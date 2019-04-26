@@ -426,7 +426,9 @@ function FileManagerView(props: Props) {
                                                                         ) : formData.search ? (
                                                                             <NoResults />
                                                                         ) : (
-                                                                            <DropFilesHere />
+                                                                            <DropFilesHere
+                                                                                empty={true}
+                                                                            />
                                                                         )}
                                                                     </FileList>
                                                                 </Scrollbar>
