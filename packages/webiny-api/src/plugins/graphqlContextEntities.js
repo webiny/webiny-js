@@ -4,12 +4,12 @@ import { getPlugins } from "webiny-plugins";
 import { EntityPool } from "webiny-entity";
 import { flowRight } from "lodash";
 import { getName } from "@commodo/name";
-import { withFields, string } from "@commodo/fields";
+import { withFields } from "@commodo/fields";
+import { withHooks } from "@commodo/hooks";
 import { withStorage } from "@commodo/fields-storage";
 import { MongoDbDriver, withId } from "@commodo/fields-storage-mongodb";
 import { withProps } from "repropose";
-
-const date = string;
+import { date } from "commodo-fields-date";
 
 const graphqlContextEntities: GraphQLContextPluginType = {
     name: "graphql-context-entities",
@@ -39,9 +39,20 @@ const graphqlContextEntities: GraphQLContextPluginType = {
                     }
                 }),
                 withFields({
-                    createdOn: date({ value: "" }),
-                    updatedOn: date({ value: "" }),
-                    deletedOn: date({ value: "" })
+                    createdOn: date(),
+                    updatedOn: date(),
+                    deletedOn: date()
+                }),
+                withHooks({
+                    beforeCreate() {
+                        this.createdOn = new Date();
+                    },
+                    beforeUpdate() {
+                        this.updatedOn = new Date();
+                    },
+                    beforeDelete() {
+                        this.deletedOn = new Date();
+                    }
                 }),
                 withId(),
                 withStorage({

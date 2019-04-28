@@ -5,14 +5,7 @@ import { withName } from "@commodo/name";
 import { withHooks } from "@commodo/hooks";
 import { withFields, onSet, number, string } from "@commodo/fields";
 
-const FileType = {
-    size: number,
-    type: string,
-    src: string,
-    name: string
-};
-
-export const File: FileType = compose(
+export const File = compose(
     withHooks({
         async beforeCreate() {
             if (!this.src.startsWith("/") || this.src.startsWith("http")) {
