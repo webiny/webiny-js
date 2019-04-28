@@ -15,6 +15,7 @@ export default [
         type: "route",
         route: (
             <Route
+                exact
                 path={"/roles"}
                 render={() => (
                     <SecureRoute roles={["security-roles"]}>
@@ -32,6 +33,7 @@ export default [
         type: "route",
         route: (
             <Route
+                exact
                 path={"/groups"}
                 render={() => (
                     <SecureRoute roles={["security-groups"]}>
@@ -49,6 +51,7 @@ export default [
         type: "route",
         route: (
             <Route
+                exact
                 path={"/users"}
                 render={() => (
                     <SecureRoute roles={["security-users"]}>
@@ -66,6 +69,7 @@ export default [
         type: "route",
         route: (
             <Route
+                exact
                 path={"/account"}
                 render={() => (
                     <AdminLayout>

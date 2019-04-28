@@ -5,6 +5,8 @@
     "apollo-link-batch-http": "^1.2.3",
     "invariant": "^2.2.4",
     "react-helmet": "^5.2.0",
+    "react-router-dom": "^5.0.0",
+    "url-search-params-polyfill": "^6.0.0",
     "webiny-app": "^1",
     "webiny-app-cms": "^1",
     "webiny-plugins": "^1",

@@ -1,1 +1,1 @@
-module.exports = require("project-rewire/babel/config");
+module.exports = require("webiny-rewire/babel/preset");

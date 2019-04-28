@@ -1,11 +1,10 @@
-const slsw = require("serverless-webpack");
 const path = require("path");
 
 const isEnvDevelopment = process.env.NODE_ENV === "development";
 const isEnvProduction = !isEnvDevelopment;
 
 module.exports = {
-    entry: isEnvDevelopment ? slsw.lib.entries : "./src/handler.js",
+    entry: "./src/handler.js",
     target: "node",
     output: isEnvProduction && {
         libraryTarget: "commonjs",

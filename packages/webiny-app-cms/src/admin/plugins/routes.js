@@ -34,6 +34,7 @@ export default [
         type: "route",
         route: (
             <Route
+                exact
                 path="/cms/categories"
                 render={() => (
                     <SecureRoute roles={["cms-categories"]}>
@@ -51,6 +52,7 @@ export default [
         type: "route",
         route: (
             <Route
+                exact
                 path="/cms/menus"
                 render={() => (
                     <SecureRoute roles={["cms-menus"]}>
@@ -68,6 +70,7 @@ export default [
         type: "route",
         route: (
             <Route
+                exact
                 path="/cms/pages"
                 render={({ location }) => (
                     <SecureRoute roles={["cms-editor"]}>
@@ -87,6 +90,7 @@ export default [
         type: "route",
         route: (
             <Route
+                exact
                 path="/cms/editor/:id"
                 render={({ location }) => (
                     <SecureRoute roles={["cms-editor"]}>

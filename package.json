@@ -94,6 +94,7 @@
     "semver": "^5.5.1",
     "source-map-support": "^0.5.0",
     "targz": "^1.0.1",
+    "verdaccio": "^3.11.6",
     "write-pkg": "^3.2.0",
     "yargs": "^12.0.1"
   },
@@ -115,7 +116,9 @@
     "functions:list": "node scripts/functions-list.js",
     "functions": "node scripts/functions.js --also-watch=packages/webiny-api*/**/*.*",
     "ssr": "node scripts/ssr.js",
-    "functions:inspect": "yarn functions --inspect=9001"
+    "functions:inspect": "yarn functions --inspect=9001",
+    "start-verdaccio": "yarn verdaccio -c ./verdaccio.yaml",
+    "publish-to-verdaccio": "yarn build && cross-env REGISTRY=http://localhost:4800 node scripts/publish-to-verdaccio"
   },
   "pre-commit": [
     "lint-staged"
