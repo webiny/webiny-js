@@ -11,7 +11,7 @@ import { spawnCommand } from "../utils";
 
 const home = homedir();
 const webinyConfigPath = path.join(home, ".webiny", "config");
-const projectConfigPath = path.join(process.cwd(), ".webiny");
+const projectConfigPath = path.resolve(".webiny");
 const ui = new inquirer.ui.BottomBar();
 
 export default class Deploy {
@@ -135,7 +135,7 @@ export default class Deploy {
     }
 
     async deployFolder(folder, { build = true } = {}) {
-        const appPath = path.join(process.cwd(), folder);
+        const appPath = path.resolve(folder);
 
         const adminConfigPath = path.join(appPath, ".webiny");
         try {
@@ -297,7 +297,7 @@ export default class Deploy {
     }
 
     async ensureBuild(folder, autoBuild) {
-        const appPath = path.join(process.cwd(), folder);
+        const appPath = path.resolve(folder);
         const buildPath = path.join(appPath, "build");
 
         if (autoBuild) {
