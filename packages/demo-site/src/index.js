@@ -1,4 +1,4 @@
-import "whatwg-fetch";
+import "cross-fetch/polyfill";
 import React from "react";
 import ReactDOM from "react-dom";
 import { ApolloProvider } from "react-apollo";

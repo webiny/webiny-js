@@ -1,24 +1,10 @@
-// @flow
-import React from "react";
-import { compose, lifecycle } from "recompose";
+import React, { useEffect } from "react";
 import { CmsContextProvider } from "./CmsContext";
-import type { CmsProviderPropsType } from "webiny-app-cms/types";
+import WebFont from "webfontloader";
 
-let WebFont;
-if (process.env.REACT_APP_SSR !== "true") {
-    WebFont = require("webfontloader");
+export default function CmsProvider({ children, ...props }) {
+    useEffect(() => {
+        WebFont.load(props.theme.fonts);
+    }, []);
+    return <CmsContextProvider {...props}>{children}</CmsContextProvider>;
 }
-
-const CmsProvider = ({ children, ...rest }: CmsProviderPropsType) => {
-    return <CmsContextProvider {...rest}>{children}</CmsContextProvider>;
-};
-
-export default compose(
-    lifecycle({
-        componentDidMount() {
-            if (process.env.REACT_APP_SSR !== "true") {
-                WebFont.load(this.props.theme.fonts);
-            }
-        }
-    })
-)(CmsProvider);

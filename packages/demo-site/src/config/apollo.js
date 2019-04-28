@@ -10,12 +10,7 @@ const cache = new InMemoryCache({
     dataIdFromObject: obj => obj.id || null
 });
 
-if (process.env.REACT_APP_SSR !== "true") {
-    cache.restore(window.__APOLLO_STATE__);
-}
-
 export default new ApolloClient({
-    ssrForceFetchDelay: process.env.REACT_APP_SSR !== "true" ? null : 100,
     link: ApolloLink.from([
         createOmitTypenameLink(),
         new BatchHttpLink({ uri: process.env.REACT_APP_API_HOST + "/function/api" })
