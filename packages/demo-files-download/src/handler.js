@@ -14,7 +14,7 @@ export const handler = async (event, { req }) => {
     const type = mime.lookup(key);
 
     try {
-        const folder = path.join(process.cwd(), "/", UPLOADS_FOLDER);
+        const folder = path.resolve(UPLOADS_FOLDER);
 
         let buffer = await fs.readFile(path.join(folder, "/", key));
         if (options) {

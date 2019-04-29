@@ -19,7 +19,7 @@ const save = req => {
         });
 
         busboy.on("file", function(name, file) {
-            const folder = path.join(process.cwd(), "/", UPLOADS_FOLDER);
+            const folder = path.resolve(UPLOADS_FOLDER);
             if (fs.existsSync(folder) === false) {
                 fs.mkdirSync(folder);
             }
