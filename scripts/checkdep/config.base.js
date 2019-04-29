@@ -20,7 +20,6 @@ module.exports = {
         "packages/webiny-data-extractor",
         "packages/webiny-validation",
         "packages/webiny-entity",
-        "packages/webiny-entity-memory",
         "packages/webiny-entity-mongodb"
     ],
     ignoredDirs: ["/node_modules/"]

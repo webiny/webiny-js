@@ -1,9 +1,16 @@
 // @flow
 import React from "react";
 import { css } from "emotion";
+import { withRouter } from "webiny-app/components";
 import gql from "graphql-tag";
 import { Query } from "react-apollo";
-import { Dialog, DialogHeader, DialogHeaderTitle, DialogBody } from "webiny-ui/Dialog";
+import {
+    Dialog,
+    DialogHeader,
+    DialogHeaderTitle,
+    DialogBody,
+    DialogFooter
+} from "webiny-ui/Dialog";
 import {
     List,
     ListItem,
@@ -11,6 +18,7 @@ import {
     ListItemTextPrimary,
     ListItemTextSecondary
 } from "webiny-ui/List";
+import { ButtonDefault } from "webiny-ui/Button";
 
 const narrowDialog = css({
     ".mdc-dialog__surface": {
@@ -36,11 +44,13 @@ const loadCategories = gql`
 const CategoriesDialog = ({
     open,
     onClose,
-    onSelect
+    onSelect,
+    router
 }: {
     open: boolean,
     onClose: Function,
-    onSelect: Function
+    onSelect: Function,
+    router: Object
 }) => {
     return (
         <Dialog open={open} onClose={onClose} className={narrowDialog}>
@@ -75,8 +85,13 @@ const CategoriesDialog = ({
                     </Query>
                 </List>
             </DialogBody>
+            <DialogFooter>
+                <ButtonDefault onClick={() => router.goToRoute({ name: "Cms.Categories" })}>
+                    + Create new category
+                </ButtonDefault>
+            </DialogFooter>
         </Dialog>
     );
 };
 
-export default CategoriesDialog;
+export default withRouter()(CategoriesDialog);

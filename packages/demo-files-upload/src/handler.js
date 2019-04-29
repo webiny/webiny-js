@@ -1,6 +1,11 @@
-// @flow
 import fs from "fs-extra";
 import Busboy from "busboy";
+import dotenv from "dotenv";
+import path from "path";
+
+dotenv.config({ path: __dirname + "/../.env" });
+
+const UPLOADS_FOLDER = process.env.UPLOADS_FOLDER || "static";
 
 const save = req => {
     return new Promise(resolve => {
@@ -14,12 +19,14 @@ const save = req => {
         });
 
         busboy.on("file", function(name, file) {
-            const folder = `${process.cwd()}/packages/demo-api/static/`;
+            const folder = path.join(process.cwd(), "/", UPLOADS_FOLDER);
             if (fs.existsSync(folder) === false) {
                 fs.mkdirSync(folder);
             }
 
-            const writerStream = fs.createWriteStream(folder + key, { encoding: "utf8" });
+            const writerStream = fs.createWriteStream(path.join(folder, "/", key), {
+                encoding: "utf8"
+            });
             file.pipe(writerStream);
         });
         busboy.on("finish", resolve);
