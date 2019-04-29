@@ -1,4 +1,3 @@
-// @flow
 import uniqueId from "uniqid";
 import mime from "mime-types";
 import sanitizeFilename from "sanitize-filename";
@@ -13,7 +12,7 @@ const respond = body => {
     };
 };
 
-export const handler = async (event: Object) => {
+export const handler = async (event) => {
     const options = JSON.parse(event.body);
 
     const { name } = options;

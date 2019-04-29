@@ -1,24 +1,21 @@
 import fs from "fs-extra";
 import Busboy from "busboy";
-import dotenv from "dotenv";
 import path from "path";
-
-dotenv.config({ path: __dirname + "/../.env" });
 
 const UPLOADS_FOLDER = process.env.UPLOADS_FOLDER || "static";
 
-const save = req => {
+const save = ({ headers }, req) => {
     return new Promise(resolve => {
-        const busboy = new Busboy({ headers: req.headers });
+        const busboy = new Busboy({ headers });
 
         let key = "";
-        busboy.on("field", function(fieldname, value) {
-            if (fieldname === "key") {
+        busboy.on("field", (fieldName, value) => {
+            if (fieldName === "key") {
                 key = value;
             }
         });
 
-        busboy.on("file", function(name, file) {
+        busboy.on("file", (name, file) => {
             const folder = path.resolve(UPLOADS_FOLDER);
             if (fs.existsSync(folder) === false) {
                 fs.mkdirSync(folder);
@@ -34,8 +31,8 @@ const save = req => {
     });
 };
 
-export const handler = async (event: Object, { req }) => {
-    await save(req);
+export const handler = async (event, { req }) => {
+    await save(event, req);
 
     return {
         statusCode: 204,

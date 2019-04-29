@@ -30,8 +30,6 @@ module.exports = async ({ port, watch }) => {
             process.exit(1);
         }
 
-        console.log(command.join(" "));
-
         logFunctions();
         nodemon(command.join(" "))
             .on("quit", process.exit)

@@ -4,7 +4,8 @@ module.exports = req => {
         path: req.path,
         resource: req.path,
         httpMethod: req.method,
-        queryStringParameters: req.query
+        queryStringParameters: req.query,
+        pathParameters: req.params
     };
 
     if (event.headers["content-type"] === "application/json") {

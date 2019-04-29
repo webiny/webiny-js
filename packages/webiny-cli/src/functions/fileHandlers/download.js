@@ -2,24 +2,20 @@ import fs from "fs-extra";
 import sharp from "sharp";
 import mime from "mime-types";
 import path from "path";
-import dotenv from "dotenv";
-
-dotenv.config({ path: __dirname + "/../.env" });
 
 const UPLOADS_FOLDER = process.env.UPLOADS_FOLDER || "static";
 
-export const handler = async (event, { req }) => {
-    const { key } = req.params;
-    const options = req.query;
+export const handler = async ({ pathParameters, queryStringParameters }) => {
+    const { key } = pathParameters;
     const type = mime.lookup(key);
 
     try {
         const folder = path.resolve(UPLOADS_FOLDER);
 
         let buffer = await fs.readFile(path.join(folder, "/", key));
-        if (options) {
+        if (queryStringParameters) {
             // If an image was requested, we can apply additional image processing.
-            const { width, height } = options;
+            const { width, height } = queryStringParameters;
             if (width || height) {
                 const supportedImageTypes = ["image/jpg", "image/jpeg", "image/png"];
                 if (supportedImageTypes.includes(type)) {
