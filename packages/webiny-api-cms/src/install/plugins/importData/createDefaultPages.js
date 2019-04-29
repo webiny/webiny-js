@@ -1,6 +1,7 @@
 // @flow
 import get from "lodash/get";
 import fs from "fs-extra";
+import path from "path";
 import { categories, pages, menus } from "./pages";
 
 const createDefaultPage = async ({ page, data }) => {
@@ -59,8 +60,8 @@ const createDefaultPages = async (context: Object, { cmsSettings }: Object) => {
 
     // Copy images.
     if (get(context, "cms.copyFiles", true) !== false) {
-        const pwd: string = (process.cwd(): any);
-        await fs.copy(`${__dirname}/pages/images`, pwd + "/static");
+        const folder: string = path.resolve(get(context, "cms.copyFilesTo") || "static");
+        await fs.copy(`${__dirname}/pages/images`, folder);
     }
 };
 

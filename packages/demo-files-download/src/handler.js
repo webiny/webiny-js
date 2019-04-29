@@ -1,7 +1,12 @@
-// @flow
 import fs from "fs-extra";
 import sharp from "sharp";
 import mime from "mime-types";
+import path from "path";
+import dotenv from "dotenv";
+
+dotenv.config({ path: __dirname + "/../.env" });
+
+const UPLOADS_FOLDER = process.env.UPLOADS_FOLDER || "static";
 
 export const handler = async (event, { req }) => {
     const { key } = req.params;
@@ -9,7 +14,9 @@ export const handler = async (event, { req }) => {
     const type = mime.lookup(key);
 
     try {
-        let buffer = await fs.readFile(`${process.cwd()}/packages/demo-api/static/${key}`);
+        const folder = path.resolve(UPLOADS_FOLDER);
+
+        let buffer = await fs.readFile(path.join(folder, "/", key));
         if (options) {
             // If an image was requested, we can apply additional image processing.
             const { width, height } = options;

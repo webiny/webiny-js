@@ -1,1 +1,1 @@
-{ "type": "function", "path": "/function/api", "method": "POST" }
+{ "type": "function", "path": "/function/api", "method": "all" }

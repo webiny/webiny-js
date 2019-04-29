@@ -5,6 +5,7 @@
   "license": "MIT",
   "dependencies": {
     "busboy": "^0.3.0",
+    "dotenv": "^7.0.0",
     "fs-extra": "^7.0.1"
   }
 }

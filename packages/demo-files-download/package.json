@@ -4,6 +4,7 @@
   "main": "index.js",
   "license": "MIT",
   "dependencies": {
+    "dotenv": "^7.0.0",
     "fs-extra": "^7.0.1",
     "mime-types": "^2.1.22",
     "sharp": "^0.22.0"
