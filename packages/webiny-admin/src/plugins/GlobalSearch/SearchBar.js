@@ -1,9 +1,11 @@
 //@flow
 import * as React from "react";
 import { compose } from "recompose";
+import { set } from "dot-prop-immutable";
+import { withRouter } from "react-router-dom";
 import Downshift from "downshift";
 import { getPlugins } from "webiny-plugins";
-import { withRouter, withKeyHandler } from "webiny-app/components";
+import { withKeyHandler } from "webiny-app/components";
 import type { GlobalSearch } from "webiny-admin/types";
 import classnames from "classnames";
 import keycode from "keycode";
@@ -68,16 +70,20 @@ class SearchBar extends React.Component<*, State> {
     constructor(props) {
         super();
         this.state.plugins.current = this.state.plugins.list.find(
-            p => p.route === props.router.route.name
+            p => p.route === props.location.pathname
         );
 
         if (this.state.plugins.current) {
+            let search;
+            const query = new URLSearchParams(props.location.search);
             try {
-                this.state.searchTerm.current = JSON.parse(props.router.getQuery().search).query;
-                this.state.searchTerm.previous = this.state.searchTerm.current;
+                search = JSON.parse(query.get("search") || "").query;
             } catch (e) {
-                // Do nothing.
+                search = query.get("search");
             }
+
+            this.state.searchTerm.current = search || "";
+            this.state.searchTerm.previous = this.state.searchTerm.current;
         }
     }
 
@@ -101,31 +107,33 @@ class SearchBar extends React.Component<*, State> {
     submitSearchTerm = plugin => {
         this.setState(
             state => {
-                state.searchTerm.previous = state.searchTerm.current;
-                state.plugins.current = plugin;
-                return state;
+                const newState = set(state, "searchTerm.previous", state.searchTerm.current);
+                return set(newState, "plugins.current", plugin);
             },
             () => {
-                const route = {
-                    name: plugin.route,
-                    params: {}
-                };
+                const query = new URLSearchParams();
 
                 if (this.state.searchTerm.current) {
                     // If "search" key in the plugin was defined, it means SearchInput values were set. Otherwise,
                     // we need to send the plain string into the "search" query param. This behavior was needed
                     // eg. for pages, since Page entity doesn't use regular SearchInput type, but plain string.
                     if (plugin.search) {
-                        route.params.search = JSON.stringify({
-                            query: this.state.searchTerm.current,
-                            ...plugin.search
-                        });
+                        query.set(
+                            "search",
+                            JSON.stringify({
+                                query: this.state.searchTerm.current,
+                                ...plugin.search
+                            })
+                        );
                     } else {
-                        route.params.search = this.state.searchTerm.current;
+                        query.set("search", this.state.searchTerm.current);
                     }
                 }
 
-                this.props.router.goToRoute(route);
+                this.props.history.push({
+                    pathname: plugin.route,
+                    search: query.toString()
+                });
             }
         );
     };
@@ -221,6 +229,6 @@ class SearchBar extends React.Component<*, State> {
 }
 
 export default compose(
-    withRouter(),
+    withRouter,
     withKeyHandler()
 )(SearchBar);

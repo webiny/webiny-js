@@ -3,7 +3,6 @@ import React from "react";
 import { i18n } from "webiny-app/i18n";
 import { registerPlugins, getPlugins } from "webiny-plugins";
 import { ReactComponent as SettingsIcon } from "webiny-admin/assets/icons/round-settings-24px.svg";
-import { AdminLayout } from "webiny-admin/components/AdminLayout";
 import type { SettingsPluginType } from "webiny-admin/types";
 
 const t = i18n.namespace("Webiny.Admin.Menus");
@@ -14,7 +13,13 @@ const renderPlugins = ({ plugins, Menu }) => {
             if (typeof sp.settings.show === "function" && !sp.settings.show()) {
                 return null;
             }
-            return <Menu key={sp.name} label={sp.settings.name} route={sp.settings.route.name} />;
+            return (
+                <Menu
+                    key={sp.name}
+                    label={sp.settings.name}
+                    route={"/settings" + sp.settings.route.props.path}
+                />
+            );
         })
         .filter(item => item);
 };
@@ -32,13 +37,9 @@ export default [
                 registerPlugins({
                     type: "route",
                     name: "route-settings-" + sp.name,
-                    route: {
-                        ...sp.settings.route,
-                        path: "/settings" + sp.settings.route.path,
-                        render() {
-                            return <AdminLayout>{sp.settings.component}</AdminLayout>;
-                        }
-                    }
+                    route: React.cloneElement(sp.settings.route, {
+                        path: "/settings" + sp.settings.route.props.path
+                    })
                 });
             });
 

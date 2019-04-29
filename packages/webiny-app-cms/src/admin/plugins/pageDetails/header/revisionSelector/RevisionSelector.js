@@ -1,7 +1,7 @@
 //@flow
 import React from "react";
 import { css } from "emotion";
-import { withRouter, type WithRouterProps } from "webiny-app/components";
+import { withRouter } from "react-router-dom";
 import { type WithPageDetailsProps } from "webiny-app-cms/admin/components";
 import { ButtonDefault } from "webiny-ui/Button";
 import { Icon } from "webiny-ui/Icon";
@@ -25,18 +25,18 @@ const menuList = css({
     }
 });
 
-type Props = WithPageDetailsProps & WithRouterProps;
+type Props = WithPageDetailsProps;
 
-const RevisionSelector = ({ router, pageDetails: { page } }: Props) => {
+const RevisionSelector = ({ location, history, pageDetails: { page } }: Props) => {
+    const query = new URLSearchParams(location.search);
+
     return (
         <Menu
             className={menuList}
-            onSelect={evt =>
-                router.goToRoute({
-                    params: { id: page.revisions[evt.detail.index].id },
-                    merge: true
-                })
-            }
+            onSelect={evt => {
+                query.set("id", page.revisions[evt.detail.index].id);
+                history.push({ search: query.toString() });
+            }}
             handle={
                 <ButtonDefault className={buttonStyle}>
                     v{page.version} <Icon icon={<DownButton />} />
@@ -59,4 +59,4 @@ const RevisionSelector = ({ router, pageDetails: { page } }: Props) => {
     );
 };
 
-export default withRouter()(RevisionSelector);
+export default withRouter(RevisionSelector);

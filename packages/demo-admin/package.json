@@ -8,6 +8,7 @@
     "apollo-client": "^2.2.8",
     "apollo-link": "^1.2.1",
     "apollo-link-batch-http": "^1.2.3",
+    "cross-fetch": "^3.0.2",
     "demo-theme": "0.0.0",
     "react-hot-loader": "^4.3.5",
     "webiny-admin": "0.0.0",
@@ -18,8 +19,7 @@
     "webiny-app-google-tag-manager": "0.0.0",
     "webiny-app-mailchimp": "0.0.0",
     "webiny-app-typeform": "0.0.0",
-    "webiny-plugins": "0.0.0",
-    "whatwg-fetch": "^3.0.0"
+    "webiny-plugins": "0.0.0"
   },
   "devDependencies": {
     "@rescripts/cli": "^0.0.7",

@@ -1,9 +1,8 @@
-//@flow
 import React from "react";
 import { connect } from "webiny-app-cms/editor/redux";
 import { compose, pure } from "recompose";
 import { css } from "emotion";
-import { withRouter } from "webiny-app/components";
+import { withRouter } from "react-router-dom";
 import { Menu, MenuItem } from "webiny-ui/Menu";
 import { getRevisions } from "webiny-app-cms/editor/selectors";
 import { ButtonDefault } from "webiny-ui/Button";
@@ -26,13 +25,13 @@ const menuList = css({
     }
 });
 
-const Revisions = pure(({ revisions, router }: Object) => {
+const Revisions = pure(({ revisions, history }) => {
     return (
         <Menu
             className={menuList}
-            onSelect={evt =>
-                router.goToRoute({ params: { id: revisions[evt.detail.index].id }, merge: true })
-            }
+            onSelect={evt => {
+                history.push(`/cms/editor/${revisions[evt.detail.index].id}`);
+            }}
             handle={
                 <ButtonDefault className={buttonStyle}>
                     Revisions <Icon icon={<DownButton />} />
@@ -57,5 +56,5 @@ const Revisions = pure(({ revisions, router }: Object) => {
 
 export default compose(
     connect(state => ({ revisions: getRevisions(state) })),
-    withRouter()
+    withRouter
 )(Revisions);

@@ -1,7 +1,6 @@
 // This is just to center the spinner
 import * as React from "react";
 import styled from "react-emotion";
-
 import Spinner from "react-spinner-material";
 
 type Props = {
@@ -9,13 +8,6 @@ type Props = {
     spinnerColor: string,
     spinnerWidth: number,
     visible: boolean
-};
-
-const defaultProps = {
-    size: 45,
-    spinnerColor: "#fa5723",
-    spinnerWidth: 4,
-    visible: true
 };
 
 const SpinnerWrapper = styled("div")({
@@ -35,14 +27,26 @@ const SpinnerWrapper = styled("div")({
     }
 });
 
-const CircularProgress = (props: Props) => {
+const CircularProgress = ({ size, spinnerWidth, spinnerColor, visible }: Props) => {
     return (
         <SpinnerWrapper>
             <div>
-                <Spinner {...defaultProps} {...props} />
+                <Spinner
+                    size={size}
+                    spinnerColor={spinnerColor}
+                    spinnerWidth={spinnerWidth}
+                    visible={visible}
+                />
             </div>
         </SpinnerWrapper>
     );
+};
+
+CircularProgress.defaultProps = {
+    size: 45,
+    spinnerColor: "#fa5723",
+    spinnerWidth: 4,
+    visible: true
 };
 
 export default CircularProgress;

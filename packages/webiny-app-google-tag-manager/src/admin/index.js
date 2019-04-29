@@ -1,5 +1,8 @@
 // @flow
 import * as React from "react";
+import { Route } from "react-router-dom";
+import { Helmet } from "react-helmet";
+import { AdminLayout } from "webiny-admin/components/AdminLayout";
 import GoogleTagManagerSettings from "./components/GoogleTagManagerSettings";
 import type { SettingsPluginType } from "webiny-admin/types";
 import { hasRoles } from "webiny-app-security";
@@ -15,17 +18,19 @@ export default ([
             show: () => hasRoles(roles),
             type: "integration",
             name: "Google Tag Manager",
-            component: (
-                <SecureRoute roles={roles}>
-                    <GoogleTagManagerSettings />
-                </SecureRoute>
-            ),
-            route: {
-                name: "Settings.GoogleTagManager",
-                path: "/google-tag-manager",
-                title: "Google Tag Manager",
-                group: undefined
-            }
+            route: (
+                <Route
+                    path="/google-tag-manager"
+                    render={() => (
+                        <AdminLayout>
+                            <Helmet title={"Google Tag Manager"} />
+                            <SecureRoute roles={roles}>
+                                <GoogleTagManagerSettings />
+                            </SecureRoute>
+                        </AdminLayout>
+                    )}
+                />
+            )
         }
     }
 ]: Array<SettingsPluginType>);

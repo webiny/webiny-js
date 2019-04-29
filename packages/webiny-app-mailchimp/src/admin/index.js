@@ -2,6 +2,9 @@
 import React from "react";
 import styled from "react-emotion";
 import { Tab } from "webiny-ui/Tabs";
+import { Route } from "react-router-dom";
+import Helmet from "react-helmet";
+import { AdminLayout } from "webiny-admin/components/AdminLayout";
 import MailchimpSettings from "./components/MailchimpSettings";
 import MailchimpElementAdvancedSettings from "./components/MailchimpElementAdvancedSettings";
 import MailchimpElement from "./components/MailchimpElement";
@@ -72,17 +75,19 @@ export default [
             show: () => hasRoles(roles),
             type: "integration",
             name: "Mailchimp",
-            component: (
-                <SecureRoute roles={roles}>
-                    <MailchimpSettings />
-                </SecureRoute>
-            ),
-            route: {
-                name: "Settings.Mailchimp",
-                path: "/mailchimp",
-                title: "Mailchimp",
-                group: undefined
-            }
+            route: (
+                <Route
+                    path="/mailchimp"
+                    render={() => (
+                        <AdminLayout>
+                            <Helmet title={"Mailchimp"} />
+                            <SecureRoute roles={roles}>
+                                <MailchimpSettings />
+                            </SecureRoute>
+                        </AdminLayout>
+                    )}
+                />
+            )
         }
     }
 ];

@@ -23,7 +23,7 @@ const fields = /* GraphQL */ `
 
 const graphql = {
     query: gql`
-            query getSettings {
+            {
                 settings {
                     cms ${fields}
                 }

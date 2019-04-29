@@ -14,7 +14,8 @@ module.exports = {
     },
     rules: {
         "flowtype/define-flow-type": 1,
-        "flowtype/use-flow-type": 1
+        "flowtype/use-flow-type": 1,
+        "react/prop-types": 0
     },
     settings: {
         flowtype: {

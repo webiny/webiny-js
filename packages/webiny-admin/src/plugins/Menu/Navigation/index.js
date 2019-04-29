@@ -1,10 +1,10 @@
 // @flow
 import * as React from "react";
+import { Link } from "react-router-dom";
 import { Drawer, DrawerContent, DrawerHeader } from "webiny-ui/Drawer";
 import { List, ListItem, ListItemGraphic, ListItemMeta } from "webiny-ui/List";
 import { IconButton } from "webiny-ui/Button";
 import { Icon } from "webiny-ui/Icon";
-import { Link } from "webiny-app/router";
 import { compose, withProps, withHandlers } from "recompose";
 import _ from "lodash";
 import styled from "react-emotion";
@@ -177,10 +177,6 @@ class Navigation extends React.Component<Props> {
         const props = _.clone(menu.props);
         const { appsMenu, hideMenu, showSection, hideSection } = this.props;
 
-        if (!utils.canAccess(/*props*/)) {
-            return null;
-        }
-
         const level = props.level || 1;
 
         const children = React.Children.toArray(props.children);
@@ -190,10 +186,6 @@ class Navigation extends React.Component<Props> {
         if (hasChildren) {
             // Build array of child items and check their access roles.
             childMenuItems = children.map((child, i) => {
-                if (!utils.canAccess(/*child.props*/)) {
-                    return null;
-                }
-
                 return React.cloneElement(child, {
                     level: level + 1,
                     key: i,

@@ -5,7 +5,7 @@ import { getPage } from "webiny-app-cms/editor/selectors";
 import { compose } from "recompose";
 import { omit, isEqual } from "lodash";
 import { withSnackbar } from "webiny-admin/components";
-import { withRouter } from "webiny-app/components";
+import { withRouter } from "react-router-dom";
 import { MenuItem } from "webiny-ui/Menu";
 import { withCmsSettings } from "webiny-app-cms/admin/components";
 import { ListItemGraphic } from "webiny-ui/List";
@@ -27,7 +27,7 @@ const setHomePage = gql`
     }
 `;
 
-const SetAsHomepageButton = ({ page, showConfirmation, showSnackbar, router }: Object) => {
+const SetAsHomepageButton = ({ page, showConfirmation, showSnackbar, history }: Object) => {
     return (
         <Mutation mutation={setHomePage}>
             {update => (
@@ -45,10 +45,7 @@ const SetAsHomepageButton = ({ page, showConfirmation, showSnackbar, router }: O
                                 return showSnackbar(error.message);
                             }
 
-                            await router.goToRoute({
-                                name: "Cms.Pages",
-                                params: { id: page.id }
-                            });
+                            history.push(`/cms/pages?id=${page.id}`);
 
                             // Let's wait a bit, because we are also redirecting the user.
                             setTimeout(() => showSnackbar("New homepage set successfully!"), 500);
@@ -73,7 +70,7 @@ export default compose(
         { areStatePropsEqual: isEqual }
     ),
     withSnackbar(),
-    withRouter(),
+    withRouter,
     withConfirmation(() => ({
         message: (
             <span>

@@ -1,7 +1,6 @@
 // @flow
 import * as React from "react";
 import { compose, withProps } from "recompose";
-import { withConfig } from "webiny-app/components";
 import { withFileUpload } from "./withFileUpload";
 
 type WithImageUploadOptions = {
@@ -26,7 +25,6 @@ const waitASecond = () => {
 export const withImageUpload = (options: WithImageUploadOptions = {}): Function => {
     return (BaseComponent: typeof React.Component) => {
         return compose(
-            withConfig(),
             withProps(props => {
                 return {
                     ...props,

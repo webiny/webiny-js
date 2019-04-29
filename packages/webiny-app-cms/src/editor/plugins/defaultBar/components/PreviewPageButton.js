@@ -5,7 +5,7 @@ import { getPage } from "webiny-app-cms/editor/selectors";
 import { compose } from "recompose";
 import { omit, isEqual } from "lodash";
 import { withSnackbar } from "webiny-admin/components";
-import { withRouter } from "webiny-app/components";
+import { withRouter } from "react-router-dom";
 import { MenuItem } from "webiny-ui/Menu";
 import { withCmsSettings } from "webiny-app-cms/admin/components";
 import { ListItemGraphic } from "webiny-ui/List";
@@ -31,6 +31,6 @@ export default compose(
         { areStatePropsEqual: isEqual }
     ),
     withSnackbar(),
-    withRouter(),
+    withRouter,
     withCmsSettings()
 )(PreviewPageButton);
