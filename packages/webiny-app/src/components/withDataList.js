@@ -29,7 +29,7 @@ export const withDataList = (withDataListParams: Object): Function => {
                     return {
                         variables: {
                             ...withDataListParams.variables,
-                            ...prepareLoadListParams(props.router)
+                            ...prepareLoadListParams(props.location)
                         }
                     };
                 }
@@ -37,7 +37,7 @@ export const withDataList = (withDataListParams: Object): Function => {
             withState("multiSelectedItems", "multiSelect", []),
             withProps(props => {
                 const returnProps = Object.assign({}, props);
-                const { router, queryData } = props;
+                const { history, location, queryData } = props;
 
                 const dataListProps: Object = {
                     ...withDataListParams.response(queryData),
@@ -54,8 +54,8 @@ export const withDataList = (withDataListParams: Object): Function => {
                             return;
                         }
 
-                        if (router) {
-                            redirectToRouteWithQueryParams(params, router);
+                        if (history) {
+                            redirectToRouteWithQueryParams(params, { history, location });
                         } else {
                             queryData.refetch(params);
                         }
@@ -140,7 +140,7 @@ export const withDataList = (withDataListParams: Object): Function => {
                         );
                     },
 
-                    __loadParams: prepareLoadListParams(props.router)
+                    __loadParams: prepareLoadListParams(props.location)
                 };
 
                 returnProps[propName] = dataListProps;

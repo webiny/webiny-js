@@ -1,25 +1,25 @@
-// @flow
-import * as React from "react";
+import React, { useCallback } from "react";
+import { withRouter } from "react-router-dom";
 import { pick } from "lodash";
 import { get } from "dot-prop-immutable";
 import { compose } from "recompose";
 import { SplitView, LeftPanel, RightPanel } from "webiny-admin/components/SplitView";
 import { FloatingActionButton } from "webiny-admin/components/FloatingActionButton";
-import { withCrud, type WithCrudProps } from "webiny-admin/components";
+import { withCrud } from "webiny-admin/components";
 import { i18n } from "webiny-app/i18n";
-
 import GroupsDataList from "./Groups/GroupsDataList";
 import GroupsForm from "./Groups/GroupsForm";
 import { loadGroup, loadGroups, createGroup, updateGroup, deleteGroup } from "./Groups/graphql";
 
 const t = i18n.namespace("Security.Groups");
 
-const Groups = ({
-    scopes,
-    router,
-    formProps,
-    listProps
-}: WithCrudProps & { scopes: Array<string> }) => {
+const Groups = ({ scopes, location, history, formProps, listProps }) => {
+    const createNew = useCallback(() => {
+        const query = new URLSearchParams(location.search);
+        query.delete("id");
+        history.push({ search: query.toString() });
+    });
+
     return (
         <React.Fragment>
             <SplitView>
@@ -30,14 +30,7 @@ const Groups = ({
                     <GroupsForm scopes={scopes} {...formProps} />
                 </RightPanel>
             </SplitView>
-            <FloatingActionButton
-                onClick={() =>
-                    router.goToRoute({
-                        params: { id: null },
-                        merge: true
-                    })
-                }
-            />
+            <FloatingActionButton onClick={createNew} />
         </React.Fragment>
     );
 };
@@ -74,5 +67,6 @@ export default compose(
                 snackbar: data => t`Group {name} saved successfully.`({ name: data.name })
             }
         }
-    })
+    }),
+    withRouter
 )(Groups);

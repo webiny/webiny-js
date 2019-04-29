@@ -1,8 +1,9 @@
 // @flow
 import * as React from "react";
 import { setDisplayName, compose, withProps, mapProps, withHandlers, withState } from "recompose";
+import { withRouter } from "react-router-dom";
 import { graphql } from "react-apollo";
-import { withDataList, withRouter, type WithRouterProps } from "webiny-app/components";
+import { withDataList } from "webiny-app/components";
 import getFormData from "./withCrud/getFormData";
 
 import {
@@ -12,7 +13,7 @@ import {
     type WithSnackbarProps
 } from "webiny-admin/components";
 
-export type WithCrudBaseProps = WithRouterProps & WithSnackbarProps & WithDialogProps;
+export type WithCrudBaseProps = WithSnackbarProps & WithDialogProps;
 
 export type WithCrudListProps = WithCrudBaseProps & {
     dataList: Object,
@@ -38,7 +39,14 @@ const withDeleteHandler = ({ mutation, response, snackbar }): Function => {
             setDisplayName("deleteHandler"),
             graphql(mutation, { name: "deleteRecord" }),
             withHandlers({
-                deleteRecord: ({ deleteRecord, showSnackbar, router, dataList, id }: Object) => {
+                deleteRecord: ({
+                    deleteRecord,
+                    showSnackbar,
+                    location,
+                    history,
+                    dataList,
+                    id
+                }: Object) => {
                     return async (item: Object) => {
                         const res = await deleteRecord({ variables: { id: item.id } });
                         const { data, error } = response(res.data);
@@ -52,10 +60,9 @@ const withDeleteHandler = ({ mutation, response, snackbar }): Function => {
                         }
 
                         if (item.id === id) {
-                            router.goToRoute({
-                                params: { id: null },
-                                merge: true
-                            });
+                            const query = new URLSearchParams(location.search);
+                            query.delete("id");
+                            history.push({ search: query.toString() });
                         }
 
                         dataList.refresh();
@@ -82,7 +89,8 @@ const withSaveHandler = ({ create, update, response, variables, snackbar }): Fun
                     setInvalidFields,
                     showSnackbar,
                     showDialog,
-                    router,
+                    location,
+                    history,
                     dataList,
                     id
                 }: Object) => {
@@ -111,7 +119,11 @@ const withSaveHandler = ({ create, update, response, variables, snackbar }): Fun
                                     }
                                 }
                                 showSnackbar(snackbar(data));
-                                router.goToRoute({ params: { id: data.id }, merge: true });
+
+                                const query = new URLSearchParams(location.search);
+                                query.set("id", data.id);
+                                history.push({ search: query.toString() });
+
                                 !id && dataList.refresh();
                             })
                             .then(res => {
@@ -131,10 +143,11 @@ export const withCrud = ({ list, form }: Object): Function => {
             setDisplayName("withCrud"),
             withSnackbar(),
             withDialog(),
-            withRouter(),
-            withProps(({ router }) => ({
-                id: router.getQuery("id")
-            })),
+            withRouter,
+            withProps(({ location }) => {
+                const query = new URLSearchParams(location.search);
+                return { id: query.get("id") };
+            }),
             // Use existing `withDataList` HOC to handle DataList component
             withDataList({
                 name: "dataList",
@@ -146,14 +159,13 @@ export const withCrud = ({ list, form }: Object): Function => {
             list.delete && withDeleteHandler(list.delete),
             // Form GET query
             graphql(form.get.query, {
-                options: ({ showSnackbar, router }) => ({
+                options: ({ showSnackbar, location, history }) => ({
                     onCompleted(data) {
                         const { error } = getFormData({ data, form });
                         if (error) {
-                            router.goToRoute({
-                                params: { id: null },
-                                merge: true
-                            });
+                            const query = new URLSearchParams(location.search);
+                            query.delete("id");
+                            history.push({ search: query.toString() });
                             showSnackbar(error.message);
                         }
                     }
@@ -168,7 +180,6 @@ export const withCrud = ({ list, form }: Object): Function => {
             mapProps(
                 (props: Object): WithCrudProps => {
                     const {
-                        router,
                         dataList,
                         saveRecord,
                         formData,
@@ -180,12 +191,10 @@ export const withCrud = ({ list, form }: Object): Function => {
                     } = props;
 
                     return {
-                        router,
                         showSnackbar,
                         showDialog,
                         listProps: {
                             dataList,
-                            router,
                             showSnackbar,
                             showDialog,
                             deleteRecord
@@ -194,8 +203,7 @@ export const withCrud = ({ list, form }: Object): Function => {
                             ...formData,
                             invalidFields,
                             onSubmit: saveRecord,
-                            loading: formData && formData.loading || mutationInProgress,
-                            router,
+                            loading: (formData && formData.loading) || mutationInProgress,
                             showSnackbar,
                             showDialog
                         }

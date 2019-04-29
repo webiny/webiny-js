@@ -18,7 +18,6 @@ import { graphql } from "react-apollo";
 import settingsGql from "./graphql";
 import { withSnackbar } from "webiny-admin/components";
 import { CircularProgress } from "webiny-ui/Progress";
-import { Link } from "webiny-app/router";
 
 const formPreview = css({
     padding: 25,
@@ -199,7 +198,7 @@ const MailchimpElementAdvancedSettings = ({ Bind, submitApiKeyForm, loading }: O
                                             <>
                                                 <Cell span={12}>
                                                     Before continuing, please{" "}
-                                                    <Link
+                                                    <a
                                                         className={enableMailchimpLink}
                                                         onClick={() =>
                                                             submitApiKeyForm({
@@ -208,7 +207,7 @@ const MailchimpElementAdvancedSettings = ({ Bind, submitApiKeyForm, loading }: O
                                                         }
                                                     >
                                                         enable
-                                                    </Link>{" "}
+                                                    </a>{" "}
                                                     the Mailchimp integration.
                                                 </Cell>
                                             </>

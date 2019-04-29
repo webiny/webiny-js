@@ -25,14 +25,14 @@ export default [
                     <Menu label={t`Security`} icon={<SecurityIcon />}>
                         {identities && (
                             <Menu label={t`Identities`}>
-                                {users && <Menu label={t`Users`} route="Users" />}
+                                {users && <Menu label={t`Users`} route="/users" />}
                             </Menu>
                         )}
 
                         {rolesGroups && (
                             <Menu label={t`Roles and Groups`}>
-                                {groups && <Menu label={t`Groups`} route="Groups" />}
-                                {roles && <Menu label={t`Roles`} route="Roles" />}
+                                {groups && <Menu label={t`Groups`} route="/groups" />}
+                                {roles && <Menu label={t`Roles`} route="/roles" />}
                             </Menu>
                         )}
                     </Menu>

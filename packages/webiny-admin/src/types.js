@@ -22,13 +22,7 @@ export type HeaderMiddlePlugin = PluginType & {
 export type SettingsPluginType = PluginType & {
     settings: {
         type?: "app" | "integration" | "other",
-        component: Element<any>,
         show?: () => boolean,
-        route: {
-            name: string,
-            path: string,
-            title: string,
-            group?: Object
-        }
+        route: Element<any>
     }
 };

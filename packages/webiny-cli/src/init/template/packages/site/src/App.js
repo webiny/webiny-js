@@ -1,33 +1,35 @@
-// @flow
 import { hot } from "react-hot-loader";
-import React from "react";
-import { Webiny, Router } from "webiny-app";
-import { registerPlugins } from "webiny-plugins";
+import React, { cloneElement } from "react";
+import { registerPlugins, getPlugins } from "webiny-plugins";
 import { CmsProvider } from "webiny-app-cms/context";
+import { UiProvider } from "webiny-app/context/ui";
 import plugins from "./plugins";
-import myTheme from "theme";
-import config from "./config";
+import theme from "theme";
 import { GenericNotFoundPage, GenericErrorPage } from "./cms";
 
+// Register all plugins
 registerPlugins(plugins);
+
+// Execute `init` plugins, they may register more plugins dynamically
+getPlugins("webiny-init").forEach(plugin => plugin.callback());
+
+const defaults = {
+    pages: {
+        notFound: GenericNotFoundPage,
+        error: GenericErrorPage
+    }
+};
 
 const App = () => {
     return (
-        <Webiny config={config}>
-            {({ router }) => (
-                <CmsProvider
-                    theme={myTheme}
-                    defaults={{
-                        pages: {
-                            notFound: GenericNotFoundPage,
-                            error: GenericErrorPage
-                        }
-                    }}
-                >
-                    <Router router={router} />
-                </CmsProvider>
-            )}
-        </Webiny>
+        /* UiProvider is a provider for UI state (dialogs, snackbars, dark theme, ...) */
+        <UiProvider>
+            {/* CmsProvider gives access to `theme` object */}
+            <CmsProvider theme={theme} defaults={defaults}>
+                {/* Get all `route` plugins and render them. */}
+                {getPlugins("route").map((pl: Object) => cloneElement(pl.route, { key: pl.name }))}
+            </CmsProvider>
+        </UiProvider>
     );
 };
 
