@@ -17,3 +17,4 @@ packages/webiny-ui/.cache/
 packages/demo-api/static/
 .changelog
 .verdaccio
+static

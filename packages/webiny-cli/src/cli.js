@@ -5,8 +5,12 @@ yargs.command("init", "Initialize a new Webiny project", argv => {
     require("./init")(argv);
 });
 
+yargs.command("list-functions", "List all registered functions", () => {
+    require("./functions/logFunctions")();
+});
+
 yargs.command(
-    "functions",
+    "start-functions",
     "Start all functions",
     yargs => {
         yargs.option("port", {
