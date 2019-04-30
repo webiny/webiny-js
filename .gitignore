@@ -10,6 +10,7 @@ node_modules
 coverage
 yarn-error.log
 dist/
+lib/
 build/
 static/
 independent/webiny-cli/lib/
@@ -18,3 +19,4 @@ packages/demo-api/static/
 .changelog
 .verdaccio
 static
+__static
