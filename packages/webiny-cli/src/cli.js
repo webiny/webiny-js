@@ -29,6 +29,32 @@ yargs.command(
 );
 
 yargs.command(
+    "start-app <name>",
+    "Start app",
+    yargs => {
+        yargs.positional("name", {
+            describe: "App name.",
+        });
+    },
+    argv => {
+        require("./apps/start")(argv);
+    }
+);
+
+yargs.command(
+    "build-app <name>",
+    "Build app",
+    yargs => {
+        yargs.positional("name", {
+            describe: "App name.",
+        });
+    },
+    argv => {
+        require("./apps/build")(argv);
+    }
+);
+
+yargs.command(
     "deploy [folder]",
     `Deploy an app or a function from the given folder. If no folder is specified, all apps will be deployed.\nWARNING: Always run from the project root folder.`,
     yargs => {

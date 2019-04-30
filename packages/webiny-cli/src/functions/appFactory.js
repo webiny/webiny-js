@@ -1,5 +1,6 @@
 /* eslint-disable */
 const express = require("express");
+const get = require("lodash.get");
 const bodyParser = require("body-parser");
 const path = require("path");
 const listFunctions = require("./listFunctions");
@@ -12,7 +13,7 @@ const handleRequest = async (req, res, handler) => {
     res.status(result.statusCode).send(result.body);
 };
 
-module.exports = () => {
+module.exports = config => {
     require("@babel/register")({
         configFile: path.resolve(process.cwd() + "/babel.config.js"),
         only: [/packages|independent/]
@@ -51,8 +52,16 @@ module.exports = () => {
 
     listFunctions().forEach(fn => {
         app[fn.method.toLowerCase()](fn.path, async (req, res) => {
+            const env = get(config, `functions.${fn.package.name}.env`, {});
+
+            const vars = Object.keys(env);
+            vars.forEach(key => {
+                process.env[key] = env[key];
+            });
+
             const { handler } = require(path.join(fn.root, fn.handler));
             await handleRequest(req, res, handler);
+            vars.forEach(key => delete process.env[key]);
         });
     });
 
