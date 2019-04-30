@@ -6,7 +6,6 @@ import { ButtonSecondary, ButtonPrimary } from "webiny-ui/Button";
 import { Tags as TagsComponent } from "webiny-ui/Tags";
 import { Form } from "webiny-form";
 import { ReactComponent as EditIcon } from "./../icons/round-edit-24px.svg";
-import { Link } from "webiny-app/router";
 import { css } from "emotion";
 import { updateFileBySrc, listFiles, listTags } from "./../graphql";
 import { compose } from "recompose";
@@ -105,9 +104,9 @@ function Tags({ state: parentState, gqlUpdateFileBySrc, showSnackbar, file }) {
                 <div>No tags assigned.</div>
             )}
             <div className={style.editTag}>
-                <Link onClick={() => setEdit(true)}>
+                <a onClick={() => setEdit(true)}>
                     <EditIcon /> Edit
-                </Link>
+                </a>
             </div>
         </>
     );

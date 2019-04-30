@@ -5,7 +5,6 @@ import { ButtonSecondary, ButtonPrimary } from "webiny-ui/Button";
 import { Input } from "webiny-ui/Input";
 import { Form } from "webiny-form";
 import { ReactComponent as EditIcon } from "./../icons/round-edit-24px.svg";
-import { Link } from "webiny-app/router";
 import { css } from "emotion";
 import { updateFileBySrc, listFiles } from "./../graphql";
 import { compose } from "recompose";
@@ -87,9 +86,9 @@ function Name({ state: parentState, gqlUpdateFileBySrc, showSnackbar, file }) {
             <div className={style.editTag}>
                 {name}
                 <br />
-                <Link onClick={() => setEdit(true)}>
+                <a onClick={() => setEdit(true)}>
                     <EditIcon /> Edit
-                </Link>
+                </a>
             </div>
         </>
     );
