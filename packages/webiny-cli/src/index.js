@@ -5,6 +5,8 @@ var chalk = require("chalk");
 var currentNodeVersion = process.versions.node;
 var majorVersion = currentNodeVersion.split(".")[0];
 
+require("dotenv").config();
+
 if (majorVersion < 8) {
     console.error(
         chalk.red(
