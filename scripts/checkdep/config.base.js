@@ -13,6 +13,7 @@ module.exports = {
         "packages/webiny-app-mailchimp",
         "packages/webiny-api-mailchimp",
         "packages/webiny-app-typeform",
+        "packages/webiny-ui",
         "packages/demo-admin",
         "packages/demo-api",
         "packages/demo-site",

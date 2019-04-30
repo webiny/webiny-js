@@ -26,7 +26,8 @@
     "webiny-api-cookie-policy": "0.0.0",
     "webiny-api-google-tag-manager": "0.0.0",
     "webiny-api-mailchimp": "0.0.0",
-    "webiny-plugins": "0.0.0"
+    "webiny-plugins": "0.0.0",
+    "source-map-support": "^0.5.0"
   },
   "devDependencies": {
     "@babel/cli": "^7.0.0",

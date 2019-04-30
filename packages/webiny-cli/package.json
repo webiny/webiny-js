@@ -16,10 +16,13 @@
   "license": "MIT",
   "dependencies": {
     "@babel/runtime": "^7.2.0",
+    "express": "^4.16.4",
     "apollo-cache-inmemory": "^1.4.2",
+    "body-parser": "^1.18.3",
     "apollo-client": "^2.4.12",
     "apollo-link": "^1.2.8",
     "apollo-link-context": "^1.0.12",
+    "sharp": "^0.21.3",
     "apollo-link-http": "^1.5.9",
     "archiver": "^3.0.0",
     "chalk": "^2.4.1",
@@ -37,9 +40,15 @@
     "node-fetch": "^2.1.2",
     "request": "^2.88.0",
     "write-json-file": "^3.1.0",
-    "yargs": "^12.0.5"
+    "busboy": "^0.3.0",
+    "yargs": "^12.0.5",
+    "uniqid": "^5.0.3",
+    "sanitize-filename": "^1.6.1",
+    "nodemon": "^1.18.10",
+    "tcp-port-used": "^1.0.1"
   },
   "devDependencies": {
+    "@babel/register": "^7.0.0",
     "@babel/plugin-proposal-class-properties": "^7.2.0",
     "@babel/plugin-proposal-object-rest-spread": "^7.2.0",
     "@babel/plugin-transform-runtime": "^7.2.0"

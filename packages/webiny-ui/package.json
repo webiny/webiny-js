@@ -15,6 +15,7 @@
   "dependencies": {
     "@babel/runtime": "^7.0.0",
     "@rmwc/button": "^2.0.0",
+    "@rmwc/base": "^2.0.0",
     "@rmwc/checkbox": "^2.0.0",
     "@rmwc/chip": "^2.0.0",
     "@rmwc/dialog": "^2.0.0",
@@ -37,12 +38,10 @@
     "@rmwc/typography": "^2.0.0",
     "@svgr/webpack": "^4.1.0",
     "brace": "^0.11.1",
-    "bytes": "^3.0.0",
     "classnames": "^2.2.6",
     "cropperjs": "^1.4.3",
     "downshift": "^2.1.5",
     "emotion": "^9.2.6",
-    "in-viewport": "^3.6.0",
     "keycode": "^2.2.0",
     "load-script": "^1.0.0",
     "material-components-web": "^0.39.1",
@@ -57,8 +56,8 @@
     "react-loading-skeleton": "^0.5.0",
     "react-spinner-material": "^1.0.19",
     "react-transition-group": "^2.5.1",
-    "react-visibility-sensor": "^5.0.2",
-    "withinviewport": "^2.1.0"
+    "lodash": "^4.17.11",
+    "dot-prop-immutable": "^1.4.0"
   },
   "devDependencies": {
     "@babel/cli": "^7.0.0",
@@ -77,7 +76,9 @@
     "raw-loader": "^0.5.1",
     "sass-loader": "^7.1.0",
     "webiny-form": "0.0.0",
-    "webiny-storybook-utils": "0.0.0"
+    "webiny-storybook-utils": "0.0.0",
+    "jest-dom": "^3.0.0",
+    "react-testing-library": "^5.2.0"
   },
   "peerDependencies": {
     "react": "^16.4.0",
