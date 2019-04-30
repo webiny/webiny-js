@@ -41,6 +41,11 @@ const Tag = styled("div")({
     },
     "&:hover": {
         backgroundColor: "var(--mdc-theme-background)"
+    },
+    "&.active": {
+        svg: {
+            color: "var(--mdc-theme-secondary)"
+        }
     }
 });
 
@@ -64,9 +69,12 @@ function LeftSidebar({ toggleTag, queryParams: { tags } }) {
                     return (
                         <TagList>
                             {list.map((item, index) => (
-                                <Tag key={item + index} onClick={() => toggleTag(item)}>
+                                <Tag
+                                    className={activeTags.includes(item) && "active"}
+                                    key={item + index}
+                                    onClick={() => toggleTag(item)}
+                                >
                                     <Icon icon={<TagIcon />} /> {item}
-                                    {activeTags.includes(item) && <Icon icon={<TagIcon />} />}
                                 </Tag>
                             ))}
                         </TagList>
