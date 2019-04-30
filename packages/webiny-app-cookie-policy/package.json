@@ -16,7 +16,9 @@
     "webiny-app-security": "0.0.0",
     "webiny-form": "0.0.0",
     "webiny-load-assets": "0.0.0",
-    "webiny-ui": "0.0.0"
+    "webiny-ui": "0.0.0",
+    "react-router-dom": "^5.0.0",
+    "react-helmet": "^5.2.0"
   },
   "devDependencies": {
     "@babel/cli": "^7.0.0",

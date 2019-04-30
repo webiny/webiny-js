@@ -4,20 +4,21 @@
   "private": true,
   "dependencies": {
     "apollo-link-batch-http": "^1.2.3",
-    "cross-fetch": "^3.0.2",
     "demo-theme": "0.0.0",
-    "express": "^4.16.4",
-    "raw-loader": "^2.0.0",
     "react-helmet": "^5.2.0",
     "react-hot-loader": "^4.3.5",
     "url-search-params-polyfill": "^5.1.0",
     "webiny-app": "0.0.0",
+    "webiny-rewire": "0.0.0",
     "webiny-app-cms": "0.0.0",
     "webiny-app-cookie-policy": "0.0.0",
     "webiny-app-google-tag-manager": "0.0.0",
     "webiny-app-mailchimp": "0.0.0",
     "webiny-app-typeform": "0.0.0",
-    "webiny-plugins": "0.0.0"
+    "webiny-plugins": "0.0.0",
+    "react-apollo": "2.3.3",
+    "react-router-dom": "^5.0.0",
+    "cross-fetch": "^3.0.2"
   },
   "devDependencies": {
     "node-sass": "^4.9.3",
