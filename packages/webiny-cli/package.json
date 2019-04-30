@@ -3,7 +3,8 @@
   "version": "2.0.13",
   "main": "index.js",
   "bin": {
-    "webiny": "./lib/index.js"
+    "webiny": "./lib/index.js",
+    "wby": "./lib/index.js"
   },
   "repository": {
     "type": "git",
