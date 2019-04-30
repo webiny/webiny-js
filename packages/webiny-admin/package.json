@@ -34,7 +34,8 @@
     "webiny-app": "0.0.0",
     "webiny-form": "0.0.0",
     "webiny-plugins": "0.0.0",
-    "webiny-ui": "0.0.0"
+    "webiny-ui": "0.0.0",
+    "timeago-react": "^2.0.0"
   },
   "devDependencies": {
     "@babel/cli": "^7.0.0",

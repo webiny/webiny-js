@@ -12,6 +12,7 @@ import Name from "./FileDetails/Name";
 import { Tooltip } from "webiny-ui/Tooltip";
 import { useHotkeys } from "react-hotkeyz";
 import { ReactComponent as DownloadIcon } from "./icons/round-cloud_download-24px.svg";
+import TimeAgo from "timeago-react";
 
 const style = {
     wrapper: css({
@@ -120,6 +121,12 @@ export default function FileDetails(props: *) {
                             <li>
                                 <li-title>Tags:</li-title>
                                 <Tags {...props} />
+                            </li>
+                            <li>
+                                <li-title>Created:</li-title>
+                                <li-content>
+                                    <TimeAgo datetime={file.createdOn} />
+                                </li-content>
                             </li>
                         </ul>
                     </DrawerContent>

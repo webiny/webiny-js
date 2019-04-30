@@ -11,7 +11,7 @@ type Props = {
     children: ({ showFileManger: Function }) => React.Node
 };
 
-class FileManagerPortal extends React.Component<> {
+class FileManagerPortal extends React.Component<*> {
     constructor() {
         super();
 

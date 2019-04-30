@@ -8,6 +8,7 @@ const fileFields = /* GraphQL */ `
         size
         type
         tags
+        createdOn
     }
 `;
 

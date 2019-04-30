@@ -6,5 +6,6 @@ export default /* GraphQL */ `
         src: String
         tags: [String]
         meta: JSON
+        createdOn: String
     }
 `;
