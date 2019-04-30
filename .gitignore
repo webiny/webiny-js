@@ -19,3 +19,4 @@ packages/demo-api/static/
 .changelog
 .verdaccio
 static
+__static
