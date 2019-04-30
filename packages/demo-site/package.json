@@ -9,7 +9,6 @@
     "react-hot-loader": "^4.3.5",
     "url-search-params-polyfill": "^5.1.0",
     "webiny-app": "0.0.0",
-    "webiny-rewire": "0.0.0",
     "webiny-app-cms": "0.0.0",
     "webiny-app-cookie-policy": "0.0.0",
     "webiny-app-google-tag-manager": "0.0.0",

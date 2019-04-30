@@ -39,6 +39,7 @@
     "lodash.get": "^4.4.2",
     "lodash.merge": "^4.6.1",
     "mime-types": "^2.1.24",
+    "execa": "^1.0.0",
     "node-fetch": "^2.1.2",
     "request": "^2.88.0",
     "sanitize-filename": "^1.6.1",

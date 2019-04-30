@@ -1,7 +1,6 @@
 // @flow
 import * as React from "react";
 import { compose, withHandlers } from "recompose";
-import { withConfig } from "webiny-app/components";
 import { getPlugin } from "webiny-plugins";
 import invariant from "invariant";
 import type { PluginType } from "webiny-plugins/types";
@@ -47,7 +46,6 @@ export const withFileUpload = (options: WithFileUploadOptions = {}): Function =>
     return (BaseComponent: typeof React.Component) => {
         return compose(
             withSnackbar(),
-            withConfig(),
             withHandlers({
                 uploadFile: () => async file => {
                     return getFileUploader()(file);
