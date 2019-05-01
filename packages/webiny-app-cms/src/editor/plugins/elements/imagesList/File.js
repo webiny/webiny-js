@@ -8,12 +8,12 @@ const COMPONENT_WIDTH = 176;
 const COMPONENT_HEIGHT = 176;
 
 const styles = css({
+    cursor: "move",
     display: "inline-block",
     float: "left",
     position: "relative",
     zIndex: 1,
     margin: 10,
-    cursor: "pointer",
     width: "100%",
     maxWidth: COMPONENT_WIDTH,
     border: "1px solid var(--mdc-theme-on-background)",
