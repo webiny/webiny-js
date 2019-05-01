@@ -16,6 +16,11 @@ export const withSnackbar = () => {
                     props.ui.setState(ui => {
                         return { ...ui, snackbar: { message, options } };
                     });
+                },
+                hideSnackbar: props => () => {
+                    props.ui.setState(ui => {
+                        return { ...ui, snackbar: null };
+                    });
                 }
             })
         )(BaseComponent);
