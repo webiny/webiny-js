@@ -1,7 +1,7 @@
-// @flowIgnore
 const path = require("path");
 const getPackages = require("get-yarn-workspaces");
-const packages = getPackages(path.join(process.cwd(), "packages"));
+
+const packages = getPackages(path.resolve("packages")).map(pkg => pkg.replace(/\//g, path.sep));
 
 const aliases = packages.reduce((aliases, dir) => {
     const name = path.basename(dir);
