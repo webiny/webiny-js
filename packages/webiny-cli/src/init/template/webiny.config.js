@@ -1,6 +1,7 @@
 module.exports = {
     functions: {
         "api": {
+            install: "src/install.js",
             method: "ALL",
             path: "/function/api",
             env: {

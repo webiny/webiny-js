@@ -4,14 +4,11 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "build": "cross-env NODE_ENV=production yarn sls webpack",
-    "start": "cross-env NODE_ENV=development yarn sls offline start --port=9100 --dontPrintOutput",
-    "setup": "node src/install.js"
+    "build": "cross-env NODE_ENV=production webpack --config=webpack.config.js --progress"
   },
   "author": "",
   "license": "MIT",
   "dependencies": {
-    "@babel/plugin-proposal-class-properties": "^7.0.0",
     "@babel/register": "^7.0.0",
     "@babel/runtime": "^7.0.0",
     "babel-loader": "^8.0.0",
@@ -23,16 +20,16 @@
     "uniqid": "^5.0.3",
     "webiny-api": "^1",
     "webiny-api-cms": "^1",
-    "webiny-api-security": "^1",
-    "webiny-entity-mongodb": "^1",
-    "webiny-install": "^1",
     "webiny-api-cookie-policy": "^1",
     "webiny-api-google-tag-manager": "^1",
     "webiny-api-mailchimp": "^1",
+    "webiny-api-security": "^1",
     "webiny-app-cookie-policy": "^1",
     "webiny-app-google-tag-manager": "^1",
     "webiny-app-mailchimp": "^1",
     "webiny-app-typeform": "^1",
+    "webiny-entity-mongodb": "^1",
+    "webiny-install": "^1",
     "webiny-plugins": "^1"
   },
   "devDependencies": {
@@ -40,6 +37,8 @@
     "@babel/core": "^7.0.0",
     "@babel/plugin-external-helpers": "^7.0.0",
     "@babel/plugin-proposal-object-rest-spread": "^7.0.0",
+    "@babel/plugin-proposal-class-properties": "^7.0.0",
+    "@babel/plugin-syntax-dynamic-import": "^7.2.0",
     "@babel/plugin-transform-runtime": "^7.0.0",
     "@babel/preset-env": "^7.0.0",
     "@babel/preset-flow": "^7.0.0",

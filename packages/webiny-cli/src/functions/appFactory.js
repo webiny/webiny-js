@@ -14,7 +14,12 @@ const handleRequest = async (req, res, handler) => {
 };
 
 module.exports = async config => {
-    require("@babel/register")({ only: [/packages/] });
+    process.env.WEBINY_DEV = "true";
+
+    require("@babel/register")({
+        only: [/packages/],
+        configFile: path.resolve("babel.config.js")
+    });
 
     const app = express();
     app.use(bodyParser.json());

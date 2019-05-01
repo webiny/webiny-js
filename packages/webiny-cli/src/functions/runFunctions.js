@@ -1,10 +1,10 @@
 const chalk = require("chalk");
 const { argv } = require("yargs");
-const getConfig = require("./getConfig");
+const getConfig = require("../utils/getConfig");
 const appFactory = require("./appFactory");
 
 (async () => {
-    const config = await getConfig();
+    const { config } = await getConfig();
 
     const app = await appFactory(config);
 

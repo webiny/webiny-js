@@ -1,8 +1,13 @@
-require("dotenv").config();
-const path = require("path");
+import config from "./configs";
+import { registerPlugins } from "webiny-plugins";
+import installer from "webiny-install";
 
-require("@babel/register")({
-    configFile: path.join(__dirname, "..", "babel.config.js"),
-});
+import securityPlugins from "webiny-api-security/install/plugins";
+import cmsPlugins from "webiny-api-cms/install/plugins";
 
-require("./install/install").default();
+registerPlugins(securityPlugins, cmsPlugins);
+
+export const install = async (context = {}) => {
+    await installer({ ...context, config: await config() });
+    process.exit();
+};

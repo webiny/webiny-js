@@ -3,7 +3,7 @@ import sharp from "sharp";
 import mime from "mime-types";
 import path from "path";
 
-const UPLOADS_FOLDER = process.env.UPLOADS_FOLDER || "static";
+const UPLOADS_FOLDER = process.env.UPLOADS_FOLDER || ".files";
 
 export const handler = async ({ pathParameters, queryStringParameters }) => {
     const { key } = pathParameters;

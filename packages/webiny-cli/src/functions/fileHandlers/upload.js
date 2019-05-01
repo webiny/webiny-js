@@ -2,7 +2,7 @@ import fs from "fs-extra";
 import Busboy from "busboy";
 import path from "path";
 
-const UPLOADS_FOLDER = process.env.UPLOADS_FOLDER || "static";
+const UPLOADS_FOLDER = process.env.UPLOADS_FOLDER || ".files";
 
 const save = ({ headers }, req) => {
     return new Promise(resolve => {
