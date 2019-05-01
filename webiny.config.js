@@ -1,6 +1,7 @@
 module.exports = {
     functions: {
         "demo-api": {
+            method: "ALL",
             path: "/function/api",
             env: {
                 MONGODB_SERVER: process.env.MONGODB_SERVER,
