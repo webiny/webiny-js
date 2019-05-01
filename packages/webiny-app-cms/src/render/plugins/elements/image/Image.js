@@ -15,7 +15,11 @@ const Link = ({ link, children }: Object) => {
     return children;
 };
 
-const Image = (props: *) => {
+const Image = (props: Object) => {
+    if (!props.image) {
+        return null;
+    }
+
     const { image = {}, link = {}, settings = {} } = get(props, "element.data", {});
     const { width, height, title, src } = image;
     const { horizontalAlign = "center" } = settings;
