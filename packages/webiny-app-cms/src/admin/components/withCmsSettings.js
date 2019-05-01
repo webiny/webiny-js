@@ -12,7 +12,9 @@ export default () =>
                 {
                     settings {
                         cms {
-                            domain
+                            data {
+                                domain
+                            }
                         }
                     }
                 }
@@ -23,7 +25,7 @@ export default () =>
         ),
         withHandlers({
             getPagePreviewUrl: ({ cmsSettings }) => (page: Object) => {
-                const domain = get(cmsSettings, "settings.cms.domain");
+                const domain = get(cmsSettings, "settings.cms.data.domain");
                 return getPagePreviewUrl({ page, domain });
             }
         }),
@@ -31,7 +33,7 @@ export default () =>
             return {
                 ...rest,
                 cmsSettings: {
-                    data: get(cmsSettings, "settings.cms"),
+                    data: get(cmsSettings, "settings.cms.data"),
                     getPagePreviewUrl
                 }
             };
