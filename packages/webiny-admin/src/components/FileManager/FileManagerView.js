@@ -97,7 +97,11 @@ const FileList = styled("div")({
 type Props = {
     onChange: Function,
     onClose: Function,
-    files: FilesRules
+    files: FilesRules,
+    accept: Array<string>,
+    maxSize: number,
+    multipleMaxCount: number,
+    multipleMaxSize: number
 };
 
 function init({ accept }) {
@@ -165,7 +169,15 @@ function renderFile(props) {
 }
 
 function FileManagerView(props: Props) {
-    const { onClose, onChange, multiple, accept, showSnackbar } = props;
+    const {
+        onClose,
+        onChange,
+        accept,
+        showSnackbar,
+        maxSize,
+        multipleMaxCount,
+        multipleMaxSize
+    } = props;
     const [state, dispatch] = useReducer(fileManagerReducer, props, init);
     const { showDetailsFileSrc, dragging, selected, queryParams } = state;
 
@@ -264,8 +276,10 @@ function FileManagerView(props: Props) {
                         return (
                             <Files
                                 multiple
+                                maxSize={maxSize}
+                                multipleMaxSize={multipleMaxSize}
+                                multipleMaxCount={multipleMaxCount}
                                 accept={accept}
-                                multipleMaxCount={10}
                                 onSuccess={files => uploadFile(files.map(file => file.src.file))}
                                 onError={errors => {
                                     const message = outputFileSelectionError(errors);
@@ -413,5 +427,11 @@ function FileManagerView(props: Props) {
         </Mutation>
     );
 }
+
+FileManagerView.defaultProps = {
+    maxSize: "10mb",
+    multipleMaxSize: "10mb",
+    multipleMaxCount: 10
+};
 
 export default compose(withSnackbar())(FileManagerView);
