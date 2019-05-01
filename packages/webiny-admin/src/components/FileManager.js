@@ -1,5 +1,5 @@
 // @flow
-import React, { useState } from "react";
+import * as React from "react";
 import ReactDOM from "react-dom";
 import FileManagerView from "./FileManager/FileManagerView";
 
@@ -8,14 +8,21 @@ type Props = {
     images?: boolean,
     multiple?: boolean,
     accept?: Array<string>,
-    children: ({ showFileManger: Function }) => React.Node
+    children: ({ showFileManager: Function }) => React.Node
 };
 
+const { useState } = React;
+
 class FileManagerPortal extends React.Component<*> {
+    container: Element;
     constructor() {
         super();
 
-        this.container = document.getElementById("file-manager-container");
+        if (!window) {
+            return;
+        }
+
+        this.container = window.document.getElementById("file-manager-container");
 
         if (!this.container) {
             this.container = document.createElement("div");
@@ -56,9 +63,5 @@ function FileManager({ children, ...rest }: Props) {
         </>
     );
 }
-
-FileManager.defaultProps = {
-    files: {}
-};
 
 export { FileManager };
