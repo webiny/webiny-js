@@ -11,7 +11,8 @@ module.exports = async ({ port, watch }) => {
     const command = [path.join(__dirname, "runFunctions.js")];
 
     // "--also-watch" argument:
-    let watchPaths = listFunctions().map(fn => fn.root + "/**/*.js");
+    const functions = await listFunctions();
+    let watchPaths = functions.map(fn => fn.root + "/**/*.js");
     if (watch) {
         watch.forEach(w => {
             watchPaths.push(path.resolve(w));
@@ -24,13 +25,13 @@ module.exports = async ({ port, watch }) => {
     command.push(`--port=${port}`);
     
     // Check port:
-    tcpPortUsed.check(port).then(inUse => {
+    tcpPortUsed.check(port).then(async inUse => {
         if (inUse) {
             console.log(chalk.red(`Port ${port} already in use.`));
             process.exit(1);
         }
 
-        logFunctions();
+        logFunctions(functions);
         nodemon(command.join(" "))
             .on("quit", process.exit)
             .on("restart", function() {
