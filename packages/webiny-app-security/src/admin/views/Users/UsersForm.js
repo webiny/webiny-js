@@ -8,7 +8,7 @@ import { CircularProgress } from "webiny-ui/Progress";
 import { ButtonPrimary } from "webiny-ui/Button";
 import GroupsAutoComplete from "./../Components/GroupsAutoComplete";
 import RolesAutoComplete from "./../Components/RolesAutoComplete";
-import AvatarImage from "./AvatarImage";
+import AvatarImage from "./../Components/AvatarImage";
 
 import {
     SimpleForm,

@@ -2,6 +2,7 @@
 import * as React from "react";
 import ReactDOM from "react-dom";
 import FileManagerView from "./FileManager/FileManagerView";
+import pick from "lodash/pick";
 
 type Props = {
     onChange: Function,
@@ -37,7 +38,14 @@ class FileManagerPortal extends React.Component<*> {
         const container: Element = (this.container: any);
 
         const props = {
-            onChange,
+            onChange: files => {
+                const fields = ["name", "src", "size", "type"];
+                if (Array.isArray(files)) {
+                    onChange(files.map(file => pick(file, fields)));
+                } else {
+                    onChange(pick(files, fields));
+                }
+            },
             onClose,
             accept,
             multiple
@@ -64,4 +72,4 @@ function FileManager({ children, ...rest }: Props) {
     );
 }
 
-export { FileManager };
+export default FileManager;

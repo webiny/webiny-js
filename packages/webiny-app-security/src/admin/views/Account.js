@@ -13,8 +13,7 @@ import { ButtonPrimary } from "webiny-ui/Button";
 import { withSnackbar } from "webiny-admin/components";
 import { compose, withHandlers, withState } from "recompose";
 import { CircularProgress } from "webiny-ui/Progress";
-import { Image } from "webiny-ui/ImageUpload";
-import { FileManager } from "webiny-admin/components";
+import AvatarImage from "./Components/AvatarImage";
 
 import {
     SimpleForm,
@@ -37,17 +36,7 @@ const UsersForm = ({ onSubmit, user, loading }: Object) => (
                             <Grid>
                                 <Cell span={12}>
                                     <Bind name="avatar">
-                                        {({ onChange, value }) => (
-                                            <FileManager onChange={onChange} images>
-                                                {({ showFileManager }) => (
-                                                    <Image
-                                                        style={{ width: "100%", height: "auto" }}
-                                                        value={value}
-                                                        uploadImage={showFileManager}
-                                                    />
-                                                )}
-                                            </FileManager>
-                                        )}
+                                        <AvatarImage />
                                     </Bind>
                                 </Cell>
                             </Grid>
