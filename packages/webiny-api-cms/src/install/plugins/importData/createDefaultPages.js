@@ -60,7 +60,7 @@ const createDefaultPages = async (context: Object, { cmsSettings }: Object) => {
 
     // Copy images.
     if (get(context, "cms.copyFiles", true) !== false) {
-        const folder: string = path.resolve(get(context, "cms.copyFilesTo") || "static");
+        const folder: string = path.resolve(get(context, "cms.copyFilesTo") || ".files");
         await fs.copy(`${__dirname}/pages/images`, folder);
     }
 };
