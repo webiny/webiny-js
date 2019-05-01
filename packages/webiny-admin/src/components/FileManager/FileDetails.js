@@ -72,7 +72,7 @@ const style = {
 };
 
 export default function FileDetails(props: *) {
-    const { file, uploadFile, onClose } = props;
+    const { file, uploadFile, onClose, validateFiles } = props;
     const filePlugin = getFileTypePlugin(file);
     const actions = get(filePlugin, "fileDetails.actions") || [];
 
@@ -89,7 +89,9 @@ export default function FileDetails(props: *) {
             {file && (
                 <div className={style.wrapper} dir="ltr">
                     <div className={style.header}>File details</div>
-                    <div className={style.preview}>{filePlugin.render({ file, uploadFile })}</div>
+                    <div className={style.preview}>
+                        {filePlugin.render({ file, uploadFile, validateFiles })}
+                    </div>
                     <div className={style.download}>
                         <>
                             <Tooltip content={<span>Download file</span>} placement={"bottom"}>

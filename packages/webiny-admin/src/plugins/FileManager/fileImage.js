@@ -8,6 +8,8 @@ import { Tooltip } from "webiny-ui/Tooltip";
 import { IconButton } from "webiny-ui/Button";
 import { ReactComponent as EditIcon } from "./icons/edit.svg";
 import { Hotkeys } from "react-hotkeyz";
+import outputFileSelectionError from "webiny-admin/components/FileManager/outputFileSelectionError";
+import { withSnackbar } from "webiny-admin/components";
 
 const styles = css({
     maxHeight: 200,
@@ -53,8 +55,8 @@ const reducer = (state, action) => {
     return next;
 };
 
-function EditAction(props) {
-    const { file, uploadFile } = props;
+const EditAction = withSnackbar()(function(props: Object) {
+    const { file, uploadFile, validateFiles, showSnackbar } = props;
     const [state, dispatch] = useReducer(reducer, initialState);
 
     return (
@@ -69,26 +71,34 @@ function EditAction(props) {
             </Tooltip>
             <Hotkeys zIndex={3} disabled={!state.dataUrl}>
                 <ImageEditorDialog
+                    dialogZIndex={10}
                     open={state.showImageEditor}
                     src={state.dataUrl}
                     onClose={() => dispatch({ type: "hideImageEditor" })}
                     onAccept={src => {
                         const blob = dataURLtoBlob(src);
-                        blob.name = file.name;
-                        uploadFile(blob);
+                        const errors = validateFiles([blob]);
+
+                        if (errors.length) {
+                            showSnackbar(outputFileSelectionError(errors));
+                        } else {
+                            blob.name = file.name;
+                            uploadFile(blob);
+                        }
+
                         dispatch({ type: "hideImageEditor" });
                     }}
                 />
             </Hotkeys>
         </>
     );
-}
+});
 
 export default {
     name: "file-manager-file-type-image",
     type: "file-manager-file-type",
     types: ["image/jpeg", "image/jpg", "image/gif", "image/png", "image/svg+xml"],
-    render: function render({ file }) {
+    render: function render({ file }: Object) {
         return (
             <Image className={styles} src={file.src} alt={file.name} transform={{ width: 300 }} />
         );

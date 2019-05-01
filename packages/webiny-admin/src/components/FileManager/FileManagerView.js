@@ -98,6 +98,7 @@ type Props = {
     onChange: Function,
     onClose: Function,
     files: FilesRules,
+    multiple: boolean, // Does not affect <Files> component, it always allows multiple selection.
     accept: Array<string>,
     maxSize: number,
     multipleMaxCount: number,
@@ -173,7 +174,9 @@ function FileManagerView(props: Props) {
         onClose,
         onChange,
         accept,
+        multiple,
         showSnackbar,
+        hideSnackbar,
         maxSize,
         multipleMaxCount,
         multipleMaxSize
@@ -260,7 +263,7 @@ function FileManagerView(props: Props) {
                     {({ data, fetchMore }) => {
                         const list = get(data, "files.listFiles.data") || [];
                         const uploadFile = async files => {
-                            showSnackbar("File upload started...");
+                            showSnackbar("File upload started...", { timeout: 1200 });
 
                             const list = Array.isArray(files) ? files : [files];
                             await Promise.all(
@@ -270,23 +273,28 @@ function FileManagerView(props: Props) {
                                 })
                             );
 
-                            showSnackbar("File upload completed.");
+                            hideSnackbar();
+
+                            setTimeout(() => {
+                                showSnackbar("File upload completed.", { timeout: 2000 });
+                            }, 1500);
                         };
 
                         return (
                             <Files
-                                multiple
+                                multiple // Always allow multiple selection.
                                 maxSize={maxSize}
                                 multipleMaxSize={multipleMaxSize}
                                 multipleMaxCount={multipleMaxCount}
                                 accept={accept}
                                 onSuccess={files => uploadFile(files.map(file => file.src.file))}
                                 onError={errors => {
+                                    console.log(errors);
                                     const message = outputFileSelectionError(errors);
                                     showSnackbar(message);
                                 }}
                             >
-                                {({ getDropZoneProps, browseFiles }) => (
+                                {({ getDropZoneProps, browseFiles, validateFiles }) => (
                                     <OverlayLayout
                                         {...getDropZoneProps({
                                             onDragEnter: () =>
@@ -351,6 +359,7 @@ function FileManagerView(props: Props) {
 
                                             <FileDetails
                                                 state={state}
+                                                validateFiles={validateFiles}
                                                 file={getFileDetailsFile({
                                                     list,
                                                     src: showDetailsFileSrc
@@ -429,6 +438,7 @@ function FileManagerView(props: Props) {
 }
 
 FileManagerView.defaultProps = {
+    multiple: false,
     maxSize: "10mb",
     multipleMaxSize: "10mb",
     multipleMaxCount: 10
