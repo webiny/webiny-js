@@ -10,9 +10,10 @@ class ImageEditorDialog extends React.Component<Props, { imageProcessing: boolea
     imageEditor = React.createRef();
 
     render() {
-        const { src, options, onAccept, open, ...dialogProps } = this.props;
+        const { src, options, onAccept, open, dialogZIndex, ...dialogProps } = this.props;
         return (
             <Dialog
+                style={{ zIndex: dialogZIndex }}
                 open={open}
                 onAccept={() => onAccept(this.imageEditor.current.getCanvasDataUrl())}
                 {...dialogProps}
