@@ -9,12 +9,26 @@ const writeJsonFile = require("write-json-file");
 const logger = require("./logger");
 
 async function publishPackages() {
-    // Get next package version
-    const pkg = await fetch("https://registry.npmjs.org/webiny-app");
-    const { latest } = (await pkg.json())["dist-tags"];
+    let currentVersion;
+    let location;
 
-    logger.info(`Latest public package version is %s`, `v${latest}`);
-    const version = semver.inc(latest, "patch");
+    // Get public npm package version
+    const pkg = await fetch("https://registry.npmjs.org/webiny-app");
+    const { latest: pubLatest } = (await pkg.json())["dist-tags"];
+
+    try {
+        // Get private registry package version
+        const privPkg = await fetch(`${process.env.REGISTRY}/webiny-app`);
+        const { latest: privLatest } = (await privPkg.json())["dist-tags"];
+        currentVersion = privLatest;
+        location = "private";
+    } catch(e) {
+        currentVersion = pubLatest;
+        location = "public";
+    }
+
+    logger.info(`Latest ${location} package version is %s`, `v${currentVersion}`);
+    const version = semver.inc(currentVersion, "minor");
 
     logger.log(`Publishing packages %s`, version);
     const nodeModulesRoot = path.resolve("build/node_modules");

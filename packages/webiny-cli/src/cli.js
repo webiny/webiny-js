@@ -9,6 +9,10 @@ yargs.command("list-functions", "List all registered functions", () => {
     require("./functions/logFunctions")();
 });
 
+yargs.command("install-functions", "Run install script for all functions (if it exists)", () => {
+    require("./functions/installFunctions")();
+});
+
 yargs.command(
     "start-functions",
     "Start all functions",

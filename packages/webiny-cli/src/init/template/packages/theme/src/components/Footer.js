@@ -1,5 +1,6 @@
 //@flow
 import * as React from "react";
+import { Link } from "react-router-dom";
 import { getFooterData } from "./graphql";
 import { Query } from "react-apollo";
 import { get } from "lodash";
@@ -12,15 +13,15 @@ const Footer = () => {
     return (
         <Query query={getFooterData}>
             {({ data: response }) => {
-                const { name, logo, social } = get(response, "settings.cms") || {};
+                const { name, logo, social } = get(response, "settings.cms.data") || {};
 
                 return (
                     <div className={"webiny-cms-section-footer"}>
                         <div className="webiny-cms-section-footer__wrapper">
                             <div className={"webiny-cms-section-footer__logo"}>
-                                <a href="/">
+                                <Link to="/">
                                     {logo && logo.src && <img src={logo.src} alt={name} />}
-                                </a>
+                                </Link>
                                 <div
                                     className={
                                         "webiny-cms-section-footer__copy webiny-cms-typography-description"

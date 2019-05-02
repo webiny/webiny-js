@@ -1,6 +1,6 @@
 module.exports = {
     functions: {
-        "demo-api": {
+        "api": {
             install: "src/install.js",
             method: "ALL",
             path: "/function/api",
@@ -12,13 +12,13 @@ module.exports = {
         }
     },
     apps: {
-        "demo-admin": {
+        "admin": {
             path: "/admin",
             env: {
                 REACT_APP_API_HOST: process.env.REACT_APP_API_HOST
             }
         },
-        "demo-site": {
+        "site": {
             path: "/",
             ssr: true,
             env: {

@@ -13,10 +13,12 @@ const handleRequest = async (req, res, handler) => {
     res.status(result.statusCode).send(result.body);
 };
 
-module.exports = config => {
+module.exports = async config => {
+    process.env.WEBINY_DEV = "true";
+
     require("@babel/register")({
-        configFile: path.resolve(process.cwd() + "/babel.config.js"),
-        only: [/packages|independent/]
+        only: [/packages/],
+        configFile: path.resolve("babel.config.js")
     });
 
     const app = express();
@@ -50,7 +52,9 @@ module.exports = config => {
         await handleRequest(req, res, handler);
     });
 
-    listFunctions().forEach(fn => {
+    const functions = await listFunctions();
+
+    functions.forEach(fn => {
         app[fn.method.toLowerCase()](fn.path, async (req, res) => {
             const env = get(config, `functions.${fn.package.name}.env`, {});
 
@@ -61,7 +65,6 @@ module.exports = config => {
 
             const { handler } = require(path.join(fn.root, fn.handler));
             await handleRequest(req, res, handler);
-            vars.forEach(key => delete process.env[key]);
         });
     });
 

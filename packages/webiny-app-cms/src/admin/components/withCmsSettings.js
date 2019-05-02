@@ -5,25 +5,24 @@ import gql from "graphql-tag";
 import getPagePreviewUrl from "./withCmsSettings/getPagePreviewUrl";
 import { get } from "lodash";
 
+const domainQuery = gql`
+    {
+        settings {
+            cms {
+                data {
+                    domain
+                }
+            }
+        }
+    }
+`;
+
 export default () =>
     compose(
-        graphql(
-            gql`
-                {
-                    settings {
-                        cms {
-                            domain
-                        }
-                    }
-                }
-            `,
-            {
-                name: "cmsSettings"
-            }
-        ),
+        graphql(domainQuery, { name: "cmsSettings" }),
         withHandlers({
             getPagePreviewUrl: ({ cmsSettings }) => (page: Object) => {
-                const domain = get(cmsSettings, "settings.cms.domain");
+                const domain = get(cmsSettings, "settings.cms.data.domain");
                 return getPagePreviewUrl({ page, domain });
             }
         }),
@@ -31,7 +30,7 @@ export default () =>
             return {
                 ...rest,
                 cmsSettings: {
-                    data: get(cmsSettings, "settings.cms"),
+                    data: get(cmsSettings, "settings.cms.data"),
                     getPagePreviewUrl
                 }
             };
