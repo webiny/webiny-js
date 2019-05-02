@@ -2,7 +2,7 @@ const chalk = require("chalk");
 const listFunctions = require("./listFunctions");
 
 module.exports = async (functions = null) => {
-    functions = functions || await listFunctions();
+    functions = functions || (await listFunctions());
 
     if (!functions.length) {
         console.log(chalk.cyan(`No functions detected!`));
@@ -14,8 +14,8 @@ module.exports = async (functions = null) => {
     functions.forEach((fn, index) => {
         console.log(
             `${index + 1}. ${fn.package.name} ` +
-            chalk.cyan(`[${fn.method.toUpperCase()}] ${fn.path}`) +
-            ` ${chalk.grey(fn.root)}`
+                chalk.cyan(`[${fn.method.toUpperCase()}] ${fn.path}`) +
+                ` ${chalk.grey(fn.root)}`
         );
     });
     console.log(chalk.cyan(`===============================================`));

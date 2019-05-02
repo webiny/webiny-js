@@ -37,7 +37,7 @@ yargs.command(
     "Start app",
     yargs => {
         yargs.positional("name", {
-            describe: "App name.",
+            describe: "App name."
         });
     },
     argv => {
@@ -50,7 +50,7 @@ yargs.command(
     "Build app",
     yargs => {
         yargs.positional("name", {
-            describe: "App name.",
+            describe: "App name."
         });
     },
     argv => {

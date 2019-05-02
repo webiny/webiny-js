@@ -22,7 +22,7 @@ async function publishPackages() {
         const { latest: privLatest } = (await privPkg.json())["dist-tags"];
         currentVersion = privLatest;
         location = "private";
-    } catch(e) {
+    } catch (e) {
         currentVersion = pubLatest;
         location = "public";
     }
