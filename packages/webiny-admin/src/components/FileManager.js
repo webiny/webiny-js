@@ -5,11 +5,14 @@ import FileManagerView from "./FileManager/FileManagerView";
 import pick from "lodash/pick";
 
 type Props = {
-    onChange: Function,
+    onChange: ?Function,
     images?: boolean,
     multiple?: boolean,
     accept?: Array<string>,
-    children: ({ showFileManager: Function }) => React.Node
+    children: ({ showFileManager: Function }) => React.Node,
+    maxSize?: string,
+    multipleMaxCount?: number,
+    multipleMaxSize?: string
 };
 
 const { useState } = React;
@@ -34,7 +37,17 @@ class FileManagerPortal extends React.Component<*> {
     }
 
     render() {
-        const { onChange, onClose, accept, multiple, images } = this.props;
+        const {
+            onChange,
+            onClose,
+            accept,
+            multiple,
+            images,
+            maxSize,
+            multipleMaxCount,
+            multipleMaxSize
+        } = this.props;
+
         const container: Element = (this.container: any);
 
         const props = {
@@ -48,7 +61,10 @@ class FileManagerPortal extends React.Component<*> {
             },
             onClose,
             accept,
-            multiple
+            multiple,
+            maxSize,
+            multipleMaxCount,
+            multipleMaxSize
         };
 
         if (images) {
