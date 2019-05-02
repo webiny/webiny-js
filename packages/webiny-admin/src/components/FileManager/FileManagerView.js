@@ -9,7 +9,7 @@ import { Query, Mutation } from "react-apollo";
 import type { FilesRules } from "react-butterfiles";
 import { listFiles, createFile } from "./graphql";
 import getFileTypePlugin from "./getFileTypePlugin";
-import { get, debounce } from "lodash";
+import { get, debounce, cloneDeep } from "lodash";
 import getFileUploader from "./getFileUploader";
 import outputFileSelectionError from "./outputFileSelectionError";
 import DropFilesHere from "./DropFilesHere";
@@ -254,10 +254,10 @@ function FileManagerView(props: WithSnackbarProps & Props) {
         []
     );
 
-    const updateCacheAfterCreateFile = useCallback((cache, newFile) => {
+    const updateCacheAfterCreateFile = (cache, newFile) => {
         const newFileData = get(newFile, "data.files.createFile.data");
 
-        const data = cache.readQuery({ query: listFiles, variables: queryParams });
+        const data = cloneDeep(cache.readQuery({ query: listFiles, variables: queryParams }));
         data.files.listFiles.data.unshift(newFileData);
 
         cache.writeQuery({
@@ -265,7 +265,7 @@ function FileManagerView(props: WithSnackbarProps & Props) {
             variables: queryParams,
             data
         });
-    }, []);
+    };
 
     const getFileDetailsFile = useCallback(function getFileDetailsFile({ src, list }) {
         return list.find(item => item.src === src);
