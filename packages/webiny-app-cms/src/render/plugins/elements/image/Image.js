@@ -16,11 +16,11 @@ const Link = ({ link, children }: Object) => {
 };
 
 const Image = (props: Object) => {
-    if (!props.image) {
+    const { image = {}, link = {}, settings = {} } = get(props, "element.data", {});
+    if (!image) {
         return null;
     }
 
-    const { image = {}, link = {}, settings = {} } = get(props, "element.data", {});
     const { width, height, title, src } = image;
     const { horizontalAlign = "center" } = settings;
 
