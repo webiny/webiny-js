@@ -44,10 +44,10 @@ class Content extends React.Component<Props> {
                 }
             },
             settings: {
-                name: get(settings, "cms.name") || "",
+                name: get(settings, "name") || "",
                 social: {
                     image: null,
-                    ...get(settings, "cms.social")
+                    ...get(settings, "social")
                 }
             }
         };
