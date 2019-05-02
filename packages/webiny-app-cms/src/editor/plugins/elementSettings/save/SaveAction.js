@@ -11,7 +11,6 @@ import { withKeyHandler } from "webiny-app-cms/editor/components";
 import { getActiveElementId, getElementWithChildren } from "webiny-app-cms/editor/selectors";
 import { createElementPlugin, createBlockPlugin } from "webiny-app-cms/admin/components";
 import { createElement, updateElement } from "webiny-app-cms/admin/graphql/pages";
-import { withFileUpload } from "webiny-app/components";
 import dataURLtoBlob from "dataurl-to-blob";
 
 type Props = {
@@ -87,7 +86,6 @@ export default compose(
     shouldUpdate((props, nextProps) => {
         return props.isDialogOpened !== nextProps.isDialogOpened;
     }),
-    withFileUpload(),
     withKeyHandler(),
     withHandlers({
         showDialog: ({ setOpenDialog }) => () => setOpenDialog(true),
@@ -97,20 +95,18 @@ export default compose(
     graphql(updateElement, { name: "updateElement" }),
     withSnackbar(),
     withHandlers({
-        onSubmit: ({
-            element,
-            hideDialog,
-            createElement,
-            updateElement,
-            showSnackbar,
-            uploadFile
-        }) => async (formData: Object) => {
+        onSubmit: ({ element, hideDialog, createElement, updateElement, showSnackbar }) => async (
+            formData: Object
+        ) => {
             formData.content = removeIdsAndPaths(cloneDeep(element));
 
             const meta = await getDataURLImageDimensions(formData.preview);
             const blob = dataURLtoBlob(formData.preview);
             blob.name = "cms-element-" + element.id + ".png";
-            formData.preview = await uploadFile(blob);
+
+            const fileUploaderPlugin = getPlugin("file-uploader");
+            formData.preview = await fileUploaderPlugin.upload(blob);
+
             formData.preview.meta = meta;
 
             let mutation = formData.overwrite ? updateElement : createElement;

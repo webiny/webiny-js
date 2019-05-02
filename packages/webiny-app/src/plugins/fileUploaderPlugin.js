@@ -1,13 +1,11 @@
 // @flow
 /* global window */
 
-import type { WithFileUploadPlugin } from "webiny-app/types";
+import type { FileUploaderPlugin } from "webiny-app/types";
 
-type WithFileUploadUploaderConfigType = { uri?: string };
-
-export default (config: WithFileUploadUploaderConfigType = {}): WithFileUploadPlugin => ({
-    type: "with-file-upload-uploader",
-    name: "with-file-upload-uploader",
+export default (config: Object = {}): FileUploaderPlugin => ({
+    type: "file-uploader",
+    name: "file-uploader",
     upload: async (file: File) => {
         const uri = config.uri || "/files";
 
