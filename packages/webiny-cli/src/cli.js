@@ -59,8 +59,8 @@ yargs.command(
 );
 
 yargs.command(
-    "deploy [folder]",
-    `Deploy an app or a function from the given folder. If no folder is specified, all apps will be deployed.`,
+    "deploy [name]",
+    `Deploy an app or a function by name. If no name is specified, all apps and functions will be deployed.`,
     yargs => {
         yargs.option("build", {
             describe: "Auto-run build script.",

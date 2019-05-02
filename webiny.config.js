@@ -15,14 +15,14 @@ module.exports = {
         "demo-admin": {
             path: "/admin",
             env: {
-                REACT_APP_API_HOST: process.env.REACT_APP_API_HOST
+                REACT_APP_FUNCTIONS_HOST: process.env.REACT_APP_FUNCTIONS_HOST
             }
         },
         "demo-site": {
             path: "/",
             ssr: true,
             env: {
-                REACT_APP_API_HOST: process.env.REACT_APP_API_HOST
+                REACT_APP_FUNCTIONS_HOST: process.env.REACT_APP_FUNCTIONS_HOST
             }
         }
     }

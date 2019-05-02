@@ -32,7 +32,7 @@ export default class Deploy {
         }
     }
 
-    async deploy({ folder, ...opts }) {
+    async deploy({ name, ...opts }) {
         if (opts.ci) {
             this.validateCiRequirements();
         }
@@ -49,8 +49,8 @@ export default class Deploy {
             this.storeSiteId(siteId);
         }
 
-        if (folder) {
-            const deploy = await this.deployFolder(folder, opts);
+        if (name) {
+            const deploy = await this.deployFolder(name, opts);
             if (!deploy) {
                 return;
             }
