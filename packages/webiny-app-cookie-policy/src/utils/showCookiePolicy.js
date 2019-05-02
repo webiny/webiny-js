@@ -1,5 +1,5 @@
 // @flow
-import load from "webiny-load-assets";
+import load from "load-src";
 
 const prepareParams = (params: Object) => {
     const prepared = { content: {}, ...params };
