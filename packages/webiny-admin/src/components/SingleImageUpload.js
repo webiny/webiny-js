@@ -50,8 +50,8 @@ type Props = FormComponentProps & {
     // onChange callback.
     onChange?: Function,
 
-    // Custom imagePreview props
-    imagePreviewProps: ?Object
+    // Optional custom props, passed to the preview image.
+    imagePreviewProps?: ?Object
 };
 
 export default class SingleImageUpload extends React.Component<Props> {
