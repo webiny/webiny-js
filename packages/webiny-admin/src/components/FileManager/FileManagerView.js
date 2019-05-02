@@ -17,7 +17,7 @@ import NoResults from "./NoResults";
 import FileDetails from "./FileDetails";
 import LeftSidebar from "./LeftSidebar";
 import { OverlayLayout } from "webiny-admin/components/OverlayLayout";
-import { withSnackbar } from "webiny-admin/components";
+import { withSnackbar, type WithSnackbarProps } from "webiny-admin/components";
 import { compose } from "recompose";
 import { Scrollbar } from "webiny-ui/Scrollbar";
 import { css } from "emotion";
@@ -108,6 +108,7 @@ type Props = {
 function init({ accept }) {
     return {
         selected: [],
+        hasPreviouslyUploadedFiles: null,
         queryParams: {
             types: accept,
             perPage: 50,
@@ -142,6 +143,7 @@ function fileManagerReducer(state, action) {
             };
             break;
         }
+
         case "showDetails": {
             next.showDetailsFileSrc = action.file;
             break;
@@ -152,6 +154,14 @@ function fileManagerReducer(state, action) {
         }
         case "dragging": {
             next.dragging = action.state;
+            break;
+        }
+        case "noPreviouslyUploadedFiles": {
+            next.hasPreviouslyUploadedFiles = false;
+            break;
+        }
+        case "hasPreviouslyUploadedFiles": {
+            next.hasPreviouslyUploadedFiles = true;
             break;
         }
     }
@@ -169,7 +179,16 @@ function renderFile(props) {
     );
 }
 
-function FileManagerView(props: Props) {
+const renderEmpty = state => {
+    console.log("==", state.hasPreviouslyUploadedFiles);
+    if (state.hasPreviouslyUploadedFiles) {
+        return <NoResults />;
+    }
+
+    return <DropFilesHere empty />;
+};
+
+function FileManagerView(props: WithSnackbarProps & Props) {
     const {
         onClose,
         onChange,
@@ -259,7 +278,22 @@ function FileManagerView(props: Props) {
     return (
         <Mutation mutation={createFile} update={updateCacheAfterCreateFile}>
             {createFile => (
-                <Query query={listFiles} variables={queryParams} ref={gqlQuery}>
+                <Query
+                    query={listFiles}
+                    variables={queryParams}
+                    ref={gqlQuery}
+                    onCompleted={response => {
+                        const list = get(response, "files.listFiles.data") || [];
+
+                        if (state.hasPreviouslyUploadedFiles === null) {
+                            const type =
+                                list.length > 0
+                                    ? "hasPreviouslyUploadedFiles"
+                                    : "noPreviouslyUploadedFiles";
+                            dispatch({ type });
+                        }
+                    }}
+                >
                     {({ data, fetchMore }) => {
                         const list = get(data, "files.listFiles.data") || [];
                         const uploadFile = async files => {
@@ -273,8 +307,11 @@ function FileManagerView(props: Props) {
                                 })
                             );
 
-                            hideSnackbar();
+                            if (!state.hasPreviouslyUploadedFiles) {
+                                dispatch("hasPreviouslyUploadedFiles");
+                            }
 
+                            hideSnackbar();
                             setTimeout(() => {
                                 showSnackbar("File upload completed.", { timeout: 2000 });
                             }, 1500);
@@ -387,41 +424,38 @@ function FileManagerView(props: Props) {
                                                     }
                                                 >
                                                     <FileList>
-                                                        {list.length ? (
-                                                            list.map(file =>
-                                                                renderFile({
-                                                                    uploadFile,
-                                                                    file,
-                                                                    showFileDetails: () =>
-                                                                        dispatch({
-                                                                            type: "showDetails",
-                                                                            file: file.src
-                                                                        }),
-                                                                    selected: selected.find(
-                                                                        current =>
-                                                                            current.src === file.src
-                                                                    ),
-                                                                    onSelect: async () => {
-                                                                        if (multiple) {
-                                                                            dispatch({
-                                                                                multiple,
-                                                                                type:
-                                                                                    "toggleSelected",
-                                                                                file
-                                                                            });
-                                                                            return;
-                                                                        }
+                                                        {list.length
+                                                            ? list.map(file =>
+                                                                  renderFile({
+                                                                      uploadFile,
+                                                                      file,
+                                                                      showFileDetails: () =>
+                                                                          dispatch({
+                                                                              type: "showDetails",
+                                                                              file: file.src
+                                                                          }),
+                                                                      selected: selected.find(
+                                                                          current =>
+                                                                              current.src ===
+                                                                              file.src
+                                                                      ),
+                                                                      onSelect: async () => {
+                                                                          if (multiple) {
+                                                                              dispatch({
+                                                                                  multiple,
+                                                                                  type:
+                                                                                      "toggleSelected",
+                                                                                  file
+                                                                              });
+                                                                              return;
+                                                                          }
 
-                                                                        await onChange(file);
-                                                                        onClose();
-                                                                    }
-                                                                })
-                                                            )
-                                                        ) : queryParams.search ? (
-                                                            <NoResults />
-                                                        ) : (
-                                                            <DropFilesHere empty={true} />
-                                                        )}
+                                                                          await onChange(file);
+                                                                          onClose();
+                                                                      }
+                                                                  })
+                                                              )
+                                                            : renderEmpty(state)}
                                                     </FileList>
                                                 </Scrollbar>
                                             </FileListWrapper>
