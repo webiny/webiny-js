@@ -25,9 +25,6 @@ const styles = css({
         height: COMPONENT_HEIGHT,
         overflow: "hidden",
         "--icon-color": "var(--mdc-theme-on-background)",
-        "&:hover": {
-            "--icon-color": "var(--mdc-theme-secondary)"
-        },
         ".checkedIcon": {
             color: "var(--mdc-theme-secondary)",
             position: "absolute",
@@ -40,7 +37,10 @@ const styles = css({
             position: "absolute",
             top: 4,
             right: 4,
-            zIndex: 10
+            zIndex: 10,
+            "&:hover": {
+                "--icon-color": "var(--mdc-theme-secondary)"
+            }
         },
         ".filePreview": {
             textAlign: "center",
