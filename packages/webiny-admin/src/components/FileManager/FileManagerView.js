@@ -179,12 +179,10 @@ function renderFile(props) {
     );
 }
 
-const renderEmpty = state => {
-    console.log("==", state.hasPreviouslyUploadedFiles);
-    if (state.hasPreviouslyUploadedFiles) {
+const renderEmpty = ({ hasPreviouslyUploadedFiles }) => {
+    if (hasPreviouslyUploadedFiles) {
         return <NoResults />;
     }
-
     return <DropFilesHere empty />;
 };
 
@@ -201,7 +199,13 @@ function FileManagerView(props: WithSnackbarProps & Props) {
         multipleMaxSize
     } = props;
     const [state, dispatch] = useReducer(fileManagerReducer, props, init);
-    const { showDetailsFileSrc, dragging, selected, queryParams } = state;
+    const {
+        showDetailsFileSrc,
+        dragging,
+        selected,
+        queryParams,
+        hasPreviouslyUploadedFiles
+    } = state;
 
     const gqlQuery = useRef();
 
@@ -285,7 +289,7 @@ function FileManagerView(props: WithSnackbarProps & Props) {
                     onCompleted={response => {
                         const list = get(response, "files.listFiles.data") || [];
 
-                        if (state.hasPreviouslyUploadedFiles === null) {
+                        if (hasPreviouslyUploadedFiles === null) {
                             const type =
                                 list.length > 0
                                     ? "hasPreviouslyUploadedFiles"
@@ -307,8 +311,8 @@ function FileManagerView(props: WithSnackbarProps & Props) {
                                 })
                             );
 
-                            if (!state.hasPreviouslyUploadedFiles) {
-                                dispatch("hasPreviouslyUploadedFiles");
+                            if (!hasPreviouslyUploadedFiles) {
+                                dispatch({ type: "hasPreviouslyUploadedFiles" });
                             }
 
                             hideSnackbar();
@@ -326,7 +330,6 @@ function FileManagerView(props: WithSnackbarProps & Props) {
                                 accept={accept}
                                 onSuccess={files => uploadFile(files.map(file => file.src.file))}
                                 onError={errors => {
-                                    console.log(errors);
                                     const message = outputFileSelectionError(errors);
                                     showSnackbar(message);
                                 }}
@@ -335,6 +338,7 @@ function FileManagerView(props: WithSnackbarProps & Props) {
                                     <OverlayLayout
                                         {...getDropZoneProps({
                                             onDragEnter: () =>
+                                                hasPreviouslyUploadedFiles &&
                                                 dispatch({
                                                     type: "dragging",
                                                     state: true
@@ -376,7 +380,7 @@ function FileManagerView(props: WithSnackbarProps & Props) {
                                         }
                                     >
                                         <>
-                                            {dragging && (
+                                            {dragging && hasPreviouslyUploadedFiles && (
                                                 <DropFilesHere
                                                     className={style.draggingFeedback}
                                                     onDragLeave={() => {
