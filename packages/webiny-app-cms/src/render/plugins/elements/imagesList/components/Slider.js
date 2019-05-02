@@ -1,7 +1,6 @@
 // @flow
 import * as React from "react";
-import { default as SlickSlider } from "react-slick";
-import "./Slider.scss";
+
 
 const Slider = ({ data }: Object) => {
     if (Array.isArray(data)) {
