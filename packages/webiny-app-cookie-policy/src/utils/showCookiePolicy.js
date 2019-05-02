@@ -20,12 +20,14 @@ const prepareParams = (params: Object) => {
 };
 
 let initialized = false;
-const showCookiePolicy = async (params: Object) => {
-    if (initialized) {
-        return;
-    }
+const showCookiePolicy = async (params: Object, previewMode: boolean = false) => {
+    if (!previewMode) {
+        if (initialized) {
+            return;
+        }
 
-    initialized = true;
+        initialized = true;
+    }
 
     await load(
         "//cdnjs.cloudflare.com/ajax/libs/cookieconsent2/3.1.0/cookieconsent.min.css",
