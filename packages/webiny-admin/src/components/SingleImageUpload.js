@@ -63,6 +63,7 @@ export default class SingleImageUpload extends React.Component<Props> {
             validation = { isValid: null },
             label,
             description,
+            accept,
             maxSize,
             multipleMaxCount,
             multipleMaxSize,
@@ -79,7 +80,8 @@ export default class SingleImageUpload extends React.Component<Props> {
 
                 <FileManager
                     onChange={onChange}
-                    images
+                    accept={accept}
+                    images={!accept}
                     maxSize={maxSize}
                     multipleMaxCount={multipleMaxCount}
                     multipleMaxSize={multipleMaxSize}
