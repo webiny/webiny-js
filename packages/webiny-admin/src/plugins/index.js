@@ -9,6 +9,7 @@ import dialog from "webiny-admin/plugins/Dialog";
 // Header plugins
 import Menu from "webiny-admin/plugins/Menu";
 import Logo from "webiny-admin/plugins/Logo";
+import FileManager from "webiny-admin/plugins/FileManager";
 import UserMenu from "webiny-admin/plugins/UserMenu";
 import { globalSearch } from "webiny-admin/plugins/GlobalSearch";
 
@@ -32,6 +33,7 @@ export default [
     // Header plugins
     Menu,
     Logo,
+    FileManager,
     UserMenu,
     globalSearch,
     DarkMode,

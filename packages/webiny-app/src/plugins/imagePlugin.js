@@ -116,13 +116,7 @@ const imagePlugin: ImageComponentPluginType = {
             });
         }
 
-        return (
-            <Image
-                {...imageProps}
-                srcSet={srcSet}
-                src={imagePlugin.getImageSrc({ src, transform })}
-            />
-        );
+        return <Image {...imageProps} srcSet={srcSet} src={src} />;
     }
 };
 

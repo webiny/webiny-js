@@ -13,8 +13,10 @@ const OverlayLayoutWrapper = styled("div")({
     width: "100%",
     height: "100vh",
     backgroundColor: "var(--mdc-theme-background)",
-    zIndex: 4,
-    paddingTop: 65
+    zIndex: 5,
+    paddingTop: 65,
+    top: 0,
+    left: 0
 });
 
 const noScroll = css({
@@ -39,6 +41,7 @@ const transitionStyles = {
 type Props = {
     barMiddle?: React.Node,
     barLeft?: React.Node,
+    barRight?: React.Node,
     children: React.Node,
     onExited?: Function
 };
@@ -70,36 +73,35 @@ class OverlayLayout extends React.Component<Props, State> {
         // $FlowFixMe
         document.body.classList.remove(noScroll);
     }
-    
+
     render() {
+        const { onExited, barLeft, barMiddle, barRight, children, style, ...rest } = this.props;
+
         return (
-            <Transition
-                in={this.state.isVisible}
-                timeout={100}
-                appear={true}
-                onExited={this.props.onExited}
-            >
+            <Transition in={this.state.isVisible} timeout={100} appear onExited={onExited}>
                 {state => (
-                    <OverlayLayoutWrapper style={{ ...defaultStyle, ...transitionStyles[state] }}>
+                    <OverlayLayoutWrapper
+                        {...rest}
+                        style={{ ...defaultStyle, ...style, ...transitionStyles[state] }}
+                    >
                         <TopAppBarSecondary fixed style={{ top: 0 }}>
                             <TopAppBarSection style={{ width: "33%" }} alignStart>
-                                {this.props.barLeft}
+                                {barLeft}
                             </TopAppBarSection>
                             <TopAppBarSection style={{ width: "33%" }}>
-                                {this.props.barMiddle}
+                                {barMiddle}
                             </TopAppBarSection>
                             <TopAppBarSection style={{ width: "33%" }} alignEnd>
+                                {barRight}
                                 <IconButton
                                     ripple={false}
-                                    onClick={() => {
-                                        this.hideComponent();
-                                    }}
+                                    onClick={this.hideComponent}
                                     icon={<CloseIcon style={{ width: 24, height: 24 }} />}
                                 />
                             </TopAppBarSection>
                         </TopAppBarSecondary>
 
-                        {this.props.children}
+                        {children}
                     </OverlayLayoutWrapper>
                 )}
             </Transition>

@@ -23,7 +23,7 @@ module.exports = async ({ port, watch }) => {
 
     // "--port" argument:
     command.push(`--port=${port}`);
-    
+
     // Check port:
     tcpPortUsed.check(port).then(async inUse => {
         if (inUse) {

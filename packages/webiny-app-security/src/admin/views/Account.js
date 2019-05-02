@@ -12,8 +12,8 @@ import { Input } from "webiny-ui/Input";
 import { ButtonPrimary } from "webiny-ui/Button";
 import { withSnackbar } from "webiny-admin/components";
 import { compose, withHandlers, withState } from "recompose";
-import AvatarImage from "./Users/AvatarImage";
 import { CircularProgress } from "webiny-ui/Progress";
+import AvatarImage from "./Components/AvatarImage";
 
 import {
     SimpleForm,

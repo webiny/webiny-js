@@ -29,22 +29,6 @@ export const genericTypes = () => {
             message: String
             data: JSON
         }
-        
-        type File {
-            name: String
-            size: Int
-            type: String
-            src: String,
-            meta: JSON
-        }
-        
-        input FileInput {
-            name: String
-            size: Int
-            type: String
-            src: String
-            meta: JSON
-        }
   `
     ];
 };

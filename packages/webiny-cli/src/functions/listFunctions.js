@@ -5,9 +5,11 @@ const getConfig = require("../utils/getConfig");
 
 // Find all Webiny functions in the project
 module.exports = async () => {
-    const { config: { functions } } = await getConfig();
+    const {
+        config: { functions }
+    } = await getConfig();
     const packages = getPackages(process.cwd()).map(pkg => pkg.replace(/\//g, path.sep));
-    
+
     return Object.keys(functions || [])
         .map(name => {
             const root = packages.find(folder => path.basename(folder) === name);

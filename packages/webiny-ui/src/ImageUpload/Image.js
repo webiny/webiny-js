@@ -86,7 +86,7 @@ const ImagePreviewWrapper = styled("div")({
         display: "none",
         top: 0,
         height: "100%",
-        zIndex: 10,
+        zIndex: 1,
         backgroundColor: "rgba(0,0,0, 0.75)",
         [AddImageIconWrapper]: {
             top: "50%",
@@ -102,11 +102,11 @@ const ImagePreviewWrapper = styled("div")({
         },
         [RemoveImage]: {
             display: "block",
-            zIndex: 12
+            zIndex: 2
         },
         [EditImage]: {
             display: "block",
-            zIndex: 12
+            zIndex: 2
         }
     }
 });
@@ -150,6 +150,7 @@ class Image extends React.Component<Props> {
 
         const imagePreviewProps: Object = {
             src: value ? value.src : null,
+            style: this.props.style ? this.props.style : null,
             onClick: () => uploadImage()
         };
 

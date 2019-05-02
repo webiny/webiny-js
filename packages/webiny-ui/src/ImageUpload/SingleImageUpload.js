@@ -41,7 +41,7 @@ type Props = FormComponentProps & {
     // Define a list of accepted image types.
     accept?: Array<string>,
 
-    // Define file's max allowed size (default is "5mb").
+    // Define file's max allowed size (default is "10mb").
     // Uses "bytes" (https://www.npmjs.com/package/bytes) library to convert string notation to actual number.
     maxSize: string,
 

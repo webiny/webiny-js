@@ -10,6 +10,7 @@ import spacer from "./spacer";
 import button from "./button";
 import embeds from "./embeds";
 import pagesList from "./pagesList";
+import imagesList from "./imagesList";
 
 export default [
     document(),
@@ -22,5 +23,6 @@ export default [
     spacer(),
     button(),
     ...embeds,
-    ...pagesList
+    ...pagesList,
+    ...imagesList
 ];
