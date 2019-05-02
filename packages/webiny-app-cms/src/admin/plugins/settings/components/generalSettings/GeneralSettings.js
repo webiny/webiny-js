@@ -4,7 +4,8 @@ import { Form } from "webiny-form";
 import { Grid, Cell } from "webiny-ui/Grid";
 import { Input } from "webiny-ui/Input";
 import { ButtonPrimary } from "webiny-ui/Button";
-import Image from "./Image";
+import SingleImageUpload from "webiny-admin/components/SingleImageUpload";
+
 import { Query, Mutation } from "react-apollo";
 import { withSnackbar } from "webiny-admin/components";
 import graphql from "./graphql";
@@ -57,7 +58,7 @@ const GeneralSettings = ({ showSnackbar }) => {
                                                         </Cell>
                                                         <Cell span={6}>
                                                             <Bind name={"favicon"}>
-                                                                <Image
+                                                                <SingleImageUpload
                                                                     label="Favicon"
                                                                     accept={["image/png"]}
                                                                 />
@@ -65,7 +66,7 @@ const GeneralSettings = ({ showSnackbar }) => {
                                                         </Cell>
                                                         <Cell span={6}>
                                                             <Bind name={"logo"}>
-                                                                <Image label="Logo" />
+                                                                <SingleImageUpload label="Logo" />
                                                             </Bind>
                                                         </Cell>
                                                     </Grid>

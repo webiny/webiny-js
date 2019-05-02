@@ -7,7 +7,8 @@ import { withSnackbar } from "webiny-admin/components";
 import graphql from "./graphql";
 import PagesAutoComplete from "webiny-app-cms/admin/components/PagesAutoComplete";
 import { CircularProgress } from "webiny-ui/Progress";
-import Image from "./Image";
+import SingleImageUpload from "webiny-admin/components/SingleImageUpload";
+
 import { get } from "lodash";
 
 import {
@@ -79,15 +80,15 @@ const CmsSettings = ({ showSnackbar }) => {
                                                     <Grid>
                                                         <Cell span={12}>
                                                             <Bind name={"social.image"}>
-                                                                <Image
+                                                                <SingleImageUpload
+                                                                    label="Default Open Graph image"
+                                                                    description={`The default OG image for all pages. Recommended resolution 1596x545.`}
                                                                     imageEditor={{
                                                                         crop: {
                                                                             autoEnable: true,
                                                                             aspectRatio: 1596 / 545
                                                                         }
                                                                     }}
-                                                                    label="Default Open Graph image"
-                                                                    description={`Any CMS page that doesn't have an Open Graph image set, will use this one.`}
                                                                 />
                                                             </Bind>
                                                         </Cell>
