@@ -4,7 +4,8 @@ import { withUi } from "webiny-app/components";
 import { compose, withHandlers } from "recompose";
 
 export type WithSnackbarProps = {
-    showSnackbar: (message: string, options: ?Object) => void
+    showSnackbar: (message: string, options: ?Object) => void,
+    hideSnackbar: () => void
 };
 
 export const withSnackbar = () => {
