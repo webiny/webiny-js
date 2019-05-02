@@ -60,7 +60,7 @@ yargs.command(
 
 yargs.command(
     "deploy [folder]",
-    `Deploy an app or a function from the given folder. If no folder is specified, all apps will be deployed.\nWARNING: Always run from the project root folder.`,
+    `Deploy an app or a function from the given folder. If no folder is specified, all apps will be deployed.`,
     yargs => {
         yargs.option("build", {
             describe: "Auto-run build script.",
