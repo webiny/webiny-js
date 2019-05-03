@@ -42,7 +42,7 @@ export default () => {
                 return {
                     type: "cms-element-pages-list",
                     data: {
-                        limit: 3,
+                        resultsPerPage: 10,
                         component: "cms-element-pages-list-component-default",
                         settings: {
                             margin: {

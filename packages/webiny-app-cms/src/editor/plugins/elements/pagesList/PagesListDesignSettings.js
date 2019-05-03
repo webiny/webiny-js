@@ -32,7 +32,7 @@ const PagesListDesignSettings = ({ cms: { theme }, Bind, data }: Object) => {
                 </Cell>
 
                 <Cell span={6}>
-                    <Bind name={"resultsPerPage"} defaultValue={10} validators={["numeric"]}>
+                    <Bind name={"resultsPerPage"} validators={["numeric"]}>
                         <Input label={"Results per page"} />
                     </Bind>
                 </Cell>
