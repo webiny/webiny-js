@@ -272,7 +272,7 @@ function FileManagerView(props: WithSnackbarProps & Props) {
     }, []);
 
     useHotkeys({
-        zIndex: 1,
+        zIndex: 50,
         keys: {
             esc: onClose
         }

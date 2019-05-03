@@ -77,7 +77,7 @@ export default function FileDetails(props: *) {
     const actions = get(filePlugin, "fileDetails.actions") || [];
 
     useHotkeys({
-        zIndex: 2,
+        zIndex: 55,
         disabled: !file,
         keys: {
             esc: onClose

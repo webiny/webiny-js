@@ -69,7 +69,7 @@ const EditAction = withSnackbar()(function(props: Object) {
                     }}
                 />
             </Tooltip>
-            <Hotkeys zIndex={3} disabled={!state.dataUrl}>
+            <Hotkeys zIndex={60} disabled={!state.dataUrl}>
                 <ImageEditorDialog
                     dialogZIndex={10}
                     open={state.showImageEditor}

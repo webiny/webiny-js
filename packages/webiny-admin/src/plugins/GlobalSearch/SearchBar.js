@@ -5,10 +5,9 @@ import { set } from "dot-prop-immutable";
 import { withRouter } from "react-router-dom";
 import Downshift from "downshift";
 import { getPlugins } from "webiny-plugins";
-import { withKeyHandler } from "webiny-app/components";
 import type { GlobalSearch } from "webiny-admin/types";
 import classnames from "classnames";
-import keycode from "keycode";
+import { Hotkeys } from "react-hotkeyz";
 
 // UI components
 import { Icon } from "webiny-ui/Icon";
@@ -87,17 +86,15 @@ class SearchBar extends React.Component<*, State> {
         }
     }
 
-    componentDidMount() {
-        const { addKeyHandler } = this.props;
-        addKeyHandler("/", e => {
-            e.preventDefault();
-            this.input.current.focus();
-        });
-    }
+    handleForwardSlash = e => {
+        const filter = ["TEXTAREA", "INPUT"];
+        if (filter.includes(e.target.nodeName)) {
+            return;
+        }
 
-    componentWillUnmount() {
-        this.props.removeKeyHandler("/");
-    }
+        e.preventDefault();
+        this.input.current.focus();
+    };
 
     /**
      * Re-routes to given route (provided by the plugin) with needed search query params.
@@ -150,7 +147,6 @@ class SearchBar extends React.Component<*, State> {
             <Downshift ref={this.downshift} itemToString={item => item && item.label}>
                 {downshiftProps => {
                     const {
-                        selectedItem,
                         isOpen,
                         openMenu,
                         closeMenu,
@@ -159,6 +155,34 @@ class SearchBar extends React.Component<*, State> {
 
                     return (
                         <div style={{ width: "100%" }}>
+                            <Hotkeys
+                                zIndex={10}
+                                keys={{
+                                    esc: () => document.activeElement.blur(),
+                                    "/": this.handleForwardSlash,
+                                    NumpadDivide: this.handleForwardSlash
+                                }}
+                            />
+
+                            <Hotkeys
+                                zIndex={11}
+                                disabled={!isOpen}
+                                keys={{
+                                    esc: () => {
+                                        this.cancelSearchTerm();
+                                        closeMenu();
+                                    },
+                                    enter: () =>
+                                        setTimeout(() => {
+                                            const {selectedItem} = this.downshift.current.state;
+                                            if (selectedItem) {
+                                                closeMenu();
+                                                this.submitSearchTerm(selectedItem);
+                                            }
+                                        })
+                                }}
+                            />
+
                             <Elevation
                                 className={classnames(searchWrapper, { active: this.state.active })}
                                 z={0}
@@ -192,24 +216,6 @@ class SearchBar extends React.Component<*, State> {
                                                             state.searchTerm.current = value;
                                                             return state;
                                                         });
-                                                    },
-                                                    onKeyUp: e => {
-                                                        switch (keycode(e)) {
-                                                            case "esc":
-                                                                e.preventDefault();
-                                                                this.cancelSearchTerm();
-                                                                closeMenu();
-                                                                break;
-                                                            case "enter":
-                                                                e.preventDefault();
-                                                                if (selectedItem) {
-                                                                    closeMenu();
-                                                                    this.submitSearchTerm(
-                                                                        selectedItem
-                                                                    );
-                                                                }
-                                                                break;
-                                                        }
                                                     }
                                                 })}
                                             />
@@ -228,7 +234,4 @@ class SearchBar extends React.Component<*, State> {
     }
 }
 
-export default compose(
-    withRouter,
-    withKeyHandler()
-)(SearchBar);
+export default compose(withRouter)(SearchBar);
