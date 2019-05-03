@@ -97,7 +97,7 @@ const EditAction = withSnackbar()(function(props: Object) {
 export default {
     name: "file-manager-file-type-image",
     type: "file-manager-file-type",
-    types: ["image/jpeg", "image/jpg", "image/gif", "image/png", "image/svg+xml"],
+    types: ["image/jpeg", "image/jpg", "image/gif", "image/png", "image/svg+xml", "image/x-icon", "image/vnd.microsoft.icon"],
     render: function render({ file }: Object) {
         return (
             <Image className={styles} src={file.src} alt={file.name} transform={{ width: 300 }} />

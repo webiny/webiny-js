@@ -60,7 +60,7 @@ const GeneralSettings = ({ showSnackbar }) => {
                                                             <Bind name={"favicon"}>
                                                                 <SingleImageUpload
                                                                     label="Favicon"
-                                                                    accept={["image/png"]}
+                                                                    accept={["image/png", "image/x-icon", "image/vnd.microsoft.icon"]}
                                                                 />
                                                             </Bind>
                                                         </Cell>
