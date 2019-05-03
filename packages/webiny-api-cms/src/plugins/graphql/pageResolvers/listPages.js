@@ -27,6 +27,9 @@ export default (entityFetcher: EntityFetcher) => async (
                 parent: {
                     $first: "$parent"
                 },
+                createdOn: {
+                    $first: "$createdOn"
+                },
                 id: {
                     $first: "$id"
                 },
@@ -52,6 +55,7 @@ export default (entityFetcher: EntityFetcher) => async (
     }
 
     const collection = entityClass.getDriver().getCollectionName(entityClass);
+
     const ids = await entityClass
         .getDriver()
         .aggregate(collection, [
@@ -69,7 +73,7 @@ export default (entityFetcher: EntityFetcher) => async (
     ]);
 
     return new ListResponse(
-        await entityClass.find({ query: { id: { $in: ids.map(item => item.id) } } }),
+        await entityClass.find({ sort, query: { id: { $in: ids.map(item => item.id) } } }),
         createPaginationMeta({
             page,
             perPage,
