@@ -179,11 +179,11 @@ function renderFile(props) {
     );
 }
 
-const renderEmpty = ({ hasPreviouslyUploadedFiles }) => {
+const renderEmpty = ({ state: { hasPreviouslyUploadedFiles }, browseFiles }) => {
     if (hasPreviouslyUploadedFiles) {
         return <NoResults />;
     }
-    return <DropFilesHere empty />;
+    return <DropFilesHere empty onClick={browseFiles} />;
 };
 
 function FileManagerView(props: WithSnackbarProps & Props) {
@@ -459,7 +459,7 @@ function FileManagerView(props: WithSnackbarProps & Props) {
                                                                       }
                                                                   })
                                                               )
-                                                            : renderEmpty(state)}
+                                                            : renderEmpty({ state, browseFiles })}
                                                     </FileList>
                                                 </Scrollbar>
                                             </FileListWrapper>

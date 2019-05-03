@@ -45,14 +45,17 @@ const styles = css({
 
 type Props = {
     onDragLeave?: Function,
-    onDrop?: Function
+    onDrop?: Function,
+    empty?: boolean,
+    onClick?: Function
 };
 
-export default function DropFilesHere({ onDrop, onDragLeave, empty }: Props) {
+export default function DropFilesHere({ onDrop, onDragLeave, empty, onClick }: Props) {
     return (
         <div
-            className={classNames(styles, { empty: empty })}
+            className={classNames(styles, { empty })}
             onDrop={onDrop}
+            onClick={onClick}
             onDragLeave={onDragLeave}
         >
             <div>
