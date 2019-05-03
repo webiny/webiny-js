@@ -1,5 +1,4 @@
 // @flow
-/* eslint-disable */
 import React, { useReducer, useRef, useCallback } from "react";
 import Files from "react-butterfiles";
 import { ButtonPrimary, ButtonIcon } from "webiny-ui/Button";
@@ -16,6 +15,7 @@ import DropFilesHere from "./DropFilesHere";
 import NoResults from "./NoResults";
 import FileDetails from "./FileDetails";
 import LeftSidebar from "./LeftSidebar";
+import SupportedFileTypes from "./SupportedFileTypes";
 import { OverlayLayout } from "webiny-admin/components/OverlayLayout";
 import { withSnackbar, type WithSnackbarProps } from "webiny-admin/components";
 import { compose } from "recompose";
@@ -342,8 +342,10 @@ function FileManagerView(props: WithSnackbarProps & Props) {
                                                 dispatch({
                                                     type: "dragging",
                                                     state: true
-                                                })
+                                                }),
+                                            onExited: onClose
                                         })}
+                                        barMiddle={<SupportedFileTypes accept={accept} />}
                                         barLeft={
                                             <InputSearch>
                                                 <Icon
@@ -357,7 +359,6 @@ function FileManagerView(props: WithSnackbarProps & Props) {
                                                 />
                                             </InputSearch>
                                         }
-                                        onExited={onClose}
                                         barRight={
                                             selected.length > 0 ? (
                                                 <ButtonPrimary
