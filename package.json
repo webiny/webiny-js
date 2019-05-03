@@ -115,9 +115,9 @@
     "release-independent": "node scripts/release/independent",
     "release-independent:dry": "node scripts/release/independent --preview",
     "webiny-ui-build-storybook": "cd packages/webiny-ui && cross-env OUT=../../netlify-static yarn build-storybook",
-    "functions:list": "node scripts/functions-list.js",
-    "functions": "node scripts/functions.js --also-watch=packages/webiny-api*/**/*.*",
-    "functions:inspect": "yarn functions --inspect=9001",
+    "wby:fns": "wby start-functions --watch \"packages/webiny-api*/**/*.*\"",
+    "wby:fns:inspect": "yarn wby:fns --inspect=9001",
+    "wby:app": "wby start-app",
     "start-verdaccio": "yarn verdaccio -c ./verdaccio.yaml",
     "publish-to-verdaccio": "yarn build && cross-env REGISTRY=http://localhost:4800 node scripts/publish-to-verdaccio"
   },
