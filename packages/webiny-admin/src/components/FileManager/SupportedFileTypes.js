@@ -23,7 +23,6 @@ const getUniqueFileExtensions = accept => {
         exts[mime.getExtension(item)] = true;
     });
 
-    console.log(accept)
     return Object.keys(exts);
 };
 
