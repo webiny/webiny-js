@@ -15,7 +15,7 @@ import DropFilesHere from "./DropFilesHere";
 import NoResults from "./NoResults";
 import FileDetails from "./FileDetails";
 import LeftSidebar from "./LeftSidebar";
-import SupportedFileTypes from "./SupportedFileTypes";
+import BottomInfoBar from "./BottomInfoBar";
 import { OverlayLayout } from "webiny-admin/components/OverlayLayout";
 import { withSnackbar, type WithSnackbarProps } from "webiny-admin/components";
 import { compose } from "recompose";
@@ -164,6 +164,10 @@ function fileManagerReducer(state, action) {
             next.hasPreviouslyUploadedFiles = true;
             break;
         }
+        case "uploading": {
+            next.uploading = action.state;
+            break;
+        }
     }
 
     return next;
@@ -193,14 +197,15 @@ function FileManagerView(props: WithSnackbarProps & Props) {
         accept,
         multiple,
         showSnackbar,
-        hideSnackbar,
         maxSize,
         multipleMaxCount,
         multipleMaxSize
     } = props;
     const [state, dispatch] = useReducer(fileManagerReducer, props, init);
+
     const {
         showDetailsFileSrc,
+        uploading,
         dragging,
         selected,
         queryParams,
@@ -301,7 +306,7 @@ function FileManagerView(props: WithSnackbarProps & Props) {
                     {({ data, fetchMore }) => {
                         const list = get(data, "files.listFiles.data") || [];
                         const uploadFile = async files => {
-                            showSnackbar("File upload started...", { timeout: 1200 });
+                            dispatch({ type: "uploading", state: true });
 
                             const list = Array.isArray(files) ? files : [files];
                             await Promise.all(
@@ -315,10 +320,12 @@ function FileManagerView(props: WithSnackbarProps & Props) {
                                 dispatch({ type: "hasPreviouslyUploadedFiles" });
                             }
 
-                            hideSnackbar();
+                            dispatch({ type: "uploading", state: false });
+
+                            // We wait 1sec, just for everything to settle down a bit.
                             setTimeout(() => {
-                                showSnackbar("File upload completed.", { timeout: 2000 });
-                            }, 1500);
+                                showSnackbar("File upload complete.")
+                            }, 1000);
                         };
 
                         return (
@@ -462,7 +469,7 @@ function FileManagerView(props: WithSnackbarProps & Props) {
                                                             : renderEmpty({ state, browseFiles })}
                                                     </FileList>
                                                 </Scrollbar>
-                                                <SupportedFileTypes accept={accept} />
+                                                <BottomInfoBar accept={accept} uploading={uploading} />
                                             </FileListWrapper>
                                         </>
                                     </OverlayLayout>
