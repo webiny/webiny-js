@@ -1,5 +1,4 @@
 // @flow
-/* eslint-disable */
 import React, { useReducer, useRef, useCallback } from "react";
 import Files from "react-butterfiles";
 import { ButtonPrimary, ButtonIcon } from "webiny-ui/Button";
@@ -16,6 +15,7 @@ import DropFilesHere from "./DropFilesHere";
 import NoResults from "./NoResults";
 import FileDetails from "./FileDetails";
 import LeftSidebar from "./LeftSidebar";
+import SupportedFileTypes from "./SupportedFileTypes";
 import { OverlayLayout } from "webiny-admin/components/OverlayLayout";
 import { withSnackbar, type WithSnackbarProps } from "webiny-admin/components";
 import { compose } from "recompose";
@@ -91,7 +91,7 @@ const FileList = styled("div")({
     display: "grid",
     /* define the number of grid columns */
     gridTemplateColumns: "repeat( auto-fill, minmax(220px, 1fr) )",
-    marginBottom: 75
+    marginBottom: 95
 });
 
 type Props = {
@@ -179,11 +179,11 @@ function renderFile(props) {
     );
 }
 
-const renderEmpty = ({ hasPreviouslyUploadedFiles }) => {
+const renderEmpty = ({ state: { hasPreviouslyUploadedFiles }, browseFiles }) => {
     if (hasPreviouslyUploadedFiles) {
         return <NoResults />;
     }
-    return <DropFilesHere empty />;
+    return <DropFilesHere empty onClick={browseFiles} />;
 };
 
 function FileManagerView(props: WithSnackbarProps & Props) {
@@ -272,7 +272,7 @@ function FileManagerView(props: WithSnackbarProps & Props) {
     }, []);
 
     useHotkeys({
-        zIndex: 1,
+        zIndex: 50,
         keys: {
             esc: onClose
         }
@@ -342,7 +342,8 @@ function FileManagerView(props: WithSnackbarProps & Props) {
                                                 dispatch({
                                                     type: "dragging",
                                                     state: true
-                                                })
+                                                }),
+                                            onExited: onClose
                                         })}
                                         barLeft={
                                             <InputSearch>
@@ -357,7 +358,6 @@ function FileManagerView(props: WithSnackbarProps & Props) {
                                                 />
                                             </InputSearch>
                                         }
-                                        onExited={onClose}
                                         barRight={
                                             selected.length > 0 ? (
                                                 <ButtonPrimary
@@ -459,9 +459,10 @@ function FileManagerView(props: WithSnackbarProps & Props) {
                                                                       }
                                                                   })
                                                               )
-                                                            : renderEmpty(state)}
+                                                            : renderEmpty({ state, browseFiles })}
                                                     </FileList>
                                                 </Scrollbar>
+                                                <SupportedFileTypes accept={accept} />
                                             </FileListWrapper>
                                         </>
                                     </OverlayLayout>

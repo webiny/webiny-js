@@ -6,7 +6,7 @@ const tcpPortUsed = require("tcp-port-used");
 const listPackages = require("../utils/listPackages");
 const logFunctions = require("./logFunctions");
 
-module.exports = async ({ port, watch }) => {
+module.exports = async ({ port, watch, inspect }) => {
     watch = Array.isArray(watch) ? watch : [watch];
     const command = [path.join(__dirname, "runFunctions.js")];
 
@@ -23,6 +23,11 @@ module.exports = async ({ port, watch }) => {
 
     // "--port" argument:
     command.push(`--port=${port}`);
+
+    // "--inspect" argument
+    if (inspect) {
+        command.unshift(`--inspect=${inspect}`);
+    }
 
     // Check port:
     tcpPortUsed.check(port).then(async inUse => {

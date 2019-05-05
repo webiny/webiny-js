@@ -217,7 +217,7 @@ const CookiePolicySettings = ({ showSnackbar }) => {
                                                                 cookie: {
                                                                     expiryDays: 0.00000001
                                                                 }
-                                                            });
+                                                            }, true);
                                                         }}
                                                     >
                                                         Preview

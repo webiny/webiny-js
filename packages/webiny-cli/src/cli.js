@@ -24,7 +24,12 @@ yargs.command(
 
         yargs.option("watch", {
             describe: "Watch given paths.",
-            default: []
+            default: ""
+        });
+
+        yargs.option("inspect", {
+            describe: "Enables debugger client listener.",
+            default: null
         });
     },
     argv => {

@@ -34,6 +34,7 @@ const styles = css({
             position: "absolute",
             top: 90,
             width: 300,
+            color: "var(--mdc-theme-on-surface)",
             "svg.mdc-button__icon": {
                 width: 100,
                 display: "inline-block",
@@ -45,14 +46,17 @@ const styles = css({
 
 type Props = {
     onDragLeave?: Function,
-    onDrop?: Function
+    onDrop?: Function,
+    empty?: boolean,
+    onClick?: Function
 };
 
-export default function DropFilesHere({ onDrop, onDragLeave, empty }: Props) {
+export default function DropFilesHere({ onDrop, onDragLeave, empty, onClick }: Props) {
     return (
         <div
-            className={classNames(styles, { empty: empty })}
+            className={classNames(styles, { empty })}
             onDrop={onDrop}
+            onClick={onClick}
             onDragLeave={onDragLeave}
         >
             <div>
