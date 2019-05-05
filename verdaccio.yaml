@@ -1,5 +1,6 @@
 max_body_size: 100MB
 storage: ./.verdaccio
+cache: false
 listen: 4800
 auth:
   htpasswd:
