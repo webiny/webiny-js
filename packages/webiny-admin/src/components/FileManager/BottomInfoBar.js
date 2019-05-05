@@ -24,7 +24,7 @@ const BottomInfoBarWrapper = styled("div")({
     alignItems: "center",
     zIndex: 1,
     "> div": {
-        padding: "0 15px",
+        padding: "0 10px",
         width: "100%"
     }
 });

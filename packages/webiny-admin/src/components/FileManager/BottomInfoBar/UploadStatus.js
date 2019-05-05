@@ -9,6 +9,8 @@ const StatusWrapper = styled("div")({
     right: 0,
     bottom: 10,
     marginRight: 10,
+    display: "flex",
+    alignItems: "center",
     "> div": {
         display: "inline-block"
     }
