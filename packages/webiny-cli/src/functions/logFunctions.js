@@ -1,8 +1,8 @@
 const chalk = require("chalk");
-const listFunctions = require("./listFunctions");
+const listPackages = require("../utils/listPackages");
 
 module.exports = async (functions = null) => {
-    functions = functions || (await listFunctions());
+    functions = functions || (await listPackages("function"));
 
     if (!functions.length) {
         console.log(chalk.cyan(`No functions detected!`));

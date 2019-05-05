@@ -28,7 +28,7 @@ if (process.env.NODE_ENV === "development") {
         link: ApolloLink.from([
             createOmitTypenameLink(),
             createAuthLink(),
-            new BatchHttpLink({ uri: process.env.REACT_APP_API_HOST + "/function/api" })
+            new BatchHttpLink({ uri: process.env.REACT_APP_FUNCTIONS_HOST + "/function/api" })
         ]),
         cache,
         defaultOptions: {

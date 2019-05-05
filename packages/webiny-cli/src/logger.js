@@ -19,7 +19,7 @@ module.exports = () => {
         },
         error(...args) {
             const [format, ...rest] = args;
-            console.error(`❌ ${formatString(format, rest)}`);
+            console.error(`❌  ${formatString(format, rest)}`);
         },
         info(...args) {
             const [format, ...rest] = args;

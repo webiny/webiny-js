@@ -1,13 +1,14 @@
 import { homedir } from "os";
 import path from "path";
-import { blue } from "chalk";
+import { blue, grey } from "chalk";
 import fs from "fs-extra";
-import getPackages from "get-yarn-workspaces";
 import inquirer from "inquirer";
-import WebinyCloudSDK from "../sdk/client";
+import execa from "execa";
 import archiver from "archiver";
+import tempdir from "temp-dir";
+import WebinyCloudSDK from "../sdk/client";
 import createLogger from "../logger";
-import { spawnCommand } from "../utils";
+import listPackages from "../utils/listPackages";
 
 const home = homedir();
 const webinyConfigPath = path.join(home, ".webiny", "config");
@@ -19,6 +20,7 @@ export default class Deploy {
     accessToken = null;
     sdk = null;
     logger = createLogger();
+    packages = {};
 
     validateCiRequirements() {
         const { WEBINY_ACCESS_TOKEN, WEBINY_SITE_ID } = process.env;
@@ -32,7 +34,7 @@ export default class Deploy {
         }
     }
 
-    async deploy({ folder, ...opts }) {
+    async deploy({ name, ...opts }) {
         if (opts.ci) {
             this.validateCiRequirements();
         }
@@ -49,8 +51,12 @@ export default class Deploy {
             this.storeSiteId(siteId);
         }
 
-        if (folder) {
-            const deploy = await this.deployFolder(folder, opts);
+        // Find all Webiny packages
+        const packages = await listPackages();
+
+        if (name) {
+            const pkg = packages.find(p => p.name === name);
+            const deploy = await this.deployPackage(pkg);
             if (!deploy) {
                 return;
             }
@@ -67,23 +73,18 @@ export default class Deploy {
             this.logger.success("Deploy completed!\n");
             this.logger.info(`Open ${blue(url)} to see your newly deployed app!`);
         } else {
-            // Find all Webiny apps in the project (packages containing .webiny file)
-            const packages = getPackages(process.cwd())
-                .filter(pkg => fs.existsSync(pkg + "/.webiny"))
-                .map(pkg => pkg.replace(process.cwd() + "/", ""));
-
             // Create deploys for each app
             const deploys = {};
             for (let i = 0; i < packages.length; i++) {
-                const folder = packages[i];
+                const pkg = packages[i];
                 console.log();
-                this.logger.log(`Deploying ${blue(folder)}...`);
-                const deploy = await this.deployFolder(folder, opts);
+                this.logger.log(`Deploying ${blue(pkg.name)} ${grey(`(${pkg.root})`)}`);
+                const deploy = await this.deployPackage(pkg);
                 if (!deploy) {
                     continue;
                 }
 
-                deploys[folder] = deploy;
+                deploys[pkg.name] = deploy;
             }
 
             if (!Object.keys(deploys).length) {
@@ -134,34 +135,20 @@ export default class Deploy {
         return new Promise(resolve => setTimeout(resolve, millis));
     }
 
-    async deployFolder(folder, { build = true } = {}) {
-        const appPath = path.resolve(folder);
-
-        const adminConfigPath = path.join(appPath, ".webiny");
+    async deployPackage(pkg) {
+        // Ensure `build` folder exists
         try {
-            const config = await fs.readJsonSync(adminConfigPath, { throws: true });
-            // Ensure `build` folder exists
-            try {
-                await this.ensureBuild(folder, build);
-            } catch (err) {
-                this.logger.error(err);
-                process.exit(1);
-            }
-
-            if (config.type === "app") {
-                return await this.deployApp(appPath, config);
-            }
-
-            return await this.deployFunction(appPath, config);
+            await this.ensureBuild(pkg.root);
         } catch (err) {
-            console.log(err);
-            this.logger.error(`Config file ".webiny" is missing: "${adminConfigPath}"!`);
+            this.logger.error(err);
             process.exit(1);
         }
+
+        return pkg.type === "app" ? await this.deployApp(pkg) : await this.deployFunction(pkg);
     }
 
-    async deployApp(appPath, config) {
-        const buildPath = path.join(appPath, "build");
+    async deployApp(pkg) {
+        const buildPath = path.join(pkg.root, "build");
         // create checksums for all files in the `build` folder
         this.logger.log(`Preparing deploy files...`);
         const files = await this.sdk.getFilesDigest(buildPath);
@@ -169,13 +156,9 @@ export default class Deploy {
         // call API to create a new deploy record
         this.logger.log(`Creating a new deploy...`);
         try {
-            const deploy = await this.sdk.createDeploy(
-                this.siteId,
-                config.type,
-                config.path,
-                files,
-                { prerender: config.prerender }
-            );
+            const deploy = await this.sdk.createDeploy(this.siteId, pkg.type, pkg.path, files, {
+                ssr: Boolean(pkg.ssr)
+            });
 
             this.logger.log("Uploading files (only new and modified files will be uploaded)...");
             await this.uploadFiles(deploy, files);
@@ -192,14 +175,14 @@ export default class Deploy {
         }
     }
 
-    async deployFunction(appPath, config) {
-        const buildPath = path.join(appPath, "build");
+    async deployFunction(pkg) {
+        const buildPath = path.join(pkg.root, "build");
         // create checksums for all files in the `build` folder
         this.logger.log(`Preparing deploy files...`);
 
         // create a file to stream archive data to.
-        const zipFile = path.join(buildPath, "function.zip");
-        await this.createZip(path.join(buildPath, "service"), zipFile);
+        const zipFile = path.join(tempdir, "function.zip");
+        await this.createZip(buildPath, zipFile);
 
         // call API to create a new deploy record
         this.logger.log(`Creating a new deploy...`);
@@ -209,12 +192,7 @@ export default class Deploy {
                 { key: "function.zip", hash: zipHash, abs: zipFile, type: "application/zip" }
             ];
 
-            const deploy = await this.sdk.createDeploy(
-                this.siteId,
-                config.type,
-                config.path,
-                files
-            );
+            const deploy = await this.sdk.createDeploy(this.siteId, pkg.type, pkg.path, files);
 
             this.logger.log("Uploading function...");
             await this.uploadFiles(deploy, files);
@@ -296,25 +274,9 @@ export default class Deploy {
         });
     }
 
-    async ensureBuild(folder, autoBuild) {
-        const appPath = path.resolve(folder);
-        const buildPath = path.join(appPath, "build");
-
-        if (autoBuild) {
-            this.logger.info("Running build...");
-            this.logger.log(
-                `To disable auto-build, run the deploy command with a ${blue(
-                    "--no-build"
-                )} parameter.`
-            );
-            await this.runBuild(appPath);
-        } else {
-            const buildExists = fs.pathExistsSync(buildPath);
-            if (!buildExists) {
-                this.logger.error(`${blue("build")} folder was not found in ${blue(folder)}!`);
-                process.exit(1);
-            }
-        }
+    async ensureBuild(folder) {
+        this.logger.info("Running build...");
+        await execa("yarn", ["build"], { cwd: folder, stdio: "inherit" });
     }
 
     async setupSDK() {
@@ -337,10 +299,6 @@ export default class Deploy {
         } catch (err) {
             this.checkNetworkError(err);
         }
-    }
-
-    async runBuild(appFolder: string) {
-        await spawnCommand("yarn", ["build"], { cwd: path.resolve(appFolder) });
     }
 
     getAccessToken() {
