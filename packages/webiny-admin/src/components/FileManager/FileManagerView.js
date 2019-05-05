@@ -479,8 +479,8 @@ function FileManagerView(props: WithSnackbarProps & Props) {
 FileManagerView.defaultProps = {
     multiple: false,
     maxSize: "10mb",
-    multipleMaxSize: "10mb",
-    multipleMaxCount: 10
+    multipleMaxSize: "100mb",
+    multipleMaxCount: 100
 };
 
 export default compose(withSnackbar())(FileManagerView);
