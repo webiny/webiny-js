@@ -34,6 +34,7 @@ const styles = css({
             position: "absolute",
             top: 90,
             width: 300,
+            color: "var(--mdc-theme-on-surface)",
             "svg.mdc-button__icon": {
                 width: 100,
                 display: "inline-block",

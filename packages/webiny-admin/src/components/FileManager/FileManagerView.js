@@ -91,7 +91,7 @@ const FileList = styled("div")({
     display: "grid",
     /* define the number of grid columns */
     gridTemplateColumns: "repeat( auto-fill, minmax(220px, 1fr) )",
-    marginBottom: 75
+    marginBottom: 95
 });
 
 type Props = {
@@ -345,7 +345,6 @@ function FileManagerView(props: WithSnackbarProps & Props) {
                                                 }),
                                             onExited: onClose
                                         })}
-                                        barMiddle={<SupportedFileTypes accept={accept} />}
                                         barLeft={
                                             <InputSearch>
                                                 <Icon
@@ -463,6 +462,7 @@ function FileManagerView(props: WithSnackbarProps & Props) {
                                                             : renderEmpty({ state, browseFiles })}
                                                     </FileList>
                                                 </Scrollbar>
+                                                <SupportedFileTypes accept={accept} />
                                             </FileListWrapper>
                                         </>
                                     </OverlayLayout>

@@ -10,11 +10,23 @@ import styled from "react-emotion";
 
 const Wrapper = styled("div")({
     fontSize: "0.8rem",
-    color: "var(--mdc-theme-on-surface)",
     "> div": {
         display: "inline-block",
         margin: "0 5px"
-    }
+    },
+    position: "sticky",
+    bottom: 0,
+    height: 30,
+    paddingLeft: 15,
+    color: "var(--mdc-theme-text-secondary-on-background)",
+    borderTop: "1px solid var(--mdc-theme-on-background)",
+    backgroundColor: "var(--mdc-theme-surface)",
+    width: "100%",
+    transform: "translateZ(0)",
+    overflow: "hidden",
+    display: "flex",
+    alignItems: "center",
+    zIndex: 1
 });
 
 const getUniqueFileExtensions = accept => {
@@ -33,8 +45,7 @@ const SupportedFileTypes = ({ accept }: *) => {
 
     return (
         <Wrapper>
-            Showing following file extensions:{" "}
-            {getUniqueFileExtensions(accept).join(", ")}.
+            Showing following file extensions: {getUniqueFileExtensions(accept).join(", ")}.
         </Wrapper>
     );
 };

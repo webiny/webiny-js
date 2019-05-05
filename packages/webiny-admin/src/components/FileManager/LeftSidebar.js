@@ -11,15 +11,16 @@ import { ReactComponent as TagIcon } from "./icons/round-label-24px.svg";
 const style = {
     leftDrawer: css({
         float: "left",
-        background: "white",
         display: "inline-block",
         width: 250,
         height: "100%",
+        backgroundColor: "var(--mdc-theme-surface)",
         padding: 10
     }),
     noTagged: css({
         paddingTop: 100,
-        textAlign: "center"
+        textAlign: "center",
+        color: "var(--mdc-theme-on-surface)"
     })
 };
 
@@ -35,6 +36,7 @@ const Tag = styled("div")({
     alignItems: "center",
     cursor: "pointer",
     paddingLeft: 15,
+    color: "var(--mdc-theme-on-surface)",
     svg: {
         color: "var(--mdc-theme-on-surface)",
         marginRight: 10
