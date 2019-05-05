@@ -17,6 +17,7 @@ const EmptySelect = styled("div")({
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
+    color: "var(--mdc-theme-on-surface)",
     ".select-page": {
         maxWidth: 400,
         padding: "50px 100px",
