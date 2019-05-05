@@ -1,15 +1,19 @@
 const path = require("path");
-const { green, blue } = require("chalk");
 const crypto = require("crypto");
 const fs = require("fs-extra");
 const glob = require("glob");
 const util = require("util");
+const execa = require("execa");
 const merge = require("lodash.merge");
+const { green, blue } = require("chalk");
 const loadJsonFile = require("load-json-file");
 const writeJsonFile = require("write-json-file");
 const globFiles = util.promisify(glob);
-const { copyFile, spawnCommand } = require("../utils");
 const logger = require("../logger")();
+
+function copyFile(from, to) {
+    fs.copySync(path.join(__dirname, from), path.resolve(to));
+}
 
 const tplJson = {
     private: true,
@@ -41,7 +45,7 @@ module.exports = async () => {
         "webiny.config.js",
         "babel.config.js"
     ];
-    files.forEach(file => copyFile(`init/template/${file}`, file));
+    files.forEach(file => copyFile(`template/${file}`, file));
 
     // Update config
     const envFile = path.resolve(".env");
@@ -73,7 +77,7 @@ module.exports = async () => {
     await setupFolder("packages/theme");
     await setupFolder("packages/webiny-rewire");
 
-    await spawnCommand("yarn", [], { cwd: root });
+    await execa("yarn", [], { cwd: root, stdio: "inherit" });
 
     console.log();
     logger.info("Your Webiny project is almost ready...\n");
@@ -99,5 +103,5 @@ async function setupFolder(appFolder) {
         dot: true
     });
 
-    files.forEach(file => copyFile(`init/template/${appFolder}/${file}`, `${appFolder}/${file}`));
+    files.forEach(file => copyFile(`template/${appFolder}/${file}`, `${appFolder}/${file}`));
 }

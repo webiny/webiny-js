@@ -3,7 +3,7 @@ const express = require("express");
 const get = require("lodash.get");
 const bodyParser = require("body-parser");
 const path = require("path");
-const listFunctions = require("./listFunctions");
+const listPackages = require("../utils/listPackages");
 const expressRequestToLambdaEvent = require("./expressRequestToLambdaEvent");
 
 const handleRequest = async (req, res, handler) => {
@@ -52,7 +52,7 @@ module.exports = async config => {
         await handleRequest(req, res, handler);
     });
 
-    const functions = await listFunctions();
+    const functions = await listPackages("function");
 
     functions.forEach(fn => {
         app[fn.method.toLowerCase()](fn.path, async (req, res) => {

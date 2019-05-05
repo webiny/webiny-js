@@ -1,6 +1,6 @@
 const path = require("path");
 const get = require("lodash.get");
-const listFunctions = require("./listFunctions");
+const listPackages = require("../utils/listPackages");
 const getConfig = require("../utils/getConfig");
 
 module.exports = async () => {
@@ -10,7 +10,7 @@ module.exports = async () => {
     });
 
     const { config } = await getConfig();
-    const functions = await listFunctions();
+    const functions = await listPackages("function");
 
     for (let i = 0; i < functions.length; i++) {
         const fn = functions[i];

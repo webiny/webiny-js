@@ -92,7 +92,7 @@ export default class Client {
         } catch (err) {
             throw err.networkError ? new SdkError(err.networkError) : err;
         }
-
+        
         const { data, error } = get(result, "data.sites", {});
         if (error) {
             throw new SdkError(error);

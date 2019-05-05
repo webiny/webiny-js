@@ -3,7 +3,7 @@ const path = require("path");
 const nodemon = require("nodemon");
 const chalk = require("chalk");
 const tcpPortUsed = require("tcp-port-used");
-const listFunctions = require("./listFunctions");
+const listPackages = require("../utils/listPackages");
 const logFunctions = require("./logFunctions");
 
 module.exports = async ({ port, watch }) => {
@@ -11,7 +11,7 @@ module.exports = async ({ port, watch }) => {
     const command = [path.join(__dirname, "runFunctions.js")];
 
     // "--also-watch" argument:
-    const functions = await listFunctions();
+    const functions = await listPackages("function");
     let watchPaths = functions.map(fn => fn.root + "/**/*.js");
     if (watch) {
         watch.forEach(w => {
