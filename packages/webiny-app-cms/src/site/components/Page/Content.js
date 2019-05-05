@@ -73,9 +73,11 @@ class Content extends React.Component<Props> {
                     {meta.page.social.description && (
                         <meta property="og:description" content={meta.page.social.description} />
                     )}
-                    {meta.page.social.meta.map(({ property, content }, index) => (
-                        <meta key={index} property={`og:${property}`} content={content} />
-                    ))}
+                    {meta.page.social.meta.map(({ property, content }, index) => {
+                        // Replace duplicate "og:og:" with single "og:".
+                        const preparedProperty = `og:${property}`.replace("og:og:", "og:");
+                        return <meta key={index} property={preparedProperty} content={content} />;
+                    })}
                 </Helmet>
                 <Layout layout={page.settings.general.layout}>
                     <Element element={page.content} />
