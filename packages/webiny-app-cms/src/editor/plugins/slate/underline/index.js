@@ -20,7 +20,7 @@ export default () => {
     return {
         menu: [
             {
-                name: "underline-menu-item",
+                name: "cms-slate-menu-item-underline",
                 type: "cms-slate-menu-item",
                 render({
                     MenuButton,

@@ -1,12 +1,10 @@
 // @flow
 import React from "react";
-import { compose, lifecycle } from "recompose";
 import { Transition } from "react-transition-group";
-import { getPlugins, getPlugin } from "webiny-plugins";
-import { withKeyHandler } from "webiny-app-cms/editor/components";
+import { getPlugins } from "webiny-plugins";
 import { css } from "emotion";
 import { Elevation } from "webiny-ui/Elevation";
-import { hoverMenuStyle, defaultStyle, ToolbarBox, transitionStyles, Overlay } from "./styled";
+import { hoverMenuStyle, defaultStyle, transitionStyles } from "./styled";
 
 const MenuButton = ({ onClick, active, children, onMouseDown = e => e.preventDefault() }) => {
     const buttonStyle = css({
@@ -26,44 +24,9 @@ const MenuButton = ({ onClick, active, children, onMouseDown = e => e.preventDef
     );
 };
 
-const MenuContainer = compose(
-    withKeyHandler(),
-    lifecycle({
-        componentDidMount() {
-            this.props.addKeyHandler("escape", e => {
-                e.preventDefault();
-                this.props.closeMenu();
-            });
-        },
-        componentWillUnmount() {
-            this.props.removeKeyHandler("escape");
-        }
-    })
-)(({ children }) => {
-    return children;
-});
-
 class Menu extends React.Component<*, *> {
     static menus = [];
     menu = React.createRef();
-
-    state = {
-        activePlugin: null,
-        visible: false
-    };
-
-    static getDerivedStateFromProps(props: Object, state: Object) {
-        if (!state.activePlugin || !props.value.selection) {
-            return null;
-        }
-
-        const selection = props.value.selection.toJSON();
-        if (state.activePlugin && selection.isFocused && !state.lastSelectionWasFocused) {
-            return { activePlugin: null };
-        }
-
-        return { lastSelectionWasFocused: selection.isFocused };
-    }
 
     componentDidUpdate() {
         const menu = this.menu.current;
@@ -89,73 +52,6 @@ class Menu extends React.Component<*, *> {
         menu.style.left = `${menuLeft}px`;
     }
 
-    activatePlugin = (plugin: string) => {
-        const { value } = this.props;
-        const jsonValue = {
-            selection: value.selection.toJSON(),
-            inlines: value.inlines.toJSON(),
-            marks: value.marks.toJSON(),
-            activeMarks: value.activeMarks.toJSON(),
-            blocks: value.blocks.toJSON(),
-            texts: value.texts.toJSON()
-        };
-
-        this.setState({ visible: true }, () => {
-            setTimeout(() => {
-                this.setState({
-                    lastSelectionWasFocused: true,
-                    activePlugin: { plugin, value: jsonValue }
-                });
-            }, 200);
-        });
-
-        Menu.menus.push(() => {
-            this.deactivatePlugin();
-        });
-    };
-
-    deactivatePlugin = () => {
-        this.setState({ visible: false }, () => {
-            setTimeout(() => {
-                this.setState({ activePlugin: null });
-            }, 100);
-        });
-    };
-
-    renderActivePlugin = () => {
-        const { plugin, value } = this.state.activePlugin || {};
-        const menuPlugin = getPlugin(plugin);
-
-        if (!menuPlugin) {
-            return null;
-        }
-
-        return (
-            <Transition in={this.state.visible} timeout={100} appear={true} mountOnEnter={true}>
-                {state => (
-                    <React.Fragment>
-                        <ToolbarBox
-                            innerRef={this.menu}
-                            style={{ ...defaultStyle, ...transitionStyles[state] }}
-                        >
-                            <Elevation z={2} className={"elevationBox"}>
-                                <MenuContainer closeMenu={this.deactivatePlugin}>
-                                    {menuPlugin.renderMenu({
-                                        closeMenu: this.deactivatePlugin,
-                                        value,
-                                        onChange: this.props.onChange,
-                                        editor: this.props.editor.current
-                                    })}
-                                </MenuContainer>
-                            </Elevation>
-                        </ToolbarBox>
-                        <Overlay onClick={this.deactivatePlugin} />
-                    </React.Fragment>
-                )}
-            </Transition>
-        );
-    };
-
     renderPlugins = (type: string) => {
         const { value, onChange, editor, exclude } = this.props;
         return getPlugins(type)
@@ -167,7 +63,7 @@ class Menu extends React.Component<*, *> {
                         value,
                         onChange,
                         editor: editor.current,
-                        activatePlugin: this.activatePlugin
+                        activatePlugin: this.props.activatePlugin
                     }),
                     {
                         key: plugin.name
@@ -178,10 +74,6 @@ class Menu extends React.Component<*, *> {
 
     render() {
         const { selection } = this.props.value;
-
-        if (this.state.activePlugin) {
-            return this.renderActivePlugin();
-        }
 
         if (selection.isFocused && selection.isCollapsed) {
             return null;
