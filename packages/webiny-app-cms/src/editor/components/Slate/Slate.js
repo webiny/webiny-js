@@ -1,19 +1,15 @@
-// @flow
-import React from "react";
+import React, { Fragment } from "react";
 import ReactDOM from "react-dom";
-import { connect } from "webiny-app-cms/editor/redux";
-import { compose, pure } from "recompose";
-import { get } from "lodash";
+import { get, isEqual } from "lodash";
 import { Editor } from "slate-react";
 import { Value } from "slate";
 import { getPlugins } from "webiny-plugins";
-import { focusSlateEditor, blurSlateEditor } from "webiny-app-cms/editor/actions";
 import { withCms } from "webiny-app-cms/context";
 import { createValue } from "./index";
 
 import Menu from "./Menu";
 
-class SlateEditor extends React.Component<*, *> {
+class SlateEditor extends React.Component {
     static defaultProps = {
         exclude: []
     };
@@ -43,6 +39,10 @@ class SlateEditor extends React.Component<*, *> {
         if (!state.modified && !props.readOnly) {
             // Got new editor value through props.
             const value = typeof props.value === "string" ? createValue(props.value) : props.value;
+            if (isEqual(value, state.value.toJSON())) {
+                return null;
+            }
+
             return {
                 value: Value.fromJSON(value)
             };
@@ -75,14 +75,6 @@ class SlateEditor extends React.Component<*, *> {
         this.props.onChange(this.state.value.toJSON());
     };
 
-    onFocus = () => {
-        if (this.state.activePlugin) {
-            this.setState({ activePlugin: null });
-        }
-
-        Array.isArray(Menu.menus) && Menu.menus.forEach(cb => cb());
-    };
-
     getMenuContainer = () => {
         const id = "slate-menu-container";
 
@@ -101,7 +93,7 @@ class SlateEditor extends React.Component<*, *> {
         }
         menuContainer.style.position = "fixed";
         menuContainer.style.pointerEvents = "none";
-        menuContainer.style.zIndex = "500";
+        menuContainer.style.zIndex = "4";
         menuContainer.style.top = rect.top - 20 + "px";
         menuContainer.style.left = rect.left + "px";
         menuContainer.style.width = rect.width + "px";
@@ -130,6 +122,9 @@ class SlateEditor extends React.Component<*, *> {
                     value={this.state.value}
                     onChange={this.onChange}
                     editor={this.editor}
+                    activatePlugin={this.activatePlugin}
+                    activePlugin={this.state.activePlugin}
+                    deactivatePlugin={this.deactivatePlugin}
                 />,
                 container
             );
@@ -138,9 +133,35 @@ class SlateEditor extends React.Component<*, *> {
         return null;
     };
 
+    activatePlugin = (plugin: string) => {
+        const { value } = this.state;
+
+        this.setState({
+            activePlugin: {
+                plugin,
+                value: {
+                    selection: value.selection.toJSON(),
+                    anchorText: value.anchorText.getText(),
+                    focusText: value.focusText.getText(),
+                    inlines: value.inlines.toJSON(),
+                    marks: value.marks.toJSON(),
+                    activeMarks: value.activeMarks.toJSON(),
+                    blocks: value.blocks.toJSON(),
+                    texts: value.texts.toJSON()
+                }
+            }
+        });
+    };
+
+    deactivatePlugin = () => {
+        this.setState({ activePlugin: null });
+    };
+
     render() {
+        const { activePlugin } = this.state;
+
         return (
-            <React.Fragment>
+            <Fragment>
                 {!this.state.readOnly && this.renderFloatingMenu()}
                 <Editor
                     ref={this.editor}
@@ -154,18 +175,26 @@ class SlateEditor extends React.Component<*, *> {
                     value={this.state.value}
                     onChange={this.onChange}
                     theme={this.props.cms.theme}
+                    activatePlugin={this.activatePlugin}
+                    activePlugin={this.state.activePlugin}
+                    deactivatePlugin={this.deactivatePlugin}
                 />
-            </React.Fragment>
+                {getPlugins("cms-slate-menu-item")
+                    .filter(pl => typeof pl.renderDialog === "function")
+                    .map(pl => {
+                        const props = {
+                            onChange: this.onChange,
+                            editor: this.editor.current,
+                            open: activePlugin ? activePlugin.plugin === pl.name : false,
+                            closeDialog: this.deactivatePlugin,
+                            activePlugin,
+                            activatePlugin: this.activatePlugin
+                        };
+                        return React.cloneElement(pl.renderDialog(props), { key: pl.name });
+                    })}
+            </Fragment>
         );
     }
 }
 
-export default pure(
-    compose(
-        connect(
-            null,
-            { focusSlateEditor, blurSlateEditor }
-        ),
-        withCms()
-    )(SlateEditor)
-);
+export default withCms()(SlateEditor);

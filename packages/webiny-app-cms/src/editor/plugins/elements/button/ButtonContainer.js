@@ -2,18 +2,20 @@
 import * as React from "react";
 import { connect } from "webiny-app-cms/editor/redux";
 import { compose, withHandlers } from "recompose";
-import { get, set } from "dot-prop-immutable";
+import { set } from "dot-prop-immutable";
 import { updateElement } from "webiny-app-cms/editor/actions";
 import { getElement } from "webiny-app-cms/editor/selectors";
 import ConnectedSlate from "webiny-app-cms/editor/components/ConnectedSlate";
 
 const excludePlugins = [
-    "align",
-    "align-menu-item",
-    "ordered-list-menu-item",
-    "unordered-list-menu-item",
-    "lists",
-    "code-menu-item"
+    "cms-slate-menu-item-link",
+    "cms-slate-menu-item-align",
+    "cms-slate-menu-item-ordered-list",
+    "cms-slate-menu-item-unordered-list",
+    "cms-slate-menu-item-code",
+    "cms-slate-editor-align",
+    "cms-slate-editor-lists",
+    "cms-slate-editor-link"
 ];
 
 const ButtonContainer = ({ getAllClasses, elementStyle, elementAttributes, element, onChange }) => {

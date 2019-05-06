@@ -1,12 +1,13 @@
-import React from "react";
+import React, { Fragment } from "react";
 import { ReactComponent as LinkIcon } from "webiny-app-cms/editor/assets/icons/link.svg";
-import LinkMenu from "./LinkMenu";
+import LinkDialog from "./LinkDialog";
+import LinkTooltip from "./LinkTooltip";
 
 export default () => {
     return {
         menu: [
             {
-                name: "link-menu-item",
+                name: "cms-slate-menu-item-link",
                 type: "cms-slate-menu-item",
                 render(props: Object) {
                     const { MenuButton } = props;
@@ -17,8 +18,8 @@ export default () => {
                         </MenuButton>
                     );
                 },
-                renderMenu(props) {
-                    return <LinkMenu {...props} />;
+                renderDialog(props) {
+                    return <LinkDialog {...props} />;
                 }
             }
         ],
@@ -42,6 +43,20 @@ export default () => {
                         }
 
                         return next();
+                    },
+                    renderEditor({ editor, onChange, activatePlugin }, next) {
+                        const children = next();
+
+                        return (
+                            <Fragment>
+                                {children}
+                                <LinkTooltip
+                                    editor={editor}
+                                    onChange={onChange}
+                                    activatePlugin={activatePlugin}
+                                />
+                            </Fragment>
+                        );
                     }
                 }
             }

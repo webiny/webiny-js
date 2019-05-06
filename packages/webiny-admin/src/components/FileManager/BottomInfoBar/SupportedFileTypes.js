@@ -22,7 +22,7 @@ const SupportedFileTypes = ({ accept }: *) => {
 
     return (
         <span>
-            Showing following file extensions: {getUniqueFileExtensions(accept).join(", ")}.
+            Showing the following file extensions: {getUniqueFileExtensions(accept).join(", ")}.
         </span>
     );
 };
