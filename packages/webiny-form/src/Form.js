@@ -117,7 +117,7 @@ class Form extends React.Component<Props, State> {
                 const inputNames = Object.keys(this.inputs);
                 inputNames.forEach(name => {
                     const defaultValue = this.inputs[name].defaultValue;
-                    if (!_.has(data, name) && typeof defaultValue !== 'undefined') {
+                    if (!_.has(data, name) && typeof defaultValue !== "undefined") {
                         data = set(name, defaultValue, data);
                     }
                 });
@@ -238,10 +238,10 @@ class Form extends React.Component<Props, State> {
     };
 
     getOnChangeFn = ({
-                         name,
-                         beforeChange,
-                         afterChange
-                     }: {
+        name,
+        beforeChange,
+        afterChange
+    }: {
         name: string,
         beforeChange: any,
         afterChange: any
@@ -282,6 +282,10 @@ class Form extends React.Component<Props, State> {
         return this.validateFns[name];
     };
 
+    __setValue = (name: string, value: any) => {
+        this.onChangeFns[name](value);
+    };
+
     __onKeyDown = (e: SyntheticKeyboardEvent<*>) => {
         const { submitOnEnter = false } = this.props;
         if (
@@ -312,6 +316,7 @@ class Form extends React.Component<Props, State> {
             <webiny-form-container onKeyDown={this.__onKeyDown}>
                 {children({
                     data: _.cloneDeep(this.state.data),
+                    setValue: this.__setValue,
                     form: this,
                     submit: this.submit,
                     Bind: this.Bind

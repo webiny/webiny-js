@@ -16,10 +16,9 @@ const FormEditor = () => {
         <div className={classSet(classes)}>
             <EditorBar />
             <EditorContent />
-            {/*<DragPreview/>*/}
+            <DragPreview />
         </div>
     );
 };
 
 export default DragDropContext(HTML5Backend)(FormEditor);
-
