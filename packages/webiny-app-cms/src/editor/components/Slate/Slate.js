@@ -1,6 +1,7 @@
-import React, { Fragment } from "react";
+import React from "react";
 import ReactDOM from "react-dom";
 import { get, isEqual } from "lodash";
+import shortid from "shortid";
 import { Editor } from "slate-react";
 import { Value } from "slate";
 import { getPlugins } from "webiny-plugins";
@@ -8,6 +9,19 @@ import { withCms } from "webiny-app-cms/context";
 import { createValue } from "./index";
 
 import Menu from "./Menu";
+
+const valueToJSON = value => {
+    return {
+        selection: value.selection.toJSON(),
+        anchorText: value.anchorText.getText(),
+        focusText: value.focusText.getText(),
+        inlines: value.inlines.toJSON(),
+        marks: value.marks.toJSON(),
+        activeMarks: value.activeMarks.toJSON(),
+        blocks: value.blocks.toJSON(),
+        texts: value.texts.toJSON()
+    };
+};
 
 class SlateEditor extends React.Component {
     static defaultProps = {
@@ -19,6 +33,9 @@ class SlateEditor extends React.Component {
 
     constructor(props) {
         super();
+
+        this.id = shortid.generate();
+        this.nextElement = null;
 
         const value = typeof props.value === "string" ? createValue(props.value) : props.value;
 
@@ -34,6 +51,25 @@ class SlateEditor extends React.Component {
             .filter(pl => !props.exclude.includes(pl.name))
             .map(pl => pl.slate);
     }
+
+    componentDidMount() {
+        document.getElementById(this.id).addEventListener("mousedown", this.trackNextElement);
+        document.getElementById(this.id).addEventListener("mouseup", this.untrackNextElement);
+    }
+
+    componentWillUnmount() {
+        document.getElementById(this.id).removeEventListener("mousedown", this.trackNextElement);
+        document.getElementById(this.id).removeEventListener("mouseup", this.untrackNextElement);
+    }
+
+    trackNextElement = e => {
+        // Store the clicked element. If it is set, it means we clicked inside the editor div.
+        this.nextElement = e.target;
+    };
+
+    untrackNextElement = () => {
+        this.nextElement = null;
+    };
 
     static getDerivedStateFromProps(props, state) {
         if (!state.modified && !props.readOnly) {
@@ -58,7 +94,8 @@ class SlateEditor extends React.Component {
 
         // Prevent `onChange` if it is a `set_value` operation.
         // We only need to handle changes on user input.
-        if (get(change.operations.toJSON(), "0.type") === "set_value") {
+        const operations = change.operations.toJSON();
+        if (get(operations, "0.type") === "set_value") {
             return;
         }
 
@@ -71,8 +108,10 @@ class SlateEditor extends React.Component {
     };
 
     onBlur = () => {
-        this.setState({ modified: false });
-        this.props.onChange(this.state.value.toJSON());
+        if (!this.nextElement) {
+            this.setState({ modified: false });
+            this.props.onChange(this.state.value.toJSON());
+        }
     };
 
     getMenuContainer = () => {
@@ -139,16 +178,7 @@ class SlateEditor extends React.Component {
         this.setState({
             activePlugin: {
                 plugin,
-                value: {
-                    selection: value.selection.toJSON(),
-                    anchorText: value.anchorText.getText(),
-                    focusText: value.focusText.getText(),
-                    inlines: value.inlines.toJSON(),
-                    marks: value.marks.toJSON(),
-                    activeMarks: value.activeMarks.toJSON(),
-                    blocks: value.blocks.toJSON(),
-                    texts: value.texts.toJSON()
-                }
+                value: valueToJSON(value)
             }
         });
     };
@@ -161,7 +191,7 @@ class SlateEditor extends React.Component {
         const { activePlugin } = this.state;
 
         return (
-            <Fragment>
+            <div id={this.id}>
                 {!this.state.readOnly && this.renderFloatingMenu()}
                 <Editor
                     ref={this.editor}
@@ -175,7 +205,7 @@ class SlateEditor extends React.Component {
                     value={this.state.value}
                     onChange={this.onChange}
                     theme={this.props.cms.theme}
-                    activatePlugin={this.activatePlugin}
+                    activatePlugin={name => this.activatePlugin(name)}
                     activePlugin={this.state.activePlugin}
                     deactivatePlugin={this.deactivatePlugin}
                 />
@@ -188,11 +218,11 @@ class SlateEditor extends React.Component {
                             open: activePlugin ? activePlugin.plugin === pl.name : false,
                             closeDialog: this.deactivatePlugin,
                             activePlugin,
-                            activatePlugin: this.activatePlugin
+                            activatePlugin: name => this.activatePlugin(name)
                         };
                         return React.cloneElement(pl.renderDialog(props), { key: pl.name });
                     })}
-            </Fragment>
+            </div>
         );
     }
 }

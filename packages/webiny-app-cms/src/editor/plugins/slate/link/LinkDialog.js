@@ -65,6 +65,22 @@ const LinkDialog = ({ open, linkData, updateLink, closeDialog }) => {
     );
 };
 
+const normalizeSelection = selection => {
+    let start, end;
+    if (selection.anchor.offset > selection.focus.offset) {
+        start = selection.focus;
+        end = selection.anchor;
+    } else {
+        start = selection.anchor;
+        end = selection.focus;
+    }
+
+    return {
+        anchor: start,
+        focus: end
+    };
+};
+
 export default compose(
     withProps(({ activePlugin }) => {
         if (!activePlugin) {
@@ -78,12 +94,10 @@ export default compose(
             anchorText = anchorText.getText();
         }
 
-        const selectedText = link
-            ? anchorText
-            : anchorText.substr(
-                  selection.anchor.offset,
-                  selection.focus.offset - selection.anchor.offset
-              );
+        const ns = normalizeSelection(selection);
+        const start = ns.anchor.offset;
+        const end = ns.focus.offset;
+        const selectedText = link ? anchorText : anchorText.substr(start, end - start);
 
         return { linkData: { ...(link && link.data), text: selectedText } };
     }),
@@ -91,14 +105,14 @@ export default compose(
         updateLink: ({ editor, onChange, closeDialog, activePlugin }) => ({ text, ...data }) => {
             editor.change(change => {
                 const { selection } = activePlugin.value;
-                const linkSelection = getLinkRange(change, selection);
+                const linkSelection = getLinkRange(change, normalizeSelection(selection));
                 change
                     .select(linkSelection)
                     .unwrapInline(TYPE)
                     .insertText(text)
                     .moveAnchorBackward(text.length)
                     .wrapInline({ type: TYPE, data })
-                    .moveToEnd();
+                    .moveToStart();
 
                 onChange(change);
                 closeDialog();
