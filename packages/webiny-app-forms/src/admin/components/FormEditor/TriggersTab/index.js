@@ -1,0 +1,1 @@
+export { TriggersTab } from "./TriggersTab";

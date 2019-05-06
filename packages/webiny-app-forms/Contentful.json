@@ -1,0 +1,188 @@
+{
+  "name": "Course",
+  "description": "A series of lessons designed to teach sets of concepts that enable students to master Contentful.",
+  "displayField": "title",
+  "fields": [
+    {
+      "id": "title",
+      "name": "Title",
+      "type": "Symbol",
+      "localized": true,
+      "required": true,
+      "validations": [
+        {
+          "size": {
+            "min": 5,
+            "max": 10
+          },
+          "message": "Your message is too long"
+        },
+        {
+          "regexp": {
+            "pattern": "^\\w[\\w.-]*@([\\w-]+\\.)+[\\w-]+$"
+          },
+          "message": "Wrong guess"
+        }
+      ],
+      "disabled": false,
+      "omitted": false
+    },
+    {
+      "id": "slug",
+      "name": "Slug",
+      "type": "Symbol",
+      "localized": false,
+      "required": true,
+      "validations": [],
+      "disabled": false,
+      "omitted": false
+    },
+    {
+      "id": "image",
+      "name": "Image",
+      "type": "Link",
+      "localized": false,
+      "required": true,
+      "validations": [],
+      "disabled": false,
+      "omitted": false,
+      "linkType": "Asset"
+    },
+    {
+      "id": "shortDescription",
+      "name": "Short Description",
+      "type": "Symbol",
+      "localized": true,
+      "required": true,
+      "validations": [],
+      "disabled": false,
+      "omitted": false
+    },
+    {
+      "id": "description",
+      "name": "Description",
+      "type": "Text",
+      "localized": true,
+      "required": true,
+      "validations": [],
+      "disabled": false,
+      "omitted": false
+    },
+    {
+      "id": "duration",
+      "name": "Duration",
+      "type": "Integer",
+      "localized": false,
+      "required": false,
+      "validations": [],
+      "disabled": false,
+      "omitted": false
+    },
+    {
+      "id": "skillLevel",
+      "name": "Skill Level",
+      "type": "Symbol",
+      "localized": false,
+      "required": true,
+      "validations": [
+        {
+          "in": [
+            "beginner",
+            "intermediate",
+            "advanced"
+          ]
+        }
+      ],
+      "disabled": false,
+      "omitted": false
+    },
+    {
+      "id": "lessons",
+      "name": "Lessons",
+      "type": "Array",
+      "localized": false,
+      "required": true,
+      "validations": [],
+      "disabled": false,
+      "omitted": false,
+      "items": {
+        "type": "Link",
+        "validations": [
+          {
+            "linkContentType": [
+              "lesson"
+            ]
+          }
+        ],
+        "linkType": "Entry"
+      }
+    },
+    {
+      "id": "categories",
+      "name": "Categories",
+      "type": "Array",
+      "localized": false,
+      "required": true,
+      "validations": [],
+      "disabled": false,
+      "omitted": false,
+      "items": {
+        "type": "Link",
+        "validations": [
+          {
+            "linkContentType": [
+              "category"
+            ]
+          }
+        ],
+        "linkType": "Entry"
+      }
+    }
+  ],
+  "sys": {
+    "space": {
+      "sys": {
+        "type": "Link",
+        "linkType": "Space",
+        "id": "rh1tvldfjss0"
+      }
+    },
+    "id": "course",
+    "type": "ContentType",
+    "createdAt": "2019-04-04T18:35:28.725Z",
+    "updatedAt": "2019-04-04T18:35:30.840Z",
+    "environment": {
+      "sys": {
+        "id": "master",
+        "type": "Link",
+        "linkType": "Environment"
+      }
+    },
+    "publishedVersion": 1,
+    "publishedAt": "2019-04-04T18:35:30.840Z",
+    "firstPublishedAt": "2019-04-04T18:35:30.840Z",
+    "createdBy": {
+      "sys": {
+        "type": "Link",
+        "linkType": "User",
+        "id": "2kUYEsQUTQ1RYsNbd0PFRT"
+      }
+    },
+    "updatedBy": {
+      "sys": {
+        "type": "Link",
+        "linkType": "User",
+        "id": "2kUYEsQUTQ1RYsNbd0PFRT"
+      }
+    },
+    "publishedCounter": 1,
+    "version": 2,
+    "publishedBy": {
+      "sys": {
+        "type": "Link",
+        "linkType": "User",
+        "id": "2kUYEsQUTQ1RYsNbd0PFRT"
+      }
+    }
+  }
+}

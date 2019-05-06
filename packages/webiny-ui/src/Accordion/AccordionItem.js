@@ -87,9 +87,12 @@ class AccordionItem extends React.Component<Props, State> {
                         this.setState({ closed: !this.state.closed });
                     }}
                 >
-                    <ListItemGraphic>
-                        <Icon icon={this.props.icon} />
-                    </ListItemGraphic>
+                    {this.props.icon && (
+                        <ListItemGraphic>
+                            <Icon icon={this.props.icon} />
+                        </ListItemGraphic>
+                    )}
+
                     <TitleContent>
                         <ListItemTitle>{this.props.title}</ListItemTitle>
                         {this.props.description && (
