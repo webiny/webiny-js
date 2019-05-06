@@ -1,5 +1,5 @@
 // @flow
-import React, { useReducer, useRef, useCallback } from "react";
+import React, { useRef, useCallback } from "react";
 import Files from "react-butterfiles";
 import { ButtonPrimary, ButtonIcon } from "webiny-ui/Button";
 import { Icon } from "webiny-ui/Icon";
@@ -23,6 +23,7 @@ import { Scrollbar } from "webiny-ui/Scrollbar";
 import { css } from "emotion";
 import styled from "react-emotion";
 import { useHotkeys } from "react-hotkeyz";
+import { useFileManager } from "./FileManagerContext";
 
 import { ReactComponent as SearchIcon } from "./icons/round-search-24px.svg";
 import { ReactComponent as UploadIcon } from "./icons/round-cloud_upload-24px.svg";
@@ -105,74 +106,6 @@ type Props = {
     multipleMaxSize: number
 };
 
-function init({ accept }) {
-    return {
-        selected: [],
-        hasPreviouslyUploadedFiles: null,
-        queryParams: {
-            types: accept,
-            perPage: 50,
-            sort: { createdOn: -1 }
-        }
-    };
-}
-
-function fileManagerReducer(state, action) {
-    const next = { ...state };
-    switch (action.type) {
-        case "toggleSelected": {
-            if (!action.multiple) {
-                next.selected = [];
-            }
-            const existingIndex = state.selected.findIndex(item => item.src === action.file.src);
-            if (existingIndex < 0) {
-                next.selected.push(action.file);
-            } else {
-                next.selected.splice(existingIndex, 1);
-            }
-            break;
-        }
-        case "queryParams": {
-            next.selected = [];
-            next.queryParams = {
-                ...state.queryParams,
-                ...action.queryParams,
-                types: state.queryParams.types,
-                perPage: 40,
-                sort: { createdOn: -1 }
-            };
-            break;
-        }
-
-        case "showDetails": {
-            next.showDetailsFileSrc = action.file;
-            break;
-        }
-        case "hideDetails": {
-            next.showDetailsFileSrc = null;
-            break;
-        }
-        case "dragging": {
-            next.dragging = action.state;
-            break;
-        }
-        case "noPreviouslyUploadedFiles": {
-            next.hasPreviouslyUploadedFiles = false;
-            break;
-        }
-        case "hasPreviouslyUploadedFiles": {
-            next.hasPreviouslyUploadedFiles = true;
-            break;
-        }
-        case "uploading": {
-            next.uploading = action.state;
-            break;
-        }
-    }
-
-    return next;
-}
-
 function renderFile(props) {
     const { file } = props;
     const plugin = getFileTypePlugin(file);
@@ -183,7 +116,7 @@ function renderFile(props) {
     );
 }
 
-const renderEmpty = ({ state: { hasPreviouslyUploadedFiles }, browseFiles }) => {
+const renderEmpty = ({ hasPreviouslyUploadedFiles, browseFiles }) => {
     if (hasPreviouslyUploadedFiles) {
         return <NoResults />;
     }
@@ -201,23 +134,25 @@ function FileManagerView(props: WithSnackbarProps & Props) {
         multipleMaxCount,
         multipleMaxSize
     } = props;
-    const [state, dispatch] = useReducer(fileManagerReducer, props, init);
 
     const {
-        showDetailsFileSrc,
-        uploading,
-        dragging,
         selected,
+        toggleSelected,
+        dragging,
+        setDragging,
+        uploading,
+        setUploading,
+        showFileDetails,
+        showingFileDetails,
         queryParams,
-        hasPreviouslyUploadedFiles
-    } = state;
+        setQueryParams,
+        hasPreviouslyUploadedFiles,
+        setHasPreviouslyUploadedFiles
+    } = useFileManager();
 
     const gqlQuery = useRef();
 
-    const searchOnChange = useCallback(
-        debounce(search => dispatch({ type: "queryParams", queryParams: { search } }), 500),
-        []
-    );
+    const searchOnChange = useCallback(debounce(search => setQueryParams({ search }), 500), []);
 
     const toggleTag = useCallback(async ({ tag, queryParams }) => {
         const finalTags = Array.isArray(queryParams.tags) ? [...queryParams.tags] : [];
@@ -228,7 +163,7 @@ function FileManagerView(props: WithSnackbarProps & Props) {
             finalTags.push(tag);
         }
 
-        dispatch({ type: "queryParams", queryParams: { ...queryParams, tags: finalTags } });
+        setQueryParams({ ...queryParams, tags: finalTags });
     }, []);
 
     const refreshOnScroll = useCallback(
@@ -284,6 +219,7 @@ function FileManagerView(props: WithSnackbarProps & Props) {
     });
 
     const searchInput = useRef();
+
     return (
         <Mutation mutation={createFile} update={updateCacheAfterCreateFile}>
             {createFile => (
@@ -293,22 +229,17 @@ function FileManagerView(props: WithSnackbarProps & Props) {
                     ref={gqlQuery}
                     onCompleted={response => {
                         const list = get(response, "files.listFiles.data") || [];
-
                         if (hasPreviouslyUploadedFiles === null) {
-                            const type =
-                                list.length > 0
-                                    ? "hasPreviouslyUploadedFiles"
-                                    : "noPreviouslyUploadedFiles";
-                            dispatch({ type });
+                            setHasPreviouslyUploadedFiles(list.length > 0);
                         }
                     }}
                 >
                     {({ data, fetchMore }) => {
                         const list = get(data, "files.listFiles.data") || [];
                         const uploadFile = async files => {
-                            dispatch({ type: "uploading", state: true });
-
+                            setUploading(true);
                             const list = Array.isArray(files) ? files : [files];
+
                             await Promise.all(
                                 list.map(async file => {
                                     const response = await getFileUploader()(file);
@@ -317,15 +248,13 @@ function FileManagerView(props: WithSnackbarProps & Props) {
                             );
 
                             if (!hasPreviouslyUploadedFiles) {
-                                dispatch({ type: "hasPreviouslyUploadedFiles" });
+                                setHasPreviouslyUploadedFiles(true);
                             }
 
-                            dispatch({ type: "uploading", state: false });
+                            setUploading(false);
 
-                            // We wait 1sec, just for everything to settle down a bit.
-                            setTimeout(() => {
-                                showSnackbar("File upload complete.")
-                            }, 1000);
+                            // We wait 750ms, just for everything to settle down a bit.
+                            setTimeout(() => showSnackbar("File upload complete."), 750);
                         };
 
                         return (
@@ -345,11 +274,7 @@ function FileManagerView(props: WithSnackbarProps & Props) {
                                     <OverlayLayout
                                         {...getDropZoneProps({
                                             onDragEnter: () =>
-                                                hasPreviouslyUploadedFiles &&
-                                                dispatch({
-                                                    type: "dragging",
-                                                    state: true
-                                                }),
+                                                hasPreviouslyUploadedFiles && setDragging(true),
                                             onExited: onClose
                                         })}
                                         barLeft={
@@ -390,34 +315,18 @@ function FileManagerView(props: WithSnackbarProps & Props) {
                                             {dragging && hasPreviouslyUploadedFiles && (
                                                 <DropFilesHere
                                                     className={style.draggingFeedback}
-                                                    onDragLeave={() => {
-                                                        dispatch({
-                                                            type: "dragging",
-                                                            state: false
-                                                        });
-                                                    }}
-                                                    onDrop={() => {
-                                                        dispatch({
-                                                            type: "dragging",
-                                                            state: false
-                                                        });
-                                                    }}
+                                                    onDragLeave={() => setDragging(false)}
+                                                    onDrop={() => setDragging(false)}
                                                 />
                                             )}
 
                                             <FileDetails
-                                                state={state}
                                                 validateFiles={validateFiles}
+                                                uploadFile={uploadFile}
                                                 file={getFileDetailsFile({
                                                     list,
-                                                    src: showDetailsFileSrc
+                                                    src: showingFileDetails
                                                 })}
-                                                uploadFile={uploadFile}
-                                                onClose={() =>
-                                                    dispatch({
-                                                        type: "hideDetails"
-                                                    })
-                                                }
                                             />
 
                                             <LeftSidebar
@@ -441,10 +350,7 @@ function FileManagerView(props: WithSnackbarProps & Props) {
                                                                       uploadFile,
                                                                       file,
                                                                       showFileDetails: () =>
-                                                                          dispatch({
-                                                                              type: "showDetails",
-                                                                              file: file.src
-                                                                          }),
+                                                                          showFileDetails(file.src),
                                                                       selected: selected.find(
                                                                           current =>
                                                                               current.src ===
@@ -452,12 +358,7 @@ function FileManagerView(props: WithSnackbarProps & Props) {
                                                                       ),
                                                                       onSelect: async () => {
                                                                           if (multiple) {
-                                                                              dispatch({
-                                                                                  multiple,
-                                                                                  type:
-                                                                                      "toggleSelected",
-                                                                                  file
-                                                                              });
+                                                                              toggleSelected(file);
                                                                               return;
                                                                           }
 
@@ -466,10 +367,16 @@ function FileManagerView(props: WithSnackbarProps & Props) {
                                                                       }
                                                                   })
                                                               )
-                                                            : renderEmpty({ state, browseFiles })}
+                                                            : renderEmpty({
+                                                                  hasPreviouslyUploadedFiles,
+                                                                  browseFiles
+                                                              })}
                                                     </FileList>
                                                 </Scrollbar>
-                                                <BottomInfoBar accept={accept} uploading={uploading} />
+                                                <BottomInfoBar
+                                                    accept={accept}
+                                                    uploading={uploading}
+                                                />
                                             </FileListWrapper>
                                         </>
                                     </OverlayLayout>

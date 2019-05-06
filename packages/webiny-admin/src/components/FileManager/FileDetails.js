@@ -13,6 +13,7 @@ import { Tooltip } from "webiny-ui/Tooltip";
 import { useHotkeys } from "react-hotkeyz";
 import { ReactComponent as DownloadIcon } from "./icons/round-cloud_download-24px.svg";
 import TimeAgo from "timeago-react";
+import { useFileManager } from "./FileManagerContext";
 
 const style = {
     wrapper: css({
@@ -72,20 +73,23 @@ const style = {
 };
 
 export default function FileDetails(props: *) {
-    const { file, uploadFile, onClose, validateFiles } = props;
+    const { file, uploadFile, validateFiles } = props;
     const filePlugin = getFileTypePlugin(file);
     const actions = get(filePlugin, "fileDetails.actions") || [];
+
+    const { hideFileDetails } = useFileManager();
 
     useHotkeys({
         zIndex: 55,
         disabled: !file,
         keys: {
-            esc: onClose
+            esc: hideFileDetails
         }
     });
 
+
     return (
-        <Drawer dir="rtl" modal open={file} onClose={onClose}>
+        <Drawer dir="rtl" modal open={file} onClose={hideFileDetails}>
             {file && (
                 <div className={style.wrapper} dir="ltr">
                     <div className={style.header}>File details</div>

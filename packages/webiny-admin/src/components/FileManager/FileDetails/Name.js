@@ -11,6 +11,7 @@ import { compose } from "recompose";
 import { withSnackbar } from "webiny-admin/components";
 import { graphql } from "react-apollo";
 import { get, cloneDeep } from "lodash";
+import { useFileManager } from "./../FileManagerContext";
 
 const style = {
     editTag: css({
@@ -19,9 +20,12 @@ const style = {
     })
 };
 
-function Name({ state: parentState, gqlUpdateFileBySrc, showSnackbar, file }) {
+function Name(props: *) {
+    const { gqlUpdateFileBySrc, showSnackbar, file } = props;
     const [editing, setEdit] = useState(false);
     const name = file.name || "";
+
+    const { queryParams } = useFileManager();
 
     if (editing) {
         return (
@@ -41,7 +45,7 @@ function Name({ state: parentState, gqlUpdateFileBySrc, showSnackbar, file }) {
                             const data = cloneDeep(
                                 cache.readQuery({
                                     query: listFiles,
-                                    variables: parentState.queryParams
+                                    variables: queryParams
                                 })
                             );
 
@@ -53,7 +57,7 @@ function Name({ state: parentState, gqlUpdateFileBySrc, showSnackbar, file }) {
 
                             cache.writeQuery({
                                 query: listFiles,
-                                variables: parentState.queryParams,
+                                variables: queryParams,
                                 data: data
                             });
                         }
