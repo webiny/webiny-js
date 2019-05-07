@@ -119,7 +119,7 @@
     "wby:fns:inspect": "yarn wby:fns --inspect=9001",
     "wby:app": "wby start-app",
     "start-verdaccio": "yarn verdaccio -c ./verdaccio.yaml",
-    "publish-to-verdaccio": "yarn build && cross-env REGISTRY=http://localhost:4800 node scripts/publish-to-verdaccio"
+    "publish-to-verdaccio": "cross-env REGISTRY=http://localhost:4800 node scripts/publish-to-verdaccio"
   },
   "pre-commit": [
     "lint-staged"

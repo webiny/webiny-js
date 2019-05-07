@@ -7,7 +7,7 @@ export type Props = {
     icon: ?string,
     order: ?number,
     role: ?string,
-    route: ?string,
+    path: ?string,
     level: ?number,
     overwriteExisting: ?boolean,
     render: ?Function,
@@ -21,7 +21,7 @@ class Menu extends React.Component<Props> {
         icon: null,
         order: 100,
         role: null,
-        route: null,
+        path: null,
         level: 0,
         overwriteExisting: false
     };

@@ -91,7 +91,7 @@ module.exports = async () => {
     logger.info("There is also a convenience alias 'wby' (for 'webiny') to type even less :)\n");
 
     logger.success(
-        `That's it! Now you have your API, admin and site apps up and running!\n   Happy coding :)`
+        `That's it! Now you have your API, admin and site apps up and running!\n  Happy coding :)`
     );
 };
 
