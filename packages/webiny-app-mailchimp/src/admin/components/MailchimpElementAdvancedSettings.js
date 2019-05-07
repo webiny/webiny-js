@@ -1,23 +1,23 @@
 // @flow
 import * as React from "react";
-import { Grid, Cell } from "webiny-ui/Grid";
-import { Typography } from "webiny-ui/Typography";
-import { withCms } from "webiny-app-cms/context";
-import MailchimpElement from "./MailchimpElement";
-import { AutoComplete } from "webiny-ui/AutoComplete";
+import { graphql } from "react-apollo";
 import { Query } from "react-apollo";
+import { compose, withHandlers, withState } from "recompose";
 import gql from "graphql-tag";
 import { get } from "lodash";
 import { css } from "react-emotion";
+import { Grid, Cell } from "webiny-ui/Grid";
+import { Typography } from "webiny-ui/Typography";
+import { withSnackbar } from "webiny-admin/components";
+import { withCms } from "webiny-app-cms/context";
+import { AutoComplete } from "webiny-ui/AutoComplete";
 import { getPlugins } from "webiny-plugins";
 import { Form } from "webiny-form";
 import { Input } from "webiny-ui/Input";
 import { ButtonPrimary } from "webiny-ui/Button";
-import { compose, withHandlers, withState } from "recompose";
-import { graphql } from "react-apollo";
-import settingsGql from "./graphql";
-import { withSnackbar } from "webiny-admin/components";
 import { CircularProgress } from "webiny-ui/Progress";
+import MailchimpElement from "./MailchimpElement";
+import settingsGql from "./graphql";
 
 const formPreview = css({
     padding: 25,
