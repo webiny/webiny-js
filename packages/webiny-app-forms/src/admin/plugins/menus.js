@@ -1,20 +1,21 @@
+// @flow
 import React from "react";
-import { ReactComponent as FormsIcon } from "./icons/round-list_alt-24px.svg";
+import { ReactComponent as PagesIcon } from "webiny-app-cms/admin/assets/round-ballot-24px.svg";
 import { hasRoles } from "webiny-app-security";
 
 export default [
     {
-        name: "cms-forms-menu",
+        name: "cms-menu",
         type: "menu",
         render({ Menu }: Object) {
-            const { forms } = hasRoles({ forms: ["cms-forms"] });
+            const { forms }: Object = (hasRoles({
+                forms: ["cms-forms"]
+            }): any);
 
             if (forms) {
                 return (
-                    <Menu label={`Content`} icon={<FormsIcon />}>
-                        <Menu label={`Forms`}>
-                            {forms && <Menu label={`Forms`} route="Cms.Forms" />}
-                        </Menu>
+                    <Menu label={`Content`} icon={<PagesIcon />}>
+                        <Menu label={`Forms`}>{<Menu label={`Forms`} route="/cms/forms" />}</Menu>
                     </Menu>
                 );
             }

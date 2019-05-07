@@ -1,0 +1,83 @@
+// @flow
+import * as React from "react";
+import TimeAgo from "timeago-react";
+import { withRouter } from "react-router-dom";
+import { i18n } from "webiny-app/i18n";
+import { css } from "emotion";
+import { Typography } from "webiny-ui/Typography";
+import {
+    DataList,
+    List,
+    ListItem,
+    ListItemText,
+    ListItemTextSecondary,
+    ListTextOverline,
+    ListItemMeta
+} from "webiny-ui/List";
+
+const t = i18n.namespace("Cms.FormsDataList");
+
+const rightAlign = css({
+    alignItems: "flex-end !important"
+});
+
+const FormsDataList = props => {
+    const { dataList, location, history } = props;
+    const query = new URLSearchParams(location.search);
+
+    return (
+        <DataList
+            {...dataList}
+            title={t`CMS Forms`}
+            sorters={[
+                {
+                    label: "Newest to oldest",
+                    sorters: { createdOn: -1 }
+                },
+                {
+                    label: "Oldest to newest",
+                    sorters: { createdOn: 1 }
+                },
+                {
+                    label: "Title A-Z",
+                    sorters: { title: 1 }
+                },
+                {
+                    label: "Title Z-A",
+                    sorters: { title: -1 }
+                }
+            ]}
+        >
+            {({ data = [] }) => (
+                <List>
+                    {data.map(form => (
+                        <ListItem key={form.id}>
+                            <ListItemText
+                                onClick={() => {
+                                    query.set("id", form.id);
+                                    history.push({ search: query.toString() });
+                                }}
+                            >
+                                {form.title}
+                                <ListTextOverline>{form.category.name}</ListTextOverline>
+                                {form.createdBy && (
+                                    <ListItemTextSecondary>
+                                        Created by: {form.createdBy.firstName}. Last modified:{" "}
+                                        <TimeAgo datetime={form.savedOn} />.
+                                    </ListItemTextSecondary>
+                                )}
+                            </ListItemText>
+                            <ListItemMeta className={rightAlign}>
+                                <Typography use={"subtitle2"}>
+                                    {form.locked ? "Published" : "Draft"} (v{form.version})
+                                </Typography>
+                            </ListItemMeta>
+                        </ListItem>
+                    ))}
+                </List>
+            )}
+        </DataList>
+    );
+};
+
+export default withRouter(FormsDataList);
