@@ -13,7 +13,6 @@ export const listPublishedForms = async ({ args, Form, Category }: Object) => {
         url = null,
         sort = null,
         tags = null,
-        tagsRule = null
     } = args;
 
     const baseFilters = [{ published: true, deleted: false }];
@@ -52,14 +51,6 @@ export const listPublishedForms = async ({ args, Form, Category }: Object) => {
         } else {
             const categoryEntity = await Category.findOne({ query: { slug: category } });
             baseFilters.push({ category: categoryEntity.id });
-        }
-    }
-
-    if (Array.isArray(tags) && tags.length) {
-        if (tagsRule === "ALL") {
-            baseFilters.push({ "settings.general.tags": { $all: tags } });
-        } else {
-            baseFilters.push({ "settings.general.tags": { $in: tags } });
         }
     }
 

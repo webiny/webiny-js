@@ -14,34 +14,26 @@ const groupFetcher = ctx => ctx.security.entities.Group;
 export default {
     typeDefs: () => [
         Role.typeDefs,
-        `type Group {
-            id: ID
-            name: String
-            slug: String
-            createdOn: DateTime
-            description: String
-            roles: [Role]
-        }
-        
-        input GroupInput {
-            id: ID
-            name: String
-            slug: String
-            description: String
-            roles: [ID]
-        }
-        
-        type GroupResponse {
-            data: Group
-            error: Error
-        }
-        
-        type GroupListResponse {
-            data: [Group]
-            meta: ListMeta
-            error: Error
-        }
-    `
+        /* GraphQL */ `
+            input GroupInput {
+                id: ID
+                name: String
+                slug: String
+                description: String
+                roles: [ID]
+            }
+
+            type GroupResponse {
+                data: Group
+                error: Error
+            }
+
+            type GroupListResponse {
+                data: [Group]
+                meta: ListMeta
+                error: Error
+            }
+        `
     ],
     typeExtensions: `
         extend type SecurityQuery {

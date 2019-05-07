@@ -13,7 +13,6 @@ export type EntityPluginType = PluginType & {
 };
 
 export type ModelPluginType = PluginType & {
-    namespace: string,
     model: Function
 };
 

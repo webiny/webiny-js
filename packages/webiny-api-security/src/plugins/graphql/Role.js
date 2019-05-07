@@ -11,35 +11,26 @@ const roleFetcher = ctx => ctx.security.entities.Role;
 
 export default {
     typeDefs: () => [
+        /* GraphQL */ `
+            input RoleInput {
+                id: ID
+                name: String
+                slug: String
+                description: String
+                scopes: [String]
+            }
+
+            type RoleResponse {
+                data: Role
+                error: Error
+            }
+
+            type RoleListResponse {
+                data: [Role]
+                meta: ListMeta
+                error: Error
+            }
         `
-        type Role {
-            id: ID
-            name: String
-            slug: String
-            createdOn: DateTime
-            description: String
-            scopes: [String]
-        }
-        
-        input RoleInput {
-            id: ID
-            name: String
-            slug: String
-            description: String
-            scopes: [String]
-        }
-        
-        type RoleResponse {
-            data: Role
-            error: Error
-        }
-        
-        type RoleListResponse {
-            data: [Role]
-            meta: ListMeta
-            error: Error
-        }
-    `
     ],
     typeExtensions: `
         extend type SecurityQuery {

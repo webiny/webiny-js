@@ -231,9 +231,7 @@ export default {
             deleteElement(
                 id: ID!
             ): DeleteResponse
-            
-            updateImageSize: DeleteResponse
-        },
+        }
     `
     ],
     resolvers: {
