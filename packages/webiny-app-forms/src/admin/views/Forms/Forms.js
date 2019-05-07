@@ -50,7 +50,7 @@ export default compose(
             try {
                 const res = await createMutation({ variables: { category } });
                 const { data } = res.data.cms.form;
-                history.push(`/cms/editor/${data.id}`);
+                history.push(`/cms/forms/${data.id}`);
             } catch (e) {
                 showSnackbar(e.message);
             }

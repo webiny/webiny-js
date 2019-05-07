@@ -11,7 +11,6 @@ error {
 const sharedFields = `
     id
     title
-    url
     version
     parent
     published
@@ -20,8 +19,8 @@ const sharedFields = `
 `;
 
 export const createForm = gql`
-    mutation CmsCreateForm($category: ID!) {
-        cms {
+    mutation FormsCreateForm($category: ID!) {
+        forms {
             form: createForm(data: { category: $category }) {
                 data {
                     id
@@ -33,15 +32,11 @@ export const createForm = gql`
 `;
 
 export const listForms = gql`
-    query CmsListForms($sort: JSON, $form: Int, $perForm: Int, $search: String) {
-        cms {
-            forms: listForms(sort: $sort, form: $form, perForm: $perForm, search: $search) {
+    query FormsListForms($sort: JSON, $page: Int, $perPage: Int, $search: String) {
+        forms {
+            forms: listForms(sort: $sort, page: $page, perPage: $perPage, search: $search) {
                 data {
                     ${sharedFields}
-                    category {
-                        id
-                        name
-                    }
                     createdBy {
                         firstName
                         lastName
@@ -51,8 +46,8 @@ export const listForms = gql`
                     totalCount
                     to
                     from
-                    nextForm
-                    previousForm
+                    nextPage
+                    previousPage
                 }
             }
         }
@@ -60,8 +55,8 @@ export const listForms = gql`
 `;
 
 export const getForm = () => gql`
-    query CmsGetForm($id: ID!) {
-        cms {
+    query FormsGetForm($id: ID!) {
+        forms {
             form: getForm(id: $id) {
                 data {
                     ${sharedFields}
@@ -69,8 +64,8 @@ export const getForm = () => gql`
                     content
                     settings {
                         _empty
-                        ${getPlugins("cms-editor-form-settings")
-                            .map((pl: CmsFormSettingsPluginType) => pl.fields)
+                        ${getPlugins("forms-editor-form-settings")
+                            .map((pl: FormsFormSettingsPluginType) => pl.fields)
                             .join("\n")}
                     }
                     category {
@@ -89,8 +84,8 @@ export const getForm = () => gql`
 `;
 
 export const createRevisionFrom = gql`
-    mutation CmsCreateRevisionFrom($revision: ID!) {
-        cms {
+    mutation FormsCreateRevisionFrom($revision: ID!) {
+        forms {
             revision: createRevisionFrom(revision: $revision) {
                 data {
                     id
@@ -102,8 +97,8 @@ export const createRevisionFrom = gql`
 `;
 
 export const publishRevision = gql`
-    mutation CmsPublishRevision($id: ID!) {
-        cms {
+    mutation FormsPublishRevision($id: ID!) {
+        forms {
             publishRevision(id: $id) {
                 data {
                     ${sharedFields}
@@ -115,8 +110,8 @@ export const publishRevision = gql`
 `;
 
 export const deleteRevision = gql`
-    mutation CmsDeleteRevision($id: ID!) {
-        cms {
+    mutation FormsDeleteRevision($id: ID!) {
+        forms {
             deleteRevision(id: $id) {
                 data
                 ${error}
@@ -127,59 +122,9 @@ export const deleteRevision = gql`
 
 export const deleteForm = gql`
     mutation DeleteForm($id: ID!) {
-        cms {
+        forms {
             deleteForm(id: $id) {
                 data
-                ${error}
-            }
-        }
-    }
-`;
-
-const elementFields = /*GraphQL*/ `
-    id
-    name
-    type
-    category
-    content
-    preview {
-        src
-        meta
-    }
-`;
-
-export const listElements = gql`
-    query CmsListElements {
-        cms {
-            elements: listElements(perForm: 1000) {
-                data {
-                    ${elementFields}
-                }
-            }
-        }
-    }
-`;
-
-export const createElement = gql`
-    mutation CmsCreateElement($data: ElementInput!) {
-        cms {
-            element: createElement(data: $data) {
-                data {
-                    ${elementFields}
-                }
-                ${error}
-            }
-        }
-    }
-`;
-
-export const updateElement = gql`
-    mutation CmsUpdateElement($id: ID!, $data: UpdateElementInput!) {
-        cms {
-            element: updateElement(id: $id, data: $data) {
-                data {
-                    ${elementFields}
-                }
                 ${error}
             }
         }

@@ -9,7 +9,7 @@ export default async (root: any, args: Object, context: Object) => {
 
     // We utilize the same query used for listing published forms (single source of truth = less maintenance).
     const { Form, Category } = context.forms.entities;
-    const [form] = await listPublishedForms({ Form, Category, args: { ...args, perForm: 1 } });
+    const [form] = await listPublishedForms({ Form, Category, args: { ...args, perPage: 1 } });
 
     if (!form) {
         return new NotFoundResponse("The requested form was not found.");

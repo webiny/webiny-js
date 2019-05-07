@@ -27,16 +27,19 @@ const graphqlContextEntities: GraphQLContextPluginType = {
             context[plugin.namespace].entities[name].pool = new EntityPool();
         });
 
-        getPlugins("model").forEach((plugin: ModelPluginType) => {
-            if (!context.models) {
-                context.models = {};
-            }
+        context.models = {};
+        context.getModels = () => {
+            return context.models;
+        };
 
+        context.getModel = name => {
+            return context.getModels()[name];
+        };
+
+        getPlugins("model").forEach((plugin: ModelPluginType) => {
             context.models[getName(plugin.model)] = flowRight(
                 withProps({
-                    getModel(name) {
-                        return context.models[name];
-                    }
+                    getModel: context.getModel
                 }),
                 withFields({
                     createdOn: date(),

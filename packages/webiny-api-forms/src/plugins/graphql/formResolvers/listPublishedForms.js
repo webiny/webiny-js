@@ -4,15 +4,14 @@ import { ListResponse } from "webiny-api/graphql/responses";
 import get from "lodash/get";
 export const listPublishedForms = async ({ args, Form, Category }: Object) => {
     const {
-        form = 1,
+        page = 1,
         search,
-        perForm = 10,
+        perPage = 10,
         category = null,
         parent = null,
         id = null,
         url = null,
-        sort = null,
-        tags = null,
+        sort = null
     } = args;
 
     const baseFilters = [{ published: true, deleted: false }];
@@ -64,7 +63,7 @@ export const listPublishedForms = async ({ args, Form, Category }: Object) => {
     return Form.find({
         aggregation: async ({ aggregate, QueryResult }) => {
             const pipelines = {
-                results: pipeline.concat({ $skip: (form - 1) * perForm }, { $limit: perForm }),
+                results: pipeline.concat({ $skip: (page - 1) * perPage }, { $limit: perPage }),
                 totalCount: pipeline.concat({
                     $count: "count"
                 })
@@ -75,8 +74,8 @@ export const listPublishedForms = async ({ args, Form, Category }: Object) => {
 
             const meta = createPaginationMeta({
                 totalCount,
-                form,
-                perForm
+                page,
+                perPage
             });
 
             return new QueryResult(results, meta);

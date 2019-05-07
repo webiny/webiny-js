@@ -115,8 +115,8 @@ export default {
     ],
     resolvers: {
         FormsQuery: {
-            getForm: resolveGet(formFetcher),
-            listForms: listForms(formFetcher),
+            getForm: resolveGet,
+            listForms: listForms,
             listPublishedForms,
             getPublishedForm
         },
