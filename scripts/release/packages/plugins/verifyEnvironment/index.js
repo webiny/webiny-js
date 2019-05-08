@@ -1,9 +1,12 @@
 const envCi = require("env-ci");
+const execa = require("execa");
 
 module.exports = () => {
-    return async ({ packages, config, logger, git }, next, finish) => {
-        const { isCi, branch, isPr } = envCi();
-        
+    return async ({ config, logger }, next, finish) => {
+        const { isCi, isPr } = envCi();
+
+        const { stdout: branch } = await execa("git", ["rev-parse", "--abbrev-ref", "HEAD"]);
+
         if (!isCi && !config.preview && config.ci) {
             logger.log(
                 "This run was not triggered in a known CI environment, running in dry-run mode."
