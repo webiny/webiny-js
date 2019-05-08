@@ -7,6 +7,7 @@ import { Theme as AdminTheme } from "webiny-admin";
 import { CmsProvider } from "webiny-app-cms/context";
 import { Security } from "webiny-app-security/components";
 import Login from "webiny-app-security/admin/views/Login";
+import { CircularProgress } from "webiny-ui/Progress";
 import myTheme from "demo-theme";
 import "./App.scss";
 import plugins from "./plugins";
@@ -20,9 +21,10 @@ const App = () => {
     return (
         <UiProvider>
             <Security>
-                {({ authenticated, notAuthenticated }) => (
+                {({ initialLoad, authenticated, notAuthenticated }) => (
                     <CmsProvider theme={myTheme} isEditor>
                         <AdminTheme>
+                            {initialLoad(<CircularProgress />)}
                             {authenticated(
                                 <Fragment>
                                     {getPlugins("route").map((pl: Object) =>
