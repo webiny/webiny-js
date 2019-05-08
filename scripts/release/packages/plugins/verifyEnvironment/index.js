@@ -1,11 +1,14 @@
 const envCi = require("env-ci");
-const execa = require("execa");
 
 module.exports = () => {
     return async ({ config, logger }, next, finish) => {
-        const { isCi, isPr } = envCi();
+        let { isCi, branch, isPr } = envCi();
 
-        const { stdout: branch } = await execa("git", ["rev-parse", "--abbrev-ref", "HEAD"]);
+        if (!isCi) {
+            const execa = require("execa");
+            const { stdout } = await execa("git", ["rev-parse", "--abbrev-ref", "HEAD"]);
+            branch = stdout;
+        }
 
         if (!isCi && !config.preview && config.ci) {
             logger.log(
