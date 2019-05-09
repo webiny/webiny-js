@@ -81,6 +81,7 @@
     "ncp": "^2.0.0",
     "nodemon": "^1.18.10",
     "p-locate": "^3.0.0",
+    "p-map": "^2.1.0",
     "p-retry": "^2.0.0",
     "parse-github-url": "^1.0.2",
     "pkgfiles": "^2.3.2",

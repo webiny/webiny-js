@@ -1,9 +1,15 @@
 const execa = require("execa");
 const parseGithubUrl = require("parse-github-url");
 const GithubFactory = require("./utils/githubClient");
+const generateChangelog = require("../../../utils/changelog");
+const labels = require("../../../utils/labels");
 
 module.exports = (pluginConfig = {}) => {
-    return async ({ lastRelease, nextRelease, config, git, logger, packages }, next, finish) => {
+    return async (
+        { lastRelease, nextRelease, config, git, logger, packages, commits },
+        next,
+        finish
+    ) => {
         let github;
 
         const githubToken = process.env.GH_TOKEN || process.env.GITHUB_TOKEN;
@@ -40,11 +46,7 @@ module.exports = (pluginConfig = {}) => {
         }
 
         if (config.preview) {
-            release.body = await execa.stdout("npx", [
-                "lerna-changelog",
-                "--from=" + lastRelease.gitTag
-            ]);
-
+            release.body = await generateChangelog(labels, commits);
             logger.log("GitHub release data:\n%s", JSON.stringify(release, null, 2));
             logger.log("Tagger:\n%s", JSON.stringify(tagger, null, 2));
         } else {
