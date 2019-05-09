@@ -64,7 +64,7 @@ release({
         analyzeCommits({
             isRelevant(packages, commit) {
                 return commit.files.some(file => {
-                    return !independent.some(pkg => file.includes(`/${pkg.name}/`));
+                    return packages.some(pkg => file.includes(`/${pkg.name}/`));
                 });
             }
         }),

@@ -1,8 +1,16 @@
 const COMMIT_FIX_REGEX = /(fix|close|resolve)(e?s|e?d)? [T#](\d+)/i;
 
-module.exports = ({ labels, baseUrl, release }) => {
-    let contributors = [];
+const ignoreCommitters = [
+    "dependabot-bot",
+    "dependabot[bot]",
+    "greenkeeperio-bot",
+    "greenkeeper[bot]",
+    "renovate-bot",
+    "renovate[bot]",
+    "GitHub"
+];
 
+module.exports = ({ labels, baseUrl, release }) => {
     function renderContributionsByPackage(commits) {
         // Group commits in category by package
         const commitsByPackage = {};
@@ -64,13 +72,14 @@ module.exports = ({ labels, baseUrl, release }) => {
         const commitLink = `[${commit.commit.short}](${baseUrl}/commit/${commit.commit.short})`;
         let markdown = commit.subject.replace(/\w+(\(.*\))?:(.*)/, "$2") + ` (${commitLink})`;
 
-        // Without PR, we don'y have exact user data, so we need to take it from the commit data.
+        // Without PR, we don' have exact user data, so we need to take it from the commit data.
         // We also attempt to match the committer name with the known contributors list.
         const {
             committer: { name }
         } = commit;
 
-        const user = contributors.find(c => c.name === name || c.login === name);
+        // Try mapping the committer name to one of the existing contributors
+        const user = release.contributors.find(c => c.name === name || c.login === name);
 
         if (user) {
             return markdown + ` ([@${user.login}](${user.html_url}))`;
@@ -87,17 +96,18 @@ module.exports = ({ labels, baseUrl, release }) => {
         return `#### Committers: ${contributors.length}\n${renderedContributors.join("\n")}`;
     }
 
-    function renderContributor(contributor) {
-        if (contributor.html_url) {
-            const userNameAndLink = `[@${contributor.login}](${contributor.html_url})`;
-            if (contributor.name) {
-                return `${contributor.name} (${userNameAndLink})`;
+    function renderContributor({ name }) {
+        const user = release.contributors.find(c => c.name === name || c.login === name) || { name };
+        if (user.html_url) {
+            const userNameAndLink = `[@${user.login}](${user.html_url})`;
+            if (user.name) {
+                return `${user.name} (${userNameAndLink})`;
             } else {
                 return userNameAndLink;
             }
         }
 
-        return contributor.name;
+        return user.name;
     }
 
     function hasPackages(commits) {
@@ -142,6 +152,11 @@ module.exports = ({ labels, baseUrl, release }) => {
         if (!isContributor) {
             release.contributors.push({ name });
         }
+    });
+
+    // Filter ignored committers
+    release.contributors = release.contributors.filter(cont => {
+        return !ignoreCommitters.some(c => c.startsWith(cont.name));
     });
 
     if (release.contributors) {
