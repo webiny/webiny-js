@@ -1,36 +1,7 @@
 const COMMIT_FIX_REGEX = /(fix|close|resolve)(e?s|e?d)? [T#](\d+)/i;
 
-module.exports = ({ labels, baseIssueUrl }) => {
+module.exports = ({ labels, baseUrl, release }) => {
     let contributors = [];
-
-    function renderRelease(release) {
-        contributors = release.contributors;
-
-        // Group commits in release by category
-        const categories = groupByCategory(release.commits);
-        const categoriesWithCommits = categories.filter(category => category.commits.length > 0);
-
-        // Skip this iteration if there are no commits available for the release
-        if (categoriesWithCommits.length === 0) return "";
-
-        let markdown = `## ${release.name} (${release.date})`;
-
-        for (const category of categoriesWithCommits) {
-            markdown += `\n\n#### ${category.name}\n`;
-
-            if (hasPackages(category.commits)) {
-                markdown += renderContributionsByPackage(category.commits);
-            } else {
-                markdown += renderContributionList(category.commits);
-            }
-        }
-
-        if (release.contributors) {
-            markdown += `\n\n${renderContributorList(release.contributors)}`;
-        }
-
-        return markdown;
-    }
 
     function renderContributionsByPackage(commits) {
         // Group commits in category by package
@@ -80,7 +51,7 @@ module.exports = ({ labels, baseIssueUrl }) => {
             if (issue.title && issue.title.match(COMMIT_FIX_REGEX)) {
                 issue.title = issue.title.replace(
                     COMMIT_FIX_REGEX,
-                    `Closes [#$3](${baseIssueUrl}$3)`
+                    `Closes [#$3](${baseUrl}/issues/$3)`
                 );
             }
 
@@ -90,7 +61,8 @@ module.exports = ({ labels, baseIssueUrl }) => {
         }
 
         // If there is no PR related to the commit we still want to render it
-        let markdown = commit.subject.replace(/\w+(\(.*\))?:(.*)/, "$2");
+        const commitLink = `[${commit.commit.short}](${baseUrl}/commit/${commit.commit.short})`;
+        let markdown = commit.subject.replace(/\w+(\(.*\))?:(.*)/, "$2") + ` (${commitLink})`;
 
         // Without PR, we don'y have exact user data, so we need to take it from the commit data.
         // We also attempt to match the committer name with the known contributors list.
@@ -116,12 +88,16 @@ module.exports = ({ labels, baseIssueUrl }) => {
     }
 
     function renderContributor(contributor) {
-        const userNameAndLink = `[@${contributor.login}](${contributor.html_url})`;
-        if (contributor.name) {
-            return `${contributor.name} (${userNameAndLink})`;
-        } else {
-            return userNameAndLink;
+        if (contributor.html_url) {
+            const userNameAndLink = `[@${contributor.login}](${contributor.html_url})`;
+            if (contributor.name) {
+                return `${contributor.name} (${userNameAndLink})`;
+            } else {
+                return userNameAndLink;
+            }
         }
+
+        return contributor.name;
     }
 
     function hasPackages(commits) {
@@ -139,5 +115,38 @@ module.exports = ({ labels, baseIssueUrl }) => {
         });
     }
 
-    return renderRelease;
+    // Group commits in release by category
+    const categories = groupByCategory(release.commits);
+    const categoriesWithCommits = categories.filter(category => category.commits.length > 0);
+
+    // Skip this iteration if there are no commits available for the release
+    if (categoriesWithCommits.length === 0) return "";
+
+    let markdown = `## ${release.name} (${release.date})`;
+
+    for (const category of categoriesWithCommits) {
+        markdown += `\n\n#### ${category.name}\n`;
+
+        if (hasPackages(category.commits)) {
+            markdown += renderContributionsByPackage(category.commits);
+        } else {
+            markdown += renderContributionList(category.commits);
+        }
+    }
+
+    // Make sure all committers are in the list of contributors
+    release.commits.forEach(commit => {
+        const name = commit.committer.name;
+        const isContributor = release.contributors.find(c => c.name === name || c.login === name);
+
+        if (!isContributor) {
+            release.contributors.push({ name });
+        }
+    });
+
+    if (release.contributors) {
+        markdown += `\n\n${renderContributorList(release.contributors)}`;
+    }
+
+    return markdown;
 };

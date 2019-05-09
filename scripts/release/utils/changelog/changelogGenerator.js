@@ -3,9 +3,9 @@ const get = require("lodash/get");
 const GithubApi = require("./githubApi");
 const markdownRenderer = require("./markdownRenderer");
 
-const baseIssueUrl = "https://github.com/Webiny/webiny-js/issues";
+const baseUrl = "https://github.com/Webiny/webiny-js";
 
-module.exports = ({ labels }) => {
+module.exports = async ({ labels, commits, name }) => {
     const githubApi = new GithubApi({ repo: "webiny/webiny-js" });
 
     function findPullRequestId(message) {
@@ -108,20 +108,17 @@ module.exports = ({ labels }) => {
         return self.indexOf(value) === index;
     }
 
-    // Main generator function
-    return async commits => {
-        parsePullRequestData(commits);
-        await getPullRequestData(commits);
-        await assignCategories(commits);
-        assignPackages(commits);
+    parsePullRequestData(commits);
+    await getPullRequestData(commits);
+    await assignCategories(commits);
+    assignPackages(commits);
 
-        const release = {
-            name: "__NAME__",
-            date: "__DATE__",
-            commits,
-            contributors: await getContributors(commits)
-        };
-
-        return markdownRenderer({ labels, baseIssueUrl })(release);
+    const release = {
+        name,
+        date: new Date().toISOString().split("T")[0],
+        commits,
+        contributors: await getContributors(commits)
     };
+
+    return markdownRenderer({ labels, baseUrl, release });
 };
