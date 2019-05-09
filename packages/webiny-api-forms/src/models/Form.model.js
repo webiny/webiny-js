@@ -4,21 +4,11 @@ import { validation } from "webiny-validation";
 import { withName } from "@commodo/name";
 import { withProps } from "repropose";
 import { withHooks } from "@commodo/hooks";
-import { ref } from "@commodo/fields-storage-ref";
 import { withAggregate } from "@commodo/fields-storage-mongodb";
 import { date } from "commodo-fields-date";
 import mdbid from "mdbid";
 
-import {
-    withFields,
-    skipOnPopulate,
-    number,
-    onSet,
-    onGet,
-    string,
-    readOnly,
-    boolean
-} from "@commodo/fields";
+import { withFields, skipOnPopulate, number, string, boolean } from "@commodo/fields";
 
 export const Form = compose(
     withAggregate(),
@@ -50,7 +40,7 @@ export const Form = compose(
             // If the deleted form is the root form - delete its revisions
             if (this.id === this.parent) {
                 // Delete all revisions
-                const revisions = await Form.find({
+                const revisions = await this.getModel("Form").find({
                     query: { parent: this.parent }
                 });
 
@@ -58,9 +48,9 @@ export const Form = compose(
             }
         }
     }),
-    withProps({
+    withProps(() => ({
         async getNextVersion() {
-            const revision = await Form.findOne({
+            const revision = await this.getModel("Form").findOne({
                 query: { parent: this.parent, deleted: { $in: [true, false] } },
                 sort: { version: -1 }
             });
@@ -70,51 +60,43 @@ export const Form = compose(
             }
 
             return revision.version + 1;
+        },
+        get revisions() {
+            return this.getModel("Form").find({
+                query: { parent: this.parent },
+                sort: { version: -1 }
+            });
         }
-    }),
+    })),
     withFields(instance => ({
         publishedOn: skipOnPopulate()(date()),
-        title: onSet(value => (instance.locked ? instance.title : value))(
-            string({ validation: validation.create("required") })
-        ),
-        snippet: onSet(value => (instance.locked ? instance.title : value))(
-            string({ validation: validation.create("required") })
-        ),
-        url: onSet(value => (instance.locked ? instance.title : value))(
-            string({ validation: validation.create("required") })
-        ),
-        content: string(value => (instance.locked ? instance.title : value))(
-            string({ validation: validation.create("required") })
-        ),
-
+        name: string({ validation: validation.create("required") }),
+        content: string(),
         version: number(),
         parent: string(),
-        locked: skipOnPopulate()(boolean({ value: false })),
-        revisions: compose(
-            readOnly(),
-            onGet(() => Form.find({ query: { parent: instance.parent }, sort: { version: -1 } }))
-        )(ref({ instanceOf: Form })),
+        published: boolean({
+            value: false,
+            set(field, value) {
+                // Deactivate previously published revision
+                if (value && value !== this.published && this.isExisting()) {
+                    instance.locked = true;
+                    instance.publishedOn = new Date();
+                    instance.registerHookCallback("beforeSave", async () => {
+                        // Deactivate previously published revision
+                        const publishedRev: Form = (await Form.findOne({
+                            query: { published: true, parent: instance.parent }
+                        }): any);
 
-        published: onSet(value => {
-            // Deactivate previously published revision
-            if (value && value !== instance.published && instance.isExisting()) {
-                instance.locked = true;
-                instance.publishedOn = new Date();
-                instance.registerHookCallback("beforeSave", async () => {
-                    // Deactivate previously published revision
-                    const publishedRev: Form = (await Form.findOne({
-                        query: { published: true, parent: instance.parent }
-                    }): any);
-
-                    if (publishedRev) {
-                        publishedRev.published = false;
-                        await publishedRev.save();
-                    }
-                });
-                // .setOnce(); TODO
+                        if (publishedRev) {
+                            publishedRev.published = false;
+                            await publishedRev.save();
+                        }
+                    });
+                    // .setOnce(); TODO
+                }
+                return value;
             }
-            return value;
-        })(boolean({ value: false }))
+        })
         /*
 
         this.attr("settings")

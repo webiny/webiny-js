@@ -14,8 +14,8 @@
   "license": "MIT",
   "dependencies": {
     "@babel/runtime": "^7.0.0",
-      "@commodo/fields": "^0.1.1",
-      "@commodo/hooks": "^0.0.8",
+      "@commodo/fields": "^0.2.0",
+      "@commodo/hooks": "^0.0.9",
       "@commodo/name": "^0.0.11",
     "@svgr/webpack": "^4.1.0",
     "bcryptjs": "^2.4.3",

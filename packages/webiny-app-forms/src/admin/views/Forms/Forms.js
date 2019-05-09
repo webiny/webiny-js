@@ -3,33 +3,33 @@ import { compose, withHandlers } from "recompose";
 import { graphql } from "react-apollo";
 import { withRouter } from "react-router-dom";
 import { SplitView, LeftPanel, RightPanel } from "webiny-admin/components/SplitView";
+import { FloatingActionButton } from "webiny-admin/components/FloatingActionButton";
 import { withDataList } from "webiny-app/components";
 import { withSnackbar } from "webiny-admin/components";
 import FormsDataList from "./FormsDataList";
 import FormDetails from "./FormDetails";
+import NewFormDialog from "./NewFormDialog";
 import { createForm, listForms } from "webiny-app-forms/admin/graphql/forms";
 import { get } from "lodash";
 
-class Forms extends React.Component {
-    onSelect = category => {
-        this.props.createForm(category.id);
-    };
+function Forms(props) {
+    const [newFormDialogOpened, openNewFormDialog] = React.useState(false);
 
-    render() {
-        const { dataList } = this.props;
-        return (
-            <React.Fragment>
-                <SplitView>
-                    <LeftPanel span={4}>
-                        <FormsDataList dataList={dataList} />
-                    </LeftPanel>
-                    <RightPanel span={8}>
-                        <FormDetails refreshForms={dataList.refresh} />
-                    </RightPanel>
-                </SplitView>
-            </React.Fragment>
-        );
-    }
+    const { dataList } = props;
+    return (
+        <>
+            <NewFormDialog open={newFormDialogOpened} onClose={openNewFormDialog} />
+            <SplitView>
+                <LeftPanel span={4}>
+                    <FormsDataList dataList={dataList} />
+                </LeftPanel>
+                <RightPanel span={8}>
+                    <FormDetails refreshForms={dataList.refresh} />
+                </RightPanel>
+            </SplitView>
+            <FloatingActionButton onClick={() => openNewFormDialog(true)} />
+        </>
+    );
 }
 
 export default compose(
@@ -39,7 +39,7 @@ export default compose(
     withDataList({
         query: listForms,
         response: data => {
-            return get(data, "cms.forms", {});
+            return get(data, "forms.listForms", {});
         },
         variables: {
             sort: { savedOn: -1 }

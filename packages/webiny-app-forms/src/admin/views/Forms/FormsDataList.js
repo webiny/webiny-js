@@ -15,7 +15,7 @@ import {
     ListItemMeta
 } from "webiny-ui/List";
 
-const t = i18n.namespace("Cms.FormsDataList");
+const t = i18n.namespace("FormsDataList");
 
 const rightAlign = css({
     alignItems: "flex-end !important"
@@ -28,7 +28,7 @@ const FormsDataList = props => {
     return (
         <DataList
             {...dataList}
-            title={t`CMS Forms`}
+            title={t`Forms`}
             sorters={[
                 {
                     label: "Newest to oldest",
@@ -39,12 +39,12 @@ const FormsDataList = props => {
                     sorters: { createdOn: 1 }
                 },
                 {
-                    label: "Title A-Z",
-                    sorters: { title: 1 }
+                    label: "Name A-Z",
+                    sorters: { name: 1 }
                 },
                 {
-                    label: "Title Z-A",
-                    sorters: { title: -1 }
+                    label: "Name Z-A",
+                    sorters: { name: -1 }
                 }
             ]}
         >
@@ -58,8 +58,8 @@ const FormsDataList = props => {
                                     history.push({ search: query.toString() });
                                 }}
                             >
-                                {form.title}
-                                <ListTextOverline>{form.category.name}</ListTextOverline>
+                                {form.name}
+                                <ListTextOverline>{form.name}</ListTextOverline>
                                 {form.createdBy && (
                                     <ListItemTextSecondary>
                                         Created by: {form.createdBy.firstName}. Last modified:{" "}

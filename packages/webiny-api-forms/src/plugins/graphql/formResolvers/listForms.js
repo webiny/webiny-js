@@ -7,7 +7,7 @@ export default async (root: any, args: Object, context: Object) => {
     const Form = context.getModel("Form");
 
     const pipeline: Array<Object> = [
-        { $match: { deleted: false } },
+        { $match: { deleted: { $ne: true } } },
         {
             $sort: {
                 version: -1
@@ -25,8 +25,8 @@ export default async (root: any, args: Object, context: Object) => {
                 id: {
                     $first: "$id"
                 },
-                title: {
-                    $first: "$title"
+                name: {
+                    $first: "$name"
                 }
             }
         }
@@ -37,7 +37,7 @@ export default async (root: any, args: Object, context: Object) => {
     }
 
     if (search) {
-        pipeline[0].$match.title = { $regex: `.*${search}.*`, $options: "i" };
+        pipeline[0].$match.name = { $regex: `.*${search}.*`, $options: "i" };
     }
 
     if (sort) {
@@ -60,6 +60,7 @@ export default async (root: any, args: Object, context: Object) => {
         }
     ]);
 
+    console.log(pipeline);
     return new ListResponse(
         await Form.find({ sort, query: { id: { $in: ids.map(item => item.id) } } }),
         createPaginationMeta({

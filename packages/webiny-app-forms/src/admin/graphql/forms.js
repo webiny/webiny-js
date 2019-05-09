@@ -10,18 +10,21 @@ error {
 
 const sharedFields = `
     id
-    title
+    name
     version
     parent
     published
-    locked
     savedOn
+    createdBy {
+        firstName
+        lastName
+    }
 `;
 
 export const createForm = gql`
-    mutation FormsCreateForm($category: ID!) {
+    mutation FormsCreateForm($name: String!) {
         forms {
-            form: createForm(data: { category: $category }) {
+            form: createForm(data: { name: $name }) {
                 data {
                     id
                 }
@@ -34,7 +37,7 @@ export const createForm = gql`
 export const listForms = gql`
     query FormsListForms($sort: JSON, $page: Int, $perPage: Int, $search: String) {
         forms {
-            forms: listForms(sort: $sort, page: $page, perPage: $perPage, search: $search) {
+            listForms(sort: $sort, page: $page, perPage: $perPage, search: $search) {
                 data {
                     ${sharedFields}
                     createdBy {

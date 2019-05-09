@@ -1,5 +1,10 @@
 // @flow
-import { resolveCreate, resolveUpdate, resolveDelete, resolveGet } from "webiny-api/graphql";
+import {
+    resolveCreate,
+    resolveUpdate,
+    resolveDelete,
+    resolveGet
+} from "webiny-api/graphql/resolvers";
 
 import createRevisionFrom from "./formResolvers/createRevisionFrom";
 import listForms from "./formResolvers/listForms";
@@ -7,7 +12,7 @@ import listPublishedForms from "./formResolvers/listPublishedForms";
 import getPublishedForm from "./formResolvers/getPublishedForm";
 import { UserType } from "webiny-api-security/plugins/graphql/types";
 
-const formFetcher = ctx => ctx.forms.entities.Form;
+const formFetcher = ctx => ctx.getModel("Form");
 
 export default {
     typeDefs: () => [
@@ -21,7 +26,7 @@ export default {
             deletedOn: DateTime
             publishedOn: DateTime
             version: Int
-            title: String
+            name: String
             content: JSON
             published: Boolean
             locked: Boolean
@@ -34,15 +39,19 @@ export default {
         }
         
         input UpdateFormInput {
-            title: String
+            name: String
             content: JSON
         }
         
         input FormSortInput {
-            title: Int
+            name: Int
             publishedOn: Int
         }
         
+        input CreateFormInput {
+            name: String!
+        }
+
         # Response types
         type FormResponse {
             data: Form
@@ -83,7 +92,9 @@ export default {
             ): FormListResponse
         }
         extend type FormsMutation {
-            createForm: FormResponse
+            createForm(
+                data: CreateFormInput!
+            ): FormResponse
             
             # Create a new revision from an existing revision
             createRevisionFrom(
@@ -126,7 +137,7 @@ export default {
             // Deletes the entire form
             deleteForm: resolveDelete(formFetcher),
             // Creates a revision from the given revision
-            createRevisionFrom: createRevisionFrom(formFetcher),
+            createRevisionFrom: createRevisionFrom,
             // Updates revision
             updateRevision: resolveUpdate(formFetcher),
             // Publish revision (must be given an exact revision ID to publish)
