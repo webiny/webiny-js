@@ -4,7 +4,9 @@ import WebFont from "webfontloader";
 
 export default function CmsProvider({ children, ...props }) {
     useEffect(() => {
-        WebFont.load(props.theme.fonts);
+        if (process.env.REACT_APP_SSR !== "true") {
+            WebFont.load(props.theme.fonts);
+        }
     }, []);
     return <CmsContextProvider {...props}>{children}</CmsContextProvider>;
 }
