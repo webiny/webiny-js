@@ -15,6 +15,7 @@ module.exports = {
         "demo-admin": {
             path: "/admin",
             env: {
+                PORT: 3001,
                 REACT_APP_FUNCTIONS_HOST: process.env.REACT_APP_FUNCTIONS_HOST
             }
         },
@@ -22,6 +23,7 @@ module.exports = {
             path: "/",
             ssr: true,
             env: {
+                PORT: 3002,
                 REACT_APP_FUNCTIONS_HOST: process.env.REACT_APP_FUNCTIONS_HOST
             }
         }

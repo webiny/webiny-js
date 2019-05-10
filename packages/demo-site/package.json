@@ -21,6 +21,7 @@
   },
   "devDependencies": {
     "express": "^4.16.4",
+    "express-http-proxy": "^1.5.1",
     "mime": "1.4.1",
     "node-sass": "^4.9.3",
     "null-loader": "^1.0.0",
@@ -36,12 +37,11 @@
   },
   "scripts": {
     "analyze": "source-map-explorer build/static/js/main.*",
-    "noprebuild": "NODE_PATH=src SKIP_PREFLIGHT_CHECK=true INLINE_RUNTIME_CHUNK=false rescripts build",
-    "build": "cross-env REACT_APP_FUNCTIONS_HOST=http://localhost:9000 REACT_APP_SSR=true NODE_ENV=production webpack --progress --mode development --config ./ssr/webpack.config.js",
-    "start": "cross-env SKIP_PREFLIGHT_CHECK=true PORT=3002 rescripts start",
+    "build": "cross-env SKIP_PREFLIGHT_CHECK=true INLINE_RUNTIME_CHUNK=false rescripts build",
+    "build:ssr": "cross-env NODE_ENV=production webpack --progress --mode production --config ./ssr/webpack.config.js",
+    "start": "cross-env SKIP_PREFLIGHT_CHECK=true rescripts start",
     "test": "rescripts test --env=jsdom",
-    "eject": "react-scripts eject",
-    "start:ssr": "node build/server.js"
+    "eject": "react-scripts eject"
   },
   "browserslist": {
     "development": [

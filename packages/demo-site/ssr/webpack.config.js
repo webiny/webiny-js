@@ -3,10 +3,11 @@ const webpack = require("webpack");
 const nodeExternals = require("webpack-node-externals");
 
 module.exports = {
-    entry: path.resolve("ssr", "server.js"),
+    entry: path.resolve("ssr", "handler.js"),
     output: {
-        filename: "server.js",
-        path: path.resolve("build")
+        filename: "ssr.js",
+        path: path.resolve("build"),
+        libraryTarget: "commonjs"
     },
     resolve: {
         alias: {
@@ -28,7 +29,7 @@ module.exports = {
     plugins: [
         new webpack.DefinePlugin({
             "process.env.REACT_APP_FUNCTIONS_HOST": JSON.stringify(process.env.REACT_APP_FUNCTIONS_HOST),
-            "process.env.REACT_APP_SSR": JSON.stringify(process.env.REACT_APP_SSR || "false")
+            "process.env.REACT_APP_ENV": JSON.stringify(process.env.REACT_APP_ENV || "browser")
         })
     ],
     module: {

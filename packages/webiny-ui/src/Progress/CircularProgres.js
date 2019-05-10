@@ -31,7 +31,7 @@ const CircularProgress = ({ size, spinnerWidth, spinnerColor, visible }: Props) 
     return (
         <SpinnerWrapper>
             <div>
-                {process.env.REACT_APP_SSR === "true" ? null : (
+                {process.env.REACT_APP_ENV === "ssr" ? null : (
                     <Spinner
                         size={size}
                         spinnerColor={spinnerColor}
