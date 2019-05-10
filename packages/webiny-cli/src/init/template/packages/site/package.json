@@ -13,6 +13,7 @@
     "whatwg-fetch": "^3.0.0"
   },
   "devDependencies": {
+    "babel-loader": "^8.0.5",
     "cross-env": "^5.2.0",
     "mime": "1.4.1",
     "node-sass": "^4.9.3",
@@ -25,8 +26,8 @@
   "scripts": {
     "analyze": "source-map-explorer build/static/js/main.*",
     "start": "cross-env rescripts start",
-    "build": "rescripts build",
-    "build:ssr": "cross-env webpack --progress --mode production --config ./ssr/webpack.config.js",
+    "build": "cross-env NODE_ENV=production rescripts build",
+    "build:ssr": "cross-env NODE_ENV=production webpack --progress --mode production --config ./ssr/webpack.config.js",
     "test": "rescripts test --env=jsdom",
     "eject": "react-scripts eject"
   },

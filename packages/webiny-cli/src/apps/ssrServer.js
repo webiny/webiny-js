@@ -18,6 +18,13 @@ export const server = ({ root, port = process.env.PORT || 8888 }) => {
         })
     );
 
+    app.use(
+        "/function",
+        proxy(process.env.REACT_APP_FUNCTIONS_HOST, {
+            proxyReqPathResolver: req => "/function" + req.url
+        })
+    );
+
     app.use("/static", express.static(path.join(root, "build/static"), { index: false }));
 
     app.use(async (req, res) => {

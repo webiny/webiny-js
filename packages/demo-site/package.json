@@ -20,8 +20,6 @@
     "webiny-plugins": "0.0.0"
   },
   "devDependencies": {
-    "express": "^4.16.4",
-    "express-http-proxy": "^1.5.1",
     "mime": "1.4.1",
     "node-sass": "^4.9.3",
     "null-loader": "^1.0.0",
