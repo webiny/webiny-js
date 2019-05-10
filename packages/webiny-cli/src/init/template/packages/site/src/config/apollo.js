@@ -13,6 +13,11 @@ const cache = new InMemoryCache({
 });
 
 if (process.env.NODE_ENV === "production") {
+    // Production build of this app will be rendered using SSR so we need to restore cache from pre-rendered state.
+    if (process.env.REACT_APP_ENV === "browser") {
+        cache.restore(window.__APOLLO_STATE__);
+    }
+
     config = {
         link: ApolloLink.from([
             createOmitTypenameLink(),

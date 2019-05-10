@@ -22,7 +22,7 @@ const createClient = ({ headers }) => {
         link: ApolloLink.from([
             createOmitTypenameLink(),
             createHttpLink({
-                uri: (process.env.REACT_APP_FUNCTIONS_HOST || "") + "/function/api",
+                uri: process.env.REACT_APP_FUNCTIONS_HOST + "/function/api",
                 credentials: "same-origin",
                 headers
             })
