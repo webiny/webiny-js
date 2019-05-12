@@ -36,6 +36,7 @@ export const server = ({ root, port = process.env.PORT || 8888 }) => {
         }
 
         const event = expressRequestToLambdaEvent(req);
+        console.log(JSON.stringify(event, null, 2));
         const html = await handler(event);
 
         res.status(200);
