@@ -18,7 +18,7 @@ export default () => {
     return {
         menu: [
             {
-                name: "code-menu-item",
+                name: "cms-slate-menu-item-code",
                 type: "cms-slate-menu-item",
                 render({
                     MenuButton,

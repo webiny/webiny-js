@@ -141,15 +141,15 @@ export const deletePage = gql`
 `;
 
 const elementFields = /*GraphQL*/ `
-id
-name
-type
-category
-content
-preview {
-    src
-    meta
-}
+    id
+    name
+    type
+    category
+    content
+    preview {
+        src
+        meta
+    }
 `;
 
 export const listElements = gql`

@@ -1,16 +1,10 @@
-// @flow
-import * as React from "react";
+import React, { useEffect } from "react";
 import { Query } from "react-apollo";
 import query from "./graphql";
 
-class GoogleTagManager extends React.Component<*> {
-    componentDidMount() {
-        const { settings } = this.props;
-        if (!settings || settings.enabled !== true) {
-            return;
-        }
-
-        if (window.dataLayer) {
+function GoogleTagManager({ settings }) {
+    useEffect(() => {
+        if (!settings || settings.enabled !== true || window.dataLayer) {
             return;
         }
 
@@ -34,11 +28,9 @@ class GoogleTagManager extends React.Component<*> {
             j.src = "https://www.googletagmanager.com/gtm.js?id=" + i + dl;
             f.parentNode.insertBefore(j, f);
         })(window, document, "script", "dataLayer", settings.code);
-    }
+    }, []);
 
-    render() {
-        return null;
-    }
+    return null;
 }
 
 export default [
@@ -48,11 +40,9 @@ export default [
         component: (
             <Query query={query}>
                 {({ data, loading }) => {
-                    if (loading) {
-                        return null;
-                    }
-
-                    return <GoogleTagManager settings={data.settings.googleTagManager.data} />;
+                    return loading ? null : (
+                        <GoogleTagManager settings={data.settings.googleTagManager.data} />
+                    );
                 }}
             </Query>
         )

@@ -11,7 +11,7 @@ import { withKeyHandler } from "webiny-app-cms/editor/components";
 import { getActiveElementId, getElementWithChildren } from "webiny-app-cms/editor/selectors";
 import { createElementPlugin, createBlockPlugin } from "webiny-app-cms/admin/components";
 import { createElement, updateElement } from "webiny-app-cms/admin/graphql/pages";
-import { withFileUpload } from "webiny-app/components";
+import dataURLtoBlob from "dataurl-to-blob";
 
 type Props = {
     isDialogOpened: boolean,
@@ -70,13 +70,22 @@ const removeIdsAndPaths = el => {
     return el;
 };
 
+function getDataURLImageDimensions(dataURL: string) {
+    return new Promise(resolve => {
+        const image = new window.Image();
+        image.onload = function() {
+            resolve({ width: image.width, height: image.height });
+        };
+        image.src = dataURL;
+    });
+}
+
 export default compose(
     connect(state => ({ element: getElementWithChildren(state, getActiveElementId(state)) })),
     withState("isDialogOpened", "setOpenDialog", false),
     shouldUpdate((props, nextProps) => {
         return props.isDialogOpened !== nextProps.isDialogOpened;
     }),
-    withFileUpload(),
     withKeyHandler(),
     withHandlers({
         showDialog: ({ setOpenDialog }) => () => setOpenDialog(true),
@@ -86,19 +95,19 @@ export default compose(
     graphql(updateElement, { name: "updateElement" }),
     withSnackbar(),
     withHandlers({
-        onSubmit: ({
-            element,
-            hideDialog,
-            createElement,
-            updateElement,
-            showSnackbar,
-            uploadFile
-        }) => async (formData: Object) => {
-            formData.preview = await uploadFile({
-                src: formData.preview,
-                name: "cms-element-" + element.source
-            });
+        onSubmit: ({ element, hideDialog, createElement, updateElement, showSnackbar }) => async (
+            formData: Object
+        ) => {
             formData.content = removeIdsAndPaths(cloneDeep(element));
+
+            const meta = await getDataURLImageDimensions(formData.preview);
+            const blob = dataURLtoBlob(formData.preview);
+            blob.name = "cms-element-" + element.id + ".png";
+
+            const fileUploaderPlugin = getPlugin("file-uploader");
+            formData.preview = await fileUploaderPlugin.upload(blob);
+
+            formData.preview.meta = meta;
 
             let mutation = formData.overwrite ? updateElement : createElement;
             const { data: res } = await mutation({

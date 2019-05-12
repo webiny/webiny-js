@@ -7,7 +7,7 @@ const independent = getPackages()
         try {
             const config = require(configPath);
             return config.type === "independent";
-        } catch(e) {
+        } catch (e) {
             return false;
         }
     })

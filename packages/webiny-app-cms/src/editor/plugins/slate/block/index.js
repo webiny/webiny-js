@@ -34,7 +34,7 @@ export default () => {
     return {
         menu: [
             {
-                name: "typography-menu-item",
+                name: "cms-slate-menu-item-typography",
                 type: "cms-slate-menu-item",
                 render({ MenuButton, ...props }: Object) {
                     return (
@@ -45,7 +45,7 @@ export default () => {
                 }
             },
             {
-                name: "align-menu-item",
+                name: "cms-slate-menu-item-align",
                 type: "cms-slate-menu-item",
                 render({ MenuButton, editor, onChange }: Object) {
                     const block = editor.value.blocks.first();

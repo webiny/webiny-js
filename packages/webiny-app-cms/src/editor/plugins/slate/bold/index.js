@@ -26,7 +26,7 @@ export default () => {
     return {
         menu: [
             {
-                name: "bold-menu-item",
+                name: "cms-slate-menu-item-bold",
                 type: "cms-slate-menu-item",
                 render({ MenuButton, editor, onChange }: Object) {
                     const isActive = hasMark(editor.value, mark);

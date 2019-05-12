@@ -18,9 +18,9 @@ export default [
                 return (
                     <Menu label={`Content`} icon={<PagesIcon />}>
                         <Menu label={`Pages`}>
-                            {categories && <Menu label={`Categories`} route="Cms.Categories" />}
-                            {editor && <Menu label={`Pages`} route="Cms.Pages" />}
-                            {menus && <Menu label={`Menus`} route="Cms.Menus" />}
+                            {categories && <Menu label={`Categories`} path="/cms/categories" />}
+                            {editor && <Menu label={`Pages`} path="/cms/pages" />}
+                            {menus && <Menu label={`Menus`} path="/cms/menus" />}
                         </Menu>
                     </Menu>
                 );

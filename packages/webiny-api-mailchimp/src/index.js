@@ -29,7 +29,8 @@ const Mailchimp = function({ apiKey }) {
     };
 
     this.request = ({ path, method, body }) => {
-        return got("https://us19.api.mailchimp.com/3.0" + path, {
+        const [hash, dataCenter] = this.apiKey.split("-");
+        return got(`https://${dataCenter}.api.mailchimp.com/3.0` + path, {
             method,
             json: true,
             body,

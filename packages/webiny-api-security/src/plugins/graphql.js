@@ -5,6 +5,7 @@ import group from "./graphql/Group";
 import user from "./graphql/User";
 import { type PluginType } from "webiny-api/types";
 import { getRegisteredScopes, hasScope } from "webiny-api-security";
+import { FileType, FileInputType } from "webiny-api-files/graphql";
 
 export default ([
     {
@@ -12,6 +13,8 @@ export default ([
         name: "graphql-security-schema",
         namespace: "security",
         typeDefs: () => [
+            FileType,
+            FileInputType,
             user.typeDefs,
             user.typeExtensions,
             role.typeDefs,

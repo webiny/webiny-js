@@ -1,8 +1,8 @@
 // @flow
 import { getPlugin, getPlugins } from "webiny-plugins";
 import warning from "warning";
-import React from "react";
-import fileUploadPlugin from "./fileUploadPlugin";
+import * as React from "react";
+import fileUploadPlugin from "./fileUploaderPlugin";
 import imagePlugin from "./imagePlugin";
 
 type RenderPluginOptions = {

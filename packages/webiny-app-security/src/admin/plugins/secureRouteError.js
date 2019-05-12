@@ -11,9 +11,7 @@ export default ({
     render() {
         return (
             <>
-                <Helmet>
-                    <title>Not authorized</title>
-                </Helmet>
+                <Helmet title={"Not authorized"} />
                 <span>You are not authorized to access this route.</span>
             </>
         );

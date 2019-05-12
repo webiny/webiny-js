@@ -1,11 +1,11 @@
-// @flow
-import * as React from "react";
+import React from "react";
+import { withRouter } from "react-router-dom";
+import { compose } from "recompose";
 import { i18n } from "webiny-app/i18n";
-import { withSecurity, type WithSecurityPropsType } from "webiny-app-security/components";
+import { withSecurity } from "webiny-app-security/components";
 import { ConfirmationDialog } from "webiny-ui/ConfirmationDialog";
 import { Tooltip } from "webiny-ui/Tooltip";
 import { Image } from "webiny-app/components";
-import type { WithCrudListProps } from "webiny-admin/components";
 
 import {
     DataList,
@@ -23,9 +23,9 @@ import { Avatar } from "webiny-ui/Avatar";
 
 const t = i18n.namespace("Security.UsersDataList");
 
-type Props = WithCrudListProps & WithSecurityPropsType;
+const UsersDataList = ({ dataList, location, history, security, deleteRecord }) => {
+    const query = new URLSearchParams(location.search);
 
-const UsersDataList = ({ dataList, router, security, deleteRecord }: Props) => {
     return (
         <DataList
             {...dataList}
@@ -52,7 +52,7 @@ const UsersDataList = ({ dataList, router, security, deleteRecord }: Props) => {
             {({ data }) => (
                 <ScrollList twoLine avatarList>
                     {data.map(item => (
-                        <ListItem key={item.id} selected={router.getQuery("id") === item.id}>
+                        <ListItem key={item.id} selected={query.get("id") === item.id}>
                             <ListItemGraphic>
                                 <Avatar
                                     renderImage={props => (
@@ -64,9 +64,10 @@ const UsersDataList = ({ dataList, router, security, deleteRecord }: Props) => {
                                 />
                             </ListItemGraphic>
                             <ListItemText
-                                onClick={() =>
-                                    router.goToRoute({ params: { id: item.id }, merge: true })
-                                }
+                                onClick={() => {
+                                    query.set("id", item.id);
+                                    history.push({ search: query.toString() });
+                                }}
                             >
                                 {item.fullName}
                                 <ListItemTextSecondary>{item.email}</ListItemTextSecondary>
@@ -104,4 +105,7 @@ const UsersDataList = ({ dataList, router, security, deleteRecord }: Props) => {
     );
 };
 
-export default withSecurity()(UsersDataList);
+export default compose(
+    withSecurity(),
+    withRouter
+)(UsersDataList);

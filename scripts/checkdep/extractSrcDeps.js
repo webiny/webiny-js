@@ -3,9 +3,9 @@ const fs = require("fs");
 
 const parseImports = source => {
     const regexes = [
-        /import.+from[ ]+['"]([a-zA-Z0-9-_@\.]*).*['"]/g,
-        / require\(['"]([a-zA-Z0-9-_@\.]*)['"]/g,
-        /import[ ]+['"]([a-zA-Z0-9-_@\.]*)['"]/g
+        /import[ ]+['"]([~@a-zA-Z]{1}[@a-zA-Z0-9-_./]+)['"]/g,
+        /from[ ]+['"]([~@a-zA-Z]{1}[@a-zA-Z0-9-_./]+)['"]/g,
+        /require\(['"]([~@a-zA-Z]{1}[@a-zA-Z0-9-_\.\/]+)['"]/g
     ];
 
     const results = [];
@@ -16,7 +16,17 @@ const parseImports = source => {
                 regex.lastIndex++;
             }
 
-            results.push(m[1]);
+            const parts = m[1].split('/');
+
+            if (parts.length === 1) {
+                results.push(parts[0]);
+            } else {
+                if (parts[0].startsWith('@')) {
+                    results.push(`${parts[0]}/${parts[1]}`);
+                } else {
+                    results.push(parts[0]);
+                }
+            }
         }
     });
 

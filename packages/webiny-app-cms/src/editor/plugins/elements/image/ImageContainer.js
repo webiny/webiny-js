@@ -5,10 +5,9 @@ import styled from "react-emotion";
 import isNumeric from "isnumeric";
 import { compose, withHandlers, pure } from "recompose";
 import { set, isEqual } from "lodash";
-import { withFileUpload, SingleImageUpload, Image } from "webiny-app/components";
+import SingleImageUpload from "webiny-admin/components/SingleImageUpload";
 import { updateElement } from "webiny-app-cms/editor/actions";
 import { getElement } from "webiny-app-cms/editor/selectors";
-import { withSnackbar } from "webiny-admin/components";
 
 const position = { left: "flex-start", center: "center", right: "flex-end" };
 
@@ -35,10 +34,9 @@ const ImageContainer = pure(props => {
     return (
         <AlignImage align={horizontalAlign}>
             <SingleImageUpload
-                renderImagePreview={props => <Image {...props} style={imgStyle} srcSet="auto" />}
+                imagePreviewProps={{ style: imgStyle, srcSet: "auto" }}
                 onChange={onChange}
                 value={image}
-                showRemoveImageButton={false}
             />
         </AlignImage>
     );
@@ -60,17 +58,9 @@ export default compose(
         null,
         { areStatePropsEqual: isEqual }
     ),
-    withFileUpload(),
-    withSnackbar(),
     withHandlers({
-        onChange: ({ uploadFile, updateElement, element, showSnackbar }) => async data => {
-            try {
-                const response = await uploadFile(data);
-                updateElement({ element: set(element, "data.image", response), merge: true });
-                showSnackbar("File uploaded successfully.");
-            } catch (e) {
-                showSnackbar("Ooops, something went wrong.");
-            }
+        onChange: ({ updateElement, element }) => async data => {
+            updateElement({ element: set(element, "data.image", data), merge: true });
         }
     })
 )(ImageContainer);

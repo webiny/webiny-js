@@ -1,23 +1,12 @@
-# webiny-integration-google-tag-manager
+# webiny-app-google-tag-manager
 
 Initializes Google Tag Manager (https://marketingplatform.google.com/about/tag-manager/).
 
 ## Installation
-`yarn add webiny-integration-google-tag-manager`
+`yarn add webiny-app-google-tag-manager`
 
 ## Setup
 To setup, you must register a set of plugins. For more information on plugins, please visit Webiny documentation.
-
-#### API
-```
-import gtmPlugins from "webiny-api-google-tag-manager"
-import { registerPlugins } from "webiny-plugins";
-
-registerPlugins(gtmPlugins);
-```
-
-Exposes necessary GraphQL fields for updating integration settings.
-
 
 #### Admin
 ```
@@ -39,4 +28,4 @@ import { registerPlugins } from "webiny-plugins";
 registerPlugins(gtmPlugins);
 ```
 
-Initializes Google Tag Manager. Use in your public website.
+Initializes Google Tag Manager for rendering on your site.

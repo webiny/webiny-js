@@ -5,9 +5,11 @@ export const getHeaderData = gql`
     query {
         settings {
             cms {
-                name
-                logo {
-                    src
+                data {
+                    name
+                    logo {
+                        src
+                    }
                 }
             }
         }
@@ -18,14 +20,16 @@ export const getFooterData = gql`
     query {
         settings {
             cms {
-                social {
-                    facebook
-                    instagram
-                    twitter
-                }
-                name
-                logo {
-                    src
+                data {
+                    social {
+                        facebook
+                        instagram
+                        twitter
+                    }
+                    name
+                    logo {
+                        src
+                    }
                 }
             }
         }

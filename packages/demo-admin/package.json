@@ -13,13 +13,16 @@
     "webiny-admin": "0.0.0",
     "webiny-app": "0.0.0",
     "webiny-app-cms": "0.0.0",
-    "webiny-app-security": "0.0.0",
     "webiny-app-cookie-policy": "0.0.0",
     "webiny-app-google-tag-manager": "0.0.0",
     "webiny-app-mailchimp": "0.0.0",
+    "webiny-app-security": "0.0.0",
     "webiny-app-typeform": "0.0.0",
     "webiny-plugins": "0.0.0",
-    "whatwg-fetch": "^3.0.0"
+    "react-router-dom": "^5.0.0",
+    "react-apollo": "2.3.3",
+    "url-search-params-polyfill": "^5.1.0",
+    "cross-fetch": "^3.0.2"
   },
   "devDependencies": {
     "@rescripts/cli": "^0.0.7",

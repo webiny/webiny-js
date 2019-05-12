@@ -9,7 +9,7 @@ import { getActiveElement } from "webiny-app-cms/editor/selectors";
 import ColorPicker from "webiny-app-cms/editor/components/ColorPicker";
 import { Cell, Grid } from "webiny-ui/Grid";
 import Select from "webiny-app-cms/editor/plugins/elementSettings/components/Select";
-import BackgroundImage from "./BackgroundImage";
+import SingleImageUpload from "webiny-admin/components/SingleImageUpload";
 import BackgroundPositionSelector from "./BackgroundPositionSelector";
 import { css } from "emotion";
 
@@ -79,7 +79,7 @@ class Settings extends React.Component<*> {
                         <Tab label={"Image"}>
                             <Grid>
                                 <Cell span={12}>
-                                    <BackgroundImage
+                                    <SingleImageUpload
                                         className={imageSelect}
                                         onChange={this.setImage}
                                         value={{ src: hasImage ? bg.image.src : "" }}

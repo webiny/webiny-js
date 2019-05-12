@@ -3,7 +3,7 @@ import React from "react";
 import { compose, withHandlers } from "recompose";
 import dot from "dot-prop-immutable";
 import { graphql } from "react-apollo";
-import { withRouter } from "webiny-app/components";
+import { withRouter } from "react-router-dom";
 import { withDialog, withSnackbar } from "webiny-admin/components";
 import { IconButton } from "webiny-ui/Button";
 import { Tooltip } from "webiny-ui/Tooltip";
@@ -24,7 +24,7 @@ const DeletePage = ({ confirmDelete }: Props) => {
 };
 
 export default compose(
-    withRouter(),
+    withRouter,
     withConfirmation(({ pageDetails: { page } }) => ({
         title: "Delete page",
         message: (
@@ -40,7 +40,7 @@ export default compose(
     withHandlers({
         confirmDelete: ({
             pageDetails: { page },
-            router,
+            history,
             showConfirmation,
             deletePage,
             showDialog,
@@ -67,7 +67,7 @@ export default compose(
                     </span>
                 );
 
-                router.goToRoute({ name: "Cms.Pages" });
+                history.push("/cms/pages");
             });
         }
     })

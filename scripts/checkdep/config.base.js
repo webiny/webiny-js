@@ -13,13 +13,15 @@ module.exports = {
         "packages/webiny-app-mailchimp",
         "packages/webiny-api-mailchimp",
         "packages/webiny-app-typeform",
+        "packages/webiny-app-cms",
+        "packages/webiny-ui",
         "packages/demo-admin",
         "packages/demo-api",
         "packages/demo-site",
+        "packages/webiny-admin",
         "packages/webiny-data-extractor",
         "packages/webiny-validation",
         "packages/webiny-entity",
-        "packages/webiny-entity-memory",
         "packages/webiny-entity-mongodb"
     ],
     ignoredDirs: ["/node_modules/"]

@@ -10,6 +10,7 @@ String.prototype.format = function() {
 const formatString = (format, rest = []) => {
     return `${format.replace(/%[^%]/g, seq => chalk.magenta(seq))}`.format(...rest);
 };
+
 module.exports = () => {
     return {
         log(...args) {
@@ -18,7 +19,7 @@ module.exports = () => {
         },
         error(...args) {
             const [format, ...rest] = args;
-            console.error(`❌ ${formatString(format, rest)}`);
+            console.error(`❌  ${formatString(format, rest)}`);
         },
         info(...args) {
             const [format, ...rest] = args;

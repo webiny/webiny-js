@@ -1,4 +1,4 @@
-const OG_IMAGE_DIMENSIONS_PROPERTIES = ["og:image:width", "og:image:height"];
+const OG_IMAGE_DIMENSIONS_PROPERTIES = ["image:width", "image:height"];
 
 export default async ({ form, value }) => {
     if (!value || value.src.startsWith("data:")) {
@@ -19,7 +19,7 @@ export default async ({ form, value }) => {
             resolve(image);
         };
         image.onerror = reject;
-        image.src = value.src + "?width=1596";
+        image.src = value.src;
     });
 
     form.setState(state => {

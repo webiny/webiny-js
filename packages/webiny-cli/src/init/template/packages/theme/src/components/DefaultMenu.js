@@ -1,5 +1,14 @@
 // @flow
 import React from "react";
+import { Link } from "react-router-dom";
+
+function getLink({ url, title }) {
+    if (url.startsWith("/")) {
+        return <Link to={url}>{title}</Link>;
+    }
+
+    return <a href={url}>{title}</a>;
+}
 
 const DefaultMenu = ({ data }: Object) => {
     if (!data) {
@@ -8,29 +17,21 @@ const DefaultMenu = ({ data }: Object) => {
 
     return (
         <ul>
-            {data.items.map(item => {
+            {data.items.map((item, index) => {
                 if (Array.isArray(item.children)) {
                     return (
-                        <li key={item.id}>
+                        <li key={item.id + index}>
                             {item.title}
                             <ul>
-                                {item.children.map(item => {
-                                    return (
-                                        <li key={item.id}>
-                                            <a href={item.url}>{item.title}</a>
-                                        </li>
-                                    );
+                                {item.children.map((item, index) => {
+                                    return <li key={item.id + index}>{getLink(item)}</li>;
                                 })}
                             </ul>
                         </li>
                     );
                 }
 
-                return (
-                    <li key={item.id}>
-                        <a href={item.url}>{item.title}</a>
-                    </li>
-                );
+                return <li key={item.id + index}>{getLink(item)}</li>;
             })}
         </ul>
     );

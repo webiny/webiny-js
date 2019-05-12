@@ -1,12 +1,11 @@
-// @flow
-import * as React from "react";
+import React, { useCallback } from "react";
 import { graphql } from "react-apollo";
 import { pick } from "lodash";
 import { get } from "dot-prop-immutable";
 import { compose } from "recompose";
 import { SplitView, LeftPanel, RightPanel } from "webiny-admin/components/SplitView";
 import { FloatingActionButton } from "webiny-admin/components/FloatingActionButton";
-import { withCrud, type WithCrudProps } from "webiny-admin/components";
+import { withCrud } from "webiny-admin/components";
 import { i18n } from "webiny-app/i18n";
 
 import RolesDataList from "./Roles/RolesDataList";
@@ -22,12 +21,13 @@ import {
 
 const t = i18n.namespace("Security.Roles");
 
-const Roles = ({
-    scopes,
-    router,
-    formProps,
-    listProps
-}: WithCrudProps & { scopes: Array<string> }) => {
+function Roles({ scopes, location, history, formProps, listProps }) {
+    const createNew = useCallback(() => {
+        const query = new URLSearchParams(location.search);
+        query.delete("id");
+        history.push({ search: query.toString() });
+    });
+
     return (
         <React.Fragment>
             <SplitView>
@@ -38,17 +38,10 @@ const Roles = ({
                     <RolesForm scopes={scopes} {...formProps} />
                 </RightPanel>
             </SplitView>
-            <FloatingActionButton
-                onClick={() =>
-                    router.goToRoute({
-                        params: { id: null },
-                        merge: true
-                    })
-                }
-            />
+            <FloatingActionButton onClick={createNew} />
         </React.Fragment>
     );
-};
+}
 
 export default compose(
     withCrud({
