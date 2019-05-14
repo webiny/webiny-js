@@ -9,8 +9,7 @@ import { getDataFromTree } from "react-apollo";
 import ApolloClient from "apollo-client";
 import { ApolloLink } from "apollo-link";
 import { InMemoryCache } from "apollo-cache-inmemory";
-import { createHttpLink } from "apollo-link-http";
-import { createOmitTypenameLink } from "webiny-app/graphql";
+import { BatchHttpLink } from "apollo-link-batch-http";
 
 import Html from "./Html";
 import assets from "./assets";
@@ -20,8 +19,7 @@ const createClient = ({ headers }) => {
     return new ApolloClient({
         ssrMode: true,
         link: ApolloLink.from([
-            createOmitTypenameLink(),
-            createHttpLink({
+            new BatchHttpLink({
                 uri: process.env.REACT_APP_FUNCTIONS_HOST + "/function/api",
                 credentials: "same-origin",
                 headers

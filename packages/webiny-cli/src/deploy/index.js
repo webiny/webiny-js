@@ -276,7 +276,6 @@ export default class Deploy {
     }
 
     async ensureBuild(pkg) {
-        return;
         this.logger.info("Running build...");
         await execa("yarn", ["build"], {
             cwd: pkg.root,
