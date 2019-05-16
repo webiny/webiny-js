@@ -1,6 +1,6 @@
-[x] demo-admin (CRA docs)
+[-] demo-admin (CRA docs)
 [] demo-api
-[x] demo-site (CRA docs)
+[-] demo-site (CRA docs)
 [] demo-theme
 [x] webiny-admin
 [x] webiny-api
@@ -29,8 +29,8 @@
 [] webiny-install
 [] webiny-model
 [] webiny-plugins
-[] webiny-rewire
-[] webiny-storybook-utils
-[] webiny-ui
+[-] webiny-rewire (no README)
+[-] webiny-storybook-utils (no README)
+[x] webiny-ui
 [x] webiny-ui_LEGACY
 [x] webiny-validation
