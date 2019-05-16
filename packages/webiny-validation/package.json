@@ -6,6 +6,7 @@
     "type": "git",
     "url": "https://github.com/webiny/webiny-js.git"
   },
+  "description": "A simple data validation library, packed with frequently used validators.",
   "contributors": [
     "Pavel Denisjuk <pavel@webiny.com>",
     "Sven Al Hamad <sven@webiny.com>",

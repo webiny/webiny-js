@@ -20,7 +20,7 @@
 [x] webiny-app-security
 [x] webiny-app-typeform
 [] webiny-cli
-[] webiny-data-extractor
+[x] webiny-data-extractor
 [] webiny-entity
 [] webiny-entity-mongodb
 [] webiny-form
