@@ -1,13 +1,17 @@
-# Webiny API
+# webiny-api-security
+[![](https://img.shields.io/npm/dw/webiny-api-security.svg)](https://www.npmjs.com/package/webiny-api-security) 
+[![](https://img.shields.io/npm/v/webiny-api-security.svg)](https://www.npmjs.com/package/webiny-api-security)
+[![code style: prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg?style=flat-square)](https://github.com/prettier/prettier)
+[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](http://makeapullrequest.com)
 
-Express middleware to quickly build powerful REST APIs.
-
-It provides support for running multiple apps, both 3rd party and the ones you create.
-In combination with `webiny-entity` library it makes development of business applications a breeze.
-
-We are developing this with `serverless` in mind so you will not be limited by your server (or the lack of one :)).
-
-Integration with your existing node apps will also be seamless as long as you support the standard middleware function signature: `(req, res, next)`.     
+The API for the [Webiny Security (webiny-app-security)](../webiny-app-security) app. 
   
-## Usage
-Docs coming before the first official release.
+## Install
+```
+npm install --save webiny-api-security
+```
+
+Or if you prefer yarn: 
+```
+yarn add webiny-api-security
+```
