@@ -6,6 +6,7 @@
     "type": "git",
     "url": "https://github.com/webiny/webiny-js.git"
   },
+  "description": "Enables embedding TypeForm forms via the Webiny CMS page editor.",
   "author": "Adrian Smijulj",
   "license": "MIT",
   "dependencies": {
