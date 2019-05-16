@@ -1,4 +1,7 @@
-# webiny-app-admin
+# webiny-admin
 
-A skeleton app to get you up and running with you app development in a few seconds.
-It provides a skeleton for building administration-style apps with layout and navigation.
+A collection of plugins that form a complete admin interface, 
+completely customizable and extensible by Webiny apps and plugins.
+
+For more information, please visit 
+[the official docs](https://docs.webiny.com/docs/developer-tutorials/admin-app-overview). 
