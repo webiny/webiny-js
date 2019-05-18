@@ -14,7 +14,7 @@ settings {
                 image {
                     src
                 }
-            }
+            } 
         }
     }
 }`;
@@ -55,7 +55,7 @@ export default ({ location, defaultPages }: Props) => {
     if (location.pathname === "/") {
         return {
             query: gql`
-                {
+                query GetHomePage {
                     cms {
                         page: getHomePage {
                             data ${getDataFields()}
