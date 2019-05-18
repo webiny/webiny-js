@@ -1,8 +1,6 @@
-import fs from "fs";
-
-const indexHtml = fs.readFileSync("build/index.html", {
-    encoding: "utf-8"
-});
+// Use `raw-loader` to copy the value of index.html into the SSR bundle.
+// This way the bundle contains all it's dependencies and can be used entirely on its own.
+import indexHtml from "!!raw-loader!../build/index.html";
 
 const extract = (pattern, string) => {
     const matches = [];
