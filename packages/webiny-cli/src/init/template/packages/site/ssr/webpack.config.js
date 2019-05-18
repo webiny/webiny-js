@@ -28,7 +28,6 @@ module.exports = {
     externals: [nodeExternals()],
     plugins: [
         new webpack.DefinePlugin({
-            "process.env.REACT_APP_FUNCTIONS_HOST": JSON.stringify(process.env.REACT_APP_FUNCTIONS_HOST),
             "process.env.REACT_APP_ENV": JSON.stringify(process.env.REACT_APP_ENV || "browser")
         })
     ],

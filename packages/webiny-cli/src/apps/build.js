@@ -9,7 +9,11 @@ module.exports = async ({ name }) => {
     const { env, ssr } = await getAppConfig(name);
 
     const cwd = path.resolve(`packages/${name}`);
-    await execa("yarn", ["build"], { cwd, env, stdio: "inherit" });
+    await execa("yarn", ["build"], {
+        cwd,
+        env: { ...env, REACT_APP_ENV: "browser" },
+        stdio: "inherit"
+    });
 
     if (ssr) {
         const pkg = loadJson.sync(path.join(cwd, "package.json"));
