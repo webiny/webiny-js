@@ -1,11 +1,11 @@
 //@flow
 import React from "react";
+import { Link } from "react-router-dom";
 import { css } from "emotion";
 import { withSecurity, type WithSecurityPropsType } from "webiny-app-security/components";
 import { Image } from "webiny-app/components";
 import { ListItem, ListItemGraphic } from "webiny-ui/List";
 import { Typography } from "webiny-ui/Typography";
-import { Link } from "webiny-app/router";
 import { Avatar } from "webiny-ui/Avatar";
 
 const avatarImage = css({
@@ -59,7 +59,7 @@ class UserInfo extends React.Component<WithSecurityPropsType> {
         const { email, fullName, avatar } = security.user;
 
         return (
-            <Link route={"Account"} className={linkStyles}>
+            <Link to={"/account"} className={linkStyles}>
                 <ListItem ripple={false}>
                     <ListItemGraphic className={avatarImage}>
                         <Avatar

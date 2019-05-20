@@ -1,20 +1,16 @@
-// @flow
-import * as React from "react";
+import React, { useEffect } from "react";
 import { Query } from "react-apollo";
 import query from "./graphql";
 import showCookiePolicy from "./../utils/showCookiePolicy";
 
-class CookiePolicy extends React.Component<*> {
-    componentDidMount() {
-        const { settings } = this.props;
+function CookiePolicy({ settings }) {
+    useEffect(() => {
         if (settings && settings.enabled === true) {
             showCookiePolicy(settings);
         }
-    }
+    }, []);
 
-    render() {
-        return null;
-    }
+    return null;
 }
 
 export default [
@@ -24,11 +20,9 @@ export default [
         component: (
             <Query query={query}>
                 {({ data, loading }) => {
-                    if (loading) {
-                        return null;
-                    }
-
-                    return <CookiePolicy settings={data.settings.cookiePolicy.data} />;
+                    return loading ? null : (
+                        <CookiePolicy settings={data.settings.cookiePolicy.data} />
+                    );
                 }}
             </Query>
         )

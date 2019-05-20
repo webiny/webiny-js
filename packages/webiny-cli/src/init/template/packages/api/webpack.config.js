@@ -1,13 +1,11 @@
-const slsw = require("serverless-webpack");
 const path = require("path");
 
 const isEnvDevelopment = process.env.NODE_ENV === "development";
-const isEnvProduction = !isEnvDevelopment;
 
 module.exports = {
-    entry: isEnvDevelopment ? slsw.lib.entries : "./src/handler.js",
+    entry: "./src/handler.js",
     target: "node",
-    output: isEnvProduction && {
+    output: {
         libraryTarget: "commonjs",
         path: path.join(__dirname, "build"),
         filename: "handler.js"
@@ -32,7 +30,7 @@ module.exports = {
                 loader: "babel-loader",
                 exclude: /node_modules/,
                 options: {
-                    configFile: path.join(__dirname, "babel.config.js")
+                    configFile: path.join(__dirname, ".babelrc.js")
                 }
             }
         ]

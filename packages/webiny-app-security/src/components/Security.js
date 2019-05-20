@@ -1,9 +1,9 @@
 // @flow
 import * as React from "react";
 import { compose } from "recompose";
+import { withRouter } from "react-router-dom";
 import { withApollo, type WithApolloClient } from "react-apollo";
 import localStorage from "store";
-import qs from "query-string";
 import observe from "store/plugins/observe";
 import { withSnackbar } from "webiny-admin/components";
 import { getCurrentUser, loginUsingToken } from "./graphql";
@@ -45,16 +45,20 @@ class Security extends React.Component<Props, State> {
         localStorage.observe(AUTH_TOKEN, async (token: any) => {
             if (!token) {
                 this.checkLoginToken();
-                return this.setState({ user: null }, () => setIdentity(null));
+                setIdentity(null);
+                return this.setState({ user: null });
             }
             const user = await this.getUser();
 
-            this.setState({ user, firstLoad: false }, () => setIdentity(user));
+            setIdentity(user);
+            this.setState({ user, firstLoad: false });
         });
     }
 
     checkLoginToken = async () => {
-        const { loginToken } = qs.parse(window.location.search);
+        const query = new URLSearchParams(this.props.location.search);
+        const loginToken = query.get("loginToken");
+
         if (loginToken && !this.state.user) {
             this.setState({ loading: true });
             const res = await this.props.client.mutate({
@@ -66,7 +70,10 @@ class Security extends React.Component<Props, State> {
 
             const { data, error } = res.data.security.loginUsingToken;
             if (error) {
-                this.props.showSnackbar(error.message);
+                setTimeout(() => {
+                    this.props.showSnackbar(error.message);
+                }, 100);
+
                 return;
             }
 
@@ -154,5 +161,6 @@ class Security extends React.Component<Props, State> {
 
 export default compose(
     withApollo,
+    withRouter,
     withSnackbar()
 )(Security);

@@ -46,6 +46,10 @@
       }
     }
 
+    &__site-name{
+      font-size: 1.1rem;
+    }
+
     &__navigation {
       color: $webiny-cms-theme-primary;
       font-family: unquote($webiny-cms-theme-typography-primary-font-family);

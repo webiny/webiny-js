@@ -61,7 +61,13 @@ release({
         verifyEnvironment(),
         githubVerify(),
         npmVerify(),
-        analyzeCommits(),
+        analyzeCommits({
+            isRelevant(packages, commit) {
+                return commit.files.some(file => {
+                    return packages.some(pkg => file.includes(`/${pkg.name}/`));
+                });
+            }
+        }),
         updatePackages(),
         npmPublish(),
         githubPublish()

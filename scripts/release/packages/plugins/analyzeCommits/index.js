@@ -26,10 +26,20 @@ module.exports = (pluginConfig = {}) => {
         // Detect next version
         const lastRelease = await getLastRelease(config.tagFormat);
         const commits = await getCommits(lastRelease.gitHead, config.branch, logger);
+        let relevantCommits = commits;
+
+        if (typeof pluginConfig.isRelevant === "function") {
+            relevantCommits = commits.filter(commit => pluginConfig.isRelevant(params.packages, commit));
+        }
+
+        if (!relevantCommits.length) {
+            logger.log(`No relevant commits were found!`);
+            return finish();
+        }
 
         // Store lastRelease for later use
         params["lastRelease"] = lastRelease;
-        params["commits"] = commits;
+        params["commits"] = relevantCommits;
 
         const type = await analyzeCommits(
             pluginConfig.commitAnalyzer || {},

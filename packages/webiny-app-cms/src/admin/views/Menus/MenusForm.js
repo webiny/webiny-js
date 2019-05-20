@@ -22,6 +22,7 @@ type State = {
 class MenusForm extends React.Component<Props, State> {
     render() {
         const { data, invalidFields, onSubmit, loading } = this.props;
+        console.log("Loading", loading);
 
         // TODO: onSubmit - remove attributes added by the Tree plugin
 

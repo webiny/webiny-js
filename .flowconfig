@@ -1,4 +1,4 @@
-[ignore]
+ [ignore]
 .*/examples/.*
 .*/__tests__/.*
 .*.svg
@@ -10,6 +10,7 @@
 .*/node_modules/.*
 [libs]
 packages/webiny-api/flow-typed/npm
+flow-typed/npm
 [lints]
 [options]
 esproposal.class_static_fields=enable

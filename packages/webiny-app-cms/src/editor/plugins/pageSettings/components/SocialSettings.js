@@ -43,6 +43,7 @@ const SocialSettings = ({ Bind, form }: Object) => {
                     >
                         <PageImage
                             label="Social Image"
+                            description={`Linked via "og:image" tag. Recommended resolution 1596x545.`}
                             imageEditor={{
                                 crop: {
                                     autoEnable: true,

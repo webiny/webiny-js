@@ -11,9 +11,12 @@
     "Sven Al Hamad <sven@webiny.com>",
     "Adrian Smijulj <adrian@webiny.com>"
   ],
+  "description": "The API for the Webiny Security (webiny-app-security) app.",
   "license": "MIT",
   "dependencies": {
     "@babel/runtime": "^7.0.0",
+    "@commodo/fields": "^0.1.1",
+    "@commodo/hooks": "^0.0.8",
     "@svgr/webpack": "^4.1.0",
     "bcryptjs": "^2.4.3",
     "graphql-shield": "^5.1.0",
@@ -21,6 +24,7 @@
     "jsonwebtoken": "^8.2.2",
     "lodash": "^4.17.4",
     "md5": "^2.2.1",
+    "repropose": "^1.0.0",
     "webiny-plugins": "0.0.0"
   },
   "devDependencies": {

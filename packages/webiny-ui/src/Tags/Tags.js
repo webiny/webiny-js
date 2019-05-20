@@ -31,7 +31,10 @@ type Props = FormComponentProps & {
     onInput?: Function,
 
     // Callback that gets executed when the input is focused.
-    onFocus?: Function
+    onFocus?: Function,
+
+    // Automatically focus on the tags input.
+    autoFocus?: boolean
 };
 
 type State = {
@@ -115,8 +118,9 @@ export class Tags extends React.Component<Props, State> {
                     {validation.isValid === false && (
                         <FormElementMessage error>{validation.message}</FormElementMessage>
                     )}
-                    {validation.isValid !== false &&
-                        description && <FormElementMessage>{description}</FormElementMessage>}
+                    {validation.isValid !== false && description && (
+                        <FormElementMessage>{description}</FormElementMessage>
+                    )}
 
                     {Array.isArray(value) && value.length ? (
                         <Chips disabled={disabled}>

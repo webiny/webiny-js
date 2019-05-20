@@ -200,8 +200,13 @@
 .webiny-cms-editor-content-preview{
   .webiny-cms-section-header {
     position: absolute;
-    padding: 0 10px;
+    padding: 10px;
     box-sizing: border-box;
     z-index: 0;
+    height: 50px;
+  }
+  .webiny-cms-section-header-spacer{
+    height: 55px;
+    background-color: white;
   }
 }

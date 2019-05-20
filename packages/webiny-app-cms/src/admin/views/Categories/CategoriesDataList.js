@@ -1,7 +1,6 @@
-// @flow
-import * as React from "react";
+import React from "react";
+import { withRouter } from "react-router-dom";
 import { i18n } from "webiny-app/i18n";
-import type { WithCrudListProps } from "webiny-admin/components";
 import { ConfirmationDialog } from "webiny-ui/ConfirmationDialog";
 import { DeleteIcon } from "webiny-ui/List/DataList/icons";
 import {
@@ -16,7 +15,7 @@ import {
 
 const t = i18n.namespace("Cms.CategoriesDataList");
 
-const CategoriesDataList = ({ dataList, router, deleteRecord }: WithCrudListProps) => {
+const CategoriesDataList = ({ dataList, history, location, deleteRecord }) => {
     return (
         <DataList
             {...dataList}
@@ -45,9 +44,11 @@ const CategoriesDataList = ({ dataList, router, deleteRecord }: WithCrudListProp
                     {data.map(item => (
                         <ListItem key={item.id}>
                             <ListItemText
-                                onClick={() =>
-                                    router.goToRoute({ params: { id: item.id }, merge: true })
-                                }
+                                onClick={() => {
+                                    const query = new URLSearchParams(location.search);
+                                    query.set("id", item.id);
+                                    history.push({ search: query.toString() });
+                                }}
                             >
                                 {item.name}
                                 <ListItemTextSecondary>{item.url}</ListItemTextSecondary>
@@ -58,9 +59,9 @@ const CategoriesDataList = ({ dataList, router, deleteRecord }: WithCrudListProp
                                     <ConfirmationDialog>
                                         {({ showConfirmation }) => (
                                             <DeleteIcon
-                                                onClick={() => {
-                                                    showConfirmation(() => deleteRecord(item));
-                                                }}
+                                                onClick={() =>
+                                                    showConfirmation(() => deleteRecord(item))
+                                                }
                                             />
                                         )}
                                     </ConfirmationDialog>
@@ -74,4 +75,4 @@ const CategoriesDataList = ({ dataList, router, deleteRecord }: WithCrudListProp
     );
 };
 
-export default CategoriesDataList;
+export default withRouter(CategoriesDataList);

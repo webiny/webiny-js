@@ -1,5 +1,6 @@
 //@flow
 import * as React from "react";
+import { Link } from "react-router-dom";
 import { getFooterData } from "./graphql";
 import { Query } from "react-apollo";
 import { get } from "lodash";
@@ -18,9 +19,9 @@ const Footer = () => {
                     <div className={"webiny-cms-section-footer"}>
                         <div className="webiny-cms-section-footer__wrapper">
                             <div className={"webiny-cms-section-footer__logo"}>
-                                <a href="/">
+                                <Link to="/">
                                     {logo && logo.src && <img src={logo.src} alt={name} />}
-                                </a>
+                                </Link>
                                 <div
                                     className={
                                         "webiny-cms-section-footer__copy webiny-cms-typography-description"

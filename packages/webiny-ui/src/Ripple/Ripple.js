@@ -18,7 +18,7 @@ type Props = {
  */
 const Ripple = (props: Props) => {
     // Let's pass "unbounded" / "primary" / "accent" flags as "type" prop instead.
-    const type = props.type || "";
+    const type = props.type || "surface";
 
     return (
         <RmwcRipple {...{ [type]: true }} {...props}>

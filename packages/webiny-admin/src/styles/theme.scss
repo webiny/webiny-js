@@ -31,3 +31,7 @@ $webiny-theme-typography-font-family: "Source Sans Pro" !default;
 
 // import required fonts
 @import url('https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,600,700');
+
+body{
+    font-size: 16px;
+}

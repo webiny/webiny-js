@@ -1,5 +1,6 @@
 // @flow
 import { compose, withHandlers } from "recompose";
+import { withRouter } from "react-router-dom";
 import { graphql } from "react-apollo";
 import { createRevisionFrom, deleteRevision } from "webiny-app-cms/admin/graphql/pages";
 import withPublishRevisionHandler from "../utils/withPublishRevisionHandler";
@@ -8,8 +9,9 @@ export default compose(
     graphql(createRevisionFrom, { name: "gqlCreate" }),
     graphql(deleteRevision, { name: "gqlDelete" }),
     withPublishRevisionHandler("publishRevision"),
+    withRouter,
     withHandlers({
-        createRevision: ({ rev, router, gqlCreate, showSnackbar }: Object) => async () => {
+        createRevision: ({ rev, history, gqlCreate, showSnackbar }: Object) => async () => {
             const { data: res } = await gqlCreate({
                 variables: { revision: rev.id }
             });
@@ -19,17 +21,17 @@ export default compose(
                 return showSnackbar(error.message);
             }
 
-            router.goToRoute({ name: "Cms.Editor", params: { id: data.id } });
+            history.push(`/cms/editor/${data.id}`);
         },
-        editRevision: ({ rev, router }) => () => {
-            router.goToRoute({ name: "Cms.Editor", params: { id: rev.id } });
+        editRevision: ({ rev, history }) => () => {
+            history.push(`/cms/editor/${rev.id}`);
         },
         deleteRevision: ({
             rev,
             pageDetails: { page },
             gqlDelete,
             showSnackbar,
-            router
+            history
         }) => async () => {
             const { data: res } = await gqlDelete({
                 refetchQueries: ["CmsLoadPageRevisions"],
@@ -41,7 +43,7 @@ export default compose(
             }
 
             if (rev.id === page.id) {
-                router.goToRoute({ params: { id: null } });
+                history.push("/cms/pages");
             }
         }
     })

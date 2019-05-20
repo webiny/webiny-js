@@ -53,16 +53,19 @@ export function userFactory({ config, security: { entities } }: Object): Class<I
                 .char()
                 .setValidators("required,email")
                 .onSet(value => {
-                    if (value !== this.email) {
-                        this.on("beforeSave", async () => {
-                            const existingUser = await User.findOne({ query: { email: value } });
-                            if (existingUser) {
-                                throw Error("User with given e-mail already exists.");
-                            }
-                        }).setOnce();
+                    if (value === this.email) {
+                        return value;
                     }
 
-                    return value.toLowerCase().trim();
+                    value = value.toLowerCase().trim();
+                    this.on("beforeSave", async () => {
+                        const existingUser = await User.findOne({ query: { email: value } });
+                        if (existingUser) {
+                            throw Error("User with given e-mail already exists.");
+                        }
+                    }).setOnce();
+
+                    return value;
                 });
 
             this.attr("password")

@@ -1,53 +1,21 @@
-# Webiny CLI
-A tool to bootstrap a blank Webiny project.
-Visit https://www.webiny.com to find out more about Webiny.
+# webiny-cli
+[![](https://img.shields.io/npm/dw/webiny-cli.svg)](https://www.npmjs.com/package/webiny-cli) 
+[![](https://img.shields.io/npm/v/webiny-cli.svg)](https://www.npmjs.com/package/webiny-cli)
+[![code style: prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg?style=flat-square)](https://github.com/prettier/prettier)
+[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](http://makeapullrequest.com)
 
-## How to use?
-Create a folder for your project and install webiny-cli as a regular dev dependency.
+A tool to bootstrap, develop and deploy a Webiny project.
+
+Visit https://docs.webiny.com/ for a step-by-step tutorial.
+
+Visit https://www.webiny.com to find out more about Webiny. 
+  
+## Install
 ```
-// Create an empty project folder
-mkdir my-project
-cd my-project
-
-// Initialize your project to create package.json
-yarn init -y
-
-// For per-project installation (recommended)
-yarn add webiny-cli --dev
-npx webiny init
-
-// For global installations
-yarn global add webiny-cli
-webiny init
+npm install --save webiny-cli
 ```
 
-This will setup the entire project in form of a monorepo for easier project maintenance.
-
-## How to run development builds?
-Each app requires its own build process (just like any create-react-app project).
-Open a terminal window, navigate to your app root and run `yarn start`:
-
+Or if you prefer yarn: 
 ```
-// To start development build of your admin app
-cd packages/admin
-yarn start
-
-// To start development build of your site app
-cd packages/site
-yarn start
-
-// To start development build of your API
-cd packages/api
-yarn start
-```
-
-
-## Deploying your project to the Webiny Cloud
-From the root of your project:
-```
-// To deploy everything
-webiny deploy
-
-// To deploy a particular app/api
-webiny deploy packages/admin
+yarn add webiny-cli
 ```

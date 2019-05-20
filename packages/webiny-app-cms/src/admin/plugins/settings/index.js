@@ -1,5 +1,7 @@
 // @flow
 import * as React from "react";
+import { Route } from "react-router-dom";
+import { AdminLayout } from "webiny-admin/components/AdminLayout";
 import CmsSettings from "./components/CmsSettings";
 import GeneralSettings from "./components/generalSettings/GeneralSettings";
 import type { SettingsPluginType } from "webiny-admin/types";
@@ -16,16 +18,18 @@ export default ([
             },
             type: "app",
             name: "CMS",
-            component: (
-                <SecureRoute roles={["cms-settings", "cms-editor"]}>
-                    <CmsSettings />
-                </SecureRoute>
-            ),
-            route: {
-                name: "Settings.Cms",
-                path: "/cms",
-                title: "CMS"
-            }
+            route: (
+                <Route
+                    path="/cms"
+                    render={() => (
+                        <AdminLayout>
+                            <SecureRoute roles={["cms-settings", "cms-editor"]}>
+                                <CmsSettings />
+                            </SecureRoute>
+                        </AdminLayout>
+                    )}
+                />
+            )
         }
     },
     {
@@ -37,16 +41,18 @@ export default ([
             },
             type: "other",
             name: "General settings",
-            component: (
-                <SecureRoute roles={["cms-settings"]}>
-                    <GeneralSettings />
-                </SecureRoute>
-            ),
-            route: {
-                name: "Settings.GeneralSettings",
-                path: "/general",
-                title: "General Settings"
-            }
+            route: (
+                <Route
+                    path="/general"
+                    render={() => (
+                        <AdminLayout>
+                            <SecureRoute roles={["cms-settings"]}>
+                                <GeneralSettings />
+                            </SecureRoute>
+                        </AdminLayout>
+                    )}
+                />
+            )
         }
     }
 ]: Array<SettingsPluginType>);

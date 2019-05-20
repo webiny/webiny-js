@@ -7,7 +7,7 @@ export default ([
     {
         type: "global-search",
         name: "global-search-categories",
-        route: "Cms.Categories",
+        route: "/cms/categories",
         label: "Categories",
         search: {
             fields: ["name", "slug"]
@@ -16,7 +16,7 @@ export default ([
     {
         type: "global-search",
         name: "global-search-pages",
-        route: "Cms.Pages",
+        route: "/cms/pages",
         label: "Pages"
     }
 ]: Array<GlobalSearch>);

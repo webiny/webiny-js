@@ -40,7 +40,7 @@ export default () => {
     return {
         menu: [
             {
-                name: "ordered-list-menu-item",
+                name: "cms-slate-menu-item-ordered-list",
                 type: "cms-slate-menu-item",
                 render({
                     MenuButton,
@@ -65,7 +65,7 @@ export default () => {
                 }
             },
             {
-                name: "unordered-list-menu-item",
+                name: "cms-slate-menu-item-unordered-list",
                 type: "cms-slate-menu-item",
                 render({
                     MenuButton,

@@ -1,27 +1,28 @@
-# webiny-integration-mailchimp
+# webiny-app-mailchimp
+[![](https://img.shields.io/npm/dw/webiny-app-mailchimp.svg)](https://www.npmjs.com/package/webiny-app-mailchimp) 
+[![](https://img.shields.io/npm/v/webiny-app-mailchimp.svg)](https://www.npmjs.com/package/webiny-app-mailchimp)
+[![code style: prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg?style=flat-square)](https://github.com/prettier/prettier)
+[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](http://makeapullrequest.com)
 
-Render Mailchimp newsletter signup form.
+Enables inserting Mailchimp newsletter signup forms on your site.
+  
+## Install
+```
+npm install --save webiny-app-mailchimp
+```
 
-## Installation
-`yarn add webiny-integration-mailchimp`
+Or if you prefer yarn: 
+```
+yarn add webiny-app-mailchimp
+```
+
+Note: the [webiny-api-mailchimp](../webiny-api-mailchimp) is also required.
 
 ## Setup
-To setup, you must register a set of plugins. For more information on plugins, please visit Webiny documentation.
-
-#### API
-```
-import mailchimpPlugins from "webiny-api-mailchimp"
-import { registerPlugins } from "webiny-plugins";
-
-registerPlugins(...mailchimpPlugins);
-```
-
-Exposes necessary GraphQL fields that handle integration settings and newsletter signup form submits. 
+To setup, you must register a set of plugins. For more information on 
+plugins, please visit [Webiny documentation](https://docs.webiny.com/docs/developer-tutorials/plugins-crash-course).
 
 #### Admin
-
-##### 1. Register plugins
-
 ```
 import mailchimpPlugins from "webiny-app-mailchimp/admin"
 import { registerPlugins } from "webiny-plugins";
@@ -29,64 +30,27 @@ import { registerPlugins } from "webiny-plugins";
 registerPlugins(...mailchimpPlugins);
 ```
 
-Enables management of Mailchimp settings, which can be accessed via Settings section in the main menu. You will paste
-your Mailchimp API key here (this is required in order for the integration to work properly). 
+Enables management of Mailchimp settings, which can be accessed via 
+Settings section in the main menu. You will paste your Mailchimp API 
+key here (this is required in order for the app to work properly). 
+Additionally, this will also register Mailchimp element in CMS editor, 
+which will enable you to insert newsletter signup forms in your pages. 
+The element will be registered under the "Form" element category.
 
-Additionally, this will also register Mailchimp element in CMS editor, which will enable you to insert
-newsletter signup forms in your pages. The element will be registered under the "Form" element category.
+You can optionally register one or more newsletter signup 
+form plugins (type: `cms-element-mailchimp-component`).
 
-##### 2. Register newsletter signup form component
-To complete the admin setup, register one or more newsletter signup forms. Registration is done via CMS theme.
-For example in `demo-theme/src/index.js`: 
-
-```
-import * as React from "react";
-import { MailchimpDefaultForm } from "webiny-integration-mailchimp/render/components";
-
-export default {
-    fonts: {
-        ...
-    },
-    colors: {
-        ...
-    },
-    elements: {
-        pagesList: {
-            ...
-        },
-        mailchimp: {
-            components: [
-                {
-                    name: "default",
-                    title: "Default page list",
-                    component: MailchimpDefaultForm
-                },
-                {
-                    name: "custom",
-                    title: "Custom page list",
-                    component: (props: *) => {
-                        const { Bind, submit } = props;
-                        return (
-                            <div>
-                                <Bind name={"email"} validate={["required"]}>
-                                    <Input label={"Your e-mail"} />
-                                </Bind>
-                                <ButtonPrimary onClick={submit}>Submit</ButtonPrimary>
-                            </div>
-                        );
-                    }
-                }
-            ]
-        }        
-    },
-    styles: {
-        ...
-    }
-};
+```js
+{
+        type: "cms-element-mailchimp-component",
+        name: "cms-element-mailchimp-component-test1",
+        title: "Test newsletter form",
+        component: MailchimpTestForm
+}
 ```
 
-Use `Bind` component to bind form elements and `submit` callback to submit the form.
- 
+An example component can be found [here](src/render/components/MailchimpDefaultForm.js).
+
 #### Site
 ```
 import mailchimpPlugins from "webiny-app-mailchimp/render"
@@ -95,5 +59,5 @@ import { registerPlugins } from "webiny-plugins";
 registerPlugins(mailchimpPlugins);
 ```
 
-Enables Mailchimp newsletter signup form render in your public website.
+This enables rendering of Mailchimp newsletter signup form in your public website.
 
