@@ -5,3 +5,13 @@
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](http://makeapullrequest.com)
 
 A small package for easy installation of Webiny apps and integrations.
+
+## Install
+```
+npm install --save webiny-install
+```
+
+Or if you prefer yarn: 
+```
+yarn add webiny-install
+```

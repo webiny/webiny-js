@@ -5,3 +5,13 @@
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](http://makeapullrequest.com)
 
 A simple I18N library, for frontend and backend apps.
+
+## Install
+```
+npm install --save webiny-i18n
+```
+
+Or if you prefer yarn: 
+```
+yarn add webiny-i18n
+```
