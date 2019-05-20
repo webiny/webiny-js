@@ -17,7 +17,7 @@ const PublishPageButton = ({ page, showSnackbar, history }) => {
             message="You are about to publish this page, are you sure want to continue?"
         >
             {({ showConfirmation }) => (
-                <Mutation mutation={publishRevision}>
+                <Mutation mutation={publishRevision} refetchQueries={["CmsListPages"]}>
                     {update => (
                         <ButtonPrimary
                             onClick={async () => {

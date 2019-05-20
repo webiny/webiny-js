@@ -383,6 +383,10 @@ addMiddleware([SAVING_REVISION], ({ store, next, action }) => {
                 updateRevision(id: $id, data: $data) {
                     data {
                         id
+                        content
+                        title
+                        published
+                        savedOn
                     }
                     error {
                         code

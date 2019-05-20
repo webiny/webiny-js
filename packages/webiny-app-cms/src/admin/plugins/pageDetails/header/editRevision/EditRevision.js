@@ -24,7 +24,8 @@ const EditRevision = ({ pageDetails: { page }, history, gqlCreate, showSnackbar 
     const copyAndEdit = useCallback(async () => {
         const [latestRevision] = page.revisions;
         const { data: res } = await gqlCreate({
-            variables: { revision: latestRevision.id }
+            variables: { revision: latestRevision.id },
+            refetchQueries: ["CmsListPages"],
         });
         const { data, error } = res.cms.revision;
 
