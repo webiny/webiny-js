@@ -23,7 +23,7 @@
 [x] webiny-data-extractor
 [x] webiny-entity
 [] webiny-entity-mongodb
-[] webiny-form
+[x] webiny-form
 [x] webiny-i18n
 [x] webiny-i18n-react
 [x] webiny-install
