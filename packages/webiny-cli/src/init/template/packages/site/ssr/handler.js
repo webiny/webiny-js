@@ -11,9 +11,7 @@ import { ApolloLink } from "apollo-link";
 import { InMemoryCache } from "apollo-cache-inmemory";
 import { createHttpLink } from "apollo-link-http";
 import { createOmitTypenameLink } from "webiny-app/graphql";
-
-import Html from "./Html";
-import assets from "./assets";
+import injectContent from "./injectContent";
 import App from "../src/App";
 
 const createClient = ({ headers }) => {
@@ -50,9 +48,5 @@ export const handler = async event => {
     const content = ReactDOMServer.renderToStaticMarkup(app);
     const state = apolloClient.extract();
     const helmet = Helmet.renderStatic();
-    const html = ReactDOMServer.renderToStaticMarkup(
-        <Html content={content} helmet={helmet} assets={assets} state={state} />
-    );
-
-    return `<!DOCTYPE html>${html}`;
+    return injectContent(content, helmet, state);
 };
