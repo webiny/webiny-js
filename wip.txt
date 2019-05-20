@@ -28,7 +28,7 @@
 [] webiny-i18n-react
 [] webiny-install
 [] webiny-model
-[] webiny-plugins
+[x] webiny-plugins
 [-] webiny-rewire (no README)
 [-] webiny-storybook-utils (no README)
 [x] webiny-ui
