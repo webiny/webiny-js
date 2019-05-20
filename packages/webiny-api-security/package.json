@@ -11,6 +11,7 @@
     "Sven Al Hamad <sven@webiny.com>",
     "Adrian Smijulj <adrian@webiny.com>"
   ],
+  "description": "The API for the Webiny Security (webiny-app-security) app.",
   "license": "MIT",
   "dependencies": {
     "@babel/runtime": "^7.0.0",

@@ -11,6 +11,7 @@
     "Sven Al Hamad <sven@webiny.com>",
     "Adrian Smijulj <adrian@webiny.com>"
   ],
+  "description": "A simple React library for working with forms.",
   "license": "MIT",
   "dependencies": {
     "@babel/runtime": "^7.0.0",
