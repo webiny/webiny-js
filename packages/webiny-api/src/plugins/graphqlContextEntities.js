@@ -2,13 +2,12 @@
 import type { GraphQLContextPluginType, EntityPluginType, ModelPluginType } from "webiny-api/types";
 import { getPlugins } from "webiny-plugins";
 import { EntityPool } from "webiny-entity";
-import { flowRight } from "lodash";
-import { getName } from "@commodo/name";
+import compose from "lodash/fp/compose";
+import { getName, hasName } from "@commodo/name";
 import { withFields } from "@commodo/fields";
 import { withHooks } from "@commodo/hooks";
 import { withStorage } from "@commodo/fields-storage";
 import { MongoDbDriver, withId } from "@commodo/fields-storage-mongodb";
-import { withProps } from "repropose";
 import { date } from "commodo-fields-date";
 
 const graphqlContextEntities: GraphQLContextPluginType = {
@@ -36,32 +35,32 @@ const graphqlContextEntities: GraphQLContextPluginType = {
             return context.getModels()[name];
         };
 
+        const Model = compose(
+            withFields({
+                createdOn: date(),
+                updatedOn: date(),
+                deletedOn: date()
+            }),
+            withHooks({
+                beforeCreate() {
+                    this.createdOn = new Date();
+                },
+                beforeUpdate() {
+                    this.updatedOn = new Date();
+                },
+                beforeDelete() {
+                    this.deletedOn = new Date();
+                }
+            }),
+            withId(),
+            withStorage({
+                driver: new MongoDbDriver({ database: context.config.database.mongodb })
+            })
+        )(function() {});
+
         getPlugins("model").forEach((plugin: ModelPluginType) => {
-            context.models[getName(plugin.model)] = flowRight(
-                withProps({
-                    getModel: context.getModel
-                }),
-                withFields({
-                    createdOn: date(),
-                    updatedOn: date(),
-                    deletedOn: date()
-                }),
-                withHooks({
-                    beforeCreate() {
-                        this.createdOn = new Date();
-                    },
-                    beforeUpdate() {
-                        this.updatedOn = new Date();
-                    },
-                    beforeDelete() {
-                        this.deletedOn = new Date();
-                    }
-                }),
-                withId(),
-                withStorage({
-                    driver: new MongoDbDriver({ database: context.config.database.mongodb })
-                })
-            )(plugin.model);
+            const modelFunction = plugin.model({ Model, context });
+            context.models[getName(modelFunction)] = modelFunction;
         });
     }
 };
