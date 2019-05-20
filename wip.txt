@@ -5,16 +5,16 @@
 [] webiny-api-files
 [] webiny-api-forms
 [] webiny-api-google-tag-manager
-[] webiny-api-mailchimp
-[] webiny-api-security
 [] webiny-app
 [] webiny-app-cms
 
 [] webiny-app-forms
 [] webiny-app-google-tag-manager
-[] webiny-app-mailchimp
 
 
+[x] webiny-api-security
+[x] webiny-api-mailchimp
+[x] webiny-app-mailchimp
 [x] webiny-admin
 [x] webiny-api
 [x] webiny-api-cms

@@ -6,7 +6,7 @@
     "type": "git",
     "url": "https://github.com/webiny/webiny-js.git"
   },
-  "description": "API for the webiny-app-mailchimp app.",
+  "description": "The API for the Webiny Mailchimp (webiny-app-mailchimp) app.",
   "author": "Adrian Smijulj",
   "license": "MIT",
   "dependencies": {
