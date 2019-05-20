@@ -19,10 +19,10 @@
 [] webiny-app-mailchimp
 [x] webiny-app-security
 [x] webiny-app-typeform
-[] webiny-cli
+[x] webiny-cli
 [x] webiny-data-extractor
 [x] webiny-entity
-[] webiny-entity-mongodb
+[x] webiny-entity-mongodb
 [x] webiny-form
 [x] webiny-i18n
 [x] webiny-i18n-react
