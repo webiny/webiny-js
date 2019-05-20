@@ -1,11 +1,7 @@
-[-] demo-admin (CRA docs)
+
 [] demo-api
-[-] demo-site (CRA docs)
 [] demo-theme
-[x] webiny-admin
-[x] webiny-api
-[x] webiny-api-cms
-[] webiny-api-cookie-policy
+
 [] webiny-api-files
 [] webiny-api-forms
 [] webiny-api-google-tag-manager
@@ -13,10 +9,17 @@
 [] webiny-api-security
 [] webiny-app
 [] webiny-app-cms
-[] webiny-app-cookie-policy
+
 [] webiny-app-forms
 [] webiny-app-google-tag-manager
 [] webiny-app-mailchimp
+
+
+[x] webiny-admin
+[x] webiny-api
+[x] webiny-api-cms
+[x] webiny-api-cookie-policy
+[x] webiny-app-cookie-policy
 [x] webiny-app-security
 [x] webiny-app-typeform
 [x] webiny-cli
@@ -29,8 +32,11 @@
 [x] webiny-install
 [x] webiny-model
 [x] webiny-plugins
-[-] webiny-rewire (no README)
-[-] webiny-storybook-utils (no README)
 [x] webiny-ui
 [x] webiny-ui_LEGACY
 [x] webiny-validation
+
+[-] demo-admin (CRA docs)
+[-] demo-site (CRA docs)
+[-] webiny-rewire (no README)
+[-] webiny-storybook-utils (no README)

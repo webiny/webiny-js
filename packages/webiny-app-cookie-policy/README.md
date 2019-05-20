@@ -1,23 +1,29 @@
-# webiny-integration-cookie-policy
+# webiny-app-cookie-policy
+[![](https://img.shields.io/npm/dw/webiny-app-cookie-policy.svg)](https://www.npmjs.com/package/webiny-app-cookie-policy) 
+[![](https://img.shields.io/npm/v/webiny-app-cookie-policy.svg)](https://www.npmjs.com/package/webiny-app-cookie-policy)
+[![code style: prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg?style=flat-square)](https://github.com/prettier/prettier)
+[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](http://makeapullrequest.com)
 
-Renders a simple cookie policy info banner. Powered by Cookie Consent (https://cookieconsent.insites.com/).
+Renders a simple cookie policy info banner on your site. 
+Powered by Cookie Consent (https://cookieconsent.insites.com/).
 
-## Installation
-`yarn add webiny-integration-cookie policy`
+Use together with [webiny-api-cookie-policy](../webiny-api-cookie-policy) package.
+  
+## Install
+```
+npm install --save webiny-app-cookie-policy
+```
+
+Or if you prefer yarn: 
+```
+yarn add webiny-app-cookie-policy
+```
+
+Note: the [webiny-api-cookie-policy](../webiny-api-cookie-policy) is also required.
 
 ## Setup
-To setup, you must register a set of plugins. For more information on plugins, please visit Webiny documentation.
-
-#### API
-```
-import cookiePolicyPlugins from "webiny-api-cookie-policy"
-import { registerPlugins } from "webiny-plugins";
-
-registerPlugins(cookiePolicyPlugins);
-```
-
-Exposes necessary GraphQL fields for updating integration settings.
-
+To setup, you must register a set of plugins. For more information on 
+plugins, please visit [Webiny documentation](https://docs.webiny.com/docs/developer-tutorials/plugins-crash-course).
 
 #### Admin
 ```
