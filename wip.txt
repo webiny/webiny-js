@@ -21,13 +21,13 @@
 [x] webiny-app-typeform
 [] webiny-cli
 [x] webiny-data-extractor
-[] webiny-entity
+[x] webiny-entity
 [] webiny-entity-mongodb
 [] webiny-form
-[] webiny-i18n
-[] webiny-i18n-react
-[] webiny-install
-[] webiny-model
+[x] webiny-i18n
+[x] webiny-i18n-react
+[x] webiny-install
+[x] webiny-model
 [x] webiny-plugins
 [-] webiny-rewire (no README)
 [-] webiny-storybook-utils (no README)
