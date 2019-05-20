@@ -40,7 +40,7 @@ class Tabs extends React.Component<Props, State> {
                 };
             });
 
-        const content = (
+        const tabBar = (
             <TabBar
                 activeTabIndex={this.state.activeTabIndex}
                 onActivate={evt => this.setState({ activeTabIndex: evt.detail.index })}
@@ -64,15 +64,24 @@ class Tabs extends React.Component<Props, State> {
             </TabBar>
         );
 
-        let children = null;
-        if (tabs[this.state.activeTabIndex]) {
-            children = tabs[this.state.activeTabIndex].children;
+        const content = [];
+        for (let i = 0; i < tabs.length; i++) {
+            let current = tabs[i];
+            if (this.state.activeTabIndex === i) {
+                content.push(<div key={i}>{current.children}</div>);
+            } else {
+                content.push(
+                    <div key={i} style={{ display: "none" }}>
+                        {current.children}
+                    </div>
+                );
+            }
         }
 
         return (
             <React.Fragment>
-                {content}
-                <div className={"mdc-tab-content"}>{children}</div>
+                {tabBar}
+                <div className={"mdc-tab-content"}>{content}</div>
             </React.Fragment>
         );
     }
