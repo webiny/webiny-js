@@ -3,15 +3,11 @@
 [] demo-theme
 
 [] webiny-api-files
-[] webiny-api-forms
-[] webiny-api-google-tag-manager
 [] webiny-app
-[] webiny-app-cms
 
-[] webiny-app-forms
-[] webiny-app-google-tag-manager
-
-
+[x] webiny-app-cms
+[x] webiny-api-google-tag-manager
+[x] webiny-app-google-tag-manager
 [x] webiny-api-security
 [x] webiny-api-mailchimp
 [x] webiny-app-mailchimp
@@ -40,3 +36,5 @@
 [-] demo-site (CRA docs)
 [-] webiny-rewire (no README)
 [-] webiny-storybook-utils (no README)
+[-] webiny-app-forms (TODO)
+[-] webiny-api-forms (TODO)
