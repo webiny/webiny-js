@@ -2,6 +2,7 @@ import { homedir } from "os";
 import path from "path";
 import { blue, grey } from "chalk";
 import fs from "fs-extra";
+import get from "lodash.get";
 import inquirer from "inquirer";
 import execa from "execa";
 import archiver from "archiver";
@@ -138,7 +139,7 @@ export default class Deploy {
     async deployPackage(pkg) {
         // Ensure `build` folder exists
         try {
-            await this.ensureBuild(pkg.root);
+            await this.ensureBuild(pkg);
         } catch (err) {
             this.logger.error(err);
             process.exit(1);
@@ -274,9 +275,29 @@ export default class Deploy {
         });
     }
 
-    async ensureBuild(folder) {
+    async ensureBuild(pkg) {
         this.logger.info("Running build...");
-        await execa("yarn", ["build"], { cwd: folder, stdio: "inherit" });
+        await execa("yarn", ["build"], {
+            cwd: pkg.root,
+            env: { ...pkg.env, REACT_APP_ENV: "browser" },
+            stdio: "inherit"
+        });
+
+        if (pkg.ssr === true) {
+            if (!get(pkg.package, "scripts.build:ssr")) {
+                this.logger.error(
+                    `%s doesn't have a script "build:ssr"! This script is mandatory for SSR enabled apps.`,
+                    pkg.name
+                );
+                process.exit(1);
+            }
+
+            await execa("yarn", ["build:ssr"], {
+                cwd: pkg.root,
+                env: { ...pkg.env, REACT_APP_ENV: "ssr" },
+                stdio: "inherit"
+            });
+        }
     }
 
     async setupSDK() {

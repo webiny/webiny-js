@@ -799,7 +799,7 @@ When you run `npm run build`, Create React App will substitute `%PUBLIC_URL%` wi
 In JavaScript code, you can use `process.env.PUBLIC_URL` for similar purposes:
 
 ```js
-render() {
+handler() {
   // Note: this is an escape hatch and should be used sparingly!
   // Normally we recommend using `import` for getting asset URLs
   // as described in “Adding Images and Fonts” above this section.

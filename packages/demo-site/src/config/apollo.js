@@ -10,6 +10,10 @@ const cache = new InMemoryCache({
     dataIdFromObject: obj => obj.id || null
 });
 
+if (process.env.REACT_APP_ENV === "browser") {
+    cache.restore(window.__APOLLO_STATE__);
+}
+
 export default new ApolloClient({
     link: ApolloLink.from([
         createOmitTypenameLink(),

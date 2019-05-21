@@ -4,7 +4,7 @@ const get = require("lodash.get");
 const bodyParser = require("body-parser");
 const path = require("path");
 const listPackages = require("../utils/listPackages");
-const expressRequestToLambdaEvent = require("./expressRequestToLambdaEvent");
+const expressRequestToLambdaEvent = require("../utils/expressRequestToLambdaEvent");
 
 const handleRequest = async (req, res, handler) => {
     const event = expressRequestToLambdaEvent(req);

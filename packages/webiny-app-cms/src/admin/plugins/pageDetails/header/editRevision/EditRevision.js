@@ -25,7 +25,7 @@ const EditRevision = ({ pageDetails: { page }, history, gqlCreate, showSnackbar 
         const [latestRevision] = page.revisions;
         const { data: res } = await gqlCreate({
             variables: { revision: latestRevision.id },
-            refetchQueries: ["CmsListPages"],
+            refetchQueries: ["CmsListPages"]
         });
         const { data, error } = res.cms.revision;
 

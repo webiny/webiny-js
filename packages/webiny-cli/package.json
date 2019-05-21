@@ -63,6 +63,6 @@
   },
   "scripts": {
     "build": "rimraf ./lib && babel src -d lib --source-maps --copy-files --ignore=src/init/template --include-dotfiles",
-    "build:watch": "babel src -d lib --source-maps --copy-files --ignore=src/init/template --watch -v --include-dotfiles"
+    "build:watch": "rimraf ./lib && babel src -d lib --source-maps --copy-files --ignore=src/init/template --watch -v --include-dotfiles"
   }
 }
