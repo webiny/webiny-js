@@ -1,6 +1,6 @@
 {
   "name": "webiny-cli",
-  "version": "2.2.0-rc.1",
+  "version": "2.2.0-rc.2",
   "main": "index.js",
   "bin": {
     "webiny": "./lib/index.js",
@@ -18,11 +18,12 @@
   "description": "A tool to bootstrap, develop and deploy a Webiny project.",
   "license": "MIT",
   "dependencies": {
-    "@babel/runtime": "^7.2.0",
-    "@babel/plugin-proposal-class-properties": "^7.2.0",
-    "@babel/plugin-proposal-object-rest-spread": "^7.2.0",
-    "@babel/plugin-transform-runtime": "^7.2.0",
-    "@babel/register": "^7.0.0",
+    "@babel/core": "^7.4.4",
+    "@babel/plugin-proposal-class-properties": "^7.4.4",
+    "@babel/plugin-proposal-object-rest-spread": "^7.4.4",
+    "@babel/plugin-transform-runtime": "^7.4.4",
+    "@babel/register": "^7.4.4",
+    "@babel/runtime": "^7.4.4",
     "apollo-cache-inmemory": "^1.4.2",
     "apollo-client": "^2.4.12",
     "apollo-link": "^1.2.8",
