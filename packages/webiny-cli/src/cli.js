@@ -1,6 +1,8 @@
 #!/usr/bin/env node
 const yargs = require("yargs");
 
+yargs.usage("Usage: $0 <command>").demandCommand(1);
+
 yargs.command("init", "Initialize a new Webiny project", argv => {
     require("./init")(argv);
 });
