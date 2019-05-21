@@ -10,14 +10,12 @@ module.exports = async ({ port, watch, inspect }) => {
     watch = Array.isArray(watch) ? watch : [watch];
     const command = [path.join(__dirname, "runFunctions.js")];
 
-    // "--also-watch" argument:
     const functions = await listPackages("function");
     let watchPaths = functions.map(fn => fn.root + "/**/*.js");
-    if (watch) {
-        watch.forEach(w => {
-            watchPaths.push(path.resolve(w));
-        });
-    }
+
+    watch.filter(Boolean).forEach(w => {
+        watchPaths.push(path.resolve(w));
+    });
 
     watchPaths.forEach(item => command.unshift(`-w ${item}`));
 
