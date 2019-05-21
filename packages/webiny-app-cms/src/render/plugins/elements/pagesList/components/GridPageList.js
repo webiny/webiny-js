@@ -36,7 +36,7 @@ const PageItem = ({ data, className }: Object) => {
             <div
                 className={"webiny-cms-element-page-list__media"}
                 style={{
-                    backgroundImage: `url("${get(data, "settings.general.image.src")}")`
+                    backgroundImage: `url("${get(data, "settings.general.image.src")}?width=500")`
                 }}
             />
             <div className={"webiny-cms-element-page-list__content"}>

@@ -6,6 +6,7 @@
     "type": "git",
     "url": "https://github.com/webiny/webiny-js.git"
   },
+  "description": "The API for the Webiny Cookie Policy (webiny-app-cookie-policy) app.",
   "author": "Adrian Smijulj",
   "license": "MIT",
   "dependencies": {

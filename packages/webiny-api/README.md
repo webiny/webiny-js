@@ -1,13 +1,27 @@
-# Webiny API
+# webiny-api
+[![](https://img.shields.io/npm/dw/webiny-api.svg)](https://www.npmjs.com/package/webiny-api) 
+[![](https://img.shields.io/npm/v/webiny-api.svg)](https://www.npmjs.com/package/webiny-api)
+[![code style: prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg?style=flat-square)](https://github.com/prettier/prettier)
+[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](http://makeapullrequest.com)
 
-Express middleware to quickly build powerful REST APIs.
+The base package for building GraphQL powered HTTP APIs for your Webiny apps.
 
-It provides support for running multiple apps, both 3rd party and the ones you create.
-In combination with `webiny-entity` library it makes development of business applications a breeze.
-
-We are developing this with `serverless` in mind so you will not be limited by your server (or the lack of one :)).
-
-Integration with your existing node apps will also be seamless as long as you support the standard middleware function signature: `(req, res, next)`.     
+For more information, please visit [the official docs](https://docs.webiny.com/docs/developer-tutorials/api-overview).
   
+## Install
+```
+npm install --save webiny-api
+```
+
+Or if you prefer yarn: 
+```
+yarn add webiny-api
+```
+
 ## Usage
-Docs coming before the first official release.
+
+Some of the packages that are built on top of the `webiny-api`:
+
+- [webiny-api-cms](../webiny-api-cms) 
+- [webiny-api-security](../webiny-api-security) 
+- [webiny-api-cookie-policy](../webiny-api-cookie-policy) 

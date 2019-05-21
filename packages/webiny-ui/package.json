@@ -6,6 +6,7 @@
     "type": "git",
     "url": "https://github.com/webiny/webiny-js.git"
   },
+  "description": "A collection of material-design based components, for all of your UI development needs.",
   "contributors": [
     "Pavel Denisjuk <pavel@webiny.com>",
     "Sven Al Hamad <sven@webiny.com>",

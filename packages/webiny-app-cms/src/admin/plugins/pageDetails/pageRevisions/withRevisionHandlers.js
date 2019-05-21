@@ -13,7 +13,8 @@ export default compose(
     withHandlers({
         createRevision: ({ rev, history, gqlCreate, showSnackbar }: Object) => async () => {
             const { data: res } = await gqlCreate({
-                variables: { revision: rev.id }
+                variables: { revision: rev.id },
+                refetchQueries: ["CmsListPages"]
             });
             const { data, error } = res.cms.revision;
 

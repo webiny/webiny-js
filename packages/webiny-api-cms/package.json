@@ -6,6 +6,7 @@
     "type": "git",
     "url": "https://github.com/webiny/webiny-js.git"
   },
+  "description": "The API for the Webiny CMS (webiny-app-cms) app.",
   "author": "Pavel Denisjuk",
   "license": "MIT",
   "dependencies": {

@@ -20,7 +20,7 @@ export default [
         component: (
             <Query
                 query={gql`
-                    query {
+                    query CmsGetFavicon {
                         settings {
                             cms {
                                 data {

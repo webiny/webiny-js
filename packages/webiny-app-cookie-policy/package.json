@@ -6,6 +6,7 @@
     "type": "git",
     "url": "https://github.com/webiny/webiny-js.git"
   },
+  "description": "Renders a simple cookie policy info banner on your site.",
   "author": "Adrian Smijulj",
   "license": "MIT",
   "dependencies": {

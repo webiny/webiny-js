@@ -29,9 +29,8 @@ const RevisionsList = ({ pageDetails: { page }, loading }: RevisionsProps) => {
             <div style={{ position: "relative" }}>
                 {loading && <CircularProgress />}
                 <List nonInteractive twoLine>
-                    {page.revisions.map(rev => (
-                        <Revision rev={rev} key={rev.id} />
-                    ))}
+                    {Array.isArray(page.revisions) &&
+                        page.revisions.map(rev => <Revision rev={rev} key={rev.id} />)}
                 </List>
             </div>
         </Elevation>

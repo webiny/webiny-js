@@ -14,15 +14,5 @@ export default new ApolloClient({
     cache: new InMemoryCache({
         addTypename: true,
         dataIdFromObject: obj => obj.id || null
-    }),
-    defaultOptions: {
-        watchQuery: {
-            fetchPolicy: "network-only",
-            errorPolicy: "all"
-        },
-        query: {
-            fetchPolicy: "network-only",
-            errorPolicy: "all"
-        }
-    }
+    })
 });
