@@ -62,12 +62,16 @@ export default ({ getModel, Model }: Object) =>
                 return revision.version + 1;
             },
             get revisions() {
+
                 return getModel("Form").find({
                     query: { parent: this.parent },
                     sort: { version: -1 }
                 });
             }
         })),
+        withFields({
+            a: string()
+        }),
         withFields(instance => ({
             publishedOn: skipOnPopulate()(date()),
             name: string({ validation: validation.create("required") }),

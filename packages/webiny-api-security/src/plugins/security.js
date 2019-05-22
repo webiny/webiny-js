@@ -3,9 +3,11 @@ import type { PluginType } from "webiny-plugins/types";
 import authenticate from "./authentication/authenticate";
 import { getPlugins } from "webiny-plugins";
 import { shield } from "graphql-shield";
-import { get, flowRight } from "lodash";
-import { withFields, string } from "@commodo/fields";
+import { get } from "lodash";
+import compose from "lodash/fp/compose";
+import { withFields } from "@commodo/fields";
 import { withHooks } from "@commodo/hooks";
+import { ref } from "@commodo/fields-storage-ref";
 import { withProps } from "repropose";
 
 export default ([
@@ -48,34 +50,37 @@ export default ([
     },
     { type: "graphql-security", name: "graphql-security", authenticate },
     {
-        type: "graphql-context",
-        name: "graphql-context-security-model-fields",
-        apply: async ({ models, user }) => {
-            for (let name in models) {
-                models[name] = flowRight(
-                    withFields({
-                        createdBy: string(),
-                        updatedBy: string(),
-                        deletedBy: string()
-                    }),
-                    withHooks({
-                        beforeCreate() {
-                            this.createdBy = this.getUser().id;
-                        },
-                        beforeUpdate() {
-                            this.updatedBy = this.getUser().id;
-                        },
-                        beforeDelete() {
-                            this.deletedBy = this.getUser().id;
+        type: "model-base",
+        name: "model-base-security",
+        apply: ({ Model, user, getModel }) => {
+            return compose(
+                withFields({
+                    createdBy: ref({ instanceOf: getModel("User") }),
+                    updatedBy: ref({ instanceOf: getModel("User") }),
+                    deletedBy: ref({ instanceOf: getModel("User") })
+                }),
+                withHooks({
+                    beforeCreate() {
+                        if (user) {
+                            this.createdBy = user.id;
                         }
-                    }),
-                    withProps({
-                        getUser() {
-                            return user;
+                    },
+                    beforeUpdate() {
+                        if (user) {
+                            this.updatedBy = user.id;
                         }
-                    }),
-                )(models[name]);
-            }
+                    },
+                    beforeDelete() {
+                        if (user) {
+                            this.deletedBy = user.id;
+                        }
+                    }
+                }),
+                withProps({
+                    getUser: () => user
+
+                })
+            )(Model);
         }
     }
 ]: Array<PluginType>);

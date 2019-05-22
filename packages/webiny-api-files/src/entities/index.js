@@ -1,2 +1,2 @@
 // @flow
-export { File } from "webiny-api-files/entities/File.model";
+export { default as File } from "webiny-api-files/entities/File.model";

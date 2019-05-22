@@ -5,7 +5,7 @@ import { withName } from "@commodo/name";
 import { withHooks } from "@commodo/hooks";
 import { withFields, onSet, number, string } from "@commodo/fields";
 
-export default ({ Model }) =>
+export default ({ Model, getModel }) =>
     compose(
         withHooks({
             async beforeCreate() {
@@ -15,7 +15,7 @@ export default ({ Model }) =>
                     );
                 }
 
-                if (await this.getModel("File").findOne({ query: { src: this.src } })) {
+                if (await getModel("File").findOne({ query: { src: this.src } })) {
                     throw Error(`File "src" must be unique. `);
                 }
             }

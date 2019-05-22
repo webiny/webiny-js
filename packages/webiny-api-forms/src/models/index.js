@@ -1,2 +1,2 @@
 // @flow
-export { Form } from "webiny-api-forms/models/Form.model";
+export { default as Form } from "webiny-api-forms/models/Form.model";
