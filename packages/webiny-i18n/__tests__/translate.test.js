@@ -6,7 +6,6 @@ i18n.registerProcessor(defaultProcessor);
 describe("translate test with namespaces", () => {
     test("should translate correctly without variables", () => {
         i18n.setTranslation("Some.Namespace.577b2243", "this is translated sample text");
-        const b = t`this is a sample text`;
         expect(t`this is a sample text`).toEqual("this is translated sample text");
         expect(t`this is a sample text without translation`).toEqual(
             "this is a sample text without translation"
