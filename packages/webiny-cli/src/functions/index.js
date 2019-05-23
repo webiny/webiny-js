@@ -6,9 +6,18 @@ const tcpPortUsed = require("tcp-port-used");
 const listPackages = require("../utils/listPackages");
 const logFunctions = require("./logFunctions");
 
+function normalizePath(raw) {
+    raw = raw.trim();
+    if (raw.includes(" ")) {
+        return `"${raw}"`;
+    }
+    return raw;
+}
+
 module.exports = async ({ port, watch, inspect }) => {
     watch = Array.isArray(watch) ? watch : [watch];
-    const command = [path.join(__dirname, "runFunctions.js")];
+
+    const command = [normalizePath(path.join(__dirname, "runFunctions.js"))];
 
     const functions = await listPackages("function");
     let watchPaths = functions.map(fn => fn.root + "/**/*.js");
@@ -17,7 +26,7 @@ module.exports = async ({ port, watch, inspect }) => {
         watchPaths.push(path.resolve(w));
     });
 
-    watchPaths.forEach(item => command.unshift(`-w ${item}`));
+    watchPaths.forEach(item => command.unshift(`-w ${normalizePath(item)}`));
 
     // "--port" argument:
     command.push(`--port=${port}`);
