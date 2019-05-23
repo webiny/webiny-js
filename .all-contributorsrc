@@ -68,7 +68,19 @@
         "tutorial",
         "video"
       ]
+    },
+    {
+      "login": "ndcollins",
+      "name": "Nick Collins",
+      "avatar_url": "https://avatars0.githubusercontent.com/u/501726?v=4",
+      "profile": "https://github.com/ndcollins",
+      "contributions": [
+        "bug",
+        "ideas",
+        "userTesting"
+      ]
     }
   ],
-  "contributorsPerLine": 7
+  "contributorsPerLine": 7,
+  "commitConvention": "none"
 }
