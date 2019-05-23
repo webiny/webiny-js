@@ -9,7 +9,7 @@ export default ({ Model, getModel }: Object) =>
         withFields({
             entity: ref({ instanceOf: [], refNameField: "entityClassId" }),
             entityClassId: string(),
-            role: ref({ instanceOf: getModel("Role") })
+            role: ref({ instanceOf: getModel("SecurityRole") })
         }),
-        withName("SecurityRole")
+        withName("SecurityRoles2Entities")
     )(Model);

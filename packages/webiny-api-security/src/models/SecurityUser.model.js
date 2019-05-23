@@ -92,12 +92,14 @@ export const SecurityUser = ({ Model, getModel, config }) =>
             })(string({ validation: "required" })),
             enabled: boolean({ list: true }),
             groups: ref({
-                instanceOf: getModel("SecurityGroup"),
-                using: getModel("SecurityGroups2Entities")
+                list: true,
+                instanceOf: [getModel("SecurityGroup"), "entity"],
+                using: [getModel("SecurityGroups2Entities"), "group"]
             }),
             roles: ref({
-                instanceOf: getModel("SecurityRole"),
-                using: getModel("SecurityRoles2Entities")
+                list: true,
+                instanceOf: [getModel("SecurityRole"), "entity"],
+                using: [getModel("SecurityRoles2Entities"), "role"]
             }),
             email: onSet(value => {
                 if (value === instance.email) {
@@ -106,7 +108,9 @@ export const SecurityUser = ({ Model, getModel, config }) =>
 
                 value = value.toLowerCase().trim();
                 instance.on("beforeSave", async () => {
-                    const existingUser = await getModel('SecurityUser').findOne({ query: { email: value } });
+                    const existingUser = await getModel("SecurityUser").findOne({
+                        query: { email: value }
+                    });
                     if (existingUser) {
                         throw Error("User with given e-mail already exists.");
                     }

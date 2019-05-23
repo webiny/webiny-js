@@ -3,23 +3,24 @@ import compose from "lodash/fp/compose";
 import { validation } from "webiny-validation";
 import { withName } from "@commodo/name";
 import { withHooks } from "@commodo/hooks";
+import { ref } from "@commodo/fields-storage-ref";
 
 import { withFields, string, setOnce, boolean } from "@commodo/fields";
 
-export const SecurityRole = ({ Model, getModel }: Object) =>
+export const SecurityGroup = ({ Model, getModel }: Object) =>
     compose(
         withHooks({
             async beforeCreate() {
-                const existingRole = await getModel("SecurityRole").findOne({
+                const existingGroup = await getModel("SecurityGroup").findOne({
                     query: { slug: this.slug }
                 });
-                if (existingRole) {
-                    throw Error(`Role with slug "${this.slug}" already exists.`);
+                if (existingGroup) {
+                    throw Error(`Group with slug "${this.slug}" already exists.`);
                 }
             },
             async beforeDelete() {
                 if (this.system) {
-                    throw Error(`Cannot delete system role.`);
+                    throw Error(`Cannot delete system group.`);
                 }
             }
         }),
@@ -27,8 +28,12 @@ export const SecurityRole = ({ Model, getModel }: Object) =>
             name: string({ validation: validation.create("required") }),
             slug: setOnce()(string({ validation: validation.create("required") })),
             description: string(),
-            scopes: string({ list: true }),
-            system: boolean()
+            system: boolean(),
+            roles: ref({
+                list: true,
+                instanceOf: [getModel("SecurityRole"), "entity"],
+                using: [getModel("SecurityRoles2Entities"), "role"]
+            })
         }),
-        withName("SecurityRole")
+        withName("SecurityGroup")
     )(Model);
