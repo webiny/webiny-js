@@ -1,6 +1,6 @@
 // @flow
-import entities from "./entities";
+import models from "./models";
 import graphql from "./graphql";
 import security from "./security";
 
-export default [entities, graphql, security];
+export default [models, graphql, security];

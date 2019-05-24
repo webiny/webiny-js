@@ -90,7 +90,7 @@ export const SecurityUser = ({ Model, getModel, config }) =>
 
                 return instance.password;
             })(string({ validation: "required" })),
-            enabled: boolean({ list: true }),
+            enabled: boolean({ value: true }),
             groups: ref({
                 list: true,
                 instanceOf: [getModel("SecurityGroup"), "entity"],
@@ -107,7 +107,7 @@ export const SecurityUser = ({ Model, getModel, config }) =>
                 }
 
                 value = value.toLowerCase().trim();
-                instance.on("beforeSave", async () => {
+                instance.registerHookCallback("beforeSave", async () => {
                     const existingUser = await getModel("SecurityUser").findOne({
                         query: { email: value }
                     });

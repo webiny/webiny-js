@@ -15,7 +15,7 @@ import { UserType } from "./types";
 import Role from "./Role";
 import Group from "./Group";
 
-const userFetcher = ctx => ctx.security.entities.User;
+const userFetcher = ctx => ctx.getModel("SecurityUser");
 
 export default {
     typeDefs: () => [

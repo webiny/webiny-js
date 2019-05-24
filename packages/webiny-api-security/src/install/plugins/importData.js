@@ -6,11 +6,11 @@ import * as data from "./data";
 
 export default async (context: Object) => {
     setupEntities(context);
-    const { User, Role, Group } = context.security.entities;
+    const { SecurityUser, SecurityRole, SecurityGroup } = context.getModels();
 
-    const user = new User();
+    const user = new SecurityUser();
 
-    const fullAccess = new Role();
+    const fullAccess = new SecurityRole();
     await fullAccess.populate(data.fullAccessRole).save();
 
     let userData = get(context, "security.admin");
@@ -22,6 +22,6 @@ export default async (context: Object) => {
 
     context.user = user;
 
-    const group = new Group();
+    const group = new SecurityGroup();
     await group.populate({ ...data.securityFullAccessGroup, roles: data.roles }).save();
 };

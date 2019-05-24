@@ -50,14 +50,14 @@ export default ([
     },
     { type: "graphql-security", name: "graphql-security", authenticate },
     {
-        type: "model-base",
+        type: "model-base123",
         name: "model-base-security",
         apply: ({ Model, user, getModel }) => {
             return compose(
                 withFields({
-                    createdBy: ref({ instanceOf: getModel("User") }),
-                    updatedBy: ref({ instanceOf: getModel("User") }),
-                    deletedBy: ref({ instanceOf: getModel("User") })
+                    createdBy: ref({ instanceOf: () => getModel("SecurityUser") }),
+                    updatedBy: ref({ instanceOf: () => getModel("SecurityUser") }),
+                    deletedBy: ref({ instanceOf: () => getModel("SecurityUser") })
                 }),
                 withHooks({
                     beforeCreate() {

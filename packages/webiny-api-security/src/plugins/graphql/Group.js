@@ -9,7 +9,7 @@ import {
 
 import Role from "./Role";
 
-const groupFetcher = ctx => ctx.security.entities.Group;
+const groupFetcher = ctx => ctx.getModel("SecurityGroup");
 
 export default {
     typeDefs: () => [

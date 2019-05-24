@@ -17,7 +17,7 @@
     "@commodo/fields": "^0.2.0",
     "@commodo/fields-storage": "^0.2.0",
     "@commodo/fields-storage-mongodb": "^0.2.3",
-    "@commodo/fields-storage-ref": "^0.1.0",
+    "@commodo/fields-storage-ref": "^0.2.0",
     "@commodo/hooks": "^0.0.9",
     "@commodo/name": "^0.0.11",
     "apollo-server-lambda": "^2.1.0",
