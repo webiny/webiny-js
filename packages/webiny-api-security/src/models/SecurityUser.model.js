@@ -32,7 +32,7 @@ export const SecurityUser = ({ Model, getModel, config }) =>
                     }
 
                     if (this.__access) {
-                        return this.__access;
+                        return resolve(this.__access);
                     }
 
                     const access = {
@@ -75,7 +75,7 @@ export const SecurityUser = ({ Model, getModel, config }) =>
 
                     this.__access = access;
 
-                    return access;
+                    return resolve(access);
                 });
             }
         }),

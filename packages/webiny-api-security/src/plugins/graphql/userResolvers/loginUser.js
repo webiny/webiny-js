@@ -22,7 +22,6 @@ export default () => async (root: any, args: Object, context: Object) => {
         return invalidCredentials;
     }
 
-    const aa = { a: user.password, b: args.password };
     // $FlowFixMe - user has a "password" attribute.
     if (!(await verifyPassword(args.password, user.password))) {
         return invalidCredentials;
