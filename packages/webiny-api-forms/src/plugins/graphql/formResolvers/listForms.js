@@ -60,7 +60,6 @@ export default async (root: any, args: Object, context: Object) => {
         }
     ]);
 
-    console.log(pipeline);
     return new ListResponse(
         await Form.find({ sort, query: { id: { $in: ids.map(item => item.id) } } }),
         createPaginationMeta({
