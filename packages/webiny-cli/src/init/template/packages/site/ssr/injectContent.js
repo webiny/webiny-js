@@ -19,5 +19,8 @@ export default (content, helmet, state) => {
         </Fragment>
     );
 
-    return indexHtml.replace(`<div id="root"></div>`, replace).replace(`</head>`, meta + "</head>");
+    return indexHtml
+        .replace(`<div id="root"></div>`, replace)
+        .replace(/<title.*?<\/title>/, "")
+        .replace(`</head>`, meta + "</head>");
 };
