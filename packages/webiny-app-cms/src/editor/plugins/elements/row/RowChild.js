@@ -3,6 +3,7 @@ import * as React from "react";
 import { compose, withHandlers, pure, setDisplayName } from "recompose";
 import { connect } from "webiny-app-cms/editor/redux";
 import { css } from "emotion";
+import { get } from "lodash";
 import styled from "react-emotion";
 import DropZone from "webiny-app-cms/editor/components/DropZone";
 import Resizer from "webiny-app-cms/editor/components/Resizer";
@@ -58,7 +59,7 @@ const RowChild = pure(
         return (
             <ColumnContainer
                 data-type="row-column-container"
-                style={{ width: (element.data.width || 100) + "%", position: "relative" }}
+                style={{ width: get(element, "data.width", 100) + "%", position: "relative" }}
             >
                 {index > 0 && (
                     <Resizer
