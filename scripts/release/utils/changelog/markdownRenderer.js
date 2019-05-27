@@ -97,7 +97,9 @@ module.exports = ({ labels, baseUrl, release }) => {
     }
 
     function renderContributor({ name }) {
-        const user = release.contributors.find(c => c.name === name || c.login === name) || { name };
+        const user = release.contributors.find(c => c.name === name || c.login === name) || {
+            name
+        };
         if (user.html_url) {
             const userNameAndLink = `[@${user.login}](${user.html_url})`;
             if (user.name) {

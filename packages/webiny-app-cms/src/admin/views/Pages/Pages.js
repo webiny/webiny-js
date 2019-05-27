@@ -69,7 +69,10 @@ export default compose(
     withHandlers({
         createPage: ({ createMutation, history, showSnackbar }) => async category => {
             try {
-                const res = await createMutation({ variables: { category }, refetchQueries: ["CmsListPages"] });
+                const res = await createMutation({
+                    variables: { category },
+                    refetchQueries: ["CmsListPages"]
+                });
                 const { data } = res.data.cms.page;
                 history.push(`/cms/editor/${data.id}`);
             } catch (e) {

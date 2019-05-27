@@ -87,7 +87,6 @@ export default function FileDetails(props: *) {
         }
     });
 
-
     return (
         <Drawer dir="rtl" modal open={file} onClose={hideFileDetails}>
             {file && (

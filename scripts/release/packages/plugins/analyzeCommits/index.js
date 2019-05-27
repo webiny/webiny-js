@@ -29,7 +29,9 @@ module.exports = (pluginConfig = {}) => {
         let relevantCommits = commits;
 
         if (typeof pluginConfig.isRelevant === "function") {
-            relevantCommits = commits.filter(commit => pluginConfig.isRelevant(params.packages, commit));
+            relevantCommits = commits.filter(commit =>
+                pluginConfig.isRelevant(params.packages, commit)
+            );
         }
 
         if (!relevantCommits.length) {
