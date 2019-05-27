@@ -1,6 +1,6 @@
 {
   "name": "webiny-cli",
-  "version": "2.2.0-rc.2",
+  "version": "2.2.2",
   "main": "index.js",
   "bin": {
     "webiny": "./lib/index.js",
@@ -39,6 +39,7 @@
     "dotenv": "^7.0.0",
     "execa": "^1.0.0",
     "express": "^4.16.4",
+    "express-http-proxy": "^1.5.1",
     "fs-extra": "^7.0.1",
     "get-yarn-workspaces": "^1.0.2",
     "glob": "^7.1.2",

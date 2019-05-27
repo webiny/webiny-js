@@ -1,0 +1,20 @@
+{
+  "schemaPath": "schema.graphql",
+  "extensions": {
+    "endpoints": {
+      "Default Introspection Endpoint": {
+        "url": "http://localhost:9003/graphql",
+        "introspect": true,
+        "headers": {
+          "user-agent": "JS GraphQL"
+        }
+      },
+      "Default (http://localhost:9003/graphql)": {
+        "url": "http://localhost:9003/graphql",
+        "headers": {
+          "user-agent": "JS GraphQL"
+        }
+      }
+    }
+  }
+}
