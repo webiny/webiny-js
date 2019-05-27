@@ -5,7 +5,7 @@ import listFiles from "./resolvers/listFiles";
 import listTags from "./resolvers/listTags";
 import updateFileBySrc from "./resolvers/updateFileBySrc";
 
-const fileFetcher = ctx => ctx.models.File;
+const fileFetcher = ctx => ctx.files.entities.File;
 
 import {
     FileType,

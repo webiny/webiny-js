@@ -674,7 +674,7 @@ class Entity {
     static __prepareParams(params: Object) {
         const clone = _.cloneDeep(params);
         if (_.get(this, "crud.delete.soft") === true) {
-            _.set(clone, "query.deleted", _.get(clone, "query.deleted", false));
+            _.set(clone, "query.deleted", _.get(clone, "query.deleted", { $ne: true }));
         }
         return clone;
     }

@@ -7,7 +7,7 @@ export default (modelFetcher: ModelFetcher) => async (root: any, args: Object, c
     const model = modelFetcher(context);
 
     const results = await model
-        .getStorageDriver()
+        .getDriver()
         .getDatabase()
         .collection("File")
         .aggregate([

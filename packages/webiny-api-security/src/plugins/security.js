@@ -3,10 +3,7 @@ import type { PluginType } from "webiny-plugins/types";
 import authenticate from "./authentication/authenticate";
 import { getPlugins } from "webiny-plugins";
 import { shield } from "graphql-shield";
-import { get, flowRight } from "lodash";
-import { withFields, string } from "@commodo/fields";
-import { withHooks } from "@commodo/hooks";
-import { withProps } from "repropose";
+import { get } from "lodash";
 
 export default ([
     {
@@ -47,35 +44,4 @@ export default ([
         }
     },
     { type: "graphql-security", name: "graphql-security", authenticate },
-    {
-        type: "graphql-context",
-        name: "graphql-context-security-model-fields",
-        apply: async ({ models, user }) => {
-            for (let name in models) {
-                models[name] = flowRight(
-                    withFields({
-                        createdBy: string(),
-                        updatedBy: string(),
-                        deletedBy: string()
-                    }),
-                    withHooks({
-                        beforeCreate() {
-                            this.createdBy = this.getUser().id;
-                        },
-                        beforeUpdate() {
-                            this.updatedBy = this.getUser().id;
-                        },
-                        beforeDelete() {
-                            this.deletedBy = this.getUser().id;
-                        }
-                    }),
-                    withProps({
-                        getUser() {
-                            return user;
-                        }
-                    }),
-                )(models[name]);
-            }
-        }
-    }
 ]: Array<PluginType>);
