@@ -3,6 +3,8 @@ import bcrypt from "bcryptjs";
 import util from "util";
 import { Response, ErrorResponse } from "webiny-api/graphql";
 import { JwtToken } from "../../authentication/jwtToken";
+import type { Entity } from "webiny-entity";
+type EntityFetcher = (context: Object) => Class<Entity>;
 
 const verifyPassword = util.promisify(bcrypt.compare);
 
@@ -11,10 +13,14 @@ const invalidCredentials = new ErrorResponse({
     message: "Invalid credentials."
 });
 
-export default () => async (root: any, args: Object, context: Object) => {
-    const { SecurityUser } = context.getModels();
+export default (entityFetcher: EntityFetcher) => async (
+    root: any,
+    args: Object,
+    context: Object
+) => {
+    const User = entityFetcher(context);
 
-    const user: SecurityUser = (await SecurityUser.findOne({
+    const user: User = (await User.findOne({
         query: { email: args.username }
     }): any);
 

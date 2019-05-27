@@ -9,31 +9,39 @@ import {
 
 import Role from "./Role";
 
-const groupFetcher = ctx => ctx.getModel("SecurityGroup");
+const groupFetcher = ctx => ctx.security.entities.Group;
 
 export default {
     typeDefs: () => [
         Role.typeDefs,
-        /* GraphQL */ `
-            input GroupInput {
-                id: ID
-                name: String
-                slug: String
-                description: String
-                roles: [ID]
-            }
-
-            type GroupResponse {
-                data: Group
-                error: Error
-            }
-
-            type GroupListResponse {
-                data: [Group]
-                meta: ListMeta
-                error: Error
-            }
-        `
+        `type Group {
+            id: ID
+            name: String
+            slug: String
+            createdOn: DateTime
+            description: String
+            roles: [Role]
+        }
+        
+        input GroupInput {
+            id: ID
+            name: String
+            slug: String
+            description: String
+            roles: [ID]
+        }
+        
+        type GroupResponse {
+            data: Group
+            error: Error
+        }
+        
+        type GroupListResponse {
+            data: [Group]
+            meta: ListMeta
+            error: Error
+        }
+    `
     ],
     typeExtensions: `
         extend type SecurityQuery {

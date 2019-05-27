@@ -43,5 +43,5 @@ export default ([
             }
         }
     },
-    { type: "graphql-security", name: "graphql-security", authenticate }
+    { type: "graphql-security", name: "graphql-security", authenticate },
 ]: Array<PluginType>);
