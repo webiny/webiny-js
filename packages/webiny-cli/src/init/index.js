@@ -34,6 +34,20 @@ module.exports = async () => {
     const root = process.cwd();
 
     logger.log(`Creating a new Webiny project in ${green(root)}...`);
+
+    const pkgJsonPath = path.resolve("package.json");
+    let pkgJson;
+    try {
+        pkgJson = await loadJsonFile(pkgJsonPath);
+    } catch (e) {
+        logger.error(
+            "%s file does not exist! Make sure you initialize your project using %s first.",
+            "package.json",
+            "yarn init"
+        );
+        process.exit(1);
+    }
+
     fs.ensureDirSync("packages");
 
     // Copy project files
@@ -65,8 +79,6 @@ module.exports = async () => {
     await fs.writeFile(envFile, env);
 
     // Merge package.json
-    const pkgJsonPath = path.resolve("package.json");
-    const pkgJson = await loadJsonFile(pkgJsonPath);
     merge(pkgJson, tplJson);
     await writeJsonFile(pkgJsonPath, pkgJson);
 
@@ -91,7 +103,7 @@ module.exports = async () => {
     logger.info("There is also a convenience alias 'wby' (for 'webiny') to type even less :)\n");
 
     logger.success(
-        `That's it! Now you have your API, admin and site apps up and running!\n   Happy coding :)`
+        `That's it! Now you have your API, admin and site apps up and running!\n  Happy coding :)`
     );
 };
 

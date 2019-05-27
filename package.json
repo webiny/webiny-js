@@ -72,7 +72,6 @@
     "inquirer-maxlength-input-prompt": "^1.0.0",
     "jest": "^23.1.0",
     "jest-extended": "^0.7.2",
-    "lerna-changelog": "0.8.2",
     "lint-staged": "^7.2.2",
     "lodash": "^4.17.11",
     "longest": "^2.0.1",
@@ -81,6 +80,7 @@
     "ncp": "^2.0.0",
     "nodemon": "^1.18.10",
     "p-locate": "^3.0.0",
+    "p-map": "^2.1.0",
     "p-retry": "^2.0.0",
     "parse-github-url": "^1.0.2",
     "pkgfiles": "^2.3.2",
@@ -119,7 +119,9 @@
     "wby:fns:inspect": "yarn wby:fns --inspect=9001",
     "wby:app": "wby start-app",
     "start-verdaccio": "yarn verdaccio -c ./verdaccio.yaml",
-    "publish-to-verdaccio": "yarn build && cross-env REGISTRY=http://localhost:4800 node scripts/publish-to-verdaccio"
+    "publish-to-verdaccio": "cross-env REGISTRY=http://localhost:4800 node scripts/publish-to-verdaccio",
+    "contributors:add": "all-contributors add",
+    "contributors:generate": "all-contributors generate"
   },
   "pre-commit": [
     "lint-staged"

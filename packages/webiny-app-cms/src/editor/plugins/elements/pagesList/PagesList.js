@@ -5,6 +5,7 @@ import { Query } from "react-apollo";
 import { withCms } from "webiny-app-cms/context";
 import { loadPages } from "./graphql";
 import { getPlugins } from "webiny-plugins";
+import { get } from "lodash";
 
 const PagesList = pure(({ data = {}, cms: { theme } }: Object = {}) => {
     const { component, ...vars } = data;
@@ -43,7 +44,7 @@ const PagesList = pure(({ data = {}, cms: { theme } }: Object = {}) => {
                     return "Loading...";
                 }
 
-                const pages = data.cms.listPublishedPages;
+                const pages = get(data, "cms.listPublishedPages");
 
                 if (!pages || !pages.data.length) {
                     return "No pages match the criteria.";

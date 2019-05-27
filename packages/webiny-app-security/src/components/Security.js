@@ -1,6 +1,7 @@
 // @flow
 import * as React from "react";
 import { compose } from "recompose";
+import { withRouter } from "react-router-dom";
 import { withApollo, type WithApolloClient } from "react-apollo";
 import localStorage from "store";
 import observe from "store/plugins/observe";
@@ -55,7 +56,7 @@ class Security extends React.Component<Props, State> {
     }
 
     checkLoginToken = async () => {
-        const query = new URLSearchParams(window.location.search);
+        const query = new URLSearchParams(this.props.location.search);
         const loginToken = query.get("loginToken");
 
         if (loginToken && !this.state.user) {
@@ -69,7 +70,10 @@ class Security extends React.Component<Props, State> {
 
             const { data, error } = res.data.security.loginUsingToken;
             if (error) {
-                this.props.showSnackbar(error.message);
+                setTimeout(() => {
+                    this.props.showSnackbar(error.message);
+                }, 100);
+
                 return;
             }
 
@@ -157,5 +161,6 @@ class Security extends React.Component<Props, State> {
 
 export default compose(
     withApollo,
+    withRouter,
     withSnackbar()
 )(Security);

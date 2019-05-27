@@ -205,7 +205,7 @@ class Navigation extends React.Component<Props> {
             key: props.id,
             label: props.label,
             className: linkStyle,
-            onClick: () => props.route && hideMenu()
+            onClick: () => props.path && hideMenu()
         };
 
         if (level > 1) {
@@ -232,7 +232,7 @@ class Navigation extends React.Component<Props> {
                 return (
                     <React.Fragment>
                         <List className={submenuList + " level-" + level}>
-                            {utils.getLink(props.route, Link, linkProps)}
+                            {utils.getLink(props.path, Link, linkProps)}
                         </List>
                         {hasChildren && childMenuItems}
                     </React.Fragment>
@@ -283,7 +283,7 @@ class Navigation extends React.Component<Props> {
         return (
             <React.Fragment>
                 <List className={menuTitle + " level-" + level}>
-                    {utils.getLink(props.route, Link, linkProps)}
+                    {utils.getLink(props.path, Link, linkProps)}
                 </List>
                 <Transition in={isExpanded} timeout={100} appear={true} unmountOnExit={true}>
                     {state => (

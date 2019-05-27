@@ -3,6 +3,7 @@ import * as React from "react";
 import ReactDOM from "react-dom";
 import FileManagerView from "./FileManager/FileManagerView";
 import pick from "lodash/pick";
+import { FileManagerProvider } from "./FileManager/FileManagerContext";
 
 type Props = {
     onChange: ?Function,
@@ -72,7 +73,12 @@ class FileManagerPortal extends React.Component<*> {
         }
 
         // Let's pass "permanent" / "persistent" / "temporary" flags as "mode" prop instead.
-        return ReactDOM.createPortal(<FileManagerView {...props} />, container);
+        return ReactDOM.createPortal(
+            <FileManagerProvider {...props}>
+                <FileManagerView {...props} />
+            </FileManagerProvider>,
+            container
+        );
     }
 }
 

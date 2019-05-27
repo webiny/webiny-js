@@ -91,7 +91,7 @@ describe("soft delete test", () => {
         await EntityWithSoftDeletes.count();
         expect(query.getCall(0).args[1]).toEqual({
             query: {
-                deleted: false
+                deleted: { $ne: true }
             }
         });
         query.restore();
@@ -102,7 +102,7 @@ describe("soft delete test", () => {
             page: 1,
             perPage: 10,
             query: {
-                deleted: false
+                deleted: { $ne: true }
             }
         });
         query.restore();
@@ -111,7 +111,7 @@ describe("soft delete test", () => {
         await EntityWithSoftDeletes.findById(123);
         expect(query.getCall(0).args[1]).toEqual({
             query: {
-                deleted: false,
+                deleted: { $ne: true },
                 id: 123
             }
         });
@@ -121,14 +121,14 @@ describe("soft delete test", () => {
         await EntityWithSoftDeletes.findByIds([123, 234]);
         expect(query.getCall(0).args[1]).toEqual({
             query: {
-                deleted: false,
+                deleted: { $ne: true },
                 id: 123
             }
         });
 
         expect(query.getCall(1).args[1]).toEqual({
             query: {
-                deleted: false,
+                deleted: { $ne: true },
                 id: 234
             }
         });

@@ -1,6 +1,6 @@
 {
   "name": "webiny-cli",
-  "version": "2.1.0-rc.1",
+  "version": "2.2.2",
   "main": "index.js",
   "bin": {
     "webiny": "./lib/index.js",
@@ -12,11 +12,18 @@
   },
   "author": "Pavel Denisjuk <pavel@webiny.com>",
   "files": [
-    "lib"
+    "lib",
+    "lib/**/.gitignore"
   ],
+  "description": "A tool to bootstrap, develop and deploy a Webiny project.",
   "license": "MIT",
   "dependencies": {
-    "@babel/runtime": "^7.2.0",
+    "@babel/core": "^7.4.4",
+    "@babel/plugin-proposal-class-properties": "^7.4.4",
+    "@babel/plugin-proposal-object-rest-spread": "^7.4.4",
+    "@babel/plugin-transform-runtime": "^7.4.4",
+    "@babel/register": "^7.4.4",
+    "@babel/runtime": "^7.4.4",
     "apollo-cache-inmemory": "^1.4.2",
     "apollo-client": "^2.4.12",
     "apollo-link": "^1.2.8",
@@ -27,14 +34,16 @@
     "busboy": "^0.3.1",
     "chalk": "^2.4.1",
     "cosmiconfig": "^5.2.0",
-    "cross-spawn": "^6.0.5",
+    "cross-env": "^5.2.0",
     "debug": "^4.1.0",
     "dotenv": "^7.0.0",
     "execa": "^1.0.0",
     "express": "^4.16.4",
+    "express-http-proxy": "^1.5.1",
     "fs-extra": "^7.0.1",
     "get-yarn-workspaces": "^1.0.2",
     "glob": "^7.1.2",
+    "graphql": "^14.3.0",
     "graphql-tag": "^2.9.2",
     "inquirer": "^6.2.1",
     "load-json-file": "^5.2.0",
@@ -53,14 +62,8 @@
     "write-json-file": "^3.1.0",
     "yargs": "^12.0.5"
   },
-  "devDependencies": {
-    "@babel/plugin-proposal-class-properties": "^7.2.0",
-    "@babel/plugin-proposal-object-rest-spread": "^7.2.0",
-    "@babel/plugin-transform-runtime": "^7.2.0",
-    "@babel/register": "^7.0.0"
-  },
   "scripts": {
     "build": "rimraf ./lib && babel src -d lib --source-maps --copy-files --ignore=src/init/template --include-dotfiles",
-    "build:watch": "babel src -d lib --source-maps --copy-files --ignore=src/init/template --watch -v --include-dotfiles"
+    "build:watch": "rimraf ./lib && babel src -d lib --source-maps --copy-files --ignore=src/init/template --watch -v --include-dotfiles"
   }
 }

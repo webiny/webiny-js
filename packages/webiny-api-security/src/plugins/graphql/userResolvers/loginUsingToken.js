@@ -17,12 +17,21 @@ export default (entityFetcher: EntityFetcher) => async (
     const jwt = new JwtToken({ secret: context.config.security.token.secret });
 
     // Decode the login token
-    const { data } = await jwt.decode(args.token);
+    let email;
+    try {
+        const { data } = await jwt.decode(args.token);
+        email = data.email;
+    } catch (err) {
+        return new ErrorResponse({
+            code: err.code,
+            message: err.message
+        });
+    }
 
     const User = entityFetcher(context);
 
     const user: User = (await User.findOne({
-        query: { email: data.email }
+        query: { email }
     }): any);
 
     if (!user) {

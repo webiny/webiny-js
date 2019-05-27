@@ -4,6 +4,7 @@ import { UiProvider } from "webiny-app/context/ui";
 import { registerPlugins, getPlugins } from "webiny-plugins";
 import { Theme as AdminTheme } from "webiny-admin";
 import { CmsProvider } from "webiny-app-cms/context";
+import { CircularProgress } from "webiny-ui/Progress";
 import { Security } from "webiny-app-security/components";
 import Login from "webiny-app-security/admin/views/Login";
 import myTheme from "theme";
@@ -22,22 +23,22 @@ const App = () => {
         <UiProvider>
             {/* Security components handles user authentication. */}
             <Security>
-                {({ authenticated, notAuthenticated }) => (
+                {({ initialLoad, authenticated, notAuthenticated }) => (
                     <CmsProvider theme={myTheme} isEditor>
                         {/* AdminTheme handles the Dark/Light theme switching and initialization. */}
                         <AdminTheme>
+                            {/* Render a loader during initial load of user data */}
+                            {initialLoad(<CircularProgress />)}
+                            {/* If user is authenticated, get all `route` plugins and render them. */}
                             {authenticated(
-                                /* If user is authenticated, get all `route` plugins and render them. */
                                 <Fragment>
                                     {getPlugins("route").map(pl =>
                                         cloneElement(pl.route, { key: pl.name })
                                     )}
                                 </Fragment>
                             )}
-                            {notAuthenticated(
-                                /* If user is not authenticated, render Login component. */
-                                <Login />
-                            )}
+                            {/* If user is not authenticated, render Login component. */}
+                            {notAuthenticated(<Login />)}
                         </AdminTheme>
                     </CmsProvider>
                 )}

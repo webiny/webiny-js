@@ -28,8 +28,10 @@ const Mailchimp = function({ apiKey }) {
         return this.request({ path, body, method: "post" });
     };
 
-    this.request = ({ path, method, body }) => {
-        return got("https://us19.api.mailchimp.com/3.0" + path, {
+    this.request = ({ path, method, body }: Object) => {
+        // eslint-disable-next-line
+        const [hash, dataCenter] = this.apiKey.split("-");
+        return got(`https://${dataCenter}.api.mailchimp.com/3.0` + path, {
             method,
             json: true,
             body,
@@ -42,6 +44,8 @@ const Mailchimp = function({ apiKey }) {
 
 const mailchimpSettingsModelFactory = parent => {
     return class MailchimpSettingsModel extends EntityModel {
+        apiKey: ?string;
+        enabled: ?boolean;
         constructor() {
             super();
             this.setParentEntity(parent);

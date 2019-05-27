@@ -4,11 +4,6 @@ import authenticate from "./authentication/authenticate";
 import { getPlugins } from "webiny-plugins";
 import { shield } from "graphql-shield";
 import { get } from "lodash";
-import compose from "lodash/fp/compose";
-import { withFields } from "@commodo/fields";
-import { withHooks } from "@commodo/hooks";
-import { ref } from "@commodo/fields-storage-ref";
-import { withProps } from "repropose";
 
 export default ([
     {
@@ -49,38 +44,4 @@ export default ([
         }
     },
     { type: "graphql-security", name: "graphql-security", authenticate },
-    {
-        type: "model-base123",
-        name: "model-base-security",
-        apply: ({ Model, user, getModel }) => {
-            return compose(
-                withFields({
-                    createdBy: ref({ instanceOf: () => getModel("SecurityUser") }),
-                    updatedBy: ref({ instanceOf: () => getModel("SecurityUser") }),
-                    deletedBy: ref({ instanceOf: () => getModel("SecurityUser") })
-                }),
-                withHooks({
-                    beforeCreate() {
-                        if (user) {
-                            this.createdBy = user.id;
-                        }
-                    },
-                    beforeUpdate() {
-                        if (user) {
-                            this.updatedBy = user.id;
-                        }
-                    },
-                    beforeDelete() {
-                        if (user) {
-                            this.deletedBy = user.id;
-                        }
-                    }
-                }),
-                withProps({
-                    getUser: () => user
-
-                })
-            )(Model);
-        }
-    }
 ]: Array<PluginType>);

@@ -11,11 +11,10 @@
     "Sven Al Hamad <sven@webiny.com>",
     "Adrian Smijulj <adrian@webiny.com>"
   ],
+  "description": "The API for the Webiny Security (webiny-app-security) app.",
   "license": "MIT",
   "dependencies": {
     "@babel/runtime": "^7.0.0",
-    "@commodo/fields": "^0.2.0",
-    "@commodo/hooks": "^0.0.9",
     "@svgr/webpack": "^4.1.0",
     "bcryptjs": "^2.4.3",
     "graphql-shield": "^5.1.0",

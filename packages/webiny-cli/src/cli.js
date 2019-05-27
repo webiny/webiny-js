@@ -1,6 +1,8 @@
 #!/usr/bin/env node
 const yargs = require("yargs");
 
+yargs.usage("Usage: $0 <command>").demandCommand(1);
+
 yargs.command("init", "Initialize a new Webiny project", argv => {
     require("./init")(argv);
 });
@@ -44,6 +46,18 @@ yargs.command(
         yargs.positional("name", {
             describe: "App name."
         });
+
+        yargs.options("ssr", {
+            describe: "Start SSR server",
+            type: "boolean",
+            default: false
+        });
+
+        yargs.options("app-build", {
+            describe: "Run production build of the app.",
+            type: "boolean",
+            default: true
+        });
     },
     argv => {
         require("./apps/start")(argv);
@@ -72,7 +86,8 @@ yargs.command(
         });
 
         yargs.option("ci", {
-            describe: "Set to 'true' when running in a CI environment.",
+            type: "boolean",
+            describe: "Set this flag when running in a CI environment.",
             default: false
         });
     },

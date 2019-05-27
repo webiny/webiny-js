@@ -16,11 +16,6 @@ export default {
             component: BlogLayout
         }
     ],
-    fonts: {
-        google: {
-            families: ["IBM Plex Sans:400,500,700", "Lato:400,500,700"]
-        }
-    },
     colors: {
         primary: "var(--webiny-cms-theme-primary)",
         secondary: "var(--webiny-cms-theme-secondary)",

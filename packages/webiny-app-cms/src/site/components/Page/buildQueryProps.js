@@ -55,7 +55,7 @@ export default ({ location, defaultPages }: Props) => {
     if (location.pathname === "/") {
         return {
             query: gql`
-                {
+                query CmsGetHomePage {
                     cms {
                         page: getHomePage {
                             data ${getDataFields()}

@@ -17,7 +17,7 @@ const renderPlugins = ({ plugins, Menu }) => {
                 <Menu
                     key={sp.name}
                     label={sp.settings.name}
-                    route={"/settings" + sp.settings.route.props.path}
+                    path={"/settings" + sp.settings.route.props.path}
                 />
             );
         })

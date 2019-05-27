@@ -1,4 +1,8 @@
-# Data Extractor
+# webiny-data-extractor
+[![](https://img.shields.io/npm/dw/webiny-data-extractor.svg)](https://www.npmjs.com/package/webiny-data-extractor) 
+[![](https://img.shields.io/npm/v/webiny-data-extractor.svg)](https://www.npmjs.com/package/webiny-data-extractor)
+[![code style: prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg?style=flat-square)](https://github.com/prettier/prettier)
+[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](http://makeapullrequest.com)
 
 A small library for easy async data extraction, using dot and square brackets notation.
 

@@ -6,6 +6,7 @@
     "type": "git",
     "url": "https://github.com/webiny/webiny-js.git"
   },
+  "description": "The base package for building GraphQL powered HTTP APIs for your Webiny apps.",
   "contributors": [
     "Pavel Denisjuk <pavel@webiny.com>",
     "Sven Al Hamad <sven@webiny.com>",
@@ -14,14 +15,7 @@
   "license": "MIT",
   "dependencies": {
     "@babel/runtime": "^7.0.0",
-    "@commodo/fields": "^0.2.0",
-    "@commodo/fields-storage": "^0.2.0",
-    "@commodo/fields-storage-mongodb": "^0.2.3",
-    "@commodo/fields-storage-ref": "^0.2.0",
-    "@commodo/hooks": "^0.0.9",
-    "@commodo/name": "^0.0.11",
     "apollo-server-lambda": "^2.1.0",
-    "commodo-fields-date": "^1.0.0",
     "graphql": "^0.13.2",
     "graphql-iso-date": "^3.5.0",
     "graphql-middleware": "^1.7.6",

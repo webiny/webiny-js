@@ -24,9 +24,7 @@ const DrawerContent = (props: Object) => <RmwcDrawerContent {...props} />;
 
 type Props = {
     // DrawerHeader and DrawerContent components (both can receive any React.Node as children).
-    children: React.ChildrenArray<
-        React.Element<typeof DrawerHeader> | React.Element<typeof DrawerContent>
-    >,
+    children: React.Node,
 
     // If true, drawer will be permanently fixed inside of a view (works for temporary and persistent modes).
     open?: boolean,

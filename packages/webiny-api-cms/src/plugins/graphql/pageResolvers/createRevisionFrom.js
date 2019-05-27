@@ -22,6 +22,7 @@ export default (entityFetcher: EntityFetcher) => async (
         newRevision.populate({
             url: sourceRev.url,
             title: sourceRev.title,
+            snippet: sourceRev.snippet,
             settings: sourceRev.settings,
             content: sourceRev.content,
             category: await sourceRev.category,

@@ -2,7 +2,7 @@
 import gql from "graphql-tag";
 
 const graphql = gql`
-    {
+    query GetCookiePolicy {
         settings {
             cookiePolicy {
                 data {
