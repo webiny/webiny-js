@@ -48,6 +48,7 @@ module.exports = async ({ port, watch, inspect }) => {
             .on("quit", process.exit)
             .on("restart", function() {
                 console.log(chalk.green("Restarting..."));
+
             });
     });
 };

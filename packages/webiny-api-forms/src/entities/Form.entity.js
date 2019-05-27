@@ -73,19 +73,13 @@ export const formFactory = (context: Object): Class<IForm> => {
                 .object()
                 .onSet(value => (this.locked ? this.content : value));
 
-            this.attr("settings")
+            /*this.attr("settings")
                 .model(formSettingsFactory({ entities: cms.entities, form: this }))
-                .onSet(value => (this.locked ? this.settings : value));
+                .onSet(value => (this.locked ? this.settings : value));*/
 
             this.attr("version").integer();
 
             this.attr("parent").char();
-
-            this.attr("revisions")
-                .entities(Form)
-                .setDynamic(() => {
-                    return Form.find({ query: { parent: this.parent }, sort: { version: -1 } });
-                });
 
             this.attr("locked")
                 .boolean()
@@ -160,6 +154,10 @@ export const formFactory = (context: Object): Class<IForm> => {
                     return Promise.all(revisions.map(rev => rev.delete()));
                 }
             });
+        }
+
+        get revisions() {
+            return Form.find({ query: { parent: this.parent }, sort: { version: -1 } });
         }
 
         async getNextVersion() {

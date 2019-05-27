@@ -4,19 +4,19 @@ import {
     resolveUpdate,
     resolveDelete,
     resolveGet
-} from "webiny-api/graphql/resolvers";
+} from "webiny-api/graphql/crudResolvers";
 
 import createRevisionFrom from "./formResolvers/createRevisionFrom";
 import listForms from "./formResolvers/listForms";
 import listPublishedForms from "./formResolvers/listPublishedForms";
 import getPublishedForm from "./formResolvers/getPublishedForm";
-import { UserType } from "webiny-api-security/plugins/graphql/types";
+import UserType from "webiny-api-security/plugins/graphql/User";
 
 const formFetcher = ctx => ctx.getModel("Form");
 
 export default {
     typeDefs: () => [
-        UserType,
+        UserType.typeDefs,
         /* GraphQL*/ `type Form {
             id: ID
             createdBy: User
