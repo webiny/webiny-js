@@ -208,6 +208,10 @@ addMiddleware([DELETE_ELEMENT], ({ store, next, action }) => {
 
     // Remove child from parent
     // $FlowFixMe
+    if (!parent) {
+        return;
+    }
+
     const index = parent.elements.findIndex(el => el.id === element.id);
     parent = dotProp.delete(parent, "elements." + index);
     store.dispatch(updateElement({ element: parent }));
@@ -229,6 +233,11 @@ addMiddleware([ELEMENT_DROPPED], ({ store, next, action }) => {
 
     const state = store.getState();
     const target = getElementWithChildren(state, action.payload.target.id);
+
+    if (!target) {
+        return;
+    }
+
     const plugin = getPlugin(target.type);
 
     if (!plugin) {
