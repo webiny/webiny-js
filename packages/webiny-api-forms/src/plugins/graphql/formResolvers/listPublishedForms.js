@@ -2,12 +2,12 @@
 import { createPaginationMeta } from "webiny-entity";
 import { ListResponse } from "webiny-api/graphql/responses";
 import get from "lodash/get";
-export const listPublishedForms = async ({ args, Form, Category }: Object) => {
+
+export const listPublishedForms = async ({ args, CmsForm }: Object) => {
     const {
         page = 1,
         search,
         perPage = 10,
-        category = null,
         parent = null,
         id = null,
         url = null,
@@ -44,15 +44,6 @@ export const listPublishedForms = async ({ args, Form, Category }: Object) => {
         baseFilters.push({ title: { $regex: `.*${search}.*`, $options: "i" } });
     }
 
-    if (category) {
-        if (Category.isId(category)) {
-            baseFilters.push({ category });
-        } else {
-            const categoryEntity = await Category.findOne({ query: { slug: category } });
-            baseFilters.push({ category: categoryEntity.id });
-        }
-    }
-
     const pipeline = [{ $match: { $and: baseFilters } }];
     if (sort) {
         pipeline.push({
@@ -60,7 +51,7 @@ export const listPublishedForms = async ({ args, Form, Category }: Object) => {
         });
     }
 
-    return Form.find({
+    return CmsForm.find({
         aggregation: async ({ aggregate, QueryResult }) => {
             const pipelines = {
                 results: pipeline.concat({ $skip: (page - 1) * perPage }, { $limit: perPage }),
@@ -84,7 +75,7 @@ export const listPublishedForms = async ({ args, Form, Category }: Object) => {
 };
 
 export default async (root: any, args: Object, context: Object) => {
-    const { Form, Category } = context.forms.entities;
-    const data = await listPublishedForms({ args, Form, Category });
+    const { CmsForm } = context.getEntities();
+    const data = await listPublishedForms({ args, CmsForm });
     return new ListResponse(data, data.getMeta());
 };

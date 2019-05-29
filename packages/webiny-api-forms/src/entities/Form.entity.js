@@ -6,31 +6,27 @@ export interface IForm extends Entity {
     createdBy: Entity;
     updatedBy: Entity;
     publishedOn: ?Date;
-    title: string;
+    name: string;
     snippet: string;
-    url: string;
     content: Object;
     settings: Object;
-    category: Promise<ICategory>;
     version: number;
     parent: string;
     published: boolean;
     locked: boolean;
 }
 
-export const formFactory = (context: Object): Class<IForm> => {
-    return class Form extends Entity {
+export default ({ getUser, security, getEntities }: Object) =>
+    class CmsForm extends Entity {
         static classId = "CmsForm";
 
         createdBy: Entity;
         updatedBy: Entity;
         publishedOn: ?Date;
-        title: string;
+        name: string;
         snippet: string;
-        url: string;
         content: Object;
         settings: Object;
-        category: Promise<ICategory>;
         version: number;
         parent: string;
         published: boolean;
@@ -38,9 +34,6 @@ export const formFactory = (context: Object): Class<IForm> => {
 
         constructor() {
             super();
-
-            const { user, cms, security } = context;
-            const { Category } = cms.entities;
             const { User } = security.entities;
 
             this.attr("createdBy")
@@ -55,27 +48,22 @@ export const formFactory = (context: Object): Class<IForm> => {
                 .date()
                 .setSkipOnPopulate();
 
-            this.attr("title")
+            this.attr("name")
                 .char()
                 .setValidators("required")
-                .onSet(value => (this.locked ? this.title : value));
+                .onSet(value => (this.locked ? this.name : value));
 
             this.attr("snippet")
                 .char()
                 .onSet(value => (this.locked ? this.snippet : value));
-
-            this.attr("url")
-                .char()
-                .setValidators("required")
-                .onSet(value => (this.locked ? this.url : value));
 
             this.attr("content")
                 .object()
                 .onSet(value => (this.locked ? this.content : value));
 
             /*this.attr("settings")
-                .model(formSettingsFactory({ entities: cms.entities, form: this }))
-                .onSet(value => (this.locked ? this.settings : value));*/
+            .model(formSettingsFactory({ entities: cms.entities, form: this }))
+            .onSet(value => (this.locked ? this.settings : value));*/
 
             this.attr("version").integer();
 
@@ -96,7 +84,8 @@ export const formFactory = (context: Object): Class<IForm> => {
                         this.publishedOn = new Date();
                         this.on("beforeSave", async () => {
                             // Deactivate previously published revision
-                            const publishedRev: Form = (await Form.findOne({
+                            const { CmsForm } = getEntities();
+                            const publishedRev: CmsForm = (await CmsForm.findOne({
                                 query: { published: true, parent: this.parent }
                             }): any);
 
@@ -118,36 +107,34 @@ export const formFactory = (context: Object): Class<IForm> => {
                     this.parent = this.id;
                 }
 
-                this.createdBy = user.id;
+                this.createdBy = getUser().id;
 
-                if (!this.title) {
-                    this.title = "Untitled";
-                }
-
-                if (!this.url) {
-                    this.url = (await this.category).url + "untitled-" + this.id;
+                if (!this.name) {
+                    this.name = "Untitled";
                 }
 
                 this.version = await this.getNextVersion();
 
-                if (!this.settings) {
+                /*if (!this.settings) {
                     this.settings = {
                         general: {
                             layout: (await this.category).layout
                         }
                     };
-                }
+                }*/
             });
 
             this.on("beforeUpdate", () => {
-                this.updatedBy = user.id;
+                this.updatedBy = getUser().id;
             });
 
             this.on("afterDelete", async () => {
                 // If the deleted form is the root form - delete its revisions
                 if (this.id === this.parent) {
-                    // Delete all revisions
-                    const revisions: EntityCollection<Form> = await Form.find({
+                    // Delete all revisions.
+                    const { CmsForm } = getEntities();
+
+                    const revisions: EntityCollection<CmsForm> = await CmsForm.find({
                         query: { parent: this.parent }
                     });
 
@@ -157,11 +144,13 @@ export const formFactory = (context: Object): Class<IForm> => {
         }
 
         get revisions() {
-            return Form.find({ query: { parent: this.parent }, sort: { version: -1 } });
+            const { CmsForm } = getEntities();
+            return CmsForm.find({ query: { parent: this.parent }, sort: { version: -1 } });
         }
 
         async getNextVersion() {
-            const revision: null | Form = await Form.findOne({
+            const { CmsForm } = getEntities();
+            const revision: null | CmsForm = CmsForm.findOne({
                 query: { parent: this.parent, deleted: { $in: [true, false] } },
                 sort: { version: -1 }
             });
@@ -173,4 +162,3 @@ export const formFactory = (context: Object): Class<IForm> => {
             return revision.version + 1;
         }
     };
-};

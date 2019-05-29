@@ -36,10 +36,15 @@ export default ([
     {
         type: "graphql-context",
         name: "graphql-context-security",
-        apply: async (...args) => {
+        preApply: context => {
+            context.token = null;
+            context.user = null;
+            context.getUser = () => context.user;
+        },
+        apply: async (context) => {
             const securityPlugins: Array<PluginType> = getPlugins("graphql-security");
             for (let i = 0; i < securityPlugins.length; i++) {
-                await securityPlugins[i].authenticate(...args);
+                await securityPlugins[i].authenticate(context);
             }
         }
     },

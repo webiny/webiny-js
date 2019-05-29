@@ -12,7 +12,7 @@ import listPublishedForms from "./formResolvers/listPublishedForms";
 import getPublishedForm from "./formResolvers/getPublishedForm";
 import UserType from "webiny-api-security/plugins/graphql/User";
 
-const formFetcher = ctx => ctx.getModel("Form");
+const formFetcher = ({ getEntity }) => getEntity("CmsForm");
 
 export default {
     typeDefs: () => [

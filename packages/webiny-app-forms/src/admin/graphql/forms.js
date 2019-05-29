@@ -6,6 +6,7 @@ const error = `
 error {
     code
     message
+    data
 }`;
 
 const sharedFields = `

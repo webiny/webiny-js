@@ -5,7 +5,7 @@ import { hasRoles } from "webiny-app-security";
 
 export default [
     {
-        name: "cms-menu",
+        name: "forms-menu",
         type: "menu",
         render({ Menu }: Object) {
             const { forms }: Object = (hasRoles({
@@ -15,7 +15,7 @@ export default [
             if (forms) {
                 return (
                     <Menu label={`Content`} icon={<PagesIcon />}>
-                        <Menu label={`Forms`}>{<Menu label={`Forms`} route="/cms/forms" />}</Menu>
+                        <Menu label={`Forms`}>{<Menu label={`Forms`} path="/cms/forms" />}</Menu>
                     </Menu>
                 );
             }
