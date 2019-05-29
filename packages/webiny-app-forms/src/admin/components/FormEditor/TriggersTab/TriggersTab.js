@@ -6,6 +6,7 @@ import {
     SimpleFormContent,
     SimpleFormHeader
 } from "webiny-admin/components/SimpleForm";
+
 import { Typography } from "webiny-ui/Typography";
 import { RichTextEditor } from "webiny-app-forms/admin/components/RichTextEditor";
 import { FormEditorContext } from "webiny-app-forms/admin/components/FormEditor";

@@ -150,7 +150,7 @@ export default ({ getUser, security, getEntities }: Object) =>
 
         async getNextVersion() {
             const { CmsForm } = getEntities();
-            const revision: null | CmsForm = CmsForm.findOne({
+            const revision: null | CmsForm = await CmsForm.findOne({
                 query: { parent: this.parent, deleted: { $in: [true, false] } },
                 sort: { version: -1 }
             });
