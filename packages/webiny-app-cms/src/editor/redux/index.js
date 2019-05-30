@@ -2,8 +2,9 @@
 import { applyMiddleware, createStore, compose } from "redux";
 import _ from "lodash";
 import invariant from "invariant";
+import { getPlugins } from "webiny-plugins";
 import createRootReducer from "./createRootReducer";
-import createMiddleware from "./createMiddleware";
+import createMiddleware, { wrapMiddleware } from "./createMiddleware";
 import type {
     MiddlewareFunction,
     ReducerFactory,
@@ -74,9 +75,13 @@ export class Redux {
                 })) ||
             compose;
 
+        const middlewareFromPlugins = getPlugins("cms-editor-redux-middleware").map(pl =>
+            wrapMiddleware(pl.middleware, Array.isArray(pl.actions) ? pl.actions : null)
+        ).reverse();
+
         this.store = createStore(
             createRootReducer(INIT_STATE, this),
-            composeEnhancers(applyMiddleware(...createMiddleware(this)))
+            composeEnhancers(applyMiddleware(...middlewareFromPlugins, ...createMiddleware(this)))
         );
 
         return this.store;
