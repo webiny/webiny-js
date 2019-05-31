@@ -64,7 +64,7 @@ const Field = ({ fieldType: { id, label } }) => {
 };
 
 export const Fields = () => {
-    const { getGroups, formState } = useFields();
+    const { getGroups } = useFields();
     return (
         <React.Fragment>
             <Field fieldType={{ id: "custom", label: "Custom field" }} />
@@ -81,8 +81,6 @@ export const Fields = () => {
                     </AccordionItem>
                 ))}
             </Accordion>
-
-            <pre style={{ marginTop: 100 }}>{JSON.stringify(formState, null, 2)}</pre>
         </React.Fragment>
     );
 };

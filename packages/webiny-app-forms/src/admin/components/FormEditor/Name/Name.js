@@ -4,19 +4,21 @@ import { Tooltip } from "webiny-ui/Tooltip";
 import { Typography } from "webiny-ui/Typography";
 import { useFormEditor } from "webiny-app-forms/admin/components/FormEditor";
 import { useHotkeys } from "react-hotkeyz";
+import { i18n } from "webiny-app/i18n";
+const t = i18n.namespace("FormEditor.Name");
 
 import {
     FormMeta,
-    FormTitle,
-    formTitleWrapper,
+    FormName,
+    formNameWrapper,
     FormVersion,
-    TitleInputWrapper,
-    TitleWrapper
-} from "./TitleStyled";
+    NameInputWrapper,
+    NameWrapper
+} from "./NameStyled";
 
-export const Title = () => {
-    const { state, setTitle } = useFormEditor();
-    const [localTitle, setLocalTitle] = useState(null);
+export const Name = () => {
+    const { state, setName, saveForm } = useFormEditor();
+    const [localName, setLocalName] = useState(null);
     const [editingEnabled, setEditing] = useState(false);
 
     function cancelChanges() {
@@ -24,14 +26,18 @@ export const Title = () => {
     }
 
     function startEditing() {
-        setLocalTitle(state.data.title);
+        setLocalName(state.data.name);
         setEditing(true);
     }
 
     useHotkeys({
         zIndex: 100,
         keys: {
-            "alt+cmd+enter": startEditing
+            "alt+cmd+enter": startEditing,
+            "cmd+s": e => {
+                e.preventDefault();
+                saveForm();
+            }
         }
     });
 
@@ -45,39 +51,41 @@ export const Title = () => {
             },
             enter: e => {
                 e.preventDefault();
-                setTitle(localTitle);
+                const b = 123;
+                console.log(localName)
+                setName(localName);
                 setEditing(false);
             }
         }
     });
 
     return editingEnabled ? (
-        <TitleInputWrapper>
+        <NameInputWrapper>
             <Input
                 autoFocus
                 fullwidth
-                value={localTitle}
-                onChange={setLocalTitle}
+                value={localName}
+                onChange={setLocalName}
                 onBlur={cancelChanges}
             />
-        </TitleInputWrapper>
+        </NameInputWrapper>
     ) : (
-        <TitleWrapper>
+        <NameWrapper>
             <FormMeta>
                 <Typography use={"overline"}>
-                    {`status: ${state.data.locked ? "published" : "draft"}`}
+                    {`status: ${state.data.locked ? t`published` : t`draft`}`}
                 </Typography>
             </FormMeta>
             <div style={{ width: "100%", display: "flex" }}>
                 <Tooltip
-                    className={formTitleWrapper}
+                    className={formNameWrapper}
                     placement={"bottom"}
-                    content={<span>Rename</span>}
+                    content={<span>{t`rename`}</span>}
                 >
-                    <FormTitle onClick={startEditing}>{state.data.title}</FormTitle>
+                    <FormName onClick={startEditing}>{state.data.name}</FormName>
                 </Tooltip>
                 <FormVersion>{`(v${state.data.version})`}</FormVersion>
             </div>
-        </TitleWrapper>
+        </NameWrapper>
     );
 };

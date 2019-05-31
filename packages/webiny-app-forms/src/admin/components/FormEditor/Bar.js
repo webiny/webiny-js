@@ -1,7 +1,7 @@
 import React from "react";
 import { TopAppBar, TopAppBarSection } from "webiny-ui/TopAppBar";
 import BackButton from "./BackButton";
-import { Title } from "./Title";
+import { Name } from "./Name";
 import { FormSettingsButton } from "./FormSettingsButton";
 import { FormSettingsDialog } from "./FormSettingsDialog";
 import { useFormEditor } from "./context";
@@ -19,7 +19,7 @@ export default function Bar() {
         <TopAppBar className={topBar} fixed>
             <TopAppBarSection style={{ width: "50%" }} alignStart>
                 <BackButton />
-                <Title />
+                <Name />
             </TopAppBarSection>
             <TopAppBarSection style={{ width: "33%" }} alignEnd>
                 <FormSettingsButton />

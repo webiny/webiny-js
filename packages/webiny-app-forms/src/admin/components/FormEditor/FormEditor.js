@@ -1,26 +1,37 @@
-import React from "react";
-import classSet from "classnames";
+// @flow
+import React, { useEffect } from "react";
 import HTML5Backend from "react-dnd-html5-backend";
 import { DragDropContext } from "react-dnd";
-import { FormEditorProvider } from "./context";
+import { useFormEditor } from "./context";
 
 // Components
 import EditorBar from "./Bar";
 import EditorContent from "./Content";
 import DragPreview from "./DragPreview";
 
-const FormEditor = () => {
-    const classes = {
-        "form-editor": true
-    };
+type Props = {
+    id: string
+};
+
+const FormEditor = ({ id }: Props) => {
+    const {
+        getForm,
+        state: { loaded }
+    } = useFormEditor();
+    useEffect(() => {
+        getForm(id);
+    }, []);
+
+    if (!loaded) {
+        return null;
+    }
+
     return (
-        <FormEditorProvider>
-            <div className={classSet(classes)}>
-                <EditorBar />
-                {/*<EditorContent />
-                <DragPreview />*/}
-            </div>
-        </FormEditorProvider>
+        <div className={"form-editor"}>
+            <EditorBar />
+            <EditorContent />
+            <DragPreview />
+        </div>
     );
 };
 

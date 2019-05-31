@@ -1,2 +1,2 @@
 export { useFormEditor, FormEditorProvider } from "./context";
-export { default as FormEditor } from "./FormEditor";
+export { default as FormEditorApp } from "./FormEditorApp";

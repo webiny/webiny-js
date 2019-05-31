@@ -8,7 +8,7 @@ export interface IForm extends Entity {
     publishedOn: ?Date;
     name: string;
     snippet: string;
-    content: Object;
+    fields: Object;
     settings: Object;
     version: number;
     parent: string;
@@ -25,7 +25,7 @@ export default ({ getUser, security, getEntities }: Object) =>
         publishedOn: ?Date;
         name: string;
         snippet: string;
-        content: Object;
+        fields: Object;
         settings: Object;
         version: number;
         parent: string;
@@ -57,9 +57,13 @@ export default ({ getUser, security, getEntities }: Object) =>
                 .char()
                 .onSet(value => (this.locked ? this.snippet : value));
 
-            this.attr("content")
+            this.attr("fields")
                 .object()
-                .onSet(value => (this.locked ? this.content : value));
+                .onSet(value => (this.locked ? this.fields : value));
+
+            this.attr("triggers")
+                .object()
+                .onSet(value => (this.locked ? this.fields : value));
 
             /*this.attr("settings")
             .model(formSettingsFactory({ entities: cms.entities, form: this }))

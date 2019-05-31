@@ -2,7 +2,7 @@
 import styled from "react-emotion";
 import { css } from "emotion";
 
-export const TitleInputWrapper = styled("div")({
+export const NameInputWrapper = styled("div")({
     width: "100%",
     display: "flex",
     alignItems: "center",
@@ -15,7 +15,7 @@ export const TitleInputWrapper = styled("div")({
     }
 });
 
-export const TitleWrapper = styled("div")({
+export const NameWrapper = styled("div")({
     height: 50,
     display: "flex",
     alignItems: "baseline",
@@ -27,7 +27,7 @@ export const TitleWrapper = styled("div")({
     marginLeft: 10
 });
 
-export const FormTitle = styled("div")({
+export const FormName = styled("div")({
     border: "1px solid transparent",
     fontSize: 20,
     whiteSpace: "nowrap",
@@ -40,7 +40,7 @@ export const FormTitle = styled("div")({
     }
 });
 
-export const formTitleWrapper = css({
+export const formNameWrapper = css({
     maxWidth: "calc(100% - 50px)"
 });
 

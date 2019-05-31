@@ -41,7 +41,7 @@ export default {
         
         input UpdateFormInput {
             name: String
-            content: JSON
+            fields: JSON
         }
         
         input FormSortInput {
@@ -127,7 +127,7 @@ export default {
     ],
     resolvers: {
         FormsQuery: {
-            getForm: resolveGet(formFetcher),
+            getForm: resolveGet("CmsForm"),
             listForms: listForms,
             listPublishedForms,
             getPublishedForm

@@ -39,8 +39,8 @@ const Field = ({ field }) => {
                 </span>
             </Info>
             <Actions>
-                <IconButton icon={<EditIcon />} onClick={editField} />
-                <IconButton icon={<DeleteIcon />} onClick={deleteField} />
+                <IconButton icon={<EditIcon />} onClick={() => editField(field)} />
+                <IconButton icon={<DeleteIcon />} onClick={() => deleteField(field)} />
             </Actions>
         </FieldContainer>
     );
