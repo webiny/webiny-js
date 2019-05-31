@@ -17,7 +17,7 @@ import {
 } from "./NameStyled";
 
 export const Name = () => {
-    const { state, setName, saveForm } = useFormEditor();
+    const { state, setName } = useFormEditor();
     const [localName, setLocalName] = useState(null);
     const [editingEnabled, setEditing] = useState(false);
 
@@ -34,10 +34,6 @@ export const Name = () => {
         zIndex: 100,
         keys: {
             "alt+cmd+enter": startEditing,
-            "cmd+s": e => {
-                e.preventDefault();
-                saveForm();
-            }
         }
     });
 

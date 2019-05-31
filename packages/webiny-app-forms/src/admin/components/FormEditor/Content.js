@@ -6,6 +6,8 @@ import { Tabs, Tab } from "webiny-ui/Tabs";
 import { EditTab } from "./EditTab";
 import { TriggersTab } from "./TriggersTab";
 import { Fields } from "./Fields";
+import { useHotkeys } from "react-hotkeyz";
+import { useFormEditor } from "webiny-app-forms/admin/components/FormEditor/Context";
 
 const ContentContainer = styled("div")({
     paddingTop: 65
@@ -14,20 +16,30 @@ const ContentContainer = styled("div")({
 const leftPanel = css({ padding: 40 });
 
 export default function Content() {
+    const { saveForm } = useFormEditor();
 
+    useHotkeys({
+        zIndex: 100,
+        keys: {
+            "cmd+s": e => {
+                e.preventDefault();
+                saveForm();
+            }
+        }
+    });
     return (
         <ContentContainer>
             <SplitView>
                 <LeftPanel span={4} className={leftPanel}>
-                    <Fields/>
+                    <Fields />
                 </LeftPanel>
                 <RightPanel span={8}>
                     <Tabs>
                         <Tab label={"Edit"}>
-                            <EditTab/>
+                            <EditTab />
                         </Tab>
                         <Tab label={"Triggers"}>
-                            <TriggersTab/>
+                            <TriggersTab />
                         </Tab>
                     </Tabs>
                 </RightPanel>
