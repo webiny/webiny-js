@@ -1,24 +1,10 @@
 import React from "react";
 import useFormEditorFactory from "./useFormEditorFactory";
 
-const defaultData = () => ({
-    name: "Unnamed",
-    version: 1,
-    locked: false,
-    fields: [],
-    triggers: {
-        redirect: "",
-        message: null,
-        webhook: ""
-    }
-});
-
 function init(props) {
     return {
         apollo: null,
-        loaded: false,
-        fields: [],
-        data: defaultData(),
+        data: null,
         ...props
     };
 }
@@ -31,11 +17,7 @@ function formEditorReducer(state, action) {
             break;
         }
         case "fields": {
-            next.fields = action.data;
-            break;
-        }
-        case "loaded": {
-            next.loaded = action.state;
+            next.data.fields = action.data;
             break;
         }
         case "data": {

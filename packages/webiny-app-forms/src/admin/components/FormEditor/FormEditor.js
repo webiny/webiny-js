@@ -16,13 +16,13 @@ type Props = {
 const FormEditor = ({ id }: Props) => {
     const {
         getForm,
-        state: { loaded }
+        state: { data }
     } = useFormEditor();
     useEffect(() => {
         getForm(id);
     }, []);
 
-    if (!loaded) {
+    if (!data) {
         return null;
     }
 

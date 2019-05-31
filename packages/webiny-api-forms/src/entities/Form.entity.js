@@ -59,7 +59,8 @@ export default ({ getUser, security, getEntities }: Object) =>
 
             this.attr("fields")
                 .object()
-                .onSet(value => (this.locked ? this.fields : value));
+                .onSet(value => (this.locked ? this.fields : value))
+                .setValue([]);
 
             this.attr("triggers")
                 .object()

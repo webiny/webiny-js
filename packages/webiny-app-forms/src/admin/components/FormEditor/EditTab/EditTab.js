@@ -10,9 +10,15 @@ import { ReactComponent as HandleIcon } from "../icons/round-drag_indicator-24px
 import { rowHandle, EditContainer, fieldHandle, FieldContainer, Row, RowContainer } from "./Styled";
 import useEditTab from "./useEditTab";
 
+import { i18n } from "webiny-app/i18n";
+const t = i18n.namespace("FormEditor.EditTab");
+
 export const EditTab = () => {
     const {
-        state: { fields, editField },
+        state: {
+            data: { fields },
+            editField
+        },
         closeFieldDialog,
         fieldDialogOpened,
         onDrop,
@@ -23,7 +29,7 @@ export const EditTab = () => {
         <EditContainer>
             {fields.length === 0 && (
                 <Center onDrop={item => onDrop(item, { row: 0, index: 0 })}>
-                    DROP YOUR FIRST FIELD HERE
+                    {t`Drop your first field here`}
                 </Center>
             )}
 

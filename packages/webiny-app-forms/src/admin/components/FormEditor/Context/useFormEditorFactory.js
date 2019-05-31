@@ -54,13 +54,13 @@ export default (FormEditorContext) => {
                     fieldData._id = shortid.generate();
                 }
 
+                const fields = state.data.fields;
+
                 // Setting a form field into a new non-existing row.
-                if (!state.fields[row]) {
-                    self.setFields(set(state.fields, row, [fieldData]));
+                if (!fields[row]) {
+                    self.setFields(set(fields, row, [fieldData]));
                     return;
                 }
-
-                const { fields } = state;
 
                 // If row exists, we drop the field at the specified index.
 
@@ -68,7 +68,7 @@ export default (FormEditorContext) => {
                     // Create a new row with the new field at the given row index
                     console.log("cemu ovo sluzi?! ");
                     self.setFields(
-                        set(state, "fields", [
+                        set(state, "data.fields", [
                             ...fields.slice(0, row),
                             [fieldData],
                             ...fields.slice(row)
@@ -79,7 +79,7 @@ export default (FormEditorContext) => {
 
                 // We are dropping a new field at the specified index.
                 self.setFields(
-                    set(state.fields, row, [
+                    set(state.data.fields, row, [
                         ...fields[row].slice(0, index),
                         fieldData,
                         ...fields[row].slice(index)
