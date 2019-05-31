@@ -1,6 +1,6 @@
 {
   "name": "webiny-cli",
-  "version": "2.2.2",
+  "version": "2.2.3",
   "main": "index.js",
   "bin": {
     "webiny": "./lib/index.js",

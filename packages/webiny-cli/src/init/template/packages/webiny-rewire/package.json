@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@rescripts/cli": "^0.0.10",
     "@svgr/webpack": "^4.1.0",
     "babel-plugin-emotion": "^10.0.4",
     "babel-plugin-lodash": "^3.3.4",
@@ -13,11 +14,10 @@
     "lodash.get": "^4.4.2",
     "lodash.isobject": "^3.0.2",
     "lodash.set": "^4.3.2",
-    "react-hot-loader": "^4.3.12"
+    "react-hot-loader": "^4.3.12",
+    "react-scripts": "^3.0.1"
   },
   "peerDependencies": {
-    "@rescripts/cli": "^0.0.7",
-    "babel-preset-react-app": "^6.1.0",
-    "react-scripts": "^2.1.1"
+    "babel-preset-react-app": "^6.1.0"
   }
 }

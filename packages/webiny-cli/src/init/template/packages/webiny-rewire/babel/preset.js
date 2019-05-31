@@ -15,7 +15,7 @@ module.exports = function(api, opts, env) {
                 {
                     loaderMap: {
                         svg: {
-                            ReactComponent: "@svgr/webpack![path]"
+                            ReactComponent: "@svgr/webpack?-svgo,+ref![path]"
                         }
                     }
                 }
