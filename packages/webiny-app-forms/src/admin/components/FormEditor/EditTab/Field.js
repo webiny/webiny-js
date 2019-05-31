@@ -1,5 +1,5 @@
 import React from "react";
-import { useFormEditor } from "webiny-app-forms/admin/components/FormEditor";
+import { useFormEditor } from "webiny-app-forms/admin/components/FormEditor/Context";
 import styled from "react-emotion";
 import { IconButton } from "webiny-ui/Button";
 import { ReactComponent as EditIcon } from "../icons/edit.svg";

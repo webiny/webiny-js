@@ -1,6 +1,6 @@
 import { useState, useEffect, useContext } from "react";
 import slugify from "slugify";
-import { useFormEditor } from "webiny-app-forms/admin/components/FormEditor";
+import { useFormEditor } from "webiny-app-forms/admin/components/FormEditor/Context";
 import { memoize, flatten } from "lodash";
 import { getPlugins } from "webiny-plugins";
 

@@ -1,5 +1,5 @@
 import React from "react";
-import { FormEditorProvider } from "./context";
+import { FormEditorProvider } from "./Context";
 import { withApollo } from "react-apollo";
 import FormEditor from "./FormEditor";
 import { withRouter } from "react-router-dom";

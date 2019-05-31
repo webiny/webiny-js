@@ -2,7 +2,7 @@
 import React, { useEffect } from "react";
 import HTML5Backend from "react-dnd-html5-backend";
 import { DragDropContext } from "react-dnd";
-import { useFormEditor } from "./context";
+import { useFormEditor } from "./Context";
 
 // Components
 import EditorBar from "./Bar";

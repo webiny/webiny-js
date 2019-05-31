@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Input } from "webiny-ui/Input";
 import { Tooltip } from "webiny-ui/Tooltip";
 import { Typography } from "webiny-ui/Typography";
-import { useFormEditor } from "webiny-app-forms/admin/components/FormEditor";
+import { useFormEditor } from "webiny-app-forms/admin/components/FormEditor/Context";
 import { useHotkeys } from "react-hotkeyz";
 import { i18n } from "webiny-app/i18n";
 const t = i18n.namespace("FormEditor.Name");

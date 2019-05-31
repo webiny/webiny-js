@@ -1,6 +1,6 @@
 import { useState, useRef } from "react";
 import { getPlugins } from "webiny-plugins";
-import { useFormEditor } from "webiny-app-forms/admin/components/FormEditor";
+import { useFormEditor } from "webiny-app-forms/admin/components/FormEditor/Context";
 
 export default function useEditTab() {
     const [fieldDialogOpened, showFieldDialog] = useState(false);

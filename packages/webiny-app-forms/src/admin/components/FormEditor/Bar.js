@@ -4,7 +4,7 @@ import BackButton from "./BackButton";
 import { Name } from "./Name";
 import { FormSettingsButton } from "./FormSettingsButton";
 import { FormSettingsDialog } from "./FormSettingsDialog";
-import { useFormEditor } from "./context";
+import { useFormEditor } from "./Context";
 
 import { css } from "emotion";
 
