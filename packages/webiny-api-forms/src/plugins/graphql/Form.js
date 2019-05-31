@@ -27,7 +27,8 @@ export default {
             publishedOn: DateTime
             version: Int
             name: String
-            content: JSON
+            fields: JSON
+            triggers: JSON
             published: Boolean
             locked: Boolean
             parent: ID
@@ -126,7 +127,7 @@ export default {
     ],
     resolvers: {
         FormsQuery: {
-            getForm: resolveGet,
+            getForm: resolveGet(formFetcher),
             listForms: listForms,
             listPublishedForms,
             getPublishedForm
