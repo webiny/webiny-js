@@ -51,8 +51,6 @@ export const Name = () => {
             },
             enter: e => {
                 e.preventDefault();
-                const b = 123;
-                console.log(localName)
                 setName(localName);
                 setEditing(false);
             }

@@ -38,14 +38,8 @@ export default (FormEditorContext) => {
             setName(name) {
                 dispatch({ type: "name", value: name });
             },
-            getName() {
-                return state.data.name;
-            },
             setFields(data) {
                 dispatch({ type: "fields", data });
-            },
-            getFields() {
-                return state.data.fields;
             },
             insertField(fieldData, position) {
                 const { row, index } = position;
