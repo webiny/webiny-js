@@ -1,4 +1,3 @@
-// @flowIgnore
 const aliases = require("../aliases");
 
 module.exports = function(api, opts, env) {
