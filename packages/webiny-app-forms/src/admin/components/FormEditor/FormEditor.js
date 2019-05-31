@@ -9,15 +9,12 @@ import EditorBar from "./Bar";
 import EditorContent from "./Content";
 import DragPreview from "./DragPreview";
 
-type Props = {
-    id: string
-};
-
-const FormEditor = ({ id }: Props) => {
+const FormEditor = () => {
     const {
         getForm,
-        state: { data }
+        state: { data, id }
     } = useFormEditor();
+
     useEffect(() => {
         getForm(id);
     }, []);

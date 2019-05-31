@@ -9,7 +9,6 @@ import { getForm, updateRevision } from "./graphql";
 
 export default (FormEditorContext) => {
     return () => {
-
         const context = React.useContext(FormEditorContext);
         if (!context) {
             throw new Error("useFormEditor must be used within a FormEditorProvider");

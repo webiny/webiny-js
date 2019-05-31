@@ -4,10 +4,11 @@ import { withApollo } from "react-apollo";
 import FormEditor from "./FormEditor";
 import { withRouter } from "react-router-dom";
 import { compose } from "recompose";
+
 const FormEditorApp = ({ client, match }) => {
     return (
-        <FormEditorProvider apollo={client}>
-            <FormEditor id={match.params.id} />
+        <FormEditorProvider apollo={client} id={match.params.id}>
+            <FormEditor />
         </FormEditorProvider>
     );
 };
