@@ -28,6 +28,7 @@
   "devDependencies": {
     "@rescripts/cli": "^0.0.7",
     "node-sass": "^4.9.3",
+    "react-scripts": "^3.0.1",
     "source-map-explorer": "^1.6.0"
   },
   "peerDependencies": {
