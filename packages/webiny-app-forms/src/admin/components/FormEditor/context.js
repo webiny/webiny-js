@@ -2,18 +2,7 @@ import React, { useReducer } from "react";
 import { flatten } from "lodash";
 import dp from "dot-prop-immutable";
 
-const INIT_STATE = {
-    title: "Untitled",
-    version: 1,
-    locked: false,
-    fields: [],
-    triggers: {
-        redirect: "",
-        message: null,
-        webhook: ""
-    }
-};
-
+/*
 const useEditorState = (initialState = INIT_STATE) => {
     const [state, dispatch] = useReducer(
         (oldState, newState) => ({ ...oldState, ...newState }),
@@ -59,14 +48,72 @@ const useEditorState = (initialState = INIT_STATE) => {
         isFieldIdInUse,
         findFieldPosition
     };
-};
+};*/
+
+function init() {
+    return {
+        data: {
+            title: "Untitled",
+            version: 1,
+            locked: false,
+            fields: [],
+            triggers: {
+                redirect: "",
+                message: null,
+                webhook: ""
+            }
+        }
+    };
+}
+
+function formEditorReducer(state, action) {
+    const next = { ...state };
+    switch (action.type) {
+        case "setTitle": {
+            next.data.title = action.value;
+            break;
+        }
+        case "uploading": {
+            next.uploading = action.state;
+            break;
+        }
+    }
+
+    return next;
+}
 
 const FormEditorContext = React.createContext();
 
-const FormEditorProvider = ({ value, children }) => {
-    const editorState = useEditorState(value);
+function FormEditorProvider(props) {
+    const [state, dispatch] = React.useReducer(formEditorReducer, props, init);
 
-    return <FormEditorContext.Provider value={editorState}>{children}</FormEditorContext.Provider>;
-};
+    const value = React.useMemo(() => {
+        return {
+            state,
+            dispatch
+        };
+    });
 
-export { FormEditorContext, FormEditorProvider };
+    return <FormEditorContext.Provider value={value} {...props} />;
+}
+
+function useFormEditor() {
+    const context = React.useContext(FormEditorContext);
+    if (!context) {
+        throw new Error("useFormEditor must be used within a FormEditorProvider");
+    }
+
+    const { state, dispatch } = context;
+    return {
+        setTitle(title) {
+            dispatch({ type: "setTitle", value: title });
+        },
+        getTitle() {
+            return state.data.title;
+        },
+        state,
+        dispatch
+    };
+}
+
+export { FormEditorProvider, useFormEditor };

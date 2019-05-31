@@ -1,8 +1,9 @@
-import React, { useState, useContext } from "react";
+import React, { useState } from "react";
 import { Input } from "webiny-ui/Input";
 import { Tooltip } from "webiny-ui/Tooltip";
 import { Typography } from "webiny-ui/Typography";
-import { FormEditorContext } from "webiny-app-forms/admin/components/FormEditor";
+import { useFormEditor } from "webiny-app-forms/admin/components/FormEditor";
+import { useHotkeys } from "react-hotkeyz";
 
 import {
     FormMeta,
@@ -14,67 +15,57 @@ import {
 } from "./TitleStyled";
 
 export const Title = () => {
-    const { formState, setFormState } = useContext(FormEditorContext);
-    const [editTitle, setEdit] = useState(false);
-    let [title, setTitle] = useState(null);
+    const { state, setTitle } = useFormEditor();
+    const [localTitle, setLocalTitle] = useState(null);
+    const [editingEnabled, setEditing] = useState(false);
 
-    if (title === null && formState.title) {
-        title = formState.title;
+    function cancelChanges() {
+        setEditing(false);
     }
 
-    function onKeyDown(e) {
-        switch (e.key) {
-            case "Escape":
-                e.preventDefault();
-                setEdit(false);
-                setTitle(null);
-                break;
-            case "Enter":
-                e.preventDefault();
+    function startEditing() {
+        setLocalTitle(state.data.title);
+        setEditing(true);
+    }
 
-                if (title === "") {
-                    title = "Untitled";
-                }
-
-                setEdit(false);
-                setTitle(null);
-
-                setFormState(state => {
-                    return { ...state, title };
-                });
-                break;
-            default:
-                return;
+    useHotkeys({
+        zIndex: 100,
+        keys: {
+            "alt+cmd+enter": startEditing
         }
-    }
+    });
 
-    function onBlur() {
-        if (title === "") {
-            title = "Untitled";
+    useHotkeys({
+        zIndex: 101,
+        disabled: !editingEnabled,
+        keys: {
+            esc: e => {
+                e.preventDefault();
+                cancelChanges();
+            },
+            enter: e => {
+                e.preventDefault();
+                setTitle(localTitle);
+                setEditing(false);
+            }
         }
-        setEdit(false);
-        setTitle(null);
-        setFormState(state => {
-            return { ...state, title };
-        });
-    }
+    });
 
-    return editTitle ? (
+    return editingEnabled ? (
         <TitleInputWrapper>
             <Input
                 autoFocus
                 fullwidth
-                value={title}
-                onChange={setTitle}
-                onKeyDown={onKeyDown}
-                onBlur={onBlur}
+                value={localTitle}
+                onChange={setLocalTitle}
+                onBlur={cancelChanges}
             />
         </TitleInputWrapper>
     ) : (
         <TitleWrapper>
             <FormMeta>
                 <Typography use={"overline"}>
-                    {`status: ${formState.locked ? "published" : "draft"}`}
+                    {`status: ${state.data.locked ? "published" : "draft"}`}
                 </Typography>
             </FormMeta>
             <div style={{ width: "100%", display: "flex" }}>
@@ -83,9 +74,9 @@ export const Title = () => {
                     placement={"bottom"}
                     content={<span>Rename</span>}
                 >
-                    <FormTitle onClick={() => setEdit(true)}>{title}</FormTitle>
+                    <FormTitle onClick={startEditing}>{state.data.title}</FormTitle>
                 </Tooltip>
-                <FormVersion>{`(v${formState.version})`}</FormVersion>
+                <FormVersion>{`(v${state.data.version})`}</FormVersion>
             </div>
         </TitleWrapper>
     );

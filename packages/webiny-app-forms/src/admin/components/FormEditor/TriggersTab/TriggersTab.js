@@ -19,6 +19,7 @@ const Container = styled("div")({
 });
 
 export const TriggersTab = () => {
+    return null;
     const { validators, createBind, createToggle, createSetValue } = useValidatorsTab(props);
 
     return (

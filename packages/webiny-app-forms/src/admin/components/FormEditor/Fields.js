@@ -1,5 +1,5 @@
-import React, { useContext } from "react";
-import { FormEditorContext } from "webiny-app-forms/admin/components/FormEditor";
+import React from "react";
+import { useFormEditor } from "webiny-app-forms/admin/components/FormEditor";
 import { getPlugins } from "webiny-plugins";
 import styled from "react-emotion";
 import { Icon } from "webiny-ui/Icon";
@@ -25,7 +25,7 @@ const FieldHandle = styled("div")({
 });
 
 function useFields() {
-    const { formState, isFieldIdInUse } = useContext(FormEditorContext);
+    const { state, isFieldIdInUse } = useFormEditor();
 
     function getGroups() {
         const fieldPlugins = getPlugins("cms-form-field-type")
@@ -39,7 +39,7 @@ function useFields() {
         }));
     }
 
-    return { getGroups, formState };
+    return { getGroups, state };
 }
 
 const Field = ({ fieldType: { id, label } }) => {

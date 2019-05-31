@@ -12,7 +12,7 @@ import useEditTab from "./useEditTab";
 
 export const EditTab = () => {
     const {
-        formState: { fields, editField },
+        state: { fields, editField },
         closeFieldDialog,
         fieldDialogOpened,
         onDrop,

@@ -1,5 +1,5 @@
-import React, { useContext } from "react";
-import { FormEditorContext } from "webiny-app-forms/admin/components/FormEditor";
+import React from "react";
+import { useFormEditor } from "webiny-app-forms/admin/components/FormEditor";
 import styled from "react-emotion";
 import { IconButton } from "webiny-ui/Button";
 import { ReactComponent as EditIcon } from "../icons/edit.svg";
@@ -28,15 +28,7 @@ const Actions = styled("div")({
 });
 
 const Field = ({ field }) => {
-    const { setFormState, deleteFormField } = useContext(FormEditorContext);
-
-    function editField() {
-        setFormState({ editField: field });
-    }
-
-    function deleteField() {
-        deleteFormField(field);
-    }
+    const { editField, deleteField } = useFormEditor();
 
     return (
         <FieldContainer>

@@ -1,5 +1,5 @@
-import React, { Fragment, useContext } from "react";
-import { FormEditorContext } from "./context";
+import React, { Fragment } from "react";
+import { useFormEditor } from "./context";
 
 import {
     Dialog,
@@ -16,11 +16,11 @@ import { Form } from "webiny-form";
 import { Input } from "webiny-ui/Input";
 
 export const FormSettingsDialog = ({ open, onClose }) => {
-    const { formState } = useContext(FormEditorContext);
+    const { state } = useFormEditor();
 
     return (
         <Dialog open={open} onClose={onClose}>
-            <Form data={formState.settings} onSubmit={() => {}}>
+            <Form data={state.settings} onSubmit={() => {}}>
                 {({ Bind, submit }) => (
                     <Fragment>
                         <DialogHeader>

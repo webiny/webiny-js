@@ -2,6 +2,7 @@ import React from "react";
 import classSet from "classnames";
 import HTML5Backend from "react-dnd-html5-backend";
 import { DragDropContext } from "react-dnd";
+import { FormEditorProvider } from "./context";
 
 // Components
 import EditorBar from "./Bar";
@@ -13,11 +14,13 @@ const FormEditor = () => {
         "form-editor": true
     };
     return (
-        <div className={classSet(classes)}>
-            <EditorBar />
-            <EditorContent />
-            <DragPreview />
-        </div>
+        <FormEditorProvider>
+            <div className={classSet(classes)}>
+                <EditorBar />
+                {/*<EditorContent />
+                <DragPreview />*/}
+            </div>
+        </FormEditorProvider>
     );
 };
 

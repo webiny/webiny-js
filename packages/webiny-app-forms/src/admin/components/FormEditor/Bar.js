@@ -1,10 +1,10 @@
-import React, { useContext, useCallback } from "react";
+import React from "react";
 import { TopAppBar, TopAppBarSection } from "webiny-ui/TopAppBar";
 import BackButton from "./BackButton";
 import { Title } from "./Title";
 import { FormSettingsButton } from "./FormSettingsButton";
 import { FormSettingsDialog } from "./FormSettingsDialog";
-import { FormEditorContext } from "./context";
+import { useFormEditor } from "./context";
 
 import { css } from "emotion";
 
@@ -13,10 +13,7 @@ const topBar = css({
 });
 
 export default function Bar() {
-    const { formState, setFormState } = useContext(FormEditorContext);
-    const hideSettings = useCallback(() => {
-        setFormState({ showSettings: false });
-    });
+    const { showSettings, hideSettings } = useFormEditor();
 
     return (
         <TopAppBar className={topBar} fixed>
@@ -26,7 +23,7 @@ export default function Bar() {
             </TopAppBarSection>
             <TopAppBarSection style={{ width: "33%" }} alignEnd>
                 <FormSettingsButton />
-                <FormSettingsDialog open={formState.showSettings} onClose={hideSettings} />
+                <FormSettingsDialog open={showSettings} onClose={hideSettings} />
             </TopAppBarSection>
         </TopAppBar>
     );

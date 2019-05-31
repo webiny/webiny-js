@@ -1,12 +1,12 @@
 import { useState, useEffect, useContext } from "react";
 import slugify from "slugify";
-import { FormEditorContext } from "webiny-app-forms/admin/components/FormEditor";
+import { useFormEditor } from "webiny-app-forms/admin/components/FormEditor";
 import { memoize, flatten } from "lodash";
 import { getPlugins } from "webiny-plugins";
 
 export default function useEditFieldDialog({ field, open }) {
     const [editField, setField] = useState(field);
-    const { formState } = useContext(FormEditorContext);
+    const { state } = useFormEditor();
 
     useEffect(() => {
         // Each time `open` prop changes, update internal field state.
@@ -31,7 +31,7 @@ export default function useEditFieldDialog({ field, open }) {
         });
 
     function uniqueId(value) {
-        if (flatten(formState.fields).find(f => editField._id !== f._id && f.id === value)) {
+        if (flatten(state.fields).find(f => editField._id !== f._id && f.id === value)) {
             throw new Error("Please enter a unique ID");
         }
     }

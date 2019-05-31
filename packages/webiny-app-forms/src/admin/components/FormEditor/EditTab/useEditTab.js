@@ -2,11 +2,11 @@ import { useContext, useState, useRef } from "react";
 import shortid from "shortid";
 import { set } from "dot-prop-immutable";
 import { getPlugins } from "webiny-plugins";
-import { FormEditorContext } from "webiny-app-forms/admin/components/FormEditor";
+import { useFormEditor } from "webiny-app-forms/admin/components/FormEditor";
 
 export default function useEditTab() {
     const [fieldDialogOpened, showFieldDialog] = useState(false);
-    const { formState, setFormState, findFieldPosition } = useContext(FormEditorContext);
+    const { state, setFormState, findFieldPosition } = useFormEditor();
     const createAt = useRef(null);
 
     function closeFieldDialog() {
@@ -22,7 +22,7 @@ export default function useEditTab() {
         }
     }
 
-    function insertField(fieldData, position, state = formState) {
+    function insertField(fieldData, position, state = state) {
         const { row, index } = position;
 
         if (!fieldData._id) {
@@ -54,7 +54,7 @@ export default function useEditTab() {
 
     function updateField(fieldData) {
         const { row, index } = findFieldPosition(fieldData._id);
-        setFormState(set(formState, ["fields", row, index], fieldData));
+        setFormState(set(state, ["fields", row, index], fieldData));
     }
 
     function onDrop(source, target) {
@@ -122,7 +122,7 @@ export default function useEditTab() {
     }
 
     return {
-        formState,
+        state: state,
         fieldDialogOpened,
         closeFieldDialog,
         saveField,
