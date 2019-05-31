@@ -5,7 +5,7 @@ import parseBoolean from "./parseBoolean";
 import InvalidAttributesError from "./InvalidAttributesError";
 import { ListResponse, ErrorResponse, NotFoundResponse, Response } from "./responses";
 
-type EntityFetcher = (context: Object) => Class<Entity>;
+type EntityFetcher = string | (context: Object) => Class<Entity>;
 
 const notFound = (id?: string) => {
     return new NotFoundResponse(id ? `Record "${id}" not found!` : "Record not found!");
