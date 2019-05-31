@@ -93,13 +93,19 @@ function useFormEditor() {
                 variables: { id: data.id, data: pick(data, ["fields", "name"]) }
             });
 
-            return get(response, "data.forms.getForm");
+            return get(response, "data.forms.updateRevision");
         },
         setName(name) {
             dispatch({ type: "name", value: name });
         },
         getName() {
             return state.data.name;
+        },
+        setFields(data) {
+            dispatch({ type: "fields", data });
+        },
+        getFields() {
+            return state.data.fields;
         },
         insertField(fieldData, position) {
             const { row, index } = position;
@@ -110,7 +116,7 @@ function useFormEditor() {
 
             // Setting a form field into a new non-existing row.
             if (!state.fields[row]) {
-                dispatch({ type: "fields", data: set(state.fields, row, [fieldData]) });
+                self.setFields(set(state.fields, row, [fieldData]));
                 return;
             }
 
@@ -121,22 +127,24 @@ function useFormEditor() {
             if (index === null) {
                 // Create a new row with the new field at the given row index
                 console.log("cemu ovo sluzi?! ");
-                return set(state, "fields", [
-                    ...fields.slice(0, row),
-                    [fieldData],
-                    ...fields.slice(row)
-                ]);
+                self.setFields(
+                    set(state, "fields", [
+                        ...fields.slice(0, row),
+                        [fieldData],
+                        ...fields.slice(row)
+                    ])
+                );
+                return;
             }
 
             // We are dropping a new field at the specified index.
-            dispatch({
-                type: "fields",
-                data: set(state.fields, row, [
+            self.setFields(
+                set(state.fields, row, [
                     ...fields[row].slice(0, index),
                     fieldData,
                     ...fields[row].slice(index)
                 ])
-            });
+            );
         },
         findFieldPosition(id) {
             for (let i = 0; i < state.fields.length; i++) {
