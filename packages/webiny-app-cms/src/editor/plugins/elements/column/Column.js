@@ -85,6 +85,7 @@ export default compose(
         (state, props) => {
             const element = getElement(state, props.element.id);
             return {
+                // $FlowFixMe
                 element: { ...element, elements: element.elements.map(id => getElement(state, id)) }
             };
         },
