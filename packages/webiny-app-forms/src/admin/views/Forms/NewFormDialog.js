@@ -7,6 +7,13 @@ import { Mutation } from "react-apollo";
 import { Form } from "webiny-form";
 import { Input } from "webiny-ui/Input";
 import { createForm } from "webiny-app-forms/admin/graphql/forms";
+import get from "lodash.get";
+import { compose } from "recompose";
+import { withSnackbar } from "webiny-admin/components";
+
+import { i18n } from "webiny-app/i18n";
+const t = i18n.namespace("Forms.NewFormDialog");
+
 import {
     Dialog,
     DialogHeader,
@@ -26,11 +33,13 @@ const narrowDialog = css({
 const NewFormDialog = ({
     open,
     onClose,
-    history
+    history,
+    showSnackbar
 }: {
     open: boolean,
     onClose: Function,
-    history: RouterHistory
+    history: RouterHistory,
+    showSnackbar: Function
 }) => {
     return (
         <Dialog open={open} onClose={onClose} className={narrowDialog}>
@@ -38,14 +47,21 @@ const NewFormDialog = ({
                 {update => (
                     <Form
                         onSubmit={async data => {
-                            const result = update({ variables: data });
-                            // history.push("/forms")
+                            const response = get(
+                                await update({ variables: data }),
+                                "data.forms.form"
+                            );
+                            if (response.error) {
+                                return showSnackbar(response.error.message);
+                            }
+
+                            history.push("/forms/" + response.data.id);
                         }}
                     >
                         {({ Bind, submit }) => (
                             <>
                                 <DialogHeader>
-                                    <DialogHeaderTitle>New form</DialogHeaderTitle>
+                                    <DialogHeaderTitle>{t`New form`}</DialogHeaderTitle>
                                 </DialogHeader>
                                 <DialogBody>
                                     <Bind name={"name"}>
@@ -53,7 +69,7 @@ const NewFormDialog = ({
                                     </Bind>
                                 </DialogBody>
                                 <DialogFooter>
-                                    <ButtonDefault onClick={submit}>+ Create</ButtonDefault>
+                                    <ButtonDefault onClick={submit}>+ {t`Create`}</ButtonDefault>
                                 </DialogFooter>
                             </>
                         )}
@@ -64,4 +80,7 @@ const NewFormDialog = ({
     );
 };
 
-export default withRouter(NewFormDialog);
+export default compose(
+    withSnackbar(),
+    withRouter
+)(NewFormDialog);
