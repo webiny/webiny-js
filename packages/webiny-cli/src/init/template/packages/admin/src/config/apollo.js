@@ -5,43 +5,17 @@ import { InMemoryCache } from "apollo-cache-inmemory";
 import { createAuthLink } from "webiny-app-security/components";
 import { createOmitTypenameLink } from "webiny-app/graphql";
 
-let config;
+const isProduction = process.env.NODE_ENV === "production";
+const uriPrefix = isProduction ? "" : process.env.REACT_APP_FUNCTIONS_HOST;
 
-const cache = new InMemoryCache({
-    addTypename: true,
-    dataIdFromObject: obj => obj.id || null
+export default new ApolloClient({
+    link: ApolloLink.from([
+        createOmitTypenameLink(),
+        createAuthLink(),
+        new BatchHttpLink({ uri: uriPrefix + "/function/api" })
+    ]),
+    cache: new InMemoryCache({
+        addTypename: true,
+        dataIdFromObject: obj => obj.id || null
+    })
 });
-
-if (process.env.NODE_ENV === "production") {
-    config = {
-        link: ApolloLink.from([
-            createOmitTypenameLink(),
-            createAuthLink(),
-            new BatchHttpLink({ uri: "/function/api" })
-        ]),
-        cache
-    };
-}
-
-if (process.env.NODE_ENV === "development") {
-    config = {
-        link: ApolloLink.from([
-            createOmitTypenameLink(),
-            createAuthLink(),
-            new BatchHttpLink({ uri: process.env.REACT_APP_FUNCTIONS_HOST + "/function/api" })
-        ]),
-        cache,
-        defaultOptions: {
-            watchQuery: {
-                fetchPolicy: "network-only",
-                errorPolicy: "all"
-            },
-            query: {
-                fetchPolicy: "network-only",
-                errorPolicy: "all"
-            }
-        }
-    };
-}
-
-export default new ApolloClient(config);
