@@ -27,6 +27,8 @@ module.exports = (pluginConfig = {}) => {
             target_commitish: config.branch
         };
 
+        logger.log("RELEASE NOTES\n%s\n", release.body);
+
         let tagger = null;
 
         // Get current user to construct proper tagger data.

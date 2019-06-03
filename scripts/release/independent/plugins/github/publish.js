@@ -47,6 +47,8 @@ module.exports = (pluginConfig = {}) => {
                 target_commitish: config.branch
             };
 
+            logger.log("RELEASE NOTES\n%s\n", release.body);
+
             if (config.preview) {
                 logger.log("GitHub release data:\n%s", JSON.stringify(release, null, 2));
                 logger.log("Tagger:\n%s", JSON.stringify(tagger, null, 2));
