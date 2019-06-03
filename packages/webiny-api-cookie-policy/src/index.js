@@ -137,6 +137,8 @@ export default [
             factory: (...args: Array<any>) => {
                 return class CookiePolicySettings extends settingsFactory(...args) {
                     static key = "cookie-policy";
+                    static classId = "CookiePolicySettings";
+                    static collectionName = "Settings";
 
                     data: Object;
                     load: Function;

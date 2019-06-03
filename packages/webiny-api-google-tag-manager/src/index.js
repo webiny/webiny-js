@@ -70,6 +70,8 @@ export default [
             factory: (...args: Array<any>) => {
                 return class GoogleTagManagerSettings extends settingsFactory(...args) {
                     static key = "google-tag-manager";
+                    static classId = "GoogleTagManagerSettings";
+                    static collectionName = "Settings";
 
                     data: Object;
                     load: Function;

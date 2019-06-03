@@ -114,6 +114,8 @@ export default [
             factory: (...args: Array<any>) => {
                 return class MailchimpSettings extends settingsFactory(...args) {
                     static key = "mailchimp";
+                    static classId = "MailchimpSettings";
+                    static collectionName = "Settings";
 
                     data: Object;
                     load: Function;

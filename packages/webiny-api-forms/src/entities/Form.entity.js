@@ -16,7 +16,7 @@ export interface IForm extends Entity {
     locked: boolean;
 }
 
-export default ({ getUser, security, getEntities }: Object) =>
+export default ({ getUser, getEntities }: Object) =>
     class CmsForm extends Entity {
         static classId = "CmsForm";
 
@@ -34,14 +34,14 @@ export default ({ getUser, security, getEntities }: Object) =>
 
         constructor() {
             super();
-            const { User } = security.entities;
+            const { CmsForm, SecurityUser } = getEntities();
 
             this.attr("createdBy")
-                .entity(User)
+                .entity(SecurityUser)
                 .setSkipOnPopulate();
 
             this.attr("updatedBy")
-                .entity(User)
+                .entity(SecurityUser)
                 .setSkipOnPopulate();
 
             this.attr("publishedOn")
@@ -65,6 +65,15 @@ export default ({ getUser, security, getEntities }: Object) =>
             this.attr("triggers")
                 .object()
                 .onSet(value => (this.locked ? this.fields : value));
+
+            this.attr("revisions")
+                .entities(CmsForm)
+                .setDynamic(() => {
+                    return CmsForm.find({
+                        query: { parent: this.parent },
+                        sort: { version: -1 }
+                    });
+                });
 
             /*this.attr("settings")
             .model(formSettingsFactory({ entities: cms.entities, form: this }))
@@ -146,11 +155,6 @@ export default ({ getUser, security, getEntities }: Object) =>
                     return Promise.all(revisions.map(rev => rev.delete()));
                 }
             });
-        }
-
-        get revisions() {
-            const { CmsForm } = getEntities();
-            return CmsForm.find({ query: { parent: this.parent }, sort: { version: -1 } });
         }
 
         async getNextVersion() {

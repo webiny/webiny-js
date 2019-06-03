@@ -3,6 +3,14 @@ import type { GraphQLContextPluginType, EntityPluginType } from "webiny-api/type
 import { getPlugins } from "webiny-plugins";
 import { EntityPool } from "webiny-entity";
 
+const registerEntityClass = ({ context, entityClass }) => {
+    if (context.entities[entityClass.classId]) {
+        throw Error(`Entity with the class ID "${entityClass.classId}" already registered.`);
+    }
+
+    context.entities[entityClass.classId] = entityClass;
+};
+
 const graphqlContextEntities: GraphQLContextPluginType = {
     name: "graphql-context-entities",
     type: "graphql-context",
@@ -25,12 +33,18 @@ const graphqlContextEntities: GraphQLContextPluginType = {
 
             if (typeof plugin.entity === "function") {
                 const entityClass = plugin.entity(context);
-                context.entities[entityClass.classId] = entityClass;
-                context.entities[entityClass.classId].pool = new EntityPool();
+                entityClass.pool = new EntityPool();
+                registerEntityClass({ context, entityClass });
             } else {
                 const { name, factory } = plugin.entity;
                 context[plugin.namespace].entities[name] = factory(context);
                 context[plugin.namespace].entities[name].pool = new EntityPool();
+
+                // We add to entities list, later we'll just do the cleanup - this won't exist.
+                registerEntityClass({
+                    context,
+                    entityClass: context[plugin.namespace].entities[name]
+                });
             }
         });
     }
