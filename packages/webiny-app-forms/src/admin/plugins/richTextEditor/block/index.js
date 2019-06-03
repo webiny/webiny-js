@@ -35,7 +35,7 @@ export default () => {
         menu: [
             {
                 name: "typography-menu-item",
-                type: "cms-form-rich-editor-menu-item",
+                type: "form-editor-rich-editor-menu-item",
                 render({ MenuButton, ...props }: Object) {
                     return (
                         <MenuButton>
@@ -46,7 +46,7 @@ export default () => {
             },
             {
                 name: "align-menu-item",
-                type: "cms-form-rich-editor-menu-item",
+                type: "form-editor-rich-editor-menu-item",
                 render({ MenuButton, editor, onChange }: Object) {
                     const block = editor.value.blocks.first();
 
@@ -66,8 +66,8 @@ export default () => {
         ],
         editor: [
             {
-                name: "cms-form-rich-editor-typography",
-                type: "cms-form-rich-editor",
+                name: "form-editor-rich-editor-typography",
+                type: "form-editor-rich-editor",
                 slate: {
                     renderNode(props: Object, next: Function) {
                         const { attributes, children, node, editor } = props;

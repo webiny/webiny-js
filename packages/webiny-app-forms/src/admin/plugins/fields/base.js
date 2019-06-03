@@ -7,8 +7,8 @@ import { ReactComponent as HiddenIcon } from "./icons/round-visibility_off-24px.
 
 export default [
     {
-        type: "cms-form-field-type",
-        name: "cms-form-field-text",
+        type: "form-editor-field-type",
+        name: "form-editor-field-text",
         fieldType: {
             dataType: true,
             id: "text",
@@ -27,8 +27,8 @@ export default [
         }
     },
     {
-        type: "cms-form-field-type",
-        name: "cms-form-field-number",
+        type: "form-editor-field-type",
+        name: "form-editor-field-number",
         fieldType: {
             dataType: true,
             id: "number",
@@ -47,8 +47,8 @@ export default [
         }
     },
     {
-        type: "cms-form-field-type",
-        name: "cms-form-field-hidden",
+        type: "form-editor-field-type",
+        name: "form-editor-field-hidden",
         fieldType: {
             dataType: true,
             id: "hidden",

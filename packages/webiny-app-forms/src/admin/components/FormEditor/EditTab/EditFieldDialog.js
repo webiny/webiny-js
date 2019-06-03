@@ -52,7 +52,7 @@ const EditFieldDialog = ({ open, field, onClose, onSave }) => {
             {!editField && (
                 <Fragment>
                     <DialogBody className={dialogBody}>
-                        {getPlugins("cms-form-field-type")
+                        {getPlugins("form-editor-field-type")
                             .filter(pl => pl.fieldType.dataType)
                             .map(pl => (
                                 <Thumbnail

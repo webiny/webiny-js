@@ -40,8 +40,8 @@ export default () => {
     return {
         menu: [
             {
-                name: "cms-form-rich-editor-menu-item-ordered-list",
-                type: "cms-form-rich-editor-menu-item",
+                name: "form-editor-rich-editor-menu-item-ordered-list",
+                type: "form-editor-rich-editor-menu-item",
                 render({
                     MenuButton,
                     editor,
@@ -65,8 +65,8 @@ export default () => {
                 }
             },
             {
-                name: "cms-form-rich-editor-menu-item-unordered-list",
-                type: "cms-form-rich-editor-menu-item",
+                name: "form-editor-rich-editor-menu-item-unordered-list",
+                type: "form-editor-rich-editor-menu-item",
                 render({
                     MenuButton,
                     editor,
@@ -92,8 +92,8 @@ export default () => {
         ],
         editor: [
             {
-                name: "cms-form-rich-editor-lists",
-                type: "cms-form-rich-editor",
+                name: "form-editor-rich-editor-lists",
+                type: "form-editor-rich-editor",
                 slate: {
                     renderNode(props: Object, next: Function) {
                         const { attributes, children, node } = props;

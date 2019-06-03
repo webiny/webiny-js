@@ -7,8 +7,8 @@ export default () => {
     return {
         menu: [
             {
-                name: "cms-form-rich-editor-menu-item-link",
-                type: "cms-form-rich-editor-menu-item",
+                name: "form-editor-rich-editor-menu-item-link",
+                type: "form-editor-rich-editor-menu-item",
                 render(props: Object) {
                     const { MenuButton } = props;
 
@@ -25,8 +25,8 @@ export default () => {
         ],
         editor: [
             {
-                name: "cms-form-rich-editor-link",
-                type: "cms-form-rich-editor",
+                name: "form-editor-rich-editor-link",
+                type: "form-editor-rich-editor",
                 slate: {
                     renderNode(props, next) {
                         const { attributes, children, node } = props;

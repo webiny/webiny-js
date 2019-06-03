@@ -21,8 +21,8 @@ const patterns = {
 
 export default [
     {
-        type: "cms-form-field-validator",
-        name: "cms-form-field-validator-required",
+        type: "form-editor-field-validator",
+        name: "form-editor-field-validator-required",
         validator: {
             id: "required",
             label: "Required",
@@ -48,8 +48,8 @@ export default [
         }
     },
     {
-        type: "cms-form-field-validator",
-        name: "cms-form-field-validator-in",
+        type: "form-editor-field-validator",
+        name: "form-editor-field-validator-in",
         validator: {
             id: "in",
             label: "Specific values",
@@ -84,8 +84,8 @@ export default [
         }
     },
     {
-        type: "cms-form-field-validator",
-        name: "cms-form-field-validator-gte",
+        type: "form-editor-field-validator",
+        name: "form-editor-field-validator-gte",
         validator: {
             id: "gte",
             label: "Greater or equal",
@@ -120,8 +120,8 @@ export default [
         }
     },
     {
-        type: "cms-form-field-validator",
-        name: "cms-form-field-validator-lte",
+        type: "form-editor-field-validator",
+        name: "form-editor-field-validator-lte",
         validator: {
             id: "lte",
             label: "Smaller or equal",
@@ -156,8 +156,8 @@ export default [
         }
     },
     {
-        type: "cms-form-field-validator",
-        name: "cms-form-field-validator-pattern",
+        type: "form-editor-field-validator",
+        name: "form-editor-field-validator-pattern",
         validator: {
             id: "pattern",
             label: "Pattern",

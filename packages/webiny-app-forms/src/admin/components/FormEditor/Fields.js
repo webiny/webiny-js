@@ -28,11 +28,11 @@ function useFields() {
     const { state, isFieldIdInUse } = useFormEditor();
 
     function getGroups() {
-        const fieldPlugins = getPlugins("cms-form-field-type")
+        const fieldPlugins = getPlugins("form-editor-field-type")
             .filter(pl => !pl.fieldType.dataType)
             .filter(pl => !isFieldIdInUse(pl.fieldType.id));
 
-        return getPlugins("cms-form-field-group").map(pl => ({
+        return getPlugins("form-editor-field-group").map(pl => ({
             ...pl.group,
             name: pl.name,
             fields: fieldPlugins.filter(f => f.fieldType.group === pl.name).map(pl => pl.fieldType)

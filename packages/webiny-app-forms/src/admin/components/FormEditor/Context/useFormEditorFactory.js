@@ -79,6 +79,29 @@ export default FormEditorContext => {
                     ])
                 );
             },
+            deleteField(field) {
+                const { row, index } = self.findFieldPosition(field._id);
+                let data = dp.delete(state.data.fields, `${row}.${index}`);
+                if (data[row].length === 0) {
+                    data = dp.delete(data, row);
+                }
+
+                dispatch({ type: "fields", data });
+            },
+            updateField(fieldData) {
+                const { row, index } = self.findFieldPosition(fieldData._id);
+                const data = set(state.data.fields, [row, index], fieldData);
+                dispatch({
+                    type: "fields",
+                    data
+                });
+            },
+            editField(data) {
+                dispatch({ type: "editField", data });
+            },
+            isFieldIdInUse(id) {
+                return !!flatten(state.data.fields).find(f => f.id === id);
+            },
             findFieldPosition(id) {
                 for (let i = 0; i < state.data.fields.length; i++) {
                     const row = state.data.fields[i];
@@ -91,32 +114,6 @@ export default FormEditorContext => {
 
                 return { row: null, index: null };
             },
-            deleteField(field) {
-                const { row, index } = self.findFieldPosition(field._id);
-                let data = dp.delete(state.data.fields, `${row}.${index}`);
-                if (data[row].length === 0) {
-                    data = dp.delete(data, row);
-                }
-
-                dispatch({ type: "fields", data });
-            },
-
-            isFieldIdInUse(id) {
-                return !!flatten(state.data.fields).find(f => f.id === id);
-            },
-
-            editField(data) {
-                dispatch({ type: "editField", data });
-            },
-            updateField(fieldData) {
-                const { row, index } = self.findFieldPosition(fieldData._id);
-                const data = set(state.data.fields, [row, index], fieldData);
-                dispatch({
-                    type: "fields",
-                    data
-                });
-            },
-
             state,
             dispatch
         };

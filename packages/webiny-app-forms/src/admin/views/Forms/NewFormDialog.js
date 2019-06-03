@@ -39,7 +39,7 @@ const NewFormDialog = ({
                     <Form
                         onSubmit={async data => {
                             const result = update({ variables: data });
-                            // history.push("/cms/forms")
+                            // history.push("/forms")
                         }}
                     >
                         {({ Bind, submit }) => (

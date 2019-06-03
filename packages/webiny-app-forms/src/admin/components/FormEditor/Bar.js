@@ -1,10 +1,6 @@
 import React from "react";
 import { TopAppBar, TopAppBarSection } from "webiny-ui/TopAppBar";
-import BackButton from "./BackButton";
-import { Name } from "./Name";
-import { FormSettingsButton } from "./FormSettingsButton";
-import { FormSettingsDialog } from "./FormSettingsDialog";
-import { useFormEditor } from "./Context";
+import { renderPlugins } from "webiny-app/plugins";
 
 import { css } from "emotion";
 
@@ -13,17 +9,14 @@ const topBar = css({
 });
 
 export default function Bar() {
-    const { showSettings, hideSettings } = useFormEditor();
-
     return (
         <TopAppBar className={topBar} fixed>
-            <TopAppBarSection style={{ width: "50%" }} alignStart>
-                <BackButton />
-                <Name />
+            <TopAppBarSection style={{ width: "50%" }} alignEnd>
+                {renderPlugins("form-editor-default-bar-left")}
             </TopAppBarSection>
-            <TopAppBarSection style={{ width: "33%" }} alignEnd>
-                <FormSettingsButton />
-                <FormSettingsDialog open={showSettings} onClose={hideSettings} />
+
+            <TopAppBarSection style={{ width: "50%" }} alignEnd>
+                {renderPlugins("form-editor-default-bar-right")}
             </TopAppBarSection>
         </TopAppBar>
     );

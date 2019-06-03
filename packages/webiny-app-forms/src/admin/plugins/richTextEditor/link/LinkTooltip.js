@@ -80,7 +80,7 @@ const LinkTooltip = ({ editor, onChange, activatePlugin }) => {
         }
     });
 
-    const activateLink = useCallback(() => activatePlugin("cms-form-rich-editor-menu-item-link"));
+    const activateLink = useCallback(() => activatePlugin("form-editor-rich-editor-menu-item-link"));
     const removeLink = useCallback(() => {
         editor.change(change => {
             // Restore selection

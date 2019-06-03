@@ -60,7 +60,7 @@ class Menu extends React.Component {
             return null;
         }
 
-        const menuPlugins = getPlugins("cms-form-rich-editor-menu-item").filter(
+        const menuPlugins = getPlugins("form-editor-rich-editor-menu-item").filter(
             pl => !exclude.includes(pl.name)
         );
 

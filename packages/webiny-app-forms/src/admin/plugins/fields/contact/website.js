@@ -1,11 +1,11 @@
 export default {
-    type: "cms-form-field-type",
-    name: "cms-form-field-website",
+    type: "form-editor-field-type",
+    name: "form-editor-field-website",
     fieldType: {
         id: "website",
         label: "Website",
         description: "Link to a website",
-        group: "cms-form-field-group-contact",
+        group: "form-editor-field-group-contact",
         icon: null,
         validators: ["required"],
         createField() {

@@ -1,7 +1,7 @@
 export default [
     {
-        name: "cms-form-field-group-contact",
-        type: "cms-form-field-group",
+        name: "form-editor-field-group-contact",
+        type: "form-editor-field-group",
         group: {
             title: "Contact information"
         }

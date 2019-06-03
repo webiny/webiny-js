@@ -9,13 +9,13 @@ export default [
         type: "menu",
         render({ Menu }: Object) {
             const { forms }: Object = (hasRoles({
-                forms: ["cms-forms"]
+                forms: ["form-editors"]
             }): any);
 
             if (forms) {
                 return (
                     <Menu label={`Content`} icon={<PagesIcon />}>
-                        <Menu label={`Forms`}>{<Menu label={`Forms`} path="/cms/forms" />}</Menu>
+                        <Menu label={`Forms`}>{<Menu label={`Forms`} path="/forms" />}</Menu>
                     </Menu>
                 );
             }

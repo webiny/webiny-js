@@ -1,9 +1,9 @@
 export default {
-    type: "cms-form-field-type",
-    name: "cms-form-field-type-first-name",
+    type: "form-editor-field-type",
+    name: "form-editor-field-type-first-name",
     fieldType: {
         id: "first-name",
-        group: "cms-form-field-group-contact",
+        group: "form-editor-field-group-contact",
         label: "First name",
         createField() {
             return {

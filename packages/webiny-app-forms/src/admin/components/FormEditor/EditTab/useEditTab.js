@@ -77,7 +77,7 @@ export default function useEditTab() {
         }
 
         // Find field plugin which handles the dropped field type "id".
-        const plugin = getPlugins("cms-form-field-type").find(pl => pl.fieldType.id === type);
+        const plugin = getPlugins("form-editor-field-type").find(pl => pl.fieldType.id === type);
         const data = plugin.fieldType.createField();
         insertField(data, createAtRef.current);
     }

@@ -41,7 +41,7 @@ class RichTextEditor extends React.Component {
             activePlugin: null
         };
 
-        this.plugins = getPlugins("cms-form-rich-editor")
+        this.plugins = getPlugins("form-editor-rich-editor")
             .filter(pl => !props.exclude.includes(pl.name))
             .map(pl => pl.slate);
     }

@@ -38,7 +38,7 @@ export default function useEditFieldDialog({ field, open }) {
 
     function getFieldType() {
         const plugin = editField
-            ? getPlugins("cms-form-field-type").find(pl => pl.fieldType.id === editField.type)
+            ? getPlugins("form-editor-field-type").find(pl => pl.fieldType.id === editField.type)
             : null;
 
         return plugin ? plugin.fieldType : null;

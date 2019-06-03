@@ -5,8 +5,8 @@ export default () => {
     return {
         editor: [
             {
-                name: "cms-form-rich-editor-scroll",
-                type: "cms-form-rich-editor",
+                name: "form-editor-rich-editor-scroll",
+                type: "form-editor-rich-editor",
                 slate: {
                     onKeyDown(event: SyntheticKeyboardEvent<*>, change: Change, next: Function) {
                         const native = window.getSelection();

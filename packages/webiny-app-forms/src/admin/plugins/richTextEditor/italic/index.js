@@ -20,7 +20,7 @@ export default () => {
         menu: [
             {
                 name: "italic-menu-item",
-                type: "cms-form-rich-editor-menu-item",
+                type: "form-editor-rich-editor-menu-item",
                 render({ MenuButton, editor, onChange }: Object) {
                     const isActive = hasMark(editor.value, mark);
 
@@ -38,8 +38,8 @@ export default () => {
         ],
         editor: [
             {
-                name: "cms-form-rich-editor-italic",
-                type: "cms-form-rich-editor",
+                name: "form-editor-rich-editor-italic",
+                type: "form-editor-rich-editor",
                 slate: {
                     onKeyDown(event: SyntheticKeyboardEvent<*>, change: Change, next: Function) {
                         if (isItalicHotkey(event)) {

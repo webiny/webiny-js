@@ -6,8 +6,8 @@ export default () => {
     return {
         editor: [
             {
-                name: "cms-form-rich-editor-break",
-                type: "cms-form-rich-editor",
+                name: "form-editor-rich-editor-break",
+                type: "form-editor-rich-editor",
                 slate: {
                     onKeyDown(e: SyntheticKeyboardEvent<*>, change: Change, next: Function) {
                         if (isHotkey("shift+enter", e)) {

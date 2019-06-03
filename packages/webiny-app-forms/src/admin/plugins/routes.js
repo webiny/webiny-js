@@ -19,14 +19,14 @@ const Forms = Loadable({
 
 export default [
     {
-        name: "route-cms-forms-editor",
+        name: "route-form-editors-editor",
         type: "route",
         route: (
             <Route
                 exact
-                path={"/cms/forms/:id"}
+                path={"/forms/:id"}
                 render={() => (
-                    <SecureRoute roles={["cms-forms-editor"]}>
+                    <SecureRoute roles={["form-editors-editor"]}>
                         <Helmet>
                             <title>CMS - Edit form</title>
                         </Helmet>
@@ -37,14 +37,14 @@ export default [
         )
     },
     {
-        name: "route-cms-forms",
+        name: "route-form-editors",
         type: "route",
         route: (
             <Route
                 exact
-                path="/cms/forms"
+                path="/forms"
                 render={() => (
-                    <SecureRoute roles={["cms-forms"]}>
+                    <SecureRoute roles={["form-editors"]}>
                         <AdminLayout>
                             <Helmet title={"CMS - Forms"} />
                             <Forms />

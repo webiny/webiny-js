@@ -1,13 +1,13 @@
 import React from "react";
 
 export default {
-    type: "cms-form-field-type",
-    name: "cms-form-field-email",
+    type: "form-editor-field-type",
+    name: "form-editor-field-email",
     fieldType: {
         id: "email",
         label: "Email",
         description: "Email address",
-        group: "cms-form-field-group-contact",
+        group: "form-editor-field-group-contact",
         icon: null,
         validators: ["required"],
         createField() {

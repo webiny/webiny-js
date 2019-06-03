@@ -1,5 +1,8 @@
 import React, { Fragment } from "react";
-import { useFormEditor } from "./Context";
+import { useFormEditor } from "webiny-app-forms/admin/components/FormEditor/Context";
+
+import { i18n } from "webiny-app/i18n";
+const t = i18n.namespace("FormEditor.FormSettingsDialog");
 
 import {
     Dialog,
@@ -24,25 +27,25 @@ export const FormSettingsDialog = ({ open, onClose }) => {
                 {({ Bind, submit }) => (
                     <Fragment>
                         <DialogHeader>
-                            <DialogHeaderTitle>Form Settings</DialogHeaderTitle>
+                            <DialogHeaderTitle>{t`Form Settings`}</DialogHeaderTitle>
                         </DialogHeader>
                         <DialogBody>
                             <Grid>
                                 <Cell span={12}>
                                     <Bind name={"successMessage"}>
-                                        <Input label={"Success message"}/>
+                                        <Input label={t`Success message`} />
                                     </Bind>
                                 </Cell>
                                 <Cell span={12}>
                                     <Bind name={"submitButtonLabel"}>
-                                        <Input label={"Submit button label"}/>
+                                        <Input label={t`Submit button label`} />
                                     </Bind>
                                 </Cell>
                             </Grid>
                         </DialogBody>
                         <DialogFooter>
-                            <DialogCancel>Cancel</DialogCancel>
-                            <DialogFooterButton onClick={submit}>Save</DialogFooterButton>
+                            <DialogCancel>{t`Cancel`}</DialogCancel>
+                            <DialogFooterButton onClick={submit}>{t`Save`}</DialogFooterButton>
                         </DialogFooter>
                     </Fragment>
                 )}

@@ -75,7 +75,7 @@ const FormDetails = ({ formId, history, query, showSnackbar, refreshForms }) => 
                                     <FormDetailsConsumer>
                                         {formDetails => (
                                             <React.Fragment>
-                                                {renderPlugins("cms-form-details", {
+                                                {renderPlugins("form-editor-details", {
                                                     refreshForms,
                                                     formDetails,
                                                     loading

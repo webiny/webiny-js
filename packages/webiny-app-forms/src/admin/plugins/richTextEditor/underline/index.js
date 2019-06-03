@@ -20,8 +20,8 @@ export default () => {
     return {
         menu: [
             {
-                name: "cms-form-rich-editor-menu-item-underline",
-                type: "cms-form-rich-editor-menu-item",
+                name: "form-editor-rich-editor-menu-item-underline",
+                type: "form-editor-rich-editor-menu-item",
                 render({
                     MenuButton,
                     editor,
@@ -47,8 +47,8 @@ export default () => {
         ],
         editor: [
             {
-                name: "cms-form-rich-editor-underline",
-                type: "cms-form-rich-editor",
+                name: "form-editor-rich-editor-underline",
+                type: "form-editor-rich-editor",
                 slate: {
                     onKeyDown(event: SyntheticKeyboardEvent<*>, change: Change, next: Function) {
                         // Decide what to do based on the key code...
