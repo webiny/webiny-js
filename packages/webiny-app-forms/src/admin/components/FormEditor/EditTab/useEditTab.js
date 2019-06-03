@@ -4,11 +4,17 @@ import { useFormEditor } from "webiny-app-forms/admin/components/FormEditor/Cont
 
 export default function useEditTab() {
     const [fieldDialogOpened, showFieldDialog] = useState(false);
-    const { state: formEditorState, setFormState, insertField } = useFormEditor();
+    const {
+        state: formEditorState,
+        setFormState,
+        insertField,
+        updateField,
+        editField
+    } = useFormEditor();
     const createAtRef = useRef(null);
 
     function closeFieldDialog() {
-        setFormState({ editField: null });
+        editField(null);
         showFieldDialog(false);
     }
 
@@ -76,10 +82,19 @@ export default function useEditTab() {
         insertField(data, createAtRef.current);
     }
 
+    function saveField(fieldData) {
+        if (!fieldData._id) {
+            insertField(fieldData, createAtRef.current);
+        } else {
+            updateField(fieldData);
+        }
+    }
+
     return {
         state: formEditorState,
         fieldDialogOpened,
         closeFieldDialog,
-        onDrop
+        onDrop,
+        saveField
     };
 }

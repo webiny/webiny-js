@@ -7,7 +7,7 @@ import get from "lodash.get";
 import pick from "lodash.pick";
 import { getForm, updateRevision } from "./graphql";
 
-export default (FormEditorContext) => {
+export default FormEditorContext => {
     return () => {
         const context = React.useContext(FormEditorContext);
         if (!context) {
@@ -80,8 +80,8 @@ export default (FormEditorContext) => {
                 );
             },
             findFieldPosition(id) {
-                for (let i = 0; i < state.fields.length; i++) {
-                    const row = state.fields[i];
+                for (let i = 0; i < state.data.fields.length; i++) {
+                    const row = state.data.fields[i];
                     for (let j = 0; j < row.length; j++) {
                         if (row[j]._id === id) {
                             return { row: i, index: j };
@@ -93,7 +93,7 @@ export default (FormEditorContext) => {
             },
             deleteField(field) {
                 const { row, index } = self.findFieldPosition(field._id);
-                let data = dp.delete(state.fields, `${row}.${index}`);
+                let data = dp.delete(state.data.fields, `${row}.${index}`);
                 if (data[row].length === 0) {
                     data = dp.delete(data, row);
                 }
@@ -101,22 +101,20 @@ export default (FormEditorContext) => {
                 dispatch({ type: "fields", data });
             },
 
-            // -------------------------------------------------------------------
             isFieldIdInUse(id) {
-                return !!flatten(state.fields).find(f => f.id === id);
+                return !!flatten(state.data.fields).find(f => f.id === id);
             },
 
-            saveField(data) {
-                if (!data._id) {
-                    setFormState(insertField(data, createAt.current));
-                } else {
-                    setFormState(updateField(data));
-                }
+            editField(data) {
+                dispatch({ type: "editField", data });
             },
-
             updateField(fieldData) {
-                const { row, index } = findFieldPosition(fieldData._id);
-                setFormState(set(state, ["fields", row, index], fieldData));
+                const { row, index } = self.findFieldPosition(fieldData._id);
+                const data = set(state.data.fields, [row, index], fieldData);
+                dispatch({
+                    type: "fields",
+                    data
+                });
             },
 
             state,
