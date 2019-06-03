@@ -14,7 +14,7 @@ const BackButton = (props) => {
     return (
         <IconButton
             className={backStyles}
-            onClick={() => history.push(`/cms/forms/${match.params.id}`)}
+            onClick={() => history.push(`/cms/forms?id=${match.params.id}`)}
             icon={<BackIcon />}
         />
     );
