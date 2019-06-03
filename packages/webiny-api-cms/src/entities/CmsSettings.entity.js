@@ -23,19 +23,17 @@ class CmsSettingsPagesModel extends Model {
     }
 }
 
-const cmsSettingsModelFactory = () => {
-    return class CmsSettingsModel extends Model {
-        constructor() {
-            super();
-            this.attr("pages").model(CmsSettingsPagesModel);
-            this.attr("name").char();
-            this.attr("domain").char();
-            this.attr("favicon").model(FileModel);
-            this.attr("logo").model(FileModel);
-            this.attr("social").model(SocialMediaModel);
-        }
-    };
-};
+class CmsSettingsModel extends Model {
+    constructor() {
+        super();
+        this.attr("pages").model(CmsSettingsPagesModel);
+        this.attr("name").char();
+        this.attr("domain").char();
+        this.attr("favicon").model(FileModel);
+        this.attr("logo").model(FileModel);
+        this.attr("social").model(SocialMediaModel);
+    }
+}
 
 export const cmsSettingsFactory = (...args: Array<*>) => {
     return class CmsSettings extends settingsFactory(...args) {
@@ -46,7 +44,7 @@ export const cmsSettingsFactory = (...args: Array<*>) => {
 
         constructor() {
             super();
-            this.attr("data").model(cmsSettingsModelFactory());
+            this.attr("data").model(CmsSettingsModel);
         }
     };
 };

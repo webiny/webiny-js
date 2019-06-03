@@ -39,6 +39,7 @@ export default async (config: Object) => {
 
         // Process `graphql-context` plugins
         const ctxPlugins = getPlugins("graphql-context");
+
         for (let i = 0; i < ctxPlugins.length; i++) {
             const ctxPlugin = ctxPlugins[i];
             if (typeof ctxPlugin.preApply === "function") {
@@ -48,7 +49,9 @@ export default async (config: Object) => {
 
         for (let i = 0; i < ctxPlugins.length; i++) {
             const ctxPlugin = ctxPlugins[i];
-            await ctxPlugin.apply(context);
+            if (typeof ctxPlugin.apply === "function") {
+                await ctxPlugin.apply(context);
+            }
         }
 
         for (let i = 0; i < ctxPlugins.length; i++) {
