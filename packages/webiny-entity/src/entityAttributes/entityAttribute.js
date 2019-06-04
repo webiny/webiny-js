@@ -308,14 +308,6 @@ class EntityAttribute extends Attribute {
         return this;
     }
 
-    async getJSONValue() {
-        const value = await this.getValue();
-        if (Entity.isEntityInstance(value)) {
-            return await value.toJSON();
-        }
-        return value;
-    }
-
     /**
      * Validates on attribute level and then on entity level (its attributes recursively).
      * If attribute has validators, we must unfortunately always load the attribute value. For example, if we had a 'required'

@@ -8,39 +8,6 @@ describe("custom attribute test", () => {
     afterEach(() => sandbox.restore());
     beforeEach(() => User.getEntityPool().flush());
 
-    test("should be able to work with a custom attribute", async () => {
-        const user = new User();
-        user.populate({ firstName: "John", lastName: "Doe" });
-
-        const issue1 = new Issue();
-        issue1.populate({ title: "testing custom attribute", assignedTo: user });
-
-        const json1 = await issue1.toJSON("title,assignedTo[firstName,lastName]");
-        expect(json1).toEqual({
-            id: null,
-            assignedTo: {
-                firstName: "John",
-                lastName: "Doe"
-            },
-            title: "testing custom attribute"
-        });
-
-        const company = new Company();
-        company.populate({ name: "Webiny" });
-
-        const issue2 = new Issue();
-        issue2.populate({ title: "testing custom attribute", assignedTo: company });
-
-        const json2 = await issue2.toJSON("title,assignedTo[name]");
-        expect(json2).toEqual({
-            id: null,
-            assignedTo: {
-                name: "Webiny"
-            },
-            title: "testing custom attribute"
-        });
-    });
-
     test("should load entities from database", async () => {
         let entityFind = sandbox.stub(User.getDriver(), "findOne").callsFake(() => {
             return new QueryResult({ id: "xyz", assignedTo: "abc", assignedToClassId: "User" });

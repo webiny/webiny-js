@@ -207,17 +207,6 @@ class Entity {
     }
 
     /**
-     * Returns entity's JSON representation.
-     */
-    async toJSON(path: ?string): Promise<JSON> {
-        const attribute: Attribute = (this.getAttribute("id"): any);
-        return _.merge(
-            { id: attribute.getValue() },
-            path ? await this.getModel().toJSON(path) : {}
-        );
-    }
-
-    /**
      * Returns data suitable for storage.
      */
     async toStorage(): Promise<{}> {

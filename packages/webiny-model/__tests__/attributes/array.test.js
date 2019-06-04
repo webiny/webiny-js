@@ -118,14 +118,6 @@ describe("attribute models test", () => {
         expect(newModel.attribute1).toEqual([1, 2, 3]);
     });
 
-    test("should return null as a default JSON value", async () => {
-        const newModel = new Model(function() {
-            this.attr("attribute1").array();
-        });
-
-        expect(await newModel.getAttribute("attribute1").getJSONValue()).toBeNull();
-    });
-
     test("should not throw validation error if it is empty", async () => {
         const newModel = new Model(function() {
             this.attr("attribute1").array();
@@ -151,10 +143,6 @@ describe("attribute models test", () => {
 
         someModel.getAttribute("company").onGet(() => {
             return ["onGetOverridden"];
-        });
-
-        expect(await someModel.toJSON("company")).toEqual({
-            company: ["onGetOverridden"]
         });
     });
 });

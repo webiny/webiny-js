@@ -198,12 +198,4 @@ describe("attribute entities test", () => {
             }
         });
     });
-
-    test("getJSONValue must return assigned value if not EntityCollection", async () => {
-        const entity = new MainEntity();
-        entity.attribute1 = 123;
-
-        const jsonValue = await entity.getAttribute("attribute1").getJSONValue();
-        expect(jsonValue).toEqual(null);
-    });
 });

@@ -86,27 +86,6 @@ class ModelsAttribute extends Attribute {
         }
     }
 
-    async getJSONValue(): Promise<mixed> {
-        const value = this.value.getCurrent();
-        if (this.keyValue) {
-            if (value instanceof Object) {
-                return {};
-            }
-
-            return value;
-        } else {
-            if (value instanceof Array) {
-                const json = [];
-                for (let i = 0; i < value.length; i++) {
-                    json.push({});
-                }
-                return json;
-            }
-
-            return value;
-        }
-    }
-
     async getStorageValue(): Promise<any> {
         const value = this.getValue();
         if (this.keyValue) {
