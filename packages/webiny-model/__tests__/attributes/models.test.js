@@ -252,14 +252,6 @@ describe("attribute models test", () => {
         expect(await newModel.get("attribute1.2.name")).toEqual("Lina");
     });
 
-    test("getJSONValue must return an empty array if nothing was set", async () => {
-        const newModel = new Model(function() {
-            this.attr("attribute1").models(Model1);
-        });
-
-        expect(await newModel.getAttribute("attribute1").getJSONValue()).toEqual([]);
-    });
-
     test("getStorageValue method must return empty array if nothing is set", async () => {
         const newModel = new Model(function() {
             this.attr("attribute1").models(Model1);
@@ -335,65 +327,9 @@ describe("attribute models test", () => {
         });
 
         newModel.getAttribute("attribute1").setStorageValue([{ name: "one" }, { name: "two" }]);
-        expect(await newModel.toJSON("attribute1[name]")).toEqual({
-            attribute1: [
-                {
-                    name: "one"
-                },
-                {
-                    name: "two"
-                }
-            ]
-        });
-
         newModel.getAttribute("attribute1").setStorageValue({});
         newModel.getAttribute("attribute1").setStorageValue(null);
         newModel.getAttribute("attribute1").setStorageValue(123);
-        expect(await newModel.toJSON("attribute1[name]")).toEqual({
-            attribute1: [{ name: "one" }, { name: "two" }]
-        });
-    });
-
-    test("when toJSON is called, it must return values correctly", async () => {
-        const newModel = new Model(function() {
-            this.attr("attribute1").models(Model1);
-        });
-
-        newModel.attribute1 = [];
-        expect(await newModel.toJSON("attribute1.name")).toEqual({
-            attribute1: []
-        });
-
-        newModel.getAttribute("attribute1").setStorageValue([{ name: "one" }, { name: "two" }]);
-        expect(await newModel.toJSON("attribute1[name]")).toEqual({
-            attribute1: [{ name: "one" }, { name: "two" }]
-        });
-
-        newModel.attribute1 = null;
-        expect(await newModel.toJSON("attribute1.name")).toEqual({
-            attribute1: null
-        });
-    });
-
-    test("getJSONValue must return values correctly", async () => {
-        const newModel = new Model(function() {
-            this.attr("attribute1").models(Model1);
-        });
-
-        newModel.attribute1 = [];
-        expect(await newModel.getAttribute("attribute1").getJSONValue()).toEqual([]);
-
-        newModel.attribute1 = 123;
-        expect(await newModel.getAttribute("attribute1").getJSONValue()).toEqual(123);
-    });
-
-    test("getJSONValue must return empty objects as items", async () => {
-        const newModel = new Model(function() {
-            this.attr("attribute1").models(Model1);
-        });
-
-        newModel.attribute1 = [{ name: 123, age: 123 }, { name: 234, age: 456 }];
-        expect(await newModel.getAttribute("attribute1").getJSONValue()).toEqual([{}, {}]);
     });
 
     test("onSet/onGet must be triggered correctly", async () => {

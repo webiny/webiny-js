@@ -52,14 +52,6 @@ class ModelAttribute extends Attribute {
         this.value.setCurrent(newValue);
     }
 
-    async getJSONValue(): Promise<mixed> {
-        const value = this.getValue();
-        if (value instanceof Model) {
-            return {};
-        }
-        return value;
-    }
-
     async getStorageValue(): Promise<mixed> {
         const value = await this.getValue();
         if (value instanceof Model) {

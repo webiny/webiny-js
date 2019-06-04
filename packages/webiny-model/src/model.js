@@ -1,6 +1,5 @@
 // @flow
 import _ from "lodash";
-import extractor from "webiny-data-extractor";
 import DefaultAttributesContainer from "./defaultAttributesContainer";
 import ModelError from "./modelError";
 import type Attribute from "./attribute";
@@ -177,26 +176,6 @@ class Model {
                 invalidAttributes
             });
         }
-    }
-
-    async toJSON(fields: string): Promise<Object> {
-        return await extractor.get(this, fields, {
-            onRead: async (data, key) => {
-                // Key can accept ":" separated arguments, so we have to make sure those are parsed.
-                const received = this.__parseKeyParams(key);
-
-                if (typeof data.getAttribute === "function") {
-                    if (!data.getAttribute(received.key)) {
-                        return [received.key];
-                    }
-                    return [
-                        received.key,
-                        await data.getAttribute(received.key).getJSONValue(...received.arguments)
-                    ];
-                }
-                return [received.key, await data[received.key]];
-            }
-        });
     }
 
     async get(path: string | Array<string> = "", defaultValue: ?mixed): Promise<mixed> {
