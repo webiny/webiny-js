@@ -10,7 +10,7 @@ export default {
         validators: ["required"],
         createField() {
             return {
-                id: "url",
+                fieldId: "url",
                 label: "URL",
                 type: this.id,
                 validation: [

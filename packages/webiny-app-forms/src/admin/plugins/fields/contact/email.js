@@ -12,7 +12,7 @@ export default {
         validators: ["required"],
         createField() {
             return {
-                id: "email",
+                fieldId: "email",
                 label: "Email",
                 type: this.id,
                 validation: [
