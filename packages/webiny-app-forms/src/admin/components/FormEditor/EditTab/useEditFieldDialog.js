@@ -1,5 +1,5 @@
-import { useState, useEffect, useContext } from "react";
-import slugify from "slugify";
+import { useState, useEffect } from "react";
+import { camelCase } from "lodash";
 import { useFormEditor } from "webiny-app-forms/admin/components/FormEditor/Context";
 import { memoize, flatten } from "lodash";
 import { getPlugins } from "webiny-plugins";
@@ -19,15 +19,7 @@ export default function useEditFieldDialog({ field, open }) {
                 return value => value;
             }
 
-            return value =>
-                setValue(
-                    name,
-                    slugify(value, {
-                        replacement: "-",
-                        lower: true,
-                        remove: /[*#\?<>_\{\}\[\]+~.()'"!:;@]/g
-                    })
-                );
+            return value => setValue(name, camelCase(value));
         });
 
     function uniqueId(value) {
