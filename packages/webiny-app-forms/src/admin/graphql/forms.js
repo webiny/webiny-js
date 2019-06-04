@@ -64,7 +64,6 @@ export const getForm = () => gql`
             form: getForm(id: $id) {
                 data {
                     ${sharedFields}
-                    snippet
                     content
                     settings {
                         _empty

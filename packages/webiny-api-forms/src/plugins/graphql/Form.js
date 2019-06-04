@@ -30,7 +30,6 @@ export default {
             fields: JSON
             triggers: JSON
             published: Boolean
-            locked: Boolean
             parent: ID
             revisions: [Form]
         }

@@ -7,6 +7,10 @@ import { ButtonDefault } from "webiny-ui/Button";
 import { Icon } from "webiny-ui/Icon";
 import { Typography } from "webiny-ui/Typography";
 import { ReactComponent as DownButton } from "./icons/round-arrow_drop_down-24px.svg";
+import { useFormEditor } from "webiny-app-forms/admin/components/FormEditor/Context";
+
+import { i18n } from "webiny-app/i18n";
+const t = i18n.namespace("FormEditor.RevisionsMenu");
 
 const buttonStyle = css({
     "&.mdc-button": {
@@ -24,7 +28,11 @@ const menuList = css({
 });
 
 const Revisions = pure(({ history }) => {
-    const revisions = [];
+    const {
+        state: { data }
+    } = useFormEditor();
+
+    const revisions = data.revisions || [];
     return (
         <Menu
             className={menuList}
@@ -33,14 +41,12 @@ const Revisions = pure(({ history }) => {
             }}
             handle={
                 <ButtonDefault className={buttonStyle}>
-                    Revisions <Icon icon={<DownButton />} />
+                    {t`Revisions`} <Icon icon={<DownButton />} />
                 </ButtonDefault>
             }
         >
             {revisions.map(rev => {
-                let status = "draft";
-                if (rev.published) status = "published";
-                if (rev.locked && !rev.published) status = "locked";
+                let status = rev.published ? t`draft` : t`published`;
 
                 return (
                     <MenuItem key={rev.id}>

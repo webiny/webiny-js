@@ -40,9 +40,7 @@ const Revisions = pure(({ revisions, router }: Object) => {
             }
         >
             {revisions.map(rev => {
-                let status = "draft";
-                if (rev.published) status = "published";
-                if (rev.locked && !rev.published) status = "locked";
+                let status = !rev.published ? t`draft` : t`published`;
 
                 return (
                     <MenuItem key={rev.id}>

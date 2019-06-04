@@ -67,7 +67,7 @@ export const Name = () => {
         <NameWrapper>
             <FormMeta>
                 <Typography use={"overline"}>
-                    {`status: ${state.data.locked ? t`published` : t`draft`}`}
+                    {`status: ${state.data.published ? t`published` : t`draft`}`}
                 </Typography>
             </FormMeta>
             <div style={{ width: "100%", display: "flex" }}>

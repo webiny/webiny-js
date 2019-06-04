@@ -9,9 +9,14 @@ export const getForm = gql`
                     id
                     name
                     version
-                    locked
                     fields
                     triggers
+                    revisions {
+                        id
+                        name
+                        published
+                        version
+                    }
                 }
             }
         }
@@ -26,7 +31,6 @@ export const updateRevision = gql`
                     id
                     name
                     version
-                    locked
                     fields
                     triggers
                 }

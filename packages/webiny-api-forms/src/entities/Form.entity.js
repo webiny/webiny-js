@@ -5,7 +5,6 @@ import mdbid from "mdbid";
 export interface IForm extends Entity {
     createdBy: Entity;
     updatedBy: Entity;
-    publishedOn: ?Date;
     name: string;
     snippet: string;
     fields: Object;
@@ -13,7 +12,7 @@ export interface IForm extends Entity {
     version: number;
     parent: string;
     published: boolean;
-    locked: boolean;
+    publishedOn: ?Date;
 }
 
 export default ({ getUser, getEntities }: Object) =>
@@ -22,6 +21,7 @@ export default ({ getUser, getEntities }: Object) =>
 
         createdBy: Entity;
         updatedBy: Entity;
+        published: boolean;
         publishedOn: ?Date;
         name: string;
         snippet: string;
@@ -29,8 +29,6 @@ export default ({ getUser, getEntities }: Object) =>
         settings: Object;
         version: number;
         parent: string;
-        published: boolean;
-        locked: boolean;
 
         constructor() {
             super();
@@ -44,27 +42,19 @@ export default ({ getUser, getEntities }: Object) =>
                 .entity(SecurityUser)
                 .setSkipOnPopulate();
 
-            this.attr("publishedOn")
-                .date()
-                .setSkipOnPopulate();
-
             this.attr("name")
                 .char()
                 .setValidators("required")
-                .onSet(value => (this.locked ? this.name : value));
-
-            this.attr("snippet")
-                .char()
-                .onSet(value => (this.locked ? this.snippet : value));
+                .onSet(value => (this.published ? this.name : value));
 
             this.attr("fields")
                 .object()
-                .onSet(value => (this.locked ? this.fields : value))
+                .onSet(value => (this.published ? this.fields : value))
                 .setValue([]);
 
             this.attr("triggers")
                 .object()
-                .onSet(value => (this.locked ? this.fields : value));
+                .onSet(value => (this.published ? this.fields : value));
 
             this.attr("revisions")
                 .entities(CmsForm)
@@ -75,42 +65,20 @@ export default ({ getUser, getEntities }: Object) =>
                     });
                 });
 
-            /*this.attr("settings")
-            .model(formSettingsFactory({ entities: cms.entities, form: this }))
-            .onSet(value => (this.locked ? this.settings : value));*/
-
             this.attr("version").integer();
 
             this.attr("parent").char();
 
-            this.attr("locked")
-                .boolean()
-                .setSkipOnPopulate()
-                .setDefaultValue(false);
+            this.attr("published").boolean().onSet((value) => {
+                if (this.published) {
+                    return this.published;
+                }
 
-            this.attr("published")
-                .boolean()
-                .setDefaultValue(false)
-                .onSet(value => {
-                    // Deactivate previously published revision
-                    if (value && value !== this.published && this.isExisting()) {
-                        this.locked = true;
-                        this.publishedOn = new Date();
-                        this.on("beforeSave", async () => {
-                            // Deactivate previously published revision
-                            const { CmsForm } = getEntities();
-                            const publishedRev: CmsForm = (await CmsForm.findOne({
-                                query: { published: true, parent: this.parent }
-                            }): any);
-
-                            if (publishedRev) {
-                                publishedRev.published = false;
-                                await publishedRev.save();
-                            }
-                        }).setOnce();
-                    }
-                    return value;
-                });
+                if (value) {
+                    this.publishedOn = new Date();
+                }
+            });
+            this.attr("publishedOn").date();
 
             this.on("beforeCreate", async () => {
                 if (!this.id) {

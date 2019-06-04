@@ -62,14 +62,16 @@ const FormsDataList = props => {
                                 <ListTextOverline>{form.name}</ListTextOverline>
                                 {form.createdBy && (
                                     <ListItemTextSecondary>
-                                        Created by: {form.createdBy.firstName}. Last modified:{" "}
-                                        <TimeAgo datetime={form.savedOn} />.
+                                        {t`Created by: {user}.`({ user: form.createdBy.firstName })}{" "}
+                                        {t`Last modified: {time}.`({
+                                            time: <TimeAgo datetime={form.savedOn} />
+                                        })}
                                     </ListItemTextSecondary>
                                 )}
                             </ListItemText>
                             <ListItemMeta className={rightAlign}>
                                 <Typography use={"subtitle2"}>
-                                    {form.locked ? "Published" : "Draft"} (v{form.version})
+                                    {form.published ? t`Published` : t`Draft`} (v{form.version})
                                 </Typography>
                             </ListItemMeta>
                         </ListItem>
