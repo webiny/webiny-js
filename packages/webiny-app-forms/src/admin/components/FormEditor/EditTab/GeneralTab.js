@@ -1,27 +1,52 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useCallback, useRef } from "react";
 import { Input } from "webiny-ui/Input";
 import { Grid, Cell } from "webiny-ui/Grid";
+import { camelCase } from "lodash";
+import { useFormEditor } from "webiny-app-forms/admin/components/FormEditor/Context";
 
-const GeneralTab = ({ Bind, slugify, uniqueId, fieldType }) => {
+const GeneralTab = ({ form: { Bind, setValue } }) => {
     const inputRef = useRef(null);
+    const {
+        getFields,
+        state: { editField }
+    } = useFormEditor();
 
     useEffect(() => {
         inputRef.current && inputRef.current.focus();
     }, []);
 
+    const afterChangeLabel = useCallback(value => {
+        setValue("fieldId", camelCase(value));
+    }, []);
+
+    const uniqueFieldIdValidator = useCallback(
+        fieldId => {
+            const existingField = getFields().find(field => field.fieldId === fieldId);
+            if (!existingField) {
+                return;
+            }
+
+            if (existingField.id !== editField.id) {
+                throw new Error("Please enter a unique ID");
+            }
+        },
+        [editField.id]
+    );
+
+    /*
     if (typeof fieldType.renderSettings === "function") {
         fieldType.renderSettings({ Bind, slugify, uniqueId });
-    }
+    }*/
 
     return (
         <Grid>
             <Cell span={6}>
-                <Bind name={"label"} validators={["required"]} afterChange={slugify("id")}>
+                <Bind name={"label"} validators={["required"]} afterChange={afterChangeLabel}>
                     <Input label={"Label"} inputRef={inputRef} />
                 </Bind>
             </Cell>
             <Cell span={6}>
-                <Bind name={"id"} validators={["required", uniqueId]}>
+                <Bind name={"fieldId"} validators={["required", uniqueFieldIdValidator]}>
                     <Input label={"Field ID"} />
                 </Bind>
             </Cell>

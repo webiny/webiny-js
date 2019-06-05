@@ -1,4 +1,4 @@
-import React, { Fragment } from "react";
+import React, { useCallback, Fragment } from "react";
 import { css } from "emotion";
 import {
     Dialog,
@@ -16,9 +16,12 @@ import { Tabs, Tab } from "webiny-ui/Tabs";
 import { Elevation } from "webiny-ui/Elevation";
 import { Typography } from "webiny-ui/Typography";
 import { Icon } from "webiny-ui/Icon";
-import useEditFieldDialog from "./useEditFieldDialog";
 import GeneralTab from "./GeneralTab";
 import ValidatorsTab from "./ValidatorsTab";
+import { useFormEditor } from "webiny-app-forms/admin/components/FormEditor/Context";
+
+import { i18n } from "webiny-app/i18n";
+const t = i18n.namespace("FormEditor.EditFieldDialog");
 
 const dialogBody = css({
     "&.mdc-dialog__body": {
@@ -26,6 +29,14 @@ const dialogBody = css({
         padding: "24px 0 0 0"
     }
 });
+
+function getFieldType() {
+    const plugin = editField
+        ? getPlugins("form-editor-field-type").find(pl => pl.fieldType.id === editField.type)
+        : null;
+
+    return plugin ? plugin.fieldType : null;
+}
 
 const Thumbnail = ({ fieldType, onClick }) => {
     return (
@@ -37,19 +48,19 @@ const Thumbnail = ({ fieldType, onClick }) => {
     );
 };
 
-const EditFieldDialog = ({ open, field, onClose, onSave }) => {
-    const hook = useEditFieldDialog({ open, field });
-    const { getFieldType, createSlugify, uniqueId, editField, setField } = hook;
+const EditFieldDialog = () => {
+    const { state, editField, saveField } = useFormEditor();
+    // const fieldType = getFieldType();
 
-    const fieldType = getFieldType();
+    const onClose = () => editField(null);
 
     return (
-        <Dialog open={open} onClose={onClose}>
+        <Dialog open={Boolean(state.editField)} onClose={onClose}>
             <DialogHeader>
-                <DialogHeaderTitle>Field Settings</DialogHeaderTitle>
+                <DialogHeaderTitle>{t`Field Settings`}</DialogHeaderTitle>
             </DialogHeader>
             {/* If `editField` is not present, show data type fields. */}
-            {!editField && (
+            {!state.editField && (
                 <Fragment>
                     <DialogBody className={dialogBody}>
                         {getPlugins("form-editor-field-type")
@@ -68,47 +79,39 @@ const EditFieldDialog = ({ open, field, onClose, onSave }) => {
                 </Fragment>
             )}
 
-            {editField && (
+            {state.editField && (
                 <Form
                     submitOnEnter
-                    data={editField}
+                    data={state.editField}
                     onSubmit={data => {
-                        onSave(data);
-                        onClose();
+                        saveField(data);
+                        editField(null);
                     }}
                 >
-                    {(formProps) => {
-                        const { setValue, submit, Bind } = formProps;
-                        const slugify = createSlugify(setValue);
-
-                        return (
-                            <Fragment>
-                                <DialogBody className={dialogBody}>
-                                    <Tabs>
-                                        <Tab label={"General"}>
-                                            <GeneralTab
-                                                fieldType={fieldType}
-                                                Bind={Bind}
-                                                slugify={slugify}
-                                                uniqueId={uniqueId}
-                                            />
-                                        </Tab>
-                                        <Tab label={"Validators"}>
-                                            <Bind name={"validation"}>
-                                                <ValidatorsTab formProps={formProps} field={editField} />
-                                            </Bind>
-                                        </Tab>
-                                    </Tabs>
-                                </DialogBody>
-                                <DialogFooter>
-                                    <DialogFooterButton onClick={onClose}>
-                                        Cancel
-                                    </DialogFooterButton>
-                                    <DialogFooterButton onClick={submit}>Save</DialogFooterButton>
-                                </DialogFooter>
-                            </Fragment>
-                        );
-                    }}
+                    {form => (
+                        <Fragment>
+                            <DialogBody className={dialogBody}>
+                                <Tabs>
+                                    <Tab label={t`General`}>
+                                        <GeneralTab form={form} />
+                                    </Tab>
+                                    <Tab label={"Validators"}>
+                                        {/*<Bind name={"validation"}>
+                                                <ValidatorsTab formProps={formProps} />
+                                            </Bind>*/}
+                                    </Tab>
+                                </Tabs>
+                            </DialogBody>
+                            <DialogFooter>
+                                <DialogFooterButton onClick={onClose}>
+                                    {t`Cancel`}
+                                </DialogFooterButton>
+                                <DialogFooterButton
+                                    onClick={form.submit}
+                                >{t`Save`}</DialogFooterButton>
+                            </DialogFooter>
+                        </Fragment>
+                    )}
                 </Form>
             )}
         </Dialog>

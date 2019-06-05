@@ -33,9 +33,6 @@ export default FormEditorContext => {
 
                 return get(response, "data.forms.updateRevision");
             },
-            setData(data) {
-                dispatch({ type: "data", data });
-            },
             setName(name) {
                 dispatch({ type: "name", value: name });
             },
@@ -56,9 +53,15 @@ export default FormEditorContext => {
             getFieldById(id): ?FieldType {
                 return self.getFields().find(item => item.id === id);
             },
+            saveField(fieldData, position = null) {
+                if (fieldData.id) {
+                    self.updateField(fieldData);
+                } else {
+                    self.insertField(fieldData, position);
+                }
+            },
             insertField(fieldData, position) {
                 const data = cloneDeep(state.data);
-
                 const field = cloneDeep(fieldData);
                 field.id = shortid.generate();
 
@@ -75,7 +78,7 @@ export default FormEditorContext => {
                 // Setting a form field into a new non-existing row.
                 if (!data.layout[row]) {
                     data.layout[row] = [field.id];
-                    self.setData(data);
+                    dispatch({ type: "data", data });
                     return;
                 }
 
@@ -96,7 +99,18 @@ export default FormEditorContext => {
 
                 // We are dropping a new field at the specified index.
                 data.layout[row].splice(index, 0, field.id);
-                self.setData(data);
+                dispatch({ type: "data", data });
+            },
+            updateField(fieldData) {
+                const field = cloneDeep(fieldData);
+                const data = cloneDeep(state.data);
+                for (let i = 0; i < data.fields.length; i++) {
+                    if (data.fields[i].id === field.id) {
+                        data.fields[i] = field;
+                        break;
+                    }
+                }
+                dispatch({ type: "data", data });
             },
             deleteField(fieldData) {
                 const field = cloneDeep(fieldData);
@@ -132,21 +146,10 @@ export default FormEditorContext => {
 
                 data.layout = layout;
 
-                self.setData(data);
-            },
-            updateField(fieldData) {
-                const field = cloneDeep(fieldData);
-                const data = cloneDeep(state.data);
-                for (let i = 0; i < data.fields.length; i++) {
-                    if (data.fields[i].id === field.id) {
-                        data.fields[i] = field;
-                        break;
-                    }
-                }
-                self.setData(data);
+                dispatch({ type: "data", data });
             },
             editField(data) {
-                dispatch({ type: "editField", data });
+                dispatch({ type: "editField", data: cloneDeep(data) });
             },
             fieldExists(fieldId): boolean {
                 return state.data.fields.findIndex(f => f.fieldId === fieldId) >= 0;

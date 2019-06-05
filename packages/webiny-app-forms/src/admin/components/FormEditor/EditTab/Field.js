@@ -35,7 +35,7 @@ const Field = ({ field }) => {
             <Info>
                 <strong>{field.label}</strong>
                 <span>
-                    {field.id} ({field.type})
+                    {field.fieldId} ({field.type})
                 </span>
             </Info>
             <Actions>
