@@ -148,8 +148,11 @@ export default FormEditorContext => {
 
                 dispatch({ type: "data", data });
             },
-            editField(data) {
-                dispatch({ type: "editField", data: cloneDeep(data) });
+            editField(data, meta) {
+                dispatch({ type: "editField", data: cloneDeep(data), meta: cloneDeep(meta) });
+            },
+            getEditingField() {
+                return state.editField.current;
             },
             fieldExists(fieldId): boolean {
                 return state.data.fields.findIndex(f => f.fieldId === fieldId) >= 0;

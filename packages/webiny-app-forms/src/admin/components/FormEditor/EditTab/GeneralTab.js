@@ -8,8 +8,10 @@ const GeneralTab = ({ form: { Bind, setValue } }) => {
     const inputRef = useRef(null);
     const {
         getFields,
-        state: { editField }
+        getEditingField
     } = useFormEditor();
+
+    const currentField = getEditingField();
 
     useEffect(() => {
         inputRef.current && inputRef.current.focus();
@@ -19,19 +21,16 @@ const GeneralTab = ({ form: { Bind, setValue } }) => {
         setValue("fieldId", camelCase(value));
     }, []);
 
-    const uniqueFieldIdValidator = useCallback(
-        fieldId => {
-            const existingField = getFields().find(field => field.fieldId === fieldId);
-            if (!existingField) {
-                return;
-            }
+    const uniqueFieldIdValidator = useCallback(fieldId => {
+        const existingField = getFields().find(field => field.fieldId === fieldId);
+        if (!existingField) {
+            return;
+        }
 
-            if (existingField.id !== editField.id) {
-                throw new Error("Please enter a unique ID");
-            }
-        },
-        [editField.id]
-    );
+        if (existingField.id !== currentField.id) {
+            throw new Error("Please enter a unique ID");
+        }
+    });
 
     /*
     if (typeof fieldType.renderSettings === "function") {

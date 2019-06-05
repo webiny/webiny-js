@@ -4,6 +4,10 @@ import type { UseFormEditorReducerStateType } from "webiny-app-forms/types";
 export function init(props: UseFormEditorReducerStateType) {
     return {
         apollo: null,
+        editField: {
+            current: null,
+            meta: null
+        },
         data: {
             fields: [],
             layout: []
@@ -24,7 +28,10 @@ export function formEditorReducer(state: Object, action: Object) {
             break;
         }
         case "editField": {
-            next.editField = action.data;
+            next.editField = {
+                current: action.data,
+                meta: action.meta
+            };
             break;
         }
     }

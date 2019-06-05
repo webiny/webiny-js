@@ -49,71 +49,71 @@ const Thumbnail = ({ fieldType, onClick }) => {
 };
 
 const EditFieldDialog = () => {
-    const { state, editField, saveField } = useFormEditor();
+    const { editField, getEditingField, saveField } = useFormEditor();
     // const fieldType = getFieldType();
 
     const onClose = () => editField(null);
+    const editedField = getEditingField();
 
     return (
-        <Dialog open={Boolean(state.editField)} onClose={onClose}>
+        <Dialog open={editedField} onClose={onClose}>
             <DialogHeader>
                 <DialogHeaderTitle>{t`Field Settings`}</DialogHeaderTitle>
             </DialogHeader>
-            {/* If `editField` is not present, show data type fields. */}
-            {!state.editField && (
-                <Fragment>
-                    <DialogBody className={dialogBody}>
-                        {getPlugins("form-editor-field-type")
-                            .filter(pl => pl.fieldType.dataType)
-                            .map(pl => (
-                                <Thumbnail
-                                    key={pl.name}
-                                    fieldType={pl.fieldType}
-                                    onClick={() => setField(pl.fieldType.createField())}
-                                />
-                            ))}
-                    </DialogBody>
-                    <DialogFooter>
-                        <DialogCancel onClick={onClose}>Cancel</DialogCancel>
-                    </DialogFooter>
-                </Fragment>
-            )}
 
-            {state.editField && (
-                <Form
-                    submitOnEnter
-                    data={state.editField}
-                    onSubmit={data => {
-                        saveField(data);
-                        editField(null);
-                    }}
-                >
-                    {form => (
-                        <Fragment>
-                            <DialogBody className={dialogBody}>
-                                <Tabs>
-                                    <Tab label={t`General`}>
-                                        <GeneralTab form={form} />
-                                    </Tab>
-                                    <Tab label={"Validators"}>
-                                        {/*<Bind name={"validation"}>
+            {editedField &&
+                (editedField.id ? (
+                    <Form
+                        submitOnEnter
+                        data={editedField}
+                        onSubmit={data => {
+                            saveField(data);
+                            editField(null);
+                        }}
+                    >
+                        {form => (
+                            <Fragment>
+                                <DialogBody className={dialogBody}>
+                                    <Tabs>
+                                        <Tab label={t`General`}>
+                                            <GeneralTab form={form} />
+                                        </Tab>
+                                        <Tab label={"Validators"}>
+                                            {/*<Bind name={"validation"}>
                                                 <ValidatorsTab formProps={formProps} />
                                             </Bind>*/}
-                                    </Tab>
-                                </Tabs>
-                            </DialogBody>
-                            <DialogFooter>
-                                <DialogFooterButton onClick={onClose}>
-                                    {t`Cancel`}
-                                </DialogFooterButton>
-                                <DialogFooterButton
-                                    onClick={form.submit}
-                                >{t`Save`}</DialogFooterButton>
-                            </DialogFooter>
-                        </Fragment>
-                    )}
-                </Form>
-            )}
+                                        </Tab>
+                                    </Tabs>
+                                </DialogBody>
+                                <DialogFooter>
+                                    <DialogFooterButton onClick={onClose}>
+                                        {t`Cancel`}
+                                    </DialogFooterButton>
+                                    <DialogFooterButton
+                                        onClick={form.submit}
+                                    >{t`Save`}</DialogFooterButton>
+                                </DialogFooter>
+                            </Fragment>
+                        )}
+                    </Form>
+                ) : (
+                    <>
+                        <DialogBody className={dialogBody}>
+                            {getPlugins("form-editor-field-type")
+                                .filter(pl => pl.fieldType.dataType)
+                                .map(pl => (
+                                    <Thumbnail
+                                        key={pl.name}
+                                        fieldType={pl.fieldType}
+                                        onClick={() => setField(pl.fieldType.createField())}
+                                    />
+                                ))}
+                        </DialogBody>
+                        <DialogFooter>
+                            <DialogCancel onClick={onClose}>Cancel</DialogCancel>
+                        </DialogFooter>
+                    </>
+                ))}
         </Dialog>
     );
 };
