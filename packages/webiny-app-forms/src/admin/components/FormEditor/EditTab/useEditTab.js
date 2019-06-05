@@ -9,7 +9,8 @@ export default function useEditTab() {
         setFormState,
         insertField,
         updateField,
-        editField
+        editField,
+        getFields
     } = useFormEditor();
     const createAtRef = useRef(null);
 
@@ -94,6 +95,7 @@ export default function useEditTab() {
         state: formEditorState,
         fieldDialogOpened,
         closeFieldDialog,
+        getFields,
         onDrop,
         saveField
     };

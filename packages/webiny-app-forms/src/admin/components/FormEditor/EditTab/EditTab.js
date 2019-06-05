@@ -15,16 +15,15 @@ const t = i18n.namespace("FormEditor.EditTab");
 
 export const EditTab = () => {
     const {
-        state: {
-            data: { fields },
-            editField
-        },
         closeFieldDialog,
         fieldDialogOpened,
         onDrop,
-        saveField
+        saveField,
+        getFields,
+        editField
     } = useEditTab();
 
+    const fields = getFields(true);
     return (
         <EditContainer>
             {fields.length === 0 && (

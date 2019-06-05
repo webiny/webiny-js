@@ -7,7 +7,8 @@ export interface IForm extends Entity {
     updatedBy: Entity;
     name: string;
     snippet: string;
-    fields: Object;
+    fields: [Object];
+    layout: [Object];
     settings: Object;
     version: number;
     parent: string;
@@ -25,7 +26,9 @@ export default ({ getUser, getEntities }: Object) =>
         publishedOn: ?Date;
         name: string;
         snippet: string;
-        fields: Object;
+        fields: [Object];
+        layout: [Object];
+        triggers: Object;
         settings: Object;
         version: number;
         parent: string;
@@ -52,9 +55,14 @@ export default ({ getUser, getEntities }: Object) =>
                 .onSet(value => (this.published ? this.fields : value))
                 .setValue([]);
 
+            this.attr("layout")
+                .object()
+                .onSet(value => (this.published ? this.layout : value))
+                .setValue([]);
+
             this.attr("triggers")
                 .object()
-                .onSet(value => (this.published ? this.fields : value));
+                .onSet(value => (this.published ? this.triggers : value));
 
             this.attr("revisions")
                 .entities(CmsForm)

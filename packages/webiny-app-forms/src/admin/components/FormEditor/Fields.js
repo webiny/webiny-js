@@ -25,12 +25,12 @@ const FieldHandle = styled("div")({
 });
 
 function useFields() {
-    const { state, isFieldIdInUse } = useFormEditor();
+    const { state, fieldExists } = useFormEditor();
 
     function getGroups() {
         const fieldPlugins = getPlugins("form-editor-field-type")
             .filter(pl => !pl.fieldType.dataType)
-            .filter(pl => !isFieldIdInUse(pl.fieldType.id));
+            .filter(pl => !fieldExists(pl.fieldType.id));
 
         return getPlugins("form-editor-field-group").map(pl => ({
             ...pl.group,

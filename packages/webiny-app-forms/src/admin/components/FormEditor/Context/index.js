@@ -4,7 +4,7 @@ import { init, formEditorReducer } from "./formEditorReducer";
 
 const FormEditorContext = React.createContext();
 
-function FormEditorProvider(props) {
+export function FormEditorProvider(props) {
     const [state, dispatch] = React.useReducer(formEditorReducer, props, init);
 
     const value = React.useMemo(() => {
@@ -17,6 +17,4 @@ function FormEditorProvider(props) {
     return <FormEditorContext.Provider value={value} {...props} />;
 }
 
-const useFormEditor = useFormEditorFactory(FormEditorContext);
-
-export { FormEditorProvider, useFormEditor };
+export const useFormEditor = useFormEditorFactory(FormEditorContext);

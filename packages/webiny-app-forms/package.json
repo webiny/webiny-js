@@ -12,6 +12,7 @@
     "@babel/runtime": "^7.0.0",
     "@svgr/webpack": "^4.1.0",
     "emotion": "^9.2.4",
+    "lodash.clonedeep": "^4.5.0",
     "lodash.debounce": "^4.0.8",
     "lodash.get": "^4.4.2",
     "lodash.pick": "^4.4.0",

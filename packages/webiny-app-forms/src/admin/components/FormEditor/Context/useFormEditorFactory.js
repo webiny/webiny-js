@@ -1,11 +1,9 @@
 import React from "react";
-import { flatten } from "lodash";
-import dp from "dot-prop-immutable";
 import shortid from "shortid";
 import { set } from "dot-prop-immutable";
-import get from "lodash.get";
-import pick from "lodash.pick";
+import { get, cloneDeep, pick } from "lodash";
 import { getForm, updateRevision } from "./graphql";
+import type { FieldsLayoutType, FieldType } from "webiny-app-forms/types";
 
 export default FormEditorContext => {
     return () => {
@@ -15,43 +13,69 @@ export default FormEditorContext => {
         }
 
         const { state, dispatch } = context;
+        window.useFormEditorState = state;
 
         const self = {
             apollo: state.apollo,
             async getForm(id) {
                 let response = await self.apollo.query({ query: getForm, variables: { id } });
-                const data = get(response, "data.forms.getForm");
-                dispatch({ type: "data", data: data.data });
-                dispatch({ type: "loaded", state: true });
-                return data;
+                response = get(response, "data.forms.getForm");
+                dispatch({ type: "data", data: response.data });
+
+                return response;
             },
             saveForm: async () => {
                 const data = state.data;
                 let response = await self.apollo.mutate({
                     mutation: updateRevision,
-                    variables: { id: data.id, data: pick(data, ["fields", "name"]) }
+                    variables: { id: data.id, data: pick(data, ["layout", "fields", "name"]) }
                 });
 
                 return get(response, "data.forms.updateRevision");
             },
+            setData(data) {
+                dispatch({ type: "data", data });
+            },
             setName(name) {
                 dispatch({ type: "name", value: name });
             },
-            setFields(data) {
-                dispatch({ type: "fields", data });
-            },
-            insertField(fieldData, position) {
-                const { row, index } = position;
-
-                if (!fieldData._id) {
-                    fieldData._id = shortid.generate();
+            getFields(layout = false): [FieldType] | FieldsLayoutType {
+                if (!layout) {
+                    return state.data.fields;
                 }
 
-                const fields = state.data.fields;
+                // Replace every field ID with actual field object.
+                const fields = cloneDeep(state.data.layout);
+                fields.forEach((row, rowIndex) => {
+                    row.forEach((fieldId, fieldIndex) => {
+                        fields[rowIndex][fieldIndex] = self.getFieldById(fieldId);
+                    });
+                });
+                return fields;
+            },
+            getFieldById(id): ?FieldType {
+                return self.getFields().find(item => item.id === id);
+            },
+            insertField(fieldData, position) {
+                const data = cloneDeep(state.data);
+
+                const field = cloneDeep(fieldData);
+                field.id = shortid.generate();
+
+                if (!Array.isArray(data.fields)) {
+                    data.fields = [];
+                }
+                data.fields.push(field);
+
+                const { row, index } = position;
+                if (!Array.isArray(data.layout)) {
+                    data.layout = [];
+                }
 
                 // Setting a form field into a new non-existing row.
-                if (!fields[row]) {
-                    self.setFields(set(fields, row, [fieldData]));
+                if (!data.layout[row]) {
+                    data.layout[row] = [field.id];
+                    self.setData(data);
                     return;
                 }
 
@@ -63,7 +87,7 @@ export default FormEditorContext => {
                     self.setFields(
                         set(state, "data.fields", [
                             ...fields.slice(0, row),
-                            [fieldData],
+                            [field],
                             ...fields.slice(row)
                         ])
                     );
@@ -71,36 +95,61 @@ export default FormEditorContext => {
                 }
 
                 // We are dropping a new field at the specified index.
-                self.setFields(
-                    set(state.data.fields, row, [
-                        ...fields[row].slice(0, index),
-                        fieldData,
-                        ...fields[row].slice(index)
-                    ])
-                );
+                data.layout[row].splice(index, 0, field.id);
+                self.setData(data);
             },
-            deleteField(field) {
-                const { row, index } = self.findFieldPosition(field._id);
-                let data = dp.delete(state.data.fields, `${row}.${index}`);
-                if (data[row].length === 0) {
-                    data = dp.delete(data, row);
+            deleteField(fieldData) {
+                const field = cloneDeep(fieldData);
+                const data = cloneDeep(state.data);
+
+                // Remove the field from fields list...
+                const fieldIndex = data.fields.findIndex(item => item.id === field.id);
+                data.fields.splice(fieldIndex, 1);
+                for (let i = 0; i < data.fields.length; i++) {
+                    if (data.fields[i].id === field.id) {
+                        data.fields[i] = field;
+                        break;
+                    }
                 }
 
-                dispatch({ type: "fields", data });
+                // ...and rebuild the layout object.
+                const layout = [];
+                let currentRowIndex = 0;
+                data.layout.forEach(row => {
+                    row.forEach(fieldId => {
+                        const field = data.fields.find(item => item.id === fieldId);
+                        if (!field) {
+                            return true;
+                        }
+                        if (!Array.isArray(layout[currentRowIndex])) {
+                            layout[currentRowIndex] = [];
+                        }
+
+                        layout[currentRowIndex].push(fieldId);
+                    });
+                    layout[currentRowIndex] && layout[currentRowIndex].length && currentRowIndex++;
+                });
+
+                data.layout = layout;
+
+                self.setData(data);
             },
             updateField(fieldData) {
-                const { row, index } = self.findFieldPosition(fieldData._id);
-                const data = set(state.data.fields, [row, index], fieldData);
-                dispatch({
-                    type: "fields",
-                    data
-                });
+                const field = cloneDeep(fieldData);
+                const data = cloneDeep(state.data);
+                for (let i = 0; i < data.fields.length; i++) {
+                    if (data.fields[i].id === field.id) {
+                        data.fields[i] = field;
+                        break;
+                    }
+                }
+                self.setData(data);
             },
             editField(data) {
                 dispatch({ type: "editField", data });
             },
-            isFieldIdInUse(id) {
-                return !!flatten(state.data.fields).find(f => f.id === id);
+            fieldExists(fieldId): boolean {
+                return state.data.fields.findIndex(f => f.fieldId === fieldId) >= 0;
             },
             findFieldPosition(id) {
                 for (let i = 0; i < state.data.fields.length; i++) {
@@ -118,6 +167,7 @@ export default FormEditorContext => {
             dispatch
         };
 
+        window.useFormEditor = self;
         return self;
     };
 };

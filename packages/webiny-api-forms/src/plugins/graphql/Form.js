@@ -27,7 +27,8 @@ export default {
             publishedOn: DateTime
             version: Int
             name: String
-            fields: JSON
+            fields: [JSON]
+            layout: [[JSON]]
             triggers: JSON
             published: Boolean
             parent: ID
@@ -40,7 +41,8 @@ export default {
         
         input UpdateFormInput {
             name: String
-            fields: JSON
+            fields: [JSON],
+            layout: [JSON]
         }
         
         input FormSortInput {

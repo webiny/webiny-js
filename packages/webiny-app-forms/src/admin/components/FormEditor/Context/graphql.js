@@ -10,6 +10,7 @@ export const getForm = gql`
                     name
                     version
                     fields
+                    layout
                     triggers
                     revisions {
                         id
@@ -32,6 +33,7 @@ export const updateRevision = gql`
                     name
                     version
                     fields
+                    layout
                     triggers
                 }
             }
