@@ -3,12 +3,6 @@ import { dummyResolver } from "webiny-api/graphql";
 import file from "./graphql/file";
 import { type PluginType } from "webiny-api/types";
 import { hasScope } from "webiny-api-security";
-import {
-    FileType,
-    FileInputType,
-    FileResponseType,
-    FileListResponseType
-} from "webiny-api-files/graphql";
 
 export default ([
     {
@@ -16,10 +10,7 @@ export default ([
         name: "graphql-files-schema",
         namespace: "files",
         typeDefs: [
-            FileType,
-            FileInputType,
-            FileResponseType,
-            FileListResponseType,
+            file.typeDefs,
             file.typeExtensions,
             /* GraphQL */ `
                 type FilesQuery {
