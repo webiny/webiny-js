@@ -16,6 +16,10 @@ const mapSourcesToExecutableSchemas = (sources: Array<Object>) => {
     const schemas = {};
 
     sources.forEach(({ typeDefs, resolvers, namespace, schemaDirectives }) => {
+        if(!typeDefs) {
+            return;
+        }
+
         // Prepare "typeDefs".
         if (typeof typeDefs === "function") {
             typeDefs = typeDefs();
