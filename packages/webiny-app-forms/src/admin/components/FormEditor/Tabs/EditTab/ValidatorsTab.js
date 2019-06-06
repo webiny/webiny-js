@@ -1,4 +1,4 @@
-import React, { Fragment, useCallback } from "react";
+import React, { useCallback } from "react";
 import { getPlugins } from "webiny-plugins";
 import { Switch } from "webiny-ui/Switch";
 import {
@@ -7,7 +7,7 @@ import {
     SimpleFormHeader
 } from "webiny-admin/components/SimpleForm";
 
-function useValidatorsTab({ formProps, value, onChange, field }) {
+function useValidatorsTab({ form: formProps, value, onChange, field }) {
     const { fieldType } = getPlugins("form-editor-field-type").find(
         f => f.fieldType.id === field.type
     );
@@ -76,7 +76,7 @@ const ValidatorsTab = props => {
     const { validators, createBind, createToggle, createSetValue } = useValidatorsTab(props);
 
     return (
-        <Fragment>
+        <>
             {validators.map(({ optional, validator: v }) => {
                 const vIndex = props.value.findIndex(x => x.id === v.id);
                 const enabled = vIndex > -1;
@@ -104,7 +104,7 @@ const ValidatorsTab = props => {
                     </SimpleForm>
                 );
             })}
-        </Fragment>
+        </>
     );
 };
 

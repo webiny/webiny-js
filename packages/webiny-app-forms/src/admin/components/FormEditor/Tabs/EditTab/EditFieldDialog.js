@@ -1,5 +1,5 @@
 // @flow
-import React, { useState, useEffect, useCallback, Fragment } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { cloneDeep } from "lodash";
 import { css } from "emotion";
 import {
@@ -20,7 +20,6 @@ import { Typography } from "webiny-ui/Typography";
 import { Icon } from "webiny-ui/Icon";
 import GeneralTab from "./GeneralTab";
 import ValidatorsTab from "./ValidatorsTab";
-import { useFormEditor } from "webiny-app-forms/admin/components/FormEditor/Context";
 
 import { i18n } from "webiny-app/i18n";
 const t = i18n.namespace("FormEditor.EditFieldDialog");
@@ -78,30 +77,33 @@ const EditFieldDialog = ({ field, onSubmit, ...props }: Props) => {
             {current &&
                 (current.type ? (
                     <Form submitOnEnter data={current} onSubmit={onSubmit}>
-                        {form => (
-                            <Fragment>
-                                <DialogBody className={dialogBody}>
-                                    <Tabs>
-                                        <Tab label={t`General`}>
-                                            <GeneralTab form={form} field={current} />
-                                        </Tab>
-                                        <Tab label={"Validators"}>
-                                            {/*<Bind name={"validation"}>
-                                                <ValidatorsTab formProps={formProps} field={current} />
-                                            </Bind>*/}
-                                        </Tab>
-                                    </Tabs>
-                                </DialogBody>
-                                <DialogFooter>
-                                    <DialogFooterButton onClick={onClose}>
-                                        {t`Cancel`}
-                                    </DialogFooterButton>
-                                    <DialogFooterButton onClick={form.submit}>
-                                        {t`Save`}
-                                    </DialogFooterButton>
-                                </DialogFooter>
-                            </Fragment>
-                        )}
+                        {form => {
+                            const { Bind } = form;
+                            return (
+                                <>
+                                    <DialogBody className={dialogBody}>
+                                        <Tabs>
+                                            <Tab label={t`General`}>
+                                                <GeneralTab form={form} field={current} />
+                                            </Tab>
+                                            <Tab label={"Validators"}>
+                                                <Bind name={"validation"}>
+                                                    <ValidatorsTab form={form} field={current} />
+                                                </Bind>
+                                            </Tab>
+                                        </Tabs>
+                                    </DialogBody>
+                                    <DialogFooter>
+                                        <DialogFooterButton onClick={onClose}>
+                                            {t`Cancel`}
+                                        </DialogFooterButton>
+                                        <DialogFooterButton onClick={form.submit}>
+                                            {t`Save`}
+                                        </DialogFooterButton>
+                                    </DialogFooter>
+                                </>
+                            );
+                        }}
                     </Form>
                 ) : (
                     <>

@@ -24,24 +24,6 @@ const FieldHandle = styled("div")({
     cursor: "grab"
 });
 
-function useFields() {
-    const { state, fieldExists } = useFormEditor();
-
-    function getGroups() {
-        const fieldPlugins = getPlugins("form-editor-field-type")
-            .filter(pl => !pl.fieldType.dataType)
-            .filter(pl => !fieldExists(pl.fieldType.id));
-
-        return getPlugins("form-editor-field-group").map(pl => ({
-            ...pl.group,
-            name: pl.name,
-            fields: fieldPlugins.filter(f => f.fieldType.group === pl.name).map(pl => pl.fieldType)
-        }));
-    }
-
-    return { getGroups, state };
-}
-
 const Field = ({ fieldType: { id, label } }) => {
     return (
         <Draggable beginDrag={{ ui: "field", type: id }}>
@@ -64,7 +46,20 @@ const Field = ({ fieldType: { id, label } }) => {
 };
 
 export const Fields = () => {
-    const { getGroups } = useFields();
+    const { fieldExists } = useFormEditor();
+
+    function getGroups() {
+        const fieldPlugins = getPlugins("form-editor-field-type")
+            .filter(pl => !pl.fieldType.dataType)
+            .filter(pl => !fieldExists(pl.fieldType.id));
+
+        return getPlugins("form-editor-field-group").map(pl => ({
+            ...pl.group,
+            name: pl.name,
+            fields: fieldPlugins.filter(f => f.fieldType.group === pl.name).map(pl => pl.fieldType)
+        }));
+    }
+
     return (
         <React.Fragment>
             <Field fieldType={{ id: "custom", label: "Custom field" }} />

@@ -2,11 +2,11 @@ import React, { useCallback, useState } from "react";
 import { Elevation } from "webiny-ui/Elevation";
 import { Icon } from "webiny-ui/Icon";
 import { get, cloneDeep } from "lodash";
-import { Center, Vertical, Horizontal } from "../DropZone";
-import Draggable from "../Draggable";
+import { Center, Vertical, Horizontal } from "../../DropZone";
+import Draggable from "../../Draggable";
 import EditFieldDialog from "./EditFieldDialog";
 import Field from "./Field";
-import { ReactComponent as HandleIcon } from "../icons/round-drag_indicator-24px.svg";
+import { ReactComponent as HandleIcon } from "../../icons/round-drag_indicator-24px.svg";
 import { rowHandle, EditContainer, fieldHandle, FieldContainer, Row, RowContainer } from "./Styled";
 import { useFormEditor } from "webiny-app-forms/admin/components/FormEditor/Context";
 import { getPlugins } from "webiny-plugins";
@@ -192,13 +192,14 @@ export const EditTab = () => {
 
             <EditFieldDialog
                 field={editingField}
-                onClose={setEditingField}
+                onClose={editField}
                 onSubmit={data => {
                     if (data.id) {
                         updateField(data);
                     } else {
                         insertField(data, dropTarget);
                     }
+                    editField(null);
                 }}
             />
         </EditContainer>

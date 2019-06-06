@@ -10,9 +10,9 @@ import {
 import { Typography } from "webiny-ui/Typography";
 import { RichTextEditor } from "webiny-app-forms/admin/components/RichTextEditor";
 import { FormEditorContext } from "webiny-app-forms/admin/components/FormEditor";
-import { ReactComponent as TextIcon } from "../icons/round-text_format-24px.svg";
-import { ReactComponent as LinkIcon } from "../icons/round-link-24px.svg";
-import { ReactComponent as CodeIcon } from "../icons/round-code-24px.svg";
+import { ReactComponent as TextIcon } from "../../icons/round-text_format-24px.svg";
+import { ReactComponent as LinkIcon } from "../../icons/round-link-24px.svg";
+import { ReactComponent as CodeIcon } from "../../icons/round-code-24px.svg";
 
 const Container = styled("div")({
     padding: "40px 60px"

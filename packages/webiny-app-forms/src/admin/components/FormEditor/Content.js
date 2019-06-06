@@ -3,8 +3,9 @@ import { css } from "emotion";
 import styled from "react-emotion";
 import { SplitView, LeftPanel, RightPanel } from "webiny-admin/components/SplitView";
 import { Tabs, Tab } from "webiny-ui/Tabs";
-import { EditTab } from "./EditTab";
-import { TriggersTab } from "./TriggersTab";
+import { EditTab } from "./Tabs/EditTab";
+import { TriggersTab } from "./Tabs/TriggersTab";
+import { PreviewTab } from "./Tabs/PreviewTab";
 import { Fields } from "./Fields";
 import { useHotkeys } from "react-hotkeyz";
 import { useFormEditor } from "webiny-app-forms/admin/components/FormEditor/Context";
@@ -37,6 +38,9 @@ export default function Content() {
                     <Tabs>
                         <Tab label={"Edit"}>
                             <EditTab />
+                        </Tab>
+                        <Tab label={"Preview"}>
+                            <PreviewTab />
                         </Tab>
                         <Tab label={"Triggers"}>
                             <TriggersTab />

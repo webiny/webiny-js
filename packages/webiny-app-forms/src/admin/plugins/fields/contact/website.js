@@ -12,7 +12,7 @@ export default {
             return {
                 fieldId: "url",
                 label: "URL",
-                type: this.id,
+                type: "website",
                 validation: [
                     {
                         id: "pattern",

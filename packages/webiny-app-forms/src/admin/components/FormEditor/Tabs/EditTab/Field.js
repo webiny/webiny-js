@@ -1,8 +1,8 @@
 import React from "react";
 import styled from "react-emotion";
 import { IconButton } from "webiny-ui/Button";
-import { ReactComponent as EditIcon } from "../icons/edit.svg";
-import { ReactComponent as DeleteIcon } from "../icons/delete.svg";
+import { ReactComponent as EditIcon } from "../../icons/edit.svg";
+import { ReactComponent as DeleteIcon } from "../../icons/delete.svg";
 
 const FieldContainer = styled("div")({
     display: "flex",
@@ -28,7 +28,6 @@ const Actions = styled("div")({
 
 const Field = props => {
     const { field, onEdit, onDelete } = props;
-    console.log(props);
     return (
         <FieldContainer>
             <Info>

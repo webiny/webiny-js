@@ -79,14 +79,15 @@ export default FormEditorContext => {
 
                 if (index === null) {
                     // Create a new row with the new field at the given row index
-                    console.log("cemu ovo sluzi?! ");
-                    self.setFields(
-                        set(state, "data.fields", [
-                            ...fields.slice(0, row),
+                    dispatch({
+                        type: "data",
+                        data: set(data, "fields", [
+                            ...data.fields.slice(0, row),
                             [field],
-                            ...fields.slice(row)
+                            ...data.fields.slice(row)
                         ])
-                    );
+                    });
+
                     return;
                 }
 
@@ -141,8 +142,8 @@ export default FormEditorContext => {
 
                 dispatch({ type: "data", data });
             },
-            fieldExists(fieldId): boolean {
-                return state.data.fields.findIndex(f => f.fieldId === fieldId) >= 0;
+            fieldExists(type): boolean {
+                return state.data.fields.findIndex(f => f.type === type) >= 0;
             },
             findFieldPosition(id) {
                 for (let i = 0; i < state.data.fields.length; i++) {

@@ -9,7 +9,7 @@ export default {
             return {
                 fieldId: this.id,
                 label: "First name",
-                type: "text",
+                type: this.id,
                 validation: []
             };
         }
