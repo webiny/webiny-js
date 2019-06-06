@@ -1,4 +1,6 @@
-import React, { useCallback, Fragment } from "react";
+// @flow
+import React, { useState, useEffect, useCallback, Fragment } from "react";
+import { cloneDeep } from "lodash";
 import { css } from "emotion";
 import {
     Dialog,
@@ -48,39 +50,44 @@ const Thumbnail = ({ fieldType, onClick }) => {
     );
 };
 
-const EditFieldDialog = () => {
-    const { editField, getEditingField, saveField } = useFormEditor();
-    // const fieldType = getFieldType();
+type Props = {
+    field: ?Object,
+    onClose: Function,
+    onSubmit: Function
+};
 
-    const onClose = () => editField(null);
-    const editedField = getEditingField();
+const EditFieldDialog = ({ field, onSubmit, ...props }: Props) => {
+    // const fieldType = getFieldType();
+    const [current, setCurrent] = useState(null);
+
+    useEffect(() => {
+        setCurrent(cloneDeep(field));
+    }, [field]);
+
+    const onClose = useCallback(() => {
+        setCurrent(null);
+        props.onClose();
+    });
 
     return (
-        <Dialog open={editedField} onClose={onClose}>
+        <Dialog open={!!current} onClose={onClose}>
             <DialogHeader>
                 <DialogHeaderTitle>{t`Field Settings`}</DialogHeaderTitle>
             </DialogHeader>
 
-            {editedField &&
-                (editedField.id ? (
-                    <Form
-                        submitOnEnter
-                        data={editedField}
-                        onSubmit={data => {
-                            saveField(data);
-                            editField(null);
-                        }}
-                    >
+            {current &&
+                (current.type ? (
+                    <Form submitOnEnter data={current} onSubmit={onSubmit}>
                         {form => (
                             <Fragment>
                                 <DialogBody className={dialogBody}>
                                     <Tabs>
                                         <Tab label={t`General`}>
-                                            <GeneralTab form={form} />
+                                            <GeneralTab form={form} field={current} />
                                         </Tab>
                                         <Tab label={"Validators"}>
                                             {/*<Bind name={"validation"}>
-                                                <ValidatorsTab formProps={formProps} />
+                                                <ValidatorsTab formProps={formProps} field={current} />
                                             </Bind>*/}
                                         </Tab>
                                     </Tabs>
@@ -89,9 +96,9 @@ const EditFieldDialog = () => {
                                     <DialogFooterButton onClick={onClose}>
                                         {t`Cancel`}
                                     </DialogFooterButton>
-                                    <DialogFooterButton
-                                        onClick={form.submit}
-                                    >{t`Save`}</DialogFooterButton>
+                                    <DialogFooterButton onClick={form.submit}>
+                                        {t`Save`}
+                                    </DialogFooterButton>
                                 </DialogFooter>
                             </Fragment>
                         )}
@@ -105,12 +112,12 @@ const EditFieldDialog = () => {
                                     <Thumbnail
                                         key={pl.name}
                                         fieldType={pl.fieldType}
-                                        onClick={() => setField(pl.fieldType.createField())}
+                                        onClick={() => setCurrent(pl.fieldType.createField())}
                                     />
                                 ))}
                         </DialogBody>
                         <DialogFooter>
-                            <DialogCancel onClick={onClose}>Cancel</DialogCancel>
+                            <DialogCancel onClick={onClose}>{t`Cancel`}</DialogCancel>
                         </DialogFooter>
                     </>
                 ))}

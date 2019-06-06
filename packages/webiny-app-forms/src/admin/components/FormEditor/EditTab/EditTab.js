@@ -1,7 +1,7 @@
-import React, { useCallback, useRef } from "react";
+import React, { useCallback, useState } from "react";
 import { Elevation } from "webiny-ui/Elevation";
 import { Icon } from "webiny-ui/Icon";
-import { get } from "lodash";
+import { get, cloneDeep } from "lodash";
 import { Center, Vertical, Horizontal } from "../DropZone";
 import Draggable from "../Draggable";
 import EditFieldDialog from "./EditFieldDialog";
@@ -15,14 +15,22 @@ import { i18n } from "webiny-app/i18n";
 const t = i18n.namespace("FormEditor.EditTab");
 
 export const EditTab = () => {
-    const { getFields, saveField, editField } = useFormEditor();
+    const { getFields, insertField, updateField, deleteField } = useFormEditor();
+    const [editingField, setEditingField] = useState(null);
+    const [dropTarget, setDropTarget] = useState(null);
 
-    const handleDropField = useCallback((source, target) => {
+    const editField = useCallback(field => {
+        setEditingField(cloneDeep(field));
+    });
+
+    const handleDropField = useCallback((source, dropTarget) => {
+        setDropTarget(dropTarget);
+
         const { pos, type, ui } = source;
-        const { row } = target;
+        const { row } = dropTarget;
 
         if (type === "custom") {
-            editField({}, {...target});
+            editField({});
             return;
         }
 
@@ -75,8 +83,7 @@ export const EditTab = () => {
 
         // Find field plugin which handles the dropped field type "id".
         const plugin = getPlugins("form-editor-field-type").find(pl => pl.fieldType.id === type);
-        const data = plugin.fieldType.createField();
-        saveField(data, createAtRef.current);
+        insertField(plugin.fieldType.createField(), dropTarget);
     });
 
     const fields = getFields(true);
@@ -136,7 +143,11 @@ export const EditTab = () => {
                                                 {({ connectDragSource }) =>
                                                     connectDragSource(
                                                         <div className={fieldHandle}>
-                                                            <Field field={field} />
+                                                            <Field
+                                                                field={field}
+                                                                onEdit={editField}
+                                                                onDelete={deleteField}
+                                                            />
                                                         </div>
                                                     )
                                                 }
@@ -179,7 +190,17 @@ export const EditTab = () => {
                 </Draggable>
             ))}
 
-            <EditFieldDialog />
+            <EditFieldDialog
+                field={editingField}
+                onClose={setEditingField}
+                onSubmit={data => {
+                    if (data.id) {
+                        updateField(data);
+                    } else {
+                        insertField(data, dropTarget);
+                    }
+                }}
+            />
         </EditContainer>
     );
 };

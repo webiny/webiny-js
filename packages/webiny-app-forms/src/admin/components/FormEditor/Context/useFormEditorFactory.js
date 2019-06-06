@@ -53,13 +53,6 @@ export default FormEditorContext => {
             getFieldById(id): ?FieldType {
                 return self.getFields().find(item => item.id === id);
             },
-            saveField(fieldData, position = null) {
-                if (fieldData.id) {
-                    self.updateField(fieldData);
-                } else {
-                    self.insertField(fieldData, position);
-                }
-            },
             insertField(fieldData, position) {
                 const data = cloneDeep(state.data);
                 const field = cloneDeep(fieldData);
@@ -147,12 +140,6 @@ export default FormEditorContext => {
                 data.layout = layout;
 
                 dispatch({ type: "data", data });
-            },
-            editField(data, meta) {
-                dispatch({ type: "editField", data: cloneDeep(data), meta: cloneDeep(meta) });
-            },
-            getEditingField() {
-                return state.editField.current;
             },
             fieldExists(fieldId): boolean {
                 return state.data.fields.findIndex(f => f.fieldId === fieldId) >= 0;

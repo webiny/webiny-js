@@ -1,5 +1,4 @@
 import React from "react";
-import { useFormEditor } from "webiny-app-forms/admin/components/FormEditor/Context";
 import styled from "react-emotion";
 import { IconButton } from "webiny-ui/Button";
 import { ReactComponent as EditIcon } from "../icons/edit.svg";
@@ -27,9 +26,9 @@ const Actions = styled("div")({
     }
 });
 
-const Field = ({ field }) => {
-    const { editField, deleteField } = useFormEditor();
-
+const Field = props => {
+    const { field, onEdit, onDelete } = props;
+    console.log(props);
     return (
         <FieldContainer>
             <Info>
@@ -39,8 +38,8 @@ const Field = ({ field }) => {
                 </span>
             </Info>
             <Actions>
-                <IconButton icon={<EditIcon />} onClick={() => editField(field)} />
-                <IconButton icon={<DeleteIcon />} onClick={() => deleteField(field)} />
+                <IconButton icon={<EditIcon />} onClick={() => onEdit(field)} />
+                <IconButton icon={<DeleteIcon />} onClick={() => onDelete(field)} />
             </Actions>
         </FieldContainer>
     );

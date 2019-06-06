@@ -4,14 +4,9 @@ import { Grid, Cell } from "webiny-ui/Grid";
 import { camelCase } from "lodash";
 import { useFormEditor } from "webiny-app-forms/admin/components/FormEditor/Context";
 
-const GeneralTab = ({ form: { Bind, setValue } }) => {
+const GeneralTab = ( { field, form: { Bind, setValue } }) => {
     const inputRef = useRef(null);
-    const {
-        getFields,
-        getEditingField
-    } = useFormEditor();
-
-    const currentField = getEditingField();
+    const { getFields } = useFormEditor();
 
     useEffect(() => {
         inputRef.current && inputRef.current.focus();
@@ -27,7 +22,7 @@ const GeneralTab = ({ form: { Bind, setValue } }) => {
             return;
         }
 
-        if (existingField.id !== currentField.id) {
+        if (existingField.id !== field.id) {
             throw new Error("Please enter a unique ID");
         }
     });
