@@ -5,6 +5,9 @@ import { withRouter } from "react-router-dom";
 import { i18n } from "webiny-app/i18n";
 import { css } from "emotion";
 import { Typography } from "webiny-ui/Typography";
+import { ConfirmationDialog } from "webiny-ui/ConfirmationDialog";
+import { DeleteIcon, EditIcon } from "webiny-ui/List/DataList/icons";
+
 import {
     DataList,
     List,
@@ -12,7 +15,8 @@ import {
     ListItemText,
     ListItemTextSecondary,
     ListTextOverline,
-    ListItemMeta
+    ListItemMeta,
+    ListActions
 } from "webiny-ui/List";
 
 const t = i18n.namespace("FormsDataList");
@@ -73,6 +77,18 @@ const FormsDataList = props => {
                                 <Typography use={"subtitle2"}>
                                     {form.published ? t`Published` : t`Draft`} (v{form.version})
                                 </Typography>
+                                <ListActions>
+                                    <EditIcon onClick={() => history.push("/forms/" + form.id)} />
+                                    <ConfirmationDialog>
+                                        {({ showConfirmation }) => (
+                                            <DeleteIcon
+                                                onClick={() =>
+                                                    showConfirmation(() => deleteRecord(item))
+                                                }
+                                            />
+                                        )}
+                                    </ConfirmationDialog>
+                                </ListActions>
                             </ListItemMeta>
                         </ListItem>
                     ))}

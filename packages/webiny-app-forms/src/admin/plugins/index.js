@@ -11,6 +11,7 @@ import revisionContent from "./formDetails/revisionContent";
 import header from "./formDetails/header";
 import previewContent from "./formDetails/previewContent";
 import pageRevisions from "./formDetails/pageRevisions";
+import formSubmissions from "./formDetails/formSubmissions";
 
 export default [
     routes,
@@ -22,6 +23,7 @@ export default [
     formEditorPlugins,
     revisionContent,
     header,
+    formSubmissions,
     previewContent,
-    /*pageRevisions*/
+    pageRevisions
 ];

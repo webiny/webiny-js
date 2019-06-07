@@ -5,7 +5,7 @@ import type { CmsPageDetailsPluginType, WithFormDetailsProps } from "webiny-app-
 import { Tab } from "webiny-ui/Tabs";
 import styled from "react-emotion";
 import { Elevation } from "webiny-ui/Elevation";
-import FormPreview from "./FormPreview";
+import FormSubmissions from "./FormSubmissions";
 import { CircularProgress } from "webiny-ui/Progress";
 
 import { i18n } from "webiny-app/i18n";
@@ -22,16 +22,16 @@ const RenderBlock = styled("div")({
 
 export default ([
     {
-        name: "forms-form-details-revision-content-preview",
+        name: "forms-form-details-revision-content-submissions",
         type: "forms-form-details-revision-content",
         render({ form, loading, refreshPages }: WithFormDetailsProps) {
             return (
-                <Tab label={t`Form preview`} disabled={loading}>
+                <Tab label={t`Submissions`} disabled={loading}>
                     <RenderBlock>
                         <Elevation z={2}>
                             <div style={{ position: "relative" }}>
                                 {loading && <CircularProgress />}
-                                {renderPlugins("forms-form-details-revision-content-preview", {
+                                {renderPlugins("forms-form-details-revision-content-submissions", {
                                     form,
                                     refreshPages
                                 })}
@@ -44,9 +44,9 @@ export default ([
     },
     {
         name: "forms-form-details-revision-render",
-        type: "forms-form-details-revision-content-preview",
+        type: "forms-form-details-revision-content-submissions",
         render({ form }: WithFormDetailsProps) {
-            return <FormPreview form={form} />;
+            return <FormSubmissions form={form} />;
         }
     }
 ]: Array<CmsPageDetailsPluginType>);

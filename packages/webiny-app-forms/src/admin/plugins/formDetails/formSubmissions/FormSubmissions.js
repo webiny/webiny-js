@@ -14,7 +14,7 @@ type Props = {
     form: Object
 };
 
-const FormPreview = ({ form }: Props) => {
+const FormSubmissions = ({ form }: Props) => {
     return (
         <div className={pageInnerWrapper}>
             <RenderElement element={form.content} />
@@ -22,4 +22,4 @@ const FormPreview = ({ form }: Props) => {
     );
 };
 
-export default FormPreview;
+export default FormSubmissions;

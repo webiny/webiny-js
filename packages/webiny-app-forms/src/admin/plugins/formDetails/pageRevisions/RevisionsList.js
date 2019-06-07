@@ -23,14 +23,15 @@ const listWrapper = css({
     }
 });
 
-const RevisionsList = ({ form: { page }, loading }: RevisionsProps) => {
+const RevisionsList = ({ form, loading }: RevisionsProps) => {
+    console.log("ff", form, form.revisions);
     return (
         <Elevation className={listWrapper} z={2}>
             <div style={{ position: "relative" }}>
                 {loading && <CircularProgress />}
                 <List nonInteractive twoLine>
-                    {Array.isArray(page.revisions) &&
-                        page.revisions.map(rev => <Revision rev={rev} key={rev.id} />)}
+                    {Array.isArray(form.revisions) &&
+                        form.revisions.map(rev => <Revision rev={rev} key={rev.id} />)}
                 </List>
             </div>
         </Elevation>

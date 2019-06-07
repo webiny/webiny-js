@@ -64,7 +64,7 @@ const FormDetails = ({ formId, history, query, showSnackbar, refreshForms }) => 
             }}
         >
             {({ data, loading }) => {
-                const form = { form: get(data, "forms.form.data") || {}, loading };
+                const form = get(data, "forms.form.data") || {};
                 return (
                     <DetailsContainer>
                         {renderPlugins("forms-form-details", {

@@ -10,19 +10,19 @@ import { graphql } from "react-apollo";
 import { withSnackbar } from "webiny-admin/components";
 import { get } from "lodash";
 
-const EditRevision = ({ form: { page }, history, gqlCreate, showSnackbar }) => {
-    const unpublishedRevision = (get(page, "revisions") || []).find(
+const EditRevision = ({ form, history, gqlCreate, showSnackbar }) => {
+    const unpublishedRevision = (get(form, "revisions") || []).find(
         item => !item.published && !item.locked
     );
 
     const editRevision = useCallback(() => {
         if (unpublishedRevision) {
-            history.push(`/cms/editor/${unpublishedRevision.id}`);
+            history.push(`/forms/${unpublishedRevision.id}`);
         }
     });
 
     const copyAndEdit = useCallback(async () => {
-        const [latestRevision] = page.revisions;
+        const [latestRevision] = form.revisions;
         const { data: res } = await gqlCreate({
             variables: { revision: latestRevision.id },
             refetchQueries: ["CmsListPages"]
@@ -33,7 +33,7 @@ const EditRevision = ({ form: { page }, history, gqlCreate, showSnackbar }) => {
             return showSnackbar(error.message);
         }
 
-        history.push(`/cms/editor/${data.id}`);
+        history.push(`/forms/${data.id}`);
     });
 
     if (unpublishedRevision) {
