@@ -59,11 +59,11 @@ const PublishRevision = ({
 };
 
 export default compose(
-    withProps(({ form: { page } }) => {
-        const publishableRevisions = getPublishableRevisions(get(page, "revisions") || []);
+    withProps(({ form }) => {
+        const publishableRevisions = getPublishableRevisions(get(form, "revisions") || []);
         return {
             publishableRevisions,
-            publishSuggestion: getPublishSuggestion(page, publishableRevisions)
+            publishSuggestion: getPublishSuggestion(form, publishableRevisions)
         };
     }),
     withPublishRevisionHandler("publish"),

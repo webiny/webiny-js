@@ -34,7 +34,7 @@ const PageOptionsMenu = (props: Props) => {
         showConfirmation,
         cmsSettings: { getFormPreviewUrl },
         showSnackbar,
-        formDetails: { page }
+        form
     } = props;
 
     return (
@@ -43,7 +43,7 @@ const PageOptionsMenu = (props: Props) => {
             handle={<IconButton icon={<MoreVerticalIcon />} />}
             openSide={"left"}
         >
-            <MenuItem onClick={() => window.open(getFormPreviewUrl(page), "_blank")}>
+            <MenuItem onClick={() => window.open(getFormPreviewUrl(form), "_blank")}>
                 <ListItemGraphic>
                     <Icon icon={<PreviewIcon />} />
                 </ListItemGraphic>
@@ -53,12 +53,12 @@ const PageOptionsMenu = (props: Props) => {
             <Mutation mutation={setHomePage}>
                 {update => (
                     <MenuItem
-                        className={classNames({ disabled: page.isHomePage })}
+                        className={classNames({ disabled: form.isHomePage })}
                         onClick={() => {
                             showConfirmation(async () => {
                                 const response = await update({
                                     variables: {
-                                        id: page.id
+                                        id: form.id
                                     }
                                 });
 
@@ -67,7 +67,7 @@ const PageOptionsMenu = (props: Props) => {
                                     showSnackbar(error.message);
                                 } else {
                                     showSnackbar("Homepage set successfully!");
-                                    if (!page.published) {
+                                    if (!form.published) {
                                         props.refreshPages();
                                     }
                                 }
@@ -89,16 +89,14 @@ export default compose(
     withSnackbar(),
     withCmsSettings(),
     withConfirmation(props => {
-        const {
-            form: { page }
-        } = props;
+        const { form } = props;
 
         return {
             message: (
                 <span>
-                    You&#39;re about to set the <strong>{page.title}</strong> page as your new
+                    You&#39;re about to set the <strong>{form.title}</strong> page as your new
                     homepage, are you sure you want to continue?{" "}
-                    {!page.published && "Note that your page will be automatically published."}
+                    {!form.published && "Note that your page will be automatically published."}
                 </span>
             )
         };

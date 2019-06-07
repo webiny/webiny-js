@@ -27,23 +27,23 @@ const menuList = css({
 
 type Props = WithFormDetailsProps;
 
-const RevisionSelector = ({ location, history, formDetails: { page } }: Props) => {
+const RevisionSelector = ({ location, history, form }: Props) => {
     const query = new URLSearchParams(location.search);
 
     return (
         <Menu
             className={menuList}
             onSelect={evt => {
-                query.set("id", page.revisions[evt.detail.index].id);
+                query.set("id", form.revisions[evt.detail.index].id);
                 history.push({ search: query.toString() });
             }}
             handle={
                 <ButtonDefault className={buttonStyle}>
-                    v{page.version} <Icon icon={<DownButton />} />
+                    v{form.version} <Icon icon={<DownButton />} />
                 </ButtonDefault>
             }
         >
-            {(get(page, "revisions") || []).map(rev => {
+            {(get(form, "revisions") || []).map(rev => {
                 let status = "draft";
                 if (rev.published) status = "published";
                 if (rev.locked && !rev.published) status = "locked";

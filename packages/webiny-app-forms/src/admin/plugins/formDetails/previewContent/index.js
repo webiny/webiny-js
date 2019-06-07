@@ -7,7 +7,6 @@ import styled from "react-emotion";
 import { Elevation } from "webiny-ui/Elevation";
 import FormPreview from "./FormPreview";
 import { CircularProgress } from "webiny-ui/Progress";
-
 const RenderBlock = styled("div")({
     position: "relative",
     zIndex: 0,

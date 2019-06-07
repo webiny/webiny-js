@@ -8,6 +8,7 @@ import richEditor from "./richTextEditor";
 import formEditorPlugins from "webiny-app-forms/editor";
 
 import revisionContent from "./formDetails/revisionContent";
+import header from "./formDetails/header";
 import previewContent from "./formDetails/previewContent";
 import pageRevisions from "./formDetails/pageRevisions";
 
@@ -20,6 +21,7 @@ export default [
     richEditor,
     formEditorPlugins,
     revisionContent,
-    previewContent
+    header,
+    previewContent,
     /*pageRevisions*/
 ];
