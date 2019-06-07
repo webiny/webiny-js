@@ -6,8 +6,6 @@ import { withRouter } from "react-router-dom";
 import styled from "react-emotion";
 import { Elevation } from "webiny-ui/Elevation";
 import { getForm } from "webiny-app-forms/admin/graphql/forms";
-import { FormDetailsProvider, FormDetailsConsumer } from "../../components/FormDetailsContext";
-import { ElementAnimation } from "webiny-app-cms/render/components";
 import { withSnackbar } from "webiny-admin/components";
 import { get } from "lodash";
 
@@ -66,27 +64,15 @@ const FormDetails = ({ formId, history, query, showSnackbar, refreshForms }) => 
             }}
         >
             {({ data, loading }) => {
-                const details = { form: get(data, "cms.form.data") || {}, loading };
+                const form = { form: get(data, "forms.form.data") || {}, loading };
                 return (
-                    <ElementAnimation>
-                        {({ refresh }) => (
-                            <DetailsContainer onScroll={refresh}>
-                                <FormDetailsProvider value={details}>
-                                    <FormDetailsConsumer>
-                                        {formDetails => (
-                                            <React.Fragment>
-                                                {renderPlugins("form-editor-details", {
-                                                    refreshForms,
-                                                    formDetails,
-                                                    loading
-                                                })}
-                                            </React.Fragment>
-                                        )}
-                                    </FormDetailsConsumer>
-                                </FormDetailsProvider>
-                            </DetailsContainer>
-                        )}
-                    </ElementAnimation>
+                    <DetailsContainer>
+                        {renderPlugins("forms-form-details", {
+                            refreshForms,
+                            form,
+                            loading
+                        })}
+                    </DetailsContainer>
                 );
             }}
         </Query>

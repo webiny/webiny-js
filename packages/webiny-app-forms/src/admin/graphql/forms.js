@@ -1,6 +1,5 @@
 // @flow
 import gql from "graphql-tag";
-import { getPlugins } from "webiny-plugins";
 
 const error = `
 error {
@@ -63,19 +62,9 @@ export const getForm = () => gql`
         forms {
             form: getForm(id: $id) {
                 data {
+                    fields
+                    layout
                     ${sharedFields}
-                    content
-                    settings {
-                        _empty
-                        ${getPlugins("forms-editor-form-settings")
-                            .map((pl: FormsFormSettingsPluginType) => pl.fields)
-                            .join("\n")}
-                    }
-                    category {
-                        id
-                        name
-                        url
-                    }
                     revisions {
                         ${sharedFields}
                     }

@@ -49,7 +49,7 @@ export default compose(
         createForm: ({ createMutation, history, showSnackbar }) => async category => {
             try {
                 const res = await createMutation({ variables: { category } });
-                const { data } = res.data.cms.form;
+                const { data } = res.data.cms.formDetails;
                 history.push(`/forms/${data.id}`);
             } catch (e) {
                 showSnackbar(e.message);
