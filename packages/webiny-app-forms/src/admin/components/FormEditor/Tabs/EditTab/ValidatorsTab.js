@@ -73,6 +73,7 @@ function useValidatorsTab({ form: formProps, value, onChange, field }) {
 }
 
 const ValidatorsTab = props => {
+    return <div style={{ padding: 50, textAlign: "center" }}>Temporary turned off. 🙃</div>;
     const { validators, createBind, createToggle, createSetValue } = useValidatorsTab(props);
 
     return (
