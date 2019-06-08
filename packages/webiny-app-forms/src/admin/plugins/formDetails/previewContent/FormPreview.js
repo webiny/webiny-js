@@ -1,7 +1,7 @@
 //@flow
 import * as React from "react";
 import { css } from "emotion";
-import RenderElement from "webiny-app-cms/render/components/Element";
+import { Form } from "webiny-app-forms/components/Form";
 
 const pageInnerWrapper = css({
     overflowY: "scroll",
@@ -17,7 +17,7 @@ type Props = {
 const FormPreview = ({ form }: Props) => {
     return (
         <div className={pageInnerWrapper}>
-            <RenderElement element={form.content} />
+            <Form data={form} />
         </div>
     );
 };

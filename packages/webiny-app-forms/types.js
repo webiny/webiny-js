@@ -1,8 +1,5 @@
 // @flow
-
-/********************************************
- *           All Form Editor types          *
- ********************************************/
+import type { PluginType } from "webiny-plugins/types";
 
 export type FieldIdType = string;
 
@@ -13,6 +10,15 @@ export type FieldType = {
     type: string,
     validation: []
 };
+
+export type RenderFieldPluginType =
+    | PluginType
+    | {
+          field: {
+              type: string,
+              render: Function
+          }
+      };
 
 export type FieldsLayoutType = [[FieldIdType]];
 

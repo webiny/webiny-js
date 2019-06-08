@@ -4,6 +4,7 @@ import adminPlugins from "webiny-admin/plugins";
 import securityPlugins from "webiny-app-security/admin/plugins";
 import cmsPlugins from "webiny-app-cms/admin/plugins";
 import formsPlugins from "webiny-app-forms/admin/plugins";
+import formsCmsPlugins from "webiny-app-forms/cms/plugins";
 import cookiePolicyPlugins from "webiny-app-cookie-policy/admin";
 import googleTagManagerPlugins from "webiny-app-google-tag-manager/admin";
 import typeformPlugins from "webiny-app-typeform/admin";
@@ -16,6 +17,7 @@ const plugins = [
     securityPlugins,
     cmsPlugins,
     formsPlugins,
+    formsCmsPlugins,
     cookiePolicyPlugins,
     googleTagManagerPlugins,
     typeformPlugins,

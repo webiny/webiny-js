@@ -16,14 +16,17 @@ import formSubmissions from "./formDetails/formSubmissions";
 export default [
     routes,
     menus,
+    header,
+    revisionContent,
+    formSubmissions,
+    previewContent,
+    pageRevisions,
+
+    // Editor
     fields,
     groups,
     validators,
     richEditor,
     formEditorPlugins,
-    revisionContent,
-    header,
-    formSubmissions,
-    previewContent,
-    pageRevisions
+
 ];
