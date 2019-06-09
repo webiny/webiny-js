@@ -2,13 +2,12 @@
 import { ApolloServer } from "apollo-server-lambda";
 import { applyMiddleware } from "graphql-middleware";
 import { addSchemaLevelResolveFunction } from "graphql-tools";
+import { Entity } from "webiny-entity";
 import type { GraphQLMiddlewarePluginType } from "webiny-api/types";
 import { prepareSchema, createGraphqlRunner } from "../graphql/schema";
-import setup from "./setup";
 import { getPlugins } from "webiny-plugins";
 
-const createApolloHandler = async (config: Object) => {
-    await setup(config);
+export const createHandler = async (config: Object) => {
     let schema = prepareSchema();
 
     const registeredMiddleware: Array<GraphQLMiddlewarePluginType> = [];
@@ -41,8 +40,7 @@ const createApolloHandler = async (config: Object) => {
         // Process `graphql-context` plugins
         const ctxPlugins = getPlugins("graphql-context");
         for (let i = 0; i < ctxPlugins.length; i++) {
-            const ctxPlugin = ctxPlugins[i];
-            await ctxPlugin.apply(context);
+            await ctxPlugins[i].apply(context);
         }
     });
 
@@ -53,7 +51,9 @@ const createApolloHandler = async (config: Object) => {
             origin: "*",
             methods: "GET,HEAD,POST"
         },
-        context: ({ event }) => {
+        context: async ({ event }) => {
+            await requestSetup(config);
+
             const ctx: Object = {
                 event,
                 config
@@ -65,63 +65,38 @@ const createApolloHandler = async (config: Object) => {
         }
     });
 
-    return apollo.createHandler();
-};
+    const handler = apollo.createHandler();
 
-function getErrorResponse(error: Error & Object) {
-    return {
-        body: JSON.stringify({
-            errors: [{ code: error.code, message: error.message }]
-        }),
-        statusCode: 200,
-        headers: {
-            "Content-Type": "application/json",
-            "Access-Control-Allow-Origin": "*",
-            "Access-Control-Allow-Credentials": true
-        }
-    };
-}
-
-let handler = {};
-
-export const createHandler = (configFactory: (context: Object) => Promise<Object>) => {
-    return async (event: Object, context: Object) => {
-        const config = await configFactory(context);
-        await setup(config);
-
-        return await new Promise(async (resolve, reject) => {
-            const cacheKey =
-                config.handler && config.handler.cacheKey ? config.handler.cacheKey : "default";
-            if (!handler[cacheKey]) {
-                try {
-                    handler[cacheKey] = await createApolloHandler(config);
-                } catch (e) {
-                    if (process.env.NODE_ENV === "development") {
-                        console.log(e); // eslint-disable-line
-                    }
-                    return resolve(getErrorResponse(e));
-                }
-            }
-
-            handler[cacheKey](event, context, (error, data) => {
+    return (event: Object, context: Object): Promise<Object> => {
+        return new Promise((resolve, reject) => {
+            handler(event, context, (error, data) => {
                 if (error) {
                     return reject(error);
                 }
 
-                if (
-                    process.env.NODE_ENV !== "production" &&
-                    data.headers["Content-Type"] === "application/json"
-                ) {
-                    data.body = JSON.stringify(JSON.parse(data.body), null, 2);
-                }
-
-                data.headers = {
-                    ...data.headers,
-                    "Access-Control-Allow-Origin": "*",
-                    "Access-Control-Allow-Credentials": true
-                };
                 resolve(data);
             });
         });
     };
+};
+
+const requestSetup = async (config: Object = {}) => {
+    // Configure Entity layer
+    if (config.entity) {
+        Entity.driver = config.entity.driver;
+        Entity.crud = config.entity.crud;
+    }
+
+    // Check if connection is valid and if Settings table exists - this will tell us if the system is installed.
+    if (process.env.NODE_ENV === "development") {
+        try {
+            await Entity.getDriver().test();
+        } catch (e) {
+            throw Error(
+                `The following error occurred while initializing Entity driver: "${
+                    e.message
+                }". Did you enter the correct database information?`
+            );
+        }
+    }
 };
