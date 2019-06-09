@@ -90,7 +90,7 @@ export default [
         name: "entity-cms-settings",
         namespace: "cms",
         entity: {
-            name: "CmsSettings",
+            name: "Settings",
             factory: cmsSettingsFactory
         }
     }

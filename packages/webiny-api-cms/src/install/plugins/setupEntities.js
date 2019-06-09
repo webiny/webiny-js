@@ -12,5 +12,5 @@ export default (context: Object) => {
     context.cms.entities.Page = pageFactory(context);
     context.cms.entities.Menu = menuFactory();
     context.cms.entities.Element = elementFactory();
-    context.cms.entities.CmsSettings = cmsSettingsFactory(context);
+    context.cms.entities.Settings = cmsSettingsFactory(context);
 };

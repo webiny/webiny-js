@@ -90,21 +90,21 @@ export const pageFactory = (context: Object): Class<IPage> => {
             this.attr("isHomePage")
                 .boolean()
                 .setDynamic(async () => {
-                    const settings = await context.cms.entities.CmsSettings.load();
+                    const settings = await context.cms.entities.Settings.load();
                     return settings.data.pages.home === this.parent;
                 });
 
             this.attr("isErrorPage")
                 .boolean()
                 .setDynamic(async () => {
-                    const settings = await context.cms.entities.CmsSettings.load();
+                    const settings = await context.cms.entities.Settings.load();
                     return settings.data.pages.error === this.parent;
                 });
 
             this.attr("isNotFoundPage")
                 .boolean()
                 .setDynamic(async () => {
-                    const settings = await context.cms.entities.CmsSettings.load();
+                    const settings = await context.cms.entities.Settings.load();
                     return settings.data.pages.notFound === this.parent;
                 });
 
