@@ -6,9 +6,37 @@ const path = require("path");
 const listPackages = require("../utils/listPackages");
 const expressRequestToLambdaEvent = require("../utils/expressRequestToLambdaEvent");
 
+const getHandler = async ({ createHandler, handler }) => {
+    return async (event, context) => {
+        if (typeof handler !== "function") {
+            handler = await createHandler(context);
+        }
+
+        const data = await handler(event, context);
+
+        /**
+         * This section simply beautifies the response for readability, useful when
+         * debugging things from your browser.
+         */
+        if (data.headers["Content-Type"] === "application/json") {
+            data.body = JSON.stringify(JSON.parse(data.body), null, 2);
+        }
+
+        data.headers = {
+            ...data.headers,
+            "Access-Control-Allow-Origin": "*",
+            "Access-Control-Allow-Credentials": true
+        };
+
+        return data;
+    };
+};
+
 const handleRequest = async (req, res, handler) => {
     const event = expressRequestToLambdaEvent(req);
-    const result = await handler(event, { req });
+    const context = { req };
+
+    const result = await handler(event, context);
     res.set(result.headers);
     res.status(result.statusCode).send(result.body);
 };
@@ -63,7 +91,8 @@ module.exports = async config => {
                 process.env[key] = env[key];
             });
 
-            const { handler } = require(path.join(fn.root, fn.handler));
+            const userHandler = require(path.join(fn.root, fn.handler));
+            const handler = await getHandler(userHandler);
             await handleRequest(req, res, handler);
         });
     });
