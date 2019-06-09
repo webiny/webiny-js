@@ -8,56 +8,67 @@ import {
     resolveUpdate
 } from "webiny-api/graphql";
 
+import { hasScope } from "webiny-api-security";
+
 import {
-    ContentModelType,
-    ContentModelInputType,
-    ContentModelResponseType,
-    ContentModelListResponseType
+    ContentModel,
+    ContentModelField,
+    ContentModelInput,
+    ContentModelResponse,
+    ContentModelListResponse
 } from "webiny-api-content-modelling/graphql";
 
-const contentModelFetcher = ctx => ctx.headless.entities.ContentModel;
+const contentModelFetcher = ctx => {
+    return ctx.cms.entities.ContentModel;
+};
 
 export default ([
     {
-        type: "graphql",
-        name: "graphql-content-modelling-schema",
-        namespace: "contentModelling",
-        stitching: {
-            linkTypeDefs: /* GraphQL */ `
-                ${ContentModelType}
-                ${ContentModelInputType}
-                ${ContentModelResponseType}
-                ${ContentModelListResponseType}
+        type: "cms-schema",
+        name: "cms-schema-content-modelling",
+        typeDefs: /* GraphQL */ `
+            ${ContentModel}
+            ${ContentModelField}
+            ${ContentModelInput}
+            ${ContentModelResponse}
+            ${ContentModelListResponse}
 
-                extend type CmsQuery {
-                    getContentModel(id: ID, where: JSON, sort: String): ContentModelResponse
+            extend type CmsQuery {
+                getContentModel(id: ID, where: JSON, sort: String): ContentModelResponse
 
-                    listContentModels(
-                        page: Int
-                        perPage: Int
-                        where: JSON
-                        sort: JSON
-                        search: SearchInput
-                    ): ContentModelListResponse
-                }
+                listContentModels(
+                    page: Int
+                    perPage: Int
+                    where: JSON
+                    sort: JSON
+                    search: SearchInput
+                ): ContentModelListResponse
+            }
 
-                extend type CmsMutation {
-                    createContentModel(data: ContentModelInput!): ContentModelResponse
+            extend type CmsMutation {
+                createContentModel(data: ContentModelInput!): ContentModelResponse
 
-                    updateContentModel(id: ID!, data: ContentModelInput!): ContentModelResponse
+                updateContentModel(id: ID!, data: ContentModelInput!): ContentModelResponse
 
-                    deleteContentModel(id: ID!): DeleteResponse
-                }
-            `,
-            resolvers: {
+                deleteContentModel(id: ID!): DeleteResponse
+            }
+        `,
+        resolvers: {
+            CmsQuery: {
+                getContentModel: resolveGet(contentModelFetcher),
+                listContentModels: resolveList(contentModelFetcher)
+            },
+            CmsMutation: {
+                createContentModel: resolveCreate(contentModelFetcher),
+                updateContentModel: resolveUpdate(contentModelFetcher),
+                deleteContentModel: resolveDelete(contentModelFetcher)
+            }
+        },
+        security: {
+            shield: {
                 CmsQuery: {
-                    getContentModel: resolveGet(contentModelFetcher),
-                    listContentModels: resolveList(contentModelFetcher)
-                },
-                CmsMutation: {
-                    createContentModel: resolveCreate(contentModelFetcher),
-                    updateContentModel: resolveUpdate(contentModelFetcher),
-                    deleteContentModel: resolveDelete(contentModelFetcher)
+                    getContentModel: hasScope("cms:contentModel:crud"),
+                    listContentModels: hasScope("cms:contentModel:crud")
                 }
             }
         }

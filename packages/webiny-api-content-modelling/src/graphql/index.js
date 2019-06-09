@@ -1,4 +1,5 @@
-export { default as ContentModelInputType } from "./ContentModelInputType";
-export { default as ContentModelListResponseType } from "./ContentModelListResponseType";
-export { default as ContentModelResponseType } from "./ContentModelResponseType";
-export { default as ContentModelType } from "./ContentModelType";
+export { default as ContentModelInput } from "./ContentModelInput";
+export { default as ContentModelListResponse } from "./ContentModelListResponse";
+export { default as ContentModelResponse } from "./ContentModelResponse";
+export { default as ContentModel } from "./ContentModel";
+export { default as ContentModelField } from "./ContentModelField";

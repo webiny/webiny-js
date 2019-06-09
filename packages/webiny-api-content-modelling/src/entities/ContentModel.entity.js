@@ -17,18 +17,18 @@ class FieldModel extends Model {
 export interface IContentModel extends Entity {
     createdBy: ?Entity;
     title: string;
-    slug: string;
+    modelId: string;
     description: string;
     fields: Array<FieldModel>;
 }
 
 export function contentModelFactory(context: Object): Class<IContentModel> {
     return class ContentModel extends Entity {
-        static classId = "ContentModel";
+        static classId = "CmsContentModel";
 
         createdBy: ?Entity;
         title: string;
-        slug: string;
+        modelId: string;
         description: string;
         fields: Array<FieldModel>;
 
@@ -47,7 +47,7 @@ export function contentModelFactory(context: Object): Class<IContentModel> {
                 .setSkipOnPopulate();
 
             this.attr("title").char().setValidators("required");
-            this.attr("slug").char().setValidators("required");
+            this.attr("modelId").char().setValidators("required");
             this.attr("description").char();
             this.attr("fields").object().setValue([]);
 
