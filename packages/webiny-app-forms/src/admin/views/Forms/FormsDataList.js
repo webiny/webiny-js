@@ -2,12 +2,15 @@
 import * as React from "react";
 import TimeAgo from "timeago-react";
 import { withRouter } from "react-router-dom";
-import { i18n } from "webiny-app/i18n";
 import { css } from "emotion";
 import { Typography } from "webiny-ui/Typography";
 import { ConfirmationDialog } from "webiny-ui/ConfirmationDialog";
 import { DeleteIcon, EditIcon } from "webiny-ui/List/DataList/icons";
-
+import { deleteForm } from "webiny-app-forms/admin/graphql/forms";
+import { graphql } from "react-apollo";
+import { withHandlers, compose } from "recompose";
+import { withSnackbar } from "webiny-admin/components";
+import { get } from "lodash";
 import {
     DataList,
     List,
@@ -19,14 +22,15 @@ import {
     ListActions
 } from "webiny-ui/List";
 
-const t = i18n.namespace("FormsDataList");
+import { i18n } from "webiny-app/i18n";
+const t = i18n.namespace("FormsApp.FormsDataList");
 
 const rightAlign = css({
     alignItems: "flex-end !important"
 });
 
 const FormsDataList = props => {
-    const { dataList, location, history } = props;
+    const { dataList, location, history, deleteRecord } = props;
     const query = new URLSearchParams(location.search);
 
     return (
@@ -35,19 +39,19 @@ const FormsDataList = props => {
             title={t`Forms`}
             sorters={[
                 {
-                    label: "Newest to oldest",
+                    label: t`Newest to oldest`,
                     sorters: { createdOn: -1 }
                 },
                 {
-                    label: "Oldest to newest",
+                    label: t`Oldest to newest`,
                     sorters: { createdOn: 1 }
                 },
                 {
-                    label: "Name A-Z",
+                    label: t`Name A-Z`,
                     sorters: { name: 1 }
                 },
                 {
-                    label: "Name Z-A",
+                    label: t`Name Z-A`,
                     sorters: { name: -1 }
                 }
             ]}
@@ -83,7 +87,9 @@ const FormsDataList = props => {
                                         {({ showConfirmation }) => (
                                             <DeleteIcon
                                                 onClick={() =>
-                                                    showConfirmation(() => deleteRecord(item))
+                                                    showConfirmation(async () => {
+                                                        deleteRecord(form);
+                                                    })
                                                 }
                                             />
                                         )}
@@ -98,4 +104,32 @@ const FormsDataList = props => {
     );
 };
 
-export default withRouter(FormsDataList);
+export default compose(
+    withRouter,
+    withSnackbar(),
+    graphql(deleteForm, { name: "deleteRecord" }),
+    withHandlers({
+        deleteRecord: ({ deleteRecord, showSnackbar, location, history, dataList, id }: Object) => {
+            return async (item: Object) => {
+                const res = await deleteRecord({ variables: { id: item.id } });
+                const { data, error } = get(res, "data.forms.deleteForm");
+
+                if (data) {
+                    showSnackbar(t`Form {name} deleted.`({ name: item.name }));
+                } else {
+                    showSnackbar(error.message, {
+                        title: t`Something unexpected happened.`
+                    });
+                }
+
+                if (item.id === id) {
+                    const query = new URLSearchParams(location.search);
+                    query.delete("id");
+                    history.push({ search: query.toString() });
+                }
+
+                dataList.refresh();
+            };
+        }
+    })
+)(FormsDataList);
