@@ -17,9 +17,13 @@ export default ([
 
             const middleware = [];
             getPlugins("graphql").forEach(plugin => {
-                const { security } = plugin;
+                let { security } = plugin;
                 if (!security) {
                     return true;
+                }
+
+                if (typeof security === "function") {
+                    security = security();
                 }
 
                 security.shield &&
@@ -36,12 +40,12 @@ export default ([
     {
         type: "graphql-context",
         name: "graphql-context-security",
-        apply: async (...args) => {
+        apply: async (context) => {
             const securityPlugins: Array<PluginType> = getPlugins("graphql-security");
             for (let i = 0; i < securityPlugins.length; i++) {
-                await securityPlugins[i].authenticate(...args);
+                await securityPlugins[i].authenticate(context);
             }
         }
     },
-    { type: "graphql-security", name: "graphql-security", authenticate },
+    { type: "graphql-security", name: "graphql-security", authenticate }
 ]: Array<PluginType>);
