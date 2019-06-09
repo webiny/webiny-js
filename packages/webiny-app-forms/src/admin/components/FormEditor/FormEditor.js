@@ -1,5 +1,5 @@
 // @flow
-import React, { useEffect } from "react";
+import * as React from "react";
 import HTML5Backend from "react-dnd-html5-backend";
 import { DragDropContext } from "react-dnd";
 import { useFormEditor } from "./Context";
@@ -9,13 +9,14 @@ import EditorBar from "./Bar";
 import EditorContent from "./Content";
 import DragPreview from "./DragPreview";
 
+
 const FormEditor = () => {
     const {
         getForm,
         state: { data, id }
     } = useFormEditor();
 
-    useEffect(() => {
+    React.useEffect(() => {
         getForm(id);
     }, []);
 

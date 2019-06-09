@@ -11,11 +11,12 @@ const Container = styled("div")({
 });
 
 export const PreviewTab = () => {
-    const { state } = useFormEditor();
+    const { data } = useFormEditor();
+
     return (
         <Elevation z={1}>
             <Container>
-                <Form preview data={state.data} />
+                <Form preview data={data} />
             </Container>
         </Elevation>
     );

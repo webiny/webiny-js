@@ -10,6 +10,9 @@ import googleTagManagerPlugins from "webiny-app-google-tag-manager/admin";
 import typeformPlugins from "webiny-app-typeform/admin";
 import mailchimpPlugins from "webiny-app-mailchimp/admin";
 
+// TODO: remove this once testing is done.
+import customFormLayout from "./customFormLayout";
+
 const plugins = [
     fileUploadPlugin({}),
     imagePlugin,
@@ -21,7 +24,8 @@ const plugins = [
     cookiePolicyPlugins,
     googleTagManagerPlugins,
     typeformPlugins,
-    mailchimpPlugins
+    mailchimpPlugins,
+    customFormLayout
 ];
 
 export default plugins;

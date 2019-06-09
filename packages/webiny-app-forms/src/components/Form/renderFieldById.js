@@ -6,6 +6,7 @@ export default ({ id, form, fields }) => {
     const plugin = getPlugins("forms-field-render").find(
         plugin => plugin.field.type === field.type
     );
+
     if (!plugin) {
         throw new Error(`Cannot find render plugin for field of type "${field.type}".`);
     }

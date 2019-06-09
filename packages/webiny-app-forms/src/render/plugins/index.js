@@ -1,3 +1,4 @@
 import fieldsPlugins from "./fields";
+import layouts from "./layouts";
 
-export default [fieldsPlugins];
+export default [fieldsPlugins, layouts];

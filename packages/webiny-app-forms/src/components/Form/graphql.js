@@ -8,6 +8,11 @@ export const getForm = gql`
                     id
                     fields
                     layout
+                    settings {
+                        layout {
+                            renderer
+                        }
+                    }
                 }
                 error {
                     message
@@ -16,4 +21,3 @@ export const getForm = gql`
         }
     }
 `;
-

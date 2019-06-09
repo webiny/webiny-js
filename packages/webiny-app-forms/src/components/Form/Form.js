@@ -1,12 +1,13 @@
 // @flow
 import React, { useCallback, useEffect } from "react";
+import { getPlugin } from "webiny-plugins";
 import { get, cloneDeep } from "lodash";
 import { Form as WebinyForm } from "webiny-form";
-import layoutRenderer from "./__sampleLayoutRenderer";
 import getClientIp from "./getClientIp";
 import renderFieldById from "./renderFieldById";
 import { getForm } from "./graphql";
 import { Query } from "react-apollo";
+import type { FormLayoutPluginType } from "webiny-app-forms/types";
 
 type Props = {
     preview?: boolean,
@@ -15,11 +16,6 @@ type Props = {
 };
 
 const DataForm = ({ preview, data }: Props) => {
-    const { fields, layout } = data;
-    if (!Array.isArray(layout)) {
-        return null;
-    }
-
     useEffect(() => {
         if (!preview) {
             // TODO: capture view
@@ -30,35 +26,41 @@ const DataForm = ({ preview, data }: Props) => {
         if (!preview) {
             const clientIp = await getClientIp();
         }
-
-        console.log("submit");
+        // TODO : submit
     });
 
-    return (
-        <>
-            {" "}
-            <WebinyForm onSubmit={onSubmitForm}>
-                {form => {
-                    const render = cloneDeep(layout);
-                    render.forEach(row => {
-                        row.forEach((id, idIndex) => {
-                            row[idIndex] = renderFieldById({ id, form, fields });
-                        });
-                    });
+    if (!data) {
+        return null;
+    }
 
-                    return layoutRenderer({
-                        layout: render,
-                        form: data,
-                        submit: form.submit
+    const { layout, fields, settings } = data;
+
+    const layoutRendererPlugin: ?FormLayoutPluginType = getPlugin(settings.layout.renderer);
+    if (!layoutRendererPlugin) {
+        return <span>Cannot render form, no layout selected.</span>;
+    }
+
+    return (
+        <WebinyForm onSubmit={onSubmitForm}>
+            {form => {
+                const layoutFields = cloneDeep(layout);
+                layoutFields.forEach(row => {
+                    row.forEach((id, idIndex) => {
+                        row[idIndex] = renderFieldById({ id, form, fields });
                     });
-                }}
-            </WebinyForm>
-        </>
+                });
+
+                return layoutRendererPlugin.render({
+                    layout: layoutFields,
+                    form: data,
+                    submit: form.submit
+                });
+            }}
+        </WebinyForm>
     );
 };
 
 const IdForm = (props: Props) => {
-    console.log('dobeo props', props)
     return (
         <Query query={getForm} variables={{ id: props.id }}>
             {({ data, loading }) => {
@@ -66,7 +68,6 @@ const IdForm = (props: Props) => {
                     return null;
                 }
 
-                console.log("dobeo", data);
                 return <DataForm data={get(data, "forms.getForm.data")} />;
             }}
         </Query>

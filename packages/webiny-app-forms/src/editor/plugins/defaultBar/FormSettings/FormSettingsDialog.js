@@ -1,5 +1,8 @@
 import React, { Fragment } from "react";
 import { useFormEditor } from "webiny-app-forms/admin/components/FormEditor/Context";
+import { Select } from "webiny-ui/Select";
+import type { FormLayoutPluginType } from "webiny-app-forms/types";
+import { getPlugins } from "webiny-plugins";
 
 import { i18n } from "webiny-app/i18n";
 const t = i18n.namespace("FormEditor.FormSettingsDialog");
@@ -16,14 +19,23 @@ import {
 
 import { Grid, Cell } from "webiny-ui/Grid";
 import { Form } from "webiny-form";
-import { Input } from "webiny-ui/Input";
 
 export const FormSettingsDialog = ({ open, onClose }) => {
-    const { state } = useFormEditor();
+    const { state, setData } = useFormEditor();
+
+    let layoutRendererPlugins: Array<FormLayoutPluginType> = getPlugins("forms-form-layout");
 
     return (
         <Dialog open={open} onClose={onClose}>
-            <Form data={state.settings} onSubmit={() => {}}>
+            <Form
+                data={state.settings}
+                onSubmit={settings => {
+                    setData(data => {
+                        data.settings = settings;
+                        return data;
+                    });
+                }}
+            >
                 {({ Bind, submit }) => (
                     <Fragment>
                         <DialogHeader>
@@ -32,14 +44,16 @@ export const FormSettingsDialog = ({ open, onClose }) => {
                         <DialogBody>
                             <Grid>
                                 <Cell span={12}>
-                                    <Bind name={"successMessage"}>
-                                        <Input label={t`Success message`} />
-                                    </Bind>
-                                </Cell>
-                                <Cell span={12}>
-                                    <Bind name={"submitButtonLabel"}>
-                                        <Input label={t`Submit button label`} />
-                                    </Bind>
+                                    <div style={{ marginBottom: 20 }}>
+                                        <Bind name={"layout.renderer"}>
+                                            <Select
+                                                label={"Layout"}
+                                                options={layoutRendererPlugins.map(item => {
+                                                    return { value: item.name, label: item.label };
+                                                })}
+                                            />
+                                        </Bind>
+                                    </div>
                                 </Cell>
                             </Grid>
                         </DialogBody>

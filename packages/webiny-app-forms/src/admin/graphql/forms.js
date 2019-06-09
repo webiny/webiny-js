@@ -64,6 +64,11 @@ export const getForm = () => gql`
                 data {
                     fields
                     layout
+                    settings {
+                        layout {
+                            renderer
+                        }
+                    }
                     ${sharedFields}
                     revisions {
                         ${sharedFields}

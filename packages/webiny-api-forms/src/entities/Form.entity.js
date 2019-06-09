@@ -1,5 +1,7 @@
 // @flow
 import { Entity, type EntityCollection } from "webiny-entity";
+import { Model } from "webiny-model";
+
 import mdbid from "mdbid";
 
 export interface IForm extends Entity {
@@ -14,6 +16,22 @@ export interface IForm extends Entity {
     parent: string;
     published: boolean;
     publishedOn: ?Date;
+}
+
+class LayoutSettingsModel extends Model {
+    constructor() {
+        super();
+        this.attr("renderer").char().setValue("forms-form-layout-default");
+    }
+}
+
+class SettingsModel extends Model {
+    constructor(props) {
+        super(props);
+        this.attr("layout")
+            .model(LayoutSettingsModel)
+            .setDefaultValue(new LayoutSettingsModel());
+    }
 }
 
 export default ({ getUser, getEntities }: Object) =>
@@ -60,6 +78,11 @@ export default ({ getUser, getEntities }: Object) =>
                 .onSet(value => (this.published ? this.layout : value))
                 .setValue([]);
 
+            this.attr("settings")
+                .model(SettingsModel)
+                .onSet(value => (this.published ? this.layout : value))
+                .setDefaultValue(new SettingsModel());
+
             this.attr("triggers")
                 .object()
                 .onSet(value => (this.published ? this.triggers : value));
@@ -77,15 +100,17 @@ export default ({ getUser, getEntities }: Object) =>
 
             this.attr("parent").char();
 
-            this.attr("published").boolean().onSet((value) => {
-                if (this.published) {
-                    return this.published;
-                }
+            this.attr("published")
+                .boolean()
+                .onSet(value => {
+                    if (this.published) {
+                        return this.published;
+                    }
 
-                if (value) {
-                    this.publishedOn = new Date();
-                }
-            });
+                    if (value) {
+                        this.publishedOn = new Date();
+                    }
+                });
             this.attr("publishedOn").date();
 
             this.on("beforeCreate", async () => {

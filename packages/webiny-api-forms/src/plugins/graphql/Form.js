@@ -29,6 +29,7 @@ export default {
             name: String
             fields: [JSON]
             layout: [[JSON]]
+            settings: FormSettingsType
             triggers: JSON
             published: Boolean
             parent: ID
@@ -39,12 +40,29 @@ export default {
             _empty: String
         }
         
+        type FormSettingsLayoutType {
+            renderer: String
+        }
+        
+        type FormSettingsType {
+            layout: FormSettingsLayoutType
+        }
+        
+        input FormSettingsLayoutInput {
+            renderer: String
+        }
+        
+        input FormSettingsInput {
+            layout: FormSettingsLayoutInput
+        }
+        
         input UpdateFormInput {
             name: String
             fields: [JSON],
             layout: [JSON]
+            settings: FormSettingsInput
         }
-        
+       
         input FormSortInput {
             name: Int
             publishedOn: Int

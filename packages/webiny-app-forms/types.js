@@ -20,12 +20,17 @@ export type RenderFieldPluginType =
           }
       };
 
+export type FormLayoutPluginType =
+    | PluginType
+    | {
+          render: Function,
+          label: string
+      };
+
 export type FieldsLayoutType = [[FieldIdType]];
 
 export type UseFormEditorReducerStateType = {
-    apollo: Object,
-    data: {
-        fields: [FieldType],
-        layout: FieldsLayoutType
-    }
+    apollo: ?Object,
+    id: string,
+    defaultLayoutRenderer: string
 };

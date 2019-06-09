@@ -7,7 +7,11 @@ import { compose } from "recompose";
 
 const FormEditorApp = ({ client, match }) => {
     return (
-        <FormEditorProvider apollo={client} id={match.params.id}>
+        <FormEditorProvider
+            apollo={client}
+            id={match.params.id}
+            defaultLayoutRenderer={"forms-form-layout-default"}
+        >
             <FormEditor />
         </FormEditorProvider>
     );
