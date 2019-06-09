@@ -65,7 +65,19 @@ export const createHandler = async (config: Object) => {
         }
     });
 
-    return apollo.createHandler();
+    const handler = apollo.createHandler();
+
+    return (event: Object, context: Object): Promise<Object> => {
+        return new Promise((resolve, reject) => {
+            handler(event, context, (error, data) => {
+                if (error) {
+                    return reject(error);
+                }
+
+                resolve(data);
+            });
+        });
+    };
 };
 
 const requestSetup = async (config: Object = {}) => {
@@ -83,7 +95,7 @@ const requestSetup = async (config: Object = {}) => {
             throw Error(
                 `The following error occurred while initializing Entity driver: "${
                     e.message
-                    }". Did you enter the correct database information?`
+                }". Did you enter the correct database information?`
             );
         }
     }

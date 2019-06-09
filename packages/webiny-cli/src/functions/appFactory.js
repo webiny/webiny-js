@@ -6,31 +6,29 @@ const path = require("path");
 const listPackages = require("../utils/listPackages");
 const expressRequestToLambdaEvent = require("../utils/expressRequestToLambdaEvent");
 
-const getHandler = async ({ createHandler }) => {
+const getHandler = async ({ createHandler, handler }) => {
     return async (event, context) => {
-        const handler = await createHandler(context);
-        return new Promise((resolve, reject) => {
-            handler(event, context, (error, data) => {
-                if (error) {
-                    return reject(error);
-                }
-                /**
-                 * This section simply beautifies the response for readability, useful when
-                 * debugging things from your browser.
-                 */
-                if (data.headers["Content-Type"] === "application/json") {
-                    data.body = JSON.stringify(JSON.parse(data.body), null, 2);
-                }
+        if (typeof handler !== "function") {
+            handler = await createHandler(context);
+        }
 
-                data.headers = {
-                    ...data.headers,
-                    "Access-Control-Allow-Origin": "*",
-                    "Access-Control-Allow-Credentials": true
-                };
+        const data = await handler(event, context);
 
-                resolve(data);
-            });
-        });
+        /**
+         * This section simply beautifies the response for readability, useful when
+         * debugging things from your browser.
+         */
+        if (data.headers["Content-Type"] === "application/json") {
+            data.body = JSON.stringify(JSON.parse(data.body), null, 2);
+        }
+
+        data.headers = {
+            ...data.headers,
+            "Access-Control-Allow-Origin": "*",
+            "Access-Control-Allow-Credentials": true
+        };
+
+        return data;
     };
 };
 
@@ -93,8 +91,8 @@ module.exports = async config => {
                 process.env[key] = env[key];
             });
 
-            const { createHandler } = require(path.join(fn.root, fn.handler));
-            const handler = await getHandler({ createHandler });
+            const userHandler = require(path.join(fn.root, fn.handler));
+            const handler = await getHandler(userHandler);
             await handleRequest(req, res, handler);
         });
     });
