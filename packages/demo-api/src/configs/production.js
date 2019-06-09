@@ -5,7 +5,8 @@ import MongoDbDriver from "webiny-entity-mongodb";
 export default async (context: Object) => {
     return {
         apollo: {
-            introspection: context.devMode === true
+            introspection: context.devMode === true,
+            playground: context.devMode === true
         },
         database: {
             mongodb: context.database
