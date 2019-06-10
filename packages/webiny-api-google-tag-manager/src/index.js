@@ -14,9 +14,7 @@ class GoogleTagManagerSettingsModel extends Model {
 export default [
     {
         name: "graphql-schema-settings-google-tag-manager",
-        type: "graphql",
-        typeDefs: ``,
-        resolvers: {},
+        type: "graphql-schema",
         security: {
             shield: {
                 SettingsMutation: {

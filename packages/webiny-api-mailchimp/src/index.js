@@ -127,9 +127,133 @@ export default [
         }
     },
     {
-        type: "graphql",
-        name: "graphql-mailchimp",
-        namespace: "mailchimp",
+        type: "graphql-schema",
+        name: "graphql-schema-mailchimp",
+        schema: {
+            namespace: "mailchimp",
+            typeDefs: () => [
+                /* GraphQL */ `
+                    type AddToListResponse {
+                        error: Error
+                    }
+
+                    type MailchimpMutation {
+                        # Add a new member to members list.
+                        addToList(list: String!, email: String!): AddToListResponse
+                    }
+
+                    type Mutation {
+                        mailchimp: MailchimpMutation
+                    }
+
+                    type List {
+                        id: String
+                        name: String
+                    }
+
+                    type ListsResponse {
+                        data: [List]
+                        meta: ListMeta
+                        error: Error
+                    }
+
+                    type MailchimpQuery {
+                        listLists: ListsResponse
+                    }
+
+                    type Query {
+                        mailchimp: MailchimpQuery
+                    }
+                `
+            ],
+            resolvers: () => [
+                {
+                    Query: {
+                        mailchimp: dummyResolver
+                    },
+                    Mutation: {
+                        mailchimp: dummyResolver
+                    },
+                    MailchimpQuery: {
+                        listLists: async (
+                            _: any,
+                            args: Object,
+                            { mailchimp: { entities } }: Object
+                        ) => {
+                            const { MailchimpSettings } = entities;
+                            const settings = await MailchimpSettings.load();
+                            if (!settings || !(await settings.get("data.apiKey"))) {
+                                throw Error("Mailchimp API key not set.");
+                            }
+
+                            const mailchimp = new Mailchimp({ apiKey: settings.data.apiKey });
+
+                            try {
+                                const listsResponse = await mailchimp.get({
+                                    path: `/lists/`
+                                });
+
+                                const output = listsResponse.body.lists.map(item => ({
+                                    id: item.id,
+                                    name: item.name
+                                }));
+
+                                return new ListResponse(output);
+                            } catch (e) {
+                                return new ListErrorResponse(e);
+                            }
+                        }
+                    },
+                    MailchimpMutation: {
+                        addToList: async (
+                            _: any,
+                            { list: listId, email }: Object,
+                            { mailchimp: { entities } }: Object
+                        ) => {
+                            const { MailchimpSettings } = entities;
+
+                            const settings = await MailchimpSettings.load();
+                            if (!settings || !(await settings.get("data.apiKey"))) {
+                                throw Error("Mailchimp API key not set.");
+                            }
+
+                            const mailchimp = new Mailchimp({ apiKey: settings.data.apiKey });
+
+                            try {
+                                const listResponse = await mailchimp.get({
+                                    path: `/lists/${listId}`
+                                });
+
+                                await mailchimp.post({
+                                    path: `/lists/${listId}/members`,
+                                    body: {
+                                        email_address: email,
+                                        status: listResponse.body.double_optin
+                                            ? "pending"
+                                            : "subscribed"
+                                    }
+                                });
+                            } catch (e) {
+                                if (e.body) {
+                                    return new ErrorResponse({
+                                        message: e.body.title,
+                                        data: {
+                                            code: e.body.status,
+                                            detail: e.body.detail,
+                                            type: e.body.type
+                                        }
+                                    });
+                                }
+
+                                return new ErrorResponse({
+                                    message: e.message
+                                });
+                            }
+                        }
+                    }
+                }
+            ]
+        },
         security: {
             shield: {
                 SettingsQuery: {
@@ -142,128 +266,6 @@ export default [
                     listLists: hasScope("cms:editor")
                 }
             }
-        },
-        typeDefs: () => [
-            /* GraphQL */ `
-                type AddToListResponse {
-                    error: Error
-                }
-
-                type MailchimpMutation {
-                    # Add a new member to members list.
-                    addToList(list: String!, email: String!): AddToListResponse
-                }
-
-                type Mutation {
-                    mailchimp: MailchimpMutation
-                }
-
-                type List {
-                    id: String
-                    name: String
-                }
-
-                type ListsResponse {
-                    data: [List]
-                    meta: ListMeta
-                    error: Error
-                }
-
-                type MailchimpQuery {
-                    listLists: ListsResponse
-                }
-
-                type Query {
-                    mailchimp: MailchimpQuery
-                }
-            `
-        ],
-        resolvers: () => [
-            {
-                Query: {
-                    mailchimp: dummyResolver
-                },
-                Mutation: {
-                    mailchimp: dummyResolver
-                },
-                MailchimpQuery: {
-                    listLists: async (
-                        _: any,
-                        args: Object,
-                        { mailchimp: { entities } }: Object
-                    ) => {
-                        const { MailchimpSettings } = entities;
-                        const settings = await MailchimpSettings.load();
-                        if (!settings || !(await settings.get("data.apiKey"))) {
-                            throw Error("Mailchimp API key not set.");
-                        }
-
-                        const mailchimp = new Mailchimp({ apiKey: settings.data.apiKey });
-
-                        try {
-                            const listsResponse = await mailchimp.get({
-                                path: `/lists/`
-                            });
-
-                            const output = listsResponse.body.lists.map(item => ({
-                                id: item.id,
-                                name: item.name
-                            }));
-
-                            return new ListResponse(output);
-                        } catch (e) {
-                            return new ListErrorResponse(e);
-                        }
-                    }
-                },
-                MailchimpMutation: {
-                    addToList: async (
-                        _: any,
-                        { list: listId, email }: Object,
-                        { mailchimp: { entities } }: Object
-                    ) => {
-                        const { MailchimpSettings } = entities;
-
-                        const settings = await MailchimpSettings.load();
-                        if (!settings || !(await settings.get("data.apiKey"))) {
-                            throw Error("Mailchimp API key not set.");
-                        }
-
-                        const mailchimp = new Mailchimp({ apiKey: settings.data.apiKey });
-
-                        try {
-                            const listResponse = await mailchimp.get({
-                                path: `/lists/${listId}`
-                            });
-
-                            await mailchimp.post({
-                                path: `/lists/${listId}/members`,
-                                body: {
-                                    email_address: email,
-                                    status: listResponse.body.double_optin
-                                        ? "pending"
-                                        : "subscribed"
-                                }
-                            });
-                        } catch (e) {
-                            if (e.body) {
-                                return new ErrorResponse({
-                                    message: e.body.title,
-                                    data: {
-                                        code: e.body.status,
-                                        detail: e.body.detail,
-                                        type: e.body.type
-                                    }
-                                });
-                            }
-
-                            return new ErrorResponse({
-                                message: e.message
-                            });
-                        }
-                    }
-                }
-            }
-        ]
+        }
     }
 ];

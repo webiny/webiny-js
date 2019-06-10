@@ -5,7 +5,7 @@ import GraphQLJSON from "graphql-type-json";
 import { GraphQLDateTime } from "graphql-iso-date";
 import { genericTypes } from "./genericTypes";
 import { getPlugins } from "webiny-plugins";
-import GraphQLLong from 'graphql-type-long';
+import GraphQLLong from "graphql-type-long";
 
 /**
  * Maps data sources and returns array of executable schema
@@ -60,13 +60,27 @@ const mapSourcesToExecutableSchemas = (sources: Array<Object>) => {
 /**
  * @return {schema, context}
  */
-export function prepareSchema() {
-    const dataSources = getPlugins("graphql");
-    const schemas = mapSourcesToExecutableSchemas(dataSources);
+export async function prepareSchema() {
+    const schemaDefs = [];
+    const schemaPlugins = getPlugins("graphql-schema");
+    for (let i = 0; i < schemaPlugins.length; i++) {
+        const { schema } = schemaPlugins[i];
+        if (!schema) {
+            continue;
+        }
 
-    const sourcesWithStitching = dataSources.filter(source => source.stitching);
-    const linkTypeDefs = sourcesWithStitching.map(source => source.stitching.linkTypeDefs);
-    const resolvers = sourcesWithStitching.map(source => source.stitching.resolvers);
+        if (typeof schema === "function") {
+            schemaDefs.push(await schema());
+        } else {
+            schemaDefs.push(schema);
+        }
+    }
+
+    const schemas = mapSourcesToExecutableSchemas(schemaDefs);
+
+    const defsWithStitching = schemaDefs.filter(source => source.stitching);
+    const linkTypeDefs = defsWithStitching.map(source => source.stitching.linkTypeDefs);
+    const resolvers = defsWithStitching.map(source => source.stitching.resolvers);
 
     return mergeSchemas({
         schemas: [...Object.values(schemas), ...linkTypeDefs],
