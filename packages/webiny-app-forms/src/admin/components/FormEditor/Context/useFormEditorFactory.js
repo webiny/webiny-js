@@ -12,7 +12,6 @@ export default FormEditorContext => {
         }
 
         const { state, dispatch } = context;
-        window.useFormEditorState = state;
 
         const self = {
             apollo: state.apollo,

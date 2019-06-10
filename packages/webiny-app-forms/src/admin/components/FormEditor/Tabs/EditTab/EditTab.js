@@ -12,7 +12,7 @@ import { useFormEditor } from "webiny-app-forms/admin/components/FormEditor/Cont
 import { getPlugins } from "webiny-plugins";
 
 import { i18n } from "webiny-app/i18n";
-const t = i18n.namespace("FormEditor.EditTab");
+const t = i18n.namespace("FormsApp.Editor.EditTab");
 
 export const EditTab = () => {
     const { getFields, insertField, updateField, deleteField } = useFormEditor();
