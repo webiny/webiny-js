@@ -3,6 +3,11 @@ import type { PluginType } from "webiny-plugins/types";
 
 export type FieldIdType = string;
 
+export type FieldLayoutPositionType = {
+    row: number,
+    index: ?number
+};
+
 export type FieldType = {
     id: FieldIdType,
     fieldId: string,

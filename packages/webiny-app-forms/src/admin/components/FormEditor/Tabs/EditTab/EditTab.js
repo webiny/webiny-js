@@ -10,75 +10,47 @@ import { ReactComponent as HandleIcon } from "../../icons/round-drag_indicator-2
 import { rowHandle, EditContainer, fieldHandle, FieldContainer, Row, RowContainer } from "./Styled";
 import { useFormEditor } from "webiny-app-forms/admin/components/FormEditor/Context";
 import { getPlugins } from "webiny-plugins";
+import type { FieldLayoutPositionType } from "webiny-app-forms/types";
 
 import { i18n } from "webiny-app/i18n";
 const t = i18n.namespace("FormsApp.Editor.EditTab");
 
 export const EditTab = () => {
-    const { getFields, insertField, updateField, deleteField } = useFormEditor();
+    const {
+        getFields,
+        insertField,
+        updateField,
+        deleteField,
+        data,
+        moveField,
+        moveRow
+    } = useFormEditor();
     const [editingField, setEditingField] = useState(null);
-    const [dropTarget, setDropTarget] = useState(null);
+    const [dropTarget, setDropTarget]: [FieldLayoutPositionType, Function] = useState(null);
 
     const editField = useCallback(field => {
         setEditingField(cloneDeep(field));
     });
 
     const handleDropField = useCallback((source, dropTarget) => {
-        setDropTarget(dropTarget);
-
         const { pos, type, ui } = source;
-        const { row } = dropTarget;
 
         if (type === "custom") {
             editField({});
+            setDropTarget(dropTarget);
             return;
         }
 
         if (ui === "row") {
             // Reorder rows.
             // Reorder logic is different depending on the source and target position.
-            setFormState(state => {
-                return {
-                    ...state,
-                    fields:
-                        pos.row < row
-                            ? [
-                                  ...state.fields.slice(0, pos.row),
-                                  ...state.fields.slice(pos.row + 1, row),
-                                  state.fields[pos.row],
-                                  ...state.fields.slice(row)
-                              ]
-                            : [
-                                  ...state.fields.slice(0, row),
-                                  state.fields[pos.row],
-                                  ...state.fields.slice(row, pos.row),
-                                  ...state.fields.slice(pos.row + 1)
-                              ]
-                };
-            });
-
-            return;
+            return moveRow(pos.row, dropTarget.row);
         }
 
         // If source pos is set, we are moving an existing field.
         if (pos) {
-            setFormState(state => {
-                const fields = [...state.fields];
-                const fieldData = { ...fields[pos.row][pos.index] };
-
-                fields[pos.row].splice(pos.index, 1);
-
-                if (fields[pos.row].length === 0) {
-                    fields.splice(pos.row, 1);
-                    if (pos.row < row) {
-                        createAtRef.current.row--;
-                    }
-                }
-
-                return insertField(fieldData, createAtRef.current, { ...state, fields });
-            });
-
-            return;
+            const fieldId = data.layout[pos.row][pos.index];
+            return moveField({ field: fieldId, position: dropTarget });
         }
 
         // Find field plugin which handles the dropped field type "id".

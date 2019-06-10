@@ -8,7 +8,6 @@ export default ({
     name: "forms-form-details-revision-content-revisions",
     type: "forms-form-details-revision-content",
     render({ form, loading }: WithFormDetailsProps) {
-        console.log('form saljem', form)
         return (
             <Tab label={"Revisions"} disabled={loading}>
                 <RevisionsList form={form} loading={loading} />

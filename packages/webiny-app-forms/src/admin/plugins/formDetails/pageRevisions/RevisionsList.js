@@ -24,7 +24,6 @@ const listWrapper = css({
 });
 
 const RevisionsList = ({ form, loading }: RevisionsProps) => {
-    console.log("ff", form, form.revisions);
     return (
         <Elevation className={listWrapper} z={2}>
             <div style={{ position: "relative" }}>
