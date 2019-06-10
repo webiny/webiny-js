@@ -48,7 +48,12 @@ const accordionItem = css({
             padding: "15px 20px 14px 20px",
             textTransform: "uppercase",
             backgroundColor: "var(--mdc-theme-on-background)",
-            marginBottom: 20
+            marginBottom: 20,
+            ".webiny-ui-accordion--item-title": {
+                ">div": {
+                    fontWeight: 400
+                }
+            }
         },
         ".webiny-ui-accordion--item-content": {
             border: "1px solid var(--mdc-theme-on-background)",
