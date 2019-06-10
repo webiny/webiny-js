@@ -1,3 +1,3 @@
 module.exports = {
-    type: "fixed"
+    type: "independent"
 };

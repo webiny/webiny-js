@@ -20,11 +20,7 @@ const tplJson = {
     workspaces: {
         packages: ["packages/*"]
     },
-    dependencies: {
-        "@svgr/webpack": "^4.1.0"
-    },
     devDependencies: {
-        "cross-env": "^5.2.0",
         prettier: "^1.15.3",
         "flow-bin": "^0.94.0"
     }

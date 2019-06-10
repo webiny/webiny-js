@@ -19,7 +19,6 @@ module.exports = {
         "packages/demo-api",
         "packages/demo-site",
         "packages/webiny-admin",
-        "packages/webiny-data-extractor",
         "packages/webiny-validation",
         "packages/webiny-entity",
         "packages/webiny-entity-mongodb"

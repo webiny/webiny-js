@@ -46,33 +46,4 @@ describe("EntityCollection test", () => {
         collection.setMeta({ a: 123 });
         expect(collection.getMeta().a).toEqual(123);
     });
-
-    test("toJSON must not throw an error if fields are not specified", async () => {
-        const collection = new EntityCollection();
-        await collection.toJSON();
-    });
-
-    test("toJSON must return array consisting of JSON representations of each entity", async () => {
-        const collection = new EntityCollection(getEntities());
-
-        const json = await collection.toJSON("firstName,age");
-
-        expect(json).toEqual([
-            { id: "A", firstName: null, age: 30 },
-            { id: "B", firstName: null, age: 35 },
-            { id: "C", firstName: null, age: 40 }
-        ]);
-    });
-
-    test("toJSON must always include ID, no matter if it was specified or not", async () => {
-        const collection = new EntityCollection(getEntities());
-
-        const json = await collection.toJSON("firstName,age");
-
-        expect(json).toEqual([
-            { id: "A", firstName: null, age: 30 },
-            { id: "B", firstName: null, age: 35 },
-            { id: "C", firstName: null, age: 40 }
-        ]);
-    });
 });

@@ -16,10 +16,14 @@ export default ([
             }
 
             const middleware = [];
-            getPlugins("graphql").forEach(plugin => {
-                const { security } = plugin;
+            getPlugins("graphql-schema").forEach(plugin => {
+                let { security } = plugin;
                 if (!security) {
                     return true;
+                }
+
+                if (typeof security === "function") {
+                    security = security();
                 }
 
                 security.shield &&
@@ -36,7 +40,7 @@ export default ([
     {
         type: "graphql-context",
         name: "graphql-context-security",
-        preApply: async context => {
+        preApply: async (context) => {
             context.token = null;
             context.user = null;
             context.getUser = () => context.user;

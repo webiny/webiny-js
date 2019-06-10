@@ -1,5 +1,4 @@
 // @flow
-import { set } from "dot-prop-immutable";
 import { createAction, addReducer } from "webiny-app-cms/editor/redux";
 
 const PREFIX = "[Row]";

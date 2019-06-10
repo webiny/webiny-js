@@ -285,10 +285,6 @@ class Attribute {
         return this;
     }
 
-    async getJSONValue(): Promise<mixed> {
-        return await this.getValue(...arguments);
-    }
-
     setToStorage(flag: boolean = true): this {
         this.toStorage = flag;
         return this;

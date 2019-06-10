@@ -9,13 +9,14 @@ import category from "./graphql/Category";
 import menu from "./graphql/Menu";
 
 export default {
-    type: "graphql",
-    name: "graphql-cms",
-    namespace: "cms",
-    typeDefs: () => [
-        FileType,
-        FileInputType,
-        `
+    type: "graphql-schema",
+    name: "graphql-schema-cms",
+    schema: {
+        namespace: "cms",
+        typeDefs: () => [
+            FileType,
+            FileInputType,
+            `
             type CmsQuery {
                 _empty: String
             }   
@@ -32,25 +33,26 @@ export default {
                 cms: CmsMutation
             }
         `,
-        page.typeDefs,
-        category.typeDefs,
-        menu.typeDefs,
-        ...getPlugins("cms-schema").map(pl => pl.typeDefs)
-    ],
-    resolvers: () => [
-        {
-            Query: {
-                cms: dummyResolver
+            page.typeDefs,
+            category.typeDefs,
+            menu.typeDefs,
+            ...getPlugins("cms-schema").map(pl => pl.typeDefs)
+        ],
+        resolvers: () => [
+            {
+                Query: {
+                    cms: dummyResolver
+                },
+                Mutation: {
+                    cms: dummyResolver
+                }
             },
-            Mutation: {
-                cms: dummyResolver
-            }
-        },
-        page.resolvers,
-        category.resolvers,
-        menu.resolvers,
-        ...getPlugins("cms-schema").map(pl => pl.resolvers)
-    ],
+            page.resolvers,
+            category.resolvers,
+            menu.resolvers,
+            ...getPlugins("cms-schema").map(pl => pl.resolvers)
+        ]
+    },
     security: {
         shield: {
             CmsQuery: {

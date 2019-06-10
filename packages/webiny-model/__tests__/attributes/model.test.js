@@ -267,35 +267,11 @@ describe("attribute model test", () => {
         expect(await user.get("company.image.size.width")).toEqual(12.5);
     });
 
-    test("should return empty JSON when getJSONValue is called", async () => {
-        const user = new User();
-        user.populate({
-            company: {
-                name: "Webiny LTD",
-                city: "London",
-                image: {
-                    file: "webiny.jpg",
-                    size: { width: 12.5, height: 44 },
-                    visible: false
-                }
-            }
-        });
-
-        expect(await user.getAttribute("company").getJSONValue()).toEqual({});
-    });
-
     test("toStorage / toJSON should just return current value if not an instance of Model", async () => {
         const user = new User();
         user.populate({ company: 123 });
 
-        expect(await user.getAttribute("company").getJSONValue()).toEqual(123);
         expect(await user.getAttribute("company").getStorageValue()).toEqual(123);
-    });
-
-    test("getJSONValue method must return value - we don't do any processing toJSON on it", async () => {
-        const user = new User();
-        user.company = null;
-        expect(await user.getAttribute("company").getJSONValue()).toBeNull();
     });
 
     test("getStorageValue method must return null", async () => {
@@ -360,12 +336,6 @@ describe("attribute model test", () => {
 
         user.getAttribute("company").onGet(() => {
             return { random: "Something overridden randomly." };
-        });
-
-        expect(await user.toJSON("company")).toEqual({
-            company: {
-                random: "Something overridden randomly."
-            }
         });
     });
 });

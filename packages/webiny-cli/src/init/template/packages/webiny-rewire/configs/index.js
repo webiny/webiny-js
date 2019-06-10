@@ -1,8 +1,7 @@
-// @flowIgnore
 const cloneDeep = require("lodash.clonedeep");
+const set = require("lodash.set");
 const packages = require("./../packages");
 const aliases = require("./../aliases");
-const set = require("lodash.set");
 
 module.exports = {
     webpack(config) {
@@ -10,10 +9,10 @@ module.exports = {
             ...config,
             module: { ...config.module, rules: cloneDeep(config.module.rules) }
         };
-        // Enable .babelrc in each monorepo package
+        // Override babel-loader configuration.
         require("./overrides/babel")(newConfig.module.rules, packages, aliases);
 
-        // Add proper includePaths
+        // Add proper `includePaths` for sass imports.
         require("./overrides/sass")(newConfig);
 
         return newConfig;

@@ -1,2 +1,2 @@
 // @flow
-export { createHandler } from "./src";
+export * from "./src";

@@ -2,7 +2,6 @@
 import React from "react";
 import styled from "react-emotion";
 import { getPlugin } from "webiny-plugins";
-import { addMiddleware } from "webiny-app-cms/editor/redux";
 import { ELEMENT_CREATED } from "webiny-app-cms/editor/actions";
 import type { PluginType } from "webiny-plugins/types";
 import { ReactComponent as ImageIcon } from "./round-image-24px.svg";
@@ -55,35 +54,6 @@ export default (): Array<PluginType> => {
                 ""
             ],
             target: ["cms-element-column", "cms-element-row"],
-            init() {
-                addMiddleware([ELEMENT_CREATED], ({ action, next }) => {
-                    const { element, source } = action.payload;
-
-                    next(action);
-
-                    if (element.type !== "cms-element-image") {
-                        return;
-                    }
-
-                    // Check the source of the element (could be `saved` element which behaves differently from other elements)
-                    const imagePlugin = getPlugin(source.type);
-                    if (!imagePlugin) {
-                        return;
-                    }
-
-                    const { onCreate } = imagePlugin;
-                    if (!onCreate || onCreate !== "skip") {
-                        // If source element does not define a specific `onCreate` behavior - continue with the actual element plugin
-                        const image = document.querySelector(
-                            `#${window.CSS.escape(element.id)} [data-role="select-image"]`
-                        );
-
-                        if (image) {
-                            image.click();
-                        }
-                    }
-                });
-            },
             create(options) {
                 return {
                     type: "cms-element-image",
@@ -117,6 +87,41 @@ export default (): Array<PluginType> => {
             },
             renderMenu() {
                 return <ImageSettings />;
+            }
+        },
+        {
+            type: "cms-editor-redux-middleware",
+            name: "cms-editor-redux-middleware-image-created",
+            actions: [ELEMENT_CREATED],
+            middleware: ({ action, next }) => {
+                const { element, source } = action.payload;
+
+                next(action);
+
+                if (element.type !== "cms-element-image") {
+                    return;
+                }
+
+                // Check the source of the element (could be `saved` element which behaves differently from other elements)
+                const imagePlugin = getPlugin(source.type);
+                if (!imagePlugin) {
+                    return;
+                }
+
+                const { onCreate } = imagePlugin;
+                if (!onCreate || onCreate !== "skip") {
+                    // If source element does not define a specific `onCreate` behavior - continue with the actual element plugin
+                    // TODO: this isn't an ideal approach, implement a retry mechanism which polls for DOM element
+                    setTimeout(() => {
+                        const image = document.querySelector(
+                            `#${window.CSS.escape(element.id)} [data-role="select-image"]`
+                        );
+
+                        if (image) {
+                            image.click();
+                        }
+                    }, 100);
+                }
             }
         }
     ];

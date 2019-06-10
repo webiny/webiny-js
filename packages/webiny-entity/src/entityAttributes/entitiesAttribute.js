@@ -373,14 +373,6 @@ class EntitiesAttribute extends Attribute {
         valueValidation && (await this.validateValue(value));
     }
 
-    async getJSONValue(): Promise<?Array<mixed>> {
-        const value: EntityCollection<Entity> = await (this.getValue(): any);
-        if (value instanceof EntityCollection) {
-            return value.toJSON();
-        }
-        return null;
-    }
-
     async normalizeSetValues() {
         // Before returning, let's load all values.
         const entities = this.value.getCurrent();

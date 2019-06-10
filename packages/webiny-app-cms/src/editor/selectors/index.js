@@ -44,8 +44,12 @@ export const getContent = (state: State): Object => {
  * Get element and all of its children recursively.
  * WARNING: use carefully as this makes render optimization really difficult when used in `connect`!
  */
-export const getElementWithChildren = (state: State, id: string): ElementType => {
+export const getElementWithChildren = (state: State, id: string): ElementType | null => {
     const element = getElement(state, id);
+    if (!element) {
+        return null;
+    }
+
     const content = getContent(state);
     return _.get(content, element.path.replace(/\./g, ".elements.").slice(2));
 };

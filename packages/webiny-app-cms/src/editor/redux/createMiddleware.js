@@ -1,9 +1,12 @@
 // @flow
 import type { Redux, MiddlewareFunction, Store, Action } from "webiny-app-cms/types";
 
-const wrapMiddleware = (types: Array<string>, middleware: MiddlewareFunction): Function => {
+export const wrapMiddleware = (
+    middleware: MiddlewareFunction,
+    actions: ?Array<string>
+): Function => {
     return (store: Store) => (next: Function) => (action: Action) => {
-        if (types.includes(action.type)) {
+        if (!actions || actions.includes(action.type)) {
             middleware({ store, next, action });
         } else {
             next(action);
@@ -13,6 +16,6 @@ const wrapMiddleware = (types: Array<string>, middleware: MiddlewareFunction): F
 
 export default (redux: Redux): Array<Function> => {
     return redux.middleware.map(mw => {
-        return wrapMiddleware(mw.actions, mw.middleware);
+        return wrapMiddleware(mw.middleware, mw.actions);
     });
 };

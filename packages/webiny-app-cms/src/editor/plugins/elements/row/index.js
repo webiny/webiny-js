@@ -102,12 +102,13 @@ export default (): ElementPluginType => {
                 element = createElement(source.type, {}, target);
             }
 
+            let column;
             if (element.type !== "cms-element-column") {
-                element = createColumn({ elements: [element] });
+                column = createColumn({ elements: [element] });
             }
 
             // Add new child element
-            let row = addElementToParent(element, target, position);
+            let row = addElementToParent(column || element, target, position);
 
             // Recalculate column widths
             row = distributeColumnWidths(row);

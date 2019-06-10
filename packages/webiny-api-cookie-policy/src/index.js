@@ -44,9 +44,7 @@ class CookiePolicySettingsModel extends Model {
 export default [
     {
         name: "graphql-schema-settings-cookie-policy",
-        type: "graphql",
-        typeDefs: ``,
-        resolvers: {},
+        type: "graphql-schema",
         security: {
             shield: {
                 SettingsMutation: {

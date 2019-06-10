@@ -1,4 +1,3 @@
-// @flowIgnore
 const aliases = require("../aliases");
 
 module.exports = function(api, opts, env) {
@@ -16,7 +15,7 @@ module.exports = function(api, opts, env) {
                 {
                     loaderMap: {
                         svg: {
-                            ReactComponent: "@svgr/webpack![path]"
+                            ReactComponent: "@svgr/webpack?-svgo,+ref![path]"
                         }
                     }
                 }

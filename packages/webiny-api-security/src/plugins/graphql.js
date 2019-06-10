@@ -9,19 +9,20 @@ import { FileType, FileInputType } from "webiny-api-files/graphql";
 
 export default ([
     {
-        type: "graphql",
-        name: "graphql-security-schema",
-        namespace: "security",
-        typeDefs: () => [
-            FileType,
-            FileInputType,
-            user.typeDefs,
-            user.typeExtensions,
-            role.typeDefs,
-            role.typeExtensions,
-            group.typeDefs,
-            group.typeExtensions,
-            /* GraphQL */ `
+        type: "graphql-schema",
+        name: "graphql-schema-security",
+        schema: {
+            namespace: "security",
+            typeDefs: () => [
+                FileType,
+                FileInputType,
+                user.typeDefs,
+                user.typeExtensions,
+                role.typeDefs,
+                role.typeExtensions,
+                group.typeDefs,
+                group.typeExtensions,
+                /* GraphQL */ `
                 type SecurityQuery {
                     # Returns all scopes that were registered throughout the schema.
                     scopes: [String]
@@ -39,23 +40,24 @@ export default ([
                     security: SecurityMutation
                 }
             `
-        ],
-        resolvers: () => [
-            {
-                Query: {
-                    security: dummyResolver
+            ],
+            resolvers: () => [
+                {
+                    Query: {
+                        security: dummyResolver
+                    },
+                    Mutation: {
+                        security: dummyResolver
+                    },
+                    SecurityQuery: {
+                        scopes: getRegisteredScopes
+                    }
                 },
-                Mutation: {
-                    security: dummyResolver
-                },
-                SecurityQuery: {
-                    scopes: getRegisteredScopes
-                }
-            },
-            group.resolvers,
-            role.resolvers,
-            user.resolvers
-        ],
+                group.resolvers,
+                role.resolvers,
+                user.resolvers
+            ]
+        },
         security: {
             shield: {
                 SecurityQuery: {

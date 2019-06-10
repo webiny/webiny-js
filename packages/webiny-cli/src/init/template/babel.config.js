@@ -1,3 +1,9 @@
+/**
+ * This `babel.config.js` file is used by `webiny-cli` when building `functions`.
+ * For config files related to SPAs please see the corresponding packages:
+ * - packages/admin
+ * - packages/site
+ */
 const path = require("path");
 const getPackages = require("get-yarn-workspaces");
 
