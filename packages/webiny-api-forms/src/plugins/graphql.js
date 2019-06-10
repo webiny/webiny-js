@@ -6,13 +6,14 @@ import { FileType, FileInputType } from "webiny-api-files/graphql";
 import form from "./graphql/Form";
 
 export default {
-    type: "graphql",
+    type: "graphql-schema",
     name: "graphql-forms",
     namespace: "forms",
-    typeDefs: () => [
-        FileType,
-        FileInputType,
-        `
+    schema: {
+        typeDefs: () => [
+            FileType,
+            FileInputType,
+            `
             type FormsQuery {
                 _empty: String
             }   
@@ -29,19 +30,20 @@ export default {
                 forms: FormsMutation
             }
         `,
-        form.typeDefs
-    ],
-    resolvers: () => [
-        {
-            Query: {
-                forms: dummyResolver
+            form.typeDefs
+        ],
+        resolvers: () => [
+            {
+                Query: {
+                    forms: dummyResolver
+                },
+                Mutation: {
+                    forms: dummyResolver
+                }
             },
-            Mutation: {
-                forms: dummyResolver
-            }
-        },
-        form.resolvers
-    ],
+            form.resolvers
+        ]
+    },
     security: {
         shield: {
             FormsQuery: {

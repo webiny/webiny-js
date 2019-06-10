@@ -42,7 +42,21 @@ export const createHandler = async (config: Object) => {
         // Process `graphql-context` plugins
         const ctxPlugins = getPlugins("graphql-context");
         for (let i = 0; i < ctxPlugins.length; i++) {
-            await ctxPlugins[i].apply(context);
+            if (typeof ctxPlugins[i].preApply === "function") {
+                await ctxPlugins[i].preApply(context);
+            }
+        }
+
+        for (let i = 0; i < ctxPlugins.length; i++) {
+            if (typeof ctxPlugins[i].apply === "function") {
+                await ctxPlugins[i].apply(context);
+            }
+        }
+
+        for (let i = 0; i < ctxPlugins.length; i++) {
+            if (typeof ctxPlugins[i].postApply === "function") {
+                await ctxPlugins[i].postApply(context);
+            }
         }
     });
 
