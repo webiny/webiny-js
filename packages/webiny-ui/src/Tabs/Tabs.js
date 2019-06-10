@@ -1,11 +1,15 @@
 // @flow
 import * as React from "react";
+import classNames from "classnames";
 
 import { TabBar, Tab as RmwcTab } from "@rmwc/tabs";
 
 type Props = {
     // Any element that needs to be highlighted.
-    children?: React.Node
+    children?: React.Node,
+
+    // Append a class name
+    className?: string
 };
 
 type State = {
@@ -42,6 +46,7 @@ class Tabs extends React.Component<Props, State> {
 
         const tabBar = (
             <TabBar
+                className="webiny-ui-tabs--tab-bar"
                 activeTabIndex={this.state.activeTabIndex}
                 onActivate={evt => this.setState({ activeTabIndex: evt.detail.index })}
             >
@@ -79,10 +84,10 @@ class Tabs extends React.Component<Props, State> {
         }
 
         return (
-            <React.Fragment>
+            <div className={classNames("webiny-ui-tabs", this.props.className)}>
                 {tabBar}
-                <div className={"mdc-tab-content"}>{content}</div>
-            </React.Fragment>
+                <div className={"webiny-ui-tabs--content mdc-tab-content"}>{content}</div>
+            </div>
         );
     }
 }
