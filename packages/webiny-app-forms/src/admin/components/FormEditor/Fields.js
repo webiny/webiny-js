@@ -3,43 +3,49 @@ import { useFormEditor } from "webiny-app-forms/admin/components/FormEditor/Cont
 import { getPlugins } from "webiny-plugins";
 import styled from "react-emotion";
 import { Icon } from "webiny-ui/Icon";
-import { Elevation } from "webiny-ui/Elevation";
 import { Accordion, AccordionItem } from "webiny-ui/Accordion";
 import { ReactComponent as HandleIcon } from "./icons/round-drag_indicator-24px.svg";
 import Draggable from "./Draggable";
 
 const FieldContainer = styled("div")({
-    height: 25,
-    padding: 5,
-    marginBottom: 10
+    padding: "10px 15px",
+    marginBottom: 10,
+    display: "flex",
+    width: "100%",
+    backgroundColor: "var(--mdc-theme-on-background)",
+    borderRadius: 15,
+    boxSizing: "border-box",
+    cursor: "grab",
+    opacity: 1,
+    transition: "opacity 225ms",
+    "&:hover": {
+        opacity: 0.8
+    }
 });
 
 const FieldLabel = styled("div")({
-    float: "left",
-    textTransform: "uppercase"
+    textTransform: "uppercase",
+    lineHeight: "145%"
 });
 
 const FieldHandle = styled("div")({
-    float: "right",
-    cursor: "grab"
+    marginRight: 15
 });
 
 const Field = ({ fieldType: { id, label } }) => {
     return (
         <Draggable beginDrag={{ ui: "field", type: id }}>
             {({ connectDragSource }) => (
-                <Elevation z={5}>
-                    <FieldContainer>
-                        <FieldLabel>{label}</FieldLabel>
-                        <FieldHandle>
-                            {connectDragSource(
-                                <div>
-                                    <Icon icon={<HandleIcon />} />
-                                </div>
-                            )}
-                        </FieldHandle>
-                    </FieldContainer>
-                </Elevation>
+                <FieldContainer>
+                    <FieldHandle>
+                        {connectDragSource(
+                            <div>
+                                <Icon icon={<HandleIcon />} />
+                            </div>
+                        )}
+                    </FieldHandle>
+                    <FieldLabel>{label}</FieldLabel>
+                </FieldContainer>
             )}
         </Draggable>
     );

@@ -9,7 +9,6 @@ import EditorBar from "./Bar";
 import EditorContent from "./Content";
 import DragPreview from "./DragPreview";
 
-
 const FormEditor = () => {
     const {
         getForm,
