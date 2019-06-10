@@ -12,15 +12,15 @@ export type EntityPluginType = PluginType & {
     }
 };
 
-export type ModelPluginType = PluginType & {
-    namespace: string,
-    model: Function
-};
-
-export type GraphQLSchemaPluginType = PluginType & {
+export type GraphQLSchemaType = {
     namespace: string,
     typeDefs: *,
     resolvers: Object | (() => Object)
+};
+
+export type GraphQLSchemaPluginType = PluginType & {
+    schema?: GraphQLSchemaType | () => GraphQLSchemaType,
+    security?: Object | (() => Object)
 };
 
 export type GraphQLMiddlewarePluginType = PluginType & {

@@ -16,7 +16,7 @@ export default ([
             }
 
             const middleware = [];
-            getPlugins("graphql").forEach(plugin => {
+            getPlugins("graphql-schema").forEach(plugin => {
                 let { security } = plugin;
                 if (!security) {
                     return true;
