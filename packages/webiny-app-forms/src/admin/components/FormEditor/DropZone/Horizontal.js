@@ -62,7 +62,7 @@ const Horizontal = ({ last, onDrop, isVisible }: Props) => {
                         position: "absolute",
                         [last ? "bottom" : "top"]: 0,
                         left: 0,
-                        zIndex: 1000
+                        zIndex: isDragging ? 1000 : -1
                     }}
                 >
                     <OuterDiv isOver={isOver} isDragging={isDragging} last={last}>

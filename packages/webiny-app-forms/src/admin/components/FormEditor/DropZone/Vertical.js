@@ -64,7 +64,7 @@ const Vertical = ({ last, onDrop, isVisible }: Props) => {
                         position: "absolute",
                         top: 0,
                         [last ? "right" : "left"]: 0,
-                        zIndex: 1000
+                        zIndex: isDragging ? 1000 : -1
                     }}
                 >
                     <OuterDivVertical isOver={isOver} isDragging={isDragging} last={last}>
