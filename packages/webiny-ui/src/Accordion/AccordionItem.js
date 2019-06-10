@@ -72,7 +72,10 @@ type Props = {
     description?: string,
 
     // Element displayed when accordion is expanded.
-    children?: React.Node
+    children?: React.Node,
+
+    // Append a class name
+    className?: string
 };
 
 class AccordionItem extends React.Component<Props, State> {
@@ -80,9 +83,13 @@ class AccordionItem extends React.Component<Props, State> {
 
     render() {
         return (
-            <React.Fragment>
+            <div className={classNames("webiny-ui-accordion--item", this.props.className)}>
                 <ListItem
-                    className={classNames(listItem, { [openedState]: !this.state.closed })}
+                    className={classNames(
+                        listItem,
+                        { [openedState]: !this.state.closed },
+                        "webiny-ui-accordion--list-item"
+                    )}
                     onClick={() => {
                         this.setState({ closed: !this.state.closed });
                     }}
@@ -93,7 +100,7 @@ class AccordionItem extends React.Component<Props, State> {
                         </ListItemGraphic>
                     )}
 
-                    <TitleContent>
+                    <TitleContent className="webiny-ui-accordion--item-title">
                         <ListItemTitle>{this.props.title}</ListItemTitle>
                         {this.props.description && (
                             <ListItemDescription>
@@ -107,12 +114,15 @@ class AccordionItem extends React.Component<Props, State> {
                 </ListItem>
                 <Transition in={!this.state.closed} timeout={duration} unmountOnExit>
                     {state => (
-                        <Content style={{ ...defaultStyle, ...transitionStyles[state] }}>
+                        <Content
+                            style={{ ...defaultStyle, ...transitionStyles[state] }}
+                            className="webiny-ui-accordion--item-content"
+                        >
                             {this.props.children}
                         </Content>
                     )}
                 </Transition>
-            </React.Fragment>
+            </div>
         );
     }
 }
