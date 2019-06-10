@@ -1,5 +1,4 @@
 import React, { useCallback, useState } from "react";
-import { Elevation } from "webiny-ui/Elevation";
 import { Icon } from "webiny-ui/Icon";
 import { get, cloneDeep } from "lodash";
 import { Center, Vertical, Horizontal } from "../../DropZone";
@@ -70,93 +69,92 @@ export const EditTab = () => {
 
             {fields.map((row, index) => (
                 <Draggable beginDrag={{ ui: "row", pos: { row: index } }} key={index}>
-                    {({ connectDragSource, isDragging }) => (
-                        /* RowContainer start - includes drag handle, drop zones and the Row itself. */
+                    {(
+                        {
+                            connectDragSource,
+                            isDragging
+                        } /* RowContainer start - includes drag handle, drop zones and the Row itself. */
+                    ) => (
                         <RowContainer style={{ opacity: isDragging ? 0.3 : 1 }}>
-                            <Elevation z={3}>
-                                {connectDragSource(
-                                    <div className={rowHandle}>
-                                        <Icon icon={<HandleIcon />} />
-                                    </div>
-                                )}
-                                <Horizontal
-                                    onDrop={item =>
-                                        handleDropField(item, { row: index, index: null })
-                                    }
-                                />
-                                {/* Row start - includes field drop zones and fields */}
-                                <Row>
-                                    {row.map((field, fieldIndex) => (
-                                        <FieldContainer key={fieldIndex}>
-                                            <Vertical
-                                                onDrop={item =>
-                                                    handleDropField(item, {
-                                                        row: index,
-                                                        index: fieldIndex
-                                                    })
+                            {connectDragSource(
+                                <div className={rowHandle}>
+                                    <Icon icon={<HandleIcon />} />
+                                </div>
+                            )}
+                            <Horizontal
+                                onDrop={item => handleDropField(item, { row: index, index: null })}
+                            />
+                            {/* Row start - includes field drop zones and fields */}
+                            <Row>
+                                {row.map((field, fieldIndex) => (
+                                    <FieldContainer key={fieldIndex}>
+                                        <Vertical
+                                            onDrop={item =>
+                                                handleDropField(item, {
+                                                    row: index,
+                                                    index: fieldIndex
+                                                })
+                                            }
+                                            isVisible={item =>
+                                                item.ui === "field" &&
+                                                (row.length < 4 || get(item, "pos.row") === index)
+                                            }
+                                        />
+                                        {/* Field start */}
+                                        <Draggable
+                                            beginDrag={{
+                                                ui: "field",
+                                                type: field.type,
+                                                pos: {
+                                                    row: index,
+                                                    index: fieldIndex
                                                 }
+                                            }}
+                                        >
+                                            {({ connectDragSource }) =>
+                                                connectDragSource(
+                                                    <div className={fieldHandle}>
+                                                        <Field
+                                                            field={field}
+                                                            onEdit={editField}
+                                                            onDelete={deleteField}
+                                                        />
+                                                    </div>
+                                                )
+                                            }
+                                        </Draggable>
+                                        {/* Field end */}
+                                        {fieldIndex === row.length - 1 && (
+                                            <Vertical
+                                                last
                                                 isVisible={item =>
                                                     item.ui === "field" &&
                                                     (row.length < 4 ||
                                                         get(item, "pos.row") === index)
                                                 }
-                                            />
-                                            {/* Field start */}
-                                            <Draggable
-                                                beginDrag={{
-                                                    ui: "field",
-                                                    type: field.type,
-                                                    pos: {
+                                                onDrop={item =>
+                                                    handleDropField(item, {
                                                         row: index,
-                                                        index: fieldIndex
-                                                    }
-                                                }}
-                                            >
-                                                {({ connectDragSource }) =>
-                                                    connectDragSource(
-                                                        <div className={fieldHandle}>
-                                                            <Field
-                                                                field={field}
-                                                                onEdit={editField}
-                                                                onDelete={deleteField}
-                                                            />
-                                                        </div>
-                                                    )
+                                                        index: fieldIndex + 1
+                                                    })
                                                 }
-                                            </Draggable>
-                                            {/* Field end */}
-                                            {fieldIndex === row.length - 1 && (
-                                                <Vertical
-                                                    last
-                                                    isVisible={item =>
-                                                        item.ui === "field" &&
-                                                        (row.length < 4 ||
-                                                            get(item, "pos.row") === index)
-                                                    }
-                                                    onDrop={item =>
-                                                        handleDropField(item, {
-                                                            row: index,
-                                                            index: fieldIndex + 1
-                                                        })
-                                                    }
-                                                />
-                                            )}
-                                        </FieldContainer>
-                                    ))}
-                                </Row>
-                                {/* Row end */}
-                                {index === fields.length - 1 && (
-                                    <Horizontal
-                                        last
-                                        onDrop={item =>
-                                            handleDropField(item, {
-                                                row: index + 1,
-                                                index: null
-                                            })
-                                        }
-                                    />
-                                )}
-                            </Elevation>
+                                            />
+                                        )}
+                                    </FieldContainer>
+                                ))}
+                            </Row>
+                            {/* Row end */}
+                            {index === fields.length - 1 && (
+                                <Horizontal
+                                    last
+                                    onDrop={item =>
+                                        handleDropField(item, {
+                                            row: index + 1,
+                                            index: null
+                                        })
+                                    }
+                                />
+                            )}
                         </RowContainer>
                     )}
                 </Draggable>

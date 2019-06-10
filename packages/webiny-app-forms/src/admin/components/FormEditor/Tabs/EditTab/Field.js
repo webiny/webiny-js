@@ -1,12 +1,15 @@
 import React from "react";
 import styled from "react-emotion";
 import { IconButton } from "webiny-ui/Button";
+import { Typography } from "webiny-ui/Typography";
 import { ReactComponent as EditIcon } from "../../icons/edit.svg";
 import { ReactComponent as DeleteIcon } from "../../icons/delete.svg";
 
 const FieldContainer = styled("div")({
     display: "flex",
-    flexDirection: "row"
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center"
 });
 
 const Info = styled("div")({
@@ -31,10 +34,7 @@ const Field = props => {
     return (
         <FieldContainer>
             <Info>
-                <strong>{field.label}</strong>
-                <span>
-                    {field.fieldId} ({field.type})
-                </span>
+                <Typography use={"subtitle1"}>{field.label}</Typography>
             </Info>
             <Actions>
                 <IconButton icon={<EditIcon />} onClick={() => onEdit(field)} />
