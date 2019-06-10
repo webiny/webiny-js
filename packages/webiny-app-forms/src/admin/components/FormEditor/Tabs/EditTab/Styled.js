@@ -23,6 +23,7 @@ export const Row = styled("div")({
     flexDirection: "row",
     backgroundColor: "var(--mdc-theme-surface)",
     paddingLeft: 40,
+    paddingRight: 10,
     position: "relative"
 });
 
@@ -47,7 +48,7 @@ export const rowHandle = css({
     width: 30,
     cursor: "grab",
     position: "absolute",
-    left: 5,
+    left: 10,
     top: "50%",
     transform: "translateY(-50%)",
     zIndex: 1,

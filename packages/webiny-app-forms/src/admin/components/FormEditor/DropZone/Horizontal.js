@@ -4,19 +4,26 @@ import styled from "react-emotion";
 import Droppable from "../Droppable";
 
 const InnerDiv = styled("div")({
-    height: 5,
+    height: 15,
     width: "100%",
     zIndex: 3,
-    borderRadius: 5,
+    borderRadius: 0,
     boxSizing: "border-box",
-    display: "none"
+    display: "none",
+    border: "1px dashed black",
+    borderSpacing: 5
+});
+
+const BackgroundColorDiv = styled("div")({
+    width: "100%",
+    height: "100%"
 });
 
 const OuterDiv = styled("div")(
     {
         margin: 0,
         padding: 0,
-        width: "100%",
+        width: "calc(100% + 2px)",
         zIndex: 10,
         backgroundColor: "transparent",
         position: "absolute",
@@ -24,12 +31,16 @@ const OuterDiv = styled("div")(
         justifyContent: "center"
     },
     props => ({
-        [props.last ? "bottom" : "top"]: 0,
+        [props.last ? "bottom" : "top"]: -15,
         [InnerDiv]: {
-            backgroundColor: props.isOver
-                ? "var(--mdc-theme-primary)"
-                : "var(--mdc-theme-secondary)",
-            display: props.isDragging ? "block" : "none"
+            borderColor: props.isOver ? "var(--mdc-theme-primary)" : "var(--mdc-theme-secondary)",
+            display: props.isDragging ? "block" : "none",
+            [BackgroundColorDiv]: {
+                opacity: 0.5,
+                backgroundColor: props.isOver
+                    ? "var(--mdc-theme-primary)"
+                    : "var(--mdc-theme-secondary)"
+            }
         }
     })
 );
@@ -55,7 +66,9 @@ const Horizontal = ({ last, onDrop, isVisible }: Props) => {
                     }}
                 >
                     <OuterDiv isOver={isOver} isDragging={isDragging} last={last}>
-                        <InnerDiv />
+                        <InnerDiv>
+                            <BackgroundColorDiv />
+                        </InnerDiv>
                     </OuterDiv>
                 </div>
             )}

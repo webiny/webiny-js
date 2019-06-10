@@ -5,11 +5,19 @@ import Droppable from "../Droppable";
 
 const InnerDivVertical = styled("div")({
     position: "absolute",
-    width: 5,
+    width: 10,
     height: "100%",
     zIndex: 3,
-    borderRadius: 5,
-    display: "none"
+    borderRadius: 0,
+    display: "none",
+    boxSizing: "border-box",
+    border: "1px dashed black",
+    borderSpacing: 5
+});
+
+const BackgroundColorDiv = styled("div")({
+    width: "100%",
+    height: "100%"
 });
 
 const OuterDivVertical = styled("div")(
@@ -22,14 +30,18 @@ const OuterDivVertical = styled("div")(
         backgroundColor: "transparent"
     },
     props => ({
-        [props.last ? "right" : "left"]: -2,
+        [props.last ? "right" : "left"]: -9,
         textAlign: props.last ? "right" : "left",
         [InnerDivVertical]: {
-            backgroundColor: props.isOver
-                ? "var(--mdc-theme-primary)"
-                : "var(--mdc-theme-secondary)",
+            borderColor: props.isOver ? "var(--mdc-theme-primary)" : "var(--mdc-theme-secondary)",
             [props.last ? "right" : "left"]: -2,
-            display: props.isDragging ? "block" : "none"
+            display: props.isDragging ? "block" : "none",
+            [BackgroundColorDiv]: {
+                opacity: 0.5,
+                backgroundColor: props.isOver
+                    ? "var(--mdc-theme-primary)"
+                    : "var(--mdc-theme-secondary)"
+            }
         }
     })
 );
@@ -56,7 +68,9 @@ const Vertical = ({ last, onDrop, isVisible }: Props) => {
                     }}
                 >
                     <OuterDivVertical isOver={isOver} isDragging={isDragging} last={last}>
-                        <InnerDivVertical />
+                        <InnerDivVertical>
+                            <BackgroundColorDiv />
+                        </InnerDivVertical>
                     </OuterDivVertical>
                 </div>
             )}
