@@ -33,6 +33,7 @@ export const FieldContainer = styled("div")({
     padding: "0 15px",
     margin: 10,
     borderRadius: 2,
+    border: "1px solid var(--mdc-theme-on-background)",
     transition: "box-shadow 225ms",
     color: "var(--mdc-theme-on-surface)",
     cursor: "grab",
