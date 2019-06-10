@@ -36,6 +36,14 @@ const LeftBarFieldList = styled("div")({
     padding: 40
 });
 
+const formTabs = css({
+    "&.webiny-ui-tabs": {
+        ".webiny-ui-tabs--tab-bar": {
+            backgroundColor: "var(--mdc-theme-surface)"
+        }
+    }
+});
+
 export default function Content() {
     const { saveForm } = useFormEditor();
 
@@ -61,7 +69,7 @@ export default function Content() {
                     </LeftBarFieldList>
                 </LeftPanel>
                 <RightPanel span={8}>
-                    <Tabs>
+                    <Tabs className={formTabs}>
                         <Tab label={"Edit"}>
                             <EditTab />
                         </Tab>
