@@ -29,11 +29,13 @@ const FieldContainer = styled("div")({
 
 const FieldLabel = styled("div")({
     textTransform: "uppercase",
-    lineHeight: "145%"
+    lineHeight: "145%",
+    color: "var(--mdc-theme-on-surface)"
 });
 
 const FieldHandle = styled("div")({
-    marginRight: 15
+    marginRight: 15,
+    color: "var(--mdc-theme-on-surface)"
 });
 
 const FormAccordionContent = styled("div")({
@@ -44,7 +46,7 @@ const accordionItem = css({
     "&.webiny-ui-accordion--item": {
         ".webiny-ui-accordion--list-item": {
             height: "14px",
-            borderRadius: "15px",
+            borderRadius: "15px !important",
             padding: "15px 20px 14px 20px",
             textTransform: "uppercase",
             backgroundColor: "var(--mdc-theme-on-background)",

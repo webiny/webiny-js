@@ -14,7 +14,8 @@ export const RowContainer = styled("div")({
     borderRadius: 2,
     backgroundColor: "var(--mdc-theme-surface)",
     border: "1px solid var(--mdc-theme-on-background)",
-    boxShadow: "rgba(46,41,51,0.08) 2px 2px 2px, rgba(71,63,79,0.08) 2px 2px 4px"
+    boxShadow:
+        "var(--mdc-theme-on-background) 1px 1px 1px, var(--mdc-theme-on-background) 1px 1px 2px"
 });
 
 export const Row = styled("div")({
@@ -33,9 +34,11 @@ export const FieldContainer = styled("div")({
     margin: 10,
     borderRadius: 2,
     transition: "box-shadow 225ms",
+    color: "var(--mdc-theme-on-surface)",
     cursor: "grab",
     "&:hover": {
-        boxShadow: "rgba(46,41,51,0.08) 2px 2px 2px, rgba(71,63,79,0.08) 2px 2px 4px"
+        boxShadow:
+            "var(--mdc-theme-on-background) 1px 1px 1px, var(--mdc-theme-on-background) 1px 1px 2px"
     }
 });
 
@@ -46,7 +49,8 @@ export const rowHandle = css({
     left: 5,
     top: "50%",
     transform: "translateY(-50%)",
-    zIndex: 1
+    zIndex: 1,
+    color: "var(--mdc-theme-on-surface)"
 });
 
 export const fieldHandle = css({
