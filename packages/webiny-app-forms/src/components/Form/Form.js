@@ -38,7 +38,6 @@ const DataForm = ({ preview, data, cms }: Props) => {
         item => item.name === settings.layout.renderer
     );
 
-    console.log(cms,settings)
     if (!LayoutRenderComponent) {
         return <span>Cannot render form, layout missing.</span>;
     }
