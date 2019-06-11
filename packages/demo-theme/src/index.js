@@ -2,6 +2,8 @@
 import "./style/theme.scss";
 import StaticLayout from "./layouts/static";
 import BlogLayout from "./layouts/blog";
+import DefaultFormLayout from "./layouts/forms/DefaultFormLayout";
+import DefaultFormLayout2 from "./layouts/forms/DefaultFormLayout2";
 
 export default {
     layouts: [
@@ -16,6 +18,12 @@ export default {
             component: BlogLayout
         }
     ],
+    forms: {
+        layouts: [
+            { name: "default", title: "Default layout", component: DefaultFormLayout },
+            { name: "default2", title: "Default layout 2", component: DefaultFormLayout2 }
+        ]
+    },
     colors: {
         primary: "var(--webiny-cms-theme-primary)",
         secondary: "var(--webiny-cms-theme-secondary)",

@@ -1,13 +1,12 @@
 // @flow
 import React, { useCallback, useEffect } from "react";
-import { getPlugin } from "webiny-plugins";
 import { get, cloneDeep } from "lodash";
 import { Form as WebinyForm } from "webiny-form";
 import getClientIp from "./getClientIp";
 import renderFieldById from "./renderFieldById";
 import { getForm } from "./graphql";
 import { Query } from "react-apollo";
-import type { FormLayoutPluginType } from "webiny-app-forms/types";
+import { withCms } from "webiny-app-cms/context";
 
 type Props = {
     preview?: boolean,
@@ -15,7 +14,7 @@ type Props = {
     id?: string
 };
 
-const DataForm = ({ preview, data }: Props) => {
+const DataForm = ({ preview, data, cms }: Props) => {
     useEffect(() => {
         if (!preview) {
             // TODO: capture view
@@ -35,10 +34,16 @@ const DataForm = ({ preview, data }: Props) => {
 
     const { layout, fields, settings } = data;
 
-    const layoutRendererPlugin: ?FormLayoutPluginType = getPlugin(settings.layout.renderer);
-    if (!layoutRendererPlugin) {
-        return <span>Cannot render form, no layout selected.</span>;
+    let LayoutRenderComponent = get(cms, "theme.forms.layouts", []).find(
+        item => item.name === settings.layout.renderer
+    );
+
+    console.log(cms,settings)
+    if (!LayoutRenderComponent) {
+        return <span>Cannot render form, layout missing.</span>;
     }
+
+    LayoutRenderComponent = LayoutRenderComponent.component;
 
     return (
         <WebinyForm onSubmit={onSubmitForm}>
@@ -50,11 +55,13 @@ const DataForm = ({ preview, data }: Props) => {
                     });
                 });
 
-                return layoutRendererPlugin.render({
+                const props = {
                     layout: layoutFields,
                     form: data,
                     submit: form.submit
-                });
+                };
+
+                return <LayoutRenderComponent {...props} />;
             }}
         </WebinyForm>
     );
@@ -68,7 +75,7 @@ const IdForm = (props: Props) => {
                     return null;
                 }
 
-                return <DataForm data={get(data, "forms.getForm.data")} />;
+                return <DataForm {...props} data={get(data, "forms.getForm.data")} />;
             }}
         </Query>
     );
@@ -86,4 +93,4 @@ const Form = (props: Props) => {
     return null;
 };
 
-export default Form;
+export default withCms()(Form);

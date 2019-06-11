@@ -21,7 +21,7 @@ export interface IForm extends Entity {
 class LayoutSettingsModel extends Model {
     constructor() {
         super();
-        this.attr("renderer").char().setValue("forms-form-layout-default");
+        this.attr("renderer").char().setValue("default");
     }
 }
 

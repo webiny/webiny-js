@@ -1,8 +1,8 @@
 import React, { Fragment } from "react";
 import { useFormEditor } from "webiny-app-forms/admin/components/FormEditor/Context";
 import { Select } from "webiny-ui/Select";
-import type { FormLayoutPluginType } from "webiny-app-forms/types";
-import { getPlugins } from "webiny-plugins";
+import { withCms } from "webiny-app-cms/context";
+import { get } from "lodash";
 
 import { i18n } from "webiny-app/i18n";
 const t = i18n.namespace("FormsApp.Editor.Settings");
@@ -20,11 +20,10 @@ import {
 import { Grid, Cell } from "webiny-ui/Grid";
 import { Form } from "webiny-form";
 
-export const FormSettingsDialog = ({ open, onClose, onSubmit }) => {
+const FormSettingsDialog = ({ cms, open, onClose, onSubmit }) => {
     const { data } = useFormEditor();
 
-    let layoutRendererPlugins: Array<FormLayoutPluginType> = getPlugins("forms-form-layout");
-
+    const layouts = get(cms, "theme.forms.layouts") || [];
     return (
         <Dialog open={open} onClose={onClose}>
             <Form data={data.settings} onSubmit={onSubmit}>
@@ -40,8 +39,8 @@ export const FormSettingsDialog = ({ open, onClose, onSubmit }) => {
                                         <Bind name={"layout.renderer"}>
                                             <Select
                                                 label={"Layout"}
-                                                options={layoutRendererPlugins.map(item => {
-                                                    return { value: item.name, label: item.label };
+                                                options={layouts.map(item => {
+                                                    return { value: item.name, label: item.title };
                                                 })}
                                             />
                                         </Bind>
@@ -59,3 +58,5 @@ export const FormSettingsDialog = ({ open, onClose, onSubmit }) => {
         </Dialog>
     );
 };
+
+export default withCms()(FormSettingsDialog);

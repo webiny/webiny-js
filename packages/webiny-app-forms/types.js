@@ -25,13 +25,6 @@ export type RenderFieldPluginType =
           }
       };
 
-export type FormLayoutPluginType =
-    | PluginType
-    | {
-          render: Function,
-          label: string
-      };
-
 export type FieldsLayoutType = [[FieldIdType]];
 
 export type UseFormEditorReducerStateType = {

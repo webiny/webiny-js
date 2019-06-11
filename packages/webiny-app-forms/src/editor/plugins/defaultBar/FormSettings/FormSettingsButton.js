@@ -1,9 +1,9 @@
 import React, { useState, useCallback } from "react";
 import { IconButton } from "webiny-ui/Button";
 import { ReactComponent as SettingsIcon } from "./../icons/settings.svg";
-import { FormSettingsDialog } from "./FormSettingsDialog";
 import { useFormEditor } from "webiny-app-forms/admin/components/FormEditor/Context";
 import { withSnackbar } from "webiny-admin/components";
+import FormSettingsDialog from "./FormSettingsDialog";
 
 import { i18n } from "webiny-app/i18n";
 const t = i18n.namespace("FormsApp.Editor.Settings");
