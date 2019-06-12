@@ -4,6 +4,7 @@ import { Input } from "webiny-ui/Input";
 import { Select } from "webiny-ui/Select";
 import { Form } from "webiny-form";
 import { RadioGroup, Radio } from "webiny-ui/Radio";
+import { CheckboxGroup, Checkbox } from "webiny-ui/Checkbox";
 
 import type { FieldType, FormRenderPropsType } from "webiny-app-forms/types";
 
@@ -63,6 +64,28 @@ function renderField(field: FieldType, bind: Object) {
                         </>
                     )}
                 </RadioGroup>
+            );
+        case "checkbox":
+            return (
+                <CheckboxGroup
+                    {...bind}
+                    label={field.label}
+                    placeholder={field.placeholderText}
+                    description={field.helpText}
+                >
+                    {({ onChange, getValue }) => (
+                        <>
+                            {field.options.map(({ value, label }) => (
+                                <Checkbox
+                                    key={value}
+                                    label={label}
+                                    value={getValue(value)}
+                                    onChange={onChange(value)}
+                                />
+                            ))}
+                        </>
+                    )}
+                </CheckboxGroup>
             );
         case "hidden":
             return <input type={"hidden"} {...bind} />;
