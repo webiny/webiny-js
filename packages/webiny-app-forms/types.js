@@ -1,4 +1,5 @@
 // @flow
+import * as React from "react";
 import type { PluginType } from "webiny-plugins/types";
 
 export type FieldIdType = string;
@@ -13,9 +14,11 @@ export type FieldType = {
     id: FieldIdType,
     fieldId: string,
     label: string,
+    helpText: string,
+    placeholderText: string,
     type: string,
-    validation: []
-};
+    validation: Array<any>
+} & Object;
 
 export type FormType = {
     id: FieldIdType,
@@ -27,23 +30,31 @@ export type FormType = {
 export type FormRenderPropsType = {
     getFieldById: Function,
     getFieldByFieldId: Function,
-    getFields: () => FieldsLayoutType,
-    submit: Function,
+    getFields: () => [[FieldType]],
+    getDefaultValues: () => Object,
+    submit: () => void,
     form: FormType
 };
-
-export type RenderFieldPluginType =
-    | PluginType
-    | {
-          field: {
-              type: string,
-              render: Function
-          }
-      };
-
 
 export type UseFormEditorReducerStateType = {
     apollo: ?Object,
     id: string,
     defaultLayoutRenderer: string
+};
+
+export type FormEditorFieldPluginType = PluginType & {
+    fieldType: {
+        dataType: boolean,
+        id: string,
+        label: string,
+        description: string,
+        icon: React.Node,
+        validators?: Array<string>,
+        createField: Function,
+        renderSettings?: ({
+            Bind: React.Node,
+            afterLabelChange: () => void,
+            uniqueFieldIdValidator: () => void
+        }) => React.Node
+    }
 };

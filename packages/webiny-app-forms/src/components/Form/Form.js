@@ -46,6 +46,16 @@ const DataForm = ({ preview, data, cms }: Props) => {
         return fields;
     }, []);
 
+    const getDefaultValues = useCallback(() => {
+        const values = {};
+        fields.forEach(field => {
+            if ("defaultValue" in field && typeof field.defaultValue !== "undefined") {
+                values[field.fieldId] = field.defaultValue;
+            }
+        });
+        return values;
+    }, []);
+
     if (!data) {
         // TODO: handle this
         return null;
@@ -65,6 +75,7 @@ const DataForm = ({ preview, data, cms }: Props) => {
     const props: FormRenderPropsType = {
         getFieldById,
         getFieldByFieldId,
+        getDefaultValues,
         getFields,
         submit,
         form: data

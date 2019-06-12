@@ -1,34 +1,75 @@
+// @flow
 import React from "react";
 import { Input } from "webiny-ui/Input";
+import { Select } from "webiny-ui/Select";
 import { Form } from "webiny-form";
+
 import type { FieldType, FormRenderPropsType } from "webiny-app-forms/types";
 
 function renderField(field: FieldType, bind: Object) {
     switch (field.type) {
         case "text":
-            return <Input {...bind} label={field.label} />;
-        case "richText":
-            return "<<RichTextEditor {...bind} label={field.label}/>";
+            return (
+                <Input
+                    {...bind}
+                    label={field.label}
+                    placeholder={field.placeholderText}
+                    description={field.helpText}
+                />
+            );
+        case "number":
+            return (
+                <Input
+                    type={"number"}
+                    {...bind}
+                    label={field.label}
+                    placeholder={field.placeholderText}
+                    description={field.helpText}
+                />
+            );
+        case "rich-text":
+            console.log(field);
+            return <span>rich text</span>;
+
+        case "select":
+            console.log(field);
+            return (
+                <Select
+                    {...bind}
+                    label={field.label}
+                    placeholder={field.placeholderText}
+                    description={field.helpText}
+                    options={field.options}
+                />
+            );
         case "radio":
-            return "<<RadioGroup {...bind} label={field.label}/>";
+            return (
+                <Select
+                    {...bind}
+                    label={field.label}
+                    placeholder={field.placeholderText}
+                    description={field.helpText}
+                    options={field.options}
+                />
+            );
         case "hidden":
-            return "<<input type='hidden' {...bind} label={field.label}/>";
+            return <input type={"hidden"} {...bind} />;
         default:
             return <span>Cannot render field.</span>;
     }
 }
 
-const FormRenderer = ({ getFields, submit }: FormRenderPropsType) => {
+const FormRenderer = ({ getFields, getDefaultValues, submit }: FormRenderPropsType) => {
     const fields = getFields();
 
-    const customSubmit = () => {
+    const customSubmit = data => {
         // Do something extra, finally call the provided callback.
-        console.log("Submit");
+        console.log("Will submit...", data);
         submit();
     };
 
     return (
-        <Form onSubmit={customSubmit}>
+        <Form onSubmit={customSubmit} data={getDefaultValues()}>
             {({ submit, Bind }) => (
                 <div>
                     <h1>DefaultFormLayout</h1>

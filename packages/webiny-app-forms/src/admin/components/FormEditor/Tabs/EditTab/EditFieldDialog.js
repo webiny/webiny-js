@@ -44,7 +44,7 @@ const Thumbnail = ({ fieldType, onClick }) => {
         <Elevation z={2} onClick={onClick}>
             <Icon icon={fieldType.icon} />
             <Typography use={"headline5"}>{fieldType.label}</Typography>
-            <br/>
+            <br />
             <Typography use={"caption"}>{fieldType.description}</Typography>
         </Elevation>
     );
@@ -87,11 +87,16 @@ const EditFieldDialog = ({ field, onSubmit, ...props }: Props) => {
                                             <Tab label={t`General`}>
                                                 <GeneralTab form={form} field={current} />
                                             </Tab>
-                                            <Tab label={"Validators"}>
-                                                <Bind name={"validation"}>
-                                                    <ValidatorsTab form={form} field={current} />
-                                                </Bind>
-                                            </Tab>
+                                            {!!current.validators && (
+                                                <Tab label={"Validators"}>
+                                                    <Bind name={"validation"}>
+                                                        <ValidatorsTab
+                                                            form={form}
+                                                            field={current}
+                                                        />
+                                                    </Bind>
+                                                </Tab>
+                                            )}
                                         </Tabs>
                                     </DialogBody>
                                     <DialogFooter>
