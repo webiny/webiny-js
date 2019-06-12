@@ -86,7 +86,7 @@ export default ({ form, multiple }: Object) => {
     }, []);
 
     return (
-        <Bind name={"options"}>
+        <Bind name={"options"} validators={["minLength:2", "required"]}>
             {({ value, onChange, ...other }) => {
                 return (
                     <DynamicFieldset value={value} onChange={onChange} {...other}>
