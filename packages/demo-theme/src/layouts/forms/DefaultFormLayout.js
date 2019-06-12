@@ -19,6 +19,16 @@ function renderField(field: FieldType, bind: Object) {
                     description={field.helpText}
                 />
             );
+        case "textarea":
+            return (
+                <Input
+                    {...bind}
+                    rows={field.rows}
+                    label={field.label}
+                    placeholder={field.placeholderText}
+                    description={field.helpText}
+                />
+            );
         case "number":
             return (
                 <Input
@@ -30,7 +40,6 @@ function renderField(field: FieldType, bind: Object) {
                 />
             );
         case "rich-text":
-            console.log(field);
             return <span>rich text</span>;
 
         case "select":
