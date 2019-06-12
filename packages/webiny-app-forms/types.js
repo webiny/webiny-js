@@ -52,6 +52,7 @@ export type FormEditorFieldPluginType = PluginType & {
         validators?: Array<string>,
         createField: Function,
         renderSettings?: ({
+            form: Object,
             Bind: React.Node,
             afterLabelChange: () => void,
             uniqueFieldIdValidator: () => void

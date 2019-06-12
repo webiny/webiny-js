@@ -1,4 +1,4 @@
-// @flow
+    // @flow
 import * as React from "react";
 import _ from "lodash";
 import set from "lodash/fp/set";

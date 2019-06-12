@@ -19,7 +19,8 @@ export default {
                 validation: []
             };
         },
-        renderSettings({ Bind, afterChangeLabel, uniqueFieldIdValidator }) {
+        renderSettings({ form, afterChangeLabel, uniqueFieldIdValidator }) {
+            const { Bind } = form;
             return (
                 <Grid>
                     <Cell span={6}>

@@ -5,7 +5,8 @@ import { camelCase } from "lodash";
 import { useFormEditor } from "webiny-app-forms/admin/components/FormEditor/Context";
 import { getPlugins } from "webiny-plugins";
 
-const GeneralTab = ({ field, form: { Bind, setValue } }) => {
+const GeneralTab = ({ field, form }) => {
+    const { Bind, setValue } = form;
     const inputRef = useRef(null);
     const { getFields } = useFormEditor();
 
@@ -36,6 +37,7 @@ const GeneralTab = ({ field, form: { Bind, setValue } }) => {
     if (typeof fieldPlugin.fieldType.renderSettings === "function") {
         additionalSettings = fieldPlugin.fieldType.renderSettings({
             Bind,
+            form,
             afterChangeLabel,
             uniqueFieldIdValidator
         });

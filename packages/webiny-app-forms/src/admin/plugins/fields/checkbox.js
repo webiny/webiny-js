@@ -21,13 +21,11 @@ export default {
                 validation: []
             };
         },
-        renderSettings({ Bind }) {
+        renderSettings({ form }) {
             return (
                 <Grid>
                     <Cell span={12}>
-                        <Bind name={"options"}>
-                            <OptionsSelectionDynamicFieldset Bind={Bind} multiple />
-                        </Bind>
+                        <OptionsSelectionDynamicFieldset form={form} multiple />
                     </Cell>
                 </Grid>
             );

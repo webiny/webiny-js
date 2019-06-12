@@ -1,11 +1,12 @@
+// @flow
 import { DynamicFieldset } from "webiny-ui/DynamicFieldset";
 import { Input } from "webiny-ui/Input";
-import React from "react";
+import * as React from "react";
 import { Typography } from "webiny-ui/Typography";
 import { Grid, Cell } from "webiny-ui/Grid";
 import { css } from "emotion";
 import { ButtonPrimary, ButtonSecondary } from "webiny-ui/Button";
-import { trim } from "lodash";
+import { debounce, camelCase, trim } from "lodash";
 
 const controlButtons = css({
     display: "flex",
@@ -21,10 +22,46 @@ const textStyling = css({
 });
 
 const SetOptionAsDefaultValue = ({
+    multiple,
     value: currentDefaultValue,
     option,
     onChange: setDefaultValue
 }) => {
+    if (multiple) {
+        if (Array.isArray(currentDefaultValue) && currentDefaultValue.includes(option.value)) {
+            return (
+                <ButtonPrimary
+                    small
+                    onClick={() => {
+                        const value = Array.isArray(currentDefaultValue)
+                            ? [...currentDefaultValue]
+                            : [];
+
+                        value.splice(value.indexOf(option.value), 1);
+                        setDefaultValue(value);
+                    }}
+                >
+                    Default
+                </ButtonPrimary>
+            );
+        }
+
+        return (
+            <ButtonSecondary
+                small
+                onClick={() => {
+                    const value = Array.isArray(currentDefaultValue)
+                        ? [...currentDefaultValue]
+                        : [];
+                    value.push(option.value);
+                    setDefaultValue(value);
+                }}
+            >
+                Default
+            </ButtonSecondary>
+        );
+    }
+
     if (currentDefaultValue === option.value) {
         return (
             <ButtonPrimary small onClick={() => setDefaultValue(null)}>
@@ -40,7 +77,14 @@ const SetOptionAsDefaultValue = ({
     );
 };
 
-export default ({ Bind }) => {
+export default ({ form, multiple }: Object) => {
+    const { Bind, setValue } = form;
+
+    // $FlowFixMe
+    const getAfterChangeLabel = React.useCallback(index => {
+        return debounce(value => setValue(`options.${index}.value`, camelCase(value)), 200);
+    }, []);
+
     return (
         <Bind name={"options"}>
             {({ value, onChange, ...other }) => {
@@ -57,6 +101,15 @@ export default ({ Bind }) => {
                                 ))}
                                 {row(({ index }) => (
                                     <Grid>
+                                        <Cell span={4}>
+                                            <Bind
+                                                name={`options.${index}.label`}
+                                                validators={["required"]}
+                                                afterChange={getAfterChangeLabel(index)}
+                                            >
+                                                <Input label={"Label"} />
+                                            </Bind>
+                                        </Cell>
                                         <Cell span={3}>
                                             <Bind
                                                 name={`options.${index}.value`}
@@ -66,14 +119,7 @@ export default ({ Bind }) => {
                                                 <Input label={"Value"} />
                                             </Bind>
                                         </Cell>
-                                        <Cell span={4}>
-                                            <Bind
-                                                name={`options.${index}.label`}
-                                                validators={["required"]}
-                                            >
-                                                <Input label={"Label"} />
-                                            </Bind>
-                                        </Cell>
+
                                         <Cell span={3} className={controlButtons}>
                                             <ButtonPrimary small onClick={actions.add(index)}>
                                                 +
@@ -84,6 +130,7 @@ export default ({ Bind }) => {
 
                                             <Bind name={"defaultValue"}>
                                                 <SetOptionAsDefaultValue
+                                                    multiple={multiple}
                                                     option={value[index]}
                                                     options={value}
                                                 />

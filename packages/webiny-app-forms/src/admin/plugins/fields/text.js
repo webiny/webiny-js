@@ -21,7 +21,9 @@ export default {
                 validation: []
             };
         },
-        renderSettings({ Bind }) {
+        renderSettings({ form }) {
+            const { Bind } = form;
+
             return (
                 <Grid>
                     <Cell span={12}>

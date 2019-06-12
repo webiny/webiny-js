@@ -31,14 +31,6 @@ const dialogBody = css({
     }
 });
 
-function getFieldType() {
-    const plugin = editField
-        ? getPlugins("form-editor-field-type").find(pl => pl.fieldType.id === editField.type)
-        : null;
-
-    return plugin ? plugin.fieldType : null;
-}
-
 const Thumbnail = ({ fieldType, onClick }) => {
     return (
         <Elevation z={2} onClick={onClick}>
