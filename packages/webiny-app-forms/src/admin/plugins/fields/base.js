@@ -8,7 +8,7 @@ import { ReactComponent as HiddenIcon } from "./icons/round-visibility_off-24px.
 export default [
     {
         type: "form-editor-field-type",
-        name: "form-editor-field-text",
+        name: "form-editor-field-type-text",
         fieldType: {
             dataType: true,
             id: "text",
@@ -28,7 +28,27 @@ export default [
     },
     {
         type: "form-editor-field-type",
-        name: "form-editor-field-number",
+        name: "form-editor-field-type-rich-text",
+        fieldType: {
+            dataType: true,
+            id: "rich-text",
+            validators: ["required"],
+            label: "Rich Text",
+            description: "Articles or any other type of longer text",
+            icon: <TextIcon />,
+            createField() {
+                return {
+                    id: "",
+                    label: "",
+                    type: this.id,
+                    validation: []
+                };
+            }
+        }
+    },
+    {
+        type: "form-editor-field-type",
+        name: "form-editor-field-type-number",
         fieldType: {
             dataType: true,
             id: "number",
@@ -48,7 +68,87 @@ export default [
     },
     {
         type: "form-editor-field-type",
-        name: "form-editor-field-hidden",
+        name: "form-editor-field-type-select",
+        fieldType: {
+            dataType: true,
+            id: "select",
+            validators: ["required"],
+            label: "Select",
+            description: "Give users the ability to choose one option",
+            icon: <TextIcon />,
+            createField() {
+                return {
+                    id: "",
+                    label: "",
+                    type: this.id,
+                    validation: []
+                };
+            }
+        }
+    },
+    {
+        type: "form-editor-field-type",
+        name: "form-editor-field-type-radio",
+        fieldType: {
+            dataType: true,
+            id: "radio",
+            validators: ["required"],
+            label: "Radio buttons",
+            description: "Give users the ability to choose one option",
+            icon: <TextIcon />,
+            createField() {
+                return {
+                    id: "",
+                    label: "",
+                    type: this.id,
+                    validation: []
+                };
+            }
+        }
+    },
+    {
+        type: "form-editor-field-type",
+        name: "form-editor-field-type-checkbox",
+        fieldType: {
+            dataType: true,
+            id: "checkbox",
+            validators: ["required"],
+            label: "Checkbox",
+            description: "For Simple yes / no questions",
+            icon: <TextIcon />,
+            createField() {
+                return {
+                    id: "",
+                    label: "",
+                    type: this.id,
+                    validation: []
+                };
+            }
+        }
+    },
+    {
+        type: "form-editor-field-type",
+        name: "form-editor-field-type-checkboxes",
+        fieldType: {
+            dataType: true,
+            id: "checkboxes",
+            validators: ["required", "minLength", "maxLength"],
+            label: "Checkboxes",
+            description: "Give users ability to choose one or more options",
+            icon: <TextIcon />,
+            createField() {
+                return {
+                    id: "",
+                    label: "",
+                    type: this.id,
+                    validation: []
+                };
+            }
+        }
+    },
+    {
+        type: "form-editor-field-type",
+        name: "form-editor-field-type-hidden",
         fieldType: {
             dataType: true,
             id: "hidden",

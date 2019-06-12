@@ -44,6 +44,7 @@ const Thumbnail = ({ fieldType, onClick }) => {
         <Elevation z={2} onClick={onClick}>
             <Icon icon={fieldType.icon} />
             <Typography use={"headline5"}>{fieldType.label}</Typography>
+            <br/>
             <Typography use={"caption"}>{fieldType.description}</Typography>
         </Elevation>
     );
