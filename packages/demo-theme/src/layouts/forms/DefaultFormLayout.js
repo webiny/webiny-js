@@ -3,6 +3,7 @@ import React from "react";
 import { Input } from "webiny-ui/Input";
 import { Select } from "webiny-ui/Select";
 import { Form } from "webiny-form";
+import { RadioGroup, Radio } from "webiny-ui/Radio";
 
 import type { FieldType, FormRenderPropsType } from "webiny-app-forms/types";
 
@@ -32,7 +33,6 @@ function renderField(field: FieldType, bind: Object) {
             return <span>rich text</span>;
 
         case "select":
-            console.log(field);
             return (
                 <Select
                     {...bind}
@@ -44,13 +44,25 @@ function renderField(field: FieldType, bind: Object) {
             );
         case "radio":
             return (
-                <Select
+                <RadioGroup
                     {...bind}
                     label={field.label}
                     placeholder={field.placeholderText}
                     description={field.helpText}
-                    options={field.options}
-                />
+                >
+                    {({ onChange, getValue }) => (
+                        <>
+                            {field.options.map(({ value, label }) => (
+                                <Radio
+                                    key={value}
+                                    label={label}
+                                    value={getValue(value)}
+                                    onChange={onChange(value)}
+                                />
+                            ))}
+                        </>
+                    )}
+                </RadioGroup>
             );
         case "hidden":
             return <input type={"hidden"} {...bind} />;
