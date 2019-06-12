@@ -1,12 +1,11 @@
 // @flow
 import React, { useCallback, useEffect } from "react";
 import { get, cloneDeep } from "lodash";
-import { Form as WebinyForm } from "webiny-form";
 import getClientIp from "./getClientIp";
-import renderFieldById from "./renderFieldById";
 import { getForm } from "./graphql";
 import { Query } from "react-apollo";
 import { withCms } from "webiny-app-cms/context";
+import type { FormRenderPropsType } from "webiny-app-forms/types";
 
 type Props = {
     preview?: boolean,
@@ -15,25 +14,44 @@ type Props = {
 };
 
 const DataForm = ({ preview, data, cms }: Props) => {
+    const { layout, fields, settings } = data;
     useEffect(() => {
         if (!preview) {
             // TODO: capture view
         }
     }, []);
 
-    const onSubmitForm = useCallback(async ({ preview }) => {
+    const submit = useCallback(async () => {
         if (!preview) {
             const clientIp = await getClientIp();
         }
         // TODO : submit
-    });
+    }, []);
+
+    const getFieldById = useCallback(id => {
+        return fields.find(field => field.id === id);
+    }, []);
+
+    const getFieldByFieldId = useCallback(id => {
+        return fields.find(field => field.fieldId === id);
+    }, []);
+
+    const getFields = useCallback(() => {
+        const fields = cloneDeep(layout);
+        fields.forEach(row => {
+            row.forEach((id, idIndex) => {
+                row[idIndex] = getFieldById(id);
+            });
+        });
+        return fields;
+    }, []);
 
     if (!data) {
+        // TODO: handle this
         return null;
     }
 
-    const { layout, fields, settings } = data;
-
+    // Get form layout, defined in theme.
     let LayoutRenderComponent = get(cms, "theme.forms.layouts", []).find(
         item => item.name === settings.layout.renderer
     );
@@ -44,26 +62,15 @@ const DataForm = ({ preview, data, cms }: Props) => {
 
     LayoutRenderComponent = LayoutRenderComponent.component;
 
-    return (
-        <WebinyForm onSubmit={onSubmitForm}>
-            {form => {
-                const layoutFields = cloneDeep(layout);
-                layoutFields.forEach(row => {
-                    row.forEach((id, idIndex) => {
-                        row[idIndex] = renderFieldById({ id, form, fields });
-                    });
-                });
+    const props: FormRenderPropsType = {
+        getFieldById,
+        getFieldByFieldId,
+        getFields,
+        submit,
+        form: data
+    };
 
-                const props = {
-                    layout: layoutFields,
-                    form: data,
-                    submit: form.submit
-                };
-
-                return <LayoutRenderComponent {...props} />;
-            }}
-        </WebinyForm>
-    );
+    return <LayoutRenderComponent {...props} />;
 };
 
 const IdForm = (props: Props) => {

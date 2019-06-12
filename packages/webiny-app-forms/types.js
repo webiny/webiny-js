@@ -2,6 +2,7 @@
 import type { PluginType } from "webiny-plugins/types";
 
 export type FieldIdType = string;
+export type FieldsLayoutType = [[FieldIdType]];
 
 export type FieldLayoutPositionType = {
     row: number,
@@ -16,6 +17,21 @@ export type FieldType = {
     validation: []
 };
 
+export type FormType = {
+    id: FieldIdType,
+    layout: FieldsLayoutType,
+    fields: [FieldType],
+    name: string
+};
+
+export type FormRenderPropsType = {
+    getFieldById: Function,
+    getFieldByFieldId: Function,
+    getFields: () => FieldsLayoutType,
+    submit: Function,
+    form: FormType
+};
+
 export type RenderFieldPluginType =
     | PluginType
     | {
@@ -25,7 +41,6 @@ export type RenderFieldPluginType =
           }
       };
 
-export type FieldsLayoutType = [[FieldIdType]];
 
 export type UseFormEditorReducerStateType = {
     apollo: ?Object,
