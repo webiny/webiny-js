@@ -33,7 +33,7 @@ const webinyIcon = css(
  */
 const Icon = (props: Props) => {
     return React.cloneElement(props.icon, {
-        className: classNames("mdc-button__icon", webinyIcon, props.className),
+        className: classNames("mdc-button__icon webiny-ui-icon", webinyIcon, props.className),
         onClick: props.onClick
     });
 };
