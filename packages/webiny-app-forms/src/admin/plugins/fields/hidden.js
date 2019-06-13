@@ -10,7 +10,7 @@ export default {
         dataType: true,
         id: "hidden",
         label: "Hidden",
-        description: "Predefined values, campaign IDs, tracking codes",
+        description: "Predefined values, hidden text",
         icon: <HiddenIcon />,
         createField() {
             return {

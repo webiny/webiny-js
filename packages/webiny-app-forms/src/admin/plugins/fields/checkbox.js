@@ -1,6 +1,6 @@
 import React from "react";
 import { Grid, Cell } from "webiny-ui/Grid";
-import { ReactComponent as TextIcon } from "./icons/round-text_fields-24px.svg";
+import { ReactComponent as Icon } from "./icons/round-check_box-24px.svg";
 import OptionsSelectionDynamicFieldset from "./components/OptionsSelectionDynamicFieldset";
 
 export default {
@@ -11,8 +11,8 @@ export default {
         id: "checkbox",
         validators: ["required"],
         label: "Checkboxes",
-        description: "Give users the ability to choose one or more options",
-        icon: <TextIcon />,
+        description: "Choose one or more options",
+        icon: <Icon />,
         createField() {
             return {
                 id: "",

@@ -10,8 +10,8 @@ export default {
         dataType: true,
         id: "text",
         validators: ["required", "minLength", "maxLength", "pattern", "in"],
-        label: "Text",
-        description: "Titles, names, paragraphs",
+        label: "Short Text",
+        description: "Titles, names, single line input",
         icon: <TextIcon />,
         createField() {
             return {

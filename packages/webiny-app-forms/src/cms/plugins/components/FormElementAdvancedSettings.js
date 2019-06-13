@@ -5,10 +5,15 @@ import gql from "graphql-tag";
 import { get } from "lodash";
 import { Grid, Cell } from "webiny-ui/Grid";
 import { AutoComplete } from "webiny-ui/AutoComplete";
+import styled from "react-emotion";
+
+const FormOptionsWrapper = styled("div")({
+    minHeight: 250
+});
 
 const FormElementAdvancedSettings = ({ Bind }: Object) => {
     return (
-        <React.Fragment>
+        <FormOptionsWrapper>
             <Query
                 query={gql`
                     {
@@ -41,6 +46,7 @@ const FormElementAdvancedSettings = ({ Bind }: Object) => {
                                                 value={value}
                                                 onChange={onChange}
                                                 label={"Form"}
+                                                description="Type to search for the form you wish to insert."
                                             />
                                         );
                                     }}
@@ -50,7 +56,7 @@ const FormElementAdvancedSettings = ({ Bind }: Object) => {
                     </>
                 )}
             </Query>
-        </React.Fragment>
+        </FormOptionsWrapper>
     );
 };
 

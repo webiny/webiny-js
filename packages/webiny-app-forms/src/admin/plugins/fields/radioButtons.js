@@ -1,6 +1,6 @@
 import React from "react";
 import { Grid, Cell } from "webiny-ui/Grid";
-import { ReactComponent as TextIcon } from "./icons/round-text_fields-24px.svg";
+import { ReactComponent as Icon } from "./icons/round-radio_button_checked-24px.svg";
 import OptionsSelectionDynamicFieldset from "./components/OptionsSelectionDynamicFieldset";
 
 export default {
@@ -11,8 +11,8 @@ export default {
         id: "radio",
         validators: ["required"],
         label: "Radio",
-        description: "Give users the ability to choose one option",
-        icon: <TextIcon />,
+        description: "Choose a single option",
+        icon: <Icon />,
         createField() {
             return {
                 id: "",

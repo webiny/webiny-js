@@ -2,6 +2,7 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { cloneDeep } from "lodash";
 import { css } from "emotion";
+import styled from "react-emotion";
 import {
     Dialog,
     DialogBody,
@@ -27,13 +28,48 @@ const t = i18n.namespace("FormEditor.EditFieldDialog");
 const dialogBody = css({
     "&.mdc-dialog__body": {
         marginTop: 0,
-        padding: "24px 0 0 0"
+        padding: "0"
+    }
+});
+
+const FieldTypeList = styled("div")({
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    flexWrap: "wrap",
+    paddingTop: 25,
+    backgroundColor: "var(--mdc-theme-background) !important"
+});
+
+const fieldTypeBox = css({
+    width: 150,
+    height: 150,
+    textAlign: "center",
+    margin: 20,
+    padding: 15,
+    display: "flex",
+    justifyContent: "flex-start",
+    alignItems: "center",
+    cursor: "pointer",
+    transition: "opacity 225ms",
+    flexDirection: "column",
+    backgroundColor: "var(--mdc-theme-surface) !important",
+    ".webiny-ui-icon": {
+        color: "var(--mdc-theme-secondary)",
+        height: 50,
+        transition: "color 225ms"
+    },
+    "&:hover": {
+        opacity: 0.8,
+        ".webiny-ui-icon": {
+            color: "var(--mdc-theme-primary)"
+        }
     }
 });
 
 const Thumbnail = ({ fieldType, onClick }) => {
     return (
-        <Elevation z={2} onClick={onClick}>
+        <Elevation z={2} onClick={onClick} className={fieldTypeBox}>
             <Icon icon={fieldType.icon} />
             <Typography use={"headline5"}>{fieldType.label}</Typography>
             <br />
@@ -106,15 +142,17 @@ const EditFieldDialog = ({ field, onSubmit, ...props }: Props) => {
                 ) : (
                     <>
                         <DialogBody className={dialogBody}>
-                            {getPlugins("form-editor-field-type")
-                                .filter(pl => pl.fieldType.dataType)
-                                .map(pl => (
-                                    <Thumbnail
-                                        key={pl.name}
-                                        fieldType={pl.fieldType}
-                                        onClick={() => setCurrent(pl.fieldType.createField())}
-                                    />
-                                ))}
+                            <FieldTypeList>
+                                {getPlugins("form-editor-field-type")
+                                    .filter(pl => pl.fieldType.dataType)
+                                    .map(pl => (
+                                        <Thumbnail
+                                            key={pl.name}
+                                            fieldType={pl.fieldType}
+                                            onClick={() => setCurrent(pl.fieldType.createField())}
+                                        />
+                                    ))}
+                            </FieldTypeList>
                         </DialogBody>
                         <DialogFooter>
                             <DialogCancel onClick={onClose}>{t`Cancel`}</DialogCancel>

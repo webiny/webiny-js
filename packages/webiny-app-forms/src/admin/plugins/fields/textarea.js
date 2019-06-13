@@ -10,8 +10,8 @@ export default {
         dataType: true,
         id: "textarea",
         validators: ["required", "minLength", "maxLength", "pattern", "in"],
-        label: "Textarea",
-        description: "Shorter text like for example short descriptions or comments.",
+        label: "Long Test",
+        description: "Descriptions, comments or paragraphs or text",
         icon: <TextIcon />,
         createField() {
             return {
