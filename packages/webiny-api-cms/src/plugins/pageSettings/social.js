@@ -47,7 +47,7 @@ export default [
     },
     {
         name: "cms-schema-settings-social",
-        type: "cms-schema",
+        type: "graphql-schema-plugin-cms",
         typeDefs: `
             type OpenGraphTag {
                 property: String

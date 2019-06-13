@@ -81,9 +81,9 @@ export default [
         ],
         entity: ({
             cms: {
-                entities: { CmsSettings }
+                entities: { Settings }
             }
-        }: Object) => CmsSettings
+        }: Object) => Settings
     },
     {
         type: "entity",

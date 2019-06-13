@@ -26,7 +26,8 @@ yargs.command(
 
         yargs.option("watch", {
             describe: "Watch given paths.",
-            default: ""
+            default: "",
+            type: "array"
         });
 
         yargs.option("inspect", {

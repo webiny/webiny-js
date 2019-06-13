@@ -16,7 +16,7 @@ function normalizePath(raw) {
 
 module.exports = async ({ port, watch, inspect }) => {
     watch = Array.isArray(watch) ? watch : [watch];
-
+    
     const command = [normalizePath(path.join(__dirname, "runFunctions.js"))];
 
     const functions = await listPackages("function");

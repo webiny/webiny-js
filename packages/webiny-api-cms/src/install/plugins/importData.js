@@ -6,7 +6,7 @@ import * as data from "./data";
 import { get } from "lodash";
 export default async (context: Object) => {
     setupEntities(context);
-    const { CmsSettings } = context.cms.entities;
+    const { Settings } = context.cms.entities;
 
     const { Group } = context.security.entities;
 
@@ -17,7 +17,7 @@ export default async (context: Object) => {
     await createDefaultBlocks(context);
 
     // Settings init.
-    const cmsSettings = new CmsSettings();
+    const cmsSettings = new Settings();
     await createDefaultPages(context, { cmsSettings });
     cmsSettings.data.name = get(context, "cms.siteName");
 

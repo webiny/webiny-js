@@ -1,5 +1,5 @@
 {
-  "name": "webiny-api-content-modelling",
+  "name": "webiny-api-headless",
   "version": "0.0.0",
   "main": "index.js",
   "repository": {
@@ -17,6 +17,7 @@
     "@babel/runtime": "^7.0.0",
     "graphql-shield": "^5.1.0",
     "invariant": "^2.2.4",
+    "pluralize": "^8.0.0",
     "webiny-api": "0.0.0",
     "webiny-plugins": "0.0.0"
   },

@@ -9,53 +9,55 @@ import { FileType, FileInputType } from "webiny-api-files/graphql";
 
 export default ([
     {
-        type: "graphql",
-        name: "graphql-security-schema",
-        namespace: "security",
-        typeDefs: () => [
-            FileType,
-            FileInputType,
-            user.typeDefs,
-            user.typeExtensions,
-            role.typeDefs,
-            role.typeExtensions,
-            group.typeDefs,
-            group.typeExtensions,
-            /* GraphQL */ `
-                type SecurityQuery {
-                    # Returns all scopes that were registered throughout the schema.
-                    scopes: [String]
-                }
+        type: "graphql-schema",
+        name: "graphql-schema-security",
+        schema: {
+            namespace: "security",
+            typeDefs: () => [
+                FileType,
+                FileInputType,
+                user.typeDefs,
+                user.typeExtensions,
+                role.typeDefs,
+                role.typeExtensions,
+                group.typeDefs,
+                group.typeExtensions,
+                /* GraphQL */ `
+                    type SecurityQuery {
+                        # Returns all scopes that were registered throughout the schema.
+                        scopes: [String]
+                    }
 
-                type SecurityMutation {
-                    _empty: String
-                }
+                    type SecurityMutation {
+                        _empty: String
+                    }
 
-                type Query {
-                    security: SecurityQuery
-                }
+                    type Query {
+                        security: SecurityQuery
+                    }
 
-                type Mutation {
-                    security: SecurityMutation
-                }
-            `
-        ],
-        resolvers: () => [
-            {
-                Query: {
-                    security: dummyResolver
+                    type Mutation {
+                        security: SecurityMutation
+                    }
+                `
+            ],
+            resolvers: () => [
+                {
+                    Query: {
+                        security: dummyResolver
+                    },
+                    Mutation: {
+                        security: dummyResolver
+                    },
+                    SecurityQuery: {
+                        scopes: getRegisteredScopes
+                    }
                 },
-                Mutation: {
-                    security: dummyResolver
-                },
-                SecurityQuery: {
-                    scopes: getRegisteredScopes
-                }
-            },
-            group.resolvers,
-            role.resolvers,
-            user.resolvers
-        ],
+                group.resolvers,
+                role.resolvers,
+                user.resolvers
+            ]
+        },
         security: {
             shield: {
                 SecurityQuery: {

@@ -31,7 +31,7 @@ export default [
     },
     {
         name: "cms-schema-settings-seo",
-        type: "cms-schema",
+        type: "graphql-schema-plugin-cms",
         typeDefs: `
             type MetaTag {
                 name: String

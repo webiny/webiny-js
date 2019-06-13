@@ -37,7 +37,7 @@ export default [
     },
     {
         name: "cms-schema-settings-general",
-        type: "cms-schema",
+        type: "graphql-schema-plugin-cms",
         typeDefs: `
             type GeneralPageSettings {
                 tags: [String]

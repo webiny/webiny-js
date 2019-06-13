@@ -9,7 +9,7 @@ System.config({
         "webiny-api/*": "./packages/webiny-api/src/*",
         "webiny-api-cms/*": "./packages/webiny-api-cms/src/*",
         "webiny-api-files/*": "./packages/webiny-api-files/src/*",
-        "webiny-api-content-modelling/*": "./packages/webiny-api-content-modelling/src/*",
+        "webiny-api-headless/*": "./packages/webiny-api-headless/src/*",
         "webiny-install/*": "./packages/webiny-install/src/*",
         "webiny-ui/*": "./packages/webiny-ui/src/*",
         "webiny-plugins/*": "./packages/webiny-plugins/src/*",

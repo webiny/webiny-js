@@ -16,7 +16,7 @@ export default ([
             }
 
             const middleware = [];
-            getPlugins("graphql").forEach(plugin => {
+            getPlugins("graphql-schema").forEach(plugin => {
                 let { security } = plugin;
                 if (!security) {
                     return true;
@@ -40,7 +40,7 @@ export default ([
     {
         type: "graphql-context",
         name: "graphql-context-security",
-        apply: async (context) => {
+        apply: async context => {
             const securityPlugins: Array<PluginType> = getPlugins("graphql-security");
             for (let i = 0; i < securityPlugins.length; i++) {
                 await securityPlugins[i].authenticate(context);

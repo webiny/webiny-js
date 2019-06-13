@@ -8,7 +8,9 @@ import { prepareSchema, createGraphqlRunner } from "../graphql/schema";
 import { getPlugins } from "webiny-plugins";
 
 export const createHandler = async (config: Object) => {
-    let schema = prepareSchema();
+    await requestSetup(config);
+
+    let schema = await prepareSchema(config);
 
     const registeredMiddleware: Array<GraphQLMiddlewarePluginType> = [];
 

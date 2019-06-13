@@ -5,7 +5,7 @@ import GraphQLJSON from "graphql-type-json";
 import { GraphQLDateTime } from "graphql-iso-date";
 import { genericTypes } from "./genericTypes";
 import { getPlugins } from "webiny-plugins";
-import GraphQLLong from 'graphql-type-long';
+import GraphQLLong from "graphql-type-long";
 
 /**
  * Maps data sources and returns array of executable schema
@@ -16,7 +16,7 @@ const mapSourcesToExecutableSchemas = (sources: Array<Object>) => {
     const schemas = {};
 
     sources.forEach(({ typeDefs, resolvers, namespace, schemaDirectives }) => {
-        if(!typeDefs) {
+        if (!typeDefs) {
             return;
         }
 
@@ -64,13 +64,35 @@ const mapSourcesToExecutableSchemas = (sources: Array<Object>) => {
 /**
  * @return {schema, context}
  */
-export function prepareSchema() {
-    const dataSources = getPlugins("graphql");
-    const schemas = mapSourcesToExecutableSchemas(dataSources);
+export async function prepareSchema(config: Object) {
+    // This allows developers to register more plugins dynamically, before the graphql schema is instantiated.
+    const gqlPlugins = getPlugins("graphql-schema");
+    for (let i = 0; i < gqlPlugins.length; i++) {
+        if (typeof gqlPlugins[i].prepare === "function") {
+            await gqlPlugins[i].prepare(config);
+        }
+    }
 
-    const sourcesWithStitching = dataSources.filter(source => source.stitching);
-    const linkTypeDefs = sourcesWithStitching.map(source => source.stitching.linkTypeDefs);
-    const resolvers = sourcesWithStitching.map(source => source.stitching.resolvers);
+    const schemaDefs = [];
+    const schemaPlugins = getPlugins("graphql-schema");
+    for (let i = 0; i < schemaPlugins.length; i++) {
+        const { schema } = schemaPlugins[i];
+        if (!schema) {
+            continue;
+        }
+
+        if (typeof schema === "function") {
+            schemaDefs.push(await schema(config));
+        } else {
+            schemaDefs.push(schema);
+        }
+    }
+
+    const schemas = mapSourcesToExecutableSchemas(schemaDefs);
+
+    const defsWithStitching = schemaDefs.filter(source => source.stitching);
+    const linkTypeDefs = defsWithStitching.map(source => source.stitching.linkTypeDefs);
+    const resolvers = defsWithStitching.map(source => source.stitching.resolvers);
 
     return mergeSchemas({
         schemas: [...Object.values(schemas), ...linkTypeDefs],
