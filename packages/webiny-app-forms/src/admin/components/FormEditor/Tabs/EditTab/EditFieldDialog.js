@@ -56,7 +56,7 @@ const fieldTypeBox = css({
     backgroundColor: "var(--mdc-theme-surface) !important",
     ".webiny-ui-icon": {
         color: "var(--mdc-theme-secondary)",
-        height: 32,
+        height: 50,
         transition: "color 225ms"
     },
     "&:hover": {
