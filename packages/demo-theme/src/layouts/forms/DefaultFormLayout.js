@@ -1,101 +1,31 @@
 // @flow
 import React from "react";
-import { Input } from "webiny-ui/Input";
-import { Select } from "webiny-ui/Select";
+import Input from "./fields/Input";
+import Select from "./fields/Select";
+import Radio from "./fields/Radio";
+import Checkbox from "./fields/Checkbox";
+import Textarea from "./fields/Textarea";
 import { Form } from "webiny-form";
-import { RadioGroup, Radio } from "webiny-ui/Radio";
-import { CheckboxGroup, Checkbox } from "webiny-ui/Checkbox";
 
 import type { FieldType, FormRenderPropsType } from "webiny-app-forms/types";
 
-function renderField(field: FieldType, bind: Object) {
+function renderField(field: FieldType, bind: Object, validation: Object) {
     switch (field.type) {
         case "text":
-            return (
-                <Input
-                    {...bind}
-                    label={field.label}
-                    placeholder={field.placeholderText}
-                    description={field.helpText}
-                />
-            );
+            return <Input field={field} bind={bind} validation={validation} />;
         case "textarea":
-            return (
-                <Input
-                    {...bind}
-                    rows={field.rows}
-                    label={field.label}
-                    placeholder={field.placeholderText}
-                    description={field.helpText}
-                />
-            );
+            return <Textarea field={field} bind={bind} validation={validation} />;
         case "number":
-            return (
-                <Input
-                    type={"number"}
-                    {...bind}
-                    label={field.label}
-                    placeholder={field.placeholderText}
-                    description={field.helpText}
-                />
-            );
+            return <Input field={field} bind={bind} validation={validation} />;
         case "rich-text":
             return <span>rich text</span>;
 
         case "select":
-            return (
-                <Select
-                    {...bind}
-                    label={field.label}
-                    placeholder={field.placeholderText}
-                    description={field.helpText}
-                    options={field.options}
-                />
-            );
+            return <Select field={field} bind={bind} validation={validation} />;
         case "radio":
-            return (
-                <RadioGroup
-                    {...bind}
-                    label={field.label}
-                    placeholder={field.placeholderText}
-                    description={field.helpText}
-                >
-                    {({ onChange, getValue }) => (
-                        <>
-                            {field.options.map(({ value, label }) => (
-                                <Radio
-                                    key={value}
-                                    label={label}
-                                    value={getValue(value)}
-                                    onChange={onChange(value)}
-                                />
-                            ))}
-                        </>
-                    )}
-                </RadioGroup>
-            );
+            return <Radio field={field} bind={bind} validation={validation} />;
         case "checkbox":
-            return (
-                <CheckboxGroup
-                    {...bind}
-                    label={field.label}
-                    placeholder={field.placeholderText}
-                    description={field.helpText}
-                >
-                    {({ onChange, getValue }) => (
-                        <>
-                            {field.options.map(({ value, label }) => (
-                                <Checkbox
-                                    key={value}
-                                    label={label}
-                                    value={getValue(value)}
-                                    onChange={onChange(value)}
-                                />
-                            ))}
-                        </>
-                    )}
-                </CheckboxGroup>
-            );
+            return <Checkbox field={field} bind={bind} validation={validation} />;
         case "hidden":
             return <input type={"hidden"} {...bind} />;
         default:
@@ -106,39 +36,33 @@ function renderField(field: FieldType, bind: Object) {
 const FormRenderer = ({ getFields, getDefaultValues, submit }: FormRenderPropsType) => {
     const fields = getFields();
 
-    const customSubmit = data => {
-        // Do something extra, finally call the provided callback.
-        console.log("Will submit...", data);
-        submit();
-    };
-
     return (
-        <Form onSubmit={customSubmit} data={getDefaultValues()}>
+        <Form onSubmit={submit} data={getDefaultValues()}>
             {({ submit, Bind }) => (
-                <div>
-                    <h1>DefaultFormLayout</h1>
+                <div className={"webiny-cms-form"}>
                     <div>
                         {fields.map((row, rowIndex) => (
-                            <div key={rowIndex} className={"row"}>
+                            <div
+                                key={rowIndex}
+                                className={"webiny-cms-base-element-style webiny-cms-layout-row"}
+                            >
                                 {row.map(field => (
                                     <div
-                                        style={{
-                                            display: "inline-block",
-                                            width: `calc(100% / ${row.length})`
-                                        }}
                                         key={field.id}
-                                        className={"field"}
+                                        className={
+                                            "webiny-cms-base-element-style webiny-cms-layout-column"
+                                        }
                                     >
                                         <Bind name={field.fieldId} validators={field.validators}>
                                             {({ validation, ...bind }) => (
-                                                <div className={"group"}>
+                                                <React.Fragment>
                                                     {/* Render input or whatever */}
-                                                    {renderField(field, bind)}
+                                                    {renderField(field, bind, validation)}
                                                     {/* Render validation message */}
                                                     {validation.valid === false
                                                         ? validation.message
                                                         : null}
-                                                </div>
+                                                </React.Fragment>
                                             )}
                                         </Bind>
                                     </div>
@@ -147,7 +71,14 @@ const FormRenderer = ({ getFields, getDefaultValues, submit }: FormRenderPropsTy
                         ))}
                     </div>
                     <div>
-                        <button onClick={submit}>Submit</button>
+                        <button
+                            className={
+                                "webiny-cms-element-button webiny-cms-element-button--primary"
+                            }
+                            onClick={submit}
+                        >
+                            Submit
+                        </button>
                     </div>
                 </div>
             )}
