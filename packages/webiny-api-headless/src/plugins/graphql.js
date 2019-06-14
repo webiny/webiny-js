@@ -10,6 +10,7 @@ import {
 } from "webiny-api/graphql";
 import { hasScope } from "webiny-api-security";
 import typeDefs from "webiny-api-headless/typeDefs";
+import { get } from "lodash";
 import setupDynamicSchema from "./dynamicSchema";
 
 const contentModelFetcher = ctx => {
@@ -17,6 +18,18 @@ const contentModelFetcher = ctx => {
 };
 
 export default ([
+    {
+        name: "graphql-context-locale",
+        type: "graphql-context",
+        apply(context) {
+            const defaultLocale = "en-US";
+            context.locale =
+                get(context, "event.headers.Accept-Language") ||
+                get(context, "event.headers.accept-language") ||
+                defaultLocale;
+            context.defaultLocale = defaultLocale;
+        }
+    },
     {
         type: "graphql-schema",
         name: "graphql-schema-headless",
@@ -29,11 +42,16 @@ export default ([
                     ${typeDefs}
 
                     extend type CmsQuery {
+                        headlessRead: HeadlessReadQuery
                         headlessManage: HeadlessManageQuery
                     }
 
                     extend type CmsMutation {
                         headlessManage: HeadlessManageMutation
+                    }
+
+                    type HeadlessReadQuery {
+                        _empty: String
                     }
 
                     type HeadlessManageQuery {
@@ -58,6 +76,10 @@ export default ([
                 `,
                 resolvers: {
                     CmsQuery: {
+                        headlessRead: {
+                            fragment: "... on CmsQuery { cms }",
+                            resolve: dummyResolver
+                        },
                         headlessManage: {
                             fragment: "... on CmsQuery { cms }",
                             resolve: dummyResolver
@@ -68,6 +90,9 @@ export default ([
                             fragment: "... on CmsMutation { cms }",
                             resolve: dummyResolver
                         }
+                    },
+                    HeadlessReadQuery: {
+                        _empty: () => ""
                     },
                     HeadlessManageQuery: {
                         getContentModel: resolveGet(contentModelFetcher),
