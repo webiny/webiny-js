@@ -1,6 +1,16 @@
 // @flow
 import gql from "graphql-tag";
 
+const settingsField = /* GraphQL */ `
+    {
+        layout {
+            renderer
+        }
+        successMessage
+        submitButtonLabel
+    }
+`;
+
 export const getForm = gql`
     query GetForm($id: ID!) {
         forms {
@@ -11,11 +21,7 @@ export const getForm = gql`
                     version
                     fields
                     layout
-                    settings {
-                        layout {
-                            renderer
-                        }
-                    }
+                    settings ${settingsField}
                     triggers
                     revisions {
                         id
@@ -39,11 +45,7 @@ export const updateRevision = gql`
                     version
                     fields
                     layout
-                    settings {
-                        layout {
-                            renderer
-                        }
-                    }
+                    settings ${settingsField}
                     triggers
                 }
             }

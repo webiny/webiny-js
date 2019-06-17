@@ -61,6 +61,7 @@ export type UseFormEditorReducerStateType = {
     defaultLayoutRenderer: string
 };
 
+// Plugin types.
 export type FormEditorFieldPluginType = PluginType & {
     fieldType: {
         dataType: boolean,
@@ -78,3 +79,5 @@ export type FormEditorFieldPluginType = PluginType & {
         }) => React.Node
     }
 };
+
+export type FormSettingsPluginType = PluginType & {};

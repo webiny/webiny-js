@@ -56,6 +56,9 @@ class SettingsModel extends Model {
         this.attr("layout")
             .model(LayoutSettingsModel)
             .setDefaultValue(new LayoutSettingsModel());
+
+        this.attr("submitButtonLabel").char();
+        this.attr("successMessage").char();
     }
 }
 

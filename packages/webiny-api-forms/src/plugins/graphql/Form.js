@@ -48,6 +48,8 @@ export default {
         
         type FormSettingsType {
             layout: FormSettingsLayoutType
+            submitButtonLabel: String
+            successMessage: String
         }
         
         input FormSettingsLayoutInput {
@@ -56,6 +58,8 @@ export default {
         
         input FormSettingsInput {
             layout: FormSettingsLayoutInput
+            submitButtonLabel: String
+            successMessage: String
         }
         
         input UpdateFormInput {
