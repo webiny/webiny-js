@@ -106,9 +106,10 @@ function renderField(field: FieldType, bind: Object) {
 const FormRenderer = ({ getFields, getDefaultValues, submit }: FormRenderPropsType) => {
     const fields = getFields();
 
-    const customSubmit = data => {
+    const customSubmit = async data => {
         // Do something extra, finally call the provided callback.
-        submit(data);
+        const results = await submit(data);
+        console.log('Submit results are: ', results)
     };
 
     return (

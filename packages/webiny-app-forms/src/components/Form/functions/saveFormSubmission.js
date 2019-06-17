@@ -2,7 +2,7 @@
 import type { FormRenderComponentPropsType } from "webiny-app-forms/types";
 import { SAVE_FORM_SUBMISSION } from "./graphql";
 import getClientIp from "./getClientIp";
-import {get} from "lodash";
+import { get } from "lodash";
 
 export default async (
     { data: form, client, preview }: FormRenderComponentPropsType,
@@ -13,20 +13,26 @@ export default async (
         return;
     }
 
-    if (preview) {
-        const meta = {
-            ip: await getClientIp()
-        };
+    /*if (preview) {
+        return { preview: true, error: null, data: {} };
+    }*/
 
-        const response = await client.mutate({
-            mutation: SAVE_FORM_SUBMISSION,
-            variables: {
-                id: form.id,
-                data,
-                meta
+    let response = await client.mutate({
+        mutation: SAVE_FORM_SUBMISSION,
+        variables: {
+            id: form.id,
+            data,
+            meta: {
+                ip: await getClientIp()
             }
-        });
+        }
+    });
 
-        return get(response, "data.forms.saveFormSubmission");
-    }
+    response = get(response, "data.forms.saveFormSubmission");
+
+    return {
+        preview: false,
+        data: {},
+        error: response.error
+    };
 };
