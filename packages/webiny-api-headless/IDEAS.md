@@ -17,3 +17,5 @@
     "title": "Jebote!"
 }
 ```
+
+https://docs.graphcms.com/developers/api/reference/mutations#deleting-related-nodes

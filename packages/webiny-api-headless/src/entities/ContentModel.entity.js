@@ -8,9 +8,13 @@ class FieldModel extends Model {
         this.attr("id").char();
         this.attr("label").char();
         this.attr("type").char();
+        this.attr("l10n").boolean();
         this.attr("validation")
             .object()
             .setValue([]);
+        this.attr("settings")
+            .object()
+            .setValue({});
     }
 }
 
@@ -46,10 +50,16 @@ export function contentModelFactory(context: Object): Class<IContentModel> {
                 .entity(User)
                 .setSkipOnPopulate();
 
-            this.attr("title").char().setValidators("required");
-            this.attr("modelId").char().setValidators("required");
+            this.attr("title")
+                .char()
+                .setValidators("required");
+            this.attr("modelId")
+                .char()
+                .setValidators("required");
             this.attr("description").char();
-            this.attr("fields").object().setValue([]);
+            this.attr("fields")
+                .object()
+                .setValue([]);
 
             this.on("beforeCreate", async () => {
                 this.createdBy = user.id;

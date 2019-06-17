@@ -22,6 +22,7 @@ export default /* GraphQL */ `
         fieldId: String
         type: String
         validation: [JSON]
+        settings: JSON
     }
 
     input ContentModelFieldInput {
@@ -30,6 +31,7 @@ export default /* GraphQL */ `
         fieldId: String
         type: String
         validation: [JSON]
+        settings: JSON
     }
 
     type ContentModelListResponse {
