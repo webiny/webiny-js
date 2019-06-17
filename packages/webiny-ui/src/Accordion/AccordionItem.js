@@ -83,12 +83,12 @@ class AccordionItem extends React.Component<Props, State> {
 
     render() {
         return (
-            <div className={classNames("webiny-ui-accordion--item", this.props.className)}>
+            <div className={classNames("webiny-ui-accordion-item", this.props.className)}>
                 <ListItem
                     className={classNames(
                         listItem,
                         { [openedState]: !this.state.closed },
-                        "webiny-ui-accordion--list-item"
+                        "webiny-ui-accordion-item__list-item"
                     )}
                     onClick={() => {
                         this.setState({ closed: !this.state.closed });
@@ -100,7 +100,7 @@ class AccordionItem extends React.Component<Props, State> {
                         </ListItemGraphic>
                     )}
 
-                    <TitleContent className="webiny-ui-accordion--item-title">
+                    <TitleContent className="webiny-ui-accordion-item__title">
                         <ListItemTitle>{this.props.title}</ListItemTitle>
                         {this.props.description && (
                             <ListItemDescription>
@@ -116,7 +116,7 @@ class AccordionItem extends React.Component<Props, State> {
                     {state => (
                         <Content
                             style={{ ...defaultStyle, ...transitionStyles[state] }}
-                            className="webiny-ui-accordion--item-content"
+                            className="webiny-ui-accordion-item__content"
                         >
                             {this.props.children}
                         </Content>

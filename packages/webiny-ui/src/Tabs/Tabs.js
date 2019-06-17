@@ -46,7 +46,7 @@ class Tabs extends React.Component<Props, State> {
 
         const tabBar = (
             <TabBar
-                className="webiny-ui-tabs--tab-bar"
+                className="webiny-ui-tabs__tab-bar"
                 activeTabIndex={this.state.activeTabIndex}
                 onActivate={evt => this.setState({ activeTabIndex: evt.detail.index })}
             >
@@ -86,7 +86,7 @@ class Tabs extends React.Component<Props, State> {
         return (
             <div className={classNames("webiny-ui-tabs", this.props.className)}>
                 {tabBar}
-                <div className={"webiny-ui-tabs--content mdc-tab-content"}>{content}</div>
+                <div className={"webiny-ui-tabs__content mdc-tab-content"}>{content}</div>
             </div>
         );
     }
