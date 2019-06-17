@@ -24,9 +24,9 @@ const saveFormView = ({ data, client }: FormRenderComponentPropsType) => {
 
 export default (props: FormRenderComponentPropsType) => {
     const { data, preview } = props;
-    /*if (!data || preview ) {
+    if (!data || preview) {
         return;
-    }*/
+    }
 
     saveFormView(props);
 };
