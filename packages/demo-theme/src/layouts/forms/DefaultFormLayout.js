@@ -33,7 +33,7 @@ function renderField(field: FieldType, bind: Object, validation: Object) {
     }
 }
 
-const FormRenderer = ({ getFields, getDefaultValues, submit }: FormRenderPropsType) => {
+const FormRenderer = ({ getFields, getDefaultValues, submit, form }: FormRenderPropsType) => {
     const fields = getFields();
 
     return (

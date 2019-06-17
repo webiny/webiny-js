@@ -15,11 +15,7 @@ type Props = {
 };
 
 const FormPreview = ({ form }: Props) => {
-    return (
-        <div className={pageInnerWrapper}>
-            <Form preview id={form.id} />
-        </div>
-    );
+    return <div className={pageInnerWrapper}>{form && <Form preview id={form.id} />}</div>;
 };
 
 export default FormPreview;

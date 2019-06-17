@@ -5,7 +5,8 @@ import type { CmsPageDetailsPluginType, WithFormDetailsProps } from "webiny-app-
 import { Tab } from "webiny-ui/Tabs";
 import styled from "react-emotion";
 import { Elevation } from "webiny-ui/Elevation";
-import FormSubmissions from "./FormSubmissions";
+import FormSubmissionsOverview from "./FormSubmissionsOverview";
+import FormSubmissionsList from "./FormSubmissionsList";
 import { CircularProgress } from "webiny-ui/Progress";
 
 import { i18n } from "webiny-app/i18n";
@@ -31,7 +32,7 @@ export default ([
                         <Elevation z={2}>
                             <div style={{ position: "relative" }}>
                                 {loading && <CircularProgress />}
-                                {renderPlugins("forms-form-details-revision-content-submissions", {
+                                {form && renderPlugins("forms-form-details-submissions", {
                                     form,
                                     refreshPages
                                 })}
@@ -43,10 +44,17 @@ export default ([
         }
     },
     {
-        name: "forms-form-details-revision-render",
-        type: "forms-form-details-revision-content-submissions",
+        name: "forms-form-details-submissions-overview",
+        type: "forms-form-details-submissions",
         render({ form }: WithFormDetailsProps) {
-            return <FormSubmissions form={form} />;
+            return <FormSubmissionsOverview form={form} />;
+        }
+    },
+    {
+        name: "forms-form-details-submissions-list",
+        type: "forms-form-details-submissions",
+        render({ form }: WithFormDetailsProps) {
+            return <FormSubmissionsList form={form} />;
         }
     }
 ]: Array<CmsPageDetailsPluginType>);

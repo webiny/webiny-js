@@ -11,7 +11,6 @@ import listForms from "./formResolvers/listForms";
 import listPublishedForms from "./formResolvers/listPublishedForms";
 import getPublishedForm from "./formResolvers/getPublishedForm";
 import saveFormView from "./formResolvers/saveFormView";
-import saveFormSubmission from "./formResolvers/saveFormSubmission";
 import UserType from "webiny-api-security/plugins/graphql/User";
 
 const formFetcher = ({ getEntity }) => getEntity("CmsForm");
@@ -36,6 +35,7 @@ export default {
             published: Boolean
             parent: ID
             revisions: [Form]
+            stats: FormStatsType
         }
         
         type FormSettings {
@@ -50,6 +50,12 @@ export default {
             layout: FormSettingsLayoutType
             submitButtonLabel: String
             successMessage: String
+        }
+        
+        type FormStatsType {
+            views: Int
+            submissions: Int
+            conversionRate: Float
         }
         
         input FormSettingsLayoutInput {
@@ -87,10 +93,6 @@ export default {
         type FormListResponse {
             data: [Form]
             meta: ListMeta
-            error: Error
-        }
-        
-        type FormSubmissionResponse {
             error: Error
         }
         
@@ -156,13 +158,6 @@ export default {
                 id: ID!
             ): DeleteResponse
             
-            # Submits a form
-            saveFormSubmission(
-                id: ID! 
-                data: JSON!
-                meta: JSON
-            ): FormSubmissionResponse
-            
             # Logs a view of a form
             saveFormView(id: ID!): SaveFormViewResponse
         }
@@ -193,7 +188,6 @@ export default {
             // Delete a revision
             deleteRevision: resolveDelete(formFetcher),
             saveFormView,
-            saveFormSubmission,
         },
         FormSettings: {
             _empty: () => ""

@@ -4,6 +4,7 @@ import { hasScope } from "webiny-api-security";
 import { FileType, FileInputType } from "webiny-api-files/graphql";
 
 import form from "./graphql/Form";
+import formSubmission from "./graphql/FormSubmissions";
 
 export default {
     type: "graphql-schema",
@@ -30,7 +31,8 @@ export default {
                 forms: FormsMutation
             }
         `,
-            form.typeDefs
+            form.typeDefs,
+            formSubmission.typeDefs,
         ],
         resolvers: () => [
             {
@@ -41,7 +43,8 @@ export default {
                     forms: dummyResolver
                 }
             },
-            form.resolvers
+            form.resolvers,
+            formSubmission.resolvers,
         ]
     },
     security: {

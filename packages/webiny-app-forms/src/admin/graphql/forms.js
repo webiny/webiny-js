@@ -57,13 +57,18 @@ export const listForms = gql`
     }
 `;
 
-export const getForm = () => gql`
+export const getForm = gql`
     query FormsGetForm($id: ID!) {
         forms {
             form: getForm(id: $id) {
                 data {
                     fields
                     layout
+                    stats {
+                        views
+                        submissions
+                        conversionRate
+                    }
                     settings {
                         layout {
                             renderer
