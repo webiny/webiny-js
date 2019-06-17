@@ -108,8 +108,7 @@ const FormRenderer = ({ getFields, getDefaultValues, submit }: FormRenderPropsTy
 
     const customSubmit = data => {
         // Do something extra, finally call the provided callback.
-        console.log("Will submit...", data);
-        submit();
+        submit(data);
     };
 
     return (

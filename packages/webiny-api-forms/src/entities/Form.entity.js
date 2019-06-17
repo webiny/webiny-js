@@ -1,27 +1,52 @@
 // @flow
 import { Entity, type EntityCollection } from "webiny-entity";
 import { Model } from "webiny-model";
-
 import mdbid from "mdbid";
 
 export interface IForm extends Entity {
-    createdBy: Entity;
-    updatedBy: Entity;
     name: string;
-    snippet: string;
-    fields: [Object];
-    layout: [Object];
-    settings: Object;
-    version: number;
-    parent: string;
-    published: boolean;
-    publishedOn: ?Date;
+    stats: {
+        views: number,
+        submissions: number,
+        conversionRate: number,
+        incrementViews: () => void,
+        incrementSubmissions: () => void,
+    }
 }
 
 class LayoutSettingsModel extends Model {
     constructor() {
         super();
-        this.attr("renderer").char().setValue("default");
+        this.attr("renderer")
+            .char()
+            .setValue("default");
+    }
+}
+
+class FormStatsModel extends Model {
+    views: number;
+    submissions: number;
+    conversionRate: number;
+
+    constructor() {
+        super();
+        this.attr("views")
+            .integer()
+            .setDefaultValue(0);
+        this.attr("submissions")
+            .integer()
+            .setDefaultValue(0);
+        this.attr("conversionRate")
+            .float()
+            .setDynamic(() => ((this.submissions / this.views) * 100).toFixed(2));
+    }
+
+    incrementViews() {
+        this.views++;
+    }
+
+    incrementSubmissions() {
+        this.submissions++;
     }
 }
 
@@ -77,6 +102,11 @@ export default ({ getUser, getEntities }: Object) =>
                 .object()
                 .onSet(value => (this.published ? this.layout : value))
                 .setValue([]);
+
+            this.attr("stats")
+                .model(FormStatsModel)
+                .setSkipOnPopulate()
+                .setDefaultValue(new FormStatsModel());
 
             this.attr("settings")
                 .model(SettingsModel)

@@ -1,11 +1,16 @@
 // @flow
 import { type EntityPluginType } from "webiny-api/types";
-import { formFactory } from "webiny-api-forms/entities";
+import { formEntity, formSubmissionEntity } from "webiny-api-forms/entities";
 
-const form: EntityPluginType = {
-    name: "entity-cms-form",
-    type: "entity",
-    entity: formFactory
-};
-
-export default [form];
+export default ([
+    {
+        name: "entity-forms-form",
+        type: "entity",
+        entity: formEntity
+    },
+    {
+        name: "entity-forms-form-submission",
+        type: "entity",
+        entity: formSubmissionEntity
+    }
+]: Array<EntityPluginType>);

@@ -11,7 +11,7 @@ const FormElement = pure((props: Object) => {
     const id = get(element, "data.settings.form");
     let render = <span>Nothing selected.</span>;
     if (id) {
-        render = <FormsForm id={id} />;
+        render = <FormsForm preview id={id} />;
     }
 
     return (

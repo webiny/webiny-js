@@ -10,6 +10,8 @@ import createRevisionFrom from "./formResolvers/createRevisionFrom";
 import listForms from "./formResolvers/listForms";
 import listPublishedForms from "./formResolvers/listPublishedForms";
 import getPublishedForm from "./formResolvers/getPublishedForm";
+import saveFormView from "./formResolvers/saveFormView";
+import saveFormSubmission from "./formResolvers/saveFormSubmission";
 import UserType from "webiny-api-security/plugins/graphql/User";
 
 const formFetcher = ({ getEntity }) => getEntity("CmsForm");
@@ -84,6 +86,14 @@ export default {
             error: Error
         }
         
+        type FormSubmissionResponse {
+            error: Error
+        }
+        
+        type SaveFormViewResponse {
+            error: Error
+        }
+        
         extend type FormsQuery {
             getForm(
                 id: ID 
@@ -141,6 +151,16 @@ export default {
             deleteRevision(
                 id: ID!
             ): DeleteResponse
+            
+            # Submits a form
+            saveFormSubmission(
+                id: ID! 
+                data: JSON!
+                meta: JSON
+            ): FormSubmissionResponse
+            
+            # Logs a view of a form
+            saveFormView(id: ID!): SaveFormViewResponse
         }
     `
     ],
@@ -167,7 +187,9 @@ export default {
                 return resolveUpdate(formFetcher)(_, args, ctx, info);
             },
             // Delete a revision
-            deleteRevision: resolveDelete(formFetcher)
+            deleteRevision: resolveDelete(formFetcher),
+            saveFormView,
+            saveFormSubmission,
         },
         FormSettings: {
             _empty: () => ""
