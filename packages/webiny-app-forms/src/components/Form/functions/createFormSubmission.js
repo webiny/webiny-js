@@ -13,9 +13,9 @@ export default async (
         return;
     }
 
-    if (preview) {
+    /*if (preview) {
         return { preview: true, error: null, data: {} };
-    }
+    }*/
 
     let response = await client.mutate({
         mutation: SAVE_FORM_SUBMISSION,
@@ -28,7 +28,7 @@ export default async (
         }
     });
 
-    response = get(response, "data.forms.saveFormSubmission");
+    response = get(response, "data.forms.createFormSubmission");
 
     return {
         preview: false,

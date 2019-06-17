@@ -15,7 +15,7 @@ export const SAVE_FORM_VIEW = gql`
 export const SAVE_FORM_SUBMISSION = gql`
     mutation SaveFormView($id: ID!, $data: JSON!, $meta: JSON!) {
         forms {
-            saveFormSubmission(id: $id, data: $data, meta: $meta) {
+            createFormSubmission(id: $id, data: $data, meta: $meta) {
                 error {
                     message
                 }

@@ -3,7 +3,7 @@
 import React, { useCallback, useEffect } from "react";
 import { get, cloneDeep } from "lodash";
 import { withCms } from "webiny-app-cms/context";
-import { onFormMounted, saveFormSubmission } from "./functions";
+import { onFormMounted, createFormSubmission } from "./functions";
 import { withApollo } from "react-apollo";
 import { compose } from "recompose";
 import type { FormRenderPropsType, FormRenderComponentPropsType } from "webiny-app-forms/types";
@@ -41,17 +41,19 @@ const FormRender = compose(
         return fields;
     }, []);
 
-    const getDefaultValues = useCallback(() => {
+    const getDefaultValues = useCallback((overrides = {}) => {
         const values = {};
         fields.forEach(field => {
             if ("defaultValue" in field && typeof field.defaultValue !== "undefined") {
                 values[field.fieldId] = field.defaultValue;
+            } else {
+                values[field.fieldId] = "" // TODO: fix this "", must be read from plugin
             }
         });
-        return values;
+        return { ...values, ...overrides };
     }, []);
 
-    const submit = useCallback(data => saveFormSubmission(props, data), []);
+    const submit = useCallback(data => createFormSubmission(props, data), []);
 
     // Get form layout, defined in theme.
     let LayoutRenderComponent = get(cms, "theme.forms.layouts", []).find(
