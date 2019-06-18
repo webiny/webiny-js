@@ -24,7 +24,7 @@ export function roleFactory(context: Object): Class<IRole> {
         constructor() {
             super();
 
-            const { user = {} } = context;
+            const { getUser } = context;
 
             this.attr("createdBy").char();
             this.attr("name")
@@ -41,7 +41,9 @@ export function roleFactory(context: Object): Class<IRole> {
             this.attr("scopes").array();
 
             this.on("beforeCreate", async () => {
-                this.createdBy = user ? user.id : null;
+                if (getUser()) {
+                    this.createdBy = getUser().id;
+                }
                 const existingRole = await Role.findOne({ query: { slug: this.slug } });
                 if (existingRole) {
                     throw Error(`Role with slug "${this.slug}" already exists.`);
