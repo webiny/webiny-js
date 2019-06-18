@@ -30,9 +30,8 @@ export default async config => {
     function renderInputFields(model) {
         return model.fields
             .map(f => {
-                const isRequired = Boolean(f.validation.find(v => v.id === "required"));
-                const type = fieldTypePlugins[f.type].manage.createInputField({ model, field: f });
-                return type + (isRequired ? "!" : "");
+                //const isRequired = Boolean(f.validation.find(v => v.id === "required"));
+                return fieldTypePlugins[f.type].manage.createInputField({ model, field: f });
             })
             .join("\n");
     }
