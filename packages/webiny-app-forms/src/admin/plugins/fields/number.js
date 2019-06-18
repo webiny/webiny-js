@@ -1,5 +1,7 @@
 import React from "react";
 import { ReactComponent as NumberIcon } from "./icons/round-looks_3-24px.svg";
+import { Input } from "webiny-ui/Input";
+import { Grid, Cell } from "webiny-ui/Grid";
 
 export default {
     type: "form-editor-field-type",
@@ -18,6 +20,21 @@ export default {
                 type: this.id,
                 validation: []
             };
+        },
+        renderSettings({ form }) {
+            const { Bind } = form;
+            return (
+                <Grid>
+                    <Cell span={12}>
+                        <Bind name={"placeholderText"}>
+                            <Input
+                                label={"Placeholder text"}
+                                description={"Placeholder text (optional)"}
+                            />
+                        </Bind>
+                    </Cell>
+                </Grid>
+            );
         }
     }
 };

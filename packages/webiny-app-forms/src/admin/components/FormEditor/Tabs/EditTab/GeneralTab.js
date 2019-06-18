@@ -61,14 +61,6 @@ const GeneralTab = ({ field, form }) => {
                         <Input label={"Help text"} description={"Help text (optional)"} />
                     </Bind>
                 </Cell>
-                <Cell span={12}>
-                    <Bind name={"placeholderText"}>
-                        <Input
-                            label={"Placeholder text"}
-                            description={"Placeholder text (optional)"}
-                        />
-                    </Bind>
-                </Cell>
             </Grid>
             {additionalSettings}
         </>
