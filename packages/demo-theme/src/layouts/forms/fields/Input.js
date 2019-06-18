@@ -5,14 +5,14 @@ type Props = {
     type?: string,
     bind: Object,
     field: {
-        fieldId: String,
-        id: String,
-        type: String,
-        helpText?: String,
-        defaultValue?: String,
-        label?: String,
-        placeholderText: String,
-        rows?: String
+        fieldId: string,
+        id: string,
+        type: string,
+        helpText?: string,
+        defaultValue?: string,
+        label?: string,
+        placeholderText: string,
+        rows?: string
     }
 };
 

@@ -18,6 +18,7 @@ export default {
                 id: "",
                 label: "",
                 type: this.id,
+                defaultValue: "",
                 validation: []
             };
         },

@@ -64,7 +64,7 @@ const SetOptionAsDefaultValue = ({
 
     if (currentDefaultValue === option.value) {
         return (
-            <ButtonPrimary small onClick={() => setDefaultValue(null)}>
+            <ButtonPrimary small onClick={() => setDefaultValue("")}>
                 Selected
             </ButtonPrimary>
         );

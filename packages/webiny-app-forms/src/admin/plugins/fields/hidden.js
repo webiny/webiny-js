@@ -16,7 +16,8 @@ export default {
             return {
                 id: "",
                 type: this.id,
-                validation: []
+                validation: [],
+                defaultValue: ""
             };
         },
         renderSettings({ form, afterChangeLabel, uniqueFieldIdValidator }) {

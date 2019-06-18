@@ -1,20 +1,45 @@
 // @flow
-import * as React from "react";
+// $FlowFixMe
+import React, { useCallback } from "react";
 
 type Props = {
+    bind: Object,
     field: {
-        fieldId: String,
-        id: String,
-        type?: String,
-        options: Array,
-        helpText?: String,
-        defaultValue?: String,
-        label?: String,
-        placeholderText: String
+        fieldId: string,
+        id: string,
+        type?: string,
+        options: Array<Object>,
+        helpText?: string,
+        defaultValue?: string,
+        label?: string,
+        placeholderText: string
     }
 };
 
 const Checkbox = (props: Props) => {
+    const { onChange, value } = props.bind;
+
+    const change = useCallback(
+        option => {
+            const newValues = Array.isArray(value) ? [...value] : [];
+            if (newValues.includes(option.value)) {
+                newValues.splice(newValues.indexOf(option.value), 1);
+            } else {
+                newValues.push(option.value);
+            }
+
+            onChange(newValues);
+        },
+        [value.join("")]
+    );
+
+    const checked = useCallback(
+        option => {
+            return Array.isArray(value) && value.includes(option.value);
+        },
+        [value.join("")]
+    );
+
     return (
         <div className="webiny-cms-form-field webiny-cms-form-field--checkbox">
             <label className="webiny-cms-form-field__label webiny-cms-typography-body">
@@ -28,7 +53,8 @@ const Checkbox = (props: Props) => {
                             className="webiny-cms-form-field__checkbox-input"
                             type="checkbox"
                             id={"checkbox-" + props.field.fieldId + option.value}
-                            value={option.value}
+                            checked={checked(option)}
+                            onChange={() => change(option)}
                         />
                         <label
                             htmlFor={"checkbox-" + props.field.fieldId + option.value}

@@ -18,7 +18,8 @@ export default {
                 id: "",
                 label: "",
                 type: this.id,
-                validation: []
+                validation: [],
+                defaultValue: ""
             };
         },
         renderSettings({ form }) {

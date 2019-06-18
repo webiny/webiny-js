@@ -2,19 +2,22 @@
 import * as React from "react";
 
 type Props = {
+    bind: Object,
     field: {
-        fieldId: String,
-        id: String,
-        type?: String,
-        options: Array,
-        helpText?: String,
-        defaultValue?: String,
-        label?: String,
-        placeholderText: String
+        fieldId: string,
+        id: string,
+        type?: string,
+        options: Array<Object>,
+        helpText?: string,
+        defaultValue?: string,
+        label?: string,
+        placeholderText: string
     }
 };
 
 const Radio = (props: Props) => {
+    const { onChange, value } = props.bind;
+
     return (
         <div className="webiny-cms-form-field webiny-cms-form-field--radio">
             <label className="webiny-cms-form-field__label webiny-cms-typography-body">
@@ -24,6 +27,8 @@ const Radio = (props: Props) => {
                 {props.field.options.map(option => (
                     <div className="webiny-cms-form-field__radio" key={option.value}>
                         <input
+                            checked={value === option.value}
+                            onChange={() => onChange(option.value)}
                             name={props.field.fieldId}
                             className="webiny-cms-form-field__radio-input"
                             type="radio"
