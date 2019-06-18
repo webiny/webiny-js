@@ -27,7 +27,7 @@ function renderField(props: { field: FieldType, bind: Object, validation: Object
         case "checkbox":
             return <Checkbox {...props} />;
         case "hidden":
-            return <input type={"hidden"} {...props} />;
+            return <input type={"hidden"} value={props.bind.value} />;
         default:
             return <span>Cannot render field.</span>;
     }
