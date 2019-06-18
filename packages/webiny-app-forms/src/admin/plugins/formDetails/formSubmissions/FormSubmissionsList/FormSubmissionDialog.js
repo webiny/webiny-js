@@ -25,8 +25,7 @@ type Props = {
     onClose: Function
 };
 
-const FormSubmissionDialog = ({ formSubmission, onClose }: Props) => {
-    console.log(formSubmission); // TODO: Tu su svi podaci
+const FormSubmissionDialog = ({ formSubmission, onClose, form }: Props) => {
     return (
         <Dialog open={!!formSubmission} onClose={onClose}>
             {formSubmission && (
@@ -37,10 +36,11 @@ const FormSubmissionDialog = ({ formSubmission, onClose }: Props) => {
 
                     <DialogBody className={dialogBody}>
                         <ul>
-                            {Object.keys(formSubmission.data).map(key => {
+                            {Object.keys(formSubmission.data).map(fieldId => {
+                                const field = form.fields.find(field => field.fieldId === fieldId);
                                 return (
-                                    <li key={key}>
-                                        {key}: {formSubmission.data[key]}
+                                    <li key={fieldId}>
+                                        <strong>{field.label}</strong>: {formSubmission.data[fieldId]}
                                     </li>
                                 );
                             })}

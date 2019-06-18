@@ -25,7 +25,7 @@ const rightAlign = css({
 });
 
 const FormsSubmissionsList = (props: Object) => {
-    const { dataList } = props;
+    const { dataList, form } = props;
     const [selectedFormSubmission, selectFormSubmission] = useState(null);
 
     return (
@@ -83,6 +83,7 @@ const FormsSubmissionsList = (props: Object) => {
                 )}
             </DataList>
             <FormSubmissionDialog
+                form={form}
                 onClose={() => selectFormSubmission(null)}
                 formSubmission={selectedFormSubmission}
             />

@@ -7,13 +7,14 @@ import { get } from "lodash";
 import { listFormSubmissions } from "./FormSubmissionsList/graphql";
 
 type Props = {
-    form: Object
+    form: Object,
+    dataList: Object
 };
 
 const FormSubmissionsOverview = ({ dataList, form }: Props) => {
     return (
         <div>
-            <FormSubmissionsList dataList={dataList}/>
+            <FormSubmissionsList form={form} dataList={dataList}/>
         </div>
     );
 };
