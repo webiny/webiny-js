@@ -3,15 +3,19 @@ import React, { useState } from "react";
 import TimeAgo from "timeago-react";
 import { css } from "emotion";
 import { Typography } from "webiny-ui/Typography";
+import { Checkbox } from "webiny-ui/Checkbox";
 import {
     DataList,
     List,
     ListItem,
     ListItemText,
     ListTextOverline,
-    ListItemMeta
+    ListItemMeta,
+    ListItemGraphic
 } from "webiny-ui/List";
 import FormSubmissionDialog from "./FormSubmissionDialog";
+import { ReactComponent as ImportExport } from "./icons/round-import_export-24px.svg";
+import { IconButton } from "webiny-ui/Button";
 
 import { i18n } from "webiny-app/i18n";
 const t = i18n.namespace("FormsApp.FormsDataList");
@@ -28,7 +32,17 @@ const FormsSubmissionsList = (props: Object) => {
         <>
             <DataList
                 {...dataList}
-                title={t`Forms`}
+                multiSelectAll={dataList.multiSelectAll}
+                multiSelect={dataList.multiSelect}
+                multiSelectActions={
+                    <IconButton
+                        onClick={() => {
+                            console.log('Multi selected items: ', dataList.getMultiSelected())
+                        }}
+                        icon={<ImportExport />}
+                    />
+                }
+                title={t`Form submissions`}
                 sorters={[
                     {
                         label: t`Newest to oldest`,
@@ -44,8 +58,14 @@ const FormsSubmissionsList = (props: Object) => {
                     <List>
                         {data.map(submission => (
                             <ListItem key={submission.id}>
+                                <ListItemGraphic icon="star_border">
+                                    <Checkbox
+                                        onChange={() => dataList.multiSelect(submission)}
+                                        value={dataList.isMultiSelected(submission)}
+                                    />
+                                </ListItemGraphic>
                                 <ListItemText onClick={() => selectFormSubmission(submission)}>
-                                    Sta cemo tu ispisati? 😁
+                                    Sto cemo tu ispisati? 😁
                                     <ListTextOverline>
                                         {submission.meta.ip || "N/A"}
                                     </ListTextOverline>
