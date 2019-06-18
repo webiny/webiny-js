@@ -2,6 +2,7 @@
 import * as React from "react";
 
 type Props = {
+    type?: string,
     bind: Object,
     field: {
         fieldId: String,
@@ -16,7 +17,7 @@ type Props = {
 };
 
 const Input = (props: Props) => {
-    const {onChange, value} = props.bind;
+    const { onChange, value } = props.bind;
     return (
         <div className="webiny-cms-form-field webiny-cms-form-field--input">
             <label className="webiny-cms-form-field__label webiny-cms-typography-body">
@@ -25,7 +26,8 @@ const Input = (props: Props) => {
             <input
                 onChange={e => onChange(e.target.value)}
                 value={value}
-                type="text"
+                placeholder={props.field.placeholderText}
+                type={props.type}
                 name={props.field.fieldId}
                 id={props.field.fieldId}
                 className="webiny-cms-form-field__input"

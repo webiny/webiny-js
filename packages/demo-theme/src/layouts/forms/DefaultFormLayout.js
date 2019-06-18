@@ -1,5 +1,6 @@
 // @flow
-import React from "react";
+// $FlowFixMe
+import React, { useState, useCallback } from "react";
 import Input from "./fields/Input";
 import Select from "./fields/Select";
 import Radio from "./fields/Radio";
@@ -9,25 +10,24 @@ import { Form } from "webiny-form";
 
 import type { FieldType, FormRenderPropsType } from "webiny-app-forms/types";
 
-function renderField(field: FieldType, bind: Object, validation: Object) {
-    switch (field.type) {
+function renderField(props: { field: FieldType, bind: Object, validation: Object }) {
+    switch (props.field.type) {
         case "text":
-            return <Input field={field} bind={bind} validation={validation} />;
+            return <Input {...props} />;
         case "textarea":
-            return <Textarea field={field} bind={bind} validation={validation} />;
+            return <Textarea {...props} />;
         case "number":
-            return <Input field={field} bind={bind} validation={validation} />;
+            return <Input type="number" {...props} />;
         case "rich-text":
             return <span>rich text</span>;
-
         case "select":
-            return <Select field={field} bind={bind} validation={validation} />;
+            return <Select {...props} />;
         case "radio":
-            return <Radio field={field} bind={bind} validation={validation} />;
+            return <Radio {...props} />;
         case "checkbox":
-            return <Checkbox field={field} bind={bind} validation={validation} />;
+            return <Checkbox {...props} />;
         case "hidden":
-            return <input type={"hidden"} {...bind} />;
+            return <input type={"hidden"} {...props} />;
         default:
             return <span>Cannot render field.</span>;
     }
@@ -35,11 +35,19 @@ function renderField(field: FieldType, bind: Object, validation: Object) {
 
 const FormRenderer = ({ getFields, getDefaultValues, submit }: FormRenderPropsType) => {
     const fields = getFields();
+    const [loading, setLoading] = useState(false);
+
+    const submitForm = useCallback(async data => {
+        setLoading(true);
+        await submit(data);
+        setLoading(false);
+    }, []);
 
     return (
-        <Form onSubmit={submit} data={getDefaultValues()}>
+        <Form onSubmit={submitForm} data={getDefaultValues()}>
             {({ submit, Bind }) => (
                 <div className={"webiny-cms-form"}>
+                    {loading && <span>Loading...</span>}
                     <div>
                         {fields.map((row, rowIndex) => (
                             <div
@@ -57,7 +65,7 @@ const FormRenderer = ({ getFields, getDefaultValues, submit }: FormRenderPropsTy
                                             {({ validation, ...bind }) => (
                                                 <React.Fragment>
                                                     {/* Render input or whatever */}
-                                                    {renderField(field, bind, validation)}
+                                                    {renderField({ field, bind, validation })}
                                                     {/* Render validation message */}
                                                     {validation.valid === false
                                                         ? validation.message
