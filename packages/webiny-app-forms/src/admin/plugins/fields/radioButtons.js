@@ -25,7 +25,7 @@ export default {
             return (
                 <Grid>
                     <Cell span={12}>
-                        <OptionsSelectionDynamicFieldset form={form} multiple />
+                        <OptionsSelectionDynamicFieldset form={form} />
                     </Cell>
                 </Grid>
             );

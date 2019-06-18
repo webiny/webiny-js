@@ -23,10 +23,10 @@ const textStyling = css({
 
 const SetOptionAsDefaultValue = ({
     multiple,
-    value: currentDefaultValue,
     option,
+    value: currentDefaultValue,
     onChange: setDefaultValue
-}) => {
+}: Object) => {
     if (multiple) {
         if (Array.isArray(currentDefaultValue) && currentDefaultValue.includes(option.value)) {
             return (
@@ -41,7 +41,7 @@ const SetOptionAsDefaultValue = ({
                         setDefaultValue(value);
                     }}
                 >
-                    Default
+                    Selected
                 </ButtonPrimary>
             );
         }
@@ -57,7 +57,7 @@ const SetOptionAsDefaultValue = ({
                     setDefaultValue(value);
                 }}
             >
-                Default
+                Selected
             </ButtonSecondary>
         );
     }
@@ -65,14 +65,14 @@ const SetOptionAsDefaultValue = ({
     if (currentDefaultValue === option.value) {
         return (
             <ButtonPrimary small onClick={() => setDefaultValue(null)}>
-                Default
+                Selected
             </ButtonPrimary>
         );
     }
 
     return (
         <ButtonSecondary small onClick={() => setDefaultValue(option.value)}>
-            Default
+            Selected
         </ButtonSecondary>
     );
 };
@@ -132,7 +132,6 @@ export default ({ form, multiple }: Object) => {
                                                 <SetOptionAsDefaultValue
                                                     multiple={multiple}
                                                     option={value[index]}
-                                                    options={value}
                                                 />
                                             </Bind>
                                         </Cell>
