@@ -160,25 +160,21 @@ export default ({ getUser, getEntities }: Object) =>
                     this.parent = this.id;
                 }
 
-                this.createdBy = getUser().id;
+                if (getUser()) {
+                    this.createdBy = getUser().id;
+                }
 
                 if (!this.name) {
                     this.name = "Untitled";
                 }
 
                 this.version = await this.getNextVersion();
-
-                /*if (!this.settings) {
-                    this.settings = {
-                        general: {
-                            layout: (await this.category).layout
-                        }
-                    };
-                }*/
             });
 
             this.on("beforeUpdate", () => {
-                this.updatedBy = getUser().id;
+                if (getUser()) {
+                    this.updatedBy = getUser().id;
+                }
             });
 
             this.on("afterDelete", async () => {
