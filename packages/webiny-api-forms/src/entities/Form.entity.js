@@ -10,8 +10,8 @@ export interface IForm extends Entity {
         submissions: number,
         conversionRate: number,
         incrementViews: () => void,
-        incrementSubmissions: () => void,
-    }
+        incrementSubmissions: () => void
+    };
 }
 
 class LayoutSettingsModel extends Model {
@@ -38,7 +38,12 @@ class FormStatsModel extends Model {
             .setDefaultValue(0);
         this.attr("conversionRate")
             .float()
-            .setDynamic(() => ((this.submissions / this.views) * 100).toFixed(2));
+            .setDynamic(() => {
+                if (this.views > 0) {
+                    return ((this.submissions / this.views) * 100).toFixed(2);
+                }
+                return 0;
+            });
     }
 
     incrementViews() {
