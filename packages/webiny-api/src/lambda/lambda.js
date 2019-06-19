@@ -58,7 +58,10 @@ export const createHandler = async (config: Object) => {
 
             const ctx: Object = {
                 event,
-                config
+                config,
+                getDatabase() {
+                    return config.database.mongodb;
+                }
             };
 
             // Add `runQuery` function to be able to easily run queries against schemas from within a resolver

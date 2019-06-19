@@ -8,6 +8,6 @@ export function createTypeName(modelId) {
     return upperFirst(modelId);
 }
 
-export function createEntityName(modelId) {
+export function createCollectionName(modelId) {
     return "Headless" + upperFirst(modelId);
 }
