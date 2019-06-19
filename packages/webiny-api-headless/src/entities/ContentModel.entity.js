@@ -8,7 +8,7 @@ class FieldModel extends Model {
         this.attr("id").char();
         this.attr("label").char();
         this.attr("type").char();
-        this.attr("l10n").boolean();
+        this.attr("i18n").boolean();
         this.attr("validation")
             .object()
             .setValue([]);

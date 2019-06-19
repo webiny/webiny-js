@@ -1,14 +1,12 @@
 // @flow
 import type { HeadlessFieldTypePlugin } from "webiny-api-headless/types";
-import { createValidator } from "webiny-api-headless/utils";
-import { Model } from "webiny-model";
 
 export default ({
     name: "cms-headless-field-type-text",
     type: "cms-headless-field-type",
     fieldType: "text",
-    createAttribute({ field, entity, context }) {
-        if (!field.l10n) {
+    /*createAttribute({ field, entity, context }) {
+        if (!field.i18n) {
             entity
                 .attr(field.fieldId)
                 .char()
@@ -31,13 +29,13 @@ export default ({
             .attr(field.fieldId)
             .models(TextValueModel)
             .onSet(newValue => {
-                /* $FlowFixMe */
+                /!* $FlowFixMe *!/
                 const currentValue = entity.getAttribute(field.fieldId).getValue();
                 if (Array.isArray(currentValue) && currentValue.length > 0) {
                     const mergedValue = currentValue.map(model => ({
-                        /* $FlowFixMe */
+                        /!* $FlowFixMe *!/
                         value: model.value,
-                        /* $FlowFixMe */
+                        /!* $FlowFixMe *!/
                         locale: model.locale
                     }));
 
@@ -54,23 +52,23 @@ export default ({
                 }
                 return newValue;
             });
-    },
+    },*/
     read: {
         createTypeField({ field }) {
             return `${field.fieldId}: String`;
         },
         createResolver({ field }) {
             return (entity, args, context, { fieldName }) => {
-                if (field.l10n === false) {
+                if (field.i18n === false) {
                     return entity[fieldName];
                 }
 
-                const l10n = entity[fieldName].reduce((acc, v) => {
+                const i18n = entity[fieldName].reduce((acc, v) => {
                     acc[v.locale] = v.value;
                     return acc;
                 }, {});
 
-                return l10n[context.locale] || l10n[context.defaultLocale];
+                return i18n[context.locale] || i18n[context.defaultLocale];
             };
         }
     },
@@ -89,13 +87,13 @@ export default ({
             `;
         },
         createTypeField({ field }) {
-            if (field.l10n) {
+            if (field.i18n) {
                 return field.fieldId + ": [Manage_HeadlessText]";
             }
             return field.fieldId + ": String";
         },
         createInputField({ field }) {
-            if (field.l10n) {
+            if (field.i18n) {
                 return field.fieldId + ": [Manage_HeadlessTextInput]";
             }
             return field.fieldId + ": String";

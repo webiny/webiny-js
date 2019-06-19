@@ -1,33 +1,16 @@
 // @flow
-import { ObjectID } from "mongodb";
+import { ObjectId } from "mongodb";
 import { ListResponse } from "webiny-api/graphql";
 import type { HeadlessFieldTypePlugin } from "webiny-api-headless/types";
-import {
-    createTypeName,
-    createEntityName,
-    createListArgs,
-    createValidator
-} from "webiny-api-headless/utils";
+import createTypeName from "webiny-api-headless/utils/createTypeName";
+import createListArgs from "webiny-api-headless/utils/createListArgs";
+import findEntry from "webiny-api-headless/utils/findEntry";
+import findEntries from "webiny-api-headless/utils/findEntries";
 
 export default ({
     name: "cms-headless-field-type-ref",
     type: "cms-headless-field-type",
     fieldType: "ref",
-    createAttribute({ field, entity, context }) {
-        const { type } = field.settings;
-
-        if (type === "one") {
-            entity
-                .attr(field.fieldId)
-                .char()
-                .setValidators(createValidator({ field, entity, context }));
-        } else {
-            entity
-                .attr(field.fieldId)
-                .array()
-                .setValidators(createValidator({ field, entity, context }));
-        }
-    },
     read: {
         createTypeField({ model, field }) {
             const { modelId, type } = field.settings;
@@ -37,30 +20,30 @@ export default ({
 
             return field.fieldId + fieldArgs + `: ${many ? `${gqlType}ListResponse` : gqlType}`;
         },
-        createResolver({ field }) {
+        createResolver({ models, field }) {
             const { type, modelId } = field.settings;
+            const refModel = models.find(m => m.modelId === modelId);
 
-            return async (entity, args, context, { fieldName }) => {
-                const entityName = createEntityName(modelId);
-                const Entity = context.cms.entities[entityName];
+            return async (entry, args, context, { fieldName }) => {
 
                 if (type === "one") {
-                    return Entity.findOne({ _id: ObjectID(entity[fieldName]) });
+                    return findEntry({
+                        model: refModel,
+                        args: { where: { _id: ObjectId(entry[fieldName]) } },
+                        context
+                    });
                 }
 
                 // Build parameters for `find`
-                const { where, search, ...rest } = args;
-                const find = {
-                    query: { _id: { $in: entity[fieldName].map(id => ObjectID(id)) }, ...where },
-                    ...rest
-                };
+                const { where = {}, ...rest } = args;
+                where["_id"] = { $in: entry[fieldName].map(id => ObjectId(id)) };
 
-                if (search && search.query) {
-                    find.search = { ...search, operator: search.operator || "or" };
-                }
-
-                const data = await Entity.find(find);
-                return new ListResponse(data, data.getMeta());
+                const { entries, meta } = await findEntries({
+                    model: refModel,
+                    args: { where, ...rest },
+                    context
+                });
+                return new ListResponse(entries, meta);
             };
         }
     },

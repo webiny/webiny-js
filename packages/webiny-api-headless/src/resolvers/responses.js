@@ -1,6 +1,4 @@
 // @flow
-import type { Entity, EntityCollection } from "webiny-entity";
-
 type ErrorResponseParams = {
     code?: string,
     message?: string,
@@ -31,7 +29,7 @@ export class ErrorResponse {
 }
 
 export class NotFoundResponse extends ErrorResponse {
-    constructor(message) {
+    constructor(message: string) {
         super({
             code: "NOT_FOUND",
             message
@@ -68,10 +66,10 @@ export class Response {
 }
 
 export class ListResponse {
-    data: EntityCollection<Entity> | Array<any>;
+    data: Array<any>;
     meta: Object;
     error: null;
-    constructor(data: EntityCollection<Entity> | Array<any>, meta: Object) {
+    constructor(data: Array<any>, meta: Object) {
         this.data = Array.isArray(data) ? data : [];
         this.meta = meta;
         this.error = null;
