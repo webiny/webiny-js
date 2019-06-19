@@ -6,16 +6,16 @@ import { Grid, Cell } from "webiny-ui/Grid";
 import { Select } from "webiny-ui/Select";
 import { Input } from "webiny-ui/Input";
 import { get } from "lodash";
+import { I18NInput } from "webiny-app-forms/__i18n/components";
 
 const GeneralSettings = ({ Bind, cms }: Object) => {
     const layouts = get(cms, "theme.forms.layouts") || [];
-
     return (
         <React.Fragment>
             <Grid>
                 <Cell span={12}>
                     <Bind name={"successMessage.value"}>
-                        <Input label={"Success message"} />
+                        <I18NInput label={"Success message"} />
                     </Bind>
                 </Cell>
                 <Cell span={12}>
