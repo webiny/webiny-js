@@ -4,7 +4,6 @@ import { renderPlugins } from "webiny-app/plugins";
 import type { CmsPageDetailsPluginType, WithFormDetailsProps } from "webiny-app-forms/types";
 import { Tab } from "webiny-ui/Tabs";
 import styled from "react-emotion";
-import { Elevation } from "webiny-ui/Elevation";
 import FormSubmissionsOverview from "./FormSubmissionsOverview";
 import FormSubmissionsList from "./FormSubmissionsList";
 import { CircularProgress } from "webiny-ui/Progress";
@@ -29,15 +28,14 @@ export default ([
             return (
                 <Tab label={t`Submissions`} disabled={loading}>
                     <RenderBlock>
-                        <Elevation z={2}>
-                            <div style={{ position: "relative" }}>
-                                {loading && <CircularProgress />}
-                                {form && renderPlugins("forms-form-details-submissions", {
+                        <div style={{ position: "relative" }}>
+                            {loading && <CircularProgress />}
+                            {form &&
+                                renderPlugins("forms-form-details-submissions", {
                                     form,
                                     refreshPages
                                 })}
-                            </div>
-                        </Elevation>
+                        </div>
                     </RenderBlock>
                 </Tab>
             );
