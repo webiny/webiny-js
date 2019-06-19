@@ -6,8 +6,9 @@ import { Form } from "webiny-app-forms/components/Form";
 const pageInnerWrapper = css({
     overflowY: "scroll",
     overflowX: "hidden",
-    height: "calc(100vh - 230px)",
-    position: "relative"
+    maxHeight: "calc(100vh - 290px)",
+    position: "relative",
+    padding: 25
 });
 
 type Props = {
