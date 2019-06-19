@@ -12,8 +12,12 @@ export const getForm = gql`
                         layout {
                             renderer
                         }
-                        submitButtonLabel
-                        successMessage
+                        successMessage {
+                            translation
+                        }
+                        submitButtonLabel {
+                            translation
+                        }
                     }
                 }
                 error {

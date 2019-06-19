@@ -6,8 +6,20 @@ const settingsField = /* GraphQL */ `
         layout {
             renderer
         }
-        successMessage
-        submitButtonLabel
+        successMessage {
+            value
+            values {
+                locale
+                value
+            }
+        }
+        submitButtonLabel {
+            value
+            values {
+                locale
+                value
+            }
+        }
     }
 `;
 

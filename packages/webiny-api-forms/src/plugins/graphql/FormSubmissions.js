@@ -62,9 +62,6 @@ export default {
         },
         FormsMutation: {
             createFormSubmission
-        },
-        FormSettings: {
-            _empty: () => ""
         }
     }
 };

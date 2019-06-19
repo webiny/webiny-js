@@ -38,18 +38,14 @@ export default {
             stats: FormStatsType
         }
         
-        type FormSettings {
-            _empty: String
-        }
-        
         type FormSettingsLayoutType {
             renderer: String
         }
         
         type FormSettingsType {
             layout: FormSettingsLayoutType
-            submitButtonLabel: String
-            successMessage: String
+            submitButtonLabel: I18NStringValue
+            successMessage: I18NStringValue
         }
         
         type FormStatsType {
@@ -64,8 +60,8 @@ export default {
         
         input FormSettingsInput {
             layout: FormSettingsLayoutInput
-            submitButtonLabel: String
-            successMessage: String
+            submitButtonLabel: I18NStringValueInput
+            successMessage: I18NStringValueInput
         }
         
         input UpdateFormInput {
@@ -187,10 +183,7 @@ export default {
             },
             // Delete a revision
             deleteRevision: resolveDelete(formFetcher),
-            saveFormView,
-        },
-        FormSettings: {
-            _empty: () => ""
+            saveFormView
         }
     }
 };

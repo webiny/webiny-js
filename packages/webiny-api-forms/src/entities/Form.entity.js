@@ -1,4 +1,5 @@
 // @flow
+import { I18NCharAttribute, I18NObjectAttribute } from "webiny-api-forms/__i18n/attributes";
 import { Entity, type EntityCollection } from "webiny-entity";
 import { Model } from "webiny-model";
 import mdbid from "mdbid";
@@ -55,20 +56,22 @@ class FormStatsModel extends Model {
     }
 }
 
-class SettingsModel extends Model {
-    constructor(props) {
-        super(props);
-        this.attr("layout")
-            .model(LayoutSettingsModel)
-            .setDefaultValue(new LayoutSettingsModel());
+const createSettingsModel = context =>
+    class SettingsModel extends Model {
+        constructor(props) {
+            super(props);
+            this.attr("layout")
+                .model(LayoutSettingsModel)
+                .setDefaultValue(new LayoutSettingsModel());
 
-        this.attr("submitButtonLabel").char();
-        this.attr("successMessage").char();
-    }
-}
+            this.attr("submitButtonLabel").custom(I18NCharAttribute, context);
+            this.attr("successMessage").custom(I18NObjectAttribute, context);
+        }
+    };
 
-export default ({ getUser, getEntities }: Object) =>
-    class CmsForm extends Entity {
+export default (context: Object) => {
+    const { getUser, getEntities } = context;
+    return class CmsForm extends Entity {
         static classId = "CmsForm";
 
         createdBy: Entity;
@@ -116,6 +119,7 @@ export default ({ getUser, getEntities }: Object) =>
                 .setSkipOnPopulate()
                 .setDefaultValue(new FormStatsModel());
 
+            const SettingsModel = createSettingsModel(context);
             this.attr("settings")
                 .model(SettingsModel)
                 .onSet(value => (this.published ? this.layout : value))
@@ -206,3 +210,4 @@ export default ({ getUser, getEntities }: Object) =>
             return revision.version + 1;
         }
     };
+};

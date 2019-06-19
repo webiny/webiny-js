@@ -14,12 +14,12 @@ const GeneralSettings = ({ Bind, cms }: Object) => {
         <React.Fragment>
             <Grid>
                 <Cell span={12}>
-                    <Bind name={"successMessage"}>
+                    <Bind name={"successMessage.value"}>
                         <Input label={"Success message"} />
                     </Bind>
                 </Cell>
                 <Cell span={12}>
-                    <Bind name={"submitButtonLabel"}>
+                    <Bind name={"submitButtonLabel.value"}>
                         <Input label={"Submit button label"} />
                     </Bind>
                 </Cell>
@@ -33,7 +33,6 @@ const GeneralSettings = ({ Bind, cms }: Object) => {
                         />
                     </Bind>
                 </Cell>
-
             </Grid>
         </React.Fragment>
     );

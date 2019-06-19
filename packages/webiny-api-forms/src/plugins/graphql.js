@@ -1,7 +1,19 @@
 // @flow
 import { dummyResolver } from "webiny-api/graphql";
 import { hasScope } from "webiny-api-security";
-import { FileType, FileInputType } from "webiny-api-files/graphql";
+import {
+    I18NStringValueType,
+    I18NJSONValueType,
+    I18NStringValueInput,
+    I18NJSONValueInput
+} from "webiny-api-forms/__i18n/graphql";
+
+import {
+    FileType,
+    FileInputType,
+    FileListResponseType,
+    FileResponseType
+} from "webiny-api-files/graphql";
 
 import form from "./graphql/Form";
 import formSubmission from "./graphql/FormSubmissions";
@@ -12,12 +24,18 @@ export default {
     namespace: "forms",
     schema: {
         typeDefs: () => [
+            I18NStringValueType,
+            I18NJSONValueType,
+            I18NStringValueInput,
+            I18NJSONValueInput,
             FileType,
             FileInputType,
+            FileListResponseType,
+            FileResponseType,
             `
             type FormsQuery {
                 _empty: String
-            }   
+            }
             
             type FormsMutation {
                 _empty: String
@@ -29,10 +47,9 @@ export default {
             
             type Mutation {
                 forms: FormsMutation
-            }
-        `,
+            }`,
             form.typeDefs,
-            formSubmission.typeDefs,
+            formSubmission.typeDefs
         ],
         resolvers: () => [
             {
@@ -44,7 +61,7 @@ export default {
                 }
             },
             form.resolvers,
-            formSubmission.resolvers,
+            formSubmission.resolvers
         ]
     },
     security: {

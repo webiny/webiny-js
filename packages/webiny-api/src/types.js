@@ -21,7 +21,7 @@ export type GraphQLSchemaPluginType = PluginType & {
 };
 
 export type GraphQLSchemaPluginType = PluginType & {
-    schema?: GraphQLSchemaType | () => GraphQLSchemaType,
+    schema?: GraphQLSchemaType | (() => GraphQLSchemaType),
     security?: Object | (() => Object)
 };
 
@@ -34,3 +34,8 @@ export type GraphQLContextPluginType = PluginType & {
 };
 
 export type SettingsPluginType = PluginType & {};
+
+export type ApiContext = {
+    getEntities: () => {[string]: Entity}
+    getEntity: () => ?Entity
+};
