@@ -33,7 +33,7 @@ function renderField(props: { field: FieldType, bind: Object, validation: Object
     }
 }
 
-const FormRenderer = ({ getFields, getDefaultValues, submit }: FormRenderPropsType) => {
+const FormRenderer = ({ getFields, getDefaultValues, submit, form }: FormRenderPropsType) => {
     const fields = getFields();
     const [loading, setLoading] = useState(false);
     const [success, setSuccess] = useState(false);
@@ -59,7 +59,7 @@ const FormRenderer = ({ getFields, getDefaultValues, submit }: FormRenderPropsTy
                             >
                                 <div className="webiny-cms-form__success-message">
                                     <div className="webiny-cms-form-field__label webiny-cms-typography-h3">
-                                        success message here
+                                        {form.settings.successMessage}
                                     </div>
                                 </div>
                             </div>
@@ -116,7 +116,7 @@ const FormRenderer = ({ getFields, getDefaultValues, submit }: FormRenderPropsTy
                                     onClick={submit}
                                     disabled={loading}
                                 >
-                                    Submit
+                                    {form.settings.submitButtonLabel}
                                 </button>
                             </div>
                         </>
