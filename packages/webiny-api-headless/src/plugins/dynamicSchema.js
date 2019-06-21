@@ -4,6 +4,7 @@ import { registerPlugins, getPlugins } from "webiny-plugins";
 import createTypeName from "../utils/createTypeName";
 import { resolveGet } from "../resolvers/resolveGet";
 import { resolveList } from "../resolvers/resolveList";
+import { resolveUpdate } from "../resolvers/resolveUpdate";
 
 export default async config => {
     // Structure plugins for faster access
@@ -82,7 +83,7 @@ export default async config => {
                     }
                     
                     type Manage_${typeName}ListResponse {
-                        data: [${typeName}]
+                        data: [Manage_${typeName}]
                         meta: ListMeta
                         error: Error
                     }
@@ -119,14 +120,30 @@ export default async config => {
                             }
                         },
                         HeadlessManageQuery: {
-                            [`get${typeName}`]: resolve.dummyResolver,
-                            [`list${pluralize(typeName)}`]: resolve.dummyResolver
+                            [`get${typeName}`]: resolveGet({ models, model }),
+                            [`list${pluralize(typeName)}`]: resolveList({ models, model })
                         },
                         HeadlessManageMutation: {
                             [`create${typeName}`]: resolve.dummyResolver,
-                            [`update${typeName}`]: resolve.dummyResolver,
+                            [`update${typeName}`]: resolveUpdate({ models, model }),
                             [`delete${typeName}`]: resolve.dummyResolver
-                        }
+                        },
+                        [`Manage_${typeName}`]: model.fields.reduce(
+                            (resolvers, field) => {
+                                const { manage } = fieldTypePlugins[field.type];
+                                let resolver = (entry, args, ctx, info) => entry[info.fieldName];
+                                if (typeof manage.createResolver === "function") {
+                                    resolver = manage.createResolver({ models, model, field });
+                                }
+
+                                resolvers[field.fieldId] = (entry, args, ctx, info) => {
+                                    return resolver(entry, args, ctx, info);
+                                };
+
+                                return resolvers;
+                            },
+                            { id: entry => entry._id.toString() }
+                        )
                     }
                 }
             }

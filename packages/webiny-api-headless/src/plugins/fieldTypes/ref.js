@@ -7,6 +7,32 @@ import createListArgs from "webiny-api-headless/utils/createListArgs";
 import findEntry from "webiny-api-headless/utils/findEntry";
 import findEntries from "webiny-api-headless/utils/findEntries";
 
+const createResolver = ({ models, field }) => {
+    const { type, modelId } = field.settings;
+    const refModel = models.find(m => m.modelId === modelId);
+
+    return async (entry, args, context, { fieldName }) => {
+        if (type === "one") {
+            return findEntry({
+                model: refModel,
+                args: { where: { _id: ObjectId(entry[fieldName]) } },
+                context
+            });
+        }
+
+        // Load "many" entries
+        const { where = {}, ...rest } = args;
+        where["_id"] = { $in: entry[fieldName].map(id => ObjectId(id)) };
+
+        const { entries, meta } = await findEntries({
+            model: refModel,
+            args: { where, ...rest },
+            context
+        });
+        return new ListResponse(entries, meta);
+    };
+};
+
 export default ({
     name: "cms-headless-field-type-ref",
     type: "cms-headless-field-type",
@@ -20,32 +46,7 @@ export default ({
 
             return field.fieldId + fieldArgs + `: ${many ? `${gqlType}ListResponse` : gqlType}`;
         },
-        createResolver({ models, field }) {
-            const { type, modelId } = field.settings;
-            const refModel = models.find(m => m.modelId === modelId);
-
-            return async (entry, args, context, { fieldName }) => {
-
-                if (type === "one") {
-                    return findEntry({
-                        model: refModel,
-                        args: { where: { _id: ObjectId(entry[fieldName]) } },
-                        context
-                    });
-                }
-
-                // Build parameters for `find`
-                const { where = {}, ...rest } = args;
-                where["_id"] = { $in: entry[fieldName].map(id => ObjectId(id)) };
-
-                const { entries, meta } = await findEntries({
-                    model: refModel,
-                    args: { where, ...rest },
-                    context
-                });
-                return new ListResponse(entries, meta);
-            };
-        }
+        createResolver
     },
     manage: {
         createTypeField({ field }) {
@@ -55,10 +56,10 @@ export default ({
             return field.fieldId + `: ${type === "many" ? `${gqlType}ListResponse` : gqlType}`;
         },
         createInputField({ field }) {
-            const { modelId, type } = field.settings;
-            const gqlType = "Manage_" + createTypeName(modelId) + "Input";
+            const { type } = field.settings;
 
-            return field.fieldId + `: ${type === "many" ? `[${gqlType}]` : gqlType}`;
-        }
+            return field.fieldId + `: ${type === "many" ? "[ID]" : "ID"}`;
+        },
+        createResolver
     }
 }: HeadlessFieldTypePlugin);
