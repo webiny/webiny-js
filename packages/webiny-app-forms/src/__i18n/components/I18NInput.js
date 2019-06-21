@@ -45,7 +45,6 @@ const I18NInput = ({ value, onChange, ...inputProps }) => {
     });
 
     const submitDialog = useCallback(async values => {
-        console.log('pozivam onChange sa:', { ...value, values })
         await onChange({ ...value, values });
         closeDialog();
     });
