@@ -41,11 +41,17 @@ const Header = (props: Props) => {
             {form && (
                 <Grid className={headerTitle}>
                     <Cell span={8} className={pageTitle}>
-                        <Typography use="headline5">{form.title}</Typography>
+                        <Typography use="headline5">{form.name}</Typography>
                     </Cell>
                     <Cell span={4} className={headerActions}>
-                        {renderPlugins("forms-form-details-header-left", { form, refreshPages })}
-                        {renderPlugins("forms-form-details-header-right", { form, refreshPages })}
+                        {renderPlugins("forms-form-details-header-left", {
+                            form,
+                            refreshPages
+                        })}
+                        {renderPlugins("forms-form-details-header-right", {
+                            form,
+                            refreshPages
+                        })}
                     </Cell>
                 </Grid>
             )}

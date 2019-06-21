@@ -1,6 +1,6 @@
 // @flow
 // $FlowFixMe
-import React, { useCallback } from "react";
+import React from "react";
 
 type Props = {
     bind: Object,
@@ -19,26 +19,20 @@ type Props = {
 const Checkbox = (props: Props) => {
     const { onChange, value } = props.bind;
 
-    const change = useCallback(
-        option => {
-            const newValues = Array.isArray(value) ? [...value] : [];
-            if (newValues.includes(option.value)) {
-                newValues.splice(newValues.indexOf(option.value), 1);
-            } else {
-                newValues.push(option.value);
-            }
+    const change = option => {
+        const newValues = Array.isArray(value) ? [...value] : [];
+        if (newValues.includes(option.value)) {
+            newValues.splice(newValues.indexOf(option.value), 1);
+        } else {
+            newValues.push(option.value);
+        }
 
-            onChange(newValues);
-        },
-        [value.join("")]
-    );
+        onChange(newValues);
+    };
 
-    const checked = useCallback(
-        option => {
-            return Array.isArray(value) && value.includes(option.value);
-        },
-        [value.join("")]
-    );
+    const checked = option => {
+        return Array.isArray(value) && value.includes(option.value);
+    };
 
     return (
         <div className="webiny-cms-form-field webiny-cms-form-field--checkbox">

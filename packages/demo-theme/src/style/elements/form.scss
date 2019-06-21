@@ -9,13 +9,20 @@
 
     .webiny-cms-layout-column{
         padding: 15px;
-        &:first-child{
-            padding-left: 0;
-        }
 
-        &:last-child{
-            padding-right: 0;
+        @include desktop{
+            &:first-child{
+                padding-left: 0;
+            }
+    
+            &:last-child{
+                padding-right: 0;
+            }
         }
+    }
+
+    &__success-message{
+        text-align: center;
     }
 
     &-field{

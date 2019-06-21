@@ -36,58 +36,91 @@ function renderField(props: { field: FieldType, bind: Object, validation: Object
 const FormRenderer = ({ getFields, getDefaultValues, submit }: FormRenderPropsType) => {
     const fields = getFields();
     const [loading, setLoading] = useState(false);
+    const [success, setSuccess] = useState(false);
 
     const submitForm = useCallback(async data => {
         setLoading(true);
-        await submit(data);
-        setLoading(false);
+        const result = await submit(data);
+        if (result.error === null) {
+            setSuccess(true);
+        } else {
+            setLoading(false);
+        }
     }, []);
 
     return (
         <Form onSubmit={submitForm} data={getDefaultValues()}>
             {({ submit, Bind }) => (
                 <div className={"webiny-cms-form"}>
-                    {loading && <span>Loading...</span>}
-                    <div>
-                        {fields.map((row, rowIndex) => (
+                    {success && (
+                        <div className={"webiny-cms-base-element-style webiny-cms-layout-row"}>
                             <div
-                                key={rowIndex}
-                                className={"webiny-cms-base-element-style webiny-cms-layout-row"}
+                                className={"webiny-cms-base-element-style webiny-cms-layout-column"}
                             >
-                                {row.map(field => (
+                                <div className="webiny-cms-form__success-message">
+                                    <div className="webiny-cms-form-field__label webiny-cms-typography-h3">
+                                        success message here
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+
+                    {!success && (
+                        <>
+                            <div>
+                                {fields.map((row, rowIndex) => (
                                     <div
-                                        key={field.id}
+                                        key={rowIndex}
                                         className={
-                                            "webiny-cms-base-element-style webiny-cms-layout-column"
+                                            "webiny-cms-base-element-style webiny-cms-layout-row"
                                         }
                                     >
-                                        <Bind name={field.fieldId} validators={field.validators}>
-                                            {({ validation, ...bind }) => (
-                                                <React.Fragment>
-                                                    {/* Render input or whatever */}
-                                                    {renderField({ field, bind, validation })}
-                                                    {/* Render validation message */}
-                                                    {validation.valid === false
-                                                        ? validation.message
-                                                        : null}
-                                                </React.Fragment>
-                                            )}
-                                        </Bind>
+                                        {row.map(field => (
+                                            <div
+                                                key={field.id}
+                                                className={
+                                                    "webiny-cms-base-element-style webiny-cms-layout-column"
+                                                }
+                                            >
+                                                <Bind
+                                                    name={field.fieldId}
+                                                    validators={field.validators}
+                                                >
+                                                    {({ validation, ...bind }) => (
+                                                        <React.Fragment>
+                                                            {/* Render input or whatever */}
+                                                            {renderField({
+                                                                field,
+                                                                bind,
+                                                                validation
+                                                            })}
+                                                            {/* Render validation message */}
+                                                            {validation.valid === false
+                                                                ? validation.message
+                                                                : null}
+                                                        </React.Fragment>
+                                                    )}
+                                                </Bind>
+                                            </div>
+                                        ))}
                                     </div>
                                 ))}
                             </div>
-                        ))}
-                    </div>
-                    <div>
-                        <button
-                            className={
-                                "webiny-cms-element-button webiny-cms-element-button--primary"
-                            }
-                            onClick={submit}
-                        >
-                            Submit
-                        </button>
-                    </div>
+                            <div>
+                                <button
+                                    className={
+                                        "webiny-cms-element-button webiny-cms-element-button--primary" +
+                                        (loading ? " webiny-cms-element-button--loading" : "")
+                                    }
+                                    onClick={submit}
+                                    disabled={loading}
+                                >
+                                    Submit
+                                </button>
+                            </div>
+                        </>
+                    )}
                 </div>
             )}
         </Form>

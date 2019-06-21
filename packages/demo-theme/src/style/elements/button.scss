@@ -1,3 +1,5 @@
+@keyframes webiny-cms-element-button-animation-rotate { 100% { transform: rotate(360deg); } }
+
 .webiny-cms-element-button{
   display: flex;
   align-items: center !important;
@@ -34,6 +36,40 @@
   }
   &:active{
     transform: translateY(1px);
+  }
+  &:disabled{
+    opacity: 0.5;
+    transform: translateY(0px);
+    box-shadow: none;
+    cursor: wait;
+  }
+  &--loading{
+    background-image: linear-gradient($webiny-cms-theme-primary 0%, $webiny-cms-theme-primary 100%) !important;
+    position: relative;
+    text-transform: uppercase;
+    color: transparent;
+    font-size: 0;
+    height: 42px;
+    transition: all 350ms ease;
+
+    &:before {
+      margin: -13px 0 0 -13px;
+      width: 24px;
+      height: 24px;
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      color: #fff;
+      content: '';
+      border-radius: 24px;
+      background-clip: padding-box;
+      border: rgba(255, 255, 255, 0.25) 2px solid;
+      border-top-color: #fff;
+      animation: webiny-cms-element-button-animation-rotate 750ms linear infinite;
+      span{
+        color: transparent;
+      }
+    }
   }
   &--primary{
     background-color: $webiny-cms-theme-primary;

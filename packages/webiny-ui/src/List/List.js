@@ -9,6 +9,7 @@ import {
 } from "@rmwc/list";
 import { Typography } from "webiny-ui/Typography";
 import classNames from "classnames";
+import styled from "react-emotion";
 
 type ListItemProps = { children: React.Node };
 
@@ -183,6 +184,32 @@ const ListActions = (props: ListActionsProps) => {
     );
 };
 
+const SelectBoxWrapper = styled("div")({
+    overflow: "hidden",
+    width: 25,
+    height: 25,
+    display: "flex",
+    position: "relative",
+    alignItems: "center",
+    justifyContent: "center"
+});
+
+type ListSelectBoxProps = {
+    children: React.Node
+};
+
+/**
+ * Used to hold the Checkbox element for multi-select options.
+ * @param {*} props
+ */
+const ListSelectBox = (props: ListSelectBoxProps) => {
+    return (
+        <ListItemGraphic>
+            <SelectBoxWrapper>{props.children}</SelectBoxWrapper>
+        </ListItemGraphic>
+    );
+};
+
 export {
     List,
     ListItem,
@@ -194,5 +221,6 @@ export {
     ListTopCaption,
     ListActions,
     ListBottomCaption,
-    ListTextOverline
+    ListTextOverline,
+    ListSelectBox
 };
