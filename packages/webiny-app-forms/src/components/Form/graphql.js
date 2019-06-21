@@ -13,10 +13,10 @@ export const getForm = gql`
                             renderer
                         }
                         successMessage {
-                            translation
+                            value
                         }
                         submitButtonLabel {
-                            translation
+                            value
                         }
                     }
                 }

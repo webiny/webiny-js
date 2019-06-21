@@ -23,7 +23,8 @@ const createI18NStringAttributeModel = ({ i18n }: I18NContext) =>
                 .char()
                 .setDynamic(async () => {
                     const locale = await i18n.getLocale();
-                    return this.values.find(value => value.locale === locale) || null;
+                    const value = this.values.find(value => value.locale === locale);
+                    return value ? value.value : "";
                 });
         }
     };
