@@ -4,7 +4,6 @@ import { compose } from "recompose";
 import { withCms } from "webiny-app-cms/context";
 import { Grid, Cell } from "webiny-ui/Grid";
 import { Select } from "webiny-ui/Select";
-import { Input } from "webiny-ui/Input";
 import { get } from "lodash";
 import { I18NInput } from "webiny-app-forms/__i18n/components";
 
@@ -14,13 +13,13 @@ const GeneralSettings = ({ Bind, cms }: Object) => {
         <React.Fragment>
             <Grid>
                 <Cell span={12}>
-                    <Bind name={"successMessage.value"}>
+                    <Bind name={"successMessage"}>
                         <I18NInput label={"Success message"} />
                     </Bind>
                 </Cell>
                 <Cell span={12}>
-                    <Bind name={"submitButtonLabel.value"}>
-                        <Input label={"Submit button label"} />
+                    <Bind name={"submitButtonLabel"}>
+                        <I18NInput label={"Submit button label"} />
                     </Bind>
                 </Cell>
                 <Cell span={12}>

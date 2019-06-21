@@ -7,14 +7,12 @@ const settingsField = /* GraphQL */ `
             renderer
         }
         successMessage {
-            value
             values {
                 locale
                 value
             }
         }
         submitButtonLabel {
-            value
             values {
                 locale
                 value

@@ -21,8 +21,8 @@ const createI18NStringAttributeModel = ({ i18n }: I18NContext) =>
                 .setValue([]);
             this.attr("value")
                 .char()
-                .setDynamic(() => {
-                    const locale = i18n.getLocale();
+                .setDynamic(async () => {
+                    const locale = await i18n.getLocale();
                     return this.values.find(value => value.locale === locale) || null;
                 });
         }

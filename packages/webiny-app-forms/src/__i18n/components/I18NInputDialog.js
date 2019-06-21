@@ -1,7 +1,8 @@
 // @flow
 import React from "react";
-import { css } from "emotion";
 import { Input } from "webiny-ui/Input";
+import { Grid, Cell } from "webiny-ui/Grid";
+import { useI18N } from "webiny-app-forms/__i18n/components";
 
 import {
     Dialog,
@@ -17,45 +18,45 @@ import { Form } from "webiny-form";
 import { i18n } from "webiny-app/i18n";
 const t = i18n.namespace("FormEditor.EditFieldDialog");
 
-const dialogBody = css({
-    "&.mdc-dialog__body": {
-        marginTop: 0,
-        padding: "0"
-    }
-});
-
 type Props = {
     open: boolean,
-    values: ?Object,
+    values: Array<{ locale: string, value: ?string }>,
     onClose: Function,
     onSubmit: Function
 };
 
 const EditFieldDialog = ({ open, onClose, values, onSubmit }: Props) => {
-    const locales = ["en-GB", "en-US", "it-IT"];
     return (
         <Dialog open={open} onClose={onClose}>
             <DialogHeader>
                 <DialogHeaderTitle>{t`I18N Values`}</DialogHeaderTitle>
             </DialogHeader>
 
-            <Form submitOnEnter data={values} onSubmit={onSubmit}>
-                {({ Bind, submit }) => (
-                    <>
-                        <DialogBody className={dialogBody}>
-                            {locales.map(key => (
-                                <Bind key={key} name={key}>
-                                    <Input label={key} name={key} />
-                                </Bind>
-                            ))}
-                        </DialogBody>
-                        <DialogFooter>
-                            <DialogFooterButton onClick={onClose}>{t`Cancel`}</DialogFooterButton>
-                            <DialogFooterButton onClick={submit}>{t`Save`}</DialogFooterButton>
-                        </DialogFooter>
-                    </>
-                )}
-            </Form>
+            {open && (
+                <Form submitOnEnter data={values} onSubmit={onSubmit}>
+                    {({ Bind, submit }) => (
+                        <>
+                            <DialogBody>
+                                <Grid>
+                                    {values.map((item, index) => (
+                                        <Cell key={item.locale} span={12}>
+                                            <Bind name={`${index}.value`}>
+                                                <Input label={item.locale} />
+                                            </Bind>
+                                        </Cell>
+                                    ))}
+                                </Grid>
+                            </DialogBody>
+                            <DialogFooter>
+                                <DialogFooterButton
+                                    onClick={onClose}
+                                >{t`Cancel`}</DialogFooterButton>
+                                <DialogFooterButton onClick={submit}>{t`Save`}</DialogFooterButton>
+                            </DialogFooter>
+                        </>
+                    )}
+                </Form>
+            )}
         </Dialog>
     );
 };

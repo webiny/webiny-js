@@ -115,7 +115,9 @@ export const resolveUpdate = (entityFetcher: EntityFetcher) => async (
     }
 
     try {
-        await entity.populate(args.data).save();
+
+        await entity.populate(args.data);
+        await entity.save();
     } catch (e) {
         if (e instanceof ModelError && e.code === ModelError.INVALID_ATTRIBUTES) {
             const attrError = InvalidAttributesError.from(e);

@@ -6,6 +6,7 @@ import { registerPlugins, getPlugins } from "webiny-plugins";
 import { Theme as AdminTheme } from "webiny-admin";
 import { CmsProvider } from "webiny-app-cms/context";
 import { Security } from "webiny-app-security/components";
+import { I18NProvider } from "webiny-app-forms/__i18n/components";
 import Login from "webiny-app-security/admin/views/Login";
 import { CircularProgress } from "webiny-ui/Progress";
 import myTheme from "demo-theme";
@@ -20,26 +21,28 @@ getPlugins("webiny-init").forEach(plugin => plugin.callback());
 const App = () => {
     return (
         <UiProvider>
-            <Security>
-                {({ initialLoad, authenticated, notAuthenticated }) => (
-                    <CmsProvider theme={myTheme} isEditor>
-                        <AdminTheme>
-                            {initialLoad(<CircularProgress />)}
-                            {authenticated(
-                                <Fragment>
-                                    {getPlugins("route").map((pl: Object) =>
-                                        React.cloneElement(pl.route, {
-                                            key: pl.name,
-                                            exact: true
-                                        })
-                                    )}
-                                </Fragment>
-                            )}
-                            {notAuthenticated(<Login />)}
-                        </AdminTheme>
-                    </CmsProvider>
-                )}
-            </Security>
+            <I18NProvider>
+                <Security>
+                    {({ initialLoad, authenticated, notAuthenticated }) => (
+                        <CmsProvider theme={myTheme} isEditor>
+                            <AdminTheme>
+                                {initialLoad(<CircularProgress />)}
+                                {authenticated(
+                                    <Fragment>
+                                        {getPlugins("route").map((pl: Object) =>
+                                            React.cloneElement(pl.route, {
+                                                key: pl.name,
+                                                exact: true
+                                            })
+                                        )}
+                                    </Fragment>
+                                )}
+                                {notAuthenticated(<Login />)}
+                            </AdminTheme>
+                        </CmsProvider>
+                    )}
+                </Security>
+            </I18NProvider>
         </UiProvider>
     );
 };

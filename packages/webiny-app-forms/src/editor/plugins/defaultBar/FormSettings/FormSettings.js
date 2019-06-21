@@ -62,7 +62,6 @@ const FormSettings = ({ onExited, showSnackbar }: Props) => {
                         data={data.settings}
                         onSubmit={settings => {
                             setData(data => {
-                                console.log('setam sets', settings)
                                 data.settings = settings;
                                 return data;
                             });

@@ -5,7 +5,6 @@ export default /* GraphQL */ `
     }
 
     input I18NStringValueInput {
-        value: String
         values: [I18NStringLocaleValueInput]
     }
 `;

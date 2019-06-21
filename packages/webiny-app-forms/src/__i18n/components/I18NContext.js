@@ -40,11 +40,22 @@ function useI18N() {
     }
 
     const { state, dispatch } = context;
-    return {
-        locale: "en-US",
+    const self = {
+        // TODO: load these properly.
+        acceptLanguage: "en-US",
+        defaultLocale: "en-US",
+        locales: ["en-US", "de-DE", "hr-HR"],
+        getLocale() {
+            return self.acceptLanguage || self.defaultLocale;
+        },
+        getLocales() {
+            return self.locales;
+        },
         state,
         dispatch
     };
+
+    return self;
 }
 
 export { I18NProvider, useI18N };
