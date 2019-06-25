@@ -82,3 +82,10 @@ export type FormEditorFieldPluginType = PluginType & {
 };
 
 export type FormSettingsPluginType = PluginType & {};
+
+export type FormTriggerHandlerPluginType = PluginType & {
+    trigger: {
+        id: string,
+        handle: ({ trigger: Object, data: Object, form: FormType }) => void
+    }
+};

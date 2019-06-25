@@ -35,6 +35,7 @@ export const getForm = gql`
                         ${fieldsFields}
                     }
                     layout
+                    triggers
                     settings {
                         layout {
                             renderer

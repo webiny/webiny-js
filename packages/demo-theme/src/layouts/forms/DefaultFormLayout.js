@@ -41,10 +41,9 @@ const FormRenderer = ({ getFields, getDefaultValues, submit, form }: FormRenderP
     const submitForm = useCallback(async data => {
         setLoading(true);
         const result = await submit(data);
+        setLoading(false);
         if (result.error === null) {
             setSuccess(true);
-        } else {
-            setLoading(false);
         }
     }, []);
 
@@ -52,21 +51,19 @@ const FormRenderer = ({ getFields, getDefaultValues, submit, form }: FormRenderP
         <Form onSubmit={submitForm} data={getDefaultValues()}>
             {({ submit, Bind }) => (
                 <div className={"webiny-cms-form"}>
-                    {success && (
+                    {success ? (
                         <div className={"webiny-cms-base-element-style webiny-cms-layout-row"}>
                             <div
                                 className={"webiny-cms-base-element-style webiny-cms-layout-column"}
                             >
                                 <div className="webiny-cms-form__success-message">
                                     <div className="webiny-cms-form-field__label webiny-cms-typography-h3">
-                                        {form.settings.successMessage.value}
+                                        {form.settings.successMessage.value || "Thanks!"}
                                     </div>
                                 </div>
                             </div>
                         </div>
-                    )}
-
-                    {!success && (
+                    ) : (
                         <>
                             <div>
                                 {fields.map((row, rowIndex) => (

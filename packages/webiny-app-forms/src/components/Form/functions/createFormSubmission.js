@@ -4,15 +4,12 @@ import { SAVE_FORM_SUBMISSION } from "./graphql";
 import getClientIp from "./getClientIp";
 import { get } from "lodash";
 
-export default async (
-    { data: form, client, preview }: FormRenderComponentPropsType,
+type Args = {
+    props: FormRenderComponentPropsType,
     data: Object
-) => {
-    if (!form) {
-        // TODO: handle this?
-        return;
-    }
+};
 
+export default async ({ props: { data: form, client, preview }, data }: Args) => {
     if (preview) {
         return { preview: true, error: null, data: {} };
     }
