@@ -1,56 +1,58 @@
-import React, {useContext} from "react";
+import React from "react";
 import styled from "react-emotion";
-import { Switch } from "webiny-ui/Switch";
-import {
-    SimpleForm,
-    SimpleFormContent,
-    SimpleFormHeader
-} from "webiny-admin/components/SimpleForm";
-
+import { Accordion, AccordionItem } from "webiny-ui/Accordion";
 import { Typography } from "webiny-ui/Typography";
-import { RichTextEditor } from "webiny-app-forms/admin/components/RichTextEditor";
-import { FormEditorContext } from "webiny-app-forms/admin/components/FormEditor";
-import { ReactComponent as TextIcon } from "../../icons/round-text_format-24px.svg";
-import { ReactComponent as LinkIcon } from "../../icons/round-link-24px.svg";
-import { ReactComponent as CodeIcon } from "../../icons/round-code-24px.svg";
+import { Form } from "webiny-form";
+import { useFormEditor } from "webiny-app-forms/admin/components/FormEditor/Context";
+import { getPlugins } from "webiny-plugins";
+import { get, set } from "lodash";
+import { withSnackbar } from "webiny-admin/components";
+import { compose } from "recompose";
+
+import { i18n } from "webiny-app/i18n";
+const t = i18n.namespace("FormsApp.Editor.TriggersTab");
 
 const Container = styled("div")({
     padding: "40px 60px"
 });
 
-export const TriggersTab = () => {
-    return null;
-    const { validators, createBind, createToggle, createSetValue } = useValidatorsTab(props);
+export const TriggersTab = compose(withSnackbar())(({ showSnackbar }) => {
+    const { setData, data:formData } = useFormEditor();
+    const plugins = getPlugins("form-editor-trigger");
 
     return (
         <Container>
-            {validators.map(({ optional, validator: v }) => {
-                const vIndex = props.value.findIndex(x => x.id === v.id);
-                const enabled = vIndex > -1;
-                const hasSettings = typeof v.renderSettings === "function";
-                const Bind = createBind(v.id, vIndex);
-                const setValue = createSetValue(v.id, vIndex);
-                const data = props.value[vIndex];
+            <Typography use={"overline"}>Which actions should be taken after submission</Typography>
 
-                return (
-                    <SimpleForm key={v.id}>
-                        <SimpleFormHeader title={v.label} description={v.description}>
-                            {optional && (
-                                <Switch
-                                    label="Enabled"
-                                    value={enabled}
-                                    onChange={createToggle(v.id, enabled)}
-                                />
-                            )}
-                        </SimpleFormHeader>
-                        {enabled && hasSettings && (
-                            <SimpleFormContent>
-                                {v.renderSettings({ data, setValue, Bind })}
-                            </SimpleFormContent>
-                        )}
-                    </SimpleForm>
-                );
-            })}
+            <Accordion>
+                {plugins.map(({ trigger }) => {
+                    return (
+                        <AccordionItem
+                            key={trigger.id}
+                            icon={trigger.icon}
+                            title={trigger.title}
+                            description={trigger.description}
+                        >
+                            <Form
+                                data={get(formData, `triggers.${trigger.id}`, {})}
+                                onSubmit={submitData => {
+                                    setData(data =>
+                                        set(data, `triggers.${trigger.id}`, submitData)
+                                    );
+                                    showSnackbar(t`Form settings updated successfully.`);
+                                }}
+                            >
+                                {({ Bind, submit }) => {
+                                    return trigger.renderSettings({
+                                        Bind,
+                                        submit
+                                    });
+                                }}
+                            </Form>
+                        </AccordionItem>
+                    );
+                })}
+            </Accordion>
         </Container>
     );
-};
+});

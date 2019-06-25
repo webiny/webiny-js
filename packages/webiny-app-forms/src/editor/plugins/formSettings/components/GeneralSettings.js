@@ -6,6 +6,7 @@ import { Grid, Cell } from "webiny-ui/Grid";
 import { Select } from "webiny-ui/Select";
 import { get } from "lodash";
 import { I18NInput } from "webiny-app-forms/__i18n/components";
+import { RichTextEditor } from "webiny-app-forms/admin/components/RichTextEditor";
 
 const GeneralSettings = ({ Bind, cms }: Object) => {
     const layouts = get(cms, "theme.forms.layouts") || [];

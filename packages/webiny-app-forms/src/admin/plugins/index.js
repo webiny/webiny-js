@@ -5,7 +5,7 @@ import fields from "./fields";
 import groups from "./groups";
 import validators from "./validators";
 import richEditor from "./richTextEditor";
-import formEditorPlugins from "webiny-app-forms/editor";
+import formEditorPlugins from "webiny-app-forms/editor/plugins";
 
 import revisionContent from "./formDetails/revisionContent";
 import header from "./formDetails/header";

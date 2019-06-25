@@ -93,6 +93,7 @@ export default {
             fields: [FormFieldInput],
             layout: [[String]]
             settings: FormSettingsInput
+            triggers: JSON
         }
        
         input FormSortInput {
