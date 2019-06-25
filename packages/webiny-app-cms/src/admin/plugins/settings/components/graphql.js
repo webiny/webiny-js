@@ -11,6 +11,7 @@ const fields = /* GraphQL */ `
             }
             social {
                 image {
+                    id
                     src
                 }
             }
