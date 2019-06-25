@@ -7,6 +7,7 @@ import { Grid, Cell } from "webiny-ui/Grid";
 import { css } from "emotion";
 import { ButtonPrimary, ButtonSecondary } from "webiny-ui/Button";
 import { debounce, camelCase, trim } from "lodash";
+import { I18NInput, useI18N } from "webiny-app-forms/__i18n/components";
 
 const controlButtons = css({
     display: "flex",
@@ -79,14 +80,17 @@ const SetOptionAsDefaultValue = ({
 
 export default ({ form, multiple }: Object) => {
     const { Bind, setValue } = form;
-
+    const { translate } = useI18N();
     // $FlowFixMe
     const getAfterChangeLabel = React.useCallback(index => {
-        return debounce(value => setValue(`options.${index}.value`, camelCase(value)), 200);
+        return debounce(
+            value => setValue(`settings.options.${index}.value`, camelCase(translate(value))),
+            200
+        );
     }, []);
 
     return (
-        <Bind name={"options"} validators={["minLength:2", "required"]}>
+        <Bind name={"settings.options"} validators={["minLength:2", "required"]}>
             {({ value, onChange, ...other }) => {
                 return (
                     <DynamicFieldset value={value} onChange={onChange} {...other}>
@@ -103,16 +107,16 @@ export default ({ form, multiple }: Object) => {
                                     <Grid>
                                         <Cell span={4}>
                                             <Bind
-                                                name={`options.${index}.label`}
+                                                name={`settings.options.${index}.label`}
                                                 validators={["required"]}
                                                 afterChange={getAfterChangeLabel(index)}
                                             >
-                                                <Input label={"Label"} />
+                                                <I18NInput label={"Label"} />
                                             </Bind>
                                         </Cell>
                                         <Cell span={3}>
                                             <Bind
-                                                name={`options.${index}.value`}
+                                                name={`settings.options.${index}.value`}
                                                 validators={["required"]}
                                                 beforeChange={(tag, cb) => cb(trim(tag))}
                                             >

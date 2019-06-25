@@ -2,13 +2,37 @@
 import gql from "graphql-tag";
 
 const error = `
-error {
     code
     message
     data
-}`;
+`;
 
-const sharedFields = `
+const i18nFields = `
+    values {
+        value
+        locale
+    }
+`;
+
+export const fieldsFields = `
+        id
+        fieldId
+        type
+        label {
+            ${i18nFields}
+        }
+        placeholderText {
+            ${i18nFields}
+        }
+        helpText {
+            ${i18nFields}
+        }
+        defaultValue
+        validation
+        settings
+`;
+
+const baseFields = `
     id
     name
     version
@@ -50,7 +74,9 @@ export const getForm = gql`
         forms {
             form: getForm(id: $id) {
                 data {
-                    fields
+                    fields {
+                        ${fieldsFields}
+                    }
                     layout
                     stats {
                         views
@@ -62,12 +88,14 @@ export const getForm = gql`
                             renderer
                         }
                     }
-                    ${sharedFields}
+                    ${baseFields}
                     revisions {
-                        ${sharedFields}
+                        ${baseFields}
                     }
                 }
-                ${error}
+                error {
+                    ${error}
+                }
             }
         }
     }

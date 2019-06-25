@@ -1,3 +1,4 @@
+// @flow
 import React from "react";
 
 export function init(props: Object) {
@@ -50,6 +51,18 @@ function useI18N() {
         },
         getLocales() {
             return self.locales;
+        },
+        translate(valueObject: ?Object): string {
+            if (!valueObject) {
+                return "";
+            }
+
+            if (Array.isArray(valueObject.values)) {
+                const output = valueObject.values.find(item => item.locale === self.getLocale());
+                return output ? output.value : "";
+            }
+
+            return valueObject.value || "";
         },
         state,
         dispatch

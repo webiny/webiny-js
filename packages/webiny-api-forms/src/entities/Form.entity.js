@@ -4,7 +4,7 @@ import { Entity, type EntityCollection } from "webiny-entity";
 import { Model } from "webiny-model";
 import mdbid from "mdbid";
 
-export interface IForm extends Entity {
+export interface IFormSettings extends Entity {
     name: string;
     stats: {
         views: number,
@@ -56,6 +56,30 @@ class FormStatsModel extends Model {
     }
 }
 
+const createFieldModel = context =>
+    class FieldModel extends Model {
+        constructor() {
+            super();
+            this.attr("id")
+                .char()
+                .setValidators("required");
+            this.attr("fieldId")
+                .char()
+                .setValidators("required");
+            this.attr("type")
+                .char()
+                .setValidators("required");
+            this.attr("label").custom(I18NCharAttribute, context);
+            this.attr("helpText").custom(I18NCharAttribute, context);
+            this.attr("placeholderText").custom(I18NCharAttribute, context);
+            this.attr("defaultValue").char();
+            this.attr("validation").array();
+            this.attr("settings")
+                .object()
+                .setValue({});
+        }
+    };
+
 const createSettingsModel = context =>
     class SettingsModel extends Model {
         constructor(props) {
@@ -80,8 +104,8 @@ export default (context: Object) => {
         publishedOn: ?Date;
         name: string;
         snippet: string;
-        fields: [Object];
-        layout: [Object];
+        fields: Array<Object>;
+        layout: Array<Array<String>>;
         triggers: Object;
         settings: Object;
         version: number;
@@ -105,7 +129,7 @@ export default (context: Object) => {
                 .onSet(value => (this.published ? this.name : value));
 
             this.attr("fields")
-                .object()
+                .models(createFieldModel(context))
                 .onSet(value => (this.published ? this.fields : value))
                 .setValue([]);
 
@@ -139,9 +163,9 @@ export default (context: Object) => {
                 });
 
             this.attr("version").integer();
-
             this.attr("parent").char();
 
+            this.attr("publishedOn").date();
             this.attr("published")
                 .boolean()
                 .onSet(value => {
@@ -153,7 +177,6 @@ export default (context: Object) => {
                         this.publishedOn = new Date();
                     }
                 });
-            this.attr("publishedOn").date();
 
             this.on("beforeCreate", async () => {
                 if (!this.id) {

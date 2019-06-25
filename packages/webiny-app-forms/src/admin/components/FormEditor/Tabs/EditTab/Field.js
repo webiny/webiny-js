@@ -4,7 +4,7 @@ import { IconButton } from "webiny-ui/Button";
 import { Typography } from "webiny-ui/Typography";
 import { ReactComponent as EditIcon } from "../../icons/edit.svg";
 import { ReactComponent as DeleteIcon } from "../../icons/delete.svg";
-
+import { useI18N } from "webiny-app-forms/__i18n/components";
 const FieldContainer = styled("div")({
     display: "flex",
     flexDirection: "row",
@@ -31,10 +31,12 @@ const Actions = styled("div")({
 
 const Field = props => {
     const { field, onEdit, onDelete } = props;
+    const { translate } = useI18N();
+
     return (
         <FieldContainer>
             <Info>
-                <Typography use={"subtitle1"}>{field.label}</Typography>
+                <Typography use={"subtitle1"}>{translate(field.label)}</Typography>
             </Info>
             <Actions>
                 <IconButton icon={<EditIcon />} onClick={() => onEdit(field)} />

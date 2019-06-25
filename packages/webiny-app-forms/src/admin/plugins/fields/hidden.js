@@ -20,23 +20,11 @@ export default {
                 defaultValue: ""
             };
         },
-        renderSettings({ form, afterChangeLabel, uniqueFieldIdValidator }) {
+        renderSettings({ form, uniqueFieldIdValidator }) {
             const { Bind } = form;
             return (
                 <Grid>
-                    <Cell span={6}>
-                        <Bind
-                            name={"label"}
-                            validators={["required"]}
-                            afterChange={afterChangeLabel}
-                        >
-                            <Input
-                                label={"Label"}
-                                description={"Not visible when the form is rendered."}
-                            />
-                        </Bind>
-                    </Cell>
-                    <Cell span={6}>
+                    <Cell span={12}>
                         <Bind name={"fieldId"} validators={["required", uniqueFieldIdValidator]}>
                             <Input label={"Field ID"} />
                         </Bind>

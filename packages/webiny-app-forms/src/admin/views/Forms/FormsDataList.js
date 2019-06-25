@@ -6,7 +6,7 @@ import { css } from "emotion";
 import { Typography } from "webiny-ui/Typography";
 import { ConfirmationDialog } from "webiny-ui/ConfirmationDialog";
 import { DeleteIcon, EditIcon } from "webiny-ui/List/DataList/icons";
-import { deleteForm } from "webiny-app-forms/admin/graphql/forms";
+import { deleteForm } from "webiny-app-forms/admin/graphql";
 import { graphql } from "react-apollo";
 import { withHandlers, compose } from "recompose";
 import { withSnackbar } from "webiny-admin/components";

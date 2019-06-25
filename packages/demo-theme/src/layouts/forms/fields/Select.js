@@ -1,26 +1,21 @@
 // @flow
 import * as React from "react";
+import { useI18N } from "webiny-app-forms/__i18n/components";
+import type { FieldType } from "webiny-app-forms/types";
 
 type Props = {
     bind: Object,
-    field: {
-        fieldId: string,
-        id: string,
-        type?: string,
-        options: Array<Object>,
-        helpText?: string,
-        defaultValue?: string,
-        label?: string,
-    }
+    field: FieldType
 };
 
 const Select = (props: Props) => {
     const { onChange, value } = props.bind;
+    const { translate } = useI18N();
 
     return (
         <div className="webiny-cms-form-field webiny-cms-form-field--select">
             <label className="webiny-cms-form-field__label webiny-cms-typography-body">
-                {props.field.label}
+                {translate(props.field.label)}
             </label>
             <select
                 value={value}
@@ -29,14 +24,18 @@ const Select = (props: Props) => {
                 name={props.field.fieldId}
                 className="webiny-cms-form-field__select"
             >
-                <option disabled value={""}> -- select an option -- </option>
-                {props.field.options.map(option => (
+                <option disabled value={""}>
+                    {translate(props.field.placeholderText)}
+                </option>
+                {props.field.settings.options.map(option => (
                     <option key={option.value} value={option.value}>
-                        {option.label}
+                        {translate(option.label)}
                     </option>
                 ))}
             </select>
-            <div className="webiny-cms-form-field__helper-text">{props.field.helpText}</div>
+            <div className="webiny-cms-form-field__helper-text">
+                {translate(props.field.helpText)}
+            </div>
         </div>
     );
 };

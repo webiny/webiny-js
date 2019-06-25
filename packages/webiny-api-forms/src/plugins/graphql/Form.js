@@ -28,14 +28,38 @@ export default {
             publishedOn: DateTime
             version: Int
             name: String
-            fields: [JSON]
-            layout: [[JSON]]
+            fields: [FormFieldType]
+            layout: [[String]]
             settings: FormSettingsType
             triggers: JSON
             published: Boolean
             parent: ID
             revisions: [Form]
             stats: FormStatsType
+        }
+        
+        type FormFieldType {
+            id: String!
+            fieldId: String!
+            type: String!
+            label: I18NStringValue
+            placeholderText: I18NStringValue
+            helpText: I18NStringValue
+            defaultValue: String
+            validation: [String]
+            settings: JSON
+        }    
+        
+        input FormFieldInput {
+            id : String!
+            fieldId: String!
+            type: String!
+            label: I18NStringValueInput
+            placeholderText: I18NStringValueInput
+            helpText: I18NStringValueInput
+            defaultValue: String
+            validation: [String]
+            settings: JSON
         }
         
         type FormSettingsLayoutType {
@@ -66,8 +90,8 @@ export default {
         
         input UpdateFormInput {
             name: String
-            fields: [JSON],
-            layout: [JSON]
+            fields: [FormFieldInput],
+            layout: [[String]]
             settings: FormSettingsInput
         }
        

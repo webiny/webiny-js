@@ -1,6 +1,31 @@
 // @flow
 import gql from "graphql-tag";
 
+const i18nFields = `
+    values {
+        value
+        locale
+    }
+`;
+
+export const fieldsFields = `
+        id
+        fieldId
+        type
+        label {
+            ${i18nFields}
+        }
+        placeholderText {
+            ${i18nFields}
+        }
+        helpText {
+            ${i18nFields}
+        }
+        defaultValue
+        validation
+        settings
+`;
+
 const settingsField = /* GraphQL */ `
     {
         layout {
@@ -29,7 +54,9 @@ export const getForm = gql`
                     id
                     name
                     version
-                    fields
+                    fields {
+                        ${fieldsFields}
+                    }
                     layout
                     settings ${settingsField}
                     triggers
@@ -53,7 +80,9 @@ export const updateRevision = gql`
                     id
                     name
                     version
-                    fields
+                    fields {
+                        ${fieldsFields}
+                    }
                     layout
                     settings ${settingsField}
                     triggers

@@ -18,7 +18,8 @@ export type FieldType = {
     helpText: string,
     placeholderText: string,
     type: string,
-    validation: Array<any>
+    validation: Array<any>,
+    settings: Object
 } & Object;
 
 export type FormType = {

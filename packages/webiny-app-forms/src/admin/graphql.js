@@ -1,14 +1,13 @@
 // @flow
 import gql from "graphql-tag";
 
-const error = `
-error {
+const errorFields = `
     code
     message
     data
-}`;
+`;
 
-const sharedFields = `
+const baseFields = `  
     id
     name
     version
@@ -21,6 +20,31 @@ const sharedFields = `
     }
 `;
 
+const i18nFields = `
+    values {
+        value
+        locale
+    }
+`;
+
+export const fieldsFields = `
+        id
+        fieldId
+        type
+        label {
+            ${i18nFields}
+        }
+        placeholderText {
+            ${i18nFields}
+        }
+        helpText {
+            ${i18nFields}
+        }
+        defaultValue
+        validation
+        settings
+`;
+
 export const createForm = gql`
     mutation FormsCreateForm($name: String!) {
         forms {
@@ -28,7 +52,9 @@ export const createForm = gql`
                 data {
                     id
                 }
-                ${error}
+                error {
+                    ${errorFields}
+                }
             }
         }
     }
@@ -39,11 +65,7 @@ export const listForms = gql`
         forms {
             listForms(sort: $sort, page: $page, perPage: $perPage, search: $search) {
                 data {
-                    ${sharedFields}
-                    createdBy {
-                        firstName
-                        lastName
-                    }
+                    ${baseFields}
                 }
                 meta {
                     totalCount
@@ -62,8 +84,10 @@ export const getForm = gql`
         forms {
             form: getForm(id: $id) {
                 data {
-                    fields
                     layout
+                    fields {
+                        ${fieldsFields}
+                    }
                     stats {
                         views
                         submissions
@@ -74,12 +98,14 @@ export const getForm = gql`
                             renderer
                         }
                     }
-                    ${sharedFields}
+                    ${baseFields}
                     revisions {
-                        ${sharedFields}
+                        ${baseFields}
                     }
                 }
-                ${error}
+                error {
+                    ${errorFields}
+                }
             }
         }
     }
@@ -92,7 +118,9 @@ export const createRevisionFrom = gql`
                 data {
                     id
                 }
-                ${error}
+                error {
+                    ${errorFields}
+                }
             }
         }
     }
@@ -103,9 +131,11 @@ export const publishRevision = gql`
         forms {
             publishRevision(id: $id) {
                 data {
-                    ${sharedFields}
+                    ${baseFields}
                 }
-                ${error}
+                error {
+                    ${errorFields}
+                }
             }
         }
     }
@@ -116,7 +146,9 @@ export const deleteRevision = gql`
         forms {
             deleteRevision(id: $id) {
                 data
-                ${error}
+                error {
+                    ${errorFields}
+                }
             }
         }
     }
@@ -127,7 +159,9 @@ export const deleteForm = gql`
         forms {
             deleteForm(id: $id) {
                 data
-                ${error}
+                error {
+                    ${errorFields}
+                }
             }
         }
     }

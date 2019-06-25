@@ -36,7 +36,10 @@ const I18NInput = ({ value, onChange, ...inputProps }) => {
     const { getLocale, getLocales } = useI18N();
 
     const openDialog = useCallback(() => {
-        const newValues = prepareII8NValues({ locales: getLocales(), values: value.values });
+        const newValues = prepareII8NValues({
+            locales: getLocales(),
+            values: value && Array.isArray(value.values) ? value.values : []
+        });
         setValues(newValues);
     });
 
@@ -59,7 +62,7 @@ const I18NInput = ({ value, onChange, ...inputProps }) => {
 
     const inputOnChange = useCallback(inputValue => {
         const newValue = { values: [], ...value };
-        const index = value.values.findIndex(item => item.locale === getLocale());
+        const index = value ? value.values.findIndex(item => item.locale === getLocale()) : -1;
         if (index >= 0) {
             newValue.values[index].value = inputValue;
         } else {

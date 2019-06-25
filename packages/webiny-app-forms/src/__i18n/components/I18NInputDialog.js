@@ -2,7 +2,6 @@
 import React from "react";
 import { Input } from "webiny-ui/Input";
 import { Grid, Cell } from "webiny-ui/Grid";
-import { useI18N } from "webiny-app-forms/__i18n/components";
 
 import {
     Dialog,

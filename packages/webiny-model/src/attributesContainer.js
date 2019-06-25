@@ -29,11 +29,9 @@ class AttributesContainer {
         return this.parentModel;
     }
 
-    custom(attribute: Class<Attribute>) {
+    custom(attribute: Class<Attribute>, ...rest: any) {
         const model = this.getParentModel();
-        const args = Array.from(arguments);
-        args.shift();
-        model.setAttribute(this.name, new attribute(this.name, this, ...args));
+        model.setAttribute(this.name, new attribute(this.name, this, ...rest));
         return model.getAttribute(this.name);
     }
 }
