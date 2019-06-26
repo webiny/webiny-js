@@ -1,81 +1,79 @@
-// @flow
+import React from "react";
 import { DynamicFieldset } from "webiny-ui/DynamicFieldset";
 import { Input } from "webiny-ui/Input";
-import * as React from "react";
+import styled from "react-emotion";
 import { Typography } from "webiny-ui/Typography";
-import { Grid, Cell } from "webiny-ui/Grid";
-import { css } from "emotion";
-import { ButtonPrimary, ButtonSecondary } from "webiny-ui/Button";
-import { debounce, camelCase, trim } from "lodash";
-import { I18NInput, useI18N } from "webiny-app-forms/__i18n/components";
+import { ButtonSecondary, ButtonDefault } from "webiny-ui/Button";
 
-const controlButtons = css({
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    ">button": {
-        marginRight: 15
+const Fieldset = styled("div")({
+    position: "relative",
+    width: "100%",
+    marginBottom: 15,
+    ".webiny-ui-button": {
+        position: "absolute",
+        display: "block",
+        right: 10,
+        top: 13
     }
 });
 
-const textStyling = css({
-    color: "var(--mdc-theme-text-secondary-on-background)"
+const Header = styled("div")({
+    display: "flex",
+    justifyContent: "space-between",
+    marginBottom: 15
 });
 
-export default ({ form }: Object) => {
-    const { Bind, setValue } = form;
-    const { translate } = useI18N();
-    // $FlowFixMe
-    const getAfterChangeLabel = React.useCallback(index => {
-        return debounce(
-            value => setValue(`settings.options.${index}.value`, camelCase(translate(value))),
-            200
-        );
-    }, []);
+type Props = {
+    value: Array<Object>,
+    onChange: Function,
+    title: string,
+    inputLabel: String,
+    addButtonLabel: String
+};
+
+const WebhooksRequestsDynamicFieldset = (props: Props) => {
+    const { onChange, value, Bind } = props;
 
     return (
-        <Bind name={"settings.options"} validators={["minLength:2", "required"]}>
-            {({ value, onChange, ...other }) => {
-                return (
-                    <DynamicFieldset value={value} onChange={onChange} {...other}>
-                        {({ actions, header, row, empty }) => (
-                            <>
-                                {header(() => (
-                                    <Grid style={{ paddingTop: 0, paddingBottom: 0 }}>
-                                        <Cell span={12} className={textStyling}>
-                                            <Typography use={"button"}>Webhook URLs</Typography>
-                                        </Cell>
-                                    </Grid>
-                                ))}
-                                {row(({ index }) => (
-                                    <Grid>
-                                        <Cell span={12}>
-                                            <Bind
-                                                name={`settings.options.${index}.label`}
-                                                validators={["required"]}
-                                                afterChange={getAfterChangeLabel(index)}
-                                            >
-                                                <I18NInput label={"Label"} />
-                                            </Bind>
-                                        </Cell>
-                                    </Grid>
-                                ))}
-                                {empty(() => (
-                                    <Grid>
-                                        <Cell span={12} className={textStyling}>
-                                            <Typography use={"button"}>Options</Typography>
-                                            <br />
-                                            <ButtonPrimary onClick={actions.add()}>
-                                                Add option
-                                            </ButtonPrimary>
-                                        </Cell>
-                                    </Grid>
-                                ))}
-                            </>
-                        )}
-                    </DynamicFieldset>
-                );
-            }}
-        </Bind>
+        <DynamicFieldset value={value} onChange={onChange}>
+            {({ actions, header, row, empty }) => (
+                <>
+                    {row(({ index }) => (
+                        <Fieldset>
+                            <Bind validators={["required", "url"]} name={`urls.${index}`}>
+                                <Input label={props.inputLabel} />
+                            </Bind>
+                            <ButtonSecondary small onClick={actions.remove(index)}>
+                                remove
+                            </ButtonSecondary>
+                        </Fieldset>
+                    ))}
+                    {empty(() => (
+                        <Header>
+                            <Typography use={"overline"}>{props.title}</Typography>
+                            <ButtonDefault onClick={actions.add()}>
+                                {props.addButtonLabel}
+                            </ButtonDefault>
+                        </Header>
+                    ))}
+                    {header(() => (
+                        <Header>
+                            <Typography use={"overline"}>{props.title}</Typography>
+                            <ButtonDefault
+                                onClick={() => {
+                                    const newValue = Array.isArray(value) ? [...value] : [];
+                                    newValue.push("");
+                                    onChange(newValue);
+                                }}
+                            >
+                                {props.addButtonLabel}
+                            </ButtonDefault>
+                        </Header>
+                    ))}
+                </>
+            )}
+        </DynamicFieldset>
     );
 };
+
+export default WebhooksRequestsDynamicFieldset;

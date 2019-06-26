@@ -16,6 +16,20 @@ class MetaModel extends Model {
     }
 }
 
+class LogModel extends Model {
+    constructor(props) {
+        super(props);
+        this.attr("type")
+            .char()
+            .setValidators("required,in:error:warning:info:success");
+        this.attr("message").char();
+        this.attr("data").object();
+        this.attr("createdOn")
+            .date()
+            .setValue(new Date());
+    }
+}
+
 export interface IFormSubmission extends Entity {
     form: ?Entity;
     data: Object;
@@ -29,6 +43,7 @@ export default ({ getEntities }: Object) =>
         form: ?IForm;
         data: Object;
         meta: Object;
+        logs: Array<Object>;
         submittedOn: ?Date;
 
         constructor() {
@@ -45,16 +60,20 @@ export default ({ getEntities }: Object) =>
                 .model(MetaModel)
                 .setValidators("required");
 
+            this.attr("logs")
+                .models(LogModel)
+                .setValidators("required").setValue([]);
+
             this.on("beforeCreate", async () => {
                 this.meta.submittedOn = new Date();
             });
+        }
 
-            this.on("afterCreate", async () => {
-                const form = await this.form;
-                if (form) {
-                    form.stats.incrementSubmissions();
-                    await form.save();
-                }
-            });
+        addLog(log: Object) {
+            if (!Array.isArray(this.logs)) {
+                this.logs = [];
+            }
+
+            this.logs = [...this.logs, log];
         }
     };

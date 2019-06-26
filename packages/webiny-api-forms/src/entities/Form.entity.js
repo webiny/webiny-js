@@ -3,6 +3,7 @@ import { I18NCharAttribute, I18NObjectAttribute } from "webiny-api-forms/__i18n/
 import { Entity, type EntityCollection } from "webiny-entity";
 import { Model } from "webiny-model";
 import mdbid from "mdbid";
+import { getPlugins } from "webiny-plugins";
 
 export interface IFormSettings extends Entity {
     name: string;
@@ -108,6 +109,7 @@ export default (context: Object) => {
         layout: Array<Array<String>>;
         triggers: Object;
         settings: Object;
+        stats: FormStatsModel;
         version: number;
         parent: string;
 
@@ -217,6 +219,41 @@ export default (context: Object) => {
                     return Promise.all(revisions.map(rev => rev.delete()));
                 }
             });
+        }
+
+        async submit({ data, meta }: { data: Object, meta: Object }) {
+            const { FormSubmission } = getEntities();
+            const formSubmission = new FormSubmission();
+            formSubmission.form = this;
+            formSubmission.data = data;
+            formSubmission.meta = meta;
+            formSubmission.addLog({ type: "info", message: "Form submission created." });
+            await formSubmission.save();
+
+            try {
+                // Execute triggers
+                const plugins = getPlugins("form-trigger-handler");
+                for (let i = 0; i < plugins.length; i++) {
+                    let plugin = plugins[i];
+                    this.triggers[plugin.trigger] &&
+                        (await plugin.handle({
+                            form: this,
+                            formSubmission,
+                            data,
+                            meta,
+                            trigger: this.triggers[plugin.trigger]
+                        }));
+                }
+
+                this.stats.incrementSubmissions();
+                await this.save();
+
+                formSubmission.addLog({ type: "success", message: "Form submitted successfully." });
+            } catch (e) {
+                formSubmission.addLog({ type: "error", message: e.message });
+            } finally {
+                await formSubmission.save();
+            }
         }
 
         async getNextVersion() {

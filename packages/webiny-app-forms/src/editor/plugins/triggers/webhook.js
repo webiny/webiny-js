@@ -1,7 +1,7 @@
 import React from "react";
 import { Grid, Cell } from "webiny-ui/Grid";
 import { ReactComponent as LinkIcon } from "./icons/round-link-24px.svg";
-import { SimpleInputFieldset } from "webiny-ui/DynamicFieldset";
+import WebhooksRequestsDynamicFieldset from "./components/WebhooksRequestsDynamicFieldset";
 import { ButtonPrimary } from "webiny-ui/Button";
 
 export default {
@@ -17,18 +17,12 @@ export default {
                 <Grid>
                     <Cell span={12}>
                         <Bind name={"urls"}>
-                            {({ value, onChange, ...other }) => (
-                                <>
-                                    <SimpleInputFieldset
-                                        value={value}
-                                        onChange={onChange}
-                                        title={"Webhook URLs"}
-                                        inputLabel={"URL"}
-                                        addButtonLabel={"+ Add URL"}
-                                        {...other}
-                                    />
-                                </>
-                            )}
+                            <WebhooksRequestsDynamicFieldset
+                                Bind={Bind}
+                                title={"Webhook URLs"}
+                                inputLabel={"URL"}
+                                addButtonLabel={"+ Add URL"}
+                            />
                         </Bind>
                     </Cell>
                     <Cell>
