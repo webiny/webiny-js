@@ -1,16 +1,22 @@
 import React, { useState, useCallback } from "react";
-import { IconButton } from "webiny-ui/Button";
+import { Icon } from "webiny-ui/Icon";
 import { Input } from "webiny-ui/Input";
 import I18NInputDialog from "./I18NInputDialog";
 import { ReactComponent as I18NIcon } from "./icons/round-translate-24px.svg";
 import { css } from "emotion";
 import { useI18N } from "webiny-app-forms/__i18n/components";
+import { Tooltip } from "webiny-ui/Tooltip";
 import classNames from "classnames";
 
 const style = {
     i18nDialogIconButton: css({
-        ".rmwc-icon": {
-            pointerEvents: "all"
+        ".webiny-ui-tooltip": {
+            display: "block"
+        },
+        ".webiny-ui-icon": {
+            pointerEvents: "all",
+            cursor: "pointer",
+            zIndex: 1
         }
     })
 };
@@ -79,7 +85,11 @@ const I18NInput = ({ value, onChange, ...inputProps }) => {
                 value={inputValue}
                 onChange={inputOnChange}
                 className={classNames(inputProps.className, style.i18nDialogIconButton)}
-                trailingIcon={<IconButton icon={<I18NIcon />} onClick={openDialog} />}
+                trailingIcon={
+                    <Tooltip content={<span>Set locale values</span>} placement={"top"}>
+                        <Icon icon={<I18NIcon />} onClick={openDialog} />
+                    </Tooltip>
+                }
             />
             <I18NInputDialog
                 values={values}
