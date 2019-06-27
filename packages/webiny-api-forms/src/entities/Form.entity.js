@@ -102,6 +102,7 @@ export default (context: Object) => {
         createdBy: Entity;
         updatedBy: Entity;
         published: boolean;
+        locked: boolean;
         publishedOn: ?Date;
         name: string;
         snippet: string;
@@ -128,16 +129,16 @@ export default (context: Object) => {
             this.attr("name")
                 .char()
                 .setValidators("required")
-                .onSet(value => (this.published ? this.name : value));
+                .onSet(value => (this.locked ? this.name : value));
 
             this.attr("fields")
                 .models(createFieldModel(context))
-                .onSet(value => (this.published ? this.fields : value))
+                .onSet(value => (this.locked ? this.fields : value))
                 .setValue([]);
 
             this.attr("layout")
                 .object()
-                .onSet(value => (this.published ? this.layout : value))
+                .onSet(value => (this.locked ? this.layout : value))
                 .setValue([]);
 
             this.attr("stats")
@@ -148,18 +149,27 @@ export default (context: Object) => {
             const SettingsModel = createSettingsModel(context);
             this.attr("settings")
                 .model(SettingsModel)
-                .onSet(value => (this.published ? this.layout : value))
+                .onSet(value => (this.locked ? this.layout : value))
                 .setDefaultValue(new SettingsModel());
 
             this.attr("triggers")
                 .object()
-                .onSet(value => (this.published ? this.triggers : value));
+                .onSet(value => (this.locked ? this.triggers : value));
 
             this.attr("revisions")
                 .entities(CmsForm)
                 .setDynamic(() => {
                     return CmsForm.find({
                         query: { parent: this.parent },
+                        sort: { version: -1 }
+                    });
+                });
+
+            this.attr("publishedRevisions")
+                .entities(CmsForm)
+                .setDynamic(() => {
+                    return CmsForm.find({
+                        query: { parent: this.parent, published: true },
                         sort: { version: -1 }
                     });
                 });
@@ -171,14 +181,24 @@ export default (context: Object) => {
             this.attr("published")
                 .boolean()
                 .onSet(value => {
-                    if (this.published) {
+                    if (this.locked) {
                         return this.published;
                     }
 
                     if (value) {
                         this.publishedOn = new Date();
+                        if (!this.locked) {
+                            this.locked = true;
+                        }
                     }
+
+                    return value;
                 });
+
+            this.attr("locked")
+                .boolean()
+                .setSkipOnPopulate()
+                .setDefaultValue(false);
 
             this.on("beforeCreate", async () => {
                 if (!this.id) {

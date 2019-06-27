@@ -35,6 +35,7 @@ export default {
             published: Boolean
             parent: ID
             revisions: [Form]
+            publishedRevisions: [Form]
             stats: FormStatsType
         }
         
@@ -128,7 +129,7 @@ export default {
                 sort: String
             ): FormResponse
             
-            getPublishedForm(id: String, url: String, parent: String): FormResponse
+            getPublishedForm(id: ID!): FormResponse
             
             listForms(
                 page: Int
@@ -141,7 +142,7 @@ export default {
             listPublishedForms(
                 search: String
                 category: String
-                parent: String
+                parent: ID!
                 tags: [String]
                 sort: FormSortInput
                 page: Int

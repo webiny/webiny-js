@@ -33,7 +33,7 @@ const PublishFormButton = ({ showSnackbar, history }) => {
                                         }
                                     });
 
-                                    const { error } = response.data.cms.publishRevision;
+                                    const { error } = response.data.forms.publishRevision;
                                     if (error) {
                                         return showSnackbar(error.message);
                                     }

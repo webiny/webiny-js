@@ -3,7 +3,7 @@ import { Response, NotFoundResponse } from "webiny-api/graphql/responses";
 import { listPublishedForms } from "./listPublishedForms";
 
 export default async (root: any, args: Object, context: Object) => {
-    if (!args.parent && !args.url) {
+    if (!args.id) {
         return new NotFoundResponse("Form parent or URL missing.");
     }
 

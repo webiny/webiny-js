@@ -2,14 +2,16 @@
 // $FlowFixMe
 import React from "react";
 import { get } from "lodash";
-import { getForm } from "./graphql";
+import { getForm, getPublishedForm } from "./graphql";
 import { Query } from "react-apollo";
 import FormRender from "./FormRender";
 import type { FormLoadComponentPropsType } from "webiny-app-forms/types";
 
 const FormLoad = (props: FormLoadComponentPropsType) => {
+    const query = props.preview ? getForm : getPublishedForm;
+
     return (
-        <Query query={getForm} variables={{ id: props.id }}>
+        <Query query={query} variables={{ id: props.id }}>
             {({ data, loading }) => {
                 if (loading) {
                     // TODO: handle loading

@@ -1,28 +1,41 @@
 import gql from "graphql-tag";
 
-const i18nFields = `
-    values {
-        value
-        locale
-    }
-`;
-
 export const fieldsFields = `
         id
         fieldId
         type
         label {
-            ${i18nFields}
+            value
         }
         placeholderText {
-            ${i18nFields}
+            value
         }
         helpText {
-            ${i18nFields}
+            value
         }
         defaultValue
         validation
         settings
+`;
+
+export const dataFields = `
+    id
+    fields {
+        ${fieldsFields}
+    }
+    layout
+    triggers
+    settings {
+        layout {
+            renderer
+        }
+        successMessage {
+            value
+        }
+        submitButtonLabel {
+            value
+        }
+    }
 `;
 
 export const getForm = gql`
@@ -30,23 +43,22 @@ export const getForm = gql`
         forms {
             getForm(id: $id) {
                 data {
-                    id
-                    fields {
-                        ${fieldsFields}
-                    }
-                    layout
-                    triggers
-                    settings {
-                        layout {
-                            renderer
-                        }
-                        successMessage {
-                            value
-                        }
-                        submitButtonLabel {
-                            value
-                        }
-                    }
+                    ${dataFields}
+                }
+                error {
+                    message
+                }
+            }
+        }
+    }
+`;
+
+export const getPublishedForm = gql`
+    query GetPublishedForm($id: ID!) {
+        forms {
+            getPublishedForm(id: $id) {
+                data {
+                    ${dataFields}
                 }
                 error {
                     message

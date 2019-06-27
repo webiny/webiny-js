@@ -19,7 +19,7 @@ export default (prop: string) => {
                     refetchQueries: ["CmsListPages"],
                     update: (cache, { data }) => {
                         // Don't do anything if there was an error during publishing!
-                        if (data.cms.publishRevision.error) {
+                        if (data.forms.publishRevision.error) {
                             return;
                         }
 
@@ -53,7 +53,7 @@ export default (prop: string) => {
                     }
                 });
 
-                const { error } = res.cms.publishRevision;
+                const { error } = res.forms.publishRevision;
                 if (error) {
                     return showSnackbar(error.message);
                 }

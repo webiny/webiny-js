@@ -33,6 +33,7 @@ type Props = {
     form: Object
 };
 
+// TODO: @sven - layout styling
 const FormSubmissionDialog = ({ formSubmission, onClose, form }: Props) => {
     return (
         <Dialog open={!!formSubmission} onClose={onClose}>
@@ -43,23 +44,26 @@ const FormSubmissionDialog = ({ formSubmission, onClose, form }: Props) => {
                     </DialogHeader>
 
                     <DialogBody className={dialogBody}>
-                        <dl>
-                            {Object.keys(formSubmission.data).map(fieldId => {
-                                const field = form.fields.find(field => field.fieldId === fieldId);
-                                return (
-                                    <React.Fragment key={fieldId}>
-                                        <dt key={fieldId}>
-                                            <Typography use="overline">{field.label.value}</Typography>
-                                        </dt>
-                                        <dd>
-                                            <Typography use="body1">
-                                                {formSubmission.data[fieldId]}
+                        <div>
+                            {form.layout.map(row => {
+                                return row.map(id => {
+                                    const field = form.fields.find(field => field.id === id);
+                                    return (
+                                        <div
+                                            key={id}
+                                            style={{ display: "inline-block", width: `calc(100% / ${row.length})` }}
+                                        >
+                                            <Typography use="overline">
+                                                {field.label.value}
                                             </Typography>
-                                        </dd>
-                                    </React.Fragment>
-                                );
+                                            <Typography use="body1">
+                                                {formSubmission.data[field.fieldId]}
+                                            </Typography>
+                                        </div>
+                                    );
+                                });
                             })}
-                        </dl>
+                        </div>
                     </DialogBody>
                     <DialogFooter>
                         <DialogCancel onClick={onClose}>{t`Cancel`}</DialogCancel>

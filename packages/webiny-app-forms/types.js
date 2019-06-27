@@ -53,7 +53,8 @@ export type FormRenderComponentPropsType = {
 };
 
 export type FormLoadComponentPropsType = {
-    id: string
+    id: string,
+    preview: boolean
 };
 
 export type UseFormEditorReducerStateType = {
