@@ -25,7 +25,7 @@ const rightAlign = css({
     alignItems: "flex-end !important"
 });
 
-const FormsSubmissionsList = (props: Object) => {
+const FormSubmissionsList = (props: Object) => {
     const { dataList, form } = props;
     const [selectedFormSubmission, selectFormSubmission] = useState(null);
 
@@ -38,10 +38,10 @@ const FormsSubmissionsList = (props: Object) => {
                     multiSelect={dataList.multiSelect}
                     multiSelectActions={
                         <IconButton
+                            icon={<ImportExport />}
                             onClick={() => {
                                 //console.log("Multi selected items: ", dataList.getMultiSelected());
                             }}
-                            icon={<ImportExport />}
                         />
                     }
                     sorters={[
@@ -100,4 +100,4 @@ const FormsSubmissionsList = (props: Object) => {
     );
 };
 
-export default FormsSubmissionsList;
+export default FormSubmissionsList;

@@ -29,7 +29,8 @@ const dialogBody = css({
 
 type Props = {
     formSubmission: ?Object,
-    onClose: Function
+    onClose: Function,
+    form: Object
 };
 
 const FormSubmissionDialog = ({ formSubmission, onClose, form }: Props) => {
@@ -46,16 +47,16 @@ const FormSubmissionDialog = ({ formSubmission, onClose, form }: Props) => {
                             {Object.keys(formSubmission.data).map(fieldId => {
                                 const field = form.fields.find(field => field.fieldId === fieldId);
                                 return (
-                                    <>
+                                    <React.Fragment key={fieldId}>
                                         <dt key={fieldId}>
-                                            <Typography use="overline">{field.label}</Typography>
+                                            <Typography use="overline">{field.label.value}</Typography>
                                         </dt>
                                         <dd>
                                             <Typography use="body1">
                                                 {formSubmission.data[fieldId]}
                                             </Typography>
                                         </dd>
-                                    </>
+                                    </React.Fragment>
                                 );
                             })}
                         </dl>

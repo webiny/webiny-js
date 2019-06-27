@@ -24,12 +24,10 @@ import { ReactComponent as LockIcon } from "webiny-app-cms/admin/assets/lock.svg
 import { ReactComponent as BeenHereIcon } from "webiny-app-cms/admin/assets/beenhere.svg";
 import { ReactComponent as GestureIcon } from "webiny-app-cms/admin/assets/gesture.svg";
 import withRevisionHandlers from "./withRevisionHandlers";
-import { withCmsSettings } from "webiny-app-cms/admin/components";
 import { ReactComponent as AddIcon } from "webiny-app-cms/admin/assets/add.svg";
 import { ReactComponent as EditIcon } from "webiny-app-cms/admin/assets/edit.svg";
 import { ReactComponent as PublishIcon } from "webiny-app-cms/admin/assets/round-publish-24px.svg";
 import { ReactComponent as DeleteIcon } from "webiny-app-cms/admin/assets/delete.svg";
-import { ReactComponent as PreviewIcon } from "webiny-app-cms/admin/assets/visibility.svg";
 
 type RevisionProps = WithFormDetailsProps & {
     rev: Object,
@@ -38,7 +36,6 @@ type RevisionProps = WithFormDetailsProps & {
     deleteRevision: Function,
     publishRevision: Function,
     submitCreateRevision: Function,
-    cmsSettings: { getFormPreviewUrl: Function }
 };
 
 const primaryColor = css({ color: "var(--mdc-theme-primary)" });
@@ -76,7 +73,6 @@ const Revision = (props: RevisionProps) => {
         editRevision,
         deleteRevision,
         publishRevision,
-        cmsSettings: { getFormPreviewUrl }
     } = props;
     const { icon, text: tooltipText } = getIcon(rev);
 
@@ -129,13 +125,6 @@ const Revision = (props: RevisionProps) => {
                                 </MenuItem>
                             )}
 
-                            <MenuItem onClick={() => window.open(getFormPreviewUrl(rev), "_blank")}>
-                                <ListItemGraphic>
-                                    <Icon icon={<PreviewIcon />} />
-                                </ListItemGraphic>
-                                Preview
-                            </MenuItem>
-
                             {!rev.locked && (
                                 <React.Fragment>
                                     <MenuDivider />
@@ -160,5 +149,4 @@ export default compose(
     withSnackbar(),
     withPageDetails(),
     withRevisionHandlers,
-    withCmsSettings()
 )(Revision);

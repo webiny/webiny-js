@@ -21,10 +21,7 @@ const baseFields = `
 `;
 
 const i18nFields = `
-    values {
-        value
-        locale
-    }
+    value
 `;
 
 export const fieldsFields = `

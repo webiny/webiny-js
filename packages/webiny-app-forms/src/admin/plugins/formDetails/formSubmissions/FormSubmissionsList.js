@@ -1,6 +1,6 @@
 //@flow
 import * as React from "react";
-import FormSubmissionsList from "./FormSubmissionsList/FormsSubmissionsList";
+import FormSubmissionsList from "./FormSubmissionsList/FormSubmissionsList";
 import { compose } from "recompose";
 import { withDataList } from "webiny-app/components";
 import { get } from "lodash";
