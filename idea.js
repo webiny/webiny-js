@@ -21,6 +21,7 @@ System.config({
         "webiny-api-cookie-policy/*": "./packages/webiny-api-cookie-policy/src/*",
         "webiny-api-google-tag-manager/*": "./packages/webiny-api-google-tag-manager/src/*",
         "webiny-api-mailchimp/*": "./packages/webiny-api-mailchimp/src/*",
-        "webiny-api-typeform/*": "./packages/webiny-api-typeform/src/*"
+        "webiny-api-typeform/*": "./packages/webiny-api-typeform/src/*",
+        "webiny-entity/*": "./packages/webiny-entity/src/*"
     }
 });
