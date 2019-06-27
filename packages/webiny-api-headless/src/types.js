@@ -1,7 +1,32 @@
 import type { PluginType } from "webiny-plugins/types";
-import type { Entity } from "webiny-entity";
+
+export type SetValueOptions = {
+    models: [Object],
+    model: Object,
+    context: Object,
+    field: Object
+};
+
+export type DbEntry = {
+    get(key: string): any,
+    set(key: string, value: any): void,
+    beforeSave(fn: Function): void,
+    afterSave(fn: Function): void,
+    save(): Promise<void>
+};
 
 export type HeadlessFieldTypePlugin = PluginType & {
     fieldType: string,
-    createAttribute: ({ model: Object, field: Object, entity: Entity, context: Object }) => void
+    i18n: boolean,
+    read: {
+        createTypeField({ model: Object, field: Object }): string,
+        createResolver({ models: [Object], model: Object, field: Object }): Function
+    },
+    manage: {
+        createTypes({ models: [Object], model: Object }): string,
+        createTypeField({ model: Object, field: Object }): string,
+        createInputField({ model: Object, field: Object }): string,
+        createResolver({ models: [Object], model: Object, field: Object }): Function,
+        setValue(value: any, entry: DbEntry, options: SetValueOptions): void
+    }
 };

@@ -4,7 +4,18 @@ import { registerPlugins, getPlugins } from "webiny-plugins";
 import createTypeName from "../utils/createTypeName";
 import { resolveGet } from "../resolvers/resolveGet";
 import { resolveList } from "../resolvers/resolveList";
+import { resolveCreate } from "../resolvers/resolveCreate";
 import { resolveUpdate } from "../resolvers/resolveUpdate";
+
+const commonFieldResolvers = () => ({
+    id: entry => entry._id.toString(),
+    createdBy: (entry, args, context) => {
+        return context.security.entities.User.findById(entry.createdBy);
+    },
+    updatedBy: (entry, args, context) => {
+        return context.security.entities.User.findById(entry.updatedBy);
+    }
+});
 
 export default async config => {
     // Structure plugins for faster access
@@ -34,6 +45,18 @@ export default async config => {
                 //const isRequired = Boolean(f.validation.find(v => v.id === "required"));
                 return fieldTypePlugins[f.type].manage.createInputField({ model, field: f });
             })
+            .join("\n");
+    }
+
+    function renderListFilterFields(model, type) {
+        return model.fields
+            .map(field => {
+                const { createListFilters } = fieldTypePlugins[field.type][type];
+                if (typeof createListFilters === "function") {
+                    return createListFilters({ field });
+                }
+            })
+            .filter(Boolean)
             .join("\n");
     }
 
@@ -70,11 +93,12 @@ export default async config => {
                         updatedBy: User
                         createdOn: DateTime
                         updatedOn: DateTime
+                        savedOn: DateTime
                         ${renderFields(model, "manage")}
                     }
                     
                     input Manage_${typeName}Input {
-                        ${renderInputFields(model)}
+                        ${renderInputFields(model, "manage")}
                     }
                     
                     type Manage_${typeName}Response {
@@ -124,26 +148,23 @@ export default async config => {
                             [`list${pluralize(typeName)}`]: resolveList({ models, model })
                         },
                         HeadlessManageMutation: {
-                            [`create${typeName}`]: resolve.dummyResolver,
+                            [`create${typeName}`]: resolveCreate({ models, model }),
                             [`update${typeName}`]: resolveUpdate({ models, model }),
                             [`delete${typeName}`]: resolve.dummyResolver
                         },
-                        [`Manage_${typeName}`]: model.fields.reduce(
-                            (resolvers, field) => {
-                                const { manage } = fieldTypePlugins[field.type];
-                                let resolver = (entry, args, ctx, info) => entry[info.fieldName];
-                                if (typeof manage.createResolver === "function") {
-                                    resolver = manage.createResolver({ models, model, field });
-                                }
+                        [`Manage_${typeName}`]: model.fields.reduce((resolvers, field) => {
+                            const { manage } = fieldTypePlugins[field.type];
+                            let resolver = (entry, args, ctx, info) => entry[info.fieldName];
+                            if (typeof manage.createResolver === "function") {
+                                resolver = manage.createResolver({ models, model, field });
+                            }
 
-                                resolvers[field.fieldId] = (entry, args, ctx, info) => {
-                                    return resolver(entry, args, ctx, info);
-                                };
+                            resolvers[field.fieldId] = (entry, args, ctx, info) => {
+                                return resolver(entry, args, ctx, info);
+                            };
 
-                                return resolvers;
-                            },
-                            { id: entry => entry._id.toString() }
-                        )
+                            return resolvers;
+                        }, commonFieldResolvers())
                     }
                 }
             }
@@ -165,7 +186,16 @@ export default async config => {
                         updatedBy: User
                         createdOn: DateTime
                         updatedOn: DateTime
+                        savedOn: DateTime
                         ${renderFields(model, "read")}
+                    }
+                    
+                    input ${typeName}FilterInput {
+                        id: String
+                        id_not: String
+                        id_in: [String]
+                        id_not_in: [String]
+                        ${renderListFilterFields(model, "read")}
                     }
                     
                     type ${typeName}Response {
@@ -185,7 +215,7 @@ export default async config => {
                         list${pluralize(typeName)}(
                             page: Int
                             perPage: Int
-                            where: JSON
+                            where: ${typeName}FilterInput
                             sort: JSON
                             search: SearchInput
                         ): ${typeName}ListResponse
@@ -205,23 +235,20 @@ export default async config => {
                             [`get${typeName}`]: resolveGet({ model }),
                             [`list${pluralize(typeName)}`]: resolveList({ model })
                         },
-                        [`${typeName}`]: model.fields.reduce(
-                            (resolvers, field) => {
-                                const { read } = fieldTypePlugins[field.type];
-                                const resolver = read.createResolver({ models, model, field });
+                        [typeName]: model.fields.reduce((resolvers, field) => {
+                            const { read } = fieldTypePlugins[field.type];
+                            const resolver = read.createResolver({ models, model, field });
 
-                                resolvers[field.fieldId] = (entry, args, ctx, info) => {
-                                    if (ctx.cms.headlessReadOnly) {
-                                        return resolver(entry, args, ctx, info);
-                                    }
+                            resolvers[field.fieldId] = (entry, args, ctx, info) => {
+                                if (ctx.cms.headlessReadOnly) {
+                                    return resolver(entry, args, ctx, info);
+                                }
 
-                                    return entry[info.fieldName];
-                                };
+                                return entry[info.fieldName];
+                            };
 
-                                return resolvers;
-                            },
-                            { id: entry => entry._id.toString() }
-                        )
+                            return resolvers;
+                        }, commonFieldResolvers())
                     }
                 }
             }

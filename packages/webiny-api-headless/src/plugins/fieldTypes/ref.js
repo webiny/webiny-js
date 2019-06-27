@@ -22,13 +22,14 @@ const createResolver = ({ models, field }) => {
 
         // Load "many" entries
         const { where = {}, ...rest } = args;
-        where["_id"] = { $in: entry[fieldName].map(id => ObjectId(id)) };
+        where["id_in"] = entry[fieldName] || [];
 
         const { entries, meta } = await findEntries({
             model: refModel,
             args: { where, ...rest },
             context
         });
+
         return new ListResponse(entries, meta);
     };
 };

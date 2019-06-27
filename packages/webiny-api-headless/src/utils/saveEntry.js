@@ -2,7 +2,7 @@ import { ObjectId } from "mongodb";
 import { getPlugins } from "webiny-plugins";
 import createCollectionName from "webiny-api-headless/utils/createCollectionName";
 
-function createDbData({ context }) {
+function createDbData({ model, context }) {
     const dbData = {
         data: {},
         beforeSave: [],
@@ -47,7 +47,7 @@ export default async function saveEntry(entry, { models, model, context }) {
         return acc;
     }, {});
 
-    const dbData = createDbData({ context });
+    const dbData = createDbData({ model, context });
 
     for (let i = 0; i < model.fields.length; i++) {
         const field = model.fields[i];
@@ -69,7 +69,17 @@ export default async function saveEntry(entry, { models, model, context }) {
     }
 
     // Save to DB.
-    dbData.set("_id", entry._id ? entry._id : new ObjectId());
+    const time = new Date();
+    dbData.set("savedOn", time);
+    if (!entry._id) {
+        dbData.set("_id", new ObjectId());
+        dbData.set("createdBy", context.user.id);
+        dbData.set("createdOn", time);
+    } else {
+        dbData.set("_id", entry._id);
+        dbData.set("updatedBy", context.user.id);
+        dbData.set("updatedOn", time);
+    }
 
     await dbData.save();
 

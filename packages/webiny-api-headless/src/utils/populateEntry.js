@@ -1,4 +1,4 @@
-export default async (entry, args, { model }) => {
+export default async function populateEntry(entry, args, { model }) {
     for (let i = 0; i < model.fields.length; i++) {
         const { fieldId } = model.fields[i];
 
@@ -8,4 +8,4 @@ export default async (entry, args, { model }) => {
 
         entry[fieldId] = args[fieldId];
     }
-};
+}
