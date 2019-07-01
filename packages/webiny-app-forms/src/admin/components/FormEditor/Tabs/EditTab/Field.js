@@ -4,7 +4,7 @@ import { IconButton } from "webiny-ui/Button";
 import { Typography } from "webiny-ui/Typography";
 import { ReactComponent as EditIcon } from "../../icons/edit.svg";
 import { ReactComponent as DeleteIcon } from "../../icons/delete.svg";
-import { useI18N } from "webiny-app-forms/__i18n/components";
+import { useI18N } from "webiny-app-i18n/components";
 const FieldContainer = styled("div")({
     display: "flex",
     flexDirection: "row",

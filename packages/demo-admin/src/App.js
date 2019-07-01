@@ -6,7 +6,7 @@ import { registerPlugins, getPlugins } from "webiny-plugins";
 import { Theme as AdminTheme } from "webiny-admin";
 import { CmsProvider } from "webiny-app-cms/context";
 import { Security } from "webiny-app-security/components";
-import { I18NProvider } from "webiny-app-forms/__i18n/components";
+import { I18NProvider } from "webiny-app-i18n/components";
 import Login from "webiny-app-security/admin/views/Login";
 import { CircularProgress } from "webiny-ui/Progress";
 import myTheme from "demo-theme";

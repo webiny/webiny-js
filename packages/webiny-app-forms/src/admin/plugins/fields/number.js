@@ -1,7 +1,7 @@
 import React from "react";
 import { ReactComponent as NumberIcon } from "./icons/round-looks_3-24px.svg";
 import { Grid, Cell } from "webiny-ui/Grid";
-import { I18NInput } from "webiny-app-forms/__i18n/components";
+import { I18NInput } from "webiny-app-i18n/components";
 
 export default {
     type: "form-editor-field-type",

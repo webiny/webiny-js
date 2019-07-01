@@ -4,7 +4,7 @@ import { Input } from "webiny-ui/Input";
 import I18NInputDialog from "./I18NInputDialog";
 import { ReactComponent as I18NIcon } from "./icons/round-translate-24px.svg";
 import { css } from "emotion";
-import { useI18N } from "webiny-app-forms/__i18n/components";
+import { useI18N } from "webiny-app-i18n/components";
 import { Tooltip } from "webiny-ui/Tooltip";
 import classNames from "classnames";
 

@@ -6,7 +6,7 @@ import {
     I18NJSONValueType,
     I18NStringValueInput,
     I18NJSONValueInput
-} from "webiny-api-forms/__i18n/graphql";
+} from "webiny-api-i18n/graphql";
 
 import {
     FileType,

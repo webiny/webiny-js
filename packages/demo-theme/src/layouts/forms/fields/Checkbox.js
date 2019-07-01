@@ -1,7 +1,7 @@
 // @flow
 // $FlowFixMe
 import React from "react";
-import { useI18N } from "webiny-app-forms/__i18n/components";
+import { useI18N } from "webiny-app-i18n/components";
 import type { FieldType } from "webiny-app-forms/types";
 
 type Props = {

@@ -1,5 +1,6 @@
 // @flow
-import React from "react";
+// $FlowFixMe
+import React, { useReducer, useMemo, useContext } from "react";
 
 export function init(props: Object) {
     return {
@@ -21,10 +22,10 @@ export function i18nReducer(state: Object, action: Object) {
 
 const I18NContext = React.createContext();
 
-function I18NProvider(props) {
-    const [state, dispatch] = React.useReducer(i18nReducer, props, init);
+function I18NProvider(props: Object) {
+    const [state, dispatch] = useReducer(i18nReducer, props, init);
 
-    const value = React.useMemo(() => {
+    const value = useMemo(() => {
         return {
             state,
             dispatch
@@ -35,7 +36,7 @@ function I18NProvider(props) {
 }
 
 function useI18N() {
-    const context = React.useContext(I18NContext);
+    const context = useContext(I18NContext);
     if (!context) {
         throw new Error("useI18N must be used within a I18NProvider");
     }

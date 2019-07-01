@@ -1,6 +1,6 @@
 import { Model, ModelAttribute } from "webiny-model";
 import type { AttributesContainer } from "webiny-model/types";
-import type { I18NContext } from "webiny-api-forms/__i18n/types";
+import type { I18NContext } from "webiny-api-i18n/types";
 
 class I18NCharAttributeTranslationsModel extends Model {
     constructor() {

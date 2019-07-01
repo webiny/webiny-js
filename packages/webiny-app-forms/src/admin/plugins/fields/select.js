@@ -2,7 +2,7 @@ import React from "react";
 import { Grid, Cell } from "webiny-ui/Grid";
 import { ReactComponent as Icon } from "./icons/dropdown-icon.svg";
 import OptionsSelectionDynamicFieldset from "./components/OptionsSelectionDynamicFieldset";
-import { I18NInput } from "webiny-app-forms/__i18n/components";
+import { I18NInput } from "webiny-app-i18n/components";
 
 export default {
     type: "form-editor-field-type",

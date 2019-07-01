@@ -7,7 +7,7 @@ import { Grid, Cell } from "webiny-ui/Grid";
 import { css } from "emotion";
 import { ButtonPrimary, ButtonSecondary } from "webiny-ui/Button";
 import { debounce, camelCase, trim } from "lodash";
-import { I18NInput, useI18N } from "webiny-app-forms/__i18n/components";
+import { I18NInput, useI18N } from "webiny-app-i18n/components";
 
 const controlButtons = css({
     display: "flex",
