@@ -40,7 +40,7 @@ export default ([
             stitching: {
                 linkTypeDefs: /* GraphQL */ `
                     ${typeDefs}
-
+                    
                     extend type CmsQuery {
                         headlessRead: HeadlessReadQuery
                         headlessManage: HeadlessManageQuery
@@ -62,7 +62,6 @@ export default ([
                             perPage: Int
                             where: JSON
                             sort: JSON
-                            search: SearchInput
                         ): ContentModelListResponse
                     }
 

@@ -54,8 +54,8 @@ export default async function saveEntry(entry, { models, model, context }) {
         const { fieldId, type } = field;
 
         const { manage } = fieldPlugins[type];
-        if (typeof manage.saveValue === "function") {
-            await manage.saveValue(entry, dbData, {
+        if (typeof manage.setEntryFieldValue === "function") {
+            await manage.setEntryFieldValue(entry, dbData, {
                 models,
                 model,
                 context,

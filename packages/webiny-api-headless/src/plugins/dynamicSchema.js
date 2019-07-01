@@ -101,6 +101,14 @@ export default async config => {
                         ${renderInputFields(model, "manage")}
                     }
                     
+                    input Manage_${typeName}FilterInput {
+                        id: ID
+                        id_not: ID
+                        id_in: [ID]
+                        id_not_in: [ID]
+                        ${renderListFilterFields(model, "manage")}
+                    }
+                    
                     type Manage_${typeName}Response {
                         data: Manage_${typeName}
                         error: Error
@@ -113,14 +121,13 @@ export default async config => {
                     }
                     
                     extend type HeadlessManageQuery {
-                        get${typeName}(id: ID, where: JSON, sort: String): Manage_${typeName}Response
+                        get${typeName}(id: ID): Manage_${typeName}Response
                         
                         list${pluralize(typeName)}(
                             page: Int
                             perPage: Int
-                            where: JSON
                             sort: JSON
-                            search: SearchInput
+                            where: Manage_${typeName}FilterInput
                         ): Manage_${typeName}ListResponse
                     }
                     
@@ -134,7 +141,10 @@ export default async config => {
                         CmsQuery: {
                             headlessManage: {
                                 fragment: "... on CmsQuery { cms }",
-                                resolve: resolve.dummyResolver
+                                resolve: (parent, args, context) => {
+                                    context.cms.headlessManage = true;
+                                    return {};
+                                }
                             }
                         },
                         CmsMutation: {
@@ -191,10 +201,10 @@ export default async config => {
                     }
                     
                     input ${typeName}FilterInput {
-                        id: String
-                        id_not: String
-                        id_in: [String]
-                        id_not_in: [String]
+                        id: ID
+                        id_not: ID
+                        id_in: [ID]
+                        id_not_in: [ID]
                         ${renderListFilterFields(model, "read")}
                     }
                     
@@ -217,7 +227,6 @@ export default async config => {
                             perPage: Int
                             where: ${typeName}FilterInput
                             sort: JSON
-                            search: SearchInput
                         ): ${typeName}ListResponse
                     }
                 `,
@@ -226,7 +235,7 @@ export default async config => {
                             headlessRead: {
                                 fragment: "... on CmsQuery { cms }",
                                 resolve: (parent, args, context) => {
-                                    context.cms.headlessReadOnly = true;
+                                    context.cms.headlessRead = true;
                                     return {};
                                 }
                             }
@@ -240,7 +249,7 @@ export default async config => {
                             const resolver = read.createResolver({ models, model, field });
 
                             resolvers[field.fieldId] = (entry, args, ctx, info) => {
-                                if (ctx.cms.headlessReadOnly) {
+                                if (ctx.cms.headlessRead) {
                                     return resolver(entry, args, ctx, info);
                                 }
 

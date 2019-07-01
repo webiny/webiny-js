@@ -5,128 +5,128 @@ export default [
         name: "cms-headless-filter-operator-eq",
         type: "cms-headless-filter-operator",
         operator: "eq",
-        createCondition({ fieldId, field, value, context }) {
+        createCondition({ fieldId, value, context }) {
             if (fieldId === "_id") {
-                value = ObjectId(value);
+                return ObjectId(value);
             }
 
-            if (field && field.i18n) {
-                return { $elemMatch: { value, locale: context.locale } };
+            if (context.cms.headlessManage) {
+                return { $elemMatch: { value } };
             }
 
-            return value;
+            return { $elemMatch: { value, locale: context.locale } };
         }
     },
     {
         name: "cms-headless-filter-operator-not",
         type: "cms-headless-filter-operator",
         operator: "not",
-        createCondition({ fieldId, field, value, context }) {
+        createCondition({ fieldId, value, context }) {
             if (fieldId === "_id") {
-                value = ObjectId(value);
+                return { $ne: ObjectId(value) };
             }
 
-            if (field && field.i18n) {
-                return { $elemMatch: { value: { $ne: value }, locale: context.locale } };
+            if (context.cms.headlessManage) {
+                return { $elemMatch: { value: { $ne: value } } };
             }
 
-            return { $ne: value };
+            return { $elemMatch: { value: { $ne: value }, locale: context.locale } };
         }
     },
     {
         name: "cms-headless-filter-operator-exists",
         type: "cms-headless-filter-operator",
         operator: "exists",
-        createCondition({ value, field, context }) {
-            if (field && field.i18n) {
-                return value
-                    ? {
-                          $elemMatch: {
-                              locale: context.locale
-                          }
-                      }
-                    : { $not: { $elemMatch: { locale: context.locale } } };
-            }
+        createCondition({ value, context }) {
+            // TODO: not sure if `headlessManage` needs this operator...
 
-            return { $exists: value };
+            return value
+                ? {
+                      $elemMatch: {
+                          locale: context.locale
+                      }
+                  }
+                : { $not: { $elemMatch: { locale: context.locale } } };
         }
     },
     {
         name: "cms-headless-filter-operator-in",
         type: "cms-headless-filter-operator",
         operator: "in",
-        createCondition({ fieldId, field, value, context }) {
+        createCondition({ fieldId, value, context }) {
             if (fieldId === "_id") {
-                value = value.map(ObjectId);
+                return { $in: value.map(ObjectId) };
             }
 
-            if (field && field.i18n) {
-                return {
-                    $elemMatch: {
-                        value: { $in: value },
-                        locale: context.locale
-                    }
-                };
+            if (context.cms.headlessManage) {
+                return { $elemMatch: { value: { $in: value } } };
             }
 
-            return { $in: value };
+            return {
+                $elemMatch: {
+                    value: { $in: value },
+                    locale: context.locale
+                }
+            };
         }
     },
     {
         name: "cms-headless-filter-operator-not-in",
         type: "cms-headless-filter-operator",
         operator: "not_in",
-        createCondition({ fieldId, field, value, context }) {
+        createCondition({ fieldId, value, context }) {
             if (fieldId === "_id") {
-                value = value.map(ObjectId);
+                return { $nin: value.map(ObjectId) };
             }
 
-            if (field && field.i18n) {
-                return {
-                    $elemMatch: {
-                        value: { $nin: value },
-                        locale: context.locale
-                    }
-                };
+            if (context.cms.headlessManage) {
+                return { $elemMatch: { value: { $nin: value } } };
             }
 
-            return { $nin: value };
+            return {
+                $elemMatch: {
+                    value: { $nin: value },
+                    locale: context.locale
+                }
+            };
         }
     },
     {
         name: "cms-headless-filter-operator-contains",
         type: "cms-headless-filter-operator",
         operator: "contains",
-        createCondition({ value, field, context }) {
-            if (field && field.i18n) {
-                return {
-                    $elemMatch: {
-                        value: { $regex: `.*${value}.*`, $options: "i" },
-                        locale: context.locale
-                    }
-                };
+        createCondition({ value, context }) {
+            if (context.cms.headlessManage) {
+                return { $elemMatch: { value: { $regex: `.*${value}.*`, $options: "i" } } };
             }
 
-            return { $regex: `.*${value}.*`, $options: "i" };
+            return {
+                $elemMatch: {
+                    value: { $regex: `.*${value}.*`, $options: "i" },
+                    locale: context.locale
+                }
+            };
         }
     },
     {
         name: "cms-headless-filter-operator-not-contains",
         type: "cms-headless-filter-operator",
         operator: "not_contains",
-        createCondition({ value, field, context }) {
-            if (field && field.i18n) {
+        createCondition({ value, context }) {
+            if (context.cms.headlessManage) {
                 return {
-                    $not: {
-                        $elemMatch: {
-                            value: { $regex: `.*${value}.*`, $options: "i" },
-                            locale: context.locale
-                        }
-                    }
+                    $not: { $elemMatch: { value: { $regex: `.*${value}.*`, $options: "i" } } }
                 };
             }
 
-            return { $not: { $regex: `.*${value}.*`, $options: "i" } };
+            return {
+                $not: {
+                    $elemMatch: {
+                        value: { $regex: `.*${value}.*`, $options: "i" },
+                        locale: context.locale
+                    }
+                }
+            };
         }
     }
 ];

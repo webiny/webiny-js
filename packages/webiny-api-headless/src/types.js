@@ -17,7 +17,6 @@ export type DbEntry = {
 
 export type HeadlessFieldTypePlugin = PluginType & {
     fieldType: string,
-    i18n: boolean,
     read: {
         createTypeField({ model: Object, field: Object }): string,
         createResolver({ models: [Object], model: Object, field: Object }): Function
@@ -27,6 +26,6 @@ export type HeadlessFieldTypePlugin = PluginType & {
         createTypeField({ model: Object, field: Object }): string,
         createInputField({ model: Object, field: Object }): string,
         createResolver({ models: [Object], model: Object, field: Object }): Function,
-        setValue(value: any, entry: DbEntry, options: SetValueOptions): void
+        setEntryFieldValue(value: any, entry: DbEntry, options: SetValueOptions): void
     }
 };

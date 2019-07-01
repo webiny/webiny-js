@@ -1,4 +1,3 @@
-import { ObjectId } from "mongodb";
 import { getPlugins } from "webiny-plugins";
 import createPaginationMeta from "webiny-entity/createPaginationMeta";
 import createCollectionName from "webiny-api-headless/utils/createCollectionName";
@@ -15,20 +14,20 @@ function mapFieldId(fieldId) {
     return fieldId;
 }
 
-export default async function findEntries({ model, args, context }) {
+export default async function findEntries({ model, args, context, info }) {
     const db = context.getDatabase();
     const collectionName = createCollectionName(model.modelId);
     const collection = db.collection(collectionName);
 
     parseBoolean(args);
-    let { where, sort, perPage, page } = args;
+    let { where = {}, sort, perPage, page } = args;
     page = isNaN(page) || page < 1 ? 1 : page;
     perPage = isNaN(perPage) || perPage < 1 ? 100 : perPage;
 
     const match = {};
     const filterOperators = getPlugins("cms-headless-filter-operator");
 
-    function setCondition(key) {
+    function createCondition(key) {
         const value = where[key];
         const delim = key.indexOf("_");
         const fieldId = mapFieldId(key.substring(0, delim > 0 ? delim : undefined));
@@ -40,14 +39,18 @@ export default async function findEntries({ model, args, context }) {
         }
 
         const field = model.fields.find(f => f.fieldId === fieldId);
-        match[fieldId] = operatorPlugin.createCondition({ fieldId, field, value, context });
+        return { [fieldId]: operatorPlugin.createCondition({ fieldId, field, value, context }) };
     }
 
-    Object.keys(where).forEach(setCondition);
+    const whereKeys = Object.keys(where);
+    if (whereKeys.length) {
+        match.$and = [];
+    }
 
-    console.log("where", where);
-    console.log("match", match);
-
+    whereKeys.forEach(key => {
+        match.$and.push(createCondition(key));
+    });
+    
     const entries = await collection
         .find(match)
         .sort(sort)
@@ -55,7 +58,14 @@ export default async function findEntries({ model, args, context }) {
         .limit(perPage)
         .toArray();
 
-    // Get totalCount
+    // Create meta
+    const { selections } = info.fieldNodes[0].selectionSet;
+    const metaField = selections.find(s => s.name.value === "meta");
+
+    if (!metaField) {
+        return { entries };
+    }
+
     const [res] = await collection
         .aggregate(
             [
