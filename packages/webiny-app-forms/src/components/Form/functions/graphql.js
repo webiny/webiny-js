@@ -12,8 +12,8 @@ export const SAVE_FORM_VIEW = gql`
     }
 `;
 
-export const SAVE_FORM_SUBMISSION = gql`
-    mutation SaveFormView($id: ID!, $data: JSON!, $meta: JSON!) {
+export const CREATE_FORM_SUBMISSION = gql`
+    mutation CreateFormSubmission($id: ID!, $data: JSON!, $meta: JSON!) {
         forms {
             createFormSubmission(id: $id, data: $data, meta: $meta) {
                 error {

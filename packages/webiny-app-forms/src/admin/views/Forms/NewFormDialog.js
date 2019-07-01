@@ -6,7 +6,7 @@ import type { RouterHistory } from "react-router-dom";
 import { Mutation } from "react-apollo";
 import { Form } from "webiny-form";
 import { Input } from "webiny-ui/Input";
-import { createForm } from "webiny-app-forms/admin/graphql";
+import { createForm } from "webiny-app-forms/admin/viewsGraphql";
 import get from "lodash.get";
 import { compose } from "recompose";
 import { withSnackbar } from "webiny-admin/components";

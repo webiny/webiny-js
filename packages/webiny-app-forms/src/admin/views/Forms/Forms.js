@@ -9,7 +9,7 @@ import { withSnackbar } from "webiny-admin/components";
 import FormsDataList from "./FormsDataList";
 import FormDetails from "./FormDetails";
 import NewFormDialog from "./NewFormDialog";
-import { createForm, listForms } from "webiny-app-forms/admin/graphql";
+import { createForm, listForms } from "webiny-app-forms/admin/viewsGraphql";
 import { get } from "lodash";
 
 function Forms(props) {

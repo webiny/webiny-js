@@ -16,7 +16,7 @@ import {
 } from "webiny-api-files/graphql";
 
 import form from "./graphql/Form";
-import formSubmission from "./graphql/FormSubmissions";
+import formSubmission from "./graphql/FormSubmission";
 
 export default {
     type: "graphql-schema",

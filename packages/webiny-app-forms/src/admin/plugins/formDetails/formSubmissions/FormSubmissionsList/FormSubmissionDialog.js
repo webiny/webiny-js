@@ -28,13 +28,12 @@ const dialogBody = css({
 });
 
 type Props = {
-    formSubmission: ?Object,
-    onClose: Function,
-    form: Object
+    formSubmission: Object,
+    onClose: Function
 };
 
 // TODO: @sven - layout styling
-const FormSubmissionDialog = ({ formSubmission, onClose, form }: Props) => {
+const FormSubmissionDialog = ({ formSubmission, onClose }: Props) => {
     return (
         <Dialog open={!!formSubmission} onClose={onClose}>
             {formSubmission && (
@@ -45,13 +44,18 @@ const FormSubmissionDialog = ({ formSubmission, onClose, form }: Props) => {
 
                     <DialogBody className={dialogBody}>
                         <div>
-                            {form.layout.map(row => {
+                            {formSubmission.form.revision.layout.map(row => {
                                 return row.map(id => {
-                                    const field = form.fields.find(field => field.id === id);
+                                    const field = formSubmission.form.revision.fields.find(
+                                        field => field.id === id
+                                    );
                                     return (
                                         <div
                                             key={id}
-                                            style={{ display: "inline-block", width: `calc(100% / ${row.length})` }}
+                                            style={{
+                                                display: "inline-block",
+                                                width: `calc(100% / ${row.length})`
+                                            }}
                                         >
                                             <Typography use="overline">
                                                 {field.label.value}

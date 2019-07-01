@@ -1,20 +1,20 @@
 //@flow
 import * as React from "react";
-import FormSubmissionsList from "./FormSubmissionsList/FormSubmissionsList";
+import FormSubmissionsListComponent from "./FormSubmissionsList/FormSubmissionsList";
 import { compose } from "recompose";
 import { withDataList } from "webiny-app/components";
 import { get } from "lodash";
-import { listFormSubmissions } from "./FormSubmissionsList/graphql";
+import { listFormSubmissions } from "webiny-app-forms/admin/viewsGraphql";
 
 type Props = {
     form: Object,
     dataList: Object
 };
 
-const FormSubmissionsOverview = ({ dataList, form }: Props) => {
+const FormSubmissionsList = ({ dataList }: Props) => {
     return (
         <div>
-            <FormSubmissionsList form={form} dataList={dataList}/>
+            <FormSubmissionsListComponent dataList={dataList} />
         </div>
     );
 };
@@ -25,8 +25,8 @@ export default compose(
         response: data => {
             return get(data, "forms.listFormSubmissions", {});
         },
-        variables: {
-            sort: { savedOn: -1 }
+        variables(props: Object) {
+            return { sort: { savedOn: -1 }, where: { "form.parent": props.form.parent } };
         }
     })
-)(FormSubmissionsOverview);
+)(FormSubmissionsList);

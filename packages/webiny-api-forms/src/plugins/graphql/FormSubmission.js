@@ -11,6 +11,12 @@ export default {
             id: ID
             data: JSON
             meta: FormMeta
+            form: FormSubmissionParentRevision
+        }
+        
+        type FormSubmissionParentRevision {
+            parent: Form
+            revision: Form
         }
         
         type FormMeta {
@@ -42,7 +48,7 @@ export default {
                 perPage: Int
                 sort: JSON
                 search: String
-                parent: String
+                where: JSON
             ): FormSubmissionsListResponse
         }
         extend type FormsMutation {

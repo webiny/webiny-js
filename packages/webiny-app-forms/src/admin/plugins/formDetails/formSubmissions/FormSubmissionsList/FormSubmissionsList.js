@@ -25,10 +25,26 @@ const rightAlign = css({
     alignItems: "flex-end !important"
 });
 
+const FullName = ({ submission }) => {
+    const {
+        data: { firstName, lastName, email }
+    } = submission;
+
+    const output = [firstName, lastName, email && `<${email}>`].filter(Boolean).join(" ");
+    return output || "N/A";
+};
+
+const FormVersion = ({ submission }) => {
+    return `Version #${submission.form.revision.version}`;
+};
+
 const FormSubmissionsList = (props: Object) => {
-    const { dataList, form } = props;
+    const { dataList } = props;
     const [selectedFormSubmission, selectFormSubmission] = useState(null);
 
+    if (!dataList) {
+        return;
+    }
     return (
         <>
             <Block title="Submissions">
@@ -66,11 +82,10 @@ const FormSubmissionsList = (props: Object) => {
                                         />
                                     </ListSelectBox>
                                     <ListItemText onClick={() => selectFormSubmission(submission)}>
-                                        {submission.data.firstName && submission.data.firstName}
-                                        {submission.data.lastName && " " + submission.data.lastName}
-                                        {submission.data.email &&
-                                            " <" + submission.data.email + ">"}
+                                        <FullName submission={submission} />
                                         <ListTextOverline>
+                                            <FormVersion submission={submission} />
+                                            {" | "}
                                             {submission.meta.ip || "N/A"}
                                         </ListTextOverline>
                                     </ListItemText>
@@ -92,7 +107,6 @@ const FormSubmissionsList = (props: Object) => {
                 </DataList>
             </Block>
             <FormSubmissionDialog
-                form={form}
                 onClose={() => selectFormSubmission(null)}
                 formSubmission={selectedFormSubmission}
             />

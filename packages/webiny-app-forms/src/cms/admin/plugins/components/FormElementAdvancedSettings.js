@@ -30,15 +30,19 @@ const getOptions = ({ gqlResponse, data }): Object => {
 
     const parentsList = get(gqlResponse, "data.forms.listForms.data") || [];
 
-    output.parents.options = parentsList.map(({ id, name }) => ({ id, name }));
+    output.parents.options = parentsList.map(({ parent, name }) => ({ id: parent, name }));
     output.parents.value = output.parents.options.find(item => item.id === selected.parent) || null;
 
-    const parent = parentsList.find(item => item.id === selected.parent);
+    const parent = parentsList.find(item => item.parent === selected.parent);
     if (parent) {
-        output.publishedRevisions.options = parent.publishedRevisions.map(({ id, name }) => ({
-            id,
-            name
+        output.publishedRevisions.options = parent.publishedRevisions.map(item => ({
+            id: item.id,
+            name: `${item.name} (version ${item.version})`
         }));
+        if (output.publishedRevisions.options.length > 0) {
+            output.publishedRevisions.options.unshift({ id: "latest", name: "Latest" });
+        }
+
         output.publishedRevisions.value =
             output.publishedRevisions.options.find(item => item.id === selected.revision) || null;
     }
@@ -55,11 +59,12 @@ const FormElementAdvancedSettings = ({ Bind, data }: Object) => {
                         forms {
                             listForms {
                                 data {
-                                    id
+                                    parent
                                     name
                                     publishedRevisions {
                                         id
                                         name
+                                        version
                                         published
                                     }
                                 }
@@ -81,11 +86,12 @@ const FormElementAdvancedSettings = ({ Bind, data }: Object) => {
                                                 value={options.parents.value}
                                                 onChange={onChange}
                                                 label={"Form"}
-                                                description="Type to search for the form you wish to insert."
                                             />
                                         );
                                     }}
                                 </Bind>
+                            </Cell>
+                            <Cell span={12}>
                                 <Bind name={"settings.form.revision"} validators={["required"]}>
                                     {({ onChange }) => {
                                         return (
@@ -93,8 +99,8 @@ const FormElementAdvancedSettings = ({ Bind, data }: Object) => {
                                                 options={options.publishedRevisions.options}
                                                 value={options.publishedRevisions.value}
                                                 onChange={onChange}
-                                                label={"Form"}
-                                                description="Type to search for the form you wish to insert."
+                                                label={"Revision"}
+                                                description="Choose a published revision."
                                             />
                                         );
                                     }}

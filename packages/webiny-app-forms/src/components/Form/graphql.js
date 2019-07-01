@@ -1,6 +1,6 @@
 import gql from "graphql-tag";
 
-export const fieldsFields = `
+export const FIELDS_FIELDS = `
         id
         fieldId
         type
@@ -18,10 +18,10 @@ export const fieldsFields = `
         settings
 `;
 
-export const dataFields = `
+export const DATA_FIELDS = `
     id
     fields {
-        ${fieldsFields}
+        ${FIELDS_FIELDS}
     }
     layout
     triggers
@@ -38,27 +38,12 @@ export const dataFields = `
     }
 `;
 
-export const getForm = gql`
-    query GetForm($id: ID!) {
-        forms {
-            getForm(id: $id) {
-                data {
-                    ${dataFields}
-                }
-                error {
-                    message
-                }
-            }
-        }
-    }
-`;
-
 export const getPublishedForm = gql`
-    query GetPublishedForm($id: ID!) {
+    query GetPublishedForm($id: ID, $parent: ID) {
         forms {
-            getPublishedForm(id: $id) {
+            getPublishedForm(id: $id, parent: $parent) {
                 data {
-                    ${dataFields}
+                    ${DATA_FIELDS}
                 }
                 error {
                     message

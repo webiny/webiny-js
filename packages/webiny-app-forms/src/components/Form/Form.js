@@ -6,15 +6,11 @@ import FormRender from "./FormRender";
 import type { FormComponentPropsType } from "webiny-app-forms/types";
 
 const Form = (props: FormComponentPropsType) => {
-    if (props.id) {
-        return <FormLoad {...props} />;
-    }
-
     if (props.data) {
         return <FormRender {...props} />;
     }
 
-    return null;
+    return <FormLoad {...props} />;
 };
 
 export default Form;

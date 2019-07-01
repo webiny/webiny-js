@@ -1,5 +1,5 @@
 // @flow
-import { Entity } from "webiny-entity";
+import { Entity, EntityModel } from "webiny-entity";
 import { Model } from "webiny-model";
 import type { IForm } from "webiny-api-forms/entities";
 
@@ -36,7 +36,23 @@ export interface IFormSubmission extends Entity {
     meta: Object;
 }
 
-export default ({ getEntities }: Object) =>
+const createFormAttributeModel = context =>
+    class FormAttributeModel extends EntityModel {
+        constructor() {
+            super();
+            const { CmsForm } = context.getEntities();
+
+            this.setParentEntity(context.form);
+            this.attr("parent")
+                .entity(CmsForm)
+                .setValidators("required");
+            this.attr("revision")
+                .entity(CmsForm)
+                .setValidators("required");
+        }
+    };
+
+export default (context: Object) =>
     class FormSubmission extends Entity {
         static classId = "FormSubmission";
 
@@ -48,11 +64,14 @@ export default ({ getEntities }: Object) =>
 
         constructor() {
             super();
-            const { CmsForm } = getEntities();
 
             this.attr("form")
-                .entity(CmsForm)
-                .setValidators("required");
+                .model(createFormAttributeModel({ ...context, form: this }))
+                .setValue({
+                    parent: null,
+                    revision: null
+                });
+
             this.attr("data")
                 .object()
                 .setValidators("required");
@@ -62,7 +81,8 @@ export default ({ getEntities }: Object) =>
 
             this.attr("logs")
                 .models(LogModel)
-                .setValidators("required").setValue([]);
+                .setValidators("required")
+                .setValue([]);
 
             this.on("beforeCreate", async () => {
                 this.meta.submittedOn = new Date();

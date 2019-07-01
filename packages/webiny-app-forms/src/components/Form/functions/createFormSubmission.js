@@ -1,6 +1,6 @@
 // @flow
 import type { FormRenderComponentPropsType } from "webiny-app-forms/types";
-import { SAVE_FORM_SUBMISSION } from "./graphql";
+import { CREATE_FORM_SUBMISSION } from "./graphql";
 import getClientIp from "./getClientIp";
 import { get } from "lodash";
 
@@ -15,7 +15,7 @@ export default async ({ props: { data: form, client, preview }, data }: Args) =>
     }
 
     let response = await client.mutate({
-        mutation: SAVE_FORM_SUBMISSION,
+        mutation: CREATE_FORM_SUBMISSION,
         variables: {
             id: form.id,
             data,

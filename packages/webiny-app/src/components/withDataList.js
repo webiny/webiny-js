@@ -26,9 +26,14 @@ export const withDataList = (withDataListParams: Object): Function => {
             graphql(withDataListParams.query, {
                 name: "queryData",
                 options: props => {
+                    let variables = withDataListParams.variables;
+                    if (typeof variables === "function") {
+                        variables = variables(props);
+                    }
+
                     return {
                         variables: {
-                            ...withDataListParams.variables,
+                            ...variables,
                             ...prepareLoadListParams(props.location)
                         }
                     };

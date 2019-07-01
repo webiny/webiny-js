@@ -53,7 +53,7 @@ class FormStatsModel extends Model {
     }
 
     incrementSubmissions() {
-        this.submissions++;
+        this.submissions = this.submissions + 1;
     }
 }
 
@@ -146,6 +146,36 @@ export default (context: Object) => {
                 .setSkipOnPopulate()
                 .setDefaultValue(new FormStatsModel());
 
+            this.attr("overallStats")
+                .model(FormStatsModel)
+                .setDynamic(async () => {
+                    const collection = CmsForm.getDriver().getCollectionName(CmsForm);
+                    const [stats] = await CmsForm.getDriver().aggregate(collection, [
+                        { $match: { parent: "5d16025046e6da12c9b1f9ed" } },
+                        { $project: { stats: 1 } },
+                        {
+                            $group: {
+                                _id: null,
+                                views: {
+                                    $sum: "$stats.views"
+                                },
+                                submissions: {
+                                    $sum: "$stats.submissions"
+                                }
+                            }
+                        }
+                    ]);
+
+                    let conversionRate = 0;
+                    if (stats.views > 0) {
+                        conversionRate = ((stats.submissions / stats.views) * 100).toFixed(2);
+                    }
+                    return {
+                        ...stats,
+                        conversionRate
+                    };
+                });
+
             const SettingsModel = createSettingsModel(context);
             this.attr("settings")
                 .model(SettingsModel)
@@ -200,6 +230,16 @@ export default (context: Object) => {
                 .setSkipOnPopulate()
                 .setDefaultValue(false);
 
+            this.attr("status")
+                .boolean()
+                .setDynamic(() => {
+                    if (this.published) {
+                        return "published";
+                    }
+
+                    return this.locked ? "locked" : "draft";
+                });
+
             this.on("beforeCreate", async () => {
                 if (!this.id) {
                     this.id = mdbid();
@@ -244,25 +284,31 @@ export default (context: Object) => {
         async submit({ data, meta }: { data: Object, meta: Object }) {
             const { FormSubmission } = getEntities();
             const formSubmission = new FormSubmission();
-            formSubmission.form = this;
             formSubmission.data = data;
             formSubmission.meta = meta;
+            formSubmission.form = {
+                parent: this.parent,
+                revision: this
+            };
+
             formSubmission.addLog({ type: "info", message: "Form submission created." });
             await formSubmission.save();
 
             try {
                 // Execute triggers
-                const plugins = getPlugins("form-trigger-handler");
-                for (let i = 0; i < plugins.length; i++) {
-                    let plugin = plugins[i];
-                    this.triggers[plugin.trigger] &&
-                        (await plugin.handle({
-                            form: this,
-                            formSubmission,
-                            data,
-                            meta,
-                            trigger: this.triggers[plugin.trigger]
-                        }));
+                if (this.triggers) {
+                    const plugins = getPlugins("form-trigger-handler");
+                    for (let i = 0; i < plugins.length; i++) {
+                        let plugin = plugins[i];
+                        this.triggers[plugin.trigger] &&
+                            (await plugin.handle({
+                                form: this,
+                                formSubmission,
+                                data,
+                                meta,
+                                trigger: this.triggers[plugin.trigger]
+                            }));
+                    }
                 }
 
                 this.stats.incrementSubmissions();
@@ -271,6 +317,7 @@ export default (context: Object) => {
                 formSubmission.addLog({ type: "success", message: "Form submitted successfully." });
             } catch (e) {
                 formSubmission.addLog({ type: "error", message: e.message });
+                throw e;
             } finally {
                 await formSubmission.save();
             }

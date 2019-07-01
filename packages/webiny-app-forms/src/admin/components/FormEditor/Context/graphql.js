@@ -60,10 +60,15 @@ export const getForm = gql`
                     layout
                     settings ${settingsField}
                     triggers
+                    published
+                    locked
+                    status
                     revisions {
                         id
                         name
                         published
+                        locked
+                        status
                         version
                     }
                 }

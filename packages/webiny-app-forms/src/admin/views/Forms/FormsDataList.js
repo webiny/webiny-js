@@ -6,7 +6,7 @@ import { css } from "emotion";
 import { Typography } from "webiny-ui/Typography";
 import { ConfirmationDialog } from "webiny-ui/ConfirmationDialog";
 import { DeleteIcon, EditIcon } from "webiny-ui/List/DataList/icons";
-import { deleteForm } from "webiny-app-forms/admin/graphql";
+import { deleteForm, createRevisionFrom } from "webiny-app-forms/admin/viewsGraphql";
 import { graphql } from "react-apollo";
 import { withHandlers, compose } from "recompose";
 import { withSnackbar } from "webiny-admin/components";
@@ -30,7 +30,7 @@ const rightAlign = css({
 });
 
 const FormsDataList = props => {
-    const { dataList, location, history, deleteRecord } = props;
+    const { dataList, location, history, deleteRecord, gqlCreate, showSnackbar } = props;
     const query = new URLSearchParams(location.search);
 
     return (
@@ -82,7 +82,25 @@ const FormsDataList = props => {
                                     {form.published ? t`Published` : t`Draft`} (v{form.version})
                                 </Typography>
                                 <ListActions>
-                                    <EditIcon onClick={() => history.push("/forms/" + form.id)} />
+                                    <EditIcon
+                                        onClick={async () => {
+                                            if (form.published) {
+                                                const { data: res } = await gqlCreate({
+                                                    variables: { revision: form.id },
+                                                    refetchQueries: ["FormsListForms"]
+                                                });
+                                                const { data, error } = res.forms.revision;
+
+                                                if (error) {
+                                                    return showSnackbar(error.message);
+                                                }
+
+                                                history.push(`/forms/${data.id}`);
+                                            } else {
+                                                history.push("/forms/" + form.id);
+                                            }
+                                        }}
+                                    />
                                     <ConfirmationDialog>
                                         {({ showConfirmation }) => (
                                             <DeleteIcon
@@ -108,6 +126,7 @@ export default compose(
     withRouter,
     withSnackbar(),
     graphql(deleteForm, { name: "deleteRecord" }),
+    graphql(createRevisionFrom, { name: "gqlCreate" }),
     withHandlers({
         deleteRecord: ({ deleteRecord, showSnackbar, location, history, dataList, id }: Object) => {
             return async (item: Object) => {

@@ -53,7 +53,6 @@ export const resolveList = (entityFetcher: EntityFetcher) => async (
     const EntityClass = getEntityClass(context, entityFetcher);
 
     parseBoolean(args);
-
     const query = { ...args.where };
     const find: Object = {
         query,

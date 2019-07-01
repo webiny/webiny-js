@@ -9,12 +9,23 @@ export default [
         type: "cms-render-element",
         element: "cms-element-form",
         render({ element }: Object) {
-            const id = get(element, "data.settings.form");
-            if (!id) {
-                return <span>Cannot render form, ID missing.</span>;
+            let render = "Cannot render form, ID missing.";
+
+            let form = get(element, "data.settings.form") || {};
+
+            if (form.revision) {
+                const props = {};
+
+                if (form.revision === "latest") {
+                    props.parent = form.parent;
+                } else {
+                    props.revision = form.revision;
+                }
+
+                render = <FormsForm {...props} />;
             }
 
-            return <FormsForm id={id} />;
+            return render;
         }
     }
 ];

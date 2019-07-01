@@ -18,7 +18,14 @@ const formFetcher = ({ getEntity }) => getEntity("CmsForm");
 export default {
     typeDefs: () => [
         UserType.typeDefs,
-        /* GraphQL*/ `type Form {
+        /* GraphQL*/ `
+        enum FormStatusEnum { 
+            published
+            draft
+            locked
+        }
+        
+        type Form {
             id: ID
             createdBy: User
             updatedBy: User
@@ -33,10 +40,13 @@ export default {
             settings: FormSettingsType
             triggers: JSON
             published: Boolean
+            locked: Boolean
+            status: FormStatusEnum
             parent: ID
             revisions: [Form]
             publishedRevisions: [Form]
             stats: FormStatsType
+            overallStats: FormStatsType
         }
         
         type FormFieldType {
@@ -129,7 +139,7 @@ export default {
                 sort: String
             ): FormResponse
             
-            getPublishedForm(id: ID!): FormResponse
+            getPublishedForm(id: ID, parent: ID): FormResponse
             
             listForms(
                 page: Int

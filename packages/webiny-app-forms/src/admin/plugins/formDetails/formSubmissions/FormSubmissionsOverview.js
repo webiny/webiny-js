@@ -28,15 +28,15 @@ const FormSubmissionsOverview = ({ form }: Props) => {
         <Block title="Overview">
             <ContentWrapper>
                 <StatBox>
-                    <Typography use="headline2">{form.stats.submissions}</Typography>
+                    <Typography use="headline2">{form.overallStats.submissions}</Typography>
                     <Typography use="overline">Submissions</Typography>
                 </StatBox>
                 <StatBox>
-                    <Typography use="headline2">{form.stats.views}</Typography>
+                    <Typography use="headline2">{form.overallStats.views}</Typography>
                     <Typography use="overline">Views</Typography>
                 </StatBox>
                 <StatBox>
-                    <Typography use="headline2">{form.stats.conversionRate}%</Typography>
+                    <Typography use="headline2">{form.overallStats.conversionRate}%</Typography>
                     <Typography use="overline">Conversion Rate</Typography>
                 </StatBox>
             </ContentWrapper>

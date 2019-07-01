@@ -5,7 +5,7 @@ import { renderPlugins } from "webiny-app/plugins";
 import { withRouter } from "react-router-dom";
 import styled from "react-emotion";
 import { Elevation } from "webiny-ui/Elevation";
-import { getForm } from "webiny-app-forms/admin/graphql";
+import { getForm } from "webiny-app-forms/admin/viewsGraphql";
 import { withSnackbar } from "webiny-admin/components";
 import { get } from "lodash";
 
@@ -67,7 +67,7 @@ const FormDetails = ({ formId, history, query, showSnackbar, refreshForms }) => 
                 const form = get(data, "forms.form.data") || null;
                 return (
                     <DetailsContainer>
-                        {renderPlugins("forms-form-details", {
+                        {form && renderPlugins("forms-form-details", {
                             refreshForms,
                             form,
                             loading
