@@ -27,11 +27,11 @@ export default ([
                 }
 
                 security.shield &&
-                    middleware.push(
-                        shield(security.shield, {
-                            debug: true
-                        })
-                    );
+                middleware.push(
+                    shield(security.shield, {
+                        debug: true
+                    })
+                );
             });
 
             return middleware;
@@ -40,7 +40,11 @@ export default ([
     {
         type: "graphql-context",
         name: "graphql-context-security",
-        apply: async (context) => {
+        preApply: async (context) => {
+            context.token = null;
+            context.user = null;
+            context.getUser = () => context.user;
+
             const securityPlugins: Array<PluginType> = getPlugins("graphql-security");
             for (let i = 0; i < securityPlugins.length; i++) {
                 await securityPlugins[i].authenticate(context);
