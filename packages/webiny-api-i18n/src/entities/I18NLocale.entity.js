@@ -59,7 +59,7 @@ export function i18nLocaleFactory(context: Object): Class<II18NLocale> {
                     this.createdBy = getUser().id;
                 }
 
-                const existingLocale = await I18NLocale.findOne({ query: { key: this.code } });
+                const existingLocale = await I18NLocale.findOne({ query: { code: this.code } });
                 if (existingLocale) {
                     throw Error(`Locale with key "${this.code}" already exists.`);
                 }
