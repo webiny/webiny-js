@@ -40,7 +40,7 @@ export default ([
     {
         type: "graphql-context",
         name: "graphql-context-security",
-        preApply: async (context) => {
+        preApply: async context => {
             context.token = null;
             context.user = null;
             context.getUser = () => context.user;
