@@ -41,7 +41,7 @@ export const pageFactory = (context: Object): Class<IPage> => {
         constructor() {
             super();
 
-            const { user, cms, security } = context;
+            const { getUser, cms, security } = context;
             const { Category } = cms.entities;
             const { User } = security.entities;
 
@@ -151,7 +151,9 @@ export const pageFactory = (context: Object): Class<IPage> => {
                     this.parent = this.id;
                 }
 
-                this.createdBy = user.id;
+                if (getUser()) {
+                    this.createdBy = getUser().id;
+                }
 
                 if (!this.title) {
                     this.title = "Untitled";
@@ -173,7 +175,9 @@ export const pageFactory = (context: Object): Class<IPage> => {
             });
 
             this.on("beforeUpdate", () => {
-                this.updatedBy = user.id;
+                if (getUser()) {
+                    this.updatedBy = getUser().id;
+                }
             });
 
             this.on("afterDelete", async () => {
