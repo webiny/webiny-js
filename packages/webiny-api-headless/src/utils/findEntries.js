@@ -1,62 +1,37 @@
-import { getPlugins } from "webiny-plugins";
 import createPaginationMeta from "webiny-entity/createPaginationMeta";
 import createCollectionName from "webiny-api-headless/utils/createCollectionName";
+import createMongoSorters from "webiny-api-headless/utils/createMongoSorters";
+import createMongoQuery from "webiny-api-headless/utils/createMongoQuery";
 import parseBoolean from "./parseBoolean";
-
-const fieldMap = {
-    id: "_id"
-};
-
-function mapFieldId(fieldId) {
-    if (fieldId in fieldMap) {
-        return fieldMap[fieldId];
-    }
-    return fieldId;
-}
 
 export default async function findEntries({ model, args, context, info }) {
     const db = context.getDatabase();
     const collectionName = createCollectionName(model.modelId);
     const collection = db.collection(collectionName);
 
+    // Create a local copy of context and override the `locale` value
+    const localContext = { ...context };
+    if (args.locale) {
+        localContext.locale = args.locale;
+    }
+
     parseBoolean(args);
-    let { where = {}, sort, perPage, page } = args;
+    let { where = {}, sort = [], perPage, page } = args;
     page = isNaN(page) || page < 1 ? 1 : page;
     perPage = isNaN(perPage) || perPage < 1 ? 100 : perPage;
 
-    const match = {};
-    const filterOperators = getPlugins("cms-headless-filter-operator");
+    const match = createMongoQuery(model, where, localContext);
+    const sorters = createMongoSorters(model, sort);
 
-    function createCondition(key) {
-        const value = where[key];
-        const delim = key.indexOf("_");
-        const fieldId = mapFieldId(key.substring(0, delim > 0 ? delim : undefined));
-        let operator = delim > 0 ? key.substring(delim + 1) : "eq";
-
-        const operatorPlugin = filterOperators.find(pl => pl.operator === operator);
-        if (!operatorPlugin) {
-            return;
-        }
-
-        const field = model.fields.find(f => f.fieldId === fieldId);
-        return { [fieldId]: operatorPlugin.createCondition({ fieldId, field, value, context }) };
-    }
-
-    const whereKeys = Object.keys(where);
-    if (whereKeys.length) {
-        match.$and = [];
-    }
-
-    whereKeys.forEach(key => {
-        match.$and.push(createCondition(key));
-    });
-    
     const entries = await collection
         .find(match)
-        .sort(sort)
+        .sort(sorters)
         .skip((page - 1) * perPage)
         .limit(perPage)
         .toArray();
+
+    // Set entry locale
+    entries.forEach(entry => (entry._locale = args.locale || context.locale));
 
     // Create meta
     const { selections } = info.fieldNodes[0].selectionSet;
@@ -74,7 +49,7 @@ export default async function findEntries({ model, args, context, info }) {
                           $match: match
                       }
                     : null,
-                sort ? { $sort: sort } : null,
+                sort ? { $sort: sorters } : null,
                 {
                     $count: "totalCount"
                 }

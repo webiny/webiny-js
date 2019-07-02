@@ -7,6 +7,7 @@ export default ({
     name: "cms-headless-field-type-float",
     type: "cms-headless-field-type",
     fieldType: "float",
+    isSortable: true,
     read: {
         createResolver() {
             return genericFieldValueResolver;

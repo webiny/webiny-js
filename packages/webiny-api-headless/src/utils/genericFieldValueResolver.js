@@ -1,21 +1,25 @@
 /**
  * This resolver is used in `headlessRead` to load field value based on the requested `locale`.
  *
- * @param entity
+ * @param entry
  * @param args
  * @param context
  * @param options
  * @returns {*}
  */
-export default (entity, args, context, { fieldName }) => {
-    const i18n = (entity[fieldName] || []).reduce((acc, v) => {
+export default (entry, args, context, { fieldName }) => {
+    const value = entry[fieldName];
+
+    if (!value) {
+        return null;
+    }
+
+    const i18n = value.reduce((acc, v) => {
         acc[v.locale] = v.value;
         return acc;
     }, {});
 
-    if (args.locale) {
-        // TODO: find locale ID and return data
-    }
+    const locale = args.locale || entry._locale || context.locale || context.defaultLocale;
 
-    return i18n[context.locale] || i18n[context.defaultLocale];
+    return i18n[locale];
 };

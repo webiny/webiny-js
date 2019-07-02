@@ -7,6 +7,7 @@ export default ({
     name: "cms-headless-field-type-json",
     type: "cms-headless-field-type",
     fieldType: "json",
+    isSortable: false,
     read: {
         createResolver() {
             return genericFieldValueResolver;

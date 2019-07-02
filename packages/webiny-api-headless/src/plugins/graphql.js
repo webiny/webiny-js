@@ -27,6 +27,8 @@ export default ([
                 get(context, "event.headers.Accept-Language") ||
                 get(context, "event.headers.accept-language") ||
                 defaultLocale;
+
+            context.locale = context.locale.split(",")[0];
             context.defaultLocale = defaultLocale;
         }
     },
@@ -40,7 +42,7 @@ export default ([
             stitching: {
                 linkTypeDefs: /* GraphQL */ `
                     ${typeDefs}
-                    
+
                     extend type CmsQuery {
                         headlessRead: HeadlessReadQuery
                         headlessManage: HeadlessManageQuery

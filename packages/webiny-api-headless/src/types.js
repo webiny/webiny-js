@@ -16,6 +16,7 @@ export type DbEntry = {
 };
 
 export type HeadlessFieldTypePlugin = PluginType & {
+    isSortable: boolean,
     fieldType: string,
     read: {
         createTypeField({ model: Object, field: Object }): string,

@@ -8,7 +8,7 @@ import { resolveCreate } from "../resolvers/resolveCreate";
 import { resolveUpdate } from "../resolvers/resolveUpdate";
 
 const commonFieldResolvers = () => ({
-    id: entry => entry._id.toString(),
+    id: entry => (entry._id ? entry._id.toString() : null),
     createdBy: (entry, args, context) => {
         return context.security.entities.User.findById(entry.createdBy);
     },
@@ -42,7 +42,6 @@ export default async config => {
     function renderInputFields(model) {
         return model.fields
             .map(f => {
-                //const isRequired = Boolean(f.validation.find(v => v.id === "required"));
                 return fieldTypePlugins[f.type].manage.createInputField({ model, field: f });
             })
             .join("\n");
@@ -70,6 +69,18 @@ export default async config => {
                 return "";
             })
             .join("\n");
+    }
+
+    function renderSortEnum(model) {
+        const sorters = [];
+        model.fields
+            .filter(f => fieldTypePlugins[f.type].isSortable)
+            .forEach(f => {
+                sorters.push(`${f.fieldId}_ASC`);
+                sorters.push(`${f.fieldId}_DESC`);
+            });
+
+        return sorters.join("\n");
     }
 
     const plugins = [];
@@ -121,9 +132,10 @@ export default async config => {
                     }
                     
                     extend type HeadlessManageQuery {
-                        get${typeName}(id: ID): Manage_${typeName}Response
+                        get${typeName}(id: ID, locale: String): Manage_${typeName}Response
                         
                         list${pluralize(typeName)}(
+                            locale: String
                             page: Int
                             perPage: Int
                             sort: JSON
@@ -208,6 +220,14 @@ export default async config => {
                         ${renderListFilterFields(model, "read")}
                     }
                     
+                    enum ${typeName}Sorter {
+                        createdOn_ASC
+                        createdOn_DESC
+                        updatedOn_ASC
+                        updatedOn_DESC
+                        ${renderSortEnum(model, "read")}
+                    }
+                    
                     type ${typeName}Response {
                         data: ${typeName}
                         error: Error
@@ -220,13 +240,14 @@ export default async config => {
                     }
                     
                     extend type HeadlessReadQuery {
-                        get${typeName}(id: ID, where: JSON, sort: String): ${typeName}Response
+                        get${typeName}(locale: String, where: ${typeName}FilterInput, sort: [${typeName}Sorter]): ${typeName}Response
                         
                         list${pluralize(typeName)}(
+                            locale: String
                             page: Int
                             perPage: Int
                             where: ${typeName}FilterInput
-                            sort: JSON
+                            sort: [${typeName}Sorter]
                         ): ${typeName}ListResponse
                     }
                 `,

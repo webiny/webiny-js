@@ -7,6 +7,7 @@ export default ({
     name: "cms-headless-field-type-boolean",
     type: "cms-headless-field-type",
     fieldType: "boolean",
+    isSortable: true,
     read: {
         createResolver() {
             return genericFieldValueResolver;

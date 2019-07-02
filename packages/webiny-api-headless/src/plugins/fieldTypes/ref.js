@@ -13,6 +13,7 @@ export default ({
     name: "cms-headless-field-type-ref",
     type: "cms-headless-field-type",
     fieldType: "ref",
+    isSortable: false,
     read: {
         createTypeField({ model, field }) {
             const { modelId, type } = field.settings;
@@ -30,7 +31,7 @@ export default ({
                 const refValue = genericFieldValueResolver(entry, args, context, info);
 
                 if (!refValue) {
-                    return new ListResponse([], {});
+                    return null;
                 }
 
                 if (type === "one") {

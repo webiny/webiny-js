@@ -32,10 +32,11 @@ export default ({
     name: "cms-headless-field-type-text",
     type: "cms-headless-field-type",
     fieldType: "text",
+    isSortable: true,
     read: {
         createListFilters,
         createTypeField({ field }) {
-            return `${field.fieldId}: String`;
+            return `${field.fieldId}(locale: String): String`;
         },
         createResolver() {
             return genericFieldValueResolver;
