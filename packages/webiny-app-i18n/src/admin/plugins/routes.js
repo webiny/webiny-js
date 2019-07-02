@@ -17,7 +17,7 @@ export default [
                 render={() => (
                     <SecureRoute i18NLocales={["i18n-locales"]}>
                         <AdminLayout>
-                            <Helmet title={"I18N - ocales"} />
+                            <Helmet title={"I18N - Locales"} />
                             <I18NLocales />
                         </AdminLayout>
                     </SecureRoute>
