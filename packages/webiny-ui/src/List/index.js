@@ -10,7 +10,8 @@ export {
     ListItemTextPrimary,
     ListItemTextSecondary,
     ListTextOverline,
-    ListTopCaption
+    ListTopCaption,
+    ListSelectBox
 } from "./List";
 
 export { DataList, ScrollList } from "./DataList";

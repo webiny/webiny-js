@@ -28,7 +28,7 @@ export const PublishForm = ({ page, showSnackbar, router }) => {
                                         }
                                     });
 
-                                    const { error } = response.data.cms.publishRevision;
+                                    const { error } = response.data.forms.publishRevision;
                                     if (error) {
                                         return showSnackbar(error.message);
                                     }
@@ -63,4 +63,4 @@ export default compose(
     ),
     withSnackbar(),
     withRouter()
-)(Index);
+)(PublishForm);

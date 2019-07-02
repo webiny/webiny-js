@@ -42,7 +42,9 @@ class Tooltip extends React.Component<Props, State> {
                 overlay={this.props.content}
                 {...this.props}
             >
-                <span className="tooltip-content-wrapper">{this.props.children}</span>
+                <span className="webiny-ui-tooltip tooltip-content-wrapper">
+                    {this.props.children}
+                </span>
             </RcTooltip>
         );
     }

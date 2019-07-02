@@ -38,7 +38,7 @@ const LeftBarFieldList = styled("div")({
 
 const formTabs = css({
     "&.webiny-ui-tabs": {
-        ".webiny-ui-tabs--tab-bar": {
+        ".webiny-ui-tabs__tab-bar": {
             backgroundColor: "var(--mdc-theme-surface)"
         }
     }

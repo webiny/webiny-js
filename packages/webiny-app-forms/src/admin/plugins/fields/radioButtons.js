@@ -18,14 +18,15 @@ export default {
                 id: "",
                 label: "",
                 type: this.id,
-                validation: []
+                validation: [],
+                defaultValue: ""
             };
         },
         renderSettings({ form }) {
             return (
                 <Grid>
                     <Cell span={12}>
-                        <OptionsSelectionDynamicFieldset form={form} multiple />
+                        <OptionsSelectionDynamicFieldset form={form} />
                     </Cell>
                 </Grid>
             );

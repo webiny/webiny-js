@@ -4,6 +4,7 @@ import type { IRole } from "./Role.entity";
 
 export interface IGroup extends Entity {
     name: string;
+    createdBy: string;
     slug: string;
     description: string;
     system: boolean;
@@ -15,6 +16,7 @@ export function groupFactory(context: Object): Class<IGroup> {
         static classId = "SecurityGroup";
 
         name: string;
+        createdBy: string;
         slug: string;
         description: string;
         system: boolean;
@@ -24,13 +26,11 @@ export function groupFactory(context: Object): Class<IGroup> {
             super();
 
             const {
-                user = {},
+                getUser,
                 security: { entities }
             } = context;
 
-            this.attr("createdBy")
-                .char()
-                .setDefaultValue(user.id);
+            this.attr("createdBy").char();
             this.attr("name")
                 .char()
                 .setValidators("required");
@@ -47,6 +47,10 @@ export function groupFactory(context: Object): Class<IGroup> {
                 .setUsing(entities.Roles2Entities, "role");
 
             this.on("beforeCreate", async () => {
+                if (getUser()) {
+                    this.createdBy = getUser().id;
+                }
+
                 const existingGroup = await Group.findOne({ query: { slug: this.slug } });
                 if (existingGroup) {
                     throw Error(`Group with slug "${this.slug}" already exists.`);

@@ -5,7 +5,7 @@ import { renderPlugins } from "webiny-app/plugins";
 import { withRouter } from "react-router-dom";
 import styled from "react-emotion";
 import { Elevation } from "webiny-ui/Elevation";
-import { getForm } from "webiny-app-forms/admin/graphql/forms";
+import { getForm } from "webiny-app-forms/admin/viewsGraphql";
 import { withSnackbar } from "webiny-admin/components";
 import { get } from "lodash";
 
@@ -52,7 +52,7 @@ const FormDetails = ({ formId, history, query, showSnackbar, refreshForms }) => 
 
     return (
         <Query
-            query={getForm()}
+            query={getForm}
             variables={{ id: formId }}
             onCompleted={data => {
                 const error = get(data, "cms.form.error.message");
@@ -64,14 +64,15 @@ const FormDetails = ({ formId, history, query, showSnackbar, refreshForms }) => 
             }}
         >
             {({ data, loading }) => {
-                const form = get(data, "forms.form.data") || {};
+                const form = get(data, "forms.form.data") || null;
                 return (
                     <DetailsContainer>
-                        {renderPlugins("forms-form-details", {
-                            refreshForms,
-                            form,
-                            loading
-                        })}
+                        {form &&
+                            renderPlugins("forms-form-details", {
+                                refreshForms,
+                                form,
+                                loading
+                            })}
                     </DetailsContainer>
                 );
             }}

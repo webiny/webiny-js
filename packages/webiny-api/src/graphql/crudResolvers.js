@@ -5,7 +5,7 @@ import parseBoolean from "./parseBoolean";
 import InvalidAttributesError from "./InvalidAttributesError";
 import { ListResponse, ErrorResponse, NotFoundResponse, Response } from "./responses";
 
-type EntityFetcher = string | (context: Object) => Class<Entity>;
+type EntityFetcher = string | ((context: Object) => Class<Entity>);
 
 const notFound = (id?: string) => {
     return new NotFoundResponse(id ? `Record "${id}" not found!` : "Record not found!");
@@ -53,7 +53,6 @@ export const resolveList = (entityFetcher: EntityFetcher) => async (
     const EntityClass = getEntityClass(context, entityFetcher);
 
     parseBoolean(args);
-
     const query = { ...args.where };
     const find: Object = {
         query,
@@ -115,7 +114,8 @@ export const resolveUpdate = (entityFetcher: EntityFetcher) => async (
     }
 
     try {
-        await entity.populate(args.data).save();
+        await entity.populate(args.data);
+        await entity.save();
     } catch (e) {
         if (e instanceof ModelError && e.code === ModelError.INVALID_ATTRIBUTES) {
             const attrError = InvalidAttributesError.from(e);

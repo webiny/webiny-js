@@ -7,6 +7,7 @@ import { UiProvider } from "webiny-app/context/ui";
 import plugins from "./plugins";
 import myTheme from "demo-theme";
 import { GenericNotFoundPage, GenericErrorPage } from "./cms";
+import { I18NProvider } from "webiny-app-i18n/components";
 
 registerPlugins(plugins);
 
@@ -22,13 +23,15 @@ const defaults = {
 
 const App = () => {
     return (
-        <UiProvider>
-            <CmsProvider theme={myTheme} defaults={defaults}>
-                {getPlugins("route").map((pl: Object) =>
-                    React.cloneElement(pl.route, { key: pl.name, exact: true })
-                )}
-            </CmsProvider>
-        </UiProvider>
+        <I18NProvider>
+            <UiProvider>
+                <CmsProvider theme={myTheme} defaults={defaults}>
+                    {getPlugins("route").map((pl: Object) =>
+                        React.cloneElement(pl.route, { key: pl.name, exact: true })
+                    )}
+                </CmsProvider>
+            </UiProvider>
+        </I18NProvider>
     );
 };
 

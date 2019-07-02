@@ -25,15 +25,17 @@ const listWrapper = css({
 
 const RevisionsList = ({ form, loading }: RevisionsProps) => {
     return (
-        <Elevation className={listWrapper} z={2}>
-            <div style={{ position: "relative" }}>
-                {loading && <CircularProgress />}
-                <List nonInteractive twoLine>
-                    {Array.isArray(form.revisions) &&
-                        form.revisions.map(rev => <Revision rev={rev} key={rev.id} />)}
-                </List>
-            </div>
-        </Elevation>
+        form && (
+            <Elevation className={listWrapper} z={2}>
+                <div style={{ position: "relative" }}>
+                    {loading && <CircularProgress />}
+                    <List nonInteractive twoLine>
+                        {Array.isArray(form.revisions) &&
+                            form.revisions.map(rev => <Revision rev={rev} key={rev.id} />)}
+                    </List>
+                </div>
+            </Elevation>
+        )
     );
 };
 

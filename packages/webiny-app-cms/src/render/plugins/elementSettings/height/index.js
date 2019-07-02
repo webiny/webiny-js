@@ -13,7 +13,7 @@ export default ({
 
         if (height.fullHeight) {
             // If `fullHeight=true`, we completely ignore the height value.
-            style.height = "100vh";
+            style.minHeight = "100vh";
         } else {
             style.height = height.value;
         }

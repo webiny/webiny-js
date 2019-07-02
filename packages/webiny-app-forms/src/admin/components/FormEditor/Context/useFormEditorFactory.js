@@ -43,7 +43,7 @@ export default FormEditorContext => {
                     mutation: updateRevision,
                     variables: {
                         id: data.id,
-                        data: pick(data, ["layout", "fields", "name", "settings"])
+                        data: pick(data, ["layout", "fields", "name", "settings", "triggers"])
                     }
                 });
 

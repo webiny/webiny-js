@@ -38,15 +38,23 @@ const Header = (props: Props) => {
     const { form, refreshPages } = props;
     return (
         <React.Fragment>
-            <Grid className={headerTitle}>
-                <Cell span={8} className={pageTitle}>
-                    <Typography use="headline5">{form.title}</Typography>
-                </Cell>
-                <Cell span={4} className={headerActions}>
-                    {renderPlugins("forms-form-details-header-left", {  form, refreshPages })}
-                    {renderPlugins("forms-form-details-header-right", { form, refreshPages })}
-                </Cell>
-            </Grid>
+            {form && (
+                <Grid className={headerTitle}>
+                    <Cell span={8} className={pageTitle}>
+                        <Typography use="headline5">{form.name}</Typography>
+                    </Cell>
+                    <Cell span={4} className={headerActions}>
+                        {renderPlugins("forms-form-details-header-left", {
+                            form,
+                            refreshPages
+                        })}
+                        {renderPlugins("forms-form-details-header-right", {
+                            form,
+                            refreshPages
+                        })}
+                    </Cell>
+                </Grid>
+            )}
         </React.Fragment>
     );
 };

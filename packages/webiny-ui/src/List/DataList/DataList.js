@@ -177,7 +177,7 @@ type Props = {
     isNoneMultiSelected: () => boolean
 };
 
-const MultiSelectActions = (props: Props) => {
+const MultiSelectAll = (props: Props) => {
     const { multiSelectActions } = props;
     if (!multiSelectActions) {
         return null;
@@ -196,9 +196,17 @@ const MultiSelectActions = (props: Props) => {
                     />
                 </ListHeaderItem>
             )}
-            <ListHeaderItem>{multiSelectActions}</ListHeaderItem>
         </React.Fragment>
     );
+};
+
+const MultiSelectActions = (props: Props) => {
+    const { multiSelectActions } = props;
+    if (!multiSelectActions) {
+        return null;
+    }
+
+    return <ListHeaderItem>{multiSelectActions}</ListHeaderItem>;
 };
 
 const RefreshButton = (props: Props) => {
@@ -321,20 +329,23 @@ export const DataList = (props: Props) => {
 
     return (
         <ListContainer className={"webiny-data-list"}>
-            <Grid className={listHeader}>
-                <Cell span={6} className={listTitle}>
-                    <Typography use="headline5">{props.title}</Typography>
-                </Cell>
-                <Cell span={6} className={listActions}>
-                    {props.actions}
-                </Cell>
-            </Grid>
+            {(props.title || props.actions) && (
+                <Grid className={listHeader}>
+                    <Cell span={6} className={listTitle}>
+                        <Typography use="headline5">{props.title}</Typography>
+                    </Cell>
+                    <Cell span={6} className={listActions}>
+                        {props.actions}
+                    </Cell>
+                </Grid>
+            )}
 
             <Grid className={listSubHeader}>
                 <Cell span={5}>
-                    <MultiSelectActions {...props} />
+                    <MultiSelectAll {...props} />
                     <RefreshButton {...props} />
                     <Sorters {...props} />
+                    <MultiSelectActions {...props} />
                 </Cell>
 
                 <Cell span={7} style={{ textAlign: "right" }}>

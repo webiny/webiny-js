@@ -1,53 +1,116 @@
 // @flow
+import { I18NCharAttribute, I18NObjectAttribute } from "webiny-api-i18n/attributes";
 import { Entity, type EntityCollection } from "webiny-entity";
 import { Model } from "webiny-model";
-
 import mdbid from "mdbid";
+import { getPlugins } from "webiny-plugins";
 
-export interface IForm extends Entity {
-    createdBy: Entity;
-    updatedBy: Entity;
+export interface IFormSettings extends Entity {
     name: string;
-    snippet: string;
-    fields: [Object];
-    layout: [Object];
-    settings: Object;
-    version: number;
-    parent: string;
-    published: boolean;
-    publishedOn: ?Date;
+    stats: {
+        views: number,
+        submissions: number,
+        conversionRate: number,
+        incrementViews: () => void,
+        incrementSubmissions: () => void
+    };
 }
 
 class LayoutSettingsModel extends Model {
     constructor() {
         super();
-        this.attr("renderer").char().setValue("default");
+        this.attr("renderer")
+            .char()
+            .setValue("default");
     }
 }
 
-class SettingsModel extends Model {
-    constructor(props) {
-        super(props);
-        this.attr("layout")
-            .model(LayoutSettingsModel)
-            .setDefaultValue(new LayoutSettingsModel());
+class FormStatsModel extends Model {
+    views: number;
+    submissions: number;
+    conversionRate: number;
+
+    constructor() {
+        super();
+        this.attr("views")
+            .integer()
+            .setDefaultValue(0);
+        this.attr("submissions")
+            .integer()
+            .setDefaultValue(0);
+        this.attr("conversionRate")
+            .float()
+            .setDynamic(() => {
+                if (this.views > 0) {
+                    return ((this.submissions / this.views) * 100).toFixed(2);
+                }
+                return 0;
+            });
+    }
+
+    incrementViews() {
+        this.views++;
+    }
+
+    incrementSubmissions() {
+        this.submissions = this.submissions + 1;
     }
 }
 
-export default ({ getUser, getEntities }: Object) =>
-    class CmsForm extends Entity {
+const createFieldModel = context =>
+    class FieldModel extends Model {
+        constructor() {
+            super();
+            this.attr("id")
+                .char()
+                .setValidators("required");
+            this.attr("fieldId")
+                .char()
+                .setValidators("required");
+            this.attr("type")
+                .char()
+                .setValidators("required");
+            this.attr("label").custom(I18NCharAttribute, context);
+            this.attr("helpText").custom(I18NCharAttribute, context);
+            this.attr("placeholderText").custom(I18NCharAttribute, context);
+            this.attr("defaultValue").char();
+            this.attr("validation").array();
+            this.attr("settings")
+                .object()
+                .setValue({});
+        }
+    };
+
+const createSettingsModel = context =>
+    class SettingsModel extends Model {
+        constructor(props) {
+            super(props);
+            this.attr("layout")
+                .model(LayoutSettingsModel)
+                .setDefaultValue(new LayoutSettingsModel());
+
+            this.attr("submitButtonLabel").custom(I18NCharAttribute, context);
+            this.attr("successMessage").custom(I18NObjectAttribute, context);
+        }
+    };
+
+export default (context: Object) => {
+    const { getUser, getEntities } = context;
+    return class CmsForm extends Entity {
         static classId = "CmsForm";
 
         createdBy: Entity;
         updatedBy: Entity;
         published: boolean;
+        locked: boolean;
         publishedOn: ?Date;
         name: string;
         snippet: string;
-        fields: [Object];
-        layout: [Object];
+        fields: Array<Object>;
+        layout: Array<Array<String>>;
         triggers: Object;
         settings: Object;
+        stats: FormStatsModel;
         version: number;
         parent: string;
 
@@ -66,26 +129,62 @@ export default ({ getUser, getEntities }: Object) =>
             this.attr("name")
                 .char()
                 .setValidators("required")
-                .onSet(value => (this.published ? this.name : value));
+                .onSet(value => (this.locked ? this.name : value));
 
             this.attr("fields")
-                .object()
-                .onSet(value => (this.published ? this.fields : value))
+                .models(createFieldModel(context))
+                .onSet(value => (this.locked ? this.fields : value))
                 .setValue([]);
 
             this.attr("layout")
                 .object()
-                .onSet(value => (this.published ? this.layout : value))
+                .onSet(value => (this.locked ? this.layout : value))
                 .setValue([]);
 
+            this.attr("stats")
+                .model(FormStatsModel)
+                .setSkipOnPopulate()
+                .setDefaultValue(new FormStatsModel());
+
+            this.attr("overallStats")
+                .model(FormStatsModel)
+                .setDynamic(async () => {
+                    const collection = CmsForm.getDriver().getCollectionName(CmsForm);
+                    const [stats] = await CmsForm.getDriver().aggregate(collection, [
+                        { $match: { parent: "5d16025046e6da12c9b1f9ed" } },
+                        { $project: { stats: 1 } },
+                        {
+                            $group: {
+                                _id: null,
+                                views: {
+                                    $sum: "$stats.views"
+                                },
+                                submissions: {
+                                    $sum: "$stats.submissions"
+                                }
+                            }
+                        }
+                    ]);
+
+                    let conversionRate = 0;
+                    if (stats.views > 0) {
+                        conversionRate = ((stats.submissions / stats.views) * 100).toFixed(2);
+                    }
+                    return {
+                        ...stats,
+                        conversionRate
+                    };
+                });
+
+            const SettingsModel = createSettingsModel(context);
             this.attr("settings")
                 .model(SettingsModel)
-                .onSet(value => (this.published ? this.layout : value))
+                .onSet(value => (this.locked ? this.layout : value))
                 .setDefaultValue(new SettingsModel());
 
             this.attr("triggers")
                 .object()
-                .onSet(value => (this.published ? this.triggers : value));
+                .onSet(value => (this.locked ? this.triggers : value));
 
             this.attr("revisions")
                 .entities(CmsForm)
@@ -96,22 +195,50 @@ export default ({ getUser, getEntities }: Object) =>
                     });
                 });
 
-            this.attr("version").integer();
+            this.attr("publishedRevisions")
+                .entities(CmsForm)
+                .setDynamic(() => {
+                    return CmsForm.find({
+                        query: { parent: this.parent, published: true },
+                        sort: { version: -1 }
+                    });
+                });
 
+            this.attr("version").integer();
             this.attr("parent").char();
 
+            this.attr("publishedOn").date();
             this.attr("published")
                 .boolean()
                 .onSet(value => {
-                    if (this.published) {
+                    if (this.locked) {
                         return this.published;
                     }
 
                     if (value) {
                         this.publishedOn = new Date();
+                        if (!this.locked) {
+                            this.locked = true;
+                        }
                     }
+
+                    return value;
                 });
-            this.attr("publishedOn").date();
+
+            this.attr("locked")
+                .boolean()
+                .setSkipOnPopulate()
+                .setDefaultValue(false);
+
+            this.attr("status")
+                .boolean()
+                .setDynamic(() => {
+                    if (this.published) {
+                        return "published";
+                    }
+
+                    return this.locked ? "locked" : "draft";
+                });
 
             this.on("beforeCreate", async () => {
                 if (!this.id) {
@@ -122,25 +249,21 @@ export default ({ getUser, getEntities }: Object) =>
                     this.parent = this.id;
                 }
 
-                this.createdBy = getUser().id;
+                if (getUser()) {
+                    this.createdBy = getUser().id;
+                }
 
                 if (!this.name) {
                     this.name = "Untitled";
                 }
 
                 this.version = await this.getNextVersion();
-
-                /*if (!this.settings) {
-                    this.settings = {
-                        general: {
-                            layout: (await this.category).layout
-                        }
-                    };
-                }*/
             });
 
             this.on("beforeUpdate", () => {
-                this.updatedBy = getUser().id;
+                if (getUser()) {
+                    this.updatedBy = getUser().id;
+                }
             });
 
             this.on("afterDelete", async () => {
@@ -158,6 +281,48 @@ export default ({ getUser, getEntities }: Object) =>
             });
         }
 
+        async submit({ data, meta }: { data: Object, meta: Object }) {
+            const { FormSubmission } = getEntities();
+            const formSubmission = new FormSubmission();
+            formSubmission.data = data;
+            formSubmission.meta = meta;
+            formSubmission.form = {
+                parent: this.parent,
+                revision: this
+            };
+
+            formSubmission.addLog({ type: "info", message: "Form submission created." });
+            await formSubmission.save();
+
+            try {
+                // Execute triggers
+                if (this.triggers) {
+                    const plugins = getPlugins("form-trigger-handler");
+                    for (let i = 0; i < plugins.length; i++) {
+                        let plugin = plugins[i];
+                        this.triggers[plugin.trigger] &&
+                            (await plugin.handle({
+                                form: this,
+                                formSubmission,
+                                data,
+                                meta,
+                                trigger: this.triggers[plugin.trigger]
+                            }));
+                    }
+                }
+
+                this.stats.incrementSubmissions();
+                await this.save();
+
+                formSubmission.addLog({ type: "success", message: "Form submitted successfully." });
+            } catch (e) {
+                formSubmission.addLog({ type: "error", message: e.message });
+                throw e;
+            } finally {
+                await formSubmission.save();
+            }
+        }
+
         async getNextVersion() {
             const { CmsForm } = getEntities();
             const revision: null | CmsForm = await CmsForm.findOne({
@@ -172,3 +337,4 @@ export default ({ getUser, getEntities }: Object) =>
             return revision.version + 1;
         }
     };
+};

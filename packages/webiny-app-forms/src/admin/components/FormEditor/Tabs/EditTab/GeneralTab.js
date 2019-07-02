@@ -4,18 +4,20 @@ import { Grid, Cell } from "webiny-ui/Grid";
 import { camelCase } from "lodash";
 import { useFormEditor } from "webiny-app-forms/admin/components/FormEditor/Context";
 import { getPlugins } from "webiny-plugins";
+import { I18NInput, useI18N } from "webiny-app-i18n/components";
 
 const GeneralTab = ({ field, form }) => {
     const { Bind, setValue } = form;
     const inputRef = useRef(null);
     const { getFields } = useFormEditor();
+    const { translate } = useI18N();
 
     useEffect(() => {
         inputRef.current && inputRef.current.focus();
     }, []);
 
     const afterChangeLabel = useCallback(value => {
-        setValue("fieldId", camelCase(value));
+        setValue("fieldId", camelCase(translate(value)));
     }, []);
 
     const uniqueFieldIdValidator = useCallback(fieldId => {
@@ -48,7 +50,7 @@ const GeneralTab = ({ field, form }) => {
             <Grid>
                 <Cell span={6}>
                     <Bind name={"label"} validators={["required"]} afterChange={afterChangeLabel}>
-                        <Input label={"Label"} inputRef={inputRef} />
+                        <I18NInput label={"Label"} inputRef={inputRef} />
                     </Bind>
                 </Cell>
                 <Cell span={6}>
@@ -58,15 +60,7 @@ const GeneralTab = ({ field, form }) => {
                 </Cell>
                 <Cell span={12}>
                     <Bind name={"helpText"}>
-                        <Input label={"Help text"} description={"Help text (optional)"} />
-                    </Bind>
-                </Cell>
-                <Cell span={12}>
-                    <Bind name={"placeholderText"}>
-                        <Input
-                            label={"Placeholder text"}
-                            description={"Placeholder text (optional)"}
-                        />
+                        <I18NInput label={"Help text"} description={"Help text (optional)"} />
                     </Bind>
                 </Cell>
             </Grid>

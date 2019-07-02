@@ -1,28 +1,23 @@
 // @flow
-import type { Entity } from "webiny-entity";
 import type { IForm } from "webiny-api-forms/entities";
 import { ErrorResponse, NotFoundResponse, Response } from "webiny-api/graphql";
 
-type EntityFetcher = (context: Object) => Class<Entity>;
+export default async (root: any, args: Object, context: Object) => {
+    const { CmsForm } = context.getEntities();
 
-export default (entityFetcher: EntityFetcher) => async (
-    root: any,
-    args: Object,
-    context: Object
-) => {
-    const Form = entityFetcher(context);
-
-    const sourceRev: IForm = (await Form.findById(args.revision): any);
+    const sourceRev: IForm = (await CmsForm.findById(args.revision): any);
     if (!sourceRev) {
         return new NotFoundResponse(`Revision with id "${args.revision}" was not found!`);
     }
 
-    const newRevision: IForm = (new Form(): any);
+    const newRevision: IForm = (new CmsForm(): any);
     try {
         newRevision.populate({
             name: sourceRev.name,
             settings: sourceRev.settings,
-            content: sourceRev.content,
+            layout: sourceRev.layout,
+            fields: sourceRev.fields,
+            triggers: sourceRev.triggers,
             parent: sourceRev.parent
         });
         await newRevision.save();

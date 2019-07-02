@@ -28,7 +28,7 @@ export default [
                 render={() => (
                     <SecureRoute roles={["form-editors-editor"]}>
                         <Helmet>
-                            <title>CMS - Edit form</title>
+                            <title>Edit form</title>
                         </Helmet>
                         <FormEditor />
                     </SecureRoute>
@@ -46,7 +46,7 @@ export default [
                 render={() => (
                     <SecureRoute roles={["form-editors"]}>
                         <AdminLayout>
-                            <Helmet title={"CMS - Forms"} />
+                            <Helmet title={"Forms"} />
                             <Forms />
                         </AdminLayout>
                     </SecureRoute>

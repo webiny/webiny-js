@@ -1,154 +1,123 @@
 // @flow
-import React from "react";
-import { Input } from "webiny-ui/Input";
-import { Select } from "webiny-ui/Select";
+// $FlowFixMe
+import React, { useState, useCallback } from "react";
+import Input from "./fields/Input";
+import Select from "./fields/Select";
+import Radio from "./fields/Radio";
+import Checkbox from "./fields/Checkbox";
+import Textarea from "./fields/Textarea";
 import { Form } from "webiny-form";
-import { RadioGroup, Radio } from "webiny-ui/Radio";
-import { CheckboxGroup, Checkbox } from "webiny-ui/Checkbox";
 
 import type { FieldType, FormRenderPropsType } from "webiny-app-forms/types";
 
-function renderField(field: FieldType, bind: Object) {
-    switch (field.type) {
+function renderField(props: { field: FieldType, bind: Object, validation: Object }) {
+    switch (props.field.type) {
         case "text":
-            return (
-                <Input
-                    {...bind}
-                    label={field.label}
-                    placeholder={field.placeholderText}
-                    description={field.helpText}
-                />
-            );
+            return <Input {...props} />;
         case "textarea":
-            return (
-                <Input
-                    {...bind}
-                    rows={field.rows}
-                    label={field.label}
-                    placeholder={field.placeholderText}
-                    description={field.helpText}
-                />
-            );
+            return <Textarea {...props} />;
         case "number":
-            return (
-                <Input
-                    type={"number"}
-                    {...bind}
-                    label={field.label}
-                    placeholder={field.placeholderText}
-                    description={field.helpText}
-                />
-            );
+            return <Input type="number" {...props} />;
         case "rich-text":
             return <span>rich text</span>;
-
         case "select":
-            return (
-                <Select
-                    {...bind}
-                    label={field.label}
-                    placeholder={field.placeholderText}
-                    description={field.helpText}
-                    options={field.options}
-                />
-            );
+            return <Select {...props} />;
         case "radio":
-            return (
-                <RadioGroup
-                    {...bind}
-                    label={field.label}
-                    placeholder={field.placeholderText}
-                    description={field.helpText}
-                >
-                    {({ onChange, getValue }) => (
-                        <>
-                            {field.options.map(({ value, label }) => (
-                                <Radio
-                                    key={value}
-                                    label={label}
-                                    value={getValue(value)}
-                                    onChange={onChange(value)}
-                                />
-                            ))}
-                        </>
-                    )}
-                </RadioGroup>
-            );
+            return <Radio {...props} />;
         case "checkbox":
-            return (
-                <CheckboxGroup
-                    {...bind}
-                    label={field.label}
-                    placeholder={field.placeholderText}
-                    description={field.helpText}
-                >
-                    {({ onChange, getValue }) => (
-                        <>
-                            {field.options.map(({ value, label }) => (
-                                <Checkbox
-                                    key={value}
-                                    label={label}
-                                    value={getValue(value)}
-                                    onChange={onChange(value)}
-                                />
-                            ))}
-                        </>
-                    )}
-                </CheckboxGroup>
-            );
+            return <Checkbox {...props} />;
         case "hidden":
-            return <input type={"hidden"} {...bind} />;
+            return <input type={"hidden"} value={props.bind.value} />;
         default:
             return <span>Cannot render field.</span>;
     }
 }
 
-const FormRenderer = ({ getFields, getDefaultValues, submit }: FormRenderPropsType) => {
+const FormRenderer = ({ getFields, getDefaultValues, submit, form }: FormRenderPropsType) => {
     const fields = getFields();
+    const [loading, setLoading] = useState(false);
+    const [success, setSuccess] = useState(false);
 
-    const customSubmit = data => {
-        // Do something extra, finally call the provided callback.
-        console.log("Will submit...", data);
-        submit();
-    };
+    const submitForm = useCallback(async data => {
+        setLoading(true);
+        const result = await submit(data);
+        setLoading(false);
+        if (result.error === null) {
+            setSuccess(true);
+        }
+    }, []);
 
     return (
-        <Form onSubmit={customSubmit} data={getDefaultValues()}>
+        <Form onSubmit={submitForm} data={getDefaultValues()}>
             {({ submit, Bind }) => (
-                <div>
-                    <h1>DefaultFormLayout</h1>
-                    <div>
-                        {fields.map((row, rowIndex) => (
-                            <div key={rowIndex} className={"row"}>
-                                {row.map(field => (
+                <div className={"webiny-cms-form"}>
+                    {success ? (
+                        <div className={"webiny-cms-base-element-style webiny-cms-layout-row"}>
+                            <div
+                                className={"webiny-cms-base-element-style webiny-cms-layout-column"}
+                            >
+                                <div className="webiny-cms-form__success-message">
+                                    <div className="webiny-cms-form-field__label webiny-cms-typography-h3">
+                                        {form.settings.successMessage.value || "Thanks!"}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    ) : (
+                        <>
+                            <div>
+                                {fields.map((row, rowIndex) => (
                                     <div
-                                        style={{
-                                            display: "inline-block",
-                                            width: `calc(100% / ${row.length})`
-                                        }}
-                                        key={field.id}
-                                        className={"field"}
+                                        key={rowIndex}
+                                        className={
+                                            "webiny-cms-base-element-style webiny-cms-layout-row"
+                                        }
                                     >
-                                        <Bind name={field.fieldId} validators={field.validators}>
-                                            {({ validation, ...bind }) => (
-                                                <div className={"group"}>
-                                                    {/* Render input or whatever */}
-                                                    {renderField(field, bind)}
-                                                    {/* Render validation message */}
-                                                    {validation.valid === false
-                                                        ? validation.message
-                                                        : null}
-                                                </div>
-                                            )}
-                                        </Bind>
+                                        {row.map(field => (
+                                            <div
+                                                key={field.id}
+                                                className={
+                                                    "webiny-cms-base-element-style webiny-cms-layout-column"
+                                                }
+                                            >
+                                                <Bind
+                                                    name={field.fieldId}
+                                                    validators={field.validators}
+                                                >
+                                                    {({ validation, ...bind }) => (
+                                                        <React.Fragment>
+                                                            {/* Render input or whatever */}
+                                                            {renderField({
+                                                                field,
+                                                                bind,
+                                                                validation
+                                                            })}
+                                                            {/* Render validation message */}
+                                                            {validation.valid === false
+                                                                ? validation.message
+                                                                : null}
+                                                        </React.Fragment>
+                                                    )}
+                                                </Bind>
+                                            </div>
+                                        ))}
                                     </div>
                                 ))}
                             </div>
-                        ))}
-                    </div>
-                    <div>
-                        <button onClick={submit}>Submit</button>
-                    </div>
+                            <div>
+                                <button
+                                    className={
+                                        "webiny-cms-element-button webiny-cms-element-button--primary" +
+                                        (loading ? " webiny-cms-element-button--loading" : "")
+                                    }
+                                    onClick={submit}
+                                    disabled={loading}
+                                >
+                                    {form.settings.submitButtonLabel.value || "Submit"}
+                                </button>
+                            </div>
+                        </>
+                    )}
                 </div>
             )}
         </Form>

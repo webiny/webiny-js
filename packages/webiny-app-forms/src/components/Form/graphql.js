@@ -1,18 +1,49 @@
 import gql from "graphql-tag";
 
-export const getForm = gql`
-    query GetForm($id: ID!) {
+export const FIELDS_FIELDS = `
+        id
+        fieldId
+        type
+        label {
+            value
+        }
+        placeholderText {
+            value
+        }
+        helpText {
+            value
+        }
+        defaultValue
+        validation
+        settings
+`;
+
+export const DATA_FIELDS = `
+    id
+    fields {
+        ${FIELDS_FIELDS}
+    }
+    layout
+    triggers
+    settings {
+        layout {
+            renderer
+        }
+        successMessage {
+            value
+        }
+        submitButtonLabel {
+            value
+        }
+    }
+`;
+
+export const getPublishedForm = gql`
+    query GetPublishedForm($id: ID, $parent: ID) {
         forms {
-            getForm(id: $id) {
+            getPublishedForm(id: $id, parent: $parent) {
                 data {
-                    id
-                    fields
-                    layout
-                    settings {
-                        layout {
-                            renderer
-                        }
-                    }
+                    ${DATA_FIELDS}
                 }
                 error {
                     message

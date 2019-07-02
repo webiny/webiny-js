@@ -2,6 +2,7 @@ import React from "react";
 import { ReactComponent as TextIcon } from "./icons/round-text_fields-24px.svg";
 import { Grid, Cell } from "webiny-ui/Grid";
 import { Input } from "webiny-ui/Input";
+import { I18NInput } from "webiny-app-i18n/components";
 
 export default {
     type: "form-editor-field-type",
@@ -18,7 +19,8 @@ export default {
                 id: "",
                 label: "",
                 type: this.id,
-                validation: []
+                validation: [],
+                defaultValue: ""
             };
         },
         renderSettings({ form }) {
@@ -26,6 +28,14 @@ export default {
 
             return (
                 <Grid>
+                    <Cell span={12}>
+                        <Bind name={"placeholderText"}>
+                            <I18NInput
+                                label={"Placeholder text"}
+                                description={"Placeholder text (optional)"}
+                            />
+                        </Bind>
+                    </Cell>
                     <Cell span={12}>
                         <Bind name={"defaultValue"}>
                             <Input

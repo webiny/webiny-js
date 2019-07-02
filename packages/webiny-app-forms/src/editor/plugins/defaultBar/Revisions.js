@@ -45,16 +45,12 @@ const Revisions = pure(({ history }) => {
                 </ButtonDefault>
             }
         >
-            {revisions.map(rev => {
-                let status = rev.published ? t`draft` : t`published`;
-
-                return (
-                    <MenuItem key={rev.id}>
-                        <Typography use={"body2"}>v{rev.version}</Typography>
-                        <Typography use={"caption"}>({status})</Typography>
-                    </MenuItem>
-                );
-            })}
+            {revisions.map(rev => (
+                <MenuItem key={rev.id}>
+                    <Typography use={"body2"}>v{rev.version}</Typography>
+                    <Typography use={"caption"}>({rev.status})</Typography>
+                </MenuItem>
+            ))}
         </Menu>
     );
 });

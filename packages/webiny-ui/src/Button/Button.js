@@ -3,6 +3,7 @@ import * as React from "react";
 import * as R from "@rmwc/button";
 import { Fab } from "@rmwc/fab";
 import { Icon } from "../Icon/Icon";
+import classNames from "classnames";
 
 type Props = {
     // Make button flat (only applicable to Primary button).
@@ -42,7 +43,7 @@ export const ButtonDefault = (props: Props) => {
             dense={small}
             onClick={onClick}
             ripple={ripple}
-            className={className}
+            className={classNames("webiny-ui-button", className)}
         >
             {children}
         </R.Button>
@@ -75,7 +76,7 @@ export const ButtonPrimary = (props: Props) => {
             ripple={ripple}
             onClick={onClick}
             style={style}
-            className={className}
+            className={classNames("webiny-ui-button webiny-ui-button--primary", className)}
         >
             {children}
         </R.Button>
@@ -107,7 +108,7 @@ export const ButtonSecondary = (props: Props) => {
             ripple={ripple}
             onClick={onClick}
             style={style}
-            className={className}
+            className={classNames("webiny-ui-button webiny-ui-button--secondary", className)}
         >
             {children}
         </R.Button>
@@ -126,7 +127,16 @@ type ButtonFloatingProps = Props & {
  * @constructor
  */
 export const ButtonFloating = (props: ButtonFloatingProps) => {
-    const { disabled, icon, onClick, small = false, label = false, ripple = true, ...rest } = props;
+    const {
+        disabled,
+        icon,
+        onClick,
+        small = false,
+        label = false,
+        ripple = true,
+        className = null,
+        ...rest
+    } = props;
     return (
         <Fab
             disabled={disabled}
@@ -135,6 +145,7 @@ export const ButtonFloating = (props: ButtonFloatingProps) => {
             label={label}
             ripple={ripple}
             icon={icon}
+            className={classNames("webiny-ui-button--floating", className)}
             {...rest}
         />
     );

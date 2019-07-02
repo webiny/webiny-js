@@ -10,6 +10,7 @@ import createRevisionFrom from "./formResolvers/createRevisionFrom";
 import listForms from "./formResolvers/listForms";
 import listPublishedForms from "./formResolvers/listPublishedForms";
 import getPublishedForm from "./formResolvers/getPublishedForm";
+import saveFormView from "./formResolvers/saveFormView";
 import UserType from "webiny-api-security/plugins/graphql/User";
 
 const formFetcher = ({ getEntity }) => getEntity("CmsForm");
@@ -17,7 +18,14 @@ const formFetcher = ({ getEntity }) => getEntity("CmsForm");
 export default {
     typeDefs: () => [
         UserType.typeDefs,
-        /* GraphQL*/ `type Form {
+        /* GraphQL*/ `
+        enum FormStatusEnum { 
+            published
+            draft
+            locked
+        }
+        
+        type Form {
             id: ID
             createdBy: User
             updatedBy: User
@@ -27,17 +35,42 @@ export default {
             publishedOn: DateTime
             version: Int
             name: String
-            fields: [JSON]
-            layout: [[JSON]]
+            fields: [FormFieldType]
+            layout: [[String]]
             settings: FormSettingsType
             triggers: JSON
             published: Boolean
+            locked: Boolean
+            status: FormStatusEnum
             parent: ID
             revisions: [Form]
+            publishedRevisions: [Form]
+            stats: FormStatsType
+            overallStats: FormStatsType
         }
         
-        type FormSettings {
-            _empty: String
+        type FormFieldType {
+            id: String!
+            fieldId: String!
+            type: String!
+            label: I18NStringValue
+            placeholderText: I18NStringValue
+            helpText: I18NStringValue
+            defaultValue: String
+            validation: [String]
+            settings: JSON
+        }    
+        
+        input FormFieldInput {
+            id : String!
+            fieldId: String!
+            type: String!
+            label: I18NStringValueInput
+            placeholderText: I18NStringValueInput
+            helpText: I18NStringValueInput
+            defaultValue: String
+            validation: [String]
+            settings: JSON
         }
         
         type FormSettingsLayoutType {
@@ -46,6 +79,14 @@ export default {
         
         type FormSettingsType {
             layout: FormSettingsLayoutType
+            submitButtonLabel: I18NStringValue
+            successMessage: I18NStringValue
+        }
+        
+        type FormStatsType {
+            views: Int
+            submissions: Int
+            conversionRate: Float
         }
         
         input FormSettingsLayoutInput {
@@ -54,13 +95,16 @@ export default {
         
         input FormSettingsInput {
             layout: FormSettingsLayoutInput
+            submitButtonLabel: I18NStringValueInput
+            successMessage: I18NStringValueInput
         }
         
         input UpdateFormInput {
             name: String
-            fields: [JSON],
-            layout: [JSON]
+            fields: [FormFieldInput],
+            layout: [[String]]
             settings: FormSettingsInput
+            triggers: JSON
         }
        
         input FormSortInput {
@@ -84,6 +128,10 @@ export default {
             error: Error
         }
         
+        type SaveFormViewResponse {
+            error: Error
+        }
+        
         extend type FormsQuery {
             getForm(
                 id: ID 
@@ -91,7 +139,7 @@ export default {
                 sort: String
             ): FormResponse
             
-            getPublishedForm(id: String, url: String, parent: String): FormResponse
+            getPublishedForm(id: ID, parent: ID): FormResponse
             
             listForms(
                 page: Int
@@ -104,7 +152,7 @@ export default {
             listPublishedForms(
                 search: String
                 category: String
-                parent: String
+                parent: ID!
                 tags: [String]
                 sort: FormSortInput
                 page: Int
@@ -141,6 +189,9 @@ export default {
             deleteRevision(
                 id: ID!
             ): DeleteResponse
+            
+            # Logs a view of a form
+            saveFormView(id: ID!): SaveFormViewResponse
         }
     `
     ],
@@ -167,10 +218,8 @@ export default {
                 return resolveUpdate(formFetcher)(_, args, ctx, info);
             },
             // Delete a revision
-            deleteRevision: resolveDelete(formFetcher)
-        },
-        FormSettings: {
-            _empty: () => ""
+            deleteRevision: resolveDelete(formFetcher),
+            saveFormView
         }
     }
 };
