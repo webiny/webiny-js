@@ -18,7 +18,7 @@ const Radio = (props: Props) => {
                 {translate(props.field.label)}
             </label>
             <div className="webiny-cms-form-field__radio-group">
-                {props.field.options.map(option => (
+                {props.field.settings.options.map(option => (
                     <div className="webiny-cms-form-field__radio" key={option.value}>
                         <input
                             checked={value === option.value}

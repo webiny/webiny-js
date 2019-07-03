@@ -34,7 +34,7 @@ const Checkbox = (props: Props) => {
                 {translate(props.field.label)}
             </label>
             <div className="webiny-cms-form-field__checkbox-group">
-                {props.field.options.map(option => (
+                {props.field.settings.options.map(option => (
                     <div className="webiny-cms-form-field__checkbox" key={option.value}>
                         <input
                             name={props.field.fieldId}
