@@ -11,22 +11,33 @@ const notFound = (id?: string) => {
     return new NotFoundResponse(id ? `Record "${id}" not found!` : "Record not found!");
 };
 
+const getEntityClass = (context, entityFetcher) => {
+    if (typeof entityFetcher === "string") {
+        const entityClass = context.getEntity(entityFetcher);
+        if (!entityClass) {
+            throw Error(`Cannot get "${entityFetcher}" entity.`);
+        }
+        return entityClass;
+    }
+    return entityFetcher(context);
+};
+
 export const resolveGet = (entityFetcher: EntityFetcher) => async (
     root: any,
     args: Object,
     context: Object
 ) => {
-    const entityClass = entityFetcher(context);
+    const EntityClass = getEntityClass(context, entityFetcher);
 
     if (args.id) {
-        const entity = await entityClass.findById(args.id);
+        const entity = await EntityClass.findById(args.id);
         if (!entity) {
             return notFound(args.id);
         }
         return new Response(entity);
     }
 
-    const entity = await entityClass.findOne({ query: args.where, sort: args.sort });
+    const entity = await EntityClass.findOne({ query: args.where, sort: args.sort });
 
     if (!entity) {
         return notFound();
@@ -39,7 +50,7 @@ export const resolveList = (entityFetcher: EntityFetcher) => async (
     args: Object,
     context: Object
 ) => {
-    const entityClass = entityFetcher(context);
+    const EntityClass = getEntityClass(context, entityFetcher);
 
     parseBoolean(args);
 
@@ -59,7 +70,7 @@ export const resolveList = (entityFetcher: EntityFetcher) => async (
         };
     }
 
-    const data: EntityCollection<Entity> = await entityClass.find(find);
+    const data: EntityCollection<Entity> = await EntityClass.find(find);
 
     return new ListResponse(data, data.getMeta());
 };
@@ -69,8 +80,8 @@ export const resolveCreate = (entityFetcher: EntityFetcher) => async (
     args: Object,
     context: Object
 ) => {
-    const entityClass = entityFetcher(context);
-    const entity = new entityClass();
+    const EntityClass = getEntityClass(context, entityFetcher);
+    const entity = new EntityClass();
 
     try {
         await entity.populate(args.data).save();
@@ -97,8 +108,8 @@ export const resolveUpdate = (entityFetcher: EntityFetcher) => async (
     args: Object,
     context: Object
 ) => {
-    const entityClass = entityFetcher(context);
-    const entity = await entityClass.findById(args.id);
+    const EntityClass = getEntityClass(context, entityFetcher);
+    const entity = await EntityClass.findById(args.id);
     if (!entity) {
         return notFound(args.id);
     }
@@ -128,8 +139,8 @@ export const resolveDelete = (entityFetcher: EntityFetcher) => async (
     args: Object,
     context: Object
 ) => {
-    const entityClass = entityFetcher(context);
-    const entity = await entityClass.findById(args.id);
+    const EntityClass = getEntityClass(context, entityFetcher);
+    const entity = await EntityClass.findById(args.id);
     if (!entity) {
         return notFound(args.id);
     }

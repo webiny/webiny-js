@@ -1,6 +1,7 @@
 // @flow
 import { fileUploadPlugin, imagePlugin } from "webiny-app/plugins";
 import adminPlugins from "webiny-admin/plugins";
+import i18nPlugins from "webiny-app-i18n/admin/plugins";
 import securityPlugins from "webiny-app-security/admin/plugins";
 import cmsPlugins from "webiny-app-cms/admin/plugins";
 import cookiePolicyPlugins from "webiny-app-cookie-policy/admin";
@@ -12,6 +13,7 @@ const plugins = [
     fileUploadPlugin({}),
     imagePlugin,
     adminPlugins,
+    i18nPlugins,
     securityPlugins,
     cmsPlugins,
     cookiePolicyPlugins,
