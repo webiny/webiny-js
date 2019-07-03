@@ -27,7 +27,7 @@ export const Row = styled("div")({
     position: "relative"
 });
 
-export const FieldContainer = styled("div")({
+export const fieldContainer = css({
     position: "relative",
     flex: "1 100%",
     backgroundColor: "var(--mdc-theme-background)",

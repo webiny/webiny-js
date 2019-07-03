@@ -6,7 +6,7 @@ import Draggable from "../../Draggable";
 import EditFieldDialog from "./EditFieldDialog";
 import Field from "./Field";
 import { ReactComponent as HandleIcon } from "../../icons/round-drag_indicator-24px.svg";
-import { rowHandle, EditContainer, fieldHandle, FieldContainer, Row, RowContainer } from "./Styled";
+import { rowHandle, EditContainer, fieldHandle, fieldContainer, Row, RowContainer } from "./Styled";
 import { useFormEditor } from "webiny-app-forms/admin/components/FormEditor/Context";
 import { getPlugins } from "webiny-plugins";
 import type { FieldLayoutPositionType } from "webiny-app-forms/types";
@@ -87,32 +87,34 @@ export const EditTab = () => {
                             {/* Row start - includes field drop zones and fields */}
                             <Row>
                                 {row.map((field, fieldIndex) => (
-                                    <FieldContainer key={fieldIndex}>
-                                        <Vertical
-                                            onDrop={item =>
-                                                handleDropField(item, {
-                                                    row: index,
-                                                    index: fieldIndex
-                                                })
+                                    <Draggable
+                                        key={fieldIndex}
+                                        beginDrag={{
+                                            ui: "field",
+                                            type: field.type,
+                                            pos: {
+                                                row: index,
+                                                index: fieldIndex
                                             }
-                                            isVisible={item =>
-                                                item.ui === "field" &&
-                                                (row.length < 4 || get(item, "pos.row") === index)
-                                            }
-                                        />
-                                        {/* Field start */}
-                                        <Draggable
-                                            beginDrag={{
-                                                ui: "field",
-                                                type: field.type,
-                                                pos: {
-                                                    row: index,
-                                                    index: fieldIndex
-                                                }
-                                            }}
-                                        >
-                                            {({ connectDragSource }) =>
-                                                connectDragSource(
+                                        }}
+                                    >
+                                        {({ connectDragSource }) =>
+                                            connectDragSource(
+                                                <div className={fieldContainer}>
+                                                    <Vertical
+                                                        onDrop={item =>
+                                                            handleDropField(item, {
+                                                                row: index,
+                                                                index: fieldIndex
+                                                            })
+                                                        }
+                                                        isVisible={item =>
+                                                            item.ui === "field" &&
+                                                            (row.length < 4 ||
+                                                                get(item, "pos.row") === index)
+                                                        }
+                                                    />
+
                                                     <div className={fieldHandle}>
                                                         <Field
                                                             field={field}
@@ -120,27 +122,28 @@ export const EditTab = () => {
                                                             onDelete={deleteField}
                                                         />
                                                     </div>
-                                                )
-                                            }
-                                        </Draggable>
-                                        {/* Field end */}
-                                        {fieldIndex === row.length - 1 && (
-                                            <Vertical
-                                                last
-                                                isVisible={item =>
-                                                    item.ui === "field" &&
-                                                    (row.length < 4 ||
-                                                        get(item, "pos.row") === index)
-                                                }
-                                                onDrop={item =>
-                                                    handleDropField(item, {
-                                                        row: index,
-                                                        index: fieldIndex + 1
-                                                    })
-                                                }
-                                            />
-                                        )}
-                                    </FieldContainer>
+
+                                                    {/* Field end */}
+                                                    {fieldIndex === row.length - 1 && (
+                                                        <Vertical
+                                                            last
+                                                            isVisible={item =>
+                                                                item.ui === "field" &&
+                                                                (row.length < 4 ||
+                                                                    get(item, "pos.row") === index)
+                                                            }
+                                                            onDrop={item =>
+                                                                handleDropField(item, {
+                                                                    row: index,
+                                                                    index: fieldIndex + 1
+                                                                })
+                                                            }
+                                                        />
+                                                    )}
+                                                </div>
+                                            )
+                                        }
+                                    </Draggable>
                                 ))}
                             </Row>
                             {/* Row end */}
