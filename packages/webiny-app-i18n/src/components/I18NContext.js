@@ -9,6 +9,7 @@ export function init(props: Object) {
     return {
         ...props,
         locales: [],
+        acceptLanguage: "something" // TODO: check how to detect this - maybe we could do it in a separate API call ?
     };
 }
 
@@ -26,7 +27,7 @@ export function i18nReducer(state: Object, action: Object) {
 
 const I18NContext = React.createContext();
 
-const I18NProvider = withApollo((props: Object) => {
+const I18NProvider = withApollo(({ children, ...props }: Object) => {
     const [state, dispatch] = useReducer(i18nReducer, props, init);
 
     useEffect(() => {
@@ -42,7 +43,7 @@ const I18NProvider = withApollo((props: Object) => {
         };
     });
 
-    return <I18NContext.Provider value={value} />;
+    return <I18NContext.Provider value={value}>{children}</I18NContext.Provider>;
 });
 
 function useI18N() {
@@ -53,13 +54,16 @@ function useI18N() {
 
     const { state, dispatch } = context;
     const self = {
-        // TODO: check how to detect this - maybe we could do it in a separate API call ?
-        acceptLanguage: "en-US",
         getDefaultLocale() {
             return state.locales.find(item => item.default === true);
         },
         getLocale() {
-            return self.acceptLanguage || self.getDefaultLocale();
+            const locale = this.getLocales().find(item => item.code === state.acceptLanguage);
+            if (locale) {
+                return locale;
+            }
+
+            return self.getDefaultLocale();
         },
         getLocales() {
             return state.locales;
@@ -70,7 +74,9 @@ function useI18N() {
             }
 
             if (Array.isArray(valueObject.values)) {
-                const output = valueObject.values.find(item => item.locale === self.getLocale());
+                const output = valueObject.values.find(
+                    item => item.locale === self.getLocale().code
+                );
                 return output ? output.value : "";
             }
 
