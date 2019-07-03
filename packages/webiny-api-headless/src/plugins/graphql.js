@@ -9,8 +9,8 @@ import {
     dummyResolver
 } from "webiny-api/graphql";
 import { hasScope } from "webiny-api-security";
-import typeDefs from "webiny-api-headless/typeDefs";
 import { get } from "lodash";
+import typeDefs from "./typeDefs";
 import setupDynamicSchema from "./dynamicSchema";
 
 const contentModelFetcher = ctx => {
