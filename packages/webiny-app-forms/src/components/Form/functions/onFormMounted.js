@@ -10,7 +10,7 @@ const saveFormView = ({ data, client }: FormRenderComponentPropsType) => {
     }
 
     if (get(window, "localStorage.form_view_" + data.id)) {
-        // return;
+        return;
     }
 
     set(window, "localStorage.form_view_" + data.id);
