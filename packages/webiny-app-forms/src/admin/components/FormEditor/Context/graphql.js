@@ -9,7 +9,7 @@ const i18nFields = `
 `;
 
 export const fieldsFields = `
-        id
+        _id
         fieldId
         type
         label {

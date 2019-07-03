@@ -41,7 +41,7 @@ const FormRenderer = ({ getFields, submit }: FormRenderPropsType) => {
                                             display: "inline-block",
                                             width: `calc(100% / ${row.length})`
                                         }}
-                                        key={field.id}
+                                        key={field._id}
                                         className={"field"}
                                     >
                                         <Bind name={field.fieldId} validators={field.validators}>

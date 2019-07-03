@@ -61,7 +61,7 @@ const createFieldModel = context =>
     class FieldModel extends Model {
         constructor() {
             super();
-            this.attr("id")
+            this.attr("_id")
                 .char()
                 .setValidators("required");
             this.attr("fieldId")

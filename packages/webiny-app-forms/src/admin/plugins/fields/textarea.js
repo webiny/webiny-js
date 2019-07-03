@@ -16,7 +16,7 @@ export default {
         icon: <TextIcon />,
         createField() {
             return {
-                id: "",
+                _id: "",
                 label: "",
                 type: this.id,
                 validation: [],

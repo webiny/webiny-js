@@ -14,7 +14,7 @@ export default {
         icon: <HiddenIcon />,
         createField() {
             return {
-                id: "",
+                _id: "",
                 type: this.id,
                 validation: [],
                 defaultValue: ""

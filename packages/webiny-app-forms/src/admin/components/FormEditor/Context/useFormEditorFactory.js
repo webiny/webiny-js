@@ -86,7 +86,7 @@ export default FormEditorContext => {
              * @returns {void|?FieldType}
              */
             getFieldById(id: FieldIdType): ?FieldType {
-                return self.getFields().find(item => item.id === id);
+                return self.getFields().find(item => item._id === id);
             },
 
             /**
@@ -106,7 +106,7 @@ export default FormEditorContext => {
              */
             insertField(data: FieldType, position: FieldLayoutPositionType) {
                 const field = cloneDeep(data);
-                field.id = shortid.generate();
+                field._id = shortid.generate();
 
                 self.setData(data => {
                     if (!Array.isArray(data.fields)) {
@@ -161,7 +161,7 @@ export default FormEditorContext => {
                 const field = cloneDeep(fieldData);
                 self.setData(data => {
                     for (let i = 0; i < data.fields.length; i++) {
-                        if (data.fields[i].id === field.id) {
+                        if (data.fields[i]._id === field._id) {
                             data.fields[i] = field;
                             break;
                         }

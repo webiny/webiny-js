@@ -1,7 +1,7 @@
 import gql from "graphql-tag";
 
 export const FIELDS_FIELDS = `
-        id
+        _id
         fieldId
         type
         label {

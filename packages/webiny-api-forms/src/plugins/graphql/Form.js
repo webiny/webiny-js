@@ -50,7 +50,7 @@ export default {
         }
         
         type FormFieldType {
-            id: String!
+            _id: String!
             fieldId: String!
             type: String!
             label: I18NStringValue
@@ -62,7 +62,7 @@ export default {
         }    
         
         input FormFieldInput {
-            id : String!
+            _id : String!
             fieldId: String!
             type: String!
             label: I18NStringValueInput

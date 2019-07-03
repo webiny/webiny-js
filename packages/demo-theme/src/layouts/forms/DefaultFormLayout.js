@@ -75,7 +75,7 @@ const FormRenderer = ({ getFields, getDefaultValues, submit, form }: FormRenderP
                                     >
                                         {row.map(field => (
                                             <div
-                                                key={field.id}
+                                                key={field._id}
                                                 className={
                                                     "webiny-cms-base-element-style webiny-cms-layout-column"
                                                 }

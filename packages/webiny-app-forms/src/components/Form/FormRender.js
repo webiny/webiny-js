@@ -24,7 +24,7 @@ const FormRender = compose(
     useEffect(() => onFormMounted(props), []);
 
     const getFieldById = useCallback(id => {
-        return fields.find(field => field.id === id);
+        return fields.find(field => field._id === id);
     }, []);
 
     const getFieldByFieldId = useCallback(id => {

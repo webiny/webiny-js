@@ -25,7 +25,7 @@ const GeneralTab = ({ field, form }) => {
             return;
         }
 
-        if (existingField.id !== field.id) {
+        if (existingField._id !== field._id) {
             throw new Error("Please enter a unique ID");
         }
     });

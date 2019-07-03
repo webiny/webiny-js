@@ -47,7 +47,7 @@ const FormSubmissionDialog = ({ formSubmission, onClose }: Props) => {
                             {formSubmission.form.revision.layout.map(row => {
                                 return row.map(id => {
                                     const field = formSubmission.form.revision.fields.find(
-                                        field => field.id === id
+                                        field => field._id === id
                                     );
                                     return (
                                         <div

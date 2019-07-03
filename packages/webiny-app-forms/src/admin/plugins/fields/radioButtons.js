@@ -15,7 +15,7 @@ export default {
         icon: <Icon />,
         createField() {
             return {
-                id: "",
+                _id: "",
                 label: "",
                 type: this.id,
                 validation: [],

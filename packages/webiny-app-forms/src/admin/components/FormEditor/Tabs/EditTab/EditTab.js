@@ -167,7 +167,7 @@ export const EditTab = () => {
                 field={editingField}
                 onClose={editField}
                 onSubmit={data => {
-                    if (data.id) {
+                    if (data._id) {
                         updateField(data);
                     } else {
                         insertField(data, dropTarget);

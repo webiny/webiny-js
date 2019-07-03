@@ -21,7 +21,7 @@ const BASE_FORM_FIELDS = `
 `;
 
 export const FIELDS_FIELDS = `
-        id
+        _id
         fieldId
         type
         label {

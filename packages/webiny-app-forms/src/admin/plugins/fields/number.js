@@ -15,7 +15,7 @@ export default {
         validators: ["required", "gte", "lte", "in"],
         createField() {
             return {
-                id: "",
+                _id: "",
                 label: "",
                 type: this.id,
                 validation: [],

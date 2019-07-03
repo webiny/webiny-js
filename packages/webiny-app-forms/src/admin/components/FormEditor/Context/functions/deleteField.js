@@ -3,10 +3,10 @@ import type { FieldType, FieldIdType } from "webiny-app-forms/types";
 
 export default ({ field, data }: { field: FieldIdType | FieldType, data: Object }) => {
     // Remove the field from fields list...
-    const fieldIndex = data.fields.findIndex(item => item.id === field.id);
+    const fieldIndex = data.fields.findIndex(item => item.id === field._id);
     data.fields.splice(fieldIndex, 1);
     for (let i = 0; i < data.fields.length; i++) {
-        if (data.fields[i].id === field.id) {
+        if (data.fields[i]._id === field._id) {
             data.fields[i] = field;
             break;
         }
