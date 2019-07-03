@@ -12,16 +12,12 @@ import {
     DialogFooter,
     DialogFooterButton
 } from "webiny-ui/Dialog";
-
 import { Form } from "webiny-form";
 import { getPlugins } from "webiny-plugins";
 import { Tabs, Tab } from "webiny-ui/Tabs";
-import { Elevation } from "webiny-ui/Elevation";
-import { Typography } from "webiny-ui/Typography";
-import { Icon } from "webiny-ui/Icon";
-import GeneralTab from "./GeneralTab";
-import ValidatorsTab from "./ValidatorsTab";
-
+import GeneralTab from "./EditFieldDialog/GeneralTab";
+import ValidatorsTab from "./EditFieldDialog/ValidatorsTab";
+import FieldTypeSelector from "./EditFieldDialog/FieldTypeSelector";
 import { i18n } from "webiny-app/i18n";
 const t = i18n.namespace("FormEditor.EditFieldDialog");
 
@@ -41,43 +37,6 @@ const FieldTypeList = styled("div")({
     backgroundColor: "var(--mdc-theme-background) !important"
 });
 
-const fieldTypeBox = css({
-    width: 150,
-    height: 150,
-    textAlign: "center",
-    margin: 20,
-    padding: 15,
-    display: "flex",
-    justifyContent: "flex-start",
-    alignItems: "center",
-    cursor: "pointer",
-    transition: "opacity 225ms",
-    flexDirection: "column",
-    backgroundColor: "var(--mdc-theme-surface) !important",
-    ".webiny-ui-icon": {
-        color: "var(--mdc-theme-secondary)",
-        height: 50,
-        transition: "color 225ms"
-    },
-    "&:hover": {
-        opacity: 0.8,
-        ".webiny-ui-icon": {
-            color: "var(--mdc-theme-primary)"
-        }
-    }
-});
-
-const Thumbnail = ({ fieldType, onClick }) => {
-    return (
-        <Elevation z={2} onClick={onClick} className={fieldTypeBox}>
-            <Icon icon={fieldType.icon} />
-            <Typography use={"headline5"}>{fieldType.label}</Typography>
-            <br />
-            <Typography use={"caption"}>{fieldType.description}</Typography>
-        </Elevation>
-    );
-};
-
 type Props = {
     field: ?Object,
     onClose: Function,
@@ -87,9 +46,15 @@ type Props = {
 const EditFieldDialog = ({ field, onSubmit, ...props }: Props) => {
     // const fieldType = getFieldType();
     const [current, setCurrent] = useState(null);
+    const [screen, setScreen] = useState();
 
     useEffect(() => {
         setCurrent(cloneDeep(field));
+        if (!field) {
+            return;
+        }
+
+        setScreen(field.type ? "fieldOptions" : "fieldType");
     }, [field]);
 
     const onClose = useCallback(() => {
@@ -97,14 +62,11 @@ const EditFieldDialog = ({ field, onSubmit, ...props }: Props) => {
         props.onClose();
     });
 
-    return (
-        <Dialog open={!!current} onClose={onClose}>
-            <DialogHeader>
-                <DialogHeaderTitle>{t`Field Settings`}</DialogHeaderTitle>
-            </DialogHeader>
-
-            {current &&
-                (current.type ? (
+    let render = null;
+    if (current) {
+        switch (screen) {
+            case "fieldOptions": {
+                render = (
                     <Form submitOnEnter data={current} onSubmit={onSubmit}>
                         {form => {
                             const { Bind } = form;
@@ -113,7 +75,11 @@ const EditFieldDialog = ({ field, onSubmit, ...props }: Props) => {
                                     <DialogBody className={dialogBody}>
                                         <Tabs>
                                             <Tab label={t`General`}>
-                                                <GeneralTab form={form} field={current} />
+                                                <GeneralTab
+                                                    form={form}
+                                                    field={current}
+                                                    setScreen={setScreen}
+                                                />
                                             </Tab>
                                             {!!current.validators && (
                                                 <Tab label={"Validators"}>
@@ -121,6 +87,7 @@ const EditFieldDialog = ({ field, onSubmit, ...props }: Props) => {
                                                         <ValidatorsTab
                                                             form={form}
                                                             field={current}
+                                                            setScreen={setScreen}
                                                         />
                                                     </Bind>
                                                 </Tab>
@@ -139,17 +106,42 @@ const EditFieldDialog = ({ field, onSubmit, ...props }: Props) => {
                             );
                         }}
                     </Form>
-                ) : (
+                );
+                break;
+            }
+            default:
+                render = (
                     <>
                         <DialogBody className={dialogBody}>
                             <FieldTypeList>
                                 {getPlugins("form-editor-field-type")
                                     .filter(pl => pl.fieldType.dataType)
                                     .map(pl => (
-                                        <Thumbnail
+                                        <FieldTypeSelector
                                             key={pl.name}
                                             fieldType={pl.fieldType}
-                                            onClick={() => setCurrent(pl.fieldType.createField())}
+                                            isCurrentFieldType={
+                                                current && current.type === pl.fieldType.id
+                                            }
+                                            onClick={() => {
+                                                const newCurrent = pl.fieldType.createField();
+                                                if (current) {
+                                                    // User edited existing field, that's why we still want to
+                                                    // keep a couple of previous values.
+                                                    const {
+                                                        _id,
+                                                        label,
+                                                        fieldId,
+                                                        helpText
+                                                    } = current;
+                                                    newCurrent._id = _id;
+                                                    newCurrent.label = label;
+                                                    newCurrent.fieldId = fieldId;
+                                                    newCurrent.helpText = helpText;
+                                                }
+                                                setCurrent(newCurrent);
+                                                setScreen("fieldOptions");
+                                            }}
                                         />
                                     ))}
                             </FieldTypeList>
@@ -158,7 +150,16 @@ const EditFieldDialog = ({ field, onSubmit, ...props }: Props) => {
                             <DialogCancel onClick={onClose}>{t`Cancel`}</DialogCancel>
                         </DialogFooter>
                     </>
-                ))}
+                );
+        }
+    }
+
+    return (
+        <Dialog open={!!current} onClose={onClose}>
+            <DialogHeader>
+                <DialogHeaderTitle>{t`Field Settings`}</DialogHeaderTitle>
+            </DialogHeader>
+            {render}
         </Dialog>
     );
 };

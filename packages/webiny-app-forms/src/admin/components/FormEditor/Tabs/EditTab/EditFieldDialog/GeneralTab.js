@@ -4,8 +4,15 @@ import { Grid, Cell } from "webiny-ui/Grid";
 import { camelCase } from "lodash";
 import { useFormEditor } from "webiny-app-forms/admin/components/FormEditor/Context";
 import { I18NInput, useI18N } from "webiny-app-i18n/components";
+import { i18n } from "webiny-app/i18n";
+import { css } from "emotion";
 
-const GeneralTab = ({ field, form }) => {
+const t = i18n.namespace("FormsApp.Editor.EditFieldDialog.GeneralTab");
+const style = {
+    backToFieldTypeScreenLink: css({ cursor: "pointer" })
+};
+
+const GeneralTab = ({ field, form, setScreen }) => {
     const { Bind, setValue } = form;
     const inputRef = useRef(null);
     const { getFields, getFieldType } = useFormEditor();
@@ -45,6 +52,21 @@ const GeneralTab = ({ field, form }) => {
     return (
         <>
             <Grid>
+                <Cell span={12}>
+                    <Input
+                        label={"Field type"}
+                        readOnly
+                        value={fieldType.label}
+                        description={
+                            <a
+                                className={style.backToFieldTypeScreenLink}
+                                onClick={() => setScreen("fieldType")}
+                            >
+                                {t`Change field type`}
+                            </a>
+                        }
+                    />
+                </Cell>
                 <Cell span={6}>
                     <Bind name={"label"} validators={["required"]} afterChange={afterChangeLabel}>
                         <I18NInput label={"Label"} inputRef={inputRef} />
