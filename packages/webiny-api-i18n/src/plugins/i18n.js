@@ -38,17 +38,18 @@ export default ([
                         return self.__i18n.locale.instance;
                     }
 
-                    self.__i18n.locale.loaded = true;
                     const acceptLanguage = getAcceptLanguage(context.event.headers);
                     let allLocales = await self.getLocales();
                     self.__i18n.locale.instance = allLocales.find(
                         item => item.code === acceptLanguage
                     );
                     if (self.__i18n.locale.instance) {
+                        self.__i18n.locale.loaded = true;
                         return self.__i18n.locale.instance;
                     }
 
                     self.__i18n.locale.instance = await self.getDefaultLocale();
+                    self.__i18n.locale.loaded = true;
                     return this.__i18n.locale.instance;
                 },
                 async getLocales() {
@@ -56,10 +57,9 @@ export default ([
                         return self.__i18n.locales.list;
                     }
 
-                    self.__i18n.locales.loaded = true;
-
                     const { I18NLocale } = context.getEntities();
                     self.__i18n.locales.list = await I18NLocale.find();
+                    self.__i18n.locales.loaded = true;
                     return self.__i18n.locales.list;
                 }
             };
