@@ -3,7 +3,7 @@ import { createPaginationMeta } from "webiny-entity";
 import { ListResponse } from "webiny-api/graphql/responses";
 import get from "lodash/get";
 
-export const listPublishedForms = async ({ args, CmsForm }: Object) => {
+export const listPublishedForms = async ({ args, Form }: Object) => {
     const {
         page = 1,
         search,
@@ -51,7 +51,7 @@ export const listPublishedForms = async ({ args, CmsForm }: Object) => {
         });
     }
 
-    return CmsForm.find({
+    return Form.find({
         aggregation: async ({ aggregate, QueryResult }) => {
             const pipelines = {
                 results: pipeline.concat({ $skip: (page - 1) * perPage }, { $limit: perPage }),
@@ -75,7 +75,7 @@ export const listPublishedForms = async ({ args, CmsForm }: Object) => {
 };
 
 export default async (root: any, args: Object, context: Object) => {
-    const { CmsForm } = context.getEntities();
-    const data = await listPublishedForms({ args, CmsForm });
+    const { Form } = context.getEntities();
+    const data = await listPublishedForms({ args, Form });
     return new ListResponse(data, data.getMeta());
 };

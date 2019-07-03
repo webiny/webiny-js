@@ -96,8 +96,8 @@ const createSettingsModel = context =>
 
 export default (context: Object) => {
     const { getUser, getEntities } = context;
-    return class CmsForm extends Entity {
-        static classId = "CmsForm";
+    return class Form extends Entity {
+        static classId = "Form";
 
         createdBy: Entity;
         updatedBy: Entity;
@@ -116,7 +116,7 @@ export default (context: Object) => {
 
         constructor() {
             super();
-            const { CmsForm, SecurityUser } = getEntities();
+            const { Form, SecurityUser } = getEntities();
 
             this.attr("createdBy")
                 .entity(SecurityUser)
@@ -149,8 +149,8 @@ export default (context: Object) => {
             this.attr("overallStats")
                 .model(FormStatsModel)
                 .setDynamic(async () => {
-                    const collection = CmsForm.getDriver().getCollectionName(CmsForm);
-                    const [stats] = await CmsForm.getDriver().aggregate(collection, [
+                    const collection = Form.getDriver().getCollectionName(Form);
+                    const [stats] = await Form.getDriver().aggregate(collection, [
                         { $match: { parent: this.parent } },
                         { $project: { stats: 1 } },
                         {
@@ -195,18 +195,18 @@ export default (context: Object) => {
                 .onSet(value => (this.locked ? this.triggers : value));
 
             this.attr("revisions")
-                .entities(CmsForm)
+                .entities(Form)
                 .setDynamic(() => {
-                    return CmsForm.find({
+                    return Form.find({
                         query: { parent: this.parent },
                         sort: { version: -1 }
                     });
                 });
 
             this.attr("publishedRevisions")
-                .entities(CmsForm)
+                .entities(Form)
                 .setDynamic(() => {
-                    return CmsForm.find({
+                    return Form.find({
                         query: { parent: this.parent, published: true },
                         sort: { version: -1 }
                     });
@@ -278,9 +278,9 @@ export default (context: Object) => {
                 // If the deleted form is the root form - delete its revisions
                 if (this.id === this.parent) {
                     // Delete all revisions.
-                    const { CmsForm } = getEntities();
+                    const { Form } = getEntities();
 
-                    const revisions: EntityCollection<CmsForm> = await CmsForm.find({
+                    const revisions: EntityCollection<Form> = await Form.find({
                         query: { parent: this.parent }
                     });
 
@@ -332,8 +332,8 @@ export default (context: Object) => {
         }
 
         async getNextVersion() {
-            const { CmsForm } = getEntities();
-            const revision: null | CmsForm = await CmsForm.findOne({
+            const { Form } = getEntities();
+            const revision: null | Form = await Form.findOne({
                 query: { parent: this.parent, deleted: { $in: [true, false] } },
                 sort: { version: -1 }
             });

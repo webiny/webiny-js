@@ -40,14 +40,14 @@ const createFormAttributeModel = context =>
     class FormAttributeModel extends EntityModel {
         constructor() {
             super();
-            const { CmsForm } = context.getEntities();
+            const { Form } = context.getEntities();
 
             this.setParentEntity(context.form);
             this.attr("parent")
-                .entity(CmsForm)
+                .entity(Form)
                 .setValidators("required");
             this.attr("revision")
-                .entity(CmsForm)
+                .entity(Form)
                 .setValidators("required");
         }
     };

@@ -3,7 +3,7 @@ import { createPaginationMeta } from "webiny-entity";
 import { ListResponse } from "webiny-api/graphql/responses";
 
 export default async (root: any, args: Object, { getEntities }: Object) => {
-    const { CmsForm } = getEntities();
+    const { Form } = getEntities();
 
     const { page = 1, perPage = 10, sort = null, search = null, parent = null } = args;
 
@@ -47,16 +47,16 @@ export default async (root: any, args: Object, { getEntities }: Object) => {
         });
     }
 
-    const collection = CmsForm.getDriver().getCollectionName(CmsForm);
+    const collection = Form.getDriver().getCollectionName(Form);
 
-    const ids = await CmsForm.getDriver().aggregate(collection, [
+    const ids = await Form.getDriver().aggregate(collection, [
         ...pipeline,
         { $project: { _id: -1, id: 1 } },
         { $skip: (page - 1) * perPage },
         { $limit: perPage }
     ]);
 
-    const [totalCount] = await CmsForm.getDriver().aggregate(collection, [
+    const [totalCount] = await Form.getDriver().aggregate(collection, [
         ...pipeline,
         {
             $count: "totalCount"
@@ -64,7 +64,7 @@ export default async (root: any, args: Object, { getEntities }: Object) => {
     ]);
 
     return new ListResponse(
-        await CmsForm.find({ sort, query: { id: { $in: ids.map(item => item.id) } } }),
+        await Form.find({ sort, query: { id: { $in: ids.map(item => item.id) } } }),
         createPaginationMeta({
             page,
             perPage,
