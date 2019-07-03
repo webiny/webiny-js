@@ -15,7 +15,6 @@ import EditorBar from "./Bar";
 import EditorToolbar from "./Toolbar";
 import EditorContent from "./Content";
 import DragPreview from "./DragPreview";
-import Dialogs from "./Dialogs";
 
 type Props = {
     isDragging: boolean,
@@ -33,7 +32,6 @@ const Editor = ({ isDragging, isResizing }: Props) => {
             <EditorBar />
             <EditorToolbar />
             <EditorContent />
-            <Dialogs />
             <DragPreview />
         </div>
     );
