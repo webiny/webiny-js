@@ -10,10 +10,10 @@ import { resolveUpdate } from "../resolvers/resolveUpdate";
 const commonFieldResolvers = () => ({
     id: entry => (entry._id ? entry._id.toString() : null),
     createdBy: (entry, args, context) => {
-        return context.security.entities.User.findById(entry.createdBy);
+        return context.getEntity("SecurityUser").findById(entry.createdBy);
     },
     updatedBy: (entry, args, context) => {
-        return context.security.entities.User.findById(entry.updatedBy);
+        return context.getEntity("SecurityUser").findById(entry.updatedBy);
     }
 });
 

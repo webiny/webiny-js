@@ -18,22 +18,21 @@ export function contentEntryFactory(context: Object): Class<IContentEntry> {
         constructor() {
             super();
 
-            const {
-                user = {},
-                security: {
-                    entities: { User }
-                }
-            } = context;
+            const { getUser, getEntity } = context;
 
             this.attr("createdBy")
-                .entity(User)
+                .entity(getEntity("SecurityUser"))
                 .setSkipOnPopulate();
 
-            this.attr("modelId").char().setValidators("required");
-            this.attr("data").object().setValue({});
+            this.attr("modelId")
+                .char()
+                .setValidators("required");
+            this.attr("data")
+                .object()
+                .setValue({});
 
             this.on("beforeCreate", async () => {
-                this.createdBy = user.id;
+                this.createdBy = getUser();
             });
         }
     };

@@ -6,19 +6,11 @@ export default ([
     {
         name: "entity-headless-content-model",
         type: "entity",
-        namespace: "cms",
-        entity: {
-            name: "ContentModel",
-            factory: entities.contentModelFactory
-        }
+        entity: entities.contentModelFactory
     },
     {
         name: "entity-headless-content-entry",
         type: "entity",
-        namespace: "cms",
-        entity: {
-            name: "ContentEntry",
-            factory: entities.contentEntryFactory
-        }
+        entity: entities.contentEntryFactory
     }
 ]: Array<EntityPluginType>);

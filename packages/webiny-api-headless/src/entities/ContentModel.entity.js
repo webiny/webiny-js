@@ -38,15 +38,10 @@ export function contentModelFactory(context: Object): Class<IContentModel> {
         constructor() {
             super();
 
-            const {
-                user = {},
-                security: {
-                    entities: { User }
-                }
-            } = context;
+            const { getUser, getEntity } = context;
 
             this.attr("createdBy")
-                .entity(User)
+                .entity(getEntity("SecurityUser"))
                 .setSkipOnPopulate();
 
             this.attr("title")
@@ -61,7 +56,7 @@ export function contentModelFactory(context: Object): Class<IContentModel> {
                 .setValue([]);
 
             this.on("beforeCreate", async () => {
-                this.createdBy = user.id;
+                this.createdBy = getUser();
             });
         }
     };
