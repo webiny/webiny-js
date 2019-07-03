@@ -8,7 +8,8 @@ import { get } from "lodash";
 export function init(props: Object) {
     return {
         ...props,
-        locales: []
+        locales: [],
+        acceptLanguage: "something" // TODO: check how to detect this - maybe we could do it in a separate API call ?
     };
 }
 
@@ -53,13 +54,16 @@ function useI18N() {
 
     const { state, dispatch } = context;
     const self = {
-        // TODO: check how to detect this - maybe we could do it in a separate API call ?
-        acceptLanguage: "en-US",
         getDefaultLocale() {
             return state.locales.find(item => item.default === true);
         },
         getLocale() {
-            return self.acceptLanguage || self.getDefaultLocale();
+            const locale = this.getLocales().find(item => item.code === state.acceptLanguage);
+            if (locale) {
+                return locale;
+            }
+
+            return self.getDefaultLocale();
         },
         getLocales() {
             return state.locales;
@@ -70,7 +74,9 @@ function useI18N() {
             }
 
             if (Array.isArray(valueObject.values)) {
-                const output = valueObject.values.find(item => item.locale === self.getLocale());
+                const output = valueObject.values.find(
+                    item => item.locale === self.getLocale().code
+                );
                 return output ? output.value : "";
             }
 
