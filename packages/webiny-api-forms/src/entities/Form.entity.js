@@ -151,7 +151,7 @@ export default (context: Object) => {
                 .setDynamic(async () => {
                     const collection = CmsForm.getDriver().getCollectionName(CmsForm);
                     const [stats] = await CmsForm.getDriver().aggregate(collection, [
-                        { $match: { parent: "5d16025046e6da12c9b1f9ed" } },
+                        { $match: { parent: this.parent } },
                         { $project: { stats: 1 } },
                         {
                             $group: {
@@ -165,6 +165,14 @@ export default (context: Object) => {
                             }
                         }
                     ]);
+
+                    if (!stats) {
+                        return {
+                            submissions: 0,
+                            views: 0,
+                            conversionRate: 0
+                        };
+                    }
 
                     let conversionRate = 0;
                     if (stats.views > 0) {
