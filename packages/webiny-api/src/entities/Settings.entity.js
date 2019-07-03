@@ -1,7 +1,7 @@
 // @flow
 import { Entity } from "webiny-entity";
 
-export const settingsFactory = ({ user = {} }: Object) => {
+export const settingsFactory = ({ getUser }: Object) => {
     class Settings extends Entity {
         static key: string;
         key: string;
@@ -9,9 +9,7 @@ export const settingsFactory = ({ user = {} }: Object) => {
 
         constructor() {
             super();
-            this.attr("createdBy")
-                .char()
-                .setDefaultValue(user.id);
+            this.attr("createdBy").char();
             this.attr("key")
                 .char()
                 .setValidators("required");
@@ -20,6 +18,9 @@ export const settingsFactory = ({ user = {} }: Object) => {
 
             this.on("beforeCreate", () => {
                 this.key = this.constructor.key;
+                if (getUser()) {
+                    this.createdBy = getUser().id;
+                }
             });
         }
 

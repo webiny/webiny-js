@@ -40,6 +40,8 @@ const cmsSettingsModelFactory = () => {
 export const cmsSettingsFactory = (...args: Array<*>) => {
     return class CmsSettings extends settingsFactory(...args) {
         static key = "cms";
+        static classId = "CmsSettings";
+        static collectionName = "Settings";
 
         data: Object;
         load: Function;
