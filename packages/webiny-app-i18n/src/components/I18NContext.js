@@ -57,8 +57,12 @@ function useI18N() {
         getDefaultLocale() {
             return state.locales.find(item => item.default === true);
         },
-        getLocale() {
-            const locale = this.getLocales().find(item => item.code === state.acceptLanguage);
+        getLocale(id: ?string) {
+            if (id) {
+                return self.getLocales().find(item => item.id === id);
+            }
+
+            const locale = self.getLocales().find(item => item.code === state.acceptLanguage);
             if (locale) {
                 return locale;
             }
@@ -75,7 +79,7 @@ function useI18N() {
 
             if (Array.isArray(valueObject.values)) {
                 const output = valueObject.values.find(
-                    item => item.locale === self.getLocale().code
+                    item => item.locale === self.getLocale().id
                 );
                 return output ? output.value : "";
             }
