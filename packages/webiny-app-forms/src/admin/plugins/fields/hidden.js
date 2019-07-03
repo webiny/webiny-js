@@ -20,15 +20,10 @@ export default {
                 defaultValue: ""
             };
         },
-        renderSettings({ form, uniqueFieldIdValidator }) {
+        renderSettings({ form }) {
             const { Bind } = form;
             return (
                 <Grid>
-                    <Cell span={12}>
-                        <Bind name={"fieldId"} validators={["required", uniqueFieldIdValidator]}>
-                            <Input label={"Field ID"} />
-                        </Bind>
-                    </Cell>
                     <Cell span={12}>
                         <Bind name={"defaultValue"}>
                             <Input
