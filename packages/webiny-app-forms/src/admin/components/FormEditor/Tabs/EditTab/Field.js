@@ -5,6 +5,8 @@ import { Typography } from "webiny-ui/Typography";
 import { ReactComponent as EditIcon } from "../../icons/edit.svg";
 import { ReactComponent as DeleteIcon } from "../../icons/delete.svg";
 import { useI18N } from "webiny-app-i18n/components";
+import { useFormEditor } from "webiny-app-forms/admin/components/FormEditor/Context";
+
 const FieldContainer = styled("div")({
     display: "flex",
     flexDirection: "row",
@@ -32,11 +34,14 @@ const Actions = styled("div")({
 const Field = props => {
     const { field, onEdit, onDelete } = props;
     const { translate } = useI18N();
+    const { getFieldType } = useFormEditor();
 
+    const fieldType = getFieldType(field.type);
     return (
         <FieldContainer>
             <Info>
                 <Typography use={"subtitle1"}>{translate(field.label)}</Typography>
+                <Typography use={"subtitle2"}>{fieldType && fieldType.label}</Typography>
             </Info>
             <Actions>
                 <IconButton icon={<EditIcon />} onClick={() => onEdit(field)} />
