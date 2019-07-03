@@ -8,7 +8,7 @@ import { get } from "lodash";
 export function init(props: Object) {
     return {
         ...props,
-        locales: [],
+        locales: []
     };
 }
 
@@ -26,7 +26,7 @@ export function i18nReducer(state: Object, action: Object) {
 
 const I18NContext = React.createContext();
 
-const I18NProvider = withApollo((props: Object) => {
+const I18NProvider = withApollo(({ children, ...props }: Object) => {
     const [state, dispatch] = useReducer(i18nReducer, props, init);
 
     useEffect(() => {
@@ -42,7 +42,7 @@ const I18NProvider = withApollo((props: Object) => {
         };
     });
 
-    return <I18NContext.Provider value={value} />;
+    return <I18NContext.Provider value={value}>{children}</I18NContext.Provider>;
 });
 
 function useI18N() {
