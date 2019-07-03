@@ -1,18 +1,22 @@
 // @flow
 // $FlowFixMe
-import React, { useReducer, useMemo, useContext } from "react";
+import React, { useReducer, useMemo, useContext, useEffect } from "react";
+import { withApollo } from "react-apollo";
+import { listI18NLocales } from "./graphql";
+import { get } from "lodash";
 
 export function init(props: Object) {
     return {
-        ...props
+        ...props,
+        locales: [],
     };
 }
 
 export function i18nReducer(state: Object, action: Object) {
     const next = { ...state };
     switch (action.type) {
-        case "data": {
-            next.data = action.data;
+        case "locales": {
+            next.locales = action.value;
             break;
         }
     }
@@ -22,8 +26,14 @@ export function i18nReducer(state: Object, action: Object) {
 
 const I18NContext = React.createContext();
 
-function I18NProvider(props: Object) {
+const I18NProvider = withApollo((props: Object) => {
     const [state, dispatch] = useReducer(i18nReducer, props, init);
+
+    useEffect(() => {
+        props.client.query({ query: listI18NLocales }).then(response => {
+            dispatch({ type: "locales", value: get(response, "data.i18n.listI18NLocales.data") });
+        });
+    }, []);
 
     const value = useMemo(() => {
         return {
@@ -32,8 +42,8 @@ function I18NProvider(props: Object) {
         };
     });
 
-    return <I18NContext.Provider value={value} {...props} />;
-}
+    return <I18NContext.Provider value={value} />;
+});
 
 function useI18N() {
     const context = useContext(I18NContext);
@@ -43,15 +53,16 @@ function useI18N() {
 
     const { state, dispatch } = context;
     const self = {
-        // TODO: load these properly.
+        // TODO: check how to detect this - maybe we could do it in a separate API call ?
         acceptLanguage: "en-US",
-        defaultLocale: "en-US",
-        locales: ["en-US", "de-DE", "hr-HR"],
+        getDefaultLocale() {
+            return state.locales.find(item => item.default === true);
+        },
         getLocale() {
-            return self.acceptLanguage || self.defaultLocale;
+            return self.acceptLanguage || self.getDefaultLocale();
         },
         getLocales() {
-            return self.locales;
+            return state.locales;
         },
         translate(valueObject: ?Object): string {
             if (!valueObject) {
