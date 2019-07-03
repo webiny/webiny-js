@@ -24,12 +24,12 @@ const style = {
 const prepareII8NValues = ({ locales, values }) => {
     const output = [];
     for (let i = 0; i < locales.length; i++) {
-        const item = values.find(item => item.locale === locales[i]);
+        const item = values.find(item => item.locale === locales[i].id);
         if (item) {
             output.push({ ...item });
         } else {
             output.push({
-                locale: locales[i],
+                locale: locales[i].id,
                 value: ""
             });
         }
@@ -60,7 +60,7 @@ const I18NInput = ({ value, onChange, ...inputProps }) => {
 
     let inputValue = "";
     if (value && Array.isArray(value.values)) {
-        const foundValue = value.values.find(item => item.locale === getLocale());
+        const foundValue = value.values.find(item => item.locale === getLocale().id);
         if (foundValue) {
             inputValue = foundValue.value;
         }
@@ -68,11 +68,11 @@ const I18NInput = ({ value, onChange, ...inputProps }) => {
 
     const inputOnChange = useCallback(inputValue => {
         const newValue = { values: [], ...value };
-        const index = value ? value.values.findIndex(item => item.locale === getLocale()) : -1;
+        const index = value ? value.values.findIndex(item => item.locale === getLocale().id) : -1;
         if (index >= 0) {
             newValue.values[index].value = inputValue;
         } else {
-            newValue.values.push({ locale: getLocale(), value: inputValue });
+            newValue.values.push({ locale: getLocale().id, value: inputValue });
         }
 
         onChange(newValue);
