@@ -4,6 +4,7 @@ import shortid from "shortid";
 import { get, cloneDeep, pick } from "lodash";
 import { getForm, updateRevision } from "./graphql";
 import { getFieldPosition, moveField, moveRow, deleteField } from "./functions";
+import { getPlugins } from "webiny-plugins";
 
 import type {
     FieldsLayoutType,
@@ -86,6 +87,16 @@ export default FormEditorContext => {
              */
             getFieldById(id: FieldIdType): ?FieldType {
                 return self.getFields().find(item => item.id === id);
+            },
+
+            /**
+             * Return field type by given type.
+             * @param type
+             * @returns {void|?FieldType}
+             */
+            getFieldType(type: string): ?Object {
+                const plugin = getPlugins("form-editor-field-type").find(plugin => plugin.fieldType.id === type);
+                return plugin ? plugin.fieldType : null;
             },
 
             /**

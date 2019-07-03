@@ -3,13 +3,12 @@ import { Input } from "webiny-ui/Input";
 import { Grid, Cell } from "webiny-ui/Grid";
 import { camelCase } from "lodash";
 import { useFormEditor } from "webiny-app-forms/admin/components/FormEditor/Context";
-import { getPlugins } from "webiny-plugins";
 import { I18NInput, useI18N } from "webiny-app-i18n/components";
 
 const GeneralTab = ({ field, form }) => {
     const { Bind, setValue } = form;
     const inputRef = useRef(null);
-    const { getFields } = useFormEditor();
+    const { getFields, getFieldType } = useFormEditor();
     const { translate } = useI18N();
 
     useEffect(() => {
@@ -31,13 +30,11 @@ const GeneralTab = ({ field, form }) => {
         }
     });
 
-    const fieldPlugin = getPlugins("form-editor-field-type").find(
-        item => item.fieldType.id === field.type
-    );
+    const fieldType = getFieldType(field.type);
 
     let additionalSettings = null;
-    if (typeof fieldPlugin.fieldType.renderSettings === "function") {
-        additionalSettings = fieldPlugin.fieldType.renderSettings({
+    if (typeof fieldType.renderSettings === "function") {
+        additionalSettings = fieldType.renderSettings({
             Bind,
             form,
             afterChangeLabel,
