@@ -4,14 +4,16 @@ import installer from "webiny-install";
 
 import securityPlugins from "webiny-api-security/install/plugins";
 import cmsPlugins from "webiny-api-cms/install/plugins";
+import i18nPlugins from "webiny-api-i18n/install/plugins";
 
-registerPlugins(securityPlugins, cmsPlugins);
+registerPlugins(securityPlugins, cmsPlugins, i18nPlugins);
 
 export const install = async (context = {}) => {
     await installer({
         ...context,
         config: await config(),
-        security: { admin: { email: "admin@webiny.com", password: "12345678" } }
+        security: { admin: { email: "admin@webiny.com", password: "12345678" } },
+        i18n: { defaultLocale: "en-US" }
     });
     process.exit();
 };
