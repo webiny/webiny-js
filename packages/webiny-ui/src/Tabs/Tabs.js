@@ -31,6 +31,10 @@ class Tabs extends React.Component<Props, State> {
         activeTabIndex: 0
     };
 
+    switchTab(activeTabIndex) {
+        this.setState({ activeTabIndex });
+    }
+
     render() {
         const tabs = React.Children.toArray(this.props.children)
             .filter(c => c !== null)

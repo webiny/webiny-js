@@ -67,12 +67,12 @@ const accordionItem = css({
     }
 });
 
-const Field = ({ fieldType: { id, label } }) => {
+const Field = ({ onFieldDragStart, fieldType: { id, label } }) => {
     return (
         <Draggable beginDrag={{ ui: "field", type: id }}>
             {({ connectDragSource }) =>
                 connectDragSource(
-                    <div style={{ marginBottom: 10 }}>
+                    <div style={{ marginBottom: 10 }} onDragStart={onFieldDragStart}>
                         <FieldContainer>
                             <FieldHandle>
                                 <Icon icon={<HandleIcon />} />
@@ -86,7 +86,7 @@ const Field = ({ fieldType: { id, label } }) => {
     );
 };
 
-export const Fields = () => {
+export const Fields = ({ onFieldDragStart }) => {
     const { fieldExists } = useFormEditor();
 
     function getGroups() {
@@ -103,7 +103,10 @@ export const Fields = () => {
 
     return (
         <React.Fragment>
-            <Field fieldType={{ id: "custom", label: "Custom field" }} />
+            <Field
+                fieldType={{ id: "custom", label: "Custom field" }}
+                onFieldDragStart={onFieldDragStart}
+            />
 
             <Accordion elevation={0}>
                 {getGroups().map(group => (
@@ -118,7 +121,11 @@ export const Fields = () => {
                                 <span>No fields are available at the moment!</span>
                             )}
                             {group.fields.map(fieldType => (
-                                <Field key={fieldType.id} fieldType={fieldType} />
+                                <Field
+                                    key={fieldType.id}
+                                    fieldType={fieldType}
+                                    onFieldDragStart={onFieldDragStart}
+                                />
                             ))}
                         </FormAccordionContent>
                     </AccordionItem>

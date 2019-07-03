@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useRef } from "react";
 import { css } from "emotion";
 import styled from "react-emotion";
 import { SplitView, LeftPanel, RightPanel } from "webiny-admin/components/SplitView";
@@ -46,6 +46,7 @@ const formTabs = css({
 
 export default function Content() {
     const { saveForm } = useFormEditor();
+    const tabsRef = useRef();
 
     useHotkeys({
         zIndex: 100,
@@ -56,6 +57,7 @@ export default function Content() {
             }
         }
     });
+
     return (
         <ContentContainer>
             <SplitView>
@@ -65,11 +67,11 @@ export default function Content() {
                         <Typography use={"headline6"}>Form Elements</Typography>
                     </LeftBarTitle>
                     <LeftBarFieldList>
-                        <Fields />
+                        <Fields onFieldDragStart={() => tabsRef.current.switchTab(0)} />
                     </LeftBarFieldList>
                 </LeftPanel>
                 <RightPanel span={8}>
-                    <Tabs className={formTabs}>
+                    <Tabs className={formTabs} ref={tabsRef}>
                         <Tab label={"Edit"}>
                             <EditTab />
                         </Tab>
