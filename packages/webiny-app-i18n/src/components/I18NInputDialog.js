@@ -13,6 +13,7 @@ import {
 } from "webiny-ui/Dialog";
 
 import { Form } from "webiny-form";
+import { useI18N } from "webiny-app-i18n/components";
 
 import { i18n } from "webiny-app/i18n";
 const t = i18n.namespace("FormEditor.EditFieldDialog");
@@ -24,7 +25,9 @@ type Props = {
     onSubmit: Function
 };
 
-const EditFieldDialog = ({ open, onClose, values, onSubmit }: Props) => {
+const I18NInputDialog = ({ open, onClose, values, onSubmit }: Props) => {
+    const { getLocale } = useI18N();
+
     return (
         <Dialog open={open} onClose={onClose}>
             <DialogHeader>
@@ -40,7 +43,7 @@ const EditFieldDialog = ({ open, onClose, values, onSubmit }: Props) => {
                                     {values.map((item, index) => (
                                         <Cell key={item.locale} span={12}>
                                             <Bind name={`${index}.value`}>
-                                                <Input label={item.locale} />
+                                                <Input label={getLocale(item.locale).code} />
                                             </Bind>
                                         </Cell>
                                     ))}
@@ -60,4 +63,4 @@ const EditFieldDialog = ({ open, onClose, values, onSubmit }: Props) => {
     );
 };
 
-export default EditFieldDialog;
+export default I18NInputDialog;
