@@ -94,13 +94,27 @@ const FormElementAdvancedSettings = ({ Bind, data }: Object) => {
                             <Cell span={12}>
                                 <Bind name={"settings.form.revision"} validators={["required"]}>
                                     {({ onChange }) => {
+                                        const parentSelected = !!options.parents.value;
+                                        const noPublished =
+                                            options.publishedRevisions.options.length === 0;
+
+                                        let description = "Choose a published revision.";
+                                        if (parentSelected && noPublished) {
+                                            description = (
+                                                <span style={{ color: "red" }}>
+                                                    No published revisions for selected form.
+                                                </span>
+                                            );
+                                        }
+
                                         return (
                                             <AutoComplete
+                                                label={"Revision"}
+                                                description={description}
+                                                disabled={!parentSelected || noPublished}
                                                 options={options.publishedRevisions.options}
                                                 value={options.publishedRevisions.value}
                                                 onChange={onChange}
-                                                label={"Revision"}
-                                                description="Choose a published revision."
                                             />
                                         );
                                     }}
