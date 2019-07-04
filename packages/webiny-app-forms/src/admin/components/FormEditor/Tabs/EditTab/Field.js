@@ -18,7 +18,8 @@ const Info = styled("div")({
     display: "flex",
     flexDirection: "column",
     "> *": {
-        flex: "1 100%"
+        flex: "1 100%",
+        lineHeight: "150%"
     }
 });
 
@@ -41,7 +42,7 @@ const Field = props => {
         <FieldContainer>
             <Info>
                 <Typography use={"subtitle1"}>{translate(field.label)}</Typography>
-                <Typography use={"subtitle2"}>{fieldType && fieldType.label}</Typography>
+                <Typography use={"caption"}>{fieldType && fieldType.label}</Typography>
             </Info>
             <Actions>
                 <IconButton icon={<EditIcon />} onClick={() => onEdit(field)} />

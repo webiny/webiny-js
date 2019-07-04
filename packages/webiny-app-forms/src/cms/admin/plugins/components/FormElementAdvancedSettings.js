@@ -4,6 +4,7 @@ import { Query } from "react-apollo";
 import gql from "graphql-tag";
 import { get } from "lodash";
 import { Grid, Cell } from "webiny-ui/Grid";
+import { Alert } from "webiny-ui/Alert";
 import { AutoComplete } from "webiny-ui/AutoComplete";
 import styled from "react-emotion";
 
@@ -100,23 +101,24 @@ const FormElementAdvancedSettings = ({ Bind, data }: Object) => {
 
                                         let description = "Choose a published revision.";
                                         if (parentSelected && noPublished) {
-                                            description = (
-                                                <span style={{ color: "red" }}>
-                                                    No published revisions for selected form.
-                                                </span>
+                                            return (
+                                                <Alert type="danger" title="Form not published">
+                                                    Please publish the form and then you can insert
+                                                    it into your page.
+                                                </Alert>
+                                            );
+                                        } else {
+                                            return (
+                                                <AutoComplete
+                                                    label={"Revision"}
+                                                    description={description}
+                                                    disabled={!parentSelected || noPublished}
+                                                    options={options.publishedRevisions.options}
+                                                    value={options.publishedRevisions.value}
+                                                    onChange={onChange}
+                                                />
                                             );
                                         }
-
-                                        return (
-                                            <AutoComplete
-                                                label={"Revision"}
-                                                description={description}
-                                                disabled={!parentSelected || noPublished}
-                                                options={options.publishedRevisions.options}
-                                                value={options.publishedRevisions.value}
-                                                onChange={onChange}
-                                            />
-                                        );
                                     }}
                                 </Bind>
                             </Cell>

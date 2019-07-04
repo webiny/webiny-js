@@ -35,7 +35,7 @@ const FullName = ({ submission }) => {
 };
 
 const FormVersion = ({ submission }) => {
-    return `Version #${submission.form.revision.version}`;
+    return `Form revision #${submission.form.revision.version}`;
 };
 
 const FormSubmissionsList = (props: Object) => {
@@ -84,9 +84,7 @@ const FormSubmissionsList = (props: Object) => {
                                     <ListItemText onClick={() => selectFormSubmission(submission)}>
                                         <FullName submission={submission} />
                                         <ListTextOverline>
-                                            <FormVersion submission={submission} />
-                                            {" | "}
-                                            {submission.meta.ip || "N/A"}
+                                            Visitor IP: {submission.meta.ip || "N/A"}
                                         </ListTextOverline>
                                     </ListItemText>
                                     <ListItemMeta className={rightAlign}>
@@ -98,6 +96,8 @@ const FormSubmissionsList = (props: Object) => {
                                                     />
                                                 )
                                             })}
+                                            <br />
+                                            <FormVersion submission={submission} />
                                         </Typography>
                                     </ListItemMeta>
                                 </ListItem>

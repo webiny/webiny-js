@@ -42,14 +42,16 @@ export class Dialog extends React.Component<Props> {
     }
 
     render() {
-        const { children, ...props } = this.props;
+        const { children, preventOutsideDismiss = false, ...props } = this.props;
         const container: Element = (this.container: any);
 
         // Let's pass "permanent" / "persistent" / "temporary" flags as "mode" prop instead.
         return ReactDOM.createPortal(
             <RmwcDialog {...props}>
                 <RmwcDialogSurface>{children}</RmwcDialogSurface>
-                <RmwcDialogBackdrop />
+                <RmwcDialogBackdrop
+                    style={{ pointerEvents: preventOutsideDismiss ? "none" : "all" }}
+                />
             </RmwcDialog>,
             container
         );
