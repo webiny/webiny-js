@@ -8,6 +8,7 @@ import { userSettingsFactory } from "./../../entities/UserSettings.entity";
 
 export default (context: Object) => {
     context.security = { ...context.security, entities: {} };
+    context.getUser = () => null;
     context.security.entities.User = userFactory(context);
     context.security.entities.Group = groupFactory(context);
     context.security.entities.Role = roleFactory(context);
