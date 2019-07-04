@@ -20,6 +20,7 @@ import ValidatorsTab from "./EditFieldDialog/ValidatorsTab";
 import FieldTypeSelector from "./EditFieldDialog/FieldTypeSelector";
 import { i18n } from "webiny-app/i18n";
 const t = i18n.namespace("FormEditor.EditFieldDialog");
+import { useFormEditor } from "webiny-app-forms/admin/components/FormEditor/Context";
 
 const dialogBody = css({
     "&.mdc-dialog__body": {
@@ -48,6 +49,8 @@ const EditFieldDialog = ({ field, onSubmit, ...props }: Props) => {
     const [current, setCurrent] = useState(null);
     const [isNewField, setIsNewField] = useState(false);
     const [screen, setScreen] = useState();
+
+    const { getFieldType } = useFormEditor();
 
     useEffect(() => {
         if (!field) {
@@ -163,10 +166,17 @@ const EditFieldDialog = ({ field, onSubmit, ...props }: Props) => {
         }
     }
 
+    let headerTitle = t`Field Settings`;
+    if (current) {
+        const fieldType = getFieldType(current.type);
+        if (fieldType) {
+            headerTitle = t`Field Settings - {fieldTypeLabel}`({ fieldTypeLabel: fieldType.label });
+        }
+    }
     return (
         <Dialog preventOutsideDismiss={true} open={!!current} onClose={onClose}>
             <DialogHeader>
-                <DialogHeaderTitle>{t`Field Settings`}</DialogHeaderTitle>
+                <DialogHeaderTitle>{headerTitle}</DialogHeaderTitle>
             </DialogHeader>
             {render}
         </Dialog>

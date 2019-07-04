@@ -52,21 +52,6 @@ const GeneralTab = ({ field, form, setScreen }) => {
     return (
         <>
             <Grid>
-                <Cell span={12}>
-                    <Input
-                        label={"Field type"}
-                        readOnly
-                        value={fieldType.label}
-                        description={
-                            <a
-                                className={style.backToFieldTypeScreenLink}
-                                onClick={() => setScreen("fieldType")}
-                            >
-                                {t`Change field type`}
-                            </a>
-                        }
-                    />
-                </Cell>
                 <Cell span={6}>
                     <Bind name={"label"} validators={["required"]} afterChange={afterChangeLabel}>
                         <I18NInput label={"Label"} inputRef={inputRef} />
