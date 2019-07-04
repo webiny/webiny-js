@@ -15,7 +15,6 @@ import {
 } from "webiny-ui/List";
 
 import { DeleteIcon } from "webiny-ui/List/DataList/icons";
-import CountryFlag from "./components/CountryFlag";
 
 const t = i18n.namespace("I18N.I18NLocalesDataList");
 
@@ -52,7 +51,6 @@ const I18NLocalesDataList = ({
                                     history.push({ search: query.toString() });
                                 }}
                             >
-                                <CountryFlag locale={item} />
                                 {item.code}
                             </ListItemText>
 
