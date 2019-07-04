@@ -8,7 +8,6 @@ import { ButtonPrimary } from "webiny-ui/Button";
 import { Switch } from "webiny-ui/Switch";
 import type { WithCrudFormProps } from "webiny-admin/components";
 import { CircularProgress } from "webiny-ui/Progress";
-import CountryFlag from "./components/CountryFlag";
 
 import {
     SimpleForm,
@@ -33,7 +32,6 @@ const I18NLocaleForm = ({ onSubmit, loading, data, invalidFields }: WithCrudForm
                                     <Input
                                         label={t`Code`}
                                         description={`For example: "en-GB"`}
-                                        trailingIcon={<CountryFlag locale={{ code: data.code }} />}
                                     />
                                 </Bind>
                             </Cell>
