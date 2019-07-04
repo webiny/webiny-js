@@ -3,12 +3,21 @@ import * as React from "react";
 import ReactDOM from "react-dom";
 import {
     Menu as BaseMenu,
-    MenuItem,
+    MenuItem as BaseMenuItem,
     MenuSurface,
     MenuSurfaceAnchor,
     type SelectedEventDetailT
 } from "@rmwc/menu";
 import type { CustomEventT } from "@rmwc/base";
+import { css } from "emotion";
+import classNames from "classnames";
+
+const style = {
+    disabledMenuItem: css({
+        opacity: 0.5,
+        pointerEvents: "none"
+    })
+};
 
 type Props = {
     // One or more MenuItem components.
@@ -135,6 +144,15 @@ class Menu extends React.Component<Props, State> {
 
 const MenuDivider = () => {
     return <li className="mdc-list-divider" role="separator" />;
+};
+
+const MenuItem = ({ disabled, className, ...rest }) => {
+    return (
+        <BaseMenuItem
+            {...rest}
+            className={classNames(className, { [style.disabledMenuItem]: disabled })}
+        />
+    );
 };
 
 export { Menu, MenuItem, MenuDivider };
