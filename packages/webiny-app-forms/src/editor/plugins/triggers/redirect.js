@@ -31,7 +31,7 @@ export default {
                         )}
                     </Cell>
                     <Cell>
-                        <ButtonPrimary onClick={submit}>Save</ButtonPrimary>
+                        <ButtonPrimary onClick={submit}>{t`Save`}</ButtonPrimary>
                     </Cell>
                 </Grid>
             );
