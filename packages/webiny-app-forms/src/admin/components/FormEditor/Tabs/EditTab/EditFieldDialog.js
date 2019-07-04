@@ -46,14 +46,16 @@ type Props = {
 const EditFieldDialog = ({ field, onSubmit, ...props }: Props) => {
     // const fieldType = getFieldType();
     const [current, setCurrent] = useState(null);
+    const [isNewField, setIsNewField] = useState(false);
     const [screen, setScreen] = useState();
 
     useEffect(() => {
-        setCurrent(cloneDeep(field));
         if (!field) {
             return;
         }
 
+        setCurrent(cloneDeep(field));
+        setIsNewField(!field._id);
         setScreen(field.type ? "fieldOptions" : "fieldType");
     }, [field]);
 
@@ -95,6 +97,13 @@ const EditFieldDialog = ({ field, onSubmit, ...props }: Props) => {
                                         </Tabs>
                                     </DialogBody>
                                     <DialogFooter>
+                                        {isNewField && (
+                                            <DialogFooterButton
+                                                onClick={() => setScreen("fieldType")}
+                                            >
+                                                {t`Go back`}
+                                            </DialogFooterButton>
+                                        )}
                                         <DialogFooterButton onClick={onClose}>
                                             {t`Cancel`}
                                         </DialogFooterButton>

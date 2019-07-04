@@ -29,13 +29,11 @@ const fieldTypeBox = css({
     }
 });
 
-const FieldTypeSelector = ({ fieldType, onClick, isCurrentFieldType }) => {
-    // TODO: @sven
+const FieldTypeSelector = ({ fieldType, onClick }) => {
     return (
         <Elevation z={2} onClick={onClick} className={fieldTypeBox}>
             <Icon icon={fieldType.icon} />
             <Typography use={"headline5"}>{fieldType.label}</Typography>
-            {isCurrentFieldType && <strong>SELECTED</strong>}
             <br />
             <Typography use={"caption"}>{fieldType.description}</Typography>
         </Elevation>
