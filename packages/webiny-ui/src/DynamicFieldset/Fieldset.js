@@ -1,6 +1,7 @@
 // @flow
 import * as React from "react";
 import dotProp from "dot-prop-immutable";
+import { FormElementMessage } from "webiny-ui/FormElementMessage";
 
 type Props = {
     value: Array<Object>,
@@ -60,7 +61,7 @@ class Fieldset extends React.Component<Props> {
         this.empty = cb();
     };
 
-    render() {
+    renderComponent() {
         const { value } = this.props;
         const { children } = this.props;
 
@@ -81,6 +82,23 @@ class Fieldset extends React.Component<Props> {
         }
 
         return this.empty;
+    }
+
+    render() {
+        const { description, validation = { isValid: null } } = this.props;
+
+        return (
+            <>
+                {this.renderComponent()}
+                {validation.isValid === false && (
+                    <FormElementMessage error>{validation.message}</FormElementMessage>
+                )}
+
+                {validation.isValid !== false && description && (
+                    <FormElementMessage>{description}</FormElementMessage>
+                )}
+            </>
+        );
     }
 }
 
