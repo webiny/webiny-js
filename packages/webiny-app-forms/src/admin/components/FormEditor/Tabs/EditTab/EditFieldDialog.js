@@ -155,7 +155,7 @@ const EditFieldDialog = ({ field, onSubmit, ...props }: Props) => {
     }
 
     return (
-        <Dialog open={!!current} onClose={onClose}>
+        <Dialog preventOutsideDismiss={true} open={!!current} onClose={onClose}>
             <DialogHeader>
                 <DialogHeaderTitle>{t`Field Settings`}</DialogHeaderTitle>
             </DialogHeader>
