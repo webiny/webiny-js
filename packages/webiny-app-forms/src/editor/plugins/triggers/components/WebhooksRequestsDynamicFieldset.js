@@ -34,6 +34,12 @@ type Props = {
 const WebhooksRequestsDynamicFieldset = (props: Props) => {
     const { onChange, value, Bind } = props;
 
+    const addUrl = () => {
+        const newValue = Array.isArray(value) ? [...value] : [];
+        newValue.push("");
+        onChange(newValue);
+    };
+
     return (
         <DynamicFieldset value={value} onChange={onChange}>
             {({ actions, header, row, empty }) => (
@@ -51,7 +57,7 @@ const WebhooksRequestsDynamicFieldset = (props: Props) => {
                     {empty(() => (
                         <Header>
                             <Typography use={"overline"}>{props.title}</Typography>
-                            <ButtonDefault onClick={actions.add()}>
+                            <ButtonDefault onClick={addUrl}>
                                 {props.addButtonLabel}
                             </ButtonDefault>
                         </Header>
@@ -60,11 +66,7 @@ const WebhooksRequestsDynamicFieldset = (props: Props) => {
                         <Header>
                             <Typography use={"overline"}>{props.title}</Typography>
                             <ButtonDefault
-                                onClick={() => {
-                                    const newValue = Array.isArray(value) ? [...value] : [];
-                                    newValue.push("");
-                                    onChange(newValue);
-                                }}
+                                onClick={addUrl}
                             >
                                 {props.addButtonLabel}
                             </ButtonDefault>
