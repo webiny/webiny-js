@@ -218,10 +218,6 @@ export default (context: Object) => {
             this.attr("published")
                 .boolean()
                 .onSet(value => {
-                    if (this.locked) {
-                        return this.published;
-                    }
-
                     if (value) {
                         this.publishedOn = new Date();
                         if (!this.locked) {

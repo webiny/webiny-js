@@ -31,7 +31,9 @@ const RevisionsList = ({ form, loading }: RevisionsProps) => {
                     {loading && <CircularProgress />}
                     <List nonInteractive twoLine>
                         {Array.isArray(form.revisions) &&
-                            form.revisions.map(rev => <Revision rev={rev} key={rev.id} />)}
+                            form.revisions.map(rev => (
+                                <Revision form={form} revision={rev} key={rev.id} />
+                            ))}
                     </List>
                 </div>
             </Elevation>

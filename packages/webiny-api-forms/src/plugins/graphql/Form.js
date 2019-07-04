@@ -176,6 +176,11 @@ export default {
                 id: ID!
             ): FormResponse
             
+            # Unpublish revision
+            unpublishRevision(
+                id: ID!
+            ): FormResponse
+            
             # Delete form and all of its revisions
             deleteForm(
                 id: ID!
@@ -210,6 +215,11 @@ export default {
             // Publish revision (must be given an exact revision ID to publish)
             publishRevision: (_: any, args: Object, ctx: Object, info: Object) => {
                 args.data = { published: true };
+
+                return resolveUpdate("Form")(_, args, ctx, info);
+            },
+            unpublishRevision: (_: any, args: Object, ctx: Object, info: Object) => {
+                args.data = { published: false };
 
                 return resolveUpdate("Form")(_, args, ctx, info);
             },

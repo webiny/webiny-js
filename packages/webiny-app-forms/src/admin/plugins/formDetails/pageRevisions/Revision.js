@@ -18,25 +18,16 @@ import { withRouter } from "react-router-dom";
 import { withSnackbar } from "webiny-admin/components";
 import { ConfirmationDialog } from "webiny-ui/ConfirmationDialog";
 import { Tooltip } from "webiny-ui/Tooltip";
-import { withPageDetails, type WithFormDetailsProps } from "webiny-app-cms/admin/components";
-import { ReactComponent as MoreVerticalIcon } from "webiny-app-cms/admin/assets/more_vert.svg";
-import { ReactComponent as LockIcon } from "webiny-app-cms/admin/assets/lock.svg";
-import { ReactComponent as BeenHereIcon } from "webiny-app-cms/admin/assets/beenhere.svg";
-import { ReactComponent as GestureIcon } from "webiny-app-cms/admin/assets/gesture.svg";
 import withRevisionHandlers from "./withRevisionHandlers";
-import { ReactComponent as AddIcon } from "webiny-app-cms/admin/assets/add.svg";
-import { ReactComponent as EditIcon } from "webiny-app-cms/admin/assets/edit.svg";
-import { ReactComponent as PublishIcon } from "webiny-app-cms/admin/assets/round-publish-24px.svg";
-import { ReactComponent as DeleteIcon } from "webiny-app-cms/admin/assets/delete.svg";
-
-type RevisionProps = WithFormDetailsProps & {
-    rev: Object,
-    createRevision: Function,
-    editRevision: Function,
-    deleteRevision: Function,
-    publishRevision: Function,
-    submitCreateRevision: Function
-};
+import { ReactComponent as AddIcon } from "webiny-app-forms/admin/icons/add.svg";
+import { ReactComponent as BeenHereIcon } from "webiny-app-forms/admin/icons/beenhere.svg";
+import { ReactComponent as DeleteIcon } from "webiny-app-forms/admin/icons/delete.svg";
+import { ReactComponent as EditIcon } from "webiny-app-forms/admin/icons/edit.svg";
+import { ReactComponent as GestureIcon } from "webiny-app-forms/admin/icons/gesture.svg";
+import { ReactComponent as LockIcon } from "webiny-app-forms/admin/icons/lock.svg";
+import { ReactComponent as MoreVerticalIcon } from "webiny-app-forms/admin/icons/more_vert.svg";
+import { ReactComponent as PublishIcon } from "webiny-app-forms/admin/icons/round-publish-24px.svg";
+import { ReactComponent as UnpublishIcon } from "webiny-app-forms/admin/icons/round-close-24px.svg";
 
 const primaryColor = css({ color: "var(--mdc-theme-primary)" });
 
@@ -47,13 +38,13 @@ const revisionsMenu = css({
 });
 
 const getIcon = (rev: Object) => {
-    switch (true) {
-        case rev.locked && !rev.published:
+    switch (rev.status) {
+        case "locked":
             return {
                 icon: <Icon icon={<LockIcon />} />,
                 text: "This revision is locked (it has already been published)"
             };
-        case rev.published:
+        case "published":
             return {
                 icon: <Icon icon={<BeenHereIcon />} className={primaryColor} />,
                 text: "This revision is currently published!"
@@ -66,81 +57,103 @@ const getIcon = (rev: Object) => {
     }
 };
 
-const Revision = (props: RevisionProps) => {
-    const { rev, createRevision, editRevision, deleteRevision, publishRevision } = props;
+const Revision = (props: Object) => {
+    const {
+        revision: rev,
+        createRevision,
+        editRevision,
+        deleteRevision,
+        unpublishRevision,
+        publishRevision
+    } = props;
     const { icon, text: tooltipText } = getIcon(rev);
 
     return (
-        <ConfirmationDialog
-            title="Confirmation required!"
-            message={<span>Are you sure you want to delete this revision?</span>}
-        >
-            {({ showConfirmation }) => (
-                <ListItem>
-                    <ListItemGraphic>
-                        <Tooltip content={tooltipText} placement={"bottom"}>
-                            {icon}
-                        </Tooltip>
-                    </ListItemGraphic>
-                    <ListItemText>
-                        <ListItemTextPrimary>{rev.title}</ListItemTextPrimary>
-                        <ListItemTextSecondary>
-                            Last modified <TimeAgo datetime={rev.savedOn} /> (#
-                            {rev.version})
-                        </ListItemTextSecondary>
-                    </ListItemText>
-                    <ListItemMeta>
-                        <Menu
-                            handle={<IconButton icon={<MoreVerticalIcon />} />}
-                            className={revisionsMenu}
-                            openSide={"left"}
+        <ListItem>
+            <ListItemGraphic>
+                <Tooltip content={tooltipText} placement={"bottom"}>
+                    {icon}
+                </Tooltip>
+            </ListItemGraphic>
+            <ListItemText>
+                <ListItemTextPrimary>{rev.name}</ListItemTextPrimary>
+                <ListItemTextSecondary>
+                    Last modified <TimeAgo datetime={rev.savedOn} /> (#
+                    {rev.version})
+                </ListItemTextSecondary>
+            </ListItemText>
+            <ListItemMeta>
+                <Menu
+                    handle={<IconButton icon={<MoreVerticalIcon />} />}
+                    className={revisionsMenu}
+                    openSide={"left"}
+                >
+                    <MenuItem onClick={createRevision}>
+                        <ListItemGraphic>
+                            <Icon icon={<AddIcon />} />
+                        </ListItemGraphic>
+                        New from current
+                    </MenuItem>
+                    {rev.status === "draft" && (
+                        <MenuItem onClick={editRevision}>
+                            <ListItemGraphic>
+                                <Icon icon={<EditIcon />} />
+                            </ListItemGraphic>
+                            Edit
+                        </MenuItem>
+                    )}
+
+                    {rev.status !== "published" && (
+                        <MenuItem onClick={() => publishRevision(rev)}>
+                            <ListItemGraphic>
+                                <Icon icon={<PublishIcon />} />
+                            </ListItemGraphic>
+                            Publish
+                        </MenuItem>
+                    )}
+
+                    {rev.status === "published" && (
+                        <ConfirmationDialog
+                            title="Confirmation required!"
+                            message={<span>Are you sure you want to unpublish this revision?</span>}
                         >
-                            <MenuItem onClick={createRevision}>
-                                <ListItemGraphic>
-                                    <Icon icon={<AddIcon />} />
-                                </ListItemGraphic>
-                                New from current
-                            </MenuItem>
-                            {!rev.locked && (
-                                <MenuItem onClick={editRevision}>
+                            {({ showConfirmation }) => (
+                                <MenuItem
+                                    onClick={() => showConfirmation(() => unpublishRevision(rev))}
+                                >
                                     <ListItemGraphic>
-                                        <Icon icon={<EditIcon />} />
+                                        <Icon icon={<UnpublishIcon />} />
                                     </ListItemGraphic>
-                                    Edit
+                                    Unpublish
                                 </MenuItem>
                             )}
+                        </ConfirmationDialog>
+                    )}
 
-                            {!rev.published && (
-                                <MenuItem onClick={() => publishRevision(rev)}>
+                    <React.Fragment>
+                        <MenuDivider />
+                        <ConfirmationDialog
+                            title="Confirmation required!"
+                            message={<span>Are you sure you want to delete this revision?</span>}
+                        >
+                            {({ showConfirmation }) => (
+                                <MenuItem onClick={() => showConfirmation(deleteRevision)}>
                                     <ListItemGraphic>
-                                        <Icon icon={<PublishIcon />} />
+                                        <Icon icon={<DeleteIcon />} />
                                     </ListItemGraphic>
-                                    Publish
+                                    Delete
                                 </MenuItem>
                             )}
-
-                            {!rev.locked && (
-                                <React.Fragment>
-                                    <MenuDivider />
-                                    <MenuItem onClick={() => showConfirmation(deleteRevision)}>
-                                        <ListItemGraphic>
-                                            <Icon icon={<DeleteIcon />} />
-                                        </ListItemGraphic>
-                                        Delete
-                                    </MenuItem>
-                                </React.Fragment>
-                            )}
-                        </Menu>
-                    </ListItemMeta>
-                </ListItem>
-            )}
-        </ConfirmationDialog>
+                        </ConfirmationDialog>
+                    </React.Fragment>
+                </Menu>
+            </ListItemMeta>
+        </ListItem>
     );
 };
 
 export default compose(
     withRouter,
     withSnackbar(),
-    withPageDetails(),
     withRevisionHandlers
 )(Revision);
