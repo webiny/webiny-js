@@ -37,7 +37,7 @@ const Revisions = pure(({ history }) => {
         <Menu
             className={menuList}
             onSelect={evt => {
-                history.push(`/cms/editor/${revisions[evt.detail.index].id}`);
+                history.push(`/forms/${revisions[evt.detail.index].id}`);
             }}
             handle={
                 <ButtonDefault className={buttonStyle}>
@@ -46,7 +46,7 @@ const Revisions = pure(({ history }) => {
             }
         >
             {revisions.map(rev => (
-                <MenuItem key={rev.id}>
+                <MenuItem key={rev.id} disabled={rev.status !== "draft"}>
                     <Typography use={"body2"}>v{rev.version}</Typography>
                     <Typography use={"caption"}>({rev.status})</Typography>
                 </MenuItem>

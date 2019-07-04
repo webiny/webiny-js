@@ -44,9 +44,9 @@ const Revisions = pure(({ revisions, history }) => {
                 if (rev.locked && !rev.published) status = "locked";
 
                 return (
-                    <MenuItem key={rev.id}>
+                    <MenuItem key={rev.id} disabled={status !== "draft"}>
                         <Typography use={"body2"}>v{rev.version}</Typography>
-                        <Typography use={"caption"}>({status})</Typography>
+                        <Typography use={"caption"}>({status}) </Typography>
                     </MenuItem>
                 );
             })}
