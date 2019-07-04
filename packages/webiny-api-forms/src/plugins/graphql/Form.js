@@ -13,8 +13,6 @@ import getPublishedForm from "./formResolvers/getPublishedForm";
 import saveFormView from "./formResolvers/saveFormView";
 import UserType from "webiny-api-security/plugins/graphql/User";
 
-const formFetcher = ({ getEntity }) => getEntity("Form");
-
 export default {
     typeDefs: () => [
         UserType.typeDefs,
@@ -204,21 +202,21 @@ export default {
         },
         FormsMutation: {
             // Creates a new form
-            createForm: resolveCreate(formFetcher),
+            createForm: resolveCreate("Form"),
             // Deletes the entire form
-            deleteForm: resolveDelete(formFetcher),
+            deleteForm: resolveDelete("Form"),
             // Creates a revision from the given revision
             createRevisionFrom: createRevisionFrom,
             // Updates revision
-            updateRevision: resolveUpdate(formFetcher),
+            updateRevision: resolveUpdate("Form"),
             // Publish revision (must be given an exact revision ID to publish)
             publishRevision: (_: any, args: Object, ctx: Object, info: Object) => {
                 args.data = { published: true };
 
-                return resolveUpdate(formFetcher)(_, args, ctx, info);
+                return resolveUpdate("Form")(_, args, ctx, info);
             },
             // Delete a revision
-            deleteRevision: resolveDelete(formFetcher),
+            deleteRevision: resolveDelete("Form"),
             saveFormView
         }
     }

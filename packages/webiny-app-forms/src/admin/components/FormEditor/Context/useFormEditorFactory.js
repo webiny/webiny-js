@@ -34,12 +34,12 @@ export default FormEditorContext => {
                         data.settings.layout.renderer = state.defaultLayoutRenderer;
                     }
                     return data;
-                });
+                }, false);
 
                 return response;
             },
-            saveForm: async () => {
-                const data = state.data;
+            saveForm: async data => {
+                data = data || state.data;
                 let response = await self.apollo.mutate({
                     mutation: updateRevision,
                     variables: {
@@ -54,10 +54,12 @@ export default FormEditorContext => {
              * Set form data by providing a callback, which receives a fresh copy of data on which you can work on.
              * Return new data once finished.
              * @param setter
+             * @param saveForm
              */
-            setData(setter: Function) {
+            setData(setter: Function, saveForm = true) {
                 const data = setter(cloneDeep(self.data));
                 dispatch({ type: "data", data });
+                saveForm !== false && self.saveForm(data);
             },
 
             /**
@@ -95,7 +97,9 @@ export default FormEditorContext => {
              * @returns {void|?FieldType}
              */
             getFieldType(type: string): ?Object {
-                const plugin = getPlugins("form-editor-field-type").find(plugin => plugin.fieldType.id === type);
+                const plugin = getPlugins("form-editor-field-type").find(
+                    plugin => plugin.fieldType.id === type
+                );
                 return plugin ? plugin.fieldType : null;
             },
 

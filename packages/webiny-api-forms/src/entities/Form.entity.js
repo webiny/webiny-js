@@ -90,7 +90,7 @@ const createSettingsModel = context =>
                 .setDefaultValue(new LayoutSettingsModel());
 
             this.attr("submitButtonLabel").custom(I18NCharAttribute, context);
-            this.attr("successMessage").custom(I18NObjectAttribute, context);
+            this.attr("successMessage").custom(I18NCharAttribute, context); // TODO: change to ObjectAttribute
         }
     };
 

@@ -9,8 +9,6 @@ import { EditTab } from "./Tabs/EditTab";
 import { TriggersTab } from "./Tabs/TriggersTab";
 import { PreviewTab } from "./Tabs/PreviewTab";
 import { Fields } from "./Fields";
-import { useHotkeys } from "react-hotkeyz";
-import { useFormEditor } from "webiny-app-forms/admin/components/FormEditor/Context";
 
 import { ReactComponent as FormIcon } from "./icons/round-assignment-24px.svg";
 
@@ -45,19 +43,7 @@ const formTabs = css({
 });
 
 export default function Content() {
-    const { saveForm } = useFormEditor();
     const tabsRef = useRef();
-
-    useHotkeys({
-        zIndex: 100,
-        keys: {
-            "cmd+s": e => {
-                e.preventDefault();
-                saveForm();
-            }
-        }
-    });
-
     return (
         <ContentContainer>
             <SplitView>

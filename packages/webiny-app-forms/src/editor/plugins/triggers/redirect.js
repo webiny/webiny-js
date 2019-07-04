@@ -20,7 +20,7 @@ export default {
             return (
                 <Grid>
                     <Cell span={12}>
-                        <Bind name={"url"}>
+                        <Bind name={"url"} validators={["url"]}>
                             <Input label={t`Redirect URL`} />
                         </Bind>
                         {hasSuccessMessage && (
