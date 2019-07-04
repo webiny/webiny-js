@@ -17,7 +17,9 @@ export default {
                 _id: "",
                 type: this.id,
                 validation: [],
-                defaultValue: ""
+                settings: {
+                    defaultValue: ""
+                }
             };
         },
         renderSettings({ form }) {

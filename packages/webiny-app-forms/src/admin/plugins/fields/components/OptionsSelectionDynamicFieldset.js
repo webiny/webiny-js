@@ -132,7 +132,7 @@ const OptionsSelectionDynamicFieldset = ({ form, multiple }: Object) => {
                                                 -
                                             </ButtonSecondary>
 
-                                            <Bind name={"defaultValue"}>
+                                            <Bind name={"settings.defaultValue"}>
                                                 <SetOptionAsDefaultValue
                                                     multiple={multiple}
                                                     option={value[index]}

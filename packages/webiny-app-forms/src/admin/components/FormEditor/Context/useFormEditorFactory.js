@@ -27,13 +27,18 @@ export default FormEditorContext => {
             data: state.data,
             state,
             async getForm(id: string) {
-                let response = await self.apollo.query({ query: getForm, variables: { id } });
+                const response = await self.apollo.query({ query: getForm, variables: { id } });
+                const { data, error } = get(response, "data.forms.getForm");
+                if (error) {
+                    throw new Error(error);
+                }
+
                 self.setData(() => {
-                    const data = get(response, "data.forms.getForm.data");
-                    if (!data.settings.layout.renderer) {
-                        data.settings.layout.renderer = state.defaultLayoutRenderer;
+                    const form = cloneDeep(data);
+                    if (!form.settings.layout.renderer) {
+                        form.settings.layout.renderer = state.defaultLayoutRenderer;
                     }
-                    return data;
+                    return form;
                 }, false);
 
                 return response;

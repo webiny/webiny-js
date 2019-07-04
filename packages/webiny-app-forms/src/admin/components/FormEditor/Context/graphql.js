@@ -21,7 +21,6 @@ export const fieldsFields = `
         helpText {
             ${i18nFields}
         }
-        defaultValue
         validation
         settings
 `;
