@@ -7,6 +7,7 @@ import { css } from "emotion";
 import { useI18N } from "webiny-app-i18n/components";
 import { Tooltip } from "webiny-ui/Tooltip";
 import classNames from "classnames";
+import { cloneDeep } from "lodash";
 
 const style = {
     i18nDialogIconButton: css({
@@ -54,7 +55,8 @@ const I18NInput = ({ value, onChange, ...inputProps }) => {
     });
 
     const submitDialog = useCallback(async values => {
-        await onChange({ ...value, values });
+        // Filter out redundant empty values.
+        await onChange({ ...value, values: values.filter(item => !!item.value) });
         closeDialog();
     });
 
@@ -66,8 +68,8 @@ const I18NInput = ({ value, onChange, ...inputProps }) => {
         }
     }
 
-    const inputOnChange = useCallback(inputValue => {
-        const newValue = { values: [], ...value };
+    const inputOnChange = inputValue => {
+        const newValue = cloneDeep({ values: [], ...value });
         const index = value ? value.values.findIndex(item => item.locale === getLocale().id) : -1;
         if (index >= 0) {
             newValue.values[index].value = inputValue;
@@ -75,8 +77,10 @@ const I18NInput = ({ value, onChange, ...inputProps }) => {
             newValue.values.push({ locale: getLocale().id, value: inputValue });
         }
 
+        // Filter out redundant empty values.
+        newValue.values = newValue.values.filter(item => !!item.value);
         onChange(newValue);
-    });
+    };
 
     return (
         <>

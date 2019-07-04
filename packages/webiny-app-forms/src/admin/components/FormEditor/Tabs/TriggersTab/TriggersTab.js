@@ -8,7 +8,6 @@ import { getPlugins } from "webiny-plugins";
 import { get, set } from "lodash";
 import { withSnackbar } from "webiny-admin/components";
 import { compose } from "recompose";
-
 import { i18n } from "webiny-app/i18n";
 const t = i18n.namespace("FormsApp.Editor.TriggersTab");
 
@@ -22,36 +21,35 @@ export const TriggersTab = compose(withSnackbar())(({ showSnackbar }) => {
 
     return (
         <Container>
-            <Typography use={"overline"}>Which actions should be taken after submission</Typography>
+            <Typography
+                use={"overline"}
+            >{t`Which actions should be taken after submission`}</Typography>
 
             <Accordion>
-                {plugins.map(({ trigger }) => {
-                    return (
-                        <AccordionItem
-                            key={trigger.id}
-                            icon={trigger.icon}
-                            title={trigger.title}
-                            description={trigger.description}
+                {plugins.map(({ trigger }) => (
+                    <AccordionItem
+                        key={trigger.id}
+                        icon={trigger.icon}
+                        title={trigger.title}
+                        description={trigger.description}
+                    >
+                        <Form
+                            data={get(formData, `triggers.${trigger.id}`, {})}
+                            onSubmit={submitData => {
+                                setData(data => set(data, `triggers.${trigger.id}`, submitData));
+                                showSnackbar(t`Form settings updated successfully.`);
+                            }}
                         >
-                            <Form
-                                data={get(formData, `triggers.${trigger.id}`, {})}
-                                onSubmit={submitData => {
-                                    setData(data =>
-                                        set(data, `triggers.${trigger.id}`, submitData)
-                                    );
-                                    showSnackbar(t`Form settings updated successfully.`);
-                                }}
-                            >
-                                {({ Bind, submit }) => {
-                                    return trigger.renderSettings({
-                                        Bind,
-                                        submit
-                                    });
-                                }}
-                            </Form>
-                        </AccordionItem>
-                    );
-                })}
+                            {({ Bind, submit }) =>
+                                trigger.renderSettings({
+                                    Bind,
+                                    submit,
+                                    form: formData
+                                })
+                            }
+                        </Form>
+                    </AccordionItem>
+                ))}
             </Accordion>
         </Container>
     );
