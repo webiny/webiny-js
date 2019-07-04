@@ -9,24 +9,24 @@ type Props = {
     field: FieldType
 };
 
+const change = ({ option, value, onChange }) => {
+    const newValues = Array.isArray(value) ? [...value] : [];
+    if (newValues.includes(option.value)) {
+        newValues.splice(newValues.indexOf(option.value), 1);
+    } else {
+        newValues.push(option.value);
+    }
+
+    onChange(newValues);
+};
+
+const checked = ({ option, value }) => {
+    return Array.isArray(value) && value.includes(option.value);
+};
+
 const Checkbox = (props: Props) => {
     const { onChange, value } = props.bind;
     const { translate } = useI18N();
-
-    const change = option => {
-        const newValues = Array.isArray(value) ? [...value] : [];
-        if (newValues.includes(option.value)) {
-            newValues.splice(newValues.indexOf(option.value), 1);
-        } else {
-            newValues.push(option.value);
-        }
-
-        onChange(newValues);
-    };
-
-    const checked = option => {
-        return Array.isArray(value) && value.includes(option.value);
-    };
 
     return (
         <div className="webiny-cms-form-field webiny-cms-form-field--checkbox">
@@ -41,8 +41,8 @@ const Checkbox = (props: Props) => {
                             className="webiny-cms-form-field__checkbox-input"
                             type="checkbox"
                             id={"checkbox-" + props.field.fieldId + option.value}
-                            checked={checked(option)}
-                            onChange={() => change(option)}
+                            checked={checked({ option, value })}
+                            onChange={() => change({ option, value, onChange })}
                         />
                         <label
                             htmlFor={"checkbox-" + props.field.fieldId + option.value}
