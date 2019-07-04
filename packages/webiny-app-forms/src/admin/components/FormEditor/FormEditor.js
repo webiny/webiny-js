@@ -3,20 +3,25 @@ import * as React from "react";
 import HTML5Backend from "react-dnd-html5-backend";
 import { DragDropContext } from "react-dnd";
 import { useFormEditor } from "./Context";
-
+import { compose } from "recompose";
 // Components
 import EditorBar from "./Bar";
 import EditorContent from "./Content";
 import DragPreview from "./DragPreview";
+import { withRouter } from "react-router-dom";
+import { withSnackbar } from "webiny-admin/components";
 
-const FormEditor = () => {
+const FormEditor = ({ history, showSnackbar }) => {
     const {
         getForm,
         state: { data, id }
     } = useFormEditor();
 
     React.useEffect(() => {
-        getForm(id);
+        getForm(id).catch((e) => {
+            history.push(`/forms`);
+            showSnackbar("Could not load form with given ID.");
+        });
     }, []);
 
     if (!data) {
@@ -32,4 +37,8 @@ const FormEditor = () => {
     );
 };
 
-export default DragDropContext(HTML5Backend)(FormEditor);
+export default compose(
+    withRouter,
+    withSnackbar(),
+    DragDropContext(HTML5Backend)
+)(FormEditor);
