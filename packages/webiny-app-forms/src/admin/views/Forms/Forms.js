@@ -18,7 +18,7 @@ function Forms(props) {
     const { dataList } = props;
     return (
         <>
-            <NewFormDialog open={newFormDialogOpened} onClose={openNewFormDialog} />
+            <NewFormDialog open={newFormDialogOpened} onClose={() => openNewFormDialog(false)} />
             <SplitView>
                 <LeftPanel span={4}>
                     <FormsDataList dataList={dataList} />
