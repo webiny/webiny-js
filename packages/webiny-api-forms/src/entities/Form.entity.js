@@ -73,7 +73,6 @@ const createFieldModel = context =>
             this.attr("label").custom(I18NCharAttribute, context);
             this.attr("helpText").custom(I18NCharAttribute, context);
             this.attr("placeholderText").custom(I18NCharAttribute, context);
-            this.attr("defaultValue").char();
             this.attr("validation").array();
             this.attr("settings")
                 .object()

@@ -19,7 +19,9 @@ export default {
                 label: "",
                 type: this.id,
                 validation: [],
-                defaultValue: ""
+                settings: {
+                    defaultValue: ""
+                }
             };
         },
         renderSettings({ form }) {

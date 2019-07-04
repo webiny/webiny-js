@@ -54,7 +54,6 @@ export default {
             label: I18NStringValue
             placeholderText: I18NStringValue
             helpText: I18NStringValue
-            defaultValue: String
             validation: [String]
             settings: JSON
         }    
@@ -66,7 +65,6 @@ export default {
             label: I18NStringValueInput
             placeholderText: I18NStringValueInput
             helpText: I18NStringValueInput
-            defaultValue: String
             validation: [String]
             settings: JSON
         }
