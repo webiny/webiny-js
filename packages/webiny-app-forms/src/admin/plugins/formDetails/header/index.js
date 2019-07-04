@@ -6,7 +6,6 @@ import RevisionSelector from "./revisionSelector/RevisionSelector";
 import PublishRevision from "./publishRevision/PublishRevision";
 import EditRevision from "./editRevision/EditRevision";
 import DeletePage from "./deletePage/DeletePage";
-import PageOptionsMenu from "./pageOptionsMenu/PageOptionsMenu";
 
 export default ([
     {
@@ -44,11 +43,4 @@ export default ([
             return <DeletePage {...props} />;
         }
     },
-    {
-        name: "forms-form-details-header-options-menu",
-        type: "forms-form-details-header-right",
-        render(props: WithFormDetailsProps) {
-            return <PageOptionsMenu {...props} />;
-        }
-    }
 ]: Array<CmsPageDetailsPluginType>);
