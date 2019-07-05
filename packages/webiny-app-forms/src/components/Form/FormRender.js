@@ -25,11 +25,11 @@ const FormRender = compose(
 
     const getFieldById = useCallback(id => {
         return fields.find(field => field._id === id);
-    }, []);
+    }, [data.id]);
 
     const getFieldByFieldId = useCallback(id => {
         return fields.find(field => field.fieldId === id);
-    }, []);
+    }, [data.id]);
 
     const getFields = useCallback(() => {
         const fields = cloneDeep(layout);
@@ -39,25 +39,25 @@ const FormRender = compose(
             });
         });
         return fields;
-    }, []);
+    }, [data.id]);
 
     const getDefaultValues = useCallback((overrides = {}) => {
         const values = {};
         fields.forEach(field => {
-            if ("defaultValue" in field && typeof field.defaultValue !== "undefined") {
+            if ("defaultValue" in field.settings && typeof field.settings.defaultValue !== "undefined") {
                 values[field.fieldId] = field.defaultValue;
             } else {
                 values[field.fieldId] = ""; // TODO: fix this "", must be read from plugin
             }
         });
         return { ...values, ...overrides };
-    }, []);
+    }, [data.id]);
 
     const submit = useCallback(async data => {
         const formSubmission = await createFormSubmission({ props, data });
         await handleFormTriggers({ props, data, formSubmission });
         return formSubmission;
-    }, []);
+    }, [data.id]);
 
     // Get form layout, defined in theme.
     let LayoutRenderComponent = get(cms, "theme.forms.layouts", []).find(
@@ -79,6 +79,7 @@ const FormRender = compose(
         form: data
     };
 
+    console.log("dobeo layoutprops", layoutProps.form.fields);
     return <LayoutRenderComponent {...layoutProps} />;
 });
 
