@@ -9,11 +9,13 @@ import invariant from "invariant";
 export const getMenuBySlug = gql`
     query GetMenuBySlug($slug: String!) {
         cms {
-            menus: getMenuBySlug(slug: $slug) {
-                data {
-                    slug
-                    title
-                    items
+            pageBuilder {
+                menus: getMenuBySlug(slug: $slug) {
+                    data {
+                        slug
+                        title
+                        items
+                    }
                 }
             }
         }
@@ -28,7 +30,7 @@ const Menu = ({ slug, component: Component }: Props) => {
     return (
         <Query query={getMenuBySlug} variables={{ slug }}>
             {props => {
-                const data = get(props, "data.cms.menus.data", {
+                const data = get(props, "data.cms.pageBuilder.menus.data", {
                     items: [],
                     title: null,
                     slug: null

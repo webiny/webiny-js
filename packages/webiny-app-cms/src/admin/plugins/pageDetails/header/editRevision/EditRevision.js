@@ -27,7 +27,7 @@ const EditRevision = ({ pageDetails: { page }, history, gqlCreate, showSnackbar 
             variables: { revision: latestRevision.id },
             refetchQueries: ["CmsListPages"]
         });
-        const { data, error } = res.cms.revision;
+        const { data, error } = res.cms.pageBuilder.revision;
 
         if (error) {
             return showSnackbar(error.message);

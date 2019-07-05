@@ -47,7 +47,7 @@ const PagesList = pure((props: Object = {}) => {
                     return null;
                 }
 
-                const pages = data.cms.listPublishedPages;
+                const pages = data.cms.pageBuilder.listPublishedPages;
 
                 if (!pages || !pages.data.length) {
                     return null;

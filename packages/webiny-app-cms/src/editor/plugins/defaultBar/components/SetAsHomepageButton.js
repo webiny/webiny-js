@@ -18,9 +18,11 @@ import { withConfirmation } from "webiny-ui/ConfirmationDialog";
 const setHomePage = gql`
     mutation SetHomePage($id: ID!) {
         cms {
-            setHomePage(id: $id) {
-                error {
-                    message
+            pageBuilder {
+                setHomePage(id: $id) {
+                    error {
+                        message
+                    }
                 }
             }
         }
@@ -40,7 +42,7 @@ const SetAsHomepageButton = ({ page, showConfirmation, showSnackbar, history }: 
                                 }
                             });
 
-                            const { error } = response.data.cms.setHomePage;
+                            const { error } = response.data.cms.pageBuilder.setHomePage;
                             if (error) {
                                 return showSnackbar(error.message);
                             }

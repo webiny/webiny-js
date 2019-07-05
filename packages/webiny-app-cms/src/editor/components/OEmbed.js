@@ -44,11 +44,13 @@ function initEmbed(props) {
 const oembedQuery = gql`
     query GetOEmbedData($url: String!, $width: String, $height: String) {
         cms {
-            oembedData(url: $url, width: $width, height: $height) {
-                data
-                error {
-                    code
-                    message
+            pageBuilder {
+                oembedData(url: $url, width: $width, height: $height) {
+                    data
+                    error {
+                        code
+                        message
+                    }
                 }
             }
         }
@@ -83,7 +85,7 @@ export default compose(
             return {
                 variables: source,
                 onCompleted: data => {
-                    const { data: oembed, error } = get(data, "cms.oembedData");
+                    const { data: oembed, error } = get(data, "cms.pageBuilder.oembedData");
                     if (oembed) {
                         // Store loaded oembed data
                         updateElement({

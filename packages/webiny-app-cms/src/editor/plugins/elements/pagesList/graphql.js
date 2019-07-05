@@ -11,45 +11,47 @@ export const loadPages = gql`
         $perPage: Int
     ) {
         cms {
-            listPublishedPages(
-                category: $category
-                sort: $sort
-                tags: $tags
-                tagsRule: $tagsRule
-                page: $page
-                perPage: $perPage
-            ) {
-                data {
-                    id
-                    title
-                    url
-                    snippet
-                    publishedOn
-                    settings {
-                        general {
-                            image {
-                                src
+            pageBuilder {
+                listPublishedPages(
+                    category: $category
+                    sort: $sort
+                    tags: $tags
+                    tagsRule: $tagsRule
+                    page: $page
+                    perPage: $perPage
+                ) {
+                    data {
+                        id
+                        title
+                        url
+                        snippet
+                        publishedOn
+                        settings {
+                            general {
+                                image {
+                                    src
+                                }
                             }
                         }
+                        createdBy {
+                            firstName
+                            lastName
+                        }
+                        category {
+                            id
+                            name
+                        }
                     }
-                    createdBy {
-                        firstName
-                        lastName
+                    meta {
+                        from
+                        to
+                        nextPage
+                        previousPage
+                        page
+                        perPage
+                        totalCount
+                        totalPages
                     }
-                    category {
-                        id
-                        name
-                    }
-                }
-                meta {
-                    from
-                    to
-                    nextPage
-                    previousPage
-                    page
-                    perPage
-                    totalCount
-                    totalPages
                 }
             }
         }

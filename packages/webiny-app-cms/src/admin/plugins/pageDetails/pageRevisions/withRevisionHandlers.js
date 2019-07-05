@@ -16,7 +16,7 @@ export default compose(
                 variables: { revision: rev.id },
                 refetchQueries: ["CmsListPages"]
             });
-            const { data, error } = res.cms.revision;
+            const { data, error } = res.cms.pageBuilder.revision;
 
             if (error) {
                 return showSnackbar(error.message);
@@ -38,7 +38,7 @@ export default compose(
                 refetchQueries: ["CmsLoadPageRevisions"],
                 variables: { id: rev.id }
             });
-            const { error } = res.cms.deleteRevision;
+            const { error } = res.cms.pageBuilder.deleteRevision;
             if (error) {
                 return showSnackbar(error.message);
             }

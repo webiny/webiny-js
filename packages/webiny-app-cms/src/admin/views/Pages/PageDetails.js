@@ -57,7 +57,7 @@ const PageDetails = ({ pageId, history, query, showSnackbar, refreshPages }) => 
             query={getPage()}
             variables={{ id: pageId }}
             onCompleted={data => {
-                const error = get(data, "cms.page.error.message");
+                const error = get(data, "cms.pageBuilder.page.error.message");
                 if (error) {
                     query.delete("id");
                     history.push({ search: query.toString() });
@@ -66,7 +66,7 @@ const PageDetails = ({ pageId, history, query, showSnackbar, refreshPages }) => 
             }}
         >
             {({ data, loading }) => {
-                const details = { page: get(data, "cms.page.data") || {}, loading };
+                const details = { page: get(data, "cms.pageBuilder.page.data") || {}, loading };
                 return (
                     <ElementAnimation>
                         {({ refresh }) => (

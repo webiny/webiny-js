@@ -60,7 +60,7 @@ export default compose(
     withDataList({
         query: listPages,
         response: data => {
-            return get(data, "cms.pages", {});
+            return get(data, "cms.pageBuilder.pages", {});
         },
         variables: {
             sort: { savedOn: -1 }
@@ -69,8 +69,11 @@ export default compose(
     withHandlers({
         createPage: ({ createMutation, history, showSnackbar }) => async category => {
             try {
-                const res = await createMutation({ variables: { category }, refetchQueries: ["CmsListPages"] });
-                const { data } = res.data.cms.page;
+                const res = await createMutation({
+                    variables: { category },
+                    refetchQueries: ["CmsListPages"]
+                });
+                const { data } = res.data.cms.pageBuilder.page;
                 history.push(`/cms/editor/${data.id}`);
             } catch (e) {
                 showSnackbar(e.message);

@@ -29,7 +29,7 @@ export default ([
                 security.shield &&
                     middleware.push(
                         shield(security.shield, {
-                            debug: true
+                            allowExternalErrors: true
                         })
                     );
             });

@@ -44,7 +44,7 @@ const PagesList = pure(({ data = {}, cms: { theme } }: Object = {}) => {
                     return "Loading...";
                 }
 
-                const pages = get(data, "cms.listPublishedPages");
+                const pages = get(data, "cms.pageBuilder.listPublishedPages");
 
                 if (!pages || !pages.data.length) {
                     return "No pages match the criteria.";

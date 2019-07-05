@@ -51,7 +51,7 @@ export default compose(
                     variables: { id: page.parent },
                     refetchQueries: ["CmsListPages"]
                 });
-                const { error } = dot.get(res, "cms.deletePage");
+                const { error } = dot.get(res, "cms.pageBuilder.deletePage");
                 if (error) {
                     return showDialog(error.message, { title: "Could not delete page" });
                 }

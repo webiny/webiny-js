@@ -18,26 +18,28 @@ export const loadCategories = gql`
         $search: SearchInput
     ) {
         cms {
-            categories: listCategories(
-                where: $where
-                sort: $sort
-                page: $page
-                perPage: $perPage
-                search: $search
-            ) {
-                data {
-                    id
-                    name
-                    slug
-                    url
-                    createdOn
-                }
-                meta {
-                    totalCount
-                    to
-                    from
-                    nextPage
-                    previousPage
+            pageBuilder {
+                categories: listCategories(
+                    where: $where
+                    sort: $sort
+                    page: $page
+                    perPage: $perPage
+                    search: $search
+                ) {
+                    data {
+                        id
+                        name
+                        slug
+                        url
+                        createdOn
+                    }
+                    meta {
+                        totalCount
+                        to
+                        from
+                        nextPage
+                        previousPage
+                    }
                 }
             }
         }
@@ -47,13 +49,15 @@ export const loadCategories = gql`
 export const loadCategory = gql`
     query LoadCategory($id: ID!) {
         cms {
-            category: getCategory(id: $id){
-                data {
-                    ${fields}
-                }
-                error {
-                    code
-                    message
+            pageBuilder {
+                category: getCategory(id: $id){
+                    data {
+                        ${fields}
+                    }
+                    error {
+                        code
+                        message
+                    }
                 }
             }
         }
@@ -63,14 +67,16 @@ export const loadCategory = gql`
 export const createCategory = gql`
     mutation CreateCategory($data: CategoryInput!){
         cms {
-            category: createCategory(data: $data) {
-                data {
-                    ${fields}
-                }
-                error {
-                    code
-                    message
-                    data
+            pageBuilder {
+                category: createCategory(data: $data) {
+                    data {
+                        ${fields}
+                    }
+                    error {
+                        code
+                        message
+                        data
+                    }
                 }
             }
         }
@@ -80,14 +86,16 @@ export const createCategory = gql`
 export const updateCategory = gql`
     mutation UpdateCategory($id: ID!, $data: CategoryInput!){
         cms {
-            category: updateCategory(id: $id, data: $data) {
-                data {
-                    ${fields}
-                }
-                error {
-                    code
-                    message
-                    data
+            pageBuilder {
+                category: updateCategory(id: $id, data: $data) {
+                    data {
+                        ${fields}
+                    }
+                    error {
+                        code
+                        message
+                        data
+                    }
                 }
             }
         }
@@ -97,11 +105,13 @@ export const updateCategory = gql`
 export const deleteCategory = gql`
     mutation DeleteCategory($id: ID!) {
         cms {
-            deleteCategory(id: $id) {
-                data
-                error {
-                    code
-                    message
+            pageBuilder {
+                deleteCategory(id: $id) {
+                    data
+                    error {
+                        code
+                        message
+                    }
                 }
             }
         }
