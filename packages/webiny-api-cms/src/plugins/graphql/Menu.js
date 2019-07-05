@@ -12,7 +12,7 @@ import getMenuBySlug from "./menuResolvers/getMenuBySlug";
 
 export default {
     typeDefs: `
-        type Menu {
+        type PageBuilderMenu {
             id: ID
             createdOn: DateTime
             title: String
@@ -21,7 +21,7 @@ export default {
             items: JSON
         }
     
-        input MenuInput {
+        input PageBuilderMenuInput {
             title: String
             slug: String
             description: String
@@ -30,13 +30,13 @@ export default {
         
         # Response types
         
-        type MenuResponse {
-            data: Menu
+        type PageBuilderMenuResponse {
+            data: PageBuilderMenu
             error: Error
         }
         
-        type MenuListResponse {
-            data: [Menu]
+        type PageBuilderMenuListResponse {
+            data: [PageBuilderMenu]
             meta: ListMeta
             error: Error
         }
@@ -46,7 +46,7 @@ export default {
                 id: ID 
                 where: JSON
                 sort: String
-            ): MenuResponse
+            ): PageBuilderMenuResponse
             
             listMenus(
                 page: Int
@@ -54,23 +54,23 @@ export default {
                 where: JSON
                 sort: JSON
                 search: SearchInput
-            ): MenuListResponse
+            ): PageBuilderMenuListResponse
             
             "Returns menu by given slug."
             getMenuBySlug(
                 slug: String!
-            ): MenuResponse
+            ): PageBuilderMenuResponse
         }
         
         extend type PageBuilderMutation {
             createMenu(
-                data: MenuInput!
-            ): MenuResponse
+                data: PageBuilderMenuInput!
+            ): PageBuilderMenuResponse
             
             updateMenu(
                 id: ID!
-                data: MenuInput!
-            ): MenuResponse
+                data: PageBuilderMenuInput!
+            ): PageBuilderMenuResponse
         
             deleteMenu(
                 id: ID!

@@ -24,18 +24,18 @@ const elementFetcher = ctx => ctx.cms.entities.Element;
 export default {
     typeDefs: () => [
         UserType.typeDefs,
-        /* GraphQL*/ `type Page {
+        /* GraphQL*/ `type PageBuilderPage {
             id: ID
             createdBy: User
             updatedBy: User
             savedOn: DateTime
             publishedOn: DateTime
-            category: Category
+            category: PageBuilderCategory
             version: Int
             title: String
             snippet: String
             url: String
-            settings: PageSettings
+            settings: PageBuilderPageSettings
             content: JSON
             published: Boolean
             isHomePage: Boolean
@@ -43,14 +43,14 @@ export default {
             isNotFoundPage: Boolean
             locked: Boolean
             parent: ID
-            revisions: [Page]
+            revisions: [PageBuilderPage]
         }
         
-        type PageSettings {
+        type PageBuilderPageSettings {
             _empty: String
         }
         
-        type Element {
+        type PageBuilderElement {
             id: ID
             name: String
             type: String
@@ -59,7 +59,7 @@ export default {
             preview: File
         }
         
-        input ElementInput {
+        input PageBuilderElementInput {
             name: String!
             type: String!
             category: String
@@ -67,14 +67,14 @@ export default {
             preview: FileInput
         }
                 
-        input UpdateElementInput {
+        input PageBuilderUpdateElementInput {
             name: String
             category: String
             content: JSON
             preview: FileInput
         }
         
-        input UpdatePageInput {
+        input PageBuilderUpdatePageInput {
             title: String
             snippet: String
             category: ID
@@ -83,53 +83,53 @@ export default {
             content: JSON
         }
         
-        input CreatePageInput {
+        input PageBuilderCreatePageInput {
             category: ID!
         }
         
         # Response types
-        type PageResponse {
-            data: Page
+        type PageBuilderPageResponse {
+            data: PageBuilderPage
             error: Error
         }
         
-        type PageListResponse {
-            data: [Page]
+        type PageBuilderPageListResponse {
+            data: [PageBuilderPage]
             meta: ListMeta
             error: Error
         }
         
-        type ElementResponse {
-            data: Element
+        type PageBuilderElementResponse {
+            data: PageBuilderElement
             error: Error
         }
         
-        type ElementListResponse {
-            data: [Element]
+        type PageBuilderElementListResponse {
+            data: [PageBuilderElement]
             meta: ListMeta
         }
         
-        type SearchTagsResponse {
+        type PageBuilderSearchTagsResponse {
             data: [String] 
         }
         
-        type OembedResponse {
+        type PageBuilderOembedResponse {
             data: JSON
             error: Error
         }
         
-        input OEmbedInput {
+        input PageBuilderOEmbedInput {
             url: String!
             width: Int
             height: Int
         }
         
-        input PageSortInput {
+        input PageBuilderPageSortInput {
             title: Int
             publishedOn: Int
         }
         
-        enum TagsRule {
+        enum PageBuilderTagsRule {
           ALL
           ANY
         }
@@ -139,18 +139,18 @@ export default {
                 id: ID 
                 where: JSON
                 sort: String
-            ): PageResponse
+            ): PageBuilderPageResponse
             
-            getPublishedPage(id: String, url: String, parent: String): PageResponse
+            getPublishedPage(id: String, url: String, parent: String): PageBuilderPageResponse
             
             # Returns page set as home page (managed in CMS settings).
-            getHomePage: PageResponse
+            getHomePage: PageBuilderPageResponse
             
             # Returns 404 (not found) page (managed in CMS settings).
-            getNotFoundPage: PageResponse
+            getNotFoundPage: PageBuilderPageResponse
             
             # Returns error page (managed in CMS settings).
-            getErrorPage: PageResponse
+            getErrorPage: PageBuilderPageResponse
             
             listPages(
                 page: Int
@@ -158,54 +158,54 @@ export default {
                 sort: JSON
                 search: String
                 parent: String
-            ): PageListResponse
+            ): PageBuilderPageListResponse
             
             listPublishedPages(
                 search: String
                 category: String
                 parent: String
                 tags: [String]
-                tagsRule: TagsRule
-                sort: PageSortInput
+                tagsRule: PageBuilderTagsRule
+                sort: PageBuilderPageSortInput
                 page: Int
                 perPage: Int
-            ): PageListResponse
+            ): PageBuilderPageListResponse
             
-            listElements(perPage: Int): ElementListResponse
+            listElements(perPage: Int): PageBuilderElementListResponse
             
             # Returns existing tags based on given search term.        
-            searchTags(query: String!): SearchTagsResponse
+            searchTags(query: String!): PageBuilderSearchTagsResponse
             
             oembedData(
                 url: String! 
                 width: String
                 height: String
-            ): OembedResponse
+            ): PageBuilderOembedResponse
         }
         
         extend type PageBuilderMutation {
             createPage(
-                data: CreatePageInput!
-            ): PageResponse
+                data: PageBuilderCreatePageInput!
+            ): PageBuilderPageResponse
             
             # Sets given page as new homepage.
-            setHomePage(id: ID!): PageResponse
+            setHomePage(id: ID!): PageBuilderPageResponse
             
             # Create a new revision from an existing revision
             createRevisionFrom(
                 revision: ID!
-            ): PageResponse
+            ): PageBuilderPageResponse
             
             # Update revision
              updateRevision(
                 id: ID!
-                data: UpdatePageInput!
-            ): PageResponse
+                data: PageBuilderUpdatePageInput!
+            ): PageBuilderPageResponse
             
             # Publish revision
             publishRevision(
                 id: ID!
-            ): PageResponse
+            ): PageBuilderPageResponse
             
             # Delete page and all of its revisions
             deletePage(
@@ -219,13 +219,13 @@ export default {
             
             # Create element
             createElement(
-                data: ElementInput!
-            ): ElementResponse
+                data: PageBuilderElementInput!
+            ): PageBuilderElementResponse
             
             updateElement(      
                 id: ID!
-                data: UpdateElementInput!
-            ): ElementResponse
+                data: PageBuilderUpdateElementInput!
+            ): PageBuilderElementResponse
             
             # Delete element
             deleteElement(
@@ -275,7 +275,7 @@ export default {
             // Deletes an element
             deleteElement: resolveDelete(elementFetcher)
         },
-        PageSettings: {
+        PageBuilderPageSettings: {
             _empty: () => ""
         }
     }

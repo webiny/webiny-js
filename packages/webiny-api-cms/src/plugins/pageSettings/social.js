@@ -61,7 +61,7 @@ export default [
                 image: File
             } 
             
-            extend type PageSettings {
+            extend type PageBuilderPageSettings {
                 social: SocialSettings
             }
         `

@@ -44,7 +44,7 @@ export default [
                 meta: [MetaTag]
             } 
             
-            extend type PageSettings {
+            extend type PageBuilderPageSettings {
                 seo: SeoSettings
             }
         `
