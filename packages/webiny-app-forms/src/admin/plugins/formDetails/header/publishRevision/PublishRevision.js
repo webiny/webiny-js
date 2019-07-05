@@ -2,12 +2,13 @@
 import React from "react";
 import { compose, withHandlers, withProps, withState } from "recompose";
 import withPublishRevisionHandler from "../../utils/withPublishRevisionHandler";
-import PublishRevisionDialog from "./PublishRevisionDialog";
 import { type WithFormDetailsProps } from "webiny-app-cms/admin/components";
 import { IconButton } from "webiny-ui/Button";
 import { Tooltip } from "webiny-ui/Tooltip";
 import { ReactComponent as PublishIcon } from "webiny-app-cms/admin/assets/round-publish-24px.svg";
 import { get } from "lodash";
+import { withConfirmation, type WithConfirmationProps } from "webiny-ui/ConfirmationDialog";
+
 function getPublishSuggestion(page, revisions) {
     if (!page.published) {
         return page.id;
@@ -28,15 +29,11 @@ function getPublishableRevisions(revisions) {
         });
 }
 
-type Props = WithFormDetailsProps;
+type Props = WithFormDetailsProps & WithConfirmationProps;
 
 const PublishRevision = ({
-    openDialog,
-    showDialog,
-    hideDialog,
-    publishRevision,
     publishableRevisions,
-    publishSuggestion
+    showConfirmation
 }: Props) => {
     if (!publishableRevisions.length) {
         return null;
@@ -45,15 +42,8 @@ const PublishRevision = ({
     return (
         <React.Fragment>
             <Tooltip content={"Publish"} placement={"top"}>
-                <IconButton icon={<PublishIcon />} onClick={showDialog} />
+                <IconButton icon={<PublishIcon />} onClick={showConfirmation} />
             </Tooltip>
-            <PublishRevisionDialog
-                open={openDialog}
-                onClose={hideDialog}
-                onSubmit={publishRevision}
-                selected={publishSuggestion}
-                revisions={publishableRevisions}
-            />
         </React.Fragment>
     );
 };
@@ -77,5 +67,9 @@ export default compose(
             hideDialog();
             publish(revision);
         }
-    })
+    }),
+    withConfirmation(({ form }) => ({
+        title: "Publish revision",
+        message: <p>You are about to publish this revision. Are your sure you want to continue?</p>
+    }))
 )(PublishRevision);

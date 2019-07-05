@@ -25,7 +25,7 @@ const EditRevision = ({ form, history, gqlCreate, showSnackbar }) => {
         const [latestRevision] = form.revisions;
         const { data: res } = await gqlCreate({
             variables: { revision: latestRevision.id },
-            refetchQueries: ["CmsListPages"]
+            refetchQueries: ["FormsListForms"]
         });
         const { data, error } = res.cms.revision;
 
