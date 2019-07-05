@@ -53,13 +53,12 @@ const EditFieldDialog = ({ field, onSubmit, ...props }: Props) => {
     const { getFieldType } = useFormEditor();
 
     useEffect(() => {
-        if (!field) {
-            return;
+        setCurrent(cloneDeep(field));
+        if (field) {
+            setIsNewField(!field._id);
+            setScreen(field.type ? "fieldOptions" : "fieldType");
         }
 
-        setCurrent(cloneDeep(field));
-        setIsNewField(!field._id);
-        setScreen(field.type ? "fieldOptions" : "fieldType");
     }, [field]);
 
     const onClose = useCallback(() => {
