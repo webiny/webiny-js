@@ -19,7 +19,7 @@ export default (prop: string) => {
                     refetchQueries: ["CmsListPages"],
                     update: (cache, { data }) => {
                         // Don't do anything if there was an error during publishing!
-                        if (data.cms.publishRevision.error) {
+                        if (data.cms.pageBuilder.publishRevision.error) {
                             return;
                         }
 
@@ -48,12 +48,12 @@ export default (prop: string) => {
                         // Write our data back to the cache.
                         cache.writeQuery({
                             query: getPageQuery,
-                            data: set(pageFromCache, "cms.page.data", page)
+                            data: set(pageFromCache, "cms.pageBuilder.page.data", page)
                         });
                     }
                 });
 
-                const { error } = res.cms.publishRevision;
+                const { error } = res.cms.pageBuilder.publishRevision;
                 if (error) {
                     return showSnackbar(error.message);
                 }

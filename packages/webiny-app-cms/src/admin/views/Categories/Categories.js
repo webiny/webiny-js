@@ -48,23 +48,23 @@ export default compose(
             get: {
                 query: loadCategories,
                 variables: { sort: { savedOn: -1 } },
-                response: data => get(data, "cms.categories")
+                response: data => get(data, "cms.pageBuilder.categories")
             },
             delete: {
                 mutation: deleteCategory,
-                response: data => data.cms.deleteCategory,
+                response: data => data.cms.pageBuilder.deleteCategory,
                 snackbar: data => t`Category {name} deleted.`({ name: data.name })
             }
         },
         form: {
             get: {
                 query: loadCategory,
-                response: data => get(data, "cms.category")
+                response: data => get(data, "cms.pageBuilder.category")
             },
             save: {
                 create: createCategory,
                 update: updateCategory,
-                response: data => data.cms.category,
+                response: data => data.cms.pageBuilder.category,
                 variables: form => ({
                     data: pick(form, ["name", "slug", "url", "layout"])
                 }),

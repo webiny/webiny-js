@@ -11,11 +11,13 @@ import { Query } from "react-apollo";
 const getPage = gql`
     query getPublishedPage($parent: String) {
         cms {
-            page: getPublishedPage(parent: $parent) {
-                data {
-                    parent
-                    published
-                    title
+            pageBuilder {
+                page: getPublishedPage(parent: $parent) {
+                    data {
+                        parent
+                        published
+                        title
+                    }
                 }
             }
         }
@@ -25,11 +27,13 @@ const getPage = gql`
 const listPages = gql`
     query listPublishedPages($search: String) {
         cms {
-            pages: listPublishedPages(search: $search) {
-                data {
-                    parent
-                    published
-                    title
+            pageBuilder {
+                pages: listPublishedPages(search: $search) {
+                    data {
+                        parent
+                        published
+                        title
+                    }
                 }
             }
         }
@@ -39,7 +43,7 @@ const listPages = gql`
 const PagesAutoComplete = props => (
     <Query skip={!props.value} variables={{ parent: props.value }} query={getPage}>
         {({ data }) => {
-            const value = get(data, "cms.page.data");
+            const value = get(data, "cms.pageBuilder.page.data");
             return (
                 <AutoComplete {...props} valueProp={"parent"} textProp={"title"} value={value} />
             );
@@ -49,7 +53,7 @@ const PagesAutoComplete = props => (
 
 export default compose(
     withAutoComplete({
-        response: data => get(data, "cms.pages"),
+        response: data => get(data, "cms.pageBuilder.pages"),
         query: listPages
     })
 )(PagesAutoComplete);

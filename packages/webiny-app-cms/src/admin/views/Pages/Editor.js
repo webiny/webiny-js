@@ -40,7 +40,7 @@ const Editor = ({ renderEditor, match, history, showSnackbar }) => {
             query={getPage()}
             variables={{ id: match.params.id }}
             onCompleted={data => {
-                const error = get(data, "cms.page.error.message");
+                const error = get(data, "cms.pageBuilder.page.error.message");
                 if (error) {
                     history.push(`/cms/pages`);
                     showSnackbar(error);
@@ -75,7 +75,7 @@ export default compose(
                 );
             }
 
-            if (!get(data, "cms.page.data")) {
+            if (!get(data, "cms.pageBuilder.page.data")) {
                 return null;
             }
 
@@ -84,7 +84,7 @@ export default compose(
             }
 
             if (!loading) {
-                const { revisions, ...page } = data.cms.page.data;
+                const { revisions, ...page } = data.cms.pageBuilder.page.data;
                 if (!page.content) {
                     page.content = createElement("cms-element-document");
                 }

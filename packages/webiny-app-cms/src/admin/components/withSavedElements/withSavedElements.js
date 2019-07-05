@@ -14,7 +14,7 @@ export const withSavedElements = () =>
                 return { elements: null };
             }
 
-            const elements = get(data, "cms.elements.data");
+            const elements = get(data, "cms.pageBuilder.elements.data");
             if (!elementsAdded) {
                 elements.forEach(el => {
                     if (el.type === "element") {

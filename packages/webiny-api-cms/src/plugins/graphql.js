@@ -53,6 +53,12 @@ export default {
                 },
                 Mutation: {
                     cms: dummyResolver
+                },
+                CmsQuery: {
+                    pageBuilder: dummyResolver
+                },
+                CmsMutation: {
+                    pageBuilder: dummyResolver
                 }
             },
             page.resolvers,

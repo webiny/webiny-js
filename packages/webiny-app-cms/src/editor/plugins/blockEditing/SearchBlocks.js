@@ -129,7 +129,7 @@ class SearchBar extends React.Component<SearchBarProps, SearchBarState> {
             }
         });
 
-        const { error } = response.data.cms.deleteElement;
+        const { error } = response.data.cms.pageBuilder.deleteElement;
         if (error) {
             showSnackbar(error.message);
             return;
@@ -153,7 +153,7 @@ class SearchBar extends React.Component<SearchBarProps, SearchBarState> {
             }
         });
 
-        const { error, data } = response.data.cms.updateElement;
+        const { error, data } = response.data.cms.pageBuilder.updateElement;
         if (error) {
             showSnackbar(error.message);
             return;

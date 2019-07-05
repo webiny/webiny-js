@@ -9,8 +9,10 @@ import { get } from "lodash";
 const searchTags = gql`
     query SearchTags($search: String!) {
         cms {
-            tags: searchTags(query: $search) {
-                data
+            pageBuilder {
+                tags: searchTags(query: $search) {
+                    data
+                }
             }
         }
     }
@@ -18,7 +20,7 @@ const searchTags = gql`
 
 export default compose(
     withAutoComplete({
-        response: data => ({ data: get(data, "cms.tags.data", []) }),
+        response: data => ({ data: get(data, "cms.pageBuilder.tags.data", []) }),
         search: query => query,
         query: searchTags
     })

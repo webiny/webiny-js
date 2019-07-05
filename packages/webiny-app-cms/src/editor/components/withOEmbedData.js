@@ -6,11 +6,13 @@ import gql from "graphql-tag";
 const oembedQuery = gql`
     query GetOEmbedData($url: String!) {
         cms {
-            oembedData(url: $url) {
-                data
-                error {
-                    code
-                    message
+            pageBuilder {
+                oembedData(url: $url) {
+                    data
+                    error {
+                        code
+                        message
+                    }
                 }
             }
         }
@@ -27,7 +29,7 @@ export default () => {
                     query: oembedQuery,
                     variables: { url }
                 });
-                const { data, error } = res.cms.oembedData;
+                const { data, error } = res.cms.pageBuilder.oembedData;
                 if (error) {
                     showSnackbar(error.message);
                     return null;

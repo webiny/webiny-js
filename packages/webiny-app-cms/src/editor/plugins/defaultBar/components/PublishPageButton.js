@@ -28,7 +28,7 @@ const PublishPageButton = ({ page, showSnackbar, history }) => {
                                         }
                                     });
 
-                                    const { error } = response.data.cms.publishRevision;
+                                    const { error } = response.data.cms.pageBuilder.publishRevision;
                                     if (error) {
                                         return showSnackbar(error.message);
                                     }

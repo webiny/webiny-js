@@ -62,7 +62,7 @@ const PageOptionsMenu = (props: Props) => {
                                     }
                                 });
 
-                                const { error } = response.data.cms.setHomePage;
+                                const { error } = response.data.cms.pageBuilder.setHomePage;
                                 if (error) {
                                     showSnackbar(error.message);
                                 } else {

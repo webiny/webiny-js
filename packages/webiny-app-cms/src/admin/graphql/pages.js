@@ -26,11 +26,13 @@ const sharedFields = `
 export const createPage = gql`
     mutation CmsCreatePage($category: ID!) {
         cms {
-            page: createPage(data: { category: $category }) {
-                data {
-                    id
+            pageBuilder {
+                page: createPage(data: { category: $category }) {
+                    data {
+                        id
+                    }
+                    ${error}
                 }
-                ${error}
             }
         }
     }
@@ -39,24 +41,26 @@ export const createPage = gql`
 export const listPages = gql`
     query CmsListPages($sort: JSON, $page: Int, $perPage: Int, $search: String) {
         cms {
-            pages: listPages(sort: $sort, page: $page, perPage: $perPage, search: $search) {
-                data {
-                    ${sharedFields}
-                    category {
-                        id
-                        name
+            pageBuilder {
+                pages: listPages(sort: $sort, page: $page, perPage: $perPage, search: $search) {
+                    data {
+                        ${sharedFields}
+                        category {
+                            id
+                            name
+                        }
+                        createdBy {
+                            firstName
+                            lastName
+                        }
                     }
-                    createdBy {
-                        firstName
-                        lastName
+                    meta {
+                        totalCount
+                        to
+                        from
+                        nextPage
+                        previousPage
                     }
-                }
-                meta {
-                    totalCount
-                    to
-                    from
-                    nextPage
-                    previousPage
                 }
             }
         }
@@ -66,27 +70,29 @@ export const listPages = gql`
 export const getPage = () => gql`
     query CmsGetPage($id: ID!) {
         cms {
-            page: getPage(id: $id) {
-                data {
-                    ${sharedFields}
-                    snippet
-                    content
-                    settings {
-                        _empty
-                        ${getPlugins("cms-editor-page-settings")
+            pageBuilder {
+                page: getPage(id: $id) {
+                    data {
+                        ${sharedFields}
+                        snippet
+                        content
+                        settings {
+                            _empty
+                            ${getPlugins("cms-editor-page-settings")
                             .map((pl: CmsPageSettingsPluginType) => pl.fields)
                             .join("\n")}
+                        }
+                        category {
+                            id
+                            name
+                            url
+                        }
+                        revisions {
+                            ${sharedFields}
+                        }
                     }
-                    category {
-                        id
-                        name
-                        url
-                    }
-                    revisions {
-                        ${sharedFields}
-                    }
+                    ${error}
                 }
-                ${error}
             }
         }
     }
@@ -95,11 +101,13 @@ export const getPage = () => gql`
 export const createRevisionFrom = gql`
     mutation CmsCreateRevisionFrom($revision: ID!) {
         cms {
-            revision: createRevisionFrom(revision: $revision) {
-                data {
-                    id
+            pageBuilder {
+                revision: createRevisionFrom(revision: $revision) {
+                    data {
+                        id
+                    }
+                    ${error}
                 }
-                ${error}
             }
         }
     }
@@ -108,11 +116,13 @@ export const createRevisionFrom = gql`
 export const publishRevision = gql`
     mutation CmsPublishRevision($id: ID!) {
         cms {
-            publishRevision(id: $id) {
-                data {
-                    ${sharedFields}
+            pageBuilder {
+                publishRevision(id: $id) {
+                    data {
+                        ${sharedFields}
+                    }
+                    ${error}
                 }
-                ${error}
             }
         }
     }
@@ -121,9 +131,11 @@ export const publishRevision = gql`
 export const deleteRevision = gql`
     mutation CmsDeleteRevision($id: ID!) {
         cms {
-            deleteRevision(id: $id) {
-                data
-                ${error}
+            pageBuilder {
+                deleteRevision(id: $id) {
+                    data
+                    ${error}
+                }
             }
         }
     }
@@ -132,9 +144,11 @@ export const deleteRevision = gql`
 export const deletePage = gql`
     mutation DeletePage($id: ID!) {
         cms {
-            deletePage(id: $id) {
-                data
-                ${error}
+            pageBuilder {
+                deletePage(id: $id) {
+                    data
+                    ${error}
+                }
             }
         }
     }
@@ -155,9 +169,11 @@ const elementFields = /*GraphQL*/ `
 export const listElements = gql`
     query CmsListElements {
         cms {
-            elements: listElements(perPage: 1000) {
-                data {
-                    ${elementFields}
+            pageBuilder {
+                elements: listElements(perPage: 1000) {
+                    data {
+                        ${elementFields}
+                    }
                 }
             }
         }
@@ -167,11 +183,13 @@ export const listElements = gql`
 export const createElement = gql`
     mutation CmsCreateElement($data: ElementInput!) {
         cms {
-            element: createElement(data: $data) {
-                data {
-                    ${elementFields}
+            pageBuilder {
+                element: createElement(data: $data) {
+                    data {
+                        ${elementFields}
+                    }
+                    ${error}
                 }
-                ${error}
             }
         }
     }
@@ -180,11 +198,13 @@ export const createElement = gql`
 export const updateElement = gql`
     mutation CmsUpdateElement($id: ID!, $data: UpdateElementInput!) {
         cms {
-            element: updateElement(id: $id, data: $data) {
-                data {
-                    ${elementFields}
+            pageBuilder {
+                element: updateElement(id: $id, data: $data) {
+                    data {
+                        ${elementFields}
+                    }
+                    ${error}
                 }
-                ${error}
             }
         }
     }

@@ -36,14 +36,16 @@ export default ({ location, defaultPages }: Props) => {
             query: gql`
                 query CmsGetPage($id: ID!) {
                     cms {
-                        page: getPage(id: $id) {
-                            data ${getDataFields()}
-                            error {
-                                code
-                                message
+                        pageBuilder {
+                            page: getPage(id: $id) {
+                                data ${getDataFields()}
+                                error {
+                                    code
+                                    message
+                                }
                             }
+                            ${defaultPagesFields}
                         }
-                        ${defaultPagesFields}
                     }
                     ${settingsFields}
                 }
@@ -57,14 +59,16 @@ export default ({ location, defaultPages }: Props) => {
             query: gql`
                 query CmsGetHomePage {
                     cms {
-                        page: getHomePage {
-                            data ${getDataFields()}
-                            error {
-                                code
-                                message
+                        pageBuilder {
+                            page: getHomePage {
+                                data ${getDataFields()}
+                                error {
+                                    code
+                                    message
+                                }
                             }
+                            ${defaultPagesFields}
                         }
-                        ${defaultPagesFields}
                     }
                     ${settingsFields}
                 }
@@ -76,14 +80,16 @@ export default ({ location, defaultPages }: Props) => {
         query: gql`
                 query CmsGetPage($url: String!) {
                     cms {
-                        page: getPublishedPage(url: $url) {
-                            data ${getDataFields()}
-                            error {
-                                code
-                                message
+                        pageBuilder {
+                            page: getPublishedPage(url: $url) {
+                                data ${getDataFields()}
+                                error {
+                                    code
+                                    message
+                                }
                             }
+                            ${defaultPagesFields}
                         }
-                        ${defaultPagesFields}
                     }
                     ${settingsFields}
                 }

@@ -40,14 +40,14 @@ const Page = ({ cms, location }: Props) => {
 
                 // Not pretty, but "onComplete" callback executed too late. Will be executed only once.
                 if (!defaultPages.error) {
-                    defaultPages.error = data.cms.errorPage;
+                    defaultPages.error = data.cms.pageBuilder.errorPage;
                 }
 
                 if (!defaultPages.notFound) {
-                    defaultPages.notFound = data.cms.notFoundPage;
+                    defaultPages.notFound = data.cms.pageBuilder.notFoundPage;
                 }
 
-                const { data: page, error: pageError } = data.cms.page;
+                const { data: page, error: pageError } = data.cms.pageBuilder.page;
                 const { data: settings } = data.settings.cms;
 
                 if (page) {

@@ -42,23 +42,23 @@ export default compose(
             get: {
                 query: loadMenus,
                 variables: { sort: { savedOn: -1 } },
-                response: data => get(data, "cms.menus")
+                response: data => get(data, "cms.pageBuilder.menus")
             },
             delete: {
                 mutation: deleteMenu,
-                response: data => data.cms.deleteMenu,
+                response: data => data.cms.pageBuilder.deleteMenu,
                 snackbar: data => t`Menu {name} deleted.`({ name: data.name })
             }
         },
         form: {
             get: {
                 query: loadMenu,
-                response: data => get(data, "cms.menu")
+                response: data => get(data, "cms.pageBuilder.menu")
             },
             save: {
                 create: createMenu,
                 update: updateMenu,
-                response: data => data.cms.menu,
+                response: data => data.cms.pageBuilder.menu,
                 variables: data => ({
                     data: pick(data, ["items", "title", "slug", "description"])
                 }),

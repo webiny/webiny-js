@@ -120,7 +120,7 @@ export default compose(
             });
 
             hideDialog();
-            const { data } = res.cms.element;
+            const { data } = res.cms.pageBuilder.element;
             if (data.type === "block") {
                 createBlockPlugin(data);
             } else {
