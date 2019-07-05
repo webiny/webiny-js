@@ -41,7 +41,7 @@ export default {
             error: Error
         }
             
-        extend type CmsQuery {
+        extend type PageBuilderQuery {
             getMenu(
                 id: ID 
                 where: JSON
@@ -62,7 +62,7 @@ export default {
             ): MenuResponse
         }
         
-        extend type CmsMutation {
+        extend type PageBuilderMutation {
             createMenu(
                 data: MenuInput!
             ): MenuResponse
@@ -78,12 +78,12 @@ export default {
         }
     `,
     resolvers: {
-        CmsQuery: {
+        PageBuilderQuery: {
             getMenu: resolveGet(menuFetcher),
             listMenus: resolveList(menuFetcher),
             getMenuBySlug: getMenuBySlug(menuFetcher)
         },
-        CmsMutation: {
+        PageBuilderMutation: {
             createMenu: resolveCreate(menuFetcher),
             updateMenu: resolveUpdate(menuFetcher),
             deleteMenu: resolveDelete(menuFetcher)

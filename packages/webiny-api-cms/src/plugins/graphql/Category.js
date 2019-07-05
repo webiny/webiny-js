@@ -40,7 +40,7 @@ export default {
             error: Error
         }
         
-        extend type CmsQuery {
+        extend type PageBuilderQuery {
             getCategory(
                 id: ID 
                 where: JSON
@@ -56,7 +56,7 @@ export default {
             ): CategoryListResponse
         }
         
-        extend type CmsMutation {
+        extend type PageBuilderMutation {
             createCategory(
                 data: CategoryInput!
             ): CategoryResponse
@@ -72,11 +72,11 @@ export default {
         }
     `,
     resolvers: {
-        CmsQuery: {
+        PageBuilderQuery: {
             getCategory: resolveGet(categoryFetcher),
             listCategories: resolveList(categoryFetcher)
         },
-        CmsMutation: {
+        PageBuilderMutation: {
             createCategory: resolveCreate(categoryFetcher),
             updateCategory: resolveUpdate(categoryFetcher),
             deleteCategory: resolveDelete(categoryFetcher)

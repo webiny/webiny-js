@@ -134,7 +134,7 @@ export default {
           ANY
         }
         
-        extend type CmsQuery {
+        extend type PageBuilderQuery {
             getPage(
                 id: ID 
                 where: JSON
@@ -183,7 +183,7 @@ export default {
             ): OembedResponse
         }
         
-        extend type CmsMutation {
+        extend type PageBuilderMutation {
             createPage(
                 data: CreatePageInput!
             ): PageResponse
@@ -237,7 +237,7 @@ export default {
     `
     ],
     resolvers: {
-        CmsQuery: {
+        PageBuilderQuery: {
             getPage: resolveGet(pageFetcher),
             listPages: listPages(pageFetcher),
             listPublishedPages,
@@ -249,7 +249,7 @@ export default {
             searchTags: searchTags,
             oembedData: oembed
         },
-        CmsMutation: {
+        PageBuilderMutation: {
             // Creates a new page
             createPage: resolveCreate(pageFetcher),
             // Deletes the entire page
