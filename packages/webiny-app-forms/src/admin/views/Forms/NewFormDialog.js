@@ -48,7 +48,7 @@ const NewFormDialog = ({
                     <Form
                         onSubmit={async data => {
                             const response = get(
-                                await update({ variables: data }),
+                                await update({ variables: data, refetchQueries: ["FormsListForms"] }),
                                 "data.forms.form"
                             );
                             if (response.error) {
