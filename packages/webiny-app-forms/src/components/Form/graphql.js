@@ -13,7 +13,6 @@ export const FIELDS_FIELDS = `
         helpText {
             value
         }
-        defaultValue
         validation
         settings
 `;
