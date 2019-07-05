@@ -2,7 +2,7 @@
 import { ObjectId } from "mongodb";
 import { ListResponse, ListErrorResponse } from "webiny-api/graphql";
 import type { HeadlessFieldTypePlugin } from "webiny-api-headless/types";
-import createTypeName from "webiny-api-headless/utils/createTypeName";
+import { createReadTypeName } from "webiny-api-headless/utils/createTypeName";
 import createListArgs from "webiny-api-headless/utils/createListArgs";
 import findEntry from "webiny-api-headless/utils/findEntry";
 import findEntries from "webiny-api-headless/utils/findEntries";
@@ -18,7 +18,7 @@ export default ({
         createTypeField({ model, field }) {
             const { modelId, type } = field.settings;
             const many = type === "many";
-            const gqlType = createTypeName(modelId);
+            const gqlType = createReadTypeName(modelId);
             const fieldArgs = many ? createListArgs({ model, field }) : "";
 
             return field.fieldId + fieldArgs + `: ${many ? `${gqlType}ListResponse` : gqlType}`;
@@ -68,22 +68,22 @@ export default ({
         setEntryFieldValue: genericFieldValueSetter,
         createTypes() {
             return /* GraphQL */ `
-                type Manage_HeadlessRefOne {
+                type HeadlessManageRefOne {
                     locale: String
                     value: ID
                 }
 
-                input Manage_HeadlessRefOneInput {
+                input HeadlessManageRefOneInput {
                     locale: String!
                     value: ID!
                 }
 
-                type Manage_HeadlessRefMany {
+                type HeadlessManageRefMany {
                     locale: String
                     value: [ID]
                 }
 
-                input Manage_HeadlessRefManyInput {
+                input HeadlessManageRefManyInput {
                     locale: String!
                     value: [ID!]
                 }
@@ -94,7 +94,7 @@ export default ({
 
             return (
                 field.fieldId +
-                `: ${type === "many" ? `[Manage_HeadlessRefMany]` : `[Manage_HeadlessRefOne]`}`
+                `: ${type === "many" ? `[HeadlessManageRefMany]` : `[HeadlessManageRefOne]`}`
             );
         },
         createInputField({ field }) {
@@ -103,9 +103,7 @@ export default ({
             return (
                 field.fieldId +
                 `: ${
-                    type === "many"
-                        ? "[Manage_HeadlessRefManyInput]"
-                        : "[Manage_HeadlessRefOneInput]"
+                    type === "many" ? "[HeadlessManageRefManyInput]" : "[HeadlessManageRefOneInput]"
                 }`
             );
         }

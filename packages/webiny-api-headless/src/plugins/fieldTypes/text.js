@@ -47,22 +47,22 @@ export default ({
         setEntryFieldValue: genericFieldValueSetter,
         createTypes() {
             return /* GraphQL */ `
-                type Manage_HeadlessText {
+                type HeadlessManageText {
                     locale: String
                     value: String
                 }
 
-                input Manage_HeadlessTextInput {
+                input HeadlessManageTextInput {
                     locale: String!
                     value: String!
                 }
             `;
         },
         createTypeField({ field }) {
-            return field.fieldId + ": [Manage_HeadlessText]";
+            return field.fieldId + ": [HeadlessManageText]";
         },
         createInputField({ field }) {
-            return field.fieldId + ": [Manage_HeadlessTextInput]";
+            return field.fieldId + ": [HeadlessManageTextInput]";
         }
     }
 }: HeadlessFieldTypePlugin);

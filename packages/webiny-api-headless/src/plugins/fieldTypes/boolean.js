@@ -20,22 +20,22 @@ export default ({
         setEntryFieldValue: genericFieldValueSetter,
         createTypes() {
             return /* GraphQL */ `
-                type Manage_HeadlessBoolean {
+                type HeadlessManageBoolean {
                     locale: String
                     value: Boolean
                 }
 
-                input Manage_HeadlessBooleanInput {
+                input HeadlessManageBooleanInput {
                     locale: String!
                     value: Boolean!
                 }
             `;
         },
         createTypeField({ field }) {
-            return field.fieldId + ": [Manage_HeadlessBoolean]";
+            return field.fieldId + ": [HeadlessManageBoolean]";
         },
         createInputField({ field }) {
-            return field.fieldId + ": [Manage_HeadlessBooleanInput]";
+            return field.fieldId + ": [HeadlessManageBooleanInput]";
         }
     }
 }: HeadlessFieldTypePlugin);

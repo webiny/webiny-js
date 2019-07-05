@@ -20,22 +20,22 @@ export default ({
         setEntryFieldValue: genericFieldValueSetter,
         createTypes() {
             return /* GraphQL */ `
-                type Manage_HeadlessFloat {
+                type HeadlessManageFloat {
                     locale: String
                     value: Float
                 }
 
-                input Manage_HeadlessFloatInput {
+                input HeadlessManageFloatInput {
                     locale: String!
                     value: Float!
                 }
             `;
         },
         createTypeField({ field }) {
-            return field.fieldId + ": [Manage_HeadlessFloat]";
+            return field.fieldId + ": [HeadlessManageFloat]";
         },
         createInputField({ field }) {
-            return field.fieldId + ": [Manage_HeadlessFloatInput]";
+            return field.fieldId + ": [HeadlessManageFloatInput]";
         }
     }
 }: HeadlessFieldTypePlugin);

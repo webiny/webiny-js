@@ -20,22 +20,22 @@ export default ({
         setEntryFieldValue: genericFieldValueSetter,
         createTypes() {
             return /* GraphQL */ `
-                type Manage_HeadlessJSON {
+                type HeadlessManageJSON {
                     locale: String
                     value: JSON
                 }
 
-                input Manage_HeadlessJSONInput {
+                input HeadlessManageJSONInput {
                     locale: String!
                     value: JSON!
                 }
             `;
         },
         createTypeField({ field }) {
-            return field.fieldId + ": [Manage_HeadlessJSON]";
+            return field.fieldId + ": [HeadlessManageJSON]";
         },
         createInputField({ field }) {
-            return field.fieldId + ": [Manage_HeadlessJSONInput]";
+            return field.fieldId + ": [HeadlessManageJSONInput]";
         }
     }
 }: HeadlessFieldTypePlugin);

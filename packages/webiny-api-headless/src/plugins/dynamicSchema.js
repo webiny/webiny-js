@@ -1,7 +1,7 @@
 import pluralize from "pluralize";
 import * as resolve from "webiny-api/graphql";
 import { registerPlugins, getPlugins } from "webiny-plugins";
-import createTypeName from "../utils/createTypeName";
+import { createTypeName, createManageTypeName, createReadTypeName } from "../utils/createTypeName";
 import { resolveGet } from "../utils/resolveGet";
 import { resolveList } from "../utils/resolveList";
 import { resolveCreate } from "../utils/resolveCreate";
@@ -108,6 +108,8 @@ export default async config => {
 
     models.forEach(model => {
         const typeName = createTypeName(model.modelId);
+        const mTypeName = createManageTypeName(typeName);
+        const rTypeName = createReadTypeName(typeName);
 
         // Get model plugins
         modelPlugins[model.modelId] = getPlugins("cms-headless-model-field").filter(
@@ -124,7 +126,7 @@ export default async config => {
                     ${renderTypes(model, "manage")}
                         
                     "${model.description}"
-                    type Manage_${typeName} {
+                    type ${mTypeName} {
                         id: ID
                         createdBy: User
                         updatedBy: User
@@ -134,11 +136,11 @@ export default async config => {
                         ${renderFields(model, "manage")}
                     }
                     
-                    input Manage_${typeName}Input {
+                    input ${mTypeName}Input {
                         ${renderInputFields(model, "manage")}
                     }
                     
-                    input Manage_${typeName}FilterInput {
+                    input ${mTypeName}FilterInput {
                         id: ID
                         id_not: ID
                         id_in: [ID]
@@ -146,32 +148,32 @@ export default async config => {
                         ${renderListFilterFields(model, "manage")}
                     }
                     
-                    type Manage_${typeName}Response {
-                        data: Manage_${typeName}
+                    type ${mTypeName}Response {
+                        data: ${mTypeName}
                         error: Error
                     }
                     
-                    type Manage_${typeName}ListResponse {
-                        data: [Manage_${typeName}]
+                    type ${mTypeName}ListResponse {
+                        data: [${mTypeName}]
                         meta: ListMeta
                         error: Error
                     }
                     
                     extend type HeadlessManageQuery {
-                        get${typeName}(id: ID, locale: String): Manage_${typeName}Response
+                        get${typeName}(id: ID, locale: String): ${mTypeName}Response
                         
                         list${pluralize(typeName)}(
                             locale: String
                             page: Int
                             perPage: Int
                             sort: JSON
-                            where: Manage_${typeName}FilterInput
-                        ): Manage_${typeName}ListResponse
+                            where: ${mTypeName}FilterInput
+                        ): ${mTypeName}ListResponse
                     }
                     
                     extend type HeadlessManageMutation{
-                        create${typeName}(data: Manage_${typeName}Input!): Manage_${typeName}Response
-                        update${typeName}(id: ID!, data: Manage_${typeName}Input!): Manage_${typeName}Response
+                        create${typeName}(data: ${mTypeName}Input!): ${mTypeName}Response
+                        update${typeName}(id: ID!, data: ${mTypeName}Input!): ${mTypeName}Response
                         delete${typeName}(id: ID!): DeleteResponse
                     }
                 `,
@@ -200,7 +202,7 @@ export default async config => {
                             [`update${typeName}`]: resolveUpdate({ models, model }),
                             [`delete${typeName}`]: resolve.dummyResolver
                         },
-                        [`Manage_${typeName}`]: model.fields.reduce((resolvers, field) => {
+                        [mTypeName]: model.fields.reduce((resolvers, field) => {
                             const { manage } = fieldTypePlugins[field.type];
                             let resolver = (entry, args, ctx, info) => entry[info.fieldName];
                             if (typeof manage.createResolver === "function") {
@@ -229,7 +231,7 @@ export default async config => {
                     ${renderTypesFromPlugins(model, "read")}
                         
                     "${model.description}"
-                    type ${typeName} {
+                    type ${rTypeName} {
                         id: ID
                         createdBy: User
                         updatedBy: User
@@ -240,7 +242,7 @@ export default async config => {
                         ${renderFieldsFromPlugins(model, "read")}
                     }
                     
-                    input ${typeName}FilterInput {
+                    input ${rTypeName}FilterInput {
                         id: ID
                         id_not: ID
                         id_in: [ID]
@@ -248,7 +250,7 @@ export default async config => {
                         ${renderListFilterFields(model, "read")}
                     }
                     
-                    enum ${typeName}Sorter {
+                    enum ${rTypeName}Sorter {
                         createdOn_ASC
                         createdOn_DESC
                         updatedOn_ASC
@@ -256,27 +258,27 @@ export default async config => {
                         ${renderSortEnum(model, "read")}
                     }
                     
-                    type ${typeName}Response {
-                        data: ${typeName}
+                    type ${rTypeName}Response {
+                        data: ${rTypeName}
                         error: Error
                     }
                     
-                    type ${typeName}ListResponse {
-                        data: [${typeName}]
+                    type ${rTypeName}ListResponse {
+                        data: [${rTypeName}]
                         meta: ListMeta
                         error: Error
                     }
                     
                     extend type HeadlessReadQuery {
-                        get${typeName}(locale: String, where: ${typeName}FilterInput, sort: [${typeName}Sorter]): ${typeName}Response
+                        get${typeName}(locale: String, where: ${rTypeName}FilterInput, sort: [${rTypeName}Sorter]): ${rTypeName}Response
                         
                         list${pluralize(typeName)}(
                             locale: String
                             page: Int
                             perPage: Int
-                            where: ${typeName}FilterInput
-                            sort: [${typeName}Sorter]
-                        ): ${typeName}ListResponse
+                            where: ${rTypeName}FilterInput
+                            sort: [${rTypeName}Sorter]
+                        ): ${rTypeName}ListResponse
                     }
                 `,
                     resolvers: {
@@ -297,7 +299,7 @@ export default async config => {
                             [`get${typeName}`]: resolveGet({ model }),
                             [`list${pluralize(typeName)}`]: resolveList({ model })
                         },
-                        [typeName]: model.fields.reduce((resolvers, field) => {
+                        [rTypeName]: model.fields.reduce((resolvers, field) => {
                             const { read } = fieldTypePlugins[field.type];
                             const resolver = read.createResolver({ models, model, field });
 
