@@ -13,6 +13,7 @@ const BASE_FORM_FIELDS = `
     version
     parent
     published
+    status
     savedOn
     createdBy {
         firstName
@@ -170,10 +171,27 @@ export const createRevisionFrom = gql`
     }
 `;
 
+export const publishRevision = gql`
+    mutation FormsPublishRevision($id: ID!) {
+        forms {
+            publishRevision(id: $id) {
+                data {
+                    id
+                    status
+                    published
+                }
+                error {
+                    ${ERROR_FIELDS}
+                }
+            }
+        }
+    }
+`;
+
 export const unpublishRevision = gql`
     mutation FormsUnpublishRevision($id: ID!) {
         forms {
-            revision: unpublishRevision(id: $id) {
+            unpublishRevision(id: $id) {
                 data {
                     id
                     status
@@ -192,31 +210,6 @@ export const deleteRevision = gql`
         forms {
             deleteRevision(id: $id) {
                 data
-                error {
-                    ${ERROR_FIELDS}
-                }
-            }
-        }
-    }
-`;
-
-// -------------------------------------------------------------------------------------------------------------------
-// -------------------------------------------------------------------------------------------------------------------
-// -------------------------------------------------------------------------------------------------------------------
-// -------------------------------------------------------------------------------------------------------------------
-// -------------------------------------------------------------------------------------------------------------------
-// -------------------------------------------------------------------------------------------------------------------
-// -------------------------------------------------------------------------------------------------------------------
-
-export const publishRevision = gql`
-    mutation FormsPublishRevision($id: ID!) {
-        forms {
-            publishRevision(id: $id) {
-                data {
-                    id
-                    status
-                    published
-                }
                 error {
                     ${ERROR_FIELDS}
                 }

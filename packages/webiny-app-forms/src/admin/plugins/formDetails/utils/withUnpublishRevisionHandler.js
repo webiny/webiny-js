@@ -3,11 +3,11 @@ import React from "react";
 import { compose, withHandlers } from "recompose";
 import { graphql } from "react-apollo";
 import { withSnackbar } from "webiny-admin/components";
-import { publishRevision } from "webiny-app-forms/admin/viewsGraphql";
+import { unpublishRevision } from "webiny-app-forms/admin/viewsGraphql";
 
 export default (prop: string) => {
     return compose(
-        graphql(publishRevision, { name: "gqlPublish" }),
+        graphql(unpublishRevision, { name: "gqlUnpublish" }),
         withSnackbar(),
         withHandlers({
             [prop]: ({ revision, gqlPublish, showSnackbar }) => async () => {

@@ -6,7 +6,6 @@ import styled from "react-emotion";
 import { Elevation } from "webiny-ui/Elevation";
 import FormPreview from "./FormPreview";
 import Header from "./Header";
-import headerPlugins from "./headerPlugins";
 import { CircularProgress } from "webiny-ui/Progress";
 import { i18n } from "webiny-app/i18n";
 const t = i18n.namespace("FormsApp.FormDetails.PreviewContent");
@@ -20,23 +19,42 @@ const RenderBlock = styled("div")({
     padding: 25
 });
 
+const PreviewContentTab = props => {
+    const [revisionId, setRevisionId] = React.useState();
+    React.useEffect(() => {
+        setRevisionId(props.form.revisions[0].id);
+    }, [props.form.id]);
+
+    const revision = props.form.revisions.find(item => item.id === revisionId);
+    if (!revision) {
+        return null;
+    }
+
+    return (
+        <RenderBlock>
+            <Elevation z={2}>
+                <div style={{ position: "relative" }}>
+                    {props.loading && <CircularProgress />}
+                    <Header
+                        {...props}
+                        revision={revision}
+                        onSelectRevision={revision => setRevisionId(revision.id)}
+                    />
+                    <FormPreview revision={revision} />
+                </div>
+            </Elevation>
+        </RenderBlock>
+    );
+};
+
 export default ([
-    headerPlugins,
     {
         name: "forms-form-details-revision-content-preview",
         type: "forms-form-details-revision-content",
-        render({ form, loading, refreshPages }: WithFormDetailsProps) {
+        render(props: WithFormDetailsProps) {
             return (
-                <Tab label={t`Form preview`} disabled={loading}>
-                    <RenderBlock>
-                        <Elevation z={2}>
-                            <div style={{ position: "relative" }}>
-                                {loading && <CircularProgress />}
-                                <Header form={form} loading={loading} refreshPages={refreshPages} />
-                                <FormPreview form={form} refreshPages={refreshPages} />;
-                            </div>
-                        </Elevation>
-                    </RenderBlock>
+                <Tab label={t`Form preview`} disabled={props.loading}>
+                    <PreviewContentTab {...props} />
                 </Tab>
             );
         }

@@ -27,30 +27,23 @@ const menuList = css({
 
 type Props = WithFormDetailsProps;
 
-const RevisionSelector = ({ location, history, form }: Props) => {
-    const query = new URLSearchParams(location.search);
-
+const RevisionSelector = ({ revision, form, onSelectRevision }: Props) => {
     return (
         <Menu
             className={menuList}
-            onSelect={evt => {
-                query.set("id", form.revisions[evt.detail.index].id);
-                history.push({ search: query.toString() });
-            }}
+            onSelect={evt => onSelectRevision(form.revisions[evt.detail.index])}
             handle={
                 <ButtonDefault className={buttonStyle}>
-                    v{form.version} <Icon icon={<DownButton />} />
+                    v{revision.version} <Icon icon={<DownButton />} />
                 </ButtonDefault>
             }
         >
-            {(get(form, "revisions") || []).map(rev => {
-                return (
-                    <MenuItem key={rev.id}>
-                        <Typography use={"body2"}>v{rev.version}</Typography>
-                        <Typography use={"caption"}>({rev.status})</Typography>
-                    </MenuItem>
-                );
-            })}
+            {(get(form, "revisions") || []).map(rev => (
+                <MenuItem key={rev.id}>
+                    <Typography use={"body2"}>v{rev.version}</Typography>
+                    <Typography use={"caption"}>({rev.status})</Typography>
+                </MenuItem>
+            ))}
         </Menu>
     );
 };

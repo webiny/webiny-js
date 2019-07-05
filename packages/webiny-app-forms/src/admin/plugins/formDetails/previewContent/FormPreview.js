@@ -2,8 +2,8 @@
 import * as React from "react";
 import { css } from "emotion";
 import { Form } from "webiny-app-forms/components/Form";
-import { Query } from "react-apollo";
 import { DATA_FIELDS } from "webiny-app-forms/components/Form/graphql";
+import { Query } from "react-apollo";
 import gql from "graphql-tag";
 import { get } from "lodash";
 
@@ -31,15 +31,15 @@ const pageInnerWrapper = css({
 });
 
 type Props = {
-    form: Object
+    revision: Object
 };
 
-const FormPreview = ({ form }: Props) => {
+const FormPreview = ({ revision }: Props) => {
     return (
-        <Query query={GET_FORM} variables={{ id: form.id }}>
+        <Query query={GET_FORM} variables={{ id: revision.id }}>
             {data => (
                 <div className={pageInnerWrapper}>
-                    {form && <Form preview data={get(data, "data.forms.getForm.data")} />}
+                    {revision && <Form preview data={get(data, "data.forms.getForm.data")} />}
                 </div>
             )}
         </Query>

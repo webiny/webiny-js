@@ -26,8 +26,8 @@ import { ReactComponent as EditIcon } from "webiny-app-forms/admin/icons/edit.sv
 import { ReactComponent as GestureIcon } from "webiny-app-forms/admin/icons/gesture.svg";
 import { ReactComponent as LockIcon } from "webiny-app-forms/admin/icons/lock.svg";
 import { ReactComponent as MoreVerticalIcon } from "webiny-app-forms/admin/icons/more_vert.svg";
-import { ReactComponent as PublishIcon } from "webiny-app-forms/admin/icons/round-publish-24px.svg";
-import { ReactComponent as UnpublishIcon } from "webiny-app-forms/admin/icons/round-close-24px.svg";
+import { ReactComponent as PublishIcon } from "webiny-app-forms/admin/icons/publish.svg";
+import { ReactComponent as UnpublishIcon } from "webiny-app-forms/admin/icons/unpublish.svg";
 
 const primaryColor = css({ color: "var(--mdc-theme-primary)" });
 

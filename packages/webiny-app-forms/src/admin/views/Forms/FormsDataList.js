@@ -10,7 +10,7 @@ import { deleteForm, createRevisionFrom } from "webiny-app-forms/admin/viewsGrap
 import { graphql } from "react-apollo";
 import { withHandlers, compose } from "recompose";
 import { withSnackbar } from "webiny-admin/components";
-import { get } from "lodash";
+import { get, upperFirst } from "lodash";
 import {
     DataList,
     List,
@@ -86,7 +86,7 @@ const FormsDataList = props => {
                             </ListItemText>
                             <ListItemMeta className={rightAlign}>
                                 <Typography use={"subtitle2"}>
-                                    {form.published ? t`Published` : t`Draft`} (v{form.version})
+                                    {upperFirst(form.status)} (v{form.version})
                                 </Typography>
                                 <ListActions>
                                     <EditIcon
