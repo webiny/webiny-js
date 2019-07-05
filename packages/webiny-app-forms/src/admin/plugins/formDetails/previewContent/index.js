@@ -1,13 +1,13 @@
 // @flow
 import * as React from "react";
-import { renderPlugins } from "webiny-app/plugins";
 import type { CmsPageDetailsPluginType, WithFormDetailsProps } from "webiny-app-forms/types";
 import { Tab } from "webiny-ui/Tabs";
 import styled from "react-emotion";
 import { Elevation } from "webiny-ui/Elevation";
 import FormPreview from "./FormPreview";
+import Header from "./Header";
+import headerPlugins from "./headerPlugins";
 import { CircularProgress } from "webiny-ui/Progress";
-
 import { i18n } from "webiny-app/i18n";
 const t = i18n.namespace("FormsApp.FormDetails.PreviewContent");
 
@@ -21,6 +21,7 @@ const RenderBlock = styled("div")({
 });
 
 export default ([
+    headerPlugins,
     {
         name: "forms-form-details-revision-content-preview",
         type: "forms-form-details-revision-content",
@@ -31,22 +32,13 @@ export default ([
                         <Elevation z={2}>
                             <div style={{ position: "relative" }}>
                                 {loading && <CircularProgress />}
-                                {renderPlugins("forms-form-details-revision-content-preview", {
-                                    form,
-                                    refreshPages
-                                })}
+                                <Header form={form} loading={loading} refreshPages={refreshPages} />
+                                <FormPreview form={form} refreshPages={refreshPages} />;
                             </div>
                         </Elevation>
                     </RenderBlock>
                 </Tab>
             );
-        }
-    },
-    {
-        name: "forms-form-details-revision-render",
-        type: "forms-form-details-revision-content-preview",
-        render({ form }: WithFormDetailsProps) {
-            return <FormPreview form={form} />;
         }
     }
 ]: Array<CmsPageDetailsPluginType>);

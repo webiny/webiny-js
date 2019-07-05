@@ -15,7 +15,7 @@ type Props = WithConfirmationProps & {
     confirmDelete: Function
 };
 
-const DeletePage = ({ confirmDelete }: Props) => {
+const DeleteForm = ({ confirmDelete }: Props) => {
     return (
         <Tooltip content={"Delete"} placement={"top"}>
             <IconButton icon={<DeleteIcon />} onClick={confirmDelete} />
@@ -71,4 +71,4 @@ export default compose(
             });
         }
     })
-)(DeletePage);
+)(DeleteForm);

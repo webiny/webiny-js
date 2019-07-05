@@ -3,7 +3,7 @@ import { withRouter } from "react-router-dom";
 import { IconButton } from "webiny-ui/Button";
 import { Tooltip } from "webiny-ui/Tooltip";
 import { ReactComponent as EditIcon } from "webiny-app-cms/admin/assets/edit.svg";
-import withRevisionHandlers from "../../pageRevisions/withRevisionHandlers";
+import withRevisionHandlers from "../../../formRevisions/withRevisionHandlers";
 import { compose } from "recompose";
 import { createRevisionFrom } from "webiny-app-cms/admin/graphql/pages";
 import { graphql } from "react-apollo";

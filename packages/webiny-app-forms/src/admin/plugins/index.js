@@ -10,19 +10,17 @@ import formEditorPlugins from "webiny-app-forms/editor/plugins";
 import formSitePlugins from "webiny-app-forms/site/plugins";
 
 import revisionContent from "./formDetails/revisionContent";
-import header from "./formDetails/header";
 import previewContent from "./formDetails/previewContent";
-import pageRevisions from "./formDetails/pageRevisions";
+import formRevisions from "./formDetails/formRevisions";
 import formSubmissions from "./formDetails/formSubmissions";
 
 export default [
     routes,
     menus,
-    header,
     revisionContent,
     formSubmissions,
     previewContent,
-    pageRevisions,
+    formRevisions,
 
     // Editor
     fields,

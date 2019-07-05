@@ -1,7 +1,7 @@
 // @flow
 import React from "react";
 import { compose, withHandlers, withProps, withState } from "recompose";
-import withPublishRevisionHandler from "../../utils/withPublishRevisionHandler";
+import withPublishRevisionHandler from "../../../utils/withPublishRevisionHandler";
 import { type WithFormDetailsProps } from "webiny-app-cms/admin/components";
 import { IconButton } from "webiny-ui/Button";
 import { Tooltip } from "webiny-ui/Tooltip";
@@ -31,10 +31,7 @@ function getPublishableRevisions(revisions) {
 
 type Props = WithFormDetailsProps & WithConfirmationProps;
 
-const PublishRevision = ({
-    publishableRevisions,
-    showConfirmation
-}: Props) => {
+const PublishRevision = ({ publishableRevisions, showConfirmation }: Props) => {
     if (!publishableRevisions.length) {
         return null;
     }
