@@ -1,6 +1,6 @@
 // @flow
 import { ObjectId } from "mongodb";
-import { ListResponse } from "webiny-api/graphql";
+import { ListResponse, ListErrorResponse } from "webiny-api/graphql";
 import type { HeadlessFieldTypePlugin } from "webiny-api-headless/types";
 import createTypeName from "webiny-api-headless/utils/createTypeName";
 import createListArgs from "webiny-api-headless/utils/createListArgs";
@@ -46,14 +46,21 @@ export default ({
                 const { where = {}, ...rest } = args;
                 where["id_in"] = refValue || [];
 
-                const { entries, meta } = await findEntries({
-                    model: refModel,
-                    args: { where, ...rest },
-                    context,
-                    info
-                });
+                try {
+                    const { entries, meta } = await findEntries({
+                        model: refModel,
+                        args: { where, ...rest },
+                        context,
+                        info
+                    });
 
-                return new ListResponse(entries, meta);
+                    return new ListResponse(entries, meta);
+                } catch (err) {
+                    return new ListErrorResponse({
+                        code: err.code,
+                        error: err.message
+                    });
+                }
             };
         }
     },

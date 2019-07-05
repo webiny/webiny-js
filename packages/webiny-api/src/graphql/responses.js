@@ -31,7 +31,7 @@ export class ErrorResponse {
 }
 
 export class NotFoundResponse extends ErrorResponse {
-    constructor(message) {
+    constructor(message: string) {
         super({
             code: "NOT_FOUND",
             message

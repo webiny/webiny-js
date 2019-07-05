@@ -5,11 +5,13 @@ import { type PluginType as _PluginType } from "webiny-plugins/types";
 export type PluginType = _PluginType;
 
 export type EntityPluginType = PluginType & {
-    namespace: string,
-    entity: {
-        name: string,
-        factory: (context: Object) => Class<Entity>
-    }
+    namespace?: string,
+    entity:
+        | {
+              name: string,
+              factory: (context: Object) => Class<Entity>
+          }
+        | Function
 };
 
 export type GraphQLSchemaType = {
