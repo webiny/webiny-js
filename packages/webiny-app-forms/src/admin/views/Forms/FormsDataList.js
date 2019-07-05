@@ -70,7 +70,14 @@ const FormsDataList = props => {
                                 <ListTextOverline>{form.name}</ListTextOverline>
                                 {form.createdBy && (
                                     <ListItemTextSecondary>
-                                        {t`Created by: {user}.`({ user: form.createdBy.firstName })}{" "}
+                                        {form.createdBy.firstName && (
+                                            <>
+                                                {t`Created by: {user}.`({
+                                                    user: form.createdBy.firstName
+                                                })}{" "}
+                                            </>
+                                        )}
+
                                         {t`Last modified: {time}.`({
                                             time: <TimeAgo datetime={form.savedOn} />
                                         })}

@@ -1,5 +1,5 @@
 // @flow
-import { I18NCharAttribute, I18NObjectAttribute } from "webiny-api-i18n/attributes";
+import { I18NCharAttribute } from "webiny-api-i18n/attributes";
 import { Entity, type EntityCollection } from "webiny-entity";
 import { Model } from "webiny-model";
 import mdbid from "mdbid";
