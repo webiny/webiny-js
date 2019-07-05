@@ -98,7 +98,7 @@ export default compose(
                     variables: { id }
                 });
 
-                const { error } = res.cms.deleteElement;
+                const { error } = res.cms.pageBuilder.deleteElement;
                 if (error) {
                     return showSnackbar(error.message);
                 }
@@ -129,7 +129,7 @@ export default compose(
                 }
             });
 
-            const { error, data } = response.data.cms.updateElement;
+            const { error, data } = response.data.cms.pageBuilder.updateElement;
             if (error) {
                 openEditDialog(false);
                 setTimeout(() => {

@@ -17,12 +17,20 @@ export default {
             FileType,
             FileInputType,
             `
-            type CmsQuery {
+            type PageBuilderQuery {
                 _empty: String
+            }
+            
+            type PageBuilderMutation {
+                _empty: String
+            }
+            
+            type CmsQuery {
+                pageBuilder: PageBuilderQuery
             }   
             
             type CmsMutation {
-                _empty: String
+                pageBuilder: PageBuilderMutation
             }
             
             type Query {
@@ -45,6 +53,12 @@ export default {
                 },
                 Mutation: {
                     cms: dummyResolver
+                },
+                CmsQuery: {
+                    pageBuilder: dummyResolver
+                },
+                CmsMutation: {
+                    pageBuilder: dummyResolver
                 }
             },
             page.resolvers,
@@ -56,6 +70,12 @@ export default {
     security: {
         shield: {
             CmsQuery: {
+                pageBuilder: dummyResolver
+            },
+            CmsMutation: {
+                pageBuilder: dummyResolver
+            },
+            PageBuilderQuery: {
                 getMenu: hasScope("cms:menu:crud"),
                 listMenus: hasScope("cms:menu:crud"),
                 getCategory: hasScope("cms:category:crud"),
@@ -64,7 +84,7 @@ export default {
                 listElements: hasScope("cms:element:crud"),
                 oembedData: hasScope("cms:oembed:read")
             },
-            CmsMutation: {
+            PageBuilderMutation: {
                 createMenu: hasScope("cms:menu:crud"),
                 updateMenu: hasScope("cms:menu:crud"),
                 deleteMenu: hasScope("cms:menu:crud"),

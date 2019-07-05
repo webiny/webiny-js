@@ -31,11 +31,13 @@ const narrowDialog = css({
 const loadCategories = gql`
     query ListCategories($sort: JSON) {
         cms {
-            listCategories(sort: $sort) {
-                data {
-                    id
-                    name
-                    url
+            pageBuilder {
+                listCategories(sort: $sort) {
+                    data {
+                        id
+                        name
+                        url
+                    }
                 }
             }
         }
@@ -68,7 +70,7 @@ const CategoriesDialog = ({
 
                             return (
                                 <React.Fragment>
-                                    {data.cms.listCategories.data.map(item => (
+                                    {data.cms.pageBuilder.listCategories.data.map(item => (
                                         <ListItem key={item.id} onClick={() => onSelect(item)}>
                                             <ListItemText>
                                                 <ListItemTextPrimary>

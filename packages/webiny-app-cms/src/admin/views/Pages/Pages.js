@@ -60,7 +60,7 @@ export default compose(
     withDataList({
         query: listPages,
         response: data => {
-            return get(data, "cms.pages", {});
+            return get(data, "cms.pageBuilder.pages", {});
         },
         variables: {
             sort: { savedOn: -1 }
@@ -73,7 +73,7 @@ export default compose(
                     variables: { category },
                     refetchQueries: ["CmsListPages"]
                 });
-                const { data } = res.data.cms.page;
+                const { data } = res.data.cms.pageBuilder.page;
                 history.push(`/cms/editor/${data.id}`);
             } catch (e) {
                 showSnackbar(e.message);

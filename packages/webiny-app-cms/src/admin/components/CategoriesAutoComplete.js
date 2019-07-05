@@ -10,10 +10,12 @@ import { Query } from "react-apollo";
 const loadCategory = gql`
     query LoadCategory($id: ID!) {
         cms {
-            getCategory(id: $id) {
-                data {
-                    id
-                    name
+            pageBuilder {
+                getCategory(id: $id) {
+                    data {
+                        id
+                        name
+                    }
                 }
             }
         }
@@ -23,10 +25,12 @@ const loadCategory = gql`
 const listCategories = gql`
     query LoadCategories($search: SearchInput) {
         cms {
-            categories: listCategories(search: $search) {
-                data {
-                    id
-                    name
+            pageBuilder {
+                categories: listCategories(search: $search) {
+                    data {
+                        id
+                        name
+                    }
                 }
             }
         }
@@ -35,13 +39,15 @@ const listCategories = gql`
 
 const CategoriesAutoComplete = props => (
     <Query skip={!props.value} variables={{ id: props.value }} query={loadCategory}>
-        {({ data }) => <AutoComplete {...props} value={get(data, "cms.getCategory.data")} />}
+        {({ data }) => (
+            <AutoComplete {...props} value={get(data, "cms.pageBuilder.getCategory.data")} />
+        )}
     </Query>
 );
 
 export default compose(
     withAutoComplete({
-        response: data => get(data, "cms.categories"),
+        response: data => get(data, "cms.pageBuilder.categories"),
         search: query => ({ query, fields: ["name"] }),
         query: listCategories
     })
