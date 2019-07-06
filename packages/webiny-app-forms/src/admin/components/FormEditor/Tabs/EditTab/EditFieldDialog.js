@@ -58,7 +58,6 @@ const EditFieldDialog = ({ field, onSubmit, ...props }: Props) => {
             setIsNewField(!field._id);
             setScreen(field.type ? "fieldOptions" : "fieldType");
         }
-
     }, [field]);
 
     const onClose = useCallback(() => {
@@ -98,7 +97,13 @@ const EditFieldDialog = ({ field, onSubmit, ...props }: Props) => {
                                             )}
                                         </Tabs>
                                     </DialogBody>
-                                    <DialogFooter>
+                                    <DialogFooter
+                                        style={{
+                                            justifyContent: isNewField
+                                                ? "space-between"
+                                                : "flex-end"
+                                        }}
+                                    >
                                         {isNewField && (
                                             <DialogFooterButton
                                                 onClick={() => setScreen("fieldType")}
@@ -106,12 +111,14 @@ const EditFieldDialog = ({ field, onSubmit, ...props }: Props) => {
                                                 {t`Go back`}
                                             </DialogFooterButton>
                                         )}
-                                        <DialogFooterButton onClick={onClose}>
-                                            {t`Cancel`}
-                                        </DialogFooterButton>
-                                        <DialogFooterButton onClick={form.submit}>
-                                            {t`Save`}
-                                        </DialogFooterButton>
+                                        <div>
+                                            <DialogFooterButton onClick={onClose}>
+                                                {t`Cancel`}
+                                            </DialogFooterButton>
+                                            <DialogFooterButton onClick={form.submit}>
+                                                {t`Save`}
+                                            </DialogFooterButton>
+                                        </div>
                                     </DialogFooter>
                                 </>
                             );

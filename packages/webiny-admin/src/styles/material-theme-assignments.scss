@@ -189,8 +189,7 @@ Fix the width of input components when inside grids
     .mdc-dialog__footer{
       border-top: 1px solid $mdc-theme-on-background;
       background-color: $mdc-theme-surface;
-      padding-top: 24px;
-      padding-bottom: 24px;
+      padding: 24px;
     }
   }
   &.mdc-dialog--open .mdc-dialog__backdrop{
