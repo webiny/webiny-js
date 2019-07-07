@@ -8,12 +8,12 @@ export default {
             return "customTitle(upper: Boolean): String";
         },
         createResolver() {
-            return async (entry, args, { typeValues }) => {
+            return async (entry, args, { resolvedValues }) => {
                 // Create title cache key
                 const titleCache = `product:${entry._id}:title`;
 
                 // Get resolved `title` value
-                const title = await typeValues.get(titleCache);
+                const title = await resolvedValues.get(titleCache);
 
                 // Format value according to argument
                 return args.upper ? title.toUpperCase() : title.toLowerCase();

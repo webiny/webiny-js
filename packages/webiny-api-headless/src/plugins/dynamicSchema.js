@@ -290,7 +290,7 @@ export default async config => {
                                      * Create emitter for resolved values.
                                      * It is used in model field plugins to access values from sibling resolvers.
                                      */
-                                    context.typeValues = new TypeValueEmitter();
+                                    context.resolvedValues = new TypeValueEmitter();
                                     return {};
                                 }
                             }
@@ -307,7 +307,7 @@ export default async config => {
                                 const value = resolver(entry, args, ctx, info);
 
                                 const cacheKey = `${model.modelId}:${entry._id}:${field.fieldId}`;
-                                ctx.typeValues.set(cacheKey, value);
+                                ctx.resolvedValues.set(cacheKey, value);
                                 return value;
                             };
 
