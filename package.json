@@ -23,7 +23,8 @@
   "dependencies": {
     "react": "^16.4.0",
     "react-dom": "^16.4.0",
-    "react-scripts": "^2.1.3"
+    "react-scripts": "^2.1.3",
+    "snyk": "^1.192.3"
   },
   "devDependencies": {
     "@babel/cli": "^7.0.0",
@@ -121,7 +122,9 @@
     "start-verdaccio": "yarn verdaccio -c ./verdaccio.yaml",
     "publish-to-verdaccio": "cross-env REGISTRY=http://localhost:4800 node scripts/publish-to-verdaccio",
     "contributors:add": "all-contributors add",
-    "contributors:generate": "all-contributors generate"
+    "contributors:generate": "all-contributors generate",
+    "snyk-protect": "snyk protect",
+    "prepublish": "npm run snyk-protect"
   },
   "pre-commit": [
     "lint-staged"
@@ -142,5 +145,6 @@
       "cliPath": "node_modules/commitizen",
       "path": "./scripts/cz-adapter"
     }
-  }
+  },
+  "snyk": true
 }
