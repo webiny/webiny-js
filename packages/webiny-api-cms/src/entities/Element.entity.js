@@ -1,6 +1,7 @@
 // @flow
 import { Entity } from "webiny-entity";
 import FileModel from "./File.model";
+import createContentAttribute from "./Page/ContentAttribute";
 
 type ElementType = "element" | "block";
 
@@ -12,7 +13,7 @@ export interface IElement extends Entity {
     preview: Object;
 }
 
-export function elementFactory(): Class<IElement> {
+export function elementFactory(context): Class<IElement> {
     return class Element extends Entity {
         static classId = "CmsElement";
 
@@ -31,7 +32,7 @@ export function elementFactory(): Class<IElement> {
 
             this.attr("category").char();
 
-            this.attr("content").object();
+            this.attr("content").custom(createContentAttribute(context));
 
             this.attr("type")
                 .char()
