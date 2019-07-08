@@ -27,11 +27,11 @@ const menuList = css({
 
 type Props = WithFormDetailsProps;
 
-const RevisionSelector = ({ revision, form, onSelectRevision }: Props) => {
+const RevisionSelector = ({ revision, form, selectRevision }: Props) => {
     return (
         <Menu
             className={menuList}
-            onSelect={evt => onSelectRevision(form.revisions[evt.detail.index])}
+            onSelect={evt => selectRevision(form.revisions[evt.detail.index])}
             handle={
                 <ButtonDefault className={buttonStyle}>
                     v{revision.version} <Icon icon={<DownButton />} />

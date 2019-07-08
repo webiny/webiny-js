@@ -38,7 +38,7 @@ const PreviewContentTab = props => {
                     <Header
                         {...props}
                         revision={revision}
-                        onSelectRevision={revision => setRevisionId(revision.id)}
+                        selectRevision={revision => setRevisionId(revision.id)}
                     />
                     <FormPreview revision={revision} />
                 </div>
