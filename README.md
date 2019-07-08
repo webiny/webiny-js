@@ -18,6 +18,7 @@
 ![](https://img.shields.io/npm/types/react-butterfiles.svg)
 [![All Contributors](https://img.shields.io/badge/all_contributors-4-orange.svg?style=flat-square)](#contributors)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](http://makeapullrequest.com)
+[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2FWebiny%2Fwebiny-js.svg?type=shield)](https://app.fossa.io/projects/git%2Bgithub.com%2FWebiny%2Fwebiny-js?ref=badge_shield)
 
 | Branch | Build |
 | :--- | :---: |
@@ -52,6 +53,9 @@ Please see our [Contributing Guideline](/CONTRIBUTING.md) which explains repo or
 
 ## License
 This project is licensed under the terms of the [MIT license](/LICENSE).
+
+
+[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2FWebiny%2Fwebiny-js.svg?type=large)](https://app.fossa.io/projects/git%2Bgithub.com%2FWebiny%2Fwebiny-js?ref=badge_large)
 
 ## Contributors
 

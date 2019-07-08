@@ -22,7 +22,7 @@ export function fileFactory(context: Object): Class<IFile> {
         constructor() {
             super();
 
-            const { user = {}, security, files } = context;
+            const { getUser, security, files } = context;
             const { User } = security.entities;
 
             this.attr("createdBy")
@@ -80,7 +80,9 @@ export function fileFactory(context: Object): Class<IFile> {
                     throw Error(`File "src" must be unique. `);
                 }
 
-                this.createdBy = user.id;
+                if (getUser()) {
+                    this.createdBy = getUser().id;
+                }
             });
         }
     };

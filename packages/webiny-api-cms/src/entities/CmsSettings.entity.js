@@ -43,6 +43,8 @@ const createCmsSettingsModel = context => {
 export const cmsSettingsFactory = (context: Object) => {
     return class CmsSettings extends settingsFactory(context) {
         static key = "cms";
+        static classId = "CmsSettings";
+        static collectionName = "Settings";
 
         data: Object;
         load: Function;
