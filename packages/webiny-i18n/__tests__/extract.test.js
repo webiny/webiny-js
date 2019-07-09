@@ -2,6 +2,7 @@ import extract from "webiny-i18n/extractor/extract";
 
 import example1 from "./extract/example1";
 import example2 from "./extract/example2";
+import example3 from "./extract/example3";
 
 describe("extractor test", () => {
     test("should extract sources correctly", () => {
@@ -23,5 +24,9 @@ describe("extractor test", () => {
             "Cool.Namespace.557b5663": "Cancel",
             "Cool.Namespace.b871e64": "Add"
         });
+
+        extracted = extract(example3);
+
+        expect(extracted).toEqual({ "ns1.665d09fd": "published", "ns1.ae83940": "draft" });
     });
 });

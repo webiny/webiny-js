@@ -24,7 +24,6 @@ class Extractor {
         if (this.glob) {
             const paths = glob.sync(this.glob);
             paths.forEach(path => {
-                console.log(path);
                 const contents = fs.readFileSync(path, "utf8");
                 const parsed = extract(contents);
                 for (let key in parsed) {
@@ -33,7 +32,7 @@ class Extractor {
             });
         }
 
-        console.log(results);
+        return results;
     }
 
     setListOnly(flag: boolean = true): Extractor {

@@ -29,7 +29,7 @@ export default (source: string) => {
     const allDeclaredNamespaces = getNamespaces(source);
 
     for (let variable in allDeclaredNamespaces) {
-        const regex = new RegExp(variable + "`(.*)`", "g");
+        const regex = new RegExp(variable + "`(.*?)`", "g");
 
         let m;
         while ((m = regex.exec(source)) !== null) {
