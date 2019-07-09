@@ -1,6 +1,6 @@
 // @flow
 // $FlowFixMe
-import React, { useCallback, useEffect } from "react";
+import React, { useEffect } from "react";
 import { get, cloneDeep } from "lodash";
 import { withCms } from "webiny-app-cms/context";
 import { onFormMounted, createFormSubmission, handleFormTriggers } from "./functions";
@@ -21,17 +21,17 @@ const FormRender = compose(
 
     const { layout, fields, settings } = data;
 
-    useEffect(() => onFormMounted(props), []);
+    useEffect(() => onFormMounted(props), [data.id]);
 
-    const getFieldById = useCallback(id => {
+    const getFieldById = id => {
         return fields.find(field => field._id === id);
-    }, [data.id]);
+    };
 
-    const getFieldByFieldId = useCallback(id => {
+    const getFieldByFieldId = id => {
         return fields.find(field => field.fieldId === id);
-    }, [data.id]);
+    };
 
-    const getFields = useCallback(() => {
+    const getFields = () => {
         const fields = cloneDeep(layout);
         fields.forEach(row => {
             row.forEach((id, idIndex) => {
@@ -39,25 +39,28 @@ const FormRender = compose(
             });
         });
         return fields;
-    }, [data.id]);
+    };
 
-    const getDefaultValues = useCallback((overrides = {}) => {
+    const getDefaultValues = (overrides = {}) => {
         const values = {};
         fields.forEach(field => {
-            if ("defaultValue" in field.settings && typeof field.settings.defaultValue !== "undefined") {
+            if (
+                "defaultValue" in field.settings &&
+                typeof field.settings.defaultValue !== "undefined"
+            ) {
                 values[field.fieldId] = field.defaultValue;
             } else {
                 values[field.fieldId] = ""; // TODO: fix this "", must be read from plugin
             }
         });
         return { ...values, ...overrides };
-    }, [data.id]);
+    };
 
-    const submit = useCallback(async data => {
+    const submit = async data => {
         const formSubmission = await createFormSubmission({ props, data });
         await handleFormTriggers({ props, data, formSubmission });
         return formSubmission;
-    }, [data.id]);
+    };
 
     // Get form layout, defined in theme.
     let LayoutRenderComponent = get(cms, "theme.forms.layouts", []).find(
@@ -79,7 +82,6 @@ const FormRender = compose(
         form: data
     };
 
-    console.log("dobeo layoutprops", layoutProps.form.fields);
     return <LayoutRenderComponent {...layoutProps} />;
 });
 
