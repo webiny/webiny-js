@@ -70,9 +70,11 @@ const EditFieldDialog = ({ field, onSubmit, ...props }: Props) => {
     let headerTitle = t`Field Settings`;
 
     if (current) {
-        const fieldType = getFieldPlugin({ name: current.name });
-        if (fieldType) {
-            headerTitle = t`Field Settings - {fieldTypeLabel}`({ fieldTypeLabel: fieldType.label });
+        const fieldPlugin = getFieldPlugin({ name: current.name });
+        if (fieldPlugin) {
+            headerTitle = t`Field Settings - {fieldTypeLabel}`({
+                fieldTypeLabel: fieldPlugin.field.label
+            });
         }
 
         switch (screen) {
@@ -80,7 +82,6 @@ const EditFieldDialog = ({ field, onSubmit, ...props }: Props) => {
                 render = (
                     <Form submitOnEnter data={current} onSubmit={onSubmit}>
                         {form => {
-                            const { Bind } = form;
                             return (
                                 <>
                                     <DialogBody className={dialogBody}>
@@ -92,17 +93,16 @@ const EditFieldDialog = ({ field, onSubmit, ...props }: Props) => {
                                                     setScreen={setScreen}
                                                 />
                                             </Tab>
-                                            {!!current.validators && (
-                                                <Tab label={"Validators"}>
-                                                    <Bind name={"validation"}>
+                                            {Array.isArray(current.validators) &&
+                                                current.validators.length > 0 && (
+                                                    <Tab label={"Validators"}>
                                                         <ValidatorsTab
                                                             form={form}
                                                             field={current}
                                                             setScreen={setScreen}
                                                         />
-                                                    </Bind>
-                                                </Tab>
-                                            )}
+                                                    </Tab>
+                                                )}
                                         </Tabs>
                                     </DialogBody>
                                     <DialogFooter
