@@ -1,11 +1,13 @@
 // @flow
+import { merge } from "lodash";
+import { gql } from "apollo-server-lambda";
 import { dummyResolver } from "webiny-api/graphql";
+import { type PluginType } from "webiny-api/types";
+import { getRegisteredScopes, hasScope } from "webiny-api-security";
+
 import role from "./graphql/Role";
 import group from "./graphql/Group";
 import user from "./graphql/User";
-import { type PluginType } from "webiny-api/types";
-import { getRegisteredScopes, hasScope } from "webiny-api-security";
-import { FileType, FileInputType } from "webiny-api-files/graphql";
 
 export default ([
     {
@@ -13,35 +15,29 @@ export default ([
         name: "graphql-schema-security",
         schema: {
             namespace: "security",
-            typeDefs: () => [
-                FileType,
-                FileInputType,
-                user.typeDefs,
-                user.typeExtensions,
-                role.typeDefs,
-                role.typeExtensions,
-                group.typeDefs,
-                group.typeExtensions,
-                /* GraphQL */ `
-                    type SecurityQuery {
-                        # Returns all scopes that were registered throughout the schema.
-                        scopes: [String]
-                    }
+            typeDefs: gql`
+                type SecurityQuery {
+                    # Returns all scopes that were registered throughout the schema.
+                    scopes: [String]
+                }
 
-                    type SecurityMutation {
-                        _empty: String
-                    }
+                type SecurityMutation {
+                    _empty: String
+                }
 
-                    type Query {
-                        security: SecurityQuery
-                    }
+                extend type Query {
+                    security: SecurityQuery
+                }
 
-                    type Mutation {
-                        security: SecurityMutation
-                    }
-                `
-            ],
-            resolvers: () => [
+                extend type Mutation {
+                    security: SecurityMutation
+                }
+
+                ${role.typeDefs}
+                ${group.typeDefs}
+                ${user.typeDefs}
+            `,
+            resolvers: merge(
                 {
                     Query: {
                         security: dummyResolver
@@ -53,10 +49,10 @@ export default ([
                         scopes: getRegisteredScopes
                     }
                 },
-                group.resolvers,
                 role.resolvers,
+                group.resolvers,
                 user.resolvers
-            ]
+            )
         },
         security: {
             shield: {

@@ -10,8 +10,8 @@ import {
 const roleFetcher = ctx => ctx.security.entities.Role;
 
 export default {
-    typeDefs: () => [
-        `
+    /* GraphQL */
+    typeDefs: `
         type Role {
             id: ID
             name: String
@@ -20,7 +20,7 @@ export default {
             description: String
             scopes: [String]
         }
-        
+
         input RoleInput {
             id: ID
             name: String
@@ -28,27 +28,21 @@ export default {
             description: String
             scopes: [String]
         }
-        
+
         type RoleResponse {
             data: Role
             error: Error
         }
-        
+
         type RoleListResponse {
             data: [Role]
             meta: ListMeta
             error: Error
         }
-    `
-    ],
-    typeExtensions: `
+
         extend type SecurityQuery {
-            getRole(
-                id: ID 
-                where: JSON
-                sort: String
-            ): RoleResponse
-            
+            getRole(id: ID, where: JSON, sort: String): RoleResponse
+
             listRoles(
                 page: Int
                 perPage: Int
@@ -57,20 +51,13 @@ export default {
                 search: SearchInput
             ): RoleListResponse
         }
-        
+
         extend type SecurityMutation {
-            createRole(
-                data: RoleInput!
-            ): RoleResponse
-            
-            updateRole(
-                id: ID!
-                data: RoleInput!
-            ): RoleResponse
-        
-            deleteRole(
-                id: ID!
-            ): DeleteResponse
+            createRole(data: RoleInput!): RoleResponse
+
+            updateRole(id: ID!, data: RoleInput!): RoleResponse
+
+            deleteRole(id: ID!): DeleteResponse
         }
     `,
     resolvers: {

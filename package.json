@@ -21,6 +21,10 @@
     "url": "https://github.com/webiny/webiny-js.git"
   },
   "dependencies": {
+    "apollo-server-lambda": "2.6.7",
+    "fsevents": "^2.0.7",
+    "graphql": "^14.4.2",
+    "graphql-middleware": "^3.0.2",
     "react": "^16.4.0",
     "react-dom": "^16.4.0"
   },
@@ -114,7 +118,7 @@
     "release-independent": "node scripts/release/independent",
     "release-independent:dry": "node scripts/release/independent --preview",
     "webiny-ui-build-storybook": "cd packages/webiny-ui && cross-env OUT=../../netlify-static yarn build-storybook",
-    "wby:fns": "wby start-functions --watch \"packages/webiny-api*/**/*.*\"",
+    "wby:fns": "cross-env NODE_ENV=development wby start-functions --watch \"packages/webiny-api*/**/*.*\"",
     "wby:fns:inspect": "yarn wby:fns --inspect=9001",
     "wby:app": "wby start-app",
     "start-verdaccio": "yarn verdaccio -c ./verdaccio.yaml",

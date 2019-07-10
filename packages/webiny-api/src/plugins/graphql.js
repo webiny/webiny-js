@@ -1,37 +1,77 @@
 // @flow
-import { dummyResolver } from "../graphql";
-import { getPlugins } from "webiny-plugins";
 import { type GraphQLSchemaPluginType } from "webiny-api/types";
-import { ErrorResponse } from "webiny-api/graphql";
+import { gql } from "apollo-server-lambda";
+import GraphQLJSON from "graphql-type-json";
+import { GraphQLDateTime } from "graphql-iso-date";
+import GraphQLLong from "graphql-type-long";
+import { dummyResolver } from "../graphql";
 
 export default ({
     type: "graphql-schema",
     name: "graphql-schema-api",
     schema: {
         namespace: "api",
-        typeDefs: () => {
-            return [
-                /* GraphQL */ `
-                    type SettingsQuery {
-                        _empty: String
-                    }
+        typeDefs: gql`
+            scalar JSON
+            scalar DateTime
+            scalar Long
 
-                    type SettingsMutation {
-                        _empty: String
-                    }
+            input SearchInput {
+                query: String
+                fields: [String]
+                operator: String
+            }
 
-                    type Query {
-                        settings: SettingsQuery
-                    }
+            type ListMeta {
+                totalCount: Int
+                totalPages: Int
+                page: Int
+                perPage: Int
+                from: Int
+                to: Int
+                previousPage: Int
+                nextPage: Int
+            }
 
-                    type Mutation {
-                        settings: SettingsMutation
-                    }
-                `,
-                ...getPlugins("schema-settings").map(pl => pl.typeDefs)
-            ];
-        },
-        resolvers: () => [
+            type Error {
+                code: String
+                message: String
+                data: JSON
+            }
+
+            type DeleteResponse {
+                data: Boolean
+                error: Error
+            }
+
+            type SettingsQuery {
+                _empty: String
+            }
+
+            type SettingsMutation {
+                _empty: String
+            }
+
+            type Query {
+                settings: SettingsQuery
+            }
+
+            type Mutation {
+                settings: SettingsMutation
+            }
+        `,
+        resolvers: {
+            Long: GraphQLLong,
+            JSON: GraphQLJSON,
+            DateTime: GraphQLDateTime,
+            Query: {
+                settings: dummyResolver
+            },
+            Mutation: {
+                settings: dummyResolver
+            }
+        }
+        /*resolvers: () => [
             {
                 Query: {
                     settings: dummyResolver
@@ -78,6 +118,6 @@ export default ({
                     }
                 };
             })
-        ]
+        ]*/
     }
 }: GraphQLSchemaPluginType);

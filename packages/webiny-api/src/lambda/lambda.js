@@ -4,7 +4,7 @@ import { applyMiddleware } from "graphql-middleware";
 import { addSchemaLevelResolveFunction } from "graphql-tools";
 import { Entity } from "webiny-entity";
 import type { GraphQLMiddlewarePluginType } from "webiny-api/types";
-import { prepareSchema, createGraphqlRunner } from "../graphql/schema";
+import { prepareSchema } from "../graphql/prepareSchema";
 import { getPlugins } from "webiny-plugins";
 
 export const createHandler = async (config: Object) => {
@@ -70,17 +70,13 @@ export const createHandler = async (config: Object) => {
         context: async ({ event }) => {
             await requestSetup(config);
 
-            const ctx: Object = {
+            return {
                 event,
                 config,
                 getDatabase() {
                     return config.database.mongodb;
                 }
             };
-
-            // Add `runQuery` function to be able to easily run queries against schemas from within a resolver
-            ctx.graphql = createGraphqlRunner(schema, ctx);
-            return ctx;
         }
     });
 
@@ -112,9 +108,7 @@ const requestSetup = async (config: Object = {}) => {
             await Entity.getDriver().test();
         } catch (e) {
             throw Error(
-                `The following error occurred while initializing Entity driver: "${
-                    e.message
-                }". Did you enter the correct database information?`
+                `The following error occurred while initializing Entity driver: "${e.message}". Did you enter the correct database information?`
             );
         }
     }

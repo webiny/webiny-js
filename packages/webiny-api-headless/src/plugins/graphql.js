@@ -8,9 +8,9 @@ import {
     resolveUpdate,
     dummyResolver
 } from "webiny-api/graphql";
+import { gql } from "apollo-server-lambda";
 import { hasScope } from "webiny-api-security";
 import { get } from "lodash";
-import typeDefs from "./typeDefs";
 import setupDynamicSchema from "./dynamicSchema";
 
 const contentModelFetcher = ctx => {
@@ -39,71 +39,117 @@ export default ([
             await setupDynamicSchema(config);
         },
         schema: {
-            stitching: {
-                linkTypeDefs: /* GraphQL */ `
-                    ${typeDefs}
+            typeDefs: gql`
+                extend type User @key(fields: "id") {
+                    id: ID @external
+                }
+                
+                type ContentModel {
+                    id: ID
+                    title: String
+                    modelId: String
+                    description: String
+                    createdOn: DateTime
+                    createdBy: User @external
+                    fields: [ContentModelField]
+                }
 
-                    extend type CmsQuery {
-                        headlessRead: HeadlessReadQuery
-                        headlessManage: HeadlessManageQuery
-                    }
+                input ContentModelInput {
+                    title: String
+                    modelId: String
+                    description: String
+                    fields: [ContentModelFieldInput]
+                }
 
-                    extend type CmsMutation {
-                        headlessManage: HeadlessManageMutation
-                    }
+                type ContentModelField {
+                    id: String
+                    label: String
+                    fieldId: String
+                    type: String
+                    validation: [JSON]
+                    settings: JSON
+                }
 
-                    type HeadlessReadQuery {
-                        _empty: String
-                    }
+                input ContentModelFieldInput {
+                    id: String
+                    label: String
+                    fieldId: String
+                    type: String
+                    validation: [JSON]
+                    settings: JSON
+                }
 
-                    type HeadlessManageQuery {
-                        getContentModel(id: ID, where: JSON, sort: String): ContentModelResponse
+                type ContentModelListResponse {
+                    data: [ContentModel]
+                    meta: ListMeta
+                    error: Error
+                }
 
-                        listContentModels(
-                            page: Int
-                            perPage: Int
-                            where: JSON
-                            sort: JSON
-                        ): ContentModelListResponse
-                    }
+                type ContentModelResponse {
+                    data: ContentModel
+                    error: Error
+                }
 
-                    type HeadlessManageMutation {
-                        createContentModel(data: ContentModelInput!): ContentModelResponse
+                extend type CmsQuery {
+                    headlessRead: HeadlessReadQuery
+                    headlessManage: HeadlessManageQuery
+                }
 
-                        updateContentModel(id: ID!, data: ContentModelInput!): ContentModelResponse
+                extend type CmsMutation {
+                    headlessManage: HeadlessManageMutation
+                }
 
-                        deleteContentModel(id: ID!): DeleteResponse
-                    }
-                `,
-                resolvers: {
-                    CmsQuery: {
-                        headlessRead: {
-                            fragment: "... on CmsQuery { cms }",
-                            resolve: dummyResolver
-                        },
-                        headlessManage: {
-                            fragment: "... on CmsQuery { cms }",
-                            resolve: dummyResolver
-                        }
+                type HeadlessReadQuery {
+                    _empty: String
+                }
+
+                type HeadlessManageQuery {
+                    getContentModel(id: ID, where: JSON, sort: String): ContentModelResponse
+
+                    listContentModels(
+                        page: Int
+                        perPage: Int
+                        where: JSON
+                        sort: JSON
+                    ): ContentModelListResponse
+                }
+
+                type HeadlessManageMutation {
+                    createContentModel(data: ContentModelInput!): ContentModelResponse
+
+                    updateContentModel(id: ID!, data: ContentModelInput!): ContentModelResponse
+
+                    deleteContentModel(id: ID!): DeleteResponse
+                }
+            `,
+            resolvers: {
+                CmsQuery: {
+                    headlessRead: {
+                        fragment: "... on CmsQuery { cms }",
+                        resolve: dummyResolver
                     },
-                    CmsMutation: {
-                        headlessManage: {
-                            fragment: "... on CmsMutation { cms }",
-                            resolve: dummyResolver
-                        }
-                    },
-                    HeadlessReadQuery: {
-                        _empty: () => ""
-                    },
-                    HeadlessManageQuery: {
-                        getContentModel: resolveGet(contentModelFetcher),
-                        listContentModels: resolveList(contentModelFetcher)
-                    },
-                    HeadlessManageMutation: {
-                        createContentModel: resolveCreate(contentModelFetcher),
-                        updateContentModel: resolveUpdate(contentModelFetcher),
-                        deleteContentModel: resolveDelete(contentModelFetcher)
+                    headlessManage: {
+                        fragment: "... on CmsQuery { cms }",
+                        resolve: dummyResolver
                     }
+                },
+                CmsMutation: {
+                    headlessManage: {
+                        fragment: "... on CmsMutation { cms }",
+                        resolve: dummyResolver
+                    }
+                },
+                HeadlessReadQuery: {
+                    _empty: () => ""
+                },
+                HeadlessManageQuery: {
+                    getContentModel: resolveGet(contentModelFetcher),
+                    listContentModels: resolveList(contentModelFetcher)
+                },
+                HeadlessManageMutation: {
+                    createContentModel: resolveCreate(contentModelFetcher),
+                    updateContentModel: resolveUpdate(contentModelFetcher),
+                    deleteContentModel: resolveDelete(contentModelFetcher)
                 }
             }
         },

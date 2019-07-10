@@ -1,15 +1,32 @@
 module.exports = {
     functions: {
-        "demo-api": {
-            install: "src/install.js",
+        "demo-gateway": {
             method: "ALL",
-            path: "/function/api",
+            path: "/function/gateway",
             env: {
                 MONGODB_SERVER: process.env.MONGODB_SERVER,
                 MONGODB_DB_NAME: process.env.MONGODB_DB_NAME,
                 WEBINY_JWT_SECRET: process.env.WEBINY_JWT_SECRET
             }
-        }
+        },
+        "demo-service-page-builder": {
+            method: "ALL",
+            path: "/function/page-builder",
+            env: {
+                MONGODB_SERVER: process.env.MONGODB_SERVER,
+                MONGODB_DB_NAME: process.env.MONGODB_DB_NAME,
+                WEBINY_JWT_SECRET: process.env.WEBINY_JWT_SECRET
+            }
+        },
+/*        "demo-service-headless": {
+            method: "ALL",
+            path: "/function/headless",
+            env: {
+                MONGODB_SERVER: process.env.MONGODB_SERVER,
+                MONGODB_DB_NAME: process.env.MONGODB_DB_NAME,
+                WEBINY_JWT_SECRET: process.env.WEBINY_JWT_SECRET
+            }
+        }*/
     },
     apps: {
         "demo-admin": {
