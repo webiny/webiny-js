@@ -1,8 +1,8 @@
 // @flow
 import * as React from "react";
 import type { Editor } from "slate-react";
-import { ReactComponent as OrderedListIcon } from "webiny-app-cms/editor/assets/icons/format_list_numbered.svg";
-import { ReactComponent as UnorderedListIcon } from "webiny-app-cms/editor/assets/icons/format_list_bulleted.svg";
+import { ReactComponent as OrderedListIcon } from "../../icons/format_list_numbered.svg";
+import { ReactComponent as UnorderedListIcon } from "../../icons/format_list_bulleted.svg";
 
 const hasBlock = (value, type) => {
     return value.blocks.some(node => node.type === type);
@@ -102,7 +102,7 @@ export default () => {
                             case "unordered-list":
                                 return (
                                     <ul
-                                        className={"webiny-cms-typography-unordered-list"}
+                                        className={"webiny-forms-typography-unordered-list"}
                                         {...attributes}
                                     >
                                         {children}
@@ -113,7 +113,7 @@ export default () => {
                             case "ordered-list":
                                 return (
                                     <ol
-                                        className={"webiny-cms-typography-ordered-list"}
+                                        className={"webiny-forms-typography-ordered-list"}
                                         {...attributes}
                                     >
                                         {children}

@@ -2,7 +2,7 @@
 import * as React from "react";
 import type { Change } from "slate";
 import type { Editor } from "slate-react";
-import { ReactComponent as UnderlineIcon } from "webiny-app-cms/editor/assets/icons/format_underlined.svg";
+import { ReactComponent as UnderlineIcon } from "./../../icons/format_underlined.svg";
 import { isKeyHotkey } from "is-hotkey";
 const isUnderlineHotkey = isKeyHotkey("mod+u");
 

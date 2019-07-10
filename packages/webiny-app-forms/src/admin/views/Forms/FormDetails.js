@@ -55,7 +55,7 @@ const FormDetails = ({ formId, history, query, showSnackbar, refreshForms }) => 
             query={getForm}
             variables={{ id: formId }}
             onCompleted={data => {
-                const error = get(data, "cms.form.error.message");
+                const error = get(data, "forms.form.error.message");
                 if (error) {
                     query.delete("id");
                     history.push({ search: query.toString() });

@@ -23,14 +23,13 @@ import {
     SimpleFormHeader
 } from "webiny-admin/components/SimpleForm";
 import { Title, listItem, ListItemTitle, listStyle, TitleContent } from "./FormSettingsStyled";
-import type { CmsPageSettingsPluginType } from "webiny-app-cms/types";
 
 type Props = {
     onExited: Function
 } & WithSnackbarProps;
 
 const FormSettings = ({ onExited, showSnackbar }: Props) => {
-    const plugins: Array<CmsPageSettingsPluginType> = getPlugins("form-editor-form-settings");
+    const plugins: Array<Object> = getPlugins("form-editor-form-settings");
     const { data, setData } = useFormEditor();
 
     const [activePlugin, setActivePlugin] = useState(plugins[0]);

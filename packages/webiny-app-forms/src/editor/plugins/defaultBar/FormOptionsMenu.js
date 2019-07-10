@@ -2,7 +2,7 @@
 import React from "react";
 import { Menu } from "webiny-ui/Menu";
 import { IconButton } from "webiny-ui/Button";
-import { ReactComponent as MoreVerticalIcon } from "webiny-app-cms/editor/assets/icons/more_vert.svg";
+import { ReactComponent as MoreVerticalIcon } from "./icons/more_vert.svg";
 import { getPlugins } from "webiny-plugins";
 import { css } from "emotion";
 
