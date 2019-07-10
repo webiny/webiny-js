@@ -4,9 +4,9 @@ import { Elevation } from "webiny-ui/Elevation";
 import { ReactComponent as HandleIcon } from "./icons/round-drag_indicator-24px.svg";
 import Draggable from "./Draggable";
 
-const Field = ({ label, type }) => {
+const Field = ({ label, name }) => {
     return (
-        <Draggable beginDrag={{ type }}>
+        <Draggable beginDrag={{ name }}>
             {({ connectDragSource }) => (
                 <Elevation z={2}>
                     <div>

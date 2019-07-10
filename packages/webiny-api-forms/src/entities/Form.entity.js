@@ -64,10 +64,13 @@ const createFieldModel = context =>
             this.attr("_id")
                 .char()
                 .setValidators("required");
-            this.attr("fieldId")
+            this.attr("type")
                 .char()
                 .setValidators("required");
-            this.attr("type")
+            this.attr("name")
+                .char()
+                .setValidators("required");
+            this.attr("fieldId")
                 .char()
                 .setValidators("required");
             this.attr("label").custom(I18NCharAttribute, context);

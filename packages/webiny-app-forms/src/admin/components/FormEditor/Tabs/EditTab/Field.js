@@ -35,14 +35,14 @@ const Actions = styled("div")({
 const Field = props => {
     const { field, onEdit, onDelete } = props;
     const { translate } = useI18N();
-    const { getFieldType } = useFormEditor();
+    const { getFieldPlugin } = useFormEditor();
 
-    const fieldType = getFieldType(field.type);
+    const fieldPlugin = getFieldPlugin({ name: field.name });
     return (
         <FieldContainer>
             <Info>
                 <Typography use={"subtitle1"}>{translate(field.label)}</Typography>
-                <Typography use={"caption"}>{fieldType && fieldType.label}</Typography>
+                <Typography use={"caption"}>{fieldPlugin && fieldPlugin.field.label}</Typography>
             </Info>
             <Actions>
                 <IconButton icon={<EditIcon />} onClick={() => onEdit(field)} />

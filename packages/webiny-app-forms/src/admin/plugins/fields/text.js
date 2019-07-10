@@ -7,17 +7,17 @@ import { I18NInput } from "webiny-app-i18n/components";
 export default {
     type: "form-editor-field-type",
     name: "form-editor-field-type-text",
-    fieldType: {
-        id: "text",
+    field: {
+        name: "text",
+        type: "text",
         validators: ["required", "minLength", "maxLength", "pattern", "in"],
         label: "Short Text",
         description: "Titles, names, single line input",
         icon: <TextIcon />,
         createField() {
             return {
-                _id: "",
-                label: "",
-                type: this.id,
+                type: this.type,
+                name: this.name,
                 validation: [],
                 settings: {
                     defaultValue: ""

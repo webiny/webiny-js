@@ -46,12 +46,11 @@ type Props = {
 };
 
 const EditFieldDialog = ({ field, onSubmit, ...props }: Props) => {
-    // const fieldType = getFieldType();
     const [current, setCurrent] = useState(null);
     const [isNewField, setIsNewField] = useState(false);
     const [screen, setScreen] = useState();
 
-    const { getFieldType } = useFormEditor();
+    const { getFieldPlugin } = useFormEditor();
     const i18n = useI18N();
 
     useEffect(() => {
@@ -71,7 +70,7 @@ const EditFieldDialog = ({ field, onSubmit, ...props }: Props) => {
     let headerTitle = t`Field Settings`;
 
     if (current) {
-        const fieldType = getFieldType(current.type);
+        const fieldType = getFieldPlugin({ name: current.name });
         if (fieldType) {
             headerTitle = t`Field Settings - {fieldTypeLabel}`({ fieldTypeLabel: fieldType.label });
         }
@@ -142,16 +141,13 @@ const EditFieldDialog = ({ field, onSubmit, ...props }: Props) => {
                         <DialogBody className={dialogBody}>
                             <FieldTypeList>
                                 {getPlugins("form-editor-field-type")
-                                    .filter(pl => !pl.fieldType.group)
+                                    .filter(pl => !pl.field.group)
                                     .map(pl => (
                                         <FieldTypeSelector
                                             key={pl.name}
-                                            fieldType={pl.fieldType}
-                                            isCurrentFieldType={
-                                                current && current.type === pl.fieldType.id
-                                            }
+                                            fieldType={pl.field}
                                             onClick={() => {
-                                                const newCurrent = pl.fieldType.createField({
+                                                const newCurrent = pl.field.createField({
                                                     i18n
                                                 });
                                                 if (current) {

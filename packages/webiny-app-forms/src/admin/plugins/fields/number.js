@@ -6,17 +6,17 @@ import { I18NInput } from "webiny-app-i18n/components";
 export default {
     type: "form-editor-field-type",
     name: "form-editor-field-type-number",
-    fieldType: {
-        id: "number",
+    field: {
+        type: "number",
+        name: "number",
         label: "Number",
         description: "ID, order number, rating, quantity",
         icon: <NumberIcon />,
         validators: ["required", "gte", "lte", "in"],
         createField() {
             return {
-                _id: "",
-                label: "",
-                type: this.id,
+                type: this.type,
+                name: this.name,
                 validation: [],
                 settings: {
                     defaultValue: ""

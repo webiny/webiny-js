@@ -6,17 +6,17 @@ import OptionsSelectionDynamicFieldset from "./components/OptionsSelectionDynami
 export default {
     type: "form-editor-field-type",
     name: "form-editor-field-type-radio",
-    fieldType: {
-        id: "radio",
+    field: {
+        type: "radio",
+        name: "radio",
         validators: ["required"],
         label: "Radio",
         description: "Choose a single option",
         icon: <Icon />,
         createField() {
             return {
-                _id: "",
-                label: "",
-                type: this.id,
+                type: this.type,
+                name: this.name,
                 validation: [],
                 settings: {
                     defaultValue: []

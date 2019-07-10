@@ -2,7 +2,7 @@
 import React from "react";
 import shortid from "shortid";
 import { get, cloneDeep, pick } from "lodash";
-import { getForm, updateRevision } from "./graphql";
+import { GET_FORM, UPDATE_REVISION } from "./graphql";
 import { getFieldPosition, moveField, moveRow, deleteField } from "./functions";
 import { getPlugins } from "webiny-plugins";
 
@@ -27,7 +27,7 @@ export default FormEditorContext => {
             data: state.data,
             state,
             async getForm(id: string) {
-                const response = await self.apollo.query({ query: getForm, variables: { id } });
+                const response = await self.apollo.query({ query: GET_FORM, variables: { id } });
                 const { data, error } = get(response, "data.forms.getForm");
                 if (error) {
                     throw new Error(error);
@@ -46,7 +46,7 @@ export default FormEditorContext => {
             saveForm: async data => {
                 data = data || state.data;
                 let response = await self.apollo.mutate({
-                    mutation: updateRevision,
+                    mutation: UPDATE_REVISION,
                     variables: {
                         id: data.id,
                         data: pick(data, ["layout", "fields", "name", "settings", "triggers"])
@@ -81,31 +81,52 @@ export default FormEditorContext => {
                 const fields = cloneDeep(state.data.layout);
                 fields.forEach((row, rowIndex) => {
                     row.forEach((fieldId, fieldIndex) => {
-                        fields[rowIndex][fieldIndex] = self.getFieldById(fieldId);
+                        fields[rowIndex][fieldIndex] = self.getField({ _id: fieldId });
                     });
                 });
                 return fields;
             },
 
             /**
-             * Return field by given ID.
-             * @param id
+             * Return field plugin.
+             * @param query
              * @returns {void|?FieldType}
              */
-            getFieldById(id: FieldIdType): ?FieldType {
-                return self.getFields().find(item => item._id === id);
+            getFieldPlugin(query: Object): ?Object {
+                return getPlugins("form-editor-field-type").find(({ field }) => {
+                    for (let key in query) {
+                        if (!(key in field)) {
+                            return null;
+                        }
+
+                        if (field[key] !== query[key]) {
+                            return null;
+                        }
+                    }
+
+                    return true;
+                });
             },
 
             /**
-             * Return field type by given type.
-             * @param type
-             * @returns {void|?FieldType}
+             * Checks if field of given type already exists in the list of fields.
+             * @param query
+             * @returns {boolean}
              */
-            getFieldType(type: string): ?Object {
-                const plugin = getPlugins("form-editor-field-type").find(
-                    plugin => plugin.fieldType.id === type
-                );
-                return plugin ? plugin.fieldType : null;
+            getField(query: Object): ?FieldType {
+                return state.data.fields.find(field => {
+                    for (let key in query) {
+                        if (!(key in field)) {
+                            return null;
+                        }
+
+                        if (field[key] !== query[key]) {
+                            return null;
+                        }
+                    }
+
+                    return true;
+                });
             },
 
             /**
@@ -118,6 +139,17 @@ export default FormEditorContext => {
                 if (!field._id) {
                     field._id = shortid.generate();
                 }
+
+                if (!data.name) {
+                    throw new Error(`Field "name" missing.`);
+                }
+
+                const fieldPlugin = self.getFieldPlugin({ name: data.name });
+                if (!fieldPlugin) {
+                    throw new Error(`Invalid field "name".`);
+                }
+
+                data.type = fieldPlugin.field.type;
 
                 self.setData(data => {
                     if (!Array.isArray(data.fields)) {
@@ -190,15 +222,6 @@ export default FormEditorContext => {
                     deleteField({ field, data });
                     return data;
                 });
-            },
-
-            /**
-             * Checks if field of given type already exists in the list of fields.
-             * @param type
-             * @returns {boolean}
-             */
-            fieldExists(type): boolean {
-                return state.data.fields.findIndex(f => f.type === type) >= 0;
             },
 
             /**

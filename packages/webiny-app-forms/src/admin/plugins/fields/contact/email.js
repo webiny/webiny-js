@@ -3,19 +3,18 @@ import textFieldPlugin from "./../text";
 export default {
     type: "form-editor-field-type",
     name: "form-editor-field-type-email",
-    fieldType: {
-        ...textFieldPlugin.fieldType,
+    field: {
+        ...textFieldPlugin.field,
         group: "form-editor-field-group-contact",
-        id: "email",
+        name: "email",
         label: "Email   ",
         description: "Email address",
-        unique: true,
         // TODO: validators: ["required"], // Editable validators.
         createField(props) {
             const { i18n } = props;
             return {
-                ...textFieldPlugin.fieldType.createField(props),
-                _id: "email",
+                ...textFieldPlugin.field.createField(props),
+                name: this.name,
                 fieldId: "email",
                 label: {
                     values: [

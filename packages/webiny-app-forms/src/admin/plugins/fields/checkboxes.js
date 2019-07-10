@@ -6,17 +6,17 @@ import OptionsSelectionDynamicFieldset from "./components/OptionsSelectionDynami
 export default {
     type: "form-editor-field-type",
     name: "form-editor-field-type-checkbox",
-    fieldType: {
-        id: "checkbox",
+    field: {
+        type: "checkbox",
+        name: "checkbox",
         validators: ["required"],
         label: "Checkboxes",
         description: "Choose one or more options",
         icon: <Icon />,
         createField() {
             return {
-                _id: null,
-                label: null,
-                type: this.id,
+                type: this.type,
+                name: this.name,
                 validation: [],
                 settings: {
                     defaultValue: []

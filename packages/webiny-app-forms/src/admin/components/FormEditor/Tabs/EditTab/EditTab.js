@@ -23,7 +23,8 @@ export const EditTab = () => {
         deleteField,
         data,
         moveField,
-        moveRow
+        moveRow,
+        getFieldPlugin
     } = useFormEditor();
     const [editingField, setEditingField] = useState(null);
     const [dropTarget, setDropTarget]: [FieldLayoutPositionType, Function] = useState(null);
@@ -35,9 +36,9 @@ export const EditTab = () => {
     const i18n = useI18N();
 
     const handleDropField = useCallback((source, dropTarget) => {
-        const { pos, type, ui } = source;
+        const { pos, name, ui } = source;
 
-        if (type === "custom") {
+        if (name === "custom") {
             editField({});
             setDropTarget(dropTarget);
             return;
@@ -55,9 +56,9 @@ export const EditTab = () => {
             return moveField({ field: fieldId, position: dropTarget });
         }
 
-        // Find field plugin which handles the dropped field type "id".
-        const plugin = getPlugins("form-editor-field-type").find(pl => pl.fieldType.id === type);
-        insertField(plugin.fieldType.createField({ i18n }), dropTarget);
+        // Find field plugin which handles the dropped field type "name".
+        const plugin = getFieldPlugin({ name });
+        insertField(plugin.field.createField({ i18n }), dropTarget);
     });
 
     const fields = getFields(true);
@@ -94,7 +95,7 @@ export const EditTab = () => {
                                         key={fieldIndex}
                                         beginDrag={{
                                             ui: "field",
-                                            type: field.type,
+                                            name: field.name,
                                             pos: {
                                                 row: index,
                                                 index: fieldIndex

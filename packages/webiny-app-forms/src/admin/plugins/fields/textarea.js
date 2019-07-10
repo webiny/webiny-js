@@ -7,17 +7,17 @@ import { I18NInput } from "webiny-app-i18n/components";
 export default {
     type: "form-editor-field-type",
     name: "form-editor-field-type-textarea",
-    fieldType: {
-        id: "textarea",
+    field: {
+        name: "textarea",
+        type: "textarea",
         validators: ["required", "minLength", "maxLength", "pattern", "in"],
         label: "Long Test",
         description: "Descriptions, comments or paragraphs or text",
         icon: <TextIcon />,
         createField() {
             return {
-                _id: "",
-                label: "",
-                type: this.id,
+                type: this.type,
+                name: this.name,
                 validation: [],
                 settings: {
                     defaultValue: ""

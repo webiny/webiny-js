@@ -48,9 +48,10 @@ export default {
         }
         
         type FormFieldType {
-            _id: String!
+            _id: ID!
             fieldId: String!
             type: String!
+            name: String!
             label: I18NStringValue
             placeholderText: I18NStringValue
             helpText: I18NStringValue
@@ -59,9 +60,10 @@ export default {
         }    
         
         input FormFieldInput {
-            _id : String!
+            _id : ID!
             fieldId: String!
             type: String!
+            name: String!
             label: I18NStringValueInput
             placeholderText: I18NStringValueInput
             helpText: I18NStringValueInput

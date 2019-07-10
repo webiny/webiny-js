@@ -6,15 +6,16 @@ import { ReactComponent as HiddenIcon } from "./icons/round-visibility_off-24px.
 export default {
     type: "form-editor-field-type",
     name: "form-editor-field-type-hidden",
-    fieldType: {
-        id: "hidden",
+    field: {
+        type: "hidden",
+        name: "hidden",
         label: "Hidden",
         description: "Predefined values, hidden text",
         icon: <HiddenIcon />,
         createField() {
             return {
-                _id: "",
-                type: this.id,
+                type: this.type,
+                name: this.name,
                 validation: [],
                 settings: {
                     defaultValue: ""

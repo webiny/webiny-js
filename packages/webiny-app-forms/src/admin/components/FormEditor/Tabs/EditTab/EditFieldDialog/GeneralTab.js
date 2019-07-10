@@ -4,18 +4,11 @@ import { Grid, Cell } from "webiny-ui/Grid";
 import { camelCase } from "lodash";
 import { useFormEditor } from "webiny-app-forms/admin/components/FormEditor/Context";
 import { I18NInput, useI18N } from "webiny-app-i18n/components";
-import { i18n } from "webiny-app/i18n";
-import { css } from "emotion";
 
-const t = i18n.namespace("FormsApp.Editor.EditFieldDialog.GeneralTab");
-const style = {
-    backToFieldTypeScreenLink: css({ cursor: "pointer" })
-};
-
-const GeneralTab = ({ field, form, setScreen }) => {
+const GeneralTab = ({ field, form }) => {
     const { Bind, setValue } = form;
     const inputRef = useRef(null);
-    const { getFields, getFieldType } = useFormEditor();
+    const { getField, getFieldPlugin } = useFormEditor();
     const { translate } = useI18N();
 
     useEffect(() => {
@@ -27,21 +20,19 @@ const GeneralTab = ({ field, form, setScreen }) => {
     }, []);
 
     const uniqueFieldIdValidator = useCallback(fieldId => {
-        const existingField = getFields().find(field => field.fieldId === fieldId);
+        const existingField = getField({ fieldId });
         if (!existingField) {
             return;
         }
 
-        if (existingField._id !== field._id) {
-            throw new Error("Please enter a unique ID");
-        }
+        throw new Error("Please enter a unique Field ID");
     });
 
-    const fieldType = getFieldType(field.type);
+    const fieldPlugin = getFieldPlugin({ name: field.name });
 
     let additionalSettings = null;
-    if (typeof fieldType.renderSettings === "function") {
-        additionalSettings = fieldType.renderSettings({
+    if (typeof fieldPlugin.field.renderSettings === "function") {
+        additionalSettings = fieldPlugin.field.renderSettings({
             Bind,
             form,
             afterChangeLabel,

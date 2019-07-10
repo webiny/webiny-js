@@ -3,17 +3,16 @@ import textFieldPlugin from "./../text";
 export default {
     type: "form-editor-field-type",
     name: "form-editor-field-type-first-name",
-    fieldType: {
-        ...textFieldPlugin.fieldType,
+    field: {
+        ...textFieldPlugin.field,
         group: "form-editor-field-group-contact",
-        id: "firstName",
+        name: "firstName",
         label: "First name",
-        unique: true,
         createField(props) {
             const { i18n } = props;
             return {
-                ...textFieldPlugin.fieldType.createField(props),
-                _id: "firstName",
+                ...textFieldPlugin.field.createField(props),
+                name: this.name,
                 fieldId: "firstName",
                 label: {
                     values: [

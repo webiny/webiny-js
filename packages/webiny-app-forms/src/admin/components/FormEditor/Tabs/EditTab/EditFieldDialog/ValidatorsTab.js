@@ -8,8 +8,8 @@ import {
 } from "webiny-admin/components/SimpleForm";
 
 function useValidatorsTab({ form: formProps, value, onChange, field }) {
-    const { fieldType } = getPlugins("form-editor-field-type").find(
-        f => f.fieldType.id === field.type
+    const { field: fieldType } = getPlugins("form-editor-field-type").find(
+        f => f.field.type === field.type
     );
 
     const validators = getPlugins("form-editor-field-validator")

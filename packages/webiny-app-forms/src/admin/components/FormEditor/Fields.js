@@ -67,9 +67,9 @@ const accordionItem = css({
     }
 });
 
-const Field = ({ onFieldDragStart, fieldType: { id, label } }) => {
+const Field = ({ onFieldDragStart, fieldType: { name, label } }) => {
     return (
-        <Draggable beginDrag={{ ui: "field", type: id }}>
+        <Draggable beginDrag={{ ui: "field", name }}>
             {({ connectDragSource }) =>
                 connectDragSource(
                     <div style={{ marginBottom: 10 }} onDragStart={onFieldDragStart}>
@@ -87,24 +87,29 @@ const Field = ({ onFieldDragStart, fieldType: { id, label } }) => {
 };
 
 export const Fields = ({ onFieldDragStart }) => {
-    const { fieldExists } = useFormEditor();
+    const { getField } = useFormEditor();
 
     function getGroups() {
         const presetFieldPlugins = getPlugins("form-editor-field-type")
-            .filter(pl => pl.fieldType.group)
-            .filter(pl => !fieldExists(pl.fieldType._id));
+            .filter(pl => pl.field.group)
+            .filter(pl => {
+                if (pl.field.id) {
+                    return !getField({ id: pl.field.id });
+                }
+                return true;
+            });
 
         return getPlugins("form-editor-field-group").map(pl => ({
             ...pl.group,
             name: pl.name,
-            fields: presetFieldPlugins.filter(f => f.fieldType.group === pl.name).map(pl => pl.fieldType)
+            fields: presetFieldPlugins.filter(f => f.field.group === pl.name).map(pl => pl.field)
         }));
     }
 
     return (
         <React.Fragment>
             <Field
-                fieldType={{ id: "custom", label: "Custom field" }}
+                fieldType={{ name: "custom", label: "Custom field" }}
                 onFieldDragStart={onFieldDragStart}
             />
 
@@ -120,13 +125,15 @@ export const Fields = ({ onFieldDragStart }) => {
                             {!group.fields.length && (
                                 <span>No fields are available at the moment!</span>
                             )}
-                            {group.fields.map(fieldType => (
-                                <Field
-                                    key={fieldType.id}
-                                    fieldType={fieldType}
-                                    onFieldDragStart={onFieldDragStart}
-                                />
-                            ))}
+                            {group.fields.map(fieldType => {
+                                return (
+                                    <Field
+                                        key={fieldType.name}
+                                        fieldType={fieldType}
+                                        onFieldDragStart={onFieldDragStart}
+                                    />
+                                );
+                            })}
                         </FormAccordionContent>
                     </AccordionItem>
                 ))}

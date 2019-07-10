@@ -7,16 +7,17 @@ import { I18NInput } from "webiny-app-i18n/components";
 export default {
     type: "form-editor-field-type",
     name: "form-editor-field-type-select",
-    fieldType: {
+    field: {
+        type: 'select',
+        name: 'select',
         validators: ["required"],
         label: "Select",
         description: "Dropdown, select one of the options",
         icon: <Icon />,
         createField() {
             return {
-                _id: "",
-                label: "",
-                type: this.id,
+                type: this.type,
+                name: this.name,
                 settings: {
                     defaultValue: ""
                 }

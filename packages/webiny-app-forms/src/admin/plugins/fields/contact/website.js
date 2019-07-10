@@ -3,19 +3,18 @@ import textFieldPlugin from "./../text";
 export default {
     type: "form-editor-field-type",
     name: "form-editor-field-type-website",
-    fieldType: {
-        ...textFieldPlugin.fieldType,
+    field: {
+        ...textFieldPlugin.field,
         group: "form-editor-field-group-contact",
-        id: "website",
+        name: "website",
         label: "Website",
         description: "Link to a website",
-        unique: true,
         // TODO: validators: ["required"],
         createField(props) {
             const { i18n } = props;
             return {
-                ...textFieldPlugin.fieldType.createField(),
-                _id: "website",
+                ...textFieldPlugin.field.createField(),
+                name: this.name,
                 fieldId: "website",
                 label: {
                     values: [

@@ -1,31 +1,32 @@
 // @flow
 import gql from "graphql-tag";
 
-const i18nFields = `
+const I18N_FIELDS = `
     values {
         value
         locale
     }
 `;
 
-export const fieldsFields = `
+export const FIELDS_FIELDS = `
         _id
         fieldId
         type
+        name
         label {
-            ${i18nFields}
+            ${I18N_FIELDS}
         }
         placeholderText {
-            ${i18nFields}
+            ${I18N_FIELDS}
         }
         helpText {
-            ${i18nFields}
+            ${I18N_FIELDS}
         }
         validation
         settings
 `;
 
-const settingsField = /* GraphQL */ `
+const SETTINGS_FIELDS = /* GraphQL */ `
     {
         layout {
             renderer
@@ -45,7 +46,7 @@ const settingsField = /* GraphQL */ `
     }
 `;
 
-export const getForm = gql`
+export const GET_FORM = gql`
     query GetForm($id: ID!) {
         forms {
             getForm(id: $id) {
@@ -54,10 +55,10 @@ export const getForm = gql`
                     name
                     version
                     fields {
-                        ${fieldsFields}
+                        ${FIELDS_FIELDS}
                     }
                     layout
-                    settings ${settingsField}
+                    settings ${SETTINGS_FIELDS}
                     triggers
                     published
                     locked
@@ -76,7 +77,7 @@ export const getForm = gql`
     }
 `;
 
-export const updateRevision = gql`
+export const UPDATE_REVISION = gql`
     mutation UpdateForm($id: ID!, $data: UpdateFormInput!) {
         forms {
             updateRevision(id: $id, data: $data) {
@@ -85,10 +86,10 @@ export const updateRevision = gql`
                     name
                     version
                     fields {
-                        ${fieldsFields}
+                        ${FIELDS_FIELDS}
                     }
                     layout
-                    settings ${settingsField}
+                    settings ${SETTINGS_FIELDS}
                     triggers
                 }
             }
