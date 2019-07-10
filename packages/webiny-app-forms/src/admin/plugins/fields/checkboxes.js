@@ -7,7 +7,6 @@ export default {
     type: "form-editor-field-type",
     name: "form-editor-field-type-checkbox",
     fieldType: {
-        dataType: true,
         id: "checkbox",
         validators: ["required"],
         label: "Checkboxes",
@@ -15,8 +14,8 @@ export default {
         icon: <Icon />,
         createField() {
             return {
-                _id: "",
-                label: "",
+                _id: null,
+                label: null,
                 type: this.id,
                 validation: [],
                 settings: {

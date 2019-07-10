@@ -7,4 +7,4 @@ import radioButtons from "./radioButtons";
 import checkboxes from "./checkboxes";
 import contact from "./contact";
 
-export default [hidden, select, text, textarea, number, contact, radioButtons, checkboxes];
+export default [hidden, select, text, textarea, number, radioButtons, checkboxes, contact];

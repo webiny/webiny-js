@@ -90,14 +90,14 @@ export const Fields = ({ onFieldDragStart }) => {
     const { fieldExists } = useFormEditor();
 
     function getGroups() {
-        const fieldPlugins = getPlugins("form-editor-field-type")
-            .filter(pl => !pl.fieldType.dataType)
-            .filter(pl => !fieldExists(pl.fieldType.id));
+        const presetFieldPlugins = getPlugins("form-editor-field-type")
+            .filter(pl => pl.fieldType.group)
+            .filter(pl => !fieldExists(pl.fieldType._id));
 
         return getPlugins("form-editor-field-group").map(pl => ({
             ...pl.group,
             name: pl.name,
-            fields: fieldPlugins.filter(f => f.fieldType.group === pl.name).map(pl => pl.fieldType)
+            fields: presetFieldPlugins.filter(f => f.fieldType.group === pl.name).map(pl => pl.fieldType)
         }));
     }
 

@@ -115,7 +115,9 @@ export default FormEditorContext => {
              */
             insertField(data: FieldType, position: FieldLayoutPositionType) {
                 const field = cloneDeep(data);
-                field._id = shortid.generate();
+                if (!field._id) {
+                    field._id = shortid.generate();
+                }
 
                 self.setData(data => {
                     if (!Array.isArray(data.fields)) {

@@ -7,7 +7,6 @@ export default {
     type: "form-editor-field-type",
     name: "form-editor-field-type-number",
     fieldType: {
-        dataType: true,
         id: "number",
         label: "Number",
         description: "ID, order number, rating, quantity",

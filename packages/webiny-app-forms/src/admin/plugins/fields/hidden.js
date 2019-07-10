@@ -7,7 +7,6 @@ export default {
     type: "form-editor-field-type",
     name: "form-editor-field-type-hidden",
     fieldType: {
-        dataType: true,
         id: "hidden",
         label: "Hidden",
         description: "Predefined values, hidden text",

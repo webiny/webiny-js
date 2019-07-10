@@ -8,7 +8,6 @@ export default {
     type: "form-editor-field-type",
     name: "form-editor-field-type-text",
     fieldType: {
-        dataType: true,
         id: "text",
         validators: ["required", "minLength", "maxLength", "pattern", "in"],
         label: "Short Text",

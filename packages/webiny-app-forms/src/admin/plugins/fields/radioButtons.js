@@ -7,7 +7,6 @@ export default {
     type: "form-editor-field-type",
     name: "form-editor-field-type-radio",
     fieldType: {
-        dataType: true,
         id: "radio",
         validators: ["required"],
         label: "Radio",

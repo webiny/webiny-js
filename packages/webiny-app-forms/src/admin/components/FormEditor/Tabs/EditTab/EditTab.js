@@ -10,6 +10,7 @@ import { rowHandle, EditContainer, fieldHandle, fieldContainer, Row, RowContaine
 import { useFormEditor } from "webiny-app-forms/admin/components/FormEditor/Context";
 import { getPlugins } from "webiny-plugins";
 import type { FieldLayoutPositionType } from "webiny-app-forms/types";
+import { useI18N } from "webiny-app-i18n/components";
 
 import { i18n } from "webiny-app/i18n";
 const t = i18n.namespace("FormsApp.Editor.EditTab");
@@ -30,6 +31,8 @@ export const EditTab = () => {
     const editField = useCallback(field => {
         setEditingField(cloneDeep(field));
     });
+
+    const i18n = useI18N();
 
     const handleDropField = useCallback((source, dropTarget) => {
         const { pos, type, ui } = source;
@@ -54,7 +57,7 @@ export const EditTab = () => {
 
         // Find field plugin which handles the dropped field type "id".
         const plugin = getPlugins("form-editor-field-type").find(pl => pl.fieldType.id === type);
-        insertField(plugin.fieldType.createField(), dropTarget);
+        insertField(plugin.fieldType.createField({ i18n }), dropTarget);
     });
 
     const fields = getFields(true);

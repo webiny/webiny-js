@@ -6,7 +6,7 @@ import { useFormEditor } from "./Context";
 import { compose } from "recompose";
 // Components
 import EditorBar from "./Bar";
-import EditorContent from "./Content";
+import EditorContent from "./EditorContent";
 import DragPreview from "./DragPreview";
 import { withRouter } from "react-router-dom";
 import { withSnackbar } from "webiny-admin/components";
@@ -18,7 +18,7 @@ const FormEditor = ({ history, showSnackbar }) => {
     } = useFormEditor();
 
     React.useEffect(() => {
-        getForm(id).catch((e) => {
+        getForm(id).catch(() => {
             history.push(`/forms`);
             showSnackbar("Could not load form with given ID.");
         });

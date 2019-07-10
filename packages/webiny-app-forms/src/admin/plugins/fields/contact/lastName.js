@@ -1,16 +1,28 @@
+import textFieldPlugin from "./../text";
+
 export default {
     type: "form-editor-field-type",
     name: "form-editor-field-type-last-name",
     fieldType: {
-        id: "lastName",
+        ...textFieldPlugin.fieldType,
         group: "form-editor-field-group-contact",
+        id: "lastName",
         label: "Last name",
-        createField() {
+        unique: true,
+        createField(props) {
+            const { i18n } = props;
             return {
-                fieldId: this.id,
-                label: "Last name",
-                type: this.id,
-                validation: []
+                ...textFieldPlugin.fieldType.createField(),
+                _id: "lastName",
+                fieldId: "lastName",
+                label: {
+                    values: [
+                        {
+                            locale: i18n.getDefaultLocale().id,
+                            value: "Last name"
+                        }
+                    ]
+                }
             };
         }
     }

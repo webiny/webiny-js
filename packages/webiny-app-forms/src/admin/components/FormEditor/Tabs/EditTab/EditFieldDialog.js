@@ -21,6 +21,7 @@ import FieldTypeSelector from "./EditFieldDialog/FieldTypeSelector";
 import { i18n } from "webiny-app/i18n";
 const t = i18n.namespace("FormEditor.EditFieldDialog");
 import { useFormEditor } from "webiny-app-forms/admin/components/FormEditor/Context";
+import { useI18N } from "webiny-app-i18n/components";
 
 const dialogBody = css({
     "&.mdc-dialog__body": {
@@ -51,6 +52,7 @@ const EditFieldDialog = ({ field, onSubmit, ...props }: Props) => {
     const [screen, setScreen] = useState();
 
     const { getFieldType } = useFormEditor();
+    const i18n = useI18N();
 
     useEffect(() => {
         setCurrent(cloneDeep(field));
@@ -66,7 +68,14 @@ const EditFieldDialog = ({ field, onSubmit, ...props }: Props) => {
     });
 
     let render = null;
+    let headerTitle = t`Field Settings`;
+
     if (current) {
+        const fieldType = getFieldType(current.type);
+        if (fieldType) {
+            headerTitle = t`Field Settings - {fieldTypeLabel}`({ fieldTypeLabel: fieldType.label });
+        }
+
         switch (screen) {
             case "fieldOptions": {
                 render = (
@@ -133,7 +142,7 @@ const EditFieldDialog = ({ field, onSubmit, ...props }: Props) => {
                         <DialogBody className={dialogBody}>
                             <FieldTypeList>
                                 {getPlugins("form-editor-field-type")
-                                    .filter(pl => pl.fieldType.dataType)
+                                    .filter(pl => !pl.fieldType.group)
                                     .map(pl => (
                                         <FieldTypeSelector
                                             key={pl.name}
@@ -142,7 +151,9 @@ const EditFieldDialog = ({ field, onSubmit, ...props }: Props) => {
                                                 current && current.type === pl.fieldType.id
                                             }
                                             onClick={() => {
-                                                const newCurrent = pl.fieldType.createField();
+                                                const newCurrent = pl.fieldType.createField({
+                                                    i18n
+                                                });
                                                 if (current) {
                                                     // User edited existing field, that's why we still want to
                                                     // keep a couple of previous values.
@@ -172,13 +183,6 @@ const EditFieldDialog = ({ field, onSubmit, ...props }: Props) => {
         }
     }
 
-    let headerTitle = t`Field Settings`;
-    if (current) {
-        const fieldType = getFieldType(current.type);
-        if (fieldType) {
-            headerTitle = t`Field Settings - {fieldTypeLabel}`({ fieldTypeLabel: fieldType.label });
-        }
-    }
     return (
         <Dialog preventOutsideDismiss={true} open={!!current} onClose={onClose}>
             <DialogHeader>

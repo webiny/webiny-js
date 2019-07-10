@@ -8,7 +8,6 @@ export default {
     type: "form-editor-field-type",
     name: "form-editor-field-type-textarea",
     fieldType: {
-        dataType: true,
         id: "textarea",
         validators: ["required", "minLength", "maxLength", "pattern", "in"],
         label: "Long Test",

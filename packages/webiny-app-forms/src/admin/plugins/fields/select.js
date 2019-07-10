@@ -8,8 +8,6 @@ export default {
     type: "form-editor-field-type",
     name: "form-editor-field-type-select",
     fieldType: {
-        dataType: true,
-        id: "select",
         validators: ["required"],
         label: "Select",
         description: "Dropdown, select one of the options",
