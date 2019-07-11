@@ -23,7 +23,7 @@ export default {
     type: "form-editor-field-validator",
     name: "form-editor-field-validator-pattern",
     validator: {
-        id: "pattern",
+        name: "pattern",
         label: "Pattern",
         description: "Entered value must match a specific pattern.",
         renderSettings({ Bind, setValue, data }) {

@@ -4,7 +4,6 @@ import menus from "./menus";
 import fields from "./fields";
 import groups from "./groups";
 import validators from "./validators";
-import richEditor from "./richTextEditor";
 
 import formEditorPlugins from "webiny-app-forms/editor/plugins";
 import formSitePlugins from "webiny-app-forms/site/plugins";
@@ -26,7 +25,6 @@ export default [
     fields,
     groups,
     validators,
-    richEditor,
     formEditorPlugins,
     formSitePlugins
 ];

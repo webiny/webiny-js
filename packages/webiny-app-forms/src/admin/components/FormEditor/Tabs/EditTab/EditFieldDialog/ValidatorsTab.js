@@ -1,4 +1,4 @@
-import React, { useCallback } from "react";
+import React, { useMemo } from "react";
 import { getPlugins } from "webiny-plugins";
 import { Switch } from "webiny-ui/Switch";
 import {
@@ -6,105 +6,121 @@ import {
     SimpleFormContent,
     SimpleFormHeader
 } from "webiny-admin/components/SimpleForm";
+import { useFormEditor } from "webiny-app-forms/admin/components/FormEditor/Context";
+import { Form } from "webiny-form";
+import { cloneDeep, debounce } from "lodash";
 
-function useValidatorsTab({ form: formProps, value, onChange, field }) {
-    const { field: fieldType } = getPlugins("form-editor-field-type").find(
-        f => f.field.type === field.type
-    );
+const onFormChange = debounce(({ data, validationValue, onChangeValidation, validatorIndex }) => {
+    const newValidationValue = cloneDeep(validationValue);
+    newValidationValue[validatorIndex] = {
+        ...newValidationValue[validatorIndex],
+        ...cloneDeep(data)
+    };
+    onChangeValidation(newValidationValue);
+}, 200);
 
-    const validators = getPlugins("form-editor-field-validator")
-        .map(pl => pl.validator)
-        .map(v => {
-            if (fieldType.validators.includes(v.id)) {
-                return { optional: true, validator: v };
-            } else if (fieldType.validators.includes(`!${v.id}`)) {
-                return { optional: false, validator: v };
-            }
-            return null;
-        })
-        .filter(Boolean)
-        .sort((a, b) => {
-            if (!a.optional && b.optional) {
-                return -1;
-            }
-
-            if (a.optional && !b.optional) {
-                return 1;
-            }
-
-            return 0;
-        });
-
-    function createToggle(id, enabled) {
-        return useCallback(() => {
-            if (!enabled) {
-                onChange([...value, { id }]);
-            } else {
-                const index = value.findIndex(v => v.id === id);
-                onChange([...value.slice(0, index), ...value.slice(index + 1)]);
-            }
-        }, [id, enabled, value]);
+const onEnabledChange = ({ data, validationValue, onChangeValidation, validator }) => {
+    if (data) {
+        const index = validationValue.findIndex(item => item.name === validator.name);
+        onChangeValidation([
+            ...validationValue.slice(0, index),
+            ...validationValue.slice(index + 1)
+        ]);
+    } else {
+        onChangeValidation([...validationValue, { name: validator.name }]);
     }
-
-    function createSetValue(id, index) {
-        return useCallback(
-            (name, newValue) => {
-                formProps.setValue(`validation.${index}.${name}`, newValue);
-            },
-            [id, index]
-        );
-    }
-
-    function createBind(id, index) {
-        const { Bind } = formProps;
-        return useCallback(
-            ({ children, name, ...props }) => {
-                return (
-                    <Bind {...props} name={`validation.${index}.${name}`}>
-                        {children}
-                    </Bind>
-                );
-            },
-            [id, index]
-        );
-    }
-
-    return { createBind, createToggle, createSetValue, validators, formProps };
-}
+};
 
 const ValidatorsTab = props => {
-    const { validators, createBind, createToggle, createSetValue } = useValidatorsTab(props);
+    const { field, form } = props;
+    const { getFieldPlugin } = useFormEditor();
+
+    const fieldType = getFieldPlugin({ name: field.name });
+
+    const validators = useMemo(() => {
+        return getPlugins("form-editor-field-validator")
+            .map(plugin => plugin.validator)
+            .map(validator => {
+                if (fieldType.field.validators.includes(validator.name)) {
+                    return { optional: true, validator: validator };
+                } else if (fieldType.field.validators.includes(`!${validator.name}`)) {
+                    return { optional: false, validator: validator };
+                }
+                return null;
+            })
+            .filter(Boolean)
+            .sort((a, b) => {
+                if (!a.optional && b.optional) {
+                    return -1;
+                }
+
+                if (a.optional && !b.optional) {
+                    return 1;
+                }
+
+                return 0;
+            });
+    }, []);
+
+    const { Bind } = form;
 
     return (
-        <>
-            {validators.map(({ optional, validator: v }) => {
-                const vIndex = props.value.findIndex(x => x.id === v.id);
-                const enabled = vIndex > -1;
-                const hasSettings = typeof v.renderSettings === "function";
-                const Bind = createBind(v.id, vIndex);
-                const setValue = createSetValue(v.id, vIndex);
-                const data = props.value[vIndex];
+        <Bind name={"validation"}>
+            {({ value: validationValue, onChange: onChangeValidation }) =>
+                validators.map(({ optional, validator }) => {
+                    const validatorIndex = validationValue.findIndex(
+                        item => item.name === validator.name
+                    );
+                    const data = validationValue[validatorIndex];
 
-                return (
-                    <SimpleForm key={v.id}>
-                        <SimpleFormHeader title={v.label} description={v.description}>
-                            {optional && (
-                                <Switch
-                                    label="Enabled"
-                                    value={enabled}
-                                    onChange={createToggle(v.id, enabled)}
-                                />
+                    return (
+                        <SimpleForm key={validator.name}>
+                            <SimpleFormHeader
+                                title={validator.label}
+                                description={validator.description}
+                            >
+                                {optional && (
+                                    <Switch
+                                        label="Enabled"
+                                        value={validatorIndex >= 0}
+                                        onChange={() =>
+                                            onEnabledChange({
+                                                data,
+                                                validationValue,
+                                                onChangeValidation,
+                                                validator
+                                            })
+                                        }
+                                    />
+                                )}
+                            </SimpleFormHeader>
+                            {data && typeof validator.renderSettings === "function" && (
+                                <Form
+                                    data={data}
+                                    onChange={data =>
+                                        onFormChange({
+                                            data,
+                                            validationValue,
+                                            onChangeValidation,
+                                            validatorIndex
+                                        })
+                                    }
+                                >
+                                    {({ Bind }) => (
+                                        <SimpleFormContent>
+                                            {validator.renderSettings({
+                                                data,
+                                                Bind
+                                            })}
+                                        </SimpleFormContent>
+                                    )}
+                                </Form>
                             )}
-                        </SimpleFormHeader>
-                        {enabled && hasSettings && (
-                            <SimpleFormContent>
-                                {v.renderSettings({ data, setValue, Bind })}
-                            </SimpleFormContent>
-                        )}
-                    </SimpleForm>
-                );
-            })}
-        </>
+                        </SimpleForm>
+                    );
+                })
+            }
+        </Bind>
     );
 };
 

@@ -93,8 +93,8 @@ const EditFieldDialog = ({ field, onSubmit, ...props }: Props) => {
                                                     setScreen={setScreen}
                                                 />
                                             </Tab>
-                                            {Array.isArray(current.validators) &&
-                                                current.validators.length > 0 && (
+                                            {Array.isArray(fieldPlugin.field.validators) &&
+                                                fieldPlugin.field.validators.length > 0 && (
                                                     <Tab label={"Validators"}>
                                                         <ValidatorsTab
                                                             form={form}

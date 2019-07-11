@@ -7,7 +7,7 @@ export default {
     type: "form-editor-field-validator",
     name: "form-editor-field-validator-in",
     validator: {
-        id: "in",
+        name: "in",
         label: "Specific values",
         description:
             "You won't be able to submit the form if the field value is not in the list of specified values",

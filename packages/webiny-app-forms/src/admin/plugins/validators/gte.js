@@ -7,7 +7,7 @@ export default {
     type: "form-editor-field-validator",
     name: "form-editor-field-validator-gte",
     validator: {
-        id: "gte",
+        name: "gte",
         label: "Greater or equal",
         description: "Entered value must be greater than the one configured to submit the form.",
         renderSettings({ Bind }) {

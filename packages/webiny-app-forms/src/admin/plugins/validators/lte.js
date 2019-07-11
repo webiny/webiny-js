@@ -7,7 +7,7 @@ export default {
     type: "form-editor-field-validator",
     name: "form-editor-field-validator-lte",
     validator: {
-        id: "lte",
+        name: "lte",
         label: "Smaller or equal",
         description: "Entered value must be smaller than the one configured to submit the form.",
         renderSettings({ Bind }) {

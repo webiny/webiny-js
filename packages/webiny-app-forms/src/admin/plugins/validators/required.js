@@ -16,7 +16,6 @@ export default {
                         <Bind
                             name={"message"}
                             validators={["required"]}
-                            defaultValue={"Value is required."}
                         >
                             <I18NInput
                                 label={"Message"}
