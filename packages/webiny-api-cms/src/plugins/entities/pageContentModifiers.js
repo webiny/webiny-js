@@ -29,11 +29,10 @@ export default [
         }
     },
     {
-        name: "cms-element-modifier-background-image",
+        name: "cms-element-modifier-image",
         type: "cms-element-modifier",
         element: "cms-element-image",
         getStorageValue({ element }) {
-
             const file = get(element, "data.image.file.id");
             if (file) {
                 set(element, "data.image.file", file);
