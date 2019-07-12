@@ -1,5 +1,9 @@
 // @flow
-const { buildFederatedSchema } = require("@apollo/federation");
+import { gql } from "apollo-server-lambda";
+import { buildFederatedSchema } from "@apollo/federation";
+import GraphQLJSON from "graphql-type-json";
+import { GraphQLDateTime } from "graphql-iso-date";
+import GraphQLLong from "graphql-type-long";
 import { getPlugins } from "webiny-plugins";
 
 /**
@@ -14,7 +18,20 @@ export async function prepareSchema(config: Object) {
         }
     }
 
-    const schemaDefs = [];
+    const schemaDefs = [
+        {
+            typeDefs: gql`
+                scalar JSON
+                scalar Long
+                scalar DateTime
+            `,
+            resolvers: {
+                JSON: GraphQLJSON,
+                DateTime: GraphQLDateTime,
+                Long: GraphQLLong
+            }
+        }
+    ];
     const schemaPlugins = getPlugins("graphql-schema");
     for (let i = 0; i < schemaPlugins.length; i++) {
         const { schema } = schemaPlugins[i];

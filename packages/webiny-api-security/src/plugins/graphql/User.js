@@ -1,4 +1,3 @@
-// @flow
 import {
     resolveCreate,
     resolveDelete,
@@ -7,38 +6,35 @@ import {
     resolveUpdate
 } from "webiny-api/graphql";
 
-import resolveLoginUser from "./userResolvers/loginUser";
+import resolveLoginSecurityUser from "./userResolvers/loginUser";
 import resolveLoginUsingToken from "./userResolvers/loginUsingToken";
-import resolveGetCurrentUser from "./userResolvers/getCurrentUser";
-import resolveUpdateCurrentUser from "./userResolvers/updateCurrentUser";
-import resolveGetCurrentUserSettings from "./userResolvers/getCurrentUserSettings";
-import resolveUpdateCurrentUserSettings from "./userResolvers/updateCurrentUserSettings";
+import resolveGetCurrentSecurityUser from "./userResolvers/getCurrentUser";
+import resolveUpdateCurrentSecurityUser from "./userResolvers/updateCurrentUser";
+import resolveGetCurrentSecurityUserSettings from "./userResolvers/getCurrentUserSettings";
+import resolveUpdateCurrentSecurityUserSettings from "./userResolvers/updateCurrentUserSettings";
 
-const userFetcher = ctx => ctx.security.entities.User;
-const userSettingsFetcher = ctx => ctx.security.entities.UserSettings;
+const userFetcher = ctx => ctx.getEntity("SecurityUser");
+const userSettingsFetcher = ctx => ctx.getEntity("SecurityUserSettings");
 
 export default {
     typeDefs: /* GraphQL */ `
-        type Avatar {
-            name: String
-            size: Int
-            type: String
-            src: String
-        }
-
-        type UserLogin {
+        type SecurityUserLogin {
             token: String
             expiresOn: Int
-            user: User
+            user: SecurityUser
         }
 
-        type UserAccess {
+        type SecurityUserAccess {
             scopes: [String]
             roles: [String]
             fullAccess: Boolean
         }
 
-        type User @key(fields: "id") {
+        extend type File @key(fields: "id") {
+            id: ID @external
+        }
+
+        type SecurityUser @key(fields: "id") {
             id: ID
             email: String
             firstName: String
@@ -47,65 +43,93 @@ export default {
             gravatar: String
             avatar: File
             enabled: Boolean
-            groups: [Group]
-            roles: [Role]
+            groups: [SecurityGroup]
+            roles: [SecurityRole]
             scopes: [String]
-            access: UserAccess
+            access: SecurityUserAccess
             createdOn: DateTime
         }
 
         # Contains user settings by specific key, ex: search-filters.
-        type UserSettings {
+        type SecurityUserSettings {
             key: String
             data: JSON
         }
 
         # This input type is used by administrators to update other user's accounts
-        input UserInput {
+        input SecurityUserInput {
             email: String
             password: String
             firstName: String
             lastName: String
-            avatar: FileInput
+            #avatar: FileInput
             enabled: Boolean
             groups: [ID]
             roles: [ID]
         }
 
         # This input type is used by the user who is updating his own account
-        input CurrentUserInput {
+        input CurrentSecurityUserInput {
             email: String
             firstName: String
             lastName: String
-            avatar: FileInput
+            #avatar: FileInput
             password: String
         }
 
-        type UserResponse {
-            data: User
-            error: Error
+        type SecurityUserResponse {
+            data: SecurityUser
+            error: SecurityUserError
         }
 
-        type UserListResponse {
-            data: [User]
-            meta: ListMeta
-            error: Error
+        input SecurityUserSearchInput {
+            query: String
+            fields: [String]
+            operator: String
         }
 
-        type UserLoginResponse {
-            data: UserLogin
-            error: Error
+        type SecurityUserListMeta {
+            totalCount: Int
+            totalPages: Int
+            page: Int
+            perPage: Int
+            from: Int
+            to: Int
+            previousPage: Int
+            nextPage: Int
+        }
+
+        type SecurityUserError {
+            code: String
+            message: String
+            data: JSON
+        }
+
+        type SecurityUserDeleteResponse {
+            data: Boolean
+            error: SecurityUserError
+        }
+
+        type SecurityUserListResponse {
+            data: [SecurityUser]
+            meta: SecurityUserListMeta
+            error: SecurityUserError
+        }
+
+        type SecurityUserLoginResponse {
+            data: SecurityUserLogin
+            error: SecurityUserError
         }
 
         extend type SecurityQuery {
             "Get current user"
-            getCurrentUser: UserResponse
+            getCurrentUser: SecurityUserResponse
 
             "Get settings of current user"
             getCurrentUserSettings(key: String!): JSON
 
             "Get a single user by id or specific search criteria"
-            getUser(id: ID, where: JSON, sort: String): UserResponse
+            getUser(id: ID, where: JSON, sort: String): SecurityUserResponse
 
             "Get a list of users"
             listUsers(
@@ -113,42 +137,47 @@ export default {
                 perPage: Int
                 where: JSON
                 sort: JSON
-                search: SearchInput
-            ): UserListResponse
+                search: SecurityUserSearchInput
+            ): SecurityUserListResponse
         }
 
         extend type SecurityMutation {
             "Login user"
-            loginUser(username: String!, password: String!, remember: Boolean): UserLoginResponse
+            loginUser(username: String!, password: String!, remember: Boolean): SecurityUserLoginResponse
 
             "Login user using token"
-            loginUsingToken(token: String!): UserLoginResponse
+            loginUsingToken(token: String!): SecurityUserLoginResponse
 
             "Update current user"
-            updateCurrentUser(data: CurrentUserInput!): UserResponse
+            updateCurrentUser(data: CurrentSecurityUserInput!): SecurityUserResponse
 
             "Update settings of current user"
             updateCurrentUserSettings(key: String!, data: JSON!): JSON
 
-            createUser(data: UserInput!): UserResponse
+            createUser(data: SecurityUserInput!): SecurityUserResponse
 
-            updateUser(id: ID!, data: UserInput!): UserResponse
+            updateUser(id: ID!, data: SecurityUserInput!): SecurityUserResponse
 
-            deleteUser(id: ID!): DeleteResponse
+            deleteUser(id: ID!): SecurityUserDeleteResponse
         }
     `,
     resolvers: {
+        SecurityUser: {
+            __resolveReference(reference, context) {
+                return userFetcher(context).findById(reference.id);
+            }
+        },
         SecurityQuery: {
-            getCurrentUser: resolveGetCurrentUser(userFetcher),
-            getCurrentUserSettings: resolveGetCurrentUserSettings(userSettingsFetcher),
+            getCurrentUser: resolveGetCurrentSecurityUser(userFetcher),
+            getCurrentUserSettings: resolveGetCurrentSecurityUserSettings(userSettingsFetcher),
             getUser: resolveGet(userFetcher),
             listUsers: resolveList(userFetcher)
         },
         SecurityMutation: {
-            loginUser: resolveLoginUser(userFetcher),
+            loginUser: resolveLoginSecurityUser(userFetcher),
             loginUsingToken: resolveLoginUsingToken(userFetcher),
-            updateCurrentUser: resolveUpdateCurrentUser(userFetcher),
-            updateCurrentUserSettings: resolveUpdateCurrentUserSettings(userSettingsFetcher),
+            updateCurrentUser: resolveUpdateCurrentSecurityUser(userFetcher),
+            updateCurrentUserSettings: resolveUpdateCurrentSecurityUserSettings(userSettingsFetcher),
             createUser: resolveCreate(userFetcher),
             updateUser: resolveUpdate(userFetcher),
             deleteUser: resolveDelete(userFetcher)

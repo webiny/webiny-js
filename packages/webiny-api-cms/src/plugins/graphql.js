@@ -1,9 +1,8 @@
 // @flow
-import { getPlugins } from "webiny-plugins";
+import { gql } from "apollo-server-lambda";
+import { merge } from "lodash";
 import { dummyResolver } from "webiny-api/graphql";
 import { hasScope } from "webiny-api-security";
-import { FileType, FileInputType } from "webiny-api-files/graphql";
-
 import page from "./graphql/Page";
 import category from "./graphql/Category";
 import menu from "./graphql/Menu";
@@ -13,40 +12,64 @@ export default {
     name: "graphql-schema-cms",
     schema: {
         namespace: "cms",
-        typeDefs: () => [
-            FileType,
-            FileInputType,
-            `
+        typeDefs: gql`
+            input PageBuilderSearchInput {
+                query: String
+                fields: [String]
+                operator: String
+            }
+
+            type PageBuilderListMeta {
+                totalCount: Int
+                totalPages: Int
+                page: Int
+                perPage: Int
+                from: Int
+                to: Int
+                previousPage: Int
+                nextPage: Int
+            }
+
+            type PageBuilderError {
+                code: String
+                message: String
+                data: JSON
+            }
+
+            type PageBuilderDeleteResponse {
+                data: Boolean
+                error: PageBuilderError
+            }
+
             type PageBuilderQuery {
                 _empty: String
             }
-            
+
             type PageBuilderMutation {
                 _empty: String
             }
-            
+
             type CmsQuery {
                 pageBuilder: PageBuilderQuery
-            }   
-            
+            }
+
             type CmsMutation {
                 pageBuilder: PageBuilderMutation
             }
-            
-            type Query {
+
+            extend type Query {
                 cms: CmsQuery
             }
-            
-            type Mutation {
+
+            extend type Mutation {
                 cms: CmsMutation
             }
+
+            ${page.typeDefs}
+            ${category.typeDefs}
+            ${menu.typeDefs}
         `,
-            page.typeDefs,
-            category.typeDefs,
-            menu.typeDefs,
-            ...getPlugins("graphql-schema-plugin-cms").map(pl => pl.typeDefs)
-        ],
-        resolvers: [
+        resolvers: merge(
             {
                 Query: {
                     cms: dummyResolver
@@ -55,7 +78,7 @@ export default {
                     cms: dummyResolver
                 },
                 CmsQuery: {
-                    pageBuilder: dummyResolver
+                    pageBuilder: dummyResolver,
                 },
                 CmsMutation: {
                     pageBuilder: dummyResolver
@@ -64,7 +87,7 @@ export default {
             page.resolvers,
             category.resolvers,
             menu.resolvers
-        ]
+        )
     },
     security: {
         shield: {
@@ -102,10 +125,10 @@ export default {
                 createElement: hasScope("cms:element:crud"),
                 updateElement: hasScope("cms:element:crud"),
                 deleteElement: hasScope("cms:element:crud")
-            },
-            SettingsMutation: {
-                cms: hasScope("cms:settings")
             }
+            /* TODO: SettingsMutation: {
+                cms: hasScope("cms:settings")
+            }*/
         }
     }
 };

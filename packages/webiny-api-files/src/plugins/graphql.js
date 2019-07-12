@@ -16,7 +16,6 @@ export default ([
         type: "graphql-schema",
         name: "graphql-schema-files",
         schema: {
-            namespace: "files",
             typeDefs: gql`
                 input FileInput {
                     name: String
@@ -27,18 +26,36 @@ export default ([
                     meta: JSON
                 }
 
+                type FileListMeta {
+                    totalCount: Int
+                    totalPages: Int
+                    page: Int
+                    perPage: Int
+                    from: Int
+                    to: Int
+                    previousPage: Int
+                    nextPage: Int
+                }
+
+                type FileError {
+                    code: String
+                    message: String
+                    data: JSON
+                }
+
                 type FileListResponse {
                     data: [File]
-                    meta: ListMeta
-                    error: Error
+                    meta: FileListMeta
+                    error: FileError
                 }
 
                 type FileResponse {
                     data: File
-                    error: Error
+                    error: FileError
                 }
 
-                type File {
+                type File @key(fields: "id") {
+                    id: ID
                     name: String
                     size: Int
                     type: String
@@ -63,10 +80,15 @@ export default ([
                     listTags: [String]
                 }
 
+                type FilesDeleteResponse {
+                    data: Boolean
+                    error: FileError
+                }
+
                 type FilesMutation {
                     createFile(data: FileInput!): FileResponse
                     updateFileBySrc(src: String!, data: FileInput!): FileResponse
-                    deleteFile(id: ID!): DeleteResponse
+                    deleteFile(id: ID!): FilesDeleteResponse
                 }
 
                 extend type Query {

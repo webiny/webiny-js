@@ -18,13 +18,10 @@
     "@babel/runtime": "^7.0.0",
     "apollo-server-lambda": "^2.6.7",
     "graphql": "^14.4.2",
-    "graphql-iso-date": "^3.6.1",
     "graphql-middleware": "^3.0.2",
     "graphql-tools": "^4.0.5",
-    "graphql-type-json": "^0.3.0",
     "graphql-type-long": "^0.1.1",
     "lodash": "^4.17.4",
-    "repropose": "^1.0.0",
     "webiny-entity": "0.0.0",
     "webiny-model": "0.0.0",
     "webiny-plugins": "0.0.0"

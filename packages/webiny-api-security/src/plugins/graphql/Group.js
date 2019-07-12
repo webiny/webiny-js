@@ -11,51 +11,77 @@ const groupFetcher = ctx => ctx.security.entities.Group;
 
 export default {
     typeDefs: /* GraphQL */ `
-        type Group {
+        type SecurityGroup {
             id: ID
             name: String
             slug: String
             createdOn: DateTime
             description: String
-            roles: [Role]
+            roles: [SecurityRole]
         }
 
-        input GroupInput {
+        input SecurityGroupInput {
             id: ID
             name: String
             slug: String
             description: String
             roles: [ID]
         }
-
-        type GroupResponse {
-            data: Group
-            error: Error
+        
+        input SecurityGroupSearchInput {
+            query: String
+            fields: [String]
+            operator: String
         }
 
-        type GroupListResponse {
-            data: [Group]
-            meta: ListMeta
-            error: Error
+        type SecurityGroupListMeta {
+            totalCount: Int
+            totalPages: Int
+            page: Int
+            perPage: Int
+            from: Int
+            to: Int
+            previousPage: Int
+            nextPage: Int
+        }
+
+        type SecurityGroupError {
+            code: String
+            message: String
+            data: JSON
+        }
+
+        type SecurityGroupDeleteResponse {
+            data: Boolean
+            error: SecurityGroupError
+        }
+
+        type SecurityGroupResponse {
+            data: SecurityGroup
+            error: SecurityGroupError
+        }
+
+        type SecurityGroupListResponse {
+            data: [SecurityGroup]
+            meta: SecurityGroupListMeta
+            error: SecurityGroupError
         }
         extend type SecurityQuery {
-            getGroup(id: ID, where: JSON, sort: String): GroupResponse
+            getGroup(id: ID, where: JSON, sort: String): SecurityGroupResponse
 
             listGroups(
                 page: Int
                 perPage: Int
                 where: JSON
                 sort: JSON
-                search: SearchInput
-            ): GroupListResponse
+                search: SecurityGroupSearchInput
+            ): SecurityGroupListResponse
         }
 
         extend type SecurityMutation {
-            createGroup(data: GroupInput!): GroupResponse
-
-            updateGroup(id: ID!, data: GroupInput!): GroupResponse
-
-            deleteGroup(id: ID!): DeleteResponse
+            createGroup(data: SecurityGroupInput!): SecurityGroupResponse
+            updateGroup(id: ID!, data: SecurityGroupInput!): SecurityGroupResponse
+            deleteGroup(id: ID!): SecurityGroupDeleteResponse
         }
     `,
     resolvers: {

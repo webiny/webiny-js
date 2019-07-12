@@ -5,8 +5,8 @@ import pageSettingsFactory from "./PageSettings.model";
 import mdbid from "mdbid";
 
 export interface IPage extends Entity {
-    createdBy: Entity;
-    updatedBy: Entity;
+    createdBy: string;
+    updatedBy: string;
     publishedOn: ?Date;
     title: string;
     snippet: string;
@@ -24,8 +24,8 @@ export const pageFactory = (context: Object): Class<IPage> => {
     return class Page extends Entity {
         static classId = "CmsPage";
 
-        createdBy: Entity;
-        updatedBy: Entity;
+        createdBy: string;
+        updatedBy: string;
         publishedOn: ?Date;
         title: string;
         snippet: string;
@@ -41,20 +41,19 @@ export const pageFactory = (context: Object): Class<IPage> => {
         constructor() {
             super();
 
-            const { getUser, cms, security } = context;
-            const { Category } = cms.entities;
-            const { User } = security.entities;
+            const { getUser, getEntity } = context;
+            const Category = getEntity("CmsCategory");
 
             this.attr("category")
                 .entity(Category)
                 .setValidators("required");
 
             this.attr("createdBy")
-                .entity(User)
+                .char()
                 .setSkipOnPopulate();
 
             this.attr("updatedBy")
-                .entity(User)
+                .char()
                 .setSkipOnPopulate();
 
             this.attr("publishedOn")
@@ -80,7 +79,7 @@ export const pageFactory = (context: Object): Class<IPage> => {
                 .onSet(value => (this.locked ? this.content : value));
 
             this.attr("settings")
-                .model(pageSettingsFactory({ entities: cms.entities, page: this }))
+                .model(pageSettingsFactory({ getEntity, page: this }))
                 .onSet(value => (this.locked ? this.settings : value));
 
             this.attr("version").integer();

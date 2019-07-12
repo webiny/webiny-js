@@ -14,7 +14,6 @@ export default ([
         type: "graphql-schema",
         name: "graphql-schema-security",
         schema: {
-            namespace: "security",
             typeDefs: gql`
                 type SecurityQuery {
                     # Returns all scopes that were registered throughout the schema.

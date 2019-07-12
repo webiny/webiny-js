@@ -31,13 +31,13 @@ export default {
         
         type PageBuilderCategoryResponse {
             data: PageBuilderCategory
-            error: Error
+            error: PageBuilderError
         }
         
         type PageBuilderCategoryListResponse {
             data: [PageBuilderCategory]
-            meta: ListMeta
-            error: Error
+            meta: PageBuilderListMeta
+            error: PageBuilderError
         }
         
         extend type PageBuilderQuery {
@@ -52,7 +52,7 @@ export default {
                 perPage: Int
                 where: JSON
                 sort: JSON
-                search: SearchInput
+                search: PageBuilderSearchInput
             ): PageBuilderCategoryListResponse
         }
         
@@ -68,7 +68,7 @@ export default {
         
             deleteCategory(
                 id: ID!
-            ): DeleteResponse
+            ): PageBuilderDeleteResponse
         }
     `,
     resolvers: {

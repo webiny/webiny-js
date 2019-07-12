@@ -18,7 +18,16 @@ module.exports = {
                 WEBINY_JWT_SECRET: process.env.WEBINY_JWT_SECRET
             }
         },
-/*        "demo-service-headless": {
+        "demo-service-security": {
+            method: "ALL",
+            path: "/function/security",
+            env: {
+                MONGODB_SERVER: process.env.MONGODB_SERVER,
+                MONGODB_DB_NAME: process.env.MONGODB_DB_NAME,
+                WEBINY_JWT_SECRET: process.env.WEBINY_JWT_SECRET
+            }
+        }
+        /*        "demo-service-headless": {
             method: "ALL",
             path: "/function/headless",
             env: {

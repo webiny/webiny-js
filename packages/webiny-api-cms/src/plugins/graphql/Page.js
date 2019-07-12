@@ -1,4 +1,3 @@
-// @flow
 import {
     resolveCreate,
     resolveUpdate,
@@ -6,7 +5,6 @@ import {
     resolveGet,
     resolveList
 } from "webiny-api/graphql";
-import UserType from "webiny-api-security/plugins/graphql/User";
 import createRevisionFrom from "./pageResolvers/createRevisionFrom";
 import listPages from "./pageResolvers/listPages";
 import listPublishedPages from "./pageResolvers/listPublishedPages";
@@ -22,12 +20,15 @@ const pageFetcher = ctx => ctx.cms.entities.Page;
 const elementFetcher = ctx => ctx.cms.entities.Element;
 
 export default {
-    typeDefs: () => [
-        UserType.typeDefs,
-        /* GraphQL*/ `type PageBuilderPage {
+    typeDefs: /* GraphQL*/ `
+        extend type SecurityUser @key(fields: "id") {
+            id: ID @external
+        }
+            
+        type PageBuilderPage {
             id: ID
-            createdBy: User
-            updatedBy: User
+            createdBy: SecurityUser
+            updatedBy: SecurityUser
             savedOn: DateTime
             publishedOn: DateTime
             category: PageBuilderCategory
@@ -88,25 +89,41 @@ export default {
         }
         
         # Response types
+        type PageBuilderPageListMeta {
+            totalCount: Int
+            totalPages: Int
+            page: Int
+            perPage: Int
+            from: Int
+            to: Int
+            previousPage: Int
+            nextPage: Int
+        }
+
+        type PageBuilderPageDeleteResponse {
+            data: Boolean
+            error: PageBuilderError
+        }
+            
         type PageBuilderPageResponse {
             data: PageBuilderPage
-            error: Error
+            error: PageBuilderError
         }
         
         type PageBuilderPageListResponse {
             data: [PageBuilderPage]
-            meta: ListMeta
-            error: Error
+            meta: PageBuilderListMeta
+            error: PageBuilderError
         }
         
         type PageBuilderElementResponse {
             data: PageBuilderElement
-            error: Error
+            error: PageBuilderError
         }
         
         type PageBuilderElementListResponse {
             data: [PageBuilderElement]
-            meta: ListMeta
+            meta: PageBuilderListMeta
         }
         
         type PageBuilderSearchTagsResponse {
@@ -115,7 +132,7 @@ export default {
         
         type PageBuilderOembedResponse {
             data: JSON
-            error: Error
+            error: PageBuilderError
         }
         
         input PageBuilderOEmbedInput {
@@ -210,12 +227,12 @@ export default {
             # Delete page and all of its revisions
             deletePage(
                 id: ID!
-            ): DeleteResponse
+            ): PageBuilderDeleteResponse
             
             # Delete a single revision
             deleteRevision(
                 id: ID!
-            ): DeleteResponse
+            ): PageBuilderDeleteResponse
             
             # Create element
             createElement(
@@ -230,13 +247,20 @@ export default {
             # Delete element
             deleteElement(
                 id: ID!
-            ): DeleteResponse
+            ): PageBuilderDeleteResponse
             
-            updateImageSize: DeleteResponse
+            updateImageSize: PageBuilderDeleteResponse
         },
-    `
-    ],
+    `,
     resolvers: {
+        PageBuilderPage: {
+            createdBy(page) {
+                return { __typename: "SecurityUser", id: page.createdBy };
+            },
+            updatedBy(page) {
+                return { __typename: "SecurityUser", id: page.updatedBy };
+            }
+        },
         PageBuilderQuery: {
             getPage: resolveGet(pageFetcher),
             listPages: listPages(pageFetcher),

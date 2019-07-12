@@ -32,13 +32,13 @@ export default {
         
         type PageBuilderMenuResponse {
             data: PageBuilderMenu
-            error: Error
+            error: PageBuilderError
         }
         
         type PageBuilderMenuListResponse {
             data: [PageBuilderMenu]
-            meta: ListMeta
-            error: Error
+            meta: PageBuilderListMeta
+            error: PageBuilderError
         }
             
         extend type PageBuilderQuery {
@@ -53,7 +53,7 @@ export default {
                 perPage: Int
                 where: JSON
                 sort: JSON
-                search: SearchInput
+                search: PageBuilderSearchInput
             ): PageBuilderMenuListResponse
             
             "Returns menu by given slug."
@@ -74,7 +74,7 @@ export default {
         
             deleteMenu(
                 id: ID!
-            ): DeleteResponse
+            ): PageBuilderDeleteResponse
         }
     `,
     resolvers: {

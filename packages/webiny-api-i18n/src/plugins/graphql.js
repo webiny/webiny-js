@@ -18,7 +18,6 @@ export default ([
         type: "graphql-schema",
         name: "graphql-schema-i18n",
         schema: {
-            namespace: "i18n",
             typeDefs: gql`
                 extend type Query {
                     i18n: I18NQuery
@@ -40,6 +39,44 @@ export default ([
                     code: String
                     default: Boolean
                     createdOn: DateTime
+                }
+
+                input I18NLocaleValueInput {
+                    value: JSON
+                    locale: String!
+                }
+
+                input I18NValueInput {
+                    values: [I18NLocaleValueInput]
+                }
+
+                type I18NLocaleValue {
+                    value: JSON
+                    locale: String!
+                }
+
+                type I18NValue {
+                    value: JSON
+                    values: [I18NLocaleValue]!
+                }
+
+                input I18NStringLocaleValueInput {
+                    value: String
+                    locale: String!
+                }
+
+                input I18NStringValueInput {
+                    values: [I18NStringLocaleValueInput]
+                }
+
+                type I18NStringLocaleValue {
+                    value: String
+                    locale: String!
+                }
+
+                type I18NStringValue {
+                    value: String
+                    values: [I18NStringLocaleValue]!
                 }
 
                 type I18NLocaleResponse {
