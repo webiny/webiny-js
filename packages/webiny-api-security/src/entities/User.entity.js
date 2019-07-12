@@ -5,7 +5,6 @@ import get from "lodash/get";
 import { Entity } from "webiny-entity";
 import type { IGroup } from "./Group.entity";
 import type { IRole } from "./Role.entity";
-import FileModel from "./File.model";
 
 type AccessType = {
     scopes: Array<string>,

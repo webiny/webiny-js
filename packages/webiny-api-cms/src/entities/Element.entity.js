@@ -1,6 +1,5 @@
 // @flow
 import { Entity } from "webiny-entity";
-import FileModel from "./File.model";
 import createContentAttribute from "./Page/ContentAttribute";
 
 type ElementType = "element" | "block";
@@ -25,20 +24,16 @@ export function elementFactory(context): Class<IElement> {
 
         constructor() {
             super();
-
             this.attr("name")
                 .char()
                 .setValidators("required");
-
             this.attr("category").char();
-
             this.attr("content").custom(createContentAttribute(context));
-
             this.attr("type")
                 .char()
                 .setValidators("required,in:element:block");
 
-            this.attr("preview").model(FileModel);
+            this.attr("preview").entity(context.files.entities.File);
         }
     };
 }
