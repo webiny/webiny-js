@@ -1,5 +1,5 @@
 {
-  "name": "demo-gateway",
+  "name": "demo-api-gateway",
   "version": "1.0.0",
   "dependencies": {
     "@apollo/gateway": "^0.6.12"

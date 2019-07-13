@@ -3,11 +3,12 @@ import "source-map-support/register";
 import { registerPlugins } from "webiny-plugins";
 import { createHandler as createBaseHandler } from "webiny-api";
 import servicePlugins from "webiny-api/plugins/service";
+import securityPlugins from "webiny-api-security/plugins/service";
 import headlessPlugins from "webiny-api-headless/plugins";
-import createConfig from "./configs";
+import createConfig from "demo-service-config";
 
 
-registerPlugins(servicePlugins, headlessPlugins);
+registerPlugins(servicePlugins, securityPlugins, headlessPlugins);
 
 /**
  * `createHandler(context)` - function which returns an actual handler function.

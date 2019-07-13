@@ -1,18 +1,17 @@
 {
-  "name": "demo-service-security",
+  "name": "demo-service-config",
+  "private": true,
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
-  "scripts": {
-    "build": "cross-env NODE_ENV=production npx webpack --out build"
-  },
+  "main": "src/index.js",
   "author": "",
   "license": "MIT",
   "dependencies": {
     "@babel/runtime": "^7.0.0",
-    "webiny-api": "0.0.0",
-    "webiny-api-security": "0.0.0",
-    "webiny-plugins": "0.0.0",
+    "date-fns": "^1.29.0",
+    "lodash": "^4.17.11",
+    "mongodb": "^3.1.13",
+    "webiny-entity-mongodb": "0.0.0",
     "source-map-support": "^0.5.0"
   },
   "devDependencies": {
@@ -24,12 +23,6 @@
     "@babel/plugin-transform-runtime": "^7.0.0",
     "@babel/preset-env": "^7.0.0",
     "@babel/preset-flow": "^7.0.0",
-    "@babel/register": "^7.0.0",
-    "babel-eslint": "^9.0.0",
-    "babel-loader": "^8.0.0",
-    "cross-env": "^5.1.5",
-    "get-yarn-workspaces": "^1.0.2",
-    "webpack-cli": "^3.1.0",
-    "webpack-node-externals": "^1.7.2"
+    "@babel/register": "^7.0.0"
   }
 }

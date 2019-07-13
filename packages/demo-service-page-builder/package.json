@@ -13,15 +13,9 @@
   "license": "MIT",
   "dependencies": {
     "@babel/runtime": "^7.0.0",
-    "date-fns": "^1.29.0",
-    "dotenv": "^5.0.1",
-    "lodash": "^4.17.11",
-    "mongodb": "^3.1.13",
     "webiny-api": "0.0.0",
     "webiny-api-cms": "0.0.0",
-    "webiny-api-files": "0.0.0",
     "webiny-api-security": "0.0.0",
-    "webiny-entity-mongodb": "0.0.0",
     "webiny-install": "0.0.0",
     "webiny-api-cookie-policy": "0.0.0",
     "webiny-api-google-tag-manager": "0.0.0",
@@ -41,18 +35,8 @@
     "@babel/register": "^7.0.0",
     "babel-eslint": "^9.0.0",
     "babel-loader": "^8.0.0",
-    "busboy": "^0.3.0",
-    "chalk": "^2.4.1",
-    "cross-env": "^5.1.5",
-    "fs-extra": "^7.0.0",
     "get-yarn-workspaces": "^1.0.2",
-    "inquirer": "^6.2.0",
-    "raw-loader": "^1.0.0",
-    "slugify": "^1.3.4",
     "webpack-cli": "^3.1.0",
     "webpack-node-externals": "^1.7.2"
-  },
-  "peerDependencies": {
-    "mongodb": "^3.1.13"
   }
 }

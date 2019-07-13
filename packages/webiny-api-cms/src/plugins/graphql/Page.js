@@ -57,7 +57,7 @@ export default {
             type: String
             category: String
             content: JSON
-            preview: File
+            #preview: File
         }
         
         input PageBuilderElementInput {
@@ -65,14 +65,14 @@ export default {
             type: String!
             category: String
             content: JSON!
-            preview: FileInput
+            #preview: FileInput
         }
                 
         input PageBuilderUpdateElementInput {
             name: String
             category: String
             content: JSON
-            preview: FileInput
+            #preview: FileInput
         }
         
         input PageBuilderUpdatePageInput {

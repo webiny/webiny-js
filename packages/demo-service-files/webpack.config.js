@@ -1,3 +1,5 @@
+// @flowIgnore
+
 const path = require("path");
 const getPackages = require("get-yarn-workspaces");
 const packages = getPackages();
