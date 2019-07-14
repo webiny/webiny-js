@@ -1,17 +1,19 @@
 // @flow
 import { settingsFactory } from "webiny-api/entities";
+import { EntityModel } from "webiny-entity";
 import { Model } from "webiny-model";
-import FileModel from "./File.model";
 
-class SocialMediaModel extends Model {
-    constructor() {
-        super();
-        this.attr("facebook").char();
-        this.attr("twitter").char();
-        this.attr("instagram").char();
-        this.attr("image").model(FileModel);
-    }
-}
+const createSocialMediaModel = context =>
+    class SocialMediaModel extends EntityModel {
+        constructor() {
+            super();
+            this.setParentEntity(context.settings);
+            this.attr("facebook").char();
+            this.attr("twitter").char();
+            this.attr("instagram").char();
+            this.attr("image").entity(context.files.entities.File);
+        }
+    };
 
 class CmsSettingsPagesModel extends Model {
     constructor() {
@@ -23,22 +25,23 @@ class CmsSettingsPagesModel extends Model {
     }
 }
 
-const cmsSettingsModelFactory = () => {
-    return class CmsSettingsModel extends Model {
+const createCmsSettingsModel = context => {
+    return class CmsSettingsModel extends EntityModel {
         constructor() {
             super();
+            this.setParentEntity(context.settings);
             this.attr("pages").model(CmsSettingsPagesModel);
             this.attr("name").char();
             this.attr("domain").char();
-            this.attr("favicon").model(FileModel);
-            this.attr("logo").model(FileModel);
-            this.attr("social").model(SocialMediaModel);
+            this.attr("favicon").entity(context.files.entities.File);
+            this.attr("logo").entity(context.files.entities.File);
+            this.attr("social").model(createSocialMediaModel(context));
         }
     };
 };
 
-export const cmsSettingsFactory = (...args: Array<*>) => {
-    return class CmsSettings extends settingsFactory(...args) {
+export const cmsSettingsFactory = (context: Object) => {
+    return class CmsSettings extends settingsFactory(context) {
         static key = "cms";
         static classId = "CmsSettings";
         static collectionName = "Settings";
@@ -48,7 +51,7 @@ export const cmsSettingsFactory = (...args: Array<*>) => {
 
         constructor() {
             super();
-            this.attr("data").model(cmsSettingsModelFactory());
+            this.attr("data").model(createCmsSettingsModel({ ...context, settings: this }));
         }
     };
 };

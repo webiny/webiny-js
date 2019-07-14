@@ -36,7 +36,7 @@ const ImageContainer = pure(props => {
             <SingleImageUpload
                 imagePreviewProps={{ style: imgStyle, srcSet: "auto" }}
                 onChange={onChange}
-                value={image}
+                value={image.file}
             />
         </AlignImage>
     );
@@ -60,7 +60,7 @@ export default compose(
     ),
     withHandlers({
         onChange: ({ updateElement, element }) => async data => {
-            updateElement({ element: set(element, "data.image", data), merge: true });
+            updateElement({ element: set(element, "data.image.file", data), merge: true });
         }
     })
 )(ImageContainer);

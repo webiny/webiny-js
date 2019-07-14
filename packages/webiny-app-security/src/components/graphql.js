@@ -15,6 +15,7 @@ export const getCurrentUser = gql`
                         fullAccess
                     }
                     avatar {
+                        id
                         src
                     }
                 }

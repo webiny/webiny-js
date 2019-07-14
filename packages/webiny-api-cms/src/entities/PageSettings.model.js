@@ -4,14 +4,14 @@ import { getPlugins } from "webiny-plugins";
 
 export interface IPageSettings extends EntityModel {}
 
-export default function pageSettingsFactory({ entities, page }: Object): Class<IPageSettings> {
+export default function pageSettingsFactory(context: Object): Class<IPageSettings> {
     return class PageSettingsModel extends EntityModel {
         constructor() {
             super();
-            this.setParentEntity(page);
+            this.setParentEntity(context.page);
 
             getPlugins("cms-page-settings-model").forEach(pl => {
-                pl.apply({ model: this, page, entities });
+                pl.apply({ ...context, model: this });
             });
         }
     };

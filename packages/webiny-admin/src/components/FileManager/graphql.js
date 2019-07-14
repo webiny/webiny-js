@@ -3,6 +3,7 @@ import gql from "graphql-tag";
 const fileFields = /* GraphQL */ `
     {
         __typename
+        id
         name
         src
         size

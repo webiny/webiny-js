@@ -7,6 +7,8 @@ export default (entityFetcher: Function) => async (root: any, args: Object, cont
     const findArgs = { page, perPage, sort };
 
     const $and = [];
+
+    $and.push({ "meta.private": { $ne: true } }); // Files created by the system, eg. installation files.
     if (Array.isArray(types) && types.length) {
         $and.push({ type: { $in: types } });
     }
