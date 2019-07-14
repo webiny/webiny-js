@@ -10,7 +10,7 @@ export default (context: Object) => {
 
     context.cms.entities.Category = categoryFactory();
     context.cms.entities.Page = pageFactory(context);
-    context.cms.entities.Menu = menuFactory();
-    context.cms.entities.Element = elementFactory();
+    context.cms.entities.Menu = menuFactory(context);
+    context.cms.entities.Element = elementFactory(context);
     context.cms.entities.CmsSettings = cmsSettingsFactory(context);
 };
