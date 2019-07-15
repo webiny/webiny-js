@@ -18,6 +18,7 @@ export default ([
         schema: {
             typeDefs: gql`
                 input FileInput {
+                    id: ID!
                     name: String
                     size: Int
                     type: String
@@ -100,6 +101,11 @@ export default ([
                 }
             `,
             resolvers: {
+                File: {
+                    __resolveReference(reference, context) {
+                        return fileFetcher(context).findById(reference.id);
+                    }
+                },
                 Query: {
                     files: dummyResolver
                 },

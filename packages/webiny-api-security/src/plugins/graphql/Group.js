@@ -7,7 +7,7 @@ import {
     resolveUpdate
 } from "webiny-api/graphql";
 
-const groupFetcher = ctx => ctx.security.entities.Group;
+const groupFetcher = ctx => ctx.getEntity("SecurityGroup");
 
 export default {
     typeDefs: /* GraphQL */ `

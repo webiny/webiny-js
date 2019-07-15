@@ -7,7 +7,7 @@ import { blue, green } from "chalk";
 const pwd: string = (process.cwd(): any);
 
 const copyImage = (srcFilename, targetFilename = null) => {
-    const src = `${pwd}/static/${srcFilename}`;
+    const src = `${pwd}/../../.files/${srcFilename}`;
     const dest = `${pwd}/../webiny-api-cms/src/install/plugins/importData/blocks/images/${targetFilename ||
         srcFilename}`;
     fs.copySync(src, dest);
@@ -29,12 +29,14 @@ export default async () => {
         .toArray();
 
     const exportedBlocks = [];
+    const exportedFiles = [];
 
     for (let i = 0; i < blocks.length; i++) {
         const data = blocks[i];
         // Copy images.
-        const regex = /\/files\/(.*?)"/gm;
-        const str = JSON.stringify(data.content);
+        const regex = /(image|file|preview)":"([a-f0-9]{24})"/gm;
+
+        const str = JSON.stringify(data);
         let m;
 
         console.log(`===========================\n> Block: ${data.name}`);
@@ -44,13 +46,27 @@ export default async () => {
                 regex.lastIndex++;
             }
 
-            const filename = m[1];
+            if (Array.isArray(m)) {
+                const [, , id] = m;
+                if (exportedFiles.find(item => item.id === id)) {
+                    continue;
+                }
+                const file = await database.mongodb.collection("File").findOne({ id });
+                if (!file.meta) {
+                    file.meta = {};
+                }
+                file.meta.private = true;
 
-            console.log(`${green("> Copy image:")} ${filename}`);
-            copyImage(filename);
+                file.name = file.src.match(/\/files\/(.*)/);
+                file.name = file.name[1];
+
+                exportedFiles.push(file);
+                console.log(`${green("> Copy image:")} ${file.name}`);
+                copyImage(file.name);
+            }
         }
 
-        console.log(`${blue("> Copy preview:")} ${data.preview.src}`);
+        /* console.log(`${blue("> Copy preview:")} ${data.preview.src}`);
         const previewName = data.preview.src.match(/\/files\/(.*)/)[1];
         let targetName = previewName;
         if (!targetName.startsWith("cms-element-")) {
@@ -59,7 +75,7 @@ export default async () => {
             data.preview.name = targetName;
             data.preview.src = data.preview.src.replace(previewName, targetName);
         }
-        copyImage(previewName, targetName);
+        copyImage(previewName, targetName);*/
 
         exportedBlocks.push(data);
     }
@@ -68,7 +84,8 @@ export default async () => {
     const index = [
         "// NOTE: THIS FILE IS AUTO-GENERATED. MANUAL CHANGES OF THIS FILE WILL BE LOST!\n",
         "",
-        `export const blocks = [${exportedBlocks.map(b => JSON.stringify(b)).join(",\n")}];`
+        `export const blocks = [${exportedBlocks.map(b => JSON.stringify(b)).join(",\n")}];`,
+        `export const files = [${exportedFiles.map(f => JSON.stringify(f)).join(",\n")}];`
     ].join("\n");
 
     console.log("\n> Writing index file...");

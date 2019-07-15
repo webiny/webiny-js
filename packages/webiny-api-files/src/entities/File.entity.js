@@ -28,18 +28,20 @@ export function fileFactory(context: Object): Class<IFile> {
                 .char()
                 .setSkipOnPopulate();
 
-            this.attr("size")
-                .integer()
-                .setValidators("required");
-            this.attr("type")
-                .char()
-                .setValidators("required,maxLength:50");
             this.attr("src")
                 .char()
                 .setValidators("required,maxLength:200");
+
+            this.attr("size").integer();
+            this.attr("type")
+                .char()
+                .setValidators("maxLength:50");
             this.attr("name")
                 .char()
-                .setValidators("required,maxLength:100");
+                .setValidators("maxLength:100");
+
+            this.attr("meta").object();
+
             this.attr("tags")
                 .array()
                 .onSet(value => {
@@ -76,7 +78,7 @@ export function fileFactory(context: Object): Class<IFile> {
                 }
 
                 if (await files.entities.File.findOne({ query: { src: this.src } })) {
-                    throw Error(`File "src" must be unique. `);
+                    throw Error(`File "src" must be unique (used "${this.src}").`);
                 }
 
                 if (getUser()) {

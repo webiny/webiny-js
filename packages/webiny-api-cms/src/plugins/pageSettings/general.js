@@ -1,37 +1,25 @@
 // @flow
-import { Model } from "webiny-model";
+import { EntityModel } from "webiny-entity";
 
-class FileModel extends Model {
-    name: string;
-    size: number;
-    src: string;
-    type: string;
-    constructor() {
-        super();
-        this.attr("name").char();
-        this.attr("size").integer();
-        this.attr("src").char();
-        this.attr("type").char();
-    }
-}
-
-class GeneralSettings extends Model {
-    constructor() {
-        super();
-        this.attr("tags").array();
-        this.attr("layout").char();
-        this.attr("image").model(FileModel);
-    }
-}
+const createGeneralSettingsModel = context =>
+    class GeneralSettings extends EntityModel {
+        constructor() {
+            super();
+            this.setParentEntity(context.page);
+            this.attr("tags").array();
+            this.attr("layout").char();
+            this.attr("image").entity(context.files.entities.File);
+        }
+    };
 
 export default [
     {
         name: "cms-page-settings-general",
         type: "cms-page-settings-model",
-        apply({ model }: Object) {
-            model
+        apply(context: Object) {
+            context.model
                 .attr("general")
-                .model(GeneralSettings)
+                .model(createGeneralSettingsModel(context))
                 .setDefaultValue({});
         }
     },

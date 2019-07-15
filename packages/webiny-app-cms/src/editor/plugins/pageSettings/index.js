@@ -18,6 +18,7 @@ export default ([
         fields: `
             general {
                 image {
+                    id
                     src
                 }
                 tags
@@ -57,6 +58,7 @@ export default ([
         fields: `
             social {
                 image {
+                    id
                     src
                 }
                 title

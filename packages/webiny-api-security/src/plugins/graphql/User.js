@@ -33,7 +33,7 @@ export default {
         extend type File @key(fields: "id") {
             id: ID @external
         }
-
+        
         type SecurityUser @key(fields: "id") {
             id: ID
             email: String
@@ -62,7 +62,7 @@ export default {
             password: String
             firstName: String
             lastName: String
-            #avatar: FileInput
+            avatar: RefInput
             enabled: Boolean
             groups: [ID]
             roles: [ID]
@@ -73,7 +73,7 @@ export default {
             email: String
             firstName: String
             lastName: String
-            #avatar: FileInput
+            avatar: RefInput
             password: String
         }
 
@@ -143,7 +143,11 @@ export default {
 
         extend type SecurityMutation {
             "Login user"
-            loginUser(username: String!, password: String!, remember: Boolean): SecurityUserLoginResponse
+            loginUser(
+                username: String!
+                password: String!
+                remember: Boolean
+            ): SecurityUserLoginResponse
 
             "Login user using token"
             loginUsingToken(token: String!): SecurityUserLoginResponse
@@ -165,6 +169,9 @@ export default {
         SecurityUser: {
             __resolveReference(reference, context) {
                 return userFetcher(context).findById(reference.id);
+            },
+            avatar(user) {
+                return { __typename: "File", id: user.avatar };
             }
         },
         SecurityQuery: {
@@ -177,7 +184,9 @@ export default {
             loginUser: resolveLoginSecurityUser(userFetcher),
             loginUsingToken: resolveLoginUsingToken(userFetcher),
             updateCurrentUser: resolveUpdateCurrentSecurityUser(userFetcher),
-            updateCurrentUserSettings: resolveUpdateCurrentSecurityUserSettings(userSettingsFetcher),
+            updateCurrentUserSettings: resolveUpdateCurrentSecurityUserSettings(
+                userSettingsFetcher
+            ),
             createUser: resolveCreate(userFetcher),
             updateUser: resolveUpdate(userFetcher),
             deleteUser: resolveDelete(userFetcher)

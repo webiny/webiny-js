@@ -5,6 +5,7 @@ import GraphQLJSON from "graphql-type-json";
 import { GraphQLDateTime } from "graphql-iso-date";
 import GraphQLLong from "graphql-type-long";
 import { getPlugins } from "webiny-plugins";
+import { RefInput } from "./RefInputScalar";
 
 /**
  * @return {schema, context}
@@ -24,11 +25,13 @@ export async function prepareSchema(config: Object) {
                 scalar JSON
                 scalar Long
                 scalar DateTime
+                scalar RefInput
             `,
             resolvers: {
                 JSON: GraphQLJSON,
                 DateTime: GraphQLDateTime,
-                Long: GraphQLLong
+                Long: GraphQLLong,
+                RefInput
             }
         }
     ];
