@@ -13,6 +13,10 @@ export default {
     schema: {
         namespace: "cms",
         typeDefs: gql`
+            extend type File @key(fields: "id") {
+                id: ID @external
+            }
+
             input PageBuilderSearchInput {
                 query: String
                 fields: [String]
@@ -78,7 +82,7 @@ export default {
                     cms: dummyResolver
                 },
                 CmsQuery: {
-                    pageBuilder: dummyResolver,
+                    pageBuilder: dummyResolver
                 },
                 CmsMutation: {
                     pageBuilder: dummyResolver
@@ -126,9 +130,6 @@ export default {
                 updateElement: hasScope("cms:element:crud"),
                 deleteElement: hasScope("cms:element:crud")
             }
-            /* TODO: SettingsMutation: {
-                cms: hasScope("cms:settings")
-            }*/
         }
     }
 };

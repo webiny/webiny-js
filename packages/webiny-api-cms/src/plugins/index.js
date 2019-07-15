@@ -1,9 +1,7 @@
 // @flow
-/*import general from "./pageSettings/general";
-import seo from "./pageSettings/seo";
-import social from "./pageSettings/social";*/
 import entities from "./entities";
 import graphql from "./graphql";
 import pageContentModifiers from "./entities/pageContentModifiers";
+import pageSettings from "./pageSettings";
 
-export default [/*general, seo, social*/ entities, graphql, pageContentModifiers];
+export default [entities, graphql, pageContentModifiers, pageSettings];

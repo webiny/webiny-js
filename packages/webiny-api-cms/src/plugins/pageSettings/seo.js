@@ -1,4 +1,5 @@
 // @flow
+import { gql } from "apollo-server-lambda";
 import { EntityModel } from "webiny-entity";
 
 class MetaTagModel extends EntityModel {
@@ -30,23 +31,25 @@ export default [
         }
     },
     {
-        name: "cms-schema-settings-seo",
-        type: "graphql-schema-plugin-cms",
-        typeDefs: `
-            type MetaTag {
-                name: String
-                content: String
-            }
-            
-            type SeoSettings {
-                title: String
-                description: String
-                meta: [MetaTag]
-            } 
-            
-            extend type PageBuilderPageSettings {
-                seo: SeoSettings
-            }
-        `
+        name: "graphql-schema-page-builder-settings-seo",
+        type: "graphql-schema",
+        schema: {
+            typeDefs: gql`
+                type MetaTag {
+                    name: String
+                    content: String
+                }
+
+                type SeoSettings {
+                    title: String
+                    description: String
+                    meta: [MetaTag]
+                }
+
+                extend type PageBuilderPageSettings {
+                    seo: SeoSettings
+                }
+            `
+        }
     }
 ];
