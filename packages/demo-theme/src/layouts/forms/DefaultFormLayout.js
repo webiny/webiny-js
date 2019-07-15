@@ -10,6 +10,7 @@ import { Form } from "webiny-form";
 
 import type { FieldType, FormRenderPropsType } from "webiny-app-forms/types";
 
+// TODO: this is an example, do whatever you want.. feel free to use 3rd party components....
 function renderField(props: { field: FieldType, bind: Object, validation: Object }) {
     switch (props.field.type) {
         case "text":
