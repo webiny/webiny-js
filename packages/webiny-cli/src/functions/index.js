@@ -49,7 +49,7 @@ module.exports = async ({ port, watch, inspect }) => {
         const configs = functions.map(fn => require(fn.root + "/webpack.config.js"));
 
         const compiler = webpack(configs);
-        console.log("Building services...");
+        console.log("Building functions...");
 
         let firstRun = true;
         compiler.watch(

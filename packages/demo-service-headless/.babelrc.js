@@ -1,4 +1,3 @@
-// NOTE: this file is required only for Webiny monorepo!! End-user will not need this file.
 module.exports = {
     presets: [
         [

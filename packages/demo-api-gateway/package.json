@@ -2,7 +2,8 @@
   "name": "demo-api-gateway",
   "version": "1.0.0",
   "dependencies": {
-    "@apollo/gateway": "^0.6.12"
+    "@apollo/gateway": "^0.6.12",
+    "apollo-server-lambda": "^2.6.9"
   },
   "scripts": {
     "build": "cross-env NODE_ENV=production npx webpack --out build"
