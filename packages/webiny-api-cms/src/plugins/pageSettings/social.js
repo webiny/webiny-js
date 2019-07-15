@@ -2,21 +2,7 @@
 import { EntityModel } from "webiny-entity";
 import { Model } from "webiny-model";
 
-class FileModel extends Model {
-    name: string;
-    size: number;
-    src: string;
-    type: string;
-    constructor() {
-        super();
-        this.attr("name").char();
-        this.attr("size").integer();
-        this.attr("src").char();
-        this.attr("type").char();
-    }
-}
-
-class OpenGraphTagModel extends EntityModel {
+class OpenGraphTagModel extends Model {
     constructor() {
         super();
         this.attr("property").char();
@@ -24,24 +10,26 @@ class OpenGraphTagModel extends EntityModel {
     }
 }
 
-class SocialSettings extends EntityModel {
-    constructor() {
-        super();
-        this.attr("meta").models(OpenGraphTagModel);
-        this.attr("title").char();
-        this.attr("description").char();
-        this.attr("image").model(FileModel);
-    }
-}
+const createSocialSettings = (context: Object) =>
+    class SocialSettings extends EntityModel {
+        constructor() {
+            super();
+            this.setParentEntity(context.page);
+            this.attr("meta").models(OpenGraphTagModel);
+            this.attr("title").char();
+            this.attr("description").char();
+            this.attr("image").entity(context.files.entities.File);
+        }
+    };
 
 export default [
     {
         name: "cms-page-settings-social",
         type: "cms-page-settings-model",
-        apply({ model }: { model: EntityModel }) {
-            model
+        apply(context: Object) {
+            context.model
                 .attr("social")
-                .model(SocialSettings)
+                .model(createSocialSettings(context))
                 .setDefaultValue({});
         }
     },

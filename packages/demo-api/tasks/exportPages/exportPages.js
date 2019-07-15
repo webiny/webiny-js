@@ -9,7 +9,7 @@ import inquirer from "inquirer";
 const pwd: string = (process.cwd(): any);
 
 const copyImage = (srcFilename, targetFilename = null) => {
-    const src = `${pwd}/static/${srcFilename}`;
+    const src = `${pwd}/../../.files/${srcFilename}`;
     const dest = `${pwd}/../webiny-api-cms/src/install/plugins/importData/pages/images/${targetFilename ||
         srcFilename}`;
 
@@ -26,7 +26,7 @@ const writeIndexFile = content => {
     fs.writeFileSync(dest, content);
 };
 
-const omitAttributes = obj => {
+const omitPageAttributes = obj => {
     return omit(obj, [
         "savedOn",
         "createdOn",
@@ -61,25 +61,27 @@ export default async () => {
     ]);
 
     // Filter pages
-    pages = pages.filter(p => answers.pages.includes(p.id)).map(omitAttributes);
+    pages = pages.filter(p => answers.pages.includes(p.id)).map(omitPageAttributes);
 
     // Get categories
     const categories = (await database.mongodb
         .collection("CmsCategory")
         .find()
-        .toArray()).map(omitAttributes);
+        .toArray()).map(omitPageAttributes);
 
     // Get menus
     const menus = (await database.mongodb
         .collection("CmsMenu")
         .find()
-        .toArray()).map(omitAttributes);
+        .toArray()).map(omitPageAttributes);
+
+    const exportedFiles = [];
 
     // Copy page files
     for (let i = 0; i < pages.length; i++) {
         const data = pages[i];
-        const regex = /\/files\/(.*?)"/gm;
-        const str = JSON.stringify(data.content);
+        const regex = /(image|file)":"([a-f0-9]{24})"/gm;
+        const str = JSON.stringify(data);
         let m;
 
         console.log(`===========================\n> Page: ${data.title}`);
@@ -89,7 +91,23 @@ export default async () => {
                 regex.lastIndex++;
             }
 
-            copyImage(m[1]);
+            if (Array.isArray(m)) {
+                const [, , id] = m;
+                if (exportedFiles.find(item => item.id === id)) {
+                    continue;
+                }
+                const file = await database.mongodb.collection("File").findOne({ id });
+                if (!file.meta) {
+                    file.meta = {};
+                }
+                file.meta.private = true;
+
+                file.name = file.src.match(/\/files\/(.*)/);
+                file.name = file.name[1];
+
+                exportedFiles.push(file);
+                copyImage(file.name);
+            }
         }
 
         // Copy page image from settings
@@ -111,6 +129,7 @@ export default async () => {
         "",
         `export const categories = [${categories.map(c => JSON.stringify(c)).join(", ")}];`,
         `export const pages = [${pages.map(p => JSON.stringify(p)).join(", ")}];`,
+        `export const files = [${exportedFiles.map(f => JSON.stringify(f)).join(", ")}];`,
         `export const menus = [${menus.map(m => JSON.stringify(m)).join(", ")}];`
     ].join("\n");
 

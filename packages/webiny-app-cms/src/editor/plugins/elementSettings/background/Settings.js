@@ -3,7 +3,8 @@ import React from "react";
 import { connect } from "webiny-app-cms/editor/redux";
 import { compose } from "recompose";
 import { Tabs, Tab } from "webiny-ui/Tabs";
-import { get, set } from "dot-prop-immutable";
+import { get } from "lodash";
+import { set } from "dot-prop-immutable";
 import { updateElement } from "webiny-app-cms/editor/actions";
 import { getActiveElement } from "webiny-app-cms/editor/selectors";
 import ColorPicker from "webiny-app-cms/editor/components/ColorPicker";
@@ -23,10 +24,17 @@ class Settings extends React.Component<*> {
     setImage = image => {
         const { element, updateElement } = this.props;
 
-        updateElement({
-            element: set(element, `${root}.image.src`, image ? image.src : null),
-            history: true
-        });
+        if (!image) {
+            updateElement({
+                element: set(element, `${root}.image.file`, null),
+                history: true
+            });
+        } else {
+            updateElement({
+                element: set(element, `${root}.image.file`, image),
+                history: true
+            });
+        }
     };
 
     setScaling = (value: string) => {
@@ -59,7 +67,7 @@ class Settings extends React.Component<*> {
         const { element, options } = this.props;
 
         const bg = get(element, "data.settings.background");
-        const hasImage = get(bg, "image.src");
+        const imageSrc = get(bg, "image.file.src");
 
         return (
             <React.Fragment>
@@ -82,12 +90,12 @@ class Settings extends React.Component<*> {
                                     <SingleImageUpload
                                         className={imageSelect}
                                         onChange={this.setImage}
-                                        value={{ src: hasImage ? bg.image.src : "" }}
+                                        value={{ src: imageSrc }}
                                     />
                                 </Cell>
                             </Grid>
                             <Select
-                                disabled={!hasImage}
+                                disabled={!imageSrc}
                                 label="Scaling"
                                 value={get(bg, "image.scaling")}
                                 updateValue={this.setScaling}
@@ -102,7 +110,7 @@ class Settings extends React.Component<*> {
                             <Grid>
                                 <Cell span={12}>
                                     <BackgroundPositionSelector
-                                        disabled={!hasImage}
+                                        disabled={!imageSrc}
                                         value={get(bg, "image.position")}
                                         onChange={this.setPosition}
                                     />

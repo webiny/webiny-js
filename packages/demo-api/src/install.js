@@ -2,11 +2,12 @@ import config from "./configs";
 import { registerPlugins } from "webiny-plugins";
 import installer from "webiny-install";
 
+import filesPlugins from "webiny-api-files/install/plugins";
 import securityPlugins from "webiny-api-security/install/plugins";
 import cmsPlugins from "webiny-api-cms/install/plugins";
 import i18nPlugins from "webiny-api-i18n/install/plugins";
 
-registerPlugins(securityPlugins, cmsPlugins, i18nPlugins);
+registerPlugins(filesPlugins, securityPlugins, cmsPlugins, i18nPlugins);
 
 export const install = async (context = {}) => {
     await installer({

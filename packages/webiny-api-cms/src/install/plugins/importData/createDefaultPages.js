@@ -2,12 +2,11 @@
 import get from "lodash/get";
 import fs from "fs-extra";
 import path from "path";
-import { categories, pages, menus } from "./pages";
+import { categories, pages, menus, files } from "./pages";
 
 const createDefaultPage = async ({ page, data }) => {
     page.populate({ ...data });
     await page.save();
-
     page.published = true;
     await page.save();
 
@@ -16,6 +15,7 @@ const createDefaultPage = async ({ page, data }) => {
 
 const createDefaultPages = async (context: Object, { cmsSettings }: Object) => {
     const { Page, Category, Menu } = context.cms.entities;
+    const { File } = context.files.entities;
 
     // Insert categories
     for (let i = 0; i < categories.length; i++) {
@@ -29,6 +29,13 @@ const createDefaultPages = async (context: Object, { cmsSettings }: Object) => {
         const menu = new Menu();
         menu.populate(menus[i]);
         await menu.save();
+    }
+
+    // Insert files
+    for (let i = 0; i < files.length; i++) {
+        const file = new File();
+        file.populate(files[i]);
+        await file.save();
     }
 
     cmsSettings.data = {

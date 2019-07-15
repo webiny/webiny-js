@@ -5,7 +5,6 @@ import get from "lodash/get";
 import { Entity } from "webiny-entity";
 import type { IGroup } from "./Group.entity";
 import type { IRole } from "./Role.entity";
-import FileModel from "./File.model";
 
 type AccessType = {
     scopes: Array<string>,
@@ -27,7 +26,7 @@ export interface IUser extends Entity {
     access: Promise<AccessType>;
 }
 
-export function userFactory({ config, security: { entities } }: Object): Class<IUser> {
+export function userFactory({ config, files, security: { entities } }: Object): Class<IUser> {
     return class User extends Entity {
         static classId = "SecurityUser";
         __access: ?AccessType;
@@ -46,6 +45,8 @@ export function userFactory({ config, security: { entities } }: Object): Class<I
 
         constructor() {
             super();
+            const { File } = files.entities;
+
             // Once we load access attribute, we cache it here.
             this.__access = null;
 
@@ -85,7 +86,7 @@ export function userFactory({ config, security: { entities } }: Object): Class<I
                     return `${this.firstName} ${this.lastName}`.trim();
                 });
 
-            this.attr("avatar").model(FileModel);
+            this.attr("avatar").entity(File);
 
             this.attr("gravatar")
                 .char()
