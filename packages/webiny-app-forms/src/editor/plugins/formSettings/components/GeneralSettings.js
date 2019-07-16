@@ -6,7 +6,6 @@ import { Grid, Cell } from "webiny-ui/Grid";
 import { Select } from "webiny-ui/Select";
 import { get } from "lodash";
 import { I18NInput } from "webiny-app-i18n/components";
-// import { RichTextEditor } from "webiny-app-forms/admin/components/RichTextEditor";
 
 const GeneralSettings = ({ Bind, cms }: Object) => {
     const layouts = get(cms, "theme.forms.layouts") || [];
@@ -15,7 +14,7 @@ const GeneralSettings = ({ Bind, cms }: Object) => {
             <Grid>
                 <Cell span={12}>
                     <Bind name={"successMessage"}>
-                        <I18NInput label={"Success message"} />
+                        <I18NInput richText label={"Success message"} />
                     </Bind>
                 </Cell>
                 <Cell span={12}>
