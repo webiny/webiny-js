@@ -20,7 +20,7 @@ const I18NRichTextEditor = props => {
         menuPlugins = [...menuPlugins, ...props.menu];
     }
 
-    return <RichTextEditor {...props} plugins={editorPlugins} menu={menuPlugins} />;
+    return <RichTextEditor {...props} editorPlugins={editorPlugins} menuPlugins={menuPlugins} />;
 };
 
 export default I18NRichTextEditor;

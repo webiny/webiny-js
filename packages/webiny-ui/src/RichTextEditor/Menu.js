@@ -1,6 +1,8 @@
+// @flow
 import React from "react";
 import styled from "react-emotion";
 import { css } from "emotion";
+import type { FormComponentProps } from "./../types";
 
 const MenuContainer = styled("div")({
     position: "relative",
@@ -41,7 +43,15 @@ const MenuButton = ({ onClick, active, children, onMouseDown = e => e.preventDef
     );
 };
 
-class Menu extends React.Component {
+type Props = FormComponentProps & {
+    editor: any,
+    activePlugin: ?Object,
+    activatePlugin: Function,
+    deactivatePlugin: Function,
+    menuPlugins: Array<Object>,
+}
+
+class Menu extends React.Component<Props> {
     menu = React.createRef();
 
     render() {
@@ -52,14 +62,14 @@ class Menu extends React.Component {
             activePlugin,
             activatePlugin,
             deactivatePlugin,
-            menu
+            menuPlugins
         } = this.props;
 
         if (!editor) {
             return null;
         }
 
-        const menuItems = menu;
+        const menuItems = menuPlugins;
 
         return (
             <MenuContainer>

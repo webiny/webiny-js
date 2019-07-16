@@ -1,3 +1,4 @@
+// @flow
 import React from "react";
 import { get } from "lodash";
 import { Editor } from "slate-react";
@@ -9,6 +10,7 @@ import shortid from "shortid";
 import { FormElementMessage } from "webiny-ui/FormElementMessage";
 import { css } from "emotion";
 import classNames from "classnames";
+import type { FormComponentProps } from "./../types";
 
 const EditorWrapper = styled("div")({
     border: "1px solid var(--mdc-theme-on-background)",
@@ -18,11 +20,13 @@ const EditorWrapper = styled("div")({
 });
 
 const EditorContent = styled("div")({
-    boxSizing: "border-box",
-    padding: 10,
-    maxHeight: 500,
-    minHeight: 200,
-    overflow: "scroll"
+    "> div > div": {
+        boxSizing: "border-box",
+        padding: 10,
+        maxHeight: 500,
+        minHeight: 200,
+        overflow: "scroll"
+    }
 });
 
 const classes = {
@@ -35,14 +39,29 @@ const classes = {
     })
 };
 
-class RichTextEditor extends React.Component {
-    static defaultProps = {
+type Props = FormComponentProps & {
+    disabled: ?boolean,
+    description: ?string,
+    label: ?string,
+    menuPlugins: Array<Object>,
+    editorPlugins: Array<Object>
+};
 
-    };
+type State = {
+    modified: boolean,
+    showMenu: boolean,
+    value: Object,
+    readOnly: boolean,
+    activePlugin: ?Object
+};
+
+class RichTextEditor extends React.Component<Props, State> {
+    static defaultProps = {};
 
     editor = React.createRef();
 
-    constructor(props) {
+    id: string;
+    constructor(props: Props) {
         super();
         this.id = shortid.generate();
 
@@ -55,7 +74,7 @@ class RichTextEditor extends React.Component {
         };
     }
 
-    static getDerivedStateFromProps(props, state) {
+    static getDerivedStateFromProps(props: Object, state: Object) {
         if (!state.modified && !props.readOnly) {
             // Got new editor value through props.
             return {
@@ -67,16 +86,20 @@ class RichTextEditor extends React.Component {
     }
 
     componentDidMount() {
+        // $FlowFixMe
         document.getElementById(this.id).addEventListener("mousedown", this.trackNextElement);
+        // $FlowFixMe
         document.getElementById(this.id).addEventListener("mouseup", this.untrackNextElement);
     }
 
     componentWillUnmount() {
+        // $FlowFixMe
         document.getElementById(this.id).removeEventListener("mousedown", this.trackNextElement);
+        // $FlowFixMe
         document.getElementById(this.id).removeEventListener("mouseup", this.untrackNextElement);
     }
 
-    onChange = change => {
+    onChange = (change: Object) => {
         // Prevent `onChange` if it is a `set_value` operation.
         // We only need to handle changes on user input.
         if (get(change.operations.toJSON(), "0.type") === "set_value") {
@@ -94,7 +117,8 @@ class RichTextEditor extends React.Component {
     onBlur = () => {
         // if (!this.nextElement) {
         this.setState({ modified: false });
-        this.props.onChange(this.state.value.toJSON());
+        const { onChange } = this.props;
+        typeof onChange === "function" && onChange(this.state.value.toJSON());
         // }
     };
 
@@ -123,10 +147,10 @@ class RichTextEditor extends React.Component {
     };
 
     render() {
-        const { label, disable, description, validation = { isValid: null } } = this.props;
+        const { label, disabled, description, validation = { isValid: null } } = this.props;
 
         return (
-            <div className={classNames({ [classes.disable]: disable })}>
+            <div className={classNames({ [classes.disable]: disabled })}>
                 {label && (
                     <div
                         className={classNames(
@@ -139,7 +163,7 @@ class RichTextEditor extends React.Component {
                 )}
                 <EditorWrapper id={this.id}>
                     <Menu
-                        menu={this.props.menu}
+                        menuPlugins={this.props.menuPlugins}
                         value={this.state.value}
                         onChange={this.onChange}
                         editor={this.editor.current}
@@ -153,11 +177,10 @@ class RichTextEditor extends React.Component {
                             ref={this.editor}
                             autoCorrect={false}
                             spellCheck={false}
-                            plugins={this.props.plugins}
+                            plugins={this.props.editorPlugins}
                             placeholder="Enter some text..."
                             value={this.state.value}
                             onChange={this.onChange}
-                            theme={this.props.theme}
                             activatePlugin={this.activatePlugin}
                             activePlugin={this.state.activePlugin}
                             deactivatePlugin={this.deactivatePlugin}
