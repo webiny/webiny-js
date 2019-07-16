@@ -6,7 +6,7 @@ class I18NObjectAttributeTranslationsModel extends Model {
     constructor() {
         super();
         this.attr("locale")
-            .object()
+            .char()
             .setValidators("required");
         this.attr("value").object();
     }

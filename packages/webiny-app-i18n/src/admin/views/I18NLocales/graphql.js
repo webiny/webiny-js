@@ -102,3 +102,13 @@ export const deleteI18NLocale = gql`
         }
     }
 `;
+
+export const searchLocaleCodes = gql`
+    query SearchLocaleCodes($search: String!) {
+        i18n {
+            codes: searchLocaleCodes(search: $search) {
+                data
+            }
+        }
+    }
+`;

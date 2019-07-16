@@ -3,18 +3,18 @@ import * as React from "react";
 import { i18n } from "webiny-app/i18n";
 import { Form } from "webiny-form";
 import { Grid, Cell } from "webiny-ui/Grid";
-import { Input } from "webiny-ui/Input";
 import { ButtonPrimary } from "webiny-ui/Button";
 import { Switch } from "webiny-ui/Switch";
 import type { WithCrudFormProps } from "webiny-admin/components";
 import { CircularProgress } from "webiny-ui/Progress";
-
+import LocaleCodesAutoComplete from "./LocaleCodesAutoComplete";
 import {
     SimpleForm,
     SimpleFormFooter,
     SimpleFormContent,
     SimpleFormHeader
 } from "webiny-admin/components/SimpleForm";
+import { I18NInput } from "webiny-app-i18n/components";
 
 const t = i18n.namespace("I18N.I18NLocalesForm");
 
@@ -24,12 +24,12 @@ const I18NLocaleForm = ({ onSubmit, loading, data, invalidFields }: WithCrudForm
             {({ data, form, Bind }) => (
                 <SimpleForm>
                     {loading && <CircularProgress />}
-                    <SimpleFormHeader title={data.code || "New Locale"} />
+                    <SimpleFormHeader title={data.code || "New Language"} />
                     <SimpleFormContent>
                         <Grid>
                             <Cell span={12}>
                                 <Bind name="code" validators={["required"]}>
-                                    <Input
+                                    <LocaleCodesAutoComplete
                                         label={t`Code`}
                                         description={`For example: "en-GB"`}
                                     />
@@ -42,6 +42,24 @@ const I18NLocaleForm = ({ onSubmit, loading, data, invalidFields }: WithCrudForm
                                     <Switch label={t`Default`} />
                                 </Bind>
                             </Cell>
+                        </Grid>
+
+                        {/* TODO: @sven*/}
+                        <Grid>
+                            <Cell span={12}>
+                                <Bind name="simpleText">
+                                    <I18NInput label={"Simple text"} />
+                                </Bind>
+                            </Cell>
+                            <Cell span={12}>
+                                <Bind name="simpleText">
+
+                                    <Bind name="richText">
+                                        <I18NInput label={"Rich text"} richText />
+                                    </Bind>
+                                </Bind>
+                            </Cell>
+
                         </Grid>
                     </SimpleFormContent>
                     <SimpleFormFooter>
