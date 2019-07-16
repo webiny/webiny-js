@@ -36,7 +36,7 @@ const classes = {
 
 class RichTextEditor extends React.Component {
     static defaultProps = {
-        exclude: []
+
     };
 
     editor = React.createRef();
@@ -139,7 +139,6 @@ class RichTextEditor extends React.Component {
                 <EditorWrapper id={this.id}>
                     <Menu
                         menu={this.props.menu}
-                        exclude={this.props.exclude}
                         value={this.state.value}
                         onChange={this.onChange}
                         editor={this.editor.current}

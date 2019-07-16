@@ -49,7 +49,6 @@ class Menu extends React.Component {
             value,
             onChange,
             editor,
-            exclude,
             activePlugin,
             activatePlugin,
             deactivatePlugin,
@@ -60,7 +59,7 @@ class Menu extends React.Component {
             return null;
         }
 
-        const menuItems = menu.filter(item => !exclude.includes(item.name));
+        const menuItems = menu;
 
         return (
             <MenuContainer>
