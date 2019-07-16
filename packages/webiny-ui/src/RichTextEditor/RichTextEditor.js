@@ -19,8 +19,9 @@ const EditorWrapper = styled("div")({
 
 const EditorContent = styled("div")({
     boxSizing: "border-box",
-    padding: "0px 5px 10px 5px",
-    maxHeight: 400,
+    padding: 10,
+    maxHeight: 500,
+    minHeight: 200,
     overflow: "scroll"
 });
 
