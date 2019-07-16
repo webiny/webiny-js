@@ -1,12 +1,14 @@
-import React, { useState, useCallback } from "react";
+import React, { useState, useCallback, useMemo } from "react";
 import { Icon } from "webiny-ui/Icon";
 import { Input } from "webiny-ui/Input";
-import I18NInputDialog from "./I18NInputDialog";
+import I18NInputLocalesOverlay from "./I18NInputLocalesOverlay";
 import { ReactComponent as I18NIcon } from "./icons/round-translate-24px.svg";
 import { css } from "emotion";
 import { useI18N } from "webiny-app-i18n/components";
 import { Tooltip } from "webiny-ui/Tooltip";
 import classNames from "classnames";
+import { cloneDeep } from "lodash";
+import I18NRichTextEditor from "./I18NRichTextEditor";
 
 const style = {
     i18nDialogIconButton: css({
@@ -37,7 +39,7 @@ const prepareII8NValues = ({ locales, values }) => {
     return output;
 };
 
-const I18NInput = ({ value, onChange, ...inputProps }) => {
+const I18NInput = ({ richText, value, onChange, ...inputProps }) => {
     const [values, setValues] = useState(null);
     const { getLocale, getLocales } = useI18N();
 
@@ -54,7 +56,8 @@ const I18NInput = ({ value, onChange, ...inputProps }) => {
     });
 
     const submitDialog = useCallback(async values => {
-        await onChange({ ...value, values });
+        // Filter out redundant empty values.
+        await onChange({ ...value, values: values.filter(item => !!item.value) });
         closeDialog();
     });
 
@@ -66,8 +69,8 @@ const I18NInput = ({ value, onChange, ...inputProps }) => {
         }
     }
 
-    const inputOnChange = useCallback(inputValue => {
-        const newValue = { values: [], ...value };
+    const inputOnChange = inputValue => {
+        const newValue = cloneDeep({ values: [], ...value });
         const index = value ? value.values.findIndex(item => item.locale === getLocale().id) : -1;
         if (index >= 0) {
             newValue.values[index].value = inputValue;
@@ -75,23 +78,51 @@ const I18NInput = ({ value, onChange, ...inputProps }) => {
             newValue.values.push({ locale: getLocale().id, value: inputValue });
         }
 
+        // Filter out redundant empty values.
+        newValue.values = newValue.values.filter(item => !!item.value);
         onChange(newValue);
-    });
+    };
+
+    const translateMenuItem = useMemo(() => {
+        return {
+            name: "i18n-rich-editor-menu-item-translate",
+            type: "i18n-rich-editor-menu-item",
+            render({ MenuButton }: Object) {
+                return (
+                    // eslint-disable-next-line react/jsx-no-bind
+                    <MenuButton onClick={openDialog}>
+                        <I18NIcon />
+                    </MenuButton>
+                );
+            }
+        };
+    }, []);
 
     return (
         <>
-            <Input
-                {...inputProps}
-                value={inputValue}
-                onChange={inputOnChange}
-                className={classNames(inputProps.className, style.i18nDialogIconButton)}
-                trailingIcon={
-                    <Tooltip content={<span>Set locale values</span>} placement={"top"}>
-                        <Icon icon={<I18NIcon />} onClick={openDialog} />
-                    </Tooltip>
-                }
-            />
-            <I18NInputDialog
+            {richText ? (
+                <I18NRichTextEditor
+                    {...inputProps}
+                    value={inputValue}
+                    onChange={inputOnChange}
+                    menu={[translateMenuItem]}
+                />
+            ) : (
+                <Input
+                    {...inputProps}
+                    value={inputValue}
+                    onChange={inputOnChange}
+                    className={classNames(inputProps.className, style.i18nDialogIconButton)}
+                    trailingIcon={
+                        <Tooltip content={<span>Set locale values</span>} placement={"top"}>
+                            <Icon icon={<I18NIcon />} onClick={openDialog} />
+                        </Tooltip>
+                    }
+                />
+            )}
+
+            <I18NInputLocalesOverlay
+                richText={richText}
                 values={values}
                 open={!!values}
                 onClose={closeDialog}
