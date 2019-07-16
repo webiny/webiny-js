@@ -3,12 +3,11 @@ import * as React from "react";
 import { i18n } from "webiny-app/i18n";
 import { Form } from "webiny-form";
 import { Grid, Cell } from "webiny-ui/Grid";
-import { Input } from "webiny-ui/Input";
 import { ButtonPrimary } from "webiny-ui/Button";
 import { Switch } from "webiny-ui/Switch";
 import type { WithCrudFormProps } from "webiny-admin/components";
 import { CircularProgress } from "webiny-ui/Progress";
-
+import LocaleCodesAutoComplete from "./LocaleCodesAutoComplete";
 import {
     SimpleForm,
     SimpleFormFooter,
@@ -29,7 +28,7 @@ const I18NLocaleForm = ({ onSubmit, loading, data, invalidFields }: WithCrudForm
                         <Grid>
                             <Cell span={12}>
                                 <Bind name="code" validators={["required"]}>
-                                    <Input
+                                    <LocaleCodesAutoComplete
                                         label={t`Code`}
                                         description={`For example: "en-GB"`}
                                     />
