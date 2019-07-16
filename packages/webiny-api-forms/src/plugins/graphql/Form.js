@@ -78,7 +78,7 @@ export default {
         type FormSettingsType {
             layout: FormSettingsLayoutType
             submitButtonLabel: I18NStringValue
-            successMessage: I18NStringValue
+            successMessage: I18NJSONValue
         }
         
         type FormStatsType {
@@ -94,7 +94,7 @@ export default {
         input FormSettingsInput {
             layout: FormSettingsLayoutInput
             submitButtonLabel: I18NStringValueInput
-            successMessage: I18NStringValueInput
+            successMessage: I18NJSONValueInput
         }
         
         input UpdateFormInput {
