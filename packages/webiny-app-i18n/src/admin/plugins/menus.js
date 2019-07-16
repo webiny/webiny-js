@@ -19,8 +19,8 @@ export default [
                 return (
                     <Menu label={t`I18N`} icon={<I18NIcon />}>
                         {locales && (
-                            <Menu label={t`Locales`}>
-                                {locales && <Menu label={t`Locales`} path="/i18n/locales" />}
+                            <Menu label={t`Languages`}>
+                                {locales && <Menu label={t`Languages`} path="/i18n/languages" />}
                             </Menu>
                         )}
                     </Menu>

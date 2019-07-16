@@ -29,7 +29,7 @@ const I18NLocalesDataList = ({
     return (
         <DataList
             {...dataList}
-            title={t`Locales`}
+            title={t`Languages`}
             sorters={[
                 {
                     label: "Name A-Z",

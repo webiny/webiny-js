@@ -24,7 +24,7 @@ const I18NLocaleForm = ({ onSubmit, loading, data, invalidFields }: WithCrudForm
             {({ data, form, Bind }) => (
                 <SimpleForm>
                     {loading && <CircularProgress />}
-                    <SimpleFormHeader title={data.code || "New Locale"} />
+                    <SimpleFormHeader title={data.code || "New Language"} />
                     <SimpleFormContent>
                         <Grid>
                             <Cell span={12}>

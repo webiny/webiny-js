@@ -53,7 +53,7 @@ export default compose(
             delete: {
                 mutation: deleteI18NLocale,
                 response: data => data.i18n.deleteI18NLocale,
-                snackbar: data => t`Locale {name} deleted.`({ name: data.name })
+                snackbar: data => t`Language {name} deleted.`({ name: data.name })
             }
         },
         form: {
@@ -68,7 +68,7 @@ export default compose(
                 variables: form => ({
                     data: pick(form, ["code", "default"])
                 }),
-                snackbar: data => t`Locale {name} saved successfully.`({ name: data.name })
+                snackbar: data => t`Language {name} saved successfully.`({ name: data.name })
             }
         }
     }),
