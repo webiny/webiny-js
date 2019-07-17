@@ -17,12 +17,11 @@ const Link = ({ link, children }: Object) => {
 
 const Image = (props: Object) => {
     const { image = {}, link = {}, settings = {} } = get(props, "element.data", {});
-    if (!image || !image.file) {
+    if (!image) {
         return null;
     }
 
-    const { width, height, title } = image;
-
+    const { width, height, title, src } = image;
     const { horizontalAlign = "center" } = settings;
 
     const style = { width, height };
@@ -45,7 +44,7 @@ const Image = (props: Object) => {
             className={"webiny-cms-base-element-style webiny-cms-element-image"}
         >
             <Link link={link}>
-                <WebinyImage title={title} alt={title} style={style} src={image.file.src} srcSet="auto" />
+                <WebinyImage title={title} alt={title} style={style} src={src} srcSet="auto" />
             </Link>
         </ElementRoot>
     );

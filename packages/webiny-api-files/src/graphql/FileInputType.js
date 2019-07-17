@@ -1,6 +1,5 @@
 export default /* GraphQL */ `
     input FileInput {
-        id: ID
         name: String
         size: Int
         type: String

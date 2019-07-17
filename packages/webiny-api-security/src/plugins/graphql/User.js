@@ -25,6 +25,13 @@ export default {
         Role.typeDefs,
         Group.typeDefs,
         /* GraphQL */ `
+            type Avatar {
+                name: String
+                size: Int
+                type: String
+                src: String
+            }
+
             type UserLogin {
                 token: String
                 expiresOn: Int

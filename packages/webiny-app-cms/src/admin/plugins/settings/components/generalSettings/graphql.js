@@ -6,11 +6,9 @@ const fields = /* GraphQL */ `
         data {
             name
             logo {
-                id
                 src
             }
             favicon {
-                id
                 src
             }
             social {

@@ -87,7 +87,7 @@ const UsersForm = ({ onSubmit, user, loading }: Object) => (
 
 const fields = `
     data {
-        id email firstName lastName avatar { id src } 
+        id email firstName lastName avatar { src } 
     }
     error {
         code

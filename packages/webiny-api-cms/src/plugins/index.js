@@ -5,6 +5,5 @@ import social from "./pageSettings/social";
 import entities from "./entities";
 import settings from "./settings";
 import graphql from "./graphql";
-import pageContentModifiers from "./entities/pageContentModifiers";
 
-export default [general, seo, social, entities, graphql, settings, pageContentModifiers];
+export default [general, seo, social, entities, graphql, settings];

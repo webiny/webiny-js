@@ -2,7 +2,7 @@
 import gql from "graphql-tag";
 
 const fields = `
-    id email firstName lastName fullName avatar { id src } enabled groups { id name } roles { id name }
+    id email firstName lastName fullName avatar { src } enabled groups { id name } roles { id name }
 `;
 
 export const loadUsers = gql`
@@ -22,7 +22,6 @@ export const loadUsers = gql`
                     lastName
                     fullName
                     avatar {
-                        id
                         src
                     }
                     createdOn
