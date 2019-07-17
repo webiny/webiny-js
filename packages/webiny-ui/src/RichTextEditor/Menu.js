@@ -48,8 +48,8 @@ type Props = FormComponentProps & {
     activePlugin: ?Object,
     activatePlugin: Function,
     deactivatePlugin: Function,
-    menuPlugins: Array<Object>,
-}
+    menuPlugins: Array<Object>
+};
 
 class Menu extends React.Component<Props> {
     menu = React.createRef();

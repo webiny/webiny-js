@@ -33,7 +33,10 @@ export default () => {
 
                     return (
                         // eslint-disable-next-line react/jsx-no-bind
-                        <MenuButton onClick={() => onClickMark(mark, editor, onChange)} active={isActive}>
+                        <MenuButton
+                            onClick={() => onClickMark(mark, editor, onChange)}
+                            active={isActive}
+                        >
                             <FormatBoldIcon />
                         </MenuButton>
                     );

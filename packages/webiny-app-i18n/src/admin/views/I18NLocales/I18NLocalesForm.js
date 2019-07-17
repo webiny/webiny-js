@@ -53,13 +53,11 @@ const I18NLocaleForm = ({ onSubmit, loading, data, invalidFields }: WithCrudForm
                             </Cell>
                             <Cell span={12}>
                                 <Bind name="simpleText">
-
                                     <Bind name="richText">
                                         <I18NInput label={"Rich text"} richText />
                                     </Bind>
                                 </Bind>
                             </Cell>
-
                         </Grid>
                     </SimpleFormContent>
                     <SimpleFormFooter>
