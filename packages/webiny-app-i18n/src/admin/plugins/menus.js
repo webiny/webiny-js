@@ -17,10 +17,10 @@ export default [
 
             if (locales) {
                 return (
-                    <Menu label={t`I18N`} icon={<I18NIcon />}>
+                    <Menu label={t`Languages`} icon={<I18NIcon />}>
                         {locales && (
-                            <Menu label={t`Languages`}>
-                                {locales && <Menu label={t`Languages`} path="/i18n/languages" />}
+                            <Menu label={t`Locales`}>
+                                {locales && <Menu label={t`Locales`} path="/i18n/locales" />}
                             </Menu>
                         )}
                     </Menu>

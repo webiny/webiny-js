@@ -13,11 +13,11 @@ export default [
         route: (
             <Route
                 exact
-                path={"/i18n/languages"}
+                path={"/i18n/locales"}
                 render={() => (
                     <SecureRoute i18NLocales={["i18n-locales"]}>
                         <AdminLayout>
-                            <Helmet title={"I18N - Languages"} />
+                            <Helmet title={"I18N - Locales"} />
                             <I18NLocales />
                         </AdminLayout>
                     </SecureRoute>
