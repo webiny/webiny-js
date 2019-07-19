@@ -1,2 +1,2 @@
-export { default as I18NInput } from "./I18NInput";
 export * from "./I18NContext";
+export { default as I18NValue } from "./I18NValue";

@@ -2,8 +2,21 @@
 // $FlowFixMe
 import React, { useReducer, useMemo, useContext, useEffect } from "react";
 import { withApollo } from "react-apollo";
-import { listI18NLocales } from "./graphql";
-import { get } from "lodash";
+import gql from "graphql-tag";
+
+export const listI18NLocales = gql`
+    query ListI18NLocales {
+        i18n {
+            listI18NLocales {
+                data {
+                    id
+                    code
+                    default
+                }
+            }
+        }
+    }
+`;
 
 export function init(props: Object) {
     return {
@@ -32,7 +45,7 @@ const I18NProvider = withApollo(({ children, ...props }: Object) => {
 
     useEffect(() => {
         props.client.query({ query: listI18NLocales }).then(response => {
-            dispatch({ type: "locales", value: get(response, "data.i18n.listI18NLocales.data") });
+            dispatch({ type: "locales", value: response.data.i18n.listI18NLocales.data });
         });
     }, []);
 
@@ -49,7 +62,7 @@ const I18NProvider = withApollo(({ children, ...props }: Object) => {
 function useI18N() {
     const context = useContext(I18NContext);
     if (!context) {
-        throw new Error("useI18N must be used within a I18NProvider");
+        return null;
     }
 
     const { state, dispatch } = context;
@@ -72,7 +85,7 @@ function useI18N() {
         getLocales() {
             return state.locales;
         },
-        translate(valueObject: ?Object): string {
+        getValue(valueObject: ?Object): string {
             if (!valueObject) {
                 return "";
             }

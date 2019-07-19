@@ -6,6 +6,8 @@ System.config({
         "webiny-app-cms/*": "./packages/webiny-app-cms/src/*",
         "webiny-app-security/*": "./packages/webiny-app-security/src/*",
         "webiny-api-security/*": "./packages/webiny-api-security/src/*",
+        "webiny-app-i18n/*": "./packages/webiny-app-i18n/src/*",
+        "webiny-api-i18n/*": "./packages/webiny-api-i18n/src/*",
         "webiny-api/*": "./packages/webiny-api/src/*",
         "webiny-api-cms/*": "./packages/webiny-api-cms/src/*",
         "webiny-api-files/*": "./packages/webiny-api-files/src/*",

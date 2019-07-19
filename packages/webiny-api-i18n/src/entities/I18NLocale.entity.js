@@ -64,6 +64,31 @@ export function i18nLocaleFactory(context: Object): Class<II18NLocale> {
                     throw Error(`Locale with key "${this.code}" already exists.`);
                 }
             });
+
+            this.on("beforeDelete", async () => {
+                const remainingLocalesCount = await I18NLocale.count({
+                    query: { id: { $ne: this.id } }
+                });
+
+                if (remainingLocalesCount === 0) {
+                    throw Error("Cannot delete the last locale.");
+                }
+
+                if (remainingLocalesCount === 1) {
+                    this.on("afterDelete", async () => {
+                        // Set last remaining locale as default.
+                        const remainingLocale = await I18NLocale.findOne();
+                        if (!remainingLocale) {
+                            return;
+                        }
+
+                        if (!remainingLocale.default) {
+                            remainingLocale.default = true;
+                            await remainingLocale.save();
+                        }
+                    }).setOnce();
+                }
+            });
         }
     };
 }
