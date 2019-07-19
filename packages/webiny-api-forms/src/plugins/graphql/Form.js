@@ -47,6 +47,16 @@ export default {
             overallStats: FormStatsType
         }
         
+        type FieldOptionsType {
+            label: I18NStringValue
+            value: String
+        }        
+        
+        input FieldOptionsInput {
+            label: I18NStringValueInput
+            value: String
+        }
+        
         type FormFieldType {
             _id: ID!
             fieldId: String!
@@ -55,6 +65,7 @@ export default {
             label: I18NStringValue
             placeholderText: I18NStringValue
             helpText: I18NStringValue
+            options: [FieldOptionsType]
             validation: [String]
             settings: JSON
         }    
@@ -67,6 +78,7 @@ export default {
             label: I18NStringValueInput
             placeholderText: I18NStringValueInput
             helpText: I18NStringValueInput
+            options: [FieldOptionsInput]
             validation: [String]
             settings: JSON
         }
@@ -215,15 +227,15 @@ export default {
             // Updates revision
             updateRevision: resolveUpdate("Form"),
             // Publish revision (must be given an exact revision ID to publish)
-            publishRevision: (_: any, args: Object, ctx: Object, info: Object) => {
+            publishRevision: (_: any, args: Object, ctx: Object) => {
                 args.data = { published: true };
 
-                return resolveUpdate("Form")(_, args, ctx, info);
+                return resolveUpdate("Form")(_, args, ctx);
             },
-            unpublishRevision: (_: any, args: Object, ctx: Object, info: Object) => {
+            unpublishRevision: (_: any, args: Object, ctx: Object) => {
                 args.data = { published: false };
 
-                return resolveUpdate("Form")(_, args, ctx, info);
+                return resolveUpdate("Form")(_, args, ctx);
             },
             // Delete a revision
             deleteRevision: resolveDelete("Form"),

@@ -21,6 +21,12 @@ export const FIELDS_FIELDS = `
         }
         helpText {
             ${I18N_FIELDS}
+        }  
+        options {
+            label {
+                ${I18N_FIELDS}
+            }
+            value
         }
         validation
         settings
@@ -32,18 +38,10 @@ const SETTINGS_FIELDS = /* GraphQL */ `
             renderer
         }
         successMessage {
-            value
-            values {
-                locale
-                value
-            }
+            ${I18N_FIELDS}
         }
         submitButtonLabel {
-            value
-            values {
-                locale
-                value
-            }
+            ${I18N_FIELDS}
         }
     }
 `;

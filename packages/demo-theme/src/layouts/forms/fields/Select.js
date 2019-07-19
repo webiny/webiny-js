@@ -1,7 +1,7 @@
 // @flow
 import * as React from "react";
-import { useI18N } from "webiny-app-i18n/components";
 import type { FieldType } from "webiny-app-forms/types";
+import { I18NValue } from "webiny-app-i18n/components";
 
 type Props = {
     bind: Object,
@@ -10,12 +10,11 @@ type Props = {
 
 const Select = (props: Props) => {
     const { onChange, value } = props.bind;
-    const { translate } = useI18N();
 
     return (
         <div className="webiny-cms-form-field webiny-cms-form-field--select">
             <label className="webiny-cms-form-field__label webiny-cms-typography-body">
-                {translate(props.field.label)}
+                <I18NValue value={props.field.label} />
             </label>
             <select
                 value={value}
@@ -25,16 +24,16 @@ const Select = (props: Props) => {
                 className="webiny-cms-form-field__select"
             >
                 <option disabled value={""}>
-                    {translate(props.field.placeholderText)}
+                    {I18NValue({ value: props.field.placeholderText })}}
                 </option>
-                {props.field.settings.options.map(option => (
+                {props.field.options.map(option => (
                     <option key={option.value} value={option.value}>
-                        {translate(option.label)}
+                        {I18NValue({ value: option.label })}
                     </option>
                 ))}
             </select>
             <div className="webiny-cms-form-field__helper-text">
-                {translate(props.field.helpText)}
+                <I18NValue value={props.field.helpText} />
             </div>
         </div>
     );

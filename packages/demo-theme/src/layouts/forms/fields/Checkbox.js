@@ -1,8 +1,8 @@
 // @flow
 // $FlowFixMe
 import React from "react";
-import { useI18N } from "webiny-app-i18n/components";
 import type { FieldType } from "webiny-app-forms/types";
+import { I18NValue } from "webiny-app-i18n/components";
 
 type Props = {
     bind: Object,
@@ -26,15 +26,14 @@ const checked = ({ option, value }) => {
 
 const Checkbox = (props: Props) => {
     const { onChange, value } = props.bind;
-    const { translate } = useI18N();
 
     return (
         <div className="webiny-cms-form-field webiny-cms-form-field--checkbox">
             <label className="webiny-cms-form-field__label webiny-cms-typography-body">
-                {translate(props.field.label)}
+                <I18NValue value={props.field.label}/>
             </label>
             <div className="webiny-cms-form-field__checkbox-group">
-                {props.field.settings.options.map(option => (
+                {props.field.options.map(option => (
                     <div className="webiny-cms-form-field__checkbox" key={option.value}>
                         <input
                             name={props.field.fieldId}
@@ -48,13 +47,13 @@ const Checkbox = (props: Props) => {
                             htmlFor={"checkbox-" + props.field.fieldId + option.value}
                             className="webiny-cms-form-field__checkbox-label"
                         >
-                            {translate(option.label)}
+                            <I18NValue value={option.label}/>
                         </label>
                     </div>
                 ))}
             </div>
             <div className="webiny-cms-form-field__helper-text">
-                {translate(props.field.helpText)}
+                <I18NValue value={props.field.helpText}/>
             </div>
         </div>
     );

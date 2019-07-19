@@ -3,28 +3,33 @@ import { Input } from "webiny-ui/Input";
 import { Grid, Cell } from "webiny-ui/Grid";
 import { camelCase } from "lodash";
 import { useFormEditor } from "webiny-app-forms/admin/components/FormEditor/Context";
-import { I18NInput, useI18N } from "webiny-app-i18n/components";
+import { I18NInput } from "webiny-app-i18n/admin/components";
+import { useI18N } from "webiny-app-i18n/components";
 
 const GeneralTab = ({ field, form }) => {
     const { Bind, setValue } = form;
     const inputRef = useRef(null);
     const { getField, getFieldPlugin } = useFormEditor();
-    const { translate } = useI18N();
+    const { getValue } = useI18N();
 
     useEffect(() => {
         inputRef.current && inputRef.current.focus();
     }, []);
 
     const afterChangeLabel = useCallback(value => {
-        setValue("fieldId", camelCase(translate(value)));
+        setValue("fieldId", camelCase(getValue(value)));
     }, []);
 
+    console.log(field);
     const uniqueFieldIdValidator = useCallback(fieldId => {
         const existingField = getField({ fieldId });
         if (!existingField) {
             return;
         }
 
+        if (existingField._id === field._id) {
+            return true;
+        }
         throw new Error("Please enter a unique Field ID");
     });
 

@@ -1,6 +1,6 @@
 import React from "react";
 import { Grid, Cell } from "webiny-ui/Grid";
-import { I18NInput } from "webiny-app-i18n/components";
+import { I18NInput } from "webiny-app-i18n/admin/components";
 
 export default {
     type: "form-editor-field-validator",

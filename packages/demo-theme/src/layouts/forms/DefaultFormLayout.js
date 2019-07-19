@@ -7,7 +7,7 @@ import Radio from "./fields/Radio";
 import Checkbox from "./fields/Checkbox";
 import Textarea from "./fields/Textarea";
 import { Form } from "webiny-form";
-
+import { I18NValue } from "webiny-app-i18n/components";
 import type { FieldType, FormRenderPropsType } from "webiny-app-forms/types";
 
 // TODO: this is an example, do whatever you want.. feel free to use 3rd party components....
@@ -28,7 +28,7 @@ function renderField(props: { field: FieldType, bind: Object, validation: Object
         case "checkbox":
             return <Checkbox {...props} />;
         case "hidden":
-            return <input type={"hidden"} value={props.bind.value} />;
+            return <input type="hidden" value={props.bind.value} />;
         default:
             return <span>Cannot render field.</span>;
     }
@@ -59,7 +59,10 @@ const FormRenderer = ({ getFields, getDefaultValues, submit, form }: FormRenderP
                             >
                                 <div className="webiny-cms-form__success-message">
                                     <div className="webiny-cms-form-field__label webiny-cms-typography-h3">
-                                        {form.settings.successMessage.value || "Thanks!"}
+                                        <I18NValue
+                                            value={form.settings.successMessage}
+                                            default="Thanks!"
+                                        />
                                     </div>
                                 </div>
                             </div>
@@ -114,7 +117,10 @@ const FormRenderer = ({ getFields, getDefaultValues, submit, form }: FormRenderP
                                     onClick={submit}
                                     disabled={loading}
                                 >
-                                    {form.settings.submitButtonLabel.value || "Submit"}
+                                    <I18NValue
+                                        value={form.settings.submitButtonLabel}
+                                        default="Submit"
+                                    />
                                 </button>
                             </div>
                         </>

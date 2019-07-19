@@ -5,7 +5,7 @@ import { withCms } from "webiny-app-cms/context";
 import { Grid, Cell } from "webiny-ui/Grid";
 import { Select } from "webiny-ui/Select";
 import { get } from "lodash";
-import { I18NInput } from "webiny-app-i18n/components";
+import { I18NInput } from "webiny-app-i18n/admin/components";
 
 const GeneralSettings = ({ Bind, cms }: Object) => {
     const layouts = get(cms, "theme.forms.layouts") || [];

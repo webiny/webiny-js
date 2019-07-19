@@ -34,14 +34,14 @@ const Actions = styled("div")({
 
 const Field = props => {
     const { field, onEdit, onDelete } = props;
-    const { translate } = useI18N();
+    const { getValue } = useI18N();
     const { getFieldPlugin } = useFormEditor();
 
     const fieldPlugin = getFieldPlugin({ name: field.name });
     return (
         <FieldContainer>
             <Info>
-                <Typography use={"subtitle1"}>{translate(field.label)}</Typography>
+                <Typography use={"subtitle1"}>{getValue(field.label)}</Typography>
                 <Typography use={"caption"}>{fieldPlugin && fieldPlugin.field.label}</Typography>
             </Info>
             <Actions>

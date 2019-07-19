@@ -57,6 +57,17 @@ class FormStatsModel extends Model {
     }
 }
 
+const createFieldOptionsModel = context =>
+    class SettingsModel extends Model {
+        constructor(props) {
+            super(props);
+            this.attr("label").custom(I18NCharAttribute, context);
+            this.attr("value")
+                .char()
+                .setValue("");
+        }
+    };
+
 const createFieldModel = context =>
     class FieldModel extends Model {
         constructor() {
@@ -76,6 +87,7 @@ const createFieldModel = context =>
             this.attr("label").custom(I18NCharAttribute, context);
             this.attr("helpText").custom(I18NCharAttribute, context);
             this.attr("placeholderText").custom(I18NCharAttribute, context);
+            this.attr("options").models(createFieldOptionsModel(context));
             this.attr("validation").array();
             this.attr("settings")
                 .object()

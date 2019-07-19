@@ -1,7 +1,7 @@
 // @flow
 import * as React from "react";
-import { useI18N } from "webiny-app-i18n/components";
 import type { FieldType } from "webiny-app-forms/types";
+import { I18NValue } from "webiny-app-i18n/components";
 
 type Props = {
     bind: Object,
@@ -10,36 +10,38 @@ type Props = {
 
 const Radio = (props: Props) => {
     const { onChange, value } = props.bind;
-    const { translate } = useI18N();
 
     return (
         <div className="webiny-cms-form-field webiny-cms-form-field--radio">
             <label className="webiny-cms-form-field__label webiny-cms-typography-body">
-                {translate(props.field.label)}
+                <I18NValue value={props.field.label} />
             </label>
             <div className="webiny-cms-form-field__radio-group">
-                {props.field.settings.options.map(option => (
-                    <div className="webiny-cms-form-field__radio" key={option.value}>
-                        <input
-                            checked={value === option.value}
-                            onChange={() => onChange(option.value)}
-                            name={props.field.fieldId}
-                            className="webiny-cms-form-field__radio-input"
-                            type="radio"
-                            id={"radio-" + props.field.fieldId + option.value}
-                            value={option.value}
-                        />
-                        <label
-                            htmlFor={"radio-" + props.field.fieldId + option.value}
-                            className="webiny-cms-form-field__radio-label"
-                        >
-                            {translate(option.label)}
-                        </label>
-                    </div>
-                ))}
+                {props.field.options.map(option => {
+                    console.log("ovo je moj,", option.label);
+                    return (
+                        <div className="webiny-cms-form-field__radio" key={option.value}>
+                            <input
+                                checked={value === option.value}
+                                onChange={() => onChange(option.value)}
+                                name={props.field.fieldId}
+                                className="webiny-cms-form-field__radio-input"
+                                type="radio"
+                                id={"radio-" + props.field.fieldId + option.value}
+                                value={option.value}
+                            />
+                            <label
+                                htmlFor={"radio-" + props.field.fieldId + option.value}
+                                className="webiny-cms-form-field__radio-label"
+                            >
+                                {I18NValue({ value: option.label })}
+                            </label>
+                        </div>
+                    );
+                })}
             </div>
             <div className="webiny-cms-form-field__helper-text">
-                {translate(props.field.helpText)}
+                <I18NValue value={props.field.helpText} />
             </div>
         </div>
     );

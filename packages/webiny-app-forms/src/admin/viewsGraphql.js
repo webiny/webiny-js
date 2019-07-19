@@ -34,6 +34,12 @@ export const FIELDS_FIELDS = `
         helpText {
             value
         }
+        options {
+            label {
+                value
+            }
+            value
+        }
         validation
         settings
 `;
