@@ -20,7 +20,6 @@ const GeneralTab = ({ field, form }) => {
         setValue("fieldId", camelCase(getValue(value)));
     }, []);
 
-    console.log(field);
     const uniqueFieldIdValidator = useCallback(fieldId => {
         const existingField = getField({ fieldId });
         if (!existingField) {
