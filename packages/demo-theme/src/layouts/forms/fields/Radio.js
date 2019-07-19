@@ -18,7 +18,6 @@ const Radio = (props: Props) => {
             </label>
             <div className="webiny-cms-form-field__radio-group">
                 {props.field.options.map(option => {
-                    console.log("ovo je moj,", option.label);
                     return (
                         <div className="webiny-cms-form-field__radio" key={option.value}>
                             <input
