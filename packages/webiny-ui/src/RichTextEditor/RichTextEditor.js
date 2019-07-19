@@ -3,14 +3,14 @@ import React from "react";
 import { get } from "lodash";
 import { Editor } from "slate-react";
 import { Value } from "slate";
+import Plain from "slate-plain-serializer";
 import styled from "react-emotion";
-import getInitialValue from "./getInitialValue";
-import Menu from "./Menu";
-import shortid from "shortid";
-import { FormElementMessage } from "webiny-ui/FormElementMessage";
 import { css } from "emotion";
 import classNames from "classnames";
+import Menu from "./Menu";
+import { FormElementMessage } from "webiny-ui/FormElementMessage";
 import type { FormComponentProps } from "./../types";
+import shortid from "shortid"; // TODO: remove this one
 
 const EditorWrapper = styled("div")({
     border: "1px solid var(--mdc-theme-on-background)",
@@ -39,12 +39,24 @@ const classes = {
     })
 };
 
-type Props = FormComponentProps & {
+export type EditorPluginType = Object & {}; // Slate plugin.
+
+export type MenuPluginType = {
+    render: ({ MenuButton: React.Node, editor: Object, onChange: () => void }) => React.Node,
+    renderDialog?: Object => React.Node
+};
+
+export type RichTextEditorPluginType = {
+    name: string,
+    editor: EditorPluginType,
+    menu: MenuPluginType
+};
+
+export type RichTextEditorPropsType = FormComponentProps & {
     disabled: ?boolean,
     description: ?string,
     label: ?string,
-    menuPlugins: Array<Object>,
-    editorPlugins: Array<Object>
+    plugins: Array<RichTextEditorPluginType>
 };
 
 type State = {
@@ -55,7 +67,7 @@ type State = {
     activePlugin: ?Object
 };
 
-class RichTextEditor extends React.Component<Props, State> {
+export class RichTextEditor extends React.Component<RichTextEditorPropsType, State> {
     static defaultProps = {};
 
     editor = React.createRef();
@@ -68,7 +80,7 @@ class RichTextEditor extends React.Component<Props, State> {
         this.state = {
             modified: false,
             showMenu: false,
-            value: props.value ? Value.fromJSON(props.value) : Value.create(getInitialValue()),
+            value: props.value ? Value.fromJSON(props.value) : Plain.deserialize(""),
             readOnly: !props.onChange,
             activePlugin: null
         };
@@ -78,7 +90,7 @@ class RichTextEditor extends React.Component<Props, State> {
         if (!state.modified && !props.readOnly) {
             // Got new editor value through props.
             return {
-                value: props.value ? Value.fromJSON(props.value) : Value.create(getInitialValue())
+                value: props.value ? Value.fromJSON(props.value) : Plain.deserialize("")
             };
         }
 
@@ -147,7 +159,13 @@ class RichTextEditor extends React.Component<Props, State> {
     };
 
     render() {
-        const { label, disabled, description, validation = { isValid: null } } = this.props;
+        const {
+            plugins,
+            label,
+            disabled,
+            description,
+            validation = { isValid: null }
+        } = this.props;
 
         return (
             <div className={classNames({ [classes.disable]: disabled })}>
@@ -163,7 +181,7 @@ class RichTextEditor extends React.Component<Props, State> {
                 )}
                 <EditorWrapper id={this.id}>
                     <Menu
-                        menuPlugins={this.props.menuPlugins}
+                        plugins={plugins}
                         value={this.state.value}
                         onChange={this.onChange}
                         editor={this.editor.current}
@@ -177,7 +195,7 @@ class RichTextEditor extends React.Component<Props, State> {
                             ref={this.editor}
                             autoCorrect={false}
                             spellCheck={false}
-                            plugins={this.props.editorPlugins}
+                            plugins={plugins.map(plugin => plugin.editor).filter(Boolean)}
                             placeholder="Enter some text..."
                             value={this.state.value}
                             onChange={this.onChange}
@@ -198,5 +216,3 @@ class RichTextEditor extends React.Component<Props, State> {
         );
     }
 }
-
-export default RichTextEditor;

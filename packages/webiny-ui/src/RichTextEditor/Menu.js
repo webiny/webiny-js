@@ -48,7 +48,7 @@ type Props = FormComponentProps & {
     activePlugin: ?Object,
     activatePlugin: Function,
     deactivatePlugin: Function,
-    menuPlugins: Array<Object>
+    plugins: Array<Object>
 };
 
 class Menu extends React.Component<Props> {
@@ -62,20 +62,24 @@ class Menu extends React.Component<Props> {
             activePlugin,
             activatePlugin,
             deactivatePlugin,
-            menuPlugins
+            plugins
         } = this.props;
 
         if (!editor) {
             return null;
         }
 
-        const menuItems = menuPlugins;
+        const menuItems = plugins;
 
         return (
             <MenuContainer>
                 {menuItems.map(item => {
+                    if (!item.menu) {
+                        return null;
+                    }
+
                     return React.cloneElement(
-                        item.render({
+                        item.menu.render({
                             MenuButton,
                             value,
                             onChange,

@@ -8,13 +8,13 @@ import { Switch } from "webiny-ui/Switch";
 import type { WithCrudFormProps } from "webiny-admin/components";
 import { CircularProgress } from "webiny-ui/Progress";
 import LocaleCodesAutoComplete from "./LocaleCodesAutoComplete";
+import { I18NInput } from "webiny-app-i18n/admin/components";
 import {
     SimpleForm,
     SimpleFormFooter,
     SimpleFormContent,
     SimpleFormHeader
 } from "webiny-admin/components/SimpleForm";
-import { I18NInput } from "webiny-app-i18n/components";
 
 const t = i18n.namespace("I18N.I18NLocalesForm");
 

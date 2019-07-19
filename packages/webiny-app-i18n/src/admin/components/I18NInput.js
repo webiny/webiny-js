@@ -85,15 +85,16 @@ const I18NInput = ({ richText, value, onChange, ...inputProps }) => {
 
     const translateMenuItem = useMemo(() => {
         return {
-            name: "i18n-rich-editor-menu-item-translate",
-            type: "i18n-rich-editor-menu-item",
-            render({ MenuButton }: Object) {
-                return (
-                    // eslint-disable-next-line react/jsx-no-bind
-                    <MenuButton onClick={openDialog}>
-                        <I18NIcon />
-                    </MenuButton>
-                );
+            name: "i18NInputLocalesOverlay",
+            menu: {
+                render({ MenuButton }: Object) {
+                    return (
+                        // eslint-disable-next-line react/jsx-no-bind
+                        <MenuButton onClick={openDialog}>
+                            <I18NIcon />
+                        </MenuButton>
+                    );
+                }
             }
         };
     }, []);
@@ -105,7 +106,7 @@ const I18NInput = ({ richText, value, onChange, ...inputProps }) => {
                     {...inputProps}
                     value={inputValue}
                     onChange={inputOnChange}
-                    menu={[translateMenuItem]}
+                    plugins={[translateMenuItem]}
                 />
             ) : (
                 <Input

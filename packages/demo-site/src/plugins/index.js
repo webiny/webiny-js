@@ -5,8 +5,7 @@ import cookiePolicyPlugins from "webiny-app-cookie-policy/render";
 import typeformPlugins from "webiny-app-typeform/render";
 import mailchimpPlugins from "webiny-app-mailchimp/render";
 import gtmPlugins from "webiny-app-google-tag-manager/render";
-import formsSitePlugins from "webiny-app-forms/site/plugins";
-import formsCmsPlugins from "webiny-app-forms/cms/site/plugins";
+import i18nPlugins from "webiny-app-i18n/site/plugins";
 
 const plugins = [
     fileUploadPlugin(),
@@ -16,8 +15,7 @@ const plugins = [
     typeformPlugins,
     mailchimpPlugins,
     gtmPlugins,
-    formsSitePlugins,
-    formsCmsPlugins
+    i18nPlugins
 ];
 
 export default plugins;

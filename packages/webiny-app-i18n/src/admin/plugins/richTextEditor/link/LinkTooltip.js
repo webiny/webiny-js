@@ -80,7 +80,7 @@ const LinkTooltip = ({ editor, onChange, activatePlugin }) => {
         }
     });
 
-    const activateLink = useCallback(() => activatePlugin("i18n-rich-editor-menu-item-link"));
+    const activateLink = useCallback(() => activatePlugin("i18n-input-rich-text-editor-menu-link"));
     const removeLink = useCallback(() => {
         editor.change(change => {
             // Restore selection

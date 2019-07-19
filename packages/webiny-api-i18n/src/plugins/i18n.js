@@ -15,52 +15,39 @@ export default ([
     {
         type: "graphql-context",
         name: "graphql-context-i18n",
-        apply: async (context: ApiContext) => {
+        apply: async (context: ApiContext & Object) => {
+            const { I18NLocale } = context.getEntities();
+
             const self = {
                 __i18n: {
                     acceptLanguage: null,
                     defaultLocale: null,
-                    locales: {
-                        list: [],
-                        loaded: false
-                    },
-                    locale: {
-                        instance: null,
-                        loaded: false
-                    }
+                    locales: await I18NLocale.find(),
+                    locale: null
                 },
-                async getDefaultLocale() {
-                    const allLocales = await self.getLocales();
+                getDefaultLocale() {
+                    const allLocales = self.getLocales();
                     return allLocales.find(item => item.default === true);
                 },
-                async getLocale() {
-                    if (self.__i18n.locale.loaded) {
-                        return self.__i18n.locale.instance;
+                getLocale() {
+                    if (self.__i18n.locale) {
+                        return self.__i18n.locale;
                     }
 
                     const acceptLanguage = getAcceptLanguage(context.event.headers);
-                    let allLocales = await self.getLocales();
-                    self.__i18n.locale.instance = allLocales.find(
-                        item => item.code === acceptLanguage
-                    );
-                    if (self.__i18n.locale.instance) {
-                        self.__i18n.locale.loaded = true;
-                        return self.__i18n.locale.instance;
+                    let allLocales = self.getLocales();
+
+                    let currentLocale = allLocales.find(item => item.code === acceptLanguage);
+                    if (!currentLocale) {
+                        currentLocale = self.getDefaultLocale();
                     }
 
-                    self.__i18n.locale.instance = await self.getDefaultLocale();
-                    self.__i18n.locale.loaded = true;
-                    return this.__i18n.locale.instance;
+                    // $FlowFixMe
+                    self.__i18n.locale = currentLocale;
+                    return self.__i18n.locale;
                 },
-                async getLocales() {
-                    if (self.__i18n.locales.loaded) {
-                        return self.__i18n.locales.list;
-                    }
-
-                    const { I18NLocale } = context.getEntities();
-                    self.__i18n.locales.list = await I18NLocale.find();
-                    self.__i18n.locales.loaded = true;
-                    return self.__i18n.locales.list;
+                getLocales() {
+                    return self.__i18n.locales;
                 }
             };
 

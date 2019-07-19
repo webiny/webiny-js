@@ -34,3 +34,7 @@ export type GraphQLContextPluginType = PluginType & {
 };
 
 export type SettingsPluginType = PluginType & {};
+
+export type ApiContext = {
+    config: Object
+}

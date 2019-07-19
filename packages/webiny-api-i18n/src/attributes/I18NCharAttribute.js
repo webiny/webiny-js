@@ -1,6 +1,7 @@
 import { Model, ModelAttribute } from "webiny-model";
 import type { AttributesContainer } from "webiny-model/types";
 import type { I18NContext } from "webiny-api-i18n/types";
+import onGetI18NValues from "./onGetI18NValues";
 
 class I18NCharAttributeTranslationsModel extends Model {
     constructor() {
@@ -18,11 +19,12 @@ const createI18NStringAttributeModel = ({ i18n }: I18NContext) =>
             super();
             this.attr("values")
                 .models(I18NCharAttributeTranslationsModel)
+                .onGet(value => onGetI18NValues(value, i18n))
                 .setValue([]);
             this.attr("value")
                 .char()
-                .setDynamic(async () => {
-                    const locale = await i18n.getLocale();
+                .setDynamic(() => {
+                    const locale = i18n.getLocale();
                     const value = this.values.find(value => value.locale === locale.id);
                     return value ? value.value : "";
                 });

@@ -4,6 +4,8 @@ import type { Change } from "slate";
 import type { Editor } from "slate-react";
 import { ReactComponent as UnderlineIcon } from "./../icons/format_underlined.svg";
 import { isKeyHotkey } from "is-hotkey";
+import type { I18NInputRichTextEditorPluginType } from "webiny-app-i18n/types";
+
 const isUnderlineHotkey = isKeyHotkey("mod+u");
 
 const hasMark = (value, type) => {
@@ -16,57 +18,52 @@ const onClickMark = (type, onChange, editor) => {
 
 const mark = "underline";
 
-export default () => {
-    return {
-        menu: [
-            {
-                name: "i18n-rich-editor-menu-item-underline",
-                type: "i18n-rich-editor-menu-item",
-                render({
-                    MenuButton,
-                    editor,
-                    onChange
-                }: {
-                    MenuButton: React.ComponentType<*>,
-                    editor: React.ElementRef<Editor>,
-                    onChange: Function
-                }) {
-                    const isActive = hasMark(editor.value, mark);
+const plugin: I18NInputRichTextEditorPluginType = {
+    name: "i18n-input-rich-text-editor-underline",
+    type: "i18n-input-rich-text-editor",
+    plugin: {
+        name: "underline",
+        editor: {
+            onKeyDown(event: SyntheticKeyboardEvent<*>, change: Change, next: Function) {
+                // Decide what to do based on the key code...
+                if (isUnderlineHotkey(event)) {
+                    event.preventDefault();
+                    change.toggleMark(mark);
+                    return true;
+                }
+                return next();
+            },
+            renderMark(props: Object, next: Function) {
+                if (props.mark.type === mark) {
+                    return <u {...props.attributes}>{props.children}</u>;
+                }
+                return next();
+            }
+        },
+        menu: {
+            render({
+                MenuButton,
+                editor,
+                onChange
+            }: {
+                MenuButton: React.ComponentType<*>,
+                editor: React.ElementRef<Editor>,
+                onChange: Function
+            }) {
+                const isActive = hasMark(editor.value, mark);
 
-                    return (
-                        // eslint-disable-next-line react/jsx-no-bind
-                        <MenuButton
-                            onClick={() => onClickMark(mark, onChange, editor)}
-                            active={isActive}
-                        >
-                            <UnderlineIcon />
-                        </MenuButton>
-                    );
-                }
+                return (
+                    // eslint-disable-next-line react/jsx-no-bind
+                    <MenuButton
+                        onClick={() => onClickMark(mark, onChange, editor)}
+                        active={isActive}
+                    >
+                        <UnderlineIcon />
+                    </MenuButton>
+                );
             }
-        ],
-        editor: [
-            {
-                name: "i18n-rich-editor-underline",
-                type: "i18n-rich-editor",
-                slate: {
-                    onKeyDown(event: SyntheticKeyboardEvent<*>, change: Change, next: Function) {
-                        // Decide what to do based on the key code...
-                        if (isUnderlineHotkey(event)) {
-                            event.preventDefault();
-                            change.toggleMark(mark);
-                            return true;
-                        }
-                        return next();
-                    },
-                    renderMark(props: Object, next: Function) {
-                        if (props.mark.type === mark) {
-                            return <u {...props.attributes}>{props.children}</u>;
-                        }
-                        return next();
-                    }
-                }
-            }
-        ]
-    };
+        }
+    }
 };
+
+export default plugin;
