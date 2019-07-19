@@ -37,4 +37,4 @@ export type SettingsPluginType = PluginType & {};
 
 export type ApiContext = {
     config: Object
-}
+};

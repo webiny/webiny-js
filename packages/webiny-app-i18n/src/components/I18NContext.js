@@ -91,9 +91,7 @@ function useI18N() {
             }
 
             if (Array.isArray(valueObject.values)) {
-                const output = valueObject.values.find(
-                    item => item.locale === self.getLocale().id
-                );
+                const output = valueObject.values.find(item => item.locale === self.getLocale().id);
                 return output ? output.value : "";
             }
 
