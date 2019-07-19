@@ -8,9 +8,9 @@ export type EntityPluginType = PluginType & {
     namespace?: string,
     entity:
         | {
-        name: string,
-        factory: (context: Object) => Class<Entity>
-    }
+              name: string,
+              factory: (context: Object) => Class<Entity>
+          }
         | Function
 };
 
@@ -21,7 +21,7 @@ export type GraphQLSchemaType = {
 };
 
 export type GraphQLSchemaPluginType = PluginType & {
-    schema?: GraphQLSchemaType | () => GraphQLSchemaType,
+    schema?: GraphQLSchemaType | (() => GraphQLSchemaType),
     security?: Object | (() => Object)
 };
 
@@ -37,4 +37,4 @@ export type SettingsPluginType = PluginType & {};
 
 export type ApiContext = {
     config: Object
-}
+};

@@ -19,7 +19,7 @@ function getValue(valueObject: ?string | ?Object) {
         return "";
     }
 
-    if (typeof valueObject === 'string') {
+    if (typeof valueObject === "string") {
         return valueObject;
     }
 
