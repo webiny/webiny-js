@@ -86,9 +86,8 @@ class SearchBar extends React.Component<*, State> {
         }
     }
 
-    handleForwardSlash = e => {
-        const filter = ["TEXTAREA", "INPUT"];
-        if (filter.includes(e.target.nodeName)) {
+    handleOpenHotkey = e => {
+        if (e.target.nodeName !== "BODY") {
             return;
         }
 
@@ -146,12 +145,7 @@ class SearchBar extends React.Component<*, State> {
         return (
             <Downshift ref={this.downshift} itemToString={item => item && item.label}>
                 {downshiftProps => {
-                    const {
-                        isOpen,
-                        openMenu,
-                        closeMenu,
-                        getInputProps
-                    } = downshiftProps;
+                    const { isOpen, openMenu, closeMenu, getInputProps } = downshiftProps;
 
                     return (
                         <div style={{ width: "100%" }}>
@@ -159,8 +153,8 @@ class SearchBar extends React.Component<*, State> {
                                 zIndex={10}
                                 keys={{
                                     esc: () => document.activeElement.blur(),
-                                    "/": this.handleForwardSlash,
-                                    NumpadDivide: this.handleForwardSlash
+                                    "/": this.handleOpenHotkey,
+                                    NumpadDivide: this.handleOpenHotkey
                                 }}
                             />
 
@@ -174,7 +168,7 @@ class SearchBar extends React.Component<*, State> {
                                     },
                                     enter: () =>
                                         setTimeout(() => {
-                                            const {selectedItem} = this.downshift.current.state;
+                                            const { selectedItem } = this.downshift.current.state;
                                             if (selectedItem) {
                                                 closeMenu();
                                                 this.submitSearchTerm(selectedItem);
