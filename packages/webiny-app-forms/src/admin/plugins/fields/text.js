@@ -38,7 +38,7 @@ export default {
                         </Bind>
                     </Cell>
                     <Cell span={12}>
-                        <Bind name={"defaultValue"}>
+                        <Bind name={"settings.defaultValue"}>
                             <Input
                                 label={"Default value"}
                                 description={"Default value (optional)"}
