@@ -53,7 +53,7 @@ class FileManagerPortal extends React.Component<*> {
 
         const props = {
             onChange: files => {
-                const fields = ["id", "name", "src", "size", "type"];
+                const fields = ["name", "src", "size", "type"];
                 if (Array.isArray(files)) {
                     onChange(files.map(file => pick(file, fields)));
                 } else {

@@ -40,12 +40,11 @@ export default ({
 
         const { color, image } = background;
 
-        const src = get(image, "file.src");
-        if (src) {
+        if (image && image.src) {
             return {
                 ...style,
                 ...scaling[image.scaling || "cover"],
-                backgroundImage: `url(${src})`,
+                backgroundImage: `url(${image.src})`,
                 backgroundPosition: image.position || "center center"
             };
         }

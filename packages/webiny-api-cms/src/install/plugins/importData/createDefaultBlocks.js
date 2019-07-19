@@ -1,19 +1,11 @@
 // @flow
 import get from "lodash/get";
 import fs from "fs-extra";
-import { blocks, files } from "./blocks";
+import { blocks } from "./blocks";
 import path from "path";
 
 const createDefaultBlocks = async (context: Object) => {
     const { Element } = context.cms.entities;
-    const { File } = context.files.entities;
-
-    // Insert files
-    for (let i = 0; i < files.length; i++) {
-        const file = new File();
-        file.populate(files[i]);
-        await file.save();
-    }
 
     for (let i = 0; i < blocks.length; i++) {
         let data = blocks[i];

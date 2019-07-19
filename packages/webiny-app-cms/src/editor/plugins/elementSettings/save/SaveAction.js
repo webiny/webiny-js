@@ -108,7 +108,6 @@ export default compose(
             formData.preview = await fileUploaderPlugin.upload(blob);
 
             formData.preview.meta = meta;
-            formData.preview.meta.private = true;
 
             let mutation = formData.overwrite ? updateElement : createElement;
             const { data: res } = await mutation({

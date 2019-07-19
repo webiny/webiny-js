@@ -3,7 +3,6 @@ import { Entity, type EntityCollection } from "webiny-entity";
 import type { ICategory } from "./Category.entity";
 import pageSettingsFactory from "./PageSettings.model";
 import mdbid from "mdbid";
-import createContentAttribute from "./Page/ContentAttribute";
 
 export interface IPage extends Entity {
     createdBy: Entity;
@@ -77,11 +76,11 @@ export const pageFactory = (context: Object): Class<IPage> => {
                 .onSet(value => (this.locked ? this.url : value));
 
             this.attr("content")
-                .custom(createContentAttribute(context))
+                .object()
                 .onSet(value => (this.locked ? this.content : value));
 
             this.attr("settings")
-                .model(pageSettingsFactory({ ...context, page: this }))
+                .model(pageSettingsFactory({ entities: cms.entities, page: this }))
                 .onSet(value => (this.locked ? this.settings : value));
 
             this.attr("version").integer();
