@@ -41,21 +41,21 @@ export type FormRenderPropsType = {
 export type FormComponentPropsType = {
     preview?: boolean,
     data?: Object,
-    id?: string
+    revision?: string,
+    parent?: string
 };
 
 export type FormRenderComponentPropsType = {
     preview?: boolean,
     data?: Object,
-    client: Object,
-    cms: WithCmsPropsType,
-    id?: string
+    client: Object, // withApollo HOC
+    cms: WithCmsPropsType // withCms HOC
 };
 
 export type FormLoadComponentPropsType = {
+    preview?: boolean,
     revision?: string,
-    parent?: string,
-    preview?: boolean
+    parent?: string
 };
 
 export type UseFormEditorReducerStateType = {

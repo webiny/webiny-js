@@ -1,6 +1,8 @@
 // @flow
 import React from "react";
 import { css } from "emotion";
+import { Typography } from "webiny-ui/Typography";
+import { I18NValue } from "webiny-app-i18n/components";
 import {
     Dialog,
     DialogBody,
@@ -9,7 +11,6 @@ import {
     DialogCancel,
     DialogFooter
 } from "webiny-ui/Dialog";
-import { Typography } from "webiny-ui/Typography";
 
 import { i18n } from "webiny-app/i18n";
 const t = i18n.namespace("FormEditor.FormSubmissionDialog");
@@ -32,7 +33,25 @@ type Props = {
     onClose: Function
 };
 
-// TODO: @sven - layout styling
+const getFieldValueLabel = (field, value) => {
+    if (field.options.length > 0) {
+        const selectedOption = field.options.find(option => option.value === value);
+        if (selectedOption) {
+            return I18NValue(selectedOption.label);
+        }
+    }
+
+    return value;
+};
+
+const renderFieldValueLabel = (field, value) => {
+    if (Array.isArray(value)) {
+        return value.map(v => getFieldValueLabel(field, v)).join(", ");
+    }
+
+    return getFieldValueLabel(field, value);
+};
+
 const FormSubmissionDialog = ({ formSubmission, onClose }: Props) => {
     return (
         <Dialog open={!!formSubmission} onClose={onClose}>
@@ -61,7 +80,10 @@ const FormSubmissionDialog = ({ formSubmission, onClose }: Props) => {
                                                 {field.label.value}
                                             </Typography>
                                             <Typography use="body1">
-                                                {formSubmission.data[field.fieldId]}
+                                                {renderFieldValueLabel(
+                                                    field,
+                                                    formSubmission.data[field.fieldId]
+                                                )}
                                             </Typography>
                                         </div>
                                     );

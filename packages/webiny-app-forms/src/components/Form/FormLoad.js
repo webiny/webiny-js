@@ -23,7 +23,12 @@ const FormLoad = (props: FormLoadComponentPropsType) => {
                     return null;
                 }
 
-                return <FormRender {...props} data={get(data, "forms.getPublishedForm.data")} />;
+                const formData = get(data, "forms.getPublishedForm.data");
+                if (!formData) {
+                    // TODO: handle cannot load form
+                    return <span>Form not found.</span>;
+                }
+                return <FormRender {...props} data={formData} />;
             }}
         </Query>
     );
