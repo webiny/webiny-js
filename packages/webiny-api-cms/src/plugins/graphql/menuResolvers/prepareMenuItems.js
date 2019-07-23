@@ -37,10 +37,10 @@ const applyModifier = async ({ items, modifier, context }) => {
 };
 
 const prepareItems = async ({
-    items,
-    modifiers,
-    context = {}
-}: {
+                                items,
+                                modifiers,
+                                context = {}
+                            }: {
     items: ?Array<Object>,
     modifiers: Array<Function>,
     context?: Object
@@ -64,7 +64,7 @@ export default async ({ entity: menu, context: graphqlContext }: Object) => {
             ({ item, context }) => {
                 switch (item.type) {
                     case "cms-menu-item-page": {
-                        if (!context.parents) {
+                        if (!context.distinctParents) {
                             context.distinctParents = {
                                 loaded: false,
                                 data: {}
@@ -73,8 +73,8 @@ export default async ({ entity: menu, context: graphqlContext }: Object) => {
 
                         // "item.page" actually represents "parent" value. This is because once we have parent, we can
                         // more easily load the right child page (we just need to search published pages in this case).
-                        if (Entity.isId(item.page) && !context.parents.data[item.page]) {
-                            context.parents.data[item.page] = null;
+                        if (Entity.isId(item.page) && !context.distinctParents.data[item.page]) {
+                            context.distinctParents.data[item.page] = null;
                         }
                         break;
                     }
@@ -83,8 +83,8 @@ export default async ({ entity: menu, context: graphqlContext }: Object) => {
             async ({ context, item }) => {
                 switch (item.type) {
                     case "cms-menu-item-page": {
-                        if (!context.parents.loaded) {
-                            const ids = Object.keys(context.parents.data);
+                        if (!context.distinctParents.loaded) {
+                            const ids = Object.keys(context.distinctParents.data);
 
                             const { Page, Category } = graphqlContext.cms.entities;
                             await listPublishedPages({
@@ -94,12 +94,12 @@ export default async ({ entity: menu, context: graphqlContext }: Object) => {
                             }).then(results => {
                                 for (let i = 0; i < results.length; i++) {
                                     let { title, url, parent: id } = results[i];
-                                    context.parents.data[id] = { id, title, url };
+                                    context.distinctParents.data[id] = { id, title, url };
                                 }
                             });
                         }
 
-                        const page = context.parents.data[item.page];
+                        const page = context.distinctParents.data[item.page];
                         if (page) {
                             // First try to use the title set on the menu item. If none, use page title.
                             Object.assign(item, page, { title: item.title || page.title });
