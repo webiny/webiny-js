@@ -32,14 +32,13 @@ const IconButton = (props: Props) => {
     const { icon, label, onClick, className, disabled } = props;
 
     return (
-        <icon-button onClick={onClick}>
-            <RIconButton
-                disabled={disabled}
-                className={className}
-                label={label}
-                icon={<Icon icon={icon} />}
-            />
-        </icon-button>
+        <RIconButton
+            onClick={onClick}
+            disabled={disabled}
+            className={className}
+            label={label}
+            icon={<Icon icon={icon} />}
+        />
     );
 };
 
