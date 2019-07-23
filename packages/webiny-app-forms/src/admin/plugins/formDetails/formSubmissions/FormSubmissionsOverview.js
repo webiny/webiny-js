@@ -13,7 +13,8 @@ const StatBox = styled("div")({
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
-    flexDirection: "column"
+    flexDirection: "column",
+    color: "var(--mdc-theme-on-surface)"
 });
 
 const ContentWrapper = styled("div")({
