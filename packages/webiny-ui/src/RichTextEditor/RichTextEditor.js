@@ -25,7 +25,8 @@ const EditorContent = styled("div")({
         padding: 10,
         maxHeight: 500,
         minHeight: 200,
-        overflow: "scroll"
+        overflow: "scroll",
+        color: "var(--mdc-theme-on-surface)"
     }
 });
 
