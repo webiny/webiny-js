@@ -27,7 +27,8 @@ const pageInnerWrapper = css({
     overflowX: "hidden",
     maxHeight: "calc(100vh - 290px)",
     position: "relative",
-    padding: 25
+    padding: 25,
+    backgroundColor: "var(--webiny-cms-theme-surface) !important"
 });
 
 type Props = {
