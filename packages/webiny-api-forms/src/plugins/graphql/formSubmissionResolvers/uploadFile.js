@@ -6,10 +6,10 @@ type FileType = { size: number, name: string, type: string, src: Buffer };
 
 export default async (file: FileType) => {
     // $FlowFixMe
-    const REACT_APP_FUNCTIONS_HOST: string = process.env.REACT_APP_FUNCTIONS_HOST;
+    const FUNCTIONS_HOST: string = process.env.FUNCTIONS_HOST;
 
     // Let's save the CSV file
-    const { body } = await got(REACT_APP_FUNCTIONS_HOST + "/files", {
+    const { body } = await got(FUNCTIONS_HOST + "/files", {
         method: "post",
         json: true,
         body: {
@@ -31,7 +31,7 @@ export default async (file: FileType) => {
     formData.append("file", file.src);
 
     try {
-        await got(REACT_APP_FUNCTIONS_HOST + body.data.s3.url, {
+        await got(FUNCTIONS_HOST + body.data.s3.url, {
             method: "post",
             body: formData
         });
