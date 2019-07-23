@@ -11,10 +11,10 @@ type Props = {
     dataList: Object
 };
 
-const FormSubmissionsList = ({ dataList }: Props) => {
+const FormSubmissionsList = (props: Props) => {
     return (
         <div>
-            <FormSubmissionsListComponent dataList={dataList} />
+            <FormSubmissionsListComponent {...props} />
         </div>
     );
 };

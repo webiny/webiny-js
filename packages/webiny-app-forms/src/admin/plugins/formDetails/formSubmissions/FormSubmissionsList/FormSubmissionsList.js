@@ -17,7 +17,10 @@ import {
 import FormSubmissionDialog from "./FormSubmissionDialog";
 import { ReactComponent as ImportExport } from "./icons/round-cloud_download-24px.svg";
 import { IconButton } from "webiny-ui/Button";
-
+import { exportFormSubmissions } from "webiny-app-forms/admin/viewsGraphql";
+import { Mutation } from "react-apollo";
+import { Tooltip } from "webiny-ui/Tooltip";
+import { withSnackbar } from "webiny-admin/components";
 import { i18n } from "webiny-app/i18n";
 const t = i18n.namespace("FormsApp.FormsDataList");
 
@@ -38,8 +41,19 @@ const FormVersion = ({ submission }) => {
     return `Form revision #${submission.form.revision.version}`;
 };
 
+const renderExportFormSubmissionsTooltip = dataList => {
+    const submissionsCount = dataList.getMultiSelected().length;
+    if (submissionsCount > 0) {
+        return t`Export {submissionsCount|count:1:form submission:default:form submissions}.`({
+            submissionsCount
+        });
+    }
+
+    return t`Export all form submissions`;
+};
+
 const FormSubmissionsList = (props: Object) => {
-    const { dataList } = props;
+    const { dataList, form, showSnackbar } = props;
     const [selectedFormSubmission, selectFormSubmission] = useState(null);
 
     if (!dataList) {
@@ -53,12 +67,44 @@ const FormSubmissionsList = (props: Object) => {
                     multiSelectAll={dataList.multiSelectAll}
                     multiSelect={dataList.multiSelect}
                     multiSelectActions={
-                        <IconButton
-                            icon={<ImportExport />}
-                            onClick={() => {
-                                //console.log("Multi selected items: ", dataList.getMultiSelected());
+                        <Mutation mutation={exportFormSubmissions}>
+                            {update => {
+                                return (
+                                    <Tooltip
+                                        content={renderExportFormSubmissionsTooltip(dataList)}
+                                        placement={"bottom"}
+                                    >
+                                        <IconButton
+                                            icon={<ImportExport />}
+                                            onClick={async () => {
+                                                const args = { variables: {} };
+                                                if (dataList.isNoneMultiSelected()) {
+                                                    args.variables.parent = form.parent;
+                                                } else {
+                                                    args.variables.ids = dataList
+                                                        .getMultiSelected()
+                                                        .map(item => item.id);
+                                                }
+
+                                                const { data } = await update(args);
+                                                if (data.forms.exportFormSubmissions.error) {
+                                                    showSnackbar(
+                                                        data.forms.exportFormSubmissions.error
+                                                            .message
+                                                    );
+                                                    return;
+                                                }
+
+                                                window.open(
+                                                    data.forms.exportFormSubmissions.data.src,
+                                                    "_blank"
+                                                );
+                                            }}
+                                        />
+                                    </Tooltip>
+                                );
                             }}
-                        />
+                        </Mutation>
                     }
                     sorters={[
                         {
@@ -114,4 +160,4 @@ const FormSubmissionsList = (props: Object) => {
     );
 };
 
-export default FormSubmissionsList;
+export default withSnackbar()(FormSubmissionsList);

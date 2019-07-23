@@ -162,6 +162,22 @@ export const listFormSubmissions = gql`
     }
 `;
 
+export const exportFormSubmissions = gql`
+    mutation FormsExportFormSubmissions($ids: [ID], $parent: ID, $form: ID) {
+        forms {
+            exportFormSubmissions(ids: $ids, parent: $parent, form: $form) {
+                data {
+                    id
+                    src
+                }
+                error {
+                    message
+                }
+            }
+        }
+    }
+`;
+
 export const createRevisionFrom = gql`
     mutation FormsCreateRevisionFrom($revision: ID!) {
         forms {

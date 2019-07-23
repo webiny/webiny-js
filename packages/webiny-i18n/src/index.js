@@ -1,11 +1,10 @@
 // @flow
 import I18n from "./I18n";
-import modifiers from "./modifiers";
+import defaultModifiers from "./modifiers";
+import defaultProcessor from "./processors/default";
 
-export { default as defaultProcessor } from "./processors/default";
-export { I18n, modifiers };
+export { I18n, defaultModifiers, defaultProcessor };
 
 const i18n = new I18n();
-i18n.registerModifiers(modifiers);
 
 export default i18n;
