@@ -93,7 +93,7 @@ class Menu extends React.Component<Props> {
                 })}
 
                 {menuItems
-                    .filter(pl => typeof pl.renderDialog === "function")
+                    .filter(pl => pl.menu && typeof pl.menu.renderDialog === "function")
                     .map(pl => {
                         const props = {
                             onChange,
@@ -103,7 +103,7 @@ class Menu extends React.Component<Props> {
                             activePlugin,
                             activatePlugin
                         };
-                        return React.cloneElement(pl.renderDialog(props), { key: pl.name });
+                        return React.cloneElement(pl.menu.renderDialog(props), { key: pl.name });
                     })}
             </MenuContainer>
         );
