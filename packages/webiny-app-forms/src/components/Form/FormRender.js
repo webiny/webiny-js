@@ -48,9 +48,7 @@ const FormRender = compose(
                 "defaultValue" in field.settings &&
                 typeof field.settings.defaultValue !== "undefined"
             ) {
-                values[field.fieldId] = field.defaultValue;
-            } else {
-                values[field.fieldId] = ""; // TODO: fix this "", must be read from plugin
+                values[field.fieldId] = field.settings.defaultValue;
             }
         });
         return { ...values, ...overrides };
