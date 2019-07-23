@@ -146,7 +146,20 @@ export const listFormSubmissions = gql`
                             id
                             name
                             version
-                            ${FIELDS_LAYOUT_FIELDS}
+                            layout
+                            fields {
+                                _id
+                                fieldId
+                                label {
+                                    value
+                                }
+                                options {
+                                    label {
+                                        value
+                                    }
+                                    value
+                                }
+                            }
                         }
                     }
                 }
@@ -167,7 +180,6 @@ export const exportFormSubmissions = gql`
         forms {
             exportFormSubmissions(ids: $ids, parent: $parent, form: $form) {
                 data {
-                    id
                     src
                 }
                 error {
