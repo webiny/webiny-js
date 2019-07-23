@@ -10,6 +10,7 @@ import { createForm } from "webiny-app-forms/admin/viewsGraphql";
 import get from "lodash.get";
 import { compose } from "recompose";
 import { withSnackbar } from "webiny-admin/components";
+import { CircularProgress } from "webiny-ui/Progress";
 
 import { i18n } from "webiny-app/i18n";
 const t = i18n.namespace("Forms.NewFormDialog");
@@ -41,16 +42,25 @@ const NewFormDialog = ({
     history: RouterHistory,
     showSnackbar: Function
 }) => {
+    // $FlowFixMe
+    const [loading, setLoading] = React.useState(false);
+
     return (
         <Dialog open={open} onClose={onClose} className={narrowDialog}>
             <Mutation mutation={createForm}>
                 {update => (
                     <Form
                         onSubmit={async data => {
+                            setLoading(true);
                             const response = get(
-                                await update({ variables: data, refetchQueries: ["FormsListForms"] }),
+                                await update({
+                                    variables: data,
+                                    refetchQueries: ["FormsListForms"]
+                                }),
                                 "data.forms.form"
                             );
+                            setLoading(false);
+
                             if (response.error) {
                                 return showSnackbar(response.error.message);
                             }
@@ -60,6 +70,7 @@ const NewFormDialog = ({
                     >
                         {({ Bind, submit }) => (
                             <>
+                                {loading && <CircularProgress />}
                                 <DialogHeader>
                                     <DialogHeaderTitle>{t`New form`}</DialogHeaderTitle>
                                 </DialogHeader>
