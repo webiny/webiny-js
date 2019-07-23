@@ -55,6 +55,7 @@ const renderExportFormSubmissionsTooltip = dataList => {
 const FormSubmissionsList = (props: Object) => {
     const { dataList, form, showSnackbar } = props;
     const [selectedFormSubmission, selectFormSubmission] = useState(null);
+    const [exportInProgress, setExportInProgress] = useState(false);
 
     if (!dataList) {
         return;
@@ -68,42 +69,42 @@ const FormSubmissionsList = (props: Object) => {
                     multiSelect={dataList.multiSelect}
                     multiSelectActions={
                         <Mutation mutation={exportFormSubmissions}>
-                            {update => {
-                                return (
-                                    <Tooltip
-                                        content={renderExportFormSubmissionsTooltip(dataList)}
-                                        placement={"bottom"}
-                                    >
-                                        <IconButton
-                                            icon={<ImportExport />}
-                                            onClick={async () => {
-                                                const args = { variables: {} };
-                                                if (dataList.isNoneMultiSelected()) {
-                                                    args.variables.parent = form.parent;
-                                                } else {
-                                                    args.variables.ids = dataList
-                                                        .getMultiSelected()
-                                                        .map(item => item.id);
-                                                }
+                            {update => (
+                                <Tooltip
+                                    content={renderExportFormSubmissionsTooltip(dataList)}
+                                    placement={"bottom"}
+                                >
+                                    <IconButton
+                                        disabled={exportInProgress}
+                                        icon={<ImportExport />}
+                                        onClick={async () => {
+                                            setExportInProgress(true);
+                                            const args = { variables: {} };
+                                            if (dataList.isNoneMultiSelected()) {
+                                                args.variables.parent = form.parent;
+                                            } else {
+                                                args.variables.ids = dataList
+                                                    .getMultiSelected()
+                                                    .map(item => item.id);
+                                            }
 
-                                                const { data } = await update(args);
-                                                if (data.forms.exportFormSubmissions.error) {
-                                                    showSnackbar(
-                                                        data.forms.exportFormSubmissions.error
-                                                            .message
-                                                    );
-                                                    return;
-                                                }
-
-                                                window.open(
-                                                    data.forms.exportFormSubmissions.data.src,
-                                                    "_blank"
+                                            const { data } = await update(args);
+                                            setExportInProgress(false);
+                                            if (data.forms.exportFormSubmissions.error) {
+                                                showSnackbar(
+                                                    data.forms.exportFormSubmissions.error.message
                                                 );
-                                            }}
-                                        />
-                                    </Tooltip>
-                                );
-                            }}
+                                                return;
+                                            }
+
+                                            window.open(
+                                                data.forms.exportFormSubmissions.data.src,
+                                                "_blank"
+                                            );
+                                        }}
+                                    />
+                                </Tooltip>
+                            )}
                         </Mutation>
                     }
                     sorters={[
