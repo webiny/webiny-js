@@ -5,6 +5,7 @@ export default {
     name: "form-editor-field-type-website",
     field: {
         ...textFieldPlugin.field,
+        unique: true,
         group: "form-editor-field-group-contact",
         name: "website",
         label: "Website",

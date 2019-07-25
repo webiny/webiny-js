@@ -93,8 +93,8 @@ export const Fields = ({ onFieldDragStart }) => {
         const presetFieldPlugins = getPlugins("form-editor-field-type")
             .filter(pl => pl.field.group)
             .filter(pl => {
-                if (pl.field.id) {
-                    return !getField({ id: pl.field.id });
+                if (pl.field.unique) {
+                    return !getField({ name: pl.field.name });
                 }
                 return true;
             });

@@ -5,6 +5,7 @@ export default {
     name: "form-editor-field-type-first-name",
     field: {
         ...textFieldPlugin.field,
+        unique: true,
         group: "form-editor-field-group-contact",
         name: "firstName",
         label: "First name",
