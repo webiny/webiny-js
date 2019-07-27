@@ -4,12 +4,12 @@ import { Input } from "webiny-ui/Input";
 
 export default {
     type: "form-editor-field-validator",
-    name: "form-editor-field-validator-lte",
+    name: "form-editor-field-validator-max-length",
     validator: {
-        name: "lte",
-        label: "Smaller or equal",
-        description: "Entered value must be equal or lower than the provided min value.",
-        defaultMessage: "Value is too great.",
+        name: "maxLength",
+        label: "Max length",
+        description: "Entered value must not be longer than the provided max length.",
+        defaultMessage: "Value is too long.",
         renderSettings({ Bind }) {
             return (
                 <Grid>
@@ -18,7 +18,7 @@ export default {
                             <Input
                                 type={"number"}
                                 label={"Value"}
-                                description={"This is the greatest value that will be allowed"}
+                                description={"This is the maximum allowed length."}
                             />
                         </Bind>
                     </Cell>

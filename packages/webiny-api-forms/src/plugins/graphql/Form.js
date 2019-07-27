@@ -57,6 +57,18 @@ export default {
             value: String
         }
         
+        input FieldValidationInput {
+            name: String!
+            message: I18NStringValueInput
+            settings: JSON
+        }
+        
+        type FieldValidationType {
+            name: String!
+            message: I18NStringValue
+            settings: JSON
+        }
+        
         type FormFieldType {
             _id: ID!
             fieldId: String!
@@ -66,7 +78,7 @@ export default {
             placeholderText: I18NStringValue
             helpText: I18NStringValue
             options: [FieldOptionsType]
-            validation: [String]
+            validation: [FieldValidationType]
             settings: JSON
         }    
         
@@ -79,7 +91,7 @@ export default {
             placeholderText: I18NStringValueInput
             helpText: I18NStringValueInput
             options: [FieldOptionsInput]
-            validation: [String]
+            validation: [FieldValidationInput]
             settings: JSON
         }
         

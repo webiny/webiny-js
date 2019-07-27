@@ -34,7 +34,7 @@ export type FormRenderPropsType = {
     getFieldByFieldId: Function,
     getFields: () => [[FieldType]],
     getDefaultValues: () => Object,
-    submit: (data: Object) => void,
+    submit: (data: Object) => void | Promise<void>,
     form: FormType
 };
 

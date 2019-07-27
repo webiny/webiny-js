@@ -28,7 +28,13 @@ export const FIELDS_FIELDS = `
             }
             value
         }
-        validation
+        validation {
+            name
+            settings
+            message {
+                ${I18N_FIELDS}
+            }
+        }
         settings
 `;
 

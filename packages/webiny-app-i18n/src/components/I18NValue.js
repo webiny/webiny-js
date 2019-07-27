@@ -35,6 +35,10 @@ function getValue(valueObject: ?string | ?Object) {
 }
 
 export function I18NValue(props: Props) {
+    if (!props) {
+        return "";
+    }
+
     const { value: valueObject, default: defaultObject } = props;
 
     let value;

@@ -10,7 +10,7 @@ export default {
     field: {
         name: "text",
         type: "text",
-        validators: ["required", "minLength", "maxLength", "pattern", "in"],
+        validators: ["required", "minLength", "maxLength", "pattern"],
         label: "Short Text",
         description: "Titles, names, single line input",
         icon: <TextIcon />,

@@ -80,57 +80,51 @@ const EditFieldDialog = ({ field, onSubmit, ...props }: Props) => {
         switch (screen) {
             case "fieldOptions": {
                 render = (
-                    <Form submitOnEnter data={current} onSubmit={onSubmit}>
-                        {form => {
-                            return (
-                                <>
-                                    <DialogBody className={dialogBody}>
-                                        <Tabs>
-                                            <Tab label={t`General`}>
-                                                <GeneralTab
-                                                    form={form}
-                                                    field={current}
-                                                    setScreen={setScreen}
-                                                />
-                                            </Tab>
-                                            {Array.isArray(fieldPlugin.field.validators) &&
-                                                fieldPlugin.field.validators.length > 0 && (
-                                                    <Tab label={"Validators"}>
-                                                        <ValidatorsTab
-                                                            form={form}
-                                                            field={current}
-                                                            setScreen={setScreen}
-                                                        />
-                                                    </Tab>
-                                                )}
-                                        </Tabs>
-                                    </DialogBody>
-                                    <DialogFooter
-                                        style={{
-                                            justifyContent: isNewField
-                                                ? "space-between"
-                                                : "flex-end"
-                                        }}
-                                    >
-                                        {isNewField && (
-                                            <DialogFooterButton
-                                                onClick={() => setScreen("fieldType")}
-                                            >
-                                                {t`Go back`}
-                                            </DialogFooterButton>
-                                        )}
-                                        <div>
-                                            <DialogFooterButton onClick={onClose}>
-                                                {t`Cancel`}
-                                            </DialogFooterButton>
-                                            <DialogFooterButton onClick={form.submit}>
-                                                {t`Save`}
-                                            </DialogFooterButton>
-                                        </div>
-                                    </DialogFooter>
-                                </>
-                            );
-                        }}
+                    <Form data={current} onSubmit={onSubmit}>
+                        {form => (
+                            <>
+                                <DialogBody className={dialogBody}>
+                                    <Tabs>
+                                        <Tab label={t`General`}>
+                                            <GeneralTab
+                                                form={form}
+                                                field={current}
+                                                setScreen={setScreen}
+                                            />
+                                        </Tab>
+                                        {Array.isArray(fieldPlugin.field.validators) &&
+                                            fieldPlugin.field.validators.length > 0 && (
+                                                <Tab label={"Validators"}>
+                                                    <ValidatorsTab
+                                                        form={form}
+                                                        field={current}
+                                                        setScreen={setScreen}
+                                                    />
+                                                </Tab>
+                                            )}
+                                    </Tabs>
+                                </DialogBody>
+                                <DialogFooter
+                                    style={{
+                                        justifyContent: isNewField ? "space-between" : "flex-end"
+                                    }}
+                                >
+                                    {isNewField && (
+                                        <DialogFooterButton onClick={() => setScreen("fieldType")}>
+                                            {t`Go back`}
+                                        </DialogFooterButton>
+                                    )}
+                                    <div>
+                                        <DialogFooterButton onClick={onClose}>
+                                            {t`Cancel`}
+                                        </DialogFooterButton>
+                                        <DialogFooterButton onClick={form.submit}>
+                                            {t`Save`}
+                                        </DialogFooterButton>
+                                    </div>
+                                </DialogFooter>
+                            </>
+                        )}
                     </Form>
                 );
                 break;

@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import React, { useMemo, useRef } from "react";
 import { getPlugins } from "webiny-plugins";
 import { Switch } from "webiny-ui/Switch";
 import {
@@ -9,6 +9,34 @@ import {
 import { useFormEditor } from "webiny-app-forms/admin/components/FormEditor/Context";
 import { Form } from "webiny-form";
 import { cloneDeep, debounce } from "lodash";
+import { Grid, Cell } from "webiny-ui/Grid";
+import { I18NInput } from "webiny-app-i18n/admin/components";
+import { useI18N } from "webiny-app-i18n/components";
+
+const onEnabledChange = ({ i18n, data, validationValue, onChangeValidation, validator }) => {
+    if (data) {
+        const index = validationValue.findIndex(item => item.name === validator.name);
+        onChangeValidation([
+            ...validationValue.slice(0, index),
+            ...validationValue.slice(index + 1)
+        ]);
+    } else {
+        onChangeValidation([
+            ...validationValue,
+            {
+                name: validator.name,
+                message: {
+                    values: [
+                        {
+                            locale: i18n.getDefaultLocale().id,
+                            value: validator.defaultMessage
+                        }
+                    ]
+                }
+            }
+        ]);
+    }
+};
 
 const onFormChange = debounce(({ data, validationValue, onChangeValidation, validatorIndex }) => {
     const newValidationValue = cloneDeep(validationValue);
@@ -19,21 +47,13 @@ const onFormChange = debounce(({ data, validationValue, onChangeValidation, vali
     onChangeValidation(newValidationValue);
 }, 200);
 
-const onEnabledChange = ({ data, validationValue, onChangeValidation, validator }) => {
-    if (data) {
-        const index = validationValue.findIndex(item => item.name === validator.name);
-        onChangeValidation([
-            ...validationValue.slice(0, index),
-            ...validationValue.slice(index + 1)
-        ]);
-    } else {
-        onChangeValidation([...validationValue, { name: validator.name }]);
-    }
-};
-
 const ValidatorsTab = props => {
-    const { field, form } = props;
+    const i18n = useI18N();
     const { getFieldPlugin } = useFormEditor();
+    const {
+        field,
+        form: { Bind }
+    } = props;
 
     const fieldType = getFieldPlugin({ name: field.name });
 
@@ -62,8 +82,6 @@ const ValidatorsTab = props => {
             });
     }, []);
 
-    const { Bind } = form;
-
     return (
         <Bind name={"validation"}>
             {({ value: validationValue, onChange: onChangeValidation }) =>
@@ -85,6 +103,7 @@ const ValidatorsTab = props => {
                                         value={validatorIndex >= 0}
                                         onChange={() =>
                                             onEnabledChange({
+                                                i18n,
                                                 data,
                                                 validationValue,
                                                 onChangeValidation,
@@ -94,7 +113,7 @@ const ValidatorsTab = props => {
                                     />
                                 )}
                             </SimpleFormHeader>
-                            {data && typeof validator.renderSettings === "function" && (
+                            {data && (
                                 <Form
                                     data={data}
                                     onChange={data =>
@@ -108,10 +127,27 @@ const ValidatorsTab = props => {
                                 >
                                     {({ Bind }) => (
                                         <SimpleFormContent>
-                                            {validator.renderSettings({
-                                                data,
-                                                Bind
-                                            })}
+                                            <Grid>
+                                                <Cell span={12}>
+                                                    <Bind
+                                                        name={"message"}
+                                                        validators={["required"]}
+                                                    >
+                                                        <I18NInput
+                                                            label={"Message"}
+                                                            description={
+                                                                "This message will be displayed to the user"
+                                                            }
+                                                        />
+                                                    </Bind>
+                                                </Cell>
+                                            </Grid>
+
+                                            {typeof validator.renderSettings === "function" &&
+                                                validator.renderSettings({
+                                                    data,
+                                                    Bind
+                                                })}
                                         </SimpleFormContent>
                                     )}
                                 </Form>

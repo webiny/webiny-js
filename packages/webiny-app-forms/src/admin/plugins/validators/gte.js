@@ -1,6 +1,5 @@
 import React from "react";
 import { Grid, Cell } from "webiny-ui/Grid";
-import { I18NInput } from "webiny-app-i18n/admin/components";
 import { Input } from "webiny-ui/Input";
 
 export default {
@@ -9,28 +8,17 @@ export default {
     validator: {
         name: "gte",
         label: "Greater or equal",
-        description: "Entered value must be greater than the one configured to submit the form.",
+        description: "Entered value must be equal or greater than the provided max value.",
+        defaultMessage: "Value is too small.",
         renderSettings({ Bind }) {
             return (
                 <Grid>
                     <Cell span={12}>
-                        <Bind name={"value"} validators={["required", "numeric"]}>
+                        <Bind name={"settings.value"} validators={["required", "numeric"]}>
                             <Input
                                 type={"number"}
                                 label={"Value"}
-                                description={"This is the smallest value that will be allowed"}
-                            />
-                        </Bind>
-                    </Cell>
-                    <Cell span={12}>
-                        <Bind
-                            name={"message"}
-                            validators={["required"]}
-                            defaultValue={"Value is too small."}
-                        >
-                            <I18NInput
-                                label={"Message"}
-                                description={"This message will be displayed to the user"}
+                                description={"This is the greatest value that will be allowed"}
                             />
                         </Bind>
                     </Cell>

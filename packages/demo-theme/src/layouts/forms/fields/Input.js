@@ -1,6 +1,6 @@
 // @flow
 import * as React from "react";
-import { I18NValue, useI18N } from "webiny-app-i18n/components";
+import { I18NValue } from "webiny-app-i18n/components";
 import type { FieldType } from "webiny-app-forms/types";
 
 type Props = {
@@ -10,8 +10,16 @@ type Props = {
 };
 
 const Input = (props: Props) => {
-    const { onChange, value } = props.bind;
-    const { getValue } = useI18N();
+    const { onChange, value, validate } = props.bind;
+
+    const onBlur = (e: SyntheticInputEvent<HTMLInputElement>) => {
+        if (validate) {
+            // Since we are accessing event in an async operation, we need to persist it.
+            // See https://reactjs.org/docs/events.html#event-pooling.
+            e.persist();
+            validate();
+        }
+    };
 
     return (
         <div className="webiny-cms-form-field webiny-cms-form-field--input">
@@ -19,9 +27,10 @@ const Input = (props: Props) => {
                 <I18NValue value={props.field.label} />
             </label>
             <input
+                onBlur={onBlur}
                 onChange={e => onChange(e.target.value)}
                 value={value}
-                placeholder={getValue(props.field.placeholderText)}
+                placeholder={I18NValue(props.field.placeholderText)}
                 type={props.type}
                 name={props.field.fieldId}
                 id={props.field.fieldId}

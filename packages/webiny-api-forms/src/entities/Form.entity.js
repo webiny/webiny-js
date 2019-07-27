@@ -68,6 +68,20 @@ const createFieldOptionsModel = context =>
         }
     };
 
+const createFieldValidationModel = context =>
+    class FieldValidationModel extends Model {
+        constructor(props) {
+            super(props);
+            this.attr("name")
+                .char()
+                .setValidators("required");
+            this.attr("message").custom(I18NCharAttribute, context);
+            this.attr("settings")
+                .object()
+                .setValue({});
+        }
+    };
+
 const createFieldModel = context =>
     class FieldModel extends Model {
         constructor() {
@@ -88,7 +102,7 @@ const createFieldModel = context =>
             this.attr("helpText").custom(I18NCharAttribute, context);
             this.attr("placeholderText").custom(I18NCharAttribute, context);
             this.attr("options").models(createFieldOptionsModel(context));
-            this.attr("validation").array();
+            this.attr("validation").models(createFieldValidationModel(context));
             this.attr("settings")
                 .object()
                 .setValue({});

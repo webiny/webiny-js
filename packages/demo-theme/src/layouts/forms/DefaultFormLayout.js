@@ -97,7 +97,7 @@ const FormRenderer = ({ getFields, getDefaultValues, submit, form }: FormRenderP
                                                                 validation
                                                             })}
                                                             {/* Render validation message */}
-                                                            {validation.valid === false
+                                                            {validation.isValid === false
                                                                 ? validation.message
                                                                 : null}
                                                         </React.Fragment>

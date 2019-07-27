@@ -10,7 +10,7 @@ export default {
     field: {
         name: "textarea",
         type: "textarea",
-        validators: ["required", "minLength", "maxLength", "pattern", "in"],
+        validators: ["required", "minLength", "maxLength", "pattern"],
         label: "Long Test",
         description: "Descriptions, comments or paragraphs or text",
         icon: <TextIcon />,
