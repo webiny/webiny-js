@@ -42,6 +42,7 @@ export const FIELDS_FIELDS = `
         }
         validation {
             name
+            settings
             message {
                 value
             }

@@ -4,6 +4,7 @@ import { Entity, type EntityCollection } from "webiny-entity";
 import { Model } from "webiny-model";
 import mdbid from "mdbid";
 import { getPlugins } from "webiny-plugins";
+import { pick } from "lodash";
 
 export interface IFormSettings extends Entity {
     name: string;
@@ -313,8 +314,58 @@ export default (context: Object) => {
             });
         }
 
-        async submit({ data, meta }: { data: Object, meta: Object }) {
+        async submit({ data: rawData, meta }: { data: Object, meta: Object }) {
             const { FormSubmission } = getEntities();
+
+            // Validate data.
+            const validatorPlugins = getPlugins("form-field-validator");
+            const fields = this.fields;
+            const data = pick(rawData, fields.map(field => field.name));
+            if (Object.keys(data).length === 0) {
+                throw new Error("Form data cannot be empty.");
+            }
+
+            const invalidFields = {};
+            for (let i = 0; i < fields.length; i++) {
+                let field = fields[i];
+                if (Array.isArray(field.validation)) {
+                    for (let j = 0; j < field.validation.length; j++) {
+                        let validator = field.validation[j];
+                        const validatorPlugin = validatorPlugins.find(
+                            item => item.validator.name === validator.name
+                        );
+                        if (!validatorPlugin) {
+                            continue;
+                        }
+
+                        let isInvalid = true;
+                        try {
+                            const result = await validatorPlugin.validator.validate(
+                                data[field.name],
+                                validator
+                            );
+                            isInvalid = result === false;
+                        } catch (e) {
+                            isInvalid = true;
+                        }
+
+                        if (isInvalid) {
+                            const { i18n } = context;
+                            invalidFields[field.name] =
+                                i18n.getValue(validator.message) || "Invalid value";
+                        }
+                    }
+                }
+            }
+
+            if (Object.keys(invalidFields).length > 0) {
+                throw {
+                    message: "Form submission contains invalid fields.",
+                    data: { invalidFields }
+                };
+            }
+
+            // Validation passed, let's create a form submission.
             const formSubmission = new FormSubmission();
             formSubmission.data = data;
             formSubmission.meta = meta;

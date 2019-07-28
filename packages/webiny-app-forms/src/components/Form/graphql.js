@@ -19,7 +19,13 @@ export const FIELDS_FIELDS = `
             }
             value
         }
-        validation
+        validation {
+            name
+            settings
+            message {
+                value
+            }
+        }
         settings
 `;
 

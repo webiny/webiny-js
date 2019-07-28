@@ -43,7 +43,6 @@ const createBind = (form: Form) => {
         // Build new input props
         const newProps = {
             form,
-            disabled: false,
             validate: form.getValidateFn(name),
             validation: form.state.validation[name] || {
                 isValid: null,

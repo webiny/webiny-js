@@ -6,7 +6,7 @@ export default async (root: any, args: Object, context: Object) => {
     const { Form } = context.getEntities();
     const form: ?IForm = await Form.findById(args.id);
 
-    if (!form) {
+    if (!form || !form.published) {
         return new NotFoundResponse(`Form with id "${args.id}" was not found!`);
     }
 

@@ -25,6 +25,7 @@ const onEnabledChange = ({ i18n, data, validationValue, onChangeValidation, vali
             ...validationValue,
             {
                 name: validator.name,
+                settings: validator.defaultSettings,
                 message: {
                     values: [
                         {
@@ -125,7 +126,7 @@ const ValidatorsTab = props => {
                                         })
                                     }
                                 >
-                                    {({ Bind }) => (
+                                    {({ Bind, setValue }) => (
                                         <SimpleFormContent>
                                             <Grid>
                                                 <Cell span={12}>
@@ -145,6 +146,18 @@ const ValidatorsTab = props => {
 
                                             {typeof validator.renderSettings === "function" &&
                                                 validator.renderSettings({
+                                                    setValue,
+                                                    setMessage: message => {
+                                                        setValue("message", {
+                                                            values: [
+                                                                {
+                                                                    locale: i18n.getDefaultLocale()
+                                                                        .id,
+                                                                    value: message
+                                                                }
+                                                            ]
+                                                        });
+                                                    },
                                                     data,
                                                     Bind
                                                 })}

@@ -48,6 +48,19 @@ export default ([
                 },
                 getLocales() {
                     return self.__i18n.locales;
+                },
+                getValue(value) {
+                    if (!value) {
+                        return "";
+                    }
+
+                    if (Array.isArray(value.values)) {
+                        const locale = self.getLocale();
+                        const valuesValue = value.values.find(value => value.locale === locale.id);
+                        return valuesValue ? valuesValue.value : "";
+                    }
+
+                    return value.value || "";
                 }
             };
 
