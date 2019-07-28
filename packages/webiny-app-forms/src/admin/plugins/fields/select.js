@@ -18,6 +18,7 @@ export default {
             return {
                 type: this.type,
                 name: this.name,
+                validation: [],
                 settings: {
                     defaultValue: ""
                 }
