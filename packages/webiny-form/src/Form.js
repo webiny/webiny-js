@@ -1,4 +1,4 @@
-    // @flow
+// @flow
 import * as React from "react";
 import _ from "lodash";
 import set from "lodash/fp/set";
@@ -146,8 +146,7 @@ class Form extends React.Component<Props, State> {
             const hasValue = !!_.get(this.state.data, name);
             const isInputValid = _.get(this.state.validation[name], "isValid");
 
-            const shouldValidate =
-                (!hasValue && validators.required) || (hasValue && isInputValid !== true);
+            const shouldValidate = !hasValue || (hasValue && isInputValid !== true);
 
             if (shouldValidate) {
                 if (isInputValid === false || _.isNil(isInputValid)) {
