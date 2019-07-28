@@ -24,7 +24,7 @@ const Select = (props: Props) => {
                 className="webiny-cms-form-field__select"
             >
                 <option disabled value={""}>
-                    {I18NValue({ value: props.field.placeholderText })}}
+                    {I18NValue({ value: props.field.placeholderText })}
                 </option>
                 {props.field.options.map(option => (
                     <option key={option.value} value={option.value}>
