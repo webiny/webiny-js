@@ -46,7 +46,7 @@ const plugin: I18NInputRichTextEditorPluginType = {
                 const { MenuButton } = props;
 
                 return (
-                    <MenuButton onMouseDown={() => props.activatePlugin(this.name)}>
+                    <MenuButton onMouseDown={() => props.activatePlugin("link")}>
                         <LinkIcon />
                     </MenuButton>
                 );

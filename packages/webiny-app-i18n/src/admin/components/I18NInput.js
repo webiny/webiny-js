@@ -20,6 +20,10 @@ const style = {
             cursor: "pointer",
             zIndex: 1
         }
+    }),
+    i18nRichEditorDialogIconButton: css({
+        position: "absolute",
+        right: 10
     })
 };
 
@@ -90,7 +94,11 @@ const I18NInput = ({ richText, value, onChange, ...inputProps }) => {
                 render({ MenuButton }: Object) {
                     return (
                         // eslint-disable-next-line react/jsx-no-bind
-                        <MenuButton onClick={openDialog}>
+                        <MenuButton
+                            right
+                            onClick={openDialog}
+                            className={style.i18nRichEditorDialogIconButton}
+                        >
                             <I18NIcon />
                         </MenuButton>
                     );

@@ -74,7 +74,8 @@ export class RichTextEditor extends React.Component<RichTextEditorPropsType, Sta
     editor = React.createRef();
 
     id: string;
-    constructor(props: Props) {
+    plugins: { editor: Array<Object> };
+    constructor(props: RichTextEditorPropsType) {
         super();
         this.id = shortid.generate();
 
@@ -84,6 +85,10 @@ export class RichTextEditor extends React.Component<RichTextEditorPropsType, Sta
             value: props.value ? Value.fromJSON(props.value) : Plain.deserialize(""),
             readOnly: !props.onChange,
             activePlugin: null
+        };
+
+        this.plugins = {
+            editor: props.plugins.map(plugin => plugin.editor).filter(Boolean)
         };
     }
 
@@ -196,7 +201,7 @@ export class RichTextEditor extends React.Component<RichTextEditorPropsType, Sta
                             ref={this.editor}
                             autoCorrect={false}
                             spellCheck={false}
-                            plugins={plugins.map(plugin => plugin.editor).filter(Boolean)}
+                            plugins={this.plugins.editor}
                             placeholder="Enter some text..."
                             value={this.state.value}
                             onChange={this.onChange}

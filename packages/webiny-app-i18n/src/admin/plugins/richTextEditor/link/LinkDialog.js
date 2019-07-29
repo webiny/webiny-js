@@ -17,7 +17,7 @@ import { getLinkRange, isLink, TYPE } from "./utils";
 
 const LinkDialog = ({ open, linkData, updateLink, closeDialog }) => {
     return (
-        <Dialog open={open} onClose={closeDialog}>
+        <Dialog open={open} onClose={closeDialog} style={{ zIndex: 11000 }}>
             <Form data={linkData} onSubmit={updateLink}>
                 {({ Bind, submit }) => (
                     <Fragment>

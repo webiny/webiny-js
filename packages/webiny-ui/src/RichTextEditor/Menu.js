@@ -3,6 +3,7 @@ import React from "react";
 import styled from "react-emotion";
 import { css } from "emotion";
 import type { FormComponentProps } from "./../types";
+import classNames from "classnames";
 
 const MenuContainer = styled("div")({
     position: "relative",
@@ -25,7 +26,13 @@ const MenuContainer = styled("div")({
     }
 });
 
-const MenuButton = ({ onClick, active, children, onMouseDown = e => e.preventDefault() }) => {
+const MenuButton = ({
+    className,
+    onClick,
+    active,
+    children,
+    onMouseDown = e => e.preventDefault()
+}) => {
     const buttonStyle = css({
         cursor: "pointer",
         color: active
@@ -37,7 +44,11 @@ const MenuButton = ({ onClick, active, children, onMouseDown = e => e.preventDef
     });
 
     return (
-        <span onClick={onClick} className={buttonStyle} onMouseDown={onMouseDown}>
+        <span
+            onClick={onClick}
+            className={classNames(className, buttonStyle)}
+            onMouseDown={onMouseDown}
+        >
             {children}
         </span>
     );
@@ -93,7 +104,7 @@ class Menu extends React.Component<Props> {
                 })}
 
                 {menuItems
-                    .filter(pl => typeof pl.renderDialog === "function")
+                    .filter(pl => pl.menu && typeof pl.menu.renderDialog === "function")
                     .map(pl => {
                         const props = {
                             onChange,
@@ -103,7 +114,7 @@ class Menu extends React.Component<Props> {
                             activePlugin,
                             activatePlugin
                         };
-                        return React.cloneElement(pl.renderDialog(props), { key: pl.name });
+                        return React.cloneElement(pl.menu.renderDialog(props), { key: pl.name });
                     })}
             </MenuContainer>
         );
