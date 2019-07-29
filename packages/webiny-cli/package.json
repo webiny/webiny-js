@@ -18,7 +18,9 @@
   "description": "A tool to bootstrap, develop and deploy a Webiny project.",
   "license": "MIT",
   "dependencies": {
+    "url-search-params-polyfill": "^6.0.0",
     "@babel/core": "^7.4.4",
+    "cross-fetch": "^3.0.2",
     "@babel/plugin-proposal-class-properties": "^7.4.4",
     "@babel/plugin-proposal-object-rest-spread": "^7.4.4",
     "@babel/plugin-transform-runtime": "^7.4.4",
