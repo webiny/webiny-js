@@ -20,6 +20,7 @@
     "webiny-api": "0.0.0",
     "webiny-api-cms": "0.0.0",
     "webiny-api-files": "0.0.0",
+    "webiny-api-forms": "0.0.0",
     "webiny-api-security": "0.0.0",
     "webiny-api-i18n": "0.0.0",
     "webiny-entity-mongodb": "0.0.0",

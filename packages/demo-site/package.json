@@ -17,6 +17,7 @@
     "webiny-app-google-tag-manager": "0.0.0",
     "webiny-app-mailchimp": "0.0.0",
     "webiny-app-typeform": "0.0.0",
+    "webiny-app-forms": "0.0.0",
     "webiny-plugins": "0.0.0",
     "webiny-app-i18n": "0.0.0",
     "apollo-link-http": "^1.5.9"
