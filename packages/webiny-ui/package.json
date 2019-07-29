@@ -61,7 +61,9 @@
     "react-transition-group": "^2.5.1",
     "dot-prop-immutable": "^1.4.0",
     "slate": "^0.42.2",
-    "slate-react": "^0.19.3"
+    "slate-react": "^0.19.3",
+    "slate-plain-serializer": "^0.6.15",
+    "shortid": "^2.2.12"
   },
   "devDependencies": {
     "@babel/cli": "^7.0.0",
