@@ -9,10 +9,17 @@ type Args = {
     data: Object
 };
 
-export default async ({ props: { data: form, client, preview }, data }: Args) => {
+export default async ({ props: { data: form, client, preview }, data: rawData }: Args) => {
     if (preview) {
         return { preview: true, error: null, data: {} };
     }
+
+    const data = {};
+    form.fields.forEach(field => {
+        if (field.fieldId in rawData) {
+            data[field.fieldId] = rawData[field.fieldId];
+        }
+    });
 
     let response = await client.mutate({
         mutation: CREATE_FORM_SUBMISSION,

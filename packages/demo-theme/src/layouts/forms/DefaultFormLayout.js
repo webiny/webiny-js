@@ -50,7 +50,7 @@ const FormRenderer = ({ getFields, getDefaultValues, submit, form }: FormRenderP
 
     return (
         <Form onSubmit={submitForm} data={getDefaultValues()}>
-            {({ submit, Bind }) => (
+            {({ submit, Bind, data }) => (
                 <div className={"webiny-cms-form"}>
                     {success ? (
                         <div className={"webiny-cms-base-element-style webiny-cms-layout-row"}>
@@ -109,13 +109,29 @@ const FormRenderer = ({ getFields, getDefaultValues, submit, form }: FormRenderP
                                 ))}
                             </div>
                             <div>
+                                <Bind name={"tosAccepted"}>
+                                    {({ onChange, value }) => (
+                                        <>
+                                            <input
+                                                type={"checkbox"}
+                                                checked={Boolean(value)}
+                                                onChange={() => onChange(!value)}
+                                            />
+                                            <I18NValue
+                                                value={form.settings.termsOfServiceMessage}
+                                            />
+                                        </>
+                                    )}
+                                </Bind>
+                            </div>
+                            <div>
                                 <button
                                     className={
                                         "webiny-cms-element-button webiny-cms-element-button--primary" +
                                         (loading ? " webiny-cms-element-button--loading" : "")
                                     }
                                     onClick={submit}
-                                    disabled={loading}
+                                    disabled={!data.tosAccepted || loading}
                                 >
                                     <I18NValue
                                         value={form.settings.submitButtonLabel}

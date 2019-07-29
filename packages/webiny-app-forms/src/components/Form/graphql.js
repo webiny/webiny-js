@@ -45,6 +45,9 @@ export const DATA_FIELDS = `
         }
         submitButtonLabel {
             value
+        } 
+        termsOfServiceMessage {
+            value
         }
     }
 `;

@@ -120,6 +120,7 @@ const createSettingsModel = context =>
 
             this.attr("submitButtonLabel").custom(I18NCharAttribute, context);
             this.attr("successMessage").custom(I18NObjectAttribute, context);
+            this.attr("termsOfServiceMessage").custom(I18NObjectAttribute, context);
         }
     };
 

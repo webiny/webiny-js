@@ -49,6 +49,9 @@ const SETTINGS_FIELDS = /* GraphQL */ `
         submitButtonLabel {
             ${I18N_FIELDS}
         }
+        termsOfServiceMessage {
+            ${I18N_FIELDS}
+        }
     }
 `;
 
