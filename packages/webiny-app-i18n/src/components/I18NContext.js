@@ -1,14 +1,19 @@
 // @flow
+/* global window */
 // $FlowFixMe
-import React, { useReducer, useMemo, useContext, useEffect } from "react";
+import React, { useState, useMemo, useContext, useEffect } from "react";
 import { withApollo } from "react-apollo";
 import gql from "graphql-tag";
 
-export const listI18NLocales = gql`
-    query ListI18NLocales {
+export const getI18NInformation = gql`
+    query GetI18NInformation {
         i18n {
-            listI18NLocales {
-                data {
+            getI18NInformation {
+                currentLocale {
+                    id
+                    code
+                }
+                locales {
                     id
                     code
                     default
@@ -18,41 +23,23 @@ export const listI18NLocales = gql`
     }
 `;
 
-export function init(props: Object) {
-    return {
-        ...props,
-        locales: [],
-        acceptLanguage: "something" // TODO: check how to detect this - maybe we could do it in a separate API call ?
-    };
-}
-
-export function i18nReducer(state: Object, action: Object) {
-    const next = { ...state };
-    switch (action.type) {
-        case "locales": {
-            next.locales = action.value;
-            break;
-        }
-    }
-
-    return next;
-}
-
 const I18NContext = React.createContext();
 
 const I18NProvider = withApollo(({ children, ...props }: Object) => {
-    const [state, dispatch] = useReducer(i18nReducer, props, init);
+    const [state, setState] = useState({ initializing: false, currentLocale: null, locales: [] });
 
     useEffect(() => {
-        props.client.query({ query: listI18NLocales }).then(response => {
-            dispatch({ type: "locales", value: response.data.i18n.listI18NLocales.data });
+        setState({ ...state, initializing: true });
+        props.client.query({ query: getI18NInformation }).then(async response => {
+            const { currentLocale, locales } = response.data.i18n.getI18NInformation;
+            setState({ ...state, currentLocale, locales, initializing: false });
         });
     }, []);
 
     const value = useMemo(() => {
         return {
             state,
-            dispatch
+            setState
         };
     });
 
@@ -75,12 +62,7 @@ function useI18N() {
                 return self.getLocales().find(item => item.id === id);
             }
 
-            const locale = self.getLocales().find(item => item.code === state.acceptLanguage);
-            if (locale) {
-                return locale;
-            }
-
-            return self.getDefaultLocale();
+            return state.currentLocale;
         },
         getLocales() {
             return state.locales;
