@@ -8,6 +8,7 @@ import { Switch } from "webiny-ui/Switch";
 import type { WithCrudFormProps } from "webiny-admin/components";
 import { CircularProgress } from "webiny-ui/Progress";
 import LocaleCodesAutoComplete from "./LocaleCodesAutoComplete";
+import { I18NInput } from "webiny-app-i18n/admin/components";
 import {
     SimpleForm,
     SimpleFormFooter,
@@ -39,6 +40,22 @@ const I18NLocaleForm = ({ onSubmit, loading, data, invalidFields }: WithCrudForm
                             <Cell span={12}>
                                 <Bind name="default">
                                     <Switch label={t`Default`} />
+                                </Bind>
+                            </Cell>
+                        </Grid>
+
+                        {/* TODO: @sven*/}
+                        <Grid>
+                            <Cell span={12}>
+                                <Bind name="simpleText">
+                                    <I18NInput label={"Simple text"} />
+                                </Bind>
+                            </Cell>
+                            <Cell span={12}>
+                                <Bind name="simpleText">
+                                    <Bind name="richText">
+                                        <I18NInput label={"Rich text"} richText />
+                                    </Bind>
                                 </Bind>
                             </Cell>
                         </Grid>
