@@ -1,15 +1,7 @@
 // @flow
 import type { PluginType } from "webiny-plugins/types";
 import type { ApiContext } from "webiny-api/types";
-
-const getAcceptLanguage = headers => {
-    if (typeof headers["accept-language"] !== "string") {
-        return null;
-    }
-
-    const match = headers["accept-language"].match(/[a-z]{2}-[A-Z]{2}/);
-    return match ? match[0] : null;
-};
+import acceptLanguageParser from "accept-language-parser";
 
 export default ([
     {
@@ -34,10 +26,17 @@ export default ([
                         return self.__i18n.locale;
                     }
 
-                    const acceptLanguage = getAcceptLanguage(context.event.headers);
                     let allLocales = self.getLocales();
+                    const acceptLanguage = acceptLanguageParser.pick(
+                        allLocales.map(item => item.code),
+                        context.event.headers["accept-language"]
+                    );
 
-                    let currentLocale = allLocales.find(item => item.code === acceptLanguage);
+                    let currentLocale;
+                    if (acceptLanguage) {
+                        currentLocale = allLocales.find(item => item.code === acceptLanguage);
+                    }
+
                     if (!currentLocale) {
                         currentLocale = self.getDefaultLocale();
                     }

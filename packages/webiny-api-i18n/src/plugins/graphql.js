@@ -47,7 +47,8 @@ export default ([
             shield: {
                 I18NQuery: {
                     getI18NLocale: hasScope("i18n:locale:crud"),
-                    // listI18NLocales: hasScope("i18n:locale:crud") // Publicly visible.
+                    listI18NLocales: hasScope("i18n:locale:crud")
+                    // getI18NInformation // Publicly visible.
                 },
                 I18NMutation: {
                     createI18NLocale: hasScope("i18n:locale:crud"),

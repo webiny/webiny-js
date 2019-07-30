@@ -7,6 +7,7 @@ import {
     resolveUpdate
 } from "webiny-api/graphql";
 import searchLocaleCodes from "./resolvers/searchLocaleCodes";
+import getI18NInformation from "./resolvers/getI18NInformation";
 
 const I18NLocaleFetcher = ({ getEntity }) => getEntity("I18NLocale");
 
@@ -41,6 +42,12 @@ export default {
         type SearchLocaleCodesResponse {
             data: [String]
         }
+        
+        type I18NInformationResponse {
+            locales: [I18NLocale],
+            currentLocale: I18NLocale
+            defaultLocale: I18NLocale 
+        }
     `
     ],
     typeExtensions: `
@@ -56,6 +63,8 @@ export default {
                 sort: JSON
                 search: SearchInput
             ): I18NLocaleListResponse   
+            
+            getI18NInformation: I18NInformationResponse
             
             searchLocaleCodes(
                 search: String
@@ -81,7 +90,8 @@ export default {
         I18NQuery: {
             getI18NLocale: resolveGet(I18NLocaleFetcher),
             listI18NLocales: resolveList(I18NLocaleFetcher),
-            searchLocaleCodes
+            searchLocaleCodes,
+            getI18NInformation
         },
         I18NMutation: {
             createI18NLocale: resolveCreate(I18NLocaleFetcher),

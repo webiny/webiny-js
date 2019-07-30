@@ -16,6 +16,7 @@
   "dependencies": {
     "@babel/runtime": "^7.0.0",
     "@svgr/webpack": "^4.1.0",
+    "accept-language-parser": "^1.5.0",
     "bcryptjs": "^2.4.3",
     "graphql-shield": "^5.1.0",
     "i18n-locales": "^0.0.2",
