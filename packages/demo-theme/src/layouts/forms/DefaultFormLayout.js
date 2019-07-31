@@ -8,6 +8,7 @@ import Checkbox from "./fields/Checkbox";
 import Textarea from "./fields/Textarea";
 import { Form } from "webiny-form";
 import { I18NValue } from "webiny-app-i18n/components";
+import HelperMessage from "./components/HelperMessage";
 import type { FieldType, FormRenderPropsType } from "webiny-app-forms/types";
 
 // TODO: this is an example, do whatever you want.. feel free to use 3rd party components....
@@ -130,6 +131,10 @@ const FormRenderer = ({ getFields, getDefaultValues, submit, form }: FormRenderP
                                                     </label>
                                                 </div>
                                             </div>
+                                            <HelperMessage
+                                                isValid={false}
+                                                errorMessage={"you must accept our TOS"}
+                                            />
                                         </div>
                                     )}
                                 </Bind>
