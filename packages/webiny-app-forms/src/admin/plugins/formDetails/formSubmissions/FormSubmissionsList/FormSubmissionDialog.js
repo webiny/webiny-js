@@ -18,7 +18,7 @@ const t = i18n.namespace("FormEditor.FormSubmissionDialog");
 const dialogBody = css({
     "&.mdc-dialog__body": {
         marginTop: 0,
-        padding: "0",
+        padding: "25",
         dl: {
             padding: 25,
             dd: {
@@ -77,7 +77,7 @@ const FormSubmissionDialog = ({ formSubmission, onClose }: Props) => {
                                             }}
                                         >
                                             <Typography use="overline">
-                                                {field.label.value}
+                                                {field.label.value}:{" "}
                                             </Typography>
                                             <Typography use="body1">
                                                 {renderFieldValueLabel(
