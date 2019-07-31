@@ -2,6 +2,7 @@
 import * as React from "react";
 import { I18NValue } from "webiny-app-i18n/components";
 import type { FieldType } from "webiny-app-forms/types";
+import HelperMessage from "../components/HelperMessage";
 
 type Props = {
     bind: Object,
@@ -14,20 +15,22 @@ const Textarea = (props: Props) => {
     return (
         <div className="webiny-cms-form-field webiny-cms-form-field--textarea">
             <label className="webiny-cms-form-field__label webiny-cms-typography-body">
-                <I18NValue value={props.field.label}/>
+                <I18NValue value={props.field.label} />
             </label>
             <textarea
                 onChange={e => onChange(e.target.value)}
                 value={value}
-                placeholder={I18NValue({value: props.field.placeholderText})}
+                placeholder={I18NValue({ value: props.field.placeholderText })}
                 rows={props.field.rows ? props.field.rows : 4}
                 name={props.field.fieldId}
                 id={props.field.fieldId}
                 className="webiny-cms-form-field__textarea"
             />
-            <div className="webiny-cms-form-field__helper-text">
-                <I18NValue value={props.field.helpText}/>
-            </div>
+            <HelperMessage
+                isValid={props.validation.isValid}
+                errorMessage={props.validation.message}
+                helperMessage={<I18NValue value={props.field.helpText} />}
+            />
         </div>
     );
 };
