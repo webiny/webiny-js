@@ -1,6 +1,7 @@
 .webiny-cms-form{
     width: 100%;
     padding: 0;
+    background-color: $webiny-cms-theme-surface;
 
     .webiny-cms-layout-row, .webiny-cms-layout-column{
         width: 100%;
@@ -19,6 +20,10 @@
                 padding-right: 0;
             }
         }
+    }
+
+    &-tos{
+        margin: 15px 0 25px 0;
     }
 
     &__success-message{

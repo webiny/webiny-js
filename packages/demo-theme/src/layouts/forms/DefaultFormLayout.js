@@ -104,19 +104,33 @@ const FormRenderer = ({ getFields, getDefaultValues, submit, form }: FormRenderP
                                     </div>
                                 ))}
                             </div>
-                            <div>
+                            <div className="webiny-cms-form-tos">
                                 <Bind name={"tosAccepted"}>
                                     {({ onChange, value }) => (
-                                        <>
-                                            <input
-                                                type={"checkbox"}
-                                                checked={Boolean(value)}
-                                                onChange={() => onChange(!value)}
-                                            />
-                                            <I18NValue
-                                                value={form.settings.termsOfServiceMessage}
-                                            />
-                                        </>
+                                        <div className="webiny-cms-form-field webiny-cms-form-field--checkbox">
+                                            <div className="webiny-cms-form-field__checkbox-group">
+                                                <div className="webiny-cms-form-field__checkbox">
+                                                    <input
+                                                        className="webiny-cms-form-field__checkbox-input"
+                                                        type={"checkbox"}
+                                                        name="webiny-tos-checkbox"
+                                                        id="webiny-tos-checkbox"
+                                                        checked={Boolean(value)}
+                                                        onChange={() => onChange(!value)}
+                                                    />
+                                                    <label
+                                                        htmlFor={"webiny-tos-checkbox"}
+                                                        className="webiny-cms-form-field__checkbox-label"
+                                                    >
+                                                        <I18NValue
+                                                            value={
+                                                                form.settings.termsOfServiceMessage
+                                                            }
+                                                        />
+                                                    </label>
+                                                </div>
+                                            </div>
+                                        </div>
                                     )}
                                 </Bind>
                             </div>
