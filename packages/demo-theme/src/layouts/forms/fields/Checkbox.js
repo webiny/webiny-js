@@ -3,6 +3,7 @@
 import React from "react";
 import type { FieldType } from "webiny-app-forms/types";
 import { I18NValue } from "webiny-app-i18n/components";
+import HelperMessage from "../components/HelperMessage";
 
 type Props = {
     bind: Object,
@@ -30,7 +31,7 @@ const Checkbox = (props: Props) => {
     return (
         <div className="webiny-cms-form-field webiny-cms-form-field--checkbox">
             <label className="webiny-cms-form-field__label webiny-cms-typography-body">
-                <I18NValue value={props.field.label}/>
+                <I18NValue value={props.field.label} />
             </label>
             <div className="webiny-cms-form-field__checkbox-group">
                 {props.field.options.map(option => (
@@ -47,14 +48,16 @@ const Checkbox = (props: Props) => {
                             htmlFor={"checkbox-" + props.field.fieldId + option.value}
                             className="webiny-cms-form-field__checkbox-label"
                         >
-                            <I18NValue value={option.label}/>
+                            <I18NValue value={option.label} />
                         </label>
                     </div>
                 ))}
             </div>
-            <div className="webiny-cms-form-field__helper-text">
-                <I18NValue value={props.field.helpText}/>
-            </div>
+            <HelperMessage
+                isValid={props.validation.isValid}
+                errorMessage={props.validation.message}
+                helperMessage={<I18NValue value={props.field.helpText} />}
+            />
         </div>
     );
 };

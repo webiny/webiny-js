@@ -2,6 +2,7 @@
 import * as React from "react";
 import type { FieldType } from "webiny-app-forms/types";
 import { I18NValue } from "webiny-app-i18n/components";
+import HelperMessage from "../components/HelperMessage";
 
 type Props = {
     bind: Object,
@@ -39,9 +40,11 @@ const Radio = (props: Props) => {
                     );
                 })}
             </div>
-            <div className="webiny-cms-form-field__helper-text">
-                <I18NValue value={props.field.helpText} />
-            </div>
+            <HelperMessage
+                isValid={props.validation.isValid}
+                errorMessage={props.validation.message}
+                helperMessage={<I18NValue value={props.field.helpText} />}
+            />
         </div>
     );
 };

@@ -120,6 +120,9 @@
             @include mobile{
                 text-align: left !important;
             }
+            &--error{
+                color: $webiny-cms-theme-primary;
+            }
         }
     }
 

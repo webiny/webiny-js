@@ -90,16 +90,12 @@ const FormRenderer = ({ getFields, getDefaultValues, submit, form }: FormRenderP
                                                 >
                                                     {({ validation, ...bind }) => (
                                                         <React.Fragment>
-                                                            {/* Render input or whatever */}
+                                                            {/* Render input */}
                                                             {renderField({
                                                                 field,
                                                                 bind,
                                                                 validation
                                                             })}
-                                                            {/* Render validation message */}
-                                                            {validation.isValid === false
-                                                                ? validation.message
-                                                                : null}
                                                         </React.Fragment>
                                                     )}
                                                 </Bind>
