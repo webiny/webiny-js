@@ -3245,6 +3245,11 @@ abbrev@1:
   resolved "https://registry.yarnpkg.com/abbrev/-/abbrev-1.1.1.tgz#f8f2c887ad10bf67f634f005b6987fed3179aac8"
   integrity sha512-nne9/IiQ/hzIhY6pdDnbBtz7DjPTKrY00P/zvPSm5pOFkl6xuGrGnXn/VtTNNfNtAfZ9/1RtehkszU9qcTii0Q==
 
+accept-language-parser@^1.5.0:
+  version "1.5.0"
+  resolved "https://registry.npmjs.org/accept-language-parser/-/accept-language-parser-1.5.0.tgz#8877c54040a8dcb59e0a07d9c1fde42298334791"
+  integrity sha1-iHfFQECo3LWeCgfZwf3kIpgzR5E=
+
 accepts@~1.3.4, accepts@~1.3.5, accepts@~1.3.7:
   version "1.3.7"
   resolved "https://registry.yarnpkg.com/accepts/-/accepts-1.3.7.tgz#531bc726517a3b2b41f850021c6cc15eaab507cd"
@@ -17574,6 +17579,14 @@ react-app-polyfill@^1.0.1:
     regenerator-runtime "0.13.2"
     whatwg-fetch "3.0.0"
 
+react-async-script@^1.0.0:
+  version "1.1.1"
+  resolved "https://registry.npmjs.org/react-async-script/-/react-async-script-1.1.1.tgz#f481c6c5f094bf4b94a9d52da0d0dda2e1a74bdf"
+  integrity sha512-pmgS3O7JcX4YtH/Xy//NXylpD5CNb5T4/zqlVUV3HvcuyOanatvuveYoxl3X30ZSq/+q/+mSXcNS8xDVQJpSeA==
+  dependencies:
+    hoist-non-react-statics "^3.3.0"
+    prop-types "^15.5.0"
+
 react-butterfiles@^1.3.0, react-butterfiles@^1.3.1:
   version "1.3.2"
   resolved "https://registry.yarnpkg.com/react-butterfiles/-/react-butterfiles-1.3.2.tgz#cc06366d219951ab036ba47e0b4b611c2da4b17b"
@@ -17773,6 +17786,14 @@ react-focus-lock@^1.18.3:
     focus-lock "^0.6.3"
     prop-types "^15.6.2"
     react-clientside-effect "^1.2.0"
+
+react-google-recaptcha@^1.1.0:
+  version "1.1.0"
+  resolved "https://registry.npmjs.org/react-google-recaptcha/-/react-google-recaptcha-1.1.0.tgz#f33bef3e22e8c016820e80da48d573f516bb99e8"
+  integrity sha512-GMWZEsIKyBVG+iXfVMwtMVKFJATu5c+oguL/5i95H3Jb5d5CG4DY0W9t4QhdSSulgkXbZMgv0VSuGF/GV1ENTA==
+  dependencies:
+    prop-types "^15.5.0"
+    react-async-script "^1.0.0"
 
 react-hamburger-menu@^1.1.1:
   version "1.1.1"
@@ -21455,6 +21476,11 @@ url-search-params-polyfill@^5.1.0:
   version "5.1.0"
   resolved "https://registry.yarnpkg.com/url-search-params-polyfill/-/url-search-params-polyfill-5.1.0.tgz#f0405dcc2e921bf7f5fdf8c4e616f1e8088ef31b"
   integrity sha512-yjFY7uw2xRf9e8Mg4ZVkZwtp8dMCC4cbBkEIZiTDpuSY2WJ9+Quw0wRhxncv32qaMQwmBQT+P847rO8PrFhhDA==
+
+url-search-params-polyfill@^6.0.0:
+  version "6.0.0"
+  resolved "https://registry.npmjs.org/url-search-params-polyfill/-/url-search-params-polyfill-6.0.0.tgz#f5e5fc230d56125f5b0ba67d9cbcd6555fa347e3"
+  integrity sha512-69Bl5s3SiEgcHe8SMpzLGOyag27BQeTeSaP/CfVHkKc/VdUHtNjaP2PnhshFVC021221ItueOzuMMGofZ/HDmQ==
 
 url-template@^2.0.8:
   version "2.0.8"

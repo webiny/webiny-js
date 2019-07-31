@@ -37,7 +37,7 @@ type Props = {
     type: "success" | "info" | "warning" | "danger",
 
     // Alert message.
-    children?: string
+    children?: React.Node
 } & Object;
 
 /**

@@ -40,6 +40,13 @@ export const FIELDS_FIELDS = `
 
 const SETTINGS_FIELDS = /* GraphQL */ `
     {
+        reCaptcha {
+            enabled
+            settings {
+                enabled
+                siteKey
+            }
+        }
         layout {
             renderer
         }
@@ -50,7 +57,10 @@ const SETTINGS_FIELDS = /* GraphQL */ `
             ${I18N_FIELDS}
         }
         termsOfServiceMessage {
-            ${I18N_FIELDS}
+            enabled
+            message {
+                ${I18N_FIELDS}
+            }
         }
     }
 `;

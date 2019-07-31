@@ -9,6 +9,7 @@ import { getPlugins } from "webiny-plugins";
 import { I18NValue } from "webiny-app-i18n/components";
 import { compose } from "recompose";
 import type { FormRenderPropsType, FormRenderComponentPropsType } from "webiny-app-forms/types";
+import ReCAPTCHA from "react-google-recaptcha";
 
 const FormRender = compose(
     withCms(),
@@ -107,16 +108,30 @@ const FormRender = compose(
 
     LayoutRenderComponent = LayoutRenderComponent.component;
 
+    const renderReCaptcha = props => {
+        const reCaptchaSettings = get(data, "settings.reCaptcha.settings") || {};
+        if (reCaptchaSettings.enabled && reCaptchaSettings.siteKey) {
+            return <ReCAPTCHA {...props} sitekey={reCaptchaSettings.siteKey} />;
+        }
+
+        return null;
+    };
+
     const layoutProps: FormRenderPropsType = {
         getFieldById,
         getFieldByFieldId,
         getDefaultValues,
         getFields,
         submit,
+        renderReCaptcha,
         form: data
     };
 
-    return <LayoutRenderComponent {...layoutProps} />;
+    return (
+        <>
+            <LayoutRenderComponent {...layoutProps} />{" "}
+        </>
+    );
 });
 
 export default FormRender;

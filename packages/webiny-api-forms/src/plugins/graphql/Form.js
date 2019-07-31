@@ -99,17 +99,48 @@ export default {
             renderer: String
         }
         
+        type TermsOfServiceMessage {
+            enabled: Boolean
+            message: I18NJSONValue
+        }
+        
+        type FormReCaptchaSettings {
+            enabled: Boolean
+            siteKey: String
+        }
+         
+        type ReCaptcha {
+            enabled: Boolean
+            settings: FormReCaptchaSettings
+        }
+        
         type FormSettingsType {
             layout: FormSettingsLayoutType
             submitButtonLabel: I18NStringValue
             successMessage: I18NJSONValue
-            termsOfServiceMessage: I18NJSONValue
-        }
+            termsOfServiceMessage: TermsOfServiceMessage
+            reCaptcha: ReCaptcha
+        }      
         
         type FormStatsType {
             views: Int
             submissions: Int
             conversionRate: Float
+        }
+        
+        input FormReCaptchaSettingsInput {
+            enabled: Boolean
+            siteKey: String
+        }
+        
+        input ReCaptchaInput {
+            enabled: Boolean
+            settings: FormReCaptchaSettingsInput
+        }
+        
+        input TermsOfServiceMessageInput {
+            enabled: Boolean
+            message: I18NJSONValueInput
         }
         
         input FormSettingsLayoutInput {
@@ -120,7 +151,8 @@ export default {
             layout: FormSettingsLayoutInput
             submitButtonLabel: I18NStringValueInput
             successMessage: I18NJSONValueInput
-            termsOfServiceMessage: I18NJSONValueInput
+            termsOfServiceMessage: TermsOfServiceMessageInput
+            reCaptcha: ReCaptchaInput
         }
         
         input UpdateFormInput {
@@ -227,7 +259,7 @@ export default {
     resolvers: {
         FormsQuery: {
             getForm: resolveGet("Form"),
-            listForms: listForms,
+            listForms,
             listPublishedForms,
             getPublishedForm
         },

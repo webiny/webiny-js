@@ -1,5 +1,18 @@
 import gql from "graphql-tag";
 
+export const FORMS_SETTINGS = /* GraphQL */ `
+    {
+        settings {
+            forms {
+                reCaptcha {
+                    enabled
+                    siteKey
+                }
+            }
+        }
+    }
+`;
+
 export const FIELDS_FIELDS = `
         _id
         fieldId
@@ -37,6 +50,13 @@ export const DATA_FIELDS = `
     layout
     triggers
     settings {
+        reCaptcha {
+            enabled
+            settings {
+                enabled
+                siteKey 
+            }
+        }
         layout {
             renderer
         }
@@ -47,7 +67,10 @@ export const DATA_FIELDS = `
             value
         } 
         termsOfServiceMessage {
-            value
+            enabled
+            message {
+                value
+            }
         }
     }
 `;

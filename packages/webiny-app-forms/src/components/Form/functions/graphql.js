@@ -18,6 +18,7 @@ export const CREATE_FORM_SUBMISSION = gql`
             createFormSubmission(id: $id, data: $data, meta: $meta) {
                 error {
                     message
+                    data
                 }
             }
         }

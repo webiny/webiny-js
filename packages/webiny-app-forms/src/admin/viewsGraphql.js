@@ -50,13 +50,6 @@ export const FIELDS_FIELDS = `
         settings
 `;
 
-const FIELDS_LAYOUT_FIELDS = `
-    layout
-    fields {
-        ${FIELDS_FIELDS}
-    }
-`;
-
 export const listForms = gql`
     query FormsListForms($sort: JSON, $page: Int, $perPage: Int, $search: String) {
         forms {

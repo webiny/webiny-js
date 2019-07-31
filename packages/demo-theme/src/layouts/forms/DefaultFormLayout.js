@@ -108,22 +108,25 @@ const FormRenderer = ({ getFields, getDefaultValues, submit, form }: FormRenderP
                                     </div>
                                 ))}
                             </div>
-                            <div>
-                                <Bind name={"tosAccepted"}>
-                                    {({ onChange, value }) => (
-                                        <>
-                                            <input
-                                                type={"checkbox"}
-                                                checked={Boolean(value)}
-                                                onChange={() => onChange(!value)}
-                                            />
-                                            <I18NValue
-                                                value={form.settings.termsOfServiceMessage}
-                                            />
-                                        </>
-                                    )}
-                                </Bind>
-                            </div>
+                            {form.settings.termsOfServiceMessage.enabled && (
+                                <div>
+                                    <Bind name={"tosAccepted"}>
+                                        {({ onChange, value }) => (
+                                            <>
+                                                <input
+                                                    type={"checkbox"}
+                                                    checked={Boolean(value)}
+                                                    onChange={() => onChange(!value)}
+                                                />
+                                                <I18NValue
+                                                    value={form.settings.termsOfServiceMessage.message}
+                                                />
+                                            </>
+                                        )}
+                                    </Bind>
+                                </div>
+                            )}
+
                             <div>
                                 <button
                                     className={
@@ -131,7 +134,7 @@ const FormRenderer = ({ getFields, getDefaultValues, submit, form }: FormRenderP
                                         (loading ? " webiny-cms-element-button--loading" : "")
                                     }
                                     onClick={submit}
-                                    disabled={!data.tosAccepted || loading}
+                                    disabled={loading}
                                 >
                                     <I18NValue
                                         value={form.settings.submitButtonLabel}

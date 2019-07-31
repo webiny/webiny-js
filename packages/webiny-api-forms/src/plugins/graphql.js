@@ -20,7 +20,7 @@ import formSubmission from "./graphql/FormSubmission";
 
 export default {
     type: "graphql-schema",
-    name: "graphql-forms",
+    name: "graphql-schema-forms",
     namespace: "forms",
     schema: {
         typeDefs: () => [
@@ -66,6 +66,12 @@ export default {
     },
     security: {
         shield: {
+            SettingsQuery: {
+                forms: hasScope("cms:settings")
+            },
+            SettingsMutation: {
+                forms: hasScope("cms:settings")
+            },
             FormsQuery: {
                 listForms: hasScope("forms:form:crud")
             },
