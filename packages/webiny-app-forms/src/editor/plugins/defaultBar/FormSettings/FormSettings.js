@@ -70,7 +70,11 @@ const FormSettings = ({ onExited, showSnackbar }: Props) => {
                     >
                         {({ Bind, submit, form, data }) => (
                             <SimpleForm>
-                                <SimpleFormHeader title={activePlugin.title} />
+                                <SimpleFormHeader title={activePlugin.title}>
+                                    {/* @sven Ovdje rendam samo childove, ali su centrirani, umjesto u desno postavljeni */}
+                                    {typeof activePlugin.renderHeaderActions === "function" &&
+                                        activePlugin.renderHeaderActions({ Bind, form, data })}
+                                </SimpleFormHeader>
                                 <SimpleFormContent>
                                     {activePlugin
                                         ? activePlugin.render({ Bind, form, data })
