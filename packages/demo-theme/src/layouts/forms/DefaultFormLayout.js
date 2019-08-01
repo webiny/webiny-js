@@ -11,20 +11,31 @@ import { I18NValue } from "webiny-app-i18n/components";
 import HelperMessage from "./components/HelperMessage";
 import type { FieldType, FormRenderPropsType } from "webiny-app-forms/types";
 
-const FormRenderer = ({ getFields, getDefaultValues, submit, form }: FormRenderPropsType) => {
+const FormRenderer = ({
+    getFields,
+    getDefaultValues,
+    submit,
+    form,
+    ReCaptcha
+}: FormRenderPropsType) => {
     const fields = getFields();
     const [loading, setLoading] = useState(false);
     const [success, setSuccess] = useState(false);
+    const [error, setError] = useState(null);
 
     {
         /* Form submit action */
     }
     const submitForm = useCallback(async data => {
         setLoading(true);
+        setError(null);
         const result = await submit(data);
         setLoading(false);
         if (result.error === null) {
             setSuccess(true);
+        } else {
+            console.log(result);
+            setError(result.error);
         }
     }, []);
 
@@ -100,9 +111,27 @@ const FormRenderer = ({ getFields, getDefaultValues, submit, form }: FormRenderP
     };
 
     {
+        /* Render reCAPTCHA checkbox */
+    }
+    const renderReCaptcha = () => {
+        return (
+            <>
+                <ReCaptcha />
+                {error && error.code === "RECAPTCHA_NOT_PASSED" && (
+                    <I18NValue value={error.message} />
+                )}
+            </>
+        );
+    };
+
+    {
         /* Render Terms of Service checkbox */
     }
     const renderTOS = Bind => {
+        if (!form.settings.termsOfServiceMessage.enabled) {
+            return null;
+        }
+
         return (
             <div className="webiny-cms-form-tos">
                 <Bind name={"tosAccepted"}>
@@ -122,7 +151,9 @@ const FormRenderer = ({ getFields, getDefaultValues, submit, form }: FormRenderP
                                         htmlFor={"webiny-tos-checkbox"}
                                         className="webiny-cms-form-field__checkbox-label"
                                     >
-                                        <I18NValue value={form.settings.termsOfServiceMessage} />
+                                        <I18NValue
+                                            value={form.settings.termsOfServiceMessage.message}
+                                        />
                                     </label>
                                 </div>
                             </div>
@@ -166,7 +197,7 @@ const FormRenderer = ({ getFields, getDefaultValues, submit, form }: FormRenderP
                         (loading ? " webiny-cms-element-button--loading" : "")
                     }
                     onClick={submit}
-                    disabled={!tosAccepted || loading}
+                    disabled={loading}
                 >
                     <I18NValue value={buttonLabel} default="Submit" />
                 </button>
@@ -202,6 +233,8 @@ const FormRenderer = ({ getFields, getDefaultValues, submit, form }: FormRenderP
 
                             {/* render tos */}
                             {renderTOS(Bind)}
+
+                            {renderReCaptcha()}
 
                             {/* render submit button */}
                             {renderSubmitButton(

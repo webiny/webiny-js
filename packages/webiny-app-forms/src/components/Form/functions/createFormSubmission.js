@@ -1,5 +1,5 @@
 // @flow
-import type { FormRenderComponentPropsType } from "webiny-app-forms/types";
+import type { FormRenderComponentPropsType, FormSubmitResponseType } from "webiny-app-forms/types";
 import { CREATE_FORM_SUBMISSION } from "./graphql";
 import getClientIp from "./getClientIp";
 import { get } from "lodash";
@@ -9,12 +9,23 @@ type Args = {
     data: Object
 };
 
-export default async ({ props: { data: form, client, preview }, data: rawData }: Args) => {
+export default async ({
+    props: { data: form, client, preview },
+    data: rawData
+}: Args): Promise<FormSubmitResponseType> => {
     if (preview) {
-        return { preview: true, error: null, data: {} };
+        return { preview: true, error: null, data: null };
     }
 
     const data = {};
+    if (!form) {
+        return {
+            error: { message: "Form data is missing.", code: "FORM_DATA_MISSING" },
+            data: null,
+            preview: false
+        };
+    }
+
     form.fields.forEach(field => {
         if (field.fieldId in rawData) {
             data[field.fieldId] = rawData[field.fieldId];
@@ -36,7 +47,7 @@ export default async ({ props: { data: form, client, preview }, data: rawData }:
 
     return {
         preview: false,
-        data: {},
+        data: null,
         error: response.error
     };
 };

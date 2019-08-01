@@ -2,7 +2,6 @@
 import * as React from "react";
 import GeneralSettings from "./components/GeneralSettings";
 import TermsOfServiceSettings from "./components/TermsOfServiceSettings";
-import TermsOfServiceSettingsHeaderActions from "./components/TermsOfServiceSettingsHeaderActions";
 import ReCaptchaSettings from "./components/ReCaptchaSettings";
 import type { FormSettingsPluginType } from "webiny-app-forms/types";
 import { ReactComponent as SettingsIcon } from "./icons/round-settings-24px.svg";
@@ -28,9 +27,6 @@ export default ([
         icon: <TermsOfServiceIcon />,
         render(props: Object) {
             return <TermsOfServiceSettings {...props} />;
-        },
-        renderHeaderActions(props: Object) {
-            return <TermsOfServiceSettingsHeaderActions {...props} />;
         }
     },
     {

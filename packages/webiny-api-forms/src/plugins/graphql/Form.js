@@ -111,6 +111,7 @@ export default {
          
         type ReCaptcha {
             enabled: Boolean
+            errorMessage: I18NJSONValue
             settings: FormReCaptchaSettings
         }
         
@@ -135,6 +136,7 @@ export default {
         
         input ReCaptchaInput {
             enabled: Boolean
+            errorMessage: I18NJSONValueInput
             settings: FormReCaptchaSettingsInput
         }
         

@@ -46,6 +46,9 @@ const SETTINGS_FIELDS = /* GraphQL */ `
                 enabled
                 siteKey
             }
+            errorMessage {
+                ${I18N_FIELDS}
+            }
         }
         layout {
             renderer

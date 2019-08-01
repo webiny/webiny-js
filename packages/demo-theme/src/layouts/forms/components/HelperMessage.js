@@ -2,7 +2,7 @@
 import * as React from "react";
 
 type Props = {
-    helperMessage: string,
+    helperMessage?: string,
     errorMessage: string,
     isValid: boolean
 };

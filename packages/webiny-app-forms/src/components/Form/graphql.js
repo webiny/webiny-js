@@ -52,6 +52,9 @@ export const DATA_FIELDS = `
     settings {
         reCaptcha {
             enabled
+            errorMessage {
+                value
+            }
             settings {
                 enabled
                 siteKey 

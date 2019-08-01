@@ -26,15 +26,17 @@ export type FormType = {
     id: FieldIdType,
     layout: FieldsLayoutType,
     fields: [FieldType],
-    name: string
+    name: string,
+    settings: Object
 };
 
 export type FormRenderPropsType = {
     getFieldById: Function,
     getFieldByFieldId: Function,
-    getFields: () => [[FieldType]],
+    getFields: () => Array<Array<FieldType>>,
     getDefaultValues: () => Object,
-    submit: (data: Object) => void | Promise<void>,
+    ReCaptcha: any,
+    submit: (data: Object) => Promise<FormSubmitResponseType>,
     form: FormType
 };
 
@@ -50,6 +52,15 @@ export type FormRenderComponentPropsType = {
     data?: Object,
     client: Object, // withApollo HOC
     cms: WithCmsPropsType // withCms HOC
+};
+
+export type FormSubmitResponseType = {
+    data: ?Object,
+    preview: boolean,
+    error: ?{
+        message: string,
+        code: string
+    },
 };
 
 export type FormLoadComponentPropsType = {

@@ -37,6 +37,16 @@ const createReCaptchaModel = context =>
         constructor(props) {
             super(props);
             this.attr("enabled").boolean();
+            this.attr("errorMessage")
+                .custom(I18NCharAttribute, context)
+                .setValue({
+                    values: [
+                        {
+                            locale: context.i18n.getDefaultLocale().id,
+                            value: "Please verify that you are not a robot."
+                        }
+                    ]
+                });
             this.attr("settings").model(createReCaptchaSettingsModel(context));
         }
     };
@@ -61,7 +71,9 @@ const createSettingsModel = context =>
             this.attr("submitButtonLabel").custom(I18NCharAttribute, context);
             this.attr("successMessage").custom(I18NObjectAttribute, context);
             this.attr("termsOfServiceMessage").model(createTermsOfServiceModel(context));
-            this.attr("reCaptcha").model(createReCaptchaModel(context));
+
+            const ReCaptchaModel = createReCaptchaModel(context);
+            this.attr("reCaptcha").model(ReCaptchaModel).setValue(new ReCaptchaModel());
         }
     };
 

@@ -1,4 +1,5 @@
 // @flow
+// $FlowFixMe
 import React, { useState, useCallback } from "react";
 import { Grid, Cell } from "webiny-ui/Grid";
 import { Switch } from "webiny-ui/Switch";
@@ -8,18 +9,22 @@ import { GET_RECAPTCHA_SETTINGS } from "./graphql";
 import ReCaptchaSettingsDialog from "./ReCaptchaSettingsDialog";
 import { withSnackbar } from "webiny-admin/components";
 import { Alert } from "webiny-ui/Alert";
+import { I18NInput } from "webiny-app-i18n/admin/components";
 
-const ReCaptchaSettings = ({ Bind }: Object) => {
+const ReCaptchaSettings = ({ Bind, data: formData }: Object) => {
     const [dialogOpened, setDialogOpened] = useState(false);
-
     const openDialog = useCallback(() => setDialogOpened(true), []);
     const closeDialog = useCallback(() => setDialogOpened(false), []);
 
+    const [settingsLoaded, setSettingsLoaded] = useState(false);
+
     return (
-        <Query query={GET_RECAPTCHA_SETTINGS}>
+        <Query query={GET_RECAPTCHA_SETTINGS} onCompleted={() => setSettingsLoaded(true)}>
+
             {({ data, refetch }) => {
                 const settings = get(data, "settings.forms.data.reCaptcha") || {};
-                const reCaptchaEnabled = settings.enabled && settings.siteKey;
+                const reCaptchaEnabledInSettings = settings.enabled && settings.siteKey;
+                const reCaptchaEnabled = get(formData, "reCaptcha.enabled");
 
                 return (
                     <Bind name={"reCaptcha.enabled"}>
@@ -28,7 +33,7 @@ const ReCaptchaSettings = ({ Bind }: Object) => {
                                 <Cell span={12}>
                                     <Switch
                                         onChange={value => {
-                                            if (value && !reCaptchaEnabled) {
+                                            if (value && !reCaptchaEnabledInSettings) {
                                                 openDialog();
                                                 return;
                                             }
@@ -40,7 +45,16 @@ const ReCaptchaSettings = ({ Bind }: Object) => {
                                         description={`Will require users to "confirm they are human" by clicking on a special checkbox.`}
                                     />
                                 </Cell>
-                                {!reCaptchaEnabled && (
+                                <Cell span={12}>
+                                    <Bind name={"reCaptcha.errorMessage"}>
+                                        <I18NInput
+                                            disabled={!reCaptchaEnabled}
+                                            label={"Error message"}
+                                        />
+                                    </Bind>
+                                </Cell>
+
+                                {settingsLoaded && !reCaptchaEnabledInSettings && (
                                     <Cell span={12}>
                                         <Alert type="danger" title="Google reCAPTCHA not enabled.">
                                             Click{" "}

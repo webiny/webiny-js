@@ -1,6 +1,6 @@
 // @flow
 // $FlowFixMe
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { get, cloneDeep } from "lodash";
 import { withCms } from "webiny-app-cms/context";
 import { onFormMounted, createFormSubmission, handleFormTriggers } from "./functions";
@@ -8,7 +8,11 @@ import { withApollo } from "react-apollo";
 import { getPlugins } from "webiny-plugins";
 import { I18NValue } from "webiny-app-i18n/components";
 import { compose } from "recompose";
-import type { FormRenderPropsType, FormRenderComponentPropsType } from "webiny-app-forms/types";
+import type {
+    FormRenderPropsType,
+    FormRenderComponentPropsType,
+    FormSubmitResponseType
+} from "webiny-app-forms/types";
 import ReCAPTCHA from "react-google-recaptcha";
 
 const FormRender = compose(
@@ -16,14 +20,20 @@ const FormRender = compose(
     withApollo
 )((props: FormRenderComponentPropsType) => {
     if (!props.data) {
-        // TODO: handle this
+        // TODO: handle this - loader?
         return null;
     }
+
+    useEffect(() => onFormMounted(props), [props.data.id]);
+    const [reCaptchaPassed, setReCaptchaPassed] = useState(false);
 
     const data = cloneDeep(props.data);
     const { layout, fields, settings } = data;
 
-    useEffect(() => onFormMounted(props), [data.id]);
+    let reCaptchaEnabled = false;
+    if (settings.reCaptcha && settings.reCaptcha.enabled) {
+        reCaptchaEnabled = settings.reCaptcha.settings && settings.reCaptcha.enabled;
+    }
 
     const getFieldById = id => {
         return fields.find(field => field._id === id);
@@ -91,7 +101,19 @@ const FormRender = compose(
         return { ...values, ...overrides };
     };
 
-    const submit = async data => {
+    const submit = async (data: Object): Promise<FormSubmitResponseType> => {
+        console.log(reCaptchaEnabled, reCaptchaPassed);
+        if (reCaptchaEnabled && !reCaptchaPassed) {
+            return {
+                data: null,
+                preview: Boolean(props.preview),
+                error: {
+                    code: "RECAPTCHA_NOT_PASSED",
+                    message: settings.reCaptcha.errorMessage
+                }
+            };
+        }
+
         const formSubmission = await createFormSubmission({ props, data });
         await handleFormTriggers({ props, data, formSubmission });
         return formSubmission;
@@ -108,10 +130,24 @@ const FormRender = compose(
 
     LayoutRenderComponent = LayoutRenderComponent.component;
 
-    const renderReCaptcha = props => {
-        const reCaptchaSettings = get(data, "settings.reCaptcha.settings") || {};
-        if (reCaptchaSettings.enabled && reCaptchaSettings.siteKey) {
-            return <ReCAPTCHA {...props} sitekey={reCaptchaSettings.siteKey} />;
+    const ReCaptcha = props => {
+        if (reCaptchaEnabled) {
+            return (
+                <ReCAPTCHA
+                    {...props}
+                    sitekey={settings.reCaptcha.settings.siteKey}
+                    onChange={result => {
+                        console.log("onChange", result);
+                        setReCaptchaPassed(true);
+                    }}
+                    onErrored={() => {
+                        console.log("onErrored", setReCaptchaPassed(false));
+                    }}
+                    onExpired={() => {
+                        console.log("onExpired", setReCaptchaPassed(false));
+                    }}
+                />
+            );
         }
 
         return null;
@@ -123,15 +159,11 @@ const FormRender = compose(
         getDefaultValues,
         getFields,
         submit,
-        renderReCaptcha,
+        ReCaptcha,
         form: data
     };
 
-    return (
-        <>
-            <LayoutRenderComponent {...layoutProps} />{" "}
-        </>
-    );
+    return <LayoutRenderComponent {...layoutProps} />;
 });
 
 export default FormRender;
