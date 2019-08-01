@@ -19,11 +19,8 @@ const dialogBody = css({
     "&.mdc-dialog__body": {
         marginTop: 0,
         padding: "25",
-        dl: {
-            padding: 25,
-            dd: {
-                marginBottom: 10
-            }
+        div: {
+            padding: "5px 0"
         }
     }
 });
