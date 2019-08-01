@@ -145,9 +145,7 @@ const FormRender = compose(
                     {...props}
                     sitekey={settings.reCaptcha.settings.siteKey}
                     onChange={response => {
-                        setTimeout(() => {
-                            reCaptchaResponseToken.current = response;
-                        }, 1500);
+                        reCaptchaResponseToken.current = response;
                     }}
                     onErrored={() => {
                         reCaptchaResponseToken.current = "";
