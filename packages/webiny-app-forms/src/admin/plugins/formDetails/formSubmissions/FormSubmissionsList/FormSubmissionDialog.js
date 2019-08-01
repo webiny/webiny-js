@@ -77,9 +77,18 @@ const FormSubmissionDialog = ({ formSubmission, onClose }: Props) => {
                                                 {field.label.value}:{" "}
                                             </Typography>
                                             <Typography use="body1">
-                                                {renderFieldValueLabel(
-                                                    field,
-                                                    formSubmission.data[field.fieldId]
+                                                {field.type === "textarea" ? (
+                                                    <pre>
+                                                        {renderFieldValueLabel(
+                                                            field,
+                                                            formSubmission.data[field.fieldId]
+                                                        )}
+                                                    </pre>
+                                                ) : (
+                                                    renderFieldValueLabel(
+                                                        field,
+                                                        formSubmission.data[field.fieldId]
+                                                    )
                                                 )}
                                             </Typography>
                                         </div>
