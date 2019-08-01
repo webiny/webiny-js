@@ -102,7 +102,6 @@ const FormRender = compose(
     };
 
     const submit = async (data: Object): Promise<FormSubmitResponseType> => {
-        console.log(reCaptchaEnabled, reCaptchaPassed);
         if (reCaptchaEnabled && !reCaptchaPassed) {
             return {
                 data: null,
@@ -136,16 +135,9 @@ const FormRender = compose(
                 <ReCAPTCHA
                     {...props}
                     sitekey={settings.reCaptcha.settings.siteKey}
-                    onChange={result => {
-                        console.log("onChange", result);
-                        setReCaptchaPassed(true);
-                    }}
-                    onErrored={() => {
-                        console.log("onErrored", setReCaptchaPassed(false));
-                    }}
-                    onExpired={() => {
-                        console.log("onExpired", setReCaptchaPassed(false));
-                    }}
+                    onChange={() => setReCaptchaPassed(true)}
+                    onErrored={() => setReCaptchaPassed(false)}
+                    onExpired={() => setReCaptchaPassed(false)}
                 />
             );
         }

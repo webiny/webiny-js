@@ -1,6 +1,6 @@
 // @flow
 // $FlowFixMe
-import React, { useState, useCallback } from "react";
+import React, { useState } from "react";
 import Input from "./fields/Input";
 import Select from "./fields/Select";
 import Radio from "./fields/Radio";
@@ -26,7 +26,7 @@ const FormRenderer = ({
     {
         /* Form submit action */
     }
-    const submitForm = useCallback(async data => {
+    const submitForm = async data => {
         setLoading(true);
         setError(null);
         const result = await submit(data);
@@ -37,7 +37,7 @@ const FormRenderer = ({
             console.log(result);
             setError(result.error);
         }
-    }, []);
+    };
 
     {
         /* Renders a field cell with a field element inside */
