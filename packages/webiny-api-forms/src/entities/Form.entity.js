@@ -4,6 +4,8 @@ import mdbid from "mdbid";
 import { getPlugins } from "webiny-plugins";
 import { pick } from "lodash";
 import { createFieldModel, createSettingsModel, FormStatsModel } from "./Form";
+import got from "got";
+import FormData from "form-data";
 
 export default (context: Object) => {
     const { getUser, getEntities } = context;
@@ -196,7 +198,43 @@ export default (context: Object) => {
             });
         }
 
-        async submit({ data: rawData, meta }: { data: Object, meta: Object }) {
+        async submit({
+            reCaptchaResponseToken,
+            data: rawData,
+            meta
+        }: {
+            reCaptchaResponseToken?: string,
+            data: Object,
+            meta: Object
+        }) {
+            if (this.settings.reCaptcha.enabled) {
+                if (!reCaptchaResponseToken) {
+                    throw new Error("Missing reCAPTCHA response token - cannot verify.");
+                }
+
+                const secretKey = await this.settings.reCaptcha.settings.secretKey;
+
+                const { body } = await got.post("https://www.google.com/recaptcha/api/siteverify", {
+                    form: true,
+                    body: {
+                        secret: secretKey,
+                        response: reCaptchaResponseToken
+                    }
+                });
+
+                let responseIsValid = false;
+                try {
+                    const validationResponse = JSON.parse(body);
+                    if (validationResponse.success) {
+                        responseIsValid = true;
+                    }
+                } catch (e) {}
+
+                if (!responseIsValid) {
+                    throw new Error("reCAPTCHA verification failed.");
+                }
+            }
+
             const { FormSubmission } = getEntities();
 
             // Validate data.

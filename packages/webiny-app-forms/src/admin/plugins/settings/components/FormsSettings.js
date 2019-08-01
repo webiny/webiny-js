@@ -76,6 +76,26 @@ const FormsSettings = ({ showSnackbar }) => {
                                                             />
                                                         </Bind>
                                                     </Cell>
+
+                                                    <Cell span={12}>
+                                                        <Bind name={"reCaptcha.secretKey"}>
+                                                            <Input
+                                                                disabled={!reCaptchaEnabled}
+                                                                label={"Google reCAPTCHA secret key"}
+                                                                description={
+                                                                    <>
+                                                                        A v2 Tickbox secret key.{" "}
+                                                                        <a
+                                                                            href="https://www.google.com/recaptcha/admin"
+                                                                            target={"_blank"}
+                                                                        >
+                                                                            Don't have a site key?
+                                                                        </a>
+                                                                    </>
+                                                                }
+                                                            />
+                                                        </Bind>
+                                                    </Cell>
                                                 </Grid>
                                             </SimpleFormContent>
                                             <SimpleFormFooter>

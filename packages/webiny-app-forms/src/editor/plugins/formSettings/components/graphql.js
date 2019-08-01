@@ -6,6 +6,7 @@ const fields = /* GraphQL */ `
             reCaptcha {
                 enabled
                 siteKey
+                secretKey
             }
         }
         error {
@@ -22,6 +23,7 @@ export const GET_RECAPTCHA_SETTINGS = gql`
                     reCaptcha {
                         enabled
                         siteKey
+                        secretKey
                     }
                 }
             }

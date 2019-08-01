@@ -6,10 +6,14 @@ import type { ApiContext } from "webiny-api/types";
 class ReCaptchaSettingsModel extends Model {
     enabled: ?boolean;
     siteKey: ?string;
+    secretKey: ?string;
     constructor() {
         super();
         this.attr("enabled").boolean();
         this.attr("siteKey")
+            .char()
+            .setValidators("maxLength:100");
+        this.attr("secretKey")
             .char()
             .setValidators("maxLength:100");
     }
@@ -34,11 +38,13 @@ export default [
             type ReCaptchaSettings {
                 enabled: Boolean
                 siteKey: String
+                secretKey: String
             }
 
             input ReCaptchaSettingsInput {
                 enabled: Boolean
                 siteKey: String
+                secretKey: String
             }
 
             type FormsSettings {

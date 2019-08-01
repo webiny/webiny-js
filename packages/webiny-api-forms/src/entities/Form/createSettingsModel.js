@@ -29,6 +29,13 @@ const createReCaptchaSettingsModel = context =>
                     const settings = await FormsSettings.load();
                     return get(settings, "data.reCaptcha.siteKey");
                 });
+            this.attr("secretKey")
+                .char()
+                .setDynamic(async () => {
+                    const { FormsSettings } = context.getEntities();
+                    const settings = await FormsSettings.load();
+                    return get(settings, "data.reCaptcha.secretKey");
+                });
         }
     };
 
