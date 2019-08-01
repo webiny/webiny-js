@@ -65,6 +65,8 @@ const FormSubmissionDialog = ({ formSubmission, onClose }: Props) => {
                                     const field = formSubmission.form.revision.fields.find(
                                         field => field._id === id
                                     );
+
+                                    console.log(field)
                                     return (
                                         <div
                                             key={id}

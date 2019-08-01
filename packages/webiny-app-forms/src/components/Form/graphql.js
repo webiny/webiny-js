@@ -7,6 +7,7 @@ export const FORMS_SETTINGS = /* GraphQL */ `
                 reCaptcha {
                     enabled
                     siteKey
+                    secretKey
                 }
             }
         }
@@ -57,7 +58,8 @@ export const DATA_FIELDS = `
             }
             settings {
                 enabled
-                siteKey 
+                siteKey
+                secretKey
             }
         }
         layout {

@@ -107,6 +107,7 @@ export default {
         type FormReCaptchaSettings {
             enabled: Boolean
             siteKey: String
+            secretKey: String
         }
          
         type ReCaptcha {
@@ -132,6 +133,7 @@ export default {
         input FormReCaptchaSettingsInput {
             enabled: Boolean
             siteKey: String
+            secretKey: String
         }
         
         input ReCaptchaInput {

@@ -6,12 +6,14 @@ import { get } from "lodash";
 
 type Args = {
     props: FormRenderComponentPropsType,
-    data: Object
+    data: Object,
+    reCaptchaResponseToken: string
 };
 
 export default async ({
     props: { data: form, client, preview },
-    data: rawData
+    data: rawData,
+    reCaptchaResponseToken
 }: Args): Promise<FormSubmitResponseType> => {
     if (preview) {
         return { preview: true, error: null, data: null };
@@ -36,6 +38,7 @@ export default async ({
         mutation: CREATE_FORM_SUBMISSION,
         variables: {
             id: form.id,
+            reCaptchaResponseToken,
             data,
             meta: {
                 ip: await getClientIp()

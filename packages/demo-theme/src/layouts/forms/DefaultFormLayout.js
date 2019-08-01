@@ -34,7 +34,6 @@ const FormRenderer = ({
         if (result.error === null) {
             setSuccess(true);
         } else {
-            console.log(result);
             setError(result.error);
         }
     };

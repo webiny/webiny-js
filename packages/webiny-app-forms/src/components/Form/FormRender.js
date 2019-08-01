@@ -1,6 +1,6 @@
 // @flow
 // $FlowFixMe
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef } from "react";
 import { get, cloneDeep } from "lodash";
 import { withCms } from "webiny-app-cms/context";
 import { onFormMounted, createFormSubmission, handleFormTriggers } from "./functions";
@@ -15,6 +15,9 @@ import type {
 } from "webiny-app-forms/types";
 import ReCAPTCHA from "react-google-recaptcha";
 
+// Not in state since for some reason when holding this information as a state, the ReCaptcha component gets refreshed,
+// forcing the user to submit the CAPTCHA again.
+
 const FormRender = compose(
     withCms(),
     withApollo
@@ -25,7 +28,8 @@ const FormRender = compose(
     }
 
     useEffect(() => onFormMounted(props), [props.data.id]);
-    const [reCaptchaPassed, setReCaptchaPassed] = useState(false);
+
+    const reCaptchaResponseToken = useRef("");
 
     const data = cloneDeep(props.data);
     const { layout, fields, settings } = data;
@@ -102,7 +106,7 @@ const FormRender = compose(
     };
 
     const submit = async (data: Object): Promise<FormSubmitResponseType> => {
-        if (reCaptchaEnabled && !reCaptchaPassed) {
+        if (reCaptchaEnabled && !reCaptchaResponseToken.current) {
             return {
                 data: null,
                 preview: Boolean(props.preview),
@@ -113,7 +117,12 @@ const FormRender = compose(
             };
         }
 
-        const formSubmission = await createFormSubmission({ props, data });
+        const formSubmission = await createFormSubmission({
+            props,
+            data,
+            reCaptchaResponseToken: reCaptchaResponseToken.current
+        });
+
         await handleFormTriggers({ props, data, formSubmission });
         return formSubmission;
     };
@@ -135,9 +144,17 @@ const FormRender = compose(
                 <ReCAPTCHA
                     {...props}
                     sitekey={settings.reCaptcha.settings.siteKey}
-                    onChange={() => setReCaptchaPassed(true)}
-                    onErrored={() => setReCaptchaPassed(false)}
-                    onExpired={() => setReCaptchaPassed(false)}
+                    onChange={response => {
+                        setTimeout(() => {
+                            reCaptchaResponseToken.current = response;
+                        }, 1500);
+                    }}
+                    onErrored={() => {
+                        reCaptchaResponseToken.current = "";
+                    }}
+                    onExpired={() => {
+                        reCaptchaResponseToken.current = "";
+                    }}
                 />
             );
         }

@@ -46,11 +46,11 @@ const ReCaptchaSettingsDialog = ({
                 {update => (
                     <Form
                         data={reCaptchaSettings}
-                        onSubmit={async ({ siteKey }) => {
+                        onSubmit={async ({ siteKey, secretKey }) => {
                             setLoading(true);
                             const response = get(
                                 await update({
-                                    variables: { data: { reCaptcha: { enabled: true, siteKey } } }
+                                    variables: { data: { reCaptcha: { enabled: true, siteKey, secretKey } } }
                                 }),
                                 "data.settings.forms"
                             );
@@ -75,10 +75,28 @@ const ReCaptchaSettingsDialog = ({
                                             <Cell span={12}>
                                                 <Bind name={"siteKey"} validators={"required"}>
                                                     <Input
-                                                        label={"Google reCAPTCHA site key"}
+                                                        label={"Site key"}
                                                         description={
                                                             <>
                                                                 A v2 Tickbox site key.{" "}
+                                                                <a
+                                                                    href="https://www.google.com/recaptcha/admin"
+                                                                    target={"_blank"}
+                                                                >
+                                                                    Don't have a site key?
+                                                                </a>
+                                                            </>
+                                                        }
+                                                    />
+                                                </Bind>
+                                            </Cell>
+                                            <Cell span={12}>
+                                                <Bind name={"secretKey"} validators={"required"}>
+                                                    <Input
+                                                        label={"Secret key"}
+                                                        description={
+                                                            <>
+                                                                A v2 Tickbox secret key.{" "}
                                                                 <a
                                                                     href="https://www.google.com/recaptcha/admin"
                                                                     target={"_blank"}

@@ -63,6 +63,7 @@ export default {
             createFormSubmission(
                 id: ID! 
                 data: JSON!
+                reCaptchaResponseToken: String
                 meta: JSON
             ): FormSubmissionResponse
             

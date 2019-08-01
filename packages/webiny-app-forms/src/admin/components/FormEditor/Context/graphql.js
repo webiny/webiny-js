@@ -45,6 +45,7 @@ const SETTINGS_FIELDS = /* GraphQL */ `
             settings {
                 enabled
                 siteKey
+                secretKey
             }
             errorMessage {
                 ${I18N_FIELDS}

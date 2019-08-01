@@ -7,6 +7,7 @@ const fields = /* GraphQL */ `
             reCaptcha {
                 enabled
                 siteKey
+                secretKey
             }
         }
         error {
