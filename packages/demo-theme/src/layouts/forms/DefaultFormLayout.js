@@ -192,7 +192,7 @@ const FormRenderer = ({
     }
     const renderSubmitButton = (submit, loading, tosAccepted, buttonLabel) => {
         return (
-            <div>
+            <div className="webiny-cms-form-submit-button">
                 <button
                     className={
                         "webiny-cms-element-button webiny-cms-element-button--primary" +
