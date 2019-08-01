@@ -149,6 +149,7 @@ export const listFormSubmissions = gql`
                             fields {
                                 _id
                                 fieldId
+                                type
                                 label {
                                     value
                                 }
