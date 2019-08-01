@@ -8,7 +8,9 @@ const alertStyles = css({
     padding: "2px 0 2px 10px",
     ".webiny-ui-alert__title": {
         fontWeight: "600",
-        lineHeight: "150%"
+        lineHeight: "150%",
+        color: "var(--mdc-theme-on-surface)",
+        marginBottom: 5
     },
     ".webiny-ui-alert__message": {
         lineHeight: "100%",

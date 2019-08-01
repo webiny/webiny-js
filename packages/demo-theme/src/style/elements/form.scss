@@ -1,6 +1,7 @@
 .webiny-cms-form{
     width: 100%;
-    padding: 0;
+    padding: 0 5px 5px 5px;
+    box-sizing: border-box;
     background-color: $webiny-cms-theme-surface;
 
     .webiny-cms-layout-row, .webiny-cms-layout-column{
@@ -24,6 +25,21 @@
 
     &-tos{
         margin: 15px 0 25px 0;
+    }
+
+    &-recaptcha{
+        margin: 0 0 20px 0;
+        padding: 0 15px;
+        @include desktop{
+            padding: 0;
+        }
+    }
+
+    &-submit-button{
+        padding: 0 15px;
+        @include desktop{
+            padding: 0;
+        }
     }
 
     &__success-message{

@@ -114,12 +114,15 @@ const FormRenderer = ({
     }
     const renderReCaptcha = () => {
         return (
-            <>
+            <div className="webiny-cms-form-recaptcha">
                 <ReCaptcha />
                 {error && error.code === "RECAPTCHA_NOT_PASSED" && (
-                    <I18NValue value={error.message} />
+                    <HelperMessage
+                        isValid={!error}
+                        errorMessage={<I18NValue value={error.message} />}
+                    />
                 )}
-            </>
+            </div>
         );
     };
 
@@ -189,7 +192,7 @@ const FormRenderer = ({
     }
     const renderSubmitButton = (submit, loading, tosAccepted, buttonLabel) => {
         return (
-            <div>
+            <div className="webiny-cms-form-submit-button">
                 <button
                     className={
                         "webiny-cms-element-button webiny-cms-element-button--primary" +
