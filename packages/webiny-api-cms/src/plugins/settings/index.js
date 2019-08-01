@@ -58,6 +58,7 @@ export default [
 
                 input CmsSettingsInput {
                     name: String
+                    domain: String
                     favicon: FileInput
                     logo: FileInput
                     social: CmsSocialMediaInput

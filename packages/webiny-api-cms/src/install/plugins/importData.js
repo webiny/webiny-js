@@ -20,6 +20,7 @@ export default async (context: Object) => {
     const cmsSettings = new CmsSettings();
     await createDefaultPages(context, { cmsSettings });
     cmsSettings.data.name = get(context, "cms.siteName");
+    cmsSettings.data.domain = get(context, "cms.siteDomain");
 
 
     await cmsSettings.save();

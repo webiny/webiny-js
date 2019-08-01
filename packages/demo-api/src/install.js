@@ -14,6 +14,9 @@ export const install = async (context = {}) => {
         ...context,
         config: await config(),
         security: { admin: { email: "admin@webiny.com", password: "12345678" } },
+        cms: {
+            siteDomain: 'http://localhost:3002'
+        },
         i18n: { defaultLocale: "en-US" }
     });
     process.exit();

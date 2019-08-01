@@ -49,10 +49,20 @@ const GeneralSettings = ({ showSnackbar }) => {
                                                 <Cell span={6}>
                                                     <Grid>
                                                         <Cell span={12}>
-                                                            <Bind name={"name"}>
+                                                            <Bind
+                                                                name={"name"}
+                                                                validators={["required"]}
+                                                            >
+                                                                <Input label="Website name" />
+                                                            </Bind>
+                                                        </Cell>
+                                                        <Cell span={12}>
+                                                            <Bind name={"domain"}>
                                                                 <Input
-                                                                    validators={["required", "url"]}
-                                                                    label="Website name"
+                                                                    label="Domain"
+                                                                    description={
+                                                                        "eg. https://www.mysite.com"
+                                                                    }
                                                                 />
                                                             </Bind>
                                                         </Cell>

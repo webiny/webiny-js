@@ -8,7 +8,6 @@ import graphql from "./graphql";
 import PagesAutoComplete from "webiny-app-cms/admin/components/PagesAutoComplete";
 import { CircularProgress } from "webiny-ui/Progress";
 import SingleImageUpload from "webiny-admin/components/SingleImageUpload";
-
 import { get } from "lodash";
 
 import {
