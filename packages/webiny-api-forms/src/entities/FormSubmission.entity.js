@@ -9,6 +9,9 @@ class MetaModel extends Model {
         this.attr("ip")
             .char()
             .setValidators("required");
+        this.attr("locale")
+            .char()
+            .setValidators("required");
         this.attr("submittedOn")
             .date()
             .setValidators("required")

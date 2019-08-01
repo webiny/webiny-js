@@ -5,7 +5,6 @@ import { getPlugins } from "webiny-plugins";
 import { pick } from "lodash";
 import { createFieldModel, createSettingsModel, FormStatsModel } from "./Form";
 import got from "got";
-import FormData from "form-data";
 
 export default (context: Object) => {
     const { getUser, getEntities } = context;
@@ -286,9 +285,11 @@ export default (context: Object) => {
             }
 
             // Validation passed, let's create a form submission.
+            const { i18n } = context;
+
             const formSubmission = new FormSubmission();
             formSubmission.data = data;
-            formSubmission.meta = meta;
+            formSubmission.meta = { ...meta, locale: i18n.getLocale().id };
 
             formSubmission.form = {
                 parent: this.parent,
