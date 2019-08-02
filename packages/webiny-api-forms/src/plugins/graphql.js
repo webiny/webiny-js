@@ -73,16 +73,23 @@ export default {
                 forms: hasScope("cms:settings")
             },
             FormsQuery: {
-                listForms: hasScope("forms:form:crud")
+                getForm: hasScope("forms:form:crud"),
+                listForms: hasScope("forms:form:crud"),
+                listFormSubmissions: hasScope("forms:form:crud"),
+                // listPublishedForms: hasScope("forms:form:crud") // Expose publicly.
+                // getPublishedForms: hasScope("forms:form:crud") // Expose publicly.
             },
             FormsMutation: {
                 createForm: hasScope("forms:form:crud"),
                 deleteForm: hasScope("forms:form:crud"),
-
                 createRevisionFrom: hasScope("forms:form:revision:create"),
                 updateRevision: hasScope("forms:form:revision:update"),
                 publishRevision: hasScope("forms:form:revision:publish"),
-                deleteRevision: hasScope("forms:form:revision:delete")
+                unpublishRevision: hasScope("forms:form:revision:unpublish"),
+                deleteRevision: hasScope("forms:form:revision:delete"),
+                exportFormSubmissions: hasScope("forms:form:submission:export"),
+                // saveFormView: hasScope("forms:form:revision:delete") // Expose publicly.
+                // createFormSubmission: hasScope("forms:form:revision:delete") // Expose publicly.
             }
         }
     }
