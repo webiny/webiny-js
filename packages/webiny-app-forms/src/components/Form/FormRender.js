@@ -3,38 +3,44 @@
 import React, { useEffect, useRef } from "react";
 import { get, cloneDeep } from "lodash";
 import { withCms } from "webiny-app-cms/context";
-import { onFormMounted, createFormSubmission, handleFormTriggers } from "./functions";
 import { withApollo } from "react-apollo";
 import { getPlugins } from "webiny-plugins";
 import { I18NValue } from "webiny-app-i18n/components";
 import { compose } from "recompose";
+import { createTermsOfServiceComponent, createReCaptchaComponent } from "./components";
+import {
+    onFormMounted,
+    createFormSubmission,
+    handleFormTriggers,
+    reCaptchaEnabled,
+    termsOfServiceEnabled
+} from "./functions";
+
 import type {
     FormRenderPropsType,
     FormRenderComponentPropsType,
-    FormSubmitResponseType
+    FormSubmitResponseType,
+    FormDataType,
+    FormSubmissionData
 } from "webiny-app-forms/types";
-import ReCAPTCHA from "react-google-recaptcha";
 
 const FormRender = compose(
     withCms(),
     withApollo
 )((props: FormRenderComponentPropsType) => {
-    if (!props.data) {
+    const data = props.data;
+    if (!data) {
         // TODO: handle this - loader?
         return null;
     }
 
-    useEffect(() => onFormMounted(props), [props.data.id]);
+    useEffect(() => onFormMounted(props), [data.id]);
 
     const reCaptchaResponseToken = useRef("");
     const termsOfServiceAccepted = useRef(false);
 
-    const data = cloneDeep(props.data);
-    const { layout, fields, settings } = data;
-
-    const reCaptchaEnabled =
-        get(settings, "reCaptcha.enabled") && get(settings, "reCaptcha.settings.enabled");
-    const termsOfServiceEnabled = get(settings, "termsOfServiceMessage.enabled");
+    const formData: FormDataType = cloneDeep(data);
+    const { layout, fields, settings } = formData;
 
     const getFieldById = id => {
         return fields.find(field => field._id === id);
@@ -92,18 +98,21 @@ const FormRender = compose(
     const getDefaultValues = (overrides = {}) => {
         const values = {};
         fields.forEach(field => {
+            const fieldId = field.fieldId;
+
             if (
+                fieldId &&
                 "defaultValue" in field.settings &&
                 typeof field.settings.defaultValue !== "undefined"
             ) {
-                values[field.fieldId] = field.settings.defaultValue;
+                values[fieldId] = field.settings.defaultValue;
             }
         });
         return { ...values, ...overrides };
     };
 
-    const submit = async (data: Object): Promise<FormSubmitResponseType> => {
-        if (reCaptchaEnabled && !reCaptchaResponseToken.current) {
+    const submit = async (data: FormSubmissionData): Promise<FormSubmitResponseType> => {
+        if (reCaptchaEnabled(formData) && !reCaptchaResponseToken.current) {
             return {
                 data: null,
                 preview: Boolean(props.preview),
@@ -114,7 +123,7 @@ const FormRender = compose(
             };
         }
 
-        if (termsOfServiceEnabled && !termsOfServiceAccepted.current) {
+        if (termsOfServiceEnabled(formData) && !termsOfServiceAccepted.current) {
             return {
                 data: null,
                 preview: Boolean(props.preview),
@@ -146,56 +155,17 @@ const FormRender = compose(
 
     LayoutRenderComponent = LayoutRenderComponent.component;
 
-    const ReCaptcha = props => {
-        if (!reCaptchaEnabled) {
-            return null;
-        }
+    const ReCaptcha = createReCaptchaComponent({
+        props,
+        formData,
+        setResponseToken: value => (reCaptchaResponseToken.current = value)
+    });
 
-        if (typeof props.children === "function") {
-            return props.children({
-                errorMessage: settings.reCaptcha.errorMessage
-            });
-        }
-
-        if (props.children) {
-            return props.children;
-        }
-
-        return (
-            <ReCAPTCHA
-                {...props}
-                sitekey={settings.reCaptcha.settings.siteKey}
-                onChange={response => {
-                    reCaptchaResponseToken.current = response;
-                    typeof props.onChange === "function" && props.onChange(response);
-                }}
-                onErrored={(...args) => {
-                    reCaptchaResponseToken.current = "";
-                    typeof props.onErrored === "function" && props.onErrored(...args);
-                }}
-                onExpired={(...args) => {
-                    reCaptchaResponseToken.current = "";
-                    typeof props.onExpired === "function" && props.onExpired(...args);
-                }}
-            />
-        );
-    };
-
-    const TermsOfService = props => {
-        if (!termsOfServiceEnabled) {
-            return null;
-        }
-
-        if (typeof props.children === "function") {
-            return props.children({
-                errorMessage: settings.termsOfServiceMessage.errorMessage,
-                message: settings.termsOfServiceMessage.message,
-                onChange: value => (termsOfServiceAccepted.current = value)
-            });
-        }
-
-        throw new Error("Please use a function for children prop of TermsOfService component.");
-    };
+    const TermsOfService = createTermsOfServiceComponent({
+        props,
+        formData,
+        setTermsOfServiceAccepted: value => (termsOfServiceAccepted.current = value)
+    });
 
     const layoutProps: FormRenderPropsType = {
         getFieldById,
@@ -203,9 +173,9 @@ const FormRender = compose(
         getDefaultValues,
         getFields,
         submit,
+        formData,
         ReCaptcha,
-        TermsOfService,
-        form: data
+        TermsOfService
     };
 
     return <LayoutRenderComponent {...layoutProps} />;

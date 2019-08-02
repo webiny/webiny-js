@@ -2,6 +2,9 @@
 import * as React from "react";
 import type { PluginType } from "webiny-plugins/types";
 import type { WithCmsPropsType } from "webiny-app-cms/context";
+import type { ReCaptchaComponentType } from "webiny-app-forms/components/Form/components/createReCaptchaComponent";
+import type { TermsOfServiceComponentType } from "webiny-app-forms/components/Form/components/createTermsOfServiceComponent";
+import type { I18NStringValueType } from "webiny-app-i18n/types";
 
 export type FieldIdType = string;
 export type FieldsLayoutType = [[FieldIdType]];
@@ -11,18 +14,28 @@ export type FieldLayoutPositionType = {
     index: ?number
 };
 
-export type FieldType = {
-    id: FieldIdType,
-    fieldId: string,
-    label: string,
-    helpText: string,
-    placeholderText: string,
-    type: string,
-    validation: Array<any>,
+export type FieldValidatorType = {
+    name: string,
+    message: I18NStringValueType,
     settings: Object
-} & Object;
+};
 
-export type FormType = {
+export type FieldType = {
+    _id: ?string,
+    type: ?string,
+    fieldId: ?FieldIdType,
+    label: ?I18NStringValueType,
+    helpText: ?I18NStringValueType,
+    placeholderText: ?I18NStringValueType,
+    validation: Array<FieldValidatorType>,
+    settings: Object
+};
+
+export type FormRenderFieldType = FieldType & {
+    validators: Array<(value: any) => boolean>
+};
+
+export type FormDataType = {
     id: FieldIdType,
     layout: FieldsLayoutType,
     fields: [FieldType],
@@ -30,16 +43,20 @@ export type FormType = {
     settings: Object
 };
 
+export type FormSubmissionData = Object;
+
 export type FormRenderPropsType = {
     getFieldById: Function,
     getFieldByFieldId: Function,
-    getFields: () => Array<Array<FieldType>>,
+    getFields: () => Array<Array<FormRenderFieldType>>,
     getDefaultValues: () => Object,
-    ReCaptcha: React.Node,
-    TermsOfService: React.Node,
+    ReCaptcha: ReCaptchaComponentType,
+    TermsOfService: TermsOfServiceComponentType,
     submit: (data: Object) => Promise<FormSubmitResponseType>,
-    form: FormType
+    formData: FormDataType
 };
+
+export type FormLayoutComponent = (props: FormRenderPropsType) => React.Node;
 
 export type FormComponentPropsType = {
     preview?: boolean,
@@ -50,7 +67,7 @@ export type FormComponentPropsType = {
 
 export type FormRenderComponentPropsType = {
     preview?: boolean,
-    data?: Object,
+    data?: FormDataType,
     client: Object, // withApollo HOC
     cms: WithCmsPropsType // withCms HOC
 };
@@ -61,7 +78,7 @@ export type FormSubmitResponseType = {
     error: ?{
         message: string,
         code: string
-    },
+    }
 };
 
 export type FormLoadComponentPropsType = {
@@ -76,16 +93,20 @@ export type UseFormEditorReducerStateType = {
     defaultLayoutRenderer: string
 };
 
-// Plugin types.
 export type FormEditorFieldPluginType = PluginType & {
-    fieldType: {
-        dataType: boolean,
-        id: string,
+    field: {
+        type: string,
+        name: string,
         label: string,
+        validators?: Array<string>,
         description: string,
         icon: React.Node,
-        validators?: Array<string>,
-        createField: Function,
+        createField: () => {
+            type: string,
+            name: string,
+            validation: Array<FieldValidatorType>,
+            settings: Object
+        },
         renderSettings?: ({
             form: Object,
             Bind: React.Node,
@@ -100,6 +121,6 @@ export type FormSettingsPluginType = PluginType & {};
 export type FormTriggerHandlerPluginType = PluginType & {
     trigger: {
         id: string,
-        handle: ({ trigger: Object, data: Object, form: FormType }) => void
+        handle: ({ trigger: Object, data: Object, form: FormDataType }) => void
     }
 };

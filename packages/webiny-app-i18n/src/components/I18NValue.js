@@ -3,14 +3,15 @@ import React from "react";
 import { Editor } from "slate-react";
 import { Value } from "slate";
 import { getPlugins } from "webiny-plugins";
+import type { I18NStringValueType, I18NObjectValueType } from "webiny-app-i18n/types";
 
 export type EditorPluginType = Object & {
     name: string
 }; // Slate plugin.
 
 export type Props = {
-    value?: ?string | ?Object,
-    default?: ?string | ?Object,
+    value?: ?string | ?I18NStringValueType | ?I18NObjectValueType,
+    default?: ?string | ?I18NStringValueType | ?I18NObjectValueType,
     editorPlugins?: Array<EditorPluginType>
 };
 

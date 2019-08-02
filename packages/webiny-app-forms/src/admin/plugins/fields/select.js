@@ -1,15 +1,17 @@
+// @flow
 import React from "react";
 import { Grid, Cell } from "webiny-ui/Grid";
 import { ReactComponent as Icon } from "./icons/dropdown-icon.svg";
 import OptionsSelectionDynamicFieldset from "./components/OptionsSelectionDynamicFieldset";
 import { I18NInput } from "webiny-app-i18n/admin/components";
+import type { FormEditorFieldPluginType } from "webiny-app-forms/types";
 
-export default {
+export default ({
     type: "form-editor-field-type",
     name: "form-editor-field-type-select",
     field: {
-        type: 'select',
-        name: 'select',
+        type: "select",
+        name: "select",
         validators: ["required"],
         label: "Select",
         description: "Dropdown, select one of the options",
@@ -44,4 +46,4 @@ export default {
             );
         }
     }
-};
+}: FormEditorFieldPluginType);

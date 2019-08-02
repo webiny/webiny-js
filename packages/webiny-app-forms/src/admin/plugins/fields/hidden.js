@@ -1,9 +1,11 @@
+// @flow
 import React from "react";
 import { Input } from "webiny-ui/Input";
 import { Grid, Cell } from "webiny-ui/Grid";
 import { ReactComponent as HiddenIcon } from "./icons/round-visibility_off-24px.svg";
+import type { FormEditorFieldPluginType } from "webiny-app-forms/types";
 
-export default {
+export default ({
     type: "form-editor-field-type",
     name: "form-editor-field-type-hidden",
     field: {
@@ -38,4 +40,4 @@ export default {
             );
         }
     }
-};
+}: FormEditorFieldPluginType);

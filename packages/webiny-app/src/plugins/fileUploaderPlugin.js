@@ -20,7 +20,7 @@ export default (config: Object = {}): FileUploaderPlugin => ({
         });
 
         return await new Promise((resolve, reject) => {
-            const formData = new window.FormData();
+            const formData = new window.CreateFormData();
             Object.keys(presignedPostPayload.data.s3.fields).forEach(key => {
                 formData.append(key, presignedPostPayload.data.s3.fields[key]);
             });

@@ -1,9 +1,11 @@
+// @flow
 import React from "react";
 import { Grid, Cell } from "webiny-ui/Grid";
 import { ReactComponent as Icon } from "./icons/round-check_box-24px.svg";
 import OptionsSelectionDynamicFieldset from "./components/OptionsSelectionDynamicFieldset";
+import type { FormEditorFieldPluginType } from "webiny-app-forms/types";
 
-export default {
+export default ({
     type: "form-editor-field-type",
     name: "form-editor-field-type-checkbox",
     field: {
@@ -21,7 +23,6 @@ export default {
                 settings: {
                     defaultValue: []
                 }
-
             };
         },
         renderSettings({ form }) {
@@ -34,4 +35,4 @@ export default {
             );
         }
     }
-};
+}: FormEditorFieldPluginType);

@@ -9,3 +9,13 @@ export type I18NInputRichTextEditorPluginType = PluginType & {
         menu?: MenuPluginType
     }
 };
+
+export type I18NStringValueType = {
+    value?: string,
+    values: Array<{ locale: string, value: string }>
+};
+
+export type I18NObjectValueType = {
+    value?: Object,
+    values: Array<{ locale: string, value: Object }>
+};

@@ -1,9 +1,11 @@
+// @flow
 import React from "react";
 import { Grid, Cell } from "webiny-ui/Grid";
 import { ReactComponent as Icon } from "./icons/round-radio_button_checked-24px.svg";
 import OptionsSelectionDynamicFieldset from "./components/OptionsSelectionDynamicFieldset";
+import type { FormEditorFieldPluginType } from "webiny-app-forms/types";
 
-export default {
+export default ({
     type: "form-editor-field-type",
     name: "form-editor-field-type-radio",
     field: {
@@ -33,4 +35,4 @@ export default {
             );
         }
     }
-};
+}:FormEditorFieldPluginType);
