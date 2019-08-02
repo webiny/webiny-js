@@ -24,21 +24,26 @@ export default {
                             value: "Email"
                         }
                     ]
-                }
+                },
+                validation: [
+                    {
+                        name: "pattern",
+                        message: {
+                            values: [
+                                {
+                                    locale: i18n.getDefaultLocale().id,
+                                    value: "Please enter a valid e-mail."
+                                }
+                            ]
+                        },
+                        settings: {
+                            preset: "email",
+                            regex: null,
+                            flags: null
+                        }
+                    }
+                ]
             };
-
-            // TODO:
-            /*
-            validation: [
-                // Hard-coded validators, cannot be edited / seen by user.
-                {
-                    id: "pattern",
-                    regex: "^\\w[\\w.-]*@([\\w-]+\\.)+[\\w-]+$",
-                    flags: "i",
-                    message: "Please enter a valid email address."
-                }
-            ]
-            */
         }
     }
 };

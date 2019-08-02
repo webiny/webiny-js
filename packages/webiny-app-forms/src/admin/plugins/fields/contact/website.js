@@ -10,7 +10,6 @@ export default {
         name: "website",
         label: "Website",
         description: "Link to a website",
-        // TODO: validators: ["required"],
         createField(props) {
             const { i18n } = props;
             return {
@@ -24,19 +23,26 @@ export default {
                             value: "Website"
                         }
                     ]
-                }
+                },
+                validation: [
+                    {
+                        name: "pattern",
+                        message: {
+                            values: [
+                                {
+                                    locale: i18n.getDefaultLocale().id,
+                                    value: "Please enter a valid URL."
+                                }
+                            ]
+                        },
+                        settings: {
+                            preset: "url",
+                            regex: null,
+                            flags: null
+                        }
+                    }
+                ]
             };
-
-            // TODO:
-            /*validation: [
-                {
-                    id: "pattern",
-                    regex:
-                        "^(ftp|http|https):\\/\\/(\\w+:{0,1}\\w*@)?(\\S+)(:[0-9]+)?(\\/|\\/([\\w#!:.?+=&%@!\\-\\/]))?$",
-                    flags: "i",
-                    message: "Please enter a valid URL."
-                }
-            ]*/
         }
     }
 };
