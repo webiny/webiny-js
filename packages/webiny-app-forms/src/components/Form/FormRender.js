@@ -15,9 +15,6 @@ import type {
 } from "webiny-app-forms/types";
 import ReCAPTCHA from "react-google-recaptcha";
 
-// Not in state since for some reason when holding this information as a state, the ReCaptcha component gets refreshed,
-// forcing the user to submit the CAPTCHA again.
-
 const FormRender = compose(
     withCms(),
     withApollo
@@ -30,15 +27,14 @@ const FormRender = compose(
     useEffect(() => onFormMounted(props), [props.data.id]);
 
     const reCaptchaResponseToken = useRef("");
+    const termsOfServiceAccepted = useRef(false);
 
     const data = cloneDeep(props.data);
     const { layout, fields, settings } = data;
 
-    let reCaptchaEnabled = false;
-    if (settings.reCaptcha && settings.reCaptcha.enabled) {
-        reCaptchaEnabled =
-            settings.reCaptcha.enabled && get(settings, "reCaptcha.settings.enabled") === true;
-    }
+    const reCaptchaEnabled =
+        get(settings, "reCaptcha.enabled") && get(settings, "reCaptcha.settings.enabled");
+    const termsOfServiceEnabled = get(settings, "termsOfServiceMessage.enabled");
 
     const getFieldById = id => {
         return fields.find(field => field._id === id);
@@ -118,6 +114,17 @@ const FormRender = compose(
             };
         }
 
+        if (termsOfServiceEnabled && !termsOfServiceAccepted.current) {
+            return {
+                data: null,
+                preview: Boolean(props.preview),
+                error: {
+                    code: "TOS_NOT_ACCEPTED",
+                    message: settings.termsOfServiceMessage.errorMessage
+                }
+            };
+        }
+
         const formSubmission = await createFormSubmission({
             props,
             data,
@@ -140,25 +147,54 @@ const FormRender = compose(
     LayoutRenderComponent = LayoutRenderComponent.component;
 
     const ReCaptcha = props => {
-        if (reCaptchaEnabled) {
-            return (
-                <ReCAPTCHA
-                    {...props}
-                    sitekey={settings.reCaptcha.settings.siteKey}
-                    onChange={response => {
-                        reCaptchaResponseToken.current = response;
-                    }}
-                    onErrored={() => {
-                        reCaptchaResponseToken.current = "";
-                    }}
-                    onExpired={() => {
-                        reCaptchaResponseToken.current = "";
-                    }}
-                />
-            );
+        if (!reCaptchaEnabled) {
+            return null;
         }
 
-        return null;
+        if (typeof props.children === "function") {
+            return props.children({
+                errorMessage: settings.reCaptcha.errorMessage
+            });
+        }
+
+        if (props.children) {
+            return props.children;
+        }
+
+        return (
+            <ReCAPTCHA
+                {...props}
+                sitekey={settings.reCaptcha.settings.siteKey}
+                onChange={response => {
+                    reCaptchaResponseToken.current = response;
+                    typeof props.onChange === "function" && props.onChange(response);
+                }}
+                onErrored={(...args) => {
+                    reCaptchaResponseToken.current = "";
+                    typeof props.onErrored === "function" && props.onErrored(...args);
+                }}
+                onExpired={(...args) => {
+                    reCaptchaResponseToken.current = "";
+                    typeof props.onExpired === "function" && props.onExpired(...args);
+                }}
+            />
+        );
+    };
+
+    const TermsOfService = props => {
+        if (!termsOfServiceEnabled) {
+            return null;
+        }
+
+        if (typeof props.children === "function") {
+            return props.children({
+                errorMessage: settings.termsOfServiceMessage.errorMessage,
+                message: settings.termsOfServiceMessage.message,
+                onChange: value => (termsOfServiceAccepted.current = value)
+            });
+        }
+
+        throw new Error("Please use a function for children prop of TermsOfService component.");
     };
 
     const layoutProps: FormRenderPropsType = {
@@ -168,6 +204,7 @@ const FormRender = compose(
         getFields,
         submit,
         ReCaptcha,
+        TermsOfService,
         form: data
     };
 

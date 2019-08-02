@@ -16,25 +16,22 @@ const FormRenderer = ({
     getDefaultValues,
     submit,
     form,
-    ReCaptcha
+    ReCaptcha,
+    TermsOfService
 }: FormRenderPropsType) => {
     const fields = getFields();
     const [loading, setLoading] = useState(false);
     const [success, setSuccess] = useState(false);
-    const [error, setError] = useState(null);
 
     {
         /* Form submit action */
     }
     const submitForm = async data => {
         setLoading(true);
-        setError(null);
         const result = await submit(data);
         setLoading(false);
         if (result.error === null) {
             setSuccess(true);
-        } else {
-            setError(result.error);
         }
     };
 
@@ -112,17 +109,25 @@ const FormRenderer = ({
     {
         /* Render reCAPTCHA checkbox */
     }
-    const renderReCaptcha = () => {
+    const renderReCaptcha = Bind => {
         return (
-            <div className="webiny-cms-form-recaptcha">
-                <ReCaptcha />
-                {error && error.code === "RECAPTCHA_NOT_PASSED" && (
-                    <HelperMessage
-                        isValid={!error}
-                        errorMessage={<I18NValue value={error.message} />}
-                    />
+            <ReCaptcha>
+                {({ errorMessage }) => (
+                    <div className="webiny-cms-form-recaptcha">
+                        <Bind name={"reCaptcha"} validators={["required"]}>
+                            {({ onChange, validation }) => (
+                                <>
+                                    <ReCaptcha onChange={onChange} />
+                                    <HelperMessage
+                                        isValid={validation.isValid}
+                                        errorMessage={<I18NValue value={errorMessage} />}
+                                    />
+                                </>
+                            )}
+                        </Bind>
+                    </div>
                 )}
-            </div>
+            </ReCaptcha>
         );
     };
 
@@ -130,47 +135,41 @@ const FormRenderer = ({
         /* Render Terms of Service checkbox */
     }
     const renderTOS = Bind => {
-        if (!form.settings.termsOfServiceMessage.enabled) {
-            return null;
-        }
-
         return (
-            <div className="webiny-cms-form-tos">
-                <Bind name={"tosAccepted"} validators={["required"]}>
-                    {({ onChange, value, validation }) => (
-                        <div className="webiny-cms-form-field webiny-cms-form-field--checkbox">
-                            <div className="webiny-cms-form-field__checkbox-group">
-                                <div className="webiny-cms-form-field__checkbox">
-                                    <input
-                                        className="webiny-cms-form-field__checkbox-input"
-                                        type={"checkbox"}
-                                        name="webiny-tos-checkbox"
-                                        id="webiny-tos-checkbox"
-                                        checked={Boolean(value)}
-                                        onChange={() => onChange(!value)}
+            <TermsOfService>
+                {({ message, errorMessage, onChange }) => (
+                    <div className="webiny-cms-form-tos">
+                        <Bind name={"tosAccepted"} validators={[]} afterChange={onChange}>
+                            {({ onChange, value, validation }) => (
+                                <div className="webiny-cms-form-field webiny-cms-form-field--checkbox">
+                                    <div className="webiny-cms-form-field__checkbox-group">
+                                        <div className="webiny-cms-form-field__checkbox">
+                                            <input
+                                                className="webiny-cms-form-field__checkbox-input"
+                                                type={"checkbox"}
+                                                name="webiny-tos-checkbox"
+                                                id="webiny-tos-checkbox"
+                                                checked={Boolean(value)}
+                                                onChange={() => onChange(!value)}
+                                            />
+                                            <label
+                                                htmlFor={"webiny-tos-checkbox"}
+                                                className="webiny-cms-form-field__checkbox-label"
+                                            >
+                                                <I18NValue value={message} />
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <HelperMessage
+                                        isValid={validation.isValid}
+                                        errorMessage={<I18NValue value={errorMessage} />}
                                     />
-                                    <label
-                                        htmlFor={"webiny-tos-checkbox"}
-                                        className="webiny-cms-form-field__checkbox-label"
-                                    >
-                                        <I18NValue
-                                            value={form.settings.termsOfServiceMessage.message}
-                                        />
-                                    </label>
                                 </div>
-                            </div>
-                            <HelperMessage
-                                isValid={validation.isValid}
-                                errorMessage={
-                                    <I18NValue
-                                        value={form.settings.termsOfServiceMessage.errorMessage}
-                                    />
-                                }
-                            />
-                        </div>
-                    )}
-                </Bind>
-            </div>
+                            )}
+                        </Bind>
+                    </div>
+                )}
+            </TermsOfService>
         );
     };
 
@@ -240,7 +239,7 @@ const FormRenderer = ({
                             {/* render tos */}
                             {renderTOS(Bind)}
 
-                            {renderReCaptcha()}
+                            {renderReCaptcha(Bind)}
 
                             {/* render submit button */}
                             {renderSubmitButton(

@@ -35,7 +35,8 @@ export type FormRenderPropsType = {
     getFieldByFieldId: Function,
     getFields: () => Array<Array<FieldType>>,
     getDefaultValues: () => Object,
-    ReCaptcha: any,
+    ReCaptcha: React.Node,
+    TermsOfService: React.Node,
     submit: (data: Object) => Promise<FormSubmitResponseType>,
     form: FormType
 };
