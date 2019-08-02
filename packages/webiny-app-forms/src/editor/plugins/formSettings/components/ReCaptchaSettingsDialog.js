@@ -9,6 +9,7 @@ import { withSnackbar } from "webiny-admin/components";
 import { CircularProgress } from "webiny-ui/Progress";
 import { Grid, Cell } from "webiny-ui/Grid";
 import { UPDATE_FORMS_SETTINGS } from "./graphql";
+import { useFormEditor } from "webiny-app-forms/admin/components/FormEditor/Context";
 
 import { i18n } from "webiny-app/i18n";
 const t = i18n.namespace("Forms.ReCaptchaSettingsDialog");
@@ -39,6 +40,7 @@ const ReCaptchaSettingsDialog = ({
 }: Props) => {
     // $FlowFixMe
     const [loading, setLoading] = React.useState(false);
+    const { setData } = useFormEditor();
 
     return (
         <Dialog open={open} onClose={onClose}>
@@ -50,10 +52,20 @@ const ReCaptchaSettingsDialog = ({
                             setLoading(true);
                             const response = get(
                                 await update({
-                                    variables: { data: { reCaptcha: { enabled: true, siteKey, secretKey } } }
+                                    variables: {
+                                        data: { reCaptcha: { enabled: true, siteKey, secretKey } }
+                                    }
                                 }),
                                 "data.settings.forms"
                             );
+                            setData(data => {
+                                data.settings.reCaptcha.settings = {
+                                    enabled: true,
+                                    siteKey,
+                                    secretKey
+                                };
+                                return data;
+                            });
                             setLoading(false);
 
                             if (response.error) {
@@ -111,7 +123,9 @@ const ReCaptchaSettingsDialog = ({
                                         </Grid>
                                     </DialogBody>
                                     <DialogFooter>
-                                        <ButtonDefault onClick={submit}>{t`Enable Google reCAPTCHA`}</ButtonDefault>
+                                        <ButtonDefault
+                                            onClick={submit}
+                                        >{t`Enable Google reCAPTCHA`}</ButtonDefault>
                                     </DialogFooter>
                                 </>
                             );

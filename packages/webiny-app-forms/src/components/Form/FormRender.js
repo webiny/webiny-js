@@ -36,7 +36,8 @@ const FormRender = compose(
 
     let reCaptchaEnabled = false;
     if (settings.reCaptcha && settings.reCaptcha.enabled) {
-        reCaptchaEnabled = settings.reCaptcha.settings && settings.reCaptcha.enabled;
+        reCaptchaEnabled =
+            settings.reCaptcha.enabled && get(settings, "reCaptcha.settings.enabled") === true;
     }
 
     const getFieldById = id => {
