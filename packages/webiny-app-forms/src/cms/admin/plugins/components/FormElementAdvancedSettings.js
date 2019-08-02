@@ -41,7 +41,7 @@ const getOptions = ({ gqlResponse, data }): Object => {
             name: `${item.name} (version ${item.version})`
         }));
         if (output.publishedRevisions.options.length > 0) {
-            output.publishedRevisions.options.unshift({ id: "latest", name: "Latest" });
+            output.publishedRevisions.options.unshift({ id: "latest", name: "Latest published revision" });
         }
 
         output.publishedRevisions.value =
