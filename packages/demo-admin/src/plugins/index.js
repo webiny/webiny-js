@@ -11,8 +11,6 @@ import mailchimpPlugins from "webiny-app-mailchimp/admin";
 import formsPlugins from "webiny-app-forms/admin/plugins";
 import formsCmsPlugins from "webiny-app-forms/cms/admin/plugins";
 
-import createBugsnag from "./bugsnag";
-
 const plugins = [
     fileUploadPlugin({}),
     imagePlugin,
@@ -25,13 +23,7 @@ const plugins = [
     cookiePolicyPlugins,
     googleTagManagerPlugins,
     typeformPlugins,
-    mailchimpPlugins,
-    {
-        name: "cms-editor-redux-middleware-bugsnag",
-        type: "cms-editor-redux-middleware",
-        actions: ["Activate element"],
-        middleware: createBugsnag()
-    }
+    mailchimpPlugins
 ];
 
 export default plugins;
