@@ -1,5 +1,5 @@
 // @flow
-import React from "react";
+import * as React from "react";
 import { get } from "lodash";
 import { Editor } from "slate-react";
 import { Value } from "slate";
@@ -75,9 +75,12 @@ export class RichTextEditor extends React.Component<RichTextEditorPropsType, Sta
 
     id: string;
     plugins: { editor: Array<Object> };
+    nextElement: ?EventTarget;
+
     constructor(props: RichTextEditorPropsType) {
         super();
         this.id = shortid.generate();
+        this.nextElement = null;
 
         this.state = {
             modified: false,
@@ -117,6 +120,15 @@ export class RichTextEditor extends React.Component<RichTextEditorPropsType, Sta
         document.getElementById(this.id).removeEventListener("mouseup", this.untrackNextElement);
     }
 
+    trackNextElement = (e: SyntheticMouseEvent<*>) => {
+        // Store the clicked element. If it is set, it means we clicked inside the editor div.
+        this.nextElement = e.target;
+    };
+
+    untrackNextElement = () => {
+        this.nextElement = null;
+    };
+
     onChange = (change: Object) => {
         // Prevent `onChange` if it is a `set_value` operation.
         // We only need to handle changes on user input.
@@ -133,11 +145,11 @@ export class RichTextEditor extends React.Component<RichTextEditorPropsType, Sta
     };
 
     onBlur = () => {
-        // if (!this.nextElement) {
-        this.setState({ modified: false });
-        const { onChange } = this.props;
-        typeof onChange === "function" && onChange(this.state.value.toJSON());
-        // }
+        if (!this.nextElement) {
+            this.setState({ modified: false });
+            const { onChange } = this.props;
+            typeof onChange === "function" && onChange(this.state.value.toJSON());
+        }
     };
 
     activatePlugin = (plugin: string) => {
