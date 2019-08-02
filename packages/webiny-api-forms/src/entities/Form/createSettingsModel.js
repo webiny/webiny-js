@@ -63,6 +63,7 @@ const createTermsOfServiceModel = context =>
         constructor(props) {
             super(props);
             this.attr("message").custom(I18NObjectAttribute, context);
+            this.attr("errorMessage").custom(I18NCharAttribute, context);
             this.attr("enabled").boolean();
         }
     };

@@ -136,8 +136,8 @@ const FormRenderer = ({
 
         return (
             <div className="webiny-cms-form-tos">
-                <Bind name={"tosAccepted"}>
-                    {({ onChange, value }) => (
+                <Bind name={"tosAccepted"} validators={["required"]}>
+                    {({ onChange, value, validation }) => (
                         <div className="webiny-cms-form-field webiny-cms-form-field--checkbox">
                             <div className="webiny-cms-form-field__checkbox-group">
                                 <div className="webiny-cms-form-field__checkbox">
@@ -160,8 +160,12 @@ const FormRenderer = ({
                                 </div>
                             </div>
                             <HelperMessage
-                                isValid={false}
-                                errorMessage={"you must accept our TOS"}
+                                isValid={validation.isValid}
+                                errorMessage={
+                                    <I18NValue
+                                        value={form.settings.termsOfServiceMessage.errorMessage}
+                                    />
+                                }
                             />
                         </div>
                     )}

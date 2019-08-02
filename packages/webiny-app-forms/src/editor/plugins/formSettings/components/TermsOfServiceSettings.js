@@ -28,6 +28,17 @@ const TermsOfServiceSettings = ({ Bind, data }: Object) => {
                         />
                     </Bind>
                 </Cell>
+                <Cell span={12}>
+                    <Bind name={"termsOfServiceMessage.errorMessage"}>
+                        <I18NInput
+                            disabled={!enabled}
+                            label={"Error message"}
+                            description={
+                                "Show this message once user submits the form without accepting the terms."
+                            }
+                        />
+                    </Bind>
+                </Cell>
             </Grid>
         </>
     );

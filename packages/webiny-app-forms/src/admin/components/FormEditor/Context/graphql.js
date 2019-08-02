@@ -65,6 +65,9 @@ const SETTINGS_FIELDS = /* GraphQL */ `
             message {
                 ${I18N_FIELDS}
             }
+            errorMessage {
+                ${I18N_FIELDS}
+            }
         }
     }
 `;

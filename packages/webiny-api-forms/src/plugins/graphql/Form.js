@@ -102,6 +102,7 @@ export default {
         type TermsOfServiceMessage {
             enabled: Boolean
             message: I18NJSONValue
+            errorMessage: I18NStringValue
         }
         
         type FormReCaptchaSettings {
@@ -145,6 +146,7 @@ export default {
         input TermsOfServiceMessageInput {
             enabled: Boolean
             message: I18NJSONValueInput
+            errorMessage: I18NStringValueInput
         }
         
         input FormSettingsLayoutInput {

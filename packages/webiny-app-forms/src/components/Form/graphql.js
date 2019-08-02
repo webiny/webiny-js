@@ -76,6 +76,9 @@ export const DATA_FIELDS = `
             message {
                 value
             }
+            errorMessage {
+                value
+            }
         }
     }
 `;
