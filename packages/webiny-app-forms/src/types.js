@@ -28,6 +28,7 @@ export type FieldType = {
     helpText: ?I18NStringValueType,
     placeholderText: ?I18NStringValueType,
     validation: Array<FieldValidatorType>,
+    options: Array<{value: string, label: I18NStringValueType}>,
     settings: Object
 };
 
