@@ -29,7 +29,7 @@ type Props = {
     // - ListItemTextSecondary
     // - ListItemText.Graphic
     // - ListItemText.Meta
-    children: React.ChildrenArray<React.Element<typeof ListItem> | React.Element<any>>,
+    children: ?React.ChildrenArray<React.Element<typeof ListItem> | React.Element<any>>,
 
     // Sets the list as non-interactive
     nonInteractive?: boolean,

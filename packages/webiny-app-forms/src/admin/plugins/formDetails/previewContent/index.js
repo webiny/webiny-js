@@ -1,6 +1,6 @@
 // @flow
-import * as React from "react";
-import type { CmsPageDetailsPluginType, WithFormDetailsProps } from "webiny-app-forms/types";
+// $FlowFixMe
+import React, { useEffect, useState } from "react";
 import { Tab } from "webiny-ui/Tabs";
 import styled from "react-emotion";
 import { Elevation } from "webiny-ui/Elevation";
@@ -8,6 +8,8 @@ import FormPreview from "./FormPreview";
 import Header from "./Header";
 import { CircularProgress } from "webiny-ui/Progress";
 import { i18n } from "webiny-app/i18n";
+import type { FormDetailsPluginType } from "webiny-app-forms/types";
+
 const t = i18n.namespace("FormsApp.FormDetails.PreviewContent");
 
 const RenderBlock = styled("div")({
@@ -20,8 +22,8 @@ const RenderBlock = styled("div")({
 });
 
 const PreviewContentTab = props => {
-    const [revisionId, setRevisionId] = React.useState();
-    React.useEffect(() => {
+    const [revisionId, setRevisionId] = useState();
+    useEffect(() => {
         setRevisionId(props.form.revisions[0].id);
     }, [props.form.id]);
 
@@ -51,7 +53,7 @@ export default ([
     {
         name: "forms-form-details-revision-content-preview",
         type: "forms-form-details-revision-content",
-        render(props: WithFormDetailsProps) {
+        render(props) {
             return (
                 <Tab label={t`Form preview`} disabled={props.loading}>
                     <PreviewContentTab {...props} />
@@ -59,4 +61,4 @@ export default ([
             );
         }
     }
-]: Array<CmsPageDetailsPluginType>);
+]: Array<FormDetailsPluginType>);

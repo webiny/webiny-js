@@ -138,3 +138,7 @@ export type FormTriggerHandlerPluginType = PluginType & {
         handle: ({ trigger: Object, data: Object, form: FormDataType }) => void
     }
 };
+
+export type FormDetailsPluginType = PluginType & {
+    render: (props: Object) => React.Node
+};

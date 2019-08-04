@@ -1,7 +1,6 @@
 // @flow
 import React from "react";
 import { css } from "emotion";
-import { type WithFormDetailsProps } from "webiny-app-cms/admin/components";
 import { Typography } from "webiny-ui/Typography";
 import { Grid, Cell } from "webiny-ui/Grid";
 import { PublishRevision, DeleteForm, EditRevision, RevisionSelector } from "./HeaderComponents";
@@ -32,9 +31,7 @@ const headerActions = css({
     alignItems: "center"
 });
 
-type Props = WithFormDetailsProps;
-
-const Header = (props: Props) => {
+const Header = (props: *) => {
     const { revision } = props;
     return (
         <React.Fragment>
