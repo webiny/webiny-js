@@ -123,12 +123,14 @@ export type FormSettingsPluginType = PluginType & {
     title: string,
     description: string,
     icon: React.Node,
-    render: (props: {
-        Bind: BindComponentType,
-        formData: FormDataType,
-        form: Object
-    }) => React.Node
+    render: FormSettingsPluginRenderFunctionType
 };
+
+export type FormSettingsPluginRenderFunctionType = (props: {
+    Bind: BindComponentType,
+    formData: Object, // Form settings.
+    form: Object
+}) => React.Node;
 
 export type FormTriggerHandlerPluginType = PluginType & {
     trigger: {

@@ -4,8 +4,9 @@ import { Grid, Cell } from "webiny-ui/Grid";
 import { I18NInput } from "webiny-app-i18n/admin/components";
 import { Switch } from "webiny-ui/Switch";
 import { get } from "lodash";
+import type { FormSettingsPluginRenderFunctionType } from "webiny-app-forms/types";
 
-const TermsOfServiceSettings = ({ Bind, formData }: Object) => {
+const TermsOfServiceSettings: FormSettingsPluginRenderFunctionType = ({ Bind, formData }) => {
     const enabled = get(formData, "termsOfServiceMessage.enabled");
 
     return (
