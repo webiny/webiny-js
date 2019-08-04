@@ -68,16 +68,15 @@ const FormSettings = ({ onExited, showSnackbar }: Props) => {
                             showSnackbar(t`Form settings updated successfully.`);
                         }}
                     >
-                        {({ Bind, submit, form, data }) => (
+                        {({ Bind, submit, form, data: formData }) => (
                             <SimpleForm>
                                 <SimpleFormHeader title={activePlugin.title}>
-                                    {/* @sven Ovdje rendam samo childove, ali su centrirani, umjesto u desno postavljeni */}
                                     {typeof activePlugin.renderHeaderActions === "function" &&
-                                        activePlugin.renderHeaderActions({ Bind, form, data })}
+                                        activePlugin.renderHeaderActions({ Bind, form, formData })}
                                 </SimpleFormHeader>
                                 <SimpleFormContent>
                                     {activePlugin
-                                        ? activePlugin.render({ Bind, form, data })
+                                        ? activePlugin.render({ Bind, form, formData })
                                         : null}
                                 </SimpleFormContent>
                                 <SimpleFormFooter>

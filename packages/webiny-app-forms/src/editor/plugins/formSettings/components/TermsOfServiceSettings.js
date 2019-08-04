@@ -5,8 +5,8 @@ import { I18NInput } from "webiny-app-i18n/admin/components";
 import { Switch } from "webiny-ui/Switch";
 import { get } from "lodash";
 
-const TermsOfServiceSettings = ({ Bind, data }: Object) => {
-    const enabled = get(data, "termsOfServiceMessage.enabled");
+const TermsOfServiceSettings = ({ Bind, formData }: Object) => {
+    const enabled = get(formData, "termsOfServiceMessage.enabled");
 
     return (
         <>

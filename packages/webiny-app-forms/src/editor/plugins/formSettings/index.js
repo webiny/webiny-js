@@ -15,7 +15,7 @@ export default ([
         title: "General settings",
         description: "Manage things like submit success messages and form layout.",
         icon: <SettingsIcon />,
-        render(props: Object) {
+        render(props) {
             return <GeneralSettings {...props} />;
         }
     },
@@ -25,7 +25,7 @@ export default ([
         title: "Terms of service",
         description: "Manage terms of service messaging.",
         icon: <TermsOfServiceIcon />,
-        render(props: Object) {
+        render(props) {
             return <TermsOfServiceSettings {...props} />;
         }
     },
@@ -35,7 +35,7 @@ export default ([
         title: "ReCAPTCHA",
         description: "Enable reCAPTCHA to prevent spam and abuse.",
         icon: <ReCaptchaIcon />,
-        render(props: Object) {
+        render(props) {
             return <ReCaptchaSettings {...props} />;
         }
     }

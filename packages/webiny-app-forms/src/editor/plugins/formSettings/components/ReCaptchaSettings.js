@@ -11,7 +11,7 @@ import { withSnackbar } from "webiny-admin/components";
 import { Alert } from "webiny-ui/Alert";
 import { I18NInput } from "webiny-app-i18n/admin/components";
 
-const ReCaptchaSettings = ({ Bind, data: formData }: Object) => {
+const ReCaptchaSettings = ({ Bind, formData }: Object) => {
     const [dialogOpened, setDialogOpened] = useState(false);
     const openDialog = useCallback(() => setDialogOpened(true), []);
     const closeDialog = useCallback(() => setDialogOpened(false), []);
