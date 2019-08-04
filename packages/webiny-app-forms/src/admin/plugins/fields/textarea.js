@@ -49,7 +49,7 @@ export default ({
                         </Bind>
                     </Cell>
                     <Cell span={12}>
-                        <Bind name={"rows"}>
+                        <Bind name={"settings.rows"}>
                             <Input
                                 type={"number"}
                                 label={"Textarea rows"}
