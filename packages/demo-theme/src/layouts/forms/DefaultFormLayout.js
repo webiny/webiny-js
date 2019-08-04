@@ -10,7 +10,7 @@ import { Form } from "webiny-form";
 import { I18NValue } from "webiny-app-i18n/components";
 import HelperMessage from "./components/HelperMessage";
 import type { FieldType, FormLayoutComponent } from "webiny-app-forms/types";
-import type { BindRenderPropsType } from "webiny-form";
+import type { BindComponentRenderPropType } from "webiny-form";
 
 /**
  * This is the default form layout component, in which we render all the form fields. We also render terms of service
@@ -97,7 +97,7 @@ const DefaultFormLayout: FormLayoutComponent = ({
      * Renders a single form field. You can add additional handling of other field types if needed.
      * All of these components are located in the "./fields" folder.
      */
-    const renderFieldElement = (props: { field: FieldType, bind: BindRenderPropsType }) => {
+    const renderFieldElement = (props: { field: FieldType, bind: BindComponentRenderPropType }) => {
         switch (props.field.type) {
             case "text":
                 return <Input {...props} />;

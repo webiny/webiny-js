@@ -3,10 +3,10 @@ import * as React from "react";
 import { I18NValue } from "webiny-app-i18n/components";
 import type { FieldType } from "webiny-app-forms/types";
 import HelperMessage from "../components/HelperMessage";
-import type { BindRenderPropsType } from "webiny-form";
+import type { BindComponentRenderPropType } from "webiny-form";
 
 type Props = {
-    bind: BindRenderPropsType,
+    bind: BindComponentRenderPropType,
     field: FieldType
 };
 
