@@ -1,0 +1,77 @@
+service: webinycms
+
+provider:
+  name: aws
+  runtime: nodejs8.10
+  profile: pavel
+
+plugins:
+  - serverless-offline
+  - build-functions
+
+package:
+  individually: true
+  exclude:
+    - ./**
+
+custom:
+  stage: ${opt:stage, self:provider.stage}
+  serverless-offline:
+    port: 9000
+  webiny:
+    local:
+      functionsHost: http://localhost:${self:custom.serverless-offline.port}
+      jwtSecret: MyS3cr3tK3Y!
+      database:
+        server: mongodb://localhost:27018
+        name: webinyjs
+    dev:
+      functionsHost: http://localhost:${self:custom.serverless-offline.port}
+      jwtSecret: MyS3cr3tK3Y!
+      database:
+        server: mongodb+srv://webiny-sls:WGPhPPnHRK9LN4xW@webiny-sls-ddei2.mongodb.net/test?retryWrites=true
+        name: webiny_sls
+
+functions:
+  demo-api-gateway:
+    handler: packages/demo-api-gateway/build/handler.handler
+    environment:
+      FUNCTIONS_HOST: ${self:custom.webiny.${self:custom.stage}.functionsHost}
+      MONGODB_SERVER: ${self:custom.webiny.${self:custom.stage}.database.server}
+      MONGODB_DB_NAME: ${self:custom.webiny.${self:custom.stage}.database.name}
+      WEBINY_JWT_SECRET: ${self:custom.webiny.${self:custom.stage}.jwtSecret}
+    events:
+      - http:
+          path: /function/api/
+          method: any
+          cors: true
+  demo-service-files:
+    handler: packages/demo-service-files/build/handler.handler
+    environment:
+      MONGODB_SERVER: ${self:custom.webiny.${self:custom.stage}.database.server}
+      MONGODB_DB_NAME: ${self:custom.webiny.${self:custom.stage}.database.name}
+      WEBINY_JWT_SECRET: ${self:custom.webiny.${self:custom.stage}.jwtSecret}
+    events:
+      - http:
+          path: /function/files/
+          method: any
+  demo-service-security:
+    handler: packages/demo-service-security/build/handler.handler
+    environment:
+      MONGODB_SERVER: ${self:custom.webiny.${self:custom.stage}.database.server}
+      MONGODB_DB_NAME: ${self:custom.webiny.${self:custom.stage}.database.name}
+      WEBINY_JWT_SECRET: ${self:custom.webiny.${self:custom.stage}.jwtSecret}
+    events:
+      - http:
+          path: /function/security/
+          method: any
+  demo-files:
+    # This function handles local file uploads
+    handler: packages/demo-files/build/handler.handler
+    events:
+      - http:
+          path: /files/{key+}
+          method: get
+    package:
+      include:
+        - packages/demo-files/build/handler.js

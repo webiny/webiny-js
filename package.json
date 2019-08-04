@@ -28,9 +28,6 @@
     "react": "^16.4.0",
     "react-dom": "^16.4.0"
   },
-  "resolutions": {
-    "**/apollo-server-core": "2.6.9"
-  },
   "devDependencies": {
     "@babel/cli": "^7.0.0",
     "@babel/core": "^7.0.0",
@@ -99,6 +96,7 @@
     "rxjs": "^6.3.0",
     "rxjs-compat": "^6.3.0",
     "semver": "^5.5.1",
+    "serverless-offline": "^6.0.0-alpha.0",
     "source-map-support": "^0.5.0",
     "targz": "^1.0.1",
     "tcp-port-used": "^1.0.1",
@@ -121,7 +119,7 @@
     "release-independent": "node scripts/release/independent",
     "release-independent:dry": "node scripts/release/independent --preview",
     "webiny-ui-build-storybook": "cd packages/webiny-ui && cross-env OUT=../../netlify-static yarn build-storybook",
-    "wby:fns": "cross-env NODE_ENV=development wby start-functions --watch \"packages/webiny-api*/**/*.*\"",
+    "wby:fns": "cross-env NODE_ENV=development sls offline start --stage=local",
     "wby:fns:inspect": "yarn wby:fns --inspect=9001",
     "wby:app": "wby start-app",
     "start-verdaccio": "yarn verdaccio -c ./verdaccio.yaml",

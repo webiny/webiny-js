@@ -98,7 +98,7 @@ export function userFactory({ config, getEntity }: Object): Class<IUser> {
 
             this.attr("roles")
                 .entities(getEntity("SecurityRole"), "entity")
-                .setUsing(getEntity("Roles2Entities"), "role");
+                .setUsing(getEntity("SecurityRoles2Entities"), "role");
 
             this.attr("groups")
                 .entities(getEntity("SecurityGroup"), "entity")

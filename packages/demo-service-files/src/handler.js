@@ -7,10 +7,8 @@ import plugins from "./plugins";
 
 registerPlugins(plugins);
 
-/**
- * `createHandler(context)` - function which returns an actual handler function.
- */
-export const createHandler = async () => {
+export const handler = async (event: Object, context: Object) => {
     const config = await createConfig();
-    return await createBaseHandler(config);
+    const handler = await createBaseHandler(config);
+    return handler(event, context);
 };

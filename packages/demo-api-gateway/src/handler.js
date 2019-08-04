@@ -24,7 +24,7 @@ const gateway = new ApolloGateway({
     }
 });
 
-export const createHandler = async () => {
+export const handler = async (event, context) => {
     const config = await createConfig();
     const { schema, executor } = await gateway.load();
 
@@ -36,27 +36,18 @@ export const createHandler = async () => {
         playground: true,
         context: async ({ event }) => {
             return { headers: event.headers };
-        },
-        formatError: err => {
-            if (err.extensions.code === "DOWNSTREAM_SERVICE_ERROR") {
-                return err.extensions.downstreamErrors[0];
-            }
-
-            return err;
         }
     });
 
     const handler = apollo.createHandler();
 
-    return (event: Object, context: Object): Promise<Object> => {
-        return new Promise((resolve, reject) => {
-            handler(event, context, (error, data) => {
-                if (error) {
-                    return reject(error);
-                }
+    return new Promise((resolve, reject) => {
+        handler(event, context, (error, data) => {
+            if (error) {
+                return reject(error);
+            }
 
-                resolve(data);
-            });
+            resolve(data);
         });
-    };
+    });
 };
