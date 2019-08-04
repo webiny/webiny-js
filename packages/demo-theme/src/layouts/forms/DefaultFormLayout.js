@@ -10,13 +10,14 @@ import { Form } from "webiny-form";
 import { I18NValue } from "webiny-app-i18n/components";
 import HelperMessage from "./components/HelperMessage";
 import type { FieldType, FormLayoutComponent } from "webiny-app-forms/types";
+import type { BindRenderPropsType } from "webiny-form";
 
 /**
  * This is the default form layout component, in which we render all the form fields. We also render terms of service
  * and reCAPTCHA (if enabled in form settings), and at the bottom, the submit button. Note that we also utilized
  * the "webiny-form" package, which makes working with forms and form fields a walk in the park. Also, as labels for
  * various parts of the form can be translated to different languages via the Form Editor (eg. submit button's label,
- * terms of service messages...), we use the I18NValue component, which is a part of the "webiny-app-i18n" package.
+ * terms of service message...), we use the I18NValue component, which is a part of the "webiny-app-i18n" package.
  *
  * Feel free to use this component as your starting point for your own form layouts. Add or remove things as you like!
  */
@@ -34,7 +35,7 @@ const DefaultFormLayout: FormLayoutComponent = ({
     // Is the form successfully submitted?
     const [formSuccess, setFormSuccess] = useState(false);
 
-    // All form fields - an array of rows which are again arrays that contain all row fields.
+    // All form fields - an array of rows where each row is an array that contain fields.
     const fields = getFields();
 
     /**
@@ -59,13 +60,12 @@ const DefaultFormLayout: FormLayoutComponent = ({
                 className={"webiny-cms-base-element-style webiny-cms-layout-column"}
             >
                 <Bind name={field.fieldId} validators={field.validators}>
-                    {({ validation, ...bind }) => (
+                    {bind => (
                         <React.Fragment>
                             {/* Render element */}
                             {renderFieldElement({
                                 field,
-                                bind,
-                                validation
+                                bind
                             })}
                         </React.Fragment>
                     )}
@@ -80,13 +80,12 @@ const DefaultFormLayout: FormLayoutComponent = ({
     const renderHiddenField = (field, Bind) => {
         return (
             <Bind name={field.fieldId} validators={field.validators}>
-                {({ validation, ...bind }) => (
+                {bind => (
                     <React.Fragment>
                         {/* Render input */}
                         {renderFieldElement({
                             field,
-                            bind,
-                            validation
+                            bind
                         })}
                     </React.Fragment>
                 )}
@@ -96,17 +95,16 @@ const DefaultFormLayout: FormLayoutComponent = ({
 
     /**
      * Renders a single form field. You can add additional handling of other field types if needed.
+     * All of these components are located in the "./fields" folder.
      */
-    const renderFieldElement = (props: { field: FieldType, bind: Object, validation: Object }) => {
+    const renderFieldElement = (props: { field: FieldType, bind: BindRenderPropsType }) => {
         switch (props.field.type) {
             case "text":
                 return <Input {...props} />;
             case "textarea":
                 return <Textarea {...props} />;
             case "number":
-                return <Input type="number" {...props} />;
-            case "rich-text":
-                return <span>rich text</span>;
+                return <Input {...props} type="number" />;
             case "select":
                 return <Select {...props} />;
             case "radio":
@@ -214,7 +212,7 @@ const DefaultFormLayout: FormLayoutComponent = ({
     };
 
     /**
-     * Renders the form submit button. We disable the button if the form is in loading state.
+     * Renders the form submit button. We disable the button if the form is in the loading state.
      */
     const renderSubmitButton = (submit, loading, tosAccepted, buttonLabel) => {
         return (
@@ -262,7 +260,10 @@ const DefaultFormLayout: FormLayoutComponent = ({
                                 ))}
                             </div>
 
-                            {/* At the bottom of the Form, we render Terms of Service, ReCaptcha and a submit button. */}
+                            {/*
+                                At the bottom of the Form, we render the terms of service,
+                                the reCAPTCHA field and the submit button.
+                            */}
                             {renderTermsOfService(Bind)}
                             {renderReCaptcha(Bind)}
                             {renderSubmitButton(

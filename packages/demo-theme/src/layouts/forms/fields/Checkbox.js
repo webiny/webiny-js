@@ -4,9 +4,10 @@ import React from "react";
 import type { FieldType } from "webiny-app-forms/types";
 import { I18NValue } from "webiny-app-i18n/components";
 import HelperMessage from "../components/HelperMessage";
+import type { BindRenderPropsType } from "webiny-form";
 
 type Props = {
-    bind: Object,
+    bind: BindRenderPropsType,
     field: FieldType
 };
 
@@ -26,7 +27,8 @@ const checked = ({ option, value }) => {
 };
 
 const Checkbox = (props: Props) => {
-    const { onChange, value } = props.bind;
+    const { onChange, value, validation } = props.bind;
+    const fieldId: string = (props.field.fieldId: any);
 
     return (
         <div className="webiny-cms-form-field webiny-cms-form-field--checkbox">
@@ -37,15 +39,15 @@ const Checkbox = (props: Props) => {
                 {props.field.options.map(option => (
                     <div className="webiny-cms-form-field__checkbox" key={option.value}>
                         <input
-                            name={props.field.fieldId}
+                            name={fieldId}
                             className="webiny-cms-form-field__checkbox-input"
                             type="checkbox"
-                            id={"checkbox-" + props.field.fieldId + option.value}
+                            id={"checkbox-" + fieldId + option.value}
                             checked={checked({ option, value })}
                             onChange={() => change({ option, value, onChange })}
                         />
                         <label
-                            htmlFor={"checkbox-" + props.field.fieldId + option.value}
+                            htmlFor={"checkbox-" + fieldId + option.value}
                             className="webiny-cms-form-field__checkbox-label"
                         >
                             <I18NValue value={option.label} />
@@ -54,8 +56,8 @@ const Checkbox = (props: Props) => {
                 ))}
             </div>
             <HelperMessage
-                isValid={props.validation.isValid}
-                errorMessage={props.validation.message}
+                isValid={validation.isValid}
+                errorMessage={validation.message}
                 helperMessage={<I18NValue value={props.field.helpText} />}
             />
         </div>
