@@ -2,7 +2,7 @@
 
 const path = require("path");
 const getPackages = require("get-yarn-workspaces");
-const packages = getPackages(path.join(process.cwd(), "../../"));
+const packages = getPackages(path.join(__dirname, "../../"));
 
 const isEnvDevelopment = process.env.NODE_ENV === "development";
 
@@ -13,11 +13,11 @@ const aliases = packages.reduce((aliases, dir) => {
 }, {});
 
 module.exports = {
-    entry: "./src/handler.js",
+    entry: __dirname + "/src/handler.js",
     target: "node",
     // Generate sourcemaps for proper error messages
     devtool: isEnvDevelopment ? "source-map" : false,
-    externals: ["aws-sdk", "vertx", "mongodb"],
+    externals: ["aws-sdk", "vertx", "mongodb", "electron"],
     mode: isEnvDevelopment ? "development" : "production",
     optimization: {
         // We no not want to minimize our code.

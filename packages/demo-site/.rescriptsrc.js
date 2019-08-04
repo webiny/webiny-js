@@ -1,2 +1,1 @@
-// @flowIgnore
-module.exports = require("webiny-rewire/configs");
+module.exports = [require("@webiny/project-utils/cra")()];
