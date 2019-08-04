@@ -22,11 +22,10 @@ export function fileFactory(context: Object): Class<IFile> {
         constructor() {
             super();
 
-            const { getUser, security, files } = context;
-            const { User } = security.entities;
+            const { getUser, files } = context;
 
             this.attr("createdBy")
-                .entity(User)
+                .char()
                 .setSkipOnPopulate();
 
             this.attr("src")

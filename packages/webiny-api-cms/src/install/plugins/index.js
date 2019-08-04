@@ -11,7 +11,7 @@ const plugin: InstallPluginType = {
         description: "Webiny CMS is a powerful content management system (CMS)."
     },
     install: async context => {
-            await importData(context);
+        await importData(context);
     }
 };
 

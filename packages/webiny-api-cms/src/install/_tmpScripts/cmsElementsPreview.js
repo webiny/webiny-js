@@ -29,7 +29,7 @@ MongoClient.connect(url, async function(err, db) {
                     size: element.preview.size,
                     type: element.preview.type,
                     src: element.preview.src,
-                    meta: element.preview.meta || {},
+                    meta: element.preview.meta || {}
                 };
                 await dbo.collection("File").insert(file);
             }

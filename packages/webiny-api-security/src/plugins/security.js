@@ -1,9 +1,9 @@
 // @flow
 import type { PluginType } from "webiny-plugins/types";
-import authenticate from "./authentication/authenticate";
 import { getPlugins } from "webiny-plugins";
 import { shield } from "graphql-shield";
 import { get } from "lodash";
+import authenticate from "./authentication/authenticate";
 
 export default ([
     {

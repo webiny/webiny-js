@@ -43,7 +43,6 @@ MongoClient.connect(url, async function(err, db) {
                     }
                     set(element, "data.settings.background.image.file", file.id);
                     unset(element, "data.settings.background.image.src");
-
                 }
             }
         },
@@ -66,7 +65,7 @@ MongoClient.connect(url, async function(err, db) {
                             name: get(element, "data.image.name"),
                             type: get(element, "data.image.type"),
                             size: get(element, "data.image.size"),
-                            meta: get(element, "data.image.meta") || {},
+                            meta: get(element, "data.image.meta") || {}
                         });
                         await dbo.collection("File").insertOne(file);
                     }

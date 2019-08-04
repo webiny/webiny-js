@@ -12,7 +12,7 @@ import getMenuBySlug from "./menuResolvers/getMenuBySlug";
 
 export default {
     typeDefs: `
-        type Menu {
+        type PageBuilderMenu {
             id: ID
             createdOn: DateTime
             title: String
@@ -21,7 +21,7 @@ export default {
             items: JSON
         }
     
-        input MenuInput {
+        input PageBuilderMenuInput {
             title: String
             slug: String
             description: String
@@ -30,15 +30,15 @@ export default {
         
         # Response types
         
-        type MenuResponse {
-            data: Menu
-            error: Error
+        type PageBuilderMenuResponse {
+            data: PageBuilderMenu
+            error: PageBuilderError
         }
         
-        type MenuListResponse {
-            data: [Menu]
-            meta: ListMeta
-            error: Error
+        type PageBuilderMenuListResponse {
+            data: [PageBuilderMenu]
+            meta: PageBuilderListMeta
+            error: PageBuilderError
         }
             
         extend type PageBuilderQuery {
@@ -46,35 +46,35 @@ export default {
                 id: ID 
                 where: JSON
                 sort: String
-            ): MenuResponse
+            ): PageBuilderMenuResponse
             
             listMenus(
                 page: Int
                 perPage: Int
                 where: JSON
                 sort: JSON
-                search: SearchInput
-            ): MenuListResponse
+                search: PageBuilderSearchInput
+            ): PageBuilderMenuListResponse
             
             "Returns menu by given slug."
             getMenuBySlug(
                 slug: String!
-            ): MenuResponse
+            ): PageBuilderMenuResponse
         }
         
         extend type PageBuilderMutation {
             createMenu(
-                data: MenuInput!
-            ): MenuResponse
+                data: PageBuilderMenuInput!
+            ): PageBuilderMenuResponse
             
             updateMenu(
                 id: ID!
-                data: MenuInput!
-            ): MenuResponse
+                data: PageBuilderMenuInput!
+            ): PageBuilderMenuResponse
         
             deleteMenu(
                 id: ID!
-            ): DeleteResponse
+            ): PageBuilderDeleteResponse
         }
     `,
     resolvers: {

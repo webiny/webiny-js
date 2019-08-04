@@ -1,4 +1,3 @@
-// @flow
 import {
     resolveCreate,
     resolveUpdate,
@@ -6,7 +5,6 @@ import {
     resolveGet,
     resolveList
 } from "webiny-api/graphql";
-import UserType from "webiny-api-security/plugins/graphql/User";
 import createRevisionFrom from "./pageResolvers/createRevisionFrom";
 import listPages from "./pageResolvers/listPages";
 import listPublishedPages from "./pageResolvers/listPublishedPages";
@@ -22,20 +20,23 @@ const pageFetcher = ctx => ctx.cms.entities.Page;
 const elementFetcher = ctx => ctx.cms.entities.Element;
 
 export default {
-    typeDefs: () => [
-        UserType.typeDefs,
-        /* GraphQL*/ `type Page {
+    typeDefs: /* GraphQL*/ `
+        extend type SecurityUser @key(fields: "id") {
+            id: ID @external
+        }
+            
+        type PageBuilderPage {
             id: ID
-            createdBy: User
-            updatedBy: User
+            createdBy: SecurityUser
+            updatedBy: SecurityUser
             savedOn: DateTime
             publishedOn: DateTime
-            category: Category
+            category: PageBuilderCategory
             version: Int
             title: String
             snippet: String
             url: String
-            settings: PageSettings
+            settings: PageBuilderPageSettings
             content: JSON
             published: Boolean
             isHomePage: Boolean
@@ -43,38 +44,38 @@ export default {
             isNotFoundPage: Boolean
             locked: Boolean
             parent: ID
-            revisions: [Page]
+            revisions: [PageBuilderPage]
         }
         
-        type PageSettings {
+        type PageBuilderPageSettings {
             _empty: String
         }
         
-        type Element {
+        type PageBuilderElement {
             id: ID
             name: String
             type: String
             category: String
             content: JSON
-            preview: File
+            #preview: File
         }
         
-        input ElementInput {
+        input PageBuilderElementInput {
             name: String!
             type: String!
             category: String
             content: JSON!
-            preview: FileInput
+            #preview: FileInput
         }
                 
-        input UpdateElementInput {
+        input PageBuilderUpdateElementInput {
             name: String
             category: String
             content: JSON
-            preview: FileInput
+            #preview: FileInput
         }
         
-        input UpdatePageInput {
+        input PageBuilderUpdatePageInput {
             title: String
             snippet: String
             category: ID
@@ -83,53 +84,69 @@ export default {
             content: JSON
         }
         
-        input CreatePageInput {
+        input PageBuilderCreatePageInput {
             category: ID!
         }
         
         # Response types
-        type PageResponse {
-            data: Page
-            error: Error
+        type PageBuilderPageListMeta {
+            totalCount: Int
+            totalPages: Int
+            page: Int
+            perPage: Int
+            from: Int
+            to: Int
+            previousPage: Int
+            nextPage: Int
+        }
+
+        type PageBuilderPageDeleteResponse {
+            data: Boolean
+            error: PageBuilderError
+        }
+            
+        type PageBuilderPageResponse {
+            data: PageBuilderPage
+            error: PageBuilderError
         }
         
-        type PageListResponse {
-            data: [Page]
-            meta: ListMeta
-            error: Error
+        type PageBuilderPageListResponse {
+            data: [PageBuilderPage]
+            meta: PageBuilderListMeta
+            error: PageBuilderError
         }
         
-        type ElementResponse {
-            data: Element
-            error: Error
+        type PageBuilderElementResponse {
+            data: PageBuilderElement
+            error: PageBuilderError
         }
         
-        type ElementListResponse {
-            data: [Element]
-            meta: ListMeta
+        type PageBuilderElementListResponse {
+            data: [PageBuilderElement]
+            meta: PageBuilderListMeta
         }
         
-        type SearchTagsResponse {
+        type PageBuilderSearchTagsResponse {
             data: [String] 
         }
         
-        type OembedResponse {
+        type PageBuilderOembedResponse {
             data: JSON
-            error: Error
+            error: PageBuilderError
         }
         
-        input OEmbedInput {
+        input PageBuilderOEmbedInput {
             url: String!
             width: Int
             height: Int
         }
         
-        input PageSortInput {
+        input PageBuilderPageSortInput {
             title: Int
             publishedOn: Int
         }
         
-        enum TagsRule {
+        enum PageBuilderTagsRule {
           ALL
           ANY
         }
@@ -139,18 +156,18 @@ export default {
                 id: ID 
                 where: JSON
                 sort: String
-            ): PageResponse
+            ): PageBuilderPageResponse
             
-            getPublishedPage(id: String, url: String, parent: String): PageResponse
+            getPublishedPage(id: String, url: String, parent: String): PageBuilderPageResponse
             
             # Returns page set as home page (managed in CMS settings).
-            getHomePage: PageResponse
+            getHomePage: PageBuilderPageResponse
             
             # Returns 404 (not found) page (managed in CMS settings).
-            getNotFoundPage: PageResponse
+            getNotFoundPage: PageBuilderPageResponse
             
             # Returns error page (managed in CMS settings).
-            getErrorPage: PageResponse
+            getErrorPage: PageBuilderPageResponse
             
             listPages(
                 page: Int
@@ -158,85 +175,92 @@ export default {
                 sort: JSON
                 search: String
                 parent: String
-            ): PageListResponse
+            ): PageBuilderPageListResponse
             
             listPublishedPages(
                 search: String
                 category: String
                 parent: String
                 tags: [String]
-                tagsRule: TagsRule
-                sort: PageSortInput
+                tagsRule: PageBuilderTagsRule
+                sort: PageBuilderPageSortInput
                 page: Int
                 perPage: Int
-            ): PageListResponse
+            ): PageBuilderPageListResponse
             
-            listElements(perPage: Int): ElementListResponse
+            listElements(perPage: Int): PageBuilderElementListResponse
             
             # Returns existing tags based on given search term.        
-            searchTags(query: String!): SearchTagsResponse
+            searchTags(query: String!): PageBuilderSearchTagsResponse
             
             oembedData(
                 url: String! 
                 width: String
                 height: String
-            ): OembedResponse
+            ): PageBuilderOembedResponse
         }
         
         extend type PageBuilderMutation {
             createPage(
-                data: CreatePageInput!
-            ): PageResponse
+                data: PageBuilderCreatePageInput!
+            ): PageBuilderPageResponse
             
             # Sets given page as new homepage.
-            setHomePage(id: ID!): PageResponse
+            setHomePage(id: ID!): PageBuilderPageResponse
             
             # Create a new revision from an existing revision
             createRevisionFrom(
                 revision: ID!
-            ): PageResponse
+            ): PageBuilderPageResponse
             
             # Update revision
              updateRevision(
                 id: ID!
-                data: UpdatePageInput!
-            ): PageResponse
+                data: PageBuilderUpdatePageInput!
+            ): PageBuilderPageResponse
             
             # Publish revision
             publishRevision(
                 id: ID!
-            ): PageResponse
+            ): PageBuilderPageResponse
             
             # Delete page and all of its revisions
             deletePage(
                 id: ID!
-            ): DeleteResponse
+            ): PageBuilderDeleteResponse
             
             # Delete a single revision
             deleteRevision(
                 id: ID!
-            ): DeleteResponse
+            ): PageBuilderDeleteResponse
             
             # Create element
             createElement(
-                data: ElementInput!
-            ): ElementResponse
+                data: PageBuilderElementInput!
+            ): PageBuilderElementResponse
             
             updateElement(      
                 id: ID!
-                data: UpdateElementInput!
-            ): ElementResponse
+                data: PageBuilderUpdateElementInput!
+            ): PageBuilderElementResponse
             
             # Delete element
             deleteElement(
                 id: ID!
-            ): DeleteResponse
+            ): PageBuilderDeleteResponse
             
-            updateImageSize: DeleteResponse
+            updateImageSize: PageBuilderDeleteResponse
         },
-    `
-    ],
+    `,
     resolvers: {
+        PageBuilderPage: {
+            createdBy(page) {
+                return { __typename: "SecurityUser", id: page.createdBy };
+            },
+            updatedBy(page) {
+                return { __typename: "SecurityUser", id: page.updatedBy };
+            }
+        },
         PageBuilderQuery: {
             getPage: resolveGet(pageFetcher),
             listPages: listPages(pageFetcher),
@@ -275,7 +299,7 @@ export default {
             // Deletes an element
             deleteElement: resolveDelete(elementFetcher)
         },
-        PageSettings: {
+        PageBuilderPageSettings: {
             _empty: () => ""
         }
     }

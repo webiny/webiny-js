@@ -34,7 +34,7 @@ const getHandler = async ({ createHandler, handler }) => {
 
 const handleRequest = async (req, res, handler) => {
     const event = expressRequestToLambdaEvent(req);
-    const context = { req };
+    const context = { req, devMode: true };
 
     const result = await handler(event, context);
     res.set(result.headers);
@@ -44,10 +44,10 @@ const handleRequest = async (req, res, handler) => {
 module.exports = async config => {
     process.env.WEBINY_DEV = "true";
 
-    require("@babel/register")({
+    /*require("@babel/register")({
         only: [/packages/],
         configFile: path.resolve("babel.config.js")
-    });
+    });*/
 
     const app = express();
     app.use(bodyParser.json());
@@ -91,7 +91,7 @@ module.exports = async config => {
                 process.env[key] = env[key];
             });
 
-            const userHandler = require(path.join(fn.root, fn.handler));
+            const userHandler = require(path.join(fn.root, "build/handler.js"));
             const handler = await getHandler(userHandler);
             await handleRequest(req, res, handler);
         });

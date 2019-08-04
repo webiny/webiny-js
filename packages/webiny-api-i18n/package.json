@@ -19,12 +19,12 @@
     "accept-language-parser": "^1.5.0",
     "bcryptjs": "^2.4.3",
     "graphql-shield": "^5.1.0",
+    "graphql-type-json": "^0.3.0",
+    "graphql-iso-date":"^3.6.1",
     "i18n-locales": "^0.0.2",
     "invariant": "^2.2.4",
-    "jsonwebtoken": "^8.2.2",
     "lodash": "^4.17.4",
     "md5": "^2.2.1",
-    "repropose": "^1.0.0",
     "webiny-plugins": "0.0.0"
   },
   "devDependencies": {

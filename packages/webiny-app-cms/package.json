@@ -24,7 +24,7 @@
     "downshift": "^2.1.1",
     "dynamics.js": "^1.1.5",
     "emotion": "^9.2.4",
-    "graphql-tag": "^2.8.0",
+    "graphql-tag": "^2.10.1",
     "immutable": "^3.8.2",
     "invariant": "^2.2.4",
     "is-hotkey": "^0.1.3",

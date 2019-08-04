@@ -1,4 +1,4 @@
-// @flow
+import { gql } from "apollo-server-lambda";
 import { EntityModel } from "webiny-entity";
 import { Model } from "webiny-model";
 
@@ -10,7 +10,7 @@ class OpenGraphTagModel extends Model {
     }
 }
 
-const createSocialSettings = (context: Object) =>
+const createSocialSettings = context =>
     class SocialSettings extends EntityModel {
         constructor() {
             super();
@@ -18,7 +18,7 @@ const createSocialSettings = (context: Object) =>
             this.attr("meta").models(OpenGraphTagModel);
             this.attr("title").char();
             this.attr("description").char();
-            this.attr("image").entity(context.files.entities.File);
+            this.attr("image").char();
         }
     };
 
@@ -26,7 +26,7 @@ export default [
     {
         name: "cms-page-settings-social",
         type: "cms-page-settings-model",
-        apply(context: Object) {
+        apply(context) {
             context.model
                 .attr("social")
                 .model(createSocialSettings(context))
@@ -34,24 +34,33 @@ export default [
         }
     },
     {
-        name: "cms-schema-settings-social",
-        type: "cms-schema",
-        typeDefs: `
-            type OpenGraphTag {
-                property: String
-                content: String
+        name: "graphql-schema-page-builder-settings-social",
+        type: "graphql-schema",
+        schema: {
+            typeDefs: gql`
+                type PageBuilderOpenGraphTag {
+                    property: String
+                    content: String
+                }
+
+                type PageBuilderSocialSettings {
+                    title: String
+                    description: String
+                    meta: [PageBuilderOpenGraphTag]
+                    image: File
+                }
+
+                extend type PageBuilderPageSettings {
+                    social: PageBuilderSocialSettings
+                }
+            `,
+            resolvers: {
+                PageBuilderSocialSettings: {
+                    image: ({ image }) => {
+                        return { __typename: "File", id: image };
+                    }
+                }
             }
-            
-            type SocialSettings {
-                title: String
-                description: String
-                meta: [OpenGraphTag]
-                image: File
-            } 
-            
-            extend type PageSettings {
-                social: SocialSettings
-            }
-        `
+        }
     }
 ];

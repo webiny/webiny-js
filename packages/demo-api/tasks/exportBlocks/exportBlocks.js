@@ -66,7 +66,7 @@ export default async () => {
             }
         }
 
-       /* console.log(`${blue("> Copy preview:")} ${data.preview.src}`);
+        /* console.log(`${blue("> Copy preview:")} ${data.preview.src}`);
         const previewName = data.preview.src.match(/\/files\/(.*)/)[1];
         let targetName = previewName;
         if (!targetName.startsWith("cms-element-")) {

@@ -2,7 +2,7 @@
 import { ErrorResponse, Response, NotFoundResponse } from "webiny-api/graphql";
 
 export default async (root: any, args: Object, context: Object) => {
-    const { CmsSettings, Page } = context.cms.entities;
+    const { Settings, Page } = context.cms.entities;
     const { id } = args;
 
     const newHomePage = await Page.findById(id);
@@ -11,7 +11,7 @@ export default async (root: any, args: Object, context: Object) => {
         return new NotFoundResponse(id);
     }
 
-    const settings = await CmsSettings.load();
+    const settings = await Settings.load();
     if (settings.data.pages.home === newHomePage.parent) {
         return new ErrorResponse({
             code: "ALREADY_HOMEPAGE",

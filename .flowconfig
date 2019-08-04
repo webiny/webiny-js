@@ -24,6 +24,8 @@ module.name_mapper='.*\.scss' -> 'empty/object'
 module.name_mapper='^webiny-\(.*\)/types$' -> '<PROJECT_ROOT>/packages/webiny-\1/types.js'
 module.name_mapper='^webiny-\(.*\)$' -> '<PROJECT_ROOT>/packages/webiny-\1/src'
 module.name_mapper='^webiny-\([a-zA-Z0-9_-]+\)/\(.*\)$' -> '<PROJECT_ROOT>/packages/webiny-\1/src/\2'
+module.name_mapper='^demo-\(.*\)$' -> '<PROJECT_ROOT>/packages/demo-\1/src'
+module.name_mapper='^demo-\([a-zA-Z0-9_-]+\)/\(.*\)$' -> '<PROJECT_ROOT>/packages/demo-\1/src/\2'
 
 
 

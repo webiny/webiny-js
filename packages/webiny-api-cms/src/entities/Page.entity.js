@@ -6,8 +6,8 @@ import mdbid from "mdbid";
 import createContentAttribute from "./Page/ContentAttribute";
 
 export interface IPage extends Entity {
-    createdBy: Entity;
-    updatedBy: Entity;
+    createdBy: string;
+    updatedBy: string;
     publishedOn: ?Date;
     title: string;
     snippet: string;
@@ -25,8 +25,8 @@ export const pageFactory = (context: Object): Class<IPage> => {
     return class Page extends Entity {
         static classId = "CmsPage";
 
-        createdBy: Entity;
-        updatedBy: Entity;
+        createdBy: string;
+        updatedBy: string;
         publishedOn: ?Date;
         title: string;
         snippet: string;
@@ -42,20 +42,19 @@ export const pageFactory = (context: Object): Class<IPage> => {
         constructor() {
             super();
 
-            const { getUser, cms, security } = context;
-            const { Category } = cms.entities;
-            const { User } = security.entities;
+            const { getUser, getEntity } = context;
+            const Category = getEntity("CmsCategory");
 
             this.attr("category")
                 .entity(Category)
                 .setValidators("required");
 
             this.attr("createdBy")
-                .entity(User)
+                .char()
                 .setSkipOnPopulate();
 
             this.attr("updatedBy")
-                .entity(User)
+                .char()
                 .setSkipOnPopulate();
 
             this.attr("publishedOn")
@@ -81,7 +80,7 @@ export const pageFactory = (context: Object): Class<IPage> => {
                 .onSet(value => (this.locked ? this.content : value));
 
             this.attr("settings")
-                .model(pageSettingsFactory({ ...context, page: this }))
+                .model(pageSettingsFactory({ getEntity, page: this }))
                 .onSet(value => (this.locked ? this.settings : value));
 
             this.attr("version").integer();
@@ -91,21 +90,21 @@ export const pageFactory = (context: Object): Class<IPage> => {
             this.attr("isHomePage")
                 .boolean()
                 .setDynamic(async () => {
-                    const settings = await context.cms.entities.CmsSettings.load();
+                    const settings = await context.cms.entities.Settings.load();
                     return settings.data.pages.home === this.parent;
                 });
 
             this.attr("isErrorPage")
                 .boolean()
                 .setDynamic(async () => {
-                    const settings = await context.cms.entities.CmsSettings.load();
+                    const settings = await context.cms.entities.Settings.load();
                     return settings.data.pages.error === this.parent;
                 });
 
             this.attr("isNotFoundPage")
                 .boolean()
                 .setDynamic(async () => {
-                    const settings = await context.cms.entities.CmsSettings.load();
+                    const settings = await context.cms.entities.Settings.load();
                     return settings.data.pages.notFound === this.parent;
                 });
 

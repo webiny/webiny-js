@@ -18,7 +18,7 @@ export interface IUser extends Entity {
     firstName: string;
     lastName: string;
     gravatar: string;
-    avatar: Object;
+    avatar: string;
     enabled: boolean;
     groups: Promise<Array<IGroup>>;
     roles: Promise<Array<IRole>>;
@@ -26,7 +26,7 @@ export interface IUser extends Entity {
     access: Promise<AccessType>;
 }
 
-export function userFactory({ config, files, security: { entities } }: Object): Class<IUser> {
+export function userFactory({ config, getEntity }: Object): Class<IUser> {
     return class User extends Entity {
         static classId = "SecurityUser";
         __access: ?AccessType;
@@ -36,7 +36,7 @@ export function userFactory({ config, files, security: { entities } }: Object): 
         firstName: string;
         lastName: string;
         gravatar: string;
-        avatar: Object;
+        avatar: string;
         enabled: boolean;
         groups: Promise<Array<IGroup>>;
         roles: Promise<Array<IRole>>;
@@ -45,7 +45,7 @@ export function userFactory({ config, files, security: { entities } }: Object): 
 
         constructor() {
             super();
-            const { File } = files.entities;
+            const File = getEntity("File");
 
             // Once we load access attribute, we cache it here.
             this.__access = null;
@@ -97,12 +97,12 @@ export function userFactory({ config, files, security: { entities } }: Object): 
                 .setValue(true);
 
             this.attr("roles")
-                .entities(entities.Role, "entity")
-                .setUsing(entities.Roles2Entities, "role");
+                .entities(getEntity("SecurityRole"), "entity")
+                .setUsing(getEntity("Roles2Entities"), "role");
 
             this.attr("groups")
-                .entities(entities.Group, "entity")
-                .setUsing(entities.Groups2Entities, "group");
+                .entities(getEntity("SecurityGroup"), "entity")
+                .setUsing(getEntity("SecurityGroups2Entities"), "group");
 
             /**
              * Returns all scopes and roles.

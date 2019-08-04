@@ -11,7 +11,7 @@ const categoryFetcher = ctx => ctx.cms.entities.Category;
 
 export default {
     typeDefs: `
-        type Category {
+        type PageBuilderCategory {
             id: ID
             createdOn: DateTime
             name: String
@@ -20,7 +20,7 @@ export default {
             layout: String
         }
     
-        input CategoryInput {
+        input PageBuilderCategoryInput {
             name: String
             slug: String
             url: String
@@ -29,15 +29,15 @@ export default {
         
         # Response types
         
-        type CategoryResponse {
-            data: Category
-            error: Error
+        type PageBuilderCategoryResponse {
+            data: PageBuilderCategory
+            error: PageBuilderError
         }
         
-        type CategoryListResponse {
-            data: [Category]
-            meta: ListMeta
-            error: Error
+        type PageBuilderCategoryListResponse {
+            data: [PageBuilderCategory]
+            meta: PageBuilderListMeta
+            error: PageBuilderError
         }
         
         extend type PageBuilderQuery {
@@ -45,30 +45,30 @@ export default {
                 id: ID 
                 where: JSON
                 sort: String
-            ): CategoryResponse
+            ): PageBuilderCategoryResponse
             
             listCategories(
                 page: Int
                 perPage: Int
                 where: JSON
                 sort: JSON
-                search: SearchInput
-            ): CategoryListResponse
+                search: PageBuilderSearchInput
+            ): PageBuilderCategoryListResponse
         }
         
         extend type PageBuilderMutation {
             createCategory(
-                data: CategoryInput!
-            ): CategoryResponse
+                data: PageBuilderCategoryInput!
+            ): PageBuilderCategoryResponse
             
             updateCategory(
                 id: ID!
-                data: CategoryInput!
-            ): CategoryResponse
+                data: PageBuilderCategoryInput!
+            ): PageBuilderCategoryResponse
         
             deleteCategory(
                 id: ID!
-            ): DeleteResponse
+            ): PageBuilderDeleteResponse
         }
     `,
     resolvers: {

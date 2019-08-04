@@ -45,7 +45,13 @@ const Image = (props: Object) => {
             className={"webiny-cms-base-element-style webiny-cms-element-image"}
         >
             <Link link={link}>
-                <WebinyImage title={title} alt={title} style={style} src={image.file.src} srcSet="auto" />
+                <WebinyImage
+                    title={title}
+                    alt={title}
+                    style={style}
+                    src={image.file.src}
+                    srcSet="auto"
+                />
             </Link>
         </ElementRoot>
     );

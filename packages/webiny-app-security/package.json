@@ -15,7 +15,7 @@
   "dependencies": {
     "@babel/runtime": "^7.0.0",
     "dot-prop-immutable": "^1.4.0",
-    "graphql-tag": "^2.8.0",
+    "graphql-tag": "^2.10.1",
     "lodash": "^4.17.11",
     "react-apollo": "2.3.3",
     "react-helmet": "^5.2.0",

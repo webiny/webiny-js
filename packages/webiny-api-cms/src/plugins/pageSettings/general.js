@@ -1,4 +1,4 @@
-// @flow
+import { gql } from "apollo-server-lambda";
 import { EntityModel } from "webiny-entity";
 
 const createGeneralSettingsModel = context =>
@@ -8,7 +8,7 @@ const createGeneralSettingsModel = context =>
             this.setParentEntity(context.page);
             this.attr("tags").array();
             this.attr("layout").char();
-            this.attr("image").entity(context.files.entities.File);
+            this.attr("image").char();
         }
     };
 
@@ -16,7 +16,7 @@ export default [
     {
         name: "cms-page-settings-general",
         type: "cms-page-settings-model",
-        apply(context: Object) {
+        apply(context) {
             context.model
                 .attr("general")
                 .model(createGeneralSettingsModel(context))
@@ -24,18 +24,27 @@ export default [
         }
     },
     {
-        name: "cms-schema-settings-general",
-        type: "cms-schema",
-        typeDefs: `
-            type GeneralPageSettings {
-                tags: [String]
-                layout: String
-                image: File
-            } 
-            
-            extend type PageSettings {
-                general: GeneralPageSettings
+        name: "graphql-schema-page-builder-settings-general",
+        type: "graphql-schema",
+        schema: {
+            typeDefs: gql`
+                type PageBuilderGeneralPageSettings {
+                    tags: [String]
+                    layout: String
+                    image: File
+                }
+
+                extend type PageBuilderPageSettings {
+                    general: PageBuilderGeneralPageSettings
+                }
+            `,
+            resolvers: {
+                PageBuilderGeneralPageSettings: {
+                    image: ({ image }) => {
+                        return { __typename: "File", id: image };
+                    }
+                }
             }
-        `
+        }
     }
 ];

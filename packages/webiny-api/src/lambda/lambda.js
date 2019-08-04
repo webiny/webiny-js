@@ -4,13 +4,13 @@ import { applyMiddleware } from "graphql-middleware";
 import { addSchemaLevelResolveFunction } from "graphql-tools";
 import { Entity } from "webiny-entity";
 import type { GraphQLMiddlewarePluginType } from "webiny-api/types";
-import { prepareSchema, createGraphqlRunner } from "../graphql/schema";
+import { prepareSchema } from "../graphql/prepareSchema";
 import { getPlugins } from "webiny-plugins";
 
 export const createHandler = async (config: Object) => {
     await requestSetup(config);
 
-    let schema = await prepareSchema();
+    let schema = await prepareSchema(config);
 
     const registeredMiddleware: Array<GraphQLMiddlewarePluginType> = [];
 
@@ -70,14 +70,13 @@ export const createHandler = async (config: Object) => {
         context: async ({ event }) => {
             await requestSetup(config);
 
-            const ctx: Object = {
+            return {
                 event,
-                config
+                config,
+                getDatabase() {
+                    return config.database.mongodb;
+                }
             };
-
-            // Add `runQuery` function to be able to easily run queries against schemas from within a resolver
-            ctx.graphql = createGraphqlRunner(schema, ctx);
-            return ctx;
         }
     });
 

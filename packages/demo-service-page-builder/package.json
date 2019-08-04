@@ -1,0 +1,42 @@
+{
+  "name": "demo-service-page-builder",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "build": "cross-env NODE_ENV=production npx webpack --out build",
+    "setup": "node src/install.js",
+    "export-blocks": "node tasks/exportBlocks/index",
+    "export-pages": "node tasks/exportPages/index"
+  },
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "@babel/runtime": "^7.0.0",
+    "webiny-api": "0.0.0",
+    "webiny-api-cms": "0.0.0",
+    "webiny-api-security": "0.0.0",
+    "webiny-install": "0.0.0",
+    "webiny-api-cookie-policy": "0.0.0",
+    "webiny-api-google-tag-manager": "0.0.0",
+    "webiny-api-mailchimp": "0.0.0",
+    "webiny-plugins": "0.0.0",
+    "source-map-support": "^0.5.0"
+  },
+  "devDependencies": {
+    "@babel/cli": "^7.0.0",
+    "@babel/core": "^7.0.0",
+    "@babel/plugin-external-helpers": "^7.0.0",
+    "@babel/plugin-proposal-class-properties": "^7.0.0",
+    "@babel/plugin-proposal-object-rest-spread": "^7.0.0",
+    "@babel/plugin-transform-runtime": "^7.0.0",
+    "@babel/preset-env": "^7.0.0",
+    "@babel/preset-flow": "^7.0.0",
+    "@babel/register": "^7.0.0",
+    "babel-eslint": "^9.0.0",
+    "babel-loader": "^8.0.0",
+    "get-yarn-workspaces": "^1.0.2",
+    "webpack-cli": "^3.1.0",
+    "webpack-node-externals": "^1.7.2"
+  }
+}

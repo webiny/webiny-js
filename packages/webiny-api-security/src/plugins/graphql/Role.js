@@ -7,12 +7,12 @@ import {
     resolveUpdate
 } from "webiny-api/graphql";
 
-const roleFetcher = ctx => ctx.security.entities.Role;
+const roleFetcher = ctx => ctx.getEntity("SecurityRole");
 
 export default {
-    typeDefs: () => [
-        `
-        type Role {
+    /* GraphQL */
+    typeDefs: `
+        type SecurityRole {
             id: ID
             name: String
             slug: String
@@ -20,8 +20,8 @@ export default {
             description: String
             scopes: [String]
         }
-        
-        input RoleInput {
+
+        input SecurityRoleInput {
             id: ID
             name: String
             slug: String
@@ -29,48 +29,61 @@ export default {
             scopes: [String]
         }
         
-        type RoleResponse {
-            data: Role
-            error: Error
+        input SecurityRoleSearchInput {
+            query: String
+            fields: [String]
+            operator: String
         }
-        
-        type RoleListResponse {
-            data: [Role]
-            meta: ListMeta
-            error: Error
+
+        type SecurityRoleListMeta {
+            totalCount: Int
+            totalPages: Int
+            page: Int
+            perPage: Int
+            from: Int
+            to: Int
+            previousPage: Int
+            nextPage: Int
         }
-    `
-    ],
-    typeExtensions: `
+
+        type SecurityRoleError {
+            code: String
+            message: String
+            data: JSON
+        }
+
+        type SecurityRoleDeleteResponse {
+            data: Boolean
+            error: SecurityRoleError
+        }
+
+        type SecurityRoleResponse {
+            data: SecurityRole
+            error: SecurityRoleError
+        }
+
+        type SecurityRoleListResponse {
+            data: [SecurityRole]
+            meta: SecurityRoleListMeta
+            error: SecurityRoleError
+        }
+
         extend type SecurityQuery {
-            getRole(
-                id: ID 
-                where: JSON
-                sort: String
-            ): RoleResponse
-            
+            getRole(id: ID, where: JSON, sort: String): SecurityRoleResponse
+
             listRoles(
                 page: Int
                 perPage: Int
                 where: JSON
                 sort: JSON
-                search: SearchInput
-            ): RoleListResponse
+                search: SecurityRoleSearchInput
+            ): SecurityRoleListResponse
         }
-        
+
         extend type SecurityMutation {
-            createRole(
-                data: RoleInput!
-            ): RoleResponse
-            
-            updateRole(
-                id: ID!
-                data: RoleInput!
-            ): RoleResponse
-        
-            deleteRole(
-                id: ID!
-            ): DeleteResponse
+            createRole(data: SecurityRoleInput!): SecurityRoleResponse
+            updateRole(id: ID!, data: SecurityRoleInput!): SecurityRoleResponse
+            deleteRole(id: ID!): SecurityRoleDeleteResponse
         }
     `,
     resolvers: {

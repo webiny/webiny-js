@@ -14,6 +14,7 @@ System.config({
         "webiny-api/*": "./packages/webiny-api/src/*",
         "webiny-api-cms/*": "./packages/webiny-api-cms/src/*",
         "webiny-api-files/*": "./packages/webiny-api-files/src/*",
+        "webiny-api-headless/*": "./packages/webiny-api-headless/src/*",
         "webiny-install/*": "./packages/webiny-install/src/*",
         "webiny-ui/*": "./packages/webiny-ui/src/*",
         "webiny-plugins/*": "./packages/webiny-plugins/src/*",
@@ -25,6 +26,7 @@ System.config({
         "webiny-api-cookie-policy/*": "./packages/webiny-api-cookie-policy/src/*",
         "webiny-api-google-tag-manager/*": "./packages/webiny-api-google-tag-manager/src/*",
         "webiny-api-mailchimp/*": "./packages/webiny-api-mailchimp/src/*",
-        "webiny-api-typeform/*": "./packages/webiny-api-typeform/src/*"
+        "webiny-api-typeform/*": "./packages/webiny-api-typeform/src/*",
+        "webiny-entity/*": "./packages/webiny-entity/src/*"
     }
 });

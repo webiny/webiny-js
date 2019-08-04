@@ -46,7 +46,7 @@
     "get-yarn-workspaces": "^1.0.2",
     "glob": "^7.1.2",
     "graphql": "^14.3.0",
-    "graphql-tag": "^2.9.2",
+    "graphql-tag": "^2.10.1",
     "inquirer": "^6.2.1",
     "load-json-file": "^5.2.0",
     "lodash.get": "^4.4.2",
