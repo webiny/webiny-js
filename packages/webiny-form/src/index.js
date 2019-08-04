@@ -1,5 +1,5 @@
 import Form from "./Form";
 import linkState from "./linkState";
-import type { BindRenderPropsType } from "./Bind";
+export type { BindComponentRenderPropType, BindComponentType } from "./Bind";
 
-export { Form, linkState, BindRenderPropsType };
+export { Form, linkState };
