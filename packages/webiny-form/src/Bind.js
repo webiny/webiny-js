@@ -1,6 +1,6 @@
 // @flow
 import * as React from "react";
-import { get, isFunction } from "lodash";
+import { get } from "lodash";
 import type Form from "./Form";
 import validation from "./validation";
 import invariant from "invariant";
@@ -12,8 +12,20 @@ export type Props = {
     defaultValue?: any,
     validators: Array<string>,
     validationMessages?: { [string]: string },
-    children: any,
+    children: BindRenderPropsType,
     validate: Function
+};
+
+export type BindRenderPropsType = {
+    form: Object,
+    onChange: (value: any) => Promise<void>,
+    value: any,
+    validate: () => Promise<void>,
+    validation: {
+        isValid: boolean,
+        message: string,
+        results: ?Object
+    }
 };
 
 const createBind = (form: Form) => {
