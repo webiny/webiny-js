@@ -22,11 +22,13 @@
   },
   "dependencies": {
     "apollo-server-lambda": "^2.8.1",
+    "bufferutil": "^4.0.1",
     "fsevents": "^2.0.7",
     "graphql": "^14.4.2",
     "graphql-middleware": "^3.0.2",
     "react": "^16.4.0",
-    "react-dom": "^16.4.0"
+    "react-dom": "^16.4.0",
+    "utf-8-validate": "^5.0.2"
   },
   "devDependencies": {
     "@babel/cli": "^7.0.0",

@@ -14,7 +14,7 @@ export default {
         namespace: "cms",
         typeDefs: gql`
             extend type File @key(fields: "id") {
-                id: ID @external
+                id: ID! @external
             }
 
             input PageBuilderSearchInput {

@@ -2,15 +2,14 @@ const { ApolloGateway, RemoteGraphQLDataSource } = require("@apollo/gateway");
 import { ApolloServer } from "apollo-server-lambda";
 import createConfig from "demo-service-config";
 
+const host = process.env.FUNCTIONS_HOST;
+
 const gateway = new ApolloGateway({
     serviceList: [
-        /*        {
-            name: "pageBuilder",
-            url: process.env.FUNCTIONS_HOST + "/function/page-builder"
-        },*/
-        { name: "security", url: process.env.FUNCTIONS_HOST + "/function/security" },
-        { name: "files", url: process.env.FUNCTIONS_HOST + "/function/files" }
-        //{ name: "headless", url: process.env.FUNCTIONS_HOST + "/function/headless" }
+        { name: "pageBuilder", url: host + "/function/page-builder" },
+        { name: "security", url: host + "/function/security" },
+        { name: "files", url: host + "/function/files" }
+        //{ name: "headless", url: host + "/function/headless" }
     ],
     buildService({ url }) {
         return new RemoteGraphQLDataSource({
