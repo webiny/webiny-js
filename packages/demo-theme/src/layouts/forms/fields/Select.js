@@ -3,14 +3,15 @@ import * as React from "react";
 import type { FieldType } from "webiny-app-forms/types";
 import { I18NValue } from "webiny-app-i18n/components";
 import HelperMessage from "../components/HelperMessage";
+import type { BindComponentRenderPropType } from "webiny-form";
 
 type Props = {
-    bind: Object,
+    bind: BindComponentRenderPropType,
     field: FieldType
 };
 
 const Select = (props: Props) => {
-    const { onChange, value } = props.bind;
+    const { onChange, value, validation } = props.bind;
 
     return (
         <div className="webiny-cms-form-field webiny-cms-form-field--select">
@@ -34,8 +35,8 @@ const Select = (props: Props) => {
                 ))}
             </select>
             <HelperMessage
-                isValid={props.validation.isValid}
-                errorMessage={props.validation.message}
+                isValid={validation.isValid}
+                errorMessage={validation.message}
                 helperMessage={<I18NValue value={props.field.helpText} />}
             />
         </div>

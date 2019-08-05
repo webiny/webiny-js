@@ -7,7 +7,7 @@ import { Select } from "webiny-ui/Select";
 import { get } from "lodash";
 import { I18NInput } from "webiny-app-i18n/admin/components";
 
-const GeneralSettings = ({ Bind, cms }: Object) => {
+const GeneralSettings = ({ Bind, cms }) => {
     const layouts = get(cms, "theme.forms.layouts") || [];
     return (
         <React.Fragment>

@@ -1,12 +1,12 @@
 // @flow
 import * as React from "react";
 import { renderPlugins } from "webiny-app/plugins";
-import type { CmsPageDetailsPluginType, WithFormDetailsProps } from "webiny-app-forms/types";
 import { Tab } from "webiny-ui/Tabs";
 import styled from "react-emotion";
 import FormSubmissionsOverview from "./FormSubmissionsOverview";
 import FormSubmissionsList from "./FormSubmissionsList";
 import { CircularProgress } from "webiny-ui/Progress";
+import type { PluginType } from "webiny-plugins/types";
 
 import { i18n } from "webiny-app/i18n";
 const t = i18n.namespace("FormsApp.FormDetails.PreviewContent");
@@ -24,7 +24,7 @@ export default ([
     {
         name: "forms-form-details-revision-content-submissions",
         type: "forms-form-details-revision-content",
-        render({ form, loading, refreshPages }: WithFormDetailsProps) {
+        render({ form, loading, refreshPages }) {
             return (
                 <Tab label={t`Submissions`} disabled={loading}>
                     <RenderBlock>
@@ -44,15 +44,15 @@ export default ([
     {
         name: "forms-form-details-submissions-overview",
         type: "forms-form-details-submissions",
-        render({ form }: WithFormDetailsProps) {
+        render({ form }) {
             return <FormSubmissionsOverview form={form} />;
         }
     },
     {
         name: "forms-form-details-submissions-list",
         type: "forms-form-details-submissions",
-        render({ form }: WithFormDetailsProps) {
+        render({ form }) {
             return <FormSubmissionsList form={form} />;
         }
     }
-]: Array<CmsPageDetailsPluginType>);
+]: Array<PluginType & Object>);

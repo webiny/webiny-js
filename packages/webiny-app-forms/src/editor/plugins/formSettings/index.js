@@ -15,9 +15,7 @@ export default ([
         title: "General settings",
         description: "Manage things like submit success messages and form layout.",
         icon: <SettingsIcon />,
-        render(props: Object) {
-            return <GeneralSettings {...props} />;
-        }
+        render: GeneralSettings
     },
     {
         name: "form-editor-form-settings-tos",
@@ -25,9 +23,7 @@ export default ([
         title: "Terms of service",
         description: "Manage terms of service messaging.",
         icon: <TermsOfServiceIcon />,
-        render(props: Object) {
-            return <TermsOfServiceSettings {...props} />;
-        }
+        render: TermsOfServiceSettings
     },
     {
         name: "form-editor-form-settings-recaptcha",
@@ -35,8 +31,6 @@ export default ([
         title: "ReCAPTCHA",
         description: "Enable reCAPTCHA to prevent spam and abuse.",
         icon: <ReCaptchaIcon />,
-        render(props: Object) {
-            return <ReCaptchaSettings {...props} />;
-        }
+        render: ReCaptchaSettings
     }
 ]: Array<FormSettingsPluginType>);

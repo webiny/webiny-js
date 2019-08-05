@@ -1,6 +1,5 @@
 // @flow
 import React from "react";
-import { type WithFormDetailsProps } from "webiny-app-cms/admin/components";
 import { IconButton } from "webiny-ui/Button";
 import { Tooltip } from "webiny-ui/Tooltip";
 import { ReactComponent as PublishIcon } from "webiny-app-forms/admin/icons/publish.svg";
@@ -11,14 +10,12 @@ import { graphql } from "react-apollo";
 import { withSnackbar } from "webiny-admin/components";
 import { compose } from "recompose";
 
-type Props = WithFormDetailsProps;
-
 const PublishRevision = ({
     showSnackbar,
     revision,
     gqlPublishRevision,
     gqlUnpublishRevision
-}: Props) => {
+}: *) => {
     return (
         <React.Fragment>
             {revision.status !== "published" ? (

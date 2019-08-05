@@ -1,5 +1,5 @@
 import React from "react";
-import { compose, withHandlers } from "recompose";
+import { compose } from "recompose";
 import { graphql } from "react-apollo";
 import { withRouter } from "react-router-dom";
 import { SplitView, LeftPanel, RightPanel } from "webiny-admin/components/SplitView";
@@ -43,17 +43,6 @@ export default compose(
         },
         variables: {
             sort: { savedOn: -1 }
-        }
-    }),
-    withHandlers({
-        createForm: ({ createMutation, history, showSnackbar }) => async category => {
-            try {
-                const res = await createMutation({ variables: { category } });
-                const { data } = res.data.cms.formDetails;
-                history.push(`/forms/${data.id}`);
-            } catch (e) {
-                showSnackbar(e.message);
-            }
         }
     })
 )(Forms);

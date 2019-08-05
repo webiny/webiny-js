@@ -1,11 +1,11 @@
-//@flow
+// @flow
 import React from "react";
 import { css } from "emotion";
 import { withRouter } from "react-router-dom";
-import { type WithFormDetailsProps } from "webiny-app-cms/admin/components";
 import { ButtonDefault } from "webiny-ui/Button";
 import { Icon } from "webiny-ui/Icon";
-import { ReactComponent as DownButton } from "webiny-app-cms/admin/assets/round-arrow_drop_down-24px.svg";
+import { ReactComponent as DownButton } from "webiny-app-forms/admin/icons/round-arrow_drop_down-24px.svg";
+
 import { MenuItem } from "@rmwc/menu";
 import { Typography } from "webiny-ui/Typography";
 import { Menu } from "webiny-ui/Menu";
@@ -25,9 +25,7 @@ const menuList = css({
     }
 });
 
-type Props = WithFormDetailsProps;
-
-const RevisionSelector = ({ revision, form, selectRevision }: Props) => {
+const RevisionSelector = ({ revision, form, selectRevision }: *) => {
     return (
         <Menu
             className={menuList}

@@ -8,6 +8,7 @@ import { Elevation } from "webiny-ui/Elevation";
 import { getForm } from "webiny-app-forms/admin/viewsGraphql";
 import { withSnackbar } from "webiny-admin/components";
 import { get } from "lodash";
+import { Tabs } from "webiny-ui/Tabs";
 
 const EmptySelect = styled("div")({
     width: "100%",
@@ -67,12 +68,15 @@ const FormDetails = ({ formId, history, query, showSnackbar, refreshForms }) => 
                 const form = get(data, "forms.form.data") || null;
                 return (
                     <DetailsContainer>
-                        {form &&
-                            renderPlugins("forms-form-details", {
-                                refreshForms,
-                                form,
-                                loading
-                            })}
+                        {form && (
+                            <Tabs>
+                                {renderPlugins(
+                                    "forms-form-details-revision-content",
+                                    { refreshForms, form, loading },
+                                    { wrapper: false }
+                                )}
+                            </Tabs>
+                        )}
                     </DetailsContainer>
                 );
             }}

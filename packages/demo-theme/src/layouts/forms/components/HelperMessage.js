@@ -7,6 +7,9 @@ type Props = {
     isValid: boolean
 };
 
+/**
+ * A component that is used to show helper (description) and validation error messages.
+ */
 const HelperMessage = (props: Props) => {
     return (
         <div

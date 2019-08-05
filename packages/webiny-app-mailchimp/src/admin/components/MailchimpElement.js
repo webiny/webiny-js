@@ -1,14 +1,12 @@
 // @flow
 import * as React from "react";
 import { pure } from "recompose";
-import { withCms } from "webiny-app-cms/context";
 import { ElementRoot } from "webiny-app-cms/render/components/ElementRoot";
 import { Form } from "webiny-form";
 import { get } from "lodash";
 import { getPlugins } from "webiny-plugins";
 
-const MailchimpElement = pure((props: Object) => {
-    const { element } = props;
+const MailchimpElement = pure(({ element }: *) => {
     let selected = get(element, "data.settings.component", get(element, "settings.component"));
     const component = getPlugins("cms-element-mailchimp-component").find(
         cmp => cmp.name === selected
@@ -46,4 +44,4 @@ const MailchimpElement = pure((props: Object) => {
     );
 });
 
-export default withCms()(MailchimpElement);
+export default MailchimpElement;

@@ -1,23 +1,37 @@
 // @flow
 import * as React from "react";
-import { get, isFunction } from "lodash";
+import { get } from "lodash";
 import type Form from "./Form";
 import validation from "./validation";
 import invariant from "invariant";
 
-export type Props = {
+export type BindComponentPropsType = {
     name: string,
     beforeChange?: Function,
     afterChange?: Function,
     defaultValue?: any,
     validators: Array<string>,
     validationMessages?: { [string]: string },
-    children: any,
+    children: React.Node | BindComponentRenderPropType,
     validate: Function
 };
 
+export type BindComponentRenderPropType = {
+    form: Object,
+    onChange: (value: any) => Promise<void>,
+    value: any,
+    validate: () => Promise<void>,
+    validation: {
+        isValid: boolean,
+        message: string,
+        results: ?Object
+    }
+};
+
+export type BindComponentType = BindComponentPropsType => React.Node;
+
 const createBind = (form: Form) => {
-    const Bind = (props: Props) => {
+    const Bind: BindComponentType = props => {
         const {
             name,
             validators = [],
@@ -42,6 +56,7 @@ const createBind = (form: Form) => {
 
         // Build new input props
         const newProps = {
+            disabled: false,
             form,
             validate: form.getValidateFn(name),
             validation: form.state.validation[name] || {
@@ -61,15 +76,18 @@ const createBind = (form: Form) => {
                     : form.props.disabled;
             // Only override the input prop if the entire Form is disabled
             if (inputDisabledByForm) {
-                newProps["disabled"] = true;
+                newProps.disabled = true;
             }
         }
 
         form.inputs[name].props = newProps;
 
         if (React.isValidElement(children)) {
+            // $FlowFixMe
             return React.cloneElement(children, newProps);
         }
+
+        // $FlowFixMe
         return children(newProps);
     };
 

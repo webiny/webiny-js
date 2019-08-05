@@ -1,15 +1,14 @@
+// @flow
 import React from "react";
 import { withRouter } from "react-router-dom";
 import { IconButton } from "webiny-ui/Button";
 import { Tooltip } from "webiny-ui/Tooltip";
-import { ReactComponent as EditIcon } from "webiny-app-cms/admin/assets/edit.svg";
+import { ReactComponent as EditIcon } from "webiny-app-forms/admin/icons/edit.svg";
 import withRevisionHandlers from "../../formRevisions/withRevisionHandlers";
 import { compose } from "recompose";
-import { createRevisionFrom } from "webiny-app-cms/admin/graphql/pages";
-import { graphql } from "react-apollo";
 import { withSnackbar } from "webiny-admin/components";
 
-const EditRevision = ({ revision, history, gqlCreate, showSnackbar }) => {
+const EditRevision = ({ revision, history, gqlCreate, showSnackbar }: *) => {
     if (revision.status === "draft") {
         return (
             <Tooltip content={"Edit"} placement={"top"}>
@@ -45,7 +44,6 @@ const EditRevision = ({ revision, history, gqlCreate, showSnackbar }) => {
 
 export default compose(
     withSnackbar(),
-    graphql(createRevisionFrom, { name: "gqlCreate" }),
     withRouter,
     withRevisionHandlers
 )(EditRevision);

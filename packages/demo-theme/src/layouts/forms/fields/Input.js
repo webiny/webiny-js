@@ -3,15 +3,16 @@ import * as React from "react";
 import { I18NValue } from "webiny-app-i18n/components";
 import HelperMessage from "../components/HelperMessage";
 import type { FieldType } from "webiny-app-forms/types";
+import type { BindComponentRenderPropType } from "webiny-form";
 
 type Props = {
     type?: string,
-    bind: Object,
+    bind: BindComponentRenderPropType,
     field: FieldType
 };
 
 const Input = (props: Props) => {
-    const { onChange, value, validate } = props.bind;
+    const { onChange, value, validation, validate } = props.bind;
 
     const onBlur = (e: SyntheticInputEvent<HTMLInputElement>) => {
         if (validate) {
@@ -38,8 +39,8 @@ const Input = (props: Props) => {
                 className="webiny-cms-form-field__input"
             />
             <HelperMessage
-                isValid={props.validation.isValid}
-                errorMessage={props.validation.message}
+                isValid={validation.isValid}
+                errorMessage={validation.message}
                 helperMessage={<I18NValue value={props.field.helpText} />}
             />
         </div>

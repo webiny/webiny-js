@@ -1,13 +1,12 @@
 // @flow
 import * as React from "react";
 import { pure } from "recompose";
-import { withCms } from "webiny-app-cms/context";
 import { ElementRoot } from "webiny-app-cms/render/components/ElementRoot";
 import { get } from "lodash";
 import { Form as FormsForm } from "webiny-app-forms/components/Form";
 
 const FormElement = pure(({ element }: Object) => {
-    let render = "Form not selected";
+    let render = "Form not selected.";
 
     let form = get(element, "data.settings.form") || {};
 
@@ -38,4 +37,4 @@ const FormElement = pure(({ element }: Object) => {
     );
 });
 
-export default withCms()(FormElement);
+export default FormElement;

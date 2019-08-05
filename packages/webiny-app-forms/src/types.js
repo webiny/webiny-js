@@ -5,6 +5,7 @@ import type { WithCmsPropsType } from "webiny-app-cms/context";
 import type { ReCaptchaComponentType } from "webiny-app-forms/components/Form/components/createReCaptchaComponent";
 import type { TermsOfServiceComponentType } from "webiny-app-forms/components/Form/components/createTermsOfServiceComponent";
 import type { I18NStringValueType } from "webiny-app-i18n/types";
+import type { BindComponentType } from "webiny-form";
 
 export type FieldIdType = string;
 export type FieldsLayoutType = [[FieldIdType]];
@@ -21,13 +22,15 @@ export type FieldValidatorType = {
 };
 
 export type FieldType = {
-    _id: ?string,
-    type: ?string,
-    fieldId: ?FieldIdType,
+    _id: string,
+    type: string,
+    name: string,
+    fieldId: FieldIdType,
     label: ?I18NStringValueType,
     helpText: ?I18NStringValueType,
     placeholderText: ?I18NStringValueType,
     validation: Array<FieldValidatorType>,
+    options: Array<{ value: string, label: I18NStringValueType }>,
     settings: Object
 };
 
@@ -109,18 +112,33 @@ export type FormEditorFieldPluginType = PluginType & {
         },
         renderSettings?: ({
             form: Object,
-            Bind: React.Node,
+            Bind: BindComponentType,
             afterLabelChange: () => void,
             uniqueFieldIdValidator: () => void
         }) => React.Node
     }
 };
 
-export type FormSettingsPluginType = PluginType & {};
+export type FormSettingsPluginType = PluginType & {
+    title: string,
+    description: string,
+    icon: React.Node,
+    render: FormSettingsPluginRenderFunctionType
+};
+
+export type FormSettingsPluginRenderFunctionType = (props: {
+    Bind: BindComponentType,
+    formData: Object, // Form settings.
+    form: Object
+}) => React.Node;
 
 export type FormTriggerHandlerPluginType = PluginType & {
     trigger: {
         id: string,
         handle: ({ trigger: Object, data: Object, form: FormDataType }) => void
     }
+};
+
+export type FormDetailsPluginType = PluginType & {
+    render: (props: Object) => React.Node
 };
