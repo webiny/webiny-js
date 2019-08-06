@@ -12,8 +12,13 @@ import getI18NInformation from "./resolvers/getI18NInformation";
 const I18NLocaleFetcher = ({ getEntity }) => getEntity("I18NLocale");
 
 export default {
-    typeDefs: () => [
-        `
+    typeDefs: `
+        input I18NLocaleSearchInput {
+            query: String
+            fields: [String]
+            operator: String
+        }
+        
         type I18NLocale {
             id: ID
             code: String
@@ -30,13 +35,13 @@ export default {
         
         type I18NLocaleResponse {
             data: I18NLocale
-            error: Error
+            error: I18NError
         }
         
         type I18NLocaleListResponse {
             data: [I18NLocale]
-            meta: ListMeta
-            error: Error
+            meta: I18NListMeta
+            error: I18NError
         }
         
         type SearchLocaleCodesResponse {
@@ -48,9 +53,7 @@ export default {
             currentLocale: I18NLocale
             defaultLocale: I18NLocale 
         }
-    `
-    ],
-    typeExtensions: `
+        
         extend type I18NQuery {
             getI18NLocale(
                 id: ID 
@@ -61,7 +64,7 @@ export default {
                 perPage: Int
                 where: JSON
                 sort: JSON
-                search: SearchInput
+                search: I18NLocaleSearchInput
             ): I18NLocaleListResponse   
             
             getI18NInformation: I18NInformationResponse
@@ -83,7 +86,7 @@ export default {
         
             deleteI18NLocale(
                 id: ID!
-            ): DeleteResponse
+            ): I18NDeleteResponse
         }
     `,
     resolvers: {

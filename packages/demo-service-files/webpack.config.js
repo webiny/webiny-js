@@ -1,16 +1,10 @@
 // @flowIgnore
 
 const path = require("path");
-const getPackages = require("get-yarn-workspaces");
-const packages = getPackages();
+const aliases = require("@webiny/project-utils/aliases");
+const packages = require("@webiny/project-utils/packages");
 
 const isEnvDevelopment = process.env.NODE_ENV === "development";
-
-const aliases = packages.reduce((aliases, dir) => {
-    const name = path.basename(dir);
-    aliases[`^${name}/(?!src)(.+)$`] = `${name}/src/\\1`;
-    return aliases;
-}, {});
 
 module.exports = {
     entry: __dirname + "/src/handler.js",
@@ -21,7 +15,7 @@ module.exports = {
         filename: "handler.js"
     },
     // Generate sourcemaps for proper error messages
-    devtool: isEnvDevelopment ? "source-map" : false,
+    devtool: false,
     externals: ["aws-sdk"],
     mode: isEnvDevelopment ? "development" : "production",
     optimization: {

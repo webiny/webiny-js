@@ -11,7 +11,6 @@ export default {
     type: "graphql-schema",
     name: "graphql-schema-cms",
     schema: {
-        namespace: "cms",
         typeDefs: gql`
             extend type File @key(fields: "id") {
                 id: ID! @external

@@ -1,17 +1,10 @@
 // @flow
+import { merge } from "lodash";
 import { gql } from "apollo-server-lambda";
 import { dummyResolver } from "webiny-api/graphql";
 import { type PluginType } from "webiny-api/types";
 import { hasScope } from "webiny-api-security";
-import {
-    resolveCreate,
-    resolveDelete,
-    resolveGet,
-    resolveList,
-    resolveUpdate
-} from "webiny-api/graphql";
-
-const I18NLocaleFetcher = ({ getEntity }) => getEntity("I18NLocale");
+import i18nLocale from "./graphql/I18NLocale";
 
 export default ([
     {
@@ -19,6 +12,14 @@ export default ([
         name: "graphql-schema-i18n",
         schema: {
             typeDefs: gql`
+                type I18NQuery {
+                    _empty: String
+                }
+
+                type I18NMutation {
+                    _empty: String
+                }
+
                 extend type Query {
                     i18n: I18NQuery
                 }
@@ -27,63 +28,12 @@ export default ([
                     i18n: I18NMutation
                 }
 
-                type I18NLocale {
-                    id: ID
-                    code: String
-                    default: Boolean
-                    createdOn: DateTime
+                type I18NDeleteResponse {
+                    data: Boolean
+                    error: I18NError
                 }
 
-                input I18NLocaleInput {
-                    id: ID
-                    code: String
-                    default: Boolean
-                    createdOn: DateTime
-                }
-
-                input I18NLocaleValueInput {
-                    value: JSON
-                    locale: String!
-                }
-
-                input I18NValueInput {
-                    values: [I18NLocaleValueInput]
-                }
-
-                type I18NLocaleValue {
-                    value: JSON
-                    locale: String!
-                }
-
-                type I18NValue {
-                    value: JSON
-                    values: [I18NLocaleValue]!
-                }
-
-                input I18NStringLocaleValueInput {
-                    value: String
-                    locale: String!
-                }
-
-                input I18NStringValueInput {
-                    values: [I18NStringLocaleValueInput]
-                }
-
-                type I18NStringLocaleValue {
-                    value: String
-                    locale: String!
-                }
-
-                type I18NStringValue {
-                    value: String
-                    values: [I18NStringLocaleValue]!
-                }
-
-                type I18NLocaleResponse {
-                    data: I18NLocale
-                }
-
-                type I18NLocaleListMeta {
+                type I18NListMeta {
                     totalCount: Int
                     totalPages: Int
                     page: Int
@@ -94,64 +44,25 @@ export default ([
                     nextPage: Int
                 }
 
-                type I18NLocaleError {
+                type I18NError {
                     code: String
                     message: String
                     data: JSON
                 }
 
-                type I18NLocaleDeleteResponse {
-                    data: Boolean
-                    error: I18NLocaleError
-                }
-
-                type I18NLocaleListResponse {
-                    data: [I18NLocale]
-                    meta: I18NLocaleListMeta
-                    error: I18NLocaleError
-                }
-
-                input I18NLocaleSearchInput {
-                    query: String
-                    fields: [String]
-                    operator: String
-                }
-
-                type I18NQuery {
-                    getI18NLocale(id: ID): I18NLocaleResponse
-
-                    listI18NLocales(
-                        page: Int
-                        perPage: Int
-                        where: JSON
-                        sort: JSON
-                        search: I18NLocaleSearchInput
-                    ): I18NLocaleListResponse
-                }
-
-                type I18NMutation {
-                    createI18NLocale(data: I18NLocaleInput!): I18NLocaleResponse
-                    updateI18NLocale(id: ID!, data: I18NLocaleInput!): I18NLocaleResponse
-                    deleteI18NLocale(id: ID!): I18NLocaleDeleteResponse
-                }
+                ${i18nLocale.typeDefs}
             `,
-            resolvers: {
-                Query: {
-                    i18n: dummyResolver
+            resolvers: merge(
+                {
+                    Query: {
+                        i18n: dummyResolver
+                    },
+                    Mutation: {
+                        i18n: dummyResolver
+                    }
                 },
-                Mutation: {
-                    i18n: dummyResolver
-                },
-                I18NQuery: {
-                    getI18NLocale: resolveGet(I18NLocaleFetcher),
-                    listI18NLocales: resolveList(I18NLocaleFetcher)
-                },
-                I18NMutation: {
-                    createI18NLocale: resolveCreate(I18NLocaleFetcher),
-                    updateI18NLocale: resolveUpdate(I18NLocaleFetcher),
-                    deleteI18NLocale: resolveDelete(I18NLocaleFetcher)
-                }
-            }
+                i18nLocale.resolvers
+            )
         },
         security: {
             shield: {
