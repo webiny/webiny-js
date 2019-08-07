@@ -19,15 +19,20 @@ export async function prepareSchema(config: Object) {
         }
     }
 
+    const scalars = getPlugins("graphql-scalar").map(item => item.scalar);
+
     const schemaDefs = [
         {
             typeDefs: gql`
+                ${scalars.map(scalar => `scalar ${scalar.name}`).join(" ")}
                 scalar JSON
                 scalar Long
                 scalar DateTime
                 scalar RefInput
+                scalar I18N
             `,
             resolvers: {
+                ...scalars,
                 JSON: GraphQLJSON,
                 DateTime: GraphQLDateTime,
                 Long: GraphQLLong,
@@ -35,6 +40,7 @@ export async function prepareSchema(config: Object) {
             }
         }
     ];
+
     const schemaPlugins = getPlugins("graphql-schema");
     for (let i = 0; i < schemaPlugins.length; i++) {
         const { schema } = schemaPlugins[i];
