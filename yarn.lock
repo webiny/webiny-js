@@ -19074,6 +19074,11 @@ reactcss@^1.2.0:
   dependencies:
     lodash "^4.0.1"
 
+read-json-sync@^2.0.1:
+  version "2.0.1"
+  resolved "https://registry.npmjs.org/read-json-sync/-/read-json-sync-2.0.1.tgz#3f3107bc485c6be7317bd9a6feb3331e9993ea03"
+  integrity sha512-8ZJRyVJ6jKMzXsuoTTb/LPQusL/bNdNZi1GV5cZ8m9JSvHGIfI7caizhNOPkLVaZWGUrARc88cAftSnRE1liDg==
+
 read-pkg-up@^1.0.1:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/read-pkg-up/-/read-pkg-up-1.0.1.tgz#9d63c13276c065918d57f002a57f40a1b643fb02"
