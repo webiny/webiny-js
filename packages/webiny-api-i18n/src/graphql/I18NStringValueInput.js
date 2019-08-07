@@ -1,10 +1,10 @@
-export default /* GraphQL */ `
-    input I18NStringLocaleValueInput {
+export default prefix => /* GraphQL */ `
+    input ${prefix}I18NStringLocaleValueInput {
         value: String
         locale: String!
     }
 
-    input I18NStringValueInput {
-        values: [I18NStringLocaleValueInput]
+    input ${prefix}I18NStringValueInput {
+        values: [${prefix}I18NStringLocaleValueInput]
     }
 `;

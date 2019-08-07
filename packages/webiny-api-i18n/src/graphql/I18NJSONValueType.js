@@ -1,11 +1,11 @@
-export default /* GraphQL */ `
-    type I18NJSONLocaleValue {
+export default prefix => /* GraphQL */ `
+    type ${prefix}I18NJSONLocaleValue {
         value: JSON
         locale: String!
     }
 
-    type I18NJSONValue {
+    type ${prefix}I18NJSONValue {
         value: JSON
-        values: [I18NJSONLocaleValue]!
+        values: [${prefix}I18NJSONLocaleValue]!
     }
 `;
