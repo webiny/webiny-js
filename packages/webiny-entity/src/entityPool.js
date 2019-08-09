@@ -55,6 +55,7 @@ class EntityPool {
     }
 
     flush(): this {
+        this.pool = null;
         this.pool = {};
         return this;
     }

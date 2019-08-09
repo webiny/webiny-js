@@ -1,7 +1,8 @@
 // This file helps Jetbrains resolve aliases
 System.config({
     paths: {
-        "@webiny/project-utils": "./packages/project-utils/src/*",
+        "@webiny/project-utils/*": "./packages/project-utils/src/*",
+        "@webiny/mongo-http-client/*": "./packages/mongo-http-client/src/*",
         "webiny-app/*": "./packages/webiny-app/src/*",
         "webiny-admin/*": "./packages/webiny-admin/src/*",
         "webiny-app-cms/*": "./packages/webiny-app-cms/src/*",
