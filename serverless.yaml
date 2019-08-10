@@ -58,35 +58,35 @@ functions:
       - http:
           path: /function/files/
           method: any
-#  demo-service-security:
-#    handler: packages/demo-service-security/build/handler.handler
-#    environment:
-#      MONGODB_SERVER: ${self:custom.webiny.${self:custom.stage}.database.server}
-#      MONGO_HTTP_SERVER: ${self:custom.webiny.${self:custom.stage}.database.httpServer}
-#      MONGODB_DB_NAME: ${self:custom.webiny.${self:custom.stage}.database.name}
-#      WEBINY_JWT_SECRET: ${self:custom.webiny.${self:custom.stage}.jwtSecret}
-#    events:
-#      - http:
-#          path: /function/security/
-#          method: any
-#  demo-service-page-builder:
-#    handler: packages/demo-service-page-builder/build/handler.handler
-#    environment:
-#      MONGODB_SERVER: ${self:custom.webiny.${self:custom.stage}.database.server}
-#      MONGO_HTTP_SERVER: ${self:custom.webiny.${self:custom.stage}.database.httpServer}
-#      MONGODB_DB_NAME: ${self:custom.webiny.${self:custom.stage}.database.name}
-#      WEBINY_JWT_SECRET: ${self:custom.webiny.${self:custom.stage}.jwtSecret}
-#    events:
-#      - http:
-#          path: /function/page-builder/
-#          method: any
-#  demo-files:
-#    # This function handles local file uploads
-#    handler: packages/demo-files/build/handler.handler
-#    events:
-#      - http:
-#          path: /files/{key+}
-#          method: get
-#    package:
-#      include:
-#        - packages/demo-files/build/handler.js
+  demo-service-security:
+    handler: packages/demo-service-security/build/handler.handler
+    environment:
+      MONGODB_SERVER: ${self:custom.webiny.${self:custom.stage}.database.server}
+      MONGO_HTTP_SERVER: ${self:custom.webiny.${self:custom.stage}.database.httpServer}
+      MONGODB_DB_NAME: ${self:custom.webiny.${self:custom.stage}.database.name}
+      WEBINY_JWT_SECRET: ${self:custom.webiny.${self:custom.stage}.jwtSecret}
+    events:
+      - http:
+          path: /function/security/
+          method: any
+  demo-service-page-builder:
+    handler: packages/demo-service-page-builder/build/handler.handler
+    environment:
+      MONGODB_SERVER: ${self:custom.webiny.${self:custom.stage}.database.server}
+      MONGO_HTTP_SERVER: ${self:custom.webiny.${self:custom.stage}.database.httpServer}
+      MONGODB_DB_NAME: ${self:custom.webiny.${self:custom.stage}.database.name}
+      WEBINY_JWT_SECRET: ${self:custom.webiny.${self:custom.stage}.jwtSecret}
+    events:
+      - http:
+          path: /function/page-builder/
+          method: any
+  demo-files:
+    # This function handles local file uploads
+    handler: packages/demo-files/build/handler.handler
+    events:
+      - http:
+          path: /files/{key+}
+          method: get
+    package:
+      include:
+        - packages/demo-files/build/handler.jwtSecret

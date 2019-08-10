@@ -1,4 +1,5 @@
 const path = require("path");
+const nodeExternals = require("@webiny/webpack-externals");
 const aliases = require("@webiny/project-utils/aliases");
 const packages = require("@webiny/project-utils/packages");
 
@@ -14,7 +15,7 @@ module.exports = {
     },
     // Generate sourcemaps for proper error messages
     devtool: false,
-    externals: ["aws-sdk"],
+    externals: [nodeExternals()],
     mode: isEnvDevelopment ? "development" : "production",
     optimization: {
         // We no not want to minimize our code.

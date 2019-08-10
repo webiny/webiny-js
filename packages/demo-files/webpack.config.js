@@ -1,4 +1,5 @@
 const path = require("path");
+const nodeExternals = require("@webiny/webpack-externals");
 
 const isEnvDevelopment = process.env.NODE_ENV === "development";
 
@@ -11,7 +12,7 @@ module.exports = {
         filename: "handler.js"
     },
     devtool: isEnvDevelopment ? "source-map" : undefined,
-    externals: ["aws-sdk"],
+    externals: [nodeExternals()],
     mode: isEnvDevelopment ? "development" : "production",
     optimization: {
         // We no not want to minimize our code.
