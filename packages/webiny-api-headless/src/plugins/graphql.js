@@ -14,7 +14,7 @@ import { get } from "lodash";
 import setupDynamicSchema from "./dynamicSchema";
 
 const contentModelFetcher = ctx => {
-    return ctx.cms.entities.ContentModel;
+    return ctx.getEntity("CmsContentModel");
 };
 
 export default ([
