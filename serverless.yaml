@@ -90,3 +90,23 @@ functions:
     package:
       include:
         - packages/demo-files/build/handler.jwtSecret
+  demo-service-i18n:
+    handler: packages/demo-service-i18n/build/handler.handler
+    environment:
+      MONGODB_SERVER: ${self:custom.webiny.${self:custom.stage}.database.server}
+      MONGODB_DB_NAME: ${self:custom.webiny.${self:custom.stage}.database.name}
+      WEBINY_JWT_SECRET: ${self:custom.webiny.${self:custom.stage}.jwtSecret}
+    events:
+      - http:
+          path: /function/i18n/
+          method: any
+  demo-service-forms:
+    handler: packages/demo-service-forms/build/handler.handler
+    environment:
+      MONGODB_SERVER: ${self:custom.webiny.${self:custom.stage}.database.server}
+      MONGODB_DB_NAME: ${self:custom.webiny.${self:custom.stage}.database.name}
+      WEBINY_JWT_SECRET: ${self:custom.webiny.${self:custom.stage}.jwtSecret}
+    events:
+      - http:
+          path: /function/forms/
+          method: any

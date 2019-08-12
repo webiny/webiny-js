@@ -3,6 +3,7 @@ const aliases = require("@webiny/project-utils/aliases");
 const packages = require("@webiny/project-utils/packages");
 
 const isEnvDevelopment = process.env.NODE_ENV === "development";
+const nodeExternals = require("@webiny/webpack-externals");
 
 module.exports = {
     entry: __dirname + "/src/handler.js",
@@ -14,7 +15,7 @@ module.exports = {
     },
     // Generate sourcemaps for proper error messages
     devtool: false,
-    externals: ["aws-sdk"],
+    externals: isEnvDevelopment ? [nodeExternals()] : ["aws-sdk"],
     mode: isEnvDevelopment ? "development" : "production",
     optimization: {
         // We no not want to minimize our code.

@@ -5,6 +5,7 @@ const getPackages = require("get-yarn-workspaces");
 const packages = getPackages();
 
 const isEnvDevelopment = process.env.NODE_ENV === "development";
+const nodeExternals = require("@webiny/webpack-externals");
 
 const aliases = packages.reduce((aliases, dir) => {
     const name = path.basename(dir);
@@ -22,7 +23,7 @@ module.exports = {
     },
     // Generate sourcemaps for proper error messages
     devtool: isEnvDevelopment ? "source-map" : false,
-    externals: ["aws-sdk", "vertx", "mongodb"],
+    externals: isEnvDevelopment ? [nodeExternals()] : ["aws-sdk"],
     mode: isEnvDevelopment ? "development" : "production",
     optimization: {
         // We no not want to minimize our code.

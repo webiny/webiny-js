@@ -23,7 +23,7 @@ class BuildFunctions {
         });
 
         return;*/
-        
+
         this.serverless.cli.log("Building functions...");
         const compiler = this.getCompiler();
 

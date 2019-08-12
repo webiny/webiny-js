@@ -17,7 +17,7 @@ module.exports = {
     },
     // Generate sourcemaps for proper error messages
     devtool: false,
-    externals: [nodeExternals()],
+    externals: isEnvDevelopment ? [nodeExternals()] : ["aws-sdk"],
     mode: isEnvDevelopment ? "development" : "production",
     optimization: {
         // We no not want to minimize our code.

@@ -12,7 +12,7 @@ module.exports = {
         filename: "handler.js"
     },
     devtool: isEnvDevelopment ? "source-map" : undefined,
-    externals: [nodeExternals()],
+    externals: isEnvDevelopment ? [nodeExternals()] : ["aws-sdk"],
     mode: isEnvDevelopment ? "development" : "production",
     optimization: {
         // We no not want to minimize our code.
