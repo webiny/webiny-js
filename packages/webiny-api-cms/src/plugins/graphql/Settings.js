@@ -1,92 +1,108 @@
 // @flow
-import { cmsSettingsFactory } from "webiny-api-cms/entities";
+import { resolveSaveSettings, resolveGetSettings } from "webiny-api/graphql";
 
-export default [
-    {
-        name: "schema-settings-cms",
-        type: "schema-settings",
-        namespace: "cms",
-        typeDefs: /* GraphQL */ `
-            type CmsSocialMedia {
-                facebook: String
-                twitter: String
-                instagram: String
-                image: File
-            }
+export default {
+    name: "graphql-schema-settings-cms",
+    type: "graphql-schema",
+    typeDefs: /* GraphQL */ `
+        type CmsSettingsError {
+            code: String
+            message: String
+            data: JSON
+        }
 
-            type CmsSettings {
-                name: String
-                favicon: File
-                logo: File
-                domain: String
-                social: CmsSocialMedia
-                pages: CmsSettingsPages
-            }
+        type CmsSocialMedia {
+            facebook: String
+            twitter: String
+            instagram: String
+            image: File
+        }
 
-            type CmsSettingsResponse {
-                error: Error
-                data: CmsSettings
-            }
+        type CmsSettings {
+            name: String
+            favicon: File
+            logo: File
+            domain: String
+            social: CmsSocialMedia
+            pages: CmsSettingsPages
+        }
 
-            type CmsSettingsPages {
-                home: ID
-                notFound: ID
-                error: ID
-            }
+        type CmsSettingsResponse {
+            error: CmsSettingsError
+            data: CmsSettings
+        }
 
-            type CmsDefaultPage {
-                id: String
-                parent: String
-                title: String
-            }
+        type CmsSettingsPages {
+            home: ID
+            notFound: ID
+            error: ID
+        }
 
-            input CmsSocialMediaInput {
-                facebook: String
-                twitter: String
-                instagram: String
-                image: FileInput
-            }
+        type CmsDefaultPage {
+            id: String
+            parent: String
+            title: String
+        }
 
-            input CmsDefaultPageInput {
-                id: String
-                title: String
-            }
+        input CmsSocialMediaInput {
+            facebook: String
+            twitter: String
+            instagram: String
+            # TODO: image: FileInput
+        }
 
-            input CmsSettingsInput {
-                name: String
-                favicon: FileInput
-                logo: FileInput
-                social: CmsSocialMediaInput
-                pages: CmsSettingsPagesInput
-            }
+        input CmsDefaultPageInput {
+            id: String
+            title: String
+        }
 
-            input CmsSettingsPagesInput {
-                home: ID
-                notFound: ID
-                error: ID
-            }
+        input CmsSettingsInput {
+            name: String
+            #favicon: FileInput
+            #logo: FileInput
+            social: CmsSocialMediaInput
+            pages: CmsSettingsPagesInput
+        }
 
-            extend type SettingsQuery {
-                cms: CmsSettingsResponse
-            }
+        input CmsSettingsPagesInput {
+            home: ID
+            notFound: ID
+            error: ID
+        }
 
-            extend type SettingsMutation {
-                cms(data: CmsSettingsInput): CmsSettingsResponse
+        extend type SettingsQuery {
+            cms: CmsSettingsResponse
+        }
+
+        extend type SettingsMutation {
+            cms(data: CmsSettingsInput): CmsSettingsResponse
+        }
+    `,
+    resolvers: {
+        CmsSocialMedia: {
+            image({ image }) {
+                return { __typename: "File", id: image };
             }
-        `,
-        entity: ({
-            cms: {
-                entities: { Settings }
+        },
+        CmsSettings: {
+            favicon({ favicon }) {
+                return { __typename: "File", id: favicon };
+            },
+            logo({ logo }) {
+                return { __typename: "File", id: logo };
             }
-        }: Object) => Settings
-    },
-    {
-        type: "entity",
-        name: "entity-cms-settings",
-        namespace: "cms",
-        entity: {
-            name: "Settings",
-            factory: cmsSettingsFactory
+        },
+        SettingsQuery: {
+            cms: (_: any, args: Object, ctx: Object, info: Object) => {
+                const entity = ctx.getEntity("CmsSettings");
+                return resolveGetSettings(entity)(_, args, ctx, info);
+            }
+        },
+        SettingsMutation: {
+            cms: (_: any, args: Object, ctx: Object, info: Object) => {
+                const entity = ctx.getEntity("CmsSettings");
+                return resolveSaveSettings(entity)(_, args, ctx, info);
+            }
         }
     }
-];
+};

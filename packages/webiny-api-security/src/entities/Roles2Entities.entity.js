@@ -19,13 +19,11 @@ export function roles2entitiesFactory(context: Object): Class<IRoles2Entities> {
         constructor() {
             super();
 
-            const {
-                security: { entities }
-            } = context;
+            const { getEntity } = context;
 
             this.attr("entity").entity([], { classIdAttribute: "entityClassId" });
             this.attr("entityClassId").char();
-            this.attr("role").entity(entities.Role);
+            this.attr("role").entity(getEntity("SecurityRole"));
         }
     };
 }
