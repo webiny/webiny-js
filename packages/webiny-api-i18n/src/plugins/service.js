@@ -8,14 +8,17 @@ export default ([
         type: "graphql-context",
         name: "graphql-context-i18n",
         apply: async (context: ApiContext & Object) => {
-            const { I18NLocale } = context.getEntities();
-
+            const { event, getDatabase } = context;
             const self = {
                 __i18n: {
                     acceptLanguage: null,
                     defaultLocale: null,
-                    locales: await I18NLocale.find(),
-                    locale: null
+                    locale: null,
+                    locales: await getDatabase()
+                        .collection("I18NLocale")
+                        .find({ deleted: { $ne: true } })
+                        .project({ _id: 0, id: 1, default: 1, code: 1 })
+                        .toArray()
                 },
                 getDefaultLocale() {
                     const allLocales = self.getLocales();
@@ -29,7 +32,7 @@ export default ([
                     let allLocales = self.getLocales();
                     const acceptLanguage = acceptLanguageParser.pick(
                         allLocales.map(item => item.code),
-                        context.event.headers["accept-language"]
+                        event.headers["accept-language"]
                     );
 
                     let currentLocale;

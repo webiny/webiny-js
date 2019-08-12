@@ -1,14 +1,10 @@
 // @flow
 import { resolveGet, resolveList } from "webiny-api/graphql/crudResolvers";
-
 import exportFormSubmissions from "./formSubmissionResolvers/exportFormSubmissions";
 import createFormSubmission from "./formSubmissionResolvers/createFormSubmission";
-import UserType from "webiny-api-security/plugins/graphql/User";
 
 export default {
-    typeDefs: () => [
-        UserType.typeDefs,
-        /* GraphQL*/ `type FormSubmission {
+    typeDefs: /* GraphQL*/ `type FormSubmission {
             id: ID
             data: JSON
             meta: FormMeta
@@ -28,18 +24,17 @@ export default {
         # Response types
         type FormSubmissionsListResponse {
             data: [FormSubmission]
-            meta: ListMeta
-            error: Error
+            meta: FormListMeta
+            error: FormError
         }
         
         type FormSubmissionResponse {
-            error: Error
+            error: FormError
             data: FormSubmission
         }
         
         type ExportFormSubmissionsResponse {
-            error: Error
-            data: File
+            error: FormError
         }
         
         extend type FormsQuery {
@@ -73,8 +68,7 @@ export default {
                 form: ID 
             ): ExportFormSubmissionsResponse
         }
-    `
-    ],
+    `,
     resolvers: {
         FormsQuery: {
             listFormSubmissions: resolveList("FormSubmission"),

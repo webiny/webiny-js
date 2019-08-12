@@ -11,22 +11,25 @@ import listForms from "./formResolvers/listForms";
 import listPublishedForms from "./formResolvers/listPublishedForms";
 import getPublishedForm from "./formResolvers/getPublishedForm";
 import saveFormView from "./formResolvers/saveFormView";
-import UserType from "webiny-api-security/plugins/graphql/User";
 
 export default {
-    typeDefs: () => [
-        UserType.typeDefs,
-        /* GraphQL*/ `
+    typeDefs: /* GraphQL*/ `
         enum FormStatusEnum { 
             published
             draft
             locked
         }
         
+        type FormsUser {
+            id: String
+            firstName: String
+            lastName: String
+        }
+        
         type Form {
             id: ID
-            createdBy: User
-            updatedBy: User
+            createdBy: FormsUser
+            updatedBy: FormsUser
             savedOn: DateTime
             createdOn: DateTime
             deletedOn: DateTime
@@ -181,17 +184,17 @@ export default {
         # Response types
         type FormResponse {
             data: Form
-            error: Error
+            error: FormError
         }
         
         type FormListResponse {
             data: [Form]
-            meta: ListMeta
-            error: Error
+            meta: FormListMeta
+            error: FormError
         }
         
         type SaveFormViewResponse {
-            error: Error
+            error: FormError
         }
         
         extend type FormsQuery {
@@ -221,6 +224,7 @@ export default {
                 perPage: Int
             ): FormListResponse
         }
+        
         extend type FormsMutation {
             createForm(
                 data: CreateFormInput!
@@ -250,18 +254,17 @@ export default {
             # Delete form and all of its revisions
             deleteForm(
                 id: ID!
-            ): DeleteResponse
+            ): FormDeleteResponse
             
             # Delete a single revision
             deleteRevision(
                 id: ID!
-            ): DeleteResponse
+            ): FormDeleteResponse
             
             # Logs a view of a form
             saveFormView(id: ID!): SaveFormViewResponse
         }
-    `
-    ],
+    `,
     resolvers: {
         FormsQuery: {
             getForm: resolveGet("Form"),

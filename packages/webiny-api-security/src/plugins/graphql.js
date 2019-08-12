@@ -16,7 +16,7 @@ export default ([
         schema: {
             typeDefs: gql`
                 extend type File @key(fields: "id") {
-                    id: ID! @external
+                    id: ID @external
                 }
                 
                 type SecurityQuery {
@@ -43,7 +43,7 @@ export default ([
             resolvers: merge(
                 {
                     Query: {
-                        security: dummyResolver
+                         security: dummyResolver
                     },
                     Mutation: {
                         security: dummyResolver

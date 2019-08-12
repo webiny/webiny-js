@@ -56,7 +56,7 @@ export default ([
                 }
 
                 type File @key(fields: "id") {
-                    id: ID!
+                    id: ID
                     name: String
                     size: Int
                     type: String

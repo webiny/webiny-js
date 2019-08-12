@@ -8,7 +8,9 @@ const gateway = new ApolloGateway({
     serviceList: [
         { name: "pageBuilder", url: host + "/function/page-builder" },
         { name: "security", url: host + "/function/security" },
-        { name: "files", url: host + "/function/files" }
+        { name: "files", url: host + "/function/files" },
+        { name: "i18n", url: host + "/function/i18n" },
+        { name: "forms", url: host + "/function/forms" }
         //{ name: "headless", url: host + "/function/headless" }
     ],
     buildService({ url }) {

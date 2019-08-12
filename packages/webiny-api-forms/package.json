@@ -6,7 +6,11 @@
     "type": "git",
     "url": "https://github.com/webiny/webiny-js.git"
   },
-  "author": "Pavel Denisjuk",
+  "contributors": [
+    "Pavel Denisjuk <pavel@webiny.com>",
+    "Sven Al Hamad <sven@webiny.com>",
+    "Adrian Smijulj <adrian@webiny.com>"
+  ],
   "license": "MIT",
   "dependencies": {
     "@babel/runtime": "^7.0.0",
@@ -17,7 +21,8 @@
     "mdbid": "^1.0.0",
     "request": "^2.88.0",
     "webiny-api": "0.0.0",
-    "webiny-plugins": "0.0.0"
+    "webiny-plugins": "0.0.0",
+    "got": "^9.6.0"
   },
   "devDependencies": {
     "@babel/cli": "^7.0.0",

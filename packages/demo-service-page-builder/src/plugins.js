@@ -6,7 +6,7 @@ import mailchimpPlugins from "webiny-api-mailchimp";
 import gtmPlugins from "webiny-api-google-tag-manager";
 import cookiePolicyPlugins from "webiny-api-cookie-policy";
 //import formPlugins from "webiny-api-forms/plugins";
-import i18nPlugins from "webiny-api-i18n/plugins";
+import i18nPlugins from "webiny-api-i18n/plugins/service";
 
 export default [
     apiPlugins,
