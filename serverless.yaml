@@ -24,6 +24,7 @@ custom:
       jwtSecret: MyS3cr3tK3Y!
       database:
         server: mongodb://localhost:27018
+        httpServer: http://localhost:5001
         name: webinyjs
     dev:
       functionsHost: http://localhost:${self:custom.serverless-offline.port}
@@ -38,6 +39,7 @@ functions:
     environment:
       FUNCTIONS_HOST: ${self:custom.webiny.${self:custom.stage}.functionsHost}
       MONGODB_SERVER: ${self:custom.webiny.${self:custom.stage}.database.server}
+      MONGO_HTTP_SERVER: ${self:custom.webiny.${self:custom.stage}.database.httpServer}
       MONGODB_DB_NAME: ${self:custom.webiny.${self:custom.stage}.database.name}
       WEBINY_JWT_SECRET: ${self:custom.webiny.${self:custom.stage}.jwtSecret}
     events:
@@ -49,6 +51,7 @@ functions:
     handler: packages/demo-service-files/build/handler.handler
     environment:
       MONGODB_SERVER: ${self:custom.webiny.${self:custom.stage}.database.server}
+      MONGO_HTTP_SERVER: ${self:custom.webiny.${self:custom.stage}.database.httpServer}
       MONGODB_DB_NAME: ${self:custom.webiny.${self:custom.stage}.database.name}
       WEBINY_JWT_SECRET: ${self:custom.webiny.${self:custom.stage}.jwtSecret}
     events:
@@ -59,6 +62,7 @@ functions:
     handler: packages/demo-service-security/build/handler.handler
     environment:
       MONGODB_SERVER: ${self:custom.webiny.${self:custom.stage}.database.server}
+      MONGO_HTTP_SERVER: ${self:custom.webiny.${self:custom.stage}.database.httpServer}
       MONGODB_DB_NAME: ${self:custom.webiny.${self:custom.stage}.database.name}
       WEBINY_JWT_SECRET: ${self:custom.webiny.${self:custom.stage}.jwtSecret}
     events:
@@ -69,6 +73,7 @@ functions:
     handler: packages/demo-service-page-builder/build/handler.handler
     environment:
       MONGODB_SERVER: ${self:custom.webiny.${self:custom.stage}.database.server}
+      MONGO_HTTP_SERVER: ${self:custom.webiny.${self:custom.stage}.database.httpServer}
       MONGODB_DB_NAME: ${self:custom.webiny.${self:custom.stage}.database.name}
       WEBINY_JWT_SECRET: ${self:custom.webiny.${self:custom.stage}.jwtSecret}
     events:
@@ -84,4 +89,4 @@ functions:
           method: get
     package:
       include:
-        - packages/demo-files/build/handler.js
+        - packages/demo-files/build/handler.jwtSecret

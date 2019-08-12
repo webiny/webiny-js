@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "build": "cross-env NODE_ENV=production npx webpack --out build"
+    "build": "babel src -d build --source-maps --copy-files"
   },
   "author": "",
   "license": "MIT",

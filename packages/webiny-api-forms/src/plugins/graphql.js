@@ -83,12 +83,13 @@ export default {
     },
     security: {
         shield: {
-            SettingsQuery: {
+            // TODO: move settings into its own fields
+            /*SettingsQuery: {
                 forms: hasScope("cms:settings")
             },
             SettingsMutation: {
                 forms: hasScope("cms:settings")
-            },
+            },*/
             FormsQuery: {
                 getForm: hasScope("forms:form:crud"),
                 listForms: hasScope("forms:form:crud"),

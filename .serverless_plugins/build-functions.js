@@ -16,6 +16,14 @@ class BuildFunctions {
     }
 
     async buildAndWatchFunctions() {
+        /*console.log("====> Attach @babel/register <====");
+        require("@babel/register")({
+            only: [/packages/],
+            configFile: path.resolve("babel.config.js")
+        });
+
+        return;*/
+        
         this.serverless.cli.log("Building functions...");
         const compiler = this.getCompiler();
 
@@ -79,7 +87,7 @@ class BuildFunctions {
         const configs = [];
         functions.forEach(fn => {
             const isSpa = get(this.serverless.service.functions[fn], "webiny.spa", false);
-            if(isSpa) {
+            if (isSpa) {
                 configs.push(require(path.resolve("packages", fn, "handler", "webpack.config.js")));
             } else {
                 configs.push(require(path.resolve("packages", fn, "webpack.config.js")));

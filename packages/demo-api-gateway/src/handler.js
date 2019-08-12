@@ -1,6 +1,5 @@
-const { ApolloGateway, RemoteGraphQLDataSource } = require("@apollo/gateway");
+import { ApolloGateway, RemoteGraphQLDataSource } from "@apollo/gateway";
 import { ApolloServer } from "apollo-server-lambda";
-import createConfig from "demo-service-config";
 
 const host = process.env.FUNCTIONS_HOST;
 
@@ -26,11 +25,9 @@ const gateway = new ApolloGateway({
 });
 
 export const handler = async (event, context) => {
-    const config = await createConfig();
     const { schema, executor } = await gateway.load();
 
-    const apollo = new ApolloServer({
-        ...(config.apollo || {}),
+    let apollo = new ApolloServer({
         schema,
         executor,
         introspection: true,
@@ -40,10 +37,10 @@ export const handler = async (event, context) => {
         }
     });
 
-    const handler = apollo.createHandler();
+    let apolloHandler = apollo.createHandler();
 
     return new Promise((resolve, reject) => {
-        handler(event, context, (error, data) => {
+        apolloHandler(event, context, (error, data) => {
             if (error) {
                 return reject(error);
             }

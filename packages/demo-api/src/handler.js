@@ -1,5 +1,4 @@
 // @flow
-import "source-map-support/register";
 import { registerPlugins } from "webiny-plugins";
 import { createHandler as createBaseHandler } from "webiny-api";
 import createConfig from "./configs";

@@ -7,7 +7,7 @@ module.exports = packages.reduce((aliases, dir) => {
         const json = readJson(path.join(dir, "package.json"));
         aliases[`^${json.name}/(?!src)(.+)$`] = `${json.name}/src/\\1`;
     } catch (err) {
-        console.log(err.message);
+        // No package.json, continue.
     }
     return aliases;
 }, {});
