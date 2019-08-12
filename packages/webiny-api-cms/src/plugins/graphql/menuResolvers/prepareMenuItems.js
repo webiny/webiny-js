@@ -86,7 +86,9 @@ export default async ({ entity: menu, context: graphqlContext }: Object) => {
                         if (!context.distinctParents.loaded) {
                             const ids = Object.keys(context.distinctParents.data);
 
-                            const { Page, Category } = graphqlContext.cms.entities;
+                            const Page = graphqlContext.getEntity("CmsPage");
+                            const Category = graphqlContext.getEntity("CmsCategory");
+
                             await listPublishedPages({
                                 args: { parent: ids },
                                 Page,
@@ -112,7 +114,9 @@ export default async ({ entity: menu, context: graphqlContext }: Object) => {
                     case "cms-menu-item-page-list": {
                         const { category, sortBy, sortDir } = item;
 
-                        const { Page, Category } = graphqlContext.cms.entities;
+                        const Page = graphqlContext.getEntity("CmsPage");
+                        const Category = graphqlContext.getEntity("CmsCategory");
+
                         item.children = await listPublishedPages({
                             args: { category, sort: { [sortBy]: parseInt(sortDir) } },
                             Page,
