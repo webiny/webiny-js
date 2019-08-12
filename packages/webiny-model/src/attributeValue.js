@@ -1,6 +1,6 @@
 // @flow
 import type { Attribute } from ".";
-import type { AttributeValueState } from "./../types";
+import type { AttributeValueState } from "./types";
 
 class AttributeValue {
     attribute: Attribute;
