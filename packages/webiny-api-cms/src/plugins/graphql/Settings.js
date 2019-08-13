@@ -48,7 +48,7 @@ export default {
             facebook: String
             twitter: String
             instagram: String
-            # TODO: image: FileInput
+            image: RefInput
         }
 
         input CmsDefaultPageInput {
@@ -58,8 +58,9 @@ export default {
 
         input CmsSettingsInput {
             name: String
-            #favicon: FileInput
-            #logo: FileInput
+            domain: String
+            favicon: RefInput
+            logo: RefInput
             social: CmsSocialMediaInput
             pages: CmsSettingsPagesInput
         }
