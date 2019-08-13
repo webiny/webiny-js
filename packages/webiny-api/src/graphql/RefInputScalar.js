@@ -13,9 +13,17 @@ export const RefInput = new GraphQLScalarType({
     description:
         "A custom input type to be used with references. Supports plain ID and `{ id: ID }` Object literal.",
     serialize: value => {
+        if (!value || value.id === null) {
+            return null;
+        }
+
         return typeof value === "string" ? value : value.id;
     },
     parseValue: value => {
+        if (!value || value.id === null) {
+            return null;
+        }
+
         if (typeof value === "string") {
             return isMongoId(value);
         }
