@@ -31,16 +31,6 @@ export default [
                     code: String
                 }
 
-                extend type SettingsQuery {
-                    googleTagManager: GoogleTagManagerSettingsResponse
-                }
-
-                extend type SettingsMutation {
-                    googleTagManager(
-                        data: GoogleTagManagerSettingsInput
-                    ): GoogleTagManagerSettingsResponse
-                }
-
                 type GoogleTagManagerQuery {
                     getSettings: GoogleTagManagerSettingsResponse
                 }
@@ -76,8 +66,11 @@ export default [
         },
         security: {
             shield: {
-                SettingsMutation: {
-                    googleTagManager: hasScope("cms:settings")
+                GoogleTagManagerQuery: {
+                    getSettings: hasScope("cms:settings")
+                },
+                GoogleTagManagerMutation: {
+                    updateSettings: hasScope("cms:settings")
                 }
             }
         }

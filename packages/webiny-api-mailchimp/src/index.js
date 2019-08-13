@@ -169,7 +169,6 @@ export default [
         security: {
             shield: {
                 MailchimpQuery: {
-                    listLists: hasScope("cms:editor"),
                     getSettings: hasScope("cms:settings")
                 },
                 MailchimpMutation: {

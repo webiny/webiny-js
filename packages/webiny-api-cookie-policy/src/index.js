@@ -106,8 +106,11 @@ export default [
         },
         security: {
             shield: {
-                SettingsMutation: {
-                    cookiePolicy: hasScope("cms:settings")
+                CookiePolicyQuery: {
+                    getSettings: hasScope("cms:settings")
+                },
+                CookiePolicyMutation: {
+                    updateSettings: hasScope("cms:settings")
                 }
             }
         }
