@@ -4,22 +4,12 @@ import type { Entity, EntityCollection } from "webiny-entity";
 import parseBoolean from "./parseBoolean";
 import InvalidAttributesError from "./InvalidAttributesError";
 import { ListResponse, ErrorResponse, NotFoundResponse, Response } from "./responses";
+import getEntityClass from "./getEntityClass";
 
 type EntityFetcher = string | ((context: Object) => Class<Entity>);
 
 const notFound = (id?: string) => {
     return new NotFoundResponse(id ? `Record "${id}" not found!` : "Record not found!");
-};
-
-const getEntityClass = (context, entityFetcher) => {
-    if (typeof entityFetcher === "string") {
-        const entityClass = context.getEntity(entityFetcher);
-        if (!entityClass) {
-            throw Error(`Cannot get "${entityFetcher}" entity.`);
-        }
-        return entityClass;
-    }
-    return entityFetcher(context);
 };
 
 export const resolveGet = (entityFetcher: EntityFetcher) => async (

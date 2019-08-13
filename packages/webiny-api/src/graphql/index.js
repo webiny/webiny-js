@@ -6,8 +6,7 @@ export {
     resolveDelete
 } from "./crudResolvers";
 
-export { resolveGetSettings } from "./resolveGetSettings";
-export { resolveSaveSettings } from "./resolveSaveSettings";
+export { resolveUpdateSettings, resolveGetSettings } from "./settingsResolvers";
 
 export const dummyResolver = () => ({});
 
