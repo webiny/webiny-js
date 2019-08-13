@@ -6,6 +6,7 @@ import { hasScope } from "webiny-api-security";
 import page from "./graphql/Page";
 import category from "./graphql/Category";
 import menu from "./graphql/Menu";
+import settings from "./graphql/Settings";
 
 export default {
     type: "graphql-schema",
@@ -71,6 +72,7 @@ export default {
             ${page.typeDefs}
             ${category.typeDefs}
             ${menu.typeDefs}
+            ${settings.typeDefs}
         `,
         resolvers: merge(
             {
@@ -89,7 +91,8 @@ export default {
             },
             page.resolvers,
             category.resolvers,
-            menu.resolvers
+            menu.resolvers,
+            settings.resolvers
         )
     },
     security: {

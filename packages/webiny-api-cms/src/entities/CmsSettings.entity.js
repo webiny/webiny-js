@@ -11,7 +11,7 @@ const createSocialMediaModel = context =>
             this.attr("facebook").char();
             this.attr("twitter").char();
             this.attr("instagram").char();
-            this.attr("image").entity(context.files.entities.File);
+            this.attr("image").entity(context.getEntity("File"));
         }
     };
 
@@ -33,8 +33,8 @@ const createCmsSettingsModel = context => {
             this.attr("pages").model(CmsSettingsPagesModel);
             this.attr("name").char();
             this.attr("domain").char();
-            this.attr("favicon").entity(context.files.entities.File);
-            this.attr("logo").entity(context.files.entities.File);
+            this.attr("favicon").entity(context.getEntity("File"));
+            this.attr("logo").entity(context.getEntity("File"));
             this.attr("social").model(createSocialMediaModel(context));
         }
     };

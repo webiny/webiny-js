@@ -1,6 +1,6 @@
 // @flow
 export default async (root: any, args: Object, context: Object) => {
-    const { Page } = context.cms.entities;
+    const Page = context.getEntity("CmsPage");
     const { query } = args;
     const pipeline = [
         { $match: { deleted: false } },

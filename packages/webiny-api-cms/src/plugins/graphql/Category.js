@@ -7,7 +7,7 @@ import {
     resolveUpdate
 } from "webiny-api/graphql";
 
-const categoryFetcher = ctx => ctx.cms.entities.Category;
+const categoryFetcher = ctx => ctx.getEntity("CmsCategory");
 
 export default {
     typeDefs: `

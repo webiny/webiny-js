@@ -2,7 +2,8 @@
 import { ErrorResponse, Response, NotFoundResponse } from "webiny-api/graphql";
 
 export default async (root: any, args: Object, context: Object) => {
-    const { Settings, Page } = context.cms.entities;
+    const Page = context.getEntity("CmsPage");
+    const Settings = context.getEntity("CmsSettings");
     const { id } = args;
 
     const newHomePage = await Page.findById(id);

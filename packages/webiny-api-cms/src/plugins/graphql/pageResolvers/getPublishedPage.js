@@ -8,7 +8,8 @@ export default async (root: any, args: Object, context: Object) => {
     }
 
     // We utilize the same query used for listing published pages (single source of truth = less maintenance).
-    const { Page, Category } = context.cms.entities;
+    const Page = context.getEntity("CmsPage");
+    const Category = context.getEntity("CmsCategory");
     const [page] = await listPublishedPages({ Page, Category, args: { ...args, perPage: 1 } });
 
     if (!page) {

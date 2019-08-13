@@ -7,7 +7,7 @@ import {
     resolveUpdate
 } from "webiny-api/graphql";
 
-const menuFetcher = ctx => ctx.cms.entities.Menu;
+const menuFetcher = ctx => ctx.getEntity("CmsMenu");
 import getMenuBySlug from "./menuResolvers/getMenuBySlug";
 
 export default {

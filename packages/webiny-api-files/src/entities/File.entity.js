@@ -22,7 +22,7 @@ export function fileFactory(context: Object): Class<IFile> {
         constructor() {
             super();
 
-            const { getUser, files } = context;
+            const { getUser, getEntity } = context;
 
             this.attr("createdBy")
                 .char()
@@ -77,7 +77,7 @@ export function fileFactory(context: Object): Class<IFile> {
                     );
                 }
 
-                if (await files.entities.File.findOne({ query: { src: this.src } })) {
+                if (await getEntity("File").findOne({ query: { src: this.src } })) {
                     throw Error(`File "src" must be unique (used "${this.src}").`);
                 }
 

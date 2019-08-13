@@ -5,41 +5,31 @@ import * as entities from "webiny-api-cms/entities";
 const category: EntityPluginType = {
     name: "entity-cms-category",
     type: "entity",
-    namespace: "cms",
-    entity: {
-        name: "Category",
-        factory: entities.categoryFactory
-    }
+    entity: entities.categoryFactory
 };
 
 const element: EntityPluginType = {
     name: "entity-cms-element",
     type: "entity",
-    namespace: "cms",
-    entity: {
-        name: "Element",
-        factory: entities.elementFactory
-    }
+    entity: entities.elementFactory
 };
 
 const menu: EntityPluginType = {
     name: "entity-cms-menu",
     type: "entity",
-    namespace: "cms",
-    entity: {
-        name: "Menu",
-        factory: entities.menuFactory
-    }
+    entity: entities.menuFactory
 };
 
 const page: EntityPluginType = {
     name: "entity-cms-page",
     type: "entity",
-    namespace: "cms",
-    entity: {
-        name: "Page",
-        factory: entities.pageFactory
-    }
+    entity: entities.pageFactory
 };
 
-export default [category, element, menu, page];
+const settings: EntityPluginType = {
+    name: "entity-cms-settings",
+    type: "entity",
+    entity: entities.cmsSettingsFactory
+};
+
+export default [category, element, menu, page, settings];

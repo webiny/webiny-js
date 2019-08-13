@@ -33,7 +33,7 @@ export function elementFactory(context): Class<IElement> {
                 .char()
                 .setValidators("required,in:element:block");
 
-            this.attr("preview").entity(context.files.entities.File);
+            this.attr("preview").entity(context.getEntity("File"));
         }
     };
 }

@@ -15,13 +15,11 @@ export function groups2entitiesFactory(context: Object) {
         constructor() {
             super();
 
-            const {
-                security: { entities }
-            } = context;
+            const { getEntity } = context;
 
             this.attr("entity").entity([], { classIdAttribute: "entityClassId" });
             this.attr("entityClassId").char();
-            this.attr("group").entity(entities.Group);
+            this.attr("group").entity(getEntity("SecurityGroup"));
         }
     };
 }
