@@ -110,7 +110,7 @@ export default {
                 listCategories: hasScope("cms:category:crud"),
                 listPages: hasScope("cms:page:crud"),
                 listElements: hasScope("cms:element:crud"),
-                oembedData: hasScope("cms:oembed:read")
+                oembedData: hasScope("cms:oembed:read"),
             },
             PageBuilderMutation: {
                 createMenu: hasScope("cms:menu:crud"),

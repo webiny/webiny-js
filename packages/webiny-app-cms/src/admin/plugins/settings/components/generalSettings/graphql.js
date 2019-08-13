@@ -29,15 +29,15 @@ const fields = /* GraphQL */ `
 const graphql = {
     query: gql`
             query getSettings {
-                settings {
-                    cms ${fields}
+                cms {
+                    getSettings ${fields}
                 }
             }
         `,
     mutation: gql`
             mutation updateSettings($data: CmsSettingsInput) {
-                settings {
-                    cms(data: $data) ${fields}
+                cms {
+                    updateSettings(data: $data) ${fields}
                 }
             }
         `

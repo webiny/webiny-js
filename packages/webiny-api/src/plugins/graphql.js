@@ -9,20 +9,12 @@ export default ({
     schema: {
         namespace: "api",
         typeDefs: gql`
-            type SettingsQuery {
-                _empty: String
-            }
-
-            type SettingsMutation {
-                _empty: String
-            }
-
             type Query {
-                settings: SettingsQuery
+                _empty: String
             }
 
             type Mutation {
-                settings: SettingsMutation
+                _empty: String
             }
         `,
         resolvers: {

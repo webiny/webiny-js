@@ -1,5 +1,5 @@
 // @flow
-import { resolveSaveSettings, resolveGetSettings } from "webiny-api/graphql";
+import { resolveUpdateSettings, resolveGetSettings } from "webiny-api/graphql";
 
 export default {
     name: "graphql-schema-settings-cms",
@@ -69,16 +69,22 @@ export default {
             notFound: ID
             error: ID
         }
-
-        extend type SettingsQuery {
-            cms: CmsSettingsResponse
-        }
-
-        extend type SettingsMutation {
-            cms(data: CmsSettingsInput): CmsSettingsResponse
+        
+        extend type CmsQuery {
+            getSettings: CmsSettingsResponse
+        }   
+        
+        extend type CmsMutation {
+            updateSettings(data: CmsSettingsInput): CmsSettingsResponse
         }
     `,
     resolvers: {
+        CmsQuery: {
+            getSettings: resolveGetSettings("CmsSettings")
+        },
+        CmsMutation: {
+            updateSettings: resolveUpdateSettings("CmsSettings")
+        },
         CmsSocialMedia: {
             image({ image }) {
                 return { __typename: "File", id: image };
@@ -90,18 +96,6 @@ export default {
             },
             logo({ logo }) {
                 return { __typename: "File", id: logo };
-            }
-        },
-        SettingsQuery: {
-            cms: (_: any, args: Object, ctx: Object, info: Object) => {
-                const entity = ctx.getEntity("CmsSettings");
-                return resolveGetSettings(entity)(_, args, ctx, info);
-            }
-        },
-        SettingsMutation: {
-            cms: (_: any, args: Object, ctx: Object, info: Object) => {
-                const entity = ctx.getEntity("CmsSettings");
-                return resolveSaveSettings(entity)(_, args, ctx, info);
             }
         }
     }

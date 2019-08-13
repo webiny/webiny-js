@@ -21,7 +21,7 @@ const CmsSettings = ({ showSnackbar }) => {
     return (
         <Query query={graphql.query}>
             {({ data, loading: queryInProgress }) => {
-                const settings = get(data, "settings.cms.data") || {};
+                const settings = get(data, "cms.getSettings.data") || {};
 
                 return (
                     <Mutation mutation={graphql.mutation}>
