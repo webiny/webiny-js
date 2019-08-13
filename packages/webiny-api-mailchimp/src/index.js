@@ -3,7 +3,7 @@ import { gql } from "apollo-server-lambda";
 import { dummyResolver, resolveGetSettings, resolveUpdateSettings } from "webiny-api/graphql";
 import { ListErrorResponse, ListResponse, ErrorResponse } from "webiny-api/graphql";
 import { hasScope } from "webiny-api-security";
-import mailchimpSettingsEntity from "./MailchimpSettings.entity";
+import MailchimpSettingsEntity from "./MailchimpSettings.entity";
 import MailchimpApi from "./MailchimpApi";
 
 export default [
@@ -181,6 +181,6 @@ export default [
     {
         type: "entity",
         name: "entity-mailchimp-settings",
-        entity: mailchimpSettingsEntity
+        entity: MailchimpSettingsEntity
     }
 ];

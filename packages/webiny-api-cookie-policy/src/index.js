@@ -1,47 +1,8 @@
 // @flow
 import { gql } from "apollo-server-lambda";
-import { Model } from "webiny-model";
-import { settingsFactory } from "webiny-api/entities";
-import { resolveGetSettings, resolveSaveSettings } from "webiny-api/graphql";
+import { dummyResolver, resolveGetSettings, resolveUpdateSettings } from "webiny-api/graphql";
 import { hasScope } from "webiny-api-security";
-
-class ColorsModel extends Model {
-    constructor() {
-        super();
-        this.attr("background").char();
-        this.attr("text").char();
-    }
-}
-
-class PaletteModel extends Model {
-    constructor() {
-        super();
-        this.attr("popup").model(ColorsModel);
-        this.attr("button").model(ColorsModel);
-    }
-}
-class ContentModel extends Model {
-    constructor() {
-        super();
-        this.attr("href").char();
-        this.attr("message").char();
-        this.attr("dismiss").char();
-        this.attr("link").char();
-    }
-}
-
-class CookiePolicySettingsModel extends Model {
-    constructor() {
-        super();
-        this.attr("enabled").boolean();
-        this.attr("position")
-            .char()
-            .setValidators("in:bottom:top:bottom-left:bottom-right")
-            .setDefaultValue("bottom");
-        this.attr("palette").model(PaletteModel);
-        this.attr("content").model(ContentModel);
-    }
-}
+import CookiePolicySettingsEntity from "./CookiePolicySettings.entity";
 
 export default [
     {
@@ -109,26 +70,37 @@ export default [
                     link: String
                 }
 
-                extend type SettingsQuery {
-                    cookiePolicy: CookiePolicySettingsResponse
+                type CookiePolicyQuery {
+                    getSettings: CookiePolicySettingsResponse
                 }
 
-                extend type SettingsMutation {
-                    cookiePolicy(data: CookiePolicySettingsInput): CookiePolicySettingsResponse
+                type CookiePolicyMutation {
+                    updateSettings(
+                        data: CookiePolicySettingsInput
+                    ): CookiePolicySettingsResponse
                 }
+
+                extend type Query {
+                    cookiePolicy: CookiePolicyQuery
+                }
+
+                extend type Mutation {
+                    cookiePolicy: CookiePolicyMutation
+                }
+                
             `,
             resolvers: {
-                SettingsQuery: {
-                    cookiePolicy: (_: any, args: Object, ctx: Object, info: Object) => {
-                        const entity = ctx.getEntity("CookiePolicySettings");
-                        return resolveGetSettings(entity)(_, args, ctx, info);
-                    }
+                Query: {
+                    cookiePolicy: dummyResolver
                 },
-                SettingsMutation: {
-                    cookiePolicy: (_: any, args: Object, ctx: Object, info: Object) => {
-                        const entity = ctx.getEntity("CookiePolicySettings");
-                        return resolveSaveSettings(entity)(_, args, ctx, info);
-                    }
+                Mutation: {
+                    cookiePolicy: dummyResolver
+                },
+                CookiePolicyQuery: {
+                    getSettings: resolveGetSettings("CookiePolicySettings")
+                },
+                CookiePolicyMutation: {
+                    updateSettings: resolveUpdateSettings("CookiePolicySettings")
                 }
             }
         },
@@ -143,20 +115,6 @@ export default [
     {
         type: "entity",
         name: "entity-cookie-policy-settings",
-        entity: (...args: Array<any>) => {
-            return class CookiePolicySettings extends settingsFactory(...args) {
-                static key = "cookie-policy";
-                static classId = "CookiePolicySettings";
-                static collectionName = "Settings";
-
-                data: Object;
-                load: Function;
-
-                constructor() {
-                    super();
-                    this.attr("data").model(CookiePolicySettingsModel);
-                }
-            };
-        }
+        entity: CookiePolicySettingsEntity
     }
 ];

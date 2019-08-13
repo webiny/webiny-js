@@ -28,16 +28,16 @@ const fields = /* GraphQL */ `
 
 const graphql = {
     query: gql`
-            query getSettings {
-                settings {
-                    cookiePolicy ${fields}
+            query cookiePolicy {
+                cookiePolicy {
+                    getSettings ${fields}
                 }
             }
         `,
     mutation: gql`
-            mutation updateSettings($data: CookiePolicySettingsInput) {
-                settings {
-                    cookiePolicy(data: $data) ${fields}
+            mutation cookiePolicy($data: CookiePolicySettingsInput) {
+                cookiePolicy {
+                    updateSettings(data: $data) ${fields}
                 }
             }
         `

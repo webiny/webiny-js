@@ -21,7 +21,7 @@ export default [
             <Query query={query}>
                 {({ data, loading }) => {
                     return loading ? null : (
-                        <CookiePolicy settings={data.settings.cookiePolicy.data} />
+                        <CookiePolicy settings={data.cookiePolicy.getSettings.data} />
                     );
                 }}
             </Query>

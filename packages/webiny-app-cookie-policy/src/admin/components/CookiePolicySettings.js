@@ -53,7 +53,7 @@ const CookiePolicySettings = ({ showSnackbar }) => {
             {({ data, loading: queryInProgress }) => (
                 <Mutation mutation={graphql.mutation}>
                     {(update, { loading: mutationInProgress }) => {
-                        const settings = get(data, "settings.cookiePolicy.data") || {};
+                        const settings = get(data, "cookiePolicy.getSettings.data") || {};
 
                         return (
                             <Form
