@@ -24,7 +24,7 @@ const GoogleTagManagerSettings = ({ showSnackbar }) => {
             {({ data, loading: queryInProgress }) => (
                 <Mutation mutation={graphql.mutation}>
                     {(update, { loading: mutationInProgress }) => {
-                        const settings = get(data, "settings.googleTagManager.data") || {};
+                        const settings = get(data, "googleTagManager.getSettings.data") || {};
 
                         return (
                             <Form

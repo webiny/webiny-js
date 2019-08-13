@@ -41,7 +41,7 @@ export default [
             <Query query={query}>
                 {({ data, loading }) => {
                     return loading ? null : (
-                        <GoogleTagManager settings={data.settings.googleTagManager.data} />
+                        <GoogleTagManager settings={data.googleTagManager.getSettings.data} />
                     );
                 }}
             </Query>

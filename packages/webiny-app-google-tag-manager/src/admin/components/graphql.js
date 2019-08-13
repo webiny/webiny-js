@@ -13,15 +13,15 @@ const fields = /* GraphQL */ `
 const graphql = {
     query: gql`
             query getSettings {
-                settings {
-                    googleTagManager ${fields}
+                googleTagManager {
+                    getSettings${fields}
                 }
             }
         `,
     mutation: gql`
             mutation updateSettings($data: GoogleTagManagerSettingsInput) {
-                settings {
-                    googleTagManager(data: $data) ${fields}
+                googleTagManager {
+                    updateSettings(data: $data) ${fields}
                 }
             }
         `

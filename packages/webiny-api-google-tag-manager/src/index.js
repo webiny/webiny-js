@@ -1,17 +1,8 @@
 // @flow
 import { gql } from "apollo-server-lambda";
-import { Model } from "webiny-model";
-import { settingsFactory } from "webiny-api/entities";
-import { resolveSaveSettings, resolveGetSettings } from "webiny-api/graphql";
+import { dummyResolver, resolveUpdateSettings, resolveGetSettings } from "webiny-api/graphql";
 import { hasScope } from "webiny-api-security";
-
-class GoogleTagManagerSettingsModel extends Model {
-    constructor() {
-        super();
-        this.attr("enabled").boolean();
-        this.attr("code").char();
-    }
-}
+import GoogleTagManagerEntity from "./GoogleTagManagerSettings.entity";
 
 export default [
     {
@@ -49,19 +40,37 @@ export default [
                         data: GoogleTagManagerSettingsInput
                     ): GoogleTagManagerSettingsResponse
                 }
+
+                type GoogleTagManagerQuery {
+                    getSettings: GoogleTagManagerSettingsResponse
+                }
+
+                type GoogleTagManagerMutation {
+                    updateSettings(
+                        data: GoogleTagManagerSettingsInput
+                    ): GoogleTagManagerSettingsResponse
+                }
+
+                extend type Query {
+                    googleTagManager: GoogleTagManagerQuery
+                }
+
+                extend type Mutation {
+                    googleTagManager: GoogleTagManagerMutation
+                }
             `,
             resolvers: {
-                SettingsQuery: {
-                    googleTagManager: (_: any, args: Object, ctx: Object, info: Object) => {
-                        const entity = ctx.getEntity("GoogleTagManagerSettings");
-                        return resolveGetSettings(entity)(_, args, ctx, info);
-                    }
+                Query: {
+                    googleTagManager: dummyResolver
                 },
-                SettingsMutation: {
-                    googleTagManager: (_: any, args: Object, ctx: Object, info: Object) => {
-                        const entity = ctx.getEntity("GoogleTagManagerSettings");
-                        return resolveSaveSettings(entity)(_, args, ctx, info);
-                    }
+                Mutation: {
+                    googleTagManager: dummyResolver
+                },
+                GoogleTagManagerQuery: {
+                    getSettings: resolveGetSettings("GoogleTagManagerSettings")
+                },
+                GoogleTagManagerMutation: {
+                    updateSettings: resolveUpdateSettings("GoogleTagManagerSettings")
                 }
             }
         },
@@ -76,20 +85,6 @@ export default [
     {
         type: "entity",
         name: "entity-google-tag-manager-settings",
-        entity: (...args: Array<any>) => {
-            return class GoogleTagManagerSettings extends settingsFactory(...args) {
-                static key = "google-tag-manager";
-                static classId = "GoogleTagManagerSettings";
-                static collectionName = "Settings";
-
-                data: Object;
-                load: Function;
-
-                constructor() {
-                    super();
-                    this.attr("data").model(GoogleTagManagerSettingsModel);
-                }
-            };
-        }
+        entity: GoogleTagManagerEntity
     }
 ];
