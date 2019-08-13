@@ -1,6 +1,6 @@
 // @flow
 import { type EntityPluginType } from "webiny-api/types";
-import { formEntity, formSubmissionEntity } from "webiny-api-forms/entities";
+import { formEntity, formSubmissionEntity, formsSettingsEntity } from "webiny-api-forms/entities";
 
 export default ([
     {
@@ -12,5 +12,10 @@ export default ([
         name: "entity-forms-form-submission",
         type: "entity",
         entity: formSubmissionEntity
+    },
+    {
+        type: "entity",
+        name: "entity-forms-settings",
+        entity: formsSettingsEntity
     }
 ]: Array<EntityPluginType>);

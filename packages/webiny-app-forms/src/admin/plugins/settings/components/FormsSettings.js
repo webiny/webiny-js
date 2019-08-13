@@ -22,7 +22,7 @@ const FormsSettings = ({ showSnackbar }) => {
     return (
         <Query query={graphql.query}>
             {({ data, loading: queryInProgress }) => {
-                const settings = get(data, "settings.forms.data") || {};
+                const settings = get(data, "forms.getSettings.data") || {};
 
                 return (
                     <Mutation mutation={graphql.mutation}>
@@ -81,7 +81,9 @@ const FormsSettings = ({ showSnackbar }) => {
                                                         <Bind name={"reCaptcha.secretKey"}>
                                                             <Input
                                                                 disabled={!reCaptchaEnabled}
-                                                                label={"Google reCAPTCHA secret key"}
+                                                                label={
+                                                                    "Google reCAPTCHA secret key"
+                                                                }
                                                                 description={
                                                                     <>
                                                                         A v2 Tickbox secret key.{" "}

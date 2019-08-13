@@ -18,16 +18,17 @@ const fields = /* GraphQL */ `
 
 const graphql = {
     query: gql`
-            {
-                settings {
-                    forms ${fields}
+            query GetSettings { 
+                forms {
+                    getSettings 
+                        ${fields}
                 }
             }
         `,
     mutation: gql`
-            mutation updateSettings($data: FormsSettingsInput) {
-                settings {
-                    forms(data: $data) ${fields}
+            mutation UpdateSettings($data: FormsSettingsInput) {
+                forms {
+                    updateSettings(data: $data) ${fields}
                 }
             }
         `
