@@ -16,15 +16,15 @@ const fields = /* GraphQL */ `
 const graphql = {
     query: gql`
             query getSettings {
-                settings {
-                    mailchimp ${fields}
+                mailchimp {
+                    getSettings ${fields}
                 }
             }
         `,
     mutation: gql`
             mutation updateSettings($data: MailchimpSettingsInput) {
-                settings {
-                    mailchimp(data: $data) ${fields}
+                mailchimp {
+                    updateSettings(data: $data) ${fields}
                 }
             }
         `

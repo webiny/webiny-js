@@ -40,8 +40,8 @@ const MailchimpElementAdvancedSettings = ({ Bind, submitApiKeyForm, loading }: O
             <Query
                 query={gql`
                     {
-                        settings {
-                            mailchimp {
+                        mailchimp {
+                            getSettings {
                                 data {
                                     enabled
                                     apiKey
@@ -61,7 +61,7 @@ const MailchimpElementAdvancedSettings = ({ Bind, submitApiKeyForm, loading }: O
             >
                 {settingsLists => {
                     const { apiKey, enabled } =
-                        get(settingsLists.data, "settings.mailchimp.data") || {};
+                        get(settingsLists.data, "mailchimp.getSettings.data") || {};
 
                     return (
                         <>
@@ -238,7 +238,7 @@ export default compose(
                 variables: { data: { ...data, enabled: true } }
             });
             setLoading(false);
-            const error = get(response, "data.settings.mailchimp.error");
+            const error = get(response, "data.mailchimp.updateSettings.error");
             if (error) {
                 showSnackbar(error.message);
             } else {

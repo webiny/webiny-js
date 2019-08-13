@@ -1,75 +1,10 @@
 // @flow
 import { gql } from "apollo-server-lambda";
-import { EntityModel } from "webiny-entity";
-import { settingsFactory } from "webiny-api/entities";
-import { dummyResolver, resolveGetSettings, resolveSaveSettings } from "webiny-api/graphql";
+import { dummyResolver, resolveGetSettings, resolveUpdateSettings } from "webiny-api/graphql";
 import { ListErrorResponse, ListResponse, ErrorResponse } from "webiny-api/graphql";
 import { hasScope } from "webiny-api-security";
-import got from "got";
-
-const Mailchimp = function({ apiKey }) {
-    this.apiKey = apiKey;
-
-    this.isValidApiKey = async () => {
-        try {
-            await this.get({
-                path: `/lists/`
-            });
-            return true;
-        } catch (e) {
-            return false;
-        }
-    };
-
-    this.get = ({ path }) => {
-        return this.request({ path, method: "get" });
-    };
-
-    this.post = ({ path, body }) => {
-        return this.request({ path, body, method: "post" });
-    };
-
-    this.request = ({ path, method, body }: Object) => {
-        // eslint-disable-next-line
-        const [, dataCenter] = this.apiKey.split("-");
-        return got(`https://${dataCenter}.api.mailchimp.com/3.0` + path, {
-            method,
-            json: true,
-            body,
-            headers: {
-                authorization: "apikey " + this.apiKey
-            }
-        });
-    };
-};
-
-const mailchimpSettingsModelFactory = parent => {
-    return class MailchimpSettingsModel extends EntityModel {
-        apiKey: ?string;
-        enabled: ?boolean;
-        constructor() {
-            super();
-            this.setParentEntity(parent);
-            this.attr("enabled").boolean();
-            this.attr("apiKey")
-                .char()
-                .onSet(value => {
-                    if (value && value !== this.apiKey) {
-                        this.getParentEntity()
-                            .on("beforeSave", async () => {
-                                const mailchimp = new Mailchimp({ apiKey: value });
-                                const valid = await mailchimp.isValidApiKey();
-                                if (!valid) {
-                                    throw Error("API key invalid.");
-                                }
-                            })
-                            .setOnce();
-                    }
-                    return value;
-                });
-        }
-    };
-};
+import mailchimpSettingsEntity from "./MailchimpSettings.entity";
+import MailchimpApi from "./MailchimpApi";
 
 export default [
     {
@@ -113,11 +48,6 @@ export default [
                     error: MailchimpError
                 }
 
-                type MailchimpMutation {
-                    # Add a new member to members list.
-                    addToList(list: String!, email: String!): MailchimpAddToListResponse
-                }
-
                 type MailchimpList {
                     id: String
                     name: String
@@ -131,16 +61,15 @@ export default [
 
                 type MailchimpQuery {
                     listLists: MailchimpListsResponse
+                    getSettings: MailchimpSettingsResponse
                 }
 
-                extend type SettingsQuery {
-                    mailchimp: MailchimpSettingsResponse
+                type MailchimpMutation {
+                    # Add a new member to members list.
+                    addToList(list: String!, email: String!): MailchimpAddToListResponse
+                    updateSettings(data: MailchimpSettingsInput): MailchimpSettingsResponse
                 }
-
-                extend type SettingsMutation {
-                    mailchimp(data: MailchimpSettingsInput): MailchimpSettingsResponse
-                }
-
+                
                 extend type Query {
                     mailchimp: MailchimpQuery
                 }
@@ -168,7 +97,7 @@ export default [
                             throw Error("Mailchimp API key not set.");
                         }
 
-                        const mailchimp = new Mailchimp({ apiKey: settings.data.apiKey });
+                        const mailchimp = new MailchimpApi({ apiKey: settings.data.apiKey });
 
                         try {
                             const listsResponse = await mailchimp.get({
@@ -184,7 +113,8 @@ export default [
                         } catch (e) {
                             return new ListErrorResponse(e);
                         }
-                    }
+                    },
+                    getSettings: resolveGetSettings("MailchimpSettings")
                 },
                 MailchimpMutation: {
                     addToList: async (
@@ -199,7 +129,7 @@ export default [
                             throw Error("Mailchimp API key not set.");
                         }
 
-                        const mailchimp = new Mailchimp({ apiKey: settings.data.apiKey });
+                        const mailchimp = new MailchimpApi({ apiKey: settings.data.apiKey });
 
                         try {
                             const listResponse = await mailchimp.get({
@@ -231,32 +161,19 @@ export default [
                                 message: e.message
                             });
                         }
-                    }
-                },
-                SettingsQuery: {
-                    mailchimp: (_: any, args: Object, ctx: Object, info: Object) => {
-                        const entity = ctx.getEntity("MailchimpSettings");
-                        return resolveGetSettings(entity)(_, args, ctx, info);
-                    }
-                },
-                SettingsMutation: {
-                    mailchimp: (_: any, args: Object, ctx: Object, info: Object) => {
-                        const entity = ctx.getEntity("MailchimpSettings");
-                        return resolveSaveSettings(entity)(_, args, ctx, info);
-                    }
+                    },
+                    updateSettings: resolveUpdateSettings("MailchimpSettings")
                 }
             }
         },
         security: {
             shield: {
-                SettingsQuery: {
-                    mailchimp: hasScope("cms:settings")
-                },
-                SettingsMutation: {
-                    mailchimp: hasScope("cms:settings")
-                },
                 MailchimpQuery: {
-                    listLists: hasScope("cms:editor")
+                    listLists: hasScope("cms:editor"),
+                    getSettings: hasScope("cms:settings")
+                },
+                MailchimpMutation: {
+                    updateSettings: hasScope("cms:settings")
                 }
             }
         }
@@ -264,20 +181,6 @@ export default [
     {
         type: "entity",
         name: "entity-mailchimp-settings",
-        entity: (...args: Array<any>) => {
-            return class MailchimpSettings extends settingsFactory(...args) {
-                static key = "mailchimp";
-                static classId = "MailchimpSettings";
-                static collectionName = "Settings";
-
-                data: Object;
-                load: Function;
-
-                constructor() {
-                    super();
-                    this.attr("data").model(mailchimpSettingsModelFactory(this));
-                }
-            };
-        }
+        entity: mailchimpSettingsEntity
     }
 ];

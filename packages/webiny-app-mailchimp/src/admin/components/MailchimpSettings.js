@@ -22,7 +22,7 @@ const MailchimpSettings = ({ showSnackbar }) => {
     return (
         <Query query={graphql.query}>
             {({ data, loading: queryInProgress }) => {
-                const settings = get(data, "settings.mailchimp.data") || {};
+                const settings = get(data, "mailchimp.getSettings.data") || {};
                 return (
                     <Mutation mutation={graphql.mutation}>
                         {(update, { loading: mutationInProgress }) => (
@@ -37,7 +37,7 @@ const MailchimpSettings = ({ showSnackbar }) => {
 
                                     const error = get(
                                         response,
-                                        "data.settings.mailchimp.error.message"
+                                        "data.mailchimp.updateSettings.error.message"
                                     );
 
                                     if (error) {
