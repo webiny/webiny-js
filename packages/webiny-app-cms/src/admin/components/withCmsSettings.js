@@ -7,8 +7,8 @@ import { get } from "lodash";
 
 const domainQuery = gql`
     {
-        settings {
-            cms {
+        cms {
+            getSettings {
                 data {
                     domain
                 }

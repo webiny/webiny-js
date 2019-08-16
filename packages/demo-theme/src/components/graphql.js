@@ -3,8 +3,8 @@ import gql from "graphql-tag";
 
 export const getHeaderData = gql`
     query CmsGetHeader {
-        settings {
-            cms {
+        cms {
+            getSettings {
                 data {
                     name
                     logo {
@@ -18,8 +18,8 @@ export const getHeaderData = gql`
 
 export const getFooterData = gql`
     query CmsGetSiteFooter {
-        settings {
-            cms {
+        cms {
+            getSettings {
                 data {
                     social {
                         facebook

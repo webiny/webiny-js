@@ -21,14 +21,14 @@ export default [
             <Query
                 query={gql`
                     query CmsGetFavicon {
-                        settings {
-                            cms {
+                        cms {
+                            getSettings {
                                 data {
                                     favicon {
                                         src
                                     }
                                 }
-                            }
+                            }   
                         }
                     }
                 `}

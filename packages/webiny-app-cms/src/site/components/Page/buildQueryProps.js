@@ -6,8 +6,8 @@ import type { Location } from "react-router-dom";
 type Props = { location: Location, defaultPages: Object };
 
 const settingsFields = `
-settings {
-    cms {
+cms {
+    getSettings {
         data {
             name
             social {

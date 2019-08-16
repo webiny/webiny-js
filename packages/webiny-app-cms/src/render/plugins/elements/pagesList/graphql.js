@@ -4,9 +4,9 @@ import gql from "graphql-tag";
 export const loadPages = gql`
     query ListPublishedPages(
         $category: String
-        $sort: PageSortInput
+        $sort: PageBuilderPageSortInput
         $tags: [String]
-        $tagsRule: TagsRule
+        $tagsRule: PageBuilderTagsRule
         $page: Int
         $perPage: Int
     ) {
