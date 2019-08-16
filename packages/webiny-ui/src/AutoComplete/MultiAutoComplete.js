@@ -9,7 +9,6 @@ import { ReactComponent as BaselineCloseIcon } from "./icons/baseline-close-24px
 import classNames from "classnames";
 import { Elevation } from "webiny-ui/Elevation";
 import { Typography } from "webiny-ui/Typography";
-import keycode from "keycode";
 import { autoCompleteStyle, suggestionList } from "./styles";
 
 import type { AutoCompleteBaseProps } from "./types";
