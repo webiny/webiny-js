@@ -7,8 +7,8 @@ export default () => {
     return {
         menu: [
             {
-                name: "cms-slate-menu-item-link",
-                type: "cms-slate-menu-item",
+                name: "pb-editor-slate-menu-item-link",
+                type: "pb-editor-slate-menu-item",
                 render(props: Object) {
                     const { MenuButton } = props;
 
@@ -25,8 +25,8 @@ export default () => {
         ],
         editor: [
             {
-                name: "cms-slate-editor-link",
-                type: "cms-slate-editor",
+                name: "pb-editor-slate-editor-link",
+                type: "pb-editor-slate-editor",
                 slate: {
                     renderNode(props, next) {
                         const { attributes, children, node } = props;

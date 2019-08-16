@@ -7,8 +7,8 @@ import Bar from "./ElementSettingsBar";
 addReducer([DEACTIVATE_ELEMENT], "ui.plugins.element-settings", () => null);
 
 export default {
-    name: "cms-element-settings-settings-bar",
-    type: "cms-editor-bar",
+    name: "pb-page-element-settings-settings-bar",
+    type: "pb-page-editor-bar",
     shouldRender({ activeElement }: Object) {
         return activeElement;
     },

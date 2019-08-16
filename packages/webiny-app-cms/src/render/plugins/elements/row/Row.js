@@ -10,7 +10,7 @@ const Row = ({ element }: { element: ElementType }) => {
         <ElementAnimation>
             <ElementRoot
                 element={element}
-                className={"webiny-cms-base-element-style webiny-cms-layout-row"}
+                className={"webiny-pb-base-page-element-style webiny-pb-layout-row"}
             >
                 {element.elements.map(element =>
                     /* $FlowFixMe */

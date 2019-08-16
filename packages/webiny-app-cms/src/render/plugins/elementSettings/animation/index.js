@@ -3,8 +3,8 @@ import { get } from "lodash";
 import type { CmsRenderElementAttributesPluginType } from "webiny-app-cms/types";
 
 export default ({
-    name: "cms-render-element-attributes-animation",
-    type: "cms-render-element-attributes",
+    name: "pb-render-element-attributes-animation",
+    type: "pb-render-element-attributes",
     renderAttributes({ element, attributes }) {
         const { animation } = get(element, "data.settings", {});
         if (!animation) {

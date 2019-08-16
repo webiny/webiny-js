@@ -5,9 +5,9 @@ import PinterestEmbed from "./PinterestEmbed";
 
 export default (): RenderElementPluginType => {
     return {
-        name: "cms-render-element-pinterest",
-        type: "cms-render-element",
-        element: "cms-element-pinterest",
+        name: "pb-render-element-pinterest",
+        type: "pb-render-element",
+        elementType: "pinterest",
         render(props) {
             return <PinterestEmbed element={props.element} />;
         }

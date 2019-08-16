@@ -23,9 +23,9 @@ type Props = {
 
 const Editor = ({ isDragging, isResizing }: Props) => {
     const classes = {
-        "cms-editor": true,
-        "cms-editor-dragging": isDragging,
-        "cms-editor-resizing": isResizing
+        "pb-editor": true,
+        "pb-editor-dragging": isDragging,
+        "pb-editor-resizing": isResizing
     };
     return (
         <div className={classSet(classes)}>

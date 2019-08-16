@@ -14,8 +14,8 @@ const Divider = pure(
 );
 
 export default {
-    name: "cms-element-settings-divider",
-    type: "cms-element-settings",
+    name: "pb-page-element-settings-divider",
+    type: "pb-page-element-settings",
     renderAction() {
         return <Divider />;
     }

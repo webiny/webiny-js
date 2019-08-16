@@ -6,8 +6,8 @@ export default () => {
     return {
         editor: [
             {
-                name: "cms-slate-editor-break",
-                type: "cms-slate-editor",
+                name: "pb-editor-slate-editor-break",
+                type: "pb-editor-slate-editor",
                 slate: {
                     onKeyDown(e: SyntheticKeyboardEvent<*>, change: Change, next: Function) {
                         if (isHotkey("shift+enter", e)) {

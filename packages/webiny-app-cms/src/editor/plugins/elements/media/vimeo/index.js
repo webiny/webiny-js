@@ -28,7 +28,7 @@ export default (): Array<PluginType> => [
         type: "vimeo",
         toolbar: {
             title: "Vimeo",
-            group: "cms-element-group-media",
+            group: "pb-page-element-group-media",
             preview() {
                 return (
                     <PreviewBox>

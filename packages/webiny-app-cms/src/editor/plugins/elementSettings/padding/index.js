@@ -5,8 +5,8 @@ import Settings from "../components/PMSettings";
 import Action from "../components/Action";
 
 export default {
-    name: "cms-element-settings-padding",
-    type: "cms-element-settings",
+    name: "pb-page-element-settings-padding",
+    type: "pb-page-element-settings",
     renderAction() {
         return <Action tooltip={"Padding"} plugin={this.name} icon={<PaddingIcon />} />;
     },

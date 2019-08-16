@@ -4,8 +4,8 @@ import { ReactComponent as SavedIcon } from "webiny-app-cms/editor/assets/icons/
 import type { ElementGroupPluginType } from "webiny-app-cms/types";
 
 export default ({
-    name: "cms-element-group-saved",
-    type: "cms-element-group",
+    name: "pb-editor-element-group-saved",
+    type: "pb-editor-element-group",
     group: {
         title: "Saved",
         icon: <SavedIcon />

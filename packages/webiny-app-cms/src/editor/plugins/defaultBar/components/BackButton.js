@@ -13,7 +13,7 @@ const BackButton = ({ match, history }) => {
     return (
         <IconButton
             className={backStyles}
-            onClick={() => history.push(`/cms/pages?id=${match.params.id}`)}
+            onClick={() => history.push(`/page-builder/pages?id=${match.params.id}`)}
             icon={<BackIcon />}
         />
     );

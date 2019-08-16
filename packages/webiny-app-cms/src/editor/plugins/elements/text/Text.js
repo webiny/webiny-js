@@ -8,7 +8,7 @@ import { ElementRoot } from "webiny-app-cms/render/components/ElementRoot";
 import { updateElement } from "webiny-app-cms/editor/actions";
 import { getElement } from "webiny-app-cms/editor/selectors";
 
-export const className = "webiny-cms-base-element-style webiny-cms-element-text";
+export const className = "webiny-pb-base-page-element-style webiny-pb-page-element-text";
 
 const Text = ({ element, onChange }) => {
     return (

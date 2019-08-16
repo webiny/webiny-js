@@ -22,10 +22,10 @@ export default compose(
                 return showSnackbar(error.message);
             }
 
-            history.push(`/cms/editor/${data.id}`);
+            history.push(`/page-builder/editor/${data.id}`);
         },
         editRevision: ({ rev, history }) => () => {
-            history.push(`/cms/editor/${rev.id}`);
+            history.push(`/page-builder/editor/${rev.id}`);
         },
         deleteRevision: ({
             rev,
@@ -44,7 +44,7 @@ export default compose(
             }
 
             if (rev.id === page.id) {
-                history.push("/cms/pages");
+                history.push("/page-builder/pages");
             }
         }
     })

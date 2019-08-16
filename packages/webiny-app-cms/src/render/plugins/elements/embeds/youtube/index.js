@@ -10,9 +10,9 @@ export default (): RenderElementPluginType => {
     };
 
     return {
-        name: "cms-render-element-youtube",
-        type: "cms-render-element",
-        element: "cms-element-youtube",
+        name: "pb-render-element-youtube",
+        type: "pb-render-element",
+        elementType: "youtube",
         render(props) {
             return <OEmbed element={props.element} renderEmbed={renderEmbed} />;
         }

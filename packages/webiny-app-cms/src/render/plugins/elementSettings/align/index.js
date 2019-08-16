@@ -10,8 +10,8 @@ const vertical = {
 
 export default ([
     {
-        name: "cms-render-element-style-horizontal-align",
-        type: "cms-render-element-style",
+        name: "pb-render-element-style-horizontal-align",
+        type: "pb-render-element-style",
         renderStyle({ element, style }: Object) {
             const { horizontalAlign } = get(element, "data.settings", {});
             if (!horizontalAlign) {
@@ -21,8 +21,8 @@ export default ([
         }
     },
     {
-        name: "cms-render-element-style-horizontal-align-flex",
-        type: "cms-render-element-style",
+        name: "pb-render-element-style-horizontal-align-flex",
+        type: "pb-render-element-style",
         renderStyle({ element, style }: Object) {
             const { horizontalAlignFlex } = get(element, "data.settings", {});
             if (!horizontalAlignFlex) {
@@ -32,8 +32,8 @@ export default ([
         }
     },
     {
-        name: "cms-render-element-style-vertical-align",
-        type: "cms-render-element-style",
+        name: "pb-render-element-style-vertical-align",
+        type: "pb-render-element-style",
         renderStyle({ element, style }: Object) {
             const { verticalAlign } = get(element, "data.settings", {});
             if (!verticalAlign) {

@@ -16,7 +16,7 @@ const Block = ({ element }: { element: ElementType }) => {
                     return (
                         <div
                             style={{ width: "100%", display: "flex", justifyContent: "center" }}
-                            className={"webiny-cms-layout-block-container " + css(containerStyle)}
+                            className={"webiny-pb-layout-block-container " + css(containerStyle)}
                             {...elementAttributes}
                         >
                             <div
@@ -26,7 +26,7 @@ const Block = ({ element }: { element: ElementType }) => {
                                     alignItems: alignItems
                                 }}
                                 className={combineClassNames(
-                                    "webiny-cms-layout-block webiny-cms-base-element-style",
+                                    "webiny-pb-layout-block webiny-pb-base-page-element-style",
                                     ...customClasses
                                 )}
                             >

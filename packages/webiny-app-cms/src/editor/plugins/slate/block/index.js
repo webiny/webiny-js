@@ -34,8 +34,8 @@ export default () => {
     return {
         menu: [
             {
-                name: "cms-slate-menu-item-typography",
-                type: "cms-slate-menu-item",
+                name: "pb-editor-slate-menu-item-typography",
+                type: "pb-editor-slate-menu-item",
                 render({ MenuButton, ...props }: Object) {
                     return (
                         <MenuButton>
@@ -45,8 +45,8 @@ export default () => {
                 }
             },
             {
-                name: "cms-slate-menu-item-align",
-                type: "cms-slate-menu-item",
+                name: "pb-editor-slate-menu-item-align",
+                type: "pb-editor-slate-menu-item",
                 render({ MenuButton, editor, onChange }: Object) {
                     const block = editor.value.blocks.first();
 
@@ -66,8 +66,8 @@ export default () => {
         ],
         editor: [
             {
-                name: "cms-slate-editor-typography",
-                type: "cms-slate-editor",
+                name: "pb-editor-slate-editor-typography",
+                type: "pb-editor-slate-editor",
                 slate: {
                     renderNode(props: Object, next: Function) {
                         const { attributes, children, node, editor } = props;

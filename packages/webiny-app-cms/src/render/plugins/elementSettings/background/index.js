@@ -30,8 +30,8 @@ const scaling = {
 };
 
 export default ({
-    name: "cms-render-element-style-background",
-    type: "cms-render-element-style",
+    name: "pb-render-element-style-background",
+    type: "pb-render-element-style",
     renderStyle({ element, style }: Object) {
         const { background } = get(element, "data.settings", {});
         if (!background) {

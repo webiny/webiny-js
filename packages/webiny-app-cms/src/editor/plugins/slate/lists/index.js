@@ -40,8 +40,8 @@ export default () => {
     return {
         menu: [
             {
-                name: "cms-slate-menu-item-ordered-list",
-                type: "cms-slate-menu-item",
+                name: "pb-editor-slate-menu-item-ordered-list",
+                type: "pb-editor-slate-menu-item",
                 render({
                     MenuButton,
                     editor,
@@ -65,8 +65,8 @@ export default () => {
                 }
             },
             {
-                name: "cms-slate-menu-item-unordered-list",
-                type: "cms-slate-menu-item",
+                name: "pb-editor-slate-menu-item-unordered-list",
+                type: "pb-editor-slate-menu-item",
                 render({
                     MenuButton,
                     editor,
@@ -92,8 +92,8 @@ export default () => {
         ],
         editor: [
             {
-                name: "cms-slate-editor-lists",
-                type: "cms-slate-editor",
+                name: "pb-editor-slate-editor-lists",
+                type: "pb-editor-slate-editor",
                 slate: {
                     renderNode(props: Object, next: Function) {
                         const { attributes, children, node } = props;
@@ -102,7 +102,7 @@ export default () => {
                             case "unordered-list":
                                 return (
                                     <ul
-                                        className={"webiny-cms-typography-unordered-list"}
+                                        className={"webiny-pb-typography-unordered-list"}
                                         {...attributes}
                                     >
                                         {children}
@@ -113,7 +113,7 @@ export default () => {
                             case "ordered-list":
                                 return (
                                     <ol
-                                        className={"webiny-cms-typography-ordered-list"}
+                                        className={"webiny-pb-typography-ordered-list"}
                                         {...attributes}
                                     >
                                         {children}

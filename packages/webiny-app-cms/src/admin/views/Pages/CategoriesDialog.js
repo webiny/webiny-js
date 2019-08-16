@@ -89,7 +89,7 @@ const CategoriesDialog = ({
                 </List>
             </DialogBody>
             <DialogFooter>
-                <ButtonDefault onClick={() => history.push("/cms/categories")}>
+                <ButtonDefault onClick={() => history.push("/page-builder/categories")}>
                     + Create new category
                 </ButtonDefault>
             </DialogFooter>

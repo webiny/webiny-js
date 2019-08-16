@@ -19,8 +19,8 @@ export default () => {
     return {
         menu: [
             {
-                name: "cms-slate-menu-item-italic",
-                type: "cms-slate-menu-item",
+                name: "pb-editor-slate-menu-item-italic",
+                type: "pb-editor-slate-menu-item",
                 render({ MenuButton, editor, onChange }: Object) {
                     const isActive = hasMark(editor.value, mark);
 
@@ -38,8 +38,8 @@ export default () => {
         ],
         editor: [
             {
-                name: "cms-slate-editor-italic",
-                type: "cms-slate-editor",
+                name: "pb-editor-slate-editor-italic",
+                type: "pb-editor-slate-editor",
                 slate: {
                     onKeyDown(event: SyntheticKeyboardEvent<*>, change: Change, next: Function) {
                         if (isItalicHotkey(event)) {

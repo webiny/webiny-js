@@ -26,11 +26,12 @@ export default (): ElementPluginType => {
     });
 
     return {
-        name: "cms-element-column",
-        type: "cms-element",
+        name: "pb-page-element-column",
+        type: "pb-page-element",
+        elementType: "column",
         toolbar: {
             title: "Column",
-            group: "cms-element-group-layout",
+            group: "pb-page-element-group-layout",
             preview() {
                 return (
                     <PreviewBox>
@@ -40,25 +41,25 @@ export default (): ElementPluginType => {
             }
         },
         settings: [
-            "cms-element-settings-background",
-            "cms-element-settings-animation",
+            "pb-page-element-settings-background",
+            "pb-page-element-settings-animation",
             "",
-            "cms-element-settings-border",
-            "cms-element-settings-shadow",
+            "pb-page-element-settings-border",
+            "pb-page-element-settings-shadow",
             "",
-            "cms-element-settings-padding",
-            "cms-element-settings-margin",
-            "cms-element-settings-horizontal-align",
-            "cms-element-settings-vertical-align",
+            "pb-page-element-settings-padding",
+            "pb-page-element-settings-margin",
+            "pb-page-element-settings-horizontal-align",
+            "pb-page-element-settings-vertical-align",
             "",
-            "cms-element-settings-clone",
-            "cms-element-settings-delete",
+            "pb-page-element-settings-clone",
+            "pb-page-element-settings-delete",
             ""
         ],
-        target: ["cms-element-row"],
+        target: ["pb-page-element-row"],
         create(options = {}) {
             return {
-                type: "cms-element-column",
+                type: "pb-page-element-column",
                 data: {
                     ...(options.data || {}),
                     settings: {
@@ -86,7 +87,7 @@ export default (): ElementPluginType => {
             const droppedOnCenter = position === null;
 
             // Dropped a column onto a center drop zone
-            if (source.type === "cms-element-column" && droppedOnCenter) {
+            if (source.type === "pb-page-element-column" && droppedOnCenter) {
                 return splitColumn(source, target);
             }
 

@@ -17,7 +17,7 @@ const menuStyles = css({
 });
 
 export default function PageOptionsMenu() {
-    const plugins = getPlugins("cms-default-bar-right-page-options-option");
+    const plugins = getPlugins("pb-editor-default-bar-right-page-options-option");
     return (
         <Menu className={menuStyles} handle={<IconButton icon={<MoreVerticalIcon />} />}>
             {plugins.map(pl => React.cloneElement(pl.render(), { key: pl.name }))}

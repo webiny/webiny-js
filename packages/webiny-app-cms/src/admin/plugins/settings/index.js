@@ -2,7 +2,7 @@
 import * as React from "react";
 import { Route } from "react-router-dom";
 import { AdminLayout } from "webiny-admin/components/AdminLayout";
-import CmsSettings from "./components/CmsSettings";
+import PageBuilderSettings from "./components/PageBuilderSettings";
 import GeneralSettings from "./components/generalSettings/GeneralSettings";
 import type { SettingsPluginType } from "webiny-admin/types";
 import { hasRoles } from "webiny-app-security";
@@ -11,20 +11,20 @@ import { SecureRoute } from "webiny-app-security/components";
 export default ([
     {
         type: "settings",
-        name: "settings-cms",
+        name: "settings-page-builder",
         settings: {
             show: () => {
-                return hasRoles(["cms-settings", "cms-editor"]);
+                return hasRoles(["pb-settings", "pb-editor"]);
             },
             type: "app",
-            name: "CMS",
+            name: "Page Builder",
             route: (
                 <Route
-                    path="/cms"
+                    path="/page-builder"
                     render={() => (
                         <AdminLayout>
-                            <SecureRoute roles={["cms-settings", "cms-editor"]}>
-                                <CmsSettings />
+                            <SecureRoute roles={["pb-settings", "pb-editor"]}>
+                                <PageBuilderSettings />
                             </SecureRoute>
                         </AdminLayout>
                     )}
@@ -37,7 +37,7 @@ export default ([
         name: "settings-general-settings",
         settings: {
             show: () => {
-                return hasRoles(["cms-settings"]);
+                return hasRoles(["pb-settings"]);
             },
             type: "other",
             name: "General settings",
@@ -46,7 +46,7 @@ export default ([
                     path="/general"
                     render={() => (
                         <AdminLayout>
-                            <SecureRoute roles={["cms-settings"]}>
+                            <SecureRoute roles={["pb-settings"]}>
                                 <GeneralSettings />
                             </SecureRoute>
                         </AdminLayout>

@@ -5,8 +5,8 @@ import Settings from "./Settings";
 import Action from "../components/Action";
 
 export default {
-    name: "cms-element-settings-background",
-    type: "cms-element-settings",
+    name: "pb-page-element-settings-background",
+    type: "pb-page-element-settings",
     renderAction() {
         return <Action plugin={this.name} tooltip={"Background"} icon={<InvertColorsIcon />} />;
     },

@@ -3,8 +3,8 @@ import { get } from "lodash";
 import type { CmsRenderElementStylePluginType } from "webiny-app-cms/types";
 
 export default ({
-    name: "cms-render-element-style-shadow",
-    type: "cms-render-element-style",
+    name: "pb-render-element-style-shadow",
+    type: "pb-render-element-style",
     renderStyle({ element, style }: Object) {
         const { shadow } = get(element, "data.settings", {});
         if (!shadow) {

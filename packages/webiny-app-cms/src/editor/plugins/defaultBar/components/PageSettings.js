@@ -22,7 +22,7 @@ import {
     SimpleFormHeader
 } from "webiny-admin/components/SimpleForm";
 import { Title, listItem, ListItemTitle, listStyle, TitleContent } from "./PageSettingsStyled";
-import type { CmsPageSettingsPluginType } from "webiny-app-cms/types";
+import type { PageBuilderPageSettingsPluginType } from "webiny-app-cms/types";
 
 type Props = {
     deactivatePlugin: Function,
@@ -33,8 +33,8 @@ type Props = {
 };
 
 const PageSettings = ({ deactivatePlugin, page, savePage, active, setActive }: Props) => {
-    const plugins = getPlugins("cms-editor-page-settings");
-    const activePlugin: ?CmsPageSettingsPluginType = plugins.find(pl => pl.name === active);
+    const plugins = getPlugins("pb-editor-page-settings");
+    const activePlugin: ?PageBuilderPageSettingsPluginType = plugins.find(pl => pl.name === active);
 
     if (!activePlugin) {
         return null;
@@ -43,7 +43,7 @@ const PageSettings = ({ deactivatePlugin, page, savePage, active, setActive }: P
     return (
         <OverlayLayout
             barMiddle={Title}
-            onExited={() => deactivatePlugin({ name: "cms-page-settings-bar" })}
+            onExited={() => deactivatePlugin({ name: "pb-editor-page-settings-bar" })}
         >
             <SplitView>
                 <LeftPanel span={5}>
@@ -96,7 +96,7 @@ export default compose(
     ),
     withSnackbar(),
     withKeyHandler(),
-    withState("active", "setActive", "cms-editor-page-settings-general"),
+    withState("active", "setActive", "pb-editor-page-settings-general"),
     withHandlers({
         savePage: ({ showSnackbar, updateRevision }) => (page: Object) =>
             updateRevision(page, {
@@ -107,7 +107,7 @@ export default compose(
         componentDidMount() {
             this.props.addKeyHandler("escape", e => {
                 e.preventDefault();
-                this.props.deactivatePlugin({ name: "cms-page-settings-bar" });
+                this.props.deactivatePlugin({ name: "pb-editor-page-settings-bar" });
             });
         },
         componentWillUnmount() {

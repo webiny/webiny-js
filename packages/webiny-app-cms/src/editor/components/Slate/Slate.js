@@ -47,7 +47,7 @@ class SlateEditor extends React.Component {
             activePlugin: null
         };
 
-        this.plugins = getPlugins("cms-slate-editor")
+        this.plugins = getPlugins("pb-editor-slate-editor")
             .filter(pl => !props.exclude.includes(pl.name))
             .map(pl => pl.slate);
     }
@@ -209,7 +209,7 @@ class SlateEditor extends React.Component {
                     activePlugin={this.state.activePlugin}
                     deactivatePlugin={this.deactivatePlugin}
                 />
-                {getPlugins("cms-slate-menu-item")
+                {getPlugins("pb-editor-slate-menu-item")
                     .filter(pl => typeof pl.renderDialog === "function")
                     .map(pl => {
                         const props = {

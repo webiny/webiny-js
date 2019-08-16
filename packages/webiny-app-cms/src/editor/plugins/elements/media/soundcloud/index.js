@@ -27,7 +27,7 @@ export default (): Array<PluginType> => [
         type: "soundcloud",
         toolbar: {
             title: "Soundcloud",
-            group: "cms-element-group-media",
+            group: "pb-page-element-group-media",
             preview() {
                 return (
                     <PreviewBox>

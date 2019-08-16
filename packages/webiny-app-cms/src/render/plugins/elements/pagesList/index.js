@@ -6,16 +6,16 @@ import GridPageList from "./components/GridPageList";
 
 export default ([
     {
-        name: "cms-render-element-pages-list",
-        type: "cms-render-element",
-        element: "cms-element-pages-list",
+        name: "pb-render-element-pages-list",
+        type: "pb-render-element",
+        elementType: "pages-list",
         render({ element, theme }) {
             return <PagesList data={element.data} theme={theme} />;
         }
     },
     {
-        name: "cms-element-pages-list-component-default",
-        type: "cms-element-pages-list-component",
+        name: "pb-page-element-pages-list-component-default",
+        type: "pb-page-element-pages-list-component",
         title: "Grid list",
         component: GridPageList
     }

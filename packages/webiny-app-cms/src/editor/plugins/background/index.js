@@ -3,8 +3,8 @@ import React from "react";
 import Background from "./Background";
 
 export default {
-    name: "cms-editor-content-background",
-    type: "cms-editor-content",
+    name: "pb-editor-content-background",
+    type: "pb-editor-content",
     render() {
         return (
             <Background/>

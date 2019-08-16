@@ -5,9 +5,9 @@ import type { RenderElementPluginType } from "webiny-app-cms/types";
 
 export default (): RenderElementPluginType => {
     return {
-        name: "cms-render-element-image",
-        type: "cms-render-element",
-        element: "cms-element-image",
+        name: "pb-render-element-image",
+        type: "pb-render-element",
+        elementType: "image",
         render(props) {
             return <Image {...props} />;
         }

@@ -5,9 +5,9 @@ import type { RenderElementPluginType } from "webiny-app-cms/types";
 
 export default (): RenderElementPluginType => {
     return {
-        name: "cms-render-element-button",
-        type: "cms-render-element",
-        element: "cms-element-button",
+        name: "pb-render-element-button",
+        type: "pb-render-element",
+        elementType: "button",
         render(props) {
             return <Button {...props} />;
         }

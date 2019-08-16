@@ -4,8 +4,8 @@ import { ReactComponent as HelpIcon } from "webiny-app-cms/editor/assets/icons/h
 import type { CmsElementActionPluginType } from "webiny-app-cms/types";
 
 export default ({
-    name: "cms-element-action-help",
-    type: "cms-element-action",
+    name: "pb-editor-element-action-help",
+    type: "pb-editor-element-action",
     render({ plugin }) {
         return plugin.help ? <HelpIcon onClick={() => window.open(plugin.help, "_blank")} /> : null;
     }

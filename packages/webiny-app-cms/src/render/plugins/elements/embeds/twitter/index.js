@@ -13,9 +13,9 @@ const oembed = {
 
 export default (): RenderElementPluginType => {
     return {
-        name: "cms-render-element-twitter",
-        type: "cms-render-element",
-        element: "cms-element-twitter",
+        name: "pb-render-element-twitter",
+        type: "pb-render-element",
+        elementType: "twitter",
         render(props) {
             return <OEmbed element={props.element} {...oembed} />;
         }

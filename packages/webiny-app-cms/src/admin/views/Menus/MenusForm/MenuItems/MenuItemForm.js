@@ -1,12 +1,12 @@
 // @flow
 import { compose, withHandlers } from "recompose";
 import { omit, omitBy, isNull } from "lodash";
-import { getPlugin } from "webiny-plugins";
+import { getPlugins } from "webiny-plugins";
 import findObject from "./findObject";
 import uniqid from "uniqid";
 
 const MenuItemForm = ({ onSubmit, onCancel, currentMenuItem }: Object) => {
-    const plugin = getPlugin(currentMenuItem.type);
+    const plugin = getPlugins("pb-menu-item").find(pl => pl.menuItem.type === currentMenuItem.type);
     if (!plugin) {
         return null;
     }

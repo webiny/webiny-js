@@ -7,7 +7,7 @@ const Image = ({ element }: Object) => {
     return (
         <ElementRoot
             element={element}
-            className={"webiny-cms-base-element-style webiny-cms-element-image"}
+            className={"webiny-pb-base-page-element-style webiny-pb-page-element-image"}
         >
             <ImageContainer elementId={element.id}/>
         </ElementRoot>

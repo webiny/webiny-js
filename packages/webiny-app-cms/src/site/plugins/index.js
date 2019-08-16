@@ -10,7 +10,7 @@ import { get } from "lodash";
 
 export default [
     {
-        name: "cms-route",
+        name: "pb-route",
         type: "route",
         route: <Route component={Page} />
     },

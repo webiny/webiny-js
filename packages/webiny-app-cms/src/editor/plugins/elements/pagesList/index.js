@@ -22,11 +22,12 @@ export default () => {
 
     return [
         ({
-            name: "cms-element-pages-list",
-            type: "cms-element",
+            name: "pb-page-element-pages-list",
+            type: "pb-page-element",
+            elementType: "pages-list",
             toolbar: {
                 title: "List of pages",
-                group: "cms-element-group-basic",
+                group: "pb-page-element-group-basic",
                 preview() {
                     return (
                         <PreviewBox>
@@ -35,15 +36,15 @@ export default () => {
                     );
                 }
             },
-            settings: ["cms-element-settings-delete"],
-            target: ["cms-element-row", "cms-element-column"],
+            settings: ["pb-page-element-settings-delete"],
+            target: ["pb-page-element-row", "pb-page-element-column"],
             onCreate: "open-settings",
             create(options = {}) {
                 return {
-                    type: "cms-element-pages-list",
+                    type: "pb-page-element-pages-list",
                     data: {
                         resultsPerPage: 10,
-                        component: "cms-element-pages-list-component-default",
+                        component: "pb-page-element-pages-list-component-default",
                         settings: {
                             margin: {
                                 desktop: { all: 0 },
@@ -63,9 +64,9 @@ export default () => {
             }
         }: ElementPluginType),
         {
-            name: "cms-element-advanced-settings-pages-list-filter",
-            type: "cms-element-advanced-settings",
-            element: "cms-element-pages-list",
+            name: "pb-page-element-advanced-settings-pages-list-filter",
+            type: "pb-page-element-advanced-settings",
+            element: "pb-page-element-pages-list",
             render(props: Object) {
                 return (
                     <Tab icon={<FilterIcon />} label="Filter">
@@ -75,9 +76,9 @@ export default () => {
             }
         },
         {
-            name: "cms-element-advanced-settings-pages-list-design",
-            type: "cms-element-advanced-settings",
-            element: "cms-element-pages-list",
+            name: "pb-page-element-advanced-settings-pages-list-design",
+            type: "pb-page-element-advanced-settings",
+            element: "pb-page-element-pages-list",
             render(props: Object) {
                 return (
                     <Tab icon={<DesignIcon />} label="Design">

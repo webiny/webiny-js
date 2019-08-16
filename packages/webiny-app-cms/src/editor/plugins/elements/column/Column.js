@@ -41,7 +41,7 @@ const Column = pure(({ element, dropElement, togglePlugin }) => {
             <ColumnContainer style={{ justifyContent: "center" }}>
                 <ElementRoot
                     element={element}
-                    className={"webiny-cms-base-element-style webiny-cms-layout-column"}
+                    className={"webiny-pb-base-page-element-style webiny-pb-layout-column"}
                     style={{ width: "100%", display: "flex", flexDirection: "column" }}
                 >
                     <ConnectedElement elementId={element.id}>
@@ -94,7 +94,7 @@ export default compose(
     withHandlers({
         togglePlugin: ({ togglePlugin, element: { id, path, type } }) => () => {
             togglePlugin({
-                name: "cms-toolbar-add-element",
+                name: "pb-editor-toolbar-add-element",
                 params: { id, path, type }
             });
         },

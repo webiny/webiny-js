@@ -2,7 +2,7 @@
 import * as React from "react";
 import { isDescendant } from "react-sortable-tree";
 import classnames from "classnames";
-import { getPlugin } from "webiny-plugins";
+import { getPlugins } from "webiny-plugins";
 import { IconButton } from "webiny-ui/Button";
 import { Typography } from "webiny-ui/Typography";
 import "./MenuItemRenderer.css";
@@ -45,7 +45,7 @@ class NodeRendererDefault extends React.Component<*> {
         } = this.props;
         const nodeTitle = title || node.title;
 
-        const plugin = getPlugin(node.type);
+        const plugin = getPlugins("pb-menu-item").find(pl => pl.menuItem.type === node.type);
         if (!plugin) {
             return null;
         }

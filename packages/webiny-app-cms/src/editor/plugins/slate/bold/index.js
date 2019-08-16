@@ -26,8 +26,8 @@ export default () => {
     return {
         menu: [
             {
-                name: "cms-slate-menu-item-bold",
-                type: "cms-slate-menu-item",
+                name: "pb-editor-slate-menu-item-bold",
+                type: "pb-editor-slate-menu-item",
                 render({ MenuButton, editor, onChange }: Object) {
                     const isActive = hasMark(editor.value, mark);
 
@@ -42,8 +42,8 @@ export default () => {
         ],
         editor: [
             {
-                name: "cms-slate-editor-bold",
-                type: "cms-slate-editor",
+                name: "pb-editor-slate-editor-bold",
+                type: "pb-editor-slate-editor",
                 slate: {
                     onKeyDown(event: SyntheticKeyboardEvent<*>, change: Change, next: Function) {
                         // Decide what to do based on the key code...

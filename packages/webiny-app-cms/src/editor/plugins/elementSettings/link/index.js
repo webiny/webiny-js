@@ -6,8 +6,8 @@ import LinkSettings from "./LinkSettings";
 import Action from "../components/Action";
 
 export default ({
-    name: "cms-element-settings-link",
-    type: "cms-element-settings",
+    name: "pb-page-element-settings-link",
+    type: "pb-page-element-settings",
     renderAction() {
         return <Action plugin={this.name} tooltip={"Link"} icon={<LinkIcon />} />;
     },

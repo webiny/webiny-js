@@ -1,7 +1,7 @@
 // @flow
 import React from "react";
 import { renderToStaticMarkup } from "react-dom/server";
-import { getPlugin } from "webiny-plugins";
+import { getPlugins } from "webiny-plugins";
 import domToImage from "./domToImage";
 
 export default class ElementPreview extends React.Component<*> {
@@ -14,7 +14,7 @@ export default class ElementPreview extends React.Component<*> {
     }
 
     replaceContent(element: Object, doc: Document) {
-        const pl = getPlugin(element.type);
+        const pl = getPlugins("pb-page-element").find(pl => pl.elementType === element.type);
         if (!pl) {
             return doc;
         }
@@ -59,10 +59,10 @@ export default class ElementPreview extends React.Component<*> {
             return null;
         }
 
-        const editor = document.querySelector(".cms-editor");
+        const editor = document.querySelector(".pb-editor");
         // Hide element highlight while creating the image
         // $FlowFixMe
-        editor.classList.add("cms-editor-no-highlight");
+        editor.classList.add("pb-editor-no-highlight");
 
         const dataUrl = await domToImage.toPng(node, {
             onDocument: doc => this.replaceContent(element, doc),
@@ -70,7 +70,7 @@ export default class ElementPreview extends React.Component<*> {
         });
 
         // $FlowFixMe
-        editor.classList.remove("cms-editor-no-highlight");
+        editor.classList.remove("pb-editor-no-highlight");
 
         this.props.onChange(dataUrl);
     }

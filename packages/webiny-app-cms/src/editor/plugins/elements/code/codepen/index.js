@@ -27,7 +27,7 @@ export default (): Array<PluginType> => [
         type: "codepen",
         toolbar: {
             title: "CodePen",
-            group: "cms-element-group-code",
+            group: "pb-page-element-group-code",
             preview() {
                 return (
                     <PreviewBox>

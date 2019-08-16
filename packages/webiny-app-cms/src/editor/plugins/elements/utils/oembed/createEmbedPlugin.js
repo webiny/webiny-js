@@ -25,15 +25,16 @@ type EmbedPluginConfig = {
 
 export const createEmbedPlugin = (config: EmbedPluginConfig): ElementPluginType => {
     return {
-        name: "cms-element-" + config.type,
-        type: "cms-element",
+        name: "pb-page-element-" + config.type,
+        type: "pb-page-element",
+        elementType: config.type,
         toolbar: config.toolbar,
-        settings: config.settings || ["cms-element-settings-delete", ""],
-        target: config.target || ["cms-element-column", "cms-element-row", "cms-element-list-item"],
+        settings: config.settings || ["pb-page-element-settings-delete", ""],
+        target: config.target || ["pb-page-element-column", "pb-page-element-row", "pb-page-element-list-item"],
         // eslint-disable-next-line
         create({ content = {}, ...options }: Object) {
             return {
-                type: "cms-element-" + config.type,
+                type: "pb-page-element-" + config.type,
                 elements: [],
                 data: {
                     settings: {
@@ -62,9 +63,10 @@ type EmbedPluginSidebarConfig = {
 };
 export const createEmbedSettingsPlugin = ({ type, render }: EmbedPluginSidebarConfig) => {
     return {
-        name: "cms-element-advanced-settings-" + type,
-        type: "cms-element-advanced-settings",
-        element: "cms-element-" + type,
+        name: "pb-page-element-advanced-settings-" + type,
+        type: "pb-page-element-advanced-settings",
+        element: "pb-page-element-" + type,
+        elementType: type,
         render
     };
 };

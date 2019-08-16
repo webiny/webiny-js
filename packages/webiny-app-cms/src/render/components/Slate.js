@@ -9,7 +9,7 @@ class SlateEditor extends React.Component<*, *> {
     constructor(props) {
         super();
 
-        this.plugins = getPlugins("cms-render-slate-editor").map(pl => pl.slate);
+        this.plugins = getPlugins("pb-render-slate-editor").map(pl => pl.slate);
 
         this.state = {
             value: Value.fromJSON(props.value)

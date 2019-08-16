@@ -9,8 +9,8 @@ import Action from "../Action";
 addReducer([ELEMENT_DROPPED], "ui.activeElement", () => null);
 
 export default {
-    name: "cms-toolbar-add-element",
-    type: "cms-toolbar-top",
+    name: "pb-editor-toolbar-add-element",
+    type: "pb-editor-toolbar-top",
     renderAction() {
         return <Action tooltip={"Add Element"} plugin={this.name} icon={<AddIcon />} />;
     },

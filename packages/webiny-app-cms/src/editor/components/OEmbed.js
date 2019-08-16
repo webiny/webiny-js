@@ -121,7 +121,7 @@ export default compose(
                         id={element.id}
                         className={
                             centerAlign +
-                            " cms-editor-dragging--disabled cms-editor-resizing--disabled"
+                            " pb-editor-dragging--disabled pb-editor-resizing--disabled"
                         }
                         dangerouslySetInnerHTML={{ __html: get(element, "data.oembed.html") || "" }}
                     />

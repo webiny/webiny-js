@@ -5,22 +5,22 @@ import { hasRoles } from "webiny-app-security";
 
 export default [
     {
-        name: "cms-menu",
+        name: "pb-menu",
         type: "menu",
         render({ Menu }: Object) {
             const { menus, categories, editor }: Object = (hasRoles({
-                menus: ["cms-menus"],
-                categories: ["cms-categories"],
-                editor: ["cms-editor"]
+                menus: ["pb-menus"],
+                categories: ["pb-categories"],
+                editor: ["pb-editor"]
             }): any);
 
             if (menus || categories || editor) {
                 return (
                     <Menu label={`Content`} icon={<PagesIcon />}>
                         <Menu label={`Pages`}>
-                            {categories && <Menu label={`Categories`} path="/cms/categories" />}
-                            {editor && <Menu label={`Pages`} path="/cms/pages" />}
-                            {menus && <Menu label={`Menus`} path="/cms/menus" />}
+                            {categories && <Menu label={`Categories`} path="/page-builder/categories" />}
+                            {editor && <Menu label={`Pages`} path="/page-builder/pages" />}
+                            {menus && <Menu label={`Menus`} path="/page-builder/menus" />}
                         </Menu>
                     </Menu>
                 );

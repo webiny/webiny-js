@@ -1,9 +1,9 @@
 // @flow
 import { getPlugins } from "webiny-plugins";
-import type { CmsPageSettingsFieldsPluginType } from "webiny-app-cms/types";
+import type { PageBuilderPageSettingsFieldsPluginType } from "webiny-app-cms/types";
 
 export default () => {
-    return getPlugins("cms-page-settings-fields")
-        .map((pl: CmsPageSettingsFieldsPluginType) => pl.fields)
+    return getPlugins("pb-page-settings-fields")
+        .map((pl: PageBuilderPageSettingsFieldsPluginType) => pl.fields)
         .join("\n");
 };

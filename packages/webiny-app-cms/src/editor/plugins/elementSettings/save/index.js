@@ -5,8 +5,8 @@ import Action from "../components/Action";
 import SaveAction from "./SaveAction";
 
 export default {
-    name: "cms-element-settings-save",
-    type: "cms-element-settings",
+    name: "pb-page-element-settings-save",
+    type: "pb-page-element-settings",
     renderAction() {
         return (
             <SaveAction>

@@ -14,7 +14,7 @@ const Icon = ({ element }: Object) => {
                     {element => {
                         const { svg = null } = element.data.icon;
                         const className = getAllClasses(
-                            "webiny-cms-base-element-style webiny-cms-element-icon",
+                            "webiny-pb-base-page-element-style webiny-pb-page-element-icon",
                             center
                         );
 

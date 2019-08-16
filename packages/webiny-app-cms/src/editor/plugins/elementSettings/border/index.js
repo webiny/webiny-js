@@ -5,8 +5,8 @@ import Settings from "./Settings";
 import Action from "../components/Action";
 
 export default {
-    name: "cms-element-settings-border",
-    type: "cms-element-settings",
+    name: "pb-page-element-settings-border",
+    type: "pb-page-element-settings",
     renderAction() {
         return <Action tooltip={"Border"} plugin={this.name} icon={<BorderIcon />} />;
     },

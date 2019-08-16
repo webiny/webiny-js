@@ -4,8 +4,8 @@ import { ReactComponent as TextIcon } from "webiny-app-cms/editor/assets/icons/r
 import type { ElementGroupPluginType } from "webiny-app-cms/types";
 
 const basicGroup: ElementGroupPluginType = {
-    name: "cms-element-group-basic",
-    type: "cms-element-group",
+    name: "pb-editor-element-group-basic",
+    type: "pb-editor-element-group",
     group: {
         title: "Basic",
         icon: <TextIcon />

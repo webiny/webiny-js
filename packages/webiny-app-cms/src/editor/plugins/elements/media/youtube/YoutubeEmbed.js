@@ -44,7 +44,7 @@ const YoutubeEmbed = (props: Object) => {
     return (
         <div
             className={
-                "webiny-cms-base-element-style webiny-cms-element-embed-youtube " + outerWrapper
+                "webiny-pb-base-page-element-style webiny-pb-page-element-embed-youtube " + outerWrapper
             }
         >
             <div className={innerWrapper}>
@@ -52,8 +52,8 @@ const YoutubeEmbed = (props: Object) => {
                     id={element.id}
                     className={[
                         scaleableVideo,
-                        "cms-editor-dragging--disabled",
-                        "cms-editor-resizing--disabled"
+                        "pb-editor-dragging--disabled",
+                        "pb-editor-resizing--disabled"
                     ].join(" ")}
                     dangerouslySetInnerHTML={{ __html: get(element, "data.oembed.html") || "" }}
                 />

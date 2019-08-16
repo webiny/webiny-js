@@ -19,8 +19,8 @@ class ElementRoot extends React.Component<*> {
     attributePlugins: Array<CmsRenderElementAttributesPluginType>;
     constructor() {
         super();
-        this.stylePlugins = getPlugins("cms-render-element-style");
-        this.attributePlugins = getPlugins("cms-render-element-attributes");
+        this.stylePlugins = getPlugins("pb-render-element-style");
+        this.attributePlugins = getPlugins("pb-render-element-attributes");
     }
 
     shouldComponentUpdate(props: Object) {

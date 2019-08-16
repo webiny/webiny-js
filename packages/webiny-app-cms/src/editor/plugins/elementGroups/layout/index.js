@@ -4,8 +4,8 @@ import { ReactComponent as LayoutIcon } from "webiny-app-cms/editor/assets/icons
 import type { ElementGroupPluginType } from "webiny-app-cms/types";
 
 const layoutGroup: ElementGroupPluginType = {
-    name: "cms-element-group-layout",
-    type: "cms-element-group",
+    name: "pb-editor-element-group-layout",
+    type: "pb-editor-element-group",
     group: {
         title: "Layout",
         icon: <LayoutIcon/>

@@ -6,8 +6,8 @@ import Settings from "./Settings";
 import Action from "../components/Action";
 
 export default {
-    name: "cms-element-settings-column-width",
-    type: "cms-element-settings",
+    name: "pb-page-element-settings-column-width",
+    type: "pb-page-element-settings",
     renderAction() {
         return <Action tooltip={"Width"} plugin={this.name} icon={<WidthIcon />} />;
     },

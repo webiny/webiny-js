@@ -3,8 +3,8 @@ import React from "react";
 
 export default () => {
     return {
-        name: "cms-render-slate-editor-lists",
-        type: "cms-render-slate-editor",
+        name: "pb-render-slate-editor-lists",
+        type: "pb-render-slate-editor",
         slate: {
             renderNode(props: Object, next: Function) {
                 const { attributes, children, node } = props;
@@ -12,7 +12,7 @@ export default () => {
                 switch (node.type) {
                     case "unordered-list":
                         return (
-                            <ul className={"webiny-cms-typography-unordered-list"} {...attributes}>
+                            <ul className={"webiny-pb-typography-unordered-list"} {...attributes}>
                                 {children}
                             </ul>
                         );
@@ -20,7 +20,7 @@ export default () => {
                         return <li {...attributes}>{children}</li>;
                     case "ordered-list":
                         return (
-                            <ol className={"webiny-cms-typography-ordered-list"} {...attributes}>
+                            <ol className={"webiny-pb-typography-ordered-list"} {...attributes}>
                                 {children}
                             </ol>
                         );

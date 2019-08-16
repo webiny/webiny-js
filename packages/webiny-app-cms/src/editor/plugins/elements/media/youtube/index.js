@@ -26,7 +26,7 @@ export default (): Array<ElementPluginType> => [
         type: "youtube",
         toolbar: {
             title: "Youtube",
-            group: "cms-element-group-media",
+            group: "pb-page-element-group-media",
             preview() {
                 return (
                     <PreviewBox>

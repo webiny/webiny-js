@@ -5,8 +5,8 @@ import Settings from "./Settings";
 import Action from "../components/Action";
 
 export default {
-    name: "cms-element-settings-height",
-    type: "cms-element-settings",
+    name: "pb-page-element-settings-height",
+    type: "pb-page-element-settings",
     renderAction() {
         return <Action tooltip={"height"} plugin={this.name} icon={<HeightIcon />} />;
     },

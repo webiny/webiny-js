@@ -5,8 +5,8 @@ import Settings from "./Settings";
 import Action from "../components/Action";
 
 export default {
-    name: "cms-element-settings-shadow",
-    type: "cms-element-settings",
+    name: "pb-page-element-settings-shadow",
+    type: "pb-page-element-settings",
     renderAction() {
         return <Action tooltip={"Shadow"} plugin={this.name} icon={<ShadowIcon />} />;
     },

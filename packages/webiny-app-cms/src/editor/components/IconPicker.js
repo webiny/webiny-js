@@ -86,7 +86,7 @@ export default compose(
     withState("filter", "setFilter", ""),
     withProps(({ filter }) => {
         if (!icons) {
-            icons = getPlugins("cms-icons").reduce((icons: Array<Object>, pl: Object) => {
+            icons = getPlugins("pb-icons").reduce((icons: Array<Object>, pl: Object) => {
                 return icons.concat(pl.getIcons());
             }, []);
         }

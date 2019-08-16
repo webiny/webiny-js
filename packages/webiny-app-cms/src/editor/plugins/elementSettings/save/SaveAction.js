@@ -4,7 +4,7 @@ import { connect } from "webiny-app-cms/editor/redux";
 import { compose, withState, withHandlers, lifecycle, shouldUpdate } from "recompose";
 import { graphql } from "react-apollo";
 import { cloneDeep } from "lodash";
-import { getPlugin } from "webiny-plugins";
+import { getPlugins } from "webiny-plugins";
 import SaveDialog from "./SaveDialog";
 import { withSnackbar } from "webiny-admin/components";
 import { withKeyHandler } from "webiny-app-cms/editor/components";
@@ -33,7 +33,7 @@ const SaveAction = ({
     if (!element) {
         return null;
     }
-    const plugin = getPlugin(element.type);
+    const plugin = getPlugins("pb-page-element").find(pl => pl.elementType === element.type);
     if (!plugin) {
         return null;
     }
@@ -46,7 +46,7 @@ const SaveAction = ({
                 open={isDialogOpened}
                 onClose={hideDialog}
                 onSubmit={onSubmit}
-                type={element.type === "cms-element-block" ? "block" : "element"}
+                type={element.type === "block" ? "block" : "element"}
             />
             {React.cloneElement(children, { onClick: showDialog })}
         </React.Fragment>
@@ -102,7 +102,7 @@ export default compose(
 
             const meta = await getDataURLImageDimensions(formData.preview);
             const blob = dataURLtoBlob(formData.preview);
-            blob.name = "cms-element-" + element.id + ".png";
+            blob.name = "pb-page-element-" + element.id + ".png";
 
             const fileUploaderPlugin = getPlugin("file-uploader");
             formData.preview = await fileUploaderPlugin.upload(blob);

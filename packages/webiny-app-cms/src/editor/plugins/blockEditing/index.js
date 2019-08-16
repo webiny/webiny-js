@@ -8,24 +8,24 @@ import SearchBlocks from "./SearchBlocks";
 export default [
     {
         name: "add-block",
-        type: "cms-editor-content",
+        type: "pb-editor-content",
         render() {
             return <AddBlock />;
         }
     },
     {
         name: "add-content",
-        type: "cms-editor-content",
+        type: "pb-editor-content",
         render() {
             return <AddContent />;
         }
     },
     {
-        name: "cms-search-blocks-bar",
-        type: "cms-editor-bar",
+        name: "pb-editor-search-blocks-bar",
+        type: "pb-editor-bar",
         shouldRender({ plugins }: Object) {
-            const active = get(plugins, "cms-editor-bar") || [];
-            return active ? active.find(pl => pl.name === "cms-search-blocks-bar") : false;
+            const active = get(plugins, "pb-editor-bar") || [];
+            return active ? active.find(pl => pl.name === "pb-editor-search-blocks-bar") : false;
         },
 
         render() {

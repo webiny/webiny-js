@@ -7,7 +7,7 @@ import { isEqual } from "lodash";
 let icons;
 export const getIcons = () => {
     if (!icons) {
-        icons = getPlugins("cms-icons").reduce((icons: Array<Object>, pl: Object) => {
+        icons = getPlugins("pb-icons").reduce((icons: Array<Object>, pl: Object) => {
             return icons.concat(pl.getIcons());
         }, []);
     }

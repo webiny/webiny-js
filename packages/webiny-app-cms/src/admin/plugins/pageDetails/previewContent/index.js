@@ -1,7 +1,7 @@
 // @flow
 import * as React from "react";
 import { renderPlugins } from "webiny-app/plugins";
-import type { CmsPageDetailsPluginType, WithPageDetailsProps } from "webiny-app-cms/types";
+import type { PageBuilderPageDetailsPluginType, WithPageDetailsProps } from "webiny-app-cms/types";
 import { Tab } from "webiny-ui/Tabs";
 import styled from "react-emotion";
 import { Elevation } from "webiny-ui/Elevation";
@@ -19,8 +19,8 @@ const RenderBlock = styled("div")({
 
 export default ([
     {
-        name: "cms-page-details-revision-content-preview",
-        type: "cms-page-details-revision-content",
+        name: "pb-page-details-revision-content-preview",
+        type: "pb-page-details-revision-content",
         render({ pageDetails, loading, refreshPages }: WithPageDetailsProps) {
             return (
                 <Tab label={"Page preview"} disabled={loading}>
@@ -28,7 +28,7 @@ export default ([
                         <Elevation z={2}>
                             <div style={{ position: "relative" }}>
                                 {loading && <CircularProgress />}
-                                {renderPlugins("cms-page-details-revision-content-preview", {
+                                {renderPlugins("pb-page-details-revision-content-preview", {
                                     pageDetails,
                                     refreshPages
                                 })}
@@ -40,10 +40,10 @@ export default ([
         }
     },
     {
-        name: "cms-page-details-revision-render",
-        type: "cms-page-details-revision-content-preview",
+        name: "pb-page-details-revision-render",
+        type: "pb-page-details-revision-content-preview",
         render({ pageDetails }: WithPageDetailsProps) {
             return <PagePreview pageDetails={pageDetails} />;
         }
     }
-]: Array<CmsPageDetailsPluginType>);
+]: Array<PageBuilderPageDetailsPluginType>);

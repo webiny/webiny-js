@@ -10,7 +10,7 @@ const Column = ({ element }: { element: ElementType }) => {
         <ElementAnimation>
             <ElementRoot
                 element={element}
-                className={"webiny-cms-base-element-style webiny-cms-layout-column"}
+                className={"webiny-pb-base-page-element-style webiny-pb-layout-column"}
                 style={{ width: (element.data.width || 100) + "%" }}
             >
                 {element.elements.map(element => (

@@ -12,7 +12,7 @@ export default function EditorPluginsLoader({ children, location }) {
 
     async function loadPlugins() {
         // If we are on pages list route, import plugins required to render the page content.
-        if (location.pathname.startsWith("/cms/pages") && !loaded.render) {
+        if (location.pathname.startsWith("/page-builder/pages") && !loaded.render) {
             const renderPlugins = await import("webiny-app-cms/render/presets/default");
             registerPlugins(renderPlugins.default);
 
@@ -21,7 +21,7 @@ export default function EditorPluginsLoader({ children, location }) {
         }
 
         // If we are on the Editor route, import plugins required to render both editor and preview.
-        if (location.pathname.startsWith("/cms/editor") && !loaded.editor) {
+        if (location.pathname.startsWith("/page-builder/editor") && !loaded.editor) {
             const plugins = await Promise.all(
                 [
                     import("webiny-app-cms/editor/presets/default"),
@@ -41,11 +41,11 @@ export default function EditorPluginsLoader({ children, location }) {
         loadPlugins();
     }, []);
 
-    if (location.pathname.startsWith("/cms/pages") && loaded.render) {
+    if (location.pathname.startsWith("/page-builder/pages") && loaded.render) {
         return children;
     }
 
-    if (location.pathname.startsWith("/cms/editor") && loaded.editor) {
+    if (location.pathname.startsWith("/page-builder/editor") && loaded.editor) {
         return children;
     }
 

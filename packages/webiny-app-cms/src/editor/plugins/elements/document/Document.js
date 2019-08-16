@@ -6,7 +6,7 @@ import type { ElementType } from "webiny-app-cms/types";
 
 const Document = pure(({ element }: { element: ElementType }) => {
     return (
-        <div className={"webiny-cms-page-document"}>
+        <div className={"webiny-pb-page-document"}>
             {element.elements.map(el => (
                 <Element key={el} id={el} />
             ))}

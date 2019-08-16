@@ -26,11 +26,12 @@ export default (): ElementPluginType => {
     });
 
     return {
-        name: "cms-element-row",
-        type: "cms-element",
+        name: "pb-page-element-row",
+        type: "pb-page-element",
+        elementType: "row",
         toolbar: {
             title: "Row",
-            group: "cms-element-group-layout",
+            group: "pb-page-element-group-layout",
             // Render element preview
             preview() {
                 return (
@@ -41,26 +42,26 @@ export default (): ElementPluginType => {
             }
         },
         settings: [
-            "cms-element-settings-background",
-            "cms-element-settings-animation",
+            "pb-page-element-settings-background",
+            "pb-page-element-settings-animation",
             "",
-            "cms-element-settings-border",
-            "cms-element-settings-shadow",
+            "pb-page-element-settings-border",
+            "pb-page-element-settings-shadow",
             "",
-            "cms-element-settings-padding",
-            "cms-element-settings-margin",
-            "cms-element-settings-width",
+            "pb-page-element-settings-padding",
+            "pb-page-element-settings-margin",
+            "pb-page-element-settings-width",
             "",
-            "cms-element-settings-clone",
-            "cms-element-settings-delete",
+            "pb-page-element-settings-clone",
+            "pb-page-element-settings-delete",
             ""
         ],
         // Target drop zones that will accept this type
-        target: ["cms-element-block", "cms-element-column"],
+        target: ["pb-page-element-block", "pb-page-element-column"],
         // This function is called when `createElement` is called for this plugin
         create(options = {}) {
             const row = {
-                type: "cms-element-row",
+                type: "pb-page-element-row",
                 elements: [],
                 data: {
                     settings: {
@@ -103,7 +104,7 @@ export default (): ElementPluginType => {
             }
 
             let column;
-            if (element.type !== "cms-element-column") {
+            if (element.type !== "pb-page-element-column") {
                 column = createColumn({ elements: [element] });
             }
 

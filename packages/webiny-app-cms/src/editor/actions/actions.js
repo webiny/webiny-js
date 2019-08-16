@@ -8,14 +8,14 @@ import {
     addMiddleware,
     addReducer,
     addHigherOrderReducer
-} from "webiny-app-cms/editor/redux";
-import { getPlugin } from "webiny-plugins";
+} from "webiny-app-page-builder/editor/redux";
+import { getPlugin, getPlugins } from "webiny-plugins";
 import {
     getPage,
     getElementWithChildren,
     getParentElementWithChildren
-} from "webiny-app-cms/editor/selectors";
-import { updateChildPaths } from "webiny-app-cms/editor/utils";
+} from "webiny-app-page-builder/editor/selectors";
+import { updateChildPaths } from "webiny-app-page-builder/editor/utils";
 import undoable from "./history";
 
 export const DRAG_START = `Drag start`;
@@ -177,7 +177,7 @@ addReducer(
     [UPDATE_ELEMENT],
     action => {
         const { element } = action.payload;
-        if (element.type === "cms-element-document") {
+        if (element.type === "document") {
             return "page.content";
         }
         // .slice(2) removes `0.` from the beginning of the generated path
@@ -238,7 +238,7 @@ addMiddleware([ELEMENT_DROPPED], ({ store, next, action }) => {
         return;
     }
 
-    const plugin = getPlugin(target.type);
+    const plugin = getPlugins("pb-page-element").find(pl => pl.elementType === target.type);
 
     if (!plugin) {
         return;
@@ -254,7 +254,8 @@ addMiddleware([ELEMENT_DROPPED], ({ store, next, action }) => {
         source = getElementWithChildren(state, source.id);
     }
 
-    const targetPlugin = getPlugin(target.type);
+    const targetPlugin = getPlugins("pb-page-element").find(pl => pl.elementType === target.type);
+
     if (!targetPlugin) {
         return;
     }
@@ -388,21 +389,19 @@ addMiddleware([SAVING_REVISION], ({ store, next, action }) => {
 
     const updateRevision = gql`
         mutation UpdateRevision($id: ID!, $data: UpdatePageInput!) {
-            cms {
-                pageBuilder {
-                    updateRevision(id: $id, data: $data) {
-                        data {
-                            id
-                            content
-                            title
-                            published
-                            savedOn
-                        }
-                        error {
-                            code
-                            message
-                            data
-                        }
+            pageBuilder {
+                updateRevision(id: $id, data: $data) {
+                    data {
+                        id
+                        content
+                        title
+                        published
+                        savedOn
+                    }
+                    error {
+                        code
+                        message
+                        data
                     }
                 }
             }

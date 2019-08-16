@@ -15,29 +15,30 @@ import type { ElementPluginType } from "webiny-app-cms/types";
 
 export default (): ElementPluginType => {
     return {
-        name: "cms-element-block",
-        type: "cms-element",
+        name: "pb-page-element-block",
+        type: "pb-page-element",
+        elementType: "block",
         settings: [
-            "cms-element-settings-background",
-            "cms-element-settings-animation",
+            "pb-page-element-settings-background",
+            "pb-page-element-settings-animation",
             "",
-            "cms-element-settings-border",
-            "cms-element-settings-shadow",
+            "pb-page-element-settings-border",
+            "pb-page-element-settings-shadow",
             "",
-            "cms-element-settings-padding",
-            "cms-element-settings-margin",
-            "cms-element-settings-width",
-            "cms-element-settings-height",
-            "cms-element-settings-horizontal-align-flex",
-            "cms-element-settings-vertical-align",
+            "pb-page-element-settings-padding",
+            "pb-page-element-settings-margin",
+            "pb-page-element-settings-width",
+            "pb-page-element-settings-height",
+            "pb-page-element-settings-horizontal-align-flex",
+            "pb-page-element-settings-vertical-align",
             "",
-            "cms-element-settings-clone",
-            "cms-element-settings-delete",
+            "pb-page-element-settings-clone",
+            "pb-page-element-settings-delete",
             ""
         ],
         create(options = {}) {
             return {
-                type: "cms-element-block",
+                type: "pb-page-element-block",
                 elements: [
                     createRow({
                         elements: [createColumn({ data: { width: 100 } })]

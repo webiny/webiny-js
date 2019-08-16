@@ -1,5 +1,5 @@
-.cms-editor-dragging {
-  .cms-disable {
+.pb-editor-dragging {
+  .pb-disable {
     z-index: 10000000;
     opacity: 0.5;
     background-color: red;
@@ -10,7 +10,7 @@
     height: 100%;
   }
   /* Append this class to the DOM elements you want to disable during element dragging. */
-  .cms-editor-dragging--disabled {
+  .pb-editor-dragging--disabled {
     &:before {
       content: " ";
       position: absolute;
@@ -27,9 +27,9 @@
   }
 }
 
-.cms-editor-resizing {
+.pb-editor-resizing {
   /* Append this class to the DOM elements you want to disable during element resizing. */
-  .cms-editor-resizing--disabled {
+  .pb-editor-resizing--disabled {
     &:before {
       content: " ";
       position: absolute;
@@ -46,12 +46,12 @@
   }
 }
 
-.cms-editor {
-  &.cms-editor-no-highlight {
+.pb-editor {
+  &.pb-editor-no-highlight {
     .type {
       display: none !important;
     }
-    .webiny-cms-element-container::after {
+    .webiny-pb-page-element-container::after {
       content: none;
     }
   }

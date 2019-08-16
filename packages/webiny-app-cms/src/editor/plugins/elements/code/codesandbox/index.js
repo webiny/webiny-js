@@ -27,7 +27,7 @@ export default (): Array<PluginType> => [
         type: "codesandbox",
         toolbar: {
             title: "CodeSandbox",
-            group: "cms-element-group-code",
+            group: "pb-page-element-group-code",
             preview() {
                 return (
                     <PreviewBox>

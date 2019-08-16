@@ -6,7 +6,7 @@ export const lazyLoadMiddleware = () => async (params: Object, next: Function) =
     const { route } = params;
 
     // If we are on pages list route, import plugins required to render the page content.
-    if (route.path.startsWith("/cms/pages") && !loaded.render) {
+    if (route.path.startsWith("/page-builder/pages") && !loaded.render) {
         const renderPlugins = await import("webiny-app-cms/render/presets/default");
         registerPlugins(renderPlugins.default);
 
@@ -14,7 +14,7 @@ export const lazyLoadMiddleware = () => async (params: Object, next: Function) =
     }
 
     // If we are on the Editor route, import plugins required to render both editor and preview.
-    if (route.path.startsWith("/cms/editor") && !loaded.editor) {
+    if (route.path.startsWith("/page-builder/editor") && !loaded.editor) {
         const plugins = await Promise.all(
             [
                 import("webiny-app-cms/editor/presets/default"),

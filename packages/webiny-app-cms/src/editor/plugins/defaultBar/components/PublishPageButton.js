@@ -33,7 +33,7 @@ const PublishPageButton = ({ page, showSnackbar, history }) => {
                                         return showSnackbar(error.message);
                                     }
 
-                                    history.push(`/cms/pages?id=${page.id}`);
+                                    history.push(`/page-builder/pages?id=${page.id}`);
 
                                     // Let's wait a bit, because we are also redirecting the user.
                                     setTimeout(() => {

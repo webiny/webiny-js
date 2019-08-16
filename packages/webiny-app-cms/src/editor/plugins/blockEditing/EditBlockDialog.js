@@ -49,7 +49,7 @@ type Props = {
 const EditBlockDialog = (props: Props) => {
     const { open, onClose, onSubmit, plugin } = props;
 
-    const blockCategoriesOptions = getPlugins("cms-block-category").map((item: Object) => ({
+    const blockCategoriesOptions = getPlugins("pb-editor-block-category").map((item: Object) => ({
         value: item.name,
         label: item.title
     }));
@@ -71,7 +71,7 @@ const EditBlockDialog = (props: Props) => {
                                         </Bind>
                                     </Cell>
                                 </Grid>
-                                {data.type === "cms-block" && (
+                                {data.type === "block" && (
                                     <>
                                         <Grid>
                                             <Cell span={12}>

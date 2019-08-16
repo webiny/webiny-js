@@ -5,9 +5,9 @@ import type { RenderElementPluginType } from "webiny-app-cms/types";
 
 export default (): RenderElementPluginType => {
     return {
-        name: "cms-render-element-spacer",
-        type: "cms-render-element",
-        element: "cms-element-spacer",
+        name: "pb-render-element-spacer",
+        type: "pb-render-element",
+        elementType: "spacer",
         render(props) {
             return <Spacer {...props} />;
         }

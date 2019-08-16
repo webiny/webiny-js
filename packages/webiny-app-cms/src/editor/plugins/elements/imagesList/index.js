@@ -23,11 +23,12 @@ export default () => {
 
     return [
         ({
-            name: "cms-element-images-list",
-            type: "cms-element",
+            name: "pb-page-element-images-list",
+            type: "pb-page-element",
+            elementType: "images-list",
             toolbar: {
                 title: "Image Gallery",
-                group: "cms-element-group-basic",
+                group: "pb-page-element-group-basic",
                 preview() {
                     return (
                         <PreviewBox>
@@ -36,14 +37,14 @@ export default () => {
                     );
                 }
             },
-            settings: ["cms-element-settings-delete"],
-            target: ["cms-element-row", "cms-element-column"],
+            settings: ["pb-page-element-settings-delete"],
+            target: ["pb-page-element-row", "pb-page-element-column"],
             onCreate: "open-settings",
             create(options = {}) {
                 return {
-                    type: "cms-element-images-list",
+                    type: "pb-page-element-images-list",
                     data: {
-                        component: "cms-element-images-list-component-mosaic",
+                        component: "pb-page-element-images-list-component-mosaic",
                         settings: {
                             margin: {
                                 desktop: { all: 0 },
@@ -63,9 +64,9 @@ export default () => {
             }
         }: ElementPluginType),
         {
-            name: "cms-element-advanced-settings-images-list-filter",
-            type: "cms-element-advanced-settings",
-            element: "cms-element-images-list",
+            name: "pb-page-element-advanced-settings-images-list-filter",
+            type: "pb-page-element-advanced-settings",
+            element: "pb-page-element-images-list",
             render(props: Object) {
                 return (
                     <Tab icon={<ImagesIcon />} label="Images">
@@ -75,9 +76,9 @@ export default () => {
             }
         },
         {
-            name: "cms-element-advanced-settings-images-list-design",
-            type: "cms-element-advanced-settings",
-            element: "cms-element-images-list",
+            name: "pb-page-element-advanced-settings-images-list-design",
+            type: "pb-page-element-advanced-settings",
+            element: "pb-page-element-images-list",
             render(props: Object) {
                 return (
                     <Tab icon={<DesignIcon />} label="Design">

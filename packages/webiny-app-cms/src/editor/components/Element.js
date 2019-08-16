@@ -2,19 +2,19 @@
 import * as React from "react";
 import { Transition } from "react-transition-group";
 import { compose, pure, withHandlers, withProps, setDisplayName } from "recompose";
-import { connect } from "webiny-app-cms/editor/redux";
+import { connect } from "webiny-app-page-builder/editor/redux";
 import isEqual from "lodash/isEqual";
-import { getPlugin } from "webiny-plugins";
+import { getPlugins } from "webiny-plugins";
 import { renderPlugins } from "webiny-app/plugins";
 import {
     dragStart,
     dragEnd,
     activateElement,
     highlightElement
-} from "webiny-app-cms/editor/actions";
-import { getElementProps, getElement } from "webiny-app-cms/editor/selectors";
+} from "webiny-app-page-builder/editor/actions";
+import { getElementProps, getElement } from "webiny-app-page-builder/editor/selectors";
 import Draggable from "./Draggable";
-import type { ElementType } from "webiny-app-cms/types";
+import type { ElementType } from "webiny-app-page-builder/types";
 import {
     defaultStyle,
     ElementContainer,
@@ -40,16 +40,16 @@ declare type ElementProps = {
 
 const Element = pure(
     ({
-        plugin,
-        renderDraggable,
-        element,
-        highlight,
-        active,
-        onMouseOver,
-        beginDrag,
-        endDrag,
-        className = ""
-    }: ElementProps) => {
+         plugin,
+         renderDraggable,
+         element,
+         highlight,
+         active,
+         onMouseOver,
+         beginDrag,
+         endDrag,
+         className = ""
+     }: ElementProps) => {
         if (!plugin) {
             return null;
         }
@@ -63,7 +63,7 @@ const Element = pure(
                         highlight={highlight}
                         active={active}
                         style={{ ...defaultStyle, ...transitionStyles[state] }}
-                        className={"webiny-cms-element-container"}
+                        className={"webiny-pb-page-element-container"}
                     >
                         <div className={["innerWrapper", className].filter(c => c).join(" ")}>
                             <Draggable
@@ -100,7 +100,9 @@ export default compose(
         { areStatePropsEqual: isEqual }
     ),
     withProps(({ element }) => ({
-        plugin: element ? getPlugin(element.type) : null
+        plugin: element
+            ? getPlugins("pb-page-element").find(pl => pl.elementType === element.type)
+            : null
     })),
     withHandlers({
         beginDrag: ({ plugin, element, dragStart }) => () => {
@@ -114,7 +116,7 @@ export default compose(
             dragEnd({ element: monitor.getItem() });
         },
         onClick: ({ element, active, activateElement }) => () => {
-            if (element.type === "cms-element-document") {
+            if (element.type === "document") {
                 return;
             }
             if (!active) {
@@ -122,7 +124,7 @@ export default compose(
             }
         },
         onMouseOver: ({ element, highlight, highlightElement }) => e => {
-            if (element.type === "cms-element-document") {
+            if (element.type === "document") {
                 return;
             }
 
@@ -138,8 +140,8 @@ export default compose(
                 <div className={"type " + typeStyle}>
                     <div className="background" onClick={onClick} />
                     <div className={"element-holder"} onClick={onClick}>
-                        {renderPlugins("cms-element-action", { element, plugin })}
-                        <span>{plugin.name.replace("cms-element-", "")}</span>
+                        {renderPlugins("pb-page-element-action", { element, plugin })}
+                        <span>{plugin.name.replace("pb-page-element-", "")}</span>
                     </div>
                 </div>
             );

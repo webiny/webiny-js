@@ -18,8 +18,8 @@ export default () => {
     return {
         menu: [
             {
-                name: "cms-slate-menu-item-code",
-                type: "cms-slate-menu-item",
+                name: "pb-editor-slate-menu-item-code",
+                type: "pb-editor-slate-menu-item",
                 render({
                     MenuButton,
                     editor,
@@ -45,14 +45,14 @@ export default () => {
         ],
         editor: [
             {
-                name: "cms-slate-editor-code",
-                type: "cms-slate-editor",
+                name: "pb-editor-slate-editor-code",
+                type: "pb-editor-slate-editor",
                 slate: {
                     renderMark(props: Object, next: Function) {
                         if (props.mark.type === MARK) {
                             return (
                                 <code
-                                    className={"webiny-cms-typography-code"}
+                                    className={"webiny-pb-typography-code"}
                                     {...props.attributes}
                                 >
                                     {props.children}

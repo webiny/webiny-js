@@ -9,15 +9,15 @@ import AdvancedAction from "./AdvancedAction";
 
 export default [
     {
-        name: "cms-element-advanced-settings",
-        type: "cms-editor-content",
+        name: "pb-page-element-advanced-settings",
+        type: "pb-page-editor-content",
         render() {
             return <AdvancedSettings />;
         }
     },
     {
-        type: "cms-editor-redux-middleware",
-        name: "cms-editor-redux-middleware-advanced-settings",
+        type: "pb-editor-redux-middleware",
+        name: "pb-editor-redux-middleware-advanced-settings",
         actions: [ELEMENT_CREATED],
         middleware: ({ store, action, next }: Object) => {
             const { element, source } = action.payload;
@@ -39,14 +39,14 @@ export default [
                 const { onCreate } = plugin;
                 if (onCreate && onCreate === "open-settings") {
                     store.dispatch(activateElement({ element: element.id }));
-                    store.dispatch(togglePlugin({ name: "cms-element-settings-advanced" }));
+                    store.dispatch(togglePlugin({ name: "pb-page-element-settings-advanced" }));
                 }
             }
         }
     },
     {
-        name: "cms-element-settings-advanced",
-        type: "cms-element-settings",
+        name: "pb-page-element-settings-advanced",
+        type: "pb-page-element-settings",
         renderAction() {
             return (
                 <AdvancedAction>

@@ -74,7 +74,7 @@ export default compose(
                     refetchQueries: ["CmsListPages"]
                 });
                 const { data } = res.data.cms.pageBuilder.page;
-                history.push(`/cms/editor/${data.id}`);
+                history.push(`/page-builder/editor/${data.id}`);
             } catch (e) {
                 showSnackbar(e.message);
             }

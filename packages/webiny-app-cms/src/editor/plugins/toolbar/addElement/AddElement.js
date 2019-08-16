@@ -15,12 +15,11 @@ import { Typography } from "webiny-ui/Typography";
 import { ButtonFloating } from "webiny-ui/Button";
 import { ReactComponent as AddIcon } from "webiny-app-cms/editor/assets/icons/add.svg";
 import type {
-    CmsProviderPropsType,
     ElementPluginType,
     ElementGroupPluginType
 } from "webiny-app-cms/types";
 
-const ADD_ELEMENT = "cms-toolbar-add-element";
+const ADD_ELEMENT = "pb-editor-toolbar-add-element";
 
 const categoriesList = css({
     backgroundColor: "var(--mdc-theme-surface)",
@@ -61,11 +60,11 @@ class AddElement extends React.Component<Props, State> {
     };
 
     getGroups(): Array<ElementGroupPluginType> {
-        return getPlugins("cms-element-group");
+        return getPlugins("pb-page-element-group");
     }
 
     getGroupElements(group: string) {
-        return getPlugins("cms-element").filter(
+        return getPlugins("pb-page-element").filter(
             (el: ElementPluginType) => el.toolbar && el.toolbar.group === group
         );
     }
@@ -202,7 +201,7 @@ class AddElement extends React.Component<Props, State> {
 export default compose(
     connect(
         state => {
-            const getParams = getActivePluginParams("cms-toolbar-add-element");
+            const getParams = getActivePluginParams("pb-editor-toolbar-add-element");
             return {
                 params: getParams ? getParams(state) : null
             };
@@ -212,15 +211,15 @@ export default compose(
     withCms(),
     withHandlers({
         enableDragOverlay: () => () => {
-            const el = document.querySelector(".cms-editor");
+            const el = document.querySelector(".pb-editor");
             if (el) {
-                el.classList.add("cms-editor-dragging");
+                el.classList.add("pb-editor-dragging");
             }
         },
         disableDragOverlay: () => () => {
-            const el = document.querySelector(".cms-editor");
+            const el = document.querySelector(".pb-editor");
             if (el) {
-                el.classList.remove("cms-editor-dragging");
+                el.classList.remove("pb-editor-dragging");
             }
         }
     })

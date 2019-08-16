@@ -5,11 +5,12 @@ import type { ElementPluginType } from "webiny-app-cms/types";
 
 export default (): ElementPluginType => {
     return {
-        name: "cms-element-document",
-        type: "cms-element",
+        name: "pb-page-element-document",
+        type: "pb-page-element",
+        elementType: "document",
         create(options = {}) {
             return {
-                type: "cms-element-document",
+                type: "pb-page-element-document",
                 elements: [],
                 ...options
             };

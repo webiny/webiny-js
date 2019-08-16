@@ -4,8 +4,8 @@ import { ReactComponent as MediaIcon } from "./round-music_video-24px.svg";
 import type { ElementGroupPluginType } from "webiny-app-cms/types";
 
 export default ({
-    name: "cms-element-group-media",
-    type: "cms-element-group",
+    name: "pb-editor-element-group-media",
+    type: "pb-editor-element-group",
     group: {
         title: "Media",
         icon: <MediaIcon />

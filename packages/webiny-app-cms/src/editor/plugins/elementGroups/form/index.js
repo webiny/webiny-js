@@ -4,8 +4,8 @@ import { ReactComponent as FormIcon } from "./round-developer_board-24px.svg";
 import type { ElementGroupPluginType } from "webiny-app-cms/types";
 
 export default ({
-    type: "cms-element-group",
-    name: "cms-element-group-form",
+    type: "pb-editor-element-group",
+    name: "pb-editor-element-group-form",
     group: {
         title: "Form",
         icon: <FormIcon />

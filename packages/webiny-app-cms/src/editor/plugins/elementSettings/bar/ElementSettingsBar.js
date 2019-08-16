@@ -5,13 +5,13 @@ import { compose, lifecycle, pure } from "recompose";
 import { TopAppBarSecondary, TopAppBarSection } from "webiny-ui/TopAppBar";
 import { ButtonDefault, ButtonIcon } from "webiny-ui/Button";
 import { deactivateElement } from "webiny-app-cms/editor/actions";
-import { getPlugin } from "webiny-plugins";
+import { getPlugin, getPlugins } from "webiny-plugins";
 import { getActiveElement } from "webiny-app-cms/editor/selectors";
 import { withKeyHandler } from "webiny-app-cms/editor/components";
 import Menu from "./components/Menu";
 import { ReactComponent as NavigateBeforeIcon } from "webiny-app-cms/editor/assets/icons/navigate_before.svg";
 
-const divider = "cms-element-settings-divider";
+const divider = "pb-page-element-settings-divider";
 
 const getElementActions = (plugin: Object) => {
     if (!plugin.settings) {
@@ -32,8 +32,8 @@ const getElementActions = (plugin: Object) => {
 
     return [
         ...actions,
-        { plugin: getPlugin("cms-element-settings-advanced") },
-        { plugin: getPlugin("cms-element-settings-save") }
+        { plugin: getPlugin("pb-page-element-settings-advanced") },
+        { plugin: getPlugin("pb-page-element-settings-save") }
     ].filter(pl => pl);
 };
 
@@ -42,7 +42,7 @@ const ElementSettingsBar = pure(({ elementType, deactivateElement }) => {
         return null;
     }
 
-    const plugin = getPlugin(elementType);
+    const plugin = getPlugins("pb-page-element").find(pl => pl.elementType === elementType);
     if (!plugin) {
         return null;
     }

@@ -8,7 +8,7 @@ import PagesList from "./PagesList";
 import { getPlugins } from "webiny-plugins";
 
 const PagesListDesignSettings = ({ cms: { theme }, Bind, data }: Object) => {
-    const components = getPlugins("cms-element-pages-list-component");
+    const components = getPlugins("pb-page-element-pages-list-component");
 
     return (
         <React.Fragment>

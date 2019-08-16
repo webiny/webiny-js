@@ -35,8 +35,8 @@ export const getContent = (state: State): Object => {
         return page.content;
     }
 
-    const document = getPlugin("cms-element-document");
-    invariant(document, `"cms-element-document" plugin must exist for CMS to work!`);
+    const document = getPlugin("pb-page-element-document");
+    invariant(document, `"pb-page-element-document" plugin must exist for CMS to work!`);
     return document.create();
 };
 

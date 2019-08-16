@@ -13,9 +13,9 @@ const oembed = {
 
 export default (): RenderElementPluginType => {
     return {
-        name: "cms-render-element-instagram",
-        type: "cms-render-element",
-        element: "cms-element-instagram",
+        name: "pb-render-element-instagram",
+        type: "pb-render-element",
+        elementType: "instagram",
         render(props) {
             return <OEmbed element={props.element} {...oembed} />;
         }

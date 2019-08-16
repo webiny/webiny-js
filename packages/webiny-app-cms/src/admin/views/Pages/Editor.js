@@ -42,7 +42,7 @@ const Editor = ({ renderEditor, match, history, showSnackbar }) => {
             onCompleted={data => {
                 const error = get(data, "cms.pageBuilder.page.error.message");
                 if (error) {
-                    history.push(`/cms/pages`);
+                    history.push(`/page-builder/pages`);
                     showSnackbar(error);
                 }
             }}
@@ -86,7 +86,7 @@ export default compose(
             if (!loading) {
                 const { revisions, ...page } = data.cms.pageBuilder.page.data;
                 if (!page.content) {
-                    page.content = createElement("cms-element-document");
+                    page.content = createElement("pb-page-element-document");
                 }
 
                 if (pageSet !== page.id) {

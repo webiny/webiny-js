@@ -5,8 +5,8 @@ import Action from "../components/Action";
 import CloneAction from "./CloneAction";
 
 export default {
-    name: "cms-element-settings-clone",
-    type: "cms-element-settings",
+    name: "pb-page-element-settings-clone",
+    type: "pb-page-element-settings",
     renderAction() {
         return (
             <CloneAction>

@@ -9,7 +9,7 @@ import { getPlugins } from "webiny-plugins";
 const PagesList = pure((props: Object = {}) => {
     const { data = {}, theme } = props;
     const { component, ...vars } = data;
-    const pageList = getPlugins("cms-element-pages-list-component").find(
+    const pageList = getPlugins("pb-page-element-pages-list-component").find(
         cmp => cmp.name === component
     );
     if (!pageList) {

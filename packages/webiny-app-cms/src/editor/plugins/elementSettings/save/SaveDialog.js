@@ -53,7 +53,7 @@ type Props = {
 const SaveDialog = (props: Props) => {
     const { element, open, onClose, onSubmit, type } = props;
 
-    const blockCategoriesOptions = getPlugins("cms-block-category").map((item: Object) => {
+    const blockCategoriesOptions = getPlugins("pb-editor-block-category").map((item: Object) => {
         return {
             value: item.name,
             label: item.title
@@ -62,7 +62,7 @@ const SaveDialog = (props: Props) => {
 
     return (
         <Dialog open={open} onClose={onClose} className={narrowDialog}>
-            <Form onSubmit={onSubmit} data={{ type, category: "cms-block-category-general" }}>
+            <Form onSubmit={onSubmit} data={{ type, category: "pb-editor-block-category-general" }}>
                 {({ data, submit, Bind }) => (
                     <React.Fragment>
                         <DialogHeader>

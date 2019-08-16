@@ -5,9 +5,9 @@ import type { RenderElementPluginType } from "webiny-app-cms/types";
 
 export default (): RenderElementPluginType => {
     return {
-        name: "cms-render-element-block",
-        type: "cms-render-element",
-        element: "cms-element-block",
+        name: "pb-render-element-block",
+        type: "pb-render-element",
+        elementType: "block",
         render(props) {
             return <Block {...props} />;
         }

@@ -28,7 +28,7 @@ export default (): Array<PluginType> => [
         type: "twitter",
         toolbar: {
             title: "Tweet",
-            group: "cms-element-group-social",
+            group: "pb-page-element-group-social",
             preview() {
                 return (
                     <PreviewBox>

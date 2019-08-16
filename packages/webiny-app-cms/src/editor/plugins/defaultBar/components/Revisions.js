@@ -30,7 +30,7 @@ const Revisions = pure(({ revisions, history }) => {
         <Menu
             className={menuList}
             onSelect={evt => {
-                history.push(`/cms/editor/${revisions[evt.detail.index].id}`);
+                history.push(`/page-builder/editor/${revisions[evt.detail.index].id}`);
             }}
             handle={
                 <ButtonDefault className={buttonStyle}>

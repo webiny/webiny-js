@@ -5,8 +5,8 @@ export default () => {
     return {
         editor: [
             {
-                name: "cms-slate-editor-scroll",
-                type: "cms-slate-editor",
+                name: "pb-editor-slate-editor-scroll",
+                type: "pb-editor-slate-editor",
                 slate: {
                     onKeyDown(event: SyntheticKeyboardEvent<*>, change: Change, next: Function) {
                         const native = window.getSelection();

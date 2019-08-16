@@ -17,8 +17,8 @@ const createSvg = (icon: Object) => {
 const icons = [];
 
 export default ({
-    name: "cms-icons-fontawesome",
-    type: "cms-icons",
+    name: "pb-icons-fontawesome",
+    type: "pb-icons",
     init() {
         library.add(fab, fas, far);
 

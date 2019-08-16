@@ -7,8 +7,8 @@ import VerticalAlignAction from "./VerticalAlignAction";
 
 export default [
     {
-        name: "cms-element-settings-horizontal-align",
-        type: "cms-element-settings",
+        name: "pb-page-element-settings-horizontal-align",
+        type: "pb-page-element-settings",
         renderAction({ options }: Object) {
             return (
                 <HorizontalAlignAction options={options}>
@@ -18,8 +18,8 @@ export default [
         }
     },
     {
-        name: "cms-element-settings-horizontal-align-flex",
-        type: "cms-element-settings",
+        name: "pb-page-element-settings-horizontal-align-flex",
+        type: "pb-page-element-settings",
         renderAction() {
             return (
                 <HorizontalAlignFlexAction>
@@ -29,8 +29,8 @@ export default [
         }
     },
     {
-        name: "cms-element-settings-vertical-align",
-        type: "cms-element-settings",
+        name: "pb-page-element-settings-vertical-align",
+        type: "pb-page-element-settings",
         renderAction() {
             return (
                 <VerticalAlignAction>

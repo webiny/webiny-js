@@ -97,8 +97,8 @@ const renderPlugin = (plugin: Object) => {
 };
 
 const Toolbar = ({ activePluginsTop }: Object) => {
-    const actionsTop = getPlugins("cms-toolbar-top");
-    const actionsBottom = getPlugins("cms-toolbar-bottom");
+    const actionsTop = getPlugins("pb-editor-toolbar-top");
+    const actionsBottom = getPlugins("pb-editor-toolbar-bottom");
 
     return (
         <React.Fragment>
@@ -127,8 +127,8 @@ const Toolbar = ({ activePluginsTop }: Object) => {
 
 export default connect(
     state => ({
-        activePluginsTop: getActivePlugins("cms-toolbar-top")(state).map(pl => pl.name),
-        activePluginsBottom: getActivePlugins("cms-toolbar-bottom")(state).map(pl => pl.name)
+        activePluginsTop: getActivePlugins("pb-editor-toolbar-top")(state).map(pl => pl.name),
+        activePluginsBottom: getActivePlugins("pb-editor-toolbar-bottom")(state).map(pl => pl.name)
     }),
     null,
     null,

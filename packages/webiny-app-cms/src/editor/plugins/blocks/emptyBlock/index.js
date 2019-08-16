@@ -4,9 +4,9 @@ import { createBlock, createRow, createColumn } from "webiny-app-cms/editor/util
 import preview from "./preview.png";
 
 export default {
-    name: "cms-block-empty",
-    type: "cms-block",
-    category: "cms-block-category-general",
+    name: "pb-editor-block-empty",
+    type: "pb-editor-block",
+    category: "pb-editor-block-category-general",
     title: "Empty block",
     create(options: Object = {}) {
         return createBlock({

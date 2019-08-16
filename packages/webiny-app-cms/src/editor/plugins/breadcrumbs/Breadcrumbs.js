@@ -48,7 +48,7 @@ const Breadcrumbs = ({ elements, activateElement, highlightElement }: Object) =>
                     onMouseOver={() => highlightElement({ element: el.id })}
                     onClick={() => activateElement({ element: el.id })}
                 >
-                    <span className={"element"}>{el.type.replace("cms-element-", "")}</span>
+                    <span className={"element"}>{el.type.replace("pb-page-element-", "")}</span>
                     {elements.length - 1 > index ? (
                         <span className={"divider"}>&nbsp;&gt;&nbsp;</span>
                     ) : null}

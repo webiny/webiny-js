@@ -12,8 +12,8 @@ const pageInnerWrapper = css({
     overflowX: "hidden",
     height: "calc(100vh - 230px)",
     position: "relative",
-    ".webiny-cms-page-document": {
-        transform: "scale(var(--webiny-cms-page-preview-scale))",
+    ".webiny-pb-page-document": {
+        transform: "scale(var(--webiny-pb-page-preview-scale))",
         transition: "transform 0.5s ease-in-out",
         transformOrigin: "top center"
     }
@@ -48,7 +48,7 @@ const PagePreview = ({ pageDetails }: Props) => {
             {({ zoom, setZoom }) => (
                 <div
                     className={pageInnerWrapper}
-                    style={{ "--webiny-cms-page-preview-scale": zoom }}
+                    style={{ "--webiny-pb-page-preview-scale": zoom }}
                 >
                     <RenderElement element={pageDetails.page.content} />
                     <PagePreviewToolbar>

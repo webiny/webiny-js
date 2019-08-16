@@ -14,7 +14,7 @@ const Row = ({ element }: Object) => {
         <ElementAnimation>
             <ElementRoot
                 element={element}
-                className={"webiny-cms-base-element-style webiny-cms-layout-row"}
+                className={"webiny-pb-base-page-element-style webiny-pb-layout-row"}
                 style={{ zIndex: 20, position: "relative" }}
             >
                 <ConnectedElement elementId={element.id} withChildElements>

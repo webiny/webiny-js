@@ -47,8 +47,8 @@ const Header = (props: Props) => {
                     <Typography use="headline5">{page.title}</Typography>
                 </Cell>
                 <Cell span={4} className={headerActions}>
-                    {renderPlugins("cms-page-details-header-left", { pageDetails, refreshPages })}
-                    {renderPlugins("cms-page-details-header-right", { pageDetails, refreshPages })}
+                    {renderPlugins("pb-page-details-header-left", { pageDetails, refreshPages })}
+                    {renderPlugins("pb-page-details-header-right", { pageDetails, refreshPages })}
                 </Cell>
             </Grid>
         </React.Fragment>

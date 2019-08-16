@@ -9,7 +9,7 @@ import { get } from "lodash";
 
 const PagesList = pure(({ data = {}, cms: { theme } }: Object = {}) => {
     const { component, ...vars } = data;
-    const components = getPlugins("cms-element-pages-list-component");
+    const components = getPlugins("pb-page-element-pages-list-component");
     const pageList = components.find(cmp => cmp.name === component);
 
     if (!pageList) {

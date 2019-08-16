@@ -32,27 +32,27 @@ const formatDate = date => {
 
 const PageItem = ({ data, className }: Object) => {
     return (
-        <Link to={data.url} className={"webiny-cms-element-page-list__item " + className}>
+        <Link to={data.url} className={"webiny-pb-page-element-page-list__item " + className}>
             <div
-                className={"webiny-cms-element-page-list__media"}
+                className={"webiny-pb-page-element-page-list__media"}
                 style={{
                     backgroundImage: `url("${get(data, "settings.general.image.src")}?width=500")`
                 }}
             />
-            <div className={"webiny-cms-element-page-list__content"}>
-                <h3 className={"webiny-cms-element-page-list__title webiny-cms-typography-h3"}>
+            <div className={"webiny-pb-page-element-page-list__content"}>
+                <h3 className={"webiny-pb-page-element-page-list__title webiny-pb-typography-h3"}>
                     {data.title}
                 </h3>
                 <p
                     className={
-                        "webiny-cms-element-page-list__snippet webiny-cms-typography-description"
+                        "webiny-pb-page-element-page-list__snippet webiny-pb-typography-description"
                     }
                 >
                     {data.snippet}
                 </p>
                 <div
                     className={
-                        "webiny-cms-element-page-list__date webiny-cms-typography-description"
+                        "webiny-pb-page-element-page-list__date webiny-pb-typography-description"
                     }
                 >
                     {formatDate(data.publishedOn)}
@@ -64,13 +64,13 @@ const PageItem = ({ data, className }: Object) => {
 
 const GridPageList = ({ data, nextPage, prevPage }: Object) => {
     return (
-        <div className={"webiny-cms-element-page-list webiny-cms-element-page-list--grid"}>
-            <div className={"webiny-cms-element-page-list__items"}>
+        <div className={"webiny-pb-page-element-page-list webiny-pb-page-element-page-list--grid"}>
+            <div className={"webiny-pb-page-element-page-list__items"}>
                 {data.map(page => (
                     <PageItem key={page.id} data={page} />
                 ))}
             </div>
-            <div className={"webiny-cms-element-page-list__navigation"}>
+            <div className={"webiny-pb-page-element-page-list__navigation"}>
                 {prevPage && (
                     <a onClick={prevPage}>
                         <PrevIcon /> Prev page

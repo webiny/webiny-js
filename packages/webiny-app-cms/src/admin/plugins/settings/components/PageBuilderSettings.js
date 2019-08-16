@@ -17,7 +17,7 @@ import {
     SimpleFormHeader
 } from "webiny-admin/components/SimpleForm";
 
-const CmsSettings = ({ showSnackbar }) => {
+const PageBuilderSettings = ({ showSnackbar }) => {
     return (
         <Query query={graphql.query}>
             {({ data, loading: queryInProgress }) => {
@@ -115,4 +115,4 @@ const CmsSettings = ({ showSnackbar }) => {
     );
 };
 
-export default withSnackbar()(CmsSettings);
+export default withSnackbar()(PageBuilderSettings);

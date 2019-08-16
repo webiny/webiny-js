@@ -26,7 +26,7 @@ const Block = pure(({ element }) => {
                             elementStyle={elementStyle}
                             elementAttributes={elementAttributes}
                             customClasses={[
-                                "webiny-cms-layout-block webiny-cms-base-element-style",
+                                "webiny-pb-layout-block webiny-pb-base-page-element-style",
                                 ...customClasses
                             ]}
                             combineClassNames={combineClassNames}

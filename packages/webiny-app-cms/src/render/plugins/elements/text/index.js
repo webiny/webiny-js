@@ -5,9 +5,9 @@ import type { RenderElementPluginType } from "webiny-app-cms/types";
 
 export default (): RenderElementPluginType => {
     return {
-        name: "cms-render-element-text",
-        type: "cms-render-element",
-        element: "cms-element-text",
+        name: "pb-render-element-text",
+        type: "pb-render-element",
+        elementType: "text",
         render(props) {
             return <Text {...props} />;
         }

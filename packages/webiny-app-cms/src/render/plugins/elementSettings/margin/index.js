@@ -3,8 +3,8 @@ import { get } from "lodash";
 import type { CmsRenderElementStylePluginType } from "webiny-app-cms/types";
 
 export default ({
-    name: "cms-render-element-style-margin",
-    type: "cms-render-element-style",
+    name: "pb-render-element-style-margin",
+    type: "pb-render-element-style",
     renderStyle({ element, style }) {
         const { margin } = get(element, "data.settings", {});
 

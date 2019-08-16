@@ -20,8 +20,8 @@ type Element = {
 export default (el: Element) => {
     registerPlugins({
         id: el.id,
-        name: "cms-saved-block-" + el.id,
-        type: "cms-block",
+        name: "pb-saved-block-" + el.id,
+        type: "pb-block",
         title: el.name,
         category: el.category,
         tags: ["saved"],

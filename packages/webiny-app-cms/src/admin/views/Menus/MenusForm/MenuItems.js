@@ -52,7 +52,7 @@ class MenuItems extends React.Component<Props, State> {
         currentMenuItem: null
     };
 
-    addItem = (plugin: CmsMenuItemPluginType) => {
+    addItem = (plugin: PageBuilderMenuItemPluginType) => {
         const { onChange, value } = this.props;
         const newItem = { type: plugin.name, id: uniqid(), __new: true };
         onChange([...value, newItem]);
@@ -74,7 +74,7 @@ class MenuItems extends React.Component<Props, State> {
     render() {
         const { value: items, onChange } = this.props;
         const { currentMenuItem } = this.state;
-        const plugins = getPlugins("cms-menu-item");
+        const plugins = getPlugins("pb-menu-item");
 
         return (
             <>

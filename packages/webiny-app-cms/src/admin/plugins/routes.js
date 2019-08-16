@@ -30,16 +30,16 @@ const Editor = Loadable({
 
 export default [
     {
-        name: "route-cms-categories",
+        name: "route-pb-categories",
         type: "route",
         route: (
             <Route
                 exact
-                path="/cms/categories"
+                path="/page-builder/categories"
                 render={() => (
-                    <SecureRoute roles={["cms-categories"]}>
+                    <SecureRoute roles={["pb-categories"]}>
                         <AdminLayout>
-                            <Helmet title={"CMS - Categories"} />
+                            <Helmet title={"Page Builder - Categories"} />
                             <Categories />
                         </AdminLayout>
                     </SecureRoute>
@@ -48,16 +48,16 @@ export default [
         )
     },
     {
-        name: "route-cms-menus",
+        name: "route-pb-menus",
         type: "route",
         route: (
             <Route
                 exact
-                path="/cms/menus"
+                path="/page-builder/menus"
                 render={() => (
-                    <SecureRoute roles={["cms-menus"]}>
+                    <SecureRoute roles={["pb-menus"]}>
                         <AdminLayout>
-                            <Helmet title={"CMS - Menus"} />
+                            <Helmet title={"Page Builder - Menus"} />
                             <Menus />
                         </AdminLayout>
                     </SecureRoute>
@@ -66,17 +66,17 @@ export default [
         )
     },
     {
-        name: "route-cms-pages",
+        name: "route-pb-pages",
         type: "route",
         route: (
             <Route
                 exact
-                path="/cms/pages"
+                path="/page-builder/pages"
                 render={({ location }) => (
-                    <SecureRoute roles={["cms-editor"]}>
+                    <SecureRoute roles={["pb-editor"]}>
                         <EditorPluginsLoader location={location}>
                             <AdminLayout>
-                                <Helmet title={"CMS - Pages"} />
+                                <Helmet title={"Page Builder - Pages"} />
                                 <Pages />
                             </AdminLayout>
                         </EditorPluginsLoader>
@@ -86,16 +86,16 @@ export default [
         )
     },
     {
-        name: "route-cms-editor",
+        name: "route-pb-editor",
         type: "route",
         route: (
             <Route
                 exact
-                path="/cms/editor/:id"
+                path="/page-builder/editor/:id"
                 render={({ location }) => (
-                    <SecureRoute roles={["cms-editor"]}>
+                    <SecureRoute roles={["pb-editor"]}>
                         <EditorPluginsLoader location={location}>
-                            <Helmet title={"CMS - Edit page"} />
+                            <Helmet title={"Page Builder - Edit page"} />
                             <Editor />
                         </EditorPluginsLoader>
                     </SecureRoute>

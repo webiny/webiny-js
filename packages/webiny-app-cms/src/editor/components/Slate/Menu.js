@@ -93,7 +93,7 @@ class Menu extends React.Component<*, *> {
                             className={hoverMenuStyle}
                             style={{ ...defaultStyle, ...transitionStyles[state] }}
                         >
-                            {this.renderPlugins("cms-slate-menu-item")}
+                            {this.renderPlugins("pb-editor-slate-menu-item")}
                         </Elevation>
                     </React.Fragment>
                 )}

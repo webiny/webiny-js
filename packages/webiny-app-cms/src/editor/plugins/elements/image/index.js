@@ -21,11 +21,12 @@ export default (): Array<PluginType> => {
 
     return [
         {
-            name: "cms-element-image",
-            type: "cms-element",
+            name: "pb-page-element-image",
+            type: "pb-page-element",
+            elementType: "image",
             toolbar: {
                 title: "Image",
-                group: "cms-element-group-basic",
+                group: "pb-page-element-group-basic",
                 preview() {
                     return (
                         <PreviewBox>
@@ -35,28 +36,28 @@ export default (): Array<PluginType> => {
                 }
             },
             settings: [
-                "cms-element-settings-image",
-                ["cms-element-settings-background", { image: false }],
-                "cms-element-settings-link",
+                "pb-page-element-settings-image",
+                ["pb-page-element-settings-background", { image: false }],
+                "pb-page-element-settings-link",
                 "",
-                "cms-element-settings-border",
-                "cms-element-settings-shadow",
+                "pb-page-element-settings-border",
+                "pb-page-element-settings-shadow",
                 "",
                 [
-                    "cms-element-settings-horizontal-align",
+                    "pb-page-element-settings-horizontal-align",
                     { alignments: ["left", "center", "right"] }
                 ],
-                "cms-element-settings-padding",
-                "cms-element-settings-margin",
+                "pb-page-element-settings-padding",
+                "pb-page-element-settings-margin",
                 "",
-                "cms-element-settings-clone",
-                "cms-element-settings-delete",
+                "pb-page-element-settings-clone",
+                "pb-page-element-settings-delete",
                 ""
             ],
-            target: ["cms-element-column", "cms-element-row"],
+            target: ["pb-page-element-column", "pb-page-element-row"],
             create(options) {
                 return {
-                    type: "cms-element-image",
+                    type: "pb-page-element-image",
                     elements: [],
                     data: {
                         settings: {
@@ -80,8 +81,8 @@ export default (): Array<PluginType> => {
             }
         },
         {
-            name: "cms-element-settings-image",
-            type: "cms-element-settings",
+            name: "pb-page-element-settings-image",
+            type: "pb-page-element-settings",
             renderAction() {
                 return <Action plugin={this.name} tooltip={"Image"} icon={<ImageIcon />} />;
             },
@@ -90,15 +91,15 @@ export default (): Array<PluginType> => {
             }
         },
         {
-            type: "cms-editor-redux-middleware",
-            name: "cms-editor-redux-middleware-image-created",
+            type: "pb-editor-redux-middleware",
+            name: "pb-editor-redux-middleware-image-created",
             actions: [ELEMENT_CREATED],
             middleware: ({ action, next }) => {
                 const { element, source } = action.payload;
 
                 next(action);
 
-                if (element.type !== "cms-element-image") {
+                if (element.type !== "pb-page-element-image") {
                     return;
                 }
 

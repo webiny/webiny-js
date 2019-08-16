@@ -17,7 +17,7 @@ const EditRevision = ({ pageDetails: { page }, history, gqlCreate, showSnackbar 
 
     const editRevision = useCallback(() => {
         if (unpublishedRevision) {
-            history.push(`/cms/editor/${unpublishedRevision.id}`);
+            history.push(`/page-builder/editor/${unpublishedRevision.id}`);
         }
     });
 
@@ -33,7 +33,7 @@ const EditRevision = ({ pageDetails: { page }, history, gqlCreate, showSnackbar 
             return showSnackbar(error.message);
         }
 
-        history.push(`/cms/editor/${data.id}`);
+        history.push(`/page-builder/editor/${data.id}`);
     });
 
     if (unpublishedRevision) {

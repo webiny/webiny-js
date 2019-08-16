@@ -10,8 +10,8 @@ import Action from "../Action";
 const metaKey = platform.os.family === "OS X" ? "CMD" : "CTRL";
 
 export const undo = {
-    name: "toolbar-undo",
-    type: "cms-toolbar-bottom",
+    name: "pb-editor-toolbar-undo",
+    type: "pb-editor-toolbar-bottom",
     renderAction() {
         return (
             <Action
@@ -24,8 +24,8 @@ export const undo = {
 };
 
 export const redo = {
-    name: "toolbar-redo",
-    type: "cms-toolbar-bottom",
+    name: "pb-editor-toolbar-redo",
+    type: "pb-editor-toolbar-bottom",
     renderAction() {
         return (
             <Action

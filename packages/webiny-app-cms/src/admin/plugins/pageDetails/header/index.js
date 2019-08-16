@@ -1,6 +1,6 @@
 // @flow
 import * as React from "react";
-import type { CmsPageDetailsPluginType, WithPageDetailsProps } from "webiny-app-cms/types";
+import type { PageBuilderPageDetailsPluginType, WithPageDetailsProps } from "webiny-app-cms/types";
 import Header from "./Header";
 import RevisionSelector from "./revisionSelector/RevisionSelector";
 import PublishRevision from "./publishRevision/PublishRevision";
@@ -10,45 +10,45 @@ import PageOptionsMenu from "./pageOptionsMenu/PageOptionsMenu";
 
 export default ([
     {
-        name: "cms-page-details-header",
-        type: "cms-page-details-revision-content-preview",
+        name: "pb-page-details-header",
+        type: "pb-page-details-revision-content-preview",
         render(props: WithPageDetailsProps) {
             return <Header {...props} />;
         }
     },
     {
-        name: "cms-page-details-revision-selector",
-        type: "cms-page-details-header-left",
+        name: "pb-page-details-revision-selector",
+        type: "pb-page-details-header-left",
         render(props: WithPageDetailsProps) {
             return <RevisionSelector {...props} />;
         }
     },
     {
-        name: "cms-page-details-header-publish",
-        type: "cms-page-details-header-right",
+        name: "pb-page-details-header-publish",
+        type: "pb-page-details-header-right",
         render(props: WithPageDetailsProps) {
             return <PublishRevision {...props} />;
         }
     },
     {
-        name: "cms-page-details-header-edit",
-        type: "cms-page-details-header-right",
+        name: "pb-page-details-header-edit",
+        type: "pb-page-details-header-right",
         render(props: WithPageDetailsProps) {
             return <EditRevision {...props} />;
         }
     },
     {
-        name: "cms-page-details-header-delete",
-        type: "cms-page-details-header-right",
+        name: "pb-page-details-header-delete",
+        type: "pb-page-details-header-right",
         render(props: WithPageDetailsProps) {
             return <DeletePage {...props} />;
         }
     },
     {
-        name: "cms-page-details-header-options-menu",
-        type: "cms-page-details-header-right",
+        name: "pb-page-details-header-options-menu",
+        type: "pb-page-details-header-right",
         render(props: WithPageDetailsProps) {
             return <PageOptionsMenu {...props} />;
         }
     }
-]: Array<CmsPageDetailsPluginType>);
+]: Array<PageBuilderPageDetailsPluginType>);

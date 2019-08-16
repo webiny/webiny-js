@@ -8,7 +8,7 @@ import { ReactComponent as SettingsIcon } from "./icons/settings.svg";
 const PageSettingsButton = ({ togglePlugin }) => {
     return (
         <IconButton
-            onClick={() => togglePlugin({ name: "cms-page-settings-bar" })}
+            onClick={() => togglePlugin({ name: "pb-editor-page-settings-bar" })}
             icon={<SettingsIcon />}
         />
     );

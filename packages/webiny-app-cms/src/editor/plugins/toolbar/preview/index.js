@@ -8,8 +8,8 @@ import Action from "../Action";
 const icons = [<ActiveIcon />, <InactiveIcon />];
 
 export default {
-    name: "cms-toolbar-preview",
-    type: "cms-toolbar-top",
+    name: "pb-editor-toolbar-preview",
+    type: "pb-editor-toolbar-top",
     renderAction() {
         return <Action plugin={this.name} icon={icons} tooltip={"Preview"} />;
     }

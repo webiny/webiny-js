@@ -20,8 +20,8 @@ export default () => {
     return {
         menu: [
             {
-                name: "cms-slate-menu-item-underline",
-                type: "cms-slate-menu-item",
+                name: "pb-editor-slate-menu-item-underline",
+                type: "pb-editor-slate-menu-item",
                 render({
                     MenuButton,
                     editor,
@@ -47,8 +47,8 @@ export default () => {
         ],
         editor: [
             {
-                name: "cms-slate-editor-underline",
-                type: "cms-slate-editor",
+                name: "pb-editor-slate-editor-underline",
+                type: "pb-editor-slate-editor",
                 slate: {
                     onKeyDown(event: SyntheticKeyboardEvent<*>, change: Change, next: Function) {
                         // Decide what to do based on the key code...

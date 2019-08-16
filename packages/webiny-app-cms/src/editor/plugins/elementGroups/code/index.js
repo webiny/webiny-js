@@ -4,8 +4,8 @@ import { ReactComponent as CodeIcon } from "./code.svg";
 import type { ElementGroupPluginType } from "webiny-app-cms/types";
 
 export default ({
-    name: "cms-element-group-code",
-    type: "cms-element-group",
+    name: "pb-editor-element-group-code",
+    type: "pb-editor-element-group",
     group: {
         title: "Code",
         icon: <CodeIcon />

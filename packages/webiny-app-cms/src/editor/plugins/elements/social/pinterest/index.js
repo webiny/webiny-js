@@ -29,7 +29,7 @@ export default (): Array<PluginType> => [
         type: "pinterest",
         toolbar: {
             title: "Pinterest post",
-            group: "cms-element-group-social",
+            group: "pb-page-element-group-social",
             preview() {
                 return (
                     <PreviewBox>

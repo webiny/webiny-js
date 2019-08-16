@@ -28,7 +28,7 @@ export default (): Array<PluginType> => [
         type: "instagram",
         toolbar: {
             title: "Instagram Post",
-            group: "cms-element-group-social",
+            group: "pb-page-element-group-social",
             preview() {
                 return (
                     <PreviewBox>

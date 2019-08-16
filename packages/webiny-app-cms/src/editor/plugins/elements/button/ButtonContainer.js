@@ -8,14 +8,14 @@ import { getElement } from "webiny-app-cms/editor/selectors";
 import ConnectedSlate from "webiny-app-cms/editor/components/ConnectedSlate";
 
 const excludePlugins = [
-    "cms-slate-menu-item-link",
-    "cms-slate-menu-item-align",
-    "cms-slate-menu-item-ordered-list",
-    "cms-slate-menu-item-unordered-list",
-    "cms-slate-menu-item-code",
-    "cms-slate-editor-align",
-    "cms-slate-editor-lists",
-    "cms-slate-editor-link"
+    "pb-editor-slate-menu-item-link",
+    "pb-editor-slate-menu-item-align",
+    "pb-editor-slate-menu-item-ordered-list",
+    "pb-editor-slate-menu-item-unordered-list",
+    "pb-editor-slate-menu-item-code",
+    "pb-editor-slate-editor-align",
+    "pb-editor-slate-editor-lists",
+    "pb-editor-slate-editor-link"
 ];
 
 const ButtonContainer = ({ getAllClasses, elementStyle, elementAttributes, element, onChange }) => {
@@ -37,9 +37,9 @@ const ButtonContainer = ({ getAllClasses, elementStyle, elementAttributes, eleme
                 style={elementStyle}
                 {...elementAttributes}
                 className={getAllClasses(
-                    "webiny-cms-element-button",
-                    "webiny-cms-element-button--" + type,
-                    "webiny-cms-element-button__icon--" + position
+                    "webiny-pb-page-element-button",
+                    "webiny-pb-page-element-button--" + type,
+                    "webiny-pb-page-element-button__icon--" + position
                 )}
             >
                 {svg && <span dangerouslySetInnerHTML={{ __html: svg }} />}

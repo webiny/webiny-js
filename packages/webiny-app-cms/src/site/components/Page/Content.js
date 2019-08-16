@@ -53,7 +53,7 @@ class Content extends React.Component<Props> {
         };
 
         return (
-            <div className="webiny-cms-page">
+            <div className="webiny-pb-page">
                 <Helmet>
                     <meta charSet="utf-8" />
                     <title>{this.getPageTitle(meta)}</title>

@@ -5,8 +5,8 @@ import DeleteAction from "./DeleteAction";
 import Action from "../components/Action";
 
 export default {
-    name: "cms-element-settings-delete",
-    type: "cms-element-settings",
+    name: "pb-page-element-settings-delete",
+    type: "pb-page-element-settings",
     renderAction() {
         return (
             <DeleteAction>

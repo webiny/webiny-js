@@ -67,7 +67,7 @@ export default compose(
                     </span>
                 );
 
-                history.push("/cms/pages");
+                history.push("/page-builder/pages");
             });
         }
     })

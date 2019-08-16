@@ -8,7 +8,7 @@ const Document = ({ element }: { element: ElementType }) => {
         return null;
     }
     return (
-        <div className={"webiny-cms-page-document"}>
+        <div className={"webiny-pb-page-document"}>
             {element.elements.map(element => (
                 <RenderElement key={element.id} element={element} />
             ))}

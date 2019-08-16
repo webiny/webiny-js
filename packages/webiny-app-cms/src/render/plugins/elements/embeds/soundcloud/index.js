@@ -5,9 +5,9 @@ import type { RenderElementPluginType } from "webiny-app-cms/types";
 
 export default (): RenderElementPluginType => {
     return {
-        name: "cms-render-element-soundcloud",
-        type: "cms-render-element",
-        element: "cms-element-soundcloud",
+        name: "pb-render-element-soundcloud",
+        type: "pb-render-element",
+        elementType: "soundcloud",
         render(props) {
             return <OEmbed element={props.element} />;
         }

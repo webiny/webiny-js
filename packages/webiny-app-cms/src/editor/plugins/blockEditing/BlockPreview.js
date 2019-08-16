@@ -36,7 +36,7 @@ class BlockPreview extends React.Component<*> {
                                 addBlockToContent(plugin);
                                 !e.shiftKey &&
                                     deactivatePlugin({
-                                        name: "cms-search-blocks-bar"
+                                        name: "pb-editor-search-blocks-bar"
                                     });
                             }}
                             icon={<AddIcon />}

@@ -37,8 +37,6 @@ type Props = {
 };
 
 class Settings extends React.Component<Props> {
-    historyUpdated = {};
-
     updateSettings = async (data, form) => {
         const valid = await form.validate();
         if (!valid) {

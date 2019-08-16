@@ -10,8 +10,8 @@ const strongStyle = css({
 
 export default () => {
     return {
-        name: "cms-render-slate-editor-bold",
-        type: "cms-render-slate-editor",
+        name: "pb-render-slate-editor-bold",
+        type: "pb-render-slate-editor",
         slate: {
             renderMark(props: Object, next: Function) {
                 if (props.mark.type === "bold") {

@@ -3,7 +3,7 @@ import shortid from "shortid";
 import invariant from "invariant";
 import { set } from "dot-prop-immutable";
 import { isPlainObject, omit } from "lodash";
-import { getPlugin } from "webiny-plugins";
+import { getPlugins } from "webiny-plugins";
 import type { ElementType } from "webiny-app-cms/types";
 
 export const updateChildPaths = (element: ElementType) => {
@@ -54,19 +54,19 @@ export const addElementToParent = (
 };
 
 export const createBlock = (options: Object = {}, parent: ?ElementType) => {
-    return createElement("cms-element-block", options, parent);
+    return createElement("pb-page-element-block", options, parent);
 };
 
 export const createRow = (options: Object = {}, parent: ?ElementType) => {
-    return createElement("cms-element-row", options, parent);
+    return createElement("pb-page-element-row", options, parent);
 };
 
 export const createColumn = (options: Object = {}, parent: ?ElementType) => {
-    return createElement("cms-element-column", options, parent);
+    return createElement("pb-page-element-column", options, parent);
 };
 
 export const createElement = (type: string, options: Object = {}, parent: ?ElementType) => {
-    const plugin = getPlugin(type);
+    const plugin = getPlugins("pb-page-element").find(pl => pl.elementType === type);
 
     invariant(plugin, `Missing element plugin "${type}"!`);
 

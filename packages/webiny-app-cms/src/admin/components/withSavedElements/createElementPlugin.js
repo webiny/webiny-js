@@ -1,7 +1,7 @@
 // @flow
 import React from "react";
 import cloneDeep from "lodash/cloneDeep";
-import { registerPlugins, getPlugin } from "webiny-plugins";
+import { registerPlugins, getPlugins } from "webiny-plugins";
 import Title from "./Title";
 
 type Element = {
@@ -15,23 +15,23 @@ type Element = {
 };
 
 export default (el: Element) => {
-    const rootPlugin = getPlugin(el.content.type);
+    const rootPlugin = getPlugins("pb-page-element").find(pl => pl.elementType === el.content.type);
     if (!rootPlugin) {
         return;
     }
 
-    const name = "cms-saved-element-" + el.id;
+    const name = "pb-saved-element-" + el.id;
 
     registerPlugins({
         name,
         title: el.name,
-        type: "cms-element",
+        type: "pb-page-element",
         target: rootPlugin.target,
         toolbar: {
             title({ refresh }) {
                 return <Title plugin={name} title={el.name} id={el.id} refresh={refresh} />;
             },
-            group: "cms-element-group-saved",
+            group: "pb-page-element-group-saved",
             preview() {
                 return (
                     <img

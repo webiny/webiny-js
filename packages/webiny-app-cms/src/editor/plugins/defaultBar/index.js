@@ -14,85 +14,85 @@ import Revisions from "./components/Revisions";
 
 export default [
     {
-        name: "cms-page-settings-bar",
-        type: "cms-editor-bar",
+        name: "pb-editor-page-settings-bar",
+        type: "pb-editor-bar",
         shouldRender({ plugins }: Object) {
-            const active = get(plugins, "cms-editor-bar");
-            return active ? active.find(pl => pl.name === "cms-page-settings-bar") : false;
+            const active = get(plugins, "pb-editor-bar");
+            return active ? active.find(pl => pl.name === "pb-page-settings-bar") : false;
         },
         render() {
             return <PageSettings />;
         }
     },
     {
-        name: "cms-default-bar-right-revisions-select",
-        type: "cms-default-bar-right",
+        name: "pb-editor-default-bar-right-revisions-select",
+        type: "pb-editor-default-bar-right",
         render() {
             return <Revisions />;
         }
     },
     {
-        name: "cms-default-bar-right-revisions-divider",
-        type: "cms-default-bar-right",
+        name: "pb-editor-default-bar-right-revisions-divider",
+        type: "pb-editor-default-bar-right",
         render() {
             return <Divider />;
         }
     },
     {
-        name: "cms-default-bar-right-page-settings-button",
-        type: "cms-default-bar-right",
+        name: "pb-editor-default-bar-right-page-settings-button",
+        type: "pb-editor-default-bar-right",
         render() {
             return <PageSettingsButton />;
         }
     },
     [
         {
-            name: "cms-default-bar-right-page-options",
-            type: "cms-default-bar-right",
+            name: "pb-editor-default-bar-right-page-options",
+            type: "pb-editor-default-bar-right",
             render() {
                 return <PageOptionsMenu />;
             }
         },
         {
-            name: "cms-default-bar-right-page-options-preview",
-            type: "cms-default-bar-right-page-options-option",
+            name: "pb-editor-default-bar-right-page-options-preview",
+            type: "pb-editor-default-bar-right-page-options-option",
             render() {
                 return <PreviewPageButton />;
             }
         },
         {
-            name: "cms-default-bar-right-page-options-set-as-homepage",
-            type: "cms-default-bar-right-page-options-option",
+            name: "pb-editor-default-bar-right-page-options-set-as-homepage",
+            type: "pb-editor-default-bar-right-page-options-option",
             render() {
                 return <SetAsHomepageButton />;
             }
         }
     ],
     {
-        name: "cms-default-bar-right-publish-button",
-        type: "cms-default-bar-right",
+        name: "pb-editor-default-bar-right-publish-button",
+        type: "pb-editor-default-bar-right",
         render() {
             return <PublishPageButton />;
         }
     },
 
     {
-        name: "cms-default-bar-left-back-button",
-        type: "cms-default-bar-left",
+        name: "pb-editor-default-bar-left-back-button",
+        type: "pb-editor-default-bar-left",
         render() {
             return <BackButton />;
         }
     },
     {
-        name: "cms-default-bar-left-divider",
-        type: "cms-default-bar-left",
+        name: "pb-editor-default-bar-left-divider",
+        type: "pb-editor-default-bar-left",
         render() {
             return <Divider />;
         }
     },
     {
-        name: "cms-default-bar-left-title",
-        type: "cms-default-bar-left",
+        name: "pb-editor-default-bar-left-title",
+        type: "pb-editor-default-bar-left",
         render() {
             return <Title />;
         }

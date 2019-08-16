@@ -42,7 +42,7 @@ const Image = (props: Object) => {
         <ElementRoot
             element={props.element}
             style={{ textAlign: horizontalAlign }}
-            className={"webiny-cms-base-element-style webiny-cms-element-image"}
+            className={"webiny-pb-base-page-element-style webiny-pb-page-element-image"}
         >
             <Link link={link}>
                 <WebinyImage

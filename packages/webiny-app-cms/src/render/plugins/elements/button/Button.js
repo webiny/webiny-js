@@ -23,10 +23,10 @@ const Button = ({ element }: { element: ElementType }) => {
                         href={link.href || null}
                         target={link.newTab ? "_blank" : "_self"}
                         className={getAllClasses(
-                            "webiny-cms-base-element-style",
-                            "webiny-cms-element-button",
-                            "webiny-cms-element-button--" + type,
-                            "webiny-cms-element-button__icon--" + position
+                            "webiny-pb-base-page-element-style",
+                            "webiny-pb-page-element-button",
+                            "webiny-pb-page-element-button--" + type,
+                            "webiny-pb-page-element-button__icon--" + position
                         )}
                     >
                         {svg && <span dangerouslySetInnerHTML={{ __html: svg }} />}

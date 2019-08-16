@@ -10,8 +10,8 @@ import { ReactComponent as SeoIcon } from "./icons/round-search-24px.svg";
 
 export default ([
     {
-        name: "cms-editor-page-settings-general",
-        type: "cms-editor-page-settings",
+        name: "pb-editor-page-settings-general",
+        type: "pb-editor-page-settings",
         title: "General settings",
         description: "Manage things like title, page status,url and more.",
         icon: <SettingsIcon />,
@@ -30,8 +30,8 @@ export default ([
         }
     },
     {
-        name: "cms-editor-page-settings-seo",
-        type: "cms-editor-page-settings",
+        name: "pb-editor-page-settings-seo",
+        type: "pb-editor-page-settings",
         title: "SEO",
         description: "Control SEO settings like description and keywords.",
         icon: <SeoIcon />,
@@ -50,8 +50,8 @@ export default ([
         }
     },
     {
-        name: "cms-editor-page-settings-social",
-        type: "cms-editor-page-settings",
+        name: "pb-editor-page-settings-social",
+        type: "pb-editor-page-settings",
         title: "Social media",
         description: "Set share images and settings for social media sites.",
         icon: <SocialIcon />,

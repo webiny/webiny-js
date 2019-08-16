@@ -10,9 +10,9 @@ export default (): RenderElementPluginType => {
     };
 
     return {
-        name: "cms-render-element-vimeo",
-        type: "cms-render-element",
-        element: "cms-element-vimeo",
+        name: "pb-render-element-vimeo",
+        type: "pb-render-element",
+        elementType: "vimeo",
         render(props) {
             return <OEmbed element={props.element} renderEmbed={renderEmbed} />;
         }

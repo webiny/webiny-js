@@ -46,8 +46,8 @@ type SearchBarState = {
 };
 
 const allBlockCategory = {
-    type: "cms-block-category",
-    name: "cms-block-category-all",
+    type: "pb-editor-block-category",
+    name: "pb-editor-block-category-all",
     title: "All blocks",
     description: "List of all available blocks.",
     icon: <AllIcon />
@@ -63,7 +63,7 @@ class SearchBar extends React.Component<SearchBarProps, SearchBarState> {
     componentDidMount() {
         this.props.addKeyHandler("escape", e => {
             e.preventDefault();
-            this.props.deactivatePlugin({ name: "cms-search-blocks-bar" });
+            this.props.deactivatePlugin({ name: "pb-editor-search-blocks-bar" });
         });
     }
 
@@ -99,8 +99,8 @@ class SearchBar extends React.Component<SearchBarProps, SearchBarState> {
         let output = blocks;
 
         // If "all" is selected, no category filtering is required.
-        if (activeCategory.name !== "cms-block-category-all") {
-            if (activeCategory.name === "cms-block-category-saved") {
+        if (activeCategory.name !== "pb-editor-block-category-all") {
+            if (activeCategory.name === "pb-editor-block-category-saved") {
                 output = output.filter(item => {
                     return item.tags && item.tags.includes("saved");
                 });
@@ -223,10 +223,10 @@ class SearchBar extends React.Component<SearchBarProps, SearchBarState> {
         const { active, setActive } = this.props;
         const plugins: Object = {
             categories: {
-                list: [allBlockCategory, ...getPlugins("cms-block-category")],
+                list: [allBlockCategory, ...getPlugins("pb-editor-block-category")],
                 active: null
             },
-            blocks: getPlugins("cms-block")
+            blocks: getPlugins("pb-editor-block")
         };
 
         plugins.categories.active = plugins.categories.list.find(({ name }) => name === active);
@@ -235,7 +235,7 @@ class SearchBar extends React.Component<SearchBarProps, SearchBarState> {
         return (
             <OverlayLayout
                 barMiddle={this.renderSearchInput()}
-                onExited={() => this.props.deactivatePlugin({ name: "cms-search-blocks-bar" })}
+                onExited={() => this.props.deactivatePlugin({ name: "pb-editor-search-blocks-bar" })}
             >
                 <SplitView>
                     <LeftPanel span={3}>
@@ -300,5 +300,5 @@ export default compose(
     ),
     withKeyHandler(),
     withSnackbar(),
-    withState("active", "setActive", "cms-block-category-all")
+    withState("active", "setActive", "pb-editor-block-category-all")
 )(SearchBar);

@@ -54,7 +54,7 @@ export default function useLink({ editor, onChange, activatePlugin }) {
     });
 
     function activateLink() {
-        activatePlugin("cms-slate-menu-item-link");
+        activatePlugin("pb-editor-slate-menu-item-link");
     }
 
     const removeLink = useCallback(() => {

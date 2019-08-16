@@ -75,7 +75,7 @@ export class Redux {
                 })) ||
             compose;
 
-        const middlewareFromPlugins = getPlugins("cms-editor-redux-middleware").map(pl =>
+        const middlewareFromPlugins = getPlugins("pb-editor-redux-middleware").map(pl =>
             wrapMiddleware(pl.middleware, Array.isArray(pl.actions) ? pl.actions : null)
         ).reverse();
 

@@ -75,7 +75,7 @@ const PageDetails = ({ pageId, history, query, showSnackbar, refreshPages }) => 
                                     <PageDetailsConsumer>
                                         {pageDetails => (
                                             <React.Fragment>
-                                                {renderPlugins("cms-page-details", {
+                                                {renderPlugins("pb-page-details", {
                                                     refreshPages,
                                                     pageDetails,
                                                     loading

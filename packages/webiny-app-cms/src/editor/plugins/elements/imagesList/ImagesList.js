@@ -6,7 +6,7 @@ import { getPlugins } from "webiny-plugins";
 
 const ImagesList = pure(({ data = {}, cms: { theme } }: Object = {}) => {
     const { component, images } = data;
-    const components = getPlugins("cms-element-images-list-component");
+    const components = getPlugins("pb-page-element-images-list-component");
     const imageList = components.find(cmp => cmp.name === component);
 
     if (!imageList) {

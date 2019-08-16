@@ -7,7 +7,7 @@ import { getUi } from "webiny-app-cms/editor/selectors";
 import DefaultEditorBar from "./DefaultEditorBar";
 
 const Bar = pure((props: Object) => {
-    const plugins = getPlugins("cms-editor-bar");
+    const plugins = getPlugins("pb-editor-bar");
     let pluginBar = null;
 
     for (let i = 0; i < plugins.length; i++) {

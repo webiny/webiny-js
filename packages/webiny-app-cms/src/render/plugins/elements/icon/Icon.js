@@ -19,7 +19,7 @@ const Icon = ({ element }: Object) => {
                 <div
                     style={elementStyle}
                     className={getAllClasses(
-                        "webiny-cms-base-element-style webiny-cms-element-icon",
+                        "webiny-pb-base-page-element-style webiny-pb-page-element-icon",
                         center
                     )}
                     dangerouslySetInnerHTML={{ __html: svg }}

@@ -1,7 +1,7 @@
 // @flow
 import gql from "graphql-tag";
 import { getPlugins } from "webiny-plugins";
-import type { CmsPageSettingsPluginType } from "webiny-app-cms/types";
+import type { PageBuilderPageSettingsPluginType } from "webiny-app-cms/types";
 
 const error = `
 error {
@@ -78,9 +78,9 @@ export const getPage = () => gql`
                         content
                         settings {
                             _empty
-                            ${getPlugins("cms-editor-page-settings")
-                                .map((pl: CmsPageSettingsPluginType) => pl.fields)
-                                .join("\n")}
+                            ${getPlugins("pb-editor-page-settings")
+                            .map((pl: PageBuilderPageSettingsPluginType) => pl.fields)
+                            .join("\n")}
                         }
                         category {
                             id

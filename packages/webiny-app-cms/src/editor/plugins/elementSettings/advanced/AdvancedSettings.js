@@ -62,7 +62,7 @@ class AdvancedSettings extends React.Component<Props> {
                             <DialogBody className={dialogBody}>
                                 <Tabs>
                                     {renderPlugins(
-                                        "cms-element-advanced-settings",
+                                        "pb-page-element-advanced-settings",
                                         { Bind, data, form },
                                         { wrapper: false, filter: pl => pl.element === type }
                                     )}
@@ -83,7 +83,7 @@ class AdvancedSettings extends React.Component<Props> {
 export default compose(
     connect(
         state => ({
-            open: isPluginActive("cms-element-settings-advanced")(state)
+            open: isPluginActive("pb-page-element-settings-advanced")(state)
         }),
         { updateElement, deactivatePlugin }
     ),
@@ -91,13 +91,13 @@ export default compose(
     withKeyHandler(),
     withHandlers({
         closeDialog: ({ deactivatePlugin }) => () => {
-            deactivatePlugin({ name: "cms-element-settings-advanced" });
+            deactivatePlugin({ name: "pb-page-element-settings-advanced" });
         }
     }),
     withHandlers({
         onSubmit: ({ element, updateElement, closeDialog }) => (formData: Object) => {
             // Get element settings plugins
-            const plugins = getPlugins("cms-element-advanced-settings").filter(
+            const plugins = getPlugins("pb-page-element-advanced-settings").filter(
                 pl => pl.element === element.type
             );
             formData = plugins.reduce((formData, pl) => {

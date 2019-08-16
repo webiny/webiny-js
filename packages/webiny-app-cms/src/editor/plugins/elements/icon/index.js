@@ -20,11 +20,12 @@ export default () => {
 
     return [
         {
-            name: "cms-element-icon",
-            type: "cms-element",
+            name: "pb-page-element-icon",
+            type: "pb-page-element",
+            elementType: "icon",
             toolbar: {
                 title: "Icon",
-                group: "cms-element-group-basic",
+                group: "pb-page-element-group-basic",
                 preview() {
                     return (
                         <PreviewBox>
@@ -34,23 +35,23 @@ export default () => {
                 }
             },
             settings: [
-                "cms-element-settings-icon",
+                "pb-page-element-settings-icon",
                 "",
-                "cms-element-settings-padding",
-                "cms-element-settings-margin",
+                "pb-page-element-settings-padding",
+                "pb-page-element-settings-margin",
                 [
-                    "cms-element-settings-horizontal-align",
+                    "pb-page-element-settings-horizontal-align",
                     { alignments: ["left", "center", "right"] }
                 ],
                 "",
-                "cms-element-settings-clone",
-                "cms-element-settings-delete",
+                "pb-page-element-settings-clone",
+                "pb-page-element-settings-delete",
                 ""
             ],
-            target: ["cms-element-column", "cms-element-row"],
+            target: ["pb-page-element-column", "pb-page-element-row"],
             create(options: Object) {
                 return {
-                    type: "cms-element-icon",
+                    type: "pb-page-element-icon",
                     elements: [],
                     data: {
                         icon: {
@@ -78,8 +79,8 @@ export default () => {
             }
         },
         {
-            name: "cms-element-settings-icon",
-            type: "cms-element-settings",
+            name: "pb-page-element-settings-icon",
+            type: "pb-page-element-settings",
             renderAction({ active }: { active: boolean }) {
                 return (
                     <Action

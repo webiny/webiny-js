@@ -7,7 +7,7 @@ import ImagesList from "./ImagesList";
 import { getPlugins } from "webiny-plugins";
 
 const ImagesListDesignSettings = ({ cms: { theme }, Bind, data }: Object) => {
-    const components = getPlugins("cms-element-images-list-component");
+    const components = getPlugins("pb-page-element-images-list-component");
 
     return (
         <React.Fragment>

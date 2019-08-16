@@ -2,11 +2,11 @@
 import type { Node, ComponentType } from "react";
 import type { PluginType } from "webiny-plugins/types";
 import type { WithPageDetailsProps } from "webiny-app-cms/admin/components";
-import type { WithCmsPropsType, CmsProviderPropsType } from "webiny-app-cms/context";
+import type { WithPageBuilderPropsType, PageBuilderProviderPropsType } from "webiny-app-cms/context";
 
 export type { WithPageDetailsProps };
-export type { WithCmsPropsType };
-export type { CmsProviderPropsType };
+export type { WithPageBuilderPropsType };
+export type { PageBuilderProviderPropsType };
 export type { PluginType };
 
 export type ElementType = {
@@ -17,7 +17,7 @@ export type ElementType = {
     data: Object
 };
 
-export type CmsThemeType = {
+export type PageBuilderThemeType = {
     colors: Object,
     fonts: Object,
     elements: Object,
@@ -36,6 +36,7 @@ export type ElementGroupPluginType = PluginType & {
 };
 
 export type ElementPluginType = PluginType & {
+    elementType: string,
     toolbar?: {
         // Element title in the toolbar.
         title?: string,
@@ -51,7 +52,7 @@ export type ElementPluginType = PluginType & {
     // A function to create an element data structure.
     create: ({ options: Object }) => Object,
     // A function to render an element in the editor.
-    render: ({ theme: CmsThemeType, element: ElementType }) => Node,
+    render: ({ theme: PageBuilderThemeType, element: ElementType }) => Node,
     // A function to check if an element can be deleted.
     canDelete?: ({ element: ElementType }) => boolean,
     // Executed when another element is dropped on the drop zones of current element.
@@ -66,16 +67,16 @@ export type ElementPluginType = PluginType & {
 };
 
 export type RenderElementPluginType = PluginType & {
-    // Name of the cms-element plugin this render plugin is handling.
+    // Name of the pb-element plugin this render plugin is handling.
     element: string,
-    render: ({ theme: CmsThemeType, element: ElementType }) => Node
+    render: ({ theme: PageBuilderThemeType, element: ElementType }) => Node
 };
 
-export type CmsPageDetailsPluginType = PluginType & {
+export type PageBuilderPageDetailsPluginType = PluginType & {
     render: (params: WithPageDetailsProps) => Node
 };
 
-export type CmsPageSettingsPluginType = PluginType & {
+export type PageBuilderPageSettingsPluginType = PluginType & {
     /* Settings group title */
     title: string,
     /* Settings group description */
@@ -88,16 +89,16 @@ export type CmsPageSettingsPluginType = PluginType & {
     render: (params: { Bind: ComponentType<*> }) => Node
 };
 
-export type CmsBlockCategoryPluginType = PluginType & {
+export type PageBuilderBlockCategoryPluginType = PluginType & {
     title: string,
     description?: string
 };
 
-export type CmsPageSettingsFieldsPluginType = PluginType & {
+export type PageBuilderPageSettingsFieldsPluginType = PluginType & {
     fields: string
 };
 
-export type CmsMenuItemPluginType = PluginType & {
+export type PageBuilderMenuItemPluginType = PluginType & {
     /* Menu item title */
     title: string,
     /* Menu item icon */
@@ -108,15 +109,15 @@ export type CmsMenuItemPluginType = PluginType & {
     renderForm: (params: { data: Object, onSubmit: Function, onCancel: Function }) => Node
 };
 
-export type CmsElementActionPluginType = PluginType & {
+export type PageBuilderElementActionPluginType = PluginType & {
     render: ({ plugin: ElementPluginType }) => Node
 };
 
-export type CmsRenderElementStylePluginType = PluginType & {
+export type PageBuilderRenderElementStylePluginType = PluginType & {
     renderStyle: ({ element: ElementType, style: Object }) => Object
 };
 
-export type CmsRenderElementAttributesPluginType = PluginType & {
+export type PageBuilderRenderElementAttributesPluginType = PluginType & {
     renderAttributes: ({ element: ElementType, attributes: Object }) => Object
 };
 

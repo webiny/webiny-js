@@ -13,7 +13,7 @@ const Element = ({ element, cms: { theme } }: ElementProps) => {
         return null;
     }
 
-    const plugin = getPlugins("cms-render-element").find(pl => pl.element === element.type);
+    const plugin = getPlugins("pb-render-element").find(pl => pl.elementType === element.type);
 
     if (!plugin) {
         return null;

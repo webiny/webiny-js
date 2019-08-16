@@ -14,11 +14,12 @@ export default (): ElementPluginType => {
     };
 
     return {
-        name: "cms-element-text",
-        type: "cms-element",
+        name: "pb-page-element-text",
+        type: "pb-page-element",
+        elementType: "text",
         toolbar: {
             title: "Text",
-            group: "cms-element-group-basic",
+            group: "pb-page-element-group-basic",
             preview() {
                 const previewText = loremIpsum(defaultLipsum);
 
@@ -26,24 +27,24 @@ export default (): ElementPluginType => {
             }
         },
         settings: [
-            "cms-element-settings-background",
+            "pb-page-element-settings-background",
             "",
-            "cms-element-settings-border",
-            "cms-element-settings-shadow",
+            "pb-page-element-settings-border",
+            "pb-page-element-settings-shadow",
             "",
-            "cms-element-settings-padding",
-            "cms-element-settings-margin",
+            "pb-page-element-settings-padding",
+            "pb-page-element-settings-margin",
             "",
-            "cms-element-settings-clone",
-            "cms-element-settings-delete",
+            "pb-page-element-settings-clone",
+            "pb-page-element-settings-delete",
             ""
         ],
-        target: ["cms-element-column", "cms-element-row", "cms-element-list-item"],
+        target: ["pb-page-element-column", "pb-page-element-row", "pb-page-element-list-item"],
         create({ content = {}, ...options }: Object) {
             const previewText = content.text || loremIpsum(content.lipsum || defaultLipsum);
 
             return {
-                type: "cms-element-text",
+                type: "pb-page-element-text",
                 elements: [],
                 data: {
                     text: createValue(previewText, content.typography || "paragraph"),

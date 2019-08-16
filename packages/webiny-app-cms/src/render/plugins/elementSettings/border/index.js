@@ -3,8 +3,8 @@ import { get, startCase } from "lodash";
 import type { CmsRenderElementStylePluginType } from "webiny-app-cms/types";
 
 export default ({
-    name: "cms-render-element-style-border",
-    type: "cms-render-element-style",
+    name: "pb-render-element-style-border",
+    type: "pb-render-element-style",
     renderStyle({ element, style }) {
         const { border } = get(element, "data.settings", {});
         if (!border) {

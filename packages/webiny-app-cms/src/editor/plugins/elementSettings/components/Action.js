@@ -33,7 +33,7 @@ export default compose(
             active: isPluginActive(props.plugin)(state),
             // $FlowFixMe
             slateFocused: getUi(state).slateFocused,
-            settingsActive: getActivePlugins("cms-element-settings")(state).length > 0
+            settingsActive: getActivePlugins("pb-page-element-settings")(state).length > 0
         }),
         { togglePlugin }
     ),

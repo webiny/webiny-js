@@ -3,8 +3,8 @@ import type { CmsPageSettingsFieldsPluginType } from "webiny-app-cms/types";
 
 export default ([
     {
-        name: "cms-page-settings-fields-general",
-        type: "cms-page-settings-fields",
+        name: "pb-page-settings-fields-general",
+        type: "pb-page-settings-fields",
         fields: `
             general {
                 image {
@@ -16,8 +16,8 @@ export default ([
     `
     },
     {
-        name: "cms-page-settings-fields-seo",
-        type: "cms-page-settings-fields",
+        name: "pb-page-settings-fields-seo",
+        type: "pb-page-settings-fields",
         fields: `
             seo {
                 title
@@ -30,8 +30,8 @@ export default ([
     `
     },
     {
-        name: "cms-page-settings-fields-social",
-        type: "cms-page-settings-fields",
+        name: "pb-page-settings-fields-social",
+        type: "pb-page-settings-fields",
         fields: `
             social {
                 image {

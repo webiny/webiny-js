@@ -2,8 +2,8 @@ import React from "react";
 
 export default () => {
     return {
-        name: "cms-render-slate-editor-link",
-        type: "cms-render-slate-editor",
+        name: "pb-render-slate-editor-link",
+        type: "pb-render-slate-editor",
         slate: {
             renderNode(props, next) {
                 const { attributes, children, node } = props;

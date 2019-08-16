@@ -13,7 +13,7 @@ import { Elevation } from "webiny-ui/Elevation";
 
 const ContentContainer = styled("div")(({ theme }) => ({
     backgroundColor: get(theme, "colors.background"),
-    ".webiny-cms-page-document": {
+    ".webiny-pb-page-document": {
         overflowY: "visible", // cuts off the block selector tooltip
         overflowX: "visible"
     }
@@ -37,7 +37,7 @@ const BaseContainer = styled("div")({
 });
 
 const Content = ({ rootElement, cms: { theme }, renderLayout, layout }) => {
-    const plugins = getPlugins("cms-editor-content");
+    const plugins = getPlugins("pb-editor-content");
     const themeLayout = theme.layouts.find(l => l.name === layout);
 
     if (renderLayout && !themeLayout) {
@@ -52,7 +52,7 @@ const Content = ({ rootElement, cms: { theme }, renderLayout, layout }) => {
         <Elevation className={contentContainerWrapper} z={2}>
             <ContentContainer theme={theme}>
                 {plugins.map(plugin => React.cloneElement(plugin.render(), { key: plugin.name }))}
-                <BaseContainer className={"webiny-cms-editor-content-preview"}>
+                <BaseContainer className={"webiny-pb-editor-content-preview"}>
                     {content}
                 </BaseContainer>
             </ContentContainer>
@@ -63,7 +63,7 @@ const Content = ({ rootElement, cms: { theme }, renderLayout, layout }) => {
 const stateToProps = state => ({
     rootElement: state.elements[getContent(state).id],
     layout: get(getPage(state), "settings.general.layout"),
-    renderLayout: isPluginActive("cms-toolbar-preview")(state)
+    renderLayout: isPluginActive("pb-toolbar-preview")(state)
 });
 
 export default compose(

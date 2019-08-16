@@ -4,8 +4,8 @@ import { ReactComponent as ImageGroupIcon } from "webiny-app-cms/editor/assets/i
 import type { ElementGroupPluginType } from "webiny-app-cms/types";
 
 const imageGroup: ElementGroupPluginType = {
-    name: "cms-element-group-image",
-    type: "cms-element-group",
+    name: "pb-editor-element-group-image",
+    type: "pb-editor-element-group",
     group: {
         title: "Image",
         icon: <ImageGroupIcon/>
