@@ -10,7 +10,7 @@ const fields = `
 `;
 
 export const loadGroups = gql`
-    query LoadGroups($where: JSON, $sort: JSON, $page: Int, $perPage: Int, $search: SearchInput) {
+    query LoadGroups($where: JSON, $sort: JSON, $page: Int, $perPage: Int, $search: SecurityGroupSearchInput) {
         security {
             groups: listGroups(
                 where: $where

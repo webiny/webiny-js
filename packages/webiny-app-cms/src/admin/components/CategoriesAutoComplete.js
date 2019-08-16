@@ -23,7 +23,7 @@ const loadCategory = gql`
 `;
 
 const listCategories = gql`
-    query LoadCategories($search: SearchInput) {
+    query LoadCategories($search: PageBuilderSearchInput) {
         cms {
             pageBuilder {
                 categories: listCategories(search: $search) {

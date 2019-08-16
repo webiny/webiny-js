@@ -18,7 +18,7 @@ export const loadScopes = gql`
 `;
 
 export const loadRoles = gql`
-    query LoadRoles($where: JSON, $sort: JSON, $page: Int, $perPage: Int, $search: SearchInput) {
+    query LoadRoles($where: JSON, $sort: JSON, $page: Int, $perPage: Int, $search: SecurityRoleSearchInput) {
         security {
             roles: listRoles(
                 where: $where

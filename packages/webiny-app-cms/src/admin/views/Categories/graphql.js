@@ -15,7 +15,7 @@ export const loadCategories = gql`
         $sort: JSON
         $page: Int
         $perPage: Int
-        $search: SearchInput
+        $search: PageBuilderSearchInput
     ) {
         cms {
             pageBuilder {

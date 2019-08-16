@@ -13,7 +13,7 @@ export default compose(
         response: data => get(data, "security.roles"),
         variables: query => ({ query, fields: ["name"] }),
         query: gql`
-            query LoadRoles($search: SearchInput) {
+            query LoadRoles($search: SecurityRoleSearchInput) {
                 security {
                     roles: listRoles(search: $search) {
                         data {

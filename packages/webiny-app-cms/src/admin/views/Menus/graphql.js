@@ -10,7 +10,7 @@ const fields = `
 `;
 
 export const loadMenus = gql`
-    query LoadMenus($where: JSON, $sort: JSON, $page: Int, $perPage: Int, $search: SearchInput) {
+    query LoadMenus($where: JSON, $sort: JSON, $page: Int, $perPage: Int, $search: PageBuilderSearchInput) {
         cms {
             pageBuilder {
                 menus: listMenus(

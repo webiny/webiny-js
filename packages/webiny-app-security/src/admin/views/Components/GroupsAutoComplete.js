@@ -13,7 +13,7 @@ export default compose(
         response: data => get(data, "security.groups"),
         variables: query => ({ query, fields: ["name"] }),
         query: gql`
-            query LoadGroups($search: SearchInput) {
+            query LoadGroups($search: SecurityGroupSearchInput) {
                 security {
                     groups: listGroups(search: $search) {
                         data {
