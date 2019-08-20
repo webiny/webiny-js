@@ -1,15 +1,15 @@
-.webiny-cms-form{
+.webiny-pb-form{
     width: 100%;
     padding: 0 5px 5px 5px;
     box-sizing: border-box;
-    background-color: $webiny-cms-theme-surface;
+    background-color: $webiny-pb-theme-surface;
 
-    .webiny-cms-layout-row, .webiny-cms-layout-column{
+    .webiny-pb-layout-row, .webiny-pb-layout-column{
         width: 100%;
         padding: 0;
     }
 
-    .webiny-cms-layout-column{
+    .webiny-pb-layout-column{
         padding: 15px;
 
         @include desktop{
@@ -50,19 +50,19 @@
         width: 100%;
         box-sizing: border-box;
         font-size: 1rem;
-        background-color: $webiny-cms-theme-surface;
+        background-color: $webiny-pb-theme-surface;
 
         &__input, &__select, &__textarea{
             font-size: 1rem;
-            border: 1px solid $webiny-cms-theme-background;
-            background-color: $webiny-cms-theme-background;
+            border: 1px solid $webiny-pb-theme-background;
+            background-color: $webiny-pb-theme-background;
             width: 100%;
             padding: 10px;
-            border-radius: $webiny-cms-theme-border-radius;
+            border-radius: $webiny-pb-theme-border-radius;
             box-sizing: border-box;
             transition: border-color .15s ease-in-out,box-shadow .15s ease-in-out;
             &:focus{
-                border-color: $webiny-cms-theme-secondary;
+                border-color: $webiny-pb-theme-secondary;
                 box-shadow: 0 0 0 0.2rem rgba(0,123,255,.25);
                 outline: none;
             }
@@ -97,13 +97,13 @@
                 font-size: 1.5rem;
                 margin-left: 0;
                 line-height: 100%;
-                background-color: $webiny-cms-theme-background;
+                background-color: $webiny-pb-theme-background;
                 width: 25px;
                 height: 25px;
                 border-radius: 50%;
                 -webkit-appearance: none;
                 &:focus{
-                    border-color: $webiny-cms-theme-secondary;
+                    border-color: $webiny-pb-theme-secondary;
                     box-shadow: 0 0 0 0.2rem rgba(0,123,255,.25);
                     outline: none;
                 }
@@ -117,7 +117,7 @@
 
         &__checkbox{
             &-input{
-                border-radius: $webiny-cms-theme-border-radius;
+                border-radius: $webiny-pb-theme-border-radius;
                 &:checked{
                     background-image: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0Ij48cGF0aCBmaWxsPSJub25lIiBkPSJNMCAwaDI0djI0SDBWMHoiLz48cGF0aCBkPSJNMTkgM0g1Yy0xLjEgMC0yIC45LTIgMnYxNGMwIDEuMS45IDIgMiAyaDE0YzEuMSAwIDItLjkgMi0yVjVjMC0xLjEtLjktMi0yLTJ6bS04LjI5IDEzLjI5Yy0uMzkuMzktMS4wMi4zOS0xLjQxIDBMNS43MSAxMi43Yy0uMzktLjM5LS4zOS0xLjAyIDAtMS40MS4zOS0uMzkgMS4wMi0uMzkgMS40MSAwTDEwIDE0LjE3bDYuODgtNi44OGMuMzktLjM5IDEuMDItLjM5IDEuNDEgMCAuMzkuMzkuMzkgMS4wMiAwIDEuNDFsLTcuNTggNy41OXoiLz48L3N2Zz4=");
                 }
@@ -137,17 +137,17 @@
             font-size: 0.8rem;
             margin-left: 2px;
             margin-top: 5px;
-            color: $webiny-cms-theme-text-secondary;
+            color: $webiny-pb-theme-text-secondary;
             @include mobile{
                 text-align: left !important;
             }
             &--error{
-                color: $webiny-cms-theme-primary;
+                color: $webiny-pb-theme-primary;
             }
         }
     }
 
-    .webiny-cms-element-button{
+    .webiny-pb-page-element-button{
         width: 100%;
     }
 

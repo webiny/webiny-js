@@ -1,7 +1,7 @@
 // @flow
 import React from "react";
 import type { Change } from "slate";
-import { ReactComponent as FormatItalicIcon } from "webiny-app-cms/editor/assets/icons/format_italic.svg";
+import { ReactComponent as FormatItalicIcon } from "webiny-app-page-builder/editor/assets/icons/format_italic.svg";
 import { isKeyHotkey } from "is-hotkey";
 const isItalicHotkey = isKeyHotkey("mod+i");
 import type { I18NInputRichTextEditorPluginType } from "webiny-app-i18n/types";

@@ -1,10 +1,10 @@
-.webiny-cms-layout-block-container{
+.webiny-pb-layout-block-container{
   @include mobile{
     background-size: cover !important;
   }
 }
 
-.webiny-cms-layout-block{
+.webiny-pb-layout-block{
   width: 100%;
   display: flex;
   flex-direction: column;
@@ -17,7 +17,7 @@
   }
 }
 
-.webiny-cms-layout-row{
+.webiny-pb-layout-row{
   position: relative;
   display: flex;
   box-sizing: border-box;
@@ -36,7 +36,7 @@
   }
 }
 
-.webiny-cms-layout-column{
+.webiny-pb-layout-column{
   box-sizing: border-box;
   text-align: center;
   display: flex;

@@ -108,9 +108,7 @@ const requestSetup = async (config: Object = {}) => {
             await Entity.getDriver().test();
         } catch (e) {
             throw Error(
-                `The following error occurred while initializing Entity driver: "${
-                    e.message
-                }". Did you enter the correct database information?`
+                `The following error occurred while initializing Entity driver: "${e.message}". Did you enter the correct database information?`
             );
         }
     }

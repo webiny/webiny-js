@@ -38,12 +38,12 @@ which will enable you to insert newsletter signup forms in your pages.
 The element will be registered under the "Form" element category.
 
 You can optionally register one or more newsletter signup 
-form plugins (type: `cms-element-mailchimp-component`).
+form plugins (type: `pb-page-element-mailchimp-component`).
 
 ```js
 {
-        type: "cms-element-mailchimp-component",
-        name: "cms-element-mailchimp-component-test1",
+        type: "pb-page-element-mailchimp-component",
+        name: "pb-page-element-mailchimp-component-test1",
         title: "Test newsletter form",
         component: MailchimpTestForm
 }

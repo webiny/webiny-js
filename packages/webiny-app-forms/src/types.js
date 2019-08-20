@@ -1,7 +1,7 @@
 // @flow
 import * as React from "react";
 import type { PluginType } from "webiny-plugins/types";
-import type { WithCmsPropsType } from "webiny-app-cms/context";
+import type { WithPageBuilderPropsType } from "webiny-app-page-builder/context";
 import type { ReCaptchaComponentType } from "webiny-app-forms/components/Form/components/createReCaptchaComponent";
 import type { TermsOfServiceComponentType } from "webiny-app-forms/components/Form/components/createTermsOfServiceComponent";
 import type { I18NStringValueType } from "webiny-app-i18n/types";
@@ -72,7 +72,7 @@ export type FormRenderComponentPropsType = {
     preview?: boolean,
     data?: FormDataType,
     client: Object, // withApollo HOC
-    cms: WithCmsPropsType // withCms HOC
+    cms: WithPageBuilderPropsType // withPageBuilder HOC
 };
 
 export type FormSubmitResponseType = {

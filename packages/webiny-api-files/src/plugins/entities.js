@@ -6,10 +6,7 @@ const file: EntityPluginType = {
     name: "entity-files-file",
     type: "entity",
     namespace: "files",
-    entity: {
-        name: "File",
-        factory: entities.fileFactory
-    }
+    entity: entities.fileFactory
 };
 
 export default [file];

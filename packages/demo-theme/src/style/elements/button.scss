@@ -1,6 +1,6 @@
-@keyframes webiny-cms-element-button-animation-rotate { 100% { transform: rotate(360deg); } }
+@keyframes webiny-pb-page-element-button-animation-rotate { 100% { transform: rotate(360deg); } }
 
-.webiny-cms-element-button{
+.webiny-pb-page-element-button{
   display: flex;
   align-items: center !important;
   justify-content: center;
@@ -22,9 +22,9 @@
   border: none;
   min-width: 100px;
   width: auto;
-  background-color: $webiny-cms-theme-background;
-  font-family: unquote($webiny-cms-theme-typography-primary-font-family);
-  color: $webiny-cms-theme-on-background;
+  background-color: $webiny-pb-theme-background;
+  font-family: unquote($webiny-pb-theme-typography-primary-font-family);
+  color: $webiny-pb-theme-on-background;
   >span{
     display: block;
     font-size: 1px;
@@ -44,7 +44,7 @@
     cursor: wait;
   }
   &--loading{
-    background-image: linear-gradient($webiny-cms-theme-primary 0%, $webiny-cms-theme-primary 100%) !important;
+    background-image: linear-gradient($webiny-pb-theme-primary 0%, $webiny-pb-theme-primary 100%) !important;
     position: relative;
     text-transform: uppercase;
     color: transparent;
@@ -65,35 +65,35 @@
       background-clip: padding-box;
       border: rgba(255, 255, 255, 0.25) 2px solid;
       border-top-color: #fff;
-      animation: webiny-cms-element-button-animation-rotate 750ms linear infinite;
+      animation: webiny-pb-page-element-button-animation-rotate 750ms linear infinite;
       span{
         color: transparent;
       }
     }
   }
   &--primary{
-    background-color: $webiny-cms-theme-primary;
-    color: $webiny-cms-theme-on-primary;
+    background-color: $webiny-pb-theme-primary;
+    color: $webiny-pb-theme-on-primary;
   }
   &--secondary{
-    background-color: $webiny-cms-theme-secondary;
-    color: $webiny-cms-theme-on-secondary;
+    background-color: $webiny-pb-theme-secondary;
+    color: $webiny-pb-theme-on-secondary;
   }
   &--outline-primary{
-    border: 2px solid $webiny-cms-theme-primary;
-    color: $webiny-cms-theme-primary;
+    border: 2px solid $webiny-pb-theme-primary;
+    color: $webiny-pb-theme-primary;
     padding: 10px 16px !important;
     background-color: transparent;
   }
   &--outline-secondary{
-    border: 2px solid $webiny-cms-theme-secondary;
-    color: $webiny-cms-theme-secondary;
+    border: 2px solid $webiny-pb-theme-secondary;
+    color: $webiny-pb-theme-secondary;
     padding: 10px 16px !important;
     background-color: transparent;
   }
   &--simple{
     background-color: transparent;
-    color: $webiny-cms-theme-primary;
+    color: $webiny-pb-theme-primary;
     padding: 0 !important;
     min-width: 0;
     &:hover{

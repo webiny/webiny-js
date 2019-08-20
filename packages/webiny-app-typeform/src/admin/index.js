@@ -6,7 +6,7 @@ import { Input } from "webiny-ui/Input";
 import { Grid, Cell } from "webiny-ui/Grid";
 import { ReactComponent as CodeIcon } from "./round-text_format-24px.svg";
 import { ReactComponent as TypeformLogo } from "./typeform-logo.svg";
-import { ElementRoot } from "webiny-app-cms/render/components/ElementRoot";
+import { ElementRoot } from "webiny-app-page-builder/render/components/ElementRoot";
 import TypeFormEmbed from "./TypeFormEmbed";
 import render from "./../render";
 
@@ -22,11 +22,12 @@ const PreviewBox = styled("div")({
 export default [
     ...render,
     {
-        name: "cms-element-typeform",
-        type: "cms-element",
+        name: "pb-page-element-typeform",
+        type: "pb-page-element",
+        elementType: "typeform",
         toolbar: {
             title: "Typeform",
-            group: "cms-element-group-form",
+            group: "pb-editor-element-group-form",
             preview() {
                 return (
                     <PreviewBox>
@@ -35,19 +36,19 @@ export default [
                 );
             }
         },
-        settings: ["cms-element-settings-delete", "", "cms-element-settings-height"],
-        target: ["cms-element-column", "cms-element-row", "cms-element-list-item"],
+        settings: ["pb-page-element-settings-delete", "", "pb-page-element-settings-height"],
+        target: ["column", "row", "list-item"],
         onCreate: "open-settings",
         render({ element }: Object) {
             return (
-                <ElementRoot element={element} className={"webiny-cms-element-typeform"}>
+                <ElementRoot element={element} className={"webiny-pb-page-element-typeform"}>
                     <TypeFormEmbed elementId={element.id} />
                 </ElementRoot>
             );
         },
         create() {
             return {
-                type: "cms-element-typeform",
+                type: "typeform",
                 elements: [],
                 data: {},
                 settings: {
@@ -59,9 +60,9 @@ export default [
         }
     },
     {
-        name: "cms-element-advanced-settings-typeform",
-        type: "cms-element-advanced-settings",
-        element: "cms-element-typeform",
+        name: "pb-page-element-advanced-settings-typeform",
+        type: "pb-page-element-advanced-settings",
+        elementType: "typeform",
         render({ Bind }: Object) {
             return (
                 <Tab icon={<CodeIcon />} label="Typeform">

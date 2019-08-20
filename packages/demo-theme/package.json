@@ -14,6 +14,6 @@
   },
   "peerDependencies": {
     "react": "^16",
-    "webiny-app-cms": "^1"
+    "webiny-app-page-builder": "^1"
   }
 }

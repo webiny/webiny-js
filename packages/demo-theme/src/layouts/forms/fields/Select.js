@@ -14,8 +14,8 @@ const Select = (props: Props) => {
     const { onChange, value, validation } = props.bind;
 
     return (
-        <div className="webiny-cms-form-field webiny-cms-form-field--select">
-            <label className="webiny-cms-form-field__label webiny-cms-typography-body">
+        <div className="webiny-pb-form-field webiny-pb-form-field--select">
+            <label className="webiny-pb-form-field__label webiny-pb-typography-body">
                 <I18NValue value={props.field.label} />
             </label>
             <select
@@ -23,7 +23,7 @@ const Select = (props: Props) => {
                 onChange={e => onChange(e.target.value)}
                 id={props.field.fieldId}
                 name={props.field.fieldId}
-                className="webiny-cms-form-field__select"
+                className="webiny-pb-form-field__select"
             >
                 <option disabled value={""}>
                     {I18NValue({ value: props.field.placeholderText })}

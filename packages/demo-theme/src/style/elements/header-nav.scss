@@ -7,13 +7,13 @@
   100% {transform: translateX(200%);}
 }
 
-.webiny-cms-section-header-spacer{
+.webiny-pb-section-header-spacer{
   height: 50px;
   background-color: transparent;
   width: 100%;
 }
 
-.webiny-cms-section-header {
+.webiny-pb-section-header {
   position: fixed;
   top: 0;
   z-index: 100;
@@ -35,7 +35,7 @@
 
 // desktop header
 @include desktop-and-tablet{
-  .webiny-cms-section-header {
+  .webiny-pb-section-header {
     padding: 10px 0 5px 0;
 
     &__logo{
@@ -51,14 +51,14 @@
     }
 
     &__navigation {
-      color: $webiny-cms-theme-primary;
-      font-family: unquote($webiny-cms-theme-typography-primary-font-family);
+      color: $webiny-pb-theme-primary;
+      font-family: unquote($webiny-pb-theme-typography-primary-font-family);
       -moz-osx-font-smoothing: grayscale;
       -webkit-font-smoothing: antialiased;
       flex: 1;
 
       a {
-        color: $webiny-cms-theme-primary;
+        color: $webiny-pb-theme-primary;
         text-decoration: none;
       }
 
@@ -80,15 +80,15 @@
             display: none;
           }
           &:hover{
-            background-color: $webiny-cms-theme-background;
-            border-radius: $webiny-cms-theme-border-radius;
+            background-color: $webiny-pb-theme-background;
+            border-radius: $webiny-pb-theme-border-radius;
             ul{
               display: block;
               position: absolute;
               top: 35px;
               left: 0;
               width: 150px;
-              background-color: $webiny-cms-theme-background;
+              background-color: $webiny-pb-theme-background;
               li{
                 padding: 10px;
                 margin: 0;
@@ -105,7 +105,7 @@
 
 // mobile header
 @include mobile{
-  .webiny-cms-section-header {
+  .webiny-pb-section-header {
     &__mobile-icon{
       position: fixed;
       top: 18px;
@@ -121,7 +121,7 @@
       z-index: 12;
       a{
         font-size: 1.2rem;
-        color: $webiny-cms-theme-text-primary;
+        color: $webiny-pb-theme-text-primary;
         text-transform: uppercase;
         font-weight: 700;
       }
@@ -130,7 +130,7 @@
     &__mobile-overlay{
       opacity: 0;
       transition: opacity .25s ease-in-out;
-      background-color: $webiny-cms-theme-on-background;
+      background-color: $webiny-pb-theme-on-background;
       &--active{
         opacity: 0.5;
         position: fixed;
@@ -152,8 +152,8 @@
     }
 
     &__navigation {
-      color: $webiny-cms-theme-primary;
-      font-family: unquote($webiny-cms-theme-typography-primary-font-family);
+      color: $webiny-pb-theme-primary;
+      font-family: unquote($webiny-pb-theme-typography-primary-font-family);
       -moz-osx-font-smoothing: grayscale;
       -webkit-font-smoothing: antialiased;
       animation: slide-out 0.5s forwards;
@@ -162,7 +162,7 @@
       width: 250px;
       right: 0;
       height: 100%;
-      background: $webiny-cms-theme-background;
+      background: $webiny-pb-theme-background;
       top: 0;
       z-index: 11;
       transform: translateX(200%);
@@ -172,7 +172,7 @@
       }
 
       a {
-        color: $webiny-cms-theme-primary;
+        color: $webiny-pb-theme-primary;
         text-decoration: none;
       }
 
@@ -197,15 +197,15 @@
 }
 
 // adjust some styles in case when we render the full layout inside the page editor
-.webiny-cms-editor-content-preview{
-  .webiny-cms-section-header {
+.webiny-pb-editor-content-preview{
+  .webiny-pb-section-header {
     position: absolute;
     padding: 10px;
     box-sizing: border-box;
     z-index: 0;
     height: 50px;
   }
-  .webiny-cms-section-header-spacer{
+  .webiny-pb-section-header-spacer{
     height: 55px;
     background-color: white;
   }

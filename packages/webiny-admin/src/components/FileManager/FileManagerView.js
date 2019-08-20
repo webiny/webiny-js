@@ -169,6 +169,9 @@ function FileManagerView(props: WithSnackbarProps & Props) {
     const refreshOnScroll = useCallback(
         debounce(({ scrollFrame, fetchMore }) => {
             if (scrollFrame.top > 0.9) {
+                if (!gqlQuery.current) {
+                    return;
+                }
                 const { data } = gqlQuery.current.getQueryResult();
                 const nextPage = get(data, "files.listFiles.meta.nextPage");
                 nextPage &&

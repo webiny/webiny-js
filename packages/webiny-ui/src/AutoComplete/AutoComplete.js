@@ -187,9 +187,16 @@ export class AutoComplete extends React.Component<Props, State> {
                                         openMenu();
                                         otherInputProps.onFocus && otherInputProps.onFocus(e);
                                     },
+                                    onKeyDown: e => {
+                                        const keyCode = keycode(e);
+
+                                        if (keyCode === "backspace") {
+                                            onChange(null);
+                                        }
+                                    },
                                     onKeyUp: e => {
                                         const keyCode = keycode(e);
-                                        const inputValue = e.target.value || "";
+                                        let inputValue = e.target.value || "";
 
                                         // If user pressed 'esc', 'enter' or similar...
                                         if (keyCode.length > 1) {

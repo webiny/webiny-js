@@ -2,8 +2,8 @@
 import gql from "graphql-tag";
 
 export const getHeaderData = gql`
-    query CmsGetHeader {
-        cms {
+    query PbGetHeader {
+        pageBuilder {
             getSettings {
                 data {
                     name
@@ -17,8 +17,8 @@ export const getHeaderData = gql`
 `;
 
 export const getFooterData = gql`
-    query CmsGetSiteFooter {
-        cms {
+    query PbGetSiteFooter {
+        pageBuilder {
             getSettings {
                 data {
                     social {

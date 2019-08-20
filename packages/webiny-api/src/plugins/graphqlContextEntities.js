@@ -31,21 +31,9 @@ const graphqlContextEntities: GraphQLContextPluginType = {
                 };
             }
 
-            if (typeof plugin.entity === "function") {
-                const entityClass = plugin.entity(context);
-                entityClass.pool = new EntityPool();
-                registerEntityClass({ context, entityClass });
-            } else {
-                const { name, factory } = plugin.entity;
-                context[plugin.namespace].entities[name] = factory(context);
-                context[plugin.namespace].entities[name].pool = new EntityPool();
-
-                // We add to entities list, later we'll just do the cleanup - this won't exist.
-                registerEntityClass({
-                    context,
-                    entityClass: context[plugin.namespace].entities[name]
-                });
-            }
+            const entityClass = plugin.entity(context);
+            entityClass.pool = new EntityPool();
+            registerEntityClass({ context, entityClass });
         });
     }
 };

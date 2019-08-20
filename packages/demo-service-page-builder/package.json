@@ -14,7 +14,7 @@
   "dependencies": {
     "@babel/runtime": "^7.0.0",
     "webiny-api": "0.0.0",
-    "webiny-api-cms": "0.0.0",
+    "webiny-api-page-builder": "0.0.0",
     "webiny-api-security": "0.0.0",
     "webiny-install": "0.0.0",
     "webiny-api-cookie-policy": "0.0.0",

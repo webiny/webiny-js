@@ -16,26 +16,26 @@ const Radio = (props: Props) => {
     const fieldId: string = (props.field.fieldId: any);
 
     return (
-        <div className="webiny-cms-form-field webiny-cms-form-field--radio">
-            <label className="webiny-cms-form-field__label webiny-cms-typography-body">
+        <div className="webiny-pb-form-field webiny-pb-form-field--radio">
+            <label className="webiny-pb-form-field__label webiny-pb-typography-body">
                 <I18NValue value={props.field.label} />
             </label>
-            <div className="webiny-cms-form-field__radio-group">
+            <div className="webiny-pb-form-field__radio-group">
                 {props.field.options.map(option => {
                     return (
-                        <div className="webiny-cms-form-field__radio" key={option.value}>
+                        <div className="webiny-pb-form-field__radio" key={option.value}>
                             <input
                                 checked={value === option.value}
                                 onChange={() => onChange(option.value)}
                                 name={fieldId}
-                                className="webiny-cms-form-field__radio-input"
+                                className="webiny-pb-form-field__radio-input"
                                 type="radio"
                                 id={"radio-" + fieldId + option.value}
                                 value={option.value}
                             />
                             <label
                                 htmlFor={"radio-" + fieldId + option.value}
-                                className="webiny-cms-form-field__radio-label"
+                                className="webiny-pb-form-field__radio-label"
                             >
                                 {I18NValue({ value: option.label })}
                             </label>

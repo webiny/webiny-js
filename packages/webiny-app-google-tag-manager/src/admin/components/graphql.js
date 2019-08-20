@@ -19,12 +19,12 @@ const graphql = {
             }
         `,
     mutation: gql`
-            mutation updateSettings($data: GoogleTagManagerSettingsInput) {
-                googleTagManager {
-                    updateSettings(data: $data) ${fields}
-                }
+        mutation updateSettings($data: GtmSettingsInput) {
+            googleTagManager {
+                updateSettings(data: $data) ${fields}
             }
-        `
+        }
+    `
 };
 
 export default graphql;

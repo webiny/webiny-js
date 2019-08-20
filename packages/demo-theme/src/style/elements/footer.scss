@@ -1,5 +1,5 @@
-.webiny-cms-section-footer {
-  background-color: $webiny-cms-theme-background;
+.webiny-pb-section-footer {
+  background-color: $webiny-pb-theme-background;
   height: 100px;
   position: absolute;
   bottom: 0;
@@ -49,7 +49,7 @@
         margin-left: 10px;
         opacity: .5;
         transition: opacity .3s;
-        color: $webiny-cms-theme-on-background;
+        color: $webiny-pb-theme-on-background;
         &:hover{
           opacity: 1;
         }
@@ -66,8 +66,8 @@
 }
 
 // adjust some styles in case when we render the full layout inside the page editor
-.webiny-cms-editor-content-preview{
-  .webiny-cms-section-footer {
+.webiny-pb-editor-content-preview{
+  .webiny-pb-section-footer {
     padding: 0 10px;
     box-sizing: border-box;
     position: relative;

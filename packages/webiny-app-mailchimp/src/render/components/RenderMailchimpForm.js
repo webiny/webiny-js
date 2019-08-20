@@ -25,15 +25,15 @@ class RenderMailchimpForm extends React.Component<*, { processing: boolean }> {
         const { props } = this;
         const { element } = props;
         const selected = get(element, "data.settings.component") || "";
-        const component = getPlugins("cms-element-mailchimp-component").find(
-            cmp => cmp.name === selected
+        const component = getPlugins("pb-page-element-mailchimp-component").find(
+            cmp => cmp.componentName === selected
         );
 
         if (component) {
             const Component = component.component;
             const style = { width: "100%", ...get(props, "element.data.settings.style") };
             return (
-                <div style={style} className={"webiny-cms-element-mailchimp"}>
+                <div style={style} className={"webiny-pb-page-element-mailchimp"}>
                     <Mutation mutation={mutation}>
                         {update => (
                             <Form key={component.name}>

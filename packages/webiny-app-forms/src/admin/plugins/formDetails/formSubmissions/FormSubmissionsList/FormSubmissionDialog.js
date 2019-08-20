@@ -66,7 +66,6 @@ const FormSubmissionDialog = ({ formSubmission, onClose }: Props) => {
                                         field => field._id === id
                                     );
 
-                                    console.log(field)
                                     return (
                                         <div
                                             key={id}

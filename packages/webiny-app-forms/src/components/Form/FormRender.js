@@ -2,7 +2,7 @@
 // $FlowFixMe
 import React, { useEffect, useRef } from "react";
 import { get, cloneDeep } from "lodash";
-import { withCms } from "webiny-app-cms/context";
+import { withPageBuilder } from "webiny-app-page-builder/context";
 import { withApollo } from "react-apollo";
 import { getPlugins } from "webiny-plugins";
 import { I18NValue } from "webiny-app-i18n/components";
@@ -25,7 +25,7 @@ import type {
 } from "webiny-app-forms/types";
 
 const FormRender = compose(
-    withCms(),
+    withPageBuilder(),
     withApollo
 )((props: FormRenderComponentPropsType) => {
     const data = props.data;
@@ -145,7 +145,7 @@ const FormRender = compose(
     };
 
     // Get form layout, defined in theme.
-    let LayoutRenderComponent = get(props.cms, "theme.forms.layouts", []).find(
+    let LayoutRenderComponent = get(props.pageBuilder, "theme.forms.layouts", []).find(
         item => item.name === settings.layout.renderer
     );
 

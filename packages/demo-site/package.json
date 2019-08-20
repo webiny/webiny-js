@@ -12,7 +12,7 @@
     "react-router-dom": "^5.0.0",
     "url-search-params-polyfill": "^5.1.0",
     "webiny-app": "0.0.0",
-    "webiny-app-cms": "0.0.0",
+    "webiny-app-page-builder": "0.0.0",
     "webiny-app-cookie-policy": "0.0.0",
     "webiny-app-google-tag-manager": "0.0.0",
     "webiny-app-mailchimp": "0.0.0",

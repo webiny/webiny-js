@@ -10,43 +10,43 @@ export default [
         type: "graphql-schema",
         schema: {
             typeDefs: gql`
-                type GoogleTagManagerError {
+                type GtmError {
                     code: String
                     message: String
                     data: JSON
                 }
 
-                type GoogleTagManagerSettings {
+                type GtmSettings {
                     enabled: Boolean
                     code: String
                 }
 
-                type GoogleTagManagerSettingsResponse {
-                    data: GoogleTagManagerSettings
-                    error: GoogleTagManagerError
+                type GtmSettingsResponse {
+                    data: GtmSettings
+                    error: GtmError
                 }
 
-                input GoogleTagManagerSettingsInput {
+                input GtmSettingsInput {
                     enabled: Boolean
                     code: String
                 }
 
-                type GoogleTagManagerQuery {
-                    getSettings: GoogleTagManagerSettingsResponse
+                type GtmQuery {
+                    getSettings: GtmSettingsResponse
                 }
 
-                type GoogleTagManagerMutation {
+                type GtmMutation {
                     updateSettings(
-                        data: GoogleTagManagerSettingsInput
-                    ): GoogleTagManagerSettingsResponse
+                        data: GtmSettingsInput
+                    ): GtmSettingsResponse
                 }
 
                 extend type Query {
-                    googleTagManager: GoogleTagManagerQuery
+                    googleTagManager: GtmQuery
                 }
 
                 extend type Mutation {
-                    googleTagManager: GoogleTagManagerMutation
+                    googleTagManager: GtmMutation
                 }
             `,
             resolvers: {
@@ -56,21 +56,21 @@ export default [
                 Mutation: {
                     googleTagManager: dummyResolver
                 },
-                GoogleTagManagerQuery: {
+                GtmQuery: {
                     getSettings: resolveGetSettings("GoogleTagManagerSettings")
                 },
-                GoogleTagManagerMutation: {
+                GtmMutation: {
                     updateSettings: resolveUpdateSettings("GoogleTagManagerSettings")
                 }
             }
         },
         security: {
             shield: {
-                GoogleTagManagerQuery: {
-                    getSettings: hasScope("cms:settings")
+                GtmQuery: {
+                    getSettings: hasScope("pb:settings")
                 },
-                GoogleTagManagerMutation: {
-                    updateSettings: hasScope("cms:settings")
+                GtmMutation: {
+                    updateSettings: hasScope("pb:settings")
                 }
             }
         }

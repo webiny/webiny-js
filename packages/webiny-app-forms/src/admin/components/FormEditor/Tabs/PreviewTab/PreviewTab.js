@@ -7,7 +7,7 @@ import { Form } from "webiny-app-forms/components/Form";
 
 const formPreviewWrapper = css({
     padding: 40,
-    backgroundColor: "var(--webiny-cms-theme-surface) !important",
+    backgroundColor: "var(--webiny-pb-theme-surface) !important",
     margin: 40,
     boxSizing: "border-box"
 });

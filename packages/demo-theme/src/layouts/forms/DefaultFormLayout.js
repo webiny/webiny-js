@@ -57,7 +57,7 @@ const DefaultFormLayout: FormLayoutComponent = ({
         return (
             <div
                 key={field._id}
-                className={"webiny-cms-base-element-style webiny-cms-layout-column"}
+                className={"webiny-pb-base-page-element-style webiny-pb-layout-column"}
             >
                 <Bind name={field.fieldId} validators={field.validators}>
                     {bind => (
@@ -130,7 +130,7 @@ const DefaultFormLayout: FormLayoutComponent = ({
         return (
             <ReCaptcha>
                 {({ errorMessage }) => (
-                    <div className="webiny-cms-form-recaptcha">
+                    <div className="webiny-pb-form-recaptcha">
                         <Bind name={"reCaptcha"} validators={["required"]}>
                             {({ onChange, validation }) => (
                                 <>
@@ -159,14 +159,14 @@ const DefaultFormLayout: FormLayoutComponent = ({
         return (
             <TermsOfService>
                 {({ message, errorMessage, onChange }) => (
-                    <div className="webiny-cms-form-tos">
+                    <div className="webiny-pb-form-tos">
                         <Bind name={"tosAccepted"} validators={["required"]} afterChange={onChange}>
                             {({ onChange, value, validation }) => (
-                                <div className="webiny-cms-form-field webiny-cms-form-field--checkbox">
-                                    <div className="webiny-cms-form-field__checkbox-group">
-                                        <div className="webiny-cms-form-field__checkbox">
+                                <div className="webiny-pb-form-field webiny-pb-form-field--checkbox">
+                                    <div className="webiny-pb-form-field__checkbox-group">
+                                        <div className="webiny-pb-form-field__checkbox">
                                             <input
-                                                className="webiny-cms-form-field__checkbox-input"
+                                                className="webiny-pb-form-field__checkbox-input"
                                                 type={"checkbox"}
                                                 name="webiny-tos-checkbox"
                                                 id="webiny-tos-checkbox"
@@ -175,7 +175,7 @@ const DefaultFormLayout: FormLayoutComponent = ({
                                             />
                                             <label
                                                 htmlFor={"webiny-tos-checkbox"}
-                                                className="webiny-cms-form-field__checkbox-label"
+                                                className="webiny-pb-form-field__checkbox-label"
                                             >
                                                 <I18NValue value={message} />
                                             </label>
@@ -199,10 +199,10 @@ const DefaultFormLayout: FormLayoutComponent = ({
      */
     const renderSuccessMessage = () => {
         return (
-            <div className={"webiny-cms-base-element-style webiny-cms-layout-row"}>
-                <div className={"webiny-cms-base-element-style webiny-cms-layout-column"}>
-                    <div className="webiny-cms-form__success-message">
-                        <div className="webiny-cms-form-field__label webiny-cms-typography-h3">
+            <div className={"webiny-pb-base-page-element-style webiny-pb-layout-row"}>
+                <div className={"webiny-pb-base-page-element-style webiny-pb-layout-column"}>
+                    <div className="webiny-pb-form__success-message">
+                        <div className="webiny-pb-form-field__label webiny-pb-typography-h3">
                             <I18NValue value={formData.settings.successMessage} default="Thanks!" />
                         </div>
                     </div>
@@ -216,11 +216,11 @@ const DefaultFormLayout: FormLayoutComponent = ({
      */
     const renderSubmitButton = (submit, loading, tosAccepted, buttonLabel) => {
         return (
-            <div className="webiny-cms-form-submit-button">
+            <div className="webiny-pb-form-submit-button">
                 <button
                     className={
-                        "webiny-cms-element-button webiny-cms-element-button--primary" +
-                        (loading ? " webiny-cms-element-button--loading" : "")
+                        "webiny-pb-page-element-button webiny-pb-page-element-button--primary" +
+                        (loading ? " webiny-pb-element-button--loading" : "")
                     }
                     onClick={submit}
                     disabled={loading}
@@ -236,7 +236,7 @@ const DefaultFormLayout: FormLayoutComponent = ({
         /* We also pass the default values for all fields via the getDefaultValues callback. */
         <Form onSubmit={submitForm} data={getDefaultValues()}>
             {({ submit, Bind, data }) => (
-                <div className={"webiny-cms-form"}>
+                <div className={"webiny-pb-form"}>
                     {formSuccess ? (
                         renderSuccessMessage()
                     ) : (
@@ -247,7 +247,7 @@ const DefaultFormLayout: FormLayoutComponent = ({
                                     <div
                                         key={rowIndex}
                                         className={
-                                            "webiny-cms-base-element-style webiny-cms-layout-row"
+                                            "webiny-pb-base-page-element-style webiny-pb-layout-row"
                                         }
                                     >
                                         {/* render form fields */}

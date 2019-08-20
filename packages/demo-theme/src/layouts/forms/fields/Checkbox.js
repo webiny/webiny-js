@@ -31,16 +31,16 @@ const Checkbox = (props: Props) => {
     const fieldId: string = (props.field.fieldId: any);
 
     return (
-        <div className="webiny-cms-form-field webiny-cms-form-field--checkbox">
-            <label className="webiny-cms-form-field__label webiny-cms-typography-body">
+        <div className="webiny-pb-form-field webiny-pb-form-field--checkbox">
+            <label className="webiny-pb-form-field__label webiny-pb-typography-body">
                 <I18NValue value={props.field.label} />
             </label>
-            <div className="webiny-cms-form-field__checkbox-group">
+            <div className="webiny-pb-form-field__checkbox-group">
                 {props.field.options.map(option => (
-                    <div className="webiny-cms-form-field__checkbox" key={option.value}>
+                    <div className="webiny-pb-form-field__checkbox" key={option.value}>
                         <input
                             name={fieldId}
-                            className="webiny-cms-form-field__checkbox-input"
+                            className="webiny-pb-form-field__checkbox-input"
                             type="checkbox"
                             id={"checkbox-" + fieldId + option.value}
                             checked={checked({ option, value })}
@@ -48,7 +48,7 @@ const Checkbox = (props: Props) => {
                         />
                         <label
                             htmlFor={"checkbox-" + fieldId + option.value}
-                            className="webiny-cms-form-field__checkbox-label"
+                            className="webiny-pb-form-field__checkbox-label"
                         >
                             <I18NValue value={option.label} />
                         </label>

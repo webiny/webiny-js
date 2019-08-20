@@ -15,7 +15,7 @@
     "react-emotion": "^9.2.4",
     "recompose": "^0.27.1",
     "webiny-admin": "0.0.0",
-    "webiny-app-cms": "0.0.0",
+    "webiny-app-page-builder": "0.0.0",
     "webiny-app-security": "0.0.0",
     "webiny-form": "0.0.0",
     "webiny-plugins": "0.0.0",

@@ -14,8 +14,8 @@ const Textarea = (props: Props) => {
     const { onChange, value, validation } = props.bind;
 
     return (
-        <div className="webiny-cms-form-field webiny-cms-form-field--textarea">
-            <label className="webiny-cms-form-field__label webiny-cms-typography-body">
+        <div className="webiny-pb-form-field webiny-pb-form-field--textarea">
+            <label className="webiny-pb-form-field__label webiny-pb-typography-body">
                 <I18NValue value={props.field.label} />
             </label>
             <textarea
@@ -25,7 +25,7 @@ const Textarea = (props: Props) => {
                 rows={props.field.settings.rows ? props.field.settings.rows : 4}
                 name={props.field.fieldId}
                 id={props.field.fieldId}
-                className="webiny-cms-form-field__textarea"
+                className="webiny-pb-form-field__textarea"
             />
             <HelperMessage
                 isValid={validation.isValid}

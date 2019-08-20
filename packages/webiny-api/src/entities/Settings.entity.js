@@ -2,7 +2,9 @@
 import { Entity } from "webiny-entity";
 
 export const settingsFactory = ({ getUser }: Object) => {
-    class Settings extends Entity {
+    return class Settings extends Entity {
+        static classId = "Settings";
+        static storageClassId = "Settings";
         static key: string;
         key: string;
         data: Object;
@@ -29,9 +31,4 @@ export const settingsFactory = ({ getUser }: Object) => {
             return (settings: Settings | null);
         }
     }
-
-    Settings.classId = "Settings";
-    Settings.storageClassId = "Settings";
-
-    return Settings;
 };

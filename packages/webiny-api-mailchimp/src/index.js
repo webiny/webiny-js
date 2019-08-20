@@ -89,9 +89,9 @@ export default [
                     listLists: async (
                         _: any,
                         args: Object,
-                        { mailchimp: { entities } }: Object
+                        { getEntity }: Object
                     ) => {
-                        const { MailchimpSettings } = entities;
+                        const MailchimpSettings = getEntity("MailchimpSettings");
                         const settings = await MailchimpSettings.load();
                         if (!settings || !(await settings.get("data.apiKey"))) {
                             throw Error("Mailchimp API key not set.");
@@ -169,10 +169,10 @@ export default [
         security: {
             shield: {
                 MailchimpQuery: {
-                    getSettings: hasScope("cms:settings")
+                    getSettings: hasScope("pb:settings")
                 },
                 MailchimpMutation: {
-                    updateSettings: hasScope("cms:settings")
+                    updateSettings: hasScope("pb:settings")
                 }
             }
         }

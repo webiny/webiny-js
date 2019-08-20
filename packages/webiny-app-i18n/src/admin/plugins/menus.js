@@ -4,7 +4,7 @@ import { ReactComponent as I18NIcon } from "./../assets/icons/round-translate-24
 import { i18n } from "webiny-app/i18n";
 import { hasRoles } from "webiny-app-security";
 
-const t = i18n.namespace("Cms.Categories");
+const t = i18n.namespace("Pb.Categories");
 
 export default [
     {

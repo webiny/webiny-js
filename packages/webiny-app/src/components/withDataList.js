@@ -68,12 +68,12 @@ export const withDataList = (withDataListParams: Object): Function => {
                     setPerPage(perPage: number): void {
                         const preparedParams = {
                             ...dataListProps.__loadParams,
-                            perPage
+                            perPage: parseInt(perPage)
                         };
                         this.refresh(preparedParams);
                     },
                     setPage(page: number): void {
-                        const preparedParams = { ...dataListProps.__loadParams, page: page };
+                        const preparedParams = { ...dataListProps.__loadParams, page: parseInt(page) };
                         this.refresh(preparedParams);
                     },
                     setSearch(search: SearchParams | any): void {

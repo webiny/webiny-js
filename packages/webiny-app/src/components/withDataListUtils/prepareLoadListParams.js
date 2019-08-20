@@ -7,11 +7,11 @@ export default location => {
         const perPage = query.get("perPage");
 
         if (page) {
-            params.page = page;
+            params.page = parseInt(page);
         }
 
         if (perPage) {
-            params.perPage = perPage;
+            params.perPage = parseInt(perPage);
         }
 
         ["sort", "where", "search"].forEach(key => {

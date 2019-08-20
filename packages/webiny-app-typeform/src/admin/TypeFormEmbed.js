@@ -1,8 +1,8 @@
 // @flow
 import React from "react";
-import { connect } from "webiny-app-cms/editor/redux";
+import { connect } from "webiny-app-page-builder/editor/redux";
 import { compose } from "recompose";
-import { getElement } from "webiny-app-cms/editor/selectors";
+import { getElement } from "webiny-app-page-builder/editor/selectors";
 
 const TypeFormEmbed = (props: { element: Object }) => {
     const { source } = props.element.data;

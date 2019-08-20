@@ -4,7 +4,7 @@ import React, { Fragment } from "react";
 import { UiProvider } from "webiny-app/context/ui";
 import { registerPlugins, getPlugins } from "webiny-plugins";
 import { Theme as AdminTheme } from "webiny-admin";
-import { CmsProvider } from "webiny-app-cms/context";
+import { PageBuilderProvider } from "webiny-app-page-builder/context";
 import { Security } from "webiny-app-security/components";
 import { I18NProvider } from "webiny-app-i18n/components";
 import Login from "webiny-app-security/admin/views/Login";
@@ -24,7 +24,7 @@ const App = () => {
             <I18NProvider>
                 <Security>
                     {({ initialLoad, authenticated, notAuthenticated }) => (
-                        <CmsProvider theme={myTheme} isEditor>
+                        <PageBuilderProvider theme={myTheme} isEditor>
                             <AdminTheme>
                                 {initialLoad(<CircularProgress />)}
                                 {authenticated(
@@ -39,7 +39,7 @@ const App = () => {
                                 )}
                                 {notAuthenticated(<Login />)}
                             </AdminTheme>
-                        </CmsProvider>
+                        </PageBuilderProvider>
                     )}
                 </Security>
             </I18NProvider>

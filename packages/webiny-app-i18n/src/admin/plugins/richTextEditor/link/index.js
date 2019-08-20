@@ -1,5 +1,5 @@
 import React from "react";
-import { ReactComponent as LinkIcon } from "webiny-app-cms/editor/assets/icons/link.svg";
+import { ReactComponent as LinkIcon } from "webiny-app-page-builder/editor/assets/icons/link.svg";
 import LinkDialog from "./LinkDialog";
 import LinkTooltip from "./LinkTooltip";
 import type { I18NInputRichTextEditorPluginType } from "webiny-app-i18n/types";

@@ -9,7 +9,7 @@ import { css } from "react-emotion";
 import { Grid, Cell } from "webiny-ui/Grid";
 import { Typography } from "webiny-ui/Typography";
 import { withSnackbar } from "webiny-admin/components";
-import { withCms } from "webiny-app-cms/context";
+import { withPageBuilder } from "webiny-app-page-builder/context";
 import { AutoComplete } from "webiny-ui/AutoComplete";
 import { getPlugins } from "webiny-plugins";
 import { Form } from "webiny-form";
@@ -36,195 +36,184 @@ const enableMailchimpLink = css({
 
 const MailchimpElementAdvancedSettings = ({ Bind, submitApiKeyForm, loading }: Object) => {
     return (
-        <React.Fragment>
-            <Query
-                query={gql`
-                    {
-                        mailchimp {
-                            getSettings {
-                                data {
-                                    enabled
-                                    apiKey
-                                }
+        <Query
+            query={gql`
+                {
+                    mailchimp {
+                        getSettings {
+                            data {
+                                enabled
+                                apiKey
                             }
                         }
-                        mailchimp {
-                            listLists {
-                                data {
-                                    id
-                                    name
-                                }
+                        listLists {
+                            data {
+                                id
+                                name
                             }
                         }
                     }
-                `}
-            >
-                {settingsLists => {
-                    const { apiKey, enabled } =
-                        get(settingsLists.data, "mailchimp.getSettings.data") || {};
+                }
+            `}
+        >
+            {settingsLists => {
+                const { apiKey, enabled } =
+                    get(settingsLists.data, "mailchimp.getSettings.data") || {};
 
-                    return (
-                        <>
-                            <Grid>
-                                {(loading || settingsLists.loading) && <CircularProgress />}
-                                {apiKey && enabled ? (
-                                    <>
-                                        <Cell span={12}>
-                                            <Bind name={"settings.list"} validators={["required"]}>
-                                                {({ value: id, onChange }) => {
-                                                    const options = (
-                                                        get(
-                                                            settingsLists.data,
-                                                            "mailchimp.listLists.data"
-                                                        ) || []
-                                                    ).map(({ id, name }) => ({ id, name }));
+                return (
+                    <>
+                        <Grid>
+                            {(loading || settingsLists.loading) && <CircularProgress />}
+                            {apiKey && enabled ? (
+                                <>
+                                    <Cell span={12}>
+                                        <Bind name={"settings.list"} validators={["required"]}>
+                                            {({ value: id, onChange, ...rest }) => {
+                                                const options = (
+                                                    get(
+                                                        settingsLists.data,
+                                                        "mailchimp.listLists.data"
+                                                    ) || []
+                                                ).map(({ id, name }) => ({ id, name }));
 
-                                                    const value = options.find(
-                                                        item => item.id === id
-                                                    );
+                                                const value = options.find(item => item.id === id);
 
-                                                    return (
-                                                        <AutoComplete
-                                                            disabled={!apiKey}
-                                                            options={options}
-                                                            value={value}
-                                                            onChange={onChange}
-                                                            label={"Mailchimp list"}
-                                                        />
-                                                    );
-                                                }}
-                                            </Bind>
-                                        </Cell>
-                                        <Cell span={12}>
-                                            <Bind
-                                                name={"settings.component"}
-                                                validators={["required"]}
-                                            >
-                                                {({ onChange, value: name }) => {
-                                                    const options = getPlugins(
-                                                        "cms-element-mailchimp-component"
-                                                    ).map(({ name, title }) => {
-                                                        return {
-                                                            name,
-                                                            title
-                                                        };
-                                                    });
+                                                return (
+                                                    <AutoComplete
+                                                        disabled={!apiKey}
+                                                        options={options}
+                                                        value={value}
+                                                        onChange={onChange}
+                                                        label={"Mailchimp list"}
+                                                        {...rest}
+                                                    />
+                                                );
+                                            }}
+                                        </Bind>
+                                    </Cell>
+                                    <Cell span={12}>
+                                        <Bind name={"settings.component"} validators={["required"]}>
+                                            {({ onChange, value: name, ...rest }) => {
+                                                const options = getPlugins(
+                                                    "pb-page-element-mailchimp-component"
+                                                ).map(({ componentName, title }) => {
+                                                    return {
+                                                        name: componentName,
+                                                        title
+                                                    };
+                                                });
 
-                                                    const value = options.find(
-                                                        item => item.name === name
-                                                    );
+                                                const value = options.find(
+                                                    item => item.name === name
+                                                );
 
-                                                    return (
-                                                        <AutoComplete
-                                                            disabled={!apiKey}
-                                                            value={value}
-                                                            options={options}
-                                                            onChange={onChange}
-                                                            textProp="title"
-                                                            valueProp="name"
-                                                            label="Mailchimp component"
-                                                            description="Select a component that renders the signup form."
-                                                        />
-                                                    );
-                                                }}
-                                            </Bind>
-                                        </Cell>
-                                        <Cell span={12} className={formPreview}>
-                                            <span>
-                                                <Typography use={"overline"}>
-                                                    Form preview
-                                                </Typography>
-                                            </span>
-                                            <Bind name={"settings"}>
-                                                {({ value }) => (
-                                                    <div>
-                                                        <MailchimpElement
-                                                            element={{ settings: value }}
-                                                        />
-                                                    </div>
-                                                )}
-                                            </Bind>
-                                        </Cell>
-                                    </>
-                                ) : (
-                                    <>
-                                        {!apiKey ? (
-                                            <>
-                                                <Cell span={12}>
-                                                    Before continuing, please enter a{" "}
-                                                    <a
-                                                        target={"_blank"}
-                                                        href="https://mailchimp.com/help/about-api-keys/"
-                                                    >
-                                                        Mailchimp API key
-                                                    </a>
-                                                    .
-                                                </Cell>
-                                                <Cell span={12}>
-                                                    <Form
-                                                        onSubmit={data =>
-                                                            submitApiKeyForm({
-                                                                data,
-                                                                settingsLists
-                                                            })
-                                                        }
-                                                    >
-                                                        {({ Bind, submit }) => (
-                                                            <>
-                                                                <Cell span={12}>
-                                                                    <Bind
-                                                                        validators={["required"]}
-                                                                        name={"apiKey"}
-                                                                    >
-                                                                        <Input label="API key" />
-                                                                    </Bind>
-                                                                </Cell>
-                                                                <Cell
-                                                                    span={12}
-                                                                    className={
-                                                                        saveApiKeyButtonWrapper
-                                                                    }
+                                                return (
+                                                    <AutoComplete
+                                                        disabled={!apiKey}
+                                                        value={value}
+                                                        options={options}
+                                                        onChange={onChange}
+                                                        textProp="title"
+                                                        valueProp="name"
+                                                        label="Mailchimp component"
+                                                        description="Select a component that renders the signup form."
+                                                        {...rest}
+                                                    />
+                                                );
+                                            }}
+                                        </Bind>
+                                    </Cell>
+                                    <Cell span={12} className={formPreview}>
+                                        <span>
+                                            <Typography use={"overline"}>Form preview</Typography>
+                                        </span>
+                                        <Bind name={"settings"}>
+                                            {({ value }) => (
+                                                <div>
+                                                    <MailchimpElement
+                                                        element={{ settings: value }}
+                                                    />
+                                                </div>
+                                            )}
+                                        </Bind>
+                                    </Cell>
+                                </>
+                            ) : (
+                                <>
+                                    {!apiKey ? (
+                                        <>
+                                            <Cell span={12}>
+                                                Before continuing, please enter a{" "}
+                                                <a
+                                                    target={"_blank"}
+                                                    href="https://mailchimp.com/help/about-api-keys/"
+                                                >
+                                                    Mailchimp API key
+                                                </a>
+                                                .
+                                            </Cell>
+                                            <Cell span={12}>
+                                                <Form
+                                                    onSubmit={data =>
+                                                        submitApiKeyForm({
+                                                            data,
+                                                            settingsLists
+                                                        })
+                                                    }
+                                                >
+                                                    {({ Bind, submit }) => (
+                                                        <>
+                                                            <Cell span={12}>
+                                                                <Bind
+                                                                    validators={["required"]}
+                                                                    name={"apiKey"}
                                                                 >
-                                                                    <ButtonPrimary onClick={submit}>
-                                                                        Save API key
-                                                                    </ButtonPrimary>
-                                                                </Cell>
-                                                            </>
-                                                        )}
-                                                    </Form>
-                                                </Cell>
-                                            </>
-                                        ) : (
-                                            <>
-                                                <Cell span={12}>
-                                                    Before continuing, please{" "}
-                                                    <a
-                                                        className={enableMailchimpLink}
-                                                        onClick={() =>
-                                                            submitApiKeyForm({
-                                                                settingsLists
-                                                            })
-                                                        }
-                                                    >
-                                                        enable
-                                                    </a>{" "}
-                                                    the Mailchimp integration.
-                                                </Cell>
-                                            </>
-                                        )}
-                                    </>
-                                )}
-                            </Grid>
-                        </>
-                    );
-                }}
-            </Query>
-        </React.Fragment>
+                                                                    <Input label="API key" />
+                                                                </Bind>
+                                                            </Cell>
+                                                            <Cell
+                                                                span={12}
+                                                                className={saveApiKeyButtonWrapper}
+                                                            >
+                                                                <ButtonPrimary onClick={submit}>
+                                                                    Save API key
+                                                                </ButtonPrimary>
+                                                            </Cell>
+                                                        </>
+                                                    )}
+                                                </Form>
+                                            </Cell>
+                                        </>
+                                    ) : (
+                                        <>
+                                            <Cell span={12}>
+                                                Before continuing, please{" "}
+                                                <a
+                                                    className={enableMailchimpLink}
+                                                    onClick={() =>
+                                                        submitApiKeyForm({
+                                                            settingsLists
+                                                        })
+                                                    }
+                                                >
+                                                    enable
+                                                </a>{" "}
+                                                the Mailchimp integration.
+                                            </Cell>
+                                        </>
+                                    )}
+                                </>
+                            )}
+                        </Grid>
+                    </>
+                );
+            }}
+        </Query>
     );
 };
 
 export default compose(
-    withCms(),
+    withPageBuilder(),
     withSnackbar(),
     withState("loading", "setLoading", false),
     graphql(settingsGql.mutation, { name: "updateApiKey" }),

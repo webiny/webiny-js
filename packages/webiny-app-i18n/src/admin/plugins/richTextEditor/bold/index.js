@@ -1,7 +1,7 @@
 // @flow
 import * as React from "react";
 import { css } from "emotion";
-import { ReactComponent as FormatBoldIcon } from "webiny-app-cms/editor/assets/icons/format_bold.svg";
+import { ReactComponent as FormatBoldIcon } from "webiny-app-page-builder/editor/assets/icons/format_bold.svg";
 import type { Change } from "slate";
 import { isKeyHotkey } from "is-hotkey";
 const isBoldHotkey = isKeyHotkey("mod+b");

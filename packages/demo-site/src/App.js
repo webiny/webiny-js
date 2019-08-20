@@ -2,7 +2,7 @@
 import { hot } from "react-hot-loader";
 import React from "react";
 import { registerPlugins, getPlugins } from "webiny-plugins";
-import { CmsProvider } from "webiny-app-cms/context";
+import { PageBuilderProvider } from "webiny-app-page-builder/context";
 import { UiProvider } from "webiny-app/context/ui";
 import plugins from "./plugins";
 import myTheme from "demo-theme";
@@ -25,11 +25,11 @@ const App = () => {
     return (
         <I18NProvider>
             <UiProvider>
-                <CmsProvider theme={myTheme} defaults={defaults}>
+                <PageBuilderProvider theme={myTheme} defaults={defaults}>
                     {getPlugins("route").map((pl: Object) =>
                         React.cloneElement(pl.route, { key: pl.name, exact: true })
                     )}
-                </CmsProvider>
+                </PageBuilderProvider>
             </UiProvider>
         </I18NProvider>
     );

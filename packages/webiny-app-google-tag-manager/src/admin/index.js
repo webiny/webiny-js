@@ -8,7 +8,7 @@ import type { SettingsPluginType } from "webiny-admin/types";
 import { hasRoles } from "webiny-app-security";
 import { SecureRoute } from "webiny-app-security/components";
 
-const roles = ["cms-settings"];
+const roles = ["pb-settings"];
 
 export default ([
     {

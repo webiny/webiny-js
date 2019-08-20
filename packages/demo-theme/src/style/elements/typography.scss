@@ -9,9 +9,9 @@ $leading:$baseLineHeight * 1rem !default;
 $scale:1.414 !default;
 
 
-body, .webiny-cms-page-document{
+body, .webiny-pb-page-document{
   /* Change default typefaces here */
-  font-family: unquote($webiny-cms-theme-typography-secondary-font-family);
+  font-family: unquote($webiny-pb-theme-typography-secondary-font-family);
   font-size: $baseFontSize / 16 * 100%;
   // Make everything look a little nicer in webkit
   -webkit-font-smoothing: antialiased;
@@ -26,7 +26,7 @@ em{
 }
 
 a{
-  color: $webiny-cms-theme-primary;
+  color: $webiny-pb-theme-primary;
   text-decoration: none;
   &:hover{
     text-decoration: underline;
@@ -39,14 +39,14 @@ blockquote {
   margin-bottom: $leading;
 }
 
-.webiny-cms-typography-h1,
-.webiny-cms-typography-h2,
-.webiny-cms-typography-h3,
-.webiny-cms-typography-h4,
-.webiny-cms-typography-h5,
-.webiny-cms-typography-h6{
-  font-family: unquote($webiny-cms-theme-typography-secondary-font-family);
-  color: $webiny-cms-theme-text-primary;
+.webiny-pb-typography-h1,
+.webiny-pb-typography-h2,
+.webiny-pb-typography-h3,
+.webiny-pb-typography-h4,
+.webiny-pb-typography-h5,
+.webiny-pb-typography-h6{
+  font-family: unquote($webiny-pb-theme-typography-secondary-font-family);
+  color: $webiny-pb-theme-text-primary;
   -moz-osx-font-smoothing: grayscale;
   -webkit-font-smoothing: antialiased;
   text-decoration: inherit;
@@ -56,7 +56,7 @@ blockquote {
   line-height: 2rem;
 }
 
-.webiny-cms-typography-h1{
+.webiny-pb-typography-h1{
   font-weight: 300;
   letter-spacing: -0.01562em;
   font-size: 3 * $scale * 1rem;
@@ -64,7 +64,7 @@ blockquote {
   margin-top: 2 * $leading;
 }
 
-.webiny-cms-typography-h2{
+.webiny-pb-typography-h2{
   font-weight: 300;
   letter-spacing: -0.00833em;
   font-size: 2 * $scale * 1rem;
@@ -72,32 +72,32 @@ blockquote {
   margin-top: 2 * $leading;
 }
 
-.webiny-cms-typography-h3{
+.webiny-pb-typography-h3{
   font-size: 1 * $scale * 1rem;
   font-weight: 400;
 }
 
-.webiny-cms-typography-h4{
+.webiny-pb-typography-h4{
   font-size: $scale / 1.5 * 1rem;
   font-weight: 400;
   letter-spacing: 0.00735em;
 }
 
-.webiny-cms-typography-h5{
+.webiny-pb-typography-h5{
   font-size: $scale / 2 * 1rem;
   font-weight: 400;
 }
 
-.webiny-cms-typography-h6{
+.webiny-pb-typography-h6{
   font-size: $scale / 3 * 1rem;
   font-weight: 500;
   letter-spacing: 0.0125em;
 }
 
-.webiny-cms-typography-body{
+.webiny-pb-typography-body{
   line-height: $leading;
   margin-top: $leading;
-  color: $webiny-cms-theme-text-primary;
+  color: $webiny-pb-theme-text-primary;
   -moz-osx-font-smoothing: grayscale;
   -webkit-font-smoothing: antialiased;
   font-size: 1rem;
@@ -108,19 +108,19 @@ blockquote {
   margin-bottom: 0;
 }
 
-.webiny-cms-typography-unordered-list{
+.webiny-pb-typography-unordered-list{
   list-style: disc;
 }
 
-.webiny-cms-typography-ordered-list{
+.webiny-pb-typography-ordered-list{
   list-style: decimal;
 }
 
-.webiny-cms-typography-ordered-list,
-.webiny-cms-typography-unordered-list{
+.webiny-pb-typography-ordered-list,
+.webiny-pb-typography-unordered-list{
   margin-top: $leading;
   margin-bottom: $leading;
-  color: $webiny-cms-theme-text-primary;
+  color: $webiny-pb-theme-text-primary;
   -moz-osx-font-smoothing: grayscale;
   -webkit-font-smoothing: antialiased;
   font-size: 1rem;
@@ -140,29 +140,29 @@ blockquote {
   }
 }
 
-.webiny-cms-typography-body,
-.webiny-cms-typography-ordered-list,
-.webiny-cms-typography-unordered-list{
+.webiny-pb-typography-body,
+.webiny-pb-typography-ordered-list,
+.webiny-pb-typography-unordered-list{
   a{
-    color: $webiny-cms-theme-primary;
+    color: $webiny-pb-theme-primary;
     &:hover{
       opacity: 0.8;
     }
   }
 }
 
-.webiny-cms-typography-code{
+.webiny-pb-typography-code{
   padding: 0.2em 0.4em;
   margin: 0;
   font-size: 90%;
-  background-color: $webiny-cms-theme-on-background;
-  color: $webiny-cms-theme-background;
+  background-color: $webiny-pb-theme-on-background;
+  color: $webiny-pb-theme-background;
   border-radius: 3px;
 }
 
-.webiny-cms-typography-description{
-  font-family: unquote($webiny-cms-theme-typography-primary-font-family);
-  color: $webiny-cms-theme-text-secondary;
+.webiny-pb-typography-description{
+  font-family: unquote($webiny-pb-theme-typography-primary-font-family);
+  color: $webiny-pb-theme-text-secondary;
   -moz-osx-font-smoothing: grayscale;
   -webkit-font-smoothing: antialiased;
   font-size: 0.8rem;
@@ -171,17 +171,17 @@ blockquote {
   letter-spacing: 0.03125em;
 }
 
-.webiny-cms-typography--white{
+.webiny-pb-typography--white{
   color: #fff;
 }
 
-.webiny-cms-typography--primary{
-  color: $webiny-cms-theme-primary;
+.webiny-pb-typography--primary{
+  color: $webiny-pb-theme-primary;
 }
 
 // force center align on mobile
 @include mobile{
-  .webiny-cms-element-text, .webiny-cms-element-icon{
+  .webiny-pb-page-element-text, .webiny-pb-page-element-icon{
     text-align: center !important;
     > div > *{
       text-align: center !important;
