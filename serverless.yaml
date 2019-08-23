@@ -34,8 +34,8 @@ custom:
         name: webiny_sls
 
 functions:
-  demo-api-gateway:
-    handler: packages/demo-api-gateway/build/handler.handler
+  api-gateway:
+    handler: examples/functions/api-gateway/build/handler.handler
     environment:
       FUNCTIONS_HOST: ${self:custom.webiny.${self:custom.stage}.functionsHost}
       MONGODB_SERVER: ${self:custom.webiny.${self:custom.stage}.database.server}
@@ -47,8 +47,8 @@ functions:
           path: /function/api/
           method: any
           cors: true
-  demo-service-files:
-    handler: packages/demo-service-files/build/handler.handler
+  api-service-files:
+    handler: examples/functions/api-service-files/build/handler.handler
     environment:
       MONGODB_SERVER: ${self:custom.webiny.${self:custom.stage}.database.server}
       MONGO_HTTP_SERVER: ${self:custom.webiny.${self:custom.stage}.database.httpServer}
@@ -58,8 +58,8 @@ functions:
       - http:
           path: /function/files/
           method: any
-  demo-service-security:
-    handler: packages/demo-service-security/build/handler.handler
+  api-service-security:
+    handler: examples/functions/api-service-security/build/handler.handler
     environment:
       MONGODB_SERVER: ${self:custom.webiny.${self:custom.stage}.database.server}
       MONGO_HTTP_SERVER: ${self:custom.webiny.${self:custom.stage}.database.httpServer}
@@ -69,8 +69,8 @@ functions:
       - http:
           path: /function/security/
           method: any
-  demo-service-page-builder:
-    handler: packages/demo-service-page-builder/build/handler.handler
+  api-service-page-builder:
+    handler: examples/functions/api-service-page-builder/build/handler.handler
     environment:
       MONGODB_SERVER: ${self:custom.webiny.${self:custom.stage}.database.server}
       MONGO_HTTP_SERVER: ${self:custom.webiny.${self:custom.stage}.database.httpServer}
@@ -80,18 +80,18 @@ functions:
       - http:
           path: /function/page-builder/
           method: any
-  demo-files:
+  files:
     # This function handles local file uploads
-    handler: packages/demo-files/build/handler.handler
+    handler: examples/functions/files/build/handler.handler
     events:
       - http:
           path: /files/{key+}
           method: get
     package:
       include:
-        - packages/demo-files/build/handler.jwtSecret
-  demo-service-i18n:
-    handler: packages/demo-service-i18n/build/handler.handler
+        - packages/files/build/handler.jwtSecret
+  api-service-i18n:
+    handler: examples/functions/api-service-i18n/build/handler.handler
     environment:
       MONGODB_SERVER: ${self:custom.webiny.${self:custom.stage}.database.server}
       MONGODB_DB_NAME: ${self:custom.webiny.${self:custom.stage}.database.name}
@@ -100,8 +100,8 @@ functions:
       - http:
           path: /function/i18n/
           method: any
-  demo-service-forms:
-    handler: packages/demo-service-forms/build/handler.handler
+  api-service-forms:
+    handler: examples/functions/api-service-forms/build/handler.handler
     environment:
       MONGODB_SERVER: ${self:custom.webiny.${self:custom.stage}.database.server}
       MONGODB_DB_NAME: ${self:custom.webiny.${self:custom.stage}.database.name}

@@ -1,0 +1,91 @@
+name: webiny-graphql-api
+
+gateway:
+  component: '../node_modules/@webiny/serverless-function'
+  inputs:
+    description: API Gateway
+    code: ./api/functions/api-gateway/build
+    handler: handler.handler
+    root: ./api/functions/api-gateway
+    hook: yarn build:deploy
+    env:
+      STAGE: __wby_inject__
+      FUNCTIONS_HOST: https://nh988s3eqb.execute-api.us-east-1.amazonaws.com/dev
+files:
+  component: '../node_modules/@webiny/serverless-function'
+  inputs:
+    code: ./api/functions/files-service/build
+    handler: handler.handler
+    root: ./api/functions/files-service
+    hook: yarn build:deploy
+    env:
+      MONGODB_SERVER: __wby_inject__
+      MONGODB_DB_NAME: __wby_inject__
+      WEBINY_JWT_SECRET: __wby_inject__
+security:
+  component: '../node_modules/@webiny/serverless-function'
+  inputs:
+    code: ./api/functions/security-service/build
+    handler: handler.handler
+    root: ./api/functions/security-service
+    hook: yarn build:deploy
+    env:
+      MONGODB_SERVER: __wby_inject__
+      MONGODB_DB_NAME: __wby_inject__
+      WEBINY_JWT_SECRET: __wby_inject__
+pageBuilder:
+  component: '../node_modules/@webiny/serverless-function'
+  inputs:
+    code: ./api/functions/page-builder-service/build
+    handler: handler.handler
+    root: ./api/functions/page-builder-service
+    hook: yarn build:deploy
+    env:
+      MONGODB_SERVER: __wby_inject__
+      MONGODB_DB_NAME: __wby_inject__
+      WEBINY_JWT_SECRET: __wby_inject__
+
+site:
+  component: '@serverless/function'
+  inputs:
+    code: ./apps/site/build
+    handler: handler.handler
+    name: webiny-site
+    description: Webiny Site
+
+admin:
+  component: '@serverless/function'
+  inputs:
+    code: ./apps/admin/build
+    handler: handler.handler
+    name: webiny-admin
+    description: Webiny Admin
+
+api:
+  component: '@serverless/api'
+  inputs:
+    endpoints:
+      - path: /function/api
+        method: ANY
+        function: ${gateway}
+      - path: /function/files
+        method: ANY
+        function: ${files}
+      - path: /function/security
+        method: ANY
+        function: ${security}
+      - path: /function/page-builder
+        method: ANY
+        function: ${pageBuilder}
+      - path: /admin/{key+}
+        method: ANY
+        function: ${admin}
+      - path: /admin
+        method: ANY
+        function: ${admin}
+      - path: /{key+}
+        method: ANY
+        function: ${site}
+      - path: /
+        method: ANY
+        function: ${site}

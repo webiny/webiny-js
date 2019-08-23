@@ -10,9 +10,14 @@ const nodeExternals = require("webpack-node-externals");
  * and sls-offline will not run out of memory on subsequent re-requires of webpack bundles.
  */
 
-module.exports = () => {
+module.exports = (opts = {}) => {
+    let { whitelist = [], ...rest } = opts;
+
+    whitelist = Array.isArray(whitelist) ? whitelist : [];
+
     return nodeExternals({
         // This means "add matching packages to the bundle"
-        whitelist: [/^webiny/, /^@webiny/, /^demo/]
+        whitelist: [/^webiny/, /^@webiny/, ...whitelist],
+        ...rest
     });
 };

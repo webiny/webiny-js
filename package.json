@@ -2,7 +2,9 @@
   "private": true,
   "workspaces": {
     "packages": [
-      "packages/*"
+      "packages/*",
+      "examples/functions/*",
+      "examples/apps/*"
     ],
     "nohoist": [
       "**/inquirer/**",
@@ -105,6 +107,7 @@
     "targz": "^1.0.1",
     "tcp-port-used": "^1.0.1",
     "verdaccio": "^3.11.6",
+    "webpack": "^4.39.2",
     "write-pkg": "^3.2.0",
     "yargs": "^12.0.1"
   },

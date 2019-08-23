@@ -1,0 +1,11 @@
+{
+  "name": "api-gateway",
+  "version": "1.0.0",
+  "dependencies": {
+    "@apollo/gateway": "^0.6.12",
+    "apollo-server-lambda": "^2.6.9"
+  },
+  "scripts": {
+    "build": "babel src -d build --source-maps --copy-files"
+  }
+}
