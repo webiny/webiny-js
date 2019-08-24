@@ -1,6 +1,6 @@
 {
   "name": "@webiny/entity",
-  "version": "0.0.0",
+  "version": "1.0.0-next.0",
   "main": "index.js",
   "repository": {
     "type": "git",
@@ -26,18 +26,18 @@
   "license": "MIT",
   "dependencies": {
     "@babel/runtime": "^7.0.0",
-    "lodash": "^4.17.4",
-    "@webiny/model": "0.0.0"
+    "@webiny/model": "^1.0.0-next.0",
+    "lodash": "^4.17.4"
   },
   "devDependencies": {
-    "chai": "^3.5.0",
     "@babel/cli": "^7.0.0",
     "@babel/core": "^7.0.0",
-    "@babel/preset-env": "^7.0.0",
-    "@babel/preset-flow": "^7.0.0",
     "@babel/plugin-proposal-object-rest-spread": "^7.0.0",
     "@babel/plugin-transform-runtime": "^7.0.0",
+    "@babel/preset-env": "^7.0.0",
+    "@babel/preset-flow": "^7.0.0",
     "babel-plugin-lodash": "^3.3.4",
+    "chai": "^3.5.0",
     "sinon": "^4.2.0"
   },
   "publishConfig": {

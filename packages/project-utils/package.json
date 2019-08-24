@@ -1,6 +1,6 @@
 {
   "name": "@webiny/project-utils",
-  "version": "1.0.0",
+  "version": "1.0.0-next.0",
   "main": "index.js",
   "description": "A collection of utilities for Webiny project.",
   "repository": {
@@ -16,8 +16,8 @@
     "@rescripts/utilities": "^0.0.5",
     "get-yarn-workspaces": "^1.0.2",
     "lodash.get": "^4.4.2",
-    "lodash.set": "^4.3.2",
-    "lodash.isobject": "^3.0.2"
+    "lodash.isobject": "^3.0.2",
+    "lodash.set": "^4.3.2"
   },
   "license": "MIT",
   "scripts": {

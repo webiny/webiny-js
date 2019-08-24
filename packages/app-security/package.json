@@ -1,6 +1,6 @@
 {
   "name": "@webiny/app-security",
-  "version": "0.0.0",
+  "version": "1.0.0-next.0",
   "main": "index.js",
   "repository": {
     "type": "git",
@@ -14,17 +14,17 @@
   "license": "MIT",
   "dependencies": {
     "@babel/runtime": "^7.0.0",
+    "@webiny/app": "^1.0.0-next.0",
+    "@webiny/form": "^1.0.0-next.0",
+    "@webiny/plugins": "^1.0.0-next.0",
+    "@webiny/ui": "^1.0.0-next.0",
     "dot-prop-immutable": "^1.4.0",
     "graphql-tag": "^2.10.1",
     "lodash": "^4.17.11",
     "react-apollo": "^2.5.8",
     "react-helmet": "^5.2.0",
     "react-router-dom": "^5.0.0",
-    "recompose": "^0.27.1",
-    "@webiny/app": "0.0.0",
-    "@webiny/form": "0.0.0",
-    "@webiny/plugins": "0.0.0",
-    "@webiny/ui": "0.0.0"
+    "recompose": "^0.27.1"
   },
   "devDependencies": {
     "@babel/cli": "^7.0.0",

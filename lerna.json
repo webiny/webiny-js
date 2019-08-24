@@ -5,7 +5,7 @@
   "version": "independent",
   "command": {
     "version": {
-      "allowBranch": "master",
+      "allowBranch": ["master", "refactor/scoped-packages"],
       "conventionalCommits": true,
       "message": "New release :tada: :rocket:"
     },
