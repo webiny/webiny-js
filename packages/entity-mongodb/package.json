@@ -1,6 +1,6 @@
 {
   "name": "@webiny/entity-mongodb",
-  "version": "1.0.0-next.0",
+  "version": "1.0.0-next.1",
   "main": "src/index.js",
   "repository": {
     "type": "git",
@@ -15,7 +15,7 @@
   "license": "MIT",
   "dependencies": {
     "@babel/runtime": "^7.0.0",
-    "@webiny/entity": "^1.0.0-next.0",
+    "@webiny/entity": "^1.0.0-next.1",
     "lodash": "^4.17.4",
     "mdbid": "^1.0.0"
   },
@@ -23,7 +23,7 @@
     "mongodb": "^3.1.13"
   },
   "devDependencies": {
-    "@webiny/model": "^1.0.0-next.0",
+    "@webiny/model": "^1.0.0-next.1",
     "chai": "^3.5.0",
     "sinon": "^4.2.0"
   },

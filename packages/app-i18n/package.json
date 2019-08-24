@@ -1,6 +1,6 @@
 {
   "name": "@webiny/app-i18n",
-  "version": "1.0.0-next.0",
+  "version": "1.0.0-next.1",
   "main": "index.js",
   "repository": {
     "type": "git",
@@ -14,10 +14,10 @@
   "license": "MIT",
   "dependencies": {
     "@babel/runtime": "^7.0.0",
-    "@webiny/app": "^1.0.0-next.0",
-    "@webiny/form": "^1.0.0-next.0",
-    "@webiny/plugins": "^1.0.0-next.0",
-    "@webiny/ui": "^1.0.0-next.0",
+    "@webiny/app": "^1.0.0-next.1",
+    "@webiny/form": "^1.0.0-next.1",
+    "@webiny/plugins": "^1.0.0-next.1",
+    "@webiny/ui": "^1.0.0-next.1",
     "dot-prop-immutable": "^1.4.0",
     "graphql-tag": "^2.10.1",
     "lodash": "^4.17.11",

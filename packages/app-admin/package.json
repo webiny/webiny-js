@@ -1,6 +1,6 @@
 {
   "name": "@webiny/app-admin",
-  "version": "1.0.0-next.0",
+  "version": "1.0.0-next.1",
   "main": "index.js",
   "description": "A collection of plugins that together form a complete admin interface, customizable and extensible with Webiny apps and plugins.",
   "repository": {
@@ -12,10 +12,10 @@
   "dependencies": {
     "@babel/runtime": "^7.0.0",
     "@svgr/webpack": "^4.1.0",
-    "@webiny/app": "^1.0.0-next.0",
-    "@webiny/form": "^1.0.0-next.0",
-    "@webiny/plugins": "^1.0.0-next.0",
-    "@webiny/ui": "^1.0.0-next.0",
+    "@webiny/app": "^1.0.0-next.1",
+    "@webiny/form": "^1.0.0-next.1",
+    "@webiny/plugins": "^1.0.0-next.1",
+    "@webiny/ui": "^1.0.0-next.1",
     "bytes": "^3.1.0",
     "classnames": "^2.2.6",
     "dataurl-to-blob": "^0.0.1",
