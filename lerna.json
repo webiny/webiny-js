@@ -5,6 +5,8 @@
   "version": "independent",
   "command": {
     "version": {
+      "preid": "next",
+      "ignoreChanges": ["scripts/**", ",**/__fixtures__/**", "**/__tests__/**", "**/*.md"],
       "allowBranch": ["master", "refactor/scoped-packages"],
       "conventionalCommits": true,
       "message": "New release :tada: :rocket:"
