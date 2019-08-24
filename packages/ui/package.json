@@ -1,6 +1,6 @@
 {
   "name": "@webiny/ui",
-  "version": "0.0.0",
+  "version": "1.0.0",
   "main": "index.js",
   "repository": {
     "type": "git",
@@ -81,8 +81,8 @@
     "node-sass": "^4.9.3",
     "raw-loader": "^0.5.1",
     "sass-loader": "^7.1.0",
-    "@webiny/form": "0.0.0",
-    "@webiny/storybook-utils": "0.0.0",
+    "@webiny/form": "1.0.0",
+    "@webiny/storybook-utils": "1.0.0",
     "jest-dom": "^3.0.0",
     "react-testing-library": "^5.2.0"
   },

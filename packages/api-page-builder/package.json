@@ -1,6 +1,6 @@
 {
   "name": "@webiny/api-page-builder",
-  "version": "0.0.0",
+  "version": "1.0.0",
   "main": "index.js",
   "repository": {
     "type": "git",
@@ -15,8 +15,8 @@
     "fs-extra": "^7.0.1",
     "mdbid": "^1.0.0",
     "request": "^2.88.0",
-    "@webiny/api": "0.0.0",
-    "@webiny/plugins": "0.0.0"
+    "@webiny/api": "1.0.0",
+    "@webiny/plugins": "1.0.0"
   },
   "devDependencies": {
     "@babel/cli": "^7.0.0",

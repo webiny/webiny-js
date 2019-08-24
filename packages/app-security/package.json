@@ -1,6 +1,6 @@
 {
   "name": "@webiny/app-security",
-  "version": "0.0.0",
+  "version": "1.0.0",
   "main": "index.js",
   "repository": {
     "type": "git",
@@ -21,10 +21,10 @@
     "react-helmet": "^5.2.0",
     "react-router-dom": "^5.0.0",
     "recompose": "^0.27.1",
-    "@webiny/app": "0.0.0",
-    "@webiny/form": "0.0.0",
-    "@webiny/plugins": "0.0.0",
-    "@webiny/ui": "0.0.0"
+    "@webiny/app": "1.0.0",
+    "@webiny/form": "1.0.0",
+    "@webiny/plugins": "1.0.0",
+    "@webiny/ui": "1.0.0"
   },
   "devDependencies": {
     "@babel/cli": "^7.0.0",

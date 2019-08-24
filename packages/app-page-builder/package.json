@@ -1,6 +1,6 @@
 {
   "name": "@webiny/app-page-builder",
-  "version": "0.0.0",
+  "version": "1.0.0",
   "main": "index.js",
   "repository": {
     "type": "git",
@@ -57,12 +57,12 @@
     "timeago-react": "^2.0.0",
     "uniqid": "^5.0.3",
     "warning": "^4.0.2",
-    "@webiny/app-admin": "0.0.0",
-    "@webiny/app": "0.0.0",
-    "@webiny/app-security": "0.0.0",
-    "@webiny/form": "0.0.0",
-    "@webiny/plugins": "0.0.0",
-    "@webiny/ui": "0.0.0"
+    "@webiny/app-admin": "1.0.0",
+    "@webiny/app": "1.0.0",
+    "@webiny/app-security": "1.0.0",
+    "@webiny/form": "1.0.0",
+    "@webiny/plugins": "1.0.0",
+    "@webiny/ui": "1.0.0"
   },
   "devDependencies": {
     "@babel/cli": "^7.0.0",

@@ -1,6 +1,6 @@
 {
   "name": "@webiny/api-forms",
-  "version": "0.0.0",
+  "version": "1.0.0",
   "main": "index.js",
   "repository": {
     "type": "git",
@@ -20,8 +20,8 @@
     "lodash": "^4.17.11",
     "mdbid": "^1.0.0",
     "request": "^2.88.0",
-    "@webiny/api": "0.0.0",
-    "@webiny/plugins": "0.0.0",
+    "@webiny/api": "1.0.0",
+    "@webiny/plugins": "1.0.0",
     "got": "^9.6.0"
   },
   "devDependencies": {

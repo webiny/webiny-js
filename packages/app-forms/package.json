@@ -1,6 +1,6 @@
 {
   "name": "@webiny/app-forms",
-  "version": "0.0.0",
+  "version": "1.0.0",
   "main": "index.js",
   "repository": {
     "type": "git",
@@ -28,9 +28,9 @@
     "react-loadable": "^5.5.0",
     "recompose": "^0.27.1",
     "shortid": "^2.2.14",
-    "@webiny/form": "0.0.0",
-    "@webiny/plugins": "0.0.0",
-    "@webiny/ui": "0.0.0"
+    "@webiny/form": "1.0.0",
+    "@webiny/plugins": "1.0.0",
+    "@webiny/ui": "1.0.0"
   },
   "devDependencies": {
     "@babel/cli": "^7.0.0",

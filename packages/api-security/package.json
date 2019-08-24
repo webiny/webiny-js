@@ -1,6 +1,6 @@
 {
   "name": "@webiny/api-security",
-  "version": "0.0.0",
+  "version": "1.0.0",
   "main": "index.js",
   "repository": {
     "type": "git",
@@ -24,7 +24,7 @@
     "jsonwebtoken": "^8.2.2",
     "lodash": "^4.17.4",
     "md5": "^2.2.1",
-    "@webiny/plugins": "0.0.0"
+    "@webiny/plugins": "1.0.0"
   },
   "devDependencies": {
     "@babel/cli": "^7.0.0",

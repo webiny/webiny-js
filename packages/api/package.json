@@ -1,6 +1,6 @@
 {
   "name": "@webiny/api",
-  "version": "0.0.0",
+  "version": "1.0.0",
   "main": "index.js",
   "repository": {
     "type": "git",
@@ -22,9 +22,9 @@
     "graphql-tools": "^4.0.5",
     "graphql-type-long": "^0.1.1",
     "lodash": "^4.17.4",
-    "@webiny/entity": "0.0.0",
-    "@webiny/model": "0.0.0",
-    "@webiny/plugins": "0.0.0"
+    "@webiny/entity": "1.0.0",
+    "@webiny/model": "1.0.0",
+    "@webiny/plugins": "1.0.0"
   },
   "devDependencies": {
     "@babel/cli": "^7.0.0",

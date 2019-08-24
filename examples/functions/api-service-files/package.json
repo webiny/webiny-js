@@ -10,10 +10,10 @@
   "license": "MIT",
   "dependencies": {
     "@babel/runtime": "^7.0.0",
-    "@webiny/api": "0.0.0",
-    "@webiny/api-files": "0.0.0",
-    "@webiny/api-security": "0.0.0",
-    "@webiny/plugins": "0.0.0",
+    "@webiny/api": "1.0.0",
+    "@webiny/api-files": "1.0.0",
+    "@webiny/api-security": "1.0.0",
+    "@webiny/plugins": "1.0.0",
     "source-map-support": "^0.5.0"
   },
   "devDependencies": {

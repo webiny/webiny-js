@@ -1,6 +1,6 @@
 {
   "name": "@webiny/model",
-  "version": "0.0.0",
+  "version": "1.0.0",
   "main": "index.js",
   "repository": {
     "type": "git",
@@ -16,7 +16,7 @@
   "dependencies": {
     "@babel/runtime": "^7.0.0",
     "lodash": "^4.17.4",
-    "@webiny/validation": "0.0.0"
+    "@webiny/validation": "1.0.0"
   },
   "devDependencies": {
     "@babel/cli": "^7.0.0",
