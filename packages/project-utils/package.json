@@ -1,6 +1,6 @@
 {
   "name": "@webiny/project-utils",
-  "version": "1.0.0-next.1",
+  "version": "1.0.0",
   "main": "index.js",
   "description": "A collection of utilities for Webiny project.",
   "repository": {

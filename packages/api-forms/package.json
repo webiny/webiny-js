@@ -1,6 +1,6 @@
 {
   "name": "@webiny/api-forms",
-  "version": "1.0.0-next.2",
+  "version": "1.0.0",
   "main": "index.js",
   "repository": {
     "type": "git",
@@ -14,8 +14,8 @@
   "license": "MIT",
   "dependencies": {
     "@babel/runtime": "^7.0.0",
-    "@webiny/api": "^1.0.0-next.2",
-    "@webiny/plugins": "^1.0.0-next.1",
+    "@webiny/api": "^1.0.0",
+    "@webiny/plugins": "^1.0.0",
     "form-data": "^2.5.0",
     "fs-extra": "^7.0.1",
     "got": "^9.6.0",

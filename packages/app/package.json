@@ -1,6 +1,6 @@
 {
   "name": "@webiny/app",
-  "version": "1.0.0-next.1",
+  "version": "1.0.0",
   "main": "index.js",
   "repository": {
     "type": "git",
@@ -16,9 +16,9 @@
   "dependencies": {
     "@babel/polyfill": "^7.0.0",
     "@babel/runtime": "^7.0.0",
-    "@webiny/i18n": "^1.0.0-next.1",
-    "@webiny/i18n-react": "^1.0.0-next.1",
-    "@webiny/plugins": "^1.0.0-next.1",
+    "@webiny/i18n": "^1.0.0",
+    "@webiny/i18n-react": "^1.0.0",
+    "@webiny/plugins": "^1.0.0",
     "apollo-cache-inmemory": "^1.1.12",
     "apollo-client": "^2.2.8",
     "apollo-link": "^1.2.1",
