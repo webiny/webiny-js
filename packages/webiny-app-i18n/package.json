@@ -17,7 +17,7 @@
     "dot-prop-immutable": "^1.4.0",
     "graphql-tag": "^2.10.1",
     "lodash": "^4.17.11",
-    "react-apollo": "2.3.3",
+    "react-apollo": "^2.5.8",
     "react-helmet": "^5.2.0",
     "react-router-dom": "^5.0.0",
     "recompose": "^0.27.1",

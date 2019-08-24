@@ -1,0 +1,64 @@
+{
+  "name": "admin",
+  "version": "0.1.0",
+  "private": true,
+  "homepage": "/admin",
+  "dependencies": {
+    "apollo-cache-inmemory": "^1.1.12",
+    "apollo-client": "^2.2.8",
+    "apollo-link": "^1.2.1",
+    "apollo-link-batch-http": "^1.2.3",
+    "theme": "0.0.0",
+    "react-hot-loader": "^4.3.5",
+    "webiny-admin": "0.0.0",
+    "webiny-app": "0.0.0",
+    "webiny-ui": "0.0.0",
+    "webiny-app-page-builder": "0.0.0",
+    "webiny-app-i18n": "0.0.0",
+    "webiny-app-forms": "0.0.0",
+    "webiny-app-cookie-policy": "0.0.0",
+    "webiny-app-google-tag-manager": "0.0.0",
+    "webiny-app-mailchimp": "0.0.0",
+    "webiny-app-security": "0.0.0",
+    "webiny-app-typeform": "0.0.0",
+    "webiny-plugins": "0.0.0",
+    "react-router-dom": "^5.0.0",
+    "react-apollo": "^2.5.8",
+    "url-search-params-polyfill": "^5.1.0",
+    "cross-fetch": "^3.0.2"
+  },
+  "devDependencies": {
+    "@rescripts/cli": "^0.0.7",
+    "node-sass": "^4.9.3",
+    "react-scripts": "^3.0.1",
+    "source-map-explorer": "^1.6.0"
+  },
+  "peerDependencies": {
+    "react": "^16.4.0",
+    "react-dom": "^16.6.0"
+  },
+  "scripts": {
+    "analyze": "source-map-explorer build/static/js/main.*",
+    "start": "SKIP_PREFLIGHT_CHECK=true PORT=3001 rescripts start",
+    "build": "cross-env PUBLIC_URL=/admin SKIP_PREFLIGHT_CHECK=true rescripts build",
+    "test": "rescripts test --env=jsdom",
+    "eject": "react-scripts eject"
+  },
+  "browserslist": {
+    "development": [
+      "last 2 chrome versions",
+      "last 2 firefox versions",
+      "last 2 edge versions"
+    ],
+    "production": [
+      ">0.25%",
+      "not op_mini all",
+      "ie 11"
+    ]
+  },
+  "svgo": {
+    "plugins": {
+      "removeViewBox": false
+    }
+  }
+}

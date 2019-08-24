@@ -33,7 +33,7 @@
     "react": "^16.6.0",
     "react-dom": "^16.6.0",
     "react-error-boundary": "^1.2.3",
-    "react-apollo": "2.3.3",
+    "react-apollo": "^2.5.8",
     "recompose": "^0.30.0",
     "shortid": "^2.2.14",
     "warning": "^4.0.2",
