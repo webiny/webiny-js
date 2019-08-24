@@ -21,7 +21,7 @@
   },
   "license": "MIT",
   "scripts": {
-    "build": "babel src -d dist --source-maps --copy-files",
+    "build": "babel src -d dist --source-maps --copy-files && cp package.json dist",
     "prepublishOnly": "yarn build"
   }
 }
