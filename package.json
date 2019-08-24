@@ -10,7 +10,7 @@
       "**/inquirer/**",
       "**/webiny-cli/**",
       "**/mime/**",
-      "webiny-cli/sharp"
+      "@webiny/cli/sharp"
     ]
   },
   "contributors": [
@@ -125,7 +125,7 @@
     "release:dry": "node scripts/release/packages --preview",
     "release-independent": "node scripts/release/independent",
     "release-independent:dry": "node scripts/release/independent --preview",
-    "webiny-ui-build-storybook": "cd packages/webiny-ui && cross-env OUT=../../netlify-static yarn build-storybook",
+    "webiny-ui-build-storybook": "cd packages/ui && cross-env OUT=../../netlify-static yarn build-storybook",
     "wby:fns": "cross-env NODE_ENV=development sls offline start --stage=local",
     "wby:fns:inspect": "yarn wby:fns --inspect=9001",
     "wby:app": "wby start-app",

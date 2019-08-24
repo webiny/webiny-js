@@ -1,11 +1,10 @@
 // @flow
 const packages = require("./../utils/listPackages")([
     // Append untested libraries to the blacklist - they are all work in progress.
-    "webiny-ui",
-    "webiny-form",
-    "webiny-i18n-react",
-    "webiny-react-router",
-    "webiny-storybook-utils"
+    "ui",
+    "form",
+    "i18n-react",
+    "storybook-utils"
 ]);
 
 module.exports = {

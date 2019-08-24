@@ -1,7 +1,7 @@
 //@flow
 import * as React from "react";
 import { Link } from "react-router-dom";
-import { Menu } from "webiny-app-page-builder/render/components";
+import { Menu } from "@webiny/app-page-builder/render/components";
 import HamburgerMenu from "react-hamburger-menu";
 import classNames from "classnames";
 import { get } from "lodash";

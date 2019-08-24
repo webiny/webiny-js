@@ -1,5 +1,5 @@
 import addDays from "date-fns/add_days";
-import MongoDbDriver from "webiny-entity-mongodb";
+import MongoDbDriver from "@webiny/entity-mongodb";
 import { MongoClient } from "mongodb";
 
 // Configure default storage

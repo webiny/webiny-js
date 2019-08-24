@@ -4,12 +4,8 @@ const getPackages = require("get-yarn-workspaces");
 const minimatch = require("minimatch");
 
 const baseBlacklist = [
-    "demo-*",
-    "webiny-cra-utils",
-    "webiny-cms-editor",
-    "webiny-cli",
-    "webiny-cloud*",
-    "webiny-ui_LEGACY"
+    "cli",
+    "ui_LEGACY"
 ];
 
 module.exports = (blacklist = []) => {

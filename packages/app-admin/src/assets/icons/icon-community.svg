@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="21px" height="21px" viewBox="0 0 21 21" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 51.1 (57501) - http://www.bohemiancoding.com/sketch -->
+    <title>discourse-brands</title>
+    <desc>Created with Sketch.</desc>
+    <defs></defs>
+    <g id="Webiny---Navigation" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Navigation---Opened" transform="translate(-17.000000, -638.000000)" fill="#757575" fill-rule="nonzero">
+            <g id="Community" transform="translate(17.000000, 638.000000)">
+                <g id="discourse-brands">
+                    <path d="M10.5890625,0 C4.8421875,0 0,4.6171875 0,10.3171875 C0,10.5 0.0046875,21 0.0046875,21 L10.5890625,20.990625 C16.340625,20.990625 21,16.1953125 21,10.4953125 C21,4.7953125 16.340625,0 10.5890625,0 Z M10.5,16.5 C9.590625,16.5 8.7234375,16.2984375 7.95,15.9328125 L4.1484375,16.875 L5.221875,13.359375 C4.7625,12.5109375 4.5,11.5359375 4.5,10.5 C4.5,7.1859375 7.1859375,4.5 10.5,4.5 C13.8140625,4.5 16.5,7.1859375 16.5,10.5 C16.5,13.8140625 13.8140625,16.5 10.5,16.5 Z" id="Shape"></path>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

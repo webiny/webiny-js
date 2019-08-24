@@ -17,7 +17,7 @@ module.exports = (opts = {}) => {
 
     return nodeExternals({
         // This means "add matching packages to the bundle"
-        whitelist: [/^webiny/, /^@webiny/, ...whitelist],
+        whitelist: [/^@webiny/, ...whitelist],
         ...rest
     });
 };

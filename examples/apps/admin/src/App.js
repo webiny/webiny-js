@@ -1,14 +1,14 @@
 // @flow
 import { hot } from "react-hot-loader";
 import React, { Fragment } from "react";
-import { UiProvider } from "webiny-app/context/ui";
-import { registerPlugins, getPlugins } from "webiny-plugins";
-import { Theme as AdminTheme } from "webiny-app-admin";
-import { PageBuilderProvider } from "webiny-app-page-builder/context";
-import { Security } from "webiny-app-security/components";
-import { I18NProvider } from "webiny-app-i18n/components";
-import Login from "webiny-app-security/admin/views/Login";
-import { CircularProgress } from "webiny-ui/Progress";
+import { UiProvider } from "@webiny/app/context/ui";
+import { registerPlugins, getPlugins } from "@webiny/plugins";
+import { Theme as AdminTheme } from "@webiny/app-admin";
+import { PageBuilderProvider } from "@webiny/app-page-builder/context";
+import { Security } from "@webiny/app-security/components";
+import { I18NProvider } from "@webiny/app-i18n/components";
+import Login from "@webiny/app-security/admin/views/Login";
+import { CircularProgress } from "@webiny/ui/Progress";
 import myTheme from "theme";
 import "./App.scss";
 import plugins from "./plugins";

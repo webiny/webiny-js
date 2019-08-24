@@ -1,9 +1,9 @@
 // @flow
 import * as React from "react";
-import type { FieldType } from "webiny-app-forms/types";
-import { I18NValue } from "webiny-app-i18n/components";
+import type { FieldType } from "@webiny/app-forms/types";
+import { I18NValue } from "@webiny/app-i18n/components";
 import HelperMessage from "../components/HelperMessage";
-import type { BindComponentRenderPropType } from "webiny-form";
+import type { BindComponentRenderPropType } from "@webiny/form";
 
 type Props = {
     bind: BindComponentRenderPropType,
