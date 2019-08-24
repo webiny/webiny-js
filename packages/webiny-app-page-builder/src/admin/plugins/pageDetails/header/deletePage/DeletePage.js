@@ -4,7 +4,7 @@ import { compose, withHandlers } from "recompose";
 import dot from "dot-prop-immutable";
 import { graphql } from "react-apollo";
 import { withRouter } from "react-router-dom";
-import { withDialog, withSnackbar } from "webiny-admin/components";
+import { withDialog, withSnackbar } from "webiny-app-admin/components";
 import { IconButton } from "webiny-ui/Button";
 import { Tooltip } from "webiny-ui/Tooltip";
 import { withConfirmation, type WithConfirmationProps } from "webiny-ui/ConfirmationDialog";

@@ -7,9 +7,9 @@ import { getPlugins } from "webiny-plugins";
 import { deactivatePlugin, updateRevision } from "webiny-app-page-builder/editor/actions";
 import { getPage } from "webiny-app-page-builder/editor/selectors";
 import { withKeyHandler } from "webiny-app-page-builder/editor/components";
-import { withSnackbar } from "webiny-admin/components";
-import { OverlayLayout } from "webiny-admin/components/OverlayLayout";
-import { SplitView, LeftPanel, RightPanel } from "webiny-admin/components/SplitView";
+import { withSnackbar } from "webiny-app-admin/components";
+import { OverlayLayout } from "webiny-app-admin/components/OverlayLayout";
+import { SplitView, LeftPanel, RightPanel } from "webiny-app-admin/components/SplitView";
 import { Typography } from "webiny-ui/Typography";
 import { Form } from "webiny-form";
 import { Icon } from "webiny-ui/Icon";
@@ -20,7 +20,7 @@ import {
     SimpleFormFooter,
     SimpleFormContent,
     SimpleFormHeader
-} from "webiny-admin/components/SimpleForm";
+} from "webiny-app-admin/components/SimpleForm";
 import { Title, listItem, ListItemTitle, listStyle, TitleContent } from "./PageSettingsStyled";
 import type { PbPageSettingsPluginType } from "webiny-app-page-builder/types";
 

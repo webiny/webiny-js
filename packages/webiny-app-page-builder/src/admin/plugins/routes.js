@@ -3,7 +3,7 @@ import React from "react";
 import { Route } from "react-router-dom";
 import Helmet from "react-helmet";
 import Loadable from "react-loadable";
-import { AdminLayout } from "webiny-admin/components/AdminLayout";
+import { AdminLayout } from "webiny-app-admin/components/AdminLayout";
 import { SecureRoute } from "webiny-app-security/components";
 import { CircularProgress } from "webiny-ui/Progress";
 import EditorPluginsLoader from "../components/EditorPluginsLoader";

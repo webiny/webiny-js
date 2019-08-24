@@ -7,7 +7,7 @@ import { ReactComponent as UnpublishIcon } from "webiny-app-forms/admin/icons/un
 import { publishRevision, unpublishRevision } from "webiny-app-forms/admin/viewsGraphql";
 import { ConfirmationDialog } from "webiny-ui/ConfirmationDialog";
 import { graphql } from "react-apollo";
-import { withSnackbar } from "webiny-admin/components";
+import { withSnackbar } from "webiny-app-admin/components";
 import { compose } from "recompose";
 
 const PublishRevision = ({

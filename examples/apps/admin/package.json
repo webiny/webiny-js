@@ -10,7 +10,7 @@
     "apollo-link-batch-http": "^1.2.3",
     "theme": "0.0.0",
     "react-hot-loader": "^4.3.5",
-    "webiny-admin": "0.0.0",
+    "webiny-app-admin": "0.0.0",
     "webiny-app": "0.0.0",
     "webiny-ui": "0.0.0",
     "webiny-app-page-builder": "0.0.0",

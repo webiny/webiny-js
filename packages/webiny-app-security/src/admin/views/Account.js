@@ -10,7 +10,7 @@ import { Form } from "webiny-form";
 import { Grid, Cell } from "webiny-ui/Grid";
 import { Input } from "webiny-ui/Input";
 import { ButtonPrimary } from "webiny-ui/Button";
-import { withSnackbar } from "webiny-admin/components";
+import { withSnackbar } from "webiny-app-admin/components";
 import { compose, withHandlers, withState } from "recompose";
 import { CircularProgress } from "webiny-ui/Progress";
 import AvatarImage from "./Components/AvatarImage";
@@ -20,7 +20,7 @@ import {
     SimpleFormHeader,
     SimpleFormFooter,
     SimpleFormContent
-} from "webiny-admin/components/SimpleForm";
+} from "webiny-app-admin/components/SimpleForm";
 
 const t = i18n.namespace("Security.UsersForm");
 

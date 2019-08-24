@@ -5,7 +5,7 @@ import { Form } from "webiny-form";
 import { Grid, Cell } from "webiny-ui/Grid";
 import { ButtonPrimary } from "webiny-ui/Button";
 import { Switch } from "webiny-ui/Switch";
-import type { WithCrudFormProps } from "webiny-admin/components";
+import type { WithCrudFormProps } from "webiny-app-admin/components";
 import { CircularProgress } from "webiny-ui/Progress";
 import LocaleCodesAutoComplete from "./LocaleCodesAutoComplete";
 import { I18NInput } from "webiny-app-i18n/admin/components";
@@ -14,7 +14,7 @@ import {
     SimpleFormFooter,
     SimpleFormContent,
     SimpleFormHeader
-} from "webiny-admin/components/SimpleForm";
+} from "webiny-app-admin/components/SimpleForm";
 
 const t = i18n.namespace("I18N.I18NLocalesForm");
 

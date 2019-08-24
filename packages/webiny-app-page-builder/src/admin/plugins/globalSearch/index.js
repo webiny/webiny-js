@@ -1,5 +1,5 @@
 //@flow
-import type { GlobalSearch } from "webiny-admin/types";
+import type { GlobalSearch } from "webiny-app-admin/types";
 
 // Additional sections in global search.
 

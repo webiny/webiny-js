@@ -2,7 +2,7 @@
 import React from "react";
 import Helmet from "react-helmet";
 import { Route } from "react-router-dom";
-import { AdminLayout } from "webiny-admin/components/AdminLayout";
+import { AdminLayout } from "webiny-app-admin/components/AdminLayout";
 import Roles from "webiny-app-security/admin/views/Roles";
 import Groups from "webiny-app-security/admin/views/Groups";
 import Users from "webiny-app-security/admin/views/Users";

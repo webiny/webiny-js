@@ -8,7 +8,7 @@ import { Elevation } from "webiny-ui/Elevation";
 import { getPage } from "webiny-app-page-builder/admin/graphql/pages";
 import { PageDetailsProvider, PageDetailsConsumer } from "../../components/PageDetailsContext";
 import { ElementAnimation } from "webiny-app-page-builder/render/components";
-import { withSnackbar } from "webiny-admin/components";
+import { withSnackbar } from "webiny-app-admin/components";
 import { get } from "lodash";
 
 const EmptySelect = styled("div")({

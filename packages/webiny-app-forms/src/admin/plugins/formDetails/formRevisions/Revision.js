@@ -15,7 +15,7 @@ import { IconButton } from "webiny-ui/Button";
 import { Icon } from "webiny-ui/Icon";
 import { MenuItem, Menu, MenuDivider } from "webiny-ui/Menu";
 import { withRouter } from "react-router-dom";
-import { withSnackbar } from "webiny-admin/components";
+import { withSnackbar } from "webiny-app-admin/components";
 import { ConfirmationDialog } from "webiny-ui/ConfirmationDialog";
 import { Tooltip } from "webiny-ui/Tooltip";
 import withRevisionHandlers from "./withRevisionHandlers";

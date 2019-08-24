@@ -9,7 +9,7 @@ import { Input } from "webiny-ui/Input";
 import { createForm } from "webiny-app-forms/admin/viewsGraphql";
 import get from "lodash.get";
 import { compose } from "recompose";
-import { withSnackbar } from "webiny-admin/components";
+import { withSnackbar } from "webiny-app-admin/components";
 import { CircularProgress } from "webiny-ui/Progress";
 
 import { i18n } from "webiny-app/i18n";

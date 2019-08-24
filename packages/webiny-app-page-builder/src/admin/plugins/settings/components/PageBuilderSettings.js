@@ -3,11 +3,11 @@ import { Form } from "webiny-form";
 import { Grid, Cell } from "webiny-ui/Grid";
 import { ButtonPrimary } from "webiny-ui/Button";
 import { Query, Mutation } from "react-apollo";
-import { withSnackbar } from "webiny-admin/components";
+import { withSnackbar } from "webiny-app-admin/components";
 import graphql from "./graphql";
 import PagesAutoComplete from "webiny-app-page-builder/admin/components/PagesAutoComplete";
 import { CircularProgress } from "webiny-ui/Progress";
-import SingleImageUpload from "webiny-admin/components/SingleImageUpload";
+import SingleImageUpload from "webiny-app-admin/components/SingleImageUpload";
 import { get } from "lodash";
 
 import {
@@ -15,7 +15,7 @@ import {
     SimpleFormFooter,
     SimpleFormContent,
     SimpleFormHeader
-} from "webiny-admin/components/SimpleForm";
+} from "webiny-app-admin/components/SimpleForm";
 
 const PageBuilderSettings = ({ showSnackbar }) => {
     return (

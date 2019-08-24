@@ -5,7 +5,7 @@ import { Form } from "webiny-form";
 import { Input } from "webiny-ui/Input";
 import get from "lodash.get";
 import { compose } from "recompose";
-import { withSnackbar } from "webiny-admin/components";
+import { withSnackbar } from "webiny-app-admin/components";
 import { CircularProgress } from "webiny-ui/Progress";
 import { Grid, Cell } from "webiny-ui/Grid";
 import { UPDATE_FORMS_SETTINGS } from "./graphql";

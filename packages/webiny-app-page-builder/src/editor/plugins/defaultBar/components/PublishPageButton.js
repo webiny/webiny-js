@@ -6,7 +6,7 @@ import { getPage } from "webiny-app-page-builder/editor/selectors";
 import { compose } from "recompose";
 import { omit, isEqual } from "lodash";
 import { Mutation } from "react-apollo";
-import { withSnackbar } from "webiny-admin/components";
+import { withSnackbar } from "webiny-app-admin/components";
 import { withRouter } from "react-router-dom";
 import { publishRevision } from "./PublishPageButton/graphql";
 

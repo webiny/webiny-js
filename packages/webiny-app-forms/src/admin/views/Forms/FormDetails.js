@@ -6,7 +6,7 @@ import { withRouter } from "react-router-dom";
 import styled from "react-emotion";
 import { Elevation } from "webiny-ui/Elevation";
 import { getForm } from "webiny-app-forms/admin/viewsGraphql";
-import { withSnackbar } from "webiny-admin/components";
+import { withSnackbar } from "webiny-app-admin/components";
 import { get } from "lodash";
 import { Tabs } from "webiny-ui/Tabs";
 

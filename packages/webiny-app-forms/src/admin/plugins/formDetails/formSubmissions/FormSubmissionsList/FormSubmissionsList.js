@@ -20,7 +20,7 @@ import { IconButton } from "webiny-ui/Button";
 import { exportFormSubmissions } from "webiny-app-forms/admin/viewsGraphql";
 import { Mutation } from "react-apollo";
 import { Tooltip } from "webiny-ui/Tooltip";
-import { withSnackbar } from "webiny-admin/components";
+import { withSnackbar } from "webiny-app-admin/components";
 import { i18n } from "webiny-app/i18n";
 const t = i18n.namespace("FormsApp.FormsDataList");
 

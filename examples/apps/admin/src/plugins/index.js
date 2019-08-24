@@ -1,6 +1,6 @@
 // @flow
 import { fileUploadPlugin, imagePlugin } from "webiny-app/plugins";
-import adminPlugins from "webiny-admin/plugins";
+import adminPlugins from "webiny-app-admin/plugins";
 import i18nPlugins from "webiny-app-i18n/admin/plugins";
 import securityPlugins from "webiny-app-security/admin/plugins";
 import cmsPlugins from "webiny-app-page-builder/admin/plugins";

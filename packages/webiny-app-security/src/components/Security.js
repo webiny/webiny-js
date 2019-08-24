@@ -5,7 +5,7 @@ import { withRouter } from "react-router-dom";
 import { withApollo, type WithApolloClient } from "react-apollo";
 import localStorage from "store";
 import observe from "store/plugins/observe";
-import { withSnackbar } from "webiny-admin/components";
+import { withSnackbar } from "webiny-app-admin/components";
 import { getCurrentUser, loginUsingToken } from "./graphql";
 import { setIdentity } from "webiny-app-security";
 const { Provider, Consumer } = React.createContext();

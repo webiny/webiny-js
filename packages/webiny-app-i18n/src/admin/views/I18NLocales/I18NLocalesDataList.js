@@ -2,7 +2,7 @@
 import * as React from "react";
 import { withRouter } from "react-router-dom";
 import type { Location, RouterHistory } from "react-router-dom";
-import type { WithCrudListProps } from "webiny-admin/components";
+import type { WithCrudListProps } from "webiny-app-admin/components";
 import { i18n } from "webiny-app/i18n";
 import { ConfirmationDialog } from "webiny-ui/ConfirmationDialog";
 import {

@@ -7,7 +7,7 @@ import { Input } from "webiny-ui/Input";
 import { ColorPicker } from "webiny-ui/ColorPicker";
 import { ButtonSecondary, ButtonPrimary } from "webiny-ui/Button";
 import { Query, Mutation } from "react-apollo";
-import { withSnackbar } from "webiny-admin/components";
+import { withSnackbar } from "webiny-app-admin/components";
 import { RadioGroup, Radio } from "webiny-ui/Radio";
 import graphql from "./graphql";
 import showCookiePolicy from "./../../utils/showCookiePolicy";
@@ -20,7 +20,7 @@ import {
     SimpleFormFooter,
     SimpleFormContent,
     SimpleFormHeader
-} from "webiny-admin/components/SimpleForm";
+} from "webiny-app-admin/components/SimpleForm";
 
 const positionOptions = [
     { id: "bottom", name: "Bottom" },

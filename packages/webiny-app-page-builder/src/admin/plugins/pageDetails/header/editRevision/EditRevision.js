@@ -7,7 +7,7 @@ import withRevisionHandlers from "../../pageRevisions/withRevisionHandlers";
 import { compose } from "recompose";
 import { createRevisionFrom } from "webiny-app-page-builder/admin/graphql/pages";
 import { graphql } from "react-apollo";
-import { withSnackbar } from "webiny-admin/components";
+import { withSnackbar } from "webiny-app-admin/components";
 import { get } from "lodash";
 
 const EditRevision = ({ pageDetails: { page }, history, gqlCreate, showSnackbar }) => {

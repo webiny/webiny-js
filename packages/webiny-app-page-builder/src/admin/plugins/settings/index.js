@@ -1,10 +1,10 @@
 // @flow
 import * as React from "react";
 import { Route } from "react-router-dom";
-import { AdminLayout } from "webiny-admin/components/AdminLayout";
+import { AdminLayout } from "webiny-app-admin/components/AdminLayout";
 import PageBuilderSettings from "./components/PageBuilderSettings";
 import GeneralSettings from "./components/generalSettings/GeneralSettings";
-import type { SettingsPluginType } from "webiny-admin/types";
+import type { SettingsPluginType } from "webiny-app-admin/types";
 import { hasRoles } from "webiny-app-security";
 import { SecureRoute } from "webiny-app-security/components";
 

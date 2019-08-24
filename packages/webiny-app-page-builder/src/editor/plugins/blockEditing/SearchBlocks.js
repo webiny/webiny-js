@@ -8,19 +8,19 @@ import { getContent } from "webiny-app-page-builder/editor/selectors";
 import { withKeyHandler } from "webiny-app-page-builder/editor/components";
 import { getPlugins, unregisterPlugin } from "webiny-plugins";
 import { createBlockElements } from "webiny-app-page-builder/editor/utils";
-import { OverlayLayout } from "webiny-admin/components/OverlayLayout";
+import { OverlayLayout } from "webiny-app-admin/components/OverlayLayout";
 import { ReactComponent as SearchIcon } from "webiny-app-page-builder/editor/assets/icons/search.svg";
 import * as Styled from "./StyledComponents";
 import { listItem, ListItemTitle, listStyle, TitleContent } from "./SearchBlocksStyled";
 import EditBlockDialog from "./EditBlockDialog";
 import { deleteElement as deleteElementGql, updateElement as updateElementGql } from "./graphql";
-import { withSnackbar, type WithSnackbarProps } from "webiny-admin/components";
+import { withSnackbar, type WithSnackbarProps } from "webiny-app-admin/components";
 import {
     SimpleForm,
     SimpleFormContent,
     SimpleFormHeader
-} from "webiny-admin/components/SimpleForm";
-import { SplitView, LeftPanel, RightPanel } from "webiny-admin/components/SplitView";
+} from "webiny-app-admin/components/SimpleForm";
+import { SplitView, LeftPanel, RightPanel } from "webiny-app-admin/components/SplitView";
 import { Icon } from "webiny-ui/Icon";
 import { List, ListItem, ListItemGraphic } from "webiny-ui/List";
 import { Typography } from "webiny-ui/Typography";

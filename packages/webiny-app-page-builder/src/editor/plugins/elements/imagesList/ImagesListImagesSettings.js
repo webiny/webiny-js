@@ -2,7 +2,7 @@
 import * as React from "react";
 import { Grid, Cell } from "webiny-ui/Grid";
 import { withPageBuilder } from "webiny-app-page-builder/context";
-import { FileManager } from "webiny-admin/components";
+import { FileManager } from "webiny-app-admin/components";
 import File from "./File";
 import { ButtonPrimary } from "webiny-ui/Button";
 import { css } from "emotion";

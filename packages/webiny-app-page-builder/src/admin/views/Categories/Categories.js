@@ -4,9 +4,9 @@ import { withRouter } from "react-router-dom";
 import { get } from "dot-prop-immutable";
 import { pick } from "lodash";
 import { i18n } from "webiny-app/i18n";
-import { withCrud } from "webiny-admin/components";
-import { SplitView, LeftPanel, RightPanel } from "webiny-admin/components/SplitView";
-import { FloatingActionButton } from "webiny-admin/components/FloatingActionButton";
+import { withCrud } from "webiny-app-admin/components";
+import { SplitView, LeftPanel, RightPanel } from "webiny-app-admin/components/SplitView";
+import { FloatingActionButton } from "webiny-app-admin/components/FloatingActionButton";
 import CategoriesDataList from "./CategoriesDataList";
 import CategoriesForm from "./CategoriesForm";
 

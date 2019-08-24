@@ -10,7 +10,7 @@ import { getActiveElement } from "webiny-app-page-builder/editor/selectors";
 import ColorPicker from "webiny-app-page-builder/editor/components/ColorPicker";
 import { Cell, Grid } from "webiny-ui/Grid";
 import Select from "webiny-app-page-builder/editor/plugins/elementSettings/components/Select";
-import SingleImageUpload from "webiny-admin/components/SingleImageUpload";
+import SingleImageUpload from "webiny-app-admin/components/SingleImageUpload";
 import BackgroundPositionSelector from "./BackgroundPositionSelector";
 import { css } from "emotion";
 

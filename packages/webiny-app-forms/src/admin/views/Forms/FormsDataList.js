@@ -9,7 +9,7 @@ import { DeleteIcon, EditIcon } from "webiny-ui/List/DataList/icons";
 import { deleteForm, createRevisionFrom } from "webiny-app-forms/admin/viewsGraphql";
 import { graphql } from "react-apollo";
 import { withHandlers, compose } from "recompose";
-import { withSnackbar } from "webiny-admin/components";
+import { withSnackbar } from "webiny-app-admin/components";
 import { get, upperFirst } from "lodash";
 import {
     DataList,

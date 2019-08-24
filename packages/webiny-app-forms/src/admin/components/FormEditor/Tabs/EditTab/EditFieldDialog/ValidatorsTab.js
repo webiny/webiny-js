@@ -5,7 +5,7 @@ import {
     SimpleForm,
     SimpleFormContent,
     SimpleFormHeader
-} from "webiny-admin/components/SimpleForm";
+} from "webiny-app-admin/components/SimpleForm";
 import { useFormEditor } from "webiny-app-forms/admin/components/FormEditor/Context";
 import { Form } from "webiny-form";
 import { cloneDeep, debounce } from "lodash";

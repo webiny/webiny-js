@@ -3,7 +3,7 @@ import { ConfirmationDialog } from "webiny-ui/ConfirmationDialog";
 import { ButtonPrimary } from "webiny-ui/Button";
 import { compose } from "recompose";
 import { Mutation } from "react-apollo";
-import { withSnackbar } from "webiny-admin/components";
+import { withSnackbar } from "webiny-app-admin/components";
 import { withRouter } from "react-router-dom";
 import { publishRevision } from "./PublishFormButton/graphql";
 import { useFormEditor } from "webiny-app-forms/admin/components/FormEditor/Context";

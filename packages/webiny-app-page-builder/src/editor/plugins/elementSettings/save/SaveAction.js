@@ -6,7 +6,7 @@ import { graphql } from "react-apollo";
 import { cloneDeep } from "lodash";
 import { getPlugins, getPlugin } from "webiny-plugins";
 import SaveDialog from "./SaveDialog";
-import { withSnackbar } from "webiny-admin/components";
+import { withSnackbar } from "webiny-app-admin/components";
 import { withKeyHandler } from "webiny-app-page-builder/editor/components";
 import { getActiveElementId, getElementWithChildren } from "webiny-app-page-builder/editor/selectors";
 import { createElementPlugin, createBlockPlugin } from "webiny-app-page-builder/admin/components";

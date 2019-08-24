@@ -9,7 +9,7 @@ import EditorBar from "./Bar";
 import EditorContent from "./EditorContent";
 import DragPreview from "./DragPreview";
 import { withRouter } from "react-router-dom";
-import { withSnackbar } from "webiny-admin/components";
+import { withSnackbar } from "webiny-app-admin/components";
 
 const FormEditor = ({ history, showSnackbar }) => {
     const {

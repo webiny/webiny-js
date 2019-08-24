@@ -1,6 +1,6 @@
 // @flow
 import React from "react";
-import Snackbar from "webiny-admin/plugins/Snackbar/Snackbar";
+import Snackbar from "webiny-app-admin/plugins/Snackbar/Snackbar";
 import { FormEditorApp } from "webiny-app-forms/admin/components/FormEditor";
 
 export default function EditorView() {

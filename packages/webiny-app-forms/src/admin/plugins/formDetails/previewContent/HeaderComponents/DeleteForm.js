@@ -3,7 +3,7 @@ import React from "react";
 import { compose } from "recompose";
 import { graphql } from "react-apollo";
 import { withRouter } from "react-router-dom";
-import { withSnackbar } from "webiny-admin/components";
+import { withSnackbar } from "webiny-app-admin/components";
 import { IconButton } from "webiny-ui/Button";
 import { Tooltip } from "webiny-ui/Tooltip";
 import { ReactComponent as DeleteIcon } from "webiny-app-forms/admin/icons/delete.svg";

@@ -15,9 +15,9 @@ import {
     SimpleFormHeader,
     SimpleFormFooter,
     SimpleFormContent
-} from "webiny-admin/components/SimpleForm";
+} from "webiny-app-admin/components/SimpleForm";
 
-import type { WithCrudFormProps } from "webiny-admin/components";
+import type { WithCrudFormProps } from "webiny-app-admin/components";
 
 const t = i18n.namespace("Security.UsersForm");
 

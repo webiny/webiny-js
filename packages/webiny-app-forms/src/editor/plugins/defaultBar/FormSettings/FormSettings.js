@@ -3,15 +3,15 @@
 import React, { useState } from "react";
 import { compose } from "recompose";
 import { getPlugins } from "webiny-plugins";
-import { OverlayLayout } from "webiny-admin/components/OverlayLayout";
-import { SplitView, LeftPanel, RightPanel } from "webiny-admin/components/SplitView";
+import { OverlayLayout } from "webiny-app-admin/components/OverlayLayout";
+import { SplitView, LeftPanel, RightPanel } from "webiny-app-admin/components/SplitView";
 import { Typography } from "webiny-ui/Typography";
 import { Form } from "webiny-form";
 import { Icon } from "webiny-ui/Icon";
 import { ButtonPrimary } from "webiny-ui/Button";
 import { List, ListItem, ListItemGraphic } from "webiny-ui/List";
 import { useFormEditor } from "webiny-app-forms/admin/components/FormEditor/Context";
-import { withSnackbar, type WithSnackbarProps } from "webiny-admin/components";
+import { withSnackbar, type WithSnackbarProps } from "webiny-app-admin/components";
 
 import { i18n } from "webiny-app/i18n";
 const t = i18n.namespace("FormsApp.Editor.FormSettings");
@@ -21,7 +21,7 @@ import {
     SimpleFormFooter,
     SimpleFormContent,
     SimpleFormHeader
-} from "webiny-admin/components/SimpleForm";
+} from "webiny-app-admin/components/SimpleForm";
 import { Title, listItem, ListItemTitle, listStyle, TitleContent } from "./FormSettingsStyled";
 
 type Props = {

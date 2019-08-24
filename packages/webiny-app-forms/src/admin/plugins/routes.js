@@ -5,7 +5,7 @@ import Loadable from "react-loadable";
 import { SecureRoute } from "webiny-app-security/components";
 import { CircularProgress } from "webiny-ui/Progress";
 import { Route } from "react-router-dom";
-import { AdminLayout } from "webiny-admin/components/AdminLayout";
+import { AdminLayout } from "webiny-app-admin/components/AdminLayout";
 
 const FormEditor = Loadable({
     loader: () => import("../views/Editor"),

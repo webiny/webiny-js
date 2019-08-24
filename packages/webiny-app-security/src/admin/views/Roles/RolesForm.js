@@ -6,7 +6,7 @@ import { Grid, Cell } from "webiny-ui/Grid";
 import { Input } from "webiny-ui/Input";
 import { ButtonPrimary } from "webiny-ui/Button";
 import { MultiAutoComplete } from "webiny-ui/AutoComplete";
-import type { WithCrudFormProps } from "webiny-admin/components";
+import type { WithCrudFormProps } from "webiny-app-admin/components";
 import { CircularProgress } from "webiny-ui/Progress";
 
 import {
@@ -14,7 +14,7 @@ import {
     SimpleFormFooter,
     SimpleFormContent,
     SimpleFormHeader
-} from "webiny-admin/components/SimpleForm";
+} from "webiny-app-admin/components/SimpleForm";
 
 const t = i18n.namespace("Security.RolesForm");
 

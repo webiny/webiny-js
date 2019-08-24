@@ -3,7 +3,7 @@ import React from "react";
 import { compose, withHandlers } from "recompose";
 import { set } from "dot-prop-immutable";
 import { graphql } from "react-apollo";
-import { withSnackbar } from "webiny-admin/components";
+import { withSnackbar } from "webiny-app-admin/components";
 import { publishRevision, getPage } from "webiny-app-page-builder/admin/graphql/pages";
 
 export default (prop: string) => {

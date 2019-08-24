@@ -16,7 +16,7 @@
     "react": "^16.4.0",
     "react-helmet": "^5.2.0",
     "react-router-dom": "^5.0.0",
-    "webiny-admin": "0.0.0",
+    "webiny-app-admin": "0.0.0",
     "webiny-app-security": "0.0.0",
     "webiny-form": "0.0.0",
     "webiny-ui": "0.0.0"

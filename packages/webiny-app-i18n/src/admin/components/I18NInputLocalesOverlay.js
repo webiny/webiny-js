@@ -4,10 +4,10 @@ import ReactDOM from "react-dom";
 import { Input } from "webiny-ui/Input";
 import { Grid, Cell } from "webiny-ui/Grid";
 import I18NRichTextEditor from "./I18NRichTextEditor";
-import { OverlayLayout } from "webiny-admin/components/OverlayLayout";
+import { OverlayLayout } from "webiny-app-admin/components/OverlayLayout";
 import { Form } from "webiny-form";
 import { useI18N } from "webiny-app-i18n/components";
-import { SplitView, LeftPanel, RightPanel } from "webiny-admin/components/SplitView";
+import { SplitView, LeftPanel, RightPanel } from "webiny-app-admin/components/SplitView";
 import { List, ListItem } from "webiny-ui/List";
 import { Typography } from "webiny-ui/Typography";
 import { ButtonPrimary, ButtonIcon } from "webiny-ui/Button";
@@ -17,7 +17,7 @@ import {
     SimpleForm,
     SimpleFormContent,
     SimpleFormHeader
-} from "webiny-admin/components/SimpleForm";
+} from "webiny-app-admin/components/SimpleForm";
 import { listItem, ListItemTitle, listStyle, TitleContent } from "./I18NInputLocalesOverlayStyled";
 
 import { i18n } from "webiny-app/i18n";

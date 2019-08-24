@@ -8,7 +8,7 @@ import { get } from "lodash";
 import { css } from "react-emotion";
 import { Grid, Cell } from "webiny-ui/Grid";
 import { Typography } from "webiny-ui/Typography";
-import { withSnackbar } from "webiny-admin/components";
+import { withSnackbar } from "webiny-app-admin/components";
 import { withPageBuilder } from "webiny-app-page-builder/context";
 import { AutoComplete } from "webiny-ui/AutoComplete";
 import { getPlugins } from "webiny-plugins";

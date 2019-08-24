@@ -6,7 +6,7 @@ import { Tooltip } from "webiny-ui/Tooltip";
 import { ReactComponent as EditIcon } from "webiny-app-forms/admin/icons/edit.svg";
 import withRevisionHandlers from "../../formRevisions/withRevisionHandlers";
 import { compose } from "recompose";
-import { withSnackbar } from "webiny-admin/components";
+import { withSnackbar } from "webiny-app-admin/components";
 
 const EditRevision = ({ revision, history, gqlCreate, showSnackbar }: *) => {
     if (revision.status === "draft") {

@@ -5,7 +5,7 @@ import styled from "react-emotion";
 import isNumeric from "isnumeric";
 import { compose, withHandlers, pure } from "recompose";
 import { set, isEqual } from "lodash";
-import SingleImageUpload from "webiny-admin/components/SingleImageUpload";
+import SingleImageUpload from "webiny-app-admin/components/SingleImageUpload";
 import { updateElement } from "webiny-app-page-builder/editor/actions";
 import { getElement } from "webiny-app-page-builder/editor/selectors";
 

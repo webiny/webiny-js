@@ -14,7 +14,7 @@ import { withPageBuilderSettings } from "webiny-app-page-builder/admin/component
 import { css } from "emotion";
 import { setHomePage } from "./graphql";
 import { Mutation } from "react-apollo";
-import { withSnackbar, type WithSnackbarProps } from "webiny-admin/components";
+import { withSnackbar, type WithSnackbarProps } from "webiny-app-admin/components";
 import classNames from "classnames";
 
 const menuStyles = css({

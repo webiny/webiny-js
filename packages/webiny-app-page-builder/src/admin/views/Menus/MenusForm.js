@@ -5,14 +5,14 @@ import { Grid, Cell } from "webiny-ui/Grid";
 import { Input } from "webiny-ui/Input";
 import { ButtonPrimary } from "webiny-ui/Button";
 import MenuItems from "./MenusForm/MenuItems";
-import type { WithCrudFormProps } from "webiny-admin/components";
+import type { WithCrudFormProps } from "webiny-app-admin/components";
 import { CircularProgress } from "webiny-ui/Progress";
 
 import {
     SimpleForm,
     SimpleFormFooter,
     SimpleFormContent
-} from "webiny-admin/components/SimpleForm";
+} from "webiny-app-admin/components/SimpleForm";
 
 type Props = WithCrudFormProps;
 type State = {

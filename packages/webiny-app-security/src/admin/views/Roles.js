@@ -3,9 +3,9 @@ import { graphql } from "react-apollo";
 import { pick } from "lodash";
 import { get } from "dot-prop-immutable";
 import { compose } from "recompose";
-import { SplitView, LeftPanel, RightPanel } from "webiny-admin/components/SplitView";
-import { FloatingActionButton } from "webiny-admin/components/FloatingActionButton";
-import { withCrud } from "webiny-admin/components";
+import { SplitView, LeftPanel, RightPanel } from "webiny-app-admin/components/SplitView";
+import { FloatingActionButton } from "webiny-app-admin/components/FloatingActionButton";
+import { withCrud } from "webiny-app-admin/components";
 import { i18n } from "webiny-app/i18n";
 
 import RolesDataList from "./Roles/RolesDataList";

@@ -9,8 +9,8 @@ import { withRouter } from "react-router-dom";
 import { Query, withApollo } from "react-apollo";
 import { getPage } from "webiny-app-page-builder/admin/graphql/pages";
 import { withSavedElements } from "webiny-app-page-builder/admin/components";
-import Snackbar from "webiny-admin/plugins/Snackbar/Snackbar";
-import { withSnackbar } from "webiny-admin/components";
+import Snackbar from "webiny-app-admin/plugins/Snackbar/Snackbar";
+import { withSnackbar } from "webiny-app-admin/components";
 
 import { Typography } from "webiny-ui/Typography";
 import { LoadingEditor, LoadingTitle } from "./EditorStyled.js";

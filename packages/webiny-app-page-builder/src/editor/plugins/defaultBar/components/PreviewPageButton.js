@@ -4,7 +4,7 @@ import { connect } from "webiny-app-page-builder/editor/redux";
 import { getPage } from "webiny-app-page-builder/editor/selectors";
 import { compose } from "recompose";
 import { omit, isEqual } from "lodash";
-import { withSnackbar } from "webiny-admin/components";
+import { withSnackbar } from "webiny-app-admin/components";
 import { withRouter } from "react-router-dom";
 import { MenuItem } from "webiny-ui/Menu";
 import { withPageBuilderSettings } from "webiny-app-page-builder/admin/components";

@@ -4,7 +4,7 @@ import { graphql } from "react-apollo";
 import { compose, withHandlers, withState } from "recompose";
 import { Form } from "webiny-form";
 import { i18n } from "webiny-app/i18n";
-import { EmptyLayout } from "webiny-admin/components/EmptyLayout";
+import { EmptyLayout } from "webiny-app-admin/components/EmptyLayout";
 import { Elevation } from "webiny-ui/Elevation";
 import { ButtonPrimary } from "webiny-ui/Button";
 import { Input } from "webiny-ui/Input";

@@ -7,7 +7,7 @@ import { Query } from "react-apollo";
 import { get } from "lodash";
 import { GET_RECAPTCHA_SETTINGS } from "./graphql";
 import ReCaptchaSettingsDialog from "./ReCaptchaSettingsDialog";
-import { withSnackbar } from "webiny-admin/components";
+import { withSnackbar } from "webiny-app-admin/components";
 import { Alert } from "webiny-ui/Alert";
 import { I18NInput } from "webiny-app-i18n/admin/components";
 
