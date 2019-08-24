@@ -52,6 +52,9 @@
     "react": "^16.6.0",
     "react-dom": "^16.6.0"
   },
+  "publishConfig": {
+    "access": "public"
+  },
   "scripts": {
     "build": "babel src -d ${DEST:-build} --source-maps --copy-files",
     "flow-copy-source": "flow-copy-source src ${DEST:-build}",

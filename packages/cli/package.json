@@ -64,6 +64,9 @@
     "write-json-file": "^3.1.0",
     "yargs": "^12.0.5"
   },
+  "publishConfig": {
+    "access": "public"
+  },
   "scripts": {
     "build": "rimraf ./lib && babel src -d lib --source-maps --copy-files --ignore=src/init/template --include-dotfiles",
     "build:watch": "rimraf ./lib && babel src -d lib --source-maps --copy-files --ignore=src/init/template --watch -v --include-dotfiles"

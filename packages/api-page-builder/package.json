@@ -26,6 +26,9 @@
     "@babel/preset-flow": "^7.0.0",
     "flow-copy-source": "^2.0.2"
   },
+  "publishConfig": {
+    "access": "public"
+  },
   "scripts": {
     "build": "babel src -d ${DEST:-build} --source-maps --copy-files",
     "flow-copy-source": "flow-copy-source src ${DEST:-build}",
