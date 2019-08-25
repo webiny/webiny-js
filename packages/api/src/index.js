@@ -1,2 +1,2 @@
 // @flow
-export { createHandler } from "./lambda/lambda";
+export { createHandler } from "./createHandler";

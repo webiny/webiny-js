@@ -4,8 +4,8 @@ import { applyMiddleware } from "graphql-middleware";
 import { addSchemaLevelResolveFunction } from "graphql-tools";
 import { Entity } from "@webiny/entity";
 import type { GraphQLMiddlewarePluginType } from "@webiny/api/types";
-import { prepareSchema } from "../graphql/prepareSchema";
 import { getPlugins } from "@webiny/plugins";
+import { prepareSchema } from "./graphql/prepareSchema";
 
 export const createHandler = async (config: Object) => {
     await requestSetup(config);
@@ -60,23 +60,32 @@ export const createHandler = async (config: Object) => {
         }
     });
 
+    const apolloConfig = config.apollo || {};
+
     const apollo = new ApolloServer({
         ...(config.apollo || {}),
         schema,
         cors: {
             origin: "*",
-            methods: "GET,HEAD,POST"
+            methods: "GET,HEAD,POST",
+            ...(apolloConfig.cors || {})
         },
-        context: async ({ event }) => {
+        context: async ({ event, context }) => {
             await requestSetup(config);
 
-            return {
+            const reqContext = {
                 event,
                 config,
                 getDatabase() {
                     return config.database.mongodb;
                 }
             };
+
+            if (typeof apolloConfig.context === "function") {
+                return await apolloConfig.context({ event, context }, reqContext);
+            }
+
+            return reqContext;
         }
     });
 
@@ -100,16 +109,5 @@ const requestSetup = async (config: Object = {}) => {
     if (config.entity) {
         Entity.driver = config.entity.driver;
         Entity.crud = config.entity.crud;
-    }
-
-    // Check if connection is valid and if Settings table exists - this will tell us if the system is installed.
-    if (process.env.NODE_ENV === "development") {
-        try {
-            await Entity.getDriver().test();
-        } catch (e) {
-            throw Error(
-                `The following error occurred while initializing Entity driver: "${e.message}". Did you enter the correct database information?`
-            );
-        }
     }
 };
