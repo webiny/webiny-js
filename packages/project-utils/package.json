@@ -21,7 +21,7 @@
   },
   "license": "MIT",
   "scripts": {
-    "build": "babel src -d dist --source-maps --copy-files && cp package.json dist",
+    "build": "rm -rf dist && mkdir dist && cp -r aliases app-babel cra packages package.json dist/",
     "prepublishOnly": "yarn build"
   }
 }
