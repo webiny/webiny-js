@@ -6,7 +6,7 @@
     "apollo-link-http": "^1.5.9",
     "apollo-link-batch-http": "^1.2.3",
     "cross-fetch": "^3.0.2",
-    "theme": "0.0.0",
+    "theme": "^1.0.0",
     "react-apollo": "^2.5.8",
     "react-helmet": "^5.2.0",
     "react-hot-loader": "^4.3.5",
@@ -39,7 +39,8 @@
   },
   "scripts": {
     "analyze": "source-map-explorer build/static/js/main.*",
-    "build": "cross-env SKIP_PREFLIGHT_CHECK=true INLINE_RUNTIME_CHUNK=false rescripts build",
+    "build": "cross-env SKIP_PREFLIGHT_CHECK=true INLINE_RUNTIME_CHUNK=false PUBLIC_URL=/dev rescripts build",
+    "postbuild": "webpack --config ./handler/webpack.config.js",
     "build:ssr": "cross-env NODE_ENV=production webpack --progress --mode production --config ./ssr/webpack.config.js",
     "start": "cross-env SKIP_PREFLIGHT_CHECK=true rescripts start",
     "test": "rescripts test --env=jsdom",

@@ -2,13 +2,12 @@
   "name": "admin",
   "version": "0.1.0",
   "private": true,
-  "homepage": "/admin",
   "dependencies": {
     "apollo-cache-inmemory": "^1.1.12",
     "apollo-client": "^2.2.8",
     "apollo-link": "^1.2.1",
     "apollo-link-batch-http": "^1.2.3",
-    "theme": "0.0.0",
+    "theme": "^1.0.0",
     "react-hot-loader": "^4.3.5",
     "@webiny/app-admin": "^1.0.0",
     "@webiny/app": "^1.0.0",
@@ -40,7 +39,8 @@
   "scripts": {
     "analyze": "source-map-explorer build/static/js/main.*",
     "start": "SKIP_PREFLIGHT_CHECK=true PORT=3001 rescripts start",
-    "build": "cross-env PUBLIC_URL=/admin SKIP_PREFLIGHT_CHECK=true rescripts build",
+    "build": "cross-env PUBLIC_URL=/dev/admin SKIP_PREFLIGHT_CHECK=true rescripts build",
+    "postbuild": "webpack --config ./handler/webpack.config.js",
     "test": "rescripts test --env=jsdom",
     "eject": "react-scripts eject"
   },
