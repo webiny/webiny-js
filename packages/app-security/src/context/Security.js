@@ -5,8 +5,9 @@ import { withRouter } from "react-router-dom";
 import { withApollo, type WithApolloClient } from "react-apollo";
 import localStorage from "store";
 import observe from "store/plugins/observe";
+// TODO: discuss with @adrian - this introduces a dependency on admin app
 import { withSnackbar } from "@webiny/app-admin/components";
-import { getCurrentUser, loginUsingToken } from "./graphql";
+import { getCurrentUser, loginUsingToken } from "../components/graphql";
 import { setIdentity } from "@webiny/app-security";
 const { Provider, Consumer } = React.createContext();
 

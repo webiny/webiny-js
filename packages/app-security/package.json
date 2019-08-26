@@ -15,6 +15,7 @@
   "dependencies": {
     "@babel/runtime": "^7.0.0",
     "@webiny/app": "^1.0.0",
+    "@webiny/app-admin": "^1.0.0",
     "@webiny/form": "^1.0.0",
     "@webiny/plugins": "^1.0.0",
     "@webiny/ui": "^1.0.0",

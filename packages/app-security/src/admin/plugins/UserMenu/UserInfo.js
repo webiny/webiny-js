@@ -2,7 +2,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { css } from "emotion";
-import { withSecurity, type WithSecurityPropsType } from "@webiny/app-security/components";
+import { withSecurity, type WithSecurityPropsType } from "@webiny/app-security/context";
 import { Image } from "@webiny/app/components";
 import { ListItem, ListItemGraphic } from "@webiny/ui/List";
 import { Typography } from "@webiny/ui/Typography";

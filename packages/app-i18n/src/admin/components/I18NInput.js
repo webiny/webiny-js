@@ -4,7 +4,7 @@ import { Input } from "@webiny/ui/Input";
 import I18NInputLocalesOverlay from "./I18NInputLocalesOverlay";
 import { ReactComponent as I18NIcon } from "./icons/round-translate-24px.svg";
 import { css } from "emotion";
-import { useI18N } from "@webiny/app-i18n/components";
+import { useI18N } from "@webiny/app-i18n/context";
 import { Tooltip } from "@webiny/ui/Tooltip";
 import classNames from "classnames";
 import { cloneDeep } from "lodash";

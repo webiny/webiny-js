@@ -4,7 +4,7 @@ System.config({
         "@webiny/project-utils/*": "./packages/project-utils/src/*",
         "@webiny/mongo-http-client/*": "./packages/mongo-http-client/src/*",
         "@webiny/app/*": "./packages/app/src/*",
-        "@webiny/app-admin/*": "./packages/admin/src/*",
+        "@webiny/app-admin/*": "./packages/app-admin/src/*",
         "@webiny/app-page-builder/*": "./packages/app-page-builder/src/*",
         "@webiny/api-page-builder/*": "./packages/api-page-builder/src/*",
         "@webiny/app-security/*": "./packages/app-security/src/*",

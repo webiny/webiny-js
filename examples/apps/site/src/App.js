@@ -7,7 +7,7 @@ import { UiProvider } from "@webiny/app/context/ui";
 import plugins from "./plugins";
 import myTheme from "theme";
 import { GenericNotFoundPage, GenericErrorPage } from "./pageBuilder";
-import { I18NProvider } from "@webiny/app-i18n/components";
+import { I18NProvider } from "@webiny/app-i18n/context";
 
 registerPlugins(plugins);
 

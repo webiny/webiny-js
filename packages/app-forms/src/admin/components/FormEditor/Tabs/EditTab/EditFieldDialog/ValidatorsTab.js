@@ -11,7 +11,7 @@ import { Form } from "@webiny/form";
 import { cloneDeep, debounce } from "lodash";
 import { Grid, Cell } from "@webiny/ui/Grid";
 import { I18NInput } from "@webiny/app-i18n/admin/components";
-import { useI18N } from "@webiny/app-i18n/components";
+import { useI18N } from "@webiny/app-i18n/context";
 
 const onEnabledChange = ({ i18n, data, validationValue, onChangeValidation, validator }) => {
     if (data) {

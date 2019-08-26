@@ -6,7 +6,7 @@ import { Grid, Cell } from "@webiny/ui/Grid";
 import I18NRichTextEditor from "./I18NRichTextEditor";
 import { OverlayLayout } from "@webiny/app-admin/components/OverlayLayout";
 import { Form } from "@webiny/form";
-import { useI18N } from "@webiny/app-i18n/components";
+import { useI18N } from "@webiny/app-i18n/context";
 import { SplitView, LeftPanel, RightPanel } from "@webiny/app-admin/components/SplitView";
 import { List, ListItem } from "@webiny/ui/List";
 import { Typography } from "@webiny/ui/Typography";

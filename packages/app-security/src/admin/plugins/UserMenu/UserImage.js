@@ -1,7 +1,7 @@
 // @flow
 import React from "react";
 import { Avatar } from "@webiny/ui/Avatar";
-import { withSecurity, type WithSecurityPropsType } from "@webiny/app-security/components";
+import { withSecurity, type WithSecurityPropsType } from "@webiny/app-security/context";
 import { Image } from "@webiny/app/components";
 
 class UserAvatar extends React.Component<WithSecurityPropsType> {

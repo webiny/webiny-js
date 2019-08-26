@@ -4,7 +4,7 @@ import { Grid, Cell } from "@webiny/ui/Grid";
 import { camelCase } from "lodash";
 import { useFormEditor } from "@webiny/app-forms/admin/components/FormEditor/Context";
 import { I18NInput } from "@webiny/app-i18n/admin/components";
-import { useI18N } from "@webiny/app-i18n/components";
+import { useI18N } from "@webiny/app-i18n/context";
 
 const GeneralTab = ({ field, form }) => {
     const { Bind, setValue } = form;

@@ -4,19 +4,16 @@ import store from "store";
 import observe from "store/plugins/observe";
 store.addPlugin(observe);
 
-const { Provider, Consumer } = React.createContext();
+const LOCAL_STORAGE_KEY = "webiny_dark_mode";
 
-export const ThemeProvider = ({ value, children }: Object) => {
-    return <Provider value={value}>{children}</Provider>;
-};
+const { Provider, Consumer } = React.createContext();
 
 export const ThemeConsumer = ({ children }: Object) => (
     <Consumer>{theme => React.cloneElement(children, { theme })}</Consumer>
 );
 
-const LOCAL_STORAGE_KEY = "webiny_dark_mode";
 
-class Theme extends React.Component<*, *> {
+export class ThemeProvider extends React.Component<*, *> {
     state = {
         dark: false
     };
@@ -62,8 +59,6 @@ class Theme extends React.Component<*, *> {
             toggleDarkMode: this.toggleDarkMode,
             theme: { dark: this.state.dark }
         };
-        return <ThemeProvider value={theme}>{this.props.children}</ThemeProvider>;
+        return <Provider value={theme}>{this.props.children}</Provider>;
     }
 }
-
-export default Theme;

@@ -3,10 +3,10 @@ import { hot } from "react-hot-loader";
 import React, { Fragment } from "react";
 import { UiProvider } from "@webiny/app/context/ui";
 import { registerPlugins, getPlugins } from "@webiny/plugins";
-import { Theme as AdminTheme } from "@webiny/app-admin";
+import { ThemeProvider } from "@webiny/app-admin/context";
 import { PageBuilderProvider } from "@webiny/app-page-builder/context";
-import { Security } from "@webiny/app-security/components";
-import { I18NProvider } from "@webiny/app-i18n/components";
+import { SecurityProvider } from "@webiny/app-security/context";
+import { I18NProvider } from "@webiny/app-i18n/context";
 import Login from "@webiny/app-security/admin/views/Login";
 import { CircularProgress } from "@webiny/ui/Progress";
 import myTheme from "theme";
@@ -22,10 +22,10 @@ const App = () => {
     return (
         <UiProvider>
             <I18NProvider>
-                <Security>
+                <SecurityProvider>
                     {({ initialLoad, authenticated, notAuthenticated }) => (
                         <PageBuilderProvider theme={myTheme} isEditor>
-                            <AdminTheme>
+                            <ThemeProvider>
                                 {initialLoad(<CircularProgress />)}
                                 {authenticated(
                                     <Fragment>
@@ -38,10 +38,10 @@ const App = () => {
                                     </Fragment>
                                 )}
                                 {notAuthenticated(<Login />)}
-                            </AdminTheme>
+                            </ThemeProvider>
                         </PageBuilderProvider>
                     )}
-                </Security>
+                </SecurityProvider>
             </I18NProvider>
         </UiProvider>
     );

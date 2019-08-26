@@ -9,7 +9,7 @@ import { ReactComponent as HandleIcon } from "../../icons/round-drag_indicator-2
 import { rowHandle, EditContainer, fieldHandle, fieldContainer, Row, RowContainer } from "./Styled";
 import { useFormEditor } from "@webiny/app-forms/admin/components/FormEditor/Context";
 import type { FieldLayoutPositionType } from "@webiny/app-forms/types";
-import { useI18N } from "@webiny/app-i18n/components";
+import { useI18N } from "@webiny/app-i18n/context";
 
 import { i18n } from "@webiny/app/i18n";
 const t = i18n.namespace("FormsApp.Editor.EditTab");
