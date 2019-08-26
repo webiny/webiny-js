@@ -4,7 +4,7 @@ import gql from "graphql-tag";
 import { pick } from "lodash";
 import { get } from "dot-prop-immutable";
 import { graphql } from "react-apollo";
-import { withSecurity } from "@webiny/app-security/context";
+import { withSecurity } from "@webiny/app-security/admin/context";
 import { i18n } from "@webiny/app/i18n";
 import { Form } from "@webiny/form";
 import { Grid, Cell } from "@webiny/ui/Grid";

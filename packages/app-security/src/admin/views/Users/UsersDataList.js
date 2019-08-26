@@ -2,7 +2,7 @@ import React from "react";
 import { withRouter } from "react-router-dom";
 import { compose } from "recompose";
 import { i18n } from "@webiny/app/i18n";
-import { withSecurity } from "@webiny/app-security/context";
+import { withSecurity } from "@webiny/app-security/admin/context";
 import { ConfirmationDialog } from "@webiny/ui/ConfirmationDialog";
 import { Tooltip } from "@webiny/ui/Tooltip";
 import { Image } from "@webiny/app/components";
