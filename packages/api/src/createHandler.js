@@ -65,11 +65,6 @@ export const createHandler = async (config: Object) => {
     const apollo = new ApolloServer({
         ...(config.apollo || {}),
         schema,
-        cors: {
-            origin: "*",
-            methods: "GET,HEAD,POST",
-            ...(apolloConfig.cors || {})
-        },
         context: async ({ event, context }) => {
             await requestSetup(config);
 
@@ -89,7 +84,13 @@ export const createHandler = async (config: Object) => {
         }
     });
 
-    const handler = apollo.createHandler();
+    const handler = apollo.createHandler({
+        cors: {
+            origin: "*",
+            methods: "GET,HEAD,POST",
+            ...(apolloConfig.cors || {})
+        }
+    });
 
     return (event: Object, context: Object): Promise<Object> => {
         return new Promise((resolve, reject) => {
