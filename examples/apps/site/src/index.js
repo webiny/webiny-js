@@ -11,7 +11,7 @@ const render = module.hot ? ReactDOM.render : ReactDOM.hydrate;
 
 render(
     <ApolloProvider client={apolloClient}>
-        <BrowserRouter>
+        <BrowserRouter basename={"/dev"}>
             <App />
         </BrowserRouter>
     </ApolloProvider>,

@@ -1,15 +1,14 @@
 name: webiny-cms-project-apps
 
 site:
-  component: '@serverless/function'
+  component: '../../node_modules/@webiny/serverless-app'
   inputs:
     code: ./site/build
     handler: handler.handler
     name: webiny-site
     description: Webiny Site
-
 admin:
-  component: '@serverless/function'
+  component: '../../node_modules/@webiny/serverless-app'
   inputs:
     code: ./admin/build
     handler: handler.handler

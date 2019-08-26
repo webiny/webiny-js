@@ -6,6 +6,7 @@
     "apollo-server-lambda": "^2.6.9"
   },
   "scripts": {
-    "build": "babel src -d build --source-maps --copy-files"
+    "build": "babel src -d build --source-maps --copy-files",
+    "build:deploy": "cross-env NODE_ENV=production webpack --progress --mode production"
   }
 }

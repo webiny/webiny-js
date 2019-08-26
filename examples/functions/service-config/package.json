@@ -11,7 +11,7 @@
     "date-fns": "^1.29.0",
     "lodash": "^4.17.11",
     "mongodb": "^3.1.13",
-    "@webiny/entity-mongodb": "0.0.0",
+    "@webiny/entity-mongodb": "^1.0.0",
     "source-map-support": "^0.5.0"
   },
   "devDependencies": {

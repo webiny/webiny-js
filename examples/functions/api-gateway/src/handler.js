@@ -1,15 +1,17 @@
 import { ApolloGateway, RemoteGraphQLDataSource } from "@apollo/gateway";
 import { ApolloServer } from "apollo-server-lambda";
 
+const host = process.env.FUNCTIONS_HOST || "http://localhost:9000";
+
 export const handler = async (event, context) => {
     const gateway = new ApolloGateway({
         serviceList: [
-            { name: "files", url: "http://localhost:9000/function/files" },
-            { name: "pageBuilder", url: "http://localhost:9000/function/page-builder" },
-            { name: "security", url: "http://localhost:9000/function/security" },
-            { name: "i18n", url: "http://localhost:9000/function/i18n" },
-            { name: "forms", url: "http://localhost:9000/function/forms" }
-            // { name: "headless", url: "http://localhost:9000/function/headless" }
+            { name: "files", url: host + "/function/files" },
+            { name: "pageBuilder", url: host + "/function/page-builder" },
+            { name: "security", url: host + "/function/security" },
+            { name: "i18n", url: host + "/function/i18n" },
+            { name: "forms", url: host + "/function/forms" }
+            // { name: "headless", url: host + "/function/headless" }
         ],
         buildService({ url }) {
             return new RemoteGraphQLDataSource({
@@ -35,7 +37,12 @@ export const handler = async (event, context) => {
         }
     });
 
-    let apolloHandler = apollo.createHandler();
+    let apolloHandler = apollo.createHandler({
+        cors: {
+            origin: "*",
+            methods: "GET,HEAD,POST,OPTIONS"
+        }
+    });
 
     return new Promise((resolve, reject) => {
         apolloHandler(event, context, (error, data) => {
