@@ -24,7 +24,7 @@ const webinyConfig = {
         return config;
     },
     devServer: config => {
-        set(config, "proxy./files", process.env.REACT_APP_FUNCTIONS_HOST);
+        set(config, "proxy./files", process.env.REACT_APP_API_HOST);
         return config;
     }
 };
