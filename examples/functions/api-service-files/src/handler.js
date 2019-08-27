@@ -8,8 +8,12 @@ import filesPlugins from "@webiny/api-files/plugins";
 
 const plugins = new PluginsContainer([servicePlugins, securityPlugins, filesPlugins]);
 
+let apolloHandler;
+
 export const handler = async (event: Object, context: Object) => {
-    const config = await createConfig();
-    const apolloHandler = await createHandler({ plugins, config });
+    if (!apolloHandler) {
+        apolloHandler = await createHandler({ plugins, config: await createConfig() });
+    }
+
     return apolloHandler(event, context);
 };

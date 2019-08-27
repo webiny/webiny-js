@@ -10,7 +10,7 @@ gateway:
     hook: yarn build:deploy
     env:
       STAGE: __wby_inject__
-      FUNCTIONS_HOST: https://idumrbbokj.execute-api.us-east-1.amazonaws.com/dev
+      API_HOST: https://idumrbbokj.execute-api.us-east-1.amazonaws.com/dev
 files:
   component: '../../node_modules/@webiny/serverless-function'
   inputs:
