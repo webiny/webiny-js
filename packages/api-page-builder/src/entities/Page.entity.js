@@ -80,7 +80,7 @@ export const pageFactory = (context: Object): Class<IPage> => {
                 .onSet(value => (this.locked ? this.content : value));
 
             this.attr("settings")
-                .model(pageSettingsFactory({ getEntity, page: this }))
+                .model(pageSettingsFactory({ context, page: this }))
                 .onSet(value => (this.locked ? this.settings : value));
 
             this.attr("version").integer();

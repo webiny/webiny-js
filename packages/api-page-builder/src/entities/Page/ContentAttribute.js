@@ -1,13 +1,12 @@
 // @flow
 import { ObjectAttribute } from "@webiny/model";
-import { getPlugins } from "@webiny/plugins";
 
 const isValidElement = element => {
     return element && element.type;
 };
 
-const getModifierPlugins = (elementType, modifierType) => {
-    return getPlugins("pb-page-element-modifier").filter(plugin => {
+const getModifierPlugins = (elementType, modifierType, plugins) => {
+    return plugins.byType("pb-page-element-modifier").filter(plugin => {
         if (plugin.elementType === "*" || plugin.elementType === elementType) {
             return typeof plugin[modifierType] === "function";
         }
@@ -20,7 +19,7 @@ const syncModifiers = ({ context, modifierType, element }) => {
         return;
     }
 
-    const plugins = getModifierPlugins(element.type, modifierType);
+    const plugins = getModifierPlugins(element.type, modifierType, context.plugins);
 
     for (let i = 0; i < plugins.length; i++) {
         let plugin = plugins[i];
@@ -39,7 +38,7 @@ const asyncModifiers = async ({ context, modifierType, element }) => {
         return;
     }
 
-    const plugins = getModifierPlugins(element.type, modifierType);
+    const plugins = getModifierPlugins(element.type, modifierType, context.plugins);
 
     for (let i = 0; i < plugins.length; i++) {
         let plugin = plugins[i];

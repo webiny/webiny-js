@@ -1,7 +1,6 @@
 // @flow
 import { Entity, type EntityCollection } from "@webiny/entity";
 import mdbid from "mdbid";
-import { getPlugins } from "@webiny/plugins";
 import { pick } from "lodash";
 import { createFieldModel, createSettingsModel, FormStatsModel } from "./Form";
 import got from "got";
@@ -237,7 +236,7 @@ export default (context: Object) => {
             const { FormSubmission } = getEntities();
 
             // Validate data.
-            const validatorPlugins = getPlugins("form-field-validator");
+            const validatorPlugins = context.plugins.byType("form-field-validator");
             const fields = this.fields;
             const data = pick(rawData, fields.map(field => field.fieldId));
             if (Object.keys(data).length === 0) {
@@ -302,7 +301,7 @@ export default (context: Object) => {
             try {
                 // Execute triggers
                 if (this.triggers) {
-                    const plugins = getPlugins("form-trigger-handler");
+                    const plugins = context.plugins.byType("form-trigger-handler");
                     for (let i = 0; i < plugins.length; i++) {
                         let plugin = plugins[i];
                         this.triggers[plugin.trigger] &&

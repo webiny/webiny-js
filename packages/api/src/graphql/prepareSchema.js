@@ -4,22 +4,25 @@ import { buildFederatedSchema } from "@apollo/federation";
 import GraphQLJSON from "graphql-type-json";
 import { GraphQLDateTime } from "graphql-iso-date";
 import GraphQLLong from "graphql-type-long";
-import { getPlugins } from "@webiny/plugins";
 import { RefInput } from "./RefInputScalar";
+import type { PluginsContainerType } from "../types";
+
+type PrepareSchemaParamsType = { config: Object, plugins: PluginsContainerType };
 
 /**
  * @return {schema, context}
  */
-export async function prepareSchema(config: Object) {
+export async function prepareSchema({ config, plugins }: PrepareSchemaParamsType) {
     // This allows developers to register more plugins dynamically, before the graphql schema is instantiated.
-    const gqlPlugins = getPlugins("graphql-schema");
+    const gqlPlugins = plugins.byType("graphql-schema");
+    
     for (let i = 0; i < gqlPlugins.length; i++) {
         if (typeof gqlPlugins[i].prepare === "function") {
             await gqlPlugins[i].prepare(config);
         }
     }
 
-    const scalars = getPlugins("graphql-scalar").map(item => item.scalar);
+    const scalars = plugins.byType("graphql-scalar").map(item => item.scalar);
 
     const schemaDefs = [
         {
@@ -41,7 +44,8 @@ export async function prepareSchema(config: Object) {
         }
     ];
 
-    const schemaPlugins = getPlugins("graphql-schema");
+    // Fetch schema plugins again, in case there were new plugins registered in the meantime.
+    const schemaPlugins = plugins.byType("graphql-schema");
     for (let i = 0; i < schemaPlugins.length; i++) {
         const { schema } = schemaPlugins[i];
         if (!schema) {
@@ -54,6 +58,6 @@ export async function prepareSchema(config: Object) {
             schemaDefs.push(schema);
         }
     }
-
+    
     return buildFederatedSchema([...schemaDefs]);
 }

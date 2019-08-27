@@ -1,8 +1,13 @@
 // @flow
 import type { Entity } from "@webiny/entity";
-import { type PluginType as _PluginType } from "@webiny/plugins/types";
+import type { PluginsContainer } from "./PluginsContainer";
 
-export type PluginType = _PluginType;
+export type PluginType = Object & {
+    name: string,
+    type: string
+};
+
+export type PluginsContainerType = PluginsContainer;
 
 export type EntityPluginType = PluginType & {
     namespace?: string,

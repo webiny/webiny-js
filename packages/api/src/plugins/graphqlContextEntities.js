@@ -1,6 +1,5 @@
 // @flow
 import type { GraphQLContextPluginType, EntityPluginType } from "@webiny/api/types";
-import { getPlugins } from "@webiny/plugins";
 import { EntityPool } from "@webiny/entity";
 
 const registerEntityClass = ({ context, entityClass }) => {
@@ -24,7 +23,7 @@ const graphqlContextEntities: GraphQLContextPluginType = {
             return context.getEntities()[name];
         };
 
-        getPlugins("entity").forEach((plugin: EntityPluginType) => {
+        context.plugins.byType("entity").forEach((plugin: EntityPluginType) => {
             if (!context[plugin.namespace]) {
                 context[plugin.namespace] = {
                     entities: {}

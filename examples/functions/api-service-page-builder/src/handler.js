@@ -1,13 +1,28 @@
 // @flow
-import { registerPlugins } from "@webiny/plugins";
-import { createHandler as createBaseHandler } from "@webiny/api";
+import { createHandler, PluginsContainer } from "@webiny/api";
 import createConfig from "service-config";
-import plugins from "./plugins";
+import apiPlugins from "@webiny/api/plugins";
+import securityPlugins from "@webiny/api-security/plugins/service";
+import pageBuilderPlugins from "@webiny/api-page-builder/plugins";
+import mailchimpPlugins from "@webiny/api-mailchimp";
+import gtmPlugins from "@webiny/api-google-tag-manager";
+import cookiePolicyPlugins from "@webiny/api-cookie-policy";
+import i18nPlugins from "@webiny/api-i18n/plugins/service";
+import fileEntityPlugins from "@webiny/api-files/plugins/entities";
 
-registerPlugins(plugins);
+const plugins = new PluginsContainer([
+    apiPlugins,
+    securityPlugins,
+    i18nPlugins,
+    pageBuilderPlugins,
+    mailchimpPlugins,
+    gtmPlugins,
+    cookiePolicyPlugins,
+    fileEntityPlugins
+]);
 
 export const handler = async (event: Object, context: Object) => {
     const config = await createConfig();
-    const apolloHandler = await createBaseHandler(config);
+    const apolloHandler = await createHandler({ plugins, config });
     return apolloHandler(event, context);
 };

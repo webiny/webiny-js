@@ -13,7 +13,6 @@
     "@babel/runtime": "^7.0.0",
     "@webiny/api": "^1.0.0",
     "@webiny/api-i18n": "^1.0.0",
-    "@webiny/plugins": "^1.0.0",
     "source-map-support": "^0.5.0"
   },
   "devDependencies": {

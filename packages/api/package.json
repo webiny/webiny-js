@@ -18,7 +18,6 @@
     "@babel/runtime": "^7.0.0",
     "@webiny/entity": "^1.0.0",
     "@webiny/model": "^1.0.0",
-    "@webiny/plugins": "^1.0.0",
     "apollo-server-lambda": "^2.6.7",
     "graphql": "^14.4.2",
     "graphql-middleware": "^3.0.2",

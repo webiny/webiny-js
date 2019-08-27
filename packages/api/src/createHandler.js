@@ -3,23 +3,27 @@ import { ApolloServer } from "apollo-server-lambda";
 import { applyMiddleware } from "graphql-middleware";
 import { addSchemaLevelResolveFunction } from "graphql-tools";
 import { Entity } from "@webiny/entity";
-import type { GraphQLMiddlewarePluginType } from "@webiny/api/types";
-import { getPlugins } from "@webiny/plugins";
+import type { PluginsContainerType, GraphQLMiddlewarePluginType } from "@webiny/api/types";
 import { prepareSchema } from "./graphql/prepareSchema";
 
-export const createHandler = async (config: Object) => {
+export type CreateHandlerParamsType = {
+    plugins: PluginsContainerType,
+    config: Object
+};
+
+export const createHandler = async ({ config, plugins }: CreateHandlerParamsType) => {
     await requestSetup(config);
 
-    let schema = await prepareSchema(config);
+    let schema = await prepareSchema({ plugins, config });
 
     const registeredMiddleware: Array<GraphQLMiddlewarePluginType> = [];
 
-    const middlewarePlugins = getPlugins("graphql-middleware");
+    const middlewarePlugins = plugins.byType("graphql-middleware");
     for (let i = 0; i < middlewarePlugins.length; i++) {
         let plugin = middlewarePlugins[i];
         const middleware =
             typeof plugin.middleware === "function"
-                ? await plugin.middleware({ config })
+                ? await plugin.middleware({ config, plugins })
                 : plugin.middleware;
         if (Array.isArray(middleware)) {
             registeredMiddleware.push(...middleware);
@@ -40,7 +44,7 @@ export const createHandler = async (config: Object) => {
         delete info.operation["__runAtMostOnce"];
 
         // Process `graphql-context` plugins
-        const ctxPlugins = getPlugins("graphql-context");
+        const ctxPlugins = plugins.byType("graphql-context");
         for (let i = 0; i < ctxPlugins.length; i++) {
             if (typeof ctxPlugins[i].preApply === "function") {
                 await ctxPlugins[i].preApply(context);
@@ -59,7 +63,7 @@ export const createHandler = async (config: Object) => {
             }
         }
     });
-
+    
     const apolloConfig = config.apollo || {};
 
     const apollo = new ApolloServer({
@@ -71,6 +75,7 @@ export const createHandler = async (config: Object) => {
             const reqContext = {
                 event,
                 config,
+                plugins,
                 getDatabase() {
                     return config.database.mongodb;
                 }
