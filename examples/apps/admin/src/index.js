@@ -9,7 +9,7 @@ import apolloClient from "./config/apollo";
 
 ReactDOM.render(
     <ApolloProvider client={apolloClient}>
-        <BrowserRouter basename={"/dev/admin"}>
+        <BrowserRouter basename={process.env.PUBLIC_URL}>
             <App />
             <Route exact path="/" render={() => <Redirect to="/page-builder/pages" />} />
         </BrowserRouter>
