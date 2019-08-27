@@ -39,7 +39,9 @@
   },
   "scripts": {
     "analyze": "source-map-explorer build/static/js/main.*",
-    "build": "cross-env SKIP_PREFLIGHT_CHECK=true INLINE_RUNTIME_CHUNK=false PUBLIC_URL=/dev rescripts build",
+    "build": "cross-env SKIP_PREFLIGHT_CHECK=true INLINE_RUNTIME_CHUNK=false rescripts build",
+    "build:dev": "cross-env PUBLIC_URL=/dev yarn build",
+    "build:prod": "cross-env PUBLIC_URL=/admin yarn build",
     "postbuild": "webpack --config ./handler/webpack.config.js",
     "build:ssr": "cross-env NODE_ENV=production webpack --progress --mode production --config ./ssr/webpack.config.js",
     "start": "cross-env SKIP_PREFLIGHT_CHECK=true rescripts start",

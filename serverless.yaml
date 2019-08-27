@@ -89,7 +89,7 @@ functions:
           method: get
     package:
       include:
-        - packages/files/build/handler.jwtSecret
+        - packages/files/build/handler.handler
   api-service-i18n:
     handler: examples/functions/api-service-i18n/build/handler.handler
     environment:
