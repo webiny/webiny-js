@@ -27,6 +27,8 @@
     "theme": "^1.0.0"
   },
   "devDependencies": {
+    "apollo-link-error": "^1.1.11",
+    "file-loader": "^4.2.0",
     "mime": "1.4.1",
     "node-sass": "^4.9.3",
     "null-loader": "^1.0.0",
@@ -44,8 +46,8 @@
   "scripts": {
     "analyze": "source-map-explorer build/static/js/main.*",
     "build": "rescripts build",
-    "build:dev": "env-cmd -f .env.dev yarn build && yarn build:dev:ssr",
-    "build:dev:ssr": "cross-env REACT_APP_ENV=ssr NODE_ENV=production env-cmd -f .env.dev webpack --progress --mode production --config ./ssr/webpack.config.js",
+    "build:dev": "cross-env NODE_ENV=production REACT_APP_ENV=browser env-cmd -f .env.dev yarn build && yarn build:dev:ssr",
+    "build:dev:ssr": "cross-env NODE_ENV=production REACT_APP_ENV=ssr env-cmd -f .env.dev webpack --progress --mode production --config ./ssr/webpack.config.js",
     "build:prod": "env-cmd -f .env.prod yarn build",
     "build:handler": "webpack --config ./handler/webpack.config.js ",
     "postbuild": "yarn build:handler",

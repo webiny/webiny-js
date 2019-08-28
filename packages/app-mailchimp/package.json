@@ -21,7 +21,7 @@
     "react-emotion": "^9.2.4",
     "react-helmet": "^5.2.0",
     "react-router-dom": "^5.0.0",
-    "recompose": "^0.27.1"
+    "recompose": "^0.30.0"
   },
   "devDependencies": {
     "@babel/cli": "^7.5.5",

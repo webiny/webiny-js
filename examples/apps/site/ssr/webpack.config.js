@@ -25,7 +25,7 @@ module.exports = {
     node: {
         __dirname: false
     },
-    externals: [nodeExternals()],
+    //externals: [nodeExternals()],
     plugins: [
         new webpack.DefinePlugin({
             "process.env.REACT_APP_API_ENDPOINT": JSON.stringify(

@@ -1,4 +1,7 @@
-name: webiny-cms-project-apps
+service: webiny-cms
+app: webiny-cms
+org: pavel910
+name: webiny-cms
 
 site:
   component: '@serverless/function'
@@ -7,24 +10,24 @@ site:
     handler: handler.handler
     name: webiny-site
     description: Webiny Site
-admin:
-  component: '@serverless/function'
-  inputs:
-    code: ./admin/build
-    handler: handler.handler
-    name: webiny-admin
-    description: Webiny Admin
+#admin:
+#  component: '@serverless/function'
+#  inputs:
+#    code: ./admin/build
+#    handler: handler.handler
+#    name: webiny-admin
+#    description: Webiny Admin
 
 api:
   component: '@serverless/api'
   inputs:
     endpoints:
-      - path: /admin/{key+}
-        method: ANY
-        function: ${admin}
-      - path: /admin
-        method: ANY
-        function: ${admin}
+#      - path: /admin/{key+}
+#        method: ANY
+#        function: ${admin}
+#      - path: /admin
+#        method: ANY
+#        function: ${admin}
       - path: /{key+}
         method: ANY
         function: ${site}

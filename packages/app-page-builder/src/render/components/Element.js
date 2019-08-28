@@ -8,8 +8,6 @@ declare type ElementProps = {
     pageBuilder: Object
 };
 
-window.getPlugins = getPlugins;
-
 const Element = ({ element, pageBuilder: { theme } }: ElementProps) => {
     if (!element) {
         return null;

@@ -15,15 +15,13 @@ import { createOmitTypenameLink } from "@webiny/app/graphql";
 import injectContent from "./injectContent";
 import App from "../src/App";
 
-const createClient = ({ headers }) => {
+const createClient = () => {
     return new ApolloClient({
         ssrMode: true,
         link: ApolloLink.from([
             createOmitTypenameLink(),
             createHttpLink({
-                uri: process.env.REACT_APP_API_ENDPOINT,
-                credentials: "same-origin",
-                headers
+                uri: process.env.REACT_APP_API_ENDPOINT
             })
         ]),
         cache: new InMemoryCache({
@@ -34,7 +32,7 @@ const createClient = ({ headers }) => {
 };
 
 export const handler = async event => {
-    const apolloClient = createClient(event);
+    const apolloClient = createClient();
 
     const app = (
         <ApolloProvider client={apolloClient}>
@@ -48,6 +46,7 @@ export const handler = async event => {
     await getDataFromTree(app);
     const content = ReactDOMServer.renderToStaticMarkup(app);
     const state = apolloClient.extract();
+    console.log("Extracted state");
     const helmet = Helmet.renderStatic();
     return injectContent(content, helmet, state);
 };

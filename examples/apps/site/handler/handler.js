@@ -2,6 +2,8 @@ const fs = require("fs");
 const path = require("path");
 const mime = require("mime-types");
 
+const ssrCache = {};
+
 const createResponse = ({ type, body, isBase64Encoded }) => {
     return {
         statusCode: 200,
@@ -19,12 +21,16 @@ module.exports.handler = async event => {
     let type = mime.lookup(key);
     let isBase64Encoded = false;
 
+    console.log("site handler", JSON.stringify(event, null, 2));
+
     if (!type) {
         type = "text/html";
-        const { handler } = require("./ssr");
-        const body = await handler(event);
+        if (!ssrCache[event.requestContext.path]) {
+            const { handler } = require("./ssr");
+            ssrCache[event.requestContext.path] = await handler(event);
+        }
 
-        return createResponse({ type, body, isBase64Encoded });
+        return createResponse({ type, body: ssrCache[event.requestContext.path], isBase64Encoded });
     }
 
     const filePath = path.resolve(key);
