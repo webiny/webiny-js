@@ -2,6 +2,18 @@ const fs = require("fs");
 const path = require("path");
 const mime = require("mime-types");
 
+const createResponse = ({ type, body, isBase64Encoded }) => {
+    return {
+        statusCode: 200,
+        headers: {
+            "Access-Control-Allow-Origin": "*",
+            "Content-Type": type
+        },
+        body,
+        isBase64Encoded
+    };
+};
+
 module.exports.handler = async event => {
     let key = event.pathParameters ? event.pathParameters.key : "";
     let type = mime.lookup(key);
@@ -9,12 +21,15 @@ module.exports.handler = async event => {
 
     if (!type) {
         type = "text/html";
-        key = "index.html";
+        const { handler } = require("./ssr");
+        const body = await handler(event);
+
+        return createResponse({ type, body, isBase64Encoded });
     }
 
-    console.log("Requested key", key);
-
     const filePath = path.resolve(key);
+
+    // TODO: check if file should be base64 encoded
 
     try {
         let buffer = await new Promise((resolve, reject) => {
@@ -24,15 +39,11 @@ module.exports.handler = async event => {
             });
         });
 
-        return {
-            statusCode: 200,
-            headers: {
-                "Access-Control-Allow-Origin": "*",
-                "Content-Type": type
-            },
+        return createResponse({
+            type,
             body: buffer.toString(isBase64Encoded ? "base64" : "utf8"),
             isBase64Encoded
-        };
+        });
     } catch (e) {
         return {
             statusCode: 404,

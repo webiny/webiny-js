@@ -20,7 +20,7 @@ const createClient = ({ headers }) => {
         link: ApolloLink.from([
             createOmitTypenameLink(),
             createHttpLink({
-                uri: process.env.REACT_APP_FUNCTIONS_HOST,
+                uri: process.env.REACT_APP_API_ENDPOINT,
                 credentials: "same-origin",
                 headers
             })
@@ -37,7 +37,7 @@ export const handler = async event => {
 
     const app = (
         <ApolloProvider client={apolloClient}>
-            <StaticRouter location={event.path} context={{}}>
+            <StaticRouter basename={process.env.PUBLIC_URL} location={event.path} context={{}}>
                 <App />
             </StaticRouter>
         </ApolloProvider>

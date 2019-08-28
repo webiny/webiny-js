@@ -12,8 +12,6 @@ module.exports.handler = async event => {
         key = "index.html";
     }
 
-    console.log("Requested key", key);
-
     const filePath = path.resolve(key);
 
     try {

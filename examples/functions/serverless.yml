@@ -3,7 +3,8 @@ name: webiny-cms-project
 gateway:
   component: '../../node_modules/@webiny/serverless-function'
   inputs:
-    description: API Gateway
+    description: Apollo Gateway
+    memory: 512
     code: ./api-gateway/build
     handler: handler.handler
     root: ./api-gateway
@@ -14,6 +15,7 @@ gateway:
 files:
   component: '../../node_modules/@webiny/serverless-function'
   inputs:
+    memory: 512
     code: ./api-service-files/build
     handler: handler.handler
     root: ./api-service-files
@@ -25,6 +27,7 @@ files:
 i18n:
   component: '../../node_modules/@webiny/serverless-function'
   inputs:
+    memory: 512
     code: ./api-service-i18n/build
     handler: handler.handler
     root: ./api-service-i18n
@@ -36,6 +39,7 @@ i18n:
 forms:
   component: '../../node_modules/@webiny/serverless-function'
   inputs:
+    memory: 512
     code: ./api-service-forms/build
     handler: handler.handler
     root: ./api-service-forms
@@ -47,6 +51,7 @@ forms:
 security:
   component: '../../node_modules/@webiny/serverless-function'
   inputs:
+    memory: 512
     code: ./api-service-security/build
     handler: handler.handler
     root: ./api-service-security
@@ -58,6 +63,7 @@ security:
 pageBuilder:
   component: '../../node_modules/@webiny/serverless-function'
   inputs:
+    memory: 512
     code: ./api-service-page-builder/build
     handler: handler.handler
     root: ./api-service-page-builder

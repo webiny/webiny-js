@@ -18,7 +18,7 @@ module.exports = {
         modules: [
             path.resolve("src"),
             path.resolve("node_modules"),
-            path.resolve("..", "..", "node_modules")
+            path.resolve("..", "..", "..", "node_modules")
         ]
     },
     target: "node",
@@ -46,7 +46,7 @@ module.exports = {
                 loader: "file-loader",
                 options: {
                     name: "static/media/[name].[hash:8].[ext]",
-                    publicPath: "/",
+                    publicPath: process.env.PUBLIC_URL,
                     emitFile: false
                 }
             }
