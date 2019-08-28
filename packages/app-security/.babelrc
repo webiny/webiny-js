@@ -16,7 +16,6 @@
         ["babel-plugin-lodash", { "id": ["lodash", "recompose"] }],
         ["@babel/plugin-proposal-class-properties"],
         ["@babel/plugin-proposal-object-rest-spread", {"useBuiltIns": true}],
-        ["@babel/plugin-syntax-dynamic-import"],
         ["@babel/plugin-transform-runtime"],
         ["babel-plugin-named-asset-import", {
             "loaderMap": {

@@ -1,5 +1,6 @@
 import "cross-fetch/polyfill";
-import "url-search-params-polyfill";
+import "core-js/stable";
+import "regenerator-runtime/runtime";
 import path from "path";
 import express from "express";
 import proxy from "express-http-proxy";

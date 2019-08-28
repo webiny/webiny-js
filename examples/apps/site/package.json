@@ -23,8 +23,8 @@
     "react-helmet": "^5.2.0",
     "react-hot-loader": "^4.3.5",
     "react-router-dom": "^5.0.0",
-    "theme": "^1.0.0",
-    "url-search-params-polyfill": "^5.1.0"
+    "regenerator-runtime": "^0.13.3",
+    "theme": "^1.0.0"
   },
   "devDependencies": {
     "mime": "1.4.1",

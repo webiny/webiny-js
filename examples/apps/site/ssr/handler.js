@@ -1,5 +1,6 @@
 import "cross-fetch/polyfill";
-import "url-search-params-polyfill";
+import "core-js/stable";
+import "regenerator-runtime/runtime";
 import React from "react";
 import { ApolloProvider } from "react-apollo";
 import { StaticRouter } from "react-router-dom";

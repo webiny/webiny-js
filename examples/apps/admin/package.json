@@ -3,12 +3,6 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "apollo-cache-inmemory": "^1.1.12",
-    "apollo-client": "^2.2.8",
-    "apollo-link": "^1.2.1",
-    "apollo-link-batch-http": "^1.2.3",
-    "theme": "^1.0.0",
-    "react-hot-loader": "^4.3.5",
     "@webiny/app-admin": "^1.0.0",
     "@webiny/app": "^1.0.0",
     "@webiny/ui": "^1.0.0",
@@ -21,10 +15,17 @@
     "@webiny/app-security": "^1.0.0",
     "@webiny/app-typeform": "^1.0.0",
     "@webiny/plugins": "^1.0.0",
+    "apollo-cache-inmemory": "^1.1.12",
+    "apollo-client": "^2.2.8",
+    "apollo-link": "^1.2.1",
+    "apollo-link-batch-http": "^1.2.3",
+    "core-js": "^3.2.1",
+    "cross-fetch": "^3.0.2",
+    "react-hot-loader": "^4.3.5",
     "react-router-dom": "^5.0.0",
     "react-apollo": "^2.5.8",
-    "url-search-params-polyfill": "^5.1.0",
-    "cross-fetch": "^3.0.2"
+    "regenerator-runtime": "^0.13.3",
+    "theme": "^1.0.0"
   },
   "devDependencies": {
     "@rescripts/cli": "^0.0.7",

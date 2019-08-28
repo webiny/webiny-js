@@ -14,8 +14,6 @@ module.exports = {
         "@babel/plugin-transform-destructuring",
         "@babel/plugin-proposal-class-properties",
         "@babel/plugin-proposal-object-rest-spread",
-        "@babel/plugin-transform-runtime",
-        "@babel/plugin-syntax-dynamic-import",
-        "babel-plugin-dynamic-import-node"
+        "@babel/plugin-transform-runtime"
     ]
 };

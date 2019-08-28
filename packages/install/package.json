@@ -13,12 +13,12 @@
   "description": "A small package for easy installation of Webiny apps and integrations.",
   "license": "MIT",
   "dependencies": {
-    "@babel/runtime": "^7.0.0",
+    "@babel/runtime": "^7.5.5",
     "chalk": "^2.4.1"
   },
   "devDependencies": {
-    "@babel/cli": "^7.0.0",
-    "@babel/core": "^7.0.0",
+    "@babel/cli": "^7.5.5",
+    "@babel/core": "^7.5.5",
     "babel-plugin-lodash": "^3.3.4"
   },
   "publishConfig": {
