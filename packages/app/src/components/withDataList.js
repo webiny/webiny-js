@@ -1,7 +1,7 @@
 // @flow
 import * as React from "react";
-import { lifecycle, withProps, withState, setDisplayName } from "recompose";
-import { compose, graphql } from "react-apollo";
+import { compose, lifecycle, withProps, withState, setDisplayName } from "recompose";
+import { graphql } from "react-apollo";
 import _ from "lodash";
 
 import type {
