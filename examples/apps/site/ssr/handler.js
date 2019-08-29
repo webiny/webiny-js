@@ -6,7 +6,7 @@ import { ApolloProvider } from "react-apollo";
 import { StaticRouter } from "react-router-dom";
 import ReactDOMServer from "react-dom/server";
 import Helmet from "react-helmet";
-import { getDataFromTree } from "react-apollo";
+import { getDataFromTree } from "@apollo/react-ssr";
 import ApolloClient from "apollo-client";
 import { ApolloLink } from "apollo-link";
 import { InMemoryCache } from "apollo-cache-inmemory";
@@ -33,10 +33,11 @@ const createClient = () => {
 
 export const handler = async event => {
     const apolloClient = createClient();
+    const context = {};
 
     const app = (
         <ApolloProvider client={apolloClient}>
-            <StaticRouter basename={process.env.PUBLIC_URL} location={event.path} context={{}}>
+            <StaticRouter basename={process.env.PUBLIC_URL} location={event.requestContext.path} context={context}>
                 <App />
             </StaticRouter>
         </ApolloProvider>
@@ -46,7 +47,6 @@ export const handler = async event => {
     await getDataFromTree(app);
     const content = ReactDOMServer.renderToStaticMarkup(app);
     const state = apolloClient.extract();
-    console.log("Extracted state");
     const helmet = Helmet.renderStatic();
     return injectContent(content, helmet, state);
 };

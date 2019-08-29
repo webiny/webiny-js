@@ -2,7 +2,6 @@ import ApolloClient from "apollo-client";
 import { ApolloLink } from "apollo-link";
 import { BatchHttpLink } from "apollo-link-batch-http";
 import { InMemoryCache } from "apollo-cache-inmemory";
-import { createAuthLink } from "@webiny/app-security/components";
 import { createOmitTypenameLink } from "@webiny/app/graphql";
 
 const isProduction = process.env.NODE_ENV === "production";
@@ -20,7 +19,6 @@ if (isProduction && process.env.REACT_APP_ENV === "browser") {
 export default new ApolloClient({
     link: ApolloLink.from([
         createOmitTypenameLink(),
-        createAuthLink(),
         new BatchHttpLink({ uri: process.env.REACT_APP_API_ENDPOINT })
     ]),
     cache

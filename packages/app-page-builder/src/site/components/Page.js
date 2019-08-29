@@ -1,7 +1,7 @@
 // @flow
 import * as React from "react";
 import type { Location } from "react-router-dom";
-import { Query } from "react-apollo";
+import { useQuery } from "react-apollo";
 import { Content, buildQueryProps } from "./Page/index";
 import { withPageBuilder } from "@webiny/app-page-builder/context";
 import type { WithPageBuilderPropsType } from "@webiny/app-page-builder/context";
@@ -22,58 +22,54 @@ const NO_ERROR_PAGE_DEFAULT =
     "Could not fetch error page nor was a default page provided (set via PageBuilderProvider).";
 
 const Page = ({ pageBuilder, location }: Props) => {
-    const props = buildQueryProps({ location, defaultPages });
+    const { query, ...options } = buildQueryProps({ location, defaultPages });
 
-    return (
-        <Query {...props}>
-            {({ data, error: gqlError, loading }) => {
-                if (loading) {
-                    return <CircularProgress />;
-                }
+    const { loading, data, error: gqlError } = useQuery(query, options);
 
-                if (gqlError) {
-                    const Component = get(pageBuilder, "defaults.pages.error");
-                    invariant(Component, NO_ERROR_PAGE_DEFAULT);
+    if (loading) {
+        return <CircularProgress />;
+    }
 
-                    return <Component />;
-                }
+    if (gqlError) {
+        const Component = get(pageBuilder, "defaults.pages.error");
+        invariant(Component, NO_ERROR_PAGE_DEFAULT);
 
-                // Not pretty, but "onComplete" callback executed too late. Will be executed only once.
-                if (!defaultPages.error) {
-                    defaultPages.error = data.pageBuilder.errorPage;
-                }
+        return <Component />;
+    }
 
-                if (!defaultPages.notFound) {
-                    defaultPages.notFound = data.pageBuilder.notFoundPage;
-                }
+    // Not pretty, but "onComplete" callback executed too late. Will be executed only once.
+    if (!defaultPages.error) {
+        defaultPages.error = data.pageBuilder.errorPage;
+    }
 
-                const { data: page, error: pageError } = data.pageBuilder.page;
-                const { data: settings } = data.pageBuilder.getSettings;
+    if (!defaultPages.notFound) {
+        defaultPages.notFound = data.pageBuilder.notFoundPage;
+    }
 
-                if (page) {
-                    return <Content settings={settings} page={page} />;
-                }
+    const { data: page, error: pageError } = data.pageBuilder.page;
+    const { data: settings } = data.pageBuilder.getSettings;
 
-                if (pageError.code === "NOT_FOUND") {
-                    if (defaultPages.notFound) {
-                        return <Content settings={settings} page={defaultPages.notFound.data} />;
-                    }
+    if (page) {
+        return <Content settings={settings} page={page} />;
+    }
 
-                    const Component = get(pageBuilder, "defaults.pages.notFound");
-                    invariant(Component, NO_404_PAGE_DEFAULT);
-                    return <Component />;
-                }
+    if (pageError.code === "NOT_FOUND") {
+        if (defaultPages.notFound) {
+            return <Content settings={settings} page={defaultPages.notFound.data} />;
+        }
 
-                if (defaultPages.error) {
-                    return <Content settings={settings} page={defaultPages.error.data} />;
-                }
+        const Component = get(pageBuilder, "defaults.pages.notFound");
+        invariant(Component, NO_404_PAGE_DEFAULT);
+        return <Component />;
+    }
 
-                const Component = get(pageBuilder, "defaults.pages.error");
-                invariant(Component, NO_ERROR_PAGE_DEFAULT);
-                return <Component />;
-            }}
-        </Query>
-    );
+    if (defaultPages.error) {
+        return <Content settings={settings} page={defaultPages.error.data} />;
+    }
+
+    const Component = get(pageBuilder, "defaults.pages.error");
+    invariant(Component, NO_ERROR_PAGE_DEFAULT);
+    return <Component />;
 };
 
 export default withPageBuilder()(Page);

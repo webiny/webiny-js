@@ -1,6 +1,6 @@
 module.exports = {
-    resource: "/",
-    path: "/",
+    resource: "/welcome-to-webiny",
+    path: "/welcome-to-webiny",
     httpMethod: "GET",
     headers: {
         Accept:
@@ -54,11 +54,11 @@ module.exports = {
     stageVariables: null,
     requestContext: {
         resourceId: "ysefllmbji",
-        resourcePath: "/",
+        resourcePath: "/welcome-to-webiny",
         httpMethod: "GET",
         extendedRequestId: "fI3iiGsQoAMF7Pw=",
         requestTime: "28/Aug/2019:15:37:13 +0000",
-        path: "/dev",
+        path: "/dev/welcome-to-webiny",
         accountId: "633381916205",
         protocol: "HTTP/1.1",
         stage: "dev",

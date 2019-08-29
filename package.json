@@ -102,7 +102,7 @@
     "rxjs": "^6.3.0",
     "rxjs-compat": "^6.3.0",
     "semver": "^5.5.1",
-    "serverless-offline": "^6.0.0-alpha.0",
+    "serverless-offline": "^5.10.1",
     "source-map-support": "^0.5.0",
     "targz": "^1.0.1",
     "tcp-port-used": "^1.0.1",
@@ -110,6 +110,9 @@
     "webpack": "^4.39.2",
     "write-pkg": "^3.2.0",
     "yargs": "^12.0.1"
+  },
+  "resolutions": {
+    "recompose/core-js": "3.2.1"
   },
   "scripts": {
     "checkdep": "node scripts/checkDep.js --config ./scripts/checkdep/config.base.js",

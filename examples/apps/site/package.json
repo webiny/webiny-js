@@ -18,7 +18,7 @@
     "cross-fetch": "^3.0.2",
     "dotenv": "^8.1.0",
     "env-cmd": "^9.0.3",
-    "react-apollo": "^2.5.8",
+    "react-apollo": "^3.1.0-beta.0",
     "react-app-env": "^1.2.3",
     "react-helmet": "^5.2.0",
     "react-hot-loader": "^4.3.5",
@@ -27,6 +27,7 @@
     "theme": "^1.0.0"
   },
   "devDependencies": {
+    "@apollo/react-ssr": "^3.0.1",
     "apollo-link-error": "^1.1.11",
     "file-loader": "^4.2.0",
     "mime": "1.4.1",

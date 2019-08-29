@@ -1,11 +1,9 @@
-service: webiny-cms
-app: webiny-cms
-org: pavel910
 name: webiny-cms
 
 site:
   component: '@serverless/function'
   inputs:
+    timeout: 10
     code: ./site/build
     handler: handler.handler
     name: webiny-site

@@ -2,16 +2,20 @@
 import * as React from "react";
 import warning from "warning";
 import { pure } from "recompose";
-import { Query } from "react-apollo";
+import { useQuery } from "react-apollo";
 import { loadPages } from "./graphql";
 import { getPlugins } from "@webiny/plugins";
 
 const PagesList = pure((props: Object = {}) => {
-    const { data = {}, theme } = props;
-    const { component, ...vars } = data;
+    const {
+        data: { component, ...vars },
+        theme
+    } = props;
+
     const pageList = getPlugins("pb-page-element-pages-list-component").find(
         cmp => cmp.componentName === component
     );
+
     if (!pageList) {
         warning(false, `Pages list component "${component}" is missing!`);
         return null;
@@ -40,42 +44,31 @@ const PagesList = pure((props: Object = {}) => {
         page: 1
     };
 
-    return (
-        <Query query={loadPages} variables={variables}>
-            {({ data, loading, refetch }) => {
-                if (loading) {
-                    return null;
-                }
+    const { data, loading, refetch } = useQuery(loadPages, { variables });
 
-                const pages = data.pageBuilder.listPublishedPages;
+    if (loading) {
+        return null;
+    }
 
-                if (!pages || !pages.data.length) {
-                    return null;
-                }
+    const pages = data.pageBuilder.listPublishedPages;
 
-                let prevPage = null;
-                if (pages.meta.previousPage !== null) {
-                    prevPage = () => refetch({ ...variables, page: pages.meta.previousPage });
-                }
+    if (!pages || !pages.data.length) {
+        return null;
+    }
 
-                let nextPage = null;
-                if (pages.meta.nextPage !== null) {
-                    if (!variables.pagesLimit || variables.pagesLimit >= pages.meta.nextPage) {
-                        nextPage = () => refetch({ ...variables, page: pages.meta.nextPage });
-                    }
-                }
+    let prevPage = null;
+    if (pages.meta.previousPage !== null) {
+        prevPage = () => refetch({ ...variables, page: pages.meta.previousPage });
+    }
 
-                return (
-                    <ListComponent
-                        {...pages}
-                        nextPage={nextPage}
-                        prevPage={prevPage}
-                        theme={theme}
-                    />
-                );
-            }}
-        </Query>
-    );
+    let nextPage = null;
+    if (pages.meta.nextPage !== null) {
+        if (!variables.pagesLimit || variables.pagesLimit >= pages.meta.nextPage) {
+            nextPage = () => refetch({ ...variables, page: pages.meta.nextPage });
+        }
+    }
+
+    return <ListComponent {...pages} nextPage={nextPage} prevPage={prevPage} theme={theme} />;
 });
 
 export default PagesList;

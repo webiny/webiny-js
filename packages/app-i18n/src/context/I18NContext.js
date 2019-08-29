@@ -1,8 +1,7 @@
 // @flow
-/* global window */
 // $FlowFixMe
-import React, { useState, useMemo, useContext, useEffect } from "react";
-import { withApollo } from "react-apollo";
+import React, { useState, useMemo, useContext } from "react";
+import { useQuery } from "react-apollo";
 import gql from "graphql-tag";
 
 export const getI18NInformation = gql`
@@ -25,26 +24,29 @@ export const getI18NInformation = gql`
 
 const I18NContext = React.createContext();
 
-const I18NProvider = withApollo(({ children, ...props }: Object) => {
+const I18NProvider = ({ children }: Object) => {
     const [state, setState] = useState({ initializing: false, currentLocale: null, locales: [] });
+    const { loading, data } = useQuery(getI18NInformation);
 
-    useEffect(() => {
-        setState({ ...state, initializing: true });
-        props.client.query({ query: getI18NInformation }).then(async response => {
-            const { currentLocale, locales } = response.data.i18n.getI18NInformation;
-            setState({ ...state, currentLocale, locales, initializing: false });
-        });
-    }, []);
+    if (loading) {
+        return null;
+    }
+
+    const { currentLocale, locales } = data.i18n.getI18NInformation;
 
     const value = useMemo(() => {
         return {
-            state,
+            state: {
+                ...state,
+                currentLocale,
+                locales
+            },
             setState
         };
     });
 
     return <I18NContext.Provider value={value}>{children}</I18NContext.Provider>;
-});
+};
 
 function useI18N() {
     const context = useContext(I18NContext);
