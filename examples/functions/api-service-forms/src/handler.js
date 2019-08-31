@@ -14,7 +14,8 @@ let apolloHandler;
 export const handler = async (event: Object, context: Object) => {
     if (!apolloHandler) {
         const config = await createConfig();
-        apolloHandler = (await createHandler({ plugins, config })).handler;
+        const { handler } = await createHandler({ plugins, config });
+        apolloHandler = handler;
     }
 
     return apolloHandler(event, context);
