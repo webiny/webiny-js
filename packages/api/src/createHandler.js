@@ -2,7 +2,6 @@
 import { ApolloServer } from "apollo-server-lambda";
 import { applyMiddleware } from "graphql-middleware";
 import { addSchemaLevelResolveFunction } from "graphql-tools";
-import { Entity } from "@webiny/entity";
 import type { PluginsContainerType, GraphQLMiddlewarePluginType } from "@webiny/api/types";
 import { prepareSchema } from "./graphql/prepareSchema";
 
@@ -12,8 +11,6 @@ export type CreateHandlerParamsType = {
 };
 
 export const createHandler = async ({ config, plugins }: CreateHandlerParamsType) => {
-    await requestSetup(config);
-
     let schema = await prepareSchema({ plugins, config });
 
     const registeredMiddleware: Array<GraphQLMiddlewarePluginType> = [];
@@ -63,15 +60,13 @@ export const createHandler = async ({ config, plugins }: CreateHandlerParamsType
             }
         }
     });
-    
+
     const apolloConfig = config.apollo || {};
 
     const apollo = new ApolloServer({
         ...(config.apollo || {}),
         schema,
-        context: async ({ event, context }) => {
-            await requestSetup(config);
-
+        context: async ({ event }) => {
             const reqContext = {
                 event,
                 config,
@@ -82,7 +77,7 @@ export const createHandler = async ({ config, plugins }: CreateHandlerParamsType
             };
 
             if (typeof apolloConfig.context === "function") {
-                return await apolloConfig.context({ event, context }, reqContext);
+                return await apolloConfig.context({ event }, reqContext);
             }
 
             return reqContext;
@@ -97,23 +92,18 @@ export const createHandler = async ({ config, plugins }: CreateHandlerParamsType
         }
     });
 
-    return (event: Object, context: Object): Promise<Object> => {
-        return new Promise((resolve, reject) => {
-            handler(event, context, (error, data) => {
-                if (error) {
-                    return reject(error);
-                }
+    return {
+        schema,
+        handler(event: Object, context: Object): Promise<Object> {
+            return new Promise((resolve, reject) => {
+                handler(event, context, (error, data) => {
+                    if (error) {
+                        return reject(error);
+                    }
 
-                resolve(data);
+                    resolve(data);
+                });
             });
-        });
+        }
     };
-};
-
-const requestSetup = async (config: Object = {}) => {
-    // Configure Entity layer
-    if (config.entity) {
-        Entity.driver = config.entity.driver;
-        Entity.crud = config.entity.crud;
-    }
 };

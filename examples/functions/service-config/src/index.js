@@ -1,5 +1,6 @@
 import addDays from "date-fns/add_days";
 import MongoDbDriver from "@webiny/entity-mongodb";
+import { Entity } from "@webiny/entity";
 import { MongoClient } from "mongodb";
 
 // Configure default storage
@@ -19,6 +20,17 @@ async function init() {
 export default async () => {
     database = await init();
 
+    Entity.driver = new MongoDbDriver({ database });
+    Entity.crud = {
+        logs: true,
+        read: {
+            maxPerPage: 1000
+        },
+        delete: {
+            soft: true
+        }
+    };
+
     return {
         apollo: {
             introspection: true,
@@ -26,19 +38,6 @@ export default async () => {
         },
         database: {
             mongodb: database
-        },
-        entity: {
-            // Instantiate entity driver with DB connection
-            driver: new MongoDbDriver({ database }),
-            crud: {
-                logs: true,
-                read: {
-                    maxPerPage: 1000
-                },
-                delete: {
-                    soft: true
-                }
-            }
         },
         security: {
             enabled: false,

@@ -18,6 +18,10 @@ files:
     memory: 512
     code: ./api-service-files/build
     handler: handler.handler
+    install:
+      - handler.install
+      - install.createData
+      - install.createFiles
     root: ./api-service-files
     hook: yarn build:deploy
     env:

@@ -63,7 +63,7 @@ export default ([
                     src: String
                     tags: [String]
                     meta: JSON
-                    createdOn: String
+                    createdOn: DateTime
                 }
 
                 type FilesQuery {

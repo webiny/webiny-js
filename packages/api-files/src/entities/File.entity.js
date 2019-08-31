@@ -81,7 +81,9 @@ export function fileFactory(context: Object): Class<IFile> {
                     throw Error(`File "src" must be unique (used "${this.src}").`);
                 }
 
-                if (getUser()) {
+                // TODO: @adrian ovdje testovi pucaju ako slucajno ne dodas security pluginove,
+                // zato provjera dali `getUser` uopce postoji
+                if (getUser && getUser()) {
                     this.createdBy = getUser().id;
                 }
             });

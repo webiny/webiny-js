@@ -15,7 +15,7 @@ type PrepareSchemaParamsType = { config: Object, plugins: PluginsContainerType }
 export async function prepareSchema({ config, plugins }: PrepareSchemaParamsType) {
     // This allows developers to register more plugins dynamically, before the graphql schema is instantiated.
     const gqlPlugins = plugins.byType("graphql-schema");
-    
+
     for (let i = 0; i < gqlPlugins.length; i++) {
         if (typeof gqlPlugins[i].prepare === "function") {
             await gqlPlugins[i].prepare(config);
@@ -58,6 +58,6 @@ export async function prepareSchema({ config, plugins }: PrepareSchemaParamsType
             schemaDefs.push(schema);
         }
     }
-    
+
     return buildFederatedSchema([...schemaDefs]);
 }
