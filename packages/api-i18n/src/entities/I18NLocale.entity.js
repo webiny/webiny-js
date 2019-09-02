@@ -55,7 +55,7 @@ export function i18nLocaleFactory(context: Object): Class<II18NLocale> {
                 });
 
             this.on("beforeCreate", async () => {
-                if (getUser()) {
+                if (getUser && getUser()) {
                     this.createdBy = getUser().id;
                 }
 

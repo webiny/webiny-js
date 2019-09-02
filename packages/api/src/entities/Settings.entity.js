@@ -20,7 +20,7 @@ export const settingsFactory = ({ getUser }: Object) => {
 
             this.on("beforeCreate", () => {
                 this.key = this.constructor.key;
-                if (getUser()) {
+                if (getUser && getUser()) {
                     this.createdBy = getUser().id;
                 }
             });
