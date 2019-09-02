@@ -23,7 +23,7 @@ custom:
       functionsHost: http://localhost:${self:custom.serverless-offline.port}
       jwtSecret: MyS3cr3tK3Y!
       database:
-        server: mongodb://localhost:27018
+        server: mongodb://localhost:8014
         httpServer: http://localhost:5001
         name: webinyjs
     dev:
