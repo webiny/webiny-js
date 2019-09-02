@@ -2,12 +2,10 @@
 import React from "react";
 import { connect } from "@webiny/app-page-builder/editor/redux";
 import { getPage } from "@webiny/app-page-builder/editor/selectors";
-import { compose } from "recompose";
 import { omit, isEqual } from "lodash";
-import { withSnackbar } from "@webiny/app-admin/components";
-import { withRouter } from "react-router-dom";
+import { useSnackbar } from "@webiny/app-admin/components";
+import useReactRouter from "use-react-router";
 import { MenuItem } from "@webiny/ui/Menu";
-import { withPageBuilderSettings } from "@webiny/app-page-builder/admin/components";
 import { ListItemGraphic } from "@webiny/ui/List";
 import { Icon } from "@webiny/ui/Icon";
 import { ReactComponent as HomeIcon } from "@webiny/app-page-builder/admin/assets/round-home-24px.svg";
@@ -27,7 +25,9 @@ const setHomePage = gql`
     }
 `;
 
-const SetAsHomepageButton = ({ page, showConfirmation, showSnackbar, history }: Object) => {
+const SetAsHomepageButton = ({ page, showConfirmation }: Object) => {
+    const { history } = useReactRouter();
+    const { showSnackbar } = useSnackbar();
     return (
         <Mutation mutation={setHomePage}>
             {update => (
@@ -62,15 +62,12 @@ const SetAsHomepageButton = ({ page, showConfirmation, showSnackbar, history }: 
     );
 };
 
-export default compose(
-    connect(
-        state => ({ page: omit(getPage(state), ["content"]) }),
-        null,
-        null,
-        { areStatePropsEqual: isEqual }
-    ),
-    withSnackbar(),
-    withRouter,
+export default connect(
+    state => ({ page: omit(getPage(state), ["content"]) }),
+    null,
+    null,
+    { areStatePropsEqual: isEqual }
+)(
     withConfirmation(() => ({
         message: (
             <span>
@@ -78,6 +75,5 @@ export default compose(
                 continue? Note that the page will automatically be published.
             </span>
         )
-    })),
-    withPageBuilderSettings()
-)(SetAsHomepageButton);
+    }))(SetAsHomepageButton)
+);

@@ -6,7 +6,7 @@ import { withRouter } from "react-router-dom";
 import styled from "react-emotion";
 import { Elevation } from "@webiny/ui/Elevation";
 import { getPage } from "@webiny/app-page-builder/admin/graphql/pages";
-import { PageDetailsProvider, PageDetailsConsumer } from "../../components/PageDetailsContext";
+import { PageDetailsProvider, PageDetailsConsumer } from "../../context/PageDetailsContext";
 import { ElementAnimation } from "@webiny/app-page-builder/render/components";
 import { withSnackbar } from "@webiny/app-admin/components";
 import { get } from "lodash";

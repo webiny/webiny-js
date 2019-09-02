@@ -1,16 +1,20 @@
 import React, { useCallback } from "react";
-import { withRouter } from "react-router-dom";
 import { IconButton } from "@webiny/ui/Button";
+import useReactRouter from "use-react-router";
+import { useApolloClient } from "react-apollo";
 import { Tooltip } from "@webiny/ui/Tooltip";
 import { ReactComponent as EditIcon } from "@webiny/app-page-builder/admin/assets/edit.svg";
-import withRevisionHandlers from "../../pageRevisions/withRevisionHandlers";
-import { compose } from "recompose";
 import { createRevisionFrom } from "@webiny/app-page-builder/admin/graphql/pages";
-import { graphql } from "react-apollo";
-import { withSnackbar } from "@webiny/app-admin/components";
+import { usePageDetails } from "@webiny/app-page-builder/admin/hooks/usePageDetails";
+import { useSnackbar } from "@webiny/app-admin/components";
 import { get } from "lodash";
 
-const EditRevision = ({ pageDetails: { page }, history, gqlCreate, showSnackbar }) => {
+const EditRevision = () => {
+    const { showSnackbar } = useSnackbar();
+    const client = useApolloClient();
+    const { history } = useReactRouter();
+    const { page } = usePageDetails();
+
     const unpublishedRevision = (get(page, "revisions") || []).find(
         item => !item.published && !item.locked
     );
@@ -23,7 +27,8 @@ const EditRevision = ({ pageDetails: { page }, history, gqlCreate, showSnackbar 
 
     const copyAndEdit = useCallback(async () => {
         const [latestRevision] = page.revisions;
-        const { data: res } = await gqlCreate({
+        const { data: res } = await client.mutate({
+            mutation: createRevisionFrom,
             variables: { revision: latestRevision.id },
             refetchQueries: ["PbListPages"]
         });
@@ -51,9 +56,4 @@ const EditRevision = ({ pageDetails: { page }, history, gqlCreate, showSnackbar 
     );
 };
 
-export default compose(
-    withSnackbar(),
-    graphql(createRevisionFrom, { name: "gqlCreate" }),
-    withRouter,
-    withRevisionHandlers
-)(EditRevision);
+export default EditRevision;

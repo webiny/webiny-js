@@ -79,7 +79,7 @@ const Element = React.memo(
             if (!active) {
                 activateElement({ element: element.id });
             }
-        }, [element]);
+        }, [element, active]);
 
         const onMouseOver = React.useCallback(
             e => {
@@ -92,7 +92,7 @@ const Element = React.memo(
                     highlightElement({ element: element.id });
                 }
             },
-            [element]
+            [element, highlight]
         );
 
         const renderDraggable = React.useCallback(
@@ -107,7 +107,7 @@ const Element = React.memo(
                     </div>
                 );
             },
-            [element]
+            [element, onClick]
         );
 
         if (!plugin) {

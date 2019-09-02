@@ -1,7 +1,6 @@
 //@flow
-import React from "react";
+import React, { useCallback } from "react";
 import { connect } from "@webiny/app-page-builder/editor/redux";
-import { compose } from "recompose";
 import { get } from "lodash";
 import { set } from "dot-prop-immutable";
 
@@ -31,61 +30,51 @@ const validateWidth = value => {
     throw Error("Specify % or px!");
 };
 
-type Props = {
-    element: Object,
-    updateElement: Function
+const Settings = ({ element, updateElement }) => {
+    const updateSettings = useCallback(
+        async (data, form) => {
+            const valid = await form.validate();
+            if (!valid) {
+                return;
+            }
+
+            const attrKey = `data.settings.width`;
+            const newElement = set(element, attrKey, data);
+
+            updateElement({ element: newElement });
+        },
+        [element, updateElement]
+    );
+
+    const { data } = element;
+
+    const settings = get(data, "settings.width", { value: "100%" });
+
+    return (
+        <Form data={settings} onChange={updateSettings}>
+            {({ Bind }) => (
+                <Tabs>
+                    <Tab label={"Width"}>
+                        <Grid>
+                            <Cell span={5}>
+                                <Typography use={"overline"}>Width</Typography>
+                            </Cell>
+                            <Cell span={7}>
+                                <InputContainer width={"auto"} margin={0}>
+                                    <Bind name={"value"} validators={[validateWidth]}>
+                                        <Input />
+                                    </Bind>
+                                </InputContainer>
+                            </Cell>
+                        </Grid>
+                    </Tab>
+                </Tabs>
+            )}
+        </Form>
+    );
 };
 
-class Settings extends React.Component<Props> {
-    historyUpdated = {};
-
-    updateSettings = async (data, form) => {
-        const valid = await form.validate();
-        if (!valid) {
-            return;
-        }
-
-        const { element, updateElement } = this.props;
-        const attrKey = `data.settings.width`;
-        const newElement = set(element, attrKey, data);
-
-        updateElement({ element: newElement });
-    };
-
-    render() {
-        const { element } = this.props;
-        const { data } = element;
-        
-        const settings = get(data, "settings.width", { value: "100%" });
-
-        return (
-            <Form data={settings} onChange={this.updateSettings}>
-                {({ Bind }) => (
-                    <Tabs>
-                        <Tab label={"Width"}>
-                            <Grid>
-                                <Cell span={5}>
-                                    <Typography use={"overline"}>Width</Typography>
-                                </Cell>
-                                <Cell span={7}>
-                                    <InputContainer width={"auto"} margin={0}>
-                                        <Bind name={"value"} validators={[validateWidth]}>
-                                            <Input />
-                                        </Bind>
-                                    </InputContainer>
-                                </Cell>
-                            </Grid>
-                        </Tab>
-                    </Tabs>
-                )}
-            </Form>
-        );
-    }
-}
-
-export default compose(
-    connect(
-        state => ({ element: getActiveElement(state) }),
-        { updateElement }
-    )
+export default connect(
+    state => ({ element: getActiveElement(state) }),
+    { updateElement }
 )(Settings);

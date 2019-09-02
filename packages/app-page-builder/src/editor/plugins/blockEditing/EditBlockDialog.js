@@ -1,6 +1,5 @@
 // @flow
 import React from "react";
-import { compose, shouldUpdate } from "recompose";
 import { css } from "emotion";
 import { getPlugins } from "@webiny/plugins";
 import {
@@ -46,66 +45,69 @@ type Props = {
     onSubmit: Function
 };
 
-const EditBlockDialog = (props: Props) => {
-    const { open, onClose, onSubmit, plugin } = props;
+const EditBlockDialog = React.memo(
+    (props: Props) => {
+        const { open, onClose, onSubmit, plugin } = props;
 
-    const blockCategoriesOptions = getPlugins("pb-editor-block-category").map((item: Object) => ({
-        value: item.name,
-        label: item.title
-    }));
+        const blockCategoriesOptions = getPlugins("pb-editor-block-category").map(
+            (item: Object) => ({
+                value: item.name,
+                label: item.title
+            })
+        );
 
-    return (
-        <Dialog open={open} onClose={onClose} className={narrowDialog}>
-            {plugin && (
-                <Form onSubmit={onSubmit} data={plugin}>
-                    {({ data, submit, Bind }) => (
-                        <React.Fragment>
-                            <DialogHeader>
-                                <DialogHeaderTitle>Update {plugin.title}</DialogHeaderTitle>
-                            </DialogHeader>
-                            <DialogBody>
-                                <Grid>
-                                    <Cell span={12}>
-                                        <Bind name={"title"} validators={"required"}>
-                                            <Input label={"Name"} autoFocus />
-                                        </Bind>
-                                    </Cell>
-                                </Grid>
-                                {data.type === "block" && (
-                                    <>
-                                        <Grid>
-                                            <Cell span={12}>
-                                                <Bind name="category" validators={["required"]}>
-                                                    <Select
-                                                        label="Category"
-                                                        description="Select a block category"
-                                                        options={blockCategoriesOptions}
-                                                    />
-                                                </Bind>
-                                            </Cell>
-                                        </Grid>
-                                    </>
-                                )}
-                                <Grid>
-                                    <Cell span={12}>
-                                        <PreviewBox>{plugin.preview()}</PreviewBox>
-                                    </Cell>
-                                </Grid>
-                            </DialogBody>
-                            <DialogFooter>
-                                <DialogCancel>Cancel</DialogCancel>
-                                <DialogFooterButton onClick={submit}>Save</DialogFooterButton>
-                            </DialogFooter>
-                        </React.Fragment>
-                    )}
-                </Form>
-            )}
-        </Dialog>
-    );
-};
+        return (
+            <Dialog open={open} onClose={onClose} className={narrowDialog}>
+                {plugin && (
+                    <Form onSubmit={onSubmit} data={plugin}>
+                        {({ data, submit, Bind }) => (
+                            <React.Fragment>
+                                <DialogHeader>
+                                    <DialogHeaderTitle>Update {plugin.title}</DialogHeaderTitle>
+                                </DialogHeader>
+                                <DialogBody>
+                                    <Grid>
+                                        <Cell span={12}>
+                                            <Bind name={"title"} validators={"required"}>
+                                                <Input label={"Name"} autoFocus />
+                                            </Bind>
+                                        </Cell>
+                                    </Grid>
+                                    {data.type === "block" && (
+                                        <>
+                                            <Grid>
+                                                <Cell span={12}>
+                                                    <Bind name="category" validators={["required"]}>
+                                                        <Select
+                                                            label="Category"
+                                                            description="Select a block category"
+                                                            options={blockCategoriesOptions}
+                                                        />
+                                                    </Bind>
+                                                </Cell>
+                                            </Grid>
+                                        </>
+                                    )}
+                                    <Grid>
+                                        <Cell span={12}>
+                                            <PreviewBox>{plugin.preview()}</PreviewBox>
+                                        </Cell>
+                                    </Grid>
+                                </DialogBody>
+                                <DialogFooter>
+                                    <DialogCancel>Cancel</DialogCancel>
+                                    <DialogFooterButton onClick={submit}>Save</DialogFooterButton>
+                                </DialogFooter>
+                            </React.Fragment>
+                        )}
+                    </Form>
+                )}
+            </Dialog>
+        );
+    },
+    (props, nextProps) => {
+        return props.open === nextProps.open;
+    }
+);
 
-export default compose(
-    shouldUpdate((props, nextProps) => {
-        return props.open !== nextProps.open;
-    })
-)(EditBlockDialog);
+export default EditBlockDialog;

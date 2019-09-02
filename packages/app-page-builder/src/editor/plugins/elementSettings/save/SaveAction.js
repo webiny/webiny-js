@@ -1,12 +1,11 @@
 // @flow
-import React, { useEffect } from "react";
+import React, { useEffect, useCallback, useState } from "react";
 import { connect } from "@webiny/app-page-builder/editor/redux";
-import { compose, withState, withHandlers, shouldUpdate } from "recompose";
-import { graphql } from "react-apollo";
+import { useApolloClient } from "react-apollo";
 import { cloneDeep } from "lodash";
 import { getPlugins, getPlugin } from "@webiny/plugins";
 import SaveDialog from "./SaveDialog";
-import { withSnackbar } from "@webiny/app-admin/components";
+import { useSnackbar } from "@webiny/app-admin/components";
 import { useKeyHandler } from "@webiny/app-page-builder/editor/hooks/useKeyHandler";
 import {
     getActiveElementId,
@@ -25,23 +24,66 @@ type Props = {
     element: Object
 };
 
-const SaveAction = ({
-    showDialog,
-    hideDialog,
-    isDialogOpened,
-    children,
-    onSubmit,
-    element
-}: Props) => {
+const SaveAction = ({ children, element }: Props) => {
     const { addKeyHandler, removeKeyHandler } = useKeyHandler();
+    const { showSnackbar } = useSnackbar();
+    const [isDialogOpened, setOpenDialog] = useState(false);
+    const client = useApolloClient();
+
+    const onSubmit = useCallback(
+        async formData => {
+            formData.content = removeIdsAndPaths(cloneDeep(element));
+
+            const meta = await getDataURLImageDimensions(formData.preview);
+            const blob = dataURLtoBlob(formData.preview);
+            blob.name = "pb-page-element-" + element.id + ".png";
+
+            const fileUploaderPlugin = getPlugin("file-uploader");
+            formData.preview = await fileUploaderPlugin.upload(blob);
+
+            formData.preview.meta = meta;
+            formData.preview.meta.private = true;
+
+            let query = formData.overwrite ? updateElement : createElement;
+            const { data: res } = await client.mutate({
+                mutation: query,
+                variables: formData.overwrite
+                    ? {
+                          id: element.source,
+                          data: { content: formData.content, preview: formData.preview }
+                      }
+                    : { data: formData }
+            });
+
+            hideDialog();
+            const { data } = res.pageBuilder.element;
+            if (data.type === "block") {
+                createBlockPlugin(data);
+            } else {
+                createElementPlugin(data);
+            }
+
+            showSnackbar(
+                <span>
+                    {formData.type[0].toUpperCase() + formData.type.slice(1)}{" "}
+                    <strong>{data.name}</strong> saved!
+                </span>
+            );
+        },
+        [element]
+    );
 
     useEffect(() => {
         isDialogOpened ? addKeyHandler("escape", hideDialog) : removeKeyHandler("escape");
     }, [isDialogOpened]);
 
+    const showDialog = useCallback(() => setOpenDialog(true), []);
+    const hideDialog = useCallback(() => setOpenDialog(false), []);
+
     if (!element) {
         return null;
     }
+
     const plugin = getPlugins("pb-page-element").find(pl => pl.elementType === element.type);
     if (!plugin) {
         return null;
@@ -89,59 +131,6 @@ function getDataURLImageDimensions(dataURL: string) {
     });
 }
 
-export default compose(
-    connect(state => ({ element: getElementWithChildren(state, getActiveElementId(state)) })),
-    withState("isDialogOpened", "setOpenDialog", false),
-    shouldUpdate((props, nextProps) => {
-        return props.isDialogOpened !== nextProps.isDialogOpened;
-    }),
-    withHandlers({
-        showDialog: ({ setOpenDialog }) => () => setOpenDialog(true),
-        hideDialog: ({ setOpenDialog }) => () => setOpenDialog(false)
-    }),
-    graphql(createElement, { name: "createElement" }),
-    graphql(updateElement, { name: "updateElement" }),
-    withSnackbar(),
-    withHandlers({
-        onSubmit: ({ element, hideDialog, createElement, updateElement, showSnackbar }) => async (
-            formData: Object
-        ) => {
-            formData.content = removeIdsAndPaths(cloneDeep(element));
-
-            const meta = await getDataURLImageDimensions(formData.preview);
-            const blob = dataURLtoBlob(formData.preview);
-            blob.name = "pb-page-element-" + element.id + ".png";
-
-            const fileUploaderPlugin = getPlugin("file-uploader");
-            formData.preview = await fileUploaderPlugin.upload(blob);
-
-            formData.preview.meta = meta;
-            formData.preview.meta.private = true;
-
-            let mutation = formData.overwrite ? updateElement : createElement;
-            const { data: res } = await mutation({
-                variables: formData.overwrite
-                    ? {
-                          id: element.source,
-                          data: { content: formData.content, preview: formData.preview }
-                      }
-                    : { data: formData }
-            });
-
-            hideDialog();
-            const { data } = res.pageBuilder.element;
-            if (data.type === "block") {
-                createBlockPlugin(data);
-            } else {
-                createElementPlugin(data);
-            }
-
-            showSnackbar(
-                <span>
-                    {formData.type[0].toUpperCase() + formData.type.slice(1)}{" "}
-                    <strong>{data.name}</strong> saved!
-                </span>
-            );
-        }
-    })
-)(SaveAction);
+export default connect(state => ({
+    element: getElementWithChildren(state, getActiveElementId(state))
+}))(SaveAction);

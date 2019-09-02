@@ -1,6 +1,5 @@
 // @flow
-import * as React from "react";
-import { compose, withHandlers } from "recompose";
+import React, { useCallback } from "react";
 import slugify from "slugify";
 import { withPageBuilder } from "@webiny/app-page-builder/context";
 import { Grid, Cell } from "@webiny/ui/Grid";
@@ -15,7 +14,28 @@ const toSlug = (value, cb) => {
     cb(slugify(value, { replacement: "-", lower: true, remove: /[*#\?<>_\{\}\[\]+~.()'"!:;@]/g })); // eslint-disable-line
 };
 
-const GeneralSettings = ({ Bind, onAfterChangeImage, pageBuilder: { theme } }: Object) => {
+const GeneralSettings = ({ form, Bind, pageBuilder: { theme } }: Object) => {
+    const hasOgImage = useCallback(() => {
+        // const src = get(data, "settings.social.image.src"); // Doesn't work.
+        const src = get(form.state, "data.settings.social.image.src"); // Works.
+
+        return typeof src === "string" && src && !src.startsWith("data:");
+    }, [form]);
+
+    const onAfterChangeImage = useCallback(
+        selectedImage => {
+            // If not already set, set selectedImage as og:image too.
+            if (selectedImage && !hasOgImage()) {
+                form.setState(state => {
+                    set(state, "data.settings.social.image", selectedImage);
+                    return state;
+                });
+                return appendOgImageDimensions({ form, value: selectedImage });
+            }
+        },
+        [hasOgImage, form]
+    );
+
     return (
         <React.Fragment>
             <Grid>
@@ -63,26 +83,4 @@ const GeneralSettings = ({ Bind, onAfterChangeImage, pageBuilder: { theme } }: O
     );
 };
 
-export default compose(
-    withPageBuilder(),
-    withHandlers({
-        hasOgImage: ({ form }) => () => {
-            // const src = get(data, "settings.social.image.src"); // Doesn't work.
-            const src = get(form.state, "data.settings.social.image.src"); // Works.
-
-            return typeof src === "string" && src && !src.startsWith("data:");
-        }
-    }),
-    withHandlers({
-        onAfterChangeImage: ({ hasOgImage, form }) => selectedImage => {
-            // If not already set, set selectedImage as og:image too.
-            if (selectedImage && !hasOgImage()) {
-                form.setState(state => {
-                    set(state, "data.settings.social.image", selectedImage);
-                    return state;
-                });
-                appendOgImageDimensions({ form, value: selectedImage });
-            }
-        }
-    })
-)(GeneralSettings);
+export default withPageBuilder()(GeneralSettings);

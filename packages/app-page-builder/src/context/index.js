@@ -2,6 +2,7 @@
 import * as React from "react";
 import PageBuilderProvider from "./PageBuilderProvider";
 import withPageBuilder from "./withPageBuilder";
+import { PageBuilderContext } from "./PageBuilderContext";
 
 type WithPageBuilderPropsType = {
     theme: Object,
@@ -16,5 +17,5 @@ type WithPageBuilderPropsType = {
 
 type PbProviderPropsType = { children: React.Node, ...WithPageBuilderPropsType };
 
-export { withPageBuilder, PageBuilderProvider };
+export { withPageBuilder, PageBuilderContext, PageBuilderProvider };
 export type { WithPageBuilderPropsType, PbProviderPropsType };

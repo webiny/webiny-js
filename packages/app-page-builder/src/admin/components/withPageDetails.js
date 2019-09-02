@@ -1,6 +1,6 @@
 // @flow
 import * as React from "react";
-import { PageDetailsConsumer } from "./PageDetailsContext";
+import { PageDetailsConsumer } from "../context/PageDetailsContext";
 
 export type WithPageDetailsProps = Object & {
     pageDetails: {

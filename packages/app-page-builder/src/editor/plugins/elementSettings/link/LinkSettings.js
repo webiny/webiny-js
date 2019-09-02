@@ -1,7 +1,6 @@
 // @flow
 import * as React from "react";
 import { connect } from "@webiny/app-page-builder/editor/redux";
-import { compose } from "recompose";
 import { isEqual } from "lodash";
 import { get, merge } from "dot-prop-immutable";
 import { Tabs, Tab } from "@webiny/ui/Tabs";
@@ -69,10 +68,7 @@ class LinkSettings extends React.Component<*> {
     }
 }
 
-export default compose(
-    connect(
-        null,
-        { updateElement }
-    ),
-    withActiveElement()
-)(LinkSettings);
+export default connect(
+    null,
+    { updateElement }
+)(withActiveElement()(LinkSettings));
