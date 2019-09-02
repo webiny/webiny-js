@@ -1,7 +1,6 @@
 //@flow
 import * as React from "react";
 import { Transition } from "react-transition-group";
-import { compose, pure, withHandlers, withProps, setDisplayName } from "recompose";
 import { connect } from "@webiny/app-page-builder/editor/redux";
 import isEqual from "lodash/isEqual";
 import { getPlugins } from "@webiny/plugins";
@@ -38,18 +37,79 @@ declare type ElementProps = {
     dragging: boolean
 };
 
-const Element = pure(
+const getElementPlugin = element => {
+    if (!element) {
+        return null;
+    }
+    return getPlugins("pb-page-element").find(pl => pl.elementType === element.type);
+};
+
+const Element = React.memo(
     ({
-         plugin,
-         renderDraggable,
-         element,
-         highlight,
-         active,
-         onMouseOver,
-         beginDrag,
-         endDrag,
-         className = ""
-     }: ElementProps) => {
+        dragStart,
+        dragEnd,
+        activateElement,
+        element,
+        highlight,
+        highlightElement,
+        active,
+        className = ""
+    }: ElementProps) => {
+        const plugin = getElementPlugin(element);
+
+        const beginDrag = React.useCallback(() => {
+            const data = { id: element.id, type: element.type, path: element.path };
+            setTimeout(() => {
+                dragStart({ element: data });
+            });
+            return { ...data, target: plugin.target };
+        }, [element]);
+
+        const endDrag = React.useCallback(
+            (props, monitor) => {
+                dragEnd({ element: monitor.getItem() });
+            },
+            [dragEnd]
+        );
+
+        const onClick = React.useCallback(() => {
+            if (element.type === "document") {
+                return;
+            }
+            if (!active) {
+                activateElement({ element: element.id });
+            }
+        }, [element]);
+
+        const onMouseOver = React.useCallback(
+            e => {
+                if (element.type === "document") {
+                    return;
+                }
+
+                e.stopPropagation();
+                if (!highlight) {
+                    highlightElement({ element: element.id });
+                }
+            },
+            [element]
+        );
+
+        const renderDraggable = React.useCallback(
+            ({ connectDragSource }) => {
+                return connectDragSource(
+                    <div className={"type " + typeStyle}>
+                        <div className="background" onClick={onClick} />
+                        <div className={"element-holder"} onClick={onClick}>
+                            {renderPlugins("pb-page-element-action", { element, plugin })}
+                            <span>{plugin.name.replace("pb-page-element-", "")}</span>
+                        </div>
+                    </div>
+                );
+            },
+            [element]
+        );
+
         if (!plugin) {
             return null;
         }
@@ -86,65 +146,14 @@ const Element = pure(
     }
 );
 
-export default compose(
-    setDisplayName("Element"),
-    connect(
-        (state, props) => {
-            return {
-                ...getElementProps(state, props),
-                element: getElement(state, props.id)
-            };
-        },
-        { dragStart, dragEnd, activateElement, highlightElement },
-        null,
-        { areStatePropsEqual: isEqual }
-    ),
-    withProps(({ element }) => ({
-        plugin: element
-            ? getPlugins("pb-page-element").find(pl => pl.elementType === element.type)
-            : null
-    })),
-    withHandlers({
-        beginDrag: ({ plugin, element, dragStart }) => () => {
-            const data = { id: element.id, type: element.type, path: element.path };
-            setTimeout(() => {
-                dragStart({ element: data });
-            });
-            return { ...data, target: plugin.target };
-        },
-        endDrag: ({ dragEnd }) => (props, monitor) => {
-            dragEnd({ element: monitor.getItem() });
-        },
-        onClick: ({ element, active, activateElement }) => () => {
-            if (element.type === "document") {
-                return;
-            }
-            if (!active) {
-                activateElement({ element: element.id });
-            }
-        },
-        onMouseOver: ({ element, highlight, highlightElement }) => e => {
-            if (element.type === "document") {
-                return;
-            }
-
-            e.stopPropagation();
-            if (!highlight) {
-                highlightElement({ element: element.id });
-            }
-        }
-    }),
-    withHandlers({
-        renderDraggable: ({ element, plugin, onClick }) => ({ connectDragSource }) => {
-            return connectDragSource(
-                <div className={"type " + typeStyle}>
-                    <div className="background" onClick={onClick} />
-                    <div className={"element-holder"} onClick={onClick}>
-                        {renderPlugins("pb-page-element-action", { element, plugin })}
-                        <span>{plugin.name.replace("pb-page-element-", "")}</span>
-                    </div>
-                </div>
-            );
-        }
-    })
+export default connect(
+    (state, props) => {
+        return {
+            ...getElementProps(state, props),
+            element: getElement(state, props.id)
+        };
+    },
+    { dragStart, dragEnd, activateElement, highlightElement },
+    null,
+    { areStatePropsEqual: isEqual }
 )(Element);

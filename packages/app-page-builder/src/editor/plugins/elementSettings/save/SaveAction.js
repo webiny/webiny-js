@@ -1,14 +1,17 @@
 // @flow
-import * as React from "react";
+import React, { useEffect } from "react";
 import { connect } from "@webiny/app-page-builder/editor/redux";
-import { compose, withState, withHandlers, lifecycle, shouldUpdate } from "recompose";
+import { compose, withState, withHandlers, shouldUpdate } from "recompose";
 import { graphql } from "react-apollo";
 import { cloneDeep } from "lodash";
 import { getPlugins, getPlugin } from "@webiny/plugins";
 import SaveDialog from "./SaveDialog";
 import { withSnackbar } from "@webiny/app-admin/components";
-import { withKeyHandler } from "@webiny/app-page-builder/editor/components";
-import { getActiveElementId, getElementWithChildren } from "@webiny/app-page-builder/editor/selectors";
+import { useKeyHandler } from "@webiny/app-page-builder/editor/hooks/useKeyHandler";
+import {
+    getActiveElementId,
+    getElementWithChildren
+} from "@webiny/app-page-builder/editor/selectors";
 import { createElementPlugin, createBlockPlugin } from "@webiny/app-page-builder/admin/components";
 import { createElement, updateElement } from "@webiny/app-page-builder/admin/graphql/pages";
 import dataURLtoBlob from "dataurl-to-blob";
@@ -30,6 +33,12 @@ const SaveAction = ({
     onSubmit,
     element
 }: Props) => {
+    const { addKeyHandler, removeKeyHandler } = useKeyHandler();
+
+    useEffect(() => {
+        isDialogOpened ? addKeyHandler("escape", hideDialog) : removeKeyHandler("escape");
+    }, [isDialogOpened]);
+
     if (!element) {
         return null;
     }
@@ -86,7 +95,6 @@ export default compose(
     shouldUpdate((props, nextProps) => {
         return props.isDialogOpened !== nextProps.isDialogOpened;
     }),
-    withKeyHandler(),
     withHandlers({
         showDialog: ({ setOpenDialog }) => () => setOpenDialog(true),
         hideDialog: ({ setOpenDialog }) => () => setOpenDialog(false)
@@ -134,12 +142,6 @@ export default compose(
                     <strong>{data.name}</strong> saved!
                 </span>
             );
-        }
-    }),
-    lifecycle({
-        componentDidUpdate() {
-            const { isDialogOpened, addKeyHandler, removeKeyHandler, hideDialog } = this.props;
-            isDialogOpened ? addKeyHandler("escape", hideDialog) : removeKeyHandler("escape");
         }
     })
 )(SaveAction);

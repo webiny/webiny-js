@@ -1,11 +1,10 @@
 //@flow
-import React from "react";
+import React, { useEffect, useCallback } from "react";
 import { css } from "emotion";
 import { connect } from "@webiny/app-page-builder/editor/redux";
-import { compose, lifecycle, withHandlers } from "recompose";
 import { togglePlugin } from "@webiny/app-page-builder/editor/actions";
 import { IconButton } from "@webiny/ui/Button";
-import { withKeyHandler } from "@webiny/app-page-builder/editor/components";
+import { useKeyHandler } from "@webiny/app-page-builder/editor/hooks/useKeyHandler";
 import { getUi, getActivePlugins, isPluginActive } from "@webiny/app-page-builder/editor/selectors";
 import { Tooltip } from "@webiny/ui/Tooltip";
 
@@ -15,58 +14,38 @@ const activeStyle = css({
     }
 });
 
-const Action = ({ icon, active, tooltip, onClick }) => {
-    return (
-        <Tooltip
-            placement={"bottom"}
-            content={<span>{tooltip}</span>}
-            {...(active ? { visible: false } : {})}
-        >
-            <IconButton icon={icon} onClick={onClick} className={active && activeStyle} />
-        </Tooltip>
-    );
-};
+const Action = (props: Object) => {
+    const { togglePlugin, plugin, icon, active, tooltip, onClick } = props;
 
-export default compose(
-    connect(
-        (state, props) => ({
-            active: isPluginActive(props.plugin)(state),
-            // $FlowFixMe
-            slateFocused: getUi(state).slateFocused,
-            settingsActive: getActivePlugins("pb-page-element-settings")(state).length > 0
-        }),
-        { togglePlugin }
-    ),
-    withKeyHandler(),
-    withHandlers({
-        onClick: ({ onClick, togglePlugin, plugin }) => () => {
-            if (typeof onClick === "function") {
-                return onClick();
-            }
-            togglePlugin({ name: plugin, closeOtherInGroup: true });
+    const { addKeyHandler, removeKeyHandler } = useKeyHandler();
+
+    const clickHandler = useCallback(() => {
+        if (typeof onClick === "function") {
+            return onClick();
         }
-    }),
-    lifecycle({
-        componentDidMount() {
-            let { addKeyHandler, onClick, shortcut = [] } = this.props;
-            if (typeof shortcut === "string") {
-                shortcut = [shortcut];
-            }
+        togglePlugin({ name: plugin, closeOtherInGroup: true });
+    }, [plugin, onClick]);
 
-            shortcut.map(short => {
-                addKeyHandler(short, e => {
-                    const { slateFocused, settingsActive } = this.props;
-                    if (slateFocused || settingsActive) {
-                        return;
-                    }
+    useEffect(() => {
+        let { onClick, shortcut = [] } = props;
+        if (typeof shortcut === "string") {
+            shortcut = [shortcut];
+        }
 
-                    e.preventDefault();
-                    onClick();
-                });
+        shortcut.map(short => {
+            addKeyHandler(short, e => {
+                const { slateFocused, settingsActive } = props;
+                if (slateFocused || settingsActive) {
+                    return;
+                }
+
+                e.preventDefault();
+                onClick();
             });
-        },
-        componentWillUnmount() {
-            let { removeKeyHandler, shortcut = [] } = this.props;
+        });
+
+        return () => {
+            let { shortcut = [] } = props;
 
             if (typeof shortcut === "string") {
                 shortcut = [shortcut];
@@ -75,6 +54,26 @@ export default compose(
             shortcut.map(short => {
                 removeKeyHandler(short);
             });
-        }
-    })
+        };
+    });
+
+    return (
+        <Tooltip
+            placement={"bottom"}
+            content={<span>{tooltip}</span>}
+            {...(active ? { visible: false } : {})}
+        >
+            <IconButton icon={icon} onClick={clickHandler} className={active && activeStyle} />
+        </Tooltip>
+    );
+};
+
+export default connect(
+    (state, props) => ({
+        active: isPluginActive(props.plugin)(state),
+        // $FlowFixMe
+        slateFocused: getUi(state).slateFocused,
+        settingsActive: getActivePlugins("pb-page-element-settings")(state).length > 0
+    }),
+    { togglePlugin }
 )(Action);

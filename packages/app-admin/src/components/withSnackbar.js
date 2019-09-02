@@ -1,6 +1,6 @@
 // @flow
 import * as React from "react";
-import { withUi } from "@webiny/app/components";
+import { withUi, useUi } from "@webiny/app/components";
 import { compose, withHandlers } from "recompose";
 
 export type WithSnackbarProps = {
@@ -25,5 +25,22 @@ export const withSnackbar = () => {
                 }
             })
         )(BaseComponent);
+    };
+};
+
+export const useSnackbar = () => {
+    const ui = useUi();
+
+    return {
+        showSnackbar: (message, options) => {
+            ui.setState(ui => {
+                return { ...ui, snackbar: { message, options } };
+            });
+        },
+        hideSnackbar: () => {
+            ui.setState(ui => {
+                return { ...ui, snackbar: null };
+            });
+        }
     };
 };

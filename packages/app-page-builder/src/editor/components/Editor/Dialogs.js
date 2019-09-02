@@ -1,6 +1,5 @@
 // @flow
 import React from "react";
-import { pure } from "recompose";
 import styled from "react-emotion";
 import { getPlugins } from "@webiny/plugins";
 
@@ -9,7 +8,7 @@ const DialogsContainer = styled("div")({
     zIndex: 5
 });
 
-const Dialogs = pure(() => {
+const Dialogs = React.memo(() => {
     const actions = [...getPlugins("pb-editor-toolbar-top"), ...getPlugins("pb-editor-toolbar-bottom")];
 
     return (

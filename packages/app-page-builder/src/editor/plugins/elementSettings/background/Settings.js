@@ -1,7 +1,6 @@
 //@flow
 import React from "react";
 import { connect } from "@webiny/app-page-builder/editor/redux";
-import { compose } from "recompose";
 import { Tabs, Tab } from "@webiny/ui/Tabs";
 import { get } from "lodash";
 import { set } from "dot-prop-immutable";
@@ -124,9 +123,7 @@ class Settings extends React.Component<*> {
     }
 }
 
-export default compose(
-    connect(
-        state => ({ element: getActiveElement(state) }),
-        { updateElement }
-    )
+export default connect(
+    state => ({ element: getActiveElement(state) }),
+    { updateElement }
 )(Settings);

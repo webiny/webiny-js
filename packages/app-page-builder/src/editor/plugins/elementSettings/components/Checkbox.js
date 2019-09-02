@@ -2,10 +2,9 @@
 import * as React from "react";
 import { connect } from "react-redux";
 import { get } from "lodash";
-import { pure } from "recompose";
 import { Typography } from "@webiny/ui/Typography";
 import { Grid, Cell } from "@webiny/ui/Grid";
-import { CheckboxGroup as CheckboxGroupCmp, Checkbox as CheckboxCmp } from "@webiny/ui/Checkbox";
+import { Checkbox as CheckboxCmp } from "@webiny/ui/Checkbox";
 import { getActiveElement } from "@webiny/app-page-builder/editor/selectors";
 
 type Props = {
@@ -17,7 +16,7 @@ type Props = {
     children?: React.ChildrenArray<React.Element<"option"> | React.Element<"optgroup">>
 };
 
-const Select = pure(({ label, value, updateValue, options, children }: Props) => {
+const Select = React.memo(({ label, value, updateValue, options, children }: Props) => {
     return (
         <Grid>
             <Cell span={4}>

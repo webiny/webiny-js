@@ -1,13 +1,13 @@
 // @flow
-import * as React from "react";
+import React, { useCallback, useEffect } from "react";
 import { connect } from "@webiny/app-page-builder/editor/redux";
-import { compose, withHandlers } from "recompose";
 import { cloneDeep } from "lodash";
 import { merge } from "dot-prop-immutable";
 import { getPlugins } from "@webiny/plugins";
 import { renderPlugins } from "@webiny/app/plugins";
 import { isPluginActive } from "@webiny/app-page-builder/editor/selectors";
-import { withActiveElement, withKeyHandler } from "@webiny/app-page-builder/editor/components";
+import { withActiveElement } from "@webiny/app-page-builder/editor/components";
+import { useKeyHandler } from "@webiny/app-page-builder/editor/hooks/useKeyHandler";
 import { css } from "emotion";
 import {
     Dialog,
@@ -22,13 +22,6 @@ import { Form } from "@webiny/form";
 import { Tabs } from "@webiny/ui/Tabs";
 import { updateElement, deactivatePlugin } from "@webiny/app-page-builder/editor/actions";
 
-type Props = Object & {
-    open: boolean,
-    onClose: Function,
-    onSubmit: Function,
-    element: Object
-};
-
 const emptyElement = { data: {}, type: null };
 
 const dialogBody = css({
@@ -38,21 +31,44 @@ const dialogBody = css({
     }
 });
 
-class AdvancedSettings extends React.Component<Props> {
-    shouldComponentUpdate(props) {
-        return this.props.open !== props.open;
-    }
-
-    componentDidUpdate() {
-        const { open, addKeyHandler, removeKeyHandler, closeDialog } = this.props;
-        open ? addKeyHandler("escape", closeDialog) : removeKeyHandler("escape");
-    }
-
-    render() {
-        const { element, open, onClose, onSubmit } = this.props;
+const AdvancedSettings = React.memo(
+    (props: Object) => {
+        const { element, open, updateElement, deactivatePlugin } = props;
         const { data, type } = element || cloneDeep(emptyElement);
+
+        const { addKeyHandler, removeKeyHandler } = useKeyHandler();
+
+        const closeDialog = useCallback(() => {
+            deactivatePlugin({ name: "pb-page-element-settings-advanced" });
+        }, []);
+
+        const onSubmit = useCallback(
+            (formData: Object) => {
+                // Get element settings plugins
+                const plugins = getPlugins("pb-page-element-advanced-settings").filter(
+                    pl => pl.elementType === element.type
+                );
+                formData = plugins.reduce((formData, pl) => {
+                    if (pl.onSave) {
+                        return pl.onSave(formData);
+                    }
+                    return formData;
+                }, formData);
+
+                updateElement({
+                    element: merge(element, "data", formData)
+                });
+                closeDialog();
+            },
+            [element]
+        );
+
+        useEffect(() => {
+            open ? addKeyHandler("escape", closeDialog) : removeKeyHandler("escape");
+        });
+
         return (
-            <Dialog open={open} onClose={onClose}>
+            <Dialog open={open} onClose={closeDialog}>
                 <DialogHeader>
                     <DialogHeaderTitle>Settings</DialogHeaderTitle>
                 </DialogHeader>
@@ -77,41 +93,15 @@ class AdvancedSettings extends React.Component<Props> {
                 </Form>
             </Dialog>
         );
-    }
-}
+    },
+    (prev, next) => prev.open === next.open
+);
 
-export default compose(
-    connect(
-        state => ({
-            open: isPluginActive("pb-page-element-settings-advanced")(state)
-        }),
-        { updateElement, deactivatePlugin }
-    ),
-    withActiveElement({ shallow: true }),
-    withKeyHandler(),
-    withHandlers({
-        closeDialog: ({ deactivatePlugin }) => () => {
-            deactivatePlugin({ name: "pb-page-element-settings-advanced" });
-        }
+const withConnect = connect(
+    state => ({
+        open: isPluginActive("pb-page-element-settings-advanced")(state)
     }),
-    withHandlers({
-        onSubmit: ({ element, updateElement, closeDialog }) => (formData: Object) => {
-            // Get element settings plugins
-            const plugins = getPlugins("pb-page-element-advanced-settings").filter(
-                pl => pl.elementType === element.type
-            );
-            formData = plugins.reduce((formData, pl) => {
-                if (pl.onSave) {
-                    return pl.onSave(formData);
-                }
-                return formData;
-            }, formData);
+    { updateElement, deactivatePlugin }
+);
 
-            updateElement({
-                element: merge(element, "data", formData)
-            });
-            closeDialog();
-        },
-        onClose: ({ closeDialog }) => () => closeDialog()
-    })
-)(AdvancedSettings);
+export default withConnect(withActiveElement({ shallow: true })(AdvancedSettings));

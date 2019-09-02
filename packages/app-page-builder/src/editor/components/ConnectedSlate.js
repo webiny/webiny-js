@@ -1,13 +1,12 @@
 // @flow
 import * as React from "react";
-import { pure } from "recompose";
 import { get } from "lodash";
 import { connect } from "@webiny/app-page-builder/editor/redux";
 import { isEqual } from "lodash";
 import { getElement } from "@webiny/app-page-builder/editor/selectors";
 import Slate from "./Slate";
 
-const ConnectedSlate = pure((props: Object) => {
+const ConnectedSlate = React.memo((props: Object) => {
     return <Slate {...props} />;
 });
 

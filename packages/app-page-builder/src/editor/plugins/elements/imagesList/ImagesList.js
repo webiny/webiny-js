@@ -1,10 +1,9 @@
 // @flow
 import * as React from "react";
-import { pure } from "recompose";
 import { withPageBuilder } from "@webiny/app-page-builder/context";
 import { getPlugins } from "@webiny/plugins";
 
-const ImagesList = pure(({ data = {}, pageBuilder: { theme } }: Object = {}) => {
+const ImagesList = React.memo(({ data = {}, pageBuilder: { theme } }: Object = {}) => {
     const { component, images } = data;
     const components = getPlugins("pb-page-element-images-list-component");
     const imageList = components.find(cmp => cmp.componentName === component);

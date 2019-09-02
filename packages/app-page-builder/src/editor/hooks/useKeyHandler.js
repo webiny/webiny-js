@@ -1,10 +1,4 @@
-/**
- * This HOC currently only works with single instance of a component.
- * That is caused by ID generation for an entire component, not for an instance of the component.
- * If you need to change that - take a look at the `decorator` function at the bottom of the file and
- * try to adapt the logic to work with multiple instances.
- */
-
+// @flow
 import React from "react";
 import shortid from "shortid";
 import isHotkey from "is-hotkey";
@@ -34,7 +28,11 @@ const setupListener = () => {
     }
 };
 
-const addKeyHandler = (id, key, handler) => {
+const addKeyHandler = (
+    id: string,
+    key: string,
+    handler: (e: SyntheticKeyboardEvent<HTMLElement>) => void
+) => {
     setupListener();
     keyStack[key] = keyStack[key] || [];
     if (!keyStack[key].find(item => item.id === id)) {
@@ -53,35 +51,28 @@ const removeKeyHandler = (id, key) => {
     }
 };
 
-export function withKeyHandler() {
-    return function decorator(Component) {
-        // Generate a unique ID for this component
-        const id = shortid.generate();
+type AddKeyHandlerType = (
+    key: String,
+    handler: (e: SyntheticKeyboardEvent<HTMLElement>) => void
+) => void;
 
-        const keyProps = {
+type RemoveKeyHandlerType = (key: String) => void;
+
+export function useKeyHandler(): {
+    addKeyHandler: AddKeyHandlerType,
+    removeKeyHandler: RemoveKeyHandlerType
+} {
+    const [id] = React.useState(shortid.generate());
+
+    return React.useMemo(
+        () => ({
             addKeyHandler(key, handler) {
                 addKeyHandler(id, key, handler);
             },
             removeKeyHandler(key) {
                 removeKeyHandler(id, key);
             }
-        };
-
-        return props => {
-            return <Component {...props} {...keyProps} />;
-        };
-    };
-}
-
-export function useKeyHandler() {
-    const [id] = React.useState(shortid.generate());
-
-    return {
-        addKeyHandler(key, handler) {
-            addKeyHandler(id, key, handler);
-        },
-        removeKeyHandler(key) {
-            removeKeyHandler(id, key);
-        }
-    }
+        }),
+        []
+    );
 }

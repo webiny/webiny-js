@@ -1,13 +1,12 @@
 //@flow
-import React from "react";
+import React, { useEffect, useRef } from "react";
 import { connect } from "@webiny/app-page-builder/editor/redux";
 import styled from "react-emotion";
 import { css } from "emotion";
 import { isEqual } from "lodash";
-import { compose, lifecycle } from "recompose";
 import { Drawer, DrawerContent } from "@webiny/ui/Drawer";
 import { getPlugins } from "@webiny/plugins";
-import { withKeyHandler } from "@webiny/app-page-builder/editor/components";
+import { useKeyHandler } from "@webiny/app-page-builder/editor/hooks/useKeyHandler";
 import { deactivatePlugin } from "@webiny/app-page-builder/editor/actions";
 import { getActivePlugins } from "@webiny/app-page-builder/editor/selectors";
 
@@ -62,35 +61,37 @@ const drawerStyle = css({
     }
 });
 
-const drawerKeyHandler = compose(
-    connect(
-        null,
-        { deactivatePlugin }
-    ),
-    withKeyHandler(),
-    lifecycle({
-        componentDidUpdate({ active, name }) {
-            if (!active && this.props.active) {
-                this.props.addKeyHandler("escape", e => {
-                    e.preventDefault();
-                    this.props.deactivatePlugin({ name });
-                });
-            }
-
-            if (active && !this.props.active) {
-                this.props.removeKeyHandler("escape");
-            }
+const ToolbarDrawer = connect(
+    null,
+    { deactivatePlugin }
+)(({ name, active, children, deactivatePlugin }) => {
+    const { removeKeyHandler, addKeyHandler } = useKeyHandler();
+    const last = useRef({ active: null });
+    useEffect(() => {
+        if (active && !last.current.active) {
+            addKeyHandler("escape", e => {
+                e.preventDefault();
+                deactivatePlugin({ name });
+            });
         }
-    })
-);
 
-const ToolbarDrawer = drawerKeyHandler(({ active, children }) => (
-    <DrawerContainer open={active}>
-        <Drawer dismissible open={active} className={drawerStyle}>
-            <DrawerContent>{children}</DrawerContent>
-        </Drawer>
-    </DrawerContainer>
-));
+        if (!active && last.current.active) {
+            removeKeyHandler("escape");
+        }
+    });
+
+    useEffect(() => {
+        last.current = { active };
+    });
+
+    return (
+        <DrawerContainer open={active}>
+            <Drawer dismissible open={active} className={drawerStyle}>
+                <DrawerContent>{children}</DrawerContent>
+            </Drawer>
+        </DrawerContainer>
+    );
+});
 
 const renderPlugin = (plugin: Object) => {
     return React.cloneElement(plugin.renderAction(), { key: plugin.name });

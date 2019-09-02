@@ -2,7 +2,6 @@
 import React from "react";
 import Droppable from "@webiny/app-page-builder/editor/components/Droppable";
 import styled from "react-emotion";
-import { pure } from "recompose";
 
 const InnerDiv = styled("div")({
     height: 5,
@@ -13,7 +12,7 @@ const InnerDiv = styled("div")({
     display: "none"
 });
 
-const OuterDiv = pure(
+const OuterDiv = React.memo(
     styled("div")(
         {
             //height: 20,
@@ -47,7 +46,7 @@ type Props = {
     isVisible: boolean
 };
 
-const Horizontal = pure(({ below, onDrop, isVisible, type }: Props) => {
+const Horizontal = React.memo(({ below, onDrop, isVisible, type }: Props) => {
     return (
         <Droppable type={type} isVisible={isVisible} onDrop={onDrop}>
             {({ isOver }) => (

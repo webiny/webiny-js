@@ -1,7 +1,6 @@
 //@flow
 import * as React from "react";
 import { connect } from "@webiny/app-page-builder/editor/redux";
-import { compose } from "recompose";
 import { Tabs, Tab } from "@webiny/ui/Tabs";
 import { isEqual } from "lodash";
 import { updateElement } from "@webiny/app-page-builder/editor/actions";
@@ -10,7 +9,7 @@ import ColorPicker from "@webiny/app-page-builder/editor/plugins/elementSettings
 import Select from "@webiny/app-page-builder/editor/plugins/elementSettings/components/Select";
 import Slider from "@webiny/app-page-builder/editor/plugins/elementSettings/components/Slider";
 import Selector from "./Selector";
-import withUpdateHandlers from "../components/withUpdateHandlers";
+import useUpdateHandlers from "../useUpdateHandlers";
 
 type Props = Object & {
     getUpdateValue: Function,
@@ -21,7 +20,12 @@ const options = ["none", "solid", "dashed", "dotted"];
 const DATA_NAMESPACE = "data.settings.border";
 const EMPTY_OBJECT = {};
 
-const Settings = ({ getUpdateValue, getUpdatePreview }: Props) => {
+const Settings = ({ element, updateElement }: Props) => {
+    const { getUpdateValue, getUpdatePreview } = useUpdateHandlers({
+        element,
+        updateElement,
+        dataNamespace: DATA_NAMESPACE
+    });
     return (
         <React.Fragment>
             <Tabs>
@@ -72,15 +76,12 @@ const Settings = ({ getUpdateValue, getUpdatePreview }: Props) => {
     );
 };
 
-export default compose(
-    connect(
-        state => {
-            const { id, type, path } = getActiveElement(state);
-            return { element: { id, type, path } };
-        },
-        { updateElement },
-        null,
-        { areStatePropsEqual: isEqual }
-    ),
-    withUpdateHandlers({ namespace: DATA_NAMESPACE })
+export default connect(
+    state => {
+        const { id, type, path } = getActiveElement(state);
+        return { element: { id, type, path } };
+    },
+    { updateElement },
+    null,
+    { areStatePropsEqual: isEqual }
 )(Settings);

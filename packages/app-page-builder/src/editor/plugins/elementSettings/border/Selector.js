@@ -2,7 +2,6 @@
 import * as React from "react";
 import { connect } from "react-redux";
 import { get, isEqual } from "lodash";
-import { pure } from "recompose";
 import { css } from "emotion";
 import { Typography } from "@webiny/ui/Typography";
 import { Grid, Cell } from "@webiny/ui/Grid";
@@ -30,7 +29,7 @@ const getValue = (value, side) => {
     return typeof enabled === "undefined" ? true : enabled;
 };
 
-const Selector = pure(({ label, value, updateValue }: Props) => {
+const Selector = React.memo(({ label, value, updateValue }: Props) => {
     const top = getValue(value, "top");
     const right = getValue(value, "right");
     const bottom = getValue(value, "bottom");

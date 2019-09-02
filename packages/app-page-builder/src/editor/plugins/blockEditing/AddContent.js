@@ -2,7 +2,6 @@
 import React from "react";
 import styled, { keyframes } from "react-emotion";
 import { connect } from "@webiny/app-page-builder/editor/redux";
-import { pure } from "recompose";
 import { Elevation } from "@webiny/ui/Elevation";
 import { ButtonFloating } from "@webiny/ui/Button";
 import { togglePlugin } from "@webiny/app-page-builder/editor/actions";
@@ -46,7 +45,7 @@ const AddBlockContent = styled("div")({
     alignItems: "center"
 });
 
-const AddContent = pure(({ count, togglePlugin }) => {
+const AddContent = React.memo(({ count, togglePlugin }) => {
     if (count) {
         return null;
     }

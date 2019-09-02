@@ -4,7 +4,6 @@ import { get } from "dot-prop-immutable";
 import { connect } from "@webiny/app-page-builder/editor/redux";
 import styled from "react-emotion";
 import { css } from "emotion";
-import { compose } from "recompose";
 import { getPlugins } from "@webiny/plugins";
 import { withPageBuilder } from "@webiny/app-page-builder/context";
 import { getContent, isPluginActive, getPage } from "@webiny/app-page-builder/editor/selectors";
@@ -66,7 +65,4 @@ const stateToProps = state => ({
     renderLayout: isPluginActive("pb-editor-toolbar-preview")(state)
 });
 
-export default compose(
-    connect(stateToProps),
-    withPageBuilder()
-)(Content);
+export default connect(stateToProps)(withPageBuilder()(Content));

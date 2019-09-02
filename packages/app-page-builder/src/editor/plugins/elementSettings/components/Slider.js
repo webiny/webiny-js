@@ -2,7 +2,6 @@
 import * as React from "react";
 import { connect } from "react-redux";
 import { get } from "lodash";
-import { pure } from "recompose";
 import { Typography } from "@webiny/ui/Typography";
 import { Grid, Cell } from "@webiny/ui/Grid";
 import { Slider as SliderCmp } from "@webiny/ui/Slider";
@@ -18,7 +17,7 @@ type Props = {
     step: number
 };
 
-const Slider = pure(
+const Slider = React.memo(
     ({ label, value, updatePreview, updateValue, min = 0, max = 100, step = 1 }: Props) => {
         return (
             <Grid>

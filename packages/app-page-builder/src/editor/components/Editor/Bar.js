@@ -1,12 +1,11 @@
 // @flow
 import React from "react";
 import { connect } from "@webiny/app-page-builder/editor/redux";
-import { pure } from "recompose";
 import { getPlugins } from "@webiny/plugins";
 import { getUi } from "@webiny/app-page-builder/editor/selectors";
 import DefaultEditorBar from "./DefaultEditorBar";
 
-const Bar = pure((props: Object) => {
+const Bar = React.memo((props: Object) => {
     const plugins = getPlugins("pb-editor-bar");
     let pluginBar = null;
 

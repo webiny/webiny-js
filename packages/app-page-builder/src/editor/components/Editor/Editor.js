@@ -1,13 +1,12 @@
 // @flow
-import React from "react";
+import React, { useEffect } from "react";
 import { connect } from "@webiny/app-page-builder/editor/redux";
 import classSet from "classnames";
 import { ActionCreators } from "redux-undo";
 import HTML5Backend from "react-dnd-html5-backend";
 import { DragDropContext } from "react-dnd";
-import { compose, lifecycle } from "recompose";
 import { getUi } from "@webiny/app-page-builder/editor/selectors";
-import { withKeyHandler } from "@webiny/app-page-builder/editor/components";
+import { useKeyHandler } from "@webiny/app-page-builder/editor/hooks/useKeyHandler";
 import "./Editor.scss";
 
 // Components
@@ -19,10 +18,36 @@ import Dialogs from "./Dialogs";
 
 type Props = {
     isDragging: boolean,
-    isResizing: boolean
+    isResizing: boolean,
+    undo: Function,
+    redo: Function,
+    addKeyHandler: Function,
+    removeKeyHandler: Function,
+    slateFocused: boolean
 };
 
-const Editor = ({ isDragging, isResizing }: Props) => {
+const Editor = ({ isDragging, isResizing, undo, redo, slateFocused }: Props) => {
+    const { addKeyHandler, removeKeyHandler } = useKeyHandler();
+
+    useEffect(() => {
+        addKeyHandler("mod+z", e => {
+            if (!slateFocused) {
+                e.preventDefault();
+                undo();
+            }
+        });
+        addKeyHandler("mod+shift+z", e => {
+            if (!slateFocused) {
+                e.preventDefault();
+                redo();
+            }
+        });
+
+        return () => {
+            removeKeyHandler("mod+z");
+            removeKeyHandler("mod+shift+z");
+        };
+    });
     const classes = {
         "pb-editor": true,
         "pb-editor-dragging": isDragging,
@@ -39,43 +64,18 @@ const Editor = ({ isDragging, isResizing }: Props) => {
     );
 };
 
-export default compose(
-    connect(
-        state => {
-            const ui: Object = getUi(state);
+export default connect(
+    state => {
+        const ui: Object = getUi(state);
 
-            return {
-                slateFocused: ui.slateFocused,
-                isDragging: ui.dragging,
-                isResizing: ui.resizing
-            };
-        },
-        {
-            undo: ActionCreators.undo,
-            redo: ActionCreators.redo
-        }
-    ),
-    withKeyHandler(),
-    lifecycle({
-        componentDidMount() {
-            const { addKeyHandler, undo, redo } = this.props;
-            addKeyHandler("mod+z", e => {
-                if (!this.props.slateFocused) {
-                    e.preventDefault();
-                    undo();
-                }
-            });
-            addKeyHandler("mod+shift+z", e => {
-                if (!this.props.slateFocused) {
-                    e.preventDefault();
-                    redo();
-                }
-            });
-        },
-        componentWillUnmount() {
-            this.props.removeKeyHandler("mod+z");
-            this.props.removeKeyHandler("mod+shift+z");
-        }
-    }),
-    DragDropContext(HTML5Backend)
-)(Editor);
+        return {
+            slateFocused: ui.slateFocused,
+            isDragging: ui.dragging,
+            isResizing: ui.resizing
+        };
+    },
+    {
+        undo: ActionCreators.undo,
+        redo: ActionCreators.redo
+    }
+)(DragDropContext(HTML5Backend)(Editor));

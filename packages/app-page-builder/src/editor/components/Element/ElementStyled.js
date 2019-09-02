@@ -1,7 +1,7 @@
 //@flow
+import * as React from "react";
 import styled from "react-emotion";
 import { css } from "emotion";
-import { pure } from "recompose";
 
 export const typeStyle = css({
     position: "relative",
@@ -40,7 +40,7 @@ export const typeStyle = css({
     }
 });
 
-export const ElementContainer = pure(
+export const ElementContainer = React.memo(
     styled("div")(({ highlight, active, dragged }) => {
         const color = active ? "var(--mdc-theme-primary)" : "var(--mdc-theme-secondary)";
 
