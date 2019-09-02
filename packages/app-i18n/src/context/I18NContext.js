@@ -3,6 +3,7 @@
 import React, { useState, useMemo, useContext } from "react";
 import { useQuery } from "react-apollo";
 import gql from "graphql-tag";
+import { get } from "lodash";
 
 export const getI18NInformation = gql`
     query GetI18NInformation {
@@ -28,11 +29,7 @@ const I18NProvider = ({ children }: Object) => {
     const [state, setState] = useState({ initializing: false, currentLocale: null, locales: [] });
     const { loading, data } = useQuery(getI18NInformation);
 
-    if (loading) {
-        return null;
-    }
-
-    const { currentLocale, locales } = data.i18n.getI18NInformation;
+    const { currentLocale, locales } = get(data, "i18n.getI18NInformation", {});
 
     const value = useMemo(() => {
         return {
@@ -44,6 +41,10 @@ const I18NProvider = ({ children }: Object) => {
             setState
         };
     });
+
+    if (loading) {
+        return null;
+    }
 
     return <I18NContext.Provider value={value}>{children}</I18NContext.Provider>;
 };
