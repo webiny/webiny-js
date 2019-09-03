@@ -7,6 +7,7 @@ import { getElement } from "@webiny/app-page-builder/editor/selectors";
 import Slate from "./Slate";
 
 const ConnectedSlate = React.memo((props: Object) => {
+    console.log("ConnectedSlate");
     return <Slate {...props} />;
 });
 

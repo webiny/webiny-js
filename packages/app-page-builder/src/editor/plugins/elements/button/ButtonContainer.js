@@ -28,7 +28,7 @@ const ButtonContainer = ({ getAllClasses, elementStyle, elementAttributes, eleme
         (value: string) => {
             updateElement({ element: set(element, "data.text", value) });
         },
-        [element, updateElement]
+        []
     );
 
     return (
