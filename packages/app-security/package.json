@@ -25,7 +25,8 @@
     "react-apollo": "^3.1.0-beta.0",
     "react-helmet": "^5.2.0",
     "react-router-dom": "^5.0.0",
-    "recompose": "^0.30.0"
+    "recompose": "^0.30.0",
+    "use-react-router": "^1.0.7"
   },
   "devDependencies": {
     "@babel/cli": "^7.5.5",

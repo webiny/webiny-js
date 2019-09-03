@@ -62,7 +62,7 @@ export const loadRole = gql`
 `;
 
 export const createRole = gql`
-    mutation CreateRole($data: RoleInput!){
+    mutation CreateRole($data: SecurityRoleInput!){
         security {
             role: createRole(data: $data) {
                 data {
@@ -79,7 +79,7 @@ export const createRole = gql`
 `;
 
 export const updateRole = gql`
-    mutation UpdateRole($id: ID!, $data: RoleInput!){
+    mutation UpdateRole($id: ID!, $data: SecurityRoleInput!){
         security {
             role: updateRole(id: $id, data: $data) {
                 data {

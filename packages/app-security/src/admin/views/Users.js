@@ -9,15 +9,18 @@ import { useCrud } from "@webiny/app-admin/hooks/useCrud";
 import UsersDataList from "./Users/UsersDataList";
 import UsersForm from "./Users/UsersForm";
 import { createUser, deleteUser, loadUser, loadUsers, updateUser } from "./Users/graphql";
+import useRouter from "use-react-router";
 
 const t = i18n.namespace("Security.Users");
 
-const Users = ({ location, history }) => {
+const Users = () => {
     const createNew = useCallback(() => {
         const query = new URLSearchParams(location.search);
         query.delete("id");
         history.push({ search: query.toString() });
     });
+
+    const { location, history } = useRouter();
 
     const { formProps, listProps } = useCrud({
         history,

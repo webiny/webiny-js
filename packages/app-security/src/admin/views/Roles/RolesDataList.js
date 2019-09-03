@@ -1,6 +1,6 @@
 // @flow
 import * as React from "react";
-import { withRouter } from "react-router-dom";
+import useRouter from "use-react-router";
 import type { Location, RouterHistory } from "react-router-dom";
 import type { WithCrudListProps } from "@webiny/app-admin/components";
 import { i18n } from "@webiny/app/i18n";
@@ -23,10 +23,9 @@ const t = i18n.namespace("Security.RolesDataList");
 
 const RolesDataList = ({
     dataList,
-    location,
-    history,
     deleteRecord
 }: WithCrudListProps & { location: Location, history: RouterHistory }) => {
+    const { location, history } = useRouter();
     const query = new URLSearchParams(location.search);
 
     return (
@@ -96,4 +95,4 @@ const RolesDataList = ({
     );
 };
 
-export default withRouter(RolesDataList);
+export default RolesDataList;
