@@ -1,5 +1,6 @@
 // @flow
-import React, { useCallback } from "react";
+import React from "react";
+import { useHandler } from "@webiny/app/hooks/useHandler";
 import { connect } from "@webiny/app-page-builder/editor/redux";
 import { getPlugins } from "@webiny/plugins";
 import { set } from "dot-prop-immutable";
@@ -12,8 +13,10 @@ import {
     getParentElementWithChildren
 } from "@webiny/app-page-builder/editor/selectors";
 
-const CloneAction = ({ element, children, updateElement }: Object) => {
-    const duplicate = useCallback(() => {
+const CloneAction = (props: Object) => {
+    const { element, children } = props;
+
+    const onClick = useHandler(props, ({ element, updateElement }) => {
         const state = redux.store.getState();
         element = getElementWithChildren(state, element.id);
         const parent = getParentElementWithChildren(state, element.id);
@@ -25,7 +28,7 @@ const CloneAction = ({ element, children, updateElement }: Object) => {
             ...(position < parent.elements.length ? parent.elements.slice(position) : [])
         ]);
         updateElement({ element: newElement });
-    }, [element]);
+    });
 
     const plugin = getPlugins("pb-page-element").find(pl => pl.elementType === element.type);
 
@@ -33,7 +36,7 @@ const CloneAction = ({ element, children, updateElement }: Object) => {
         return null;
     }
 
-    return React.cloneElement(children, { onClick: duplicate });
+    return React.cloneElement(children, { onClick });
 };
 
 export default connect(

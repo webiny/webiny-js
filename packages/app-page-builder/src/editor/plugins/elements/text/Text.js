@@ -1,5 +1,6 @@
 // @flow
-import React, { useCallback } from "react";
+import React from "react";
+import { useHandler } from "@webiny/app/hooks/useHandler";
 import { connect } from "@webiny/app-page-builder/editor/redux";
 import { set } from "dot-prop-immutable";
 import ConnectedSlate from "@webiny/app-page-builder/editor/components/ConnectedSlate";
@@ -9,14 +10,14 @@ import { getElement } from "@webiny/app-page-builder/editor/selectors";
 
 export const className = "webiny-pb-base-page-element-style webiny-pb-page-element-text";
 
-const Text = ({ element, updateElement }) => {
-    const onChange = useCallback(value => {
+const Text = props => {
+    const onChange = useHandler(props, ({ element, updateElement }) => value => {
         updateElement({ element: set(element, "data.text", value) });
-    }, [element]);
+    });
 
     return (
-        <ElementRoot element={element} className={className}>
-            <ConnectedSlate elementId={element.id} onChange={onChange} />
+        <ElementRoot element={props.element} className={className}>
+            <ConnectedSlate elementId={props.element.id} onChange={onChange} />
         </ElementRoot>
     );
 };

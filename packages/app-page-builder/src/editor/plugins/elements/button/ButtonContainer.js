@@ -1,5 +1,6 @@
 // @flow
-import React, { useCallback } from "react";
+import React from "react";
+import { useHandler } from "@webiny/app/hooks/useHandler";
 import { connect } from "@webiny/app-page-builder/editor/redux";
 import { set } from "dot-prop-immutable";
 import { updateElement } from "@webiny/app-page-builder/editor/actions";
@@ -17,19 +18,17 @@ const excludePlugins = [
     "pb-editor-slate-editor-link"
 ];
 
-const ButtonContainer = ({ getAllClasses, elementStyle, elementAttributes, element, updateElement }) => {
+const ButtonContainer = props => {
+    const { getAllClasses, elementStyle, elementAttributes, element } = props;
     const { type = "default", icon = {} } = element.data || {};
     const svg = icon.svg || null;
     const { alignItems } = elementStyle;
 
     const { position = "left" } = icon;
 
-    const onChange = useCallback(
-        (value: string) => {
-            updateElement({ element: set(element, "data.text", value) });
-        },
-        []
-    );
+    const onChange = useHandler(props, ({ element, updateElement }) => (value: string) => {
+        updateElement({ element: set(element, "data.text", value) });
+    });
 
     return (
         <div

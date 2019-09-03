@@ -1,9 +1,10 @@
 // @flow
 import { useMemo } from "react";
 import { set } from "lodash";
+import { useHandler } from "@webiny/app/hooks/useHandler";
 
-export default ({ element, updateElement, dataNamespace }: Object) => {
-    const updateSettings = useMemo(() => {
+export default (props: Object) => {
+    const updateSettings = useHandler(props, ({ element, updateElement, dataNamespace }) => {
         let historyUpdated = {};
         return (name: string, newValue: mixed, history = false) => {
             const propName = `${dataNamespace}.${name}`;
@@ -24,7 +25,7 @@ export default ({ element, updateElement, dataNamespace }: Object) => {
                 updateElement({ element: newElement, merge: true });
             }
         };
-    }, [element, dataNamespace]);
+    });
 
     const getUpdateValue = useMemo(() => {
         const handlers = {};
