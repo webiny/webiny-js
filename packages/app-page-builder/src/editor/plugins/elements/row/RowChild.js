@@ -1,6 +1,5 @@
 // @flow
-import * as React from "react";
-import { compose, withHandlers, pure, setDisplayName } from "recompose";
+import React, { useCallback } from "react";
 import { connect } from "@webiny/app-page-builder/editor/redux";
 import { css } from "emotion";
 import { get } from "lodash";
@@ -42,20 +41,40 @@ const noPointer = css({
     }
 });
 
-const RowChild = pure(
+const RowChild = React.memo(
     ({
+        dropElement,
+        onResize,
+        onResizeStart,
+        onResizeStop,
         target,
         resizing,
         element,
         index,
         leftElement,
-        last = false,
-        dropElementLeft,
-        dropElementRight,
-        resizeStart,
-        resizeStop,
-        resize
+        count,
+        last = false
     }: Props) => {
+        const resizeStart = useCallback(() => {
+            onResizeStart(leftElement, element);
+        }, [element, leftElement]);
+
+        const resize = useCallback(diff => onResize(diff), [onResize]);
+
+        const dropElementLeft = useCallback(
+            source => {
+                dropElement({ source, target: { ...target, position: index } });
+            },
+            [target, index, dropElement]
+        );
+
+        const dropElementRight = useCallback(
+            source => {
+                dropElement({ source, target: { ...target, position: count } });
+            },
+            [target, count, dropElement]
+        );
+
         return (
             <ColumnContainer
                 data-type="row-column-container"
@@ -65,7 +84,7 @@ const RowChild = pure(
                     <Resizer
                         axis={"x"}
                         onResizeStart={resizeStart}
-                        onResizeStop={resizeStop}
+                        onResizeStop={onResizeStop}
                         onResize={resize}
                     >
                         {resizeProps => (
@@ -85,25 +104,9 @@ const RowChild = pure(
     }
 );
 
-export default compose(
-    setDisplayName("RowChild"),
-    connect(
-        state => ({
-            isDragging: getIsDragging(state)
-        }),
-        { dropElement }
-    ),
-    withHandlers({
-        resizeStart: ({ onResizeStart, element, leftElement }) => () => {
-            onResizeStart(leftElement, element);
-        },
-        resizeStop: ({ onResizeStop }) => () => onResizeStop(),
-        resize: ({ onResize }) => diff => onResize(diff),
-        dropElementLeft: ({ dropElement, target, index }) => (source: Object) => {
-            dropElement({ source, target: { ...target, position: index } });
-        },
-        dropElementRight: ({ dropElement, target, count }) => (source: Object) => {
-            dropElement({ source, target: { ...target, position: count } });
-        }
-    })
+export default connect(
+    state => ({
+        isDragging: getIsDragging(state)
+    }),
+    { dropElement }
 )(RowChild);

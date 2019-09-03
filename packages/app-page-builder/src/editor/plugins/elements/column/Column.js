@@ -1,9 +1,9 @@
 //@flow
-import React from "react";
+import React, { useCallback } from "react";
 import styled from "react-emotion";
+import { isEqual } from "lodash";
 import { css } from "emotion";
 import { connect } from "@webiny/app-page-builder/editor/redux";
-import { compose, withHandlers, pure } from "recompose";
 import { IconButton } from "@webiny/ui/Button";
 import { ElementRoot } from "@webiny/app-page-builder/render/components/ElementRoot";
 import DropZone from "@webiny/app-page-builder/editor/components/DropZone";
@@ -35,7 +35,23 @@ const addIcon = css({
     }
 });
 
-const Column = pure(({ element, dropElement, togglePlugin }) => {
+const Column = React.memo(({ element, dropElement, togglePlugin }) => {
+    const onClick = useCallback(() => {
+        const { id, path, type } = element;
+        togglePlugin({
+            name: "pb-editor-toolbar-add-element",
+            params: { id, path, type }
+        });
+    }, [element]);
+
+    const onDrop = useCallback(
+        source => {
+            const { id, path, type } = element;
+            dropElement({ source, target: { id, path, type, position: null } });
+        },
+        [element]
+    );
+
     return (
         <ElementAnimation>
             <ColumnContainer style={{ justifyContent: "center" }}>
@@ -48,16 +64,11 @@ const Column = pure(({ element, dropElement, togglePlugin }) => {
                         {({ id, path, type, elements }) => (
                             <React.Fragment>
                                 {!elements.length && (
-                                    <DropZone.Center
-                                        key={id}
-                                        id={id}
-                                        type={type}
-                                        onDrop={dropElement}
-                                    >
+                                    <DropZone.Center key={id} id={id} type={type} onDrop={onDrop}>
                                         <IconButton
                                             className={addIcon + " addIcon"}
                                             icon={<AddCircleOutline />}
-                                            onClick={togglePlugin}
+                                            onClick={onClick}
                                         />
                                     </DropZone.Center>
                                 )}
@@ -80,26 +91,15 @@ const Column = pure(({ element, dropElement, togglePlugin }) => {
     );
 });
 
-export default compose(
-    connect(
-        (state, props) => {
-            const element = getElement(state, props.element.id);
-            return {
-                // $FlowFixMe
-                element: { ...element, elements: element.elements.map(id => getElement(state, id)) }
-            };
-        },
-        { dropElement, togglePlugin }
-    ),
-    withHandlers({
-        togglePlugin: ({ togglePlugin, element: { id, path, type } }) => () => {
-            togglePlugin({
-                name: "pb-editor-toolbar-add-element",
-                params: { id, path, type }
-            });
-        },
-        dropElement: ({ dropElement, element: { id, path, type } }) => (source: Object) => {
-            dropElement({ source, target: { id, path, type, position: null } });
-        }
-    })
+export default connect(
+    (state, props) => {
+        const element = getElement(state, props.element.id);
+        return {
+            // $FlowFixMe
+            element: { ...element, elements: element.elements.map(id => getElement(state, id)) }
+        };
+    },
+    { dropElement, togglePlugin },
+    null,
+    { areStatePropsEqual: isEqual }
 )(Column);

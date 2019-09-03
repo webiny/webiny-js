@@ -1,8 +1,7 @@
 // @flow
-import * as React from "react";
+import React, { useCallback, useEffect } from "react";
 import { css } from "emotion";
 import { isEqual } from "lodash";
-import { compose, withHandlers, shouldUpdate, lifecycle } from "recompose";
 import { get } from "lodash";
 
 function appendSDK(props) {
@@ -10,7 +9,7 @@ function appendSDK(props) {
     const { url } = get(element, "data.source") || {};
 
     if (!url || window["PinUtils"]) {
-        return;
+        return Promise.resolve();
     }
 
     return new Promise(resolve => {
@@ -45,39 +44,30 @@ const getHTML = data => {
     />`;
 };
 
-export default compose(
-    shouldUpdate((props, nextProps) => {
-        return !isEqual(props, nextProps);
-    }),
-    withHandlers({
-        renderEmpty: () =>
-            function renderEmpty() {
-                return <div>You must configure your embed in the settings!</div>;
-            },
-        renderEmbed: ({ element }) =>
-            function renderEmbed() {
-                const data = get(element, "data.source");
-                return (
-                    <div
-                        id={element.id}
-                        className={centerAlign}
-                        dangerouslySetInnerHTML={{ __html: getHTML(data) }}
-                    />
-                );
-            }
-    }),
-    lifecycle({
-        async componentDidMount() {
-            await appendSDK(this.props);
-            initEmbed(this.props);
-        },
-        async componentDidUpdate() {
-            await appendSDK(this.props);
-            initEmbed(this.props);
-        }
-    })
-)(({ element, renderEmbed, renderEmpty }: Object) => {
-    const { url } = get(element, "data.source") || {};
+export default React.memo(
+    props => {
+        const { element } = props;
 
-    return url ? renderEmbed() : renderEmpty();
-});
+        useEffect(() => {
+            appendSDK(props).then(() => initEmbed(props));
+        }, [element]);
+
+        const empty = <div>You must configure your embed in the settings!</div>;
+
+        const renderEmbed = useCallback(() => {
+            const data = get(element, "data.source");
+            return (
+                <div
+                    id={element.id}
+                    className={centerAlign}
+                    dangerouslySetInnerHTML={{ __html: getHTML(data) }}
+                />
+            );
+        }, [element]);
+
+        const { url } = get(element, "data.source") || {};
+
+        return url ? renderEmbed() : empty;
+    },
+    (props, nextProps) => isEqual(props, nextProps)
+);

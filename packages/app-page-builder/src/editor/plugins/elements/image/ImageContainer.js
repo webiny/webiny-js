@@ -1,9 +1,8 @@
 // @flow
-import * as React from "react";
+import React, { useCallback } from "react";
 import { connect } from "@webiny/app-page-builder/editor/redux";
 import styled from "react-emotion";
 import isNumeric from "isnumeric";
-import { compose, withHandlers, pure } from "recompose";
 import { set, isEqual } from "lodash";
 import SingleImageUpload from "@webiny/app-admin/components/SingleImageUpload";
 import { updateElement } from "@webiny/app-page-builder/editor/actions";
@@ -17,8 +16,8 @@ const AlignImage = styled("div")(props => ({
     }
 }));
 
-const ImageContainer = pure(props => {
-    const { horizontalAlign, onChange } = props;
+const ImageContainer = React.memo(props => {
+    const { horizontalAlign, updateElement, element } = props;
     const image = { ...props.image };
 
     const imgStyle = {};
@@ -31,6 +30,13 @@ const ImageContainer = pure(props => {
         imgStyle.height = isNumeric(height) ? parseInt(height) : height;
     }
 
+    const onChange = useCallback(
+        async data => {
+            updateElement({ element: set(element, "data.image.file", data), merge: true });
+        },
+        [element]
+    );
+
     return (
         <AlignImage align={horizontalAlign}>
             <SingleImageUpload
@@ -42,25 +48,18 @@ const ImageContainer = pure(props => {
     );
 });
 
-export default compose(
-    connect(
-        (state, { elementId }) => {
-            const element = getElement(state, elementId);
-            const { image = {}, settings = {} } = element.data;
+export default connect(
+    (state, { elementId }) => {
+        const element = getElement(state, elementId);
+        const { image = {}, settings = {} } = element.data;
 
-            return {
-                element: { id: element.id, type: element.type, path: element.path },
-                image,
-                horizontalAlign: settings.horizontalAlign || "center"
-            };
-        },
-        { updateElement },
-        null,
-        { areStatePropsEqual: isEqual }
-    ),
-    withHandlers({
-        onChange: ({ updateElement, element }) => async data => {
-            updateElement({ element: set(element, "data.image.file", data), merge: true });
-        }
-    })
+        return {
+            element: { id: element.id, type: element.type, path: element.path },
+            image,
+            horizontalAlign: settings.horizontalAlign || "center"
+        };
+    },
+    { updateElement },
+    null,
+    { areStatePropsEqual: isEqual }
 )(ImageContainer);

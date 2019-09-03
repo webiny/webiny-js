@@ -1,6 +1,5 @@
 // @flow
-import * as React from "react";
-import { compose, withHandlers } from "recompose";
+import React, { useCallback } from "react";
 import { connect } from "@webiny/app-page-builder/editor/redux";
 import isEqual from "lodash/isEqual";
 import DropZone from "@webiny/app-page-builder/editor/components/DropZone";
@@ -17,37 +16,37 @@ type Props = {
     dropElementBelow: Function
 };
 
-const ColumnChild = ({
-    target,
-    element,
-    last = false,
-    dropElementAbove,
-    dropElementBelow
-}: Props) => {
-    return (
-        <div style={{ width: "100%", position: "relative" }}>
-            <DropZone.Above type={target.type} onDrop={dropElementAbove} />
-            <Element id={element.id} />
-            {last && <DropZone.Below type={target.type} onDrop={dropElementBelow} />}
-        </div>
-    );
-};
+const ColumnChild = React.memo(
+    ({ target, element, last = false, dropElement, index, count }: Props) => {
+        const dropElementAbove = useCallback(
+            source => {
+                dropElement({ source, target: { ...target, position: index } });
+            },
+            [element, index, target]
+        );
 
-export default compose(
-    connect(
-        (state, props) => ({
-            element: getElement(state, props.id)
-        }),
-        { dropElement },
-        null,
-        { areStatePropsEqual: isEqual }
-    ),
-    withHandlers({
-        dropElementAbove: ({ dropElement, target, index }) => (source: Object) => {
-            dropElement({ source, target: { ...target, position: index } });
-        },
-        dropElementBelow: ({ dropElement, target, count }) => (source: Object) => {
-            dropElement({ source, target: { ...target, position: count } });
-        }
-    })
+        const dropElementBelow = useCallback(
+            source => {
+                dropElement({ source, target: { ...target, position: count } });
+            },
+            [count, target]
+        );
+
+        return (
+            <div style={{ width: "100%", position: "relative" }}>
+                <DropZone.Above type={target.type} onDrop={dropElementAbove} />
+                <Element id={element.id} />
+                {last && <DropZone.Below type={target.type} onDrop={dropElementBelow} />}
+            </div>
+        );
+    }
+);
+
+export default connect(
+    (state, props) => ({
+        element: getElement(state, props.id)
+    }),
+    { dropElement },
+    null,
+    { areStatePropsEqual: isEqual }
 )(ColumnChild);

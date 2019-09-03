@@ -1,7 +1,6 @@
 // @flow
-import * as React from "react";
+import React, { useMemo, useCallback } from "react";
 import { connect } from "@webiny/app-page-builder/editor/redux";
-import { compose, withHandlers } from "recompose";
 import { set } from "dot-prop-immutable";
 import { get } from "lodash";
 import { Tabs, Tab } from "@webiny/ui/Tabs";
@@ -10,8 +9,26 @@ import { getActiveElement } from "@webiny/app-page-builder/editor/selectors";
 import Input from "@webiny/app-page-builder/editor/plugins/elementSettings/components/Input";
 import { ReactComponent as ImageIcon } from "./round-image-24px.svg";
 
-const ImageSettings = ({ element, updateTitle, updateWidth, updateHeight }: Object) => {
+const ImageSettings = ({ element, updateElement }: Object) => {
     const { image = {} } = get(element, "data", {});
+
+    const setData = useMemo(() => {
+        const historyUpdated = {};
+
+        return (name, value) => {
+            const attrKey = `data.image.${name}`;
+            const newElement = set(element, attrKey, value);
+
+            if (historyUpdated[name] !== value) {
+                historyUpdated[name] = value;
+                updateElement({ element: newElement });
+            }
+        };
+    }, [element, updateElement]);
+
+    const updateTitle = useCallback(value => setData("title", value), [setData]);
+    const updateWidth = useCallback(value => setData("width", value), [setData]);
+    const updateHeight = useCallback(value => setData("height", value), [setData]);
 
     return (
         <Tabs>
@@ -43,36 +60,7 @@ const ImageSettings = ({ element, updateTitle, updateWidth, updateHeight }: Obje
     );
 };
 
-export default compose(
-    connect(
-        state => ({ element: getActiveElement(state) }),
-        { updateElement }
-    ),
-    withHandlers({
-        updateData: ({ updateElement, element }) => {
-            const historyUpdated = {};
-
-            return (name, value, history = true) => {
-                const attrKey = `data.image.${name}`;
-                const newElement = set(element, attrKey, value);
-
-                if (!history) {
-                    updateElement({ element: newElement, history });
-                    return;
-                }
-
-                if (historyUpdated[name] !== value) {
-                    historyUpdated[name] = value;
-                    updateElement({ element: newElement });
-                }
-            };
-        }
-    }),
-    withHandlers({
-        updateTitle: ({ updateData }) => (value: string) => updateData("title", value),
-        updateAlt: ({ updateData }) => (value: string) => updateData("alt", value),
-        updateWidth: ({ updateData }) => (value: string) => updateData("width", value),
-        updateHeight: ({ updateData }) => (value: string) => updateData("height", value),
-        updateAlign: ({ updateData }) => (value: string) => updateData("align", value)
-    })
+export default connect(
+    state => ({ element: getActiveElement(state) }),
+    { updateElement }
 )(ImageSettings);

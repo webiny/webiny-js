@@ -1,7 +1,6 @@
 // @flow
-import * as React from "react";
+import React, { useCallback } from "react";
 import { connect } from "@webiny/app-page-builder/editor/redux";
-import { compose, withHandlers } from "recompose";
 import { set } from "dot-prop-immutable";
 import { updateElement } from "@webiny/app-page-builder/editor/actions";
 import { getElement } from "@webiny/app-page-builder/editor/selectors";
@@ -18,12 +17,19 @@ const excludePlugins = [
     "pb-editor-slate-editor-link"
 ];
 
-const ButtonContainer = ({ getAllClasses, elementStyle, elementAttributes, element, onChange }) => {
-    const { type = "default", icon = {}, } = element.data || {};
+const ButtonContainer = ({ getAllClasses, elementStyle, elementAttributes, element, updateElement }) => {
+    const { type = "default", icon = {} } = element.data || {};
     const svg = icon.svg || null;
     const { alignItems } = elementStyle;
 
     const { position = "left" } = icon;
+
+    const onChange = useCallback(
+        (value: string) => {
+            updateElement({ element: set(element, "data.text", value) });
+        },
+        [element, updateElement]
+    );
 
     return (
         <div
@@ -53,14 +59,7 @@ const ButtonContainer = ({ getAllClasses, elementStyle, elementAttributes, eleme
     );
 };
 
-export default compose(
-    connect(
-        (state, props) => ({ element: getElement(state, props.elementId) }),
-        { updateElement }
-    ),
-    withHandlers({
-        onChange: ({ element, updateElement }) => (value: string) => {
-            updateElement({ element: set(element, "data.text", value) });
-        }
-    })
+export default connect(
+    (state, props) => ({ element: getElement(state, props.elementId) }),
+    { updateElement }
 )(ButtonContainer);

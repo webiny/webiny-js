@@ -1,11 +1,10 @@
 // @flow
-import * as React from "react";
+import React, { useRef, useCallback, useState } from "react";
 import { css } from "emotion";
 import { connect } from "@webiny/app-page-builder/editor/redux";
 import { set } from "dot-prop-immutable";
 import { isEqual } from "lodash";
 import { getElement } from "@webiny/app-page-builder/editor/selectors";
-import { compose, withHandlers, withState, setDisplayName } from "recompose";
 import { updateElement } from "@webiny/app-page-builder/editor/actions";
 import { resizeStart, resizeStop } from "./actions";
 import RowChild from "./RowChild";
@@ -17,18 +16,52 @@ const innerElement = css({
     boxSizing: "border-box"
 });
 
-const RowContainer = ({
-    element,
-    getRef,
-    onResizeStart,
-    onResizeStop,
-    onResize,
-    width,
-    resizing
-}) => {
-    const ref = getRef();
+const RowContainer = ({ element, updateElement, resizeStart, resizeStop }) => {
+    const ref = useRef({});
+    const [resizing, setResizing] = useState(false);
+    const [width, setWidth] = useState(null);
 
     const { id, path, type, elements } = element;
+
+    const onResizeStart = useCallback(
+        (leftElement, rightElement) => {
+            resizeStart();
+            setResizing({ left: leftElement, right: rightElement });
+            setWidth({ left: leftElement.data.width, right: rightElement.data.width });
+        },
+        [resizeStart]
+    );
+
+    const onResizeStop = useCallback(() => {
+        const { left, right } = resizing;
+        setResizing(false);
+        updateElement({ element: set(left, "data.width", width.left) });
+        updateElement({ element: set(right, "data.width", width.right) });
+        setWidth(null);
+        resizeStop();
+    }, [resizing, width, updateElement, resizeStop]);
+
+    const onResize = useCallback(diff => {
+        const change = parseFloat(((diff / ref.current.offsetWidth) * 100).toFixed(2));
+
+        const totalWidth = width.left + width.right;
+
+        // Apply the change
+        let rightWidth = width.right + change;
+        let leftWidth = totalWidth - rightWidth;
+
+        if (rightWidth < 10) {
+            rightWidth = 10;
+            leftWidth = totalWidth - rightWidth;
+        }
+
+        if (leftWidth < 10) {
+            leftWidth = 10;
+            rightWidth = totalWidth - leftWidth;
+        }
+
+        setWidth({ left: leftWidth, right: rightWidth });
+    }, [width]);
 
     return (
         <div ref={ref} className={innerElement}>
@@ -66,68 +99,14 @@ const RowContainer = ({
     );
 };
 
-export default compose(
-    setDisplayName("RowContainer"),
-    connect(
-        (state, props) => {
-            const element = getElement(state, props.elementId);
-            return {
-                element: { ...element, elements: element.elements.map(id => getElement(state, id)) }
-            };
-        },
-        { updateElement, resizeStart, resizeStop },
-        null,
-        { areStatePropsEqual: isEqual }
-    ),
-    withState("resizing", "setResizing", false),
-    withState("width", "setWidth", null),
-    withHandlers(() => {
-        const rowRef = React.createRef();
+export default connect(
+    (state, props) => {
+        const element = getElement(state, props.elementId);
         return {
-            getRef: () => () => rowRef
+            element: { ...element, elements: element.elements.map(id => getElement(state, id)) }
         };
-    }),
-    withHandlers({
-        onResizeStart: ({ setResizing, setWidth, resizeStart }) => (leftElement, rightElement) => {
-            resizeStart();
-            setResizing({ left: leftElement, right: rightElement });
-            setWidth({ left: leftElement.data.width, right: rightElement.data.width });
-        },
-        onResizeStop: ({
-            resizeStop,
-            updateElement,
-            setResizing,
-            setWidth,
-            resizing,
-            width
-        }) => () => {
-            const { left, right } = resizing;
-            setResizing(false);
-            updateElement({ element: set(left, "data.width", width.left) });
-            updateElement({ element: set(right, "data.width", width.right) });
-            setWidth(null);
-            resizeStop();
-        },
-        onResize: ({ getRef, width, setWidth }) => diff => {
-            const change = parseFloat(((diff / getRef().current.offsetWidth) * 100).toFixed(2));
-
-            const totalWidth = width.left + width.right;
-
-            // Apply the change
-            let rightWidth = width.right + change;
-            let leftWidth = totalWidth - rightWidth;
-
-            if (rightWidth < 10) {
-                rightWidth = 10;
-                leftWidth = totalWidth - rightWidth;
-            }
-
-            if (leftWidth < 10) {
-                leftWidth = 10;
-                rightWidth = totalWidth - leftWidth;
-            }
-
-            setWidth({ left: leftWidth, right: rightWidth });
-        }
-    })
+    },
+    { updateElement, resizeStart, resizeStop },
+    null,
+    { areStatePropsEqual: isEqual }
 )(RowContainer);
