@@ -1,9 +1,10 @@
 // @flow
 import * as React from "react";
-import { withPageBuilder } from "@webiny/app-page-builder/context";
+import { usePageBuilder } from "@webiny/app-page-builder/hooks/usePageBuilder";
 import { getPlugins } from "@webiny/plugins";
 
-const ImagesList = React.memo(({ data = {}, pageBuilder: { theme } }: Object = {}) => {
+const ImagesList = React.memo(({ data = {} }: Object = {}) => {
+    const { theme } = usePageBuilder();
     const { component, images } = data;
     const components = getPlugins("pb-page-element-images-list-component");
     const imageList = components.find(cmp => cmp.componentName === component);
@@ -20,4 +21,4 @@ const ImagesList = React.memo(({ data = {}, pageBuilder: { theme } }: Object = {
     return <ListComponent data={images} theme={theme} />;
 });
 
-export default withPageBuilder()(ImagesList);
+export default ImagesList;

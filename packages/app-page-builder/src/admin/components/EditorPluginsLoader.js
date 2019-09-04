@@ -4,7 +4,7 @@ import { CircularProgress } from "@webiny/ui/Progress";
 
 const globalState = { render: false, editor: false };
 
-export default function EditorPluginsLoader({ children, location }) {
+export function EditorPluginsLoader({ children, location }) {
     const [loaded, setLoaded] = useReducer(
         (state, newState) => ({ ...state, ...newState }),
         globalState

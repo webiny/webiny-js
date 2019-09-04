@@ -24,7 +24,7 @@ import { Icon } from "@webiny/ui/Icon";
 import { List, ListItem, ListItemGraphic } from "@webiny/ui/List";
 import { Typography } from "@webiny/ui/Typography";
 import { ReactComponent as AllIcon } from "./icons/round-clear_all-24px.svg";
-import createBlockPlugin from "@webiny/app-page-builder/admin/components/withSavedElements/createBlockPlugin";
+import createBlockPlugin from "@webiny/app-page-builder/admin/utils/createBlockPlugin";
 import BlocksList from "./BlocksList";
 
 const allBlockCategory = {

@@ -2,7 +2,6 @@
 import * as React from "react";
 import { AutoComplete } from "@webiny/ui/AutoComplete";
 import { withAutoComplete } from "@webiny/app/components";
-import { compose } from "recompose";
 import gql from "graphql-tag";
 import { get } from "lodash";
 import { Query } from "react-apollo";
@@ -36,7 +35,10 @@ const listPages = gql`
     }
 `;
 
-const PagesAutoComplete = props => (
+export const PagesAutoComplete = withAutoComplete({
+    response: data => get(data, "pageBuilder.pages"),
+    query: listPages
+})(props => (
     <Query skip={!props.value} variables={{ parent: props.value }} query={getPage}>
         {({ data }) => {
             const value = get(data, "pageBuilder.page.data");
@@ -45,11 +47,4 @@ const PagesAutoComplete = props => (
             );
         }}
     </Query>
-);
-
-export default compose(
-    withAutoComplete({
-        response: data => get(data, "pageBuilder.pages"),
-        query: listPages
-    })
-)(PagesAutoComplete);
+));

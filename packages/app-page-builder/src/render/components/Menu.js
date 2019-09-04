@@ -3,7 +3,6 @@ import * as React from "react";
 import { Query } from "react-apollo";
 import gql from "graphql-tag";
 import { get } from "lodash";
-import { withPageBuilder, type WithPageBuilderPropsType } from "@webiny/app-page-builder/context";
 import invariant from "invariant";
 
 export const getMenuBySlug = gql`
@@ -19,8 +18,6 @@ export const getMenuBySlug = gql`
         }
     }
 `;
-
-type Props = { pageBuilder: WithPageBuilderPropsType } & { slug: string, component: string };
 
 const Menu = ({ slug, component: Component }: Props) => {
     invariant(Component, `You must provide a valid Menu component name (via "component" prop).`);
@@ -40,4 +37,4 @@ const Menu = ({ slug, component: Component }: Props) => {
     );
 };
 
-export default withPageBuilder()(Menu);
+export default Menu;

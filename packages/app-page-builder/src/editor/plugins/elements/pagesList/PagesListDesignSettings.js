@@ -3,11 +3,10 @@ import * as React from "react";
 import { Grid, Cell } from "@webiny/ui/Grid";
 import { Input } from "@webiny/ui/Input";
 import { Select } from "@webiny/ui/Select";
-import { withPageBuilder } from "@webiny/app-page-builder/context";
 import PagesList from "./PagesList";
 import { getPlugins } from "@webiny/plugins";
 
-const PagesListDesignSettings = ({ pageBuilder: { theme }, Bind, data }: Object) => {
+const PagesListDesignSettings = ({ Bind, data }: Object) => {
     const components = getPlugins("pb-page-element-pages-list-component");
 
     return (
@@ -40,11 +39,11 @@ const PagesListDesignSettings = ({ pageBuilder: { theme }, Bind, data }: Object)
 
             <Grid>
                 <Cell span={12} style={{ overflowY: "scroll" }}>
-                    <PagesList data={data} theme={theme} />
+                    <PagesList data={data} />
                 </Cell>
             </Grid>
         </React.Fragment>
     );
 };
 
-export default withPageBuilder()(PagesListDesignSettings);
+export default PagesListDesignSettings;

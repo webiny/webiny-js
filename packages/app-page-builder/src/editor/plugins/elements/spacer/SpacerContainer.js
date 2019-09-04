@@ -1,10 +1,11 @@
 // @flow
-import React, { useState, useCallback } from "react";
+import React, { useState } from "react";
 import { css } from "emotion";
 import styled from "react-emotion";
-import { connect } from "@webiny/app-page-builder/editor/redux";
 import { set } from "dot-prop-immutable";
 import { get } from "lodash";
+import { useHandlers } from "@webiny/app/hooks/useHandlers";
+import { connect } from "@webiny/app-page-builder/editor/redux";
 import Resizer from "@webiny/app-page-builder/editor/components/Resizer";
 import { updateElement } from "@webiny/app-page-builder/editor/actions";
 import { getElement } from "@webiny/app-page-builder/editor/selectors";
@@ -32,38 +33,29 @@ const SpacerHeight = styled("div")({
 export const MIN_HEIGHT = 20;
 export const INIT_HEIGHT = 100;
 
-const SpacerContainer = ({
-    element,
-    elementStyle,
-    customClasses,
-    combineClassNames,
-    updateElement,
-    resizeStart,
-    resizeStop
-}) => {
+const SpacerContainer = props => {
+    const { elementStyle, customClasses, combineClassNames } = props;
+
     const [localHeight, setHeight] = useState(null);
     let { height = MIN_HEIGHT, ...spacerStyle } = elementStyle;
     if (localHeight) {
         height = localHeight;
     }
 
-    const onResizeStart = useCallback(() => {
-        resizeStart();
-        setHeight(get(element, "data.settings.height.value", MIN_HEIGHT));
-    }, [element]);
-
-    const onResizeStop = useCallback(() => {
-        resizeStop();
-        updateElement({ element: set(element, "data.settings.height.value", localHeight) });
-        setHeight(null);
-    }, [element, localHeight]);
-
-    const onResize = useCallback(
-        diff => {
-            setHeight(Math.max(MIN_HEIGHT, localHeight - diff));
+    const { onResizeStart, onResizeStop, onResize } = useHandlers(props, {
+        onResizeStart: ({ element, resizeStart }) => () => {
+            resizeStart();
+            setHeight(get(element, "data.settings.height.value", MIN_HEIGHT));
         },
-        [localHeight]
-    );
+        onResizeStop: ({ updateElement, element, resizeStop }) => () => {
+            resizeStop();
+            updateElement({ element: set(element, "data.settings.height.value", localHeight) });
+            setHeight(null);
+        },
+        onResize: () => diff => {
+            setHeight(Math.max(MIN_HEIGHT, localHeight - diff));
+        }
+    });
 
     return (
         <div style={{ height }} className={combineClassNames(css(spacerStyle), ...customClasses)}>

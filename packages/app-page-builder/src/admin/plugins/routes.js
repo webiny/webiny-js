@@ -6,7 +6,7 @@ import Loadable from "react-loadable";
 import { AdminLayout } from "@webiny/app-admin/components/AdminLayout";
 import { SecureRoute } from "@webiny/app-security/components";
 import { CircularProgress } from "@webiny/ui/Progress";
-import EditorPluginsLoader from "../components/EditorPluginsLoader";
+import { EditorPluginsLoader } from "../components/EditorPluginsLoader";
 
 const Categories = Loadable({
     loader: () => import("@webiny/app-page-builder/admin/views/Categories/Categories"),

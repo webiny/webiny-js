@@ -3,6 +3,7 @@ import React, { useCallback } from "react";
 import styled from "react-emotion";
 import { isEqual } from "lodash";
 import { css } from "emotion";
+import { useHandler } from "@webiny/app/hooks/useHandler";
 import { connect } from "@webiny/app-page-builder/editor/redux";
 import { IconButton } from "@webiny/ui/Button";
 import { ElementRoot } from "@webiny/app-page-builder/render/components/ElementRoot";
@@ -35,22 +36,21 @@ const addIcon = css({
     }
 });
 
-const Column = React.memo(({ element, dropElement, togglePlugin }) => {
-    const onClick = useCallback(() => {
+const Column = React.memo(props => {
+    const { element } = props;
+
+    const onClick = useHandler(props, ({ element, togglePlugin }) => () => {
         const { id, path, type } = element;
         togglePlugin({
             name: "pb-editor-toolbar-add-element",
             params: { id, path, type }
         });
-    }, [element]);
+    });
 
-    const onDrop = useCallback(
-        source => {
-            const { id, path, type } = element;
-            dropElement({ source, target: { id, path, type, position: null } });
-        },
-        [element]
-    );
+    const onDrop = useHandler(props, ({ element, dropElement }) => source => {
+        const { id, path, type } = element;
+        dropElement({ source, target: { id, path, type, position: null } });
+    });
 
     return (
         <ElementAnimation>

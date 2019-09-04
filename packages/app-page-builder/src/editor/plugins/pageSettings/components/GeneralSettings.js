@@ -1,9 +1,9 @@
 // @flow
 import React, { useCallback } from "react";
 import slugify from "slugify";
-import { withPageBuilder } from "@webiny/app-page-builder/context";
+import { usePageBuilder } from "@webiny/app-page-builder/hooks/usePageBuilder";
 import { Grid, Cell } from "@webiny/ui/Grid";
-import { TagsMultiAutoComplete } from "@webiny/app-page-builder/admin/components";
+import { TagsMultiAutoComplete } from "@webiny/app-page-builder/admin/components/TagsMultiAutoComplete";
 import { Input } from "@webiny/ui/Input";
 import { Select } from "@webiny/ui/Select";
 import PageImage from "./PageImage";
@@ -14,7 +14,9 @@ const toSlug = (value, cb) => {
     cb(slugify(value, { replacement: "-", lower: true, remove: /[*#\?<>_\{\}\[\]+~.()'"!:;@]/g })); // eslint-disable-line
 };
 
-const GeneralSettings = ({ form, Bind, pageBuilder: { theme } }: Object) => {
+const GeneralSettings = ({ form, Bind }: Object) => {
+    const { theme } = usePageBuilder();
+
     const hasOgImage = useCallback(() => {
         // const src = get(data, "settings.social.image.src"); // Doesn't work.
         const src = get(form.state, "data.settings.social.image.src"); // Works.
@@ -83,4 +85,4 @@ const GeneralSettings = ({ form, Bind, pageBuilder: { theme } }: Object) => {
     );
 };
 
-export default withPageBuilder()(GeneralSettings);
+export default GeneralSettings;

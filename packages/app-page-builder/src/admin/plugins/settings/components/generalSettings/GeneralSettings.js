@@ -7,7 +7,7 @@ import { ButtonPrimary } from "@webiny/ui/Button";
 import SingleImageUpload from "@webiny/app-admin/components/SingleImageUpload";
 
 import { Query, Mutation } from "react-apollo";
-import { withSnackbar } from "@webiny/app-admin/components";
+import { useSnackbar } from "@webiny/app-admin/components";
 import graphql from "./graphql";
 import { CircularProgress } from "@webiny/ui/Progress";
 import { get } from "lodash";
@@ -19,7 +19,8 @@ import {
     SimpleFormHeader
 } from "@webiny/app-admin/components/SimpleForm";
 
-const GeneralSettings = ({ showSnackbar }) => {
+const GeneralSettings = () => {
+    const { showSnackbar } = useSnackbar();
     return (
         <Query query={graphql.query}>
             {({ data, loading: queryInProgress }) => {
@@ -144,4 +145,4 @@ const GeneralSettings = ({ showSnackbar }) => {
     );
 };
 
-export default withSnackbar()(GeneralSettings);
+export default GeneralSettings;

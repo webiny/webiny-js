@@ -3,9 +3,9 @@ import { Form } from "@webiny/form";
 import { Grid, Cell } from "@webiny/ui/Grid";
 import { ButtonPrimary } from "@webiny/ui/Button";
 import { Query, Mutation } from "react-apollo";
-import { withSnackbar } from "@webiny/app-admin/components";
+import { useSnackbar } from "@webiny/app-admin/components";
 import graphql from "./graphql";
-import PagesAutoComplete from "@webiny/app-page-builder/admin/components/PagesAutoComplete";
+import { PagesAutoComplete } from "@webiny/app-page-builder/admin/components/PagesAutoComplete";
 import { CircularProgress } from "@webiny/ui/Progress";
 import SingleImageUpload from "@webiny/app-admin/components/SingleImageUpload";
 import { get } from "lodash";
@@ -17,7 +17,9 @@ import {
     SimpleFormHeader
 } from "@webiny/app-admin/components/SimpleForm";
 
-const PageBuilderSettings = ({ showSnackbar }) => {
+const PageBuilderSettings = () => {
+    const { showSnackbar } = useSnackbar();
+
     return (
         <Query query={graphql.query}>
             {({ data, loading: queryInProgress }) => {
@@ -115,4 +117,4 @@ const PageBuilderSettings = ({ showSnackbar }) => {
     );
 };
 
-export default withSnackbar()(PageBuilderSettings);
+export default PageBuilderSettings;

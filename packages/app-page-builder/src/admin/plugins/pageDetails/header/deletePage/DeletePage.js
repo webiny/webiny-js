@@ -1,55 +1,29 @@
 // @flow
 import React from "react";
-import { compose, withHandlers } from "recompose";
 import dot from "dot-prop-immutable";
-import { graphql } from "react-apollo";
-import { withRouter } from "react-router-dom";
-import { withDialog, withSnackbar } from "@webiny/app-admin/components";
+import { useApolloClient } from "react-apollo";
+import useReactRouter from "use-react-router";
+import { useHandler } from "@webiny/app/hooks/useHandler";
+import { withDialog, useSnackbar } from "@webiny/app-admin/components";
 import { IconButton } from "@webiny/ui/Button";
 import { Tooltip } from "@webiny/ui/Tooltip";
-import { withConfirmation, type WithConfirmationProps } from "@webiny/ui/ConfirmationDialog";
+import { withConfirmation } from "@webiny/ui/ConfirmationDialog";
 import { ReactComponent as DeleteIcon } from "@webiny/app-page-builder/admin/assets/delete.svg";
 import { deletePage } from "@webiny/app-page-builder/admin/graphql/pages";
 
-type Props = WithConfirmationProps & {
-    confirmDelete: Function
-};
+const DeletePage = props => {
+    const client = useApolloClient();
+    const { showSnackbar } = useSnackbar();
+    const { history } = useReactRouter();
 
-const DeletePage = ({ confirmDelete }: Props) => {
-    return (
-        <Tooltip content={"Delete"} placement={"top"}>
-            <IconButton icon={<DeleteIcon />} onClick={confirmDelete} />
-        </Tooltip>
-    );
-};
-
-export default compose(
-    withRouter,
-    withConfirmation(({ pageDetails: { page } }) => ({
-        title: "Delete page",
-        message: (
-            <p>
-                You are about to delete the entire page and all of its revisions! <br />
-                Are you sure you want to permanently delete the page <strong>{page.title}</strong>?
-            </p>
-        )
-    })),
-    graphql(deletePage, { name: "deletePage" }),
-    withDialog(),
-    withSnackbar(),
-    withHandlers({
-        confirmDelete: ({
-            pageDetails: { page },
-            history,
-            showConfirmation,
-            deletePage,
-            showDialog,
-            showSnackbar
-        }) => () => {
+    const confirmDelete = useHandler(
+        props,
+        ({ pageDetails: { page }, showConfirmation, showDialog }) => () => {
             showConfirmation(async () => {
-                const { data: res } = await deletePage({
+                const { data: res } = await client.mutate({
+                    mutation: deletePage,
                     variables: { id: page.parent },
-                    refetchQueries: ["PageBuilderListPages"]
+                    refetchQueries: ["PbListPages"]
                 });
                 const { error } = dot.get(res, "pageBuilder.deletePage");
                 if (error) {
@@ -70,5 +44,21 @@ export default compose(
                 history.push("/page-builder/pages");
             });
         }
-    })
-)(DeletePage);
+    );
+
+    return (
+        <Tooltip content={"Delete"} placement={"top"}>
+            <IconButton icon={<DeleteIcon />} onClick={confirmDelete} />
+        </Tooltip>
+    );
+};
+
+export default withConfirmation(({ pageDetails: { page } }) => ({
+    title: "Delete page",
+    message: (
+        <p>
+            You are about to delete the entire page and all of its revisions! <br />
+            Are you sure you want to permanently delete the page <strong>{page.title}</strong>?
+        </p>
+    )
+}))(withDialog()(DeletePage));

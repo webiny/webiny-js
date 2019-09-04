@@ -1,5 +1,6 @@
 // @flow
-import React, { useCallback } from "react";
+import React from "react";
+import { useHandler } from "@webiny/app/hooks/useHandler";
 import { connect } from "@webiny/app-page-builder/editor/redux";
 import { getPlugins } from "@webiny/plugins";
 import { set } from "dot-prop-immutable";
@@ -21,15 +22,13 @@ const icons = {
 
 const defaultOptions = { alignments: ["left", "center", "right", "justify"] };
 
-const HorizontalAlignAction = ({
-    element,
-    children,
-    updateElement,
-    options: { alignments } = defaultOptions
-}: Object) => {
+const HorizontalAlignAction = (props: Object) => {
+    const { element, children, options: { alignments } = defaultOptions } = props;
     const align = get(element, "data.settings.horizontalAlign") || "left";
 
-    const onClick = useCallback(() => {
+    const onClick = useHandler(props, ({ element, updateElement }) => () => {
+        const align = get(element, "data.settings.horizontalAlign") || "left";
+
         const types = Object.keys(icons).filter(key =>
             alignments ? alignments.includes(key) : true
         );
@@ -39,7 +38,7 @@ const HorizontalAlignAction = ({
         updateElement({
             element: set(element, "data.settings.horizontalAlign", nextAlign)
         });
-    }, [element, align]);
+    });
 
     const plugin = getPlugins("pb-page-element").find(pl => pl.elementType === element.type);
 

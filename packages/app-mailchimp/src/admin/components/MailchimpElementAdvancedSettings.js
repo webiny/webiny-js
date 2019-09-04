@@ -1,15 +1,14 @@
 // @flow
-import * as React from "react";
-import { graphql } from "react-apollo";
+import React, { useState } from "react";
+import { useApolloClient } from "react-apollo";
 import { Query } from "react-apollo";
-import { compose, withHandlers, withState } from "recompose";
 import gql from "graphql-tag";
 import { get } from "lodash";
 import { css } from "react-emotion";
 import { Grid, Cell } from "@webiny/ui/Grid";
 import { Typography } from "@webiny/ui/Typography";
-import { withSnackbar } from "@webiny/app-admin/components";
-import { withPageBuilder } from "@webiny/app-page-builder/context";
+import { useHandler } from "@webiny/app/hooks/useHandler";
+import { useSnackbar } from "@webiny/app-admin/components";
 import { AutoComplete } from "@webiny/ui/AutoComplete";
 import { getPlugins } from "@webiny/plugins";
 import { Form } from "@webiny/form";
@@ -34,28 +33,48 @@ const enableMailchimpLink = css({
     cursor: "pointer"
 });
 
-const MailchimpElementAdvancedSettings = ({ Bind, submitApiKeyForm, loading }: Object) => {
-    return (
-        <Query
-            query={gql`
-                {
-                    mailchimp {
-                        getSettings {
-                            data {
-                                enabled
-                                apiKey
-                            }
-                        }
-                        listLists {
-                            data {
-                                id
-                                name
-                            }
-                        }
-                    }
+const MAILCHIMP_SETTINGS = gql`
+    {
+        mailchimp {
+            getSettings {
+                data {
+                    enabled
+                    apiKey
                 }
-            `}
-        >
+            }
+            listLists {
+                data {
+                    id
+                    name
+                }
+            }
+        }
+    }
+`;
+
+const MailchimpElementAdvancedSettings = ({ Bind }: Object) => {
+    const [loading, setLoading] = useState(false);
+    const { showSnackbar } = useSnackbar();
+    const client = useApolloClient();
+
+    const submitApiKeyForm = useHandler({}, () => async ({ data = {}, settingsLists }) => {
+        setLoading(true);
+        const response = await client.mutate({
+            mutation: settingsGql.mutation,
+            variables: { data: { ...data, enabled: true } }
+        });
+        setLoading(false);
+        const error = get(response, "data.mailchimp.updateSettings.error");
+        if (error) {
+            showSnackbar(error.message);
+        } else {
+            showSnackbar("Settings updated successfully.");
+            settingsLists.refetch();
+        }
+    });
+
+    return (
+        <Query query={MAILCHIMP_SETTINGS}>
             {settingsLists => {
                 const { apiKey, enabled } =
                     get(settingsLists.data, "mailchimp.getSettings.data") || {};
@@ -212,28 +231,4 @@ const MailchimpElementAdvancedSettings = ({ Bind, submitApiKeyForm, loading }: O
     );
 };
 
-export default compose(
-    withPageBuilder(),
-    withSnackbar(),
-    withState("loading", "setLoading", false),
-    graphql(settingsGql.mutation, { name: "updateApiKey" }),
-    withHandlers({
-        submitApiKeyForm: ({ updateApiKey, showSnackbar, setLoading }) => async ({
-            data = {},
-            settingsLists
-        }) => {
-            setLoading(true);
-            const response = await updateApiKey({
-                variables: { data: { ...data, enabled: true } }
-            });
-            setLoading(false);
-            const error = get(response, "data.mailchimp.updateSettings.error");
-            if (error) {
-                showSnackbar(error.message);
-            } else {
-                showSnackbar("Settings updated successfully.");
-                settingsLists.refetch();
-            }
-        }
-    })
-)(MailchimpElementAdvancedSettings);
+export default MailchimpElementAdvancedSettings;

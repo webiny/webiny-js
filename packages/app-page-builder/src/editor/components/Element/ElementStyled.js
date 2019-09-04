@@ -45,6 +45,7 @@ export const ElementContainer = React.memo(
         const color = active ? "var(--mdc-theme-primary)" : "var(--mdc-theme-secondary)";
 
         return {
+            width: "100%",
             position: "relative",
             flex: "100%",
             padding: 0,

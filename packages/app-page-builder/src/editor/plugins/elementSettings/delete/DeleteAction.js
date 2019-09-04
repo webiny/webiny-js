@@ -9,7 +9,7 @@ import { getActiveElement } from "@webiny/app-page-builder/editor/selectors";
 const DeleteAction = (props: Object) => {
     const { element, children } = props;
 
-    const onClick = useHandler(props, ({ element, deleteElement }) => {
+    const onClick = useHandler(props, ({ element, deleteElement }) => () => {
         deleteElement({ element });
     });
 

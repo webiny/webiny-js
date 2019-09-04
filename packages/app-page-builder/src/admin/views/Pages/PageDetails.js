@@ -1,14 +1,13 @@
 import React from "react";
-import { compose, withProps } from "recompose";
 import { Query } from "react-apollo";
-import { renderPlugins } from "@webiny/app/plugins";
-import { withRouter } from "react-router-dom";
+import useReactRouter from "use-react-router";
 import styled from "react-emotion";
 import { Elevation } from "@webiny/ui/Elevation";
+import { renderPlugins } from "@webiny/app/plugins";
 import { getPage } from "@webiny/app-page-builder/admin/graphql/pages";
 import { PageDetailsProvider, PageDetailsConsumer } from "../../context/PageDetailsContext";
 import { ElementAnimation } from "@webiny/app-page-builder/render/components";
-import { withSnackbar } from "@webiny/app-admin/components";
+import { useSnackbar } from "@webiny/app-admin/components";
 import { get } from "lodash";
 
 const EmptySelect = styled("div")({
@@ -47,7 +46,13 @@ const EmptyPageDetails = () => {
     );
 };
 
-const PageDetails = ({ pageId, history, query, showSnackbar, refreshPages }) => {
+const PageDetails = ({ refreshPages }) => {
+    const { history, location } = useReactRouter();
+    const { showSnackbar } = useSnackbar();
+
+    const query = new URLSearchParams(location.search);
+    const pageId = query.get("id");
+
     if (!pageId) {
         return <EmptyPageDetails />;
     }
@@ -93,11 +98,4 @@ const PageDetails = ({ pageId, history, query, showSnackbar, refreshPages }) => 
     );
 };
 
-export default compose(
-    withRouter,
-    withSnackbar(),
-    withProps(({ location }) => {
-        const query = new URLSearchParams(location.search);
-        return { pageId: query.get("id"), query };
-    })
-)(PageDetails);
+export default PageDetails;

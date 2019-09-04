@@ -1,6 +1,7 @@
 //@flow
 import React, { useMemo } from "react";
 import { connect } from "@webiny/app-page-builder/editor/redux";
+import { useHandler } from "@webiny/app/hooks/useHandler";
 import { Tabs, Tab } from "@webiny/ui/Tabs";
 import { get, isEqual } from "lodash";
 import { set, merge } from "dot-prop-immutable";
@@ -23,10 +24,10 @@ type Props = Object & {
     value: Object | number
 };
 
-const PMSettings = ({ element, updateElement, advanced, valueKey }: Props) => {
-    const updateSettings = useMemo(() => {
-        let historyUpdated = {};
+const PMSettings = (props: Props) => {
+    const { advanced, valueKey } = props;
 
+    const updateSettings = useHandler(props, ({ element, updateElement }) => {
         return (name: string, newValue: mixed, history = false) => {
             const propName = `${valueKey}.${name}`;
 
@@ -53,15 +54,9 @@ const PMSettings = ({ element, updateElement, advanced, valueKey }: Props) => {
                     history,
                     merge: true
                 });
-                return;
-            }
-
-            if (historyUpdated[propName] !== newValue) {
-                historyUpdated[propName] = newValue;
-                updateElement({ element: newElement, merge: true });
             }
         };
-    }, [element, valueKey]);
+    });
 
     const getUpdateValue = useMemo(() => {
         const handlers = {};

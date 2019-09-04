@@ -1,16 +1,15 @@
 //@flow
-import React, { useCallback } from "react";
-import { connect } from "@webiny/app-page-builder/editor/redux";
+import React from "react";
 import { get } from "lodash";
 import { set } from "dot-prop-immutable";
-
+import { connect } from "@webiny/app-page-builder/editor/redux";
+import { useHandler } from "@webiny/app/hooks/useHandler";
 import { Tabs, Tab } from "@webiny/ui/Tabs";
 import { Input } from "@webiny/ui/Input";
 import { InputContainer } from "@webiny/app-page-builder/editor/plugins/elementSettings/components/StyledComponents";
 import { Typography } from "@webiny/ui/Typography";
 import { Grid, Cell } from "@webiny/ui/Grid";
 import { Form } from "@webiny/form";
-
 import { updateElement } from "@webiny/app-page-builder/editor/actions";
 import { getActiveElement } from "@webiny/app-page-builder/editor/selectors";
 
@@ -30,23 +29,20 @@ const validateWidth = value => {
     throw Error("Specify % or px!");
 };
 
-const Settings = ({ element, updateElement }) => {
-    const updateSettings = useCallback(
-        async (data, form) => {
-            const valid = await form.validate();
-            if (!valid) {
-                return;
-            }
+const Settings = props => {
+    const updateSettings = useHandler(props, ({ element, updateElement }) => async (data, form) => {
+        const valid = await form.validate();
+        if (!valid) {
+            return;
+        }
 
-            const attrKey = `data.settings.width`;
-            const newElement = set(element, attrKey, data);
+        const attrKey = `data.settings.width`;
+        const newElement = set(element, attrKey, data);
 
-            updateElement({ element: newElement });
-        },
-        [element, updateElement]
-    );
+        updateElement({ element: newElement });
+    });
 
-    const { data } = element;
+    const { data } = props.element;
 
     const settings = get(data, "settings.width", { value: "100%" });
 

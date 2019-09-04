@@ -7,7 +7,8 @@ import { Typography } from "@webiny/ui/Typography";
 import { Grid, Cell } from "@webiny/ui/Grid";
 import { ButtonSecondary, ButtonPrimary } from "@webiny/ui/Button";
 import { Select } from "@webiny/ui/Select";
-import { TagsMultiAutoComplete, CategoriesAutoComplete } from "@webiny/app-page-builder/admin/components";
+import { TagsMultiAutoComplete } from "@webiny/app-page-builder/admin/components/TagsMultiAutoComplete";
+import { CategoriesAutoComplete } from "@webiny/app-page-builder/admin/components/CategoriesAutoComplete";
 import { Elevation } from "@webiny/ui/Elevation";
 
 const LinkForm = ({ data, onSubmit, onCancel }: Object) => {

@@ -2,8 +2,8 @@
 import { useCallback } from "react";
 import { useQuery } from "react-apollo";
 import gql from "graphql-tag";
-import formatPreviewUrl from "./utils/formatPreviewUrl";
 import { get } from "lodash";
+import formatPreviewUrl from "./formatPreviewUrl";
 
 const domainQuery = gql`
     {

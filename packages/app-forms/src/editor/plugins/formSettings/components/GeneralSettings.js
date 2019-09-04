@@ -1,14 +1,14 @@
 // @flow
 import * as React from "react";
-import { compose } from "recompose";
-import { withPageBuilder } from "@webiny/app-page-builder/context";
+import { usePageBuilder } from "@webiny/app-page-builder/hooks/usePageBuilder";
 import { Grid, Cell } from "@webiny/ui/Grid";
 import { Select } from "@webiny/ui/Select";
 import { get } from "lodash";
 import { I18NInput } from "@webiny/app-i18n/admin/components";
 
-const GeneralSettings = ({ Bind, pageBuilder }) => {
-    const layouts = get(pageBuilder, "theme.forms.layouts") || [];
+const GeneralSettings = ({ Bind }) => {
+    const { theme } = usePageBuilder();
+    const layouts = get(theme, "forms.layouts") || [];
     return (
         <React.Fragment>
             <Grid>
@@ -37,4 +37,4 @@ const GeneralSettings = ({ Bind, pageBuilder }) => {
     );
 };
 
-export default compose(withPageBuilder())(GeneralSettings);
+export default GeneralSettings;

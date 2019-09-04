@@ -1,33 +1,25 @@
 // @flow
-import React from "react";
-import { Editor } from "slate-react";
+import React, { useRef, useState } from "react";
 import { Value } from "slate";
+import { Editor } from "slate-react";
 import { getPlugins } from "@webiny/plugins";
-import { withPageBuilder } from "@webiny/app-page-builder/context";
+import { usePageBuilder } from "@webiny/app-page-builder/hooks/usePageBuilder";
 
-class SlateEditor extends React.Component<*, *> {
-    constructor(props) {
-        super();
+const SlateEditor = props => {
+    const { theme } = usePageBuilder();
+    const plugins = useRef(getPlugins("pb-render-slate-editor").map(pl => pl.slate));
+    const [value] = useState(Value.fromJSON(props.value));
 
-        this.plugins = getPlugins("pb-render-slate-editor").map(pl => pl.slate);
+    return (
+        <Editor
+            readOnly={true}
+            autoCorrect={false}
+            spellCheck={false}
+            plugins={plugins.current}
+            value={value}
+            theme={theme}
+        />
+    );
+};
 
-        this.state = {
-            value: Value.fromJSON(props.value)
-        };
-    }
-
-    render() {
-        return (
-            <Editor
-                readOnly={true}
-                autoCorrect={false}
-                spellCheck={false}
-                plugins={this.plugins}
-                value={this.state.value}
-                theme={this.props.pageBuilder.theme}
-            />
-        );
-    }
-}
-
-export default withPageBuilder()(SlateEditor);
+export default SlateEditor;

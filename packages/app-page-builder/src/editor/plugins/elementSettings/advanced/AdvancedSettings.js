@@ -8,6 +8,7 @@ import { renderPlugins } from "@webiny/app/plugins";
 import { isPluginActive } from "@webiny/app-page-builder/editor/selectors";
 import { withActiveElement } from "@webiny/app-page-builder/editor/components";
 import { useKeyHandler } from "@webiny/app-page-builder/editor/hooks/useKeyHandler";
+import { useHandler } from "@webiny/app/hooks/useHandler";
 import { css } from "emotion";
 import {
     Dialog,
@@ -33,7 +34,7 @@ const dialogBody = css({
 
 const AdvancedSettings = React.memo(
     (props: Object) => {
-        const { element, open, updateElement, deactivatePlugin } = props;
+        const { element, open, deactivatePlugin } = props;
         const { data, type } = element || cloneDeep(emptyElement);
 
         const { addKeyHandler, removeKeyHandler } = useKeyHandler();
@@ -42,26 +43,23 @@ const AdvancedSettings = React.memo(
             deactivatePlugin({ name: "pb-page-element-settings-advanced" });
         }, []);
 
-        const onSubmit = useCallback(
-            (formData: Object) => {
-                // Get element settings plugins
-                const plugins = getPlugins("pb-page-element-advanced-settings").filter(
-                    pl => pl.elementType === element.type
-                );
-                formData = plugins.reduce((formData, pl) => {
-                    if (pl.onSave) {
-                        return pl.onSave(formData);
-                    }
-                    return formData;
-                }, formData);
+        const onSubmit = useHandler(props, ({ element, updateElement }) => (formData: Object) => {
+            // Get element settings plugins
+            const plugins = getPlugins("pb-page-element-advanced-settings").filter(
+                pl => pl.elementType === element.type
+            );
+            formData = plugins.reduce((formData, pl) => {
+                if (pl.onSave) {
+                    return pl.onSave(formData);
+                }
+                return formData;
+            }, formData);
 
-                updateElement({
-                    element: merge(element, "data", formData)
-                });
-                closeDialog();
-            },
-            [element]
-        );
+            updateElement({
+                element: merge(element, "data", formData)
+            });
+            closeDialog();
+        });
 
         useEffect(() => {
             open ? addKeyHandler("escape", closeDialog) : removeKeyHandler("escape");

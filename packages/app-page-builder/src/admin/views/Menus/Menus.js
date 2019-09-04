@@ -1,6 +1,5 @@
 import React, { useCallback } from "react";
-import { withRouter } from "react-router-dom";
-import { compose } from "recompose";
+import useReactRouter from "use-react-router";
 import { get } from "dot-prop-immutable";
 import { pick } from "lodash";
 import { i18n } from "@webiny/app/i18n";
@@ -14,12 +13,14 @@ import { loadMenu, loadMenus, createMenu, updateMenu, deleteMenu } from "./graph
 
 const t = i18n.namespace("Pb.Menus");
 
-function Menus({ formProps, listProps, location, history }) {
+function Menus({ formProps, listProps }) {
+    const { history, location } = useReactRouter();
+
     const createNew = useCallback(() => {
         const query = new URLSearchParams(location.search);
         query.delete("id");
         history.push({ search: query.toString() });
-    });
+    }, [history, location]);
 
     return (
         <React.Fragment>
@@ -36,35 +37,32 @@ function Menus({ formProps, listProps, location, history }) {
     );
 }
 
-export default compose(
-    withCrud({
-        list: {
-            get: {
-                query: loadMenus,
-                variables: { sort: { savedOn: -1 } },
-                response: data => get(data, "pageBuilder.menus")
-            },
-            delete: {
-                mutation: deleteMenu,
-                response: data => data.pageBuilder.deleteMenu,
-                snackbar: data => t`Menu {name} deleted.`({ name: data.name })
-            }
+export default withCrud({
+    list: {
+        get: {
+            query: loadMenus,
+            variables: { sort: { savedOn: -1 } },
+            response: data => get(data, "pageBuilder.menus")
         },
-        form: {
-            get: {
-                query: loadMenu,
-                response: data => get(data, "pageBuilder.menu")
-            },
-            save: {
-                create: createMenu,
-                update: updateMenu,
-                response: data => data.pageBuilder.menu,
-                variables: data => ({
-                    data: pick(data, ["items", "title", "slug", "description"])
-                }),
-                snackbar: data => t`Menu {name} saved successfully.`({ name: data.title })
-            }
+        delete: {
+            mutation: deleteMenu,
+            response: data => data.pageBuilder.deleteMenu,
+            snackbar: data => t`Menu {name} deleted.`({ name: data.name })
         }
-    }),
-    withRouter
-)(Menus);
+    },
+    form: {
+        get: {
+            query: loadMenu,
+            response: data => get(data, "pageBuilder.menu")
+        },
+        save: {
+            create: createMenu,
+            update: updateMenu,
+            response: data => data.pageBuilder.menu,
+            variables: data => ({
+                data: pick(data, ["items", "title", "slug", "description"])
+            }),
+            snackbar: data => t`Menu {name} saved successfully.`({ name: data.title })
+        }
+    }
+})(Menus);

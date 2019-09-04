@@ -1,19 +1,21 @@
 // @flow
 import React, { useEffect, useCallback, useState } from "react";
-import { connect } from "@webiny/app-page-builder/editor/redux";
 import { useApolloClient } from "react-apollo";
 import { cloneDeep } from "lodash";
+import dataURLtoBlob from "dataurl-to-blob";
+import { useHandler } from "@webiny/app/hooks/useHandler";
+import { connect } from "@webiny/app-page-builder/editor/redux";
 import { getPlugins, getPlugin } from "@webiny/plugins";
-import SaveDialog from "./SaveDialog";
 import { useSnackbar } from "@webiny/app-admin/components";
 import { useKeyHandler } from "@webiny/app-page-builder/editor/hooks/useKeyHandler";
 import {
     getActiveElementId,
     getElementWithChildren
 } from "@webiny/app-page-builder/editor/selectors";
-import { createElementPlugin, createBlockPlugin } from "@webiny/app-page-builder/admin/components";
+import createElementPlugin from "@webiny/app-page-builder/admin/utils/createElementPlugin";
+import createBlockPlugin from "@webiny/app-page-builder/admin/utils/createBlockPlugin";
 import { createElement, updateElement } from "@webiny/app-page-builder/admin/graphql/pages";
-import dataURLtoBlob from "dataurl-to-blob";
+import SaveDialog from "./SaveDialog";
 
 type Props = {
     isDialogOpened: boolean,
@@ -24,54 +26,52 @@ type Props = {
     element: Object
 };
 
-const SaveAction = ({ children, element }: Props) => {
+const SaveAction = (props: Props) => {
+    const { children, element } = props;
     const { addKeyHandler, removeKeyHandler } = useKeyHandler();
     const { showSnackbar } = useSnackbar();
     const [isDialogOpened, setOpenDialog] = useState(false);
     const client = useApolloClient();
 
-    const onSubmit = useCallback(
-        async formData => {
-            formData.content = removeIdsAndPaths(cloneDeep(element));
+    const onSubmit = useHandler(props, ({ element }) => async formData => {
+        formData.content = removeIdsAndPaths(cloneDeep(element));
 
-            const meta = await getDataURLImageDimensions(formData.preview);
-            const blob = dataURLtoBlob(formData.preview);
-            blob.name = "pb-page-element-" + element.id + ".png";
+        const meta = await getDataURLImageDimensions(formData.preview);
+        const blob = dataURLtoBlob(formData.preview);
+        blob.name = "pb-page-element-" + element.id + ".png";
 
-            const fileUploaderPlugin = getPlugin("file-uploader");
-            formData.preview = await fileUploaderPlugin.upload(blob);
+        const fileUploaderPlugin = getPlugin("file-uploader");
+        formData.preview = await fileUploaderPlugin.upload(blob);
 
-            formData.preview.meta = meta;
-            formData.preview.meta.private = true;
+        formData.preview.meta = meta;
+        formData.preview.meta.private = true;
 
-            let query = formData.overwrite ? updateElement : createElement;
-            const { data: res } = await client.mutate({
-                mutation: query,
-                variables: formData.overwrite
-                    ? {
-                          id: element.source,
-                          data: { content: formData.content, preview: formData.preview }
-                      }
-                    : { data: formData }
-            });
+        let query = formData.overwrite ? updateElement : createElement;
+        const { data: res } = await client.mutate({
+            mutation: query,
+            variables: formData.overwrite
+                ? {
+                      id: element.source,
+                      data: { content: formData.content, preview: formData.preview }
+                  }
+                : { data: formData }
+        });
 
-            hideDialog();
-            const { data } = res.pageBuilder.element;
-            if (data.type === "block") {
-                createBlockPlugin(data);
-            } else {
-                createElementPlugin(data);
-            }
+        hideDialog();
+        const { data } = res.pageBuilder.element;
+        if (data.type === "block") {
+            createBlockPlugin(data);
+        } else {
+            createElementPlugin(data);
+        }
 
-            showSnackbar(
-                <span>
-                    {formData.type[0].toUpperCase() + formData.type.slice(1)}{" "}
-                    <strong>{data.name}</strong> saved!
-                </span>
-            );
-        },
-        [element]
-    );
+        showSnackbar(
+            <span>
+                {formData.type[0].toUpperCase() + formData.type.slice(1)}{" "}
+                <strong>{data.name}</strong> saved!
+            </span>
+        );
+    });
 
     useEffect(() => {
         isDialogOpened ? addKeyHandler("escape", hideDialog) : removeKeyHandler("escape");
