@@ -6,9 +6,11 @@ import { Grid, Cell } from "@webiny/ui/Grid";
 import { Input } from "@webiny/ui/Input";
 import { ButtonPrimary } from "@webiny/ui/Button";
 import { MultiAutoComplete } from "@webiny/ui/AutoComplete";
-import type { WithCrudFormProps } from "@webiny/app-admin/components";
 import { CircularProgress } from "@webiny/ui/Progress";
-
+import { useQuery } from "react-apollo";
+import { useCrudForm } from "@webiny/app-admin/context/CrudContext";
+import { pick, get } from "lodash";
+import { GET_ROLE, LIST_SCOPES, CREATE_ROLE, UPDATE_ROLE } from "./graphql";
 import {
     SimpleForm,
     SimpleFormFooter,
@@ -18,19 +20,32 @@ import {
 
 const t = i18n.namespace("Security.RolesForm");
 
-const RoleForm = ({
-    onSubmit,
-    loading,
-    data,
-    invalidFields,
-    scopes
-}: WithCrudFormProps & { scopes: Array<string> }) => {
+const RoleForm = () => {
+    const scopesQuery = useQuery(LIST_SCOPES);
+    const scopes = get(scopesQuery, "data.security.scopes") || [];
+
+    const { loading, ...crudFormProps } = useCrudForm({
+        get: {
+            query: GET_ROLE,
+            response: data => get(data, "security.role")
+        },
+        save: {
+            create: CREATE_ROLE,
+            update: UPDATE_ROLE,
+            response: data => data.security.role,
+            variables: form => ({
+                data: pick(form, ["name", "slug", "description", "scopes"])
+            }),
+            snackbar: data => t`Role {name} saved successfully.`({ name: data.name })
+        }
+    });
+
     return (
-        <Form invalidFields={invalidFields} data={data} onSubmit={onSubmit}>
+        <Form {...crudFormProps}>
             {({ data, form, Bind }) => (
                 <SimpleForm>
                     {loading && <CircularProgress />}
-                    <SimpleFormHeader title={data.name ? data.name : "Untitled"} />
+                    <SimpleFormHeader title={data.name ? data.name : t`Untitled`} />
                     <SimpleFormContent>
                         <Grid>
                             <Cell span={6}>

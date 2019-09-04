@@ -1,10 +1,13 @@
 // @flow
 import * as React from "react";
 import useRouter from "use-react-router";
-import type { Location, RouterHistory } from "react-router-dom";
-import type { WithCrudListProps } from "@webiny/app-admin/components";
 import { i18n } from "@webiny/app/i18n";
 import { ConfirmationDialog } from "@webiny/ui/ConfirmationDialog";
+import { DeleteIcon } from "@webiny/ui/List/DataList/icons";
+import { Checkbox } from "@webiny/ui/Checkbox";
+import { useCrudList } from "@webiny/app-admin/context/CrudContext";
+import { LIST_ROLES, DELETE_ROLE } from "./graphql";
+import { get } from "lodash";
 import {
     DataList,
     ScrollList,
@@ -16,21 +19,28 @@ import {
     ListItemGraphic
 } from "@webiny/ui/List";
 
-import { DeleteIcon } from "@webiny/ui/List/DataList/icons";
-import { Checkbox } from "@webiny/ui/Checkbox";
-
 const t = i18n.namespace("Security.RolesDataList");
 
-const RolesDataList = ({
-    dataList,
-    deleteRecord
-}: WithCrudListProps & { location: Location, history: RouterHistory }) => {
+const RolesDataList = () => {
     const { location, history } = useRouter();
     const query = new URLSearchParams(location.search);
 
+    const { deleteRecord, ...crudListProps } = useCrudList({
+        get: {
+            query: LIST_ROLES,
+            variables: { sort: { savedOn: -1 } },
+            response: data => get(data, "security.roles")
+        },
+        delete: {
+            mutation: DELETE_ROLE,
+            response: data => data.security.deleteRole,
+            snackbar: data => t`Role {name} deleted.`({ name: data.name })
+        }
+    });
+
     return (
         <DataList
-            {...dataList}
+            {...crudListProps}
             title={t`Security Roles`}
             sorters={[
                 {

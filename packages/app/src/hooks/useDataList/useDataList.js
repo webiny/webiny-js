@@ -1,9 +1,9 @@
 // @flow
 import { useState, useEffect, useRef } from "react";
 import { useQuery } from "react-apollo";
-import type { WithDataListParams, SearchParams, WithDataListProps } from "./useDataListUtils/types";
+import type { WithDataListParams, SearchParams, WithDataListProps } from "./utils/types";
 import { isEqual } from "lodash";
-import { prepareLoadListParams, redirectToRouteWithQueryParams } from "./useDataListUtils";
+import { prepareLoadListParams, redirectToRouteWithQueryParams } from "./utils";
 export type { WithDataListProps, SearchParams, WithDataListParams };
 
 const getQueryOptions = props => {

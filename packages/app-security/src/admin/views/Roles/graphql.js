@@ -9,7 +9,7 @@ const fields = `
     scopes
 `;
 
-export const loadScopes = gql`
+export const LIST_SCOPES = gql`
     query LoadScopes {
         security {
             scopes
@@ -17,8 +17,14 @@ export const loadScopes = gql`
     }
 `;
 
-export const loadRoles = gql`
-    query LoadRoles($where: JSON, $sort: JSON, $page: Int, $perPage: Int, $search: SecurityRoleSearchInput) {
+export const LIST_ROLES = gql`
+    query listRoles(
+        $where: JSON
+        $sort: JSON
+        $page: Int
+        $perPage: Int
+        $search: SecurityRoleSearchInput
+    ) {
         security {
             roles: listRoles(
                 where: $where
@@ -45,8 +51,8 @@ export const loadRoles = gql`
     }
 `;
 
-export const loadRole = gql`
-    query LoadRole($id: ID!) {
+export const GET_ROLE = gql`
+    query getRole($id: ID!) {
         security {
             role: getRole(id: $id){
                 data {
@@ -61,8 +67,8 @@ export const loadRole = gql`
     }
 `;
 
-export const createRole = gql`
-    mutation CreateRole($data: SecurityRoleInput!){
+export const CREATE_ROLE = gql`
+    mutation createRole($data: SecurityRoleInput!){
         security {
             role: createRole(data: $data) {
                 data {
@@ -78,8 +84,8 @@ export const createRole = gql`
     }
 `;
 
-export const updateRole = gql`
-    mutation UpdateRole($id: ID!, $data: SecurityRoleInput!){
+export const UPDATE_ROLE = gql`
+    mutation updateRole($id: ID!, $data: SecurityRoleInput!){
         security {
             role: updateRole(id: $id, data: $data) {
                 data {
@@ -95,8 +101,8 @@ export const updateRole = gql`
     }
 `;
 
-export const deleteRole = gql`
-    mutation DeleteRole($id: ID!) {
+export const DELETE_ROLE = gql`
+    mutation deleteRole($id: ID!) {
         security {
             deleteRole(id: $id) {
                 data
