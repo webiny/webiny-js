@@ -1,13 +1,11 @@
 // @flow
 import * as React from "react";
-import HTML5Backend from "react-dnd-html5-backend";
-import { DragDropContext } from "react-dnd";
+import useReactRouter from "use-react-router";
+import { useSnackbar } from "@webiny/app-admin/components";
 // Components
 import EditorBar from "./Bar";
 import EditorContent from "./EditorContent";
 import DragPreview from "./DragPreview";
-import useReactRouter from "use-react-router";
-import { useSnackbar } from "@webiny/app-admin/components";
 import { useFormEditor } from "./Context";
 
 const FormEditor = () => {
@@ -18,7 +16,6 @@ const FormEditor = () => {
 
     const { history } = useReactRouter();
     const { showSnackbar } = useSnackbar();
-
 
     React.useEffect(() => {
         getForm(id).catch(() => {
@@ -40,4 +37,4 @@ const FormEditor = () => {
     );
 };
 
-export default DragDropContext(HTML5Backend)(FormEditor);
+export default FormEditor;

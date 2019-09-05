@@ -70,18 +70,16 @@ const accordionItem = css({
 const Field = ({ onFieldDragStart, fieldType: { name, label } }) => {
     return (
         <Draggable beginDrag={{ ui: "field", name }}>
-            {({ connectDragSource }) =>
-                connectDragSource(
-                    <div style={{ marginBottom: 10 }} onDragStart={onFieldDragStart}>
-                        <FieldContainer>
-                            <FieldHandle>
-                                <Icon icon={<HandleIcon />} />
-                            </FieldHandle>
-                            <FieldLabel>{label}</FieldLabel>
-                        </FieldContainer>
-                    </div>
-                )
-            }
+            {({ drag }) => (
+                <div ref={drag} style={{ marginBottom: 10 }} onDragStart={onFieldDragStart}>
+                    <FieldContainer>
+                        <FieldHandle>
+                            <Icon icon={<HandleIcon />} />
+                        </FieldHandle>
+                        <FieldLabel>{label}</FieldLabel>
+                    </FieldContainer>
+                </div>
+            )}
         </Draggable>
     );
 };

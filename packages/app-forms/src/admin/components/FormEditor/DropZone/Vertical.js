@@ -55,8 +55,9 @@ type Props = {
 const Vertical = ({ last, onDrop, isVisible }: Props) => {
     return (
         <Droppable onDrop={onDrop} isVisible={isVisible}>
-            {({ isOver, isDragging }) => (
+            {({ isOver, isDragging, drop }) => (
                 <div
+                    ref={drop}
                     style={{
                         width: "30%",
                         maxWidth: "100px",

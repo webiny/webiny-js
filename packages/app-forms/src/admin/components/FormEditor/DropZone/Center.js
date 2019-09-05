@@ -34,9 +34,9 @@ type Props = {
 
 export default function Center({ onDrop, children }: Props) {
     return (
-        <Droppable onDrop={onDrop}>
-            {({ isOver }) => (
-                <div style={{ width: "100%", height: "100%" }}>
+        <Droppable onDrop={onDrop} ref={drop}>
+            {({ isOver, drop }) => (
+                <div ref={drop} style={{ width: "100%", height: "100%" }}>
                     <Container isOver={isOver}>
                         <Add isOver={isOver}>{children}</Add>
                     </Container>

@@ -54,8 +54,9 @@ type Props = {
 const Horizontal = ({ last, onDrop, isVisible }: Props) => {
     return (
         <Droppable onDrop={onDrop} isVisible={isVisible}>
-            {({ isOver, isDragging }) => (
+            {({ isOver, isDragging, drop }) => (
                 <div
+                    ref={drop}
                     style={{
                         height: "25px",
                         width: "100%",
