@@ -30,12 +30,6 @@ const Editor = ({ isDragging, isResizing, undo, redo, slateFocused }: Props) => 
     const { addKeyHandler, removeKeyHandler } = useKeyHandler();
 
     useEffect(() => {
-        document.addEventListener("scroll", e => {
-            console.log("scroll", e);
-        });
-    }, []);
-
-    useEffect(() => {
         addKeyHandler("mod+z", e => {
             if (!slateFocused) {
                 e.preventDefault();
