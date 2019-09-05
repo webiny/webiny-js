@@ -1,10 +1,20 @@
-import { compose, pure, lifecycle } from "recompose";
+import React, { useEffect } from "react";
 import { DragSource } from "react-dnd";
 import { getEmptyImage } from "react-dnd-html5-backend";
 
-const Draggable = pure(({ children, connectDragSource, isDragging }) => {
+const Draggable = React.memo(({ children, connectDragSource, connectDragPreview, isDragging }) => {
+    useEffect(() => {
+        if (connectDragPreview) {
+            connectDragPreview(getEmptyImage(), {
+                captureDraggingState: true
+            });
+        }
+    }, []);
+
     return children({ isDragging, connectDragSource });
 });
+
+Draggable.displayName = "Draggable";
 
 const itemSource = {
     beginDrag(props) {
@@ -27,16 +37,4 @@ const collect = (connect, monitor) => ({
     item: monitor.getItem()
 });
 
-export default compose(
-    DragSource("element", itemSource, collect),
-    lifecycle({
-        componentDidMount() {
-            const { connectDragPreview } = this.props;
-            if (connectDragPreview) {
-                connectDragPreview(getEmptyImage(), {
-                    captureDraggingState: true
-                });
-            }
-        }
-    })
-)(Draggable);
+export default DragSource("element", itemSource, collect)(Draggable);

@@ -4,8 +4,7 @@ import { Mutation } from "react-apollo";
 import { Form } from "@webiny/form";
 import { Input } from "@webiny/ui/Input";
 import get from "lodash.get";
-import { compose } from "recompose";
-import { withSnackbar } from "@webiny/app-admin/components";
+import { useSnackbar } from "@webiny/app-admin/components";
 import { CircularProgress } from "@webiny/ui/Progress";
 import { Grid, Cell } from "@webiny/ui/Grid";
 import { UPDATE_FORMS_SETTINGS } from "./graphql";
@@ -27,20 +26,14 @@ type Props = {
     open: boolean,
     onClose: Function,
     onSubmit: Function,
-    showSnackbar: Function,
     reCaptchaSettings: Object
 };
 
-const ReCaptchaSettingsDialog = ({
-    open,
-    onClose,
-    showSnackbar,
-    reCaptchaSettings,
-    onSubmit
-}: Props) => {
+const ReCaptchaSettingsDialog = ({ open, onClose, reCaptchaSettings, onSubmit }: Props) => {
     // $FlowFixMe
     const [loading, setLoading] = React.useState(false);
     const { setData } = useFormEditor();
+    const { showSnackbar } = useSnackbar();
 
     return (
         <Dialog open={open} onClose={onClose}>
@@ -137,4 +130,4 @@ const ReCaptchaSettingsDialog = ({
     );
 };
 
-export default compose(withSnackbar())(ReCaptchaSettingsDialog);
+export default ReCaptchaSettingsDialog;

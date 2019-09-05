@@ -1,7 +1,6 @@
 import React from "react";
-import { compose, pure } from "recompose";
 import { css } from "emotion";
-import { withRouter } from "react-router-dom";
+import useReactRouter from "use-react-router";
 import { Menu, MenuItem } from "@webiny/ui/Menu";
 import { ButtonDefault } from "@webiny/ui/Button";
 import { Icon } from "@webiny/ui/Icon";
@@ -27,10 +26,12 @@ const menuList = css({
     }
 });
 
-const Revisions = pure(({ history }) => {
+const Revisions = () => {
     const {
         state: { data }
     } = useFormEditor();
+
+    const { history } = useReactRouter();
 
     const revisions = data.revisions || [];
     return (
@@ -53,6 +54,6 @@ const Revisions = pure(({ history }) => {
             ))}
         </Menu>
     );
-});
+};
 
-export default compose(withRouter)(Revisions);
+export default React.memo(Revisions);

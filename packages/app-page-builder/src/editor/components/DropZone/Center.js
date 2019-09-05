@@ -46,8 +46,8 @@ type Props = {
 const Center = React.memo(({ type, onDrop, children, active, highlight }: Props) => {
     return (
         <Droppable onDrop={onDrop} type={type} isVisible={isVisible}>
-            {({ isOver, isDroppable }) => (
-                <div style={{ width: "100%", height: "100%" }}>
+            {({ isOver, isDroppable, drop }) => (
+                <div style={{ width: "100%", height: "100%" }} ref={drop}>
                     <Container isOver={(isOver && isDroppable) || active} highlight={highlight}>
                         <Add>{children}</Add>
                     </Container>

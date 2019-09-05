@@ -96,9 +96,9 @@ const AddElement = ({ params, dropElement, dragStart, deactivatePlugin, dragEnd 
                         dragEnd({ element: monitor.getItem() });
                     }}
                 >
-                    {({ connectDragSource }) =>
-                        connectDragSource(<div>{renderOverlay(element, null, "Drag to Add")}</div>)
-                    }
+                    {({ drag }) => (
+                        <div ref={drag}>{renderOverlay(element, null, "Drag to Add")}</div>
+                    )}
                 </Draggable>
             );
         },

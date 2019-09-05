@@ -1,37 +1,35 @@
-import React, { useEffect } from "react";
-import { DragSource } from "react-dnd";
-import { getEmptyImage } from "react-dnd-html5-backend";
+import React from "react";
+import { useDrag, DragPreviewImage } from "react-dnd";
 
-const Draggable = React.memo(({ children, connectDragSource, isDragging, connectDragPreview }) => {
-    useEffect(() => {
-        if (connectDragPreview) {
-            connectDragPreview(getEmptyImage(), {
-                captureDraggingState: true
-            });
+const emptyImage = "data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==";
+
+const Draggable = React.memo(props => {
+    const { children, beginDrag, endDrag, target } = props;
+
+    const [{ isDragging }, drag, preview] = useDrag({
+        item: { type: "element", target },
+        collect: monitor => ({
+            isDragging: monitor.isDragging()
+        }),
+        begin(monitor) {
+            if (typeof beginDrag === "function") {
+                return beginDrag(props, monitor);
+            }
+            return { ...props };
+        },
+        end(item, monitor) {
+            if (typeof endDrag === "function") {
+                return endDrag(item, monitor);
+            }
         }
-    }, []);
+    });
 
-    return children({ isDragging, connectDragSource });
+    return (
+        <>
+            <DragPreviewImage connect={preview} src={emptyImage} />
+            {children({ isDragging, drag })}
+        </>
+    );
 });
 
-const itemSource = {
-    beginDrag(props, monitor) {
-        if (props.beginDrag) {
-            return props.beginDrag(props, monitor);
-        }
-        return { ...props };
-    },
-    endDrag(props, monitor) {
-        if (props.endDrag) {
-            return props.endDrag(props, monitor);
-        }
-    }
-};
-
-const collect = (connect, monitor) => ({
-    connectDragSource: connect.dragSource(),
-    connectDragPreview: connect.dragPreview(),
-    isDragging: monitor.isDragging()
-});
-
-export default DragSource("element", itemSource, collect)(Draggable);
+export default Draggable;

@@ -84,9 +84,9 @@ const Element = React.memo((props: ElementProps) => {
         }
     });
 
-    const renderDraggable = useHandler(props, ({ element }) => ({ connectDragSource }) => {
-        return connectDragSource(
-            <div className={"type " + typeStyle}>
+    const renderDraggable = useHandler(props, ({ element }) => ({ drag }) => {
+        return (
+            <div ref={drag} className={"type " + typeStyle}>
                 <div className="background" onClick={onClick} />
                 <div className={"element-holder"} onClick={onClick}>
                     {renderPlugins("pb-page-element-action", { element, plugin })}

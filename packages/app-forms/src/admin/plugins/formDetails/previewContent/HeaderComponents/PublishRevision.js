@@ -4,18 +4,15 @@ import { IconButton } from "@webiny/ui/Button";
 import { Tooltip } from "@webiny/ui/Tooltip";
 import { ReactComponent as PublishIcon } from "@webiny/app-forms/admin/icons/publish.svg";
 import { ReactComponent as UnpublishIcon } from "@webiny/app-forms/admin/icons/unpublish.svg";
-import { publishRevision, unpublishRevision } from "@webiny/app-forms/admin/viewsGraphql";
+import { PUBLISH_REVISION, UNPUBLISH_REVISION } from "@webiny/app-forms/admin/viewsGraphql";
 import { ConfirmationDialog } from "@webiny/ui/ConfirmationDialog";
-import { graphql } from "react-apollo";
-import { withSnackbar } from "@webiny/app-admin/components";
-import { compose } from "recompose";
+import { useApolloClient } from "react-apollo";
+import { useSnackbar } from "@webiny/app-admin/components";
 
-const PublishRevision = ({
-    showSnackbar,
-    revision,
-    gqlPublishRevision,
-    gqlUnpublishRevision
-}: *) => {
+const PublishRevision = ({ revision }: *) => {
+    const { showSnackbar } = useSnackbar();
+    const client = useApolloClient();
+
     return (
         <React.Fragment>
             {revision.status !== "published" ? (
@@ -31,7 +28,8 @@ const PublishRevision = ({
                                 icon={<PublishIcon />}
                                 onClick={() =>
                                     showConfirmation(async () => {
-                                        const { data: res } = await gqlPublishRevision({
+                                        const { data: res } = await client.mutate({
+                                            mutation: PUBLISH_REVISION,
                                             variables: { id: revision.id }
                                         });
 
@@ -65,7 +63,8 @@ const PublishRevision = ({
                                 icon={<UnpublishIcon />}
                                 onClick={() =>
                                     showConfirmation(async () => {
-                                        const { data: res } = await gqlUnpublishRevision({
+                                        const { data: res } = await client.mutate({
+                                            mutation: UNPUBLISH_REVISION,
                                             variables: { id: revision.id }
                                         });
 
@@ -91,8 +90,4 @@ const PublishRevision = ({
     );
 };
 
-export default compose(
-    withSnackbar(),
-    graphql(publishRevision, { name: "gqlPublishRevision" }),
-    graphql(unpublishRevision, { name: "gqlUnpublishRevision" })
-)(PublishRevision);
+export default PublishRevision;

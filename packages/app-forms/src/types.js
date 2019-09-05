@@ -70,9 +70,7 @@ export type FormComponentPropsType = {
 
 export type FormRenderComponentPropsType = {
     preview?: boolean,
-    data?: FormDataType,
-    client: Object, // withApollo HOC
-    cms: WithPageBuilderPropsType // withPageBuilder HOC
+    data?: FormDataType
 };
 
 export type FormSubmitResponseType = {

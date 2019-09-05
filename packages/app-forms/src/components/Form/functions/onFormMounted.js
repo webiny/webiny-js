@@ -3,6 +3,8 @@ import { get, set } from "lodash";
 import type { FormRenderComponentPropsType } from "@webiny/app-forms/types";
 import { SAVE_FORM_VIEW } from "./graphql";
 
+// TODO: `client` is not part of FormRenderComponentPropsType but is injected by `FormRender`
+
 const saveFormView = ({ data, client }: FormRenderComponentPropsType) => {
     // SSR?
     if (!window || !data) {

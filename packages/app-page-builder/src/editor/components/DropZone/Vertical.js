@@ -46,8 +46,9 @@ type Props = {
 const Vertical = React.memo(({ last, onDrop, isVisible, type }: Props) => {
     return (
         <Droppable type={type} isVisible={isVisible} onDrop={onDrop}>
-            {({ isOver }) => (
+            {({ isOver, drop }) => (
                 <div
+                    ref={drop}
                     style={{
                         width: "30%",
                         maxWidth: "100px",

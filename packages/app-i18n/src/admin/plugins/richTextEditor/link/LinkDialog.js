@@ -1,5 +1,5 @@
 import React, { Fragment } from "react";
-import { compose, withProps, withHandlers } from "recompose";
+import { useHandler } from "@webiny/app/hooks/useHandler";
 import { Form } from "@webiny/form";
 import { Input } from "@webiny/ui/Input";
 import { Switch } from "@webiny/ui/Switch";
@@ -15,7 +15,48 @@ import {
 } from "@webiny/ui/Dialog";
 import { getLinkRange, isLink, TYPE } from "./utils";
 
-const LinkDialog = ({ open, linkData, updateLink, closeDialog }) => {
+const LinkDialog = props => {
+    const { open, closeDialog, activePlugin } = props;
+
+    let linkData = null;
+    if (activePlugin) {
+        let { selection, inlines, anchorText } = activePlugin.value;
+        let link = inlines.find(isLink);
+
+        if (typeof anchorText !== "string") {
+            anchorText = anchorText.getText();
+        }
+
+        const selectedText = link
+            ? anchorText
+            : anchorText.substr(
+                  selection.anchor.offset,
+                  selection.focus.offset - selection.anchor.offset
+              );
+
+        linkData = { ...(link && link.data), text: selectedText };
+    }
+
+    const updateLink = useHandler(
+        props,
+        ({ editor, onChange, closeDialog, activePlugin }) => ({ text, ...data }) => {
+            editor.change(change => {
+                const { selection } = activePlugin.value;
+                const linkSelection = getLinkRange(change, selection);
+                change
+                    .select(linkSelection)
+                    .unwrapInline(TYPE)
+                    .insertText(text)
+                    .moveAnchorBackward(text.length)
+                    .wrapInline({ type: TYPE, data })
+                    .moveToEnd();
+
+                onChange(change);
+                closeDialog();
+            });
+        }
+    );
+
     return (
         <Dialog open={open} onClose={closeDialog} style={{ zIndex: 11000 }}>
             <Form data={linkData} onSubmit={updateLink}>
@@ -65,44 +106,4 @@ const LinkDialog = ({ open, linkData, updateLink, closeDialog }) => {
     );
 };
 
-export default compose(
-    withProps(({ activePlugin }) => {
-        if (!activePlugin) {
-            return { linkData: null };
-        }
-
-        let { selection, inlines, anchorText } = activePlugin.value;
-        let link = inlines.find(isLink);
-
-        if (typeof anchorText !== "string") {
-            anchorText = anchorText.getText();
-        }
-
-        const selectedText = link
-            ? anchorText
-            : anchorText.substr(
-                  selection.anchor.offset,
-                  selection.focus.offset - selection.anchor.offset
-              );
-
-        return { linkData: { ...(link && link.data), text: selectedText } };
-    }),
-    withHandlers({
-        updateLink: ({ editor, onChange, closeDialog, activePlugin }) => ({ text, ...data }) => {
-            editor.change(change => {
-                const { selection } = activePlugin.value;
-                const linkSelection = getLinkRange(change, selection);
-                change
-                    .select(linkSelection)
-                    .unwrapInline(TYPE)
-                    .insertText(text)
-                    .moveAnchorBackward(text.length)
-                    .wrapInline({ type: TYPE, data })
-                    .moveToEnd();
-
-                onChange(change);
-                closeDialog();
-            });
-        }
-    })
-)(LinkDialog);
+export default LinkDialog;

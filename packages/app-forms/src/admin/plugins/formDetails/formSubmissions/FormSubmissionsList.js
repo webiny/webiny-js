@@ -1,10 +1,9 @@
 //@flow
 import * as React from "react";
 import FormSubmissionsListComponent from "./FormSubmissionsList/FormSubmissionsList";
-import { compose } from "recompose";
 import { withDataList } from "@webiny/app/components";
 import { get } from "lodash";
-import { listFormSubmissions } from "@webiny/app-forms/admin/viewsGraphql";
+import { LIST_FORM_SUBMISSIONS } from "@webiny/app-forms/admin/viewsGraphql";
 
 type Props = {
     form: Object,
@@ -19,14 +18,12 @@ const FormSubmissionsList = (props: Props) => {
     );
 };
 
-export default compose(
-    withDataList({
-        query: listFormSubmissions,
-        response: data => {
-            return get(data, "forms.listFormSubmissions", {});
-        },
-        variables(props: Object) {
-            return { sort: { savedOn: -1 }, where: { "form.parent": props.form.parent } };
-        }
-    })
-)(FormSubmissionsList);
+export default withDataList({
+    query: LIST_FORM_SUBMISSIONS,
+    response: data => {
+        return get(data, "forms.listFormSubmissions", {});
+    },
+    variables(props: Object) {
+        return { sort: { savedOn: -1 }, where: { "form.parent": props.form.parent } };
+    }
+})(FormSubmissionsList);

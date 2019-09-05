@@ -12,7 +12,7 @@ export function FormEditorProvider(props) {
             state,
             dispatch
         };
-    });
+    }, [state]);
 
     return <FormEditorContext.Provider value={value} {...props} />;
 }

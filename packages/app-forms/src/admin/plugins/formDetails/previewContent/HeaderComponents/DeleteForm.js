@@ -1,26 +1,22 @@
 // @flow
 import React from "react";
-import { compose } from "recompose";
-import { graphql } from "react-apollo";
-import { withRouter } from "react-router-dom";
-import { withSnackbar } from "@webiny/app-admin/components";
+import { useApolloClient } from "react-apollo";
+import useReactRouter from "use-react-router";
+import { useSnackbar } from "@webiny/app-admin/components";
 import { IconButton } from "@webiny/ui/Button";
 import { Tooltip } from "@webiny/ui/Tooltip";
 import { ReactComponent as DeleteIcon } from "@webiny/app-forms/admin/icons/delete.svg";
-import { getForm, deleteForm } from "@webiny/app-forms/admin/viewsGraphql";
+import { GET_FORM, DELETE_FORM } from "@webiny/app-forms/admin/viewsGraphql";
 import { ConfirmationDialog } from "@webiny/ui/ConfirmationDialog";
 import { cloneDeep, get } from "lodash";
 
 type Props = Object;
 
-const DeleteForm = ({
-    history,
-    showSnackbar,
-    form,
-    revision,
-    gqlDeleteForm,
-    selectRevision
-}: Props) => {
+const DeleteForm = ({ form, revision, selectRevision }: Props) => {
+    const { showSnackbar } = useSnackbar();
+    const client = useApolloClient();
+    const { history } = useReactRouter();
+
     const parentRevision = revision.parent === revision.id;
     let message = "You are about to delete this form revision, are you sure want to continue?";
     if (parentRevision) {
@@ -36,7 +32,8 @@ const DeleteForm = ({
                         icon={<DeleteIcon />}
                         onClick={() =>
                             showConfirmation(async () => {
-                                await gqlDeleteForm({
+                                await client.mutate({
+                                    mutation: DELETE_FORM,
                                     variables: { id: revision.id },
                                     refetchQueries: ["FormsListForms"],
                                     update: (cache, updated) => {
@@ -57,7 +54,7 @@ const DeleteForm = ({
                                         }
 
                                         const gqlParams = {
-                                            query: getForm,
+                                            query: GET_FORM,
                                             variables: { id: form.id }
                                         };
                                         const data = cloneDeep(cache.readQuery(gqlParams));
@@ -89,8 +86,4 @@ const DeleteForm = ({
     );
 };
 
-export default compose(
-    withRouter,
-    graphql(deleteForm, { name: "gqlDeleteForm" }),
-    withSnackbar()
-)(DeleteForm);
+export default DeleteForm;

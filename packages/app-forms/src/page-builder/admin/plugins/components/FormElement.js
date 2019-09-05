@@ -1,11 +1,10 @@
 // @flow
 import * as React from "react";
-import { pure } from "recompose";
 import { ElementRoot } from "@webiny/app-page-builder/render/components/ElementRoot";
 import { get } from "lodash";
 import { Form as FormsForm } from "@webiny/app-forms/components/Form";
 
-const FormElement = pure(({ element }: Object) => {
+const FormElement = React.memo(({ element }: Object) => {
     let render = "Form not selected.";
 
     let form = get(element, "data.settings.form") || {};

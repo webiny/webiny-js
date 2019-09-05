@@ -1,6 +1,5 @@
 // @flow
 import React from "react";
-import { type WithPageDetailsProps } from "@webiny/app-page-builder/admin/components";
 import { IconButton } from "@webiny/ui/Button";
 import { Icon } from "@webiny/ui/Icon";
 import { ReactComponent as MoreVerticalIcon } from "@webiny/app-page-builder/admin/assets/more_vert.svg";
@@ -26,7 +25,7 @@ const menuStyles = css({
     }
 });
 
-type Props = WithPageDetailsProps & WithConfirmationProps;
+type Props = WithConfirmationProps;
 
 const PageOptionsMenu = (props: Props) => {
     const {

@@ -2,14 +2,14 @@ import React from "react";
 import { IconButton } from "@webiny/ui/Button";
 import { ReactComponent as BackIcon } from "./icons/round-arrow_back-24px.svg";
 import { css } from "emotion";
-import { withRouter } from "react-router-dom";
+import useReactRouter from "use-react-router";
 
 const backStyles = css({
     marginLeft: -10
 });
 
-const BackButton = (props) => {
-    const { match, history } = props;
+const BackButton = React.memo(() => {
+    const { match, history } = useReactRouter();
 
     return (
         <IconButton
@@ -18,6 +18,8 @@ const BackButton = (props) => {
             icon={<BackIcon />}
         />
     );
-};
+});
 
-export default withRouter(BackButton);
+BackButton.displayName = "BackButton";
+
+export default BackButton;

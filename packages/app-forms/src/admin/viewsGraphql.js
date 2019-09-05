@@ -50,7 +50,7 @@ export const FIELDS_FIELDS = `
         settings
 `;
 
-export const listForms = gql`
+export const LIST_FORMS = gql`
     query FormsListForms($sort: JSON, $page: Int, $perPage: Int, $search: String) {
         forms {
             listForms(sort: $sort, page: $page, perPage: $perPage, search: $search) {
@@ -69,7 +69,7 @@ export const listForms = gql`
     }
 `;
 
-export const createForm = gql`
+export const CREATE_FORM = gql`
     mutation FormsCreateForm($name: String!) {
         forms {
             form: createForm(data: { name: $name }) {
@@ -84,7 +84,7 @@ export const createForm = gql`
     }
 `;
 
-export const getForm = gql`
+export const GET_FORM = gql`
     query FormsGetForm($id: ID!) {
         forms {
             form: getForm(id: $id) {
@@ -117,7 +117,7 @@ export const getForm = gql`
     }
 `;
 
-export const listFormSubmissions = gql`
+export const LIST_FORM_SUBMISSIONS = gql`
     query FormsListFormSubmissions(
         $sort: JSON
         $page: Int
@@ -175,7 +175,7 @@ export const listFormSubmissions = gql`
     }
 `;
 
-export const exportFormSubmissions = gql`
+export const EXPORT_FORM_SUBMISSIONS = gql`
     mutation FormsExportFormSubmissions($ids: [ID], $parent: ID, $form: ID) {
         forms {
             exportFormSubmissions(ids: $ids, parent: $parent, form: $form) {
@@ -190,7 +190,7 @@ export const exportFormSubmissions = gql`
     }
 `;
 
-export const createRevisionFrom = gql`
+export const CREATE_REVISION_FROM = gql`
     mutation FormsCreateRevisionFrom($revision: ID!) {
         forms {
             revision: createRevisionFrom(revision: $revision) {
@@ -205,7 +205,7 @@ export const createRevisionFrom = gql`
     }
 `;
 
-export const publishRevision = gql`
+export const PUBLISH_REVISION = gql`
     mutation FormsPublishRevision($id: ID!) {
         forms {
             publishRevision(id: $id) {
@@ -222,7 +222,7 @@ export const publishRevision = gql`
     }
 `;
 
-export const unpublishRevision = gql`
+export const UNPUBLISH_REVISION = gql`
     mutation FormsUnpublishRevision($id: ID!) {
         forms {
             unpublishRevision(id: $id) {
@@ -239,7 +239,7 @@ export const unpublishRevision = gql`
     }
 `;
 
-export const deleteRevision = gql`
+export const DELETE_REVISION = gql`
     mutation FormsDeleteRevision($id: ID!) {
         forms {
             deleteRevision(id: $id) {
@@ -252,7 +252,7 @@ export const deleteRevision = gql`
     }
 `;
 
-export const deleteForm = gql`
+export const DELETE_FORM = gql`
     mutation DeleteForm($id: ID!) {
         forms {
             deleteForm(id: $id) {

@@ -2,7 +2,6 @@
 import React from "react";
 import { css } from "emotion";
 import { renderPlugins } from "@webiny/app/plugins";
-import { type WithPageDetailsProps } from "@webiny/app-page-builder/admin/components";
 import { Typography } from "@webiny/ui/Typography";
 import { Grid, Cell } from "@webiny/ui/Grid";
 
@@ -32,9 +31,7 @@ const headerActions = css({
     alignItems: "center"
 });
 
-type Props = WithPageDetailsProps;
-
-const Header = (props: Props) => {
+const Header = (props: Object) => {
     const {
         pageDetails,
         pageDetails: { page },
