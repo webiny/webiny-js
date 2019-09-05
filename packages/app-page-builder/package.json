@@ -52,7 +52,6 @@
     "react-sortable-tree": "^2.6.0",
     "react-transition-group": "^4.3.0",
     "react-virtualized": "^9.21.0",
-    "recompose": "^0.30.0",
     "redux": "^4.0.0",
     "redux-undo": "^1.0.0-beta9-9-7",
     "shortid": "^2.2.8",

@@ -1,6 +1,5 @@
 import React from "react";
-import { compose } from "recompose";
-import { withRouter } from "react-router-dom";
+import useReactRouter from "use-react-router";
 import { get } from "dot-prop-immutable";
 import { pick } from "lodash";
 import { i18n } from "@webiny/app/i18n";
@@ -20,7 +19,8 @@ import {
 
 const t = i18n.namespace("Pb.Categories");
 
-const Categories = ({ formProps, listProps, location, history }) => {
+const Categories = ({ formProps, listProps }) => {
+    const { location, history } = useReactRouter();
     const createNew = React.useCallback(() => {
         const query = new URLSearchParams(location.search);
         query.delete("id");
@@ -42,35 +42,32 @@ const Categories = ({ formProps, listProps, location, history }) => {
     );
 };
 
-export default compose(
-    withCrud({
-        list: {
-            get: {
-                query: loadCategories,
-                variables: { sort: { savedOn: -1 } },
-                response: data => get(data, "pageBuilder.categories")
-            },
-            delete: {
-                mutation: deleteCategory,
-                response: data => data.pageBuilder.deleteCategory,
-                snackbar: data => t`Category {name} deleted.`({ name: data.name })
-            }
+export default withCrud({
+    list: {
+        get: {
+            query: loadCategories,
+            variables: { sort: { savedOn: -1 } },
+            response: data => get(data, "pageBuilder.categories")
         },
-        form: {
-            get: {
-                query: loadCategory,
-                response: data => get(data, "pageBuilder.category")
-            },
-            save: {
-                create: createCategory,
-                update: updateCategory,
-                response: data => data.pageBuilder.category,
-                variables: form => ({
-                    data: pick(form, ["name", "slug", "url", "layout"])
-                }),
-                snackbar: data => t`Category {name} saved successfully.`({ name: data.name })
-            }
+        delete: {
+            mutation: deleteCategory,
+            response: data => data.pageBuilder.deleteCategory,
+            snackbar: data => t`Category {name} deleted.`({ name: data.name })
         }
-    }),
-    withRouter
-)(Categories);
+    },
+    form: {
+        get: {
+            query: loadCategory,
+            response: data => get(data, "pageBuilder.category")
+        },
+        save: {
+            create: createCategory,
+            update: updateCategory,
+            response: data => data.pageBuilder.category,
+            variables: form => ({
+                data: pick(form, ["name", "slug", "url", "layout"])
+            }),
+            snackbar: data => t`Category {name} saved successfully.`({ name: data.name })
+        }
+    }
+})(Categories);
