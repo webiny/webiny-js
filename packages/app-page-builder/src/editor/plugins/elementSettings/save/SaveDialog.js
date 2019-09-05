@@ -18,7 +18,7 @@ import { Switch } from "@webiny/ui/Switch";
 import { Select } from "@webiny/ui/Select";
 import { Grid, Cell } from "@webiny/ui/Grid";
 import { Form } from "@webiny/form";
-import styled from "react-emotion";
+import styled from "@emotion/styled";
 
 const narrowDialog = css({
     ".mdc-dialog__surface": {

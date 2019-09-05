@@ -1,7 +1,7 @@
 // @flow
 import React from "react";
 import { css } from "emotion";
-import styled from "react-emotion";
+import styled from "@emotion/styled";
 import uniqid from "uniqid";
 import { getPlugins } from "@webiny/plugins";
 import { Grid, Cell } from "@webiny/ui/Grid";

@@ -1,7 +1,7 @@
 import React from "react";
 import { Query } from "react-apollo";
 import useReactRouter from "use-react-router";
-import styled from "react-emotion";
+import styled from "@emotion/styled";
 import { Elevation } from "@webiny/ui/Elevation";
 import { renderPlugins } from "@webiny/app/plugins";
 import { getPage } from "@webiny/app-page-builder/admin/graphql/pages";

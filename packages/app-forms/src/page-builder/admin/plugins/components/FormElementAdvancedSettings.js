@@ -6,7 +6,7 @@ import { get } from "lodash";
 import { Grid, Cell } from "@webiny/ui/Grid";
 import { Alert } from "@webiny/ui/Alert";
 import { AutoComplete } from "@webiny/ui/AutoComplete";
-import styled from "react-emotion";
+import styled from "@emotion/styled";
 
 const FormOptionsWrapper = styled("div")({
     minHeight: 250

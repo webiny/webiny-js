@@ -2,7 +2,7 @@
 import React from "react";
 import { Transition } from "react-transition-group";
 import { connect } from "@webiny/app-page-builder/editor/redux";
-import styled from "react-emotion";
+import styled from "@emotion/styled";
 import { Elevation } from "@webiny/ui/Elevation";
 import { togglePlugin } from "@webiny/app-page-builder/editor/actions";
 import { isPluginActive } from "@webiny/app-page-builder/editor/selectors";

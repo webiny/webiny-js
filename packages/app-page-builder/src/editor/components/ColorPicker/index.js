@@ -1,7 +1,7 @@
 //@flow
 import React, { useState, useCallback } from "react";
 import classnames from "classnames";
-import styled from "react-emotion";
+import styled from "@emotion/styled";
 import { css } from "emotion";
 import { isEqual } from "lodash";
 import { ChromePicker } from "react-color";

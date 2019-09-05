@@ -18,7 +18,7 @@
     "@webiny/plugins": "^1.0.0",
     "@webiny/ui": "^1.0.0",
     "lodash": "^4.17.11",
-    "react-emotion": "^10.0.0",
+    "@emotion/styled": "^10.0.17",
     "react-helmet": "^5.2.0",
     "react-router-dom": "^5.0.0",
     "recompose": "^0.30.0"

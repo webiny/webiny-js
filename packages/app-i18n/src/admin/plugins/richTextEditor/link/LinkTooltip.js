@@ -1,5 +1,5 @@
 import React, { useCallback, useRef, useEffect } from "react";
-import styled from "react-emotion";
+import styled from "@emotion/styled";
 import { css } from "emotion";
 import { getLinkRange, TYPE } from "./utils";
 import { Elevation } from "@webiny/ui/Elevation";

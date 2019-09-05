@@ -4,7 +4,7 @@ import { get } from "lodash";
 import { Editor } from "slate-react";
 import { Value } from "slate";
 import Plain from "slate-plain-serializer";
-import styled from "react-emotion";
+import styled from "@emotion/styled";
 import { css } from "emotion";
 import classNames from "classnames";
 import Menu from "./Menu";

@@ -2,7 +2,7 @@
 import * as React from "react";
 import { Slider as RmwcSlider } from "@rmwc/slider";
 import type { FormComponentProps } from "./../types";
-import styled from "react-emotion";
+import styled from "@emotion/styled";
 import {FormElementMessage} from "../FormElementMessage";
 
 type Props = FormComponentProps & {

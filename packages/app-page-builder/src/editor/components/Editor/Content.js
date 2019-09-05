@@ -2,7 +2,7 @@
 import React from "react";
 import { get } from "dot-prop-immutable";
 import { connect } from "@webiny/app-page-builder/editor/redux";
-import styled from "react-emotion";
+import styled from "@emotion/styled";
 import { css } from "emotion";
 import { getPlugins } from "@webiny/plugins";
 import { usePageBuilder } from "@webiny/app-page-builder/hooks/usePageBuilder";

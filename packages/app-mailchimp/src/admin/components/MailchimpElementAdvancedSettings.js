@@ -4,7 +4,7 @@ import { useApolloClient } from "react-apollo";
 import { Query } from "react-apollo";
 import gql from "graphql-tag";
 import { get } from "lodash";
-import { css } from "react-emotion";
+import { css } from "emotion";
 import { Grid, Cell } from "@webiny/ui/Grid";
 import { Typography } from "@webiny/ui/Typography";
 import { useHandler } from "@webiny/app/hooks/useHandler";

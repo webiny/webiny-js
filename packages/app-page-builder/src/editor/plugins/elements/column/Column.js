@@ -1,6 +1,6 @@
 //@flow
 import React, { useCallback } from "react";
-import styled from "react-emotion";
+import styled from "@emotion/styled";
 import { isEqual } from "lodash";
 import { css } from "emotion";
 import { useHandler } from "@webiny/app/hooks/useHandler";

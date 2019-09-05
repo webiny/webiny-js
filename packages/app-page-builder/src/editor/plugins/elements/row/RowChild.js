@@ -2,7 +2,7 @@
 import React, { useCallback } from "react";
 import { css } from "emotion";
 import { get } from "lodash";
-import styled from "react-emotion";
+import styled from "@emotion/styled";
 import { useHandlers } from "@webiny/app/hooks/useHandlers";
 import { connect } from "@webiny/app-page-builder/editor/redux";
 import DropZone from "@webiny/app-page-builder/editor/components/DropZone";

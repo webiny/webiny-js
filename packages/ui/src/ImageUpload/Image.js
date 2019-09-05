@@ -1,6 +1,6 @@
 // @flow
 import * as React from "react";
-import styled from "react-emotion";
+import styled from "@emotion/styled";
 import classNames from "classnames";
 import { ReactComponent as AddImageIcon } from "./icons/round-add_photo_alternate-24px.svg";
 import { ReactComponent as RemoveImageIcon } from "./icons/round-close-24px.svg";

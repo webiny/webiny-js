@@ -2,7 +2,7 @@
 import * as React from "react";
 import * as toolbar from "./toolbar";
 import type { ImageEditorTool } from "./toolbar/types";
-import styled from "react-emotion";
+import styled from "@emotion/styled";
 import classNames from "classnames";
 import { ButtonSecondary, ButtonPrimary } from "@webiny/ui/Button";
 import loadScript from "load-script";

@@ -3,7 +3,7 @@ import * as React from "react";
 import classSet from "classnames";
 import { Cell, Grid, GridInner, type Props } from "@webiny/ui/Grid";
 import { css } from "emotion";
-import styled from "react-emotion";
+import styled from "@emotion/styled";
 
 const grid = css({
     "&.mdc-layout-grid": {

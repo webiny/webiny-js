@@ -1,6 +1,6 @@
 //@flow
 import React, { useCallback, useEffect, useState } from "react";
-import styled from "react-emotion";
+import styled from "@emotion/styled";
 import { Carousel } from "@webiny/ui/Carousel";
 import { connect } from "@webiny/app-page-builder/editor/redux";
 import { deactivatePlugin } from "@webiny/app-page-builder/editor/actions";

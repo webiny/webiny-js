@@ -1,7 +1,7 @@
 // @flow
 import React, { useCallback } from "react";
 import { connect } from "@webiny/app-page-builder/editor/redux";
-import styled from "react-emotion";
+import styled from "@emotion/styled";
 import isNumeric from "isnumeric";
 import { set, isEqual } from "lodash";
 import SingleImageUpload from "@webiny/app-admin/components/SingleImageUpload";

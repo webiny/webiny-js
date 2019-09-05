@@ -1,7 +1,7 @@
 // @flow
 import * as React from "react";
 import { SketchPicker } from "react-color";
-import { css } from "react-emotion";
+import { css } from "emotion";
 import type { FormComponentProps } from "./../types";
 import { FormElementMessage } from "../FormElementMessage";
 import classNames from "classnames";

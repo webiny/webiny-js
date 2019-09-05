@@ -1,6 +1,6 @@
 //@flow
 import React from "react";
-import styled from "react-emotion";
+import styled from "@emotion/styled";
 import { ElementRoot } from "@webiny/app-page-builder/render/components/ElementRoot";
 import BlockContainer from "./BlockContainer";
 import ElementAnimation from "@webiny/app-page-builder/render/components/ElementAnimation";

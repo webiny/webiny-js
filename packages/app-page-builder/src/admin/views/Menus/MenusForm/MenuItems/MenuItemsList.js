@@ -4,7 +4,7 @@ import SortableTree from "react-sortable-tree";
 import { getPlugins } from "@webiny/plugins";
 import MenuItemRenderer from "./MenuItemRenderer";
 import { Typography } from "@webiny/ui/Typography";
-import styled from "react-emotion";
+import styled from "@emotion/styled";
 
 const TreeWrapper = styled("div")({
     width: "100%",

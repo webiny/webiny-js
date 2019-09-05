@@ -1,7 +1,7 @@
 // @flow
 import React, { useState } from "react";
 import { css } from "emotion";
-import styled from "react-emotion";
+import styled from "@emotion/styled";
 import { set } from "dot-prop-immutable";
 import { get } from "lodash";
 import { useHandlers } from "@webiny/app/hooks/useHandlers";

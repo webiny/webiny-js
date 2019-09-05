@@ -9,7 +9,7 @@ import {
 } from "@rmwc/list";
 import { Typography } from "@webiny/ui/Typography";
 import classNames from "classnames";
-import styled from "react-emotion";
+import styled from "@emotion/styled";
 
 type ListItemProps = { children: React.Node };
 

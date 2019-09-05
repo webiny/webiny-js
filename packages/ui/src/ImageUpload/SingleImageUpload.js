@@ -3,7 +3,7 @@ import * as React from "react";
 import type { FormComponentProps } from "./../types";
 import BrowseFiles, { type SelectedFile, type FileError } from "react-butterfiles";
 import { FormElementMessage } from "@webiny/ui/FormElementMessage";
-import styled from "react-emotion";
+import styled from "@emotion/styled";
 import classNames from "classnames";
 import Image from "./Image";
 import ImageEditorDialog from "./ImageEditorDialog";

@@ -2,7 +2,7 @@ import React from "react";
 import { Query } from "react-apollo";
 import { renderPlugins } from "@webiny/app/plugins";
 import useReactRouter from "use-react-router";
-import styled from "react-emotion";
+import styled from "@emotion/styled";
 import { Elevation } from "@webiny/ui/Elevation";
 import { GET_FORM } from "@webiny/app-forms/admin/viewsGraphql";
 import { useSnackbar } from "@webiny/app-admin/components";

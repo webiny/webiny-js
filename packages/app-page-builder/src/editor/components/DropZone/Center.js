@@ -1,6 +1,6 @@
 //@flow
 import * as React from "react";
-import styled from "react-emotion";
+import styled from "@emotion/styled";
 import { getElementProps } from "@webiny/app-page-builder/editor/selectors";
 import { connect } from "@webiny/app-page-builder/editor/redux";
 import Droppable from "./../Droppable";

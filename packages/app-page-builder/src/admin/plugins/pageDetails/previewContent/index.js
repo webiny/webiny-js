@@ -3,7 +3,7 @@ import * as React from "react";
 import { renderPlugins } from "@webiny/app/plugins";
 import type { PbPageDetailsPluginType, WithPageDetailsProps } from "@webiny/app-page-builder/types";
 import { Tab } from "@webiny/ui/Tabs";
-import styled from "react-emotion";
+import styled from "@emotion/styled";
 import { Elevation } from "@webiny/ui/Elevation";
 import PagePreview from "./PagePreview";
 import { CircularProgress } from "@webiny/ui/Progress";

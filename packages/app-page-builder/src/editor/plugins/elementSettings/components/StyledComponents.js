@@ -1,5 +1,5 @@
 //@flow
-import styled from "react-emotion";
+import styled from "@emotion/styled";
 
 export const Footer = styled("div")({
     backgroundColor: "var(--mdc-theme-background)",

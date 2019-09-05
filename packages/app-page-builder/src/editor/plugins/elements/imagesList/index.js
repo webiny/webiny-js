@@ -5,7 +5,7 @@ import { Tab } from "@webiny/ui/Tabs";
 import ImagesList from "./ImagesList";
 import ImagesListImagesSettings from "./ImagesListImagesSettings";
 import ImagesListDesignSettings from "./ImagesListDesignSettings";
-import styled from "react-emotion";
+import styled from "@emotion/styled";
 
 import { ReactComponent as DesignIcon } from "./icons/round-style-24px.svg";
 import { ReactComponent as ImageGalleryIcon } from "./icons/round-photo_library-24px.svg";

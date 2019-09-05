@@ -7,7 +7,7 @@ import { IconButton } from "@webiny/ui/Button";
 import { Icon } from "@webiny/ui/Icon";
 import { compose, withProps, withHandlers } from "recompose";
 import _ from "lodash";
-import styled from "react-emotion";
+import styled from "@emotion/styled";
 import { css } from "emotion";
 import { getPlugin, getPlugins } from "@webiny/plugins";
 import { withUi } from "@webiny/app/components";

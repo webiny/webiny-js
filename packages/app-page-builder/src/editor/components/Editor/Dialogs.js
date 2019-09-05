@@ -1,6 +1,6 @@
 // @flow
 import React from "react";
-import styled from "react-emotion";
+import styled from "@emotion/styled";
 import { getPlugins } from "@webiny/plugins";
 
 const DialogsContainer = styled("div")({

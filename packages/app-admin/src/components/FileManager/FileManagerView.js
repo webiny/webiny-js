@@ -21,7 +21,7 @@ import { withSnackbar, type WithSnackbarProps } from "@webiny/app-admin/componen
 import { compose } from "recompose";
 import { Scrollbar } from "@webiny/ui/Scrollbar";
 import { css } from "emotion";
-import styled from "react-emotion";
+import styled from "@emotion/styled";
 import { useHotkeys } from "react-hotkeyz";
 import { useFileManager } from "./FileManagerContext";
 

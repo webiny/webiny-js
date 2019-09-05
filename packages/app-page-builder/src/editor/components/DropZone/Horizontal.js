@@ -1,7 +1,7 @@
 //@flow
 import React from "react";
 import Droppable from "@webiny/app-page-builder/editor/components/Droppable";
-import styled from "react-emotion";
+import styled from "@emotion/styled";
 
 const InnerDiv = styled("div")({
     height: 5,

@@ -5,7 +5,7 @@ import * as Ui from "@webiny/ui/ImageUpload";
 import FileManager from "./FileManager";
 import type { FormComponentProps } from "@webiny/ui/types";
 import { FormElementMessage } from "@webiny/ui/FormElementMessage";
-import styled from "react-emotion";
+import styled from "@emotion/styled";
 
 const ImageUploadWrapper = styled("div")({
     position: "relative",

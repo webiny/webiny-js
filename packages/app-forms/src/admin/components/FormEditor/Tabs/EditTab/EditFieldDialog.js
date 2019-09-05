@@ -2,7 +2,7 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { cloneDeep } from "lodash";
 import { css } from "emotion";
-import styled from "react-emotion";
+import styled from "@emotion/styled";
 import {
     Dialog,
     DialogBody,

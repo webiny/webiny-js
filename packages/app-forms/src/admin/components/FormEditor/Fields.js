@@ -1,7 +1,7 @@
 import React from "react";
 import { useFormEditor } from "@webiny/app-forms/admin/components/FormEditor/Context";
 import { getPlugins } from "@webiny/plugins";
-import styled from "react-emotion";
+import styled from "@emotion/styled";
 import { css } from "emotion";
 import { Icon } from "@webiny/ui/Icon";
 import { Accordion, AccordionItem } from "@webiny/ui/Accordion";

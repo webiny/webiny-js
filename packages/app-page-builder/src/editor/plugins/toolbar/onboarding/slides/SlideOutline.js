@@ -1,6 +1,6 @@
 //@flow
 import * as React from "react";
-import styled from "react-emotion";
+import styled from "@emotion/styled";
 import { Typography } from "@webiny/ui/Typography";
 import { List, ListItem, ListItemGraphic, ListItemMeta } from "@webiny/ui/List";
 

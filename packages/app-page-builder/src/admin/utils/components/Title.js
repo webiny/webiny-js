@@ -1,7 +1,7 @@
 // @flow
 import React, { useState, useCallback } from "react";
 import { useApolloClient } from "react-apollo";
-import styled from "react-emotion";
+import styled from "@emotion/styled";
 import { useHandlers } from "@webiny/app/hooks/useHandlers";
 import { unregisterPlugin } from "@webiny/plugins";
 import { Typography } from "@webiny/ui/Typography";
