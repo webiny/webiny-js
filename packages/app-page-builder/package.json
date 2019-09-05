@@ -50,7 +50,7 @@
     "react-router-dom": "^5.0.0",
     "react-sortable": "^2.0.0",
     "react-sortable-tree": "^2.6.0",
-    "react-transition-group": "2.3.1",
+    "react-transition-group": "^4.3.0",
     "react-virtualized": "^9.21.0",
     "recompose": "^0.30.0",
     "redux": "^4.0.0",

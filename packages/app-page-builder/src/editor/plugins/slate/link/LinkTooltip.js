@@ -13,7 +13,7 @@ const Tooltip = styled("span")({
     zIndex: 1,
     width: "auto",
     maxWidth: 520,
-    "> span:not(:first-child)": {
+    "> span:not(:first-of-type)": {
         marginLeft: 10
     }
 });
@@ -40,7 +40,7 @@ const LinkTooltip = props => {
     const { menuRef, href, activateLink, removeLink } = useLink(props);
 
     return (
-        <Tooltip innerRef={menuRef} style={displayNone}>
+        <Tooltip ref={menuRef} style={displayNone}>
             <Elevation className={tooltipInner} z={1}>
                 <span>
                     Link:{" "}

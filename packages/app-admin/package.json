@@ -33,7 +33,7 @@
     "react-hotkeyz": "^1.0.4",
     "react-lazy-load": "^3.0.13",
     "react-router-dom": "^5.0.0",
-    "react-transition-group": "^2.5.1",
+    "react-transition-group": "^4.3.0",
     "recompose": "^0.30.0",
     "shortid": "^2.2.12",
     "store": "^2.0.12",

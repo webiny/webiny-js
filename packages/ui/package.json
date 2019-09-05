@@ -60,7 +60,7 @@
     "react-custom-scrollbars": "^4.2.1",
     "react-loading-skeleton": "^0.5.0",
     "react-spinner-material": "^1.0.19",
-    "react-transition-group": "^2.5.1",
+    "react-transition-group": "^4.3.0",
     "shortid": "^2.2.12",
     "slate": "^0.42.2",
     "slate-plain-serializer": "^0.6.15",

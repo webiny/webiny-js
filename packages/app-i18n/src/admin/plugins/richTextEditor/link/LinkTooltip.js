@@ -13,7 +13,7 @@ const Tooltip = styled("span")({
     zIndex: 1,
     width: "auto",
     maxWidth: 520,
-    "> span:not(:first-child)": {
+    "> span:not(:first-of-type)": {
         marginLeft: 10
     }
 });
@@ -93,7 +93,7 @@ const LinkTooltip = ({ editor, onChange, activatePlugin }) => {
     const href = link ? link.data.get("href") : "";
 
     return (
-        <Tooltip innerRef={menuRef} style={{ display: "none" }}>
+        <Tooltip ref={menuRef} style={{ display: "none" }}>
             <Elevation className={tooltipInner} z={1}>
                 <span>
                     Link:{" "}
