@@ -5,7 +5,7 @@ import { FloatingActionButton } from "@webiny/app-admin/components/FloatingActio
 import UsersDataList from "./UsersDataList";
 import UsersForm from "./UsersForm";
 import { CREATE_USER, DELETE_USER, READ_USER, LIST_USERS, UPDATE_USER } from "./graphql";
-import { CrudProvider } from "@webiny/app-admin/contexts/CrudContext";
+import { CrudProvider } from "@webiny/app-admin/contexts/Crud";
 
 const variables = data => {
     return {

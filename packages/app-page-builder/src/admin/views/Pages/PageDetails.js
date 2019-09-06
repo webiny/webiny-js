@@ -5,7 +5,7 @@ import styled from "@emotion/styled";
 import { Elevation } from "@webiny/ui/Elevation";
 import { renderPlugins } from "@webiny/app/plugins";
 import { getPage } from "@webiny/app-page-builder/admin/graphql/pages";
-import { PageDetailsProvider, PageDetailsConsumer } from "../../context/PageDetailsContext";
+import { PageDetailsProvider, PageDetailsConsumer } from "../../contexts/PageDetails";
 import { ElementAnimation } from "@webiny/app-page-builder/render/components";
 import { useSnackbar } from "@webiny/app-admin/components";
 import { get } from "lodash";

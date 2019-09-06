@@ -4,11 +4,13 @@ import { ListItem, ListItemGraphic, ListItemMeta } from "@webiny/ui/List";
 import { Switch } from "@webiny/ui/Switch";
 import { Icon } from "@webiny/ui/Icon";
 import { ReactComponent as DarkModeIcon } from "@webiny/app-admin/assets/icons/round-invert_colors-24px.svg";
-import { withTheme, type WithThemeProps } from "@webiny/app-admin/context";
+import { useTheme } from "@webiny/app-admin/hooks/useTheme";
 
-const DarkMode = ({ theme: { toggleDarkMode, theme } }: { theme: WithThemeProps }) => {
+const DarkMode = () => {
+    const { toggleDarkMode, theme } = useTheme();
+
     return (
-        <ListItem ripple={false} onClick={() => toggleDarkMode()}>
+        <ListItem ripple={false} onClick={toggleDarkMode}>
             <ListItemGraphic>
                 <Icon icon={<DarkModeIcon />} />
             </ListItemGraphic>
@@ -20,4 +22,4 @@ const DarkMode = ({ theme: { toggleDarkMode, theme } }: { theme: WithThemeProps 
     );
 };
 
-export default withTheme()(DarkMode);
+export default DarkMode;

@@ -1,6 +1,6 @@
 // @flow
 import * as React from "react";
-import { UiContext, UiConsumer } from "./../context/ui";
+import { UiContext, UiConsumer } from "./../contexts/Ui";
 
 export const withUi = (): Function => {
     return (Component: typeof React.Component) => {

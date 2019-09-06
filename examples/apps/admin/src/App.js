@@ -1,10 +1,10 @@
 // @flow
 import { hot } from "react-hot-loader";
 import React, { Fragment } from "react";
-import { UiProvider } from "@webiny/app/context/ui";
+import { UiProvider } from "@webiny/app/contexts/Ui";
 import { registerPlugins, getPlugins } from "@webiny/plugins";
-import { ThemeProvider } from "@webiny/app-admin/context";
-import { PageBuilderProvider } from "@webiny/app-page-builder/context";
+import { ThemeProvider } from "@webiny/app-admin/contexts/Theme";
+import { PageBuilderProvider } from "@webiny/app-page-builder/contexts/PageBuilder";
 import { SecurityProvider } from "@webiny/app-security/admin/context";
 import { I18NProvider } from "@webiny/app-i18n/context";
 import Login from "@webiny/app-security/admin/views/Login";
