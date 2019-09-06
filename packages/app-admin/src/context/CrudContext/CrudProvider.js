@@ -1,61 +1,82 @@
 // @flow
-import React, { useState, useContext } from "react";
+import React, { useState } from "react";
 import { useMutation, useQuery } from "react-apollo";
-import getFormData from "./getFormData";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { useDialog } from "@webiny/app-admin/hooks/useDialog";
 import { useDataList } from "@webiny/app/hooks/useDataList";
 import useReactRouter from "use-react-router";
+import { getData, getError, getMeta } from "./functions";
+import { get } from "lodash";
+import { i18n } from "@webiny/app/i18n";
 
-const CrudContext = React.createContext();
-
-const CrudProvider = ({ children }: Object) => {
-    const value = {
-        state: {
-            list: {
-                current: {}
-            },
-            form: {
-                current: {}
-            }
-        }
-    };
-
-    return <CrudContext.Provider value={value}>{children}</CrudContext.Provider>;
+type Props = {
+    create?: {},
+    read?: {},
+    list?: {},
+    update?: {},
+    delete?: {}
 };
 
-function useCrudList(list) {
-    const context = useContext(CrudContext);
-    if (!context) {
-        throw new Error("useCrudList hook must be used within the CrudProvider.");
-    }
+const t = i18n.ns("app-admin/context/crud-context");
 
-    const { location, history } = useReactRouter();
+export const CrudContext = React.createContext();
+
+export const CrudProvider = ({ children, ...props }: Props) => {
     const { showSnackbar } = useSnackbar();
-    const dataList = useDataList({
+    const { showDialog } = useDialog();
+    const { location, history } = useReactRouter();
+
+    const list = useDataList({
         name: "dataList",
-        query: list.get.query,
-        variables: list.get.variables,
-        response: list.get.response
+        query: props.list.query,
+        variables: props.list.variables,
+        getData: get(props, "list.getData", getData),
+        getMeta: get(props, "list.getMeta", getMeta),
+        getError: get(props, "list.getError", getError)
     });
+
+    const [mutationInProgress, setMutationInProgress] = useState(false);
+    const [invalidFields, setInvalidFields] = useState({});
 
     const urlSearchParams = new URLSearchParams(location.search);
     const id = urlSearchParams.get("id");
 
-    const [deleteRecord] = useMutation(list.delete.mutation);
+    const [createMutation] = useMutation(props.create.mutation || props.create);
+    const [updateMutation] = useMutation(props.update.mutation || props.update);
+    const [deleteMutation] = useMutation(props.delete.mutation || props.delete);
 
-    return {
-        ...dataList,
-        deleteRecord: async (item: Object) => {
-            const res = await deleteRecord({ variables: { id: item.id } });
-            const { data, error } = list.delete.response(res.data);
+    const readQuery = useQuery(props.read.query || props.read, {
+        variables: { id },
+        skip: !id,
+        onCompleted(data) {
+            const error = get(props, "read.getError", getError)(data);
+            if (!error) {
+                return;
+            }
 
-            if (data) {
-                showSnackbar(list.delete.snackbar(item));
-            } else {
-                showSnackbar(error.message, {
+            const query = new URLSearchParams(location.search);
+            query.delete("id");
+            history.push({ search: query.toString() });
+            showSnackbar(error.message);
+        }
+    });
+
+    const actions = {
+        delete: async (item: Object) => {
+            const res = await deleteMutation({ variables: { id: item.id } });
+            const error = get(props, "delete.getError", getError)(res);
+
+            if (error) {
+                let message = error.message || t`Could not delete record.`;
+                showSnackbar(message, {
                     title: "Something unexpected happened"
                 });
+            } else {
+                let message = get(props, "delete.snackbar", t`Record deleted successfully.`);
+                if (typeof message === "function") {
+                    message = message(item);
+                }
+                showSnackbar(message);
             }
 
             if (item.id === id) {
@@ -64,88 +85,73 @@ function useCrudList(list) {
                 history.push({ search: query.toString() });
             }
 
-            dataList.refresh();
+            list.refresh();
+        },
+        save: async (formData: Object) => {
+            const action = id ? "update" : "create";
+            setMutationInProgress(true);
+            setInvalidFields(null);
+
+            const variablesHandler = get(props[action], "variables");
+            const variables = variablesHandler ? variablesHandler(formData) : { data: formData };
+            const operation =
+                action === "create"
+                    ? createMutation({ variables })
+                    : updateMutation({ variables: { id, ...variables } });
+
+            return operation.then(response => {
+                const data = get(props[action], "getData", getData)(response.data);
+                const error = get(props[action], "getError", getError)(response.data);
+
+                if (error) {
+                    if (error.code === "INVALID_ATTRIBUTES") {
+                        showSnackbar(t`One or more fields invalid.`);
+                        setInvalidFields(error.data.invalidAttributes);
+                    } else {
+                        let message = error.message || t`Could not save record.`;
+                        showDialog(message, {
+                            title: t`Something unexpected happened`
+                        });
+                    }
+                    return;
+                }
+
+                let message = get(props[action], "snackbar", t`Record saved successfully.`);
+                if (typeof message === "function") {
+                    message = message(data);
+                }
+                showSnackbar(message);
+
+                const query = new URLSearchParams(location.search);
+                query.set("id", data.id);
+                history.push({ search: query.toString() });
+
+                !id && list.refresh();
+                setMutationInProgress(false);
+            });
+        },
+        resetForm: () => {
+            const query = new URLSearchParams(location.search);
+            query.delete("id");
+            history.push({ search: query.toString() });
         }
     };
-}
 
-function useCrudForm(form) {
-    const context = useContext(CrudContext);
-    if (!context) {
-        throw new Error("useCrudList hook must be used within the CrudProvider.");
-    }
-
-    const { location, history } = useReactRouter();
-    const { showSnackbar } = useSnackbar();
-    const { showDialog } = useDialog();
-
-    const [mutationInProgress, setMutationInProgress] = useState(false);
-    const [invalidFields, setInvalidFields] = useState({});
-
-    const urlSearchParams = new URLSearchParams(location.search);
-    const id = urlSearchParams.get("id");
-
-    const [createRecord] = useMutation(form.save.create);
-    const [updateRecord] = useMutation(form.save.update);
-
-    const { data: getRecord } = useQuery(form.get.query, {
-        variables: { id },
-        skip: !id,
-        onCompleted(data) {
-            const { error } = getFormData({ data, form });
-            if (error) {
-                const query = new URLSearchParams(location.search);
-                query.delete("id");
-                history.push({ search: query.toString() });
-                showSnackbar(error.message);
-            }
-        }
-    });
-
-    const formData = getFormData({ data: getRecord, form });
-
-    return {
-        ...formData,
-        onSubmit: async (formData: Object) => {
-            setMutationInProgress(true);
-            // Reset errors
-            setInvalidFields(null);
-            // Get variables
-            const gqlVariables = form.save.variables(formData);
-            const operation = id
-                ? updateRecord({ variables: { id, ...gqlVariables } })
-                : createRecord({ variables: gqlVariables });
-
-            return operation
-                .then(res => {
-                    const { data, error } = form.save.response(res.data);
-                    if (error) {
-                        if (error.code === "INVALID_ATTRIBUTES") {
-                            showSnackbar("Some of your form input is incorrect!");
-                            setInvalidFields(error.data.invalidAttributes);
-                        } else {
-                            showDialog(error.message, {
-                                title: "Something unexpected happened"
-                            });
-                        }
-                        return;
-                    }
-                    showSnackbar(form.save.snackbar(data));
-
-                    const query = new URLSearchParams(location.search);
-                    query.set("id", data.id);
-                    history.push({ search: query.toString() });
-
-                    !id && console.log("dataList.refresh();"); // TODO
-                })
-                .then(res => {
-                    setMutationInProgress(false);
-                    return res;
-                });
-        },
-        loading: mutationInProgress || (formData && formData.loading),
+    const form = {
+        data: props.read.getData ? props.read.getData(readQuery.data) : getData(readQuery.data),
+        error: props.read.getError ? props.read.getError(readQuery.data) : getError(readQuery.data),
+        onSubmit: actions.save,
+        loading: mutationInProgress || readQuery.loading,
         invalidFields
     };
-}
 
-export { CrudProvider, useCrudList, useCrudForm };
+    if (!form.data) {
+        form.data = {};
+    }
+
+    return (
+        <CrudContext.Provider value={{ form, list, actions }}>
+            {React.isValidElement(children) ? children : children({ form, list, actions })}
+        </CrudContext.Provider>
+    );
+};

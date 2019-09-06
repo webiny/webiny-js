@@ -5,9 +5,7 @@ import { i18n } from "@webiny/app/i18n";
 import { ConfirmationDialog } from "@webiny/ui/ConfirmationDialog";
 import { DeleteIcon } from "@webiny/ui/List/DataList/icons";
 import { Checkbox } from "@webiny/ui/Checkbox";
-import { useCrudList } from "@webiny/app-admin/context/CrudContext";
-import { LIST_ROLES, DELETE_ROLE } from "./graphql";
-import { get } from "lodash";
+import { useCrud } from "@webiny/app-admin/hooks/useCrud";
 import {
     DataList,
     ScrollList,
@@ -19,28 +17,17 @@ import {
     ListItemGraphic
 } from "@webiny/ui/List";
 
-const t = i18n.namespace("Security.RolesDataList");
+const t = i18n.namespace("app-security/admin/roles-form");
 
 const RolesDataList = () => {
     const { location, history } = useRouter();
     const query = new URLSearchParams(location.search);
 
-    const { deleteRecord, ...crudListProps } = useCrudList({
-        get: {
-            query: LIST_ROLES,
-            variables: { sort: { savedOn: -1 } },
-            response: data => get(data, "security.roles")
-        },
-        delete: {
-            mutation: DELETE_ROLE,
-            response: data => data.security.deleteRole,
-            snackbar: data => t`Role {name} deleted.`({ name: data.name })
-        }
-    });
+    const { actions, list } = useCrud();
 
     return (
         <DataList
-            {...crudListProps}
+            {...list}
             title={t`Security Roles`}
             sorters={[
                 {
@@ -90,7 +77,7 @@ const RolesDataList = () => {
                                         {({ showConfirmation }) => (
                                             <DeleteIcon
                                                 onClick={() =>
-                                                    showConfirmation(() => deleteRecord(item))
+                                                    showConfirmation(() => actions.delete(item))
                                                 }
                                             />
                                         )}

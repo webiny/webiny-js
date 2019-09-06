@@ -27,8 +27,13 @@ const useDataList = params => {
 
     const { history, location } = params;
 
+    if (!params.getData || !params.getError) {
+        throw new Error("Missing getData and getError callbacks.");
+    }
+
     const dataListProps: Object = {
-        ...params.response(queryData.data),
+        data: params.getData(queryData.data),
+        error: params.getError(queryData.data),
         loading: queryData.loading,
         init(): void {
             this.refresh();
