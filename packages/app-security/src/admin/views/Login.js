@@ -60,7 +60,7 @@ const Login = (props: Object) => {
                                                     name="username"
                                                     validators={["required", "email"]}
                                                 >
-                                                    <Input label={t`Your e-mail`} box={true} />
+                                                    <Input label={t`Your e-mail`} box="true" />
                                                 </Bind>
                                             </Cell>
                                         </Grid>
@@ -74,7 +74,7 @@ const Login = (props: Object) => {
                                                     <Input
                                                         type={"password"}
                                                         label={t`Your password`}
-                                                        box={true}
+                                                        box="true"
                                                     />
                                                 </Bind>
                                             </Cell>

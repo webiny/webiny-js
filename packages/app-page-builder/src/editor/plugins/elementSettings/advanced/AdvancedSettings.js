@@ -12,12 +12,11 @@ import { useHandler } from "@webiny/app/hooks/useHandler";
 import { css } from "emotion";
 import {
     Dialog,
-    DialogBody,
-    DialogFooter,
-    DialogFooterButton,
+    DialogContent,
+    DialogActions,
+    DialogButton,
     DialogCancel,
-    DialogHeader,
-    DialogHeaderTitle
+    DialogTitle
 } from "@webiny/ui/Dialog";
 import { Form } from "@webiny/form";
 import { Tabs } from "@webiny/ui/Tabs";
@@ -67,13 +66,11 @@ const AdvancedSettings = React.memo(
 
         return (
             <Dialog open={open} onClose={closeDialog}>
-                <DialogHeader>
-                    <DialogHeaderTitle>Settings</DialogHeaderTitle>
-                </DialogHeader>
+                <DialogTitle>Settings</DialogTitle>
                 <Form key={element && element.id} data={data} onSubmit={onSubmit}>
                     {({ submit, Bind, data, form }) => (
                         <React.Fragment>
-                            <DialogBody className={dialogBody}>
+                            <DialogContent className={dialogBody}>
                                 <Tabs>
                                     {renderPlugins(
                                         "pb-page-element-advanced-settings",
@@ -81,11 +78,11 @@ const AdvancedSettings = React.memo(
                                         { wrapper: false, filter: pl => pl.elementType === type }
                                     )}
                                 </Tabs>
-                            </DialogBody>
-                            <DialogFooter>
+                            </DialogContent>
+                            <DialogActions>
                                 <DialogCancel>Cancel</DialogCancel>
-                                <DialogFooterButton onClick={submit}>Save</DialogFooterButton>
-                            </DialogFooter>
+                                <DialogButton onClick={submit}>Save</DialogButton>
+                            </DialogActions>
                         </React.Fragment>
                     )}
                 </Form>

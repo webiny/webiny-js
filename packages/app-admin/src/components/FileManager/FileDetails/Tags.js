@@ -1,7 +1,7 @@
 // @flow
 /* eslint-disable */
 import React, { useState } from "react";
-import { Chips, Chip, ChipText } from "@webiny/ui/Chips";
+import { Chips, Chip } from "@webiny/ui/Chips";
 import { ButtonSecondary, ButtonPrimary } from "@webiny/ui/Button";
 import { Tags as TagsComponent } from "@webiny/ui/Tags";
 import { Form } from "@webiny/form";
@@ -98,9 +98,7 @@ function Tags({ gqlUpdateFileBySrc, showSnackbar, file }) {
             {initialTags.length > 0 ? (
                 <Chips>
                     {initialTags.map((tag, index) => (
-                        <Chip key={tag + index}>
-                            <ChipText>{tag}</ChipText>
-                        </Chip>
+                        <Chip key={tag + index} label={tag}/>
                     ))}
                 </Chips>
             ) : (

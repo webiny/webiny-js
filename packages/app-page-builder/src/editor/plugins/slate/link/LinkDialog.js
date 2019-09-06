@@ -5,12 +5,11 @@ import { Switch } from "@webiny/ui/Switch";
 import { Cell, Grid } from "@webiny/ui/Grid";
 import {
     Dialog,
-    DialogBody,
-    DialogHeader,
-    DialogHeaderTitle,
+    DialogContent,
+    DialogTitle,
     DialogCancel,
-    DialogFooter,
-    DialogFooterButton
+    DialogActions,
+    DialogButton
 } from "@webiny/ui/Dialog";
 import { getLinkRange, isLink, TYPE } from "./utils";
 
@@ -60,10 +59,8 @@ const LinkDialog = ({ open, editor, onChange, closeDialog, activePlugin }) => {
             <Form data={linkData} onSubmit={updateLink}>
                 {({ Bind, submit }) => (
                     <Fragment>
-                        <DialogHeader>
-                            <DialogHeaderTitle>Edit Link</DialogHeaderTitle>
-                        </DialogHeader>
-                        <DialogBody>
+                        <DialogTitle>Edit Link</DialogTitle>
+                        <DialogContent>
                             <Grid>
                                 <Cell span={12}>
                                     <Bind name={"text"} validators={["required"]}>
@@ -92,11 +89,11 @@ const LinkDialog = ({ open, editor, onChange, closeDialog, activePlugin }) => {
                                     </Bind>
                                 </Cell>
                             </Grid>
-                        </DialogBody>
-                        <DialogFooter>
+                        </DialogContent>
+                        <DialogActions>
                             <DialogCancel onClick={closeDialog}>Cancel</DialogCancel>
-                            <DialogFooterButton onClick={submit}>OK</DialogFooterButton>
-                        </DialogFooter>
+                            <DialogButton onClick={submit}>OK</DialogButton>
+                        </DialogActions>
                     </Fragment>
                 )}
             </Form>

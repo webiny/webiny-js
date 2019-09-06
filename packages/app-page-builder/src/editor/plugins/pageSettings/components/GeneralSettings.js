@@ -53,12 +53,13 @@ const GeneralSettings = ({ form, Bind }: Object) => {
                 </Cell>
                 <Cell span={12}>
                     <Bind name={"snippet"}>
-                        <Input rows={4} label="Snippet" description="Page snippet" />
+                        <Input rows={4} label="Snippet" description="Page snippet" box={"true"} />
                     </Bind>
                 </Cell>
                 <Cell span={12}>
                     <Bind name={"settings.general.layout"} defaultValue={theme.layouts[0].name}>
                         <Select
+                            box={"true"}
                             label={"Layout"}
                             description={"Render this page using the selected layout"}
                         >

@@ -1,7 +1,6 @@
 // @flow
 import * as React from "react";
 import { IconButton as RIconButton } from "@rmwc/icon-button";
-import { Icon } from "../../Icon/Icon";
 
 import type { FormComponentProps } from "../../types";
 
@@ -29,7 +28,7 @@ type Props = FormComponentProps & {
  * @constructor
  */
 const IconButton = (props: Props) => {
-    const { icon, label, onClick, className, disabled } = props;
+    const { icon, label, onClick, className, disabled, ripple = true } = props;
 
     return (
         <RIconButton
@@ -37,7 +36,8 @@ const IconButton = (props: Props) => {
             disabled={disabled}
             className={className}
             label={label}
-            icon={<Icon icon={icon} />}
+            icon={icon}
+            ripple={ripple}
         />
     );
 };

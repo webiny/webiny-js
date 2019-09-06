@@ -44,7 +44,7 @@
   @include mdc-drawer-item-icon-ink-color($mdc-theme-text-primary-on-background);
   @include mdc-drawer-item-text-ink-color($mdc-theme-text-primary-on-background);
   @include mdc-drawer-surface-fill-color($mdc-theme-surface);
-  @include mdc-drawer-item-corner-radius(0);
+  @include mdc-drawer-item-shape-radius(0);
 }
 
 // fix for drawer positioning
@@ -85,7 +85,7 @@
   @include mdc-list-item-meta-ink-color($mdc-theme-text-secondary-on-background);
   @include mdc-list-divider-color($mdc-theme-on-background);
   @include mdc-list-group-subheader-ink-color($mdc-theme-text-primary-on-background);
-  @include mdc-list-item-corner-radius(0);
+  @include mdc-list-item-shape-radius(0);
 
   .mdc-list-item{
     color: $mdc-theme-text-primary-on-background;
@@ -124,7 +124,8 @@ Fix the width of input components when inside grids
  */
 .mdc-text-field {
   width: 100%;
-  @include mdc-text-field-textarea-corner-radius(0);
+  @include mdc-text-field-shape-radius(0);
+  @include mdc-text-field-textarea-shape-radius(0);
   &.mdc-text-field--disabled{
     background-color: $mdc-theme-background;
     opacity: 0.55;
@@ -153,17 +154,21 @@ Fix the width of input components when inside grids
 // dialog
 .mdc-dialog{
   .mdc-dialog__surface{
-    .mdc-dialog__header{
+    border-radius: 0px;
+    .mdc-dialog__title{
       background-color: $mdc-theme-secondary;
       padding-bottom: 24px;
       font-size: 1.4rem;
-      .mdc-dialog__header__title{
-        font-weight: 600;
-        color: $mdc-theme-on-secondary;
-      }
+      font-weight: 600;
+      color: $mdc-theme-on-secondary;
     }
-    .mdc-dialog__body{
+    .mdc-dialog__content{
       color: $mdc-theme-text-primary-on-background;
+      max-height: 70vh;
+      overflow: auto;
+      margin-top: 0;
+      padding-top: 24px;
+      background-color: $mdc-theme-surface;
 
       // add options for when tabs are inside the body
       >.mdc-tab-bar{
@@ -186,22 +191,15 @@ Fix the width of input components when inside grids
       }
 
     }
-    .mdc-dialog__footer{
+    .mdc-dialog__actions{
       border-top: 1px solid $mdc-theme-on-background;
       background-color: $mdc-theme-surface;
       padding: 24px;
     }
   }
-  &.mdc-dialog--open .mdc-dialog__backdrop{
+  &.mdc-dialog--open .mdc-dialog__scrim{
     opacity: 0.7;
     background-color: var(--mdc-theme-on-surface);
-  }
-  .mdc-dialog__body{
-    max-height: 70vh;
-    overflow: auto;
-    margin-top: 0;
-    padding-top: 24px;
-    background-color: $mdc-theme-surface;
   }
 }
 
@@ -212,8 +210,8 @@ Fix the width of input components when inside grids
   @include mdc-select-label-color($mdc-theme-text-secondary-on-background);
   @include mdc-select-bottom-line-color($mdc-theme-text-secondary-on-background);
   @include mdc-select-hover-bottom-line-color($mdc-theme-text-primary-on-background);
-  @include mdc-select-outline-corner-radius(2);
-  background-image: var(--mdc-theme-caret-down);
+  @include mdc-select-shape-radius(0);
+  @include mdc-select-outline-shape-radius(2);
 
   /*
   Fix for select box appearance. For some reason browser prefix css attributes are striped away.

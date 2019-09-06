@@ -4,11 +4,10 @@ import { css } from "emotion";
 import { getPlugins } from "@webiny/plugins";
 import {
     Dialog,
-    DialogHeader,
-    DialogHeaderTitle,
-    DialogBody,
-    DialogFooter,
-    DialogFooterButton,
+    DialogTitle,
+    DialogContent,
+    DialogActions,
+    DialogButton,
     DialogCancel
 } from "@webiny/ui/Dialog";
 import { Input } from "@webiny/ui/Input";
@@ -62,10 +61,8 @@ const EditBlockDialog = React.memo(
                     <Form onSubmit={onSubmit} data={plugin}>
                         {({ data, submit, Bind }) => (
                             <React.Fragment>
-                                <DialogHeader>
-                                    <DialogHeaderTitle>Update {plugin.title}</DialogHeaderTitle>
-                                </DialogHeader>
-                                <DialogBody>
+                                <DialogTitle>Update {plugin.title}</DialogTitle>
+                                <DialogContent>
                                     <Grid>
                                         <Cell span={12}>
                                             <Bind name={"title"} validators={"required"}>
@@ -93,11 +90,11 @@ const EditBlockDialog = React.memo(
                                             <PreviewBox>{plugin.preview()}</PreviewBox>
                                         </Cell>
                                     </Grid>
-                                </DialogBody>
-                                <DialogFooter>
+                                </DialogContent>
+                                <DialogActions>
                                     <DialogCancel>Cancel</DialogCancel>
-                                    <DialogFooterButton onClick={submit}>Save</DialogFooterButton>
-                                </DialogFooter>
+                                    <DialogButton onClick={submit}>Save</DialogButton>
+                                </DialogActions>
                             </React.Fragment>
                         )}
                     </Form>

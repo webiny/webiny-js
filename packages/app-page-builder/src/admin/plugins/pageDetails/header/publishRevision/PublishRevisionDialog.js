@@ -3,10 +3,9 @@ import React from "react";
 import { css } from "emotion";
 import {
     Dialog,
-    DialogHeader,
-    DialogHeaderTitle,
-    DialogBody,
-    DialogFooter,
+    DialogTitle,
+    DialogContent,
+    DialogActions,
     DialogAccept,
     DialogCancel
 } from "@webiny/ui/Dialog";
@@ -37,10 +36,8 @@ const PublishRevisionDialog = ({ open, onClose, onSubmit, revisions, selected }:
             >
                 {({ submit, Bind }) => (
                     <React.Fragment>
-                        <DialogHeader>
-                            <DialogHeaderTitle>Select a revision to publish</DialogHeaderTitle>
-                        </DialogHeader>
-                        <DialogBody>
+                        <DialogTitle>Select a revision to publish</DialogTitle>
+                        <DialogContent>
                             <Bind name={"revision"} validators={["required"]}>
                                 <Select label={"Revision to publish"}>
                                     {revisions.filter(r => !r.published).map(rev => (
@@ -51,11 +48,11 @@ const PublishRevisionDialog = ({ open, onClose, onSubmit, revisions, selected }:
                                     ))}
                                 </Select>
                             </Bind>
-                        </DialogBody>
-                        <DialogFooter>
+                        </DialogContent>
+                        <DialogActions>
                             <DialogCancel>Cancel</DialogCancel>
                             <DialogAccept onClick={submit}>Publish</DialogAccept>
-                        </DialogFooter>
+                        </DialogActions>
                     </React.Fragment>
                 )}
             </Form>

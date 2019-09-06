@@ -13,13 +13,7 @@ import { CircularProgress } from "@webiny/ui/Progress";
 import { i18n } from "@webiny/app/i18n";
 const t = i18n.namespace("Forms.NewFormDialog");
 
-import {
-    Dialog,
-    DialogHeader,
-    DialogHeaderTitle,
-    DialogBody,
-    DialogFooter
-} from "@webiny/ui/Dialog";
+import { Dialog, DialogTitle, DialogContent, DialogActions } from "@webiny/ui/Dialog";
 import { ButtonDefault } from "@webiny/ui/Button";
 
 const narrowDialog = css({
@@ -61,17 +55,15 @@ const NewFormDialog = ({ open, onClose }: { open: boolean, onClose: Function }) 
                         {({ Bind, submit }) => (
                             <>
                                 {loading && <CircularProgress />}
-                                <DialogHeader>
-                                    <DialogHeaderTitle>{t`New form`}</DialogHeaderTitle>
-                                </DialogHeader>
-                                <DialogBody>
+                                <DialogTitle>{t`New form`}</DialogTitle>
+                                <DialogContent>
                                     <Bind name={"name"}>
                                         <Input placeholder={"Enter a name for your new form"} />
                                     </Bind>
-                                </DialogBody>
-                                <DialogFooter>
+                                </DialogContent>
+                                <DialogActions>
                                     <ButtonDefault onClick={submit}>+ {t`Create`}</ButtonDefault>
-                                </DialogFooter>
+                                </DialogActions>
                             </>
                         )}
                     </Form>

@@ -2,7 +2,7 @@
 import * as React from "react";
 import { ImageEditor } from "@webiny/ui/ImageEditor";
 import { Tooltip } from "@webiny/ui/Tooltip";
-import { Dialog, DialogAccept, DialogCancel, DialogFooter, DialogBody } from "@webiny/ui/Dialog";
+import { Dialog, DialogAccept, DialogCancel, DialogActions, DialogContent } from "@webiny/ui/Dialog";
 
 type Props = Object & { options?: Object, src: ?string };
 
@@ -22,8 +22,8 @@ class ImageEditorDialog extends React.Component<Props, { imageProcessing: boolea
                     <ImageEditor ref={this.imageEditor} src={src} options={options}>
                         {({ render, activeTool }) => (
                             <>
-                                <DialogBody>{render()}</DialogBody>
-                                <DialogFooter>
+                                <DialogContent>{render()}</DialogContent>
+                                <DialogActions>
                                     <DialogCancel>Cancel</DialogCancel>
                                     {activeTool ? (
                                         <Tooltip
@@ -35,7 +35,7 @@ class ImageEditorDialog extends React.Component<Props, { imageProcessing: boolea
                                     ) : (
                                         <DialogAccept>Save</DialogAccept>
                                     )}
-                                </DialogFooter>
+                                </DialogActions>
                             </>
                         )}
                     </ImageEditor>

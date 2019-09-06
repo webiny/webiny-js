@@ -16,10 +16,9 @@ import {
     Dialog,
     DialogAccept,
     DialogCancel,
-    DialogFooter,
-    DialogHeader,
-    DialogHeaderTitle,
-    DialogBody,
+    DialogActions,
+    DialogTitle,
+    DialogContent,
     // $FlowFixMe
     PropsType
 } from ".";
@@ -43,24 +42,22 @@ story.add("usage", () => {
                     <code>accept</code> or <code>cancel</code> prop, you can use a shorter{" "}
                     <code>DialogAccept</code> and <code>DialogCancel</code> components respectively.
                     <Dialog open={open}>
-                        <DialogHeader>
-                            <DialogHeaderTitle>Delete confirmation</DialogHeaderTitle>
-                        </DialogHeader>
-                        <DialogBody>Are you sure you want to delete?</DialogBody>
-                        <DialogFooter>
+                        <DialogTitle>Delete confirmation</DialogTitle>
+                        <DialogContent>Are you sure you want to delete?</DialogContent>
+                        <DialogActions>
                             <DialogCancel onClick={() => console.log("Cancel")}>
                                 Cancel
                             </DialogCancel>
                             <DialogAccept onClick={() => console.log("Accept")}>OK</DialogAccept>
-                        </DialogFooter>
+                        </DialogActions>
                     </Dialog>
                 </StorySandboxExample>
                 <StorySandboxCode>
                     {`
                     <Dialog open={${open}}>
-                        <DialogHeader>
-                            <DialogHeaderTitle>Delete confirmation</DialogHeaderTitle>
-                        </DialogHeader>
+                        <DialogTitle>
+                            Delete confirmation
+                        </DialogTitle>
                         <DialogBody>Are you sure you want to delete?</DialogBody>
                         <DialogFooter>
                             <DialogCancel onClick={() => console.log("Cancel")}>Cancel</DialogCancel>

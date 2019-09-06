@@ -13,7 +13,7 @@
     "@babel/runtime": "^7.5.5",
     "@emotion/core": "^10.0.17",
     "@emotion/styled": "^10.0.17",
-    "@svgr/webpack": "^4.1.0",
+    "@svgr/webpack": "^4.3.2",
     "@webiny/app": "^1.0.0",
     "@webiny/form": "^1.0.0",
     "@webiny/plugins": "^1.0.0",

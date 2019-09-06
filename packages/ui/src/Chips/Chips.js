@@ -2,7 +2,7 @@
 import * as React from "react";
 import { css } from "emotion";
 import classNames from "classnames";
-import { Chip, ChipText, ChipSet, ChipIcon as RwmcChipIcon } from "@rmwc/chip";
+import { Chip, ChipSet, ChipIcon as RwmcChipIcon } from "@rmwc/chip";
 
 type Props = {
     children: ?React.ChildrenArray<React.Element<typeof Chip>>,
@@ -48,4 +48,4 @@ const ChipIcon = (props: Object) => {
     return <RwmcChipIcon className={chipIconWrapper} {...props} />;
 };
 
-export { Chip, ChipText, ChipIcon, ChipSet };
+export { Chip, ChipIcon, ChipSet };

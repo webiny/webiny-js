@@ -106,7 +106,7 @@ const getCurrentUser = gql`
 `;
 
 const updateCurrentUser = gql`
-    mutation updateMe($data: CurrentUserInput!) {
+    mutation updateMe($data: SecurityCurrentUserInput!) {
         security {
             updateCurrentUser(data: $data) {
                ${fields}

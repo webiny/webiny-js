@@ -29,7 +29,6 @@ const MenuHeader = styled("div")({
     alignItems: "center",
     padding: 5,
     backgroundColor: "var(--mdc-theme-surface)",
-    width: "100%",
     borderBottom: "1px solid var(--mdc-theme-on-background)"
 });
 

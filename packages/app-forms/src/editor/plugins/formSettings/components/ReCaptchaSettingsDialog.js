@@ -13,13 +13,7 @@ import { useFormEditor } from "@webiny/app-forms/admin/components/FormEditor/Con
 import { i18n } from "@webiny/app/i18n";
 const t = i18n.namespace("Forms.ReCaptchaSettingsDialog");
 
-import {
-    Dialog,
-    DialogHeader,
-    DialogHeaderTitle,
-    DialogBody,
-    DialogFooter
-} from "@webiny/ui/Dialog";
+import { Dialog, DialogTitle, DialogContent, DialogActions } from "@webiny/ui/Dialog";
 import { ButtonDefault } from "@webiny/ui/Button";
 
 type Props = {
@@ -72,10 +66,8 @@ const ReCaptchaSettingsDialog = ({ open, onClose, reCaptchaSettings, onSubmit }:
                             return (
                                 <>
                                     {loading && <CircularProgress />}
-                                    <DialogHeader>
-                                        <DialogHeaderTitle>{t`Edit Google reCAPTCHA settings`}</DialogHeaderTitle>
-                                    </DialogHeader>
-                                    <DialogBody>
+                                    <DialogTitle>{t`Edit Google reCAPTCHA settings`}</DialogTitle>
+                                    <DialogContent>
                                         <Grid>
                                             <Cell span={12}>
                                                 <Bind name={"siteKey"} validators={"required"}>
@@ -88,7 +80,7 @@ const ReCaptchaSettingsDialog = ({ open, onClose, reCaptchaSettings, onSubmit }:
                                                                     href="https://www.google.com/recaptcha/admin"
                                                                     target={"_blank"}
                                                                 >
-                                                                    Don't have a site key?
+                                                                    Don&apos;t have a site key?
                                                                 </a>
                                                             </>
                                                         }
@@ -106,7 +98,7 @@ const ReCaptchaSettingsDialog = ({ open, onClose, reCaptchaSettings, onSubmit }:
                                                                     href="https://www.google.com/recaptcha/admin"
                                                                     target={"_blank"}
                                                                 >
-                                                                    Don't have a site key?
+                                                                    Don&apos;t have a site key?
                                                                 </a>
                                                             </>
                                                         }
@@ -114,12 +106,12 @@ const ReCaptchaSettingsDialog = ({ open, onClose, reCaptchaSettings, onSubmit }:
                                                 </Bind>
                                             </Cell>
                                         </Grid>
-                                    </DialogBody>
-                                    <DialogFooter>
+                                    </DialogContent>
+                                    <DialogActions>
                                         <ButtonDefault
                                             onClick={submit}
                                         >{t`Enable Google reCAPTCHA`}</ButtonDefault>
-                                    </DialogFooter>
+                                    </DialogActions>
                                 </>
                             );
                         }}
