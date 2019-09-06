@@ -46,7 +46,7 @@ type Props = FormComponentProps & {
     inputRef?: React.Ref<any>,
 
     // A leading icon. Use `<InputIcon/>` component.
-    leadingIcon?: React.Node,
+    icon?: React.Node,
 
     // A trailing icon. Use `<InputIcon/>` component.
     trailingIcon?: React.Node,
@@ -123,7 +123,7 @@ class Input extends React.Component<Props> {
             outlined,
             rows,
             validation = { isValid: null },
-            leadingIcon,
+            icon,
             trailingIcon,
             box,
             ...props
@@ -136,7 +136,7 @@ class Input extends React.Component<Props> {
 
         const boxValue = (
             box ||
-            (!outlined && (Boolean(leadingIcon) || Boolean(trailingIcon)))
+            (!outlined && (Boolean(icon) || Boolean(trailingIcon)))
         ).toString();
 
         return (
@@ -150,9 +150,9 @@ class Input extends React.Component<Props> {
                     onChange={this.onChange}
                     onBlur={this.onBlur}
                     label={label}
-                    withLeadingIcon={leadingIcon}
+                    icon={icon}
                     placeholder={(!label && placeholder) || undefined}
-                    withTrailingIcon={trailingIcon}
+                    trailingIcon={trailingIcon}
                     rows={this.props.rows}
                 />
 
