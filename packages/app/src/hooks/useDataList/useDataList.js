@@ -1,6 +1,7 @@
 // @flow
 import { useState, useEffect, useRef } from "react";
 import { useQuery } from "react-apollo";
+import useRouter from "use-react-router";
 import type { WithDataListParams, SearchParams, WithDataListProps } from "./utils/types";
 import { isEqual } from "lodash";
 import { prepareLoadListParams, redirectToRouteWithQueryParams } from "./utils";
@@ -25,14 +26,15 @@ const useDataList = params => {
     const queryData = useQuery(params.query, getQueryOptions(params));
     const prevLoadParamsRef = useRef({});
 
-    const { history, location } = params;
+    const { history, location } = useRouter();
 
-    if (!params.getData || !params.getError) {
+    if (!params.getData || !params.getError|| !params.getMeta) {
         throw new Error("Missing getData and getError callbacks.");
     }
 
     const dataListProps: Object = {
         data: params.getData(queryData.data),
+        meta: params.getMeta(queryData.data),
         error: params.getError(queryData.data),
         loading: queryData.loading,
         init(): void {
@@ -103,6 +105,11 @@ const useDataList = params => {
 
             multiSelect(returnItems);
         },
+        isSelected(item) {
+            const query = new URLSearchParams(location.search);
+            return query.get("id") === item.id;
+        },
+
         isMultiSelected(item): boolean {
             if (!Array.isArray(multiSelectedItems)) {
                 return false;
