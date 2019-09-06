@@ -1,17 +1,16 @@
 // @flow
 /* eslint-disable */
 import React, { useState } from "react";
+import { css } from "emotion";
+import { useApolloClient } from "react-apollo";
+import { get, cloneDeep } from "lodash";
 import { Chips, Chip } from "@webiny/ui/Chips";
 import { ButtonSecondary, ButtonPrimary } from "@webiny/ui/Button";
 import { Tags as TagsComponent } from "@webiny/ui/Tags";
 import { Form } from "@webiny/form";
+import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
+import { UPDATE_FILE_BY_SRC, LIST_FILES, LIST_TAGS } from "./../graphql";
 import { ReactComponent as EditIcon } from "./../icons/round-edit-24px.svg";
-import { css } from "emotion";
-import { updateFileBySrc, listFiles, listTags } from "./../graphql";
-import { compose } from "recompose";
-import { withSnackbar } from "@webiny/app-admin/components";
-import { graphql } from "react-apollo";
-import { get, cloneDeep } from "lodash";
 import { useFileManager } from "./../FileManagerContext";
 
 const style = {
@@ -21,7 +20,10 @@ const style = {
     })
 };
 
-function Tags({ gqlUpdateFileBySrc, showSnackbar, file }) {
+function Tags({ file }) {
+    const { showSnackbar } = useSnackbar();
+    const client = useApolloClient();
+
     const [editing, setEdit] = useState(false);
     const initialTags = Array.isArray(file.tags) ? [...file.tags] : [];
 
@@ -33,19 +35,20 @@ function Tags({ gqlUpdateFileBySrc, showSnackbar, file }) {
                 data={{ tags: [...initialTags] }}
                 onSubmit={async ({ tags }) => {
                     setEdit(false);
-                    await gqlUpdateFileBySrc({
+                    await client.mutate({
+                        mutation: UPDATE_FILE_BY_SRC,
                         variables: {
                             src: file.src,
                             data: { tags }
                         },
-                        refetchQueries: [{ query: listTags }],
+                        refetchQueries: [{ query: LIST_TAGS }],
                         update: (cache, updated) => {
                             const newFileData = get(updated, "data.files.updateFileBySrc.data");
 
                             // 1. Update files list cache
                             let data = cloneDeep(
                                 cache.readQuery({
-                                    query: listFiles,
+                                    query: LIST_FILES,
                                     variables: queryParams
                                 })
                             );
@@ -57,7 +60,7 @@ function Tags({ gqlUpdateFileBySrc, showSnackbar, file }) {
                             });
 
                             cache.writeQuery({
-                                query: listFiles,
+                                query: LIST_FILES,
                                 variables: queryParams,
                                 data
                             });
@@ -113,7 +116,4 @@ function Tags({ gqlUpdateFileBySrc, showSnackbar, file }) {
     );
 }
 
-export default compose(
-    graphql(updateFileBySrc, { name: "gqlUpdateFileBySrc" }),
-    withSnackbar()
-)(Tags);
+export default Tags;

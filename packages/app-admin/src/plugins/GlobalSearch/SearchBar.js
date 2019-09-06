@@ -1,6 +1,5 @@
 //@flow
 import * as React from "react";
-import { compose } from "recompose";
 import { set } from "dot-prop-immutable";
 import { withRouter } from "react-router-dom";
 import Downshift from "downshift";
@@ -228,4 +227,4 @@ class SearchBar extends React.Component<*, State> {
     }
 }
 
-export default compose(withRouter)(SearchBar);
+export default withRouter(SearchBar);

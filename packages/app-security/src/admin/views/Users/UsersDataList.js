@@ -1,5 +1,4 @@
 import React from "react";
-import { compose } from "recompose";
 import { i18n } from "@webiny/app/i18n";
 import { withSecurity } from "@webiny/app-security/admin/context";
 import { ConfirmationDialog } from "@webiny/ui/ConfirmationDialog";
@@ -99,4 +98,4 @@ const UsersDataList = ({ security }) => {
     );
 };
 
-export default compose(withSecurity())(UsersDataList);
+export default withSecurity()(UsersDataList);

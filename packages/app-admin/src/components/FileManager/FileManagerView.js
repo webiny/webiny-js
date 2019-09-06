@@ -6,7 +6,7 @@ import { Icon } from "@webiny/ui/Icon";
 import File from "./File";
 import { Query, Mutation } from "react-apollo";
 import type { FilesRules } from "react-butterfiles";
-import { listFiles, createFile } from "./graphql";
+import { LIST_FILES, CREATE_FILE } from "./graphql";
 import getFileTypePlugin from "./getFileTypePlugin";
 import { get, debounce, cloneDeep } from "lodash";
 import getFileUploader from "./getFileUploader";
@@ -18,7 +18,6 @@ import LeftSidebar from "./LeftSidebar";
 import BottomInfoBar from "./BottomInfoBar";
 import { OverlayLayout } from "@webiny/app-admin/components/OverlayLayout";
 import { withSnackbar, type WithSnackbarProps } from "@webiny/app-admin/components";
-import { compose } from "recompose";
 import { Scrollbar } from "@webiny/ui/Scrollbar";
 import { css } from "emotion";
 import styled from "@emotion/styled";
@@ -200,11 +199,11 @@ function FileManagerView(props: WithSnackbarProps & Props) {
     const updateCacheAfterCreateFile = (cache, newFile) => {
         const newFileData = get(newFile, "data.files.createFile.data");
 
-        const data = cloneDeep(cache.readQuery({ query: listFiles, variables: queryParams }));
+        const data = cloneDeep(cache.readQuery({ query: LIST_FILES, variables: queryParams }));
         data.files.listFiles.data.unshift(newFileData);
 
         cache.writeQuery({
-            query: listFiles,
+            query: LIST_FILES,
             variables: queryParams,
             data
         });
@@ -224,10 +223,10 @@ function FileManagerView(props: WithSnackbarProps & Props) {
     const searchInput = useRef();
 
     return (
-        <Mutation mutation={createFile} update={updateCacheAfterCreateFile}>
+        <Mutation mutation={CREATE_FILE} update={updateCacheAfterCreateFile}>
             {createFile => (
                 <Query
-                    query={listFiles}
+                    query={LIST_FILES}
                     variables={queryParams}
                     ref={gqlQuery}
                     onCompleted={response => {
@@ -400,4 +399,4 @@ FileManagerView.defaultProps = {
     multipleMaxCount: 100
 };
 
-export default compose(withSnackbar())(FileManagerView);
+export default withSnackbar()(FileManagerView);
