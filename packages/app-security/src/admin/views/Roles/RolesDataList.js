@@ -48,10 +48,10 @@ const RolesDataList = () => {
                 }
             ]}
         >
-            {({ data, multiSelect, isMultiSelected }) => (
+            {({ data, multiSelect, isMultiSelected, isSelected }) => (
                 <ScrollList>
                     {data.map(item => (
-                        <ListItem key={item.id} selected={query.get("id") === item.id}>
+                        <ListItem key={item.id} selected={isSelected(item)}>
                             <ListItemGraphic>
                                 <Checkbox
                                     value={isMultiSelected(item)}
