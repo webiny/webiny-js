@@ -1,6 +1,5 @@
 // @flow
 import * as React from "react";
-import useRouter from "use-react-router";
 import { i18n } from "@webiny/app/i18n";
 import { ConfirmationDialog } from "@webiny/ui/ConfirmationDialog";
 import { DeleteIcon } from "@webiny/ui/List/DataList/icons";
@@ -15,12 +14,9 @@ import {
     ListActions
 } from "@webiny/ui/List";
 
-const t = i18n.namespace("app-security/admin/roles/data-list");
+const t = i18n.ns("app-security/admin/roles/data-list");
 
 const RolesDataList = () => {
-    const { location, history } = useRouter();
-    const query = new URLSearchParams(location.search);
-
     const { actions, list } = useCrud();
 
     return (

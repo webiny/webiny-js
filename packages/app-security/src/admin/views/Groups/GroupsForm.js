@@ -16,7 +16,7 @@ import {
     SimpleFormHeader
 } from "@webiny/app-admin/components/SimpleForm";
 
-const t = i18n.namespace("app-security/admin/groups/form");
+const t = i18n.ns("app-security/admin/groups/form");
 
 const GroupForm = () => {
     const { form } = useCrud();

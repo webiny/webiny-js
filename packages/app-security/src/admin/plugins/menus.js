@@ -4,7 +4,7 @@ import { ReactComponent as SecurityIcon } from "./../assets/icons/baseline-secur
 import { i18n } from "@webiny/app/i18n";
 import { hasRoles } from "@webiny/app-security";
 
-const t = i18n.namespace("Pb.Categories");
+const t = i18n.ns("app-security/admin/menus");
 
 export default [
     {

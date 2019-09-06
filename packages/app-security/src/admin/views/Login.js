@@ -24,7 +24,7 @@ import logoOrange from "./../assets/images/logo_orange.png";
 import { loginMutation } from "./Login/graphql";
 import { CircularProgress } from "@webiny/ui/Progress";
 
-const t = i18n.namespace("Webiny.Admin.Login");
+const t = i18n.ns("app-security/admin/login");
 
 const Login = (props: Object) => {
     const { login, error, loading }: { loading: boolean, login: Function, error?: Object } = props;
