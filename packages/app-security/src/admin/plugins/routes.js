@@ -4,8 +4,8 @@ import Helmet from "react-helmet";
 import { Route } from "react-router-dom";
 import { AdminLayout } from "@webiny/app-admin/components/AdminLayout";
 import { Roles } from "@webiny/app-security/admin/views/Roles";
+import { Users } from "@webiny/app-security/admin/views/Users";
 import Groups from "@webiny/app-security/admin/views/Groups";
-import Users from "@webiny/app-security/admin/views/Users";
 import Account from "@webiny/app-security/admin/views/Account";
 import { SecureRoute } from "@webiny/app-security/components";
 

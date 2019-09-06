@@ -22,7 +22,7 @@ import {
     SimpleFormContent
 } from "@webiny/app-admin/components/SimpleForm";
 
-const t = i18n.namespace("Security.UsersForm");
+const t = i18n.namespace("app-security/admin/account-form");
 
 const UsersForm = ({ onSubmit, user, loading }: Object) => (
     <Form data={user.data} onSubmit={onSubmit}>

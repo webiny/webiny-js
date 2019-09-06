@@ -109,7 +109,11 @@ const useDataList = params => {
             const query = new URLSearchParams(location.search);
             return query.get("id") === item.id;
         },
-
+        select(item) {
+            const query = new URLSearchParams(location.search);
+            query.set("id", item.id);
+            history.push({ search: query.toString() });
+        },
         isMultiSelected(item): boolean {
             if (!Array.isArray(multiSelectedItems)) {
                 return false;

@@ -9,6 +9,7 @@ import { ButtonPrimary } from "@webiny/ui/Button";
 import GroupsAutoComplete from "./../Components/GroupsAutoComplete";
 import RolesAutoComplete from "./../Components/RolesAutoComplete";
 import AvatarImage from "./../Components/AvatarImage";
+import { useCrud } from "@webiny/app-admin/hooks/useCrud";
 
 import {
     SimpleForm,
@@ -17,17 +18,16 @@ import {
     SimpleFormContent
 } from "@webiny/app-admin/components/SimpleForm";
 
-import type { WithCrudFormProps } from "@webiny/app-admin/components";
+const t = i18n.ns("app-security/admin/users/form");
 
-const t = i18n.namespace("Security.UsersForm");
-
-const UsersForm = ({ onSubmit, data, invalidFields, loading }: WithCrudFormProps) => {
+const UsersForm = () => {
+    const { form } = useCrud();
     return (
-        <Form invalidFields={invalidFields} data={data} onSubmit={onSubmit}>
+        <Form {...form}>
             {({ data, form, Bind }) => (
                 <SimpleForm>
-                    {loading && <CircularProgress />}
-                    <SimpleFormHeader title={data.fullName || "N/A"} />
+                    {form.loading && <CircularProgress />}
+                    <SimpleFormHeader title={data.fullName || t`N/A`} />
                     <SimpleFormContent>
                         <Grid>
                             <Cell span={6}>

@@ -4,7 +4,6 @@ import useRouter from "use-react-router";
 import { i18n } from "@webiny/app/i18n";
 import { ConfirmationDialog } from "@webiny/ui/ConfirmationDialog";
 import { DeleteIcon } from "@webiny/ui/List/DataList/icons";
-import { Checkbox } from "@webiny/ui/Checkbox";
 import { useCrud } from "@webiny/app-admin/hooks/useCrud";
 import {
     DataList,
@@ -13,11 +12,10 @@ import {
     ListItemText,
     ListItemTextSecondary,
     ListItemMeta,
-    ListActions,
-    ListItemGraphic
+    ListActions
 } from "@webiny/ui/List";
 
-const t = i18n.namespace("app-security/admin/roles-form");
+const t = i18n.namespace("app-security/admin/roles/data-list");
 
 const RolesDataList = () => {
     const { location, history } = useRouter();
@@ -31,42 +29,28 @@ const RolesDataList = () => {
             title={t`Security Roles`}
             sorters={[
                 {
-                    label: "Newest to oldest",
+                    label: t`Newest to oldest`,
                     sorters: { savedOn: -1 }
                 },
                 {
-                    label: "Oldest to newest",
+                    label: t`Oldest to newest`,
                     sorters: { savedOn: 1 }
                 },
                 {
-                    label: "Name A-Z",
+                    label: t`Name A-Z`,
                     sorters: { name: 1 }
                 },
                 {
-                    label: "Name Z-A",
+                    label: t`Name Z-A`,
                     sorters: { name: -1 }
                 }
             ]}
         >
-            {({ data, multiSelect, isMultiSelected, isSelected }) => (
+            {({ data, isSelected, select }) => (
                 <ScrollList>
                     {data.map(item => (
                         <ListItem key={item.id} selected={isSelected(item)}>
-                            <ListItemGraphic>
-                                <Checkbox
-                                    value={isMultiSelected(item)}
-                                    onClick={() => {
-                                        multiSelect(item);
-                                    }}
-                                />
-                            </ListItemGraphic>
-
-                            <ListItemText
-                                onClick={() => {
-                                    query.set("id", item.id);
-                                    history.push({ search: query.toString() });
-                                }}
-                            >
+                            <ListItemText onClick={() => select(item)}>
                                 {item.name}
                                 <ListItemTextSecondary>{item.description}</ListItemTextSecondary>
                             </ListItemText>

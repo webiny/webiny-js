@@ -19,7 +19,7 @@ import {
     SimpleFormHeader
 } from "@webiny/app-admin/components/SimpleForm";
 
-const t = i18n.namespace("Security.RolesForm");
+const t = i18n.namespace("app-security/admin/roles/form");
 
 const RoleForm = () => {
     const scopesQuery = useQuery(LIST_SCOPES);
