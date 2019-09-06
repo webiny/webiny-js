@@ -1,6 +1,6 @@
 // @flow
 import { useContext } from "react";
-import { CrudContext } from "@webiny/app-admin/context/CrudContext";
+import { CrudContext } from "@webiny/app-admin/contexts/CrudContext";
 
 function useCrud() {
     const context = useContext(CrudContext);

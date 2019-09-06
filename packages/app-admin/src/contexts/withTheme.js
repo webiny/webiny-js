@@ -11,7 +11,7 @@ export type WithThemeProps = {
 
 export const withTheme = (): Function => {
     return (Component: typeof React.Component) => {
-        return props => {
+        return function WithTheme(props: WithThemeProps) {
             return (
                 <ThemeConsumer>
                     <Component {...props} />

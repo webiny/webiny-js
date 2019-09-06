@@ -12,7 +12,6 @@ export const ThemeConsumer = ({ children }: Object) => (
     <Consumer>{theme => React.cloneElement(children, { theme })}</Consumer>
 );
 
-
 export class ThemeProvider extends React.Component<*, *> {
     state = {
         dark: false
