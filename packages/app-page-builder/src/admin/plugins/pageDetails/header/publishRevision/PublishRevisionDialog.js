@@ -40,12 +40,14 @@ const PublishRevisionDialog = ({ open, onClose, onSubmit, revisions, selected }:
                         <DialogContent>
                             <Bind name={"revision"} validators={["required"]}>
                                 <Select label={"Revision to publish"}>
-                                    {revisions.filter(r => !r.published).map(rev => (
-                                        <option key={rev.id} value={rev.id}>
-                                            {rev.title} (#
-                                            {rev.version})
-                                        </option>
-                                    ))}
+                                    {revisions
+                                        .filter(r => !r.published)
+                                        .map(rev => (
+                                            <option key={rev.id} value={rev.id}>
+                                                {rev.title} (#
+                                                {rev.version})
+                                            </option>
+                                        ))}
                                 </Select>
                             </Bind>
                         </DialogContent>

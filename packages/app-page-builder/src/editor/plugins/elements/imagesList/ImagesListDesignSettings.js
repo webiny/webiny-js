@@ -32,7 +32,7 @@ const ImagesListDesignSettings = ({ Bind, data }: Object) => {
 
             <Grid>
                 <Cell span={12} style={{ overflowY: "scroll" }}>
-                    <ImagesList data={data}/>
+                    <ImagesList data={data} />
                 </Cell>
             </Grid>
         </React.Fragment>

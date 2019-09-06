@@ -23,7 +23,6 @@ const root = "data.settings.background";
 const Settings = props => {
     const { setImage, setScaling, setPosition, setColor } = useHandlers(props, {
         setImage: ({ element, updateElement }) => image => {
-
             if (!image) {
                 updateElement({
                     element: set(element, `${root}.image.file`, null),

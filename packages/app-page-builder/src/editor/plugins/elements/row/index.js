@@ -9,7 +9,11 @@ import {
     cloneElement,
     addElementToParent
 } from "@webiny/app-page-builder/editor/utils";
-import { updateElement, deleteElement, elementCreated } from "@webiny/app-page-builder/editor/actions";
+import {
+    updateElement,
+    deleteElement,
+    elementCreated
+} from "@webiny/app-page-builder/editor/actions";
 import "./actions";
 import Row from "./Row";
 import { ReactComponent as RowIcon } from "@webiny/app-page-builder/editor/assets/icons/row-icon.svg";

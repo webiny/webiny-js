@@ -9,7 +9,10 @@ const DialogsContainer = styled("div")({
 });
 
 const Dialogs = React.memo(() => {
-    const actions = [...getPlugins("pb-editor-toolbar-top"), ...getPlugins("pb-editor-toolbar-bottom")];
+    const actions = [
+        ...getPlugins("pb-editor-toolbar-top"),
+        ...getPlugins("pb-editor-toolbar-bottom")
+    ];
 
     return (
         <DialogsContainer data-type={"dialogs"}>

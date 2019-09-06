@@ -57,19 +57,13 @@ const WebhooksRequestsDynamicFieldset = (props: Props) => {
                     {empty(() => (
                         <Header>
                             <Typography use={"overline"}>{props.title}</Typography>
-                            <ButtonDefault onClick={addUrl}>
-                                {props.addButtonLabel}
-                            </ButtonDefault>
+                            <ButtonDefault onClick={addUrl}>{props.addButtonLabel}</ButtonDefault>
                         </Header>
                     ))}
                     {header(() => (
                         <Header>
                             <Typography use={"overline"}>{props.title}</Typography>
-                            <ButtonDefault
-                                onClick={addUrl}
-                            >
-                                {props.addButtonLabel}
-                            </ButtonDefault>
+                            <ButtonDefault onClick={addUrl}>{props.addButtonLabel}</ButtonDefault>
                         </Header>
                     ))}
                 </>

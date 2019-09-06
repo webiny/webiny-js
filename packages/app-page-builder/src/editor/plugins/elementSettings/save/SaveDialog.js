@@ -69,9 +69,7 @@ const SaveDialog = React.memo(
                 >
                     {({ data, submit, Bind }) => (
                         <React.Fragment>
-                            <DialogTitle>
-                                Save {type}
-                            </DialogTitle>
+                            <DialogTitle>Save {type}</DialogTitle>
                             <DialogContent>
                                 {element.source && (
                                     <Grid>

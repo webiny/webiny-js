@@ -12,7 +12,6 @@ import PagesDataList from "./PagesDataList";
 import PageDetails from "./PageDetails";
 import CategoriesDialog from "./CategoriesDialog";
 
-
 const Pages = props => {
     const [showCategoriesDialog, setCategoriesDialog] = useState(false);
     const client = useApolloClient();

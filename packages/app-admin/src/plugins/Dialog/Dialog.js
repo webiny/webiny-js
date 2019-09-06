@@ -1,13 +1,7 @@
 // @flow
 import React from "react";
 import { compose, withProps, withHandlers, setDisplayName } from "recompose";
-import {
-    Dialog,
-    DialogAccept,
-    DialogTitle,
-    DialogActions,
-    DialogContent
-} from "@webiny/ui/Dialog";
+import { Dialog, DialogAccept, DialogTitle, DialogActions, DialogContent } from "@webiny/ui/Dialog";
 
 import _ from "lodash";
 import { withUi } from "@webiny/app/components";
@@ -16,9 +10,7 @@ const DialogMain = ({ message, options, hideDialog }) => {
     return (
         <Dialog>
             <Dialog open={!!message} onClose={hideDialog}>
-                {options.title && (
-                    <DialogTitle>{options.title}</DialogTitle>
-                )}
+                {options.title && <DialogTitle>{options.title}</DialogTitle>}
                 <DialogContent>{message}</DialogContent>
                 <DialogActions>
                     <DialogAccept>OK</DialogAccept>

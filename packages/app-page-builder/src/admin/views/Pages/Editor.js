@@ -39,57 +39,60 @@ const Editor = () => {
     const { showSnackbar } = useSnackbar();
     const ready = useSavedElements();
 
-    const renderEditor = useCallback(({ data, loading }) => {
-        if (loading || !ready) {
+    const renderEditor = useCallback(
+        ({ data, loading }) => {
+            if (loading || !ready) {
+                return (
+                    <LoadingEditor>
+                        <img src={editorMock} />
+                        <LoadingTitle>
+                            <Typography tag={"div"} use={"headline6"}>
+                                Loading Editor<span>.</span>
+                                <span>.</span>
+                                <span>.</span>
+                            </Typography>
+                        </LoadingTitle>
+                    </LoadingEditor>
+                );
+            }
+
+            if (!get(data, "pageBuilder.page.data")) {
+                return null;
+            }
+
+            if (!redux.store) {
+                redux.initStore({}, { client });
+            }
+
+            if (!loading) {
+                const { revisions, ...page } = data.pageBuilder.page.data;
+                if (!page.content) {
+                    page.content = createElement("document");
+                }
+
+                if (pageSet !== page.id) {
+                    pageSet = page.id;
+                    redux.store.dispatch({
+                        type: SETUP_EDITOR,
+                        payload: getEmptyData(page, revisions)
+                    });
+                    redux.store.dispatch({ type: "@@redux-undo/INIT" });
+                }
+            }
+
             return (
-                <LoadingEditor>
-                    <img src={editorMock} />
-                    <LoadingTitle>
-                        <Typography tag={"div"} use={"headline6"}>
-                            Loading Editor<span>.</span>
-                            <span>.</span>
-                            <span>.</span>
-                        </Typography>
-                    </LoadingTitle>
-                </LoadingEditor>
+                <React.Fragment>
+                    <Provider store={redux.store}>
+                        <PbEditor />
+                    </Provider>
+                    <div style={{ zIndex: 10, position: "absolute" }}>
+                        <Snackbar />
+                    </div>
+                </React.Fragment>
             );
-        }
-
-        if (!get(data, "pageBuilder.page.data")) {
-            return null;
-        }
-
-        if (!redux.store) {
-            redux.initStore({}, { client });
-        }
-
-        if (!loading) {
-            const { revisions, ...page } = data.pageBuilder.page.data;
-            if (!page.content) {
-                page.content = createElement("document");
-            }
-
-            if (pageSet !== page.id) {
-                pageSet = page.id;
-                redux.store.dispatch({
-                    type: SETUP_EDITOR,
-                    payload: getEmptyData(page, revisions)
-                });
-                redux.store.dispatch({ type: "@@redux-undo/INIT" });
-            }
-        }
-
-        return (
-            <React.Fragment>
-                <Provider store={redux.store}>
-                    <PbEditor />
-                </Provider>
-                <div style={{ zIndex: 10, position: "absolute" }}>
-                    <Snackbar />
-                </div>
-            </React.Fragment>
-        );
-    }, [ready]);
+        },
+        [ready]
+    );
 
     return (
         <Query

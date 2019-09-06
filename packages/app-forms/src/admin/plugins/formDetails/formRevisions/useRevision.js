@@ -18,7 +18,13 @@ export const useRevision = ({ revision, form }) => {
     const { showSnackbar } = useSnackbar();
     const client = useApolloClient();
 
-    const { createRevision, editRevision, deleteRevision, publishRevision, unpublishRevision } = useHandlers(null, {
+    const {
+        createRevision,
+        editRevision,
+        deleteRevision,
+        publishRevision,
+        unpublishRevision
+    } = useHandlers(null, {
         createRevision: () => async () => {
             const { data: res } = await client.mutate({
                 mutation: CREATE_REVISION_FROM,

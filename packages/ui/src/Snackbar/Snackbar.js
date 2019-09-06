@@ -25,7 +25,7 @@ type Props = {
     actionOnBottom?: boolean,
 
     // Whether or not the Snackbar dismisses on the action press.
-    dismissesOnAction?: boolean,
+    dismissesOnAction?: boolean
 };
 
 /**

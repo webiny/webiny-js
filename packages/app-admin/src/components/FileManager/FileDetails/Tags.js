@@ -98,7 +98,7 @@ function Tags({ gqlUpdateFileBySrc, showSnackbar, file }) {
             {initialTags.length > 0 ? (
                 <Chips>
                     {initialTags.map((tag, index) => (
-                        <Chip key={tag + index} label={tag}/>
+                        <Chip key={tag + index} label={tag} />
                     ))}
                 </Chips>
             ) : (

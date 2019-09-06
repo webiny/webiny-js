@@ -25,7 +25,9 @@ export function EditorPluginsLoader({ children, location }) {
             const plugins = await Promise.all(
                 [
                     import("@webiny/app-page-builder/editor/presets/default"),
-                    !loaded.render ? import("@webiny/app-page-builder/render/presets/default") : null
+                    !loaded.render
+                        ? import("@webiny/app-page-builder/render/presets/default")
+                        : null
                 ].filter(Boolean)
             );
             registerPlugins(plugins.map(p => p.default));

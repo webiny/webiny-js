@@ -69,36 +69,39 @@ const SearchBar = ({ updateElement, content, deactivatePlugin }) => {
      * @param categories
      * @returns {*}
      */
-    const getBlocksList = useCallback(({ blocks, categories }) => {
-        const activeCategory = categories.active;
-        if (!activeCategory) {
-            return [];
-        }
+    const getBlocksList = useCallback(
+        ({ blocks, categories }) => {
+            const activeCategory = categories.active;
+            if (!activeCategory) {
+                return [];
+            }
 
-        let output = blocks;
+            let output = blocks;
 
-        // If "all" is selected, no category filtering is required.
-        if (activeCategory !== "all") {
-            if (activeCategory === "saved") {
+            // If "all" is selected, no category filtering is required.
+            if (activeCategory !== "all") {
+                if (activeCategory === "saved") {
+                    output = output.filter(item => {
+                        return item.tags && item.tags.includes("saved");
+                    });
+                } else {
+                    output = output.filter(item => {
+                        return item.category === activeCategory;
+                    });
+                }
+            }
+
+            // Finally, filter by typed search term.
+            if (search) {
                 output = output.filter(item => {
-                    return item.tags && item.tags.includes("saved");
-                });
-            } else {
-                output = output.filter(item => {
-                    return item.category === activeCategory;
+                    return item.title.toLowerCase().includes(search.toLowerCase());
                 });
             }
-        }
 
-        // Finally, filter by typed search term.
-        if (search) {
-            output = output.filter(item => {
-                return item.title.toLowerCase().includes(search.toLowerCase());
-            });
-        }
-
-        return output;
-    }, [search]);
+            return output;
+        },
+        [search]
+    );
 
     const getCategoryBlocksCount = useCallback(({ plugins, category }) => {
         return getBlocksList({

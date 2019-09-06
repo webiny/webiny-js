@@ -41,27 +41,30 @@ const RowContainer = ({ element, updateElement, resizeStart, resizeStop }) => {
         resizeStop();
     }, [resizing, width, updateElement, resizeStop]);
 
-    const onResize = useCallback(diff => {
-        const change = parseFloat(((diff / ref.current.offsetWidth) * 100).toFixed(2));
+    const onResize = useCallback(
+        diff => {
+            const change = parseFloat(((diff / ref.current.offsetWidth) * 100).toFixed(2));
 
-        const totalWidth = width.left + width.right;
+            const totalWidth = width.left + width.right;
 
-        // Apply the change
-        let rightWidth = width.right + change;
-        let leftWidth = totalWidth - rightWidth;
+            // Apply the change
+            let rightWidth = width.right + change;
+            let leftWidth = totalWidth - rightWidth;
 
-        if (rightWidth < 10) {
-            rightWidth = 10;
-            leftWidth = totalWidth - rightWidth;
-        }
+            if (rightWidth < 10) {
+                rightWidth = 10;
+                leftWidth = totalWidth - rightWidth;
+            }
 
-        if (leftWidth < 10) {
-            leftWidth = 10;
-            rightWidth = totalWidth - leftWidth;
-        }
+            if (leftWidth < 10) {
+                leftWidth = 10;
+                rightWidth = totalWidth - leftWidth;
+            }
 
-        setWidth({ left: leftWidth, right: rightWidth });
-    }, [width]);
+            setWidth({ left: leftWidth, right: rightWidth });
+        },
+        [width]
+    );
 
     return (
         <div ref={ref} className={innerElement}>

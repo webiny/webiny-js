@@ -2,7 +2,13 @@
 import * as React from "react";
 import { ImageEditor } from "@webiny/ui/ImageEditor";
 import { Tooltip } from "@webiny/ui/Tooltip";
-import { Dialog, DialogAccept, DialogCancel, DialogActions, DialogContent } from "@webiny/ui/Dialog";
+import {
+    Dialog,
+    DialogAccept,
+    DialogCancel,
+    DialogActions,
+    DialogContent
+} from "@webiny/ui/Dialog";
 
 type Props = Object & { options?: Object, src: ?string };
 

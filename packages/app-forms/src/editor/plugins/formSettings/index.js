@@ -26,7 +26,7 @@ export default ([
         description: "Manage terms of service messaging.",
         icon: <TermsOfServiceIcon />,
         render(props) {
-            return <TermsOfServiceSettings {...props}/>
+            return <TermsOfServiceSettings {...props} />;
         }
     },
     {
@@ -36,7 +36,7 @@ export default ([
         description: "Enable reCAPTCHA to prevent spam and abuse.",
         icon: <ReCaptchaIcon />,
         render(props) {
-            return <ReCaptchaSettings {...props}/>
+            return <ReCaptchaSettings {...props} />;
         }
     }
 ]: Array<FormSettingsPluginType>);

@@ -34,14 +34,17 @@ const PublishRevision = () => {
     const publishableRevisions = getPublishableRevisions(get(page, "revisions") || []);
     const publishSuggestion = getPublishSuggestion(page, publishableRevisions);
     const [openDialog, setOpenDialog] = useState(false);
-    
+
     const showDialog = useCallback(() => setOpenDialog(true), []);
     const hideDialog = useCallback(() => setOpenDialog(false), []);
 
-    const onSubmit = useCallback(revision => {
-        hideDialog();
-        return publishRevision(revision);
-    }, [publishRevision]);
+    const onSubmit = useCallback(
+        revision => {
+            hideDialog();
+            return publishRevision(revision);
+        },
+        [publishRevision]
+    );
 
     if (!publishableRevisions.length) {
         return null;

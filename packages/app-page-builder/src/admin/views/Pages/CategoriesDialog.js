@@ -5,12 +5,7 @@ import { withRouter } from "react-router-dom";
 import type { RouterHistory } from "react-router-dom";
 import gql from "graphql-tag";
 import { Query } from "react-apollo";
-import {
-    Dialog,
-    DialogTitle,
-    DialogContent,
-    DialogActions
-} from "@webiny/ui/Dialog";
+import { Dialog, DialogTitle, DialogContent, DialogActions } from "@webiny/ui/Dialog";
 import {
     List,
     ListItem,

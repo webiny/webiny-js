@@ -65,7 +65,6 @@ const Revision = (props: Object) => {
         unpublishRevision
     } = useRevision({ revision: rev, form });
 
-
     return (
         <ListItem>
             <ListItemGraphic>
@@ -82,7 +81,7 @@ const Revision = (props: Object) => {
             </ListItemText>
             <ListItemMeta>
                 <Menu
-                    handle={<IconButton icon={<MoreVerticalIcon />}/>}
+                    handle={<IconButton icon={<MoreVerticalIcon />} />}
                     className={revisionsMenu}
                     openSide={"left"}
                 >

@@ -43,12 +43,7 @@ export class Dialog extends React.Component<Props> {
         const container: Element = (this.container: any);
 
         // Let's pass "permanent" / "persistent" / "temporary" flags as "mode" prop instead.
-        return ReactDOM.createPortal(
-            <RmwcDialog {...props}>
-                {children}
-            </RmwcDialog>,
-            container
-        );
+        return ReactDOM.createPortal(<RmwcDialog {...props}>{children}</RmwcDialog>, container);
     }
 }
 

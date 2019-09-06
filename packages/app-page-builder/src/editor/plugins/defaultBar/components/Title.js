@@ -52,28 +52,31 @@ const Title = React.memo(
             updateRevision(getRevData({ title, pageTitle, pageCategoryUrl }));
         }, [title]);
 
-        const onKeyDown = useCallback((e: SyntheticKeyboardEvent<HTMLInputElement>) => {
-            switch (e.key) {
-                case "Escape":
-                    e.preventDefault();
-                    setEdit(false);
-                    setTitle(pageTitle);
-                    break;
-                case "Enter":
-                    if (title === "") {
-                        title = "Untitled";
-                        setTitle(title);
-                    }
+        const onKeyDown = useCallback(
+            (e: SyntheticKeyboardEvent<HTMLInputElement>) => {
+                switch (e.key) {
+                    case "Escape":
+                        e.preventDefault();
+                        setEdit(false);
+                        setTitle(pageTitle);
+                        break;
+                    case "Enter":
+                        if (title === "") {
+                            title = "Untitled";
+                            setTitle(title);
+                        }
 
-                    e.preventDefault();
-                    setEdit(false);
+                        e.preventDefault();
+                        setEdit(false);
 
-                    updateRevision(getRevData({ title, pageTitle, pageCategoryUrl }));
-                    break;
-                default:
-                    return;
-            }
-        }, [title, pageTitle]);
+                        updateRevision(getRevData({ title, pageTitle, pageCategoryUrl }));
+                        break;
+                    default:
+                        return;
+                }
+            },
+            [title, pageTitle]
+        );
 
         return editTitle ? (
             <TitleInputWrapper>

@@ -10,7 +10,11 @@ import {
     cloneElement,
     addElementToParent
 } from "@webiny/app-page-builder/editor/utils";
-import { updateElement, deleteElement, elementCreated } from "@webiny/app-page-builder/editor/actions";
+import {
+    updateElement,
+    deleteElement,
+    elementCreated
+} from "@webiny/app-page-builder/editor/actions";
 import { getParentElementWithChildren } from "@webiny/app-page-builder/editor/selectors";
 import { ReactComponent as ColumnIcon } from "@webiny/app-page-builder/editor/assets/icons/column-icon.svg";
 import type { PbElementPluginType } from "@webiny/app-page-builder/types";
@@ -99,7 +103,7 @@ export default (): PbElementPluginType => {
 const handleDroppedElement = (source, target, position) => {
     let dispatchNew = false;
     let element;
-    
+
     if (source.path) {
         // $FlowFixMe
         element = cloneElement(source);
@@ -107,7 +111,7 @@ const handleDroppedElement = (source, target, position) => {
         dispatchNew = true;
         element = createElement(source.type, {}, target);
     }
-    
+
     target = addElementToParent(element, target, position);
     redux.store.dispatch(updateElement({ element: target }));
 

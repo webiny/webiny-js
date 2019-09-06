@@ -8,12 +8,10 @@ import { CircularProgress } from "@webiny/ui/Progress";
 import { EditorPluginsLoader } from "../components/EditorPluginsLoader";
 
 const Loader = ({ children, ...props }) => (
-    <Suspense fallback={<CircularProgress />}>
-        {React.cloneElement(children, props)}
-    </Suspense>
+    <Suspense fallback={<CircularProgress />}>{React.cloneElement(children, props)}</Suspense>
 );
 
-const Categories = lazy(() =>import("@webiny/app-page-builder/admin/views/Categories/Categories"));
+const Categories = lazy(() => import("@webiny/app-page-builder/admin/views/Categories/Categories"));
 const Menus = lazy(() => import("@webiny/app-page-builder/admin/views/Menus/Menus"));
 const Pages = lazy(() => import("@webiny/app-page-builder/admin/views/Pages/Pages"));
 const Editor = lazy(() => import("@webiny/app-page-builder/admin/views/Pages/Editor"));
@@ -30,7 +28,9 @@ export default [
                     <SecureRoute roles={["pb-categories"]}>
                         <AdminLayout>
                             <Helmet title={"Page Builder - Categories"} />
-                            <Loader><Categories/></Loader>
+                            <Loader>
+                                <Categories />
+                            </Loader>
                         </AdminLayout>
                     </SecureRoute>
                 )}
@@ -48,7 +48,9 @@ export default [
                     <SecureRoute roles={["pb-menus"]}>
                         <AdminLayout>
                             <Helmet title={"Page Builder - Menus"} />
-                            <Loader><Menus/></Loader>
+                            <Loader>
+                                <Menus />
+                            </Loader>
                         </AdminLayout>
                     </SecureRoute>
                 )}
@@ -67,7 +69,9 @@ export default [
                         <EditorPluginsLoader location={location}>
                             <AdminLayout>
                                 <Helmet title={"Page Builder - Pages"} />
-                                <Loader><Pages/></Loader>
+                                <Loader>
+                                    <Pages />
+                                </Loader>
                             </AdminLayout>
                         </EditorPluginsLoader>
                     </SecureRoute>
@@ -86,7 +90,9 @@ export default [
                     <SecureRoute roles={["pb-editor"]}>
                         <EditorPluginsLoader location={location}>
                             <Helmet title={"Page Builder - Edit page"} />
-                            <Loader><Editor/></Loader>
+                            <Loader>
+                                <Editor />
+                            </Loader>
                         </EditorPluginsLoader>
                     </SecureRoute>
                 )}

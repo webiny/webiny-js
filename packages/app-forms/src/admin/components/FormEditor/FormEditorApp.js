@@ -8,7 +8,7 @@ const FormEditorApp = () => {
     const { match } = useReactRouter();
     const client = useApolloClient();
     const formId = match.params.id;
-    
+
     return (
         <FormEditorProvider
             key={formId}

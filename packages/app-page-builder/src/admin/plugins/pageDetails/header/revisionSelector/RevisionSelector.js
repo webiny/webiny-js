@@ -24,7 +24,6 @@ const menuList = css({
     }
 });
 
-
 const RevisionSelector = ({ location, history, pageDetails: { page } }: Object) => {
     const query = new URLSearchParams(location.search);
 
