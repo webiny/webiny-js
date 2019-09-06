@@ -20,10 +20,10 @@ const variables = data => {
 const Users = () => {
     return (
         <CrudProvider
-            create={{ mutation: CREATE_USER, variables }}
-            read={READ_USER}
-            update={{ mutation: UPDATE_USER, variables }}
             delete={DELETE_USER}
+            read={READ_USER}
+            create={{ mutation: CREATE_USER, variables }}
+            update={{ mutation: UPDATE_USER, variables }}
             list={{
                 query: LIST_USERS,
                 variables: { sort: { savedOn: -1 } }

@@ -9,8 +9,14 @@ const fields = `
     roles { id name }
 `;
 
-export const loadGroups = gql`
-    query LoadGroups($where: JSON, $sort: JSON, $page: Int, $perPage: Int, $search: SecurityGroupSearchInput) {
+export const LIST_GROUPS = gql`
+    query LoadGroups(
+        $where: JSON
+        $sort: JSON
+        $page: Int
+        $perPage: Int
+        $search: SecurityGroupSearchInput
+    ) {
         security {
             groups: listGroups(
                 where: $where
@@ -37,7 +43,7 @@ export const loadGroups = gql`
     }
 `;
 
-export const loadGroup = gql`
+export const READ_GROUP = gql`
     query LoadGroup($id: ID!) {
         security {
             group: getGroup(id: $id){
@@ -53,7 +59,7 @@ export const loadGroup = gql`
     }
 `;
 
-export const createGroup = gql`
+export const CREATE_GROUP = gql`
     mutation CreateGroup($data: GroupInput!){
         security {
             group: createGroup(data: $data) {
@@ -70,7 +76,7 @@ export const createGroup = gql`
     }
 `;
 
-export const updateGroup = gql`
+export const UPDATE_GROUP = gql`
     mutation UpdateGroup($id: ID!, $data: GroupInput!){
         security {
             group: updateGroup(id: $id, data: $data) {
@@ -87,7 +93,7 @@ export const updateGroup = gql`
     }
 `;
 
-export const deleteGroup = gql`
+export const DELETE_GROUP = gql`
     mutation DeleteGroup($id: ID!) {
         security {
             deleteGroup(id: $id) {

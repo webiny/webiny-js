@@ -6,8 +6,8 @@ import { Grid, Cell } from "@webiny/ui/Grid";
 import { Input } from "@webiny/ui/Input";
 import { ButtonPrimary } from "@webiny/ui/Button";
 import RolesAutoComplete from "./../Components/RolesAutoComplete";
-import type { WithCrudFormProps } from "@webiny/app-admin/components";
 import { CircularProgress } from "@webiny/ui/Progress";
+import { useCrud } from "@webiny/app-admin/hooks/useCrud";
 
 import {
     SimpleForm,
@@ -16,19 +16,15 @@ import {
     SimpleFormHeader
 } from "@webiny/app-admin/components/SimpleForm";
 
-const t = i18n.namespace("Security.GroupsForm");
+const t = i18n.namespace("app-security/admin/groups/form");
 
-const GroupForm = ({
-    onSubmit,
-    loading,
-    data,
-    invalidFields
-}: WithCrudFormProps & { scopes: Array<string> }) => {
+const GroupForm = () => {
+    const { form } = useCrud();
     return (
-        <Form invalidFields={invalidFields} data={data} onSubmit={onSubmit}>
+        <Form {...form}>
             {({ data, form, Bind }) => (
                 <SimpleForm>
-                    {loading && <CircularProgress />}
+                    {form.loading && <CircularProgress />}
                     <SimpleFormHeader title={data.name ? data.name : "Untitled"} />
                     <SimpleFormContent>
                         <Grid>
