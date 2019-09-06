@@ -28,7 +28,7 @@ const useDataList = params => {
 
     const { history, location } = useRouter();
 
-    if (!params.getData || !params.getError|| !params.getMeta) {
+    if (!params.getData || !params.getError || !params.getMeta) {
         throw new Error("Missing getData and getError callbacks.");
     }
 
@@ -141,7 +141,7 @@ const useDataList = params => {
             return Array.isArray(data) && multiSelectedItems.length === data.length;
         },
 
-        __loadParams: prepareLoadListParams(params.location)
+        __loadParams: prepareLoadListParams(location)
     };
 
     useEffect(() => {
