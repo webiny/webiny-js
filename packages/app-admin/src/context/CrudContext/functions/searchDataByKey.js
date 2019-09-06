@@ -3,12 +3,15 @@ const searchDataByKey = (searchKey, object) => {
         return null;
     }
 
-    for (let key in object) {
-        if (key === searchKey) {
-            return object.data;
-        }
+    if (object[searchKey]) {
+        return object[searchKey];
+    }
 
-        return searchDataByKey(searchKey, object[key]);
+    for (let key in object) {
+        const value = searchDataByKey(searchKey, object[key]);
+        if (value) {
+            return value;
+        }
     }
 
     return null;
