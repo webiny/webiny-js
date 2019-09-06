@@ -2,15 +2,14 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { cloneDeep } from "lodash";
 import { css } from "emotion";
-import styled from "react-emotion";
+import styled from "@emotion/styled";
 import {
     Dialog,
-    DialogBody,
-    DialogHeader,
-    DialogHeaderTitle,
+    DialogContent,
+    DialogTitle,
     DialogCancel,
-    DialogFooter,
-    DialogFooterButton
+    DialogActions,
+    DialogButton
 } from "@webiny/ui/Dialog";
 import { Form } from "@webiny/form";
 import { getPlugins } from "@webiny/plugins";
@@ -83,7 +82,7 @@ const EditFieldDialog = ({ field, onSubmit, ...props }: Props) => {
                     <Form data={current} onSubmit={onSubmit}>
                         {form => (
                             <>
-                                <DialogBody className={dialogBody}>
+                                <DialogContent className={dialogBody}>
                                     <Tabs>
                                         <Tab label={t`General`}>
                                             <GeneralTab
@@ -103,26 +102,22 @@ const EditFieldDialog = ({ field, onSubmit, ...props }: Props) => {
                                                 </Tab>
                                             )}
                                     </Tabs>
-                                </DialogBody>
-                                <DialogFooter
+                                </DialogContent>
+                                <DialogActions
                                     style={{
                                         justifyContent: isNewField ? "space-between" : "flex-end"
                                     }}
                                 >
                                     {isNewField && (
-                                        <DialogFooterButton onClick={() => setScreen("fieldType")}>
+                                        <DialogButton onClick={() => setScreen("fieldType")}>
                                             {t`Go back`}
-                                        </DialogFooterButton>
+                                        </DialogButton>
                                     )}
                                     <div>
-                                        <DialogFooterButton onClick={onClose}>
-                                            {t`Cancel`}
-                                        </DialogFooterButton>
-                                        <DialogFooterButton onClick={form.submit}>
-                                            {t`Save`}
-                                        </DialogFooterButton>
+                                        <DialogButton onClick={onClose}>{t`Cancel`}</DialogButton>
+                                        <DialogButton onClick={form.submit}>{t`Save`}</DialogButton>
                                     </div>
-                                </DialogFooter>
+                                </DialogActions>
                             </>
                         )}
                     </Form>
@@ -132,7 +127,7 @@ const EditFieldDialog = ({ field, onSubmit, ...props }: Props) => {
             default:
                 render = (
                     <>
-                        <DialogBody className={dialogBody}>
+                        <DialogContent className={dialogBody}>
                             <FieldTypeList>
                                 {getPlugins("form-editor-field-type")
                                     .filter(pl => !pl.field.group)
@@ -164,10 +159,10 @@ const EditFieldDialog = ({ field, onSubmit, ...props }: Props) => {
                                         />
                                     ))}
                             </FieldTypeList>
-                        </DialogBody>
-                        <DialogFooter>
+                        </DialogContent>
+                        <DialogActions>
                             <DialogCancel onClick={onClose}>{t`Cancel`}</DialogCancel>
-                        </DialogFooter>
+                        </DialogActions>
                     </>
                 );
         }
@@ -175,9 +170,7 @@ const EditFieldDialog = ({ field, onSubmit, ...props }: Props) => {
 
     return (
         <Dialog preventOutsideDismiss={true} open={!!current} onClose={onClose}>
-            <DialogHeader>
-                <DialogHeaderTitle>{headerTitle}</DialogHeaderTitle>
-            </DialogHeader>
+            <DialogTitle>{headerTitle}</DialogTitle>
             {render}
         </Dialog>
     );

@@ -55,7 +55,7 @@ const oembedQuery = gql`
 `;
 
 const centerAlign = css({
-    "*:first-child": {
+    "*:first-of-type": {
         marginLeft: "auto !important",
         marginRight: "auto !important"
     }

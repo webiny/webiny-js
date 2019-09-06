@@ -7,7 +7,7 @@ import { Input } from "@webiny/ui/Input";
 import { Select } from "@webiny/ui/Select";
 import { ButtonPrimary } from "@webiny/ui/Button";
 import type { WithCrudFormProps } from "@webiny/app-admin/components";
-import { withPageBuilder, type WithPageBuilderPropsType } from "@webiny/app-page-builder/context";
+import { usePageBuilder } from "@webiny/app-page-builder/hooks/usePageBuilder";
 import {
     SimpleForm,
     SimpleFormFooter,
@@ -18,13 +18,8 @@ import { CircularProgress } from "@webiny/ui/Progress";
 
 const t = i18n.namespace("Pb.CategoriesForm");
 
-const CategoriesForm = ({
-    data,
-    invalidFields,
-    onSubmit,
-    loading,
-    pageBuilder: { theme }
-}: WithCrudFormProps & { pageBuilder: WithPageBuilderPropsType }) => {
+const CategoriesForm = ({ data, invalidFields, onSubmit, loading }: WithCrudFormProps) => {
+    const { theme } = usePageBuilder();
     return (
         <Form data={data || {}} invalidFields={invalidFields} onSubmit={onSubmit}>
             {({ data, form, Bind }) => (
@@ -71,4 +66,4 @@ const CategoriesForm = ({
     );
 };
 
-export default withPageBuilder()(CategoriesForm);
+export default CategoriesForm;

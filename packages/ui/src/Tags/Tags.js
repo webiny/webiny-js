@@ -1,7 +1,7 @@
 // @flow
 import * as React from "react";
 import { Input } from "@webiny/ui/Input";
-import { Chips, Chip, ChipText, ChipIcon } from "@webiny/ui/Chips";
+import { Chips, Chip } from "@webiny/ui/Chips";
 import type { FormComponentProps } from "./../types";
 import { css } from "emotion";
 import keycode from "keycode";
@@ -126,9 +126,11 @@ export class Tags extends React.Component<Props, State> {
                         <Chips disabled={disabled}>
                             {value.map((item, index) => (
                                 <Chip
+                                    label={item}
+                                    trailingIcon={<BaselineCloseIcon />}
                                     disabled
                                     key={`${item}-${index}`}
-                                    onRemoval={() => {
+                                    onRemove={() => {
                                         // On removal, let's update the value and call "onChange" callback.
                                         if (onChange) {
                                             const newValue = [...value];
@@ -136,10 +138,7 @@ export class Tags extends React.Component<Props, State> {
                                             onChange(newValue);
                                         }
                                     }}
-                                >
-                                    <ChipText>{item}</ChipText>
-                                    <ChipIcon trailing icon={<BaselineCloseIcon />} />
-                                </Chip>
+                                />
                             ))}
                         </Chips>
                     ) : null}

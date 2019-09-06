@@ -1,6 +1,6 @@
 //@flow
 import React from "react";
-import styled from "react-emotion";
+import styled from "@emotion/styled";
 import { css } from "emotion";
 import { ReactComponent as LogoIcon } from "../assets/logo.svg";
 import { ReactComponent as EditorMockIcon } from "../assets/editor-mock.svg";

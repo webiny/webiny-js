@@ -1,7 +1,7 @@
 //@flow
 import * as React from "react";
 import { css } from "emotion";
-import styled from "react-emotion";
+import styled from "@emotion/styled";
 import { Typography } from "@webiny/ui/Typography";
 import { Select } from "@webiny/ui/Select";
 import RenderElement from "@webiny/app-page-builder/render/components/Element";

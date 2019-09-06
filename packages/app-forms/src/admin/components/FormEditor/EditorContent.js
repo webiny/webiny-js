@@ -1,6 +1,6 @@
 import React, { useRef } from "react";
 import { css } from "emotion";
-import styled from "react-emotion";
+import styled from "@emotion/styled";
 import { SplitView, LeftPanel, RightPanel } from "@webiny/app-admin/components/SplitView";
 import { Typography } from "@webiny/ui/Typography";
 import { Tabs, Tab } from "@webiny/ui/Tabs";

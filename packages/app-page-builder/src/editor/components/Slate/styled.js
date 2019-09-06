@@ -1,5 +1,5 @@
 import { css } from "emotion";
-import styled from "react-emotion";
+import styled from "@emotion/styled";
 
 export const hoverMenuStyle = css({
     display: "inline-flex",

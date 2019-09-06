@@ -1,12 +1,11 @@
 // @flow
 import * as React from "react";
-import { Grid, Cell } from "@webiny/ui/Grid";
-import { withPageBuilder } from "@webiny/app-page-builder/context";
-import { FileManager } from "@webiny/app-admin/components";
-import File from "./File";
-import { ButtonPrimary } from "@webiny/ui/Button";
 import { css } from "emotion";
 import { sortable } from "react-sortable";
+import { FileManager } from "@webiny/app-admin/components";
+import { Grid, Cell } from "@webiny/ui/Grid";
+import { ButtonPrimary } from "@webiny/ui/Button";
+import File from "./File";
 
 const style = {
     addImagesButton: css({ clear: "both", padding: "20px 10px", textAlign: "center" })
@@ -79,4 +78,4 @@ const ImagesListImagesSettings = (props: Object) => {
     );
 };
 
-export default withPageBuilder()(ImagesListImagesSettings);
+export default ImagesListImagesSettings;

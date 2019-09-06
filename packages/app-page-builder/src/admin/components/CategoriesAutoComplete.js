@@ -2,7 +2,6 @@
 import * as React from "react";
 import { AutoComplete } from "@webiny/ui/AutoComplete";
 import { withAutoComplete } from "@webiny/app/components";
-import { compose } from "recompose";
 import gql from "graphql-tag";
 import { get } from "lodash";
 import { Query } from "react-apollo";
@@ -33,18 +32,14 @@ const listCategories = gql`
     }
 `;
 
-const CategoriesAutoComplete = props => (
+export const CategoriesAutoComplete = withAutoComplete({
+    response: data => get(data, "pageBuilder.categories"),
+    search: query => ({ query, fields: ["name"] }),
+    query: listCategories
+})(props => (
     <Query skip={!props.value} variables={{ id: props.value }} query={loadCategory}>
         {({ data }) => (
             <AutoComplete {...props} value={get(data, "pageBuilder.getCategory.data")} />
         )}
     </Query>
-);
-
-export default compose(
-    withAutoComplete({
-        response: data => get(data, "pageBuilder.categories"),
-        search: query => ({ query, fields: ["name"] }),
-        query: listCategories
-    })
-)(CategoriesAutoComplete);
+));

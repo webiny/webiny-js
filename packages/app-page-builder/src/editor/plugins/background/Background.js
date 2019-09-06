@@ -1,7 +1,6 @@
 // @flow
 import React from "react";
 import { connect } from "@webiny/app-page-builder/editor/redux";
-import { compose } from "recompose";
 import { withActiveElement } from "@webiny/app-page-builder/editor/components";
 import { highlightElement, deactivateElement } from "@webiny/app-page-builder/editor/actions";
 import { css } from "emotion";
@@ -24,10 +23,7 @@ const Background = ({ element, deactivateElement, highlightElement }) => {
     );
 };
 
-export default compose(
-    connect(
-        null,
-        { deactivateElement, highlightElement }
-    ),
-    withActiveElement()
-)(Background);
+export default connect(
+    null,
+    { deactivateElement, highlightElement }
+)(withActiveElement()(Background));

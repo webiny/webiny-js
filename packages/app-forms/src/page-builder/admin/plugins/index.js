@@ -1,6 +1,6 @@
 // @flow
 import React from "react";
-import styled from "react-emotion";
+import styled from "@emotion/styled";
 import { Tab } from "@webiny/ui/Tabs";
 import FormElementAdvancedSettings from "./components/FormElementAdvancedSettings";
 import formsSitePlugins from "@webiny/app-forms/page-builder/site/plugins";

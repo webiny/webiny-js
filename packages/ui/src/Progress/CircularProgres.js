@@ -1,6 +1,6 @@
 // This is just to center the spinner
 import * as React from "react";
-import styled from "react-emotion";
+import styled from "@emotion/styled";
 import Spinner from "react-spinner-material";
 
 type Props = {

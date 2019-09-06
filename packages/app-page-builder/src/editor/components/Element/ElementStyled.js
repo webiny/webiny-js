@@ -1,6 +1,6 @@
 //@flow
 import * as React from "react";
-import styled from "react-emotion";
+import styled from "@emotion/styled";
 import { css } from "emotion";
 
 export const typeStyle = css({
@@ -45,6 +45,7 @@ export const ElementContainer = React.memo(
         const color = active ? "var(--mdc-theme-primary)" : "var(--mdc-theme-secondary)";
 
         return {
+            width: "100%",
             position: "relative",
             flex: "100%",
             padding: 0,

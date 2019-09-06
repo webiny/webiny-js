@@ -1,7 +1,7 @@
 //@flow
 import React from "react";
 import { css } from "emotion";
-import { keyframes } from "react-emotion";
+import { keyframes } from "emotion";
 import classnames from "classnames";
 
 import SlideOutline from "./SlideOutline";

@@ -1,20 +1,22 @@
 import React from "react";
-import { ConfirmationDialog } from "@webiny/ui/ConfirmationDialog";
-import { ButtonPrimary } from "@webiny/ui/Button";
-import { compose } from "recompose";
 import { Mutation } from "react-apollo";
-import { withSnackbar } from "@webiny/app-admin/components";
-import { withRouter } from "react-router-dom";
-import { publishRevision } from "./PublishFormButton/graphql";
+import useReactRouter from "use-react-router";
+import { ButtonPrimary } from "@webiny/ui/Button";
+import { ConfirmationDialog } from "@webiny/ui/ConfirmationDialog";
+import { useSnackbar } from "@webiny/app-admin/components";
 import { useFormEditor } from "@webiny/app-forms/admin/components/FormEditor/Context";
+import { publishRevision } from "./PublishFormButton/graphql";
 
 import { i18n } from "@webiny/app/i18n";
 const t = i18n.namespace("FormEditor.PublishPageButton");
 
-const PublishFormButton = ({ showSnackbar, history }) => {
+const PublishFormButton = () => {
     const {
         state: { data }
     } = useFormEditor();
+
+    const { showSnackbar } = useSnackbar();
+    const { history } = useReactRouter();
 
     return (
         <ConfirmationDialog
@@ -56,7 +58,4 @@ const PublishFormButton = ({ showSnackbar, history }) => {
     );
 };
 
-export default compose(
-    withSnackbar(),
-    withRouter
-)(PublishFormButton);
+export default PublishFormButton;

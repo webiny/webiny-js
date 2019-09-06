@@ -8,7 +8,7 @@ import type { ImageEditorTool } from "./types";
 import { IconButton, ButtonDefault } from "@webiny/ui/Button";
 import { Tooltip } from "@webiny/ui/Tooltip";
 import { debounce } from "lodash";
-import styled from "react-emotion";
+import styled from "@emotion/styled";
 
 type State = {
     values: Object,

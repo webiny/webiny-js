@@ -4,7 +4,7 @@ import { connect } from "@webiny/app-page-builder/editor/redux";
 import classSet from "classnames";
 import { ActionCreators } from "redux-undo";
 import HTML5Backend from "react-dnd-html5-backend";
-import { DragDropContext } from "react-dnd";
+import { DndProvider } from "react-dnd";
 import { getUi } from "@webiny/app-page-builder/editor/selectors";
 import { useKeyHandler } from "@webiny/app-page-builder/editor/hooks/useKeyHandler";
 import "./Editor.scss";
@@ -48,19 +48,22 @@ const Editor = ({ isDragging, isResizing, undo, redo, slateFocused }: Props) => 
             removeKeyHandler("mod+shift+z");
         };
     });
+
     const classes = {
         "pb-editor": true,
         "pb-editor-dragging": isDragging,
         "pb-editor-resizing": isResizing
     };
     return (
-        <div className={classSet(classes)}>
-            <EditorBar />
-            <EditorToolbar />
-            <EditorContent />
-            <Dialogs />
-            <DragPreview />
-        </div>
+        <DndProvider backend={HTML5Backend}>
+            <div className={classSet(classes)}>
+                <EditorBar />
+                <EditorToolbar />
+                <EditorContent />
+                <Dialogs />
+                <DragPreview />
+            </div>
+        </DndProvider>
     );
 };
 
@@ -78,4 +81,4 @@ export default connect(
         undo: ActionCreators.undo,
         redo: ActionCreators.redo
     }
-)(DragDropContext(HTML5Backend)(Editor));
+)(Editor);

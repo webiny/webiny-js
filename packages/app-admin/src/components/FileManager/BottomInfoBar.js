@@ -1,7 +1,7 @@
 // @flow
 import React from "react";
 import mime from "mime/lite";
-import styled from "react-emotion";
+import styled from "@emotion/styled";
 import SupportedFileTypes from "./BottomInfoBar/SupportedFileTypes";
 import UploadStatus from "./BottomInfoBar/UploadStatus";
 

@@ -1,6 +1,6 @@
 // @flow
 import React from "react";
-import styled from "react-emotion";
+import styled from "@emotion/styled";
 import { CircularProgress } from "@webiny/ui/Progress";
 
 const StatusWrapper = styled("div")({

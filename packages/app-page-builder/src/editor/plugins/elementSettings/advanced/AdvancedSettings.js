@@ -8,15 +8,15 @@ import { renderPlugins } from "@webiny/app/plugins";
 import { isPluginActive } from "@webiny/app-page-builder/editor/selectors";
 import { withActiveElement } from "@webiny/app-page-builder/editor/components";
 import { useKeyHandler } from "@webiny/app-page-builder/editor/hooks/useKeyHandler";
+import { useHandler } from "@webiny/app/hooks/useHandler";
 import { css } from "emotion";
 import {
     Dialog,
-    DialogBody,
-    DialogFooter,
-    DialogFooterButton,
+    DialogContent,
+    DialogActions,
+    DialogButton,
     DialogCancel,
-    DialogHeader,
-    DialogHeaderTitle
+    DialogTitle
 } from "@webiny/ui/Dialog";
 import { Form } from "@webiny/form";
 import { Tabs } from "@webiny/ui/Tabs";
@@ -33,7 +33,7 @@ const dialogBody = css({
 
 const AdvancedSettings = React.memo(
     (props: Object) => {
-        const { element, open, updateElement, deactivatePlugin } = props;
+        const { element, open, deactivatePlugin } = props;
         const { data, type } = element || cloneDeep(emptyElement);
 
         const { addKeyHandler, removeKeyHandler } = useKeyHandler();
@@ -42,26 +42,23 @@ const AdvancedSettings = React.memo(
             deactivatePlugin({ name: "pb-page-element-settings-advanced" });
         }, []);
 
-        const onSubmit = useCallback(
-            (formData: Object) => {
-                // Get element settings plugins
-                const plugins = getPlugins("pb-page-element-advanced-settings").filter(
-                    pl => pl.elementType === element.type
-                );
-                formData = plugins.reduce((formData, pl) => {
-                    if (pl.onSave) {
-                        return pl.onSave(formData);
-                    }
-                    return formData;
-                }, formData);
+        const onSubmit = useHandler(props, ({ element, updateElement }) => (formData: Object) => {
+            // Get element settings plugins
+            const plugins = getPlugins("pb-page-element-advanced-settings").filter(
+                pl => pl.elementType === element.type
+            );
+            formData = plugins.reduce((formData, pl) => {
+                if (pl.onSave) {
+                    return pl.onSave(formData);
+                }
+                return formData;
+            }, formData);
 
-                updateElement({
-                    element: merge(element, "data", formData)
-                });
-                closeDialog();
-            },
-            [element]
-        );
+            updateElement({
+                element: merge(element, "data", formData)
+            });
+            closeDialog();
+        });
 
         useEffect(() => {
             open ? addKeyHandler("escape", closeDialog) : removeKeyHandler("escape");
@@ -69,13 +66,11 @@ const AdvancedSettings = React.memo(
 
         return (
             <Dialog open={open} onClose={closeDialog}>
-                <DialogHeader>
-                    <DialogHeaderTitle>Settings</DialogHeaderTitle>
-                </DialogHeader>
+                <DialogTitle>Settings</DialogTitle>
                 <Form key={element && element.id} data={data} onSubmit={onSubmit}>
                     {({ submit, Bind, data, form }) => (
                         <React.Fragment>
-                            <DialogBody className={dialogBody}>
+                            <DialogContent className={dialogBody}>
                                 <Tabs>
                                     {renderPlugins(
                                         "pb-page-element-advanced-settings",
@@ -83,11 +78,11 @@ const AdvancedSettings = React.memo(
                                         { wrapper: false, filter: pl => pl.elementType === type }
                                     )}
                                 </Tabs>
-                            </DialogBody>
-                            <DialogFooter>
+                            </DialogContent>
+                            <DialogActions>
                                 <DialogCancel>Cancel</DialogCancel>
-                                <DialogFooterButton onClick={submit}>Save</DialogFooterButton>
-                            </DialogFooter>
+                                <DialogButton onClick={submit}>Save</DialogButton>
+                            </DialogActions>
                         </React.Fragment>
                     )}
                 </Form>

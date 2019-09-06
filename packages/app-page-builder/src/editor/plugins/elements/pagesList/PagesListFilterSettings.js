@@ -3,8 +3,8 @@ import * as React from "react";
 import { Grid, Cell } from "@webiny/ui/Grid";
 import { Input } from "@webiny/ui/Input";
 import { Select } from "@webiny/ui/Select";
-import { withPageBuilder } from "@webiny/app-page-builder/context";
-import { TagsMultiAutoComplete, CategoriesAutoComplete } from "@webiny/app-page-builder/admin/components";
+import { TagsMultiAutoComplete } from "@webiny/app-page-builder/admin/components/TagsMultiAutoComplete";
+import { CategoriesAutoComplete } from "@webiny/app-page-builder/admin/components/CategoriesAutoComplete";
 
 const PagesListFilterSettings = ({ Bind }: Object) => {
     return (
@@ -60,4 +60,4 @@ const PagesListFilterSettings = ({ Bind }: Object) => {
     );
 };
 
-export default withPageBuilder()(PagesListFilterSettings);
+export default PagesListFilterSettings;

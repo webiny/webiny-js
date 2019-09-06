@@ -217,7 +217,7 @@ addMiddleware([DELETE_ELEMENT], ({ store, next, action }) => {
     store.dispatch(updateElement({ element: parent }));
 
     // Execute `onChildDeleted` if defined
-    const plugin = getPlugin(parent.type);
+    const plugin = getPlugins("pb-page-element").find(pl => pl.elementType === parent.type);
     if (!plugin) {
         return;
     }

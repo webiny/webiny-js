@@ -5,7 +5,7 @@ import shortid from "shortid";
 import { Editor } from "slate-react";
 import { Value } from "slate";
 import { getPlugins } from "@webiny/plugins";
-import { withPageBuilder } from "@webiny/app-page-builder/context";
+import { usePageBuilder } from "@webiny/app-page-builder/hooks/usePageBuilder";
 import { createValue } from "./index";
 
 import Menu from "./Menu";
@@ -193,22 +193,26 @@ class SlateEditor extends React.Component {
         return (
             <div id={this.id}>
                 {!this.state.readOnly && this.renderFloatingMenu()}
-                <Editor
-                    ref={this.editor}
-                    onBlur={this.onBlur}
-                    onFocus={this.onFocus}
-                    readOnly={this.state.readOnly}
-                    autoCorrect={false}
-                    spellCheck={false}
-                    plugins={this.plugins}
-                    placeholder="Enter some text..."
-                    value={this.state.value}
-                    onChange={this.onChange}
-                    theme={this.props.pageBuilder.theme}
-                    activatePlugin={name => this.activatePlugin(name)}
-                    activePlugin={this.state.activePlugin}
-                    deactivatePlugin={this.deactivatePlugin}
-                />
+                <WithPageBuilderTheme>
+                    {({ theme }) => (
+                        <Editor
+                            ref={this.editor}
+                            onBlur={this.onBlur}
+                            onFocus={this.onFocus}
+                            readOnly={this.state.readOnly}
+                            autoCorrect={false}
+                            spellCheck={false}
+                            plugins={this.plugins}
+                            placeholder="Enter some text..."
+                            value={this.state.value}
+                            onChange={this.onChange}
+                            theme={theme}
+                            activatePlugin={name => this.activatePlugin(name)}
+                            activePlugin={this.state.activePlugin}
+                            deactivatePlugin={this.deactivatePlugin}
+                        />
+                    )}
+                </WithPageBuilderTheme>
                 {getPlugins("pb-editor-slate-menu-item")
                     .filter(pl => typeof pl.renderDialog === "function")
                     .map(pl => {
@@ -227,4 +231,9 @@ class SlateEditor extends React.Component {
     }
 }
 
-export default withPageBuilder()(SlateEditor);
+const WithPageBuilderTheme = ({ children }) => {
+    const { theme } = usePageBuilder();
+    return children({ theme });
+};
+
+export default SlateEditor;

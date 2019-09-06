@@ -1,7 +1,7 @@
 // @flow
 import * as React from "react";
 import classNames from "classnames";
-import styled from "react-emotion";
+import styled from "@emotion/styled";
 import { Tooltip } from "@webiny/ui/Tooltip";
 import { Typography } from "@webiny/ui/Typography";
 

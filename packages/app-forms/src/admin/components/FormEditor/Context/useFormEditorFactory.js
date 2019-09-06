@@ -234,8 +234,6 @@ export default FormEditorContext => {
             }
         };
 
-        // TODO: remove this once ready.
-        window.useFormEditor = self;
         return self;
     };
 };

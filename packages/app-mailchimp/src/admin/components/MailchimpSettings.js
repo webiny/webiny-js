@@ -1,15 +1,15 @@
 // @flow
 import * as React from "react";
+import { get } from "lodash";
 import { Form } from "@webiny/form";
 import { Grid, Cell } from "@webiny/ui/Grid";
 import { Switch } from "@webiny/ui/Switch";
 import { Input } from "@webiny/ui/Input";
 import { ButtonPrimary } from "@webiny/ui/Button";
 import { Query, Mutation } from "react-apollo";
-import { withSnackbar } from "@webiny/app-admin/components";
-import graphql from "./graphql";
+import { useSnackbar } from "@webiny/app-admin/components";
 import { CircularProgress } from "@webiny/ui/Progress";
-import { get } from "lodash";
+import graphql from "./graphql";
 
 import {
     SimpleForm,
@@ -18,7 +18,9 @@ import {
     SimpleFormHeader
 } from "@webiny/app-admin/components/SimpleForm";
 
-const MailchimpSettings = ({ showSnackbar }) => {
+const MailchimpSettings = () => {
+    const { showSnackbar } = useSnackbar();
+
     return (
         <Query query={graphql.query}>
             {({ data, loading: queryInProgress }) => {
@@ -119,4 +121,4 @@ const MailchimpSettings = ({ showSnackbar }) => {
     );
 };
 
-export default withSnackbar()(MailchimpSettings);
+export default MailchimpSettings;

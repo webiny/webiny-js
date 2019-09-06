@@ -42,7 +42,7 @@ const createPbSettingsModel = context => {
 
 export const pageBuilderSettingsFactory = (context: Object) => {
     return class PbSettings extends settingsFactory(context) {
-        static key = "cms";
+        static key = "page-builder";
         static classId = "PbSettings";
         static collectionName = "Settings";
 

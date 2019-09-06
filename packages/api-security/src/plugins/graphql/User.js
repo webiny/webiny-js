@@ -65,7 +65,7 @@ export default {
         }
 
         # This input type is used by the user who is updating his own account
-        input CurrentSecurityUserInput {
+        input SecurityCurrentUserInput {
             email: String
             firstName: String
             lastName: String
@@ -149,7 +149,7 @@ export default {
             loginUsingToken(token: String!): SecurityUserLoginResponse
 
             "Update current user"
-            updateCurrentUser(data: CurrentSecurityUserInput!): SecurityUserResponse
+            updateCurrentUser(data: SecurityCurrentUserInput!): SecurityUserResponse
 
             "Update settings of current user"
             updateCurrentUserSettings(key: String!, data: JSON!): JSON

@@ -1,7 +1,7 @@
 //@flow
 import React from "react";
 import Droppable from "@webiny/app-page-builder/editor/components/Droppable";
-import styled from "react-emotion";
+import styled from "@emotion/styled";
 
 const InnerDiv = styled("div")({
     height: 5,
@@ -49,8 +49,9 @@ type Props = {
 const Horizontal = React.memo(({ below, onDrop, isVisible, type }: Props) => {
     return (
         <Droppable type={type} isVisible={isVisible} onDrop={onDrop}>
-            {({ isOver }) => (
+            {({ isOver, drop }) => (
                 <div
+                    ref={drop}
                     style={{
                         height: "25px",
                         width: "100%",

@@ -5,7 +5,7 @@ import copy from "copy-to-clipboard";
 import elementToString from "react-element-to-jsx-string";
 import prettier from "prettier/standalone";
 import babylon from "prettier/parser-babylon";
-import styled from "react-emotion";
+import styled from "@emotion/styled";
 
 type Props = {
     copy?: boolean,

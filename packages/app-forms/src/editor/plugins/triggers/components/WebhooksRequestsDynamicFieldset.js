@@ -1,7 +1,7 @@
 import React from "react";
 import { DynamicFieldset } from "@webiny/ui/DynamicFieldset";
 import { Input } from "@webiny/ui/Input";
-import styled from "react-emotion";
+import styled from "@emotion/styled";
 import { Typography } from "@webiny/ui/Typography";
 import { ButtonSecondary, ButtonDefault } from "@webiny/ui/Button";
 

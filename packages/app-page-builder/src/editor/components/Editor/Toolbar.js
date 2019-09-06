@@ -1,7 +1,7 @@
 //@flow
 import React, { useEffect, useRef } from "react";
 import { connect } from "@webiny/app-page-builder/editor/redux";
-import styled from "react-emotion";
+import styled from "@emotion/styled";
 import { css } from "emotion";
 import { isEqual } from "lodash";
 import { Drawer, DrawerContent } from "@webiny/ui/Drawer";

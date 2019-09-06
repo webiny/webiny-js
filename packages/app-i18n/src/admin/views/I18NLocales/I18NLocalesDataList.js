@@ -1,6 +1,6 @@
 // @flow
 import * as React from "react";
-import { withRouter } from "react-router-dom";
+import useReactRouter from "use-react-router";
 import type { Location, RouterHistory } from "react-router-dom";
 import type { WithCrudListProps } from "@webiny/app-admin/components";
 import { i18n } from "@webiny/app/i18n";
@@ -18,12 +18,8 @@ import { DeleteIcon } from "@webiny/ui/List/DataList/icons";
 
 const t = i18n.namespace("I18N.I18NLocalesDataList");
 
-const I18NLocalesDataList = ({
-    dataList,
-    location,
-    history,
-    deleteRecord
-}: WithCrudListProps & { location: Location, history: RouterHistory }) => {
+const I18NLocalesDataList = ({ dataList, deleteRecord }: WithCrudListProps) => {
+    const { location, history } = useReactRouter();
     const query = new URLSearchParams(location.search);
 
     return (
@@ -75,4 +71,4 @@ const I18NLocalesDataList = ({
     );
 };
 
-export default withRouter(I18NLocalesDataList);
+export default I18NLocalesDataList;

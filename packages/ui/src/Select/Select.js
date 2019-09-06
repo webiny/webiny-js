@@ -20,7 +20,7 @@ type Props = FormComponentProps & {
     placeholder?: string,
 
     // Makes the Select have a visual box.
-    box?: boolean,
+    box?: string,
 
     // One or more <option> or <optgroup> elements.
     children?: React.ChildrenArray<React.Element<"option"> | React.Element<"optgroup">>,

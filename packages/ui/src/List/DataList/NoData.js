@@ -1,7 +1,7 @@
 // @flow
 import * as React from "react";
 import { Typography } from "@webiny/ui/Typography";
-import styled from "react-emotion";
+import styled from "@emotion/styled";
 
 const NoDataWrapper = styled("div")({
     textAlign: "center",

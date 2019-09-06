@@ -1,6 +1,5 @@
 // @flow
 import React from "react";
-import { type WithPageDetailsProps } from "@webiny/app-page-builder/admin/components";
 import { IconButton } from "@webiny/ui/Button";
 import { Icon } from "@webiny/ui/Icon";
 import { ReactComponent as MoreVerticalIcon } from "@webiny/app-page-builder/admin/assets/more_vert.svg";
@@ -9,13 +8,12 @@ import { ReactComponent as HomeIcon } from "@webiny/app-page-builder/admin/asset
 import { ListItemGraphic } from "@webiny/ui/List";
 import { MenuItem, Menu } from "@webiny/ui/Menu";
 import { withConfirmation, type WithConfirmationProps } from "@webiny/ui/ConfirmationDialog";
-import { compose } from "recompose";
-import { withPageBuilderSettings } from "@webiny/app-page-builder/admin/components";
+import { usePageBuilderSettings } from "@webiny/app-page-builder/admin/hooks/usePageBuilderSettings";
 import { css } from "emotion";
-import { setHomePage } from "./graphql";
 import { Mutation } from "react-apollo";
-import { withSnackbar, type WithSnackbarProps } from "@webiny/app-admin/components";
+import { useSnackbar } from "@webiny/app-admin/components";
 import classNames from "classnames";
+import { setHomePage } from "./graphql";
 
 const menuStyles = css({
     width: 250,
@@ -27,15 +25,16 @@ const menuStyles = css({
     }
 });
 
-type Props = WithPageDetailsProps & WithConfirmationProps & WithSnackbarProps;
+type Props = WithConfirmationProps;
 
 const PageOptionsMenu = (props: Props) => {
     const {
         showConfirmation,
-        pageBuilderSettings: { getPagePreviewUrl },
-        showSnackbar,
         pageDetails: { page }
     } = props;
+
+    const { getPagePreviewUrl } = usePageBuilderSettings();
+    const { showSnackbar } = useSnackbar();
 
     return (
         <Menu
@@ -85,22 +84,18 @@ const PageOptionsMenu = (props: Props) => {
     );
 };
 
-export default compose(
-    withSnackbar(),
-    withPageBuilderSettings(),
-    withConfirmation(props => {
-        const {
-            pageDetails: { page }
-        } = props;
+export default withConfirmation(props => {
+    const {
+        pageDetails: { page }
+    } = props;
 
-        return {
-            message: (
-                <span>
-                    You&#39;re about to set the <strong>{page.title}</strong> page as your new
-                    homepage, are you sure you want to continue?{" "}
-                    {!page.published && "Note that your page will be automatically published."}
-                </span>
-            )
-        };
-    })
-)(PageOptionsMenu);
+    return {
+        message: (
+            <span>
+                You&#39;re about to set the <strong>{page.title}</strong> page as your new homepage,
+                are you sure you want to continue?{" "}
+                {!page.published && "Note that your page will be automatically published."}
+            </span>
+        )
+    };
+})(PageOptionsMenu);

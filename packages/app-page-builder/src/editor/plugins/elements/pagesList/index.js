@@ -8,7 +8,7 @@ import { ReactComponent as PageListIcon } from "./page-list-icon.svg";
 import PagesList from "./PagesList";
 import PagesListFilterSettings from "./PagesListFilterSettings";
 import PagesListDesignSettings from "./PagesListDesignSettings";
-import styled from "react-emotion";
+import styled from "@emotion/styled";
 
 export default () => {
     const PreviewBox = styled("div")({

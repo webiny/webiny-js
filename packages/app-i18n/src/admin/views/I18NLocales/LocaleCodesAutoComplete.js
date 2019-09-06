@@ -2,7 +2,6 @@
 import * as React from "react";
 import { AutoComplete } from "@webiny/ui/AutoComplete";
 import { withAutoComplete } from "@webiny/app/components";
-import { compose } from "recompose";
 import { get } from "lodash";
 import { searchLocaleCodes } from "./graphql";
 
@@ -15,9 +14,7 @@ const LocaleCodesAutoComplete = props => {
     return <AutoComplete {...props} options={options} useSimpleValues />;
 };
 
-export default compose(
-    withAutoComplete({
-        response: data => get(data, "i18n.codes"),
-        query: searchLocaleCodes
-    })
-)(LocaleCodesAutoComplete);
+export default withAutoComplete({
+    response: data => get(data, "i18n.codes"),
+    query: searchLocaleCodes
+})(LocaleCodesAutoComplete);

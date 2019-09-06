@@ -31,12 +31,11 @@ class SnackbarContainer extends React.Component<{ alignStart: boolean }, { show:
         return (
             <React.Fragment>
                 <Snackbar
-                    show={this.state.show}
-                    onHide={() => this.setState({ show: false })}
+                    open={this.state.show}
+                    onClose={() => this.setState({ show: false })}
                     message="This is a message."
                     alignStart={this.props.alignStart}
                     actionText="Something"
-                    actionHandler={() => console.log("Action triggered.")}
                 />
                 <ButtonPrimary onClick={() => this.setState({ show: true })}>
                     Show message

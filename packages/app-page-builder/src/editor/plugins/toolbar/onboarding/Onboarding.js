@@ -1,12 +1,11 @@
 //@flow
-import React from "react";
-import styled from "react-emotion";
+import React, { useCallback, useEffect, useState } from "react";
+import styled from "@emotion/styled";
 import { Carousel } from "@webiny/ui/Carousel";
 import { connect } from "@webiny/app-page-builder/editor/redux";
-import { compose, lifecycle, withHandlers } from "recompose";
 import { deactivatePlugin } from "@webiny/app-page-builder/editor/actions";
 import { isPluginActive } from "@webiny/app-page-builder/editor/selectors";
-import { withKeyHandler } from "@webiny/app-page-builder/editor/components";
+import { useKeyHandler } from "@webiny/app-page-builder/editor/hooks/useKeyHandler";
 
 import { ReactComponent as NextSlideIcon } from "./assets/next-slide.svg";
 import { ReactComponent as PrevSlideIcon } from "./assets/prev-slide.svg";
@@ -70,104 +69,81 @@ const SlideControl = styled("div")({
     }
 });
 
-type Props = {
-    showOnboarding: boolean,
-    deactivatePlugin: Function
-};
+const Onboarding = React.memo(({ deactivatePlugin, showOnboarding }) => {
+    const [slideIndex, setSlideIndex] = useState(0);
+    const { addKeyHandler, removeKeyHandler } = useKeyHandler();
 
-type State = {
-    slideIndex: number
-};
+    const nextSlide = useCallback(() => {
+        setSlideIndex(slideIndex + 1);
+    }, [slideIndex]);
 
-class Onboarding extends React.Component<Props, State> {
-    state = {
-        slideIndex: 0
-    };
+    const closeDialog = useCallback(() => {
+        setSlideIndex(0);
+        deactivatePlugin({ name: "pb-editor-toolbar-onboarding" });
+    }, [setSlideIndex]);
 
-    nextSlide = () => {
-        this.setState({ slideIndex: this.state.slideIndex + 1 });
-    };
+    useEffect(() => {
+        showOnboarding ? addKeyHandler("escape", closeDialog) : removeKeyHandler("escape");
+    });
 
-    closeDialog = () => {
-        this.setState({ slideIndex: 0 });
-        this.props.deactivatePlugin({ name: "pb-editor-toolbar-onboarding" });
-    };
-
-    render() {
-        const { showOnboarding } = this.props;
-        if (!showOnboarding) {
-            return null;
-        }
-
-        return (
-            <Overlay>
-                <Container>
-                    <Carousel
-                        speed={this.state.slideIndex < 1 || this.state.slideIndex > 4 ? 500 : 0}
-                        dragging={true}
-                        transitionMode={"scroll"}
-                        slideIndex={this.state.slideIndex}
-                        afterSlide={slideIndex => this.setState({ slideIndex })}
-                        renderNextSlide={({ nextSlide, currentSlide }) =>
-                            currentSlide < 6 && (
-                                <SlideControl onClick={nextSlide}>
-                                    <NextSlideIcon />
-                                </SlideControl>
-                            )
-                        }
-                        renderPreviousSlide={({ previousSlide, currentSlide }) =>
-                            currentSlide > 0 && (
-                                <SlideControl onClick={previousSlide}>
-                                    <PrevSlideIcon />
-                                </SlideControl>
-                            )
-                        }
-                    >
-                        <InnerContainer>
-                            <Slide1 nextSlide={this.nextSlide} />
-                        </InnerContainer>
-                        <InnerContainer>
-                            <Slide2 currentSlide={this.state.slideIndex + 1} />
-                        </InnerContainer>
-                        <InnerContainer>
-                            <Slide3 currentSlide={this.state.slideIndex + 1} />
-                        </InnerContainer>
-                        <InnerContainer>
-                            <Slide4 currentSlide={this.state.slideIndex + 1} />
-                        </InnerContainer>
-                        <InnerContainer>
-                            <Slide5 currentSlide={this.state.slideIndex + 1} />
-                        </InnerContainer>
-                        <InnerContainer>
-                            <Slide6 currentSlide={this.state.slideIndex + 1} />
-                        </InnerContainer>
-                        <InnerContainer>
-                            <Slide7 closeDialog={this.closeDialog} />
-                        </InnerContainer>
-                    </Carousel>
-                </Container>
-            </Overlay>
-        );
+    if (!showOnboarding) {
+        return null;
     }
-}
 
-export default compose(
-    connect(
-        state => ({
-            showOnboarding: isPluginActive("pb-editor-toolbar-onboarding")(state)
-        }),
-        { deactivatePlugin }
-    ),
-    withKeyHandler(),
-    withHandlers({
-        closeDialog: ({ deactivatePlugin }) => () => {
-            deactivatePlugin({ name: "pb-editor-toolbar-onboarding" });
-        }
+    return (
+        <Overlay>
+            <Container>
+                <Carousel
+                    speed={slideIndex < 1 || slideIndex > 4 ? 500 : 0}
+                    dragging={true}
+                    transitionMode={"scroll"}
+                    slideIndex={slideIndex}
+                    afterSlide={setSlideIndex}
+                    renderNextSlide={({ nextSlide, currentSlide }) =>
+                        currentSlide < 6 && (
+                            <SlideControl onClick={nextSlide}>
+                                <NextSlideIcon />
+                            </SlideControl>
+                        )
+                    }
+                    renderPreviousSlide={({ previousSlide, currentSlide }) =>
+                        currentSlide > 0 && (
+                            <SlideControl onClick={previousSlide}>
+                                <PrevSlideIcon />
+                            </SlideControl>
+                        )
+                    }
+                >
+                    <InnerContainer>
+                        <Slide1 nextSlide={nextSlide} />
+                    </InnerContainer>
+                    <InnerContainer>
+                        <Slide2 currentSlide={slideIndex + 1} />
+                    </InnerContainer>
+                    <InnerContainer>
+                        <Slide3 currentSlide={slideIndex + 1} />
+                    </InnerContainer>
+                    <InnerContainer>
+                        <Slide4 currentSlide={slideIndex + 1} />
+                    </InnerContainer>
+                    <InnerContainer>
+                        <Slide5 currentSlide={slideIndex + 1} />
+                    </InnerContainer>
+                    <InnerContainer>
+                        <Slide6 currentSlide={slideIndex + 1} />
+                    </InnerContainer>
+                    <InnerContainer>
+                        <Slide7 closeDialog={closeDialog} />
+                    </InnerContainer>
+                </Carousel>
+            </Container>
+        </Overlay>
+    );
+});
+
+export default connect(
+    state => ({
+        showOnboarding: isPluginActive("pb-editor-toolbar-onboarding")(state)
     }),
-    lifecycle({
-        componentDidUpdate() {
-            const { showOnboarding, addKeyHandler, removeKeyHandler, closeDialog } = this.props;
-            showOnboarding ? addKeyHandler("escape", closeDialog) : removeKeyHandler("escape");
-        }
-    })
+    { deactivatePlugin }
 )(Onboarding);

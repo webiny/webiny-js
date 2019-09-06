@@ -1,11 +1,11 @@
 //@flow
-import * as React from "react";
-import { compose, withState } from "recompose";
+import React, { useEffect, useCallback, useState } from "react";
 import { Mutation } from "react-apollo";
 import { connect } from "@webiny/app-page-builder/editor/redux";
 import { deactivatePlugin, updateElement } from "@webiny/app-page-builder/editor/actions";
 import { getContent } from "@webiny/app-page-builder/editor/selectors";
-import { withKeyHandler } from "@webiny/app-page-builder/editor/components";
+import { useKeyHandler } from "@webiny/app-page-builder/editor/hooks/useKeyHandler";
+import { useSnackbar } from "@webiny/app-admin/components/withSnackbar";
 import { getPlugins, unregisterPlugin } from "@webiny/plugins";
 import { createBlockElements } from "@webiny/app-page-builder/editor/utils";
 import { OverlayLayout } from "@webiny/app-admin/components/OverlayLayout";
@@ -14,7 +14,6 @@ import * as Styled from "./StyledComponents";
 import { listItem, ListItemTitle, listStyle, TitleContent } from "./SearchBlocksStyled";
 import EditBlockDialog from "./EditBlockDialog";
 import { deleteElement as deleteElementGql, updateElement as updateElementGql } from "./graphql";
-import { withSnackbar, type WithSnackbarProps } from "@webiny/app-admin/components";
 import {
     SimpleForm,
     SimpleFormContent,
@@ -25,25 +24,8 @@ import { Icon } from "@webiny/ui/Icon";
 import { List, ListItem, ListItemGraphic } from "@webiny/ui/List";
 import { Typography } from "@webiny/ui/Typography";
 import { ReactComponent as AllIcon } from "./icons/round-clear_all-24px.svg";
-import createBlockPlugin from "@webiny/app-page-builder/admin/components/withSavedElements/createBlockPlugin";
+import createBlockPlugin from "@webiny/app-page-builder/admin/utils/createBlockPlugin";
 import BlocksList from "./BlocksList";
-
-type SearchBarProps = {
-    addKeyHandler: Function,
-    createBlockFromType: Function,
-    deactivatePlugin: Function,
-    removeKeyHandler: Function,
-    updateElement: Function,
-    content: Object,
-    active: string,
-    setActive: Function
-} & WithSnackbarProps;
-
-type SearchBarState = {
-    search: string,
-    activeTab: number,
-    editingBlock: ?Object
-};
 
 const allBlockCategory = {
     type: "pb-editor-block-category",
@@ -54,36 +36,32 @@ const allBlockCategory = {
     icon: <AllIcon />
 };
 
-class SearchBar extends React.Component<SearchBarProps, SearchBarState> {
-    state = {
-        search: "",
-        activeTab: 0,
-        editingBlock: null
-    };
+const SearchBar = ({ updateElement, content, deactivatePlugin }) => {
+    const [search, setSearch] = useState("");
+    const [editingBlock, setEditingBlock] = useState(null);
+    const [active, setActive] = useState("all");
 
-    componentDidMount() {
-        this.props.addKeyHandler("escape", e => {
+    const { addKeyHandler, removeKeyHandler } = useKeyHandler();
+
+    useEffect(() => {
+        addKeyHandler("escape", e => {
             e.preventDefault();
-            this.props.deactivatePlugin({ name: "pb-editor-search-blocks-bar" });
+            deactivatePlugin({ name: "pb-editor-search-blocks-bar" });
         });
-    }
 
-    componentWillUnmount() {
-        this.props.removeKeyHandler("escape");
-    }
+        return () => removeKeyHandler("escape");
+    }, []);
 
-    addBlockToContent = plugin => {
-        const { content } = this.props;
-        const element = { ...content, elements: [...content.elements, createBlockElements(plugin.name)] };
-        this.props.updateElement({ element });
-    };
-
-    getCategoryBlocksCount({ plugins, category }) {
-        return this.getBlocksList({
-            blocks: plugins.blocks,
-            categories: { active: category }
-        }).length;
-    }
+    const addBlockToContent = useCallback(
+        plugin => {
+            const element = {
+                ...content,
+                elements: [...content.elements, createBlockElements(plugin.name)]
+            };
+            updateElement({ element });
+        },
+        [content]
+    );
 
     /**
      * Returns a list of blocks - by selected category and by searched term (if present).
@@ -91,7 +69,7 @@ class SearchBar extends React.Component<SearchBarProps, SearchBarState> {
      * @param categories
      * @returns {*}
      */
-    getBlocksList({ blocks, categories }) {
+    const getBlocksList = useCallback(({ blocks, categories }) => {
         const activeCategory = categories.active;
         if (!activeCategory) {
             return [];
@@ -113,17 +91,25 @@ class SearchBar extends React.Component<SearchBarProps, SearchBarState> {
         }
 
         // Finally, filter by typed search term.
-        if (this.state.search) {
+        if (search) {
             output = output.filter(item => {
-                return item.title.toLowerCase().includes(this.state.search.toLowerCase());
+                return item.title.toLowerCase().includes(search.toLowerCase());
             });
         }
 
         return output;
-    }
+    }, [search]);
 
-    deleteBlock = async ({ plugin, deleteElement }) => {
-        const { showSnackbar } = this.props;
+    const getCategoryBlocksCount = useCallback(({ plugins, category }) => {
+        return getBlocksList({
+            blocks: plugins.blocks,
+            categories: { active: category }
+        }).length;
+    }, []);
+
+    const { showSnackbar } = useSnackbar();
+
+    const deleteBlock = useCallback(async ({ plugin, deleteElement }) => {
         const response = await deleteElement({
             variables: {
                 id: plugin.id
@@ -138,73 +124,77 @@ class SearchBar extends React.Component<SearchBarProps, SearchBarState> {
 
         unregisterPlugin(plugin.name);
         showSnackbar("Block " + plugin.title + " successfully deleted.");
-    };
+    }, []);
 
-    updateBlock = async ({ updateElement, data: { title: name, category } }) => {
-        const plugin = this.state.editingBlock;
-        if (!plugin) {
-            return;
-        }
-
-        const { showSnackbar } = this.props;
-        const response = await updateElement({
-            variables: {
-                id: plugin.id,
-                data: { name, category }
+    const updateBlock = useCallback(
+        async ({ updateElement, data: { title: name, category } }) => {
+            if (!editingBlock) {
+                return;
             }
-        });
 
-        const { error, data } = response.data.pageBuilder.updateElement;
-        if (error) {
-            showSnackbar(error.message);
-            return;
-        }
+            const response = await updateElement({
+                variables: {
+                    id: editingBlock.id,
+                    data: { name, category }
+                }
+            });
 
-        // This will replace previously registered block plugin.
-        createBlockPlugin(data);
+            const { error, data } = response.data.pageBuilder.updateElement;
+            if (error) {
+                showSnackbar(error.message);
+                return;
+            }
 
-        this.setState({ editingBlock: null });
-        setTimeout(() => {
-            // For better UX, success message is shown after 300ms has passed.
-            showSnackbar("Block " + plugin.title + " successfully saved.");
-        }, 300);
-    };
+            // This will replace previously registered block plugin.
+            createBlockPlugin(data);
 
-    renderBlocksList({ plugins, category, deleteElement, updateElement, blocksList }) {
-        const categoryPlugin = plugins.categories.list.find(pl => pl.categoryName === category);
+            setEditingBlock(null);
+            setTimeout(() => {
+                // For better UX, success message is shown after 300ms has passed.
+                showSnackbar("Block " + editingBlock.title + " successfully saved.");
+            }, 300);
+        },
+        [editingBlock]
+    );
 
-        return (
-            <SimpleForm>
-                <SimpleFormHeader title={categoryPlugin.title} icon={categoryPlugin.icon} />
-                <SimpleFormContent>
-                    <Styled.BlockList>
-                        <BlocksList
-                            category={category}
-                            addBlock={this.addBlockToContent}
-                            deactivatePlugin={this.props.deactivatePlugin}
-                            blocks={blocksList}
-                            onEdit={plugin => this.setState({ editingBlock: plugin })}
-                            onDelete={plugin =>
-                                this.deleteBlock({
-                                    plugin,
-                                    deleteElement
-                                })
-                            }
+    const renderBlocksList = useCallback(
+        ({ plugins, category, deleteElement, updateElement, blocksList }) => {
+            const categoryPlugin = plugins.categories.list.find(pl => pl.categoryName === category);
+
+            return (
+                <SimpleForm>
+                    <SimpleFormHeader title={categoryPlugin.title} icon={categoryPlugin.icon} />
+                    <SimpleFormContent>
+                        <Styled.BlockList>
+                            <BlocksList
+                                category={category}
+                                addBlock={addBlockToContent}
+                                deactivatePlugin={deactivatePlugin}
+                                blocks={blocksList}
+                                onEdit={plugin => setEditingBlock(plugin)}
+                                onDelete={plugin =>
+                                    deleteBlock({
+                                        plugin,
+                                        deleteElement
+                                    })
+                                }
+                            />
+                        </Styled.BlockList>
+
+                        <EditBlockDialog
+                            onClose={() => setEditingBlock(null)}
+                            onSubmit={data => updateBlock({ data, updateElement })}
+                            open={!!editingBlock}
+                            plugin={editingBlock}
                         />
-                    </Styled.BlockList>
+                    </SimpleFormContent>
+                </SimpleForm>
+            );
+        },
+        [editingBlock, addBlockToContent, deleteBlock, updateBlock]
+    );
 
-                    <EditBlockDialog
-                        onClose={() => this.setState({ editingBlock: null })}
-                        onSubmit={data => this.updateBlock({ data, updateElement })}
-                        open={!!this.state.editingBlock}
-                        plugin={this.state.editingBlock}
-                    />
-                </SimpleFormContent>
-            </SimpleForm>
-        );
-    }
-
-    renderSearchInput = () => {
+    const renderSearchInput = useCallback(() => {
         return (
             <Styled.Input>
                 <Icon className={Styled.searchIcon} icon={<SearchIcon />} />
@@ -212,94 +202,85 @@ class SearchBar extends React.Component<SearchBarProps, SearchBarState> {
                     autoFocus
                     type={"text"}
                     placeholder="Search blocks..."
-                    value={this.state.search}
-                    onChange={e => this.setState({ search: e.target.value })}
+                    value={search}
+                    onChange={e => setSearch(e.target.value)}
                 />
             </Styled.Input>
         );
+    }, [search]);
+
+    const plugins: Object = {
+        categories: {
+            list: [allBlockCategory, ...getPlugins("pb-editor-block-category")],
+            active
+        },
+        blocks: getPlugins("pb-editor-block")
     };
 
-    render() {
-        const { active, setActive } = this.props;
-        const plugins: Object = {
-            categories: {
-                list: [allBlockCategory, ...getPlugins("pb-editor-block-category")],
-                active
-            },
-            blocks: getPlugins("pb-editor-block")
-        };
+    const blocksList = getBlocksList(plugins);
 
-        const blocksList = this.getBlocksList(plugins);
+    const onExited = useCallback(() => {
+        deactivatePlugin({ name: "pb-editor-search-blocks-bar" });
+    }, []);
 
-        return (
-            <OverlayLayout
-                barMiddle={this.renderSearchInput()}
-                onExited={() =>
-                    this.props.deactivatePlugin({ name: "pb-editor-search-blocks-bar" })
-                }
-            >
-                <SplitView>
-                    <LeftPanel span={3}>
-                        <List twoLine className={listStyle}>
-                            {plugins.categories.list.map(p => (
-                                <ListItem
-                                    key={p.name}
-                                    className={listItem}
-                                    onClick={() => {
-                                        setActive(p.categoryName);
-                                    }}
-                                >
-                                    <ListItemGraphic>
-                                        <Icon icon={p.icon} />
-                                    </ListItemGraphic>
-                                    <TitleContent>
-                                        <ListItemTitle>
-                                            {p.title} (
-                                            {this.getCategoryBlocksCount({
-                                                plugins,
-                                                category: p.categoryName
-                                            })}
-                                            )
-                                        </ListItemTitle>
-                                        <Typography use={"subtitle2"}>{p.description}</Typography>
-                                    </TitleContent>
-                                </ListItem>
-                            ))}
-                        </List>
-                    </LeftPanel>
-                    <RightPanel span={9}>
-                        <Mutation mutation={updateElementGql}>
-                            {updateElement => (
-                                <Mutation mutation={deleteElementGql}>
-                                    {deleteElement =>
-                                        plugins.categories.active &&
-                                        this.renderBlocksList({
+    return (
+        <OverlayLayout barMiddle={renderSearchInput()} onExited={onExited}>
+            <SplitView>
+                <LeftPanel span={3}>
+                    <List twoLine className={listStyle}>
+                        {plugins.categories.list.map(p => (
+                            <ListItem
+                                key={p.name}
+                                className={listItem}
+                                onClick={() => {
+                                    setActive(p.categoryName);
+                                }}
+                            >
+                                <ListItemGraphic>
+                                    <Icon icon={p.icon} />
+                                </ListItemGraphic>
+                                <TitleContent>
+                                    <ListItemTitle>
+                                        {p.title} (
+                                        {getCategoryBlocksCount({
                                             plugins,
-                                            category: active,
-                                            deleteElement,
-                                            updateElement,
-                                            blocksList
-                                        })
-                                    }
-                                </Mutation>
-                            )}
-                        </Mutation>
-                    </RightPanel>
-                </SplitView>
-            </OverlayLayout>
-        );
-    }
-}
+                                            category: p.categoryName
+                                        })}
+                                        )
+                                    </ListItemTitle>
+                                    <Typography use={"subtitle2"}>{p.description}</Typography>
+                                </TitleContent>
+                            </ListItem>
+                        ))}
+                    </List>
+                </LeftPanel>
+                <RightPanel span={9}>
+                    <Mutation mutation={updateElementGql}>
+                        {updateElement => (
+                            <Mutation mutation={deleteElementGql}>
+                                {deleteElement =>
+                                    plugins.categories.active &&
+                                    renderBlocksList({
+                                        plugins,
+                                        category: active,
+                                        deleteElement,
+                                        updateElement,
+                                        blocksList
+                                    })
+                                }
+                            </Mutation>
+                        )}
+                    </Mutation>
+                </RightPanel>
+            </SplitView>
+        </OverlayLayout>
+    );
+};
 
-export default compose(
-    connect(
-        state => ({ content: getContent(state) }),
-        {
-            deactivatePlugin,
-            updateElement
-        }
-    ),
-    withKeyHandler(),
-    withSnackbar(),
-    withState("active", "setActive", "all")
+export default connect(
+    state => ({ content: getContent(state) }),
+    {
+        deactivatePlugin,
+        updateElement
+    }
 )(SearchBar);

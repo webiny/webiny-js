@@ -1,6 +1,6 @@
 //@flow
 import React from "react";
-import styled from "react-emotion";
+import styled from "@emotion/styled";
 import { set } from "dot-prop-immutable";
 import { dispatch } from "@webiny/app-page-builder/editor/redux";
 import {

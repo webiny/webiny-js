@@ -2,7 +2,7 @@
 import React from "react";
 import cloneDeep from "lodash/cloneDeep";
 import { registerPlugins, getPlugins } from "@webiny/plugins";
-import Title from "./Title";
+import Title from "./components/Title";
 
 type Element = {
     id: string,

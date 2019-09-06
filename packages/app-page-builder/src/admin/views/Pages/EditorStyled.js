@@ -1,5 +1,5 @@
 //@flow
-import styled from "react-emotion";
+import styled from "@emotion/styled";
 import { keyframes } from "emotion";
 
 const imageAnim = keyframes`
@@ -73,10 +73,10 @@ export const LoadingTitle = styled("h5")({
     span: {
         animation: dotsAnim + " 1.4s infinite",
         animationFillMode: "both",
-        "&:nth-child(2)": {
+        "&span:nth-of-type(2)": {
             animationDelay: ".2s"
         },
-        "&:nth-child(3)": {
+        "&span:nth-of-type(3)": {
             animationDelay: ".4s"
         }
     }

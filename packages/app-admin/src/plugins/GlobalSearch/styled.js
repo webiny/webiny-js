@@ -1,6 +1,6 @@
 //@flow
 import { css } from "emotion";
-import styled from "react-emotion";
+import styled from "@emotion/styled";
 
 export const SearchShortcut = styled("div")({
     border: "1px solid var(--mdc-theme-surface)",

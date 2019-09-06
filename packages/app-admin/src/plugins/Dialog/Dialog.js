@@ -4,10 +4,9 @@ import { compose, withProps, withHandlers, setDisplayName } from "recompose";
 import {
     Dialog,
     DialogAccept,
-    DialogHeader,
-    DialogHeaderTitle,
-    DialogFooter,
-    DialogBody
+    DialogTitle,
+    DialogActions,
+    DialogContent
 } from "@webiny/ui/Dialog";
 
 import _ from "lodash";
@@ -18,14 +17,12 @@ const DialogMain = ({ message, options, hideDialog }) => {
         <Dialog>
             <Dialog open={!!message} onClose={hideDialog}>
                 {options.title && (
-                    <DialogHeader>
-                        <DialogHeaderTitle>{options.title}</DialogHeaderTitle>
-                    </DialogHeader>
+                    <DialogTitle>{options.title}</DialogTitle>
                 )}
-                <DialogBody>{message}</DialogBody>
-                <DialogFooter>
+                <DialogContent>{message}</DialogContent>
+                <DialogActions>
                     <DialogAccept>OK</DialogAccept>
-                </DialogFooter>
+                </DialogActions>
             </Dialog>
         </Dialog>
     );

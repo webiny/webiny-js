@@ -18,7 +18,7 @@
     "@webiny/plugins": "^1.0.0",
     "@webiny/ui": "^1.0.0",
     "lodash": "^4.17.11",
-    "react-emotion": "^9.2.4",
+    "@emotion/styled": "^10.0.17",
     "react-helmet": "^5.2.0",
     "react-router-dom": "^5.0.0",
     "recompose": "^0.30.0"
@@ -32,7 +32,7 @@
     "@babel/preset-env": "^7.5.5",
     "@babel/preset-flow": "^7.0.0",
     "@babel/preset-react": "^7.0.0",
-    "@svgr/webpack": "^2.1.1",
+    "@svgr/webpack": "^4.3.2",
     "babel-plugin-module-resolver": "^3.1.1",
     "babel-plugin-named-asset-import": "^1.0.0-next.3e165448"
   },

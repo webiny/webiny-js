@@ -3,14 +3,14 @@ import { connect } from "@webiny/app-page-builder/editor/redux";
 import { ConfirmationDialog } from "@webiny/ui/ConfirmationDialog";
 import { ButtonPrimary } from "@webiny/ui/Button";
 import { getPage } from "@webiny/app-page-builder/editor/selectors";
-import { compose } from "recompose";
 import { omit, isEqual } from "lodash";
 import { Mutation } from "react-apollo";
-import { withSnackbar } from "@webiny/app-admin/components";
+import { useSnackbar } from "@webiny/app-admin/components";
 import { withRouter } from "react-router-dom";
 import { publishRevision } from "./PublishPageButton/graphql";
 
-const PublishPageButton = ({ page, showSnackbar, history }) => {
+const PublishPageButton = ({ page, history }) => {
+    const { showSnackbar } = useSnackbar();
     return (
         <ConfirmationDialog
             title="Publish page"
@@ -51,13 +51,9 @@ const PublishPageButton = ({ page, showSnackbar, history }) => {
     );
 };
 
-export default compose(
-    connect(
-        state => ({ page: omit(getPage(state), ["content"]) }),
-        null,
-        null,
-        { areStatePropsEqual: isEqual }
-    ),
-    withSnackbar(),
-    withRouter
-)(PublishPageButton);
+export default connect(
+    state => ({ page: omit(getPage(state), ["content"]) }),
+    null,
+    null,
+    { areStatePropsEqual: isEqual }
+)(withRouter(PublishPageButton));

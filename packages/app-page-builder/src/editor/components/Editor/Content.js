@@ -2,10 +2,10 @@
 import React from "react";
 import { get } from "dot-prop-immutable";
 import { connect } from "@webiny/app-page-builder/editor/redux";
-import styled from "react-emotion";
+import styled from "@emotion/styled";
 import { css } from "emotion";
 import { getPlugins } from "@webiny/plugins";
-import { withPageBuilder } from "@webiny/app-page-builder/context";
+import { usePageBuilder } from "@webiny/app-page-builder/hooks/usePageBuilder";
 import { getContent, isPluginActive, getPage } from "@webiny/app-page-builder/editor/selectors";
 import Element from "@webiny/app-page-builder/editor/components/Element";
 import { Elevation } from "@webiny/ui/Elevation";
@@ -35,7 +35,8 @@ const BaseContainer = styled("div")({
     margin: "0 auto"
 });
 
-const Content = ({ rootElement, pageBuilder: { theme }, renderLayout, layout }) => {
+const Content = ({ rootElement, renderLayout, layout }) => {
+    const { theme } = usePageBuilder();
     const plugins = getPlugins("pb-editor-content");
     const themeLayout = theme.layouts.find(l => l.name === layout);
 
@@ -65,4 +66,4 @@ const stateToProps = state => ({
     renderLayout: isPluginActive("pb-editor-toolbar-preview")(state)
 });
 
-export default connect(stateToProps)(withPageBuilder()(Content));
+export default connect(stateToProps)(Content);

@@ -1,6 +1,6 @@
 // @flow
 import * as React from "react";
-import { css } from "react-emotion";
+import { css } from "emotion";
 
 const style = css({
     ".webiny-pb-page-element-mailchimp-form__wrapper": {

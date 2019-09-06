@@ -1,12 +1,11 @@
 import React from "react";
-import { compose, withProps } from "recompose";
 import { Query } from "react-apollo";
 import { renderPlugins } from "@webiny/app/plugins";
-import { withRouter } from "react-router-dom";
-import styled from "react-emotion";
+import useReactRouter from "use-react-router";
+import styled from "@emotion/styled";
 import { Elevation } from "@webiny/ui/Elevation";
-import { getForm } from "@webiny/app-forms/admin/viewsGraphql";
-import { withSnackbar } from "@webiny/app-admin/components";
+import { GET_FORM } from "@webiny/app-forms/admin/viewsGraphql";
+import { useSnackbar } from "@webiny/app-admin/components";
 import { get } from "lodash";
 import { Tabs } from "@webiny/ui/Tabs";
 
@@ -46,14 +45,19 @@ const EmptyFormDetails = () => {
     );
 };
 
-const FormDetails = ({ formId, history, query, showSnackbar, refreshForms }) => {
+const FormDetails = ({ refreshForms }) => {
+    const { location, history } = useReactRouter();
+    const { showSnackbar } = useSnackbar();
+    const query = new URLSearchParams(location.search);
+    const formId = query.get("id");
+
     if (!formId) {
         return <EmptyFormDetails />;
     }
 
     return (
         <Query
-            query={getForm}
+            query={GET_FORM}
             variables={{ id: formId }}
             onCompleted={data => {
                 const error = get(data, "forms.form.error.message");
@@ -84,11 +88,4 @@ const FormDetails = ({ formId, history, query, showSnackbar, refreshForms }) => 
     );
 };
 
-export default compose(
-    withRouter,
-    withSnackbar(),
-    withProps(({ location }) => {
-        const query = new URLSearchParams(location.search);
-        return { formId: query.get("id"), query };
-    })
-)(FormDetails);
+export default FormDetails;

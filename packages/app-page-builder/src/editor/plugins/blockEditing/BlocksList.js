@@ -56,7 +56,7 @@ class BlocksList extends React.Component<*, *> {
     render() {
         const { blocks } = this.props;
 
-        this.rightPanelElement = document.getElementById("@webiny/secondary-view-right-panel");
+        this.rightPanelElement = document.getElementById("webiny-secondary-view-right-panel");
         if (!this.rightPanelElement) {
             return null;
         }

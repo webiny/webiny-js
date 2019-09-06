@@ -1,6 +1,6 @@
 //@flow
 import React from "react";
-import { withRouter } from "react-router-dom";
+import useReactRouter from "use-react-router";
 import { IconButton } from "@webiny/ui/Button";
 import { ReactComponent as BackIcon } from "./icons/round-arrow_back-24px.svg";
 import { css } from "emotion";
@@ -9,7 +9,8 @@ const backStyles = css({
     marginLeft: -10
 });
 
-const BackButton = ({ match, history }) => {
+const BackButton = () => {
+    const { match, history } = useReactRouter();
     return (
         <IconButton
             className={backStyles}
@@ -19,4 +20,4 @@ const BackButton = ({ match, history }) => {
     );
 };
 
-export default withRouter(BackButton);
+export default BackButton;

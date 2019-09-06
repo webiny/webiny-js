@@ -1,21 +1,17 @@
 // @flow
-import React from "react";
+import React, { Suspense, lazy } from "react";
 import Helmet from "react-helmet";
-import Loadable from "react-loadable";
 import { SecureRoute } from "@webiny/app-security/components";
 import { CircularProgress } from "@webiny/ui/Progress";
 import { Route } from "react-router-dom";
 import { AdminLayout } from "@webiny/app-admin/components/AdminLayout";
 
-const FormEditor = Loadable({
-    loader: () => import("../views/Editor"),
-    loading: CircularProgress
-});
+const Loader = ({ children, ...props }) => (
+    <Suspense fallback={<CircularProgress />}>{React.cloneElement(children, props)}</Suspense>
+);
 
-const Forms = Loadable({
-    loader: () => import("@webiny/app-forms/admin/views/Forms/Forms"),
-    loading: CircularProgress
-});
+const FormEditor = lazy(() => import("../views/Editor"));
+const Forms = lazy(() => import("@webiny/app-forms/admin/views/Forms/Forms"));
 
 export default [
     {
@@ -30,7 +26,9 @@ export default [
                         <Helmet>
                             <title>Edit form</title>
                         </Helmet>
-                        <FormEditor />
+                        <Loader>
+                            <FormEditor />
+                        </Loader>
                     </SecureRoute>
                 )}
             />
@@ -47,7 +45,9 @@ export default [
                     <SecureRoute roles={["form-editors"]}>
                         <AdminLayout>
                             <Helmet title={"Forms"} />
-                            <Forms />
+                            <Loader>
+                                <Forms />
+                            </Loader>
                         </AdminLayout>
                     </SecureRoute>
                 )}

@@ -1,6 +1,6 @@
 // @flow
 import React from "react";
-import styled from "react-emotion";
+import styled from "@emotion/styled";
 import { Tab } from "@webiny/ui/Tabs";
 import { Input } from "@webiny/ui/Input";
 import { Select } from "@webiny/ui/Select";

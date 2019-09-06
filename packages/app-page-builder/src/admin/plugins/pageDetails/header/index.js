@@ -51,4 +51,4 @@ export default ([
             return <PageOptionsMenu {...props} />;
         }
     }
-]: Array<PageBuilderPageDetailsPluginType>);
+]: Array<PbPageDetailsPluginType>);

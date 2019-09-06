@@ -2,7 +2,6 @@
 import React from "react";
 import { css } from "emotion";
 import { withRouter } from "react-router-dom";
-import { type WithPageDetailsProps } from "@webiny/app-page-builder/admin/components";
 import { ButtonDefault } from "@webiny/ui/Button";
 import { Icon } from "@webiny/ui/Icon";
 import { ReactComponent as DownButton } from "@webiny/app-page-builder/admin/assets/round-arrow_drop_down-24px.svg";
@@ -25,9 +24,8 @@ const menuList = css({
     }
 });
 
-type Props = WithPageDetailsProps;
 
-const RevisionSelector = ({ location, history, pageDetails: { page } }: Props) => {
+const RevisionSelector = ({ location, history, pageDetails: { page } }: Object) => {
     const query = new URLSearchParams(location.search);
 
     return (

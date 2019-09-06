@@ -6,7 +6,7 @@ import _ from "lodash";
 import { withUi } from "@webiny/app/components";
 
 const SnackbarMain = ({ message, options, hideSnackbar }) => {
-    return <Snackbar show={!!message} onHide={hideSnackbar} message={message} {...options} />;
+    return <Snackbar open={!!message} onClose={hideSnackbar} message={message} {...options} />;
 };
 
 export default compose(

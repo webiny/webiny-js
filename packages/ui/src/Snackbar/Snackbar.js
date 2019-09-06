@@ -1,7 +1,6 @@
 // @flow
 import * as React from "react";
-import { Snackbar as RmwcSnackbar } from "@rmwc/snackbar";
-import { noop } from "lodash";
+import { Snackbar as RmwcSnackbar, SnackbarAction } from "@rmwc/snackbar";
 
 type Props = {
     // Show the Snackbar.
@@ -11,19 +10,13 @@ type Props = {
     onShow?: () => mixed,
 
     // A callback thats fired when the Snackbar hides.
-    onHide: () => mixed,
+    onClose: () => mixed,
 
     // A string or other renderable JSX to be used as the message body.
     message: React.Node,
 
     // Milliseconds to show the Snackbar for.
     timeout?: number,
-
-    // Callback that fires when action is pressed. The actionText property must be set to use this.
-    actionHandler?: () => mixed,
-
-    // Label for the action button.
-    actionText?: React.Node,
 
     // Lets the Snackbar text overflow onto multiple lines.
     multiline?: boolean,
@@ -33,9 +26,6 @@ type Props = {
 
     // Whether or not the Snackbar dismisses on the action press.
     dismissesOnAction?: boolean,
-
-    // Snackbar will be shown in the bottom-left angle.
-    alignStart?: boolean
 };
 
 /**
@@ -46,10 +36,6 @@ type Props = {
  */
 class Snackbar extends React.Component<Props> {
     container: ?Element;
-
-    static defaultProps = {
-        actionHandler: noop
-    };
 
     constructor() {
         super();
@@ -69,4 +55,4 @@ class Snackbar extends React.Component<Props> {
     }
 }
 
-export { Snackbar };
+export { Snackbar, SnackbarAction };

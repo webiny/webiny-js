@@ -1,15 +1,15 @@
 // @flow
-import * as React from "react";
+import React, { useEffect } from "react";
 import { css } from "emotion";
-import { compose, withHandlers, lifecycle } from "recompose";
 import { get } from "lodash";
+import { useHandler } from "@webiny/app/hooks/useHandler";
 
 function appendSDK(props) {
     const { element } = props;
     const { url } = get(element, "data.source") || {};
 
     if (!url || window["PinUtils"]) {
-        return;
+        return Promise.resolve();
     }
 
     return new Promise(resolve => {
@@ -36,30 +36,27 @@ const centerAlign = css({
     textAlign: "center"
 });
 
-export default compose(
-    withHandlers({
-        renderEmbed: ({ element }: Object) =>
-            function renderEmbed() {
-                const data = get(element, "data.source");
-                return (
-                    <div id={element.id} className={centerAlign}>
-                        <a
-                            data-pin-do="embedPin"
-                            data-pin-width={data.size || "small"}
-                            href={data.url}
-                        />
-                    </div>
-                );
-            }
-    }),
-    lifecycle({
-        async componentDidMount() {
-            await appendSDK(this.props);
-            initEmbed(this.props);
-        }
-    })
-)(({ element, renderEmbed }: Object) => {
-    const { url } = get(element, "data.source") || {};
+export default (props: Object) => {
+    const { url } = get(props.element, "data.source") || {};
+
+    useEffect(() => {
+        appendSDK(props).then(() => initEmbed(props));
+    }, []);
+
+    const renderEmbed = useHandler(props, ({ element }) => {
+        return function renderEmbed() {
+            const data = get(element, "data.source");
+            return (
+                <div id={element.id} className={centerAlign}>
+                    <a
+                        data-pin-do="embedPin"
+                        data-pin-width={data.size || "small"}
+                        href={data.url}
+                    />
+                </div>
+            );
+        };
+    });
 
     return url ? renderEmbed() : null;
-});
+};

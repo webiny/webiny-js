@@ -1,7 +1,6 @@
 //@flow
-import * as React from "react";
+import React, { useMemo, useCallback } from "react";
 import { connect } from "@webiny/app-page-builder/editor/redux";
-import { compose, withHandlers } from "recompose";
 import { Tabs, Tab } from "@webiny/ui/Tabs";
 import { get, set } from "dot-prop-immutable";
 import { updateElement } from "@webiny/app-page-builder/editor/actions";
@@ -11,17 +10,35 @@ import ColorPicker from "@webiny/app-page-builder/editor/plugins/elementSettings
 import IconPicker from "@webiny/app-page-builder/editor/plugins/elementSettings/components/IconPicker";
 import { getSvg } from "./utils";
 
-type Props = {
-    element: Object,
-    updateIcon: Function,
-    updateWidth: Function,
-    updateColor: Function,
-    updateColorPreview: Function
-};
-
-const IconSettings = (props: Props) => {
-    const { element, updateIcon, updateWidth, updateColor, updateColorPreview } = props;
+const IconSettings = ({ element, updateElement }: Object) => {
     const { data: { icon = {} } = {} } = element;
+
+    const setData = useMemo(() => {
+        const historyUpdated = {};
+
+        return (name, value, history = true) => {
+            const attrKey = `data.icon.${name}`;
+
+            let newElement = set(element, attrKey, value);
+            const { id, width, color } = get(newElement, "data.icon");
+            newElement = set(newElement, "data.icon.svg", getSvg(id, { width, color }));
+
+            if (!history) {
+                updateElement({ element: newElement, history });
+                return;
+            }
+
+            if (historyUpdated[name] !== value) {
+                historyUpdated[name] = value;
+                updateElement({ element: newElement });
+            }
+        };
+    }, [element, updateElement]);
+
+    const updateIcon = useCallback(value => setData("id", value.id), [setData]);
+    const updateColor = useCallback(value => setData("color", value), [setData]);
+    const updateColorPreview = useCallback(value => setData("color", value, false), [setData]);
+    const updateWidth = useCallback(value => setData("width", value)[setData]);
 
     return (
         <React.Fragment>
@@ -41,39 +58,7 @@ const IconSettings = (props: Props) => {
     );
 };
 
-export default compose(
-    connect(
-        state => ({ element: getActiveElement(state) }),
-        { updateElement }
-    ),
-    withHandlers({
-        updateSettings: ({ updateElement, element }) => {
-            const historyUpdated = {};
-
-            return (name, value, history = true) => {
-                const attrKey = `data.icon.${name}`;
-
-                let newElement = set(element, attrKey, value);
-                const { id, width, color } = get(newElement, "data.icon");
-                newElement = set(newElement, "data.icon.svg", getSvg(id, { width, color }));
-
-                if (!history) {
-                    updateElement({ element: newElement, history });
-                    return;
-                }
-
-                if (historyUpdated[name] !== value) {
-                    historyUpdated[name] = value;
-                    updateElement({ element: newElement });
-                }
-            };
-        }
-    }),
-    withHandlers({
-        updateIcon: ({ updateSettings }) => (value: Object) => updateSettings("id", value.id),
-        updateColor: ({ updateSettings }) => (value: string) => updateSettings("color", value),
-        updateColorPreview: ({ updateSettings }) => (value: string) =>
-            updateSettings("color", value, false),
-        updateWidth: ({ updateSettings }) => (value: string) => updateSettings("width", value)
-    })
+export default connect(
+    state => ({ element: getActiveElement(state) }),
+    { updateElement }
 )(IconSettings);

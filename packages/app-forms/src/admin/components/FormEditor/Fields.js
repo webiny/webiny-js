@@ -1,7 +1,7 @@
 import React from "react";
 import { useFormEditor } from "@webiny/app-forms/admin/components/FormEditor/Context";
 import { getPlugins } from "@webiny/plugins";
-import styled from "react-emotion";
+import styled from "@emotion/styled";
 import { css } from "emotion";
 import { Icon } from "@webiny/ui/Icon";
 import { Accordion, AccordionItem } from "@webiny/ui/Accordion";
@@ -70,18 +70,16 @@ const accordionItem = css({
 const Field = ({ onFieldDragStart, fieldType: { name, label } }) => {
     return (
         <Draggable beginDrag={{ ui: "field", name }}>
-            {({ connectDragSource }) =>
-                connectDragSource(
-                    <div style={{ marginBottom: 10 }} onDragStart={onFieldDragStart}>
-                        <FieldContainer>
-                            <FieldHandle>
-                                <Icon icon={<HandleIcon />} />
-                            </FieldHandle>
-                            <FieldLabel>{label}</FieldLabel>
-                        </FieldContainer>
-                    </div>
-                )
-            }
+            {({ drag }) => (
+                <div ref={drag} style={{ marginBottom: 10 }} onDragStart={onFieldDragStart}>
+                    <FieldContainer>
+                        <FieldHandle>
+                            <Icon icon={<HandleIcon />} />
+                        </FieldHandle>
+                        <FieldLabel>{label}</FieldLabel>
+                    </FieldContainer>
+                </div>
+            )}
         </Draggable>
     );
 };
