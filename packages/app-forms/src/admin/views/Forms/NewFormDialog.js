@@ -7,7 +7,7 @@ import { Form } from "@webiny/form";
 import { Input } from "@webiny/ui/Input";
 import { CREATE_FORM } from "@webiny/app-forms/admin/viewsGraphql";
 import get from "lodash.get";
-import { useSnackbar } from "@webiny/app-admin/components";
+import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { CircularProgress } from "@webiny/ui/Progress";
 
 import { i18n } from "@webiny/app/i18n";

@@ -11,7 +11,7 @@ import {
     PUBLISH_REVISION,
     UNPUBLISH_REVISION
 } from "@webiny/app-forms/admin/viewsGraphql";
-import { useSnackbar } from "@webiny/app-admin/components";
+import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 
 export const useRevision = ({ revision, form }) => {
     const { history } = useReactRouter();

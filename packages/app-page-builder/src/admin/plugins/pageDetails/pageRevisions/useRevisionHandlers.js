@@ -7,7 +7,7 @@ import {
     deleteRevision as deleteGql
 } from "@webiny/app-page-builder/admin/graphql/pages";
 import { usePublishRevisionHandler } from "../utils/usePublishRevisionHandler";
-import { useSnackbar } from "@webiny/app-admin/components";
+import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { usePageDetails } from "@webiny/app-page-builder/admin/hooks/usePageDetails";
 
 export function useRevisionHandlers({ rev }) {

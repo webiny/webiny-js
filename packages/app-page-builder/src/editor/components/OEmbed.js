@@ -8,7 +8,7 @@ import { set } from "dot-prop-immutable";
 import gql from "graphql-tag";
 import { useQuery } from "react-apollo";
 import { updateElement } from "@webiny/app-page-builder/editor/actions";
-import { useSnackbar } from "@webiny/app-admin/components";
+import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 
 function appendSDK(props) {
     const { sdk, global, element } = props;

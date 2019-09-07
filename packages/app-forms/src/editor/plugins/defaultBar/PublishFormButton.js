@@ -3,7 +3,7 @@ import { Mutation } from "react-apollo";
 import useReactRouter from "use-react-router";
 import { ButtonPrimary } from "@webiny/ui/Button";
 import { ConfirmationDialog } from "@webiny/ui/ConfirmationDialog";
-import { useSnackbar } from "@webiny/app-admin/components";
+import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { useFormEditor } from "@webiny/app-forms/admin/components/FormEditor/Context";
 import { publishRevision } from "./PublishFormButton/graphql";
 

@@ -7,8 +7,6 @@ import { IconButton } from "@webiny/ui/Button";
 import { Icon } from "@webiny/ui/Icon";
 import { compose, withProps, withHandlers } from "recompose";
 import _ from "lodash";
-import styled from "@emotion/styled";
-import { css } from "emotion";
 import { getPlugin, getPlugins } from "@webiny/plugins";
 import { withUi } from "@webiny/app/components";
 import { Typography } from "@webiny/ui/Typography";
@@ -16,6 +14,19 @@ import { Transition } from "react-transition-group";
 import Menu from "./Menu";
 import handlers from "./handlers";
 import utils from "./utils";
+import {
+    linkStyle,
+    logoStyle,
+    MenuFooter,
+    MenuHeader,
+    menuSubtitle,
+    menuTitle,
+    navContent,
+    navHeader,
+    subFooter,
+    submenuItems,
+    submenuList
+} from "./Styled";
 
 import { ReactComponent as MenuIcon } from "@webiny/app-admin/assets/icons/baseline-menu-24px.svg";
 import { ReactComponent as DownIcon } from "@webiny/app-admin/assets/icons/round-keyboard_arrow_down-24px.svg";
@@ -23,94 +34,6 @@ import { ReactComponent as UpIcon } from "@webiny/app-admin/assets/icons/round-k
 import { ReactComponent as DocsIcon } from "@webiny/app-admin/assets/icons/icon-documentation.svg";
 import { ReactComponent as CommunityIcon } from "@webiny/app-admin/assets/icons/icon-community.svg";
 import { ReactComponent as GithubIcon } from "@webiny/app-admin/assets/icons/github-brands.svg";
-
-const MenuHeader = styled("div")({
-    display: "flex",
-    alignItems: "center",
-    padding: 5,
-    backgroundColor: "var(--mdc-theme-surface)",
-    borderBottom: "1px solid var(--mdc-theme-on-background)"
-});
-
-const navHeader = css({
-    padding: 0,
-    "&.mdc-drawer__header": {
-        padding: "0 !important",
-        minHeight: 0
-    }
-});
-
-const navContent = css({
-    padding: "0 !important"
-});
-
-const logoStyle = css({
-    "&.mdc-top-app-bar__title": {
-        paddingLeft: 15,
-        ".webiny-logo": {
-            color: "var(--mdc-theme-primary)"
-        }
-    }
-});
-
-const menuTitle = css({
-    ".mdc-drawer &.mdc-list": {
-        borderBottom: "1px solid var(--mdc-theme-on-background)",
-        padding: 0,
-        ".mdc-list-item": {
-            margin: 0,
-            padding: "0 15px",
-            height: "auto",
-            width: "100%",
-            fontWeight: "600",
-            boxSizing: "border-box"
-        },
-        '>a[data-expanded="true"]': {
-            ".mdc-list-item": {
-                backgroundColor: "var(--mdc-theme-background)"
-            }
-        }
-    }
-});
-
-const linkStyle = css({
-    color: "var(--mdc-theme-text-primary-on-background)",
-    textDecoration: "none",
-    fontWeight: "600"
-});
-
-const submenuItems = css({
-    ".mdc-drawer &.mdc-list-item": {
-        paddingLeft: 65
-    }
-});
-
-const submenuList = css({
-    "&.mdc-list": {
-        padding: 0
-    }
-});
-
-const menuSubtitle = css({
-    marginLeft: 20,
-    display: "block",
-    color: "var(--mdc-theme-on-surface)"
-});
-
-const MenuFooter = styled("div")({
-    borderTop: "1px solid var(--mdc-theme-on-background)",
-    a: {
-        color: "var(--mdc-theme-text-on-primary)",
-        textDecoration: "none"
-    }
-});
-
-const subFooter = css({
-    ".mdc-drawer &.mdc-list-item": {
-        borderTop: "1px solid var(--mdc-theme-on-background)",
-        padding: "10px 8px"
-    }
-});
 
 function findMenuIndex(findIn, menu) {
     return _.findIndex(findIn, item => {

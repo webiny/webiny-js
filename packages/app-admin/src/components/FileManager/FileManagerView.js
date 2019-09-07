@@ -17,7 +17,7 @@ import FileDetails from "./FileDetails";
 import LeftSidebar from "./LeftSidebar";
 import BottomInfoBar from "./BottomInfoBar";
 import { OverlayLayout } from "@webiny/app-admin/components/OverlayLayout";
-import { withSnackbar, type WithSnackbarProps } from "@webiny/app-admin/components";
+import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { Scrollbar } from "@webiny/ui/Scrollbar";
 import { css } from "emotion";
 import styled from "@emotion/styled";
@@ -128,7 +128,6 @@ function FileManagerView(props: WithSnackbarProps & Props) {
         onChange,
         accept,
         multiple,
-        showSnackbar,
         maxSize,
         multipleMaxCount,
         multipleMaxSize
@@ -148,6 +147,8 @@ function FileManagerView(props: WithSnackbarProps & Props) {
         hasPreviouslyUploadedFiles,
         setHasPreviouslyUploadedFiles
     } = useFileManager();
+
+    const { showSnackbar } = useSnackbar();
 
     const gqlQuery = useRef();
 
@@ -399,4 +400,4 @@ FileManagerView.defaultProps = {
     multipleMaxCount: 100
 };
 
-export default withSnackbar()(FileManagerView);
+export default FileManagerView;

@@ -11,7 +11,7 @@ import { withConfirmation, type WithConfirmationProps } from "@webiny/ui/Confirm
 import { usePageBuilderSettings } from "@webiny/app-page-builder/admin/hooks/usePageBuilderSettings";
 import { css } from "emotion";
 import { Mutation } from "react-apollo";
-import { useSnackbar } from "@webiny/app-admin/components";
+import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import classNames from "classnames";
 import { setHomePage } from "./graphql";
 

@@ -4,7 +4,8 @@ import dot from "dot-prop-immutable";
 import { useApolloClient } from "react-apollo";
 import useReactRouter from "use-react-router";
 import { useHandler } from "@webiny/app/hooks/useHandler";
-import { withDialog, useSnackbar } from "@webiny/app-admin/components";
+import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
+import { useDialog } from "@webiny/app-admin/hooks/useDialog";
 import { IconButton } from "@webiny/ui/Button";
 import { Tooltip } from "@webiny/ui/Tooltip";
 import { withConfirmation } from "@webiny/ui/ConfirmationDialog";
@@ -15,36 +16,34 @@ const DeletePage = props => {
     const client = useApolloClient();
     const { showSnackbar } = useSnackbar();
     const { history } = useReactRouter();
+    const { showDialog } = useDialog();
 
-    const confirmDelete = useHandler(
-        props,
-        ({ pageDetails: { page }, showConfirmation, showDialog }) => () => {
-            showConfirmation(async () => {
-                const { data: res } = await client.mutate({
-                    mutation: deletePage,
-                    variables: { id: page.parent },
-                    refetchQueries: ["PbListPages"]
-                });
-                const { error } = dot.get(res, "pageBuilder.deletePage");
-                if (error) {
-                    return showDialog(error.message, { title: "Could not delete page" });
-                }
-
-                showSnackbar(
-                    <span>
-                        The page{" "}
-                        <strong>
-                            {page.title.substr(0, 20)}
-                            ...
-                        </strong>{" "}
-                        was deleted successfully!
-                    </span>
-                );
-
-                history.push("/page-builder/pages");
+    const confirmDelete = useHandler(props, ({ pageDetails: { page }, showConfirmation }) => () => {
+        showConfirmation(async () => {
+            const { data: res } = await client.mutate({
+                mutation: deletePage,
+                variables: { id: page.parent },
+                refetchQueries: ["PbListPages"]
             });
-        }
-    );
+            const { error } = dot.get(res, "pageBuilder.deletePage");
+            if (error) {
+                return showDialog(error.message, { title: "Could not delete page" });
+            }
+
+            showSnackbar(
+                <span>
+                    The page{" "}
+                    <strong>
+                        {page.title.substr(0, 20)}
+                        ...
+                    </strong>{" "}
+                    was deleted successfully!
+                </span>
+            );
+
+            history.push("/page-builder/pages");
+        });
+    });
 
     return (
         <Tooltip content={"Delete"} placement={"top"}>
@@ -61,4 +60,4 @@ export default withConfirmation(({ pageDetails: { page } }) => ({
             Are you sure you want to permanently delete the page <strong>{page.title}</strong>?
         </p>
     )
-}))(withDialog()(DeletePage));
+}))(DeletePage);

@@ -3,15 +3,17 @@ import React from "react";
 import { ReactComponent as SignOutIcon } from "@webiny/app-security/admin/assets/icons/round-lock_open-24px.svg";
 import { ListItem, ListItemGraphic } from "@webiny/ui/List";
 import { Icon } from "@webiny/ui/Icon";
-import { withSecurity } from "@webiny/app-security/admin/context";
+import { useSecurity } from "@webiny/app-security/admin/hooks/useSecurity";
 
-const SignOut = (props: Object) => {
+const SignOut = () => {
+    const { logout } = useSecurity();
+
     return (
-        <ListItem onClick={() => props.security.logout()}>
+        <ListItem onClick={logout}>
             <ListItemGraphic>{<Icon icon={<SignOutIcon />} />}</ListItemGraphic>
             Sign out
         </ListItem>
     );
 };
 
-export default withSecurity()(SignOut);
+export default SignOut;

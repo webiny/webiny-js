@@ -8,7 +8,7 @@ import { css } from "emotion";
 import { Grid, Cell } from "@webiny/ui/Grid";
 import { Typography } from "@webiny/ui/Typography";
 import { useHandler } from "@webiny/app/hooks/useHandler";
-import { useSnackbar } from "@webiny/app-admin/components";
+import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { AutoComplete } from "@webiny/ui/AutoComplete";
 import { getPlugins } from "@webiny/plugins";
 import { Form } from "@webiny/form";

@@ -2,7 +2,7 @@
 import React from "react";
 import { useApolloClient } from "react-apollo";
 import useReactRouter from "use-react-router";
-import { useSnackbar } from "@webiny/app-admin/components";
+import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { IconButton } from "@webiny/ui/Button";
 import { Tooltip } from "@webiny/ui/Tooltip";
 import { ReactComponent as DeleteIcon } from "@webiny/app-forms/admin/icons/delete.svg";

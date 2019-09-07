@@ -1,7 +1,7 @@
 // @flow
 import gql from "graphql-tag";
 
-export const getCurrentUser = gql`
+export const GET_CURRENT_USER = gql`
     {
         security {
             getCurrentUser {
@@ -18,22 +18,6 @@ export const getCurrentUser = gql`
                         id
                         src
                     }
-                }
-                error {
-                    code
-                    message
-                }
-            }
-        }
-    }
-`;
-
-export const loginUsingToken = gql`
-    mutation LoginUsingToken($token: String!) {
-        security {
-            loginUsingToken(token: $token) {
-                data {
-                    token
                 }
                 error {
                     code

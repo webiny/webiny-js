@@ -6,7 +6,7 @@ import dataURLtoBlob from "dataurl-to-blob";
 import { useHandler } from "@webiny/app/hooks/useHandler";
 import { connect } from "@webiny/app-page-builder/editor/redux";
 import { getPlugins, getPlugin } from "@webiny/plugins";
-import { useSnackbar } from "@webiny/app-admin/components";
+import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { useKeyHandler } from "@webiny/app-page-builder/editor/hooks/useKeyHandler";
 import {
     getActiveElementId,

@@ -5,7 +5,7 @@ import useReactRouter from "use-react-router";
 import styled from "@emotion/styled";
 import { Elevation } from "@webiny/ui/Elevation";
 import { GET_FORM } from "@webiny/app-forms/admin/viewsGraphql";
-import { useSnackbar } from "@webiny/app-admin/components";
+import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { get } from "lodash";
 import { Tabs } from "@webiny/ui/Tabs";
 

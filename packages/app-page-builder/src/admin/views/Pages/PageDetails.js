@@ -7,7 +7,7 @@ import { renderPlugins } from "@webiny/app/plugins";
 import { getPage } from "@webiny/app-page-builder/admin/graphql/pages";
 import { PageDetailsProvider, PageDetailsConsumer } from "../../contexts/PageDetails";
 import { ElementAnimation } from "@webiny/app-page-builder/render/components";
-import { useSnackbar } from "@webiny/app-admin/components";
+import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { get } from "lodash";
 
 const EmptySelect = styled("div")({

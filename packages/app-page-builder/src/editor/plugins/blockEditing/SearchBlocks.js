@@ -5,7 +5,7 @@ import { connect } from "@webiny/app-page-builder/editor/redux";
 import { deactivatePlugin, updateElement } from "@webiny/app-page-builder/editor/actions";
 import { getContent } from "@webiny/app-page-builder/editor/selectors";
 import { useKeyHandler } from "@webiny/app-page-builder/editor/hooks/useKeyHandler";
-import { useSnackbar } from "@webiny/app-admin/components/withSnackbar";
+import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { getPlugins, unregisterPlugin } from "@webiny/plugins";
 import { createBlockElements } from "@webiny/app-page-builder/editor/utils";
 import { OverlayLayout } from "@webiny/app-admin/components/OverlayLayout";

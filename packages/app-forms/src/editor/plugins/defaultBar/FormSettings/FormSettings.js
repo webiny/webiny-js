@@ -10,7 +10,7 @@ import { Icon } from "@webiny/ui/Icon";
 import { ButtonPrimary } from "@webiny/ui/Button";
 import { List, ListItem, ListItemGraphic } from "@webiny/ui/List";
 import { useFormEditor } from "@webiny/app-forms/admin/components/FormEditor/Context";
-import { useSnackbar } from "@webiny/app-admin/components";
+import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 
 import { i18n } from "@webiny/app/i18n";
 const t = i18n.namespace("FormsApp.Editor.FormSettings");
