@@ -35,6 +35,10 @@
 // button styles
 .mdc-button{
   @include mdc-button-shape-radius(2px);
+  .mdc-button__label{
+    display: flex;
+    align-items: center;
+  }
 }
 
 // set icon colors
