@@ -19,7 +19,7 @@ type Props = {
 };
 
 const enabled = css({
-    color: "var(--mdc-theme-primary, #fa5723)"
+    color: "var(--mdc-theme-primary, #fa5723) !important"
 });
 
 const cellStyle = { marginBottom: 0 };

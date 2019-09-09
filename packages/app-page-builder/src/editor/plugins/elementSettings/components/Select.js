@@ -6,6 +6,14 @@ import { Typography } from "@webiny/ui/Typography";
 import { Grid, Cell } from "@webiny/ui/Grid";
 import { Select as SelectCmp } from "@webiny/ui/Select";
 import { getActiveElement } from "@webiny/app-page-builder/editor/selectors";
+import { css } from "emotion";
+
+const selectStyle = css({
+    select: {
+        height: 35,
+        paddingTop: "4px !important"
+    }
+});
 
 type Props = {
     label: string,
@@ -23,7 +31,12 @@ const Select = React.memo(({ label, value, updateValue, options, children }: Pro
                 <Typography use={"overline"}>{label}</Typography>
             </Cell>
             <Cell span={8}>
-                <SelectCmp value={value} onChange={updateValue} options={options}>
+                <SelectCmp
+                    className={selectStyle}
+                    value={value}
+                    onChange={updateValue}
+                    options={options}
+                >
                     {children}
                 </SelectCmp>
             </Cell>

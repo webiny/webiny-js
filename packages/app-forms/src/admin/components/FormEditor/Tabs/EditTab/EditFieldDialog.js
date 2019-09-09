@@ -23,7 +23,7 @@ import { useFormEditor } from "@webiny/app-forms/admin/components/FormEditor/Con
 import { useI18N } from "@webiny/app-i18n/hooks/useI18N";
 
 const dialogBody = css({
-    "&.mdc-dialog__body": {
+    "&.webiny-ui-dialog__content": {
         marginTop: 0,
         padding: "0"
     }

@@ -32,6 +32,15 @@
   background-color: $mdc-theme-surface;
 }
 
+// button styles
+.mdc-button{
+  @include mdc-button-shape-radius(2px);
+  .mdc-button__label{
+    display: flex;
+    align-items: center;
+  }
+}
+
 // set icon colors
 .mdc-icon, .mdc-icon-button {
   @include mdc-icon-button-ink-color($mdc-theme-text-secondary-on-background)
@@ -67,6 +76,8 @@
 
   .mdc-tab{
     @include mdc-tab-fixed-width('100px');
+    @include mdc-tab-text-label-color($mdc-theme-on-secondary);
+    @include mdc-tab-icon-color($mdc-theme-on-secondary);
 
     // fixes tab width
     flex: 1 0;
@@ -126,6 +137,23 @@ Fix the width of input components when inside grids
   width: 100%;
   @include mdc-text-field-shape-radius(0);
   @include mdc-text-field-textarea-shape-radius(0);
+  @include mdc-text-field-fill-color($mdc-theme-on-background);
+  @include mdc-text-field-label-color($mdc-theme-text-primary-on-background)	
+  @include mdc-text-field-ink-color($mdc-theme-on-surface)
+  &.mdc-text-field--textarea{
+    textarea{
+      padding-top: 25px;
+    }
+    .mdc-floating-label.mdc-floating-label{
+      margin-left: 11px;
+      top: 35px;
+    }
+    &.--focused{
+      .mdc-floating-label.mdc-floating-label{
+        top: 0px;
+      }
+    }
+  }
   &.mdc-text-field--disabled{
     background-color: $mdc-theme-background;
     opacity: 0.55;
@@ -139,6 +167,7 @@ Fix the width of input components when inside grids
   .mdc-text-field__input{
     width: 100%;
     resize: none;
+    //border: 1px solid $mdc-theme-on-background;
   }
 }
 
@@ -155,6 +184,7 @@ Fix the width of input components when inside grids
 .mdc-dialog{
   .mdc-dialog__surface{
     border-radius: 0px;
+    max-width: 875px;
     .mdc-dialog__title{
       background-color: $mdc-theme-secondary;
       padding-bottom: 24px;
@@ -171,8 +201,8 @@ Fix the width of input components when inside grids
       background-color: $mdc-theme-surface;
 
       // add options for when tabs are inside the body
-      >.mdc-tab-bar{
-        margin-top: -24px;
+      >.webiny-ui-tabs>.mdc-tab-bar{
+        margin-top: 0px;
         @include mdc-tab-bar-width(100%);
         background-color: $mdc-theme-secondary;
         .mdc-tab{
@@ -210,6 +240,7 @@ Fix the width of input components when inside grids
   @include mdc-select-label-color($mdc-theme-text-secondary-on-background);
   @include mdc-select-bottom-line-color($mdc-theme-text-secondary-on-background);
   @include mdc-select-hover-bottom-line-color($mdc-theme-text-primary-on-background);
+  @include mdc-select-container-fill-color($mdc-theme-on-background);
   @include mdc-select-shape-radius(0);
   @include mdc-select-outline-shape-radius(2);
 
@@ -228,11 +259,17 @@ Fix the width of input components when inside grids
       padding-top: 10px;
     }
   }
+
+  .mdc-select__dropdown-icon{
+    bottom: 50%;
+    transform: translateY(50%);
+  }
 }
 
 // snackbar
 .mdc-snackbar	{
-  z-index: 1000; // todo: replace this with mixin mdc-snackbar-z-index($z-index) once we update to latest version of MDC
+  @include mdc-snackbar-shape-radius(2px);
+  @include mdc-snackbar-z-index(1000);
 }
 
 // when grid is inside another grid cell, child grid should not have any padding

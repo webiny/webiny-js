@@ -9,7 +9,7 @@ import { i18n } from "@webiny/app/i18n";
 const t = i18n.namespace("FormEditor.FormSubmissionDialog");
 
 const dialogBody = css({
-    "&.mdc-dialog__body": {
+    "&.webiny-ui-dialog__content": {
         marginTop: 0,
         padding: "25",
         div: {

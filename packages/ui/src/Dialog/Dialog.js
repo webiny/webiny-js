@@ -8,6 +8,7 @@ import {
     DialogActions as RmwcDialogActions,
     DialogButton as RmwcDialogButton
 } from "@rmwc/dialog";
+import { getClasses } from "@webiny/ui/Helpers";
 
 type Props = {
     children: any,
@@ -43,7 +44,10 @@ export class Dialog extends React.Component<Props> {
         const container: Element = (this.container: any);
 
         // Let's pass "permanent" / "persistent" / "temporary" flags as "mode" prop instead.
-        return ReactDOM.createPortal(<RmwcDialog {...props}>{children}</RmwcDialog>, container);
+        return ReactDOM.createPortal(
+            <RmwcDialog {...getClasses(props, "webiny-ui-dialog")}>{children}</RmwcDialog>,
+            container
+        );
     }
 }
 
@@ -53,7 +57,9 @@ export class Dialog extends React.Component<Props> {
  * @returns {*}
  * @constructor
  */
-export const DialogTitle = (props: Object) => <RmwcDialogTitle {...props} />;
+export const DialogTitle = (props: Object) => (
+    <RmwcDialogTitle {...getClasses(props, "webiny-ui-dialog__title")} />
+);
 
 /**
  * A simple component for showing dialog's body.
@@ -61,7 +67,9 @@ export const DialogTitle = (props: Object) => <RmwcDialogTitle {...props} />;
  * @returns {*}
  * @constructor
  */
-export const DialogContent = (props: Object) => <RmwcDialogContent {...props} />;
+export const DialogContent = (props: Object) => (
+    <RmwcDialogContent {...getClasses(props, "webiny-ui-dialog__content")} />
+);
 
 /**
  * Can be used to show accept and cancel buttons.
@@ -69,7 +77,9 @@ export const DialogContent = (props: Object) => <RmwcDialogContent {...props} />
  * @returns {*}
  * @constructor
  */
-export const DialogActions = (props: Object) => <RmwcDialogActions {...props} />;
+export const DialogActions = (props: Object) => (
+    <RmwcDialogActions {...getClasses(props, "webiny-ui-dialog__actions")} />
+);
 
 /**
  * Use this to show a simple button.
@@ -77,7 +87,9 @@ export const DialogActions = (props: Object) => <RmwcDialogActions {...props} />
  * @returns {*}
  * @constructor
  */
-export const DialogButton = (props: Object) => <RmwcDialogButton {...props} />;
+export const DialogButton = (props: Object) => (
+    <RmwcDialogButton {...getClasses(props, "webiny-ui-dialog__button")} />
+);
 
 /**
  * Use this to close the dialog without taking any additional action.
@@ -87,7 +99,10 @@ export const DialogButton = (props: Object) => <RmwcDialogButton {...props} />;
  */
 export const DialogCancel = (props: { children: React.Node }) => {
     return (
-        <DialogButton {...props} action="close">
+        <DialogButton
+            {...getClasses(props, "webiny-ui-dialog__button webiny-ui-dialog__button--cancel")}
+            action="close"
+        >
             {props.children}
         </DialogButton>
     );
@@ -101,7 +116,10 @@ export const DialogCancel = (props: { children: React.Node }) => {
  */
 export const DialogAccept = (props: { children: React.Node }) => {
     return (
-        <DialogButton {...props} action="accept">
+        <DialogButton
+            {...getClasses(props, "webiny-ui-dialog__button webiny-ui-dialog__button--accept")}
+            action="accept"
+        >
             {props.children}
         </DialogButton>
     );

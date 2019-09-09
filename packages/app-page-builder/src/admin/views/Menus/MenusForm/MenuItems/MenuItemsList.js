@@ -16,7 +16,8 @@ const EmptyTree = styled("div")({
     height: "100%",
     display: "flex",
     alignItems: "center",
-    justifyContent: "center"
+    justifyContent: "center",
+    color: "var(--mdc-theme-on-surface)"
 });
 
 class MenuItemsList extends React.Component<*> {
