@@ -126,6 +126,17 @@ Fix the width of input components when inside grids
   width: 100%;
   @include mdc-text-field-shape-radius(0);
   @include mdc-text-field-textarea-shape-radius(0);
+  &.mdc-text-field--textarea{
+    textarea{
+      padding-top: 10px;
+    }
+    .mdc-floating-label.mdc-floating-label{
+      margin-left: 10px;
+      padding: 0 5px;
+      top: 25px;
+      background-color: $mdc-theme-surface;
+    }
+  }
   &.mdc-text-field--disabled{
     background-color: $mdc-theme-background;
     opacity: 0.55;
@@ -139,6 +150,7 @@ Fix the width of input components when inside grids
   .mdc-text-field__input{
     width: 100%;
     resize: none;
+    border: 1px solid $mdc-theme-on-background;
   }
 }
 
