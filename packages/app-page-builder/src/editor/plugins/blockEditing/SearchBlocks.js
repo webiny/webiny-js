@@ -1,7 +1,6 @@
 //@flow
 import React, { useEffect, useCallback, useState, useMemo } from "react";
 import { Mutation } from "react-apollo";
-import { clone } from "lodash";
 import { connect } from "@webiny/app-page-builder/editor/redux";
 import { deactivatePlugin, updateElement } from "@webiny/app-page-builder/editor/actions";
 import { getContent } from "@webiny/app-page-builder/editor/selectors";
@@ -240,11 +239,10 @@ const SearchBar = props => {
                                             <SimpleFormContent>
                                                 <Styled.BlockList>
                                                     <BlocksList
-                                                        key={search || activeCategory}
                                                         category={activeCategory}
                                                         addBlock={addBlockToContent}
                                                         deactivatePlugin={deactivatePlugin}
-                                                        blocks={clone(getBlocksList())}
+                                                        blocks={getBlocksList()}
                                                         onEdit={plugin => setEditingBlock(plugin)}
                                                         onDelete={plugin =>
                                                             deleteBlock({
