@@ -67,6 +67,8 @@
 
   .mdc-tab{
     @include mdc-tab-fixed-width('100px');
+    @include mdc-tab-text-label-color($mdc-theme-on-secondary);
+    @include mdc-tab-icon-color($mdc-theme-on-secondary);
 
     // fixes tab width
     flex: 1 0;
