@@ -259,6 +259,11 @@ Fix the width of input components when inside grids
       padding-top: 10px;
     }
   }
+
+  .mdc-select__dropdown-icon{
+    bottom: 50%;
+    transform: translateY(50%);
+  }
 }
 
 // snackbar
