@@ -10,23 +10,26 @@ import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { getPlugins, unregisterPlugin } from "@webiny/plugins";
 import { createBlockElements } from "@webiny/app-page-builder/editor/utils";
 import { OverlayLayout } from "@webiny/app-admin/components/OverlayLayout";
+import { SplitView, LeftPanel, RightPanel } from "@webiny/app-admin/components/SplitView";
+import { List, ListItem, ListItemGraphic } from "@webiny/ui/List";
+import { Icon } from "@webiny/ui/Icon";
+import { DelayedOnChange } from "@webiny/app-page-builder/editor/components/DelayedOnChange";
+import { Typography } from "@webiny/ui/Typography";
+
 import { ReactComponent as SearchIcon } from "@webiny/app-page-builder/editor/assets/icons/search.svg";
-import * as Styled from "./StyledComponents";
-import { listItem, ListItemTitle, listStyle, TitleContent } from "./SearchBlocksStyled";
-import EditBlockDialog from "./EditBlockDialog";
-import { DELETE_ELEMENT, UPDATE_ELEMENT } from "./graphql";
 import {
     SimpleForm,
     SimpleFormContent,
     SimpleFormHeader
 } from "@webiny/app-admin/components/SimpleForm";
-import { SplitView, LeftPanel, RightPanel } from "@webiny/app-admin/components/SplitView";
-import { Icon } from "@webiny/ui/Icon";
-import { List, ListItem, ListItemGraphic } from "@webiny/ui/List";
-import { Typography } from "@webiny/ui/Typography";
+
 import { ReactComponent as AllIcon } from "./icons/round-clear_all-24px.svg";
 import createBlockPlugin from "@webiny/app-page-builder/admin/utils/createBlockPlugin";
 import BlocksList from "./BlocksList";
+import { DELETE_ELEMENT, UPDATE_ELEMENT } from "./graphql";
+import EditBlockDialog from "./EditBlockDialog";
+import { listItem, ListItemTitle, listStyle, TitleContent } from "./SearchBlocksStyled";
+import * as Styled from "./StyledComponents";
 
 const allBlockCategory = {
     type: "pb-editor-block-category",
@@ -176,13 +179,17 @@ const SearchBar = props => {
         return (
             <Styled.Input>
                 <Icon className={Styled.searchIcon} icon={<SearchIcon />} />
-                <input
-                    autoFocus
-                    type={"text"}
-                    placeholder="Search blocks..."
-                    value={search}
-                    onChange={e => setSearch(e.target.value)}
-                />
+                <DelayedOnChange value={search} onChange={value => setSearch(value)}>
+                    {({ value, onChange }) => (
+                        <input
+                            autoFocus
+                            type={"text"}
+                            placeholder="Search blocks..."
+                            value={value}
+                            onChange={e => onChange(e.target.value)}
+                        />
+                    )}
+                </DelayedOnChange>
             </Styled.Input>
         );
     }, [search]);
@@ -233,7 +240,7 @@ const SearchBar = props => {
                                             <SimpleFormContent>
                                                 <Styled.BlockList>
                                                     <BlocksList
-                                                        key={activeCategory}
+                                                        key={search || activeCategory}
                                                         category={activeCategory}
                                                         addBlock={addBlockToContent}
                                                         deactivatePlugin={deactivatePlugin}
