@@ -3,7 +3,7 @@ import { hot } from "react-hot-loader";
 import React, { Fragment } from "react";
 import { UiProvider } from "@webiny/app/context/ui";
 import { registerPlugins, getPlugins } from "@webiny/plugins";
-import { ThemeProvider } from "@webiny/app-admin/context";
+import { ThemeProvider } from "@webiny/app-admin/contexts";
 import { PageBuilderProvider } from "@webiny/app-page-builder/context";
 import { SecurityProvider } from "@webiny/app-security/admin/context";
 import { I18NProvider } from "@webiny/app-i18n/context";
