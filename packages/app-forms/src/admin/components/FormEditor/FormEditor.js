@@ -1,7 +1,7 @@
 // @flow
 import * as React from "react";
 import useReactRouter from "use-react-router";
-import { useSnackbar } from "@webiny/app-admin/components";
+import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 // Components
 import EditorBar from "./Bar";
 import EditorContent from "./EditorContent";

@@ -24,8 +24,6 @@ export const ELEMENT_CREATED = `Element created`;
 export const ELEMENT_DROPPED = `Element dropped`;
 export const TOGGLE_PLUGIN = `Toggle plugin`;
 export const DEACTIVATE_PLUGIN = `Deactivate plugin`;
-export const FOCUS_SLATE_EDITOR = `Focus slate editor`;
-export const BLUR_SLATE_EDITOR = `Blur slate editor`;
 export const HIGHLIGHT_ELEMENT = `Highlight element`;
 export const ACTIVATE_ELEMENT = `Activate element`;
 export const DEACTIVATE_ELEMENT = `Deactivate element`;
@@ -157,12 +155,6 @@ addReducer([ACTIVATE_ELEMENT], "ui.activeElement", (state, action) => {
 
 export const deactivateElement = createAction(DEACTIVATE_ELEMENT);
 addReducer([DEACTIVATE_ELEMENT], "ui.activeElement", () => null);
-
-export const focusSlateEditor = createAction(FOCUS_SLATE_EDITOR);
-addReducer([FOCUS_SLATE_EDITOR], "ui.slateFocused", () => true);
-
-export const blurSlateEditor = createAction(BLUR_SLATE_EDITOR);
-addReducer([BLUR_SLATE_EDITOR], "ui.slateFocused", () => false);
 
 export const dragStart = createAction(DRAG_START);
 addReducer([DRAG_START], "ui.dragging", () => true);

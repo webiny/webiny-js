@@ -2,7 +2,7 @@
 import React from "react";
 import { set } from "dot-prop-immutable";
 import { useApolloClient } from "react-apollo";
-import { useSnackbar } from "@webiny/app-admin/components";
+import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import {
     publishRevision as publishRevisionGql,
     getPage

@@ -4,7 +4,6 @@ import type { Location } from "react-router-dom";
 import { useQuery } from "react-apollo";
 import { Content, buildQueryProps } from "./Page/index";
 import { usePageBuilder } from "@webiny/app-page-builder/hooks/usePageBuilder";
-import type { WithPageBuilderPropsType } from "@webiny/app-page-builder/context";
 import { get } from "lodash";
 import invariant from "invariant";
 import { CircularProgress } from "@webiny/ui/Progress";
@@ -14,7 +13,7 @@ const defaultPages = {
     notFound: null
 };
 
-type Props = { match: Object, location: Location, pageBuilder: WithPageBuilderPropsType };
+type Props = { match: Object, location: Location };
 
 const NO_404_PAGE_DEFAULT =
     "Could not fetch 404 (not found) page nor was a default page provided (set via PageBuilderProvider).";

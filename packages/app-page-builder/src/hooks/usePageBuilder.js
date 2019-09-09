@@ -1,6 +1,6 @@
 import * as React from "react";
 import { useContext } from "react";
-import { PageBuilderContext } from "../context";
+import { PageBuilderContext } from "../contexts/PageBuilder";
 
 type UsePageBuilderHookType = {
     theme: Object,

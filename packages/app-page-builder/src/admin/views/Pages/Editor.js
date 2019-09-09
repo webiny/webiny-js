@@ -10,7 +10,7 @@ import { SETUP_EDITOR } from "@webiny/app-page-builder/editor/actions";
 import { getPage } from "@webiny/app-page-builder/admin/graphql/pages";
 import { useSavedElements } from "@webiny/app-page-builder/admin/hooks/useSavedElements";
 import Snackbar from "@webiny/app-admin/plugins/Snackbar/Snackbar";
-import { useSnackbar } from "@webiny/app-admin/components";
+import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 
 import { Typography } from "@webiny/ui/Typography";
 import { LoadingEditor, LoadingTitle } from "./EditorStyled.js";

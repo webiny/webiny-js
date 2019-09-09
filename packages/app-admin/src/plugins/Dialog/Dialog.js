@@ -1,12 +1,18 @@
 // @flow
-import React from "react";
-import { compose, withProps, withHandlers, setDisplayName } from "recompose";
+import React, { useCallback } from "react";
+import { get } from "lodash";
+import { useUi } from "@webiny/app/hooks/useUi";
 import { Dialog, DialogAccept, DialogTitle, DialogActions, DialogContent } from "@webiny/ui/Dialog";
 
-import _ from "lodash";
-import { withUi } from "@webiny/app/components";
+const DialogMain = () => {
+    const ui = useUi();
+    const message = get(ui, "dialog.message");
+    const options = get(ui, "dialog.options", {});
 
-const DialogMain = ({ message, options, hideDialog }) => {
+    const hideDialog = useCallback(() => {
+        ui.setState(ui => ({ ...ui, dialog: null }));
+    }, [ui]);
+
     return (
         <Dialog>
             <Dialog open={!!message} onClose={hideDialog}>
@@ -20,16 +26,4 @@ const DialogMain = ({ message, options, hideDialog }) => {
     );
 };
 
-export default compose(
-    setDisplayName("DialogMain"),
-    withUi(),
-    withProps(props => ({
-        message: _.get(props.ui, "dialog.message"),
-        options: _.get(props.ui, "dialog.options", {})
-    })),
-    withHandlers({
-        hideDialog: props => () => {
-            props.ui.setState(ui => ({ ...ui, dialog: null }));
-        }
-    })
-)(DialogMain);
+export default DialogMain;

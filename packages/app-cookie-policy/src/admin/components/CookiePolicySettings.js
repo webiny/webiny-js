@@ -1,19 +1,19 @@
 // @flow
 import * as React from "react";
+import get from "lodash.get";
+import { Query, Mutation } from "react-apollo";
 import { Form } from "@webiny/form";
 import { Grid, Cell } from "@webiny/ui/Grid";
 import { Switch } from "@webiny/ui/Switch";
 import { Input } from "@webiny/ui/Input";
 import { ColorPicker } from "@webiny/ui/ColorPicker";
 import { ButtonSecondary, ButtonPrimary } from "@webiny/ui/Button";
-import { Query, Mutation } from "react-apollo";
-import { withSnackbar } from "@webiny/app-admin/components";
+import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { RadioGroup, Radio } from "@webiny/ui/Radio";
+import { CircularProgress } from "@webiny/ui/Progress";
 import graphql from "./graphql";
 import showCookiePolicy from "./../../utils/showCookiePolicy";
 import getDefaultCookiePolicySettings from "./getDefaultCookiePolicySettings";
-import { CircularProgress } from "@webiny/ui/Progress";
-import get from "lodash.get";
 
 import {
     SimpleForm,
@@ -47,7 +47,9 @@ const getFormData = settings => {
     return data;
 };
 
-const CookiePolicySettings = ({ showSnackbar }) => {
+const CookiePolicySettings = () => {
+    const { showSnackbar } = useSnackbar();
+
     return (
         <Query query={graphql.query}>
             {({ data, loading: queryInProgress }) => (
@@ -208,16 +210,19 @@ const CookiePolicySettings = ({ showSnackbar }) => {
                                                         type="primary"
                                                         align="right"
                                                         onClick={() => {
-                                                            showCookiePolicy({
-                                                                ...data,
-                                                                // Official bug fix.
-                                                                messagelink:
-                                                                    '<span id="cookieconsent:desc" class="cc-message">{{message}} <a aria-label="learn more about cookies" tabindex="0" class="cc-link" href="{{href}}" target="_blank">{{link}}</a></span>',
-                                                                dismissOnTimeout: 5000,
-                                                                cookie: {
-                                                                    expiryDays: 0.00000001
-                                                                }
-                                                            }, true);
+                                                            showCookiePolicy(
+                                                                {
+                                                                    ...data,
+                                                                    // Official bug fix.
+                                                                    messagelink:
+                                                                        '<span id="cookieconsent:desc" class="cc-message">{{message}} <a aria-label="learn more about cookies" tabindex="0" class="cc-link" href="{{href}}" target="_blank">{{link}}</a></span>',
+                                                                    dismissOnTimeout: 5000,
+                                                                    cookie: {
+                                                                        expiryDays: 0.00000001
+                                                                    }
+                                                                },
+                                                                true
+                                                            );
                                                         }}
                                                     >
                                                         Preview
@@ -244,4 +249,4 @@ const CookiePolicySettings = ({ showSnackbar }) => {
     );
 };
 
-export default withSnackbar()(CookiePolicySettings);
+export default CookiePolicySettings;

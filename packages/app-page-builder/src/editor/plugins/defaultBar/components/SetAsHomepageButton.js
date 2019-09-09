@@ -3,7 +3,7 @@ import React from "react";
 import { connect } from "@webiny/app-page-builder/editor/redux";
 import { getPage } from "@webiny/app-page-builder/editor/selectors";
 import { omit, isEqual } from "lodash";
-import { useSnackbar } from "@webiny/app-admin/components";
+import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import useReactRouter from "use-react-router";
 import { MenuItem } from "@webiny/ui/Menu";
 import { ListItemGraphic } from "@webiny/ui/List";

@@ -6,7 +6,7 @@ import { Form } from "@webiny/form";
 import { useFormEditor } from "@webiny/app-forms/admin/components/FormEditor/Context";
 import { getPlugins } from "@webiny/plugins";
 import { get, set } from "lodash";
-import { useSnackbar } from "@webiny/app-admin/components";
+import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { i18n } from "@webiny/app/i18n";
 const t = i18n.namespace("FormsApp.Editor.TriggersTab");
 

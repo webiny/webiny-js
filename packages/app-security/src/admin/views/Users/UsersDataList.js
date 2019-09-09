@@ -1,7 +1,6 @@
 import React from "react";
-import { compose } from "recompose";
 import { i18n } from "@webiny/app/i18n";
-import { withSecurity } from "@webiny/app-security/admin/context";
+import { useSecurity } from "@webiny/app-security/admin/hooks/useSecurity";
 import { ConfirmationDialog } from "@webiny/ui/ConfirmationDialog";
 import { Tooltip } from "@webiny/ui/Tooltip";
 import { Image } from "@webiny/app/components";
@@ -23,7 +22,8 @@ import { Avatar } from "@webiny/ui/Avatar";
 
 const t = i18n.ns("app-security/admin/users/data-list");
 
-const UsersDataList = ({ security }) => {
+const UsersDataList = () => {
+    const security = useSecurity();
     const { actions, list } = useCrud();
     return (
         <DataList
@@ -99,4 +99,4 @@ const UsersDataList = ({ security }) => {
     );
 };
 
-export default compose(withSecurity())(UsersDataList);
+export default UsersDataList;

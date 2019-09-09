@@ -10,7 +10,7 @@ import { DeleteIcon, EditIcon } from "@webiny/ui/List/DataList/icons";
 import { DELETE_FORM, CREATE_REVISION_FROM } from "@webiny/app-forms/admin/viewsGraphql";
 import { useApolloClient } from "react-apollo";
 import { useHandler } from "@webiny/app/hooks/useHandler";
-import { useSnackbar } from "@webiny/app-admin/components";
+import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 
 import {
     DataList,

@@ -6,7 +6,7 @@ import { useHandlers } from "@webiny/app/hooks/useHandlers";
 import { unregisterPlugin } from "@webiny/plugins";
 import { Typography } from "@webiny/ui/Typography";
 import { IconButton } from "@webiny/ui/Button";
-import { useSnackbar } from "@webiny/app-admin/components";
+import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { withConfirmation } from "@webiny/ui/ConfirmationDialog";
 import { ReactComponent as DeleteIcon } from "@webiny/app-page-builder/editor/assets/icons/close.svg";
 import { ReactComponent as EditIcon } from "@webiny/app-page-builder/editor/assets/icons/edit.svg";

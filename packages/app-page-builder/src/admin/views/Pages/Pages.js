@@ -6,7 +6,7 @@ import { useHandler } from "@webiny/app/hooks/useHandler";
 import { SplitView, LeftPanel, RightPanel } from "@webiny/app-admin/components/SplitView";
 import { FloatingActionButton } from "@webiny/app-admin/components/FloatingActionButton";
 import { withDataList } from "@webiny/app/components";
-import { useSnackbar } from "@webiny/app-admin/components";
+import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { createPage, listPages } from "@webiny/app-page-builder/admin/graphql/pages";
 import PagesDataList from "./PagesDataList";
 import PageDetails from "./PageDetails";

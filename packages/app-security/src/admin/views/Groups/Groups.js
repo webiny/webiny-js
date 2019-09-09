@@ -5,7 +5,7 @@ import { FloatingActionButton } from "@webiny/app-admin/components/FloatingActio
 import GroupsDataList from "./GroupsDataList";
 import GroupsForm from "./GroupsForm";
 import { READ_GROUP, LIST_GROUPS, CREATE_GROUP, UPDATE_GROUP, DELETE_GROUP } from "./graphql";
-import { CrudProvider } from "@webiny/app-admin/contexts/CrudContext";
+import { CrudProvider } from "@webiny/app-admin/contexts/Crud";
 
 const Groups = ({ scopes, formProps, listProps }) => {
     const variables = data => ({

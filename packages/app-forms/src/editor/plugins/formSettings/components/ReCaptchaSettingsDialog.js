@@ -4,7 +4,7 @@ import { Mutation } from "react-apollo";
 import { Form } from "@webiny/form";
 import { Input } from "@webiny/ui/Input";
 import get from "lodash.get";
-import { useSnackbar } from "@webiny/app-admin/components";
+import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { CircularProgress } from "@webiny/ui/Progress";
 import { Grid, Cell } from "@webiny/ui/Grid";
 import { UPDATE_FORMS_SETTINGS } from "./graphql";

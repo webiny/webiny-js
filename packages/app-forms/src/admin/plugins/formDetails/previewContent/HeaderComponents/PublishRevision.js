@@ -7,7 +7,7 @@ import { ReactComponent as UnpublishIcon } from "@webiny/app-forms/admin/icons/u
 import { PUBLISH_REVISION, UNPUBLISH_REVISION } from "@webiny/app-forms/admin/viewsGraphql";
 import { ConfirmationDialog } from "@webiny/ui/ConfirmationDialog";
 import { useApolloClient } from "react-apollo";
-import { useSnackbar } from "@webiny/app-admin/components";
+import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 
 const PublishRevision = ({ revision }: *) => {
     const { showSnackbar } = useSnackbar();

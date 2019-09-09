@@ -20,7 +20,7 @@ import FieldTypeSelector from "./EditFieldDialog/FieldTypeSelector";
 import { i18n } from "@webiny/app/i18n";
 const t = i18n.namespace("FormEditor.EditFieldDialog");
 import { useFormEditor } from "@webiny/app-forms/admin/components/FormEditor/Context";
-import { useI18N } from "@webiny/app-i18n/context";
+import { useI18N } from "@webiny/app-i18n/hooks/useI18N";
 
 const dialogBody = css({
     "&.mdc-dialog__body": {

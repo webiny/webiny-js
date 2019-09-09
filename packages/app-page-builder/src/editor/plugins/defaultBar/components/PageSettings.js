@@ -6,7 +6,7 @@ import { getPlugins } from "@webiny/plugins";
 import { deactivatePlugin, updateRevision } from "@webiny/app-page-builder/editor/actions";
 import { getPage } from "@webiny/app-page-builder/editor/selectors";
 import { useKeyHandler } from "@webiny/app-page-builder/editor/hooks/useKeyHandler";
-import { useSnackbar } from "@webiny/app-admin/components";
+import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { OverlayLayout } from "@webiny/app-admin/components/OverlayLayout";
 import { SplitView, LeftPanel, RightPanel } from "@webiny/app-admin/components/SplitView";
 import { Typography } from "@webiny/ui/Typography";

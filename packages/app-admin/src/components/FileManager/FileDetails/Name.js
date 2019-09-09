@@ -1,16 +1,15 @@
 // @flow
 /* eslint-disable */
 import React, { useState } from "react";
+import { get, cloneDeep } from "lodash";
+import { useApolloClient } from "react-apollo";
+import { css } from "emotion";
 import { ButtonSecondary, ButtonPrimary } from "@webiny/ui/Button";
 import { Input } from "@webiny/ui/Input";
 import { Form } from "@webiny/form";
 import { ReactComponent as EditIcon } from "./../icons/round-edit-24px.svg";
-import { css } from "emotion";
-import { updateFileBySrc, listFiles } from "./../graphql";
-import { compose } from "recompose";
-import { withSnackbar } from "@webiny/app-admin/components";
-import { graphql } from "react-apollo";
-import { get, cloneDeep } from "lodash";
+import { UPDATE_FILE_BY_SRC, LIST_FILES } from "./../graphql";
+import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { useFileManager } from "./../FileManagerContext";
 
 const style = {
@@ -20,10 +19,12 @@ const style = {
     })
 };
 
-function Name(props: *) {
-    const { gqlUpdateFileBySrc, showSnackbar, file } = props;
+function Name({ file }: *) {
     const [editing, setEdit] = useState(false);
     const name = file.name || "";
+
+    const { showSnackbar } = useSnackbar();
+    const client = useApolloClient();
 
     const { queryParams } = useFileManager();
 
@@ -35,7 +36,8 @@ function Name(props: *) {
                 }}
                 onSubmit={async ({ name }) => {
                     setEdit(false);
-                    await gqlUpdateFileBySrc({
+                    await client.mutate({
+                        mutation: UPDATE_FILE_BY_SRC,
                         variables: {
                             src: file.src,
                             data: { name }
@@ -44,7 +46,7 @@ function Name(props: *) {
                             const newFileData = get(updated, "data.files.updateFileBySrc.data");
                             const data = cloneDeep(
                                 cache.readQuery({
-                                    query: listFiles,
+                                    query: LIST_FILES,
                                     variables: queryParams
                                 })
                             );
@@ -56,7 +58,7 @@ function Name(props: *) {
                             });
 
                             cache.writeQuery({
-                                query: listFiles,
+                                query: LIST_FILES,
                                 variables: queryParams,
                                 data: data
                             });
@@ -98,7 +100,4 @@ function Name(props: *) {
     );
 }
 
-export default compose(
-    graphql(updateFileBySrc, { name: "gqlUpdateFileBySrc" }),
-    withSnackbar()
-)(Name);
+export default Name;

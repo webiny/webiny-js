@@ -5,7 +5,7 @@ import { ButtonPrimary } from "@webiny/ui/Button";
 import { getPage } from "@webiny/app-page-builder/editor/selectors";
 import { omit, isEqual } from "lodash";
 import { Mutation } from "react-apollo";
-import { useSnackbar } from "@webiny/app-admin/components";
+import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { withRouter } from "react-router-dom";
 import { publishRevision } from "./PublishPageButton/graphql";
 

@@ -1,24 +1,19 @@
 // @flow
-import React from "react";
-import { compose, withProps, withHandlers, setDisplayName } from "recompose";
+import React, { useCallback } from "react";
 import { Snackbar } from "@webiny/ui/Snackbar";
-import _ from "lodash";
-import { withUi } from "@webiny/app/components";
+import { get } from "lodash";
+import { useUi } from "@webiny/app/hooks/useUi";
 
-const SnackbarMain = ({ message, options, hideSnackbar }) => {
+const SnackbarMain = () => {
+    const ui = useUi();
+    const message = get(ui, "snackbar.message");
+    const options = get(ui, "snackbar.options", {});
+
+    const hideSnackbar = useCallback(() => {
+        ui.setState(ui => ({ ...ui, snackbar: null }));
+    }, [ui]);
+
     return <Snackbar open={!!message} onClose={hideSnackbar} message={message} {...options} />;
 };
 
-export default compose(
-    setDisplayName("SnackbarMain"),
-    withUi(),
-    withProps(props => ({
-        message: _.get(props.ui, "snackbar.message"),
-        options: _.get(props.ui, "snackbar.options", {})
-    })),
-    withHandlers({
-        hideSnackbar: props => () => {
-            props.ui.setState(ui => ({ ...ui, snackbar: null }));
-        }
-    })
-)(SnackbarMain);
+export default SnackbarMain;

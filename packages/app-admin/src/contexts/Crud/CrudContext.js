@@ -17,7 +17,7 @@ type Props = {
     delete?: {}
 };
 
-const t = i18n.ns("app-admin/context/crud-context");
+const t = i18n.ns("app-admin/contexts");
 
 export const CrudContext = React.createContext();
 

@@ -8,7 +8,7 @@ import { css } from "emotion";
 import { ButtonPrimary, ButtonSecondary } from "@webiny/ui/Button";
 import { debounce, camelCase, trim } from "lodash";
 import { I18NInput } from "@webiny/app-i18n/admin/components";
-import { useI18N } from "@webiny/app-i18n/context";
+import { useI18N } from "@webiny/app-i18n/hooks/useI18N";
 
 const controlButtons = css({
     display: "flex",

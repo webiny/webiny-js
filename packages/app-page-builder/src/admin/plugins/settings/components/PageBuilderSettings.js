@@ -3,7 +3,7 @@ import { Form } from "@webiny/form";
 import { Grid, Cell } from "@webiny/ui/Grid";
 import { ButtonPrimary } from "@webiny/ui/Button";
 import { Query, Mutation } from "react-apollo";
-import { useSnackbar } from "@webiny/app-admin/components";
+import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import graphql from "./graphql";
 import { PagesAutoComplete } from "@webiny/app-page-builder/admin/components/PagesAutoComplete";
 import { CircularProgress } from "@webiny/ui/Progress";

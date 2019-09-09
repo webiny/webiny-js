@@ -1,7 +1,7 @@
 // @flow
 import React from "react";
 import { Query } from "react-apollo";
-import { listTags } from "./graphql";
+import { LIST_TAGS } from "./graphql";
 import { get } from "lodash";
 import { css } from "emotion";
 import { Icon } from "@webiny/ui/Icon";
@@ -56,7 +56,7 @@ function LeftSidebar({ toggleTag, queryParams: { tags } }) {
 
     return (
         <div className={style.leftDrawer}>
-            <Query query={listTags}>
+            <Query query={LIST_TAGS}>
                 {({ data }) => {
                     const list = get(data, "files.listTags") || [];
 
