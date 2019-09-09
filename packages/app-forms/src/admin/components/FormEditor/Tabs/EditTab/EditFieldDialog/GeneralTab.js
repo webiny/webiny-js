@@ -12,6 +12,8 @@ const GeneralTab = ({ field, form }) => {
     const { getField, getFieldPlugin } = useFormEditor();
     const { getValue } = useI18N();
 
+    const setRef = useCallback(ref => inputRef.current = ref, []);
+
     useEffect(() => {
         inputRef.current && inputRef.current.focus();
     }, []);
@@ -49,7 +51,7 @@ const GeneralTab = ({ field, form }) => {
             <Grid>
                 <Cell span={6}>
                     <Bind name={"label"} validators={["required"]} afterChange={afterChangeLabel}>
-                        <I18NInput label={"Label"} inputRef={inputRef} />
+                        <I18NInput label={"Label"} inputRef={setRef} />
                     </Bind>
                 </Cell>
                 <Cell span={6}>
