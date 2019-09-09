@@ -32,6 +32,11 @@
   background-color: $mdc-theme-surface;
 }
 
+// button styles
+.mdc-button{
+  @include mdc-button-shape-radius(2px);
+}
+
 // set icon colors
 .mdc-icon, .mdc-icon-button {
   @include mdc-icon-button-ink-color($mdc-theme-text-secondary-on-background)
@@ -232,7 +237,6 @@ Fix the width of input components when inside grids
   @include mdc-select-bottom-line-color($mdc-theme-text-secondary-on-background);
   @include mdc-select-hover-bottom-line-color($mdc-theme-text-primary-on-background);
   @include mdc-select-container-fill-color($mdc-theme-on-background);
-  @include mdc-select-outline-color($mdc-theme-on-surface);	
   @include mdc-select-shape-radius(0);
   @include mdc-select-outline-shape-radius(2);
 
