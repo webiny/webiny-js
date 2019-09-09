@@ -155,6 +155,7 @@ Fix the width of input components when inside grids
 .mdc-dialog{
   .mdc-dialog__surface{
     border-radius: 0px;
+    max-width: 875px;
     .mdc-dialog__title{
       background-color: $mdc-theme-secondary;
       padding-bottom: 24px;
@@ -171,8 +172,8 @@ Fix the width of input components when inside grids
       background-color: $mdc-theme-surface;
 
       // add options for when tabs are inside the body
-      >.mdc-tab-bar{
-        margin-top: -24px;
+      >.webiny-ui-tabs>.mdc-tab-bar{
+        margin-top: 0px;
         @include mdc-tab-bar-width(100%);
         background-color: $mdc-theme-secondary;
         .mdc-tab{
