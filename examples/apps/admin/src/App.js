@@ -5,7 +5,7 @@ import { UiProvider } from "@webiny/app/contexts/Ui";
 import { registerPlugins, getPlugins } from "@webiny/plugins";
 import { ThemeProvider } from "@webiny/app-admin/contexts/Theme";
 import { PageBuilderProvider } from "@webiny/app-page-builder/contexts/PageBuilder";
-import { SecurityProvider } from "@webiny/app-security/admin/contexts/Security";
+import { SecurityProvider } from "@webiny/app-security/contexts/Security";
 import { I18NProvider } from "@webiny/app-i18n/contexts/I18N";
 import Login from "@webiny/app-security/admin/views/Login";
 import { CircularProgress } from "@webiny/ui/Progress";
