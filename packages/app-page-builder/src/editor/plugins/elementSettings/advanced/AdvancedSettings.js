@@ -25,9 +25,11 @@ import { updateElement, deactivatePlugin } from "@webiny/app-page-builder/editor
 const emptyElement = { data: {}, type: null };
 
 const dialogBody = css({
-    "&.mdc-dialog__body": {
+    "&.webiny-ui-dialog__content": {
         marginTop: 0,
-        padding: "0 0 0 0"
+        padding: "0 0 0 0 !important",
+        width: 750,
+        height: 400
     }
 });
 
