@@ -125,7 +125,6 @@ class Input extends React.Component<Props> {
             validation = { isValid: null },
             icon,
             trailingIcon,
-            box,
             ...props
         } = this.props;
 
@@ -134,18 +133,12 @@ class Input extends React.Component<Props> {
             inputValue = "";
         }
 
-        const boxValue = (
-            box ||
-            (!outlined && (Boolean(icon) || Boolean(trailingIcon)))
-        ).toString();
-
         return (
             <React.Fragment>
                 <TextField
                     {...pick(props, Input.rmwcProps)}
                     autoFocus={autoFocus}
                     textarea={Boolean(rows)}
-                    box={boxValue}
                     value={inputValue}
                     onChange={this.onChange}
                     onBlur={this.onBlur}
