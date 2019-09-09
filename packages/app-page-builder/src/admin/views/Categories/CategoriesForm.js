@@ -10,6 +10,7 @@ import type { WithCrudFormProps } from "@webiny/app-admin/components";
 import { usePageBuilder } from "@webiny/app-page-builder/hooks/usePageBuilder";
 import {
     SimpleForm,
+    SimpleFormHeader,
     SimpleFormFooter,
     SimpleFormContent
 } from "@webiny/app-admin/components/SimpleForm";
@@ -25,6 +26,7 @@ const CategoriesForm = ({ data, invalidFields, onSubmit, loading }: WithCrudForm
             {({ data, form, Bind }) => (
                 <SimpleForm>
                     {loading && <CircularProgress />}
+                    <SimpleFormHeader title={data.name || t`New Category`} />
                     <SimpleFormContent>
                         <Grid>
                             <Cell span={6}>
