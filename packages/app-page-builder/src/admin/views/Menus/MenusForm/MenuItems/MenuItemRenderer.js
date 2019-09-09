@@ -5,7 +5,8 @@ import classnames from "classnames";
 import { getPlugins } from "@webiny/plugins";
 import { IconButton } from "@webiny/ui/Button";
 import { Typography } from "@webiny/ui/Typography";
-import "./MenuItemRenderer.css";
+//import "./MenuItemRenderer.css";
+import "react-sortable-tree/style.css";
 import { ReactComponent as EditIcon } from "./icons/round-edit-24px.svg";
 import { ReactComponent as DeleteIcon } from "./icons/round-delete-24px.svg";
 
