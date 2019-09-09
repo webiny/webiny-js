@@ -128,15 +128,21 @@ Fix the width of input components when inside grids
   width: 100%;
   @include mdc-text-field-shape-radius(0);
   @include mdc-text-field-textarea-shape-radius(0);
+  @include mdc-text-field-fill-color($mdc-theme-on-background);
+  @include mdc-text-field-label-color($mdc-theme-text-primary-on-background)	
+  @include mdc-text-field-ink-color($mdc-theme-on-surface)
   &.mdc-text-field--textarea{
     textarea{
-      padding-top: 10px;
+      padding-top: 25px;
     }
     .mdc-floating-label.mdc-floating-label{
-      margin-left: 10px;
-      padding: 0 5px;
-      top: 25px;
-      background-color: $mdc-theme-surface;
+      margin-left: 11px;
+      top: 35px;
+    }
+    &.--focused{
+      .mdc-floating-label.mdc-floating-label{
+        top: 0px;
+      }
     }
   }
   &.mdc-text-field--disabled{
@@ -152,7 +158,7 @@ Fix the width of input components when inside grids
   .mdc-text-field__input{
     width: 100%;
     resize: none;
-    border: 1px solid $mdc-theme-on-background;
+    //border: 1px solid $mdc-theme-on-background;
   }
 }
 
@@ -225,6 +231,8 @@ Fix the width of input components when inside grids
   @include mdc-select-label-color($mdc-theme-text-secondary-on-background);
   @include mdc-select-bottom-line-color($mdc-theme-text-secondary-on-background);
   @include mdc-select-hover-bottom-line-color($mdc-theme-text-primary-on-background);
+  @include mdc-select-container-fill-color($mdc-theme-on-background);
+  @include mdc-select-outline-color($mdc-theme-on-surface);	
   @include mdc-select-shape-radius(0);
   @include mdc-select-outline-shape-radius(2);
 
