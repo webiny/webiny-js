@@ -4,8 +4,8 @@ import { useApolloClient } from "react-apollo";
 import localStorage from "store";
 import observe from "store/plugins/observe";
 import { useHandler } from "@webiny/app/hooks/useHandler";
-import { GET_CURRENT_USER } from "../../../components/graphql";
-import { setIdentity } from "../../../identity";
+import { GET_CURRENT_USER } from "../../components/graphql";
+import { setIdentity } from "../../identity";
 
 export const SecurityContext = React.createContext();
 
