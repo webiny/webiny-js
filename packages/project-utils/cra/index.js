@@ -15,6 +15,8 @@ const webinyConfig = {
         // Add proper includePaths
         require("./sass")(newConfig);
 
+        set(newConfig, "resolve.alias.react-dom", "@hot-loader/react-dom");
+
         return newConfig;
     },
     jest: config => {
