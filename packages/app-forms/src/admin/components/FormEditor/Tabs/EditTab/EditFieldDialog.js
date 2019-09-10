@@ -24,8 +24,8 @@ import { useI18N } from "@webiny/app-i18n/hooks/useI18N";
 
 const dialogBody = css({
     "&.webiny-ui-dialog__content": {
-        marginTop: 0,
-        padding: "0"
+        width: 875,
+        height: 450
     }
 });
 
