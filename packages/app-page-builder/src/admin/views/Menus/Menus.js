@@ -25,10 +25,10 @@ function Menus({ formProps, listProps }) {
     return (
         <React.Fragment>
             <SplitView>
-                <LeftPanel span={4}>
+                <LeftPanel span={3}>
                     <MenusDataList {...listProps} />
                 </LeftPanel>
-                <RightPanel span={8}>
+                <RightPanel span={9}>
                     <MenusForm {...formProps} />
                 </RightPanel>
             </SplitView>

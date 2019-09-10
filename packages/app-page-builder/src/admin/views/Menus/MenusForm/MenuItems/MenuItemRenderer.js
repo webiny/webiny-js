@@ -5,10 +5,13 @@ import classnames from "classnames";
 import { getPlugins } from "@webiny/plugins";
 import { IconButton } from "@webiny/ui/Button";
 import { Typography } from "@webiny/ui/Typography";
-//import "./MenuItemRenderer.css";
+import { Icon } from "@webiny/ui/Icon";
 import "react-sortable-tree/style.css";
+import { rowHandle, fieldContainer, Row, RowContainer } from "./Styled";
+
 import { ReactComponent as EditIcon } from "./icons/round-edit-24px.svg";
 import { ReactComponent as DeleteIcon } from "./icons/round-delete-24px.svg";
+import { ReactComponent as HandleIcon } from "./icons/round-drag_indicator-24px.svg";
 
 class NodeRendererDefault extends React.Component<*> {
     static defaultProps = {
@@ -51,9 +54,14 @@ class NodeRendererDefault extends React.Component<*> {
             return null;
         }
 
-        const handle = connectDragSource(<div className="rst__moveHandle">{plugin.icon}</div>, {
-            dropEffect: "copy"
-        });
+        const handle = connectDragSource(
+            <div className={rowHandle}>
+                <Icon icon={<HandleIcon />} />
+            </div>,
+            {
+                dropEffect: "copy"
+            }
+        );
 
         const isDraggedDescendant = draggedNode && isDescendant(draggedNode, node);
         const isLandingPadActive = !didDrop && isDragging;
@@ -91,54 +99,55 @@ class NodeRendererDefault extends React.Component<*> {
                         </div>
                     )}
 
-                <div className={classnames("rst__rowWrapper")}>
+                <RowContainer className={"rst__rowWrapper"}>
                     {/* Set the row preview to be used during drag and drop */}
                     {connectDragPreview(
-                        <div
-                            className={classnames(
-                                "rst__row",
-                                isLandingPadActive && "rst__rowLandingPad",
-                                isLandingPadActive && !canDrop && "rst__rowCancelPad",
-                                className
-                            )}
-                            style={{
-                                opacity: isDraggedDescendant ? 0.5 : 1,
-                                ...style
-                            }}
-                        >
+                        <div>
                             {handle}
-
-                            <div
+                            <Row
                                 className={classnames(
-                                    "rst__rowContents",
-                                    !canDrag && "rst__rowContentsDragDisabled"
+                                    "rst__row",
+                                    isLandingPadActive && "rst__rowLandingPad",
+                                    isLandingPadActive && !canDrop && "rst__rowCancelPad",
+                                    className
                                 )}
+                                style={{
+                                    opacity: isDraggedDescendant ? 0.5 : 1,
+                                    ...style
+                                }}
                             >
-                                <div className={classnames("rst__rowLabel")}>
-                                    <span
-                                        className={classnames(
-                                            "rst__rowTitle",
-                                            node.subtitle && "rst__rowTitleWithSubtitle"
-                                        )}
-                                    >
-                                        <Typography use={"overline"}>{nodeTitle}</Typography>
-                                    </span>
-                                </div>
+                                <div
+                                    className={classnames(
+                                        fieldContainer,
+                                        !canDrag && "rst__rowContentsDragDisabled"
+                                    )}
+                                >
+                                    <div className={classnames("rst__rowLabel")}>
+                                        <span
+                                            className={classnames(
+                                                "rst__rowTitle",
+                                                node.subtitle && "rst__rowTitleWithSubtitle"
+                                            )}
+                                        >
+                                            <Typography use={"overline"}>{nodeTitle}</Typography>
+                                        </span>
+                                    </div>
 
-                                <div className="rst__rowToolbar">
-                                    <IconButton
-                                        icon={<EditIcon />}
-                                        onClick={() => editItem(node)}
-                                    />
-                                    <IconButton
-                                        icon={<DeleteIcon />}
-                                        onClick={() => deleteItem(node)}
-                                    />
+                                    <div className="rst__rowToolbar">
+                                        <IconButton
+                                            icon={<EditIcon />}
+                                            onClick={() => editItem(node)}
+                                        />
+                                        <IconButton
+                                            icon={<DeleteIcon />}
+                                            onClick={() => deleteItem(node)}
+                                        />
+                                    </div>
                                 </div>
-                            </div>
+                            </Row>
                         </div>
                     )}
-                </div>
+                </RowContainer>
             </div>
         );
     }
