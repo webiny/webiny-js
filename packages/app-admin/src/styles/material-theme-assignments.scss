@@ -182,9 +182,13 @@ Fix the width of input components when inside grids
 
 // dialog
 .mdc-dialog{
+  .mdc-dialog__container{
+    width: 100%;
+  }
   .mdc-dialog__surface{
     border-radius: 0px;
     max-width: 875px;
+    position: relative;
     .mdc-dialog__title{
       background-color: $mdc-theme-secondary;
       padding-bottom: 24px;
