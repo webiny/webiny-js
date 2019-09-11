@@ -18,6 +18,7 @@ import { Select } from "@webiny/ui/Select";
 import { Grid, Cell } from "@webiny/ui/Grid";
 import { Form } from "@webiny/form";
 import styled from "@emotion/styled";
+import { validation } from "@webiny/validation";
 
 const narrowDialog = css({
     ".mdc-dialog__surface": {
@@ -93,7 +94,7 @@ const SaveDialog = React.memo(
                                     <>
                                         <Grid>
                                             <Cell span={12}>
-                                                <Bind name="category" validators={["required"]}>
+                                                <Bind name="category" validators={validation.create("required")}>
                                                     <Select
                                                         label="Category"
                                                         description="Select a block category"

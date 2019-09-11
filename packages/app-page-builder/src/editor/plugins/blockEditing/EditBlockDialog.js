@@ -10,6 +10,7 @@ import {
     DialogButton,
     DialogCancel
 } from "@webiny/ui/Dialog";
+import { validation } from "@webiny/validation";
 import { Input } from "@webiny/ui/Input";
 import { Select } from "@webiny/ui/Select";
 import { Grid, Cell } from "@webiny/ui/Grid";
@@ -74,7 +75,7 @@ const EditBlockDialog = React.memo(
                                         <>
                                             <Grid>
                                                 <Cell span={12}>
-                                                    <Bind name="category" validators={["required"]}>
+                                                    <Bind name="category" validators={validation.create("required")}>
                                                         <Select
                                                             label="Category"
                                                             description="Select a block category"

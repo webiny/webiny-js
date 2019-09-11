@@ -14,6 +14,7 @@ import {
     SimpleFormContent,
     SimpleFormHeader
 } from "@webiny/app-admin/components/SimpleForm";
+import { validation } from "@webiny/validation";
 
 const t = i18n.ns("app-i18n/admin/locales/form");
 
@@ -29,7 +30,7 @@ const I18NLocaleForm = () => {
                     <SimpleFormContent>
                         <Grid>
                             <Cell span={12}>
-                                <Bind name="code" validators={["required"]}>
+                                <Bind name="code" validators={validation.create("required")}>
                                     <LocaleCodesAutoComplete
                                         label={t`Code`}
                                         description={t`For example: "en-GB"`}

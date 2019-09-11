@@ -8,7 +8,7 @@ import { ButtonPrimary } from "@webiny/ui/Button";
 import RolesAutoComplete from "./../Components/RolesAutoComplete";
 import { CircularProgress } from "@webiny/ui/Progress";
 import { useCrud } from "@webiny/app-admin/hooks/useCrud";
-
+import { validation } from "@webiny/validation";
 import {
     SimpleForm,
     SimpleFormFooter,
@@ -29,19 +29,19 @@ const GroupForm = () => {
                     <SimpleFormContent>
                         <Grid>
                             <Cell span={6}>
-                                <Bind name="name" validators={["required"]}>
+                                <Bind name="name" validators={validation.create("required")}>
                                     <Input label={t`Name`} />
                                 </Bind>
                             </Cell>
                             <Cell span={6}>
-                                <Bind name="slug" validators={["required"]}>
+                                <Bind name="slug" validators={validation.create("required")}>
                                     <Input disabled={data.id} label={t`Slug`} />
                                 </Bind>
                             </Cell>
                         </Grid>
                         <Grid>
                             <Cell span={12}>
-                                <Bind name="description" validators={["required"]}>
+                                <Bind name="description" validators={validation.create("required")}>
                                     <Input label={t`Description`} rows={4} />
                                 </Bind>
                             </Cell>

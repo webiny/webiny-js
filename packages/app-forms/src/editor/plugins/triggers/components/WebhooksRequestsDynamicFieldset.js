@@ -4,6 +4,7 @@ import { Input } from "@webiny/ui/Input";
 import styled from "@emotion/styled";
 import { Typography } from "@webiny/ui/Typography";
 import { ButtonSecondary, ButtonDefault } from "@webiny/ui/Button";
+import { validation } from "@webiny/validation";
 
 const Fieldset = styled("div")({
     position: "relative",
@@ -46,7 +47,10 @@ const WebhooksRequestsDynamicFieldset = (props: Props) => {
                 <>
                     {row(({ index }) => (
                         <Fieldset>
-                            <Bind validators={["required", "url"]} name={`urls.${index}`}>
+                            <Bind
+                                validators={validation.create("required,url")}
+                                name={`urls.${index}`}
+                            >
                                 <Input label={props.inputLabel} />
                             </Bind>
                             <ButtonSecondary small onClick={actions.remove(index)}>

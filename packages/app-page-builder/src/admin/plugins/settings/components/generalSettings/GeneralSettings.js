@@ -11,6 +11,7 @@ import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import graphql from "./graphql";
 import { CircularProgress } from "@webiny/ui/Progress";
 import { get } from "lodash";
+import { validation } from "@webiny/validation";
 
 import {
     SimpleForm,
@@ -52,7 +53,7 @@ const GeneralSettings = () => {
                                                         <Cell span={12}>
                                                             <Bind
                                                                 name={"name"}
-                                                                validators={["required"]}
+                                                                validators={validation.create("required")}
                                                             >
                                                                 <Input label="Website name" />
                                                             </Bind>
@@ -100,7 +101,7 @@ const GeneralSettings = () => {
                                                         <Cell span={12}>
                                                             <Bind
                                                                 name={"social.facebook"}
-                                                                validators={["url"]}
+                                                                validators={validation.create("url")}
                                                             >
                                                                 <Input label="Facebook" />
                                                             </Bind>
@@ -108,7 +109,7 @@ const GeneralSettings = () => {
                                                         <Cell span={12}>
                                                             <Bind
                                                                 name={"social.twitter"}
-                                                                validators={["url"]}
+                                                                validators={validation.create("url")}
                                                             >
                                                                 <Input label="Twitter" />
                                                             </Bind>
@@ -116,7 +117,7 @@ const GeneralSettings = () => {
                                                         <Cell span={12}>
                                                             <Bind
                                                                 name={"social.instagram"}
-                                                                validators={["url"]}
+                                                                validators={validation.create("url")}
                                                             >
                                                                 <Input label="Instagram" />
                                                             </Bind>

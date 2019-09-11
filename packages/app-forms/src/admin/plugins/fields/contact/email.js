@@ -10,7 +10,7 @@ export default {
         name: "email",
         label: "Email   ",
         description: "Email address",
-        // TODO: validators: ["required"], // Editable validators.
+        // TODO: validators: validation.create("required"), // Editable validators.
         createField(props) {
             const { i18n } = props;
             return {

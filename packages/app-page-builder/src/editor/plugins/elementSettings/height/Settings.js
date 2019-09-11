@@ -70,7 +70,7 @@ const Settings = props => {
                                 </Cell>
                                 <Cell span={7}>
                                     <InputContainer width={"auto"} margin={0}>
-                                        <Bind name={"value"} validators={[validateHeight]}>
+                                        <Bind name={"value"} validators={validateHeight}>
                                             <Input />
                                         </Bind>
                                     </InputContainer>

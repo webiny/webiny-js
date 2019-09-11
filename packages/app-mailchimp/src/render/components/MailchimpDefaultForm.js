@@ -1,7 +1,7 @@
 // @flow
 import * as React from "react";
 import { css } from "emotion";
-
+import { validation } from "@webiny/validation";
 const style = css({
     ".webiny-pb-page-element-mailchimp-form__wrapper": {
         position: "relative",
@@ -27,11 +27,7 @@ class MailchimpDefaultForm extends React.Component<*, { success: boolean, error:
         return (
             <div className={"webiny-pb-page-element-mailchimp-form " + style}>
                 <div className={"webiny-pb-page-element-mailchimp-form__wrapper"}>
-                    <Bind
-                        name={"email"}
-                        validators={["required", "email"]}
-                        validationMessages={{ email: "Please enter a valid email address." }}
-                    >
+                    <Bind name={"email"} validators={validation.create("required,email")}>
                         {({ value, onChange, validation }) => (
                             <div className="webiny-pb-page-element-input">
                                 <input

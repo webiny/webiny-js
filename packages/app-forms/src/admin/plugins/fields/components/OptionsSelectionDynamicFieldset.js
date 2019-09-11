@@ -9,6 +9,7 @@ import { ButtonPrimary, ButtonSecondary } from "@webiny/ui/Button";
 import { debounce, camelCase, trim } from "lodash";
 import { I18NInput } from "@webiny/app-i18n/admin/components";
 import { useI18N } from "@webiny/app-i18n/hooks/useI18N";
+import { validation } from "@webiny/validation";
 
 const controlButtons = css({
     display: "flex",
@@ -91,7 +92,7 @@ const OptionsSelectionDynamicFieldset = ({ form, multiple }: Object) => {
     }, []);
 
     return (
-        <Bind name={"options"} validators={["minLength:2", "required"]}>
+        <Bind name={"options"} validators={validation.create("minLength:2,required")}>
             {({ value, onChange, ...other }) => {
                 return (
                     <DynamicFieldset value={value} onChange={onChange} {...other}>
@@ -109,7 +110,7 @@ const OptionsSelectionDynamicFieldset = ({ form, multiple }: Object) => {
                                         <Cell span={4}>
                                             <Bind
                                                 name={`options.${index}.label`}
-                                                validators={["required"]}
+                                                validators={validation.create("required")}
                                                 afterChange={getAfterChangeLabel(index)}
                                             >
                                                 <I18NInput label={"Label"} />
@@ -118,7 +119,7 @@ const OptionsSelectionDynamicFieldset = ({ form, multiple }: Object) => {
                                         <Cell span={3}>
                                             <Bind
                                                 name={`options.${index}.value`}
-                                                validators={["required"]}
+                                                validators={validation.create("required")}
                                                 beforeChange={(tag, cb) => cb(trim(tag))}
                                             >
                                                 <Input label={"Value"} />

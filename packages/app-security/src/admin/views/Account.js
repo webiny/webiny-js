@@ -13,6 +13,7 @@ import { ButtonPrimary } from "@webiny/ui/Button";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { CircularProgress } from "@webiny/ui/Progress";
 import AvatarImage from "./Components/AvatarImage";
+import { validation } from "@webiny/validation";
 
 import {
     SimpleForm,
@@ -105,12 +106,12 @@ const UsersForm = () => {
                             <Cell span={9}>
                                 <Grid>
                                     <Cell span={12}>
-                                        <Bind name="email" validators={["required"]}>
+                                        <Bind name="email" validators={validation.create("required")}>
                                             <Input label={t`E-mail`} />
                                         </Bind>
                                     </Cell>
                                     <Cell span={12}>
-                                        <Bind name="password" validators={["password"]}>
+                                        <Bind name="password" validators={validation.create("password")}>
                                             <Input
                                                 autoComplete="off"
                                                 description={

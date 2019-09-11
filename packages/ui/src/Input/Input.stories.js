@@ -27,8 +27,7 @@ story.addDecorator(withKnobs);
 story.add("usage", () => {
     const bindProps = {
         name: "name",
-        validators: ["required", "minLength:3"],
-        validationMessages: { minLength: "Please enter more characters" }
+        validators: ["required", "minLength:3"]
     };
 
     const disabled = boolean("Disabled", false);
@@ -57,8 +56,7 @@ story.add("usage", () => {
                         {({ Bind }) => (
                             <Bind
                                 name="name"
-                                validators={["required", "minLength:3"]}
-                                validationMessages={{ minLength: "Please enter more characters" }}>
+                                validators={validation.create("required,minLength:3")}
                                 <Input label={"Your name"} disabled={${disabled}} description={"This is your profile name"}/>
                             </Bind>
                         )}
@@ -190,8 +188,7 @@ story.add("usage", () => {
                         {({ Bind }) => (
                             <Bind
                                 name="name"
-                                validators={["required", "minLength:3"]}
-                                validationMessages={{ minLength: "Please enter more characters" }}>
+                                validators={validation.create("required,minLength:3")}
                                 <Input placeholder={"Your name"} fullwidth disabled={${disabled}}/>
                             </Bind>
                         )}

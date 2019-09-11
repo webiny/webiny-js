@@ -13,7 +13,7 @@ import {
 } from "./../../utils/oembed/createEmbedPlugin";
 
 import { ReactComponent as LogoIcon } from "./instagram-brands.svg";
-
+import { validation } from "@webiny/validation";
 const PreviewBox = styled("div")({
     textAlign: "center",
     height: 50,
@@ -55,7 +55,7 @@ export default (): Array<PluginType> => [
                 <Tab icon={<SocialIcon />} label="Instagram">
                     <Grid>
                         <Cell span={12}>
-                            <Bind name={"source.url"} validators={["required", "url"]}>
+                            <Bind name={"source.url"} validators={validation.create("required,url")}>
                                 <Input
                                     label={"Instagram URL"}
                                     description={"Enter an Instagram URL"}

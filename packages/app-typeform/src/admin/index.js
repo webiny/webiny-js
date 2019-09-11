@@ -9,6 +9,7 @@ import { ReactComponent as TypeformLogo } from "./typeform-logo.svg";
 import { ElementRoot } from "@webiny/app-page-builder/render/components/ElementRoot";
 import TypeFormEmbed from "./TypeFormEmbed";
 import render from "./../render";
+import { validation } from "@webiny/validation";
 
 const PreviewBox = styled("div")({
     textAlign: "center",
@@ -68,7 +69,7 @@ export default [
                 <Tab icon={<CodeIcon />} label="Typeform">
                     <Grid>
                         <Cell span={12}>
-                            <Bind name={"source.url"} validators={["required", "url"]}>
+                            <Bind name={"source.url"} validators={validation.create("required,url")}>
                                 <Input
                                     label={"Typeform URL"}
                                     description={"Enter a Typeform URL"}

@@ -16,6 +16,7 @@ import {
 } from "@webiny/app-admin/components/SimpleForm";
 import { categoryUrlValidator } from "./validators";
 import { CircularProgress } from "@webiny/ui/Progress";
+import { validation } from "@webiny/validation";
 
 const t = i18n.namespace("Pb.CategoriesForm");
 
@@ -30,17 +31,23 @@ const CategoriesForm = ({ data, invalidFields, onSubmit, loading }: WithCrudForm
                     <SimpleFormContent>
                         <Grid>
                             <Cell span={6}>
-                                <Bind name="name" validators={["required"]}>
+                                <Bind name="name" validators={validation.create("required")}>
                                     <Input label={t`Name`} />
                                 </Bind>
                             </Cell>
                             <Cell span={6}>
-                                <Bind name="slug" validators={["required"]}>
+                                <Bind name="slug" validators={validation.create("required")}>
                                     <Input disabled={data.id} label={t`Slug`} />
                                 </Bind>
                             </Cell>
                             <Cell span={12}>
-                                <Bind name="url" validators={["required", categoryUrlValidator]}>
+                                <Bind
+                                    name="url"
+                                    validators={[
+                                        validation.create("required"),
+                                        categoryUrlValidator
+                                    ]}
+                                >
                                     <Input disabled={data.id} label={t`URL`} />
                                 </Bind>
                             </Cell>

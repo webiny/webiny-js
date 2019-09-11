@@ -1,5 +1,5 @@
 // @flow
-import * as React from "react";
+import React from "react";
 import { Form } from "@webiny/form";
 import { Grid, Cell } from "@webiny/ui/Grid";
 import { Input } from "@webiny/ui/Input";
@@ -8,6 +8,7 @@ import MenuItems from "./MenusForm/MenuItems";
 import { CircularProgress } from "@webiny/ui/Progress";
 import { useCrud } from "@webiny/app-admin/hooks/useCrud";
 import { i18n } from "@webiny/app/i18n";
+import { validation } from "@webiny/validation";
 import {
     SimpleForm,
     SimpleFormFooter,
@@ -27,12 +28,12 @@ function MenusForm() {
                     <SimpleFormContent>
                         <Grid>
                             <Cell span={6}>
-                                <Bind name="title" validators={["required"]}>
+                                <Bind name="title" validators={validation.create("required,email")}>
                                     <Input label={t`Name`} />
                                 </Bind>
                             </Cell>
                             <Cell span={6}>
-                                <Bind name="slug" validators={["required"]}>
+                                <Bind name="slug" validators={validation.create("required")}>
                                     <Input disabled={data.id} label={t`Slug`} />
                                 </Bind>
                             </Cell>

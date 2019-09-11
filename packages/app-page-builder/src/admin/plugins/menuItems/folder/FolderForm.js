@@ -6,6 +6,7 @@ import { Typography } from "@webiny/ui/Typography";
 import { Grid, Cell } from "@webiny/ui/Grid";
 import { ButtonSecondary, ButtonPrimary } from "@webiny/ui/Button";
 import { Elevation } from "@webiny/ui/Elevation";
+import { validation } from "@webiny/validation";
 
 const FolderForm = ({ data, onSubmit, onCancel }: Object) => {
     return (
@@ -20,7 +21,7 @@ const FolderForm = ({ data, onSubmit, onCancel }: Object) => {
                         </Grid>
                         <Grid>
                             <Cell span={12}>
-                                <Bind name="title" validators={["required"]}>
+                                <Bind name="title" validators={validation.create("required")}>
                                     <Input label={`Title`} />
                                 </Bind>
                             </Cell>

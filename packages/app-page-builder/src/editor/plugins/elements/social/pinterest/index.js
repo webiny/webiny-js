@@ -12,7 +12,7 @@ import {
     createEmbedSettingsPlugin
 } from "./../../utils/oembed/createEmbedPlugin";
 import PinterestEmbed from "./PinterestEmbed";
-
+import { validation } from "@webiny/validation";
 import { ReactComponent as LogoIcon } from "./pinterest-brands.svg";
 
 const PreviewBox = styled("div")({
@@ -49,7 +49,7 @@ export default (): Array<PluginType> => [
                 <Tab icon={<SocialIcon />} label="Pinterest">
                     <Grid>
                         <Cell span={12}>
-                            <Bind name={"source.url"} validators={["required", "url"]}>
+                            <Bind name={"source.url"} validators={validation.create("required,url")}>
                                 <Input
                                     label={"Pinterest URL"}
                                     description={"Enter a Pinterest URL"}

@@ -65,7 +65,7 @@ class Settings extends React.Component<Props> {
                                 </Cell>
                                 <Cell span={7}>
                                     <InputContainer width={"auto"} margin={0}>
-                                        <Bind name={"value"} validators={[validateWidth]}>
+                                        <Bind name={"value"} validators={validateWidth}>
                                             <Input />
                                         </Bind>
                                     </InputContainer>
