@@ -5,10 +5,9 @@ import { Form } from "@webiny/form";
 import { Grid, Cell } from "@webiny/ui/Grid";
 import { ButtonPrimary } from "@webiny/ui/Button";
 import { Switch } from "@webiny/ui/Switch";
-import type { WithCrudFormProps } from "@webiny/app-admin/components";
 import { CircularProgress } from "@webiny/ui/Progress";
 import LocaleCodesAutoComplete from "./LocaleCodesAutoComplete";
-import { I18NInput } from "@webiny/app-i18n/admin/components";
+import { useCrud } from "@webiny/app-admin/hooks/useCrud";
 import {
     SimpleForm,
     SimpleFormFooter,
@@ -16,22 +15,24 @@ import {
     SimpleFormHeader
 } from "@webiny/app-admin/components/SimpleForm";
 
-const t = i18n.namespace("I18N.I18NLocalesForm");
+const t = i18n.ns("app-i18n/admin/locales/form");
 
-const I18NLocaleForm = ({ onSubmit, loading, data, invalidFields }: WithCrudFormProps) => {
+const I18NLocaleForm = () => {
+    const { form } = useCrud();
+
     return (
-        <Form invalidFields={invalidFields} data={data} onSubmit={onSubmit}>
+        <Form {...form}>
             {({ data, form, Bind }) => (
                 <SimpleForm>
-                    {loading && <CircularProgress />}
-                    <SimpleFormHeader title={data.code || "New Locale"} />
+                    {form.loading && <CircularProgress />}
+                    <SimpleFormHeader title={data.code || t`New locale`} />
                     <SimpleFormContent>
                         <Grid>
                             <Cell span={12}>
                                 <Bind name="code" validators={["required"]}>
                                     <LocaleCodesAutoComplete
                                         label={t`Code`}
-                                        description={`For example: "en-GB"`}
+                                        description={t`For example: "en-GB"`}
                                     />
                                 </Bind>
                             </Cell>
@@ -40,22 +41,6 @@ const I18NLocaleForm = ({ onSubmit, loading, data, invalidFields }: WithCrudForm
                             <Cell span={12}>
                                 <Bind name="default">
                                     <Switch label={t`Default`} />
-                                </Bind>
-                            </Cell>
-                        </Grid>
-
-                        {/* TODO: @sven*/}
-                        <Grid>
-                            <Cell span={12}>
-                                <Bind name="simpleText">
-                                    <I18NInput label={"Simple text"} />
-                                </Bind>
-                            </Cell>
-                            <Cell span={12}>
-                                <Bind name="simpleText">
-                                    <Bind name="richText">
-                                        <I18NInput label={"Rich text"} richText />
-                                    </Bind>
                                 </Bind>
                             </Cell>
                         </Grid>

@@ -8,8 +8,8 @@ const BASE_FIELDS = `
     createdOn
 `;
 
-export const loadI18NLocales = gql`
-    query LoadI18NLocales(
+export const LIST_LOCALES = gql`
+    query listI18NLocales(
         $where: JSON
         $sort: JSON
         $page: Int
@@ -39,8 +39,8 @@ export const loadI18NLocales = gql`
     }
 `;
 
-export const loadLocale = gql`
-    query LoadLocale($id: ID!) {
+export const READ_LOCALE = gql`
+    query getLocale($id: ID!) {
         i18n {
             locale: getI18NLocale(id: $id){
                 data {
@@ -55,8 +55,8 @@ export const loadLocale = gql`
     }
 `;
 
-export const createI18NLocale = gql`
-    mutation CreateI18NLocale($data: I18NLocaleInput!){
+export const CREATE_LOCALE = gql`
+    mutation createI18NLocale($data: I18NLocaleInput!){
         i18n {
             locale: createI18NLocale(data: $data) {
                 data {
@@ -72,8 +72,8 @@ export const createI18NLocale = gql`
     }
 `;
 
-export const updateI18NLocale = gql`
-    mutation UpdateI18NLocale($id: ID!, $data: I18NLocaleInput!){
+export const UPDATE_LOCALE = gql`
+    mutation updateI18NLocale($id: ID!, $data: I18NLocaleInput!){
         i18n {
             locale: updateI18NLocale(id: $id, data: $data) {
                 data {
@@ -89,8 +89,8 @@ export const updateI18NLocale = gql`
     }
 `;
 
-export const deleteI18NLocale = gql`
-    mutation DeleteI18NLocale($id: ID!) {
+export const DELETE_LOCALE = gql`
+    mutation deleteI18NLocale($id: ID!) {
         i18n {
             deleteI18NLocale(id: $id) {
                 data
@@ -104,7 +104,7 @@ export const deleteI18NLocale = gql`
 `;
 
 export const searchLocaleCodes = gql`
-    query SearchLocaleCodes($search: String!) {
+    query searchLocaleCodes($search: String!) {
         i18n {
             codes: searchLocaleCodes(search: $search) {
                 data
