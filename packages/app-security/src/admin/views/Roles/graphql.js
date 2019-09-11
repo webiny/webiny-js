@@ -10,7 +10,7 @@ const fields = `
 `;
 
 export const LIST_SCOPES = gql`
-    query LoadScopes {
+    query loadScopes {
         security {
             scopes
         }
