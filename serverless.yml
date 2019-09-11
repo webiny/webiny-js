@@ -28,7 +28,7 @@ custom:
 
 functions:
   api-gateway:
-    handler: examples/functions/api-gateway/build/handler.handler
+    handler: examples/functions/code/api-gateway/build/handler.handler
     environment:
       FUNCTIONS_HOST: ${self:custom.webiny.functionsHost}
       MONGODB_SERVER: ${self:custom.webiny.database.server}
@@ -36,66 +36,63 @@ functions:
       WEBINY_JWT_SECRET: ${self:custom.webiny.jwtSecret}
     events:
       - http:
-          path: /function/api/
+          path: /graphql
           method: any
           cors: true
   api-service-files:
-    handler: examples/functions/api-service-files/build/handler.handler
+    handler: examples/functions/code/api-service-files/build/handler.handler
     environment:
       MONGODB_SERVER: ${self:custom.webiny.database.server}
       MONGODB_DB_NAME: ${self:custom.webiny.database.name}
       WEBINY_JWT_SECRET: ${self:custom.webiny.jwtSecret}
     events:
       - http:
-          path: /function/files/
+          path: /graphql/files/
           method: any
   api-service-security:
-    handler: examples/functions/api-service-security/build/handler.handler
+    handler: examples/functions/code/api-service-security/build/handler.handler
     environment:
       MONGODB_SERVER: ${self:custom.webiny.database.server}
       MONGODB_DB_NAME: ${self:custom.webiny.database.name}
       WEBINY_JWT_SECRET: ${self:custom.webiny.jwtSecret}
     events:
       - http:
-          path: /function/security/
+          path: /graphql/security/
           method: any
   api-service-page-builder:
-    handler: examples/functions/api-service-page-builder/build/handler.handler
+    handler: examples/functions/code/api-service-page-builder/build/handler.handler
     environment:
       MONGODB_SERVER: ${self:custom.webiny.database.server}
       MONGODB_DB_NAME: ${self:custom.webiny.database.name}
       WEBINY_JWT_SECRET: ${self:custom.webiny.jwtSecret}
     events:
       - http:
-          path: /function/page-builder/
+          path: /graphql/page-builder/
           method: any
   files:
     # This function handles local file uploads
-    handler: examples/functions/files/build/handler.handler
+    handler: examples/functions/code/files/build/handler.handler
     events:
       - http:
           path: /files/{key+}
           method: get
-    package:
-      include:
-        - packages/files/build/handler.handler
   api-service-i18n:
-    handler: examples/functions/api-service-i18n/build/handler.handler
+    handler: examples/functions/code/api-service-i18n/build/handler.handler
     environment:
       MONGODB_SERVER: ${self:custom.webiny.database.server}
       MONGODB_DB_NAME: ${self:custom.webiny.database.name}
       WEBINY_JWT_SECRET: ${self:custom.webiny.jwtSecret}
     events:
       - http:
-          path: /function/i18n/
+          path: /graphql/i18n/
           method: any
   api-service-forms:
-    handler: examples/functions/api-service-forms/build/handler.handler
+    handler: examples/functions/code/api-service-forms/build/handler.handler
     environment:
       MONGODB_SERVER: ${self:custom.webiny.database.server}
       MONGODB_DB_NAME: ${self:custom.webiny.database.name}
       WEBINY_JWT_SECRET: ${self:custom.webiny.jwtSecret}
     events:
       - http:
-          path: /function/forms/
+          path: /graphql/forms/
           method: any

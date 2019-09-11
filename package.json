@@ -3,12 +3,11 @@
   "workspaces": {
     "packages": [
       "packages/*",
-      "examples/functions/*",
-      "examples/apps/*"
+      "examples/functions/code/*",
+      "examples/apps/code/*"
     ],
     "nohoist": [
       "**/inquirer/**",
-      "**/webiny-cli/**",
       "**/mime/**",
       "@webiny/cli/sharp"
     ]
