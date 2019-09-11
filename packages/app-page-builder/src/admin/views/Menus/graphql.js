@@ -9,14 +9,8 @@ const fields = `
     items
 `;
 
-export const loadMenus = gql`
-    query LoadMenus(
-        $where: JSON
-        $sort: JSON
-        $page: Int
-        $perPage: Int
-        $search: PbSearchInput
-    ) {
+export const LIST_MENUS = gql`
+    query listMenus($where: JSON, $sort: JSON, $page: Int, $perPage: Int, $search: PbSearchInput) {
         pageBuilder {
             menus: listMenus(
                 where: $where
@@ -45,8 +39,8 @@ export const loadMenus = gql`
     }
 `;
 
-export const loadMenu = gql`
-    query LoadMenu($id: ID!) {
+export const READ_MENU = gql`
+    query getMenu($id: ID!) {
         pageBuilder {
             menu: getMenu(id: $id){
                 data {
@@ -61,8 +55,8 @@ export const loadMenu = gql`
     }
 `;
 
-export const createMenu = gql`
-    mutation CreateMenu($data: PbMenuInput!){
+export const CREATE_MENU = gql`
+    mutation createMenu($data: PbMenuInput!){
         pageBuilder {
             menu: createMenu(data: $data) {
                 data {
@@ -78,8 +72,8 @@ export const createMenu = gql`
     }
 `;
 
-export const updateMenu = gql`
-    mutation UpdateMenu($id: ID!, $data: PbMenuInput!){
+export const UPDATE_MENU = gql`
+    mutation updateMenu($id: ID!, $data: PbMenuInput!){
         pageBuilder {
             menu: updateMenu(id: $id, data: $data) {
                 data {
@@ -95,8 +89,8 @@ export const updateMenu = gql`
     }
 `;
 
-export const deleteMenu = gql`
-    mutation DeleteMenu($id: ID!) {
+export const DELETE_MENU = gql`
+    mutation deleteMenu($id: ID!) {
         pageBuilder {
             deleteMenu(id: $id) {
                 data

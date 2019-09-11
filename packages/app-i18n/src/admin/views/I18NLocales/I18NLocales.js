@@ -6,7 +6,7 @@ import I18NLocalesDataList from "./I18NLocalesDataList";
 import I18NLocalesForm from "./I18NLocalesForm";
 import { READ_LOCALE, LIST_LOCALES, CREATE_LOCALE, UPDATE_LOCALE, DELETE_LOCALE } from "./graphql";
 
-export default function I18NLocales({ scopes, formProps, listProps }) {
+export default function I18NLocales() {
     return (
         <CrudProvider
             delete={DELETE_LOCALE}
@@ -22,10 +22,10 @@ export default function I18NLocales({ scopes, formProps, listProps }) {
                 <>
                     <SplitView>
                         <LeftPanel>
-                            <I18NLocalesDataList {...listProps} />
+                            <I18NLocalesDataList />
                         </LeftPanel>
                         <RightPanel>
-                            <I18NLocalesForm scopes={scopes} {...formProps} />
+                            <I18NLocalesForm />
                         </RightPanel>
                     </SplitView>
                     <FloatingActionButton onClick={actions.resetForm} />

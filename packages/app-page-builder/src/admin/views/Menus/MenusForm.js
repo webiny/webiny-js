@@ -5,63 +5,56 @@ import { Grid, Cell } from "@webiny/ui/Grid";
 import { Input } from "@webiny/ui/Input";
 import { ButtonPrimary } from "@webiny/ui/Button";
 import MenuItems from "./MenusForm/MenuItems";
-import type { WithCrudFormProps } from "@webiny/app-admin/components";
 import { CircularProgress } from "@webiny/ui/Progress";
-
+import { useCrud } from "@webiny/app-admin/hooks/useCrud";
+import { i18n } from "@webiny/app/i18n";
 import {
     SimpleForm,
     SimpleFormFooter,
     SimpleFormContent
 } from "@webiny/app-admin/components/SimpleForm";
 
-type Props = WithCrudFormProps;
-type State = {
-    item: ?Object
-};
+const t = i18n.ns("app-page-builder/admin/menus/form");
 
-class MenusForm extends React.Component<Props, State> {
-    render() {
-        const { data, invalidFields, onSubmit, loading } = this.props;
+function MenusForm() {
+    const { form } = useCrud();
 
-        // TODO: onSubmit - remove attributes added by the Tree plugin
-
-        return (
-            <Form data={data || { items: [] }} invalidFields={invalidFields} onSubmit={onSubmit}>
-                {({ data, form, Bind }) => (
-                    <SimpleForm>
-                        {loading && <CircularProgress />}
-                        <SimpleFormContent>
-                            <Grid>
-                                <Cell span={6}>
-                                    <Bind name="title" validators={["required"]}>
-                                        <Input label={"Name"} />
-                                    </Bind>
-                                </Cell>
-                                <Cell span={6}>
-                                    <Bind name="slug" validators={["required"]}>
-                                        <Input disabled={data.id} label={"Slug"} />
-                                    </Bind>
-                                </Cell>
-                                <Cell span={12}>
-                                    <Bind name="description">
-                                        <Input rows={5} label={"Description"} />
-                                    </Bind>
-                                </Cell>
-                            </Grid>
-                            <Bind name="items">
-                                {props => <MenuItems menuForm={form} {...props} />}
-                            </Bind>
-                        </SimpleFormContent>
-                        <SimpleFormFooter>
-                            <ButtonPrimary type="primary" onClick={form.submit} align="right">
-                                {"Save menu"}
-                            </ButtonPrimary>
-                        </SimpleFormFooter>
-                    </SimpleForm>
-                )}
-            </Form>
-        );
-    }
+    return (
+        <Form {...form} data={form.id ? form.data : { items: [] }}>
+            {({ data, form, Bind }) => (
+                <SimpleForm>
+                    {form.loading && <CircularProgress />}
+                    <SimpleFormContent>
+                        <Grid>
+                            <Cell span={6}>
+                                <Bind name="title" validators={["required"]}>
+                                    <Input label={t`Name`} />
+                                </Bind>
+                            </Cell>
+                            <Cell span={6}>
+                                <Bind name="slug" validators={["required"]}>
+                                    <Input disabled={data.id} label={t`Slug`} />
+                                </Bind>
+                            </Cell>
+                            <Cell span={12}>
+                                <Bind name="description">
+                                    <Input rows={5} label={t`Description`} />
+                                </Bind>
+                            </Cell>
+                        </Grid>
+                        <Bind name="items">
+                            {props => <MenuItems menuForm={form} {...props} />}
+                        </Bind>
+                    </SimpleFormContent>
+                    <SimpleFormFooter>
+                        <ButtonPrimary type="primary" onClick={form.submit} align="right">
+                            {t`Save menu`}
+                        </ButtonPrimary>
+                    </SimpleFormFooter>
+                </SimpleForm>
+            )}
+        </Form>
+    );
 }
 
 export default MenusForm;
