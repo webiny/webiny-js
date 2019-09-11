@@ -69,7 +69,9 @@ export const Select = (props: Props) => {
             <RmwcSelect
                 {...getRmwcProps(other)}
                 value={value}
-                className={classNames(props.className, { [noLabel]: !props.label })}
+                className={classNames("webiny-ui-select", props.className, {
+                    [noLabel]: !props.label
+                })}
                 onChange={e => {
                     props.onChange && props.onChange(e.target.value);
                 }}

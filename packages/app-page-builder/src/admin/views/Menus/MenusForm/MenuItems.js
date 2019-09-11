@@ -79,7 +79,7 @@ class MenuItems extends React.Component<Props, State> {
         return (
             <>
                 <Grid>
-                    <Cell span={6} className={leftPanel}>
+                    <Cell span={7} className={leftPanel}>
                         <MenuItemsList
                             menuForm={this.props.menuForm}
                             items={items}
@@ -88,7 +88,7 @@ class MenuItems extends React.Component<Props, State> {
                             deleteItem={this.deleteItem}
                         />
                     </Cell>
-                    <Cell span={6}>
+                    <Cell span={5}>
                         {!currentMenuItem && (
                             <>
                                 <MenuHolder>

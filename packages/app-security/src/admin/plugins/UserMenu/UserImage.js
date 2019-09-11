@@ -2,7 +2,7 @@
 import React from "react";
 import { Avatar } from "@webiny/ui/Avatar";
 import { Image } from "@webiny/app/components";
-import { useSecurity } from "@webiny/app-security/admin/hooks/useSecurity";
+import { useSecurity } from "@webiny/app-security/hooks/useSecurity";
 
 const UserImage = () => {
     const security = useSecurity();

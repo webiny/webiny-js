@@ -20,6 +20,7 @@ const MenusDataList = ({ dataList, location, history, deleteRecord }) => {
         <DataList
             {...dataList}
             title={t`Menus`}
+            showOptions={{}}
             sorters={[
                 {
                     label: "Newest to oldest",

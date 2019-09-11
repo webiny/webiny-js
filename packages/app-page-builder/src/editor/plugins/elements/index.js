@@ -12,7 +12,7 @@ import media from "./media";
 import social from "./social";
 import code from "./code";
 import pagesList from "./pagesList";
-// import imagesList from "./imagesList";
+import imagesList from "./imagesList";
 
 export default [
     document(),
@@ -21,7 +21,7 @@ export default [
     column(),
     ...icon(),
     ...image(),
-    // ...imagesList(),
+    ...imagesList(),
     text(),
     spacer(),
     ...button(),

@@ -39,7 +39,7 @@
   },
   "scripts": {
     "analyze": "source-map-explorer build/static/js/main.*",
-    "start": "SKIP_PREFLIGHT_CHECK=true PORT=3001 rescripts start",
+    "start": "env-cmd -f .env.local rescripts start",
     "build:dev": "env-cmd -f .env.dev rescripts build",
     "build:prod": "env-cmd -f .env.prod rescripts build",
     "postbuild": "webpack --config ./handler/webpack.config.js",

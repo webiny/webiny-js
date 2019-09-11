@@ -24,10 +24,13 @@ import { updateElement, deactivatePlugin } from "@webiny/app-page-builder/editor
 
 const emptyElement = { data: {}, type: null };
 
-const dialogBody = css({
-    "&.mdc-dialog__body": {
-        marginTop: 0,
-        padding: "0 0 0 0"
+const dialogStyle = css({
+    ".mdc-dialog__surface": {
+        maxWidth: 865
+    },
+    ".webiny-ui-dialog__content": {
+        width: 865,
+        maxHeight: "70vh"
     }
 });
 
@@ -65,12 +68,12 @@ const AdvancedSettings = React.memo(
         });
 
         return (
-            <Dialog open={open} onClose={closeDialog}>
+            <Dialog open={open} onClose={closeDialog} className={dialogStyle}>
                 <DialogTitle>Settings</DialogTitle>
                 <Form key={element && element.id} data={data} onSubmit={onSubmit}>
                     {({ submit, Bind, data, form }) => (
                         <React.Fragment>
-                            <DialogContent className={dialogBody}>
+                            <DialogContent>
                                 <Tabs>
                                     {renderPlugins(
                                         "pb-page-element-advanced-settings",

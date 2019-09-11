@@ -16,13 +16,14 @@ const EmptyTree = styled("div")({
     height: "100%",
     display: "flex",
     alignItems: "center",
-    justifyContent: "center"
+    justifyContent: "center",
+    color: "var(--mdc-theme-on-surface)"
 });
 
 class MenuItemsList extends React.Component<*> {
     static canHaveChildren(node: Object) {
         const plugin = getPlugins("pb-menu-item").find(pl => pl.menuItem.type === node.type);
-        return plugin ? plugin.canHaveChildren : false;
+        return plugin ? plugin.menuItem.canHaveChildren : false;
     }
 
     render() {
@@ -41,7 +42,7 @@ class MenuItemsList extends React.Component<*> {
                     onChange={onChange}
                     canNodeHaveChildren={MenuItemsList.canHaveChildren}
                     nodeContentRenderer={MenuItemRenderer}
-                    rowHeight={45}
+                    rowHeight={80}
                     generateNodeProps={() => ({
                         editItem,
                         deleteItem

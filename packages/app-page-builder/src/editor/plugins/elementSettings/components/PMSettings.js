@@ -48,13 +48,11 @@ const PMSettings = (props: Props) => {
                 });
             }
 
-            if (!history) {
-                updateElement({
-                    element: newElement,
-                    history,
-                    merge: true
-                });
-            }
+            updateElement({
+                element: newElement,
+                history,
+                merge: true
+            });
         };
     });
 
@@ -120,7 +118,7 @@ const PMSettings = (props: Props) => {
                         />
                     </React.Fragment>
                 )}
-                <Footer advanced={advanced || false} toggleAdvanced={getUpdateValue("advanced")} />
+                <Footer advanced={Boolean(advanced)} toggleAdvanced={getUpdateValue("advanced")} />
             </Tab>
             <Tab label={"Mobile"}>
                 {!advanced ? (
@@ -160,7 +158,7 @@ const PMSettings = (props: Props) => {
                         />
                     </React.Fragment>
                 )}
-                <Footer advanced={advanced || false} toggleAdvanced={getUpdateValue("advanced")} />
+                <Footer advanced={Boolean(advanced)} toggleAdvanced={getUpdateValue("advanced")} />
             </Tab>
         </Tabs>
     );

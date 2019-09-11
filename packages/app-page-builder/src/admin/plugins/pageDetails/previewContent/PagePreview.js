@@ -31,10 +31,20 @@ const PagePreviewToolbar = styled("div")({
     transform: "translateZ(0)",
     display: "flex",
     overflow: "hidden",
-    select: {
-        fontSize: 14,
+    ".webiny-ui-select": {
         color: "var(--mdc-theme-text-secondary-on-background)",
-        width: 75
+        backgroundColor: "transparent !important",
+        width: "120px !important",
+        ".mdc-select__dropdown-icon": {
+            display: "none"
+        },
+        select: {
+            fontSize: 14,
+            border: "none",
+            height: 30,
+            padding: 0,
+            backgroundColor: "transparent !important"
+        }
     }
 });
 

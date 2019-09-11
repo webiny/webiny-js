@@ -9,8 +9,8 @@ import { css } from "emotion";
 import classNames from "classnames";
 import Menu from "./Menu";
 import { FormElementMessage } from "@webiny/ui/FormElementMessage";
-import type { FormComponentProps } from "./../types";
 import shortid from "shortid"; // TODO: remove this one
+import type { FormComponentProps } from "./../types";
 
 const EditorWrapper = styled("div")({
     border: "1px solid var(--mdc-theme-on-background)",
@@ -71,11 +71,10 @@ type State = {
 export class RichTextEditor extends React.Component<RichTextEditorPropsType, State> {
     static defaultProps = {};
 
-    editor = React.createRef();
-
     id: string;
     plugins: { editor: Array<Object> };
     nextElement: ?EventTarget;
+    editor: ?Editor;
 
     constructor(props: RichTextEditorPropsType) {
         super();
@@ -176,6 +175,11 @@ export class RichTextEditor extends React.Component<RichTextEditorPropsType, Sta
         this.setState({ activePlugin: null });
     };
 
+    setEditorRef = editor => {
+        this.editor = editor;
+        this.setState({ ts: new Date().getTime() });
+    };
+
     render() {
         const {
             plugins,
@@ -202,7 +206,7 @@ export class RichTextEditor extends React.Component<RichTextEditorPropsType, Sta
                         plugins={plugins}
                         value={this.state.value}
                         onChange={this.onChange}
-                        editor={this.editor.current}
+                        editor={this.editor}
                         activePlugin={this.state.activePlugin}
                         activatePlugin={this.activatePlugin}
                         deactivatePlugin={this.deactivatePlugin}
@@ -210,7 +214,7 @@ export class RichTextEditor extends React.Component<RichTextEditorPropsType, Sta
                     <EditorContent>
                         <Editor
                             onBlur={this.onBlur}
-                            ref={this.editor}
+                            ref={this.setEditorRef}
                             autoCorrect={false}
                             spellCheck={false}
                             plugins={this.plugins.editor}
