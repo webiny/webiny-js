@@ -142,6 +142,7 @@ export const CrudProvider = ({ children, ...props }: Props) => {
         error: props.read.getError ? props.read.getError(readQuery.data) : getError(readQuery.data),
         onSubmit: actions.save,
         loading: mutationInProgress || readQuery.loading,
+        id,
         invalidFields
     };
 
