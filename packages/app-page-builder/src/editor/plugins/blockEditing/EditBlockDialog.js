@@ -66,7 +66,7 @@ const EditBlockDialog = React.memo(
                                 <DialogContent>
                                     <Grid>
                                         <Cell span={12}>
-                                            <Bind name={"title"} validators={"required"}>
+                                            <Bind name={"title"} validators={validation.create("required")}>
                                                 <Input label={"Name"} autoFocus />
                                             </Bind>
                                         </Cell>

@@ -5,6 +5,7 @@ import { Input } from "@webiny/ui/Input";
 import { Select } from "@webiny/ui/Select";
 import { TagsMultiAutoComplete } from "@webiny/app-page-builder/admin/components/TagsMultiAutoComplete";
 import { CategoriesAutoComplete } from "@webiny/app-page-builder/admin/components/CategoriesAutoComplete";
+import { validation } from "@webiny/validation";
 
 const PagesListFilterSettings = ({ Bind }: Object) => {
     return (
@@ -16,7 +17,7 @@ const PagesListFilterSettings = ({ Bind }: Object) => {
                     </Bind>
                 </Cell>
                 <Cell span={6}>
-                    <Bind name={"pagesLimit"} validators={"numeric"}>
+                    <Bind name={"pagesLimit"} validators={validation.create("numeric")}>
                         <Input
                             label={"Number of pages to show"}
                             description={"Leave empty to show all"}

@@ -9,7 +9,7 @@ import { CircularProgress } from "@webiny/ui/Progress";
 import { Grid, Cell } from "@webiny/ui/Grid";
 import { UPDATE_FORMS_SETTINGS } from "./graphql";
 import { useFormEditor } from "@webiny/app-forms/admin/components/FormEditor/Context";
-
+import { validation } from "@webiny/validation";
 import { i18n } from "@webiny/app/i18n";
 const t = i18n.namespace("Forms.ReCaptchaSettingsDialog");
 
@@ -70,7 +70,7 @@ const ReCaptchaSettingsDialog = ({ open, onClose, reCaptchaSettings, onSubmit }:
                                     <DialogContent>
                                         <Grid>
                                             <Cell span={12}>
-                                                <Bind name={"siteKey"} validators={"required"}>
+                                                <Bind name={"siteKey"} validators={validation.create("required")}>
                                                     <Input
                                                         label={"Site key"}
                                                         description={
@@ -88,7 +88,7 @@ const ReCaptchaSettingsDialog = ({ open, onClose, reCaptchaSettings, onSubmit }:
                                                 </Bind>
                                             </Cell>
                                             <Cell span={12}>
-                                                <Bind name={"secretKey"} validators={"required"}>
+                                                <Bind name={"secretKey"} validators={validation.create("required")}>
                                                     <Input
                                                         label={"Secret key"}
                                                         description={
