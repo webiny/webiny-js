@@ -43,7 +43,7 @@ const ReCaptchaSettingsDialog = ({ open, onClose, reCaptchaSettings, onSubmit }:
                                         data: { reCaptcha: { enabled: true, siteKey, secretKey } }
                                     }
                                 }),
-                                "data.settings.forms"
+                                "data.forms.updateSettings"
                             );
                             setData(data => {
                                 data.settings.reCaptcha.settings = {
