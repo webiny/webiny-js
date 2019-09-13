@@ -137,6 +137,7 @@ const FormRender = (props: FormRenderComponentPropsType) => {
         }
 
         const formSubmission = await createFormSubmission({
+            client,
             props,
             data,
             reCaptchaResponseToken: reCaptchaResponseToken.current

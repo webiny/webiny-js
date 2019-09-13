@@ -11,7 +11,8 @@ type Args = {
 };
 
 export default async ({
-    props: { data: form, client, preview },
+    client,
+    props: { data: form, preview },
     data: rawData,
     reCaptchaResponseToken
 }: Args): Promise<FormSubmitResponseType> => {
