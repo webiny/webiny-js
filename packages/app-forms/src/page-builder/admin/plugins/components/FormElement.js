@@ -3,8 +3,19 @@ import * as React from "react";
 import { ElementRoot } from "@webiny/app-page-builder/render/components/ElementRoot";
 import { get } from "lodash";
 import { Form as FormsForm } from "@webiny/app-forms/components/Form";
+import { styled } from "@storybook/theming";
 
-const FormElement = React.memo(({ element }: Object) => {
+const Overlay = styled("div")({
+    background: "black",
+    border: "1px solid red",
+    position: "absolute",
+    width: "100%",
+    height: "100%",
+    zIndex: 9,
+    opacity: 0.25
+});
+
+const FormElement = React.memo(({ element, isActive }: Object) => {
     let render = "Form not selected.";
 
     let form = get(element, "data.settings.form") || {};
@@ -31,6 +42,7 @@ const FormElement = React.memo(({ element }: Object) => {
             element={element}
             className={"webiny-pb-element-form"}
         >
+            {isActive && <Overlay />}
             {render}
         </ElementRoot>
     );
