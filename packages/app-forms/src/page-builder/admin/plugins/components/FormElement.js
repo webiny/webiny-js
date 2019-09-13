@@ -3,19 +3,21 @@ import * as React from "react";
 import { ElementRoot } from "@webiny/app-page-builder/render/components/ElementRoot";
 import { get } from "lodash";
 import { Form as FormsForm } from "@webiny/app-forms/components/Form";
-import { styled } from "@storybook/theming";
+import styled from "@emotion/styled";
+import { connect } from "react-redux";
+import { getActiveElementId } from "@webiny/app-page-builder/editor/selectors";
 
 const Overlay = styled("div")({
     background: "black",
-    border: "1px solid red",
     position: "absolute",
     width: "100%",
     height: "100%",
-    zIndex: 9,
+    zIndex: 10,
     opacity: 0.25
 });
 
-const FormElement = React.memo(({ element, isActive }: Object) => {
+const FormElement = (props: Object) => {
+    const { element, isActive } = props;
     let render = "Form not selected.";
 
     let form = get(element, "data.settings.form") || {};
@@ -37,15 +39,21 @@ const FormElement = React.memo(({ element, isActive }: Object) => {
     }
 
     return (
-        <ElementRoot
-            key={`form-${form.parent}-${form.revision}`}
-            element={element}
-            className={"webiny-pb-element-form"}
-        >
+        <>
             {isActive && <Overlay />}
-            {render}
-        </ElementRoot>
+            <ElementRoot
+                key={`form-${form.parent}-${form.revision}`}
+                element={element}
+                className={"webiny-pb-element-form"}
+            >
+                {render}
+            </ElementRoot>
+        </>
     );
-});
+};
 
-export default FormElement;
+export default connect((state, props) => {
+    return {
+        isActive: getActiveElementId(state) === props.element.id
+    };
+})(FormElement);
