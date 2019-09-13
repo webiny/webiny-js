@@ -10,8 +10,8 @@ const createHandler = async () => {
             { name: "pageBuilder", url: host + "/graphql/page-builder" },
             { name: "security", url: host + "/graphql/security" },
             { name: "i18n", url: host + "/graphql/i18n" },
-            { name: "forms", url: host + "/graphql/forms" }
-            // { name: "headless", url: host + "/graphql/headless" }
+            { name: "forms", url: host + "/graphql/forms" },
+            { name: "cms", url: host + "/graphql/cms" }
         ],
         buildService({ url }) {
             return new RemoteGraphQLDataSource({

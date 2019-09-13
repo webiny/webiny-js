@@ -96,3 +96,13 @@ functions:
       - http:
           path: /graphql/forms/
           method: any
+  api-service-cms:
+    handler: examples/functions/code/api-service-cms/build/handler.handler
+    environment:
+      MONGODB_SERVER: ${self:custom.webiny.database.server}
+      MONGODB_DB_NAME: ${self:custom.webiny.database.name}
+      WEBINY_JWT_SECRET: ${self:custom.webiny.jwtSecret}
+    events:
+      - http:
+          path: /graphql/cms/
+          method: any
