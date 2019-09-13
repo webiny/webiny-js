@@ -4,8 +4,8 @@ import { set } from "dot-prop-immutable";
 import { useApolloClient } from "react-apollo";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import {
-    publishRevision as publishRevisionGql,
-    getPage
+    PUBLISH_REVISION,
+    GET_PAGE
 } from "@webiny/app-page-builder/admin/graphql/pages";
 
 export function usePublishRevisionHandler({ page }) {
@@ -14,7 +14,7 @@ export function usePublishRevisionHandler({ page }) {
 
     const publishRevision = async revision => {
         const { data: res } = await client.mutate({
-            mutation: publishRevisionGql,
+            mutation: PUBLISH_REVISION,
             variables: { id: revision.id },
             refetchQueries: ["PbListPages"],
             update: (cache, { data }) => {
@@ -23,7 +23,7 @@ export function usePublishRevisionHandler({ page }) {
                     return;
                 }
 
-                const getPageQuery = getPage();
+                const getPageQuery = GET_PAGE();
 
                 // Update revisions
                 const pageFromCache = cache.readQuery({

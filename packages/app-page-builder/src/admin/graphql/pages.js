@@ -23,8 +23,8 @@ const sharedFields = `
     savedOn
 `;
 
-export const createPage = gql`
-    mutation PbCreatePage($category: ID!) {
+export const CREATE_PAGE = gql`
+    mutation createPage($category: ID!) {
         pageBuilder {
             page: createPage(data: { category: $category }) {
                 data {
@@ -36,8 +36,8 @@ export const createPage = gql`
     }
 `;
 
-export const listPages = gql`
-    query PbListPages($sort: JSON, $page: Int, $perPage: Int, $search: String) {
+export const LIST_PAGES = gql`
+    query listPages($sort: JSON, $page: Int, $perPage: Int, $search: String) {
         pageBuilder {
             pages: listPages(sort: $sort, page: $page, perPage: $perPage, search: $search) {
                 data {
@@ -63,8 +63,8 @@ export const listPages = gql`
     }
 `;
 
-export const getPage = () => gql`
-    query PbGetPage($id: ID!) {
+export const GET_PAGE = () => gql`
+    query getPage($id: ID!) {
         pageBuilder {
             page: getPage(id: $id) {
                 data {
@@ -92,8 +92,8 @@ export const getPage = () => gql`
     }
 `;
 
-export const createRevisionFrom = gql`
-    mutation PbCreateRevisionFrom($revision: ID!) {
+export const CREATE_REVISION_FORM = gql`
+    mutation createRevisionFrom($revision: ID!) {
         pageBuilder {
             revision: createRevisionFrom(revision: $revision) {
                 data {
@@ -105,7 +105,7 @@ export const createRevisionFrom = gql`
     }
 `;
 
-export const publishRevision = gql`
+export const PUBLISH_REVISION = gql`
     mutation PbPublishRevision($id: ID!) {
         pageBuilder {
             publishRevision(id: $id) {
@@ -118,7 +118,7 @@ export const publishRevision = gql`
     }
 `;
 
-export const deleteRevision = gql`
+export const DELETE_REVISION = gql`
     mutation PbDeleteRevision($id: ID!) {
         pageBuilder {
             deleteRevision(id: $id) {
@@ -129,7 +129,7 @@ export const deleteRevision = gql`
     }
 `;
 
-export const deletePage = gql`
+export const DELETE_PAGE = gql`
     mutation DeletePage($id: ID!) {
         pageBuilder {
             deletePage(id: $id) {
@@ -152,7 +152,7 @@ const elementFields = /*GraphQL*/ `
     }
 `;
 
-export const listElements = gql`
+export const LIST_ELEMENTS = gql`
     query PbListElements {
         pageBuilder {
             elements: listElements(perPage: 1000) {
@@ -164,7 +164,7 @@ export const listElements = gql`
     }
 `;
 
-export const createElement = gql`
+export const CREATE_ELEMENT = gql`
     mutation PbCreateElement($data: ElementInput!) {
         pageBuilder {
             element: createElement(data: $data) {
@@ -177,7 +177,7 @@ export const createElement = gql`
     }
 `;
 
-export const updateElement = gql`
+export const UPDATE_ELEMENT = gql`
     mutation PbUpdateElement($id: ID!, $data: UpdateElementInput!) {
         pageBuilder {
             element: updateElement(id: $id, data: $data) {

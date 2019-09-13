@@ -3,8 +3,8 @@ import { useCallback } from "react";
 import { useApolloClient } from "react-apollo";
 import useReactRouter from "use-react-router";
 import {
-    createRevisionFrom,
-    deleteRevision as deleteGql
+    CREATE_REVISION_FORM,
+    DELETE_REVISION
 } from "@webiny/app-page-builder/admin/graphql/pages";
 import { usePublishRevisionHandler } from "../utils/usePublishRevisionHandler";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
@@ -19,7 +19,7 @@ export function useRevisionHandlers({ rev }) {
 
     const createRevision = useCallback(async () => {
         const { data: res } = await client.mutate({
-            mutation: createRevisionFrom,
+            mutation: CREATE_REVISION_FORM,
             variables: { revision: rev.id },
             refetchQueries: ["PbListPages"]
         });
@@ -38,7 +38,7 @@ export function useRevisionHandlers({ rev }) {
 
     const deleteRevision = useCallback(async () => {
         const { data: res } = await client.mutate({
-            mutation: deleteGql,
+            mutation: DELETE_REVISION,
             refetchQueries: ["PbLoadPageRevisions"],
             variables: { id: rev.id }
         });

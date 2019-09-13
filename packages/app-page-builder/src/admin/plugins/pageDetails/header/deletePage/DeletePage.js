@@ -10,7 +10,7 @@ import { IconButton } from "@webiny/ui/Button";
 import { Tooltip } from "@webiny/ui/Tooltip";
 import { withConfirmation } from "@webiny/ui/ConfirmationDialog";
 import { ReactComponent as DeleteIcon } from "@webiny/app-page-builder/admin/assets/delete.svg";
-import { deletePage } from "@webiny/app-page-builder/admin/graphql/pages";
+import { DELETE_PAGE } from "@webiny/app-page-builder/admin/graphql/pages";
 
 const DeletePage = props => {
     const client = useApolloClient();
@@ -21,7 +21,7 @@ const DeletePage = props => {
     const confirmDelete = useHandler(props, ({ pageDetails: { page }, showConfirmation }) => () => {
         showConfirmation(async () => {
             const { data: res } = await client.mutate({
-                mutation: deletePage,
+                mutation: DELETE_PAGE,
                 variables: { id: page.parent },
                 refetchQueries: ["PbListPages"]
             });

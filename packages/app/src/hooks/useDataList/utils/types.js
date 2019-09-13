@@ -1,5 +1,6 @@
 // @flow
-export type WithDataListParams = {
+// TODO: types and apply in useDataList
+export type UseDataListParams = {
     load?: boolean,
     name: string,
     type: string,
@@ -17,7 +18,7 @@ export type SearchParams = {
     fields?: Array<string>
 };
 
-export type WithDataListProps = {
+export type UseDataListProps = {
     data: Array<Object>,
     meta: Object,
     init: () => void,
@@ -35,5 +36,5 @@ export type WithDataListProps = {
     isAllMultiSelected: () => boolean,
     isNoneMultiSelected: () => boolean,
     getMultiSelected: () => Array<Object>,
-    __loadParams: WithDataListParams
+    __loadParams: UseDataListParams
 };
