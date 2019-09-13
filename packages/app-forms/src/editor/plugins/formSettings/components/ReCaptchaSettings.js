@@ -20,7 +20,7 @@ const ReCaptchaSettings = ({ Bind, formData }) => {
     return (
         <Query query={GET_RECAPTCHA_SETTINGS} onCompleted={() => setSettingsLoaded(true)}>
             {({ data, refetch }) => {
-                const settings = get(data, "settings.forms.data.reCaptcha") || {};
+                const settings = get(data, "forms.getSettings.data.reCaptcha") || {};
                 const reCaptchaEnabledInSettings =
                     settings.enabled && settings.siteKey && settings.secretKey;
                 const reCaptchaEnabled = get(formData, "reCaptcha.enabled");
