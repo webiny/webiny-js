@@ -1,8 +1,9 @@
 import React from "react";
-import { withRouter } from "react-router-dom";
 import { i18n } from "@webiny/app/i18n";
 import { ConfirmationDialog } from "@webiny/ui/ConfirmationDialog";
 import { DeleteIcon } from "@webiny/ui/List/DataList/icons";
+import { useCrud } from "@webiny/app-admin/hooks/useCrud";
+
 import {
     DataList,
     List,
@@ -13,46 +14,43 @@ import {
     ListActions
 } from "@webiny/ui/List";
 
-const t = i18n.namespace("Pb.MenusDataList");
+const t = i18n.ns("app-page-builder/admin/menus/data-list");
 
-const MenusDataList = ({ dataList, location, history, deleteRecord }) => {
+const MenusDataList = () => {
+    const { actions, list } = useCrud();
+
     return (
         <DataList
-            {...dataList}
+            {...list}
             title={t`Menus`}
+            showOptions={{}}
             sorters={[
                 {
-                    label: "Newest to oldest",
+                    label: t`Newest to oldest`,
                     sorters: { createdOn: -1 }
                 },
                 {
-                    label: "Oldest to newest",
+                    label: t`Oldest to newest`,
                     sorters: { createdOn: 1 }
                 },
                 {
-                    label: "Name A-Z",
+                    label: t`Name A-Z`,
                     sorters: { name: 1 }
                 },
                 {
-                    label: "Name Z-A",
+                    label: t`Name Z-A`,
                     sorters: { name: -1 }
                 }
             ]}
         >
-            {({ data }) => (
+            {({ data, isSelected, select }) => (
                 <List>
                     {data.map(item => (
-                        <ListItem key={item.id}>
-                            <ListItemText
-                                onClick={() => {
-                                    const query = new URLSearchParams(location.search);
-                                    query.set("id", item.id);
-                                    history.push({ search: query.toString() });
-                                }}
-                            >
+                        <ListItem key={item.id} selected={isSelected(item)}>
+                            <ListItemText onClick={() => select(item)}>
                                 {item.title}
                                 <ListItemTextSecondary>
-                                    {item.description || "No description provided."}
+                                    {item.description || t`No description provided.`}
                                 </ListItemTextSecondary>
                             </ListItemText>
 
@@ -62,7 +60,7 @@ const MenusDataList = ({ dataList, location, history, deleteRecord }) => {
                                         {({ showConfirmation }) => (
                                             <DeleteIcon
                                                 onClick={() => {
-                                                    showConfirmation(() => deleteRecord(item));
+                                                    showConfirmation(() => actions.delete(item));
                                                 }}
                                             />
                                         )}
@@ -77,4 +75,4 @@ const MenusDataList = ({ dataList, location, history, deleteRecord }) => {
     );
 };
 
-export default withRouter(MenusDataList);
+export default MenusDataList;

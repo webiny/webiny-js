@@ -34,26 +34,6 @@ describe("attribute models test", () => {
         this.attr("attribute2").models(Model2, true);
     });
 
-    test("should not accept inline functions, must always receive a Model class", async () => {
-        class ModelsAttributeWithoutModelsClassModel extends Model {
-            constructor() {
-                super();
-                this.attr("modelsAttribute1").models(() => {});
-            }
-        }
-
-        try {
-            new ModelsAttributeWithoutModelsClassModel();
-        } catch (e) {
-            expect(e.message).toEqual(
-                `"models" attribute "modelsAttribute1" received an invalid class (subclass of Model is required).`
-            );
-            return;
-        }
-
-        throw Error(`Error should've been thrown.`);
-    });
-
     test("should fail - attributes should accept object with models as values", async () => {
         model.attribute1 = new Model1();
         expect(model.attribute1).toBeInstanceOf(Model1);
@@ -459,7 +439,6 @@ describe("attribute models test", () => {
             }
         });
     });
-
 
     test("onSet/onGet must be triggered correctly", async () => {
         const newModel = new Model(function() {

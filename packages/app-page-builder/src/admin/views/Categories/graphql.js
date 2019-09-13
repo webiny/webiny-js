@@ -9,7 +9,7 @@ const fields = `
     layout
 `;
 
-export const loadCategories = gql`
+export const LIST_CATEGORIES = gql`
     query LoadCategories(
         $where: JSON
         $sort: JSON
@@ -44,7 +44,7 @@ export const loadCategories = gql`
     }
 `;
 
-export const loadCategory = gql`
+export const READ_CATEGORY = gql`
     query LoadCategory($id: ID!) {
         pageBuilder {
             category: getCategory(id: $id){
@@ -60,7 +60,7 @@ export const loadCategory = gql`
     }
 `;
 
-export const createCategory = gql`
+export const CREATE_CATEGORY = gql`
     mutation CreateCategory($data: PbCategoryInput!){
         pageBuilder {
             category: createCategory(data: $data) {
@@ -77,7 +77,7 @@ export const createCategory = gql`
     }
 `;
 
-export const updateCategory = gql`
+export const UPDATE_CATEGORY = gql`
     mutation UpdateCategory($id: ID!, $data: PbCategoryInput!){
         pageBuilder {
             category: updateCategory(id: $id, data: $data) {
@@ -94,7 +94,7 @@ export const updateCategory = gql`
     }
 `;
 
-export const deleteCategory = gql`
+export const DELETE_CATEGORY = gql`
     mutation DeleteCategory($id: ID!) {
         pageBuilder {
             deleteCategory(id: $id) {

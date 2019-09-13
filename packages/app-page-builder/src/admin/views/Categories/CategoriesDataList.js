@@ -3,6 +3,8 @@ import { withRouter } from "react-router-dom";
 import { i18n } from "@webiny/app/i18n";
 import { ConfirmationDialog } from "@webiny/ui/ConfirmationDialog";
 import { DeleteIcon } from "@webiny/ui/List/DataList/icons";
+import { useCrud } from "@webiny/app-admin/hooks/useCrud";
+
 import {
     DataList,
     List,
@@ -13,12 +15,14 @@ import {
     ListActions
 } from "@webiny/ui/List";
 
-const t = i18n.namespace("Pb.CategoriesDataList");
+const t = i18n.ns("app-page-builder/admin/categories/data-list");
 
-const CategoriesDataList = ({ dataList, history, location, deleteRecord }) => {
+const CategoriesDataList = () => {
+    const { actions, list } = useCrud();
+
     return (
         <DataList
-            {...dataList}
+            {...list}
             title={t`Categories`}
             sorters={[
                 {
@@ -39,17 +43,11 @@ const CategoriesDataList = ({ dataList, history, location, deleteRecord }) => {
                 }
             ]}
         >
-            {({ data }) => (
+            {({ data, isSelected, select }) => (
                 <List>
                     {data.map(item => (
-                        <ListItem key={item.id}>
-                            <ListItemText
-                                onClick={() => {
-                                    const query = new URLSearchParams(location.search);
-                                    query.set("id", item.id);
-                                    history.push({ search: query.toString() });
-                                }}
-                            >
+                        <ListItem key={item.id} selected={isSelected(item)}>
+                            <ListItemText onClick={() => select(item)}>
                                 {item.name}
                                 <ListItemTextSecondary>{item.url}</ListItemTextSecondary>
                             </ListItemText>
@@ -60,7 +58,7 @@ const CategoriesDataList = ({ dataList, history, location, deleteRecord }) => {
                                         {({ showConfirmation }) => (
                                             <DeleteIcon
                                                 onClick={() =>
-                                                    showConfirmation(() => deleteRecord(item))
+                                                    showConfirmation(() => actions.delete(item))
                                                 }
                                             />
                                         )}

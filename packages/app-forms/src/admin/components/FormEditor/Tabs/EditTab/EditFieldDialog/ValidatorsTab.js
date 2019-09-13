@@ -12,6 +12,7 @@ import { cloneDeep, debounce } from "lodash";
 import { Grid, Cell } from "@webiny/ui/Grid";
 import { I18NInput } from "@webiny/app-i18n/admin/components";
 import { useI18N } from "@webiny/app-i18n/hooks/useI18N";
+import { validation } from "@webiny/validation";
 
 const onEnabledChange = ({ i18n, data, validationValue, onChangeValidation, validator }) => {
     if (data) {
@@ -132,7 +133,7 @@ const ValidatorsTab = props => {
                                                 <Cell span={12}>
                                                     <Bind
                                                         name={"message"}
-                                                        validators={["required"]}
+                                                        validators={validation.create("required")}
                                                     >
                                                         <I18NInput
                                                             label={"Message"}

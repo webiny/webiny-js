@@ -11,6 +11,7 @@ import { Input } from "@webiny/ui/Input";
 import { Grid, Cell } from "@webiny/ui/Grid";
 import { Typography } from "@webiny/ui/Typography";
 import { CircularProgress } from "@webiny/ui/Progress";
+import { validation } from "@webiny/validation";
 import {
     Footer,
     alignRight,
@@ -77,7 +78,7 @@ const Login = props => {
                                             <Cell span={12}>
                                                 <Bind
                                                     name="username"
-                                                    validators={["required", "email"]}
+                                                    validators={validation.create("required,email")}
                                                 >
                                                     <Input label={t`Your e-mail`} box="true" />
                                                 </Bind>
@@ -88,7 +89,9 @@ const Login = props => {
                                             <Cell span={12}>
                                                 <Bind
                                                     name="password"
-                                                    validators={["required", "password"]}
+                                                    validators={validation.create(
+                                                        "required,password"
+                                                    )}
                                                 >
                                                     <Input
                                                         type={"password"}

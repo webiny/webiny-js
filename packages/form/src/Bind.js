@@ -2,7 +2,6 @@
 import * as React from "react";
 import { get } from "lodash";
 import type Form from "./Form";
-import validation from "./validation";
 import invariant from "invariant";
 
 export type BindComponentPropsType = {
@@ -10,8 +9,7 @@ export type BindComponentPropsType = {
     beforeChange?: Function,
     afterChange?: Function,
     defaultValue?: any,
-    validators: Array<string>,
-    validationMessages?: { [string]: string },
+    validators: Function | Array<Function>,
     children: React.Node | BindComponentRenderPropType,
     validate: Function
 };
@@ -32,15 +30,7 @@ export type BindComponentType = BindComponentPropsType => React.Node;
 
 const createBind = (form: Form) => {
     const Bind: BindComponentType = props => {
-        const {
-            name,
-            validators = [],
-            validationMessages = {},
-            children,
-            defaultValue,
-            beforeChange,
-            afterChange
-        } = props;
+        const { name, validators = [], children, defaultValue, beforeChange, afterChange } = props;
 
         invariant(name, `Bind component must have a "name" prop.`);
 
@@ -50,8 +40,7 @@ const createBind = (form: Form) => {
         // Store validators and custom messages
         form.inputs[name] = {
             defaultValue,
-            validators: validation.parseValidators(validators),
-            validationMessages
+            validators
         };
 
         // Build new input props

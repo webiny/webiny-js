@@ -1,20 +1,17 @@
 // @flow
 import * as React from "react";
 import { AutoComplete } from "@webiny/ui/AutoComplete";
-import { withAutoComplete } from "@webiny/app/components";
-import { get } from "lodash";
-import { searchLocaleCodes } from "./graphql";
+import { SEARCH_LOCALE_CODES } from "./graphql";
+import { useAutocomplete } from "@webiny/app/hooks/useAutocomplete";
 
 const LocaleCodesAutoComplete = props => {
-    const options = [...props.options];
+    const autoComplete = useAutocomplete(SEARCH_LOCALE_CODES);
+    const options = [...autoComplete.options];
     if (props.value && !options.includes(props.value)) {
         options.push(props.value);
     }
 
-    return <AutoComplete {...props} options={options} useSimpleValues />;
+    return <AutoComplete {...props} {...autoComplete} options={options} useSimpleValues  />;
 };
 
-export default withAutoComplete({
-    response: data => get(data, "i18n.codes"),
-    query: searchLocaleCodes
-})(LocaleCodesAutoComplete);
+export default LocaleCodesAutoComplete;

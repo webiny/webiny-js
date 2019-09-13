@@ -2,10 +2,10 @@
 import * as React from "react";
 import _ from "lodash";
 import set from "lodash/fp/set";
-import validation from "./validation";
 import { createBind } from "./Bind";
 import linkState from "./linkState";
 import type { Props as BindProps } from "./Bind";
+import ValidationError from "./ValidationError";
 
 type Props = {
     invalidFields?: Object,
@@ -78,6 +78,35 @@ class Form extends React.Component<Props, State> {
         return !_.isEqual(validation, state.validation) ? { validation } : null;
     }
 
+    static executeValidators = async (
+        value: any,
+        validators: Function | Array<Function>,
+        formData: Object = {}
+    ): Promise<any> => {
+        validators = Array.isArray(validators) ? [...validators] : [validators];
+
+        const results = {};
+        for (let i = 0; i < validators.length; i++) {
+            let validator = validators[i];
+            try {
+                await Promise.resolve(validator(value, formData))
+                    .then(result => {
+                        if (result instanceof Error) {
+                            throw result;
+                        }
+                        results[i] = result;
+                    })
+                    .catch(e => {
+                        throw new ValidationError(e.message, value);
+                    });
+            } catch (e) {
+                throw new ValidationError(e.message, value);
+            }
+        }
+
+        return results;
+    };
+
     componentDidUpdate() {
         Object.keys(this.inputs).forEach(name => {
             if (!this.lastRender.includes(name)) {
@@ -139,7 +168,7 @@ class Form extends React.Component<Props, State> {
         for (let i = 0; i < inputNames.length; i++) {
             const name = inputNames[i];
             const { validators } = this.inputs[name];
-            if (_.isEmpty(validators)) {
+            if (!validators) {
                 continue;
             }
 
@@ -174,7 +203,7 @@ class Form extends React.Component<Props, State> {
             return Promise.resolve(null);
         }
         const value = _.get(this.state.data, name, this.inputs[name].defaultValue);
-        const { validators, validationMessages } = this.inputs[name];
+        const { validators } = this.inputs[name];
         const hasValidators = _.keys(validators).length;
 
         // Validate input
@@ -194,7 +223,7 @@ class Form extends React.Component<Props, State> {
             }
         }));
 
-        return Promise.resolve(validation.validate(value, validators, formData))
+        return Promise.resolve(Form.executeValidators(value, validators, formData))
             .then(validationResults => {
                 const isValid = hasValidators ? (value === null ? null : true) : null;
 
@@ -213,12 +242,6 @@ class Form extends React.Component<Props, State> {
                 return validationResults;
             })
             .catch(validationError => {
-                // Set custom error message if defined
-                const validator = validationError.getValidator();
-                if (validator in validationMessages) {
-                    validationError.setMessage(validationMessages[validator]);
-                }
-
                 // Set component state to reflect validation error
                 this.setState(state => ({
                     ...state,

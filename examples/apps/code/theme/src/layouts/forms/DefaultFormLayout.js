@@ -131,7 +131,7 @@ const DefaultFormLayout: FormLayoutComponent = ({
             <ReCaptcha>
                 {({ errorMessage }) => (
                     <div className="webiny-pb-form-recaptcha">
-                        <Bind name={"reCaptcha"} validators={["required"]}>
+                        <Bind name={"reCaptcha"} validators={validation.create("required")}>
                             {({ onChange, validation }) => (
                                 <>
                                     <ReCaptcha onChange={onChange} />
@@ -160,7 +160,7 @@ const DefaultFormLayout: FormLayoutComponent = ({
             <TermsOfService>
                 {({ message, errorMessage, onChange }) => (
                     <div className="webiny-pb-form-tos">
-                        <Bind name={"tosAccepted"} validators={["required"]} afterChange={onChange}>
+                        <Bind name={"tosAccepted"} validators={validation.create("required")} afterChange={onChange}>
                             {({ onChange, value, validation }) => (
                                 <div className="webiny-pb-form-field webiny-pb-form-field--checkbox">
                                     <div className="webiny-pb-form-field__checkbox-group">

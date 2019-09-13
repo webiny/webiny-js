@@ -11,6 +11,7 @@ import {
 } from "@webiny/ui/Dialog";
 import { Select } from "@webiny/ui/Select";
 import { Form } from "@webiny/form";
+import { validation } from "@webiny/validation";
 
 const narrowDialog = css({
     ".mdc-dialog__surface": {
@@ -38,7 +39,7 @@ const PublishRevisionDialog = ({ open, onClose, onSubmit, revisions, selected }:
                     <React.Fragment>
                         <DialogTitle>Select a revision to publish</DialogTitle>
                         <DialogContent>
-                            <Bind name={"revision"} validators={["required"]}>
+                            <Bind name={"revision"} validators={validation.create("required")}>
                                 <Select label={"Revision to publish"}>
                                     {revisions
                                         .filter(r => !r.published)

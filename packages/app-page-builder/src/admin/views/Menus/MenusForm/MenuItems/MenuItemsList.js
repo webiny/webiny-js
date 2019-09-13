@@ -42,7 +42,7 @@ class MenuItemsList extends React.Component<*> {
                     onChange={onChange}
                     canNodeHaveChildren={MenuItemsList.canHaveChildren}
                     nodeContentRenderer={MenuItemRenderer}
-                    rowHeight={45}
+                    rowHeight={80}
                     generateNodeProps={() => ({
                         editItem,
                         deleteItem

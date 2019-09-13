@@ -14,7 +14,7 @@ import { Input } from "@webiny/ui/Input";
 import { Grid, Cell } from "@webiny/ui/Grid";
 import { Form } from "@webiny/form";
 import styled from "@emotion/styled";
-
+import { validation } from "@webiny/validation";
 const narrowDialog = css({
     ".mdc-dialog__surface": {
         width: 600,
@@ -59,7 +59,7 @@ const EditElementDialog = React.memo(
                                 <DialogContent>
                                     <Grid>
                                         <Cell span={12}>
-                                            <Bind name={"title"} validators={"required"}>
+                                            <Bind name={"title"} validators={validation.create("required")}>
                                                 <Input label={"Name"} autoFocus />
                                             </Bind>
                                         </Cell>

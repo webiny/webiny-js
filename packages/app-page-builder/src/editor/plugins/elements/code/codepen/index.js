@@ -12,6 +12,7 @@ import {
 } from "./../../utils/oembed/createEmbedPlugin";
 
 import { ReactComponent as LogoIcon } from "./codepen-brands.svg";
+import { validation } from "@webiny/validation";
 
 const PreviewBox = styled("div")({
     textAlign: "center",
@@ -44,7 +45,7 @@ export default (): Array<PluginType> => [
                 <Tab icon={<CodeIcon />} label="CodePen">
                     <Grid>
                         <Cell span={12}>
-                            <Bind name={"source.url"} validators={["required", "url"]}>
+                            <Bind name={"source.url"} validators={validation.create("required,url")}>
                                 <Input label={"CodePen URL"} description={"Enter a CodePen URL"} />
                             </Bind>
                         </Cell>

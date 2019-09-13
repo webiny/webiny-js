@@ -1,41 +1,48 @@
 // @flow
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { useQuery } from "react-apollo";
 import useRouter from "use-react-router";
 import type { WithDataListParams, SearchParams, WithDataListProps } from "./utils/types";
-import { isEqual } from "lodash";
+import { get, isEqual } from "lodash";
 import { prepareLoadListParams, redirectToRouteWithQueryParams } from "./utils";
 export type { WithDataListProps, SearchParams, WithDataListParams };
-
-const getQueryOptions = props => {
-    let variables = props.variables;
-    if (typeof variables === "function") {
-        variables = variables(props);
-    }
-
-    return {
-        variables: {
-            ...variables,
-            ...prepareLoadListParams(props.location)
-        }
-    };
-};
+import { getData, getError, getMeta } from "./functions";
 
 const useDataList = params => {
     const [multiSelectedItems, multiSelect] = useState([]);
-    const queryData = useQuery(params.query, getQueryOptions(params));
-    const prevLoadParamsRef = useRef({});
 
-    const { history, location } = useRouter();
-
-    if (!params.getData || !params.getError || !params.getMeta) {
-        throw new Error("Missing getData and getError callbacks.");
+    let history = null;
+    let location = null;
+    const routerHook = useRouter();
+    // TODO: const router = ....
+    if (params.useRouter !== false) {
+        history = routerHook.history;
+        location = routerHook.location;
     }
 
+    const getQueryOptions = useCallback(() => {
+        let variables = params.variables;
+        if (typeof variables === "function") {
+            variables = variables(params);
+        }
+
+        return {
+            variables: {
+                ...variables,
+                ...prepareLoadListParams(location)
+            }
+        };
+    });
+
+    const query = get(params, "query", params);
+    const queryData = useQuery(query, getQueryOptions());
+    const prevLoadParamsRef = useRef({});
+
     const dataListProps: Object = {
-        data: params.getData(queryData.data),
-        meta: params.getMeta(queryData.data),
-        error: params.getError(queryData.data),
+        data: get(queryData, "list.getData", getData)(queryData.data),
+        meta: get(queryData, "list.getMeta", getMeta)(queryData.data),
+        error: get(queryData, "list.getError", getError)(queryData.data),
+
         loading: queryData.loading,
         init(): void {
             this.refresh();

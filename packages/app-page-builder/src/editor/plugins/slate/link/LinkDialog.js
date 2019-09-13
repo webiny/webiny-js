@@ -12,6 +12,7 @@ import {
     DialogButton
 } from "@webiny/ui/Dialog";
 import { getLinkRange, isLink, TYPE } from "./utils";
+import { validation } from "@webiny/validation";
 
 const LinkDialog = ({ open, editor, onChange, closeDialog, activePlugin }) => {
     const { linkData } = useMemo(() => {
@@ -63,12 +64,12 @@ const LinkDialog = ({ open, editor, onChange, closeDialog, activePlugin }) => {
                         <DialogContent>
                             <Grid>
                                 <Cell span={12}>
-                                    <Bind name={"text"} validators={["required"]}>
+                                    <Bind name={"text"} validators={validation.create("required")}>
                                         <Input label="Text to display" />
                                     </Bind>
                                 </Cell>
                                 <Cell span={12}>
-                                    <Bind name={"href"} validators={["required"]}>
+                                    <Bind name={"href"} validators={validation.create("required")}>
                                         <Input label="URL" />
                                     </Bind>
                                 </Cell>

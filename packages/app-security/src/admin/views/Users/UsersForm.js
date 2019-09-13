@@ -6,11 +6,11 @@ import { Grid, Cell } from "@webiny/ui/Grid";
 import { Input } from "@webiny/ui/Input";
 import { CircularProgress } from "@webiny/ui/Progress";
 import { ButtonPrimary } from "@webiny/ui/Button";
-import GroupsAutoComplete from "./../Components/GroupsAutoComplete";
-import RolesAutoComplete from "./../Components/RolesAutoComplete";
+import GroupsAutocomplete from "./../Components/GroupsAutocomplete";
+import RolesAutocomplete from "./../Components/RolesAutocomplete";
 import AvatarImage from "./../Components/AvatarImage";
 import { useCrud } from "@webiny/app-admin/hooks/useCrud";
-
+import { validation } from "@webiny/validation";
 import {
     SimpleForm,
     SimpleFormHeader,
@@ -33,16 +33,19 @@ const UsersForm = () => {
                             <Cell span={6}>
                                 <Grid>
                                     <Cell span={12}>
-                                        <Bind name="email" validators={["required", "email"]}>
+                                        <Bind
+                                            name="email"
+                                            validators={validation.create("required,email")}
+                                        >
                                             <Input label={t`E-mail`} />
                                         </Bind>
                                     </Cell>
                                     <Cell span={12}>
                                         <Bind
                                             name="password"
-                                            validators={
-                                                data.id ? ["password"] : ["required", "password"]
-                                            }
+                                            validators={validation.create(
+                                                data.id ? "password" : "required,password"
+                                            )}
                                         >
                                             <Input
                                                 autoComplete="off"
@@ -67,25 +70,25 @@ const UsersForm = () => {
                             </Cell>
 
                             <Cell span={6}>
-                                <Bind name="firstName" validators={["required"]}>
+                                <Bind name="firstName" validators={validation.create("required")}>
                                     <Input label={t`First Name`} />
                                 </Bind>
                             </Cell>
                             <Cell span={6}>
-                                <Bind name="lastName" validators={["required"]}>
+                                <Bind name="lastName" validators={validation.create("required")}>
                                     <Input label={t`Last name`} />
                                 </Bind>
                             </Cell>
 
                             <Cell span={12}>
                                 <Bind name="groups">
-                                    <GroupsAutoComplete label={t`Groups`} />
+                                    <GroupsAutocomplete label={t`Groups`} />
                                 </Bind>
                             </Cell>
 
                             <Cell span={12}>
                                 <Bind name="roles">
-                                    <RolesAutoComplete label={t`Roles`} />
+                                    <RolesAutocomplete label={t`Roles`} />
                                 </Bind>
                             </Cell>
                         </Grid>

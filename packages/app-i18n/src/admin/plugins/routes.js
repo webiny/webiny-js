@@ -3,7 +3,7 @@ import React from "react";
 import Helmet from "react-helmet";
 import { Route } from "react-router-dom";
 import { AdminLayout } from "@webiny/app-admin/components/AdminLayout";
-import I18NLocales from "@webiny/app-i18n/admin/views/I18NLocales";
+import { I18NLocales } from "@webiny/app-i18n/admin/views/I18NLocales";
 import { SecureRoute } from "@webiny/app-security/components";
 
 export default [

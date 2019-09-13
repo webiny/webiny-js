@@ -60,7 +60,7 @@ export const READ_GROUP = gql`
 `;
 
 export const CREATE_GROUP = gql`
-    mutation CreateGroup($data: GroupInput!){
+    mutation CreateGroup($data: SecurityGroupInput!){
         security {
             group: createGroup(data: $data) {
                 data {
@@ -77,7 +77,7 @@ export const CREATE_GROUP = gql`
 `;
 
 export const UPDATE_GROUP = gql`
-    mutation UpdateGroup($id: ID!, $data: GroupInput!){
+    mutation UpdateGroup($id: ID!, $data: SecurityGroupInput!){
         security {
             group: updateGroup(id: $id, data: $data) {
                 data {

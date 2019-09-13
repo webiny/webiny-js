@@ -5,6 +5,7 @@ import { Input } from "@webiny/ui/Input";
 import { Select } from "@webiny/ui/Select";
 import PagesList from "./PagesList";
 import { getPlugins } from "@webiny/plugins";
+import { validation } from "@webiny/validation";
 
 const PagesListDesignSettings = ({ Bind, data }: Object) => {
     const components = getPlugins("pb-page-element-pages-list-component");
@@ -31,7 +32,7 @@ const PagesListDesignSettings = ({ Bind, data }: Object) => {
                 </Cell>
 
                 <Cell span={6}>
-                    <Bind name={"resultsPerPage"} validators={["numeric"]}>
+                    <Bind name={"resultsPerPage"} validators={validation.create("numeric")}>
                         <Input label={"Results per page"} />
                     </Bind>
                 </Cell>

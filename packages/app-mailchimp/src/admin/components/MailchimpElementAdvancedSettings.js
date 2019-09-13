@@ -17,6 +17,7 @@ import { ButtonPrimary } from "@webiny/ui/Button";
 import { CircularProgress } from "@webiny/ui/Progress";
 import MailchimpElement from "./MailchimpElement";
 import settingsGql from "./graphql";
+import { validation } from "@webiny/validation";
 
 const formPreview = css({
     padding: 25,
@@ -86,7 +87,7 @@ const MailchimpElementAdvancedSettings = ({ Bind }: Object) => {
                             {apiKey && enabled ? (
                                 <>
                                     <Cell span={12}>
-                                        <Bind name={"settings.list"} validators={["required"]}>
+                                        <Bind name={"settings.list"} validators={validation.create("required")}>
                                             {({ value: id, onChange, ...rest }) => {
                                                 const options = (
                                                     get(
@@ -111,7 +112,7 @@ const MailchimpElementAdvancedSettings = ({ Bind }: Object) => {
                                         </Bind>
                                     </Cell>
                                     <Cell span={12}>
-                                        <Bind name={"settings.component"} validators={["required"]}>
+                                        <Bind name={"settings.component"} validators={validation.create("required")}>
                                             {({ onChange, value: name, ...rest }) => {
                                                 const options = getPlugins(
                                                     "pb-page-element-mailchimp-component"
@@ -184,7 +185,7 @@ const MailchimpElementAdvancedSettings = ({ Bind }: Object) => {
                                                         <>
                                                             <Cell span={12}>
                                                                 <Bind
-                                                                    validators={["required"]}
+                                                                    validators={validation.create("required")}
                                                                     name={"apiKey"}
                                                                 >
                                                                     <Input label="API key" />

@@ -3,12 +3,13 @@ import React, { useCallback } from "react";
 import slugify from "slugify";
 import { usePageBuilder } from "@webiny/app-page-builder/hooks/usePageBuilder";
 import { Grid, Cell } from "@webiny/ui/Grid";
-import { TagsMultiAutoComplete } from "@webiny/app-page-builder/admin/components/TagsMultiAutoComplete";
+import { TagsMultiAutocomplete } from "@webiny/app-page-builder/admin/components/TagsMultiAutocomplete";
 import { Input } from "@webiny/ui/Input";
 import { Select } from "@webiny/ui/Select";
 import PageImage from "./PageImage";
 import { set, get } from "lodash";
 import appendOgImageDimensions from "./appendOgImageDimensions";
+import { validation } from "@webiny/validation";
 
 const toSlug = (value, cb) => {
     cb(slugify(value, { replacement: "-", lower: true, remove: /[*#\?<>_\{\}\[\]+~.()'"!:;@]/g })); // eslint-disable-line
@@ -42,12 +43,12 @@ const GeneralSettings = ({ form, Bind }: Object) => {
         <React.Fragment>
             <Grid>
                 <Cell span={12}>
-                    <Bind name={"title"} validators={["required"]}>
+                    <Bind name={"title"} validators={validation.create("required")}>
                         <Input label="Title" description="Page title" />
                     </Bind>
                 </Cell>
                 <Cell span={12}>
-                    <Bind name={"url"} validators={["required"]} beforeChange={toSlug}>
+                    <Bind name={"url"} validators={validation.create("required")} beforeChange={toSlug}>
                         <Input label="URL" description="Page URL" />
                     </Bind>
                 </Cell>
@@ -73,7 +74,7 @@ const GeneralSettings = ({ form, Bind }: Object) => {
                 </Cell>
                 <Cell span={12}>
                     <Bind name={"settings.general.tags"}>
-                        <TagsMultiAutoComplete description="Enter tags to filter pages" />
+                        <TagsMultiAutocomplete description="Enter tags to filter pages" />
                     </Bind>
                 </Cell>
                 <Cell span={12}>

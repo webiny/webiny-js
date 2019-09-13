@@ -14,6 +14,7 @@ import { CircularProgress } from "@webiny/ui/Progress";
 import graphql from "./graphql";
 import showCookiePolicy from "./../../utils/showCookiePolicy";
 import getDefaultCookiePolicySettings from "./getDefaultCookiePolicySettings";
+import { validation } from "@webiny/validation";
 
 import {
     SimpleForm,
@@ -190,7 +191,9 @@ const CookiePolicySettings = () => {
                                                                 <Cell span={6}>
                                                                     <Bind
                                                                         name={"content.href"}
-                                                                        validators={["url"]}
+                                                                        validators={validation.create(
+                                                                            "url"
+                                                                        )}
                                                                     >
                                                                         <Input label="Policy link" />
                                                                     </Bind>

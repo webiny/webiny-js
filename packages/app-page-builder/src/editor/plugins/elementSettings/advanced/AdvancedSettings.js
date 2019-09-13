@@ -29,8 +29,6 @@ const dialogStyle = css({
         maxWidth: 865
     },
     ".webiny-ui-dialog__content": {
-        marginTop: 0,
-        padding: "0 0 0 0 !important",
         width: 865,
         maxHeight: "70vh"
     }

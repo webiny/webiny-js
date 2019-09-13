@@ -3,6 +3,7 @@ import { Grid, Cell } from "@webiny/ui/Grid";
 import { Input } from "@webiny/ui/Input";
 import { Select } from "@webiny/ui/Select";
 import { getPlugins } from "@webiny/plugins";
+import { validation } from "@webiny/validation";
 
 export default {
     type: "form-editor-field-validator",
@@ -24,7 +25,7 @@ export default {
                     <Cell span={3}>
                         <Bind
                             name={"settings.preset"}
-                            validators={["required"]}
+                            validators={validation.create("required")}
                             afterChange={value => {
                                 if (value === "custom") {
                                     setMessage("Invalid value.");
@@ -52,7 +53,7 @@ export default {
                         </Bind>
                     </Cell>
                     <Cell span={7}>
-                        <Bind name={"settings.regex"} validators={["required"]}>
+                        <Bind name={"settings.regex"} validators={validation.create("required")}>
                             <Input
                                 disabled={inputsDisabled}
                                 label={"Regex"}
@@ -61,7 +62,7 @@ export default {
                         </Bind>
                     </Cell>
                     <Cell span={2}>
-                        <Bind name={"settings.flags"} validators={["required"]}>
+                        <Bind name={"settings.flags"} validators={validation.create("required")}>
                             <Input
                                 disabled={inputsDisabled}
                                 label={"Flags"}

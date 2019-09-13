@@ -22,6 +22,7 @@ export default {
         }
     
         input PbMenuInput {
+            id: ID
             title: String
             slug: String
             description: String
@@ -78,12 +79,12 @@ export default {
         }
     `,
     resolvers: {
-       PbQuery: {
+        PbQuery: {
             getMenu: resolveGet(menuFetcher),
             listMenus: resolveList(menuFetcher),
             getMenuBySlug: getMenuBySlug(menuFetcher)
         },
-       PbMutation: {
+        PbMutation: {
             createMenu: resolveCreate(menuFetcher),
             updateMenu: resolveUpdate(menuFetcher),
             deleteMenu: resolveDelete(menuFetcher)

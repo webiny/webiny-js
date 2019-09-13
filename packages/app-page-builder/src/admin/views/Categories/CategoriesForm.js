@@ -6,7 +6,6 @@ import { Grid, Cell } from "@webiny/ui/Grid";
 import { Input } from "@webiny/ui/Input";
 import { Select } from "@webiny/ui/Select";
 import { ButtonPrimary } from "@webiny/ui/Button";
-import type { WithCrudFormProps } from "@webiny/app-admin/components";
 import { usePageBuilder } from "@webiny/app-page-builder/hooks/usePageBuilder";
 import {
     SimpleForm,
@@ -16,31 +15,41 @@ import {
 } from "@webiny/app-admin/components/SimpleForm";
 import { categoryUrlValidator } from "./validators";
 import { CircularProgress } from "@webiny/ui/Progress";
+import { validation } from "@webiny/validation";
+import { useCrud } from "@webiny/app-admin/hooks/useCrud";
 
-const t = i18n.namespace("Pb.CategoriesForm");
+const t = i18n.ns("app-page-builder/admin/categories/form");
 
-const CategoriesForm = ({ data, invalidFields, onSubmit, loading }: WithCrudFormProps) => {
+const CategoriesForm = () => {
     const { theme } = usePageBuilder();
+    const { form } = useCrud();
+
     return (
-        <Form data={data || {}} invalidFields={invalidFields} onSubmit={onSubmit}>
+        <Form {...form}>
             {({ data, form, Bind }) => (
                 <SimpleForm>
-                    {loading && <CircularProgress />}
+                    {form.loading && <CircularProgress />}
                     <SimpleFormHeader title={data.name || t`New Category`} />
                     <SimpleFormContent>
                         <Grid>
                             <Cell span={6}>
-                                <Bind name="name" validators={["required"]}>
+                                <Bind name="name" validators={validation.create("required")}>
                                     <Input label={t`Name`} />
                                 </Bind>
                             </Cell>
                             <Cell span={6}>
-                                <Bind name="slug" validators={["required"]}>
+                                <Bind name="slug" validators={validation.create("required")}>
                                     <Input disabled={data.id} label={t`Slug`} />
                                 </Bind>
                             </Cell>
                             <Cell span={12}>
-                                <Bind name="url" validators={["required", categoryUrlValidator]}>
+                                <Bind
+                                    name="url"
+                                    validators={[
+                                        validation.create("required"),
+                                        categoryUrlValidator
+                                    ]}
+                                >
                                     <Input disabled={data.id} label={t`URL`} />
                                 </Bind>
                             </Cell>

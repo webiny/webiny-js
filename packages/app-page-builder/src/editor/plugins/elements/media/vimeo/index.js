@@ -11,7 +11,7 @@ import {
 } from "./../../utils/oembed/createEmbedPlugin";
 import { ReactComponent as MediaIcon } from "./../../../elementGroups/media/round-music_video-24px.svg";
 import VimeoEmbed from "./VimeoEmbed";
-
+import { validation } from "@webiny/validation";
 import { ReactComponent as LogoIcon } from "./vimeo-v-brands.svg";
 
 const PreviewBox = styled("div")({
@@ -53,7 +53,7 @@ export default (): Array<PluginType> => [
                 <Tab icon={<MediaIcon />} label="Vimeo">
                     <Grid>
                         <Cell span={12}>
-                            <Bind name={"source.url"} validators={["required", "url"]}>
+                            <Bind name={"source.url"} validators={validation.create("required,url")}>
                                 <Input label={"Video URL"} description={"Enter a video URL"} />
                             </Bind>
                         </Cell>

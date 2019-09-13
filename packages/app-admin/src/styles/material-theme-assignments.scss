@@ -182,9 +182,13 @@ Fix the width of input components when inside grids
 
 // dialog
 .mdc-dialog{
+  .mdc-dialog__container{
+    width: 100%;
+  }
   .mdc-dialog__surface{
     border-radius: 0px;
     max-width: 875px;
+    position: relative;
     .mdc-dialog__title{
       background-color: $mdc-theme-secondary;
       padding-bottom: 24px;
@@ -201,22 +205,30 @@ Fix the width of input components when inside grids
       background-color: $mdc-theme-surface;
 
       // add options for when tabs are inside the body
-      >.webiny-ui-tabs>.mdc-tab-bar{
-        margin-top: 0px;
-        @include mdc-tab-bar-width(100%);
-        background-color: $mdc-theme-secondary;
-        .mdc-tab{
-          @include mdc-tab-text-label-color($mdc-theme-on-secondary);
-          @include mdc-tab-icon-color($mdc-theme-on-secondary);
-          @include mdc-tab-fixed-width(100px);
-          justify-content: flex-start;
-          font-weight: 600;
-        }
-        .mdc-tab-indicator{
-          padding-bottom: 5px;
-          margin-top: -1px;
-          @include mdc-tab-indicator-underline-color($mdc-theme-on-secondary);
+      >.webiny-ui-tabs{
+        margin: -24px;
+        >.mdc-tab-bar{
+          position: absolute;
+          z-index: 10;
+          @include mdc-tab-bar-width(100%);
           background-color: $mdc-theme-secondary;
+          .mdc-tab{
+            @include mdc-tab-text-label-color($mdc-theme-on-secondary);
+            @include mdc-tab-icon-color($mdc-theme-on-secondary);
+            @include mdc-tab-fixed-width(100px);
+            justify-content: flex-start;
+            font-weight: 600;
+          }
+          .mdc-tab-indicator{
+            padding-bottom: 5px;
+            margin-top: -1px;
+            @include mdc-tab-indicator-underline-color($mdc-theme-on-secondary);
+            background-color: $mdc-theme-secondary;
+          }
+        }
+        >.webiny-ui-tabs__content{
+          padding-top: 50px;
+          padding-bottom: 25px;
         }
       }
 
