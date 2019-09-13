@@ -13,12 +13,7 @@ module.exports = {
             webfontloader: "null-loader",
             "react-spinner-material": "null-loader"
         },
-        extensions: [".js", ".json", ".jsx", ".mjs"],
-        modules: [
-            path.resolve("src"),
-            path.resolve("node_modules"),
-            path.resolve("..", "..", "..", "..", "node_modules")
-        ]
+        extensions: [".js", ".json", ".jsx", ".mjs"]
     },
     target: "node",
     node: {

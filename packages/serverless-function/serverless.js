@@ -14,12 +14,15 @@ class ServerlessFunction extends Component {
         }
         if (inputs.hook) {
             this.context.log("Building function");
-            const [cmd, ...args] = inputs.hook.split(" ");
-            await execa(cmd, args, {
-                cwd: functionRoot,
-                env: { NODE_ENV: "production" },
-                stdio: "inherit"
-            });
+            const hooks = Array.isArray(inputs.hook) ? inputs.hook : [inputs.hook];
+            for (let i = 0; i < hooks.length; i++) {
+                const [cmd, ...args] = hooks[i].split(" ");
+                await execa(cmd, args, {
+                    cwd: functionRoot,
+                    env: { NODE_ENV: "production" },
+                    stdio: "inherit"
+                });
+            }
         }
 
         const lambda = await this.load("@serverless/function");

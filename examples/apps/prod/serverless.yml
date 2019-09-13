@@ -13,9 +13,7 @@ site:
     handler: handler.handler
     name: webiny-site
     description: Webiny Site
-    #hook:
-    #  - yarn build:prod
-    #  - yarn build:handler
+    #hook: yarn build:prod
 #admin:
 #  component: '@serverless/function'
 #  inputs:

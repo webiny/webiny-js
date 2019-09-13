@@ -37,7 +37,11 @@ export const handler = async event => {
 
     const app = (
         <ApolloProvider client={apolloClient}>
-            <StaticRouter basename={process.env.PUBLIC_URL} location={event.requestContext.path} context={context}>
+            <StaticRouter
+                basename={process.env.PUBLIC_URL === "/" ? null : process.env.PUBLIC_URL}
+                location={event.requestContext.path}
+                context={context}
+            >
                 <App />
             </StaticRouter>
         </ApolloProvider>

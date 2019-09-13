@@ -1,0 +1,16 @@
+{
+  "name": "@webiny/serverless-api",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "dependencies": {
+    "@serverless/core": "^1.0.0",
+    "@serverless/domain": "^4.0.4",
+    "@serverless/api": "^2.0.0",
+    "@serverless/components": "^0.2.2"
+  },
+  "scripts": {
+    "build": "rm -rf dist && mkdir dist && cp serverless.js package.json dist/",
+    "prepublishOnly": "yarn build"
+  }
+}
