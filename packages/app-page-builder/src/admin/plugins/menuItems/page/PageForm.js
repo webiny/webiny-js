@@ -5,7 +5,7 @@ import { Input } from "@webiny/ui/Input";
 import { Typography } from "@webiny/ui/Typography";
 import { Grid, Cell } from "@webiny/ui/Grid";
 import { ButtonSecondary, ButtonPrimary } from "@webiny/ui/Button";
-import { PagesAutoComplete } from "@webiny/app-page-builder/admin/components/PagesAutoComplete";
+import { PagesAutocomplete } from "@webiny/app-page-builder/admin/components/PagesAutocomplete";
 import { Elevation } from "@webiny/ui/Elevation";
 import { validation } from "@webiny/validation";
 
@@ -25,7 +25,7 @@ const LinkForm = ({ data, onSubmit, onCancel }: Object) => {
                             <Cell span={12}>
                                 <Bind name="page" validators={validation.create("required")}>
                                     {({ onChange, ...rest }) => (
-                                        <PagesAutoComplete
+                                        <PagesAutocomplete
                                             {...rest}
                                             onChange={(value, selection) => {
                                                 onChange(value);

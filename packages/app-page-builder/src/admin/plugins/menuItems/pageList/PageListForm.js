@@ -7,8 +7,8 @@ import { Typography } from "@webiny/ui/Typography";
 import { Grid, Cell } from "@webiny/ui/Grid";
 import { ButtonSecondary, ButtonPrimary } from "@webiny/ui/Button";
 import { Select } from "@webiny/ui/Select";
-import { TagsMultiAutoComplete } from "@webiny/app-page-builder/admin/components/TagsMultiAutoComplete";
-import { CategoriesAutoComplete } from "@webiny/app-page-builder/admin/components/CategoriesAutoComplete";
+import { TagsMultiAutocomplete } from "@webiny/app-page-builder/admin/components/TagsMultiAutocomplete";
+import { CategoriesAutocomplete } from "@webiny/app-page-builder/admin/components/CategoriesAutocomplete";
 import { Elevation } from "@webiny/ui/Elevation";
 import { validation } from "@webiny/validation";
 
@@ -33,7 +33,7 @@ const LinkForm = ({ data, onSubmit, onCancel }: Object) => {
                         <Grid>
                             <Cell span={12}>
                                 <Bind name="category" validators={validation.create("required")}>
-                                    <CategoriesAutoComplete label="Category" />
+                                    <CategoriesAutocomplete label="Category" />
                                 </Bind>
                             </Cell>
                         </Grid>
@@ -53,7 +53,11 @@ const LinkForm = ({ data, onSubmit, onCancel }: Object) => {
                         </Grid>
                         <Grid>
                             <Cell span={12}>
-                                <Bind name="sortDir" defaultValue={"-1"} validators={validation.create("required")}>
+                                <Bind
+                                    name="sortDir"
+                                    defaultValue={"-1"}
+                                    validators={validation.create("required")}
+                                >
                                     <Select label="Sort direction...">
                                         <option value="1">Ascending</option>
                                         <option value="-1">Descending</option>
@@ -64,7 +68,7 @@ const LinkForm = ({ data, onSubmit, onCancel }: Object) => {
                         <Grid>
                             <Cell span={12}>
                                 <Bind name="tags">
-                                    <TagsMultiAutoComplete />
+                                    <TagsMultiAutocomplete />
                                 </Bind>
                             </Cell>
                         </Grid>
@@ -72,7 +76,10 @@ const LinkForm = ({ data, onSubmit, onCancel }: Object) => {
                             <Cell span={12}>
                                 {get(data, "tags.length", 0) > 0 && (
                                     <Bind name="tagsRule" defaultValue={"ALL"}>
-                                        <Select label="Tags rule..." validators={validation.create("required")}>
+                                        <Select
+                                            label="Tags rule..."
+                                            validators={validation.create("required")}
+                                        >
                                             <option value="ALL">Must include all tags</option>
                                             <option value="ANY">
                                                 Must include any of the tags

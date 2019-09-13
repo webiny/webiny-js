@@ -5,7 +5,7 @@ import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { useDialog } from "@webiny/app-admin/hooks/useDialog";
 import { useDataList } from "@webiny/app/hooks/useDataList";
 import useReactRouter from "use-react-router";
-import { getData, getError, getMeta } from "./functions";
+import { getData, getError } from "./functions";
 import { get } from "lodash";
 import { i18n } from "@webiny/app/i18n";
 
@@ -27,12 +27,13 @@ export const CrudProvider = ({ children, ...props }: Props) => {
     const { location, history } = useReactRouter();
 
     const list = useDataList({
-        name: "dataList",
-        query: props.list.query,
-        variables: props.list.variables,
-        getData: get(props, "list.getData", getData),
-        getMeta: get(props, "list.getMeta", getMeta),
-        getError: get(props, "list.getError", getError)
+        name: "dataList", // TODO: ???
+        query: get(props, "list.query", props.list),
+        variables: get(props, "list.variables"),
+        // "useDataList" will know how to handle no-handler-provided situations.
+        getData: get(props, "list.getData"),
+        getMeta: get(props, "list.getMeta"),
+        getError: get(props, "list.getError")
     });
 
     const [mutationInProgress, setMutationInProgress] = useState(false);
@@ -88,6 +89,7 @@ export const CrudProvider = ({ children, ...props }: Props) => {
             list.refresh();
         },
         save: async (formData: Object) => {
+            console.log('gooo')
             const action = id ? "update" : "create";
             setMutationInProgress(true);
             setInvalidFields(null);

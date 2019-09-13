@@ -3,8 +3,8 @@ import * as React from "react";
 import { Grid, Cell } from "@webiny/ui/Grid";
 import { Input } from "@webiny/ui/Input";
 import { Select } from "@webiny/ui/Select";
-import { TagsMultiAutoComplete } from "@webiny/app-page-builder/admin/components/TagsMultiAutoComplete";
-import { CategoriesAutoComplete } from "@webiny/app-page-builder/admin/components/CategoriesAutoComplete";
+import { TagsMultiAutocomplete } from "@webiny/app-page-builder/admin/components/TagsMultiAutocomplete";
+import { CategoriesAutocomplete } from "@webiny/app-page-builder/admin/components/CategoriesAutocomplete";
 import { validation } from "@webiny/validation";
 
 const PagesListFilterSettings = ({ Bind }: Object) => {
@@ -13,7 +13,7 @@ const PagesListFilterSettings = ({ Bind }: Object) => {
             <Grid>
                 <Cell span={6}>
                     <Bind name={"category"}>
-                        <CategoriesAutoComplete label="Category" />
+                        <CategoriesAutocomplete label="Category" />
                     </Bind>
                 </Cell>
                 <Cell span={6}>
@@ -42,7 +42,7 @@ const PagesListFilterSettings = ({ Bind }: Object) => {
                 </Cell>
                 <Cell span={6}>
                     <Bind name="tags">
-                        <TagsMultiAutoComplete
+                        <TagsMultiAutocomplete
                             label="Filter by tags"
                             description="Enter tags to filter pages"
                         />
