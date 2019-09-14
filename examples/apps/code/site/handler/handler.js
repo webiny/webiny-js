@@ -1,7 +1,6 @@
 const fs = require("fs");
 const path = require("path");
 const mime = require("mime-types");
-const addSeconds = require("date-fns/add_seconds");
 
 const ssrCache = {};
 
@@ -22,19 +21,18 @@ module.exports.handler = async event => {
     let key = event.pathParameters ? event.pathParameters.key : "";
     let type = mime.lookup(key);
     let isBase64Encoded = false;
-
-    console.log("site handler", JSON.stringify(event, null, 2));
+    console.log("KEY", key);
 
     if (!type) {
         type = "text/html";
-        if (!ssrCache[event.requestContext.path]) {
+        if (!ssrCache[key]) {
             const { handler } = require("./ssr");
-            ssrCache[event.requestContext.path] = await handler(event);
+            ssrCache[key] = await handler("/" + key);
         }
 
         return createResponse({
             type,
-            body: ssrCache[event.requestContext.path],
+            body: ssrCache[key],
             isBase64Encoded,
             headers: { "Cache-Control": "public, max-age=60" }
         });

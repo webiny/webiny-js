@@ -49,7 +49,7 @@
     "build": "rescripts build",
     "build:dev": "cross-env NODE_ENV=production REACT_APP_ENV=browser env-cmd -f .env.dev yarn build && yarn build:dev:ssr",
     "build:dev:ssr": "cross-env NODE_ENV=production REACT_APP_ENV=ssr env-cmd -f .env.dev webpack --progress --mode production --config ./ssr/webpack.config.js",
-    "build:prod": "env-cmd -f .env.prod yarn build && yarn build:prod:ssr",
+    "build:prod": "cross-env REACT_APP_ENV=browser env-cmd -f .env.prod yarn build && yarn build:prod:ssr",
     "build:prod:ssr": "cross-env NODE_ENV=production REACT_APP_ENV=ssr env-cmd -f .env.prod webpack --progress --mode production --config ./ssr/webpack.config.js",
     "build:handler": "webpack --config ./handler/webpack.config.js ",
     "postbuild": "yarn build:handler",

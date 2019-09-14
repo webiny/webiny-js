@@ -27,7 +27,6 @@ api:
   inputs:
     description: Serverless Site
     stage: prod
-    domain: www.mywebiny.com
     endpoints:
       - path: /{key+}
         method: ANY

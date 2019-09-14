@@ -21,7 +21,7 @@ gateway:
     hook: yarn build:deploy
     env:
       STAGE: __wby_inject__
-      API_HOST: https://api.mywebiny.com
+      API_HOST: https://grmxrq1iyf.execute-api.us-east-1.amazonaws.com/prod
 files:
   component: ${components.function}
   inputs:
@@ -74,7 +74,6 @@ pageBuilder:
 api:
   component: ${components.api}
   inputs:
-    domain: api.mywebiny.com
     stage: prod
     endpoints:
       - path: /graphql
