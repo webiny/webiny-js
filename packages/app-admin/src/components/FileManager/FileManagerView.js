@@ -122,7 +122,7 @@ const renderEmpty = ({ hasPreviouslyUploadedFiles, browseFiles }) => {
     return <DropFilesHere empty onClick={browseFiles} />;
 };
 
-function FileManagerView(props: WithSnackbarProps & Props) {
+function FileManagerView(props: Props) {
     const {
         onClose,
         onChange,
