@@ -311,7 +311,7 @@ class Navigation extends React.Component<Props> {
                             </ListItem>
                         </a>
                         <a
-                            href="https://github.com/Webiny/webiny-js"
+                            href="https://github.com/webiny/webiny-js"
                             rel="noopener noreferrer"
                             target="_blank"
                         >
