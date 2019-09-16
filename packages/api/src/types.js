@@ -19,6 +19,10 @@ export type EntityPluginType = PluginType & {
         | Function
 };
 
+export type ModelPluginType = PluginType & {
+    model: Function
+};
+
 export type GraphQLSchemaType = {
     namespace: string,
     typeDefs: *,
