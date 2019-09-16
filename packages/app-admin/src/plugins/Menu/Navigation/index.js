@@ -331,7 +331,7 @@ class Navigation extends React.Component<Props> {
                                 >
                                     Webiny.com
                                 </a>
-                                <p>© {new Date().getFullYear()} Webiny, Ltd</p>
+                                <p>© {new Date().getFullYear()} Webiny Ltd, London, UK</p>
                             </div>
                         </ListItem>
                     </List>
