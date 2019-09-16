@@ -7,7 +7,11 @@ import { Dialog, DialogAccept, DialogTitle, DialogActions, DialogContent } from 
 const DialogMain = () => {
     const ui = useUi();
     const message = get(ui, "dialog.message");
-    const options = get(ui, "dialog.options", {});
+    const { title, actions = { cancel: null, accept: { label: "OK" } } } = get(
+        ui,
+        "dialog.options",
+        {}
+    );
 
     const hideDialog = useCallback(() => {
         ui.setState(ui => ({ ...ui, dialog: null }));
@@ -16,10 +20,19 @@ const DialogMain = () => {
     return (
         <Dialog>
             <Dialog open={!!message} onClose={hideDialog}>
-                {options.title && <DialogTitle>{options.title}</DialogTitle>}
+                {title && <DialogTitle>{title}</DialogTitle>}
                 <DialogContent>{message}</DialogContent>
                 <DialogActions>
-                    <DialogAccept>OK</DialogAccept>
+                    {actions.cancel && (
+                        <DialogAccept onClick={actions.cancel.onClick}>
+                            {actions.cancel.label}
+                        </DialogAccept>
+                    )}
+                    {actions.accept && (
+                        <DialogAccept onClick={actions.accept.onClick}>
+                            {actions.accept.label}
+                        </DialogAccept>
+                    )}
                 </DialogActions>
             </Dialog>
         </Dialog>

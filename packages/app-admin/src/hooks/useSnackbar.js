@@ -1,5 +1,4 @@
 // @flow
-import * as React from "react";
 import { useUi } from "@webiny/app/components";
 
 export const useSnackbar = () => {

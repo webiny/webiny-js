@@ -32,8 +32,8 @@ type State = {
  */
 class ConfirmationDialog extends React.Component<Props, State> {
     static defaultProps = {
-        title: "Confirmation",
-        message: "Are you sure you want to continue?"
+            title: "Confirmation",
+            message: "Are you sure you want to continue?"
     };
 
     callbacks: { onAccept: ?Function, onCancel: ?Function } = {
