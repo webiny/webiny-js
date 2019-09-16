@@ -8,7 +8,10 @@ import styled from "@emotion/styled";
 
 const TreeWrapper = styled("div")({
     width: "100%",
-    height: 400
+    height: 400,
+    ".rst__lineHalfHorizontalRight::before, .rst__lineFullVertical::after, .rst__lineHalfVerticalTop::after, .rst__lineHalfVerticalBottom::after, .rst__lineChildren::after": {
+        backgroundColor: "var(--mdc-theme-on-surface)"
+    }
 });
 
 const EmptyTree = styled("div")({
