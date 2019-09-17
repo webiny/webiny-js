@@ -12,9 +12,14 @@ import { CategoriesAutocomplete } from "@webiny/app-page-builder/admin/component
 import { Elevation } from "@webiny/ui/Elevation";
 import { validation } from "@webiny/validation";
 
+const menuPageFormStyle = {
+    color: "var(--mdc-theme-on-surface)",
+    backgroundColor: "var(--mdc-theme-background) !important"
+};
+
 const LinkForm = ({ data, onSubmit, onCancel }: Object) => {
     return (
-        <Elevation z={4}>
+        <Elevation z={4} css={menuPageFormStyle}>
             <Form data={data} onSubmit={onSubmit}>
                 {({ submit, Bind }) => (
                     <>
