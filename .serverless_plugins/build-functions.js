@@ -3,7 +3,7 @@ const execa = require("execa");
 const webpack = require("webpack");
 const get = require("lodash.get");
 
-const relativeRoot = "examples/functions";
+const relativeRoot = "examples/functions/code";
 
 class BuildFunctions {
     constructor(serverless, options) {
