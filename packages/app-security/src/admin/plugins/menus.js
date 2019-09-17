@@ -10,7 +10,7 @@ export default [
     {
         name: "security-menu",
         type: "menu",
-        render({ Menu }: Object) {
+        render({ Menu, Section, Item }) {
             const { groups, roles, users }: Object = (hasRoles({
                 groups: ["security-groups"],
                 roles: ["security-roles"],
@@ -24,16 +24,16 @@ export default [
                 return (
                     <Menu label={t`Security`} icon={<SecurityIcon />}>
                         {identities && (
-                            <Menu label={t`Identities`}>
-                                {users && <Menu label={t`Users`} path="/users" />}
-                            </Menu>
+                            <Section label={t`Identities`}>
+                                {users && <Item label={t`Users`} path="/users" />}
+                            </Section>
                         )}
 
                         {rolesGroups && (
-                            <Menu label={t`Roles and Groups`}>
-                                {groups && <Menu label={t`Groups`} path="/groups" />}
-                                {roles && <Menu label={t`Roles`} path="/roles" />}
-                            </Menu>
+                            <Section label={t`Roles and Groups`}>
+                                {groups && <Item label={t`Groups`} path="/groups" />}
+                                {roles && <Item label={t`Roles`} path="/roles" />}
+                            </Section>
                         )}
                     </Menu>
                 );

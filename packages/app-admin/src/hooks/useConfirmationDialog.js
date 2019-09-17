@@ -1,5 +1,5 @@
 // @flow
-import { useUi } from "@webiny/app/components";
+import { useUi } from "@webiny/app/hooks/useUi";
 import { i18n } from "@webiny/app/i18n";
 const t = i18n.ns("app-admin/hooks/use-confirmation-dialog");
 

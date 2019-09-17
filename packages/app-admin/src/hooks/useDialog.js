@@ -1,5 +1,5 @@
 // @flow
-import { useUi } from "@webiny/app/components";
+import { useUi } from "@webiny/app/hooks/useUi";
 
 const useDialog = () => {
     const ui = useUi();

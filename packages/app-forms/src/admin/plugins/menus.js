@@ -7,7 +7,7 @@ export default [
     {
         name: "forms-menu",
         type: "menu",
-        render({ Menu }: Object) {
+        render({ Menu, Section, Item }: Object) {
             const { forms }: Object = (hasRoles({
                 forms: ["form-editors"]
             }): any);
@@ -15,7 +15,7 @@ export default [
             if (forms) {
                 return (
                     <Menu label={`Content`} icon={<PagesIcon />}>
-                        <Menu label={`Forms`}>{<Menu label={`Forms`} path="/forms" />}</Menu>
+                        <Section label={`Forms`}>{<Item label={`Forms`} path="/forms" />}</Section>
                     </Menu>
                 );
             }
