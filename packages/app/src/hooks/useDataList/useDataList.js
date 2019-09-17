@@ -2,10 +2,8 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { useQuery } from "react-apollo";
 import useRouter from "use-react-router";
-import type { WithDataListParams, SearchParams, WithDataListProps } from "./utils/types";
 import { get, isEqual } from "lodash";
 import { prepareLoadListParams, redirectToRouteWithQueryParams } from "./utils";
-export type { WithDataListProps, SearchParams, WithDataListParams };
 import { getData, getError, getMeta } from "./functions";
 
 const useDataList = params => {
@@ -76,7 +74,7 @@ const useDataList = params => {
             };
             this.refresh(preparedParams);
         },
-        setSearch(search: SearchParams | any): void {
+        setSearch(search): void {
             const preparedParams = { ...dataListProps.__loadParams, search };
             this.refresh(preparedParams);
         },

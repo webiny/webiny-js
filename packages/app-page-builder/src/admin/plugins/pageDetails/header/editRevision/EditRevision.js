@@ -4,7 +4,7 @@ import useReactRouter from "use-react-router";
 import { useApolloClient } from "react-apollo";
 import { Tooltip } from "@webiny/ui/Tooltip";
 import { ReactComponent as EditIcon } from "@webiny/app-page-builder/admin/assets/edit.svg";
-import { createRevisionFrom } from "@webiny/app-page-builder/admin/graphql/pages";
+import { CREATE_REVISION_FORM } from "@webiny/app-page-builder/admin/graphql/pages";
 import { usePageDetails } from "@webiny/app-page-builder/admin/hooks/usePageDetails";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { get } from "lodash";
@@ -28,7 +28,7 @@ const EditRevision = () => {
     const copyAndEdit = useCallback(async () => {
         const [latestRevision] = page.revisions;
         const { data: res } = await client.mutate({
-            mutation: createRevisionFrom,
+            mutation: CREATE_REVISION_FORM,
             variables: { revision: latestRevision.id },
             refetchQueries: ["PbListPages"]
         });

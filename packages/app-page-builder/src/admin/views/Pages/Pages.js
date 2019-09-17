@@ -1,16 +1,15 @@
 import React, { useState, useCallback } from "react";
 import { useApolloClient } from "react-apollo";
 import useReactRouter from "use-react-router";
-import { get } from "lodash";
 import { useHandler } from "@webiny/app/hooks/useHandler";
 import { SplitView, LeftPanel, RightPanel } from "@webiny/app-admin/components/SplitView";
 import { FloatingActionButton } from "@webiny/app-admin/components/FloatingActionButton";
-import { withDataList } from "@webiny/app/components";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
-import { createPage, listPages } from "@webiny/app-page-builder/admin/graphql/pages";
+import { CREATE_PAGE, LIST_PAGES } from "@webiny/app-page-builder/admin/graphql/pages";
 import PagesDataList from "./PagesDataList";
 import PageDetails from "./PageDetails";
 import CategoriesDialog from "./CategoriesDialog";
+import { useDataList } from "@webiny/app/hooks/useDataList";
 
 const Pages = props => {
     const [showCategoriesDialog, setCategoriesDialog] = useState(false);
@@ -18,10 +17,17 @@ const Pages = props => {
     const { showSnackbar } = useSnackbar();
     const { history } = useReactRouter();
 
+    const dataList = useDataList({
+        query: LIST_PAGES,
+        variables: {
+            sort: { savedOn: -1 }
+        }
+    });
+
     const createPageMutation = useHandler(props, () => async category => {
         try {
             const res = await client.mutate({
-                mutation: createPage,
+                mutation: CREATE_PAGE,
                 variables: { category },
                 refetchQueries: ["PbListPages"]
             });
@@ -39,8 +45,6 @@ const Pages = props => {
         closeDialog();
         createPageMutation(category.id);
     }, []);
-
-    const { dataList } = props;
 
     return (
         <React.Fragment>
@@ -62,12 +66,4 @@ const Pages = props => {
     );
 };
 
-export default withDataList({
-    query: listPages,
-    response: data => {
-        return get(data, "pageBuilder.pages", {});
-    },
-    variables: {
-        sort: { savedOn: -1 }
-    }
-})(Pages);
+export default Pages;

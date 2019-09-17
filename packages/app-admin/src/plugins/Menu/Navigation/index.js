@@ -311,7 +311,7 @@ class Navigation extends React.Component<Props> {
                             </ListItem>
                         </a>
                         <a
-                            href="https://github.com/Webiny/webiny-js"
+                            href="https://github.com/webiny/webiny-js"
                             rel="noopener noreferrer"
                             target="_blank"
                         >
@@ -331,7 +331,7 @@ class Navigation extends React.Component<Props> {
                                 >
                                     Webiny.com
                                 </a>
-                                <p>© {new Date().getFullYear()} Webiny, Ltd</p>
+                                <p>© {new Date().getFullYear()} Webiny Ltd, London, UK</p>
                             </div>
                         </ListItem>
                     </List>

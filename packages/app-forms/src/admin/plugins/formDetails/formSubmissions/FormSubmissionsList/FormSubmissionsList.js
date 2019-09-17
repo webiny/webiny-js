@@ -61,6 +61,7 @@ const FormSubmissionsList = (props: Object) => {
     if (!dataList) {
         return;
     }
+
     return (
         <>
             <Block title="Submissions">

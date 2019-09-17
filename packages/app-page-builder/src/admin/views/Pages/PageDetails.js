@@ -4,7 +4,7 @@ import useReactRouter from "use-react-router";
 import styled from "@emotion/styled";
 import { Elevation } from "@webiny/ui/Elevation";
 import { renderPlugins } from "@webiny/app/plugins";
-import { getPage } from "@webiny/app-page-builder/admin/graphql/pages";
+import { GET_PAGE } from "@webiny/app-page-builder/admin/graphql/pages";
 import { PageDetailsProvider, PageDetailsConsumer } from "../../contexts/PageDetails";
 import { ElementAnimation } from "@webiny/app-page-builder/render/components";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
@@ -59,7 +59,7 @@ const PageDetails = ({ refreshPages }) => {
 
     return (
         <Query
-            query={getPage()}
+            query={GET_PAGE()}
             variables={{ id: pageId }}
             onCompleted={data => {
                 const error = get(data, "pageBuilder.page.error.message");

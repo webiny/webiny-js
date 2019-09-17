@@ -14,7 +14,7 @@ import {
 } from "@webiny/app-page-builder/editor/selectors";
 import createElementPlugin from "@webiny/app-page-builder/admin/utils/createElementPlugin";
 import createBlockPlugin from "@webiny/app-page-builder/admin/utils/createBlockPlugin";
-import { createElement, updateElement } from "@webiny/app-page-builder/admin/graphql/pages";
+import { CREATE_ELEMENT, UPDATE_ELEMENT } from "@webiny/app-page-builder/admin/graphql/pages";
 import SaveDialog from "./SaveDialog";
 
 type Props = {
@@ -46,7 +46,7 @@ const SaveAction = (props: Props) => {
         formData.preview.meta = meta;
         formData.preview.meta.private = true;
 
-        let query = formData.overwrite ? updateElement : createElement;
+        let query = formData.overwrite ? UPDATE_ELEMENT : CREATE_ELEMENT;
         const { data: res } = await client.mutate({
             mutation: query,
             variables: formData.overwrite

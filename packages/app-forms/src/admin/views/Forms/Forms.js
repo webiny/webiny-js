@@ -1,17 +1,22 @@
 import React from "react";
 import { SplitView, LeftPanel, RightPanel } from "@webiny/app-admin/components/SplitView";
 import { FloatingActionButton } from "@webiny/app-admin/components/FloatingActionButton";
-import { withDataList } from "@webiny/app/components";
 import FormsDataList from "./FormsDataList";
 import FormDetails from "./FormDetails";
 import NewFormDialog from "./NewFormDialog";
 import { LIST_FORMS } from "@webiny/app-forms/admin/viewsGraphql";
-import { get } from "lodash";
+import { useDataList } from "@webiny/app/hooks/useDataList";
 
-function Forms(props) {
+function Forms() {
     const [newFormDialogOpened, openNewFormDialog] = React.useState(false);
 
-    const { dataList } = props;
+    const dataList = useDataList({
+        query: LIST_FORMS,
+        variables: {
+            sort: { savedOn: -1 }
+        }
+    });
+
     return (
         <>
             <NewFormDialog open={newFormDialogOpened} onClose={() => openNewFormDialog(false)} />
@@ -28,12 +33,4 @@ function Forms(props) {
     );
 }
 
-export default withDataList({
-    query: LIST_FORMS,
-    response: data => {
-        return get(data, "forms.listForms", {});
-    },
-    variables: {
-        sort: { savedOn: -1 }
-    }
-})(Forms);
+export default Forms;
