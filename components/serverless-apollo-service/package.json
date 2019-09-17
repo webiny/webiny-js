@@ -1,0 +1,16 @@
+{
+  "name": "@webiny/sls-apollo-service",
+  "version": "1.0.0",
+  "main": "serverless.js",
+  "license": "MIT",
+  "dependencies": {
+    "@serverless/core": "^1.0.0",
+    "@serverless/function": "^3.0.0",
+    "@serverless/components": "^0.2.2",
+    "execa": "^2.0.3"
+  },
+  "scripts": {
+    "build": "rm -rf dist && mkdir dist && cp serverless.js package.json dist/",
+    "prepublishOnly": "yarn build"
+  }
+}
