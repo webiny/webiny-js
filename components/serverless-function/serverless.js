@@ -28,6 +28,12 @@ class ServerlessFunction extends Component {
         const lambda = await this.load("@serverless/function");
         return await lambda(inputs);
     }
+
+    async remove(inputs = {}) {
+        const lambda = await this.load("@serverless/function");
+
+        return await lambda.remove(inputs);
+    }
 }
 
 module.exports = ServerlessFunction;

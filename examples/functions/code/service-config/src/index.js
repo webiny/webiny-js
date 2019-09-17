@@ -12,7 +12,10 @@ async function init() {
 
     const server = process.env.MONGODB_SERVER;
     const databaseName = process.env.MONGODB_DB_NAME;
-    const client = await MongoClient.connect(server, { useNewUrlParser: true });
+    const client = await MongoClient.connect(server, {
+        useNewUrlParser: true,
+        useUnifiedTopology: true
+    });
 
     return client.db(databaseName);
 }

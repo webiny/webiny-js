@@ -1,24 +1,48 @@
 import { ApolloGateway, RemoteGraphQLDataSource } from "@apollo/gateway";
 import { ApolloServer } from "apollo-server-lambda";
 
-const host = process.env.API_HOST || "http://localhost:9000";
+const buildHeaders = ({ headers }) => {
+    return {
+        "Content-Type": headers["content-type"] || headers["Content-Type"],
+        Accept: headers["Accept"],
+        "Accept-Encoding": headers["Accept-Encoding"],
+        "Accept-Language": headers["Accept-Language"],
+        Authorization: headers["Authorization"]
+    };
+};
 
-const createHandler = async () => {
+const createHandler = async ({ requestContext }) => {
+    // let host = "http://localhost:9000";
+    // if (requestContext.domainName) {
+    //     host = `https://${requestContext.domainName}/${requestContext.stage}`;
+    // }
+    //
+    // if (process.env.API_HOST) {
+    //     host = process.env.API_HOST;
+    // }
+
+    const services = [];
+    Object.keys(process.env).forEach(key => {
+        if (key.startsWith("SERVICE_")) {
+            services.push({
+                name: key.replace("SERVICE_", ""),
+                url: process.env[key]
+            });
+        }
+    });
+
+    console.log("services", services);
+
     const gateway = new ApolloGateway({
-        serviceList: [
-            { name: "files", url: host + "/graphql/files" },
-            { name: "pageBuilder", url: host + "/graphql/page-builder" },
-            { name: "security", url: host + "/graphql/security" },
-            { name: "i18n", url: host + "/graphql/i18n" },
-            { name: "forms", url: host + "/graphql/forms" },
-            { name: "cms", url: host + "/graphql/cms" }
-        ],
+        serviceList: services,
         buildService({ url }) {
             return new RemoteGraphQLDataSource({
                 url,
                 willSendRequest({ request, context }) {
                     Object.keys(context.headers).forEach(key => {
-                        request.http.headers.set(key, context.headers[key]);
+                        if (context.headers[key]) {
+                            request.http.headers.set(key, context.headers[key]);
+                        }
                     });
                 }
             });
@@ -33,7 +57,7 @@ const createHandler = async () => {
         introspection: true,
         playground: true,
         context: async ({ event }) => {
-            return { headers: event.headers };
+            return { headers: buildHeaders(event) };
         }
     });
 
@@ -49,7 +73,7 @@ let apolloHandler;
 
 export const handler = async (event, context) => {
     if (!apolloHandler) {
-        apolloHandler = await createHandler();
+        apolloHandler = await createHandler(event);
     }
 
     return new Promise((resolve, reject) => {
