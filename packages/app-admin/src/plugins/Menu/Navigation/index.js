@@ -5,7 +5,6 @@ import { Drawer, DrawerContent, DrawerHeader } from "@webiny/ui/Drawer";
 import { List, ListItem, ListItemGraphic, ListItemMeta } from "@webiny/ui/List";
 import { IconButton } from "@webiny/ui/Button";
 import { Icon } from "@webiny/ui/Icon";
-import { compose, withProps, withHandlers } from "recompose";
 import _ from "lodash";
 import { getPlugin, getPlugins } from "@webiny/plugins";
 import { withUi } from "@webiny/app/components";
@@ -96,6 +95,13 @@ class Navigation extends React.Component<Props> {
     }
 
     renderer = menu => {
+/*
+        withUi(),
+            withProps(({ ui }) => ({
+                appsMenu: ui.appsMenu || []
+            })),
+            withHandlers(handlers)
+        */
         const props = _.clone(menu.props);
         const { appsMenu, hideMenu, showSection, hideSection } = this.props;
 
@@ -341,10 +347,4 @@ class Navigation extends React.Component<Props> {
     }
 }
 
-export default compose(
-    withUi(),
-    withProps(({ ui }) => ({
-        appsMenu: ui.appsMenu || []
-    })),
-    withHandlers(handlers)
-)(Navigation);
+export default Navigation;
