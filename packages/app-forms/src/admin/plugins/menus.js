@@ -1,7 +1,8 @@
 // @flow
 import React from "react";
-import { hasRoles } from "@webiny/app-security";
 import { i18n } from "@webiny/app/i18n";
+import { SecureView } from "@webiny/app-security/components";
+
 const t = i18n.ns("app-forms/admin/menus");
 
 export default [
@@ -9,19 +10,13 @@ export default [
         type: "menu-content-section",
         name: "menu-content-section-forms",
         render({ Section, Item }: Object) {
-            const { forms }: Object = (hasRoles({
-                forms: ["form-editors"]
-            }): any);
-
-            if (forms) {
-                return (
+            return (
+                <SecureView roles={["forms-editors"]}>
                     <Section label={t`Forms`}>
                         <Item label={t`Forms`} path="/forms" />
                     </Section>
-                );
-            }
-
-            return null;
+                </SecureView>
+            );
         }
     }
 ];
