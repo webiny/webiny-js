@@ -1,14 +1,13 @@
 // @flow
 import React from "react";
 import { ReactComponent as SecurityIcon } from "./../assets/icons/baseline-security-24px.svg";
-import { i18n } from "@webiny/app/i18n";
 import { hasRoles } from "@webiny/app-security";
-
+import { i18n } from "@webiny/app/i18n";
 const t = i18n.ns("app-security/admin/menus");
 
 export default [
     {
-        name: "security-menu",
+        name: "menu-app-security",
         type: "menu",
         render({ Menu, Section, Item }) {
             const { groups, roles, users }: Object = (hasRoles({
@@ -22,7 +21,7 @@ export default [
 
             if (identities || rolesGroups) {
                 return (
-                    <Menu label={t`Security`} icon={<SecurityIcon />}>
+                    <Menu name="security" label={t`Security`} icon={<SecurityIcon />}>
                         {identities && (
                             <Section label={t`Identities`}>
                                 {users && <Item label={t`Users`} path="/users" />}

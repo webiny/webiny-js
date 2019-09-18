@@ -51,7 +51,7 @@ export default [
                 )
             };
 
-            registerPlugins({
+         /*   registerPlugins({
                 type: "menu",
                 name: "menu-settings",
                 render({ Menu }) {
@@ -84,7 +84,7 @@ export default [
 
                     return null;
                 }
-            });
+            });*/
         }
     }
 ];

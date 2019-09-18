@@ -1,27 +1,26 @@
 // @flow
 import React from "react";
 import { ReactComponent as I18NIcon } from "./../assets/icons/round-translate-24px.svg";
-import { i18n } from "@webiny/app/i18n";
 import { hasRoles } from "@webiny/app-security";
-
-const t = i18n.namespace("Pb.Categories");
+import { i18n } from "@webiny/app/i18n";
+const t = i18n.ns("app-forms/admin/menus");
 
 export default [
     {
-        name: "i18n-menu",
+        name: "menu-app-i18n",
         type: "menu",
-        render({ Menu }: Object) {
+        render({ Menu, Section, Item }: Object) {
             const { locales }: Object = (hasRoles({
                 locales: ["i18n-locales"]
             }): any);
 
             if (locales) {
                 return (
-                    <Menu label={t`Languages`} icon={<I18NIcon />}>
+                    <Menu name="languages" label={t`Languages`} icon={<I18NIcon />}>
                         {locales && (
-                            <Menu label={t`Locales`}>
-                                {locales && <Menu label={t`Locales`} path="/i18n/locales" />}
-                            </Menu>
+                            <Section label={t`Locales`}>
+                                {locales && <Item label={t`Locales`} path="/i18n/locales" />}
+                            </Section>
                         )}
                     </Menu>
                 );

@@ -1,36 +1,14 @@
 // @flow
 import React, { useMemo, useEffect } from "react";
-import { Link } from "react-router-dom";
 import { Drawer, DrawerContent, DrawerHeader } from "@webiny/ui/Drawer";
-import { List, ListItem, ListItemGraphic, ListItemMeta } from "@webiny/ui/List";
+import { List, ListItem, ListItemGraphic } from "@webiny/ui/List";
 import { IconButton } from "@webiny/ui/Button";
 import { Icon } from "@webiny/ui/Icon";
-import _ from "lodash";
 import { getPlugin, getPlugins } from "@webiny/plugins";
-import { Typography } from "@webiny/ui/Typography";
-import { Transition } from "react-transition-group";
-import Menu from "./Menu";
-import handlers from "./handlers";
-import { useUi } from "@webiny/app/hooks/useUi";
-import { useHandlers } from "@webiny/app/hooks/useHandlers";
-import utils from "./utils";
-import {
-    linkStyle,
-    logoStyle,
-    MenuFooter,
-    MenuHeader,
-    menuSubtitle,
-    menuTitle,
-    navContent,
-    navHeader,
-    subFooter,
-    submenuItems,
-    submenuList
-} from "./Styled";
-
+import { useNavigation, Menu, Item, Section } from "./components";
+import { logoStyle, MenuFooter, MenuHeader, navContent, navHeader, subFooter } from "./Styled";
+import { sortBy } from "lodash";
 import { ReactComponent as MenuIcon } from "@webiny/app-admin/assets/icons/baseline-menu-24px.svg";
-import { ReactComponent as DownIcon } from "@webiny/app-admin/assets/icons/round-keyboard_arrow_down-24px.svg";
-import { ReactComponent as UpIcon } from "@webiny/app-admin/assets/icons/round-keyboard_arrow_up-24px.svg";
 import { ReactComponent as DocsIcon } from "@webiny/app-admin/assets/icons/icon-documentation.svg";
 import { ReactComponent as CommunityIcon } from "@webiny/app-admin/assets/icons/icon-community.svg";
 import { ReactComponent as GithubIcon } from "@webiny/app-admin/assets/icons/github-brands.svg";
@@ -39,11 +17,9 @@ import { i18n } from "@webiny/app/i18n";
 const t = i18n.ns("app-admin/navigation");
 
 const Navigation = () => {
-    const ui = useUi();
-    const appsMenu = ui.appsMenu || {};
-    const { hideMenu, initSections } = useHandlers({ ui }, handlers);
+    const { hideMenu, menuIsShown, initSections } = useNavigation();
 
-    useEffect(() => initSections({ ui }), []);
+    useEffect(initSections, []);
 
     const logo = useMemo(() => {
         const logoPlugin = getPlugin("header-logo");
@@ -53,19 +29,23 @@ const Navigation = () => {
         return null;
     }, []);
 
-    const menus = useMemo(() => {
-        const menus = [];
-        const menuPlugins = getPlugins("menu");
-        menuPlugins &&
-            menuPlugins.forEach(plugin => {
-                menus.push(plugin.render({ Menu }));
-            });
-        console.log('enus', menus)
-        return menus;
-    }, []);
+    const menus = [];
+    const menuPlugins = getPlugins("menu");
+    menuPlugins &&
+        sortBy(menuPlugins, [
+            function(p) {
+                return p.name;
+            }
+        ]).forEach(plugin => {
+            menus.push(
+                <menu-component key={plugin.name}>
+                    {plugin.render({ Menu, Section, Item })}
+                </menu-component>
+            );
+        });
 
     return (
-        <Drawer modal open={appsMenu.show} onClose={hideMenu}>
+        <Drawer modal open={menuIsShown()} onClose={hideMenu}>
             <DrawerHeader className={navHeader}>
                 <MenuHeader>
                     <IconButton icon={<MenuIcon />} onClick={hideMenu} />
