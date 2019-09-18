@@ -31,12 +31,11 @@ const Navigation = () => {
 
     const menus = [];
     const menuPlugins = getPlugins("menu");
+
+    // First we sort by order (default: 50), and then by plugin name. In other words, if order isn't defined,
+    // then we just sort by plugin name.
     menuPlugins &&
-        sortBy(menuPlugins, [
-            function(p) {
-                return p.name;
-            }
-        ]).forEach(plugin => {
+        sortBy(menuPlugins, [p => p.order || 50, p => p.name]).forEach(plugin => {
             menus.push(
                 <menu-component key={plugin.name}>
                     {plugin.render({ Menu, Section, Item })}

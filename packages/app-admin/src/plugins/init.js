@@ -7,14 +7,14 @@ import type { SettingsPluginType } from "@webiny/app-admin/types";
 
 const t = i18n.namespace("Webiny.Admin.Menus");
 
-const renderPlugins = ({ plugins, Menu }) => {
+const renderPlugins = ({ plugins, Item }) => {
     return plugins
         .map(sp => {
             if (typeof sp.settings.show === "function" && !sp.settings.show()) {
                 return null;
             }
             return (
-                <Menu
+                <Item
                     key={sp.name}
                     label={sp.settings.name}
                     path={"/settings" + sp.settings.route.props.path}
@@ -51,32 +51,33 @@ export default [
                 )
             };
 
-         /*   registerPlugins({
+            registerPlugins({
+                name: "menu-app-admin-settings",
                 type: "menu",
-                name: "menu-settings",
-                render({ Menu }) {
+                order: 100,
+                render({ Menu, Section, Item }) {
                     const render = {
-                        apps: renderPlugins({ plugins: sortedSettingsPlugins.apps, Menu }),
+                        apps: renderPlugins({ plugins: sortedSettingsPlugins.apps, Item }),
                         integrations: renderPlugins({
                             plugins: sortedSettingsPlugins.integrations,
-                            Menu
+                            Item
                         }),
-                        other: renderPlugins({ plugins: sortedSettingsPlugins.other, Menu })
+                        other: renderPlugins({ plugins: sortedSettingsPlugins.other, Item })
                     };
 
                     if (render.apps.length || render.integrations.length || render.other.length) {
                         return (
-                            <Menu label={t`Settings`} icon={<SettingsIcon />}>
+                            <Menu name="settings" label={t`Settings`} icon={<SettingsIcon />}>
                                 {render.apps.length > 0 && (
-                                    <Menu label={t`Apps`}>{render.apps}</Menu>
+                                    <Section label={t`Apps`}>{render.apps}</Section>
                                 )}
 
                                 {render.integrations.length > 0 && (
-                                    <Menu label={t`Integrations`}>{render.integrations}</Menu>
+                                    <Section label={t`Integrations`}>{render.integrations}</Section>
                                 )}
 
                                 {render.other.length > 0 && (
-                                    <Menu label={t`Other`}>{render.other}</Menu>
+                                    <Section label={t`Other`}>{render.other}</Section>
                                 )}
                             </Menu>
                         );
@@ -84,7 +85,7 @@ export default [
 
                     return null;
                 }
-            });*/
+            });
         }
     }
 ];

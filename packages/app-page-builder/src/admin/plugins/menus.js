@@ -4,6 +4,7 @@ import { ReactComponent as PagesIcon } from "@webiny/app-page-builder/admin/asse
 import { hasRoles } from "@webiny/app-security";
 import { i18n } from "@webiny/app/i18n";
 const t = i18n.ns("app-forms/admin/menus");
+import { getPlugins } from "@webiny/plugins";
 
 export default [
     {
@@ -17,6 +18,8 @@ export default [
             }): any);
 
             if (menus || categories || editor) {
+                const additionalSectionPlugins = getPlugins("menu-app-page-builder-section");
+
                 return (
                     <Menu name="content-2" label={t`Content`} icon={<PagesIcon />}>
                         <Section label={t`Pages`}>
@@ -26,6 +29,9 @@ export default [
                             {editor && <Item label={t`Pages`} path="/page-builder/pages" />}
                             {menus && <Item label={t`Menus`} path="/page-builder/menus" />}
                         </Section>
+                        {additionalSectionPlugins.map(plugin => {
+                            return plugin.render({ Section, Item });
+                        })}
                     </Menu>
                 );
             }
