@@ -7,7 +7,7 @@ const t = i18n.ns("app-security/admin/menus");
 
 export default [
     {
-        name: "menu-app-security",
+        name: "menu-security",
         type: "menu",
         render({ Menu, Section, Item }) {
             const { groups, roles, users }: Object = (hasRoles({

@@ -6,8 +6,8 @@ const t = i18n.ns("app-forms/admin/menus");
 
 export default [
     {
-        type: "menu-app-page-builder-section",
-        name: "menu-app-page-builder-section-forms",
+        type: "menu-content-section",
+        name: "menu-content-section-forms",
         render({ Section, Item }: Object) {
             const { forms }: Object = (hasRoles({
                 forms: ["form-editors"]

@@ -8,8 +8,8 @@ import { getPlugins } from "@webiny/plugins";
 
 export default [
     {
-        name: "menu-app-page-builder",
         type: "menu",
+        name: "menu-content",
         render({ Menu, Section, Item }: Object) {
             const { menus, categories, editor }: Object = (hasRoles({
                 menus: ["pb-menus"],
@@ -18,8 +18,7 @@ export default [
             }): any);
 
             if (menus || categories || editor) {
-                const additionalSectionPlugins = getPlugins("menu-app-page-builder-section");
-
+                const additionalSectionPlugins = getPlugins("menu-content-section");
                 return (
                     <Menu name="content-2" label={t`Content`} icon={<PagesIcon />}>
                         <Section label={t`Pages`}>
@@ -29,9 +28,11 @@ export default [
                             {editor && <Item label={t`Pages`} path="/page-builder/pages" />}
                             {menus && <Item label={t`Menus`} path="/page-builder/menus" />}
                         </Section>
-                        {additionalSectionPlugins.map(plugin => {
-                            return plugin.render({ Section, Item });
-                        })}
+                        {additionalSectionPlugins.map(plugin => (
+                            <menu-content-section key={plugin.name}>
+                                {plugin.render({ Section, Item })}
+                            </menu-content-section>
+                        ))}
                     </Menu>
                 );
             }

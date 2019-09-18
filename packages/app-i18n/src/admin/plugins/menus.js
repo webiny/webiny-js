@@ -7,8 +7,8 @@ const t = i18n.ns("app-forms/admin/menus");
 
 export default [
     {
-        name: "menu-app-languages",
         type: "menu",
+        name: "menu-languages",
         render({ Menu, Section, Item }: Object) {
             const { locales }: Object = (hasRoles({
                 locales: ["i18n-locales"]
