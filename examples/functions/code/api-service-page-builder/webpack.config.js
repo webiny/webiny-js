@@ -17,11 +17,11 @@ module.exports = {
     devtool: false,
     externals: isEnvDevelopment
         ? [
-            nodeExternals({
-                modulesDir: path.resolve("node_modules"),
-                whitelist: [/service-config/]
-            })
-        ]
+              nodeExternals({
+                  modulesDir: path.resolve("node_modules"),
+                  whitelist: [/service-config/]
+              })
+          ]
         : ["aws-sdk"],
     mode: isEnvDevelopment ? "development" : "production",
     optimization: {
@@ -42,7 +42,6 @@ module.exports = {
                 exclude: /node_modules/,
                 include: packages,
                 options: {
-
                     presets: [
                         [
                             "@babel/preset-env",

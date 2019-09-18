@@ -93,8 +93,7 @@ export default ({
             const { type } = field.settings;
 
             return (
-                field.fieldId +
-                `: ${type === "many" ? `[CmsManageRefMany]` : `[CmsManageRefOne]`}`
+                field.fieldId + `: ${type === "many" ? `[CmsManageRefMany]` : `[CmsManageRefOne]`}`
             );
         },
         createInputField({ field }) {
@@ -102,9 +101,7 @@ export default ({
 
             return (
                 field.fieldId +
-                `: ${
-                    type === "many" ? "[CmsManageRefManyInput]" : "[CmsManageRefOneInput]"
-                }`
+                `: ${type === "many" ? "[CmsManageRefManyInput]" : "[CmsManageRefOneInput]"}`
             );
         }
     }

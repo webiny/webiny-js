@@ -161,7 +161,11 @@ const DefaultFormLayout: FormLayoutComponent = ({
             <TermsOfService>
                 {({ message, errorMessage, onChange }) => (
                     <div className="webiny-pb-form-tos">
-                        <Bind name={"tosAccepted"} validators={validation.create("required")} afterChange={onChange}>
+                        <Bind
+                            name={"tosAccepted"}
+                            validators={validation.create("required")}
+                            afterChange={onChange}
+                        >
                             {({ onChange, value, validation }) => (
                                 <div className="webiny-pb-form-field webiny-pb-form-field--checkbox">
                                     <div className="webiny-pb-form-field__checkbox-group">
