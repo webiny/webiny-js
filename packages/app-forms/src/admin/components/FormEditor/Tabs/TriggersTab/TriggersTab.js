@@ -11,7 +11,8 @@ import { i18n } from "@webiny/app/i18n";
 const t = i18n.namespace("FormsApp.Editor.TriggersTab");
 
 const Container = styled("div")({
-    padding: "40px 60px"
+    padding: "40px 60px",
+    color: "var(--mdc-theme-on-surface)"
 });
 
 export const TriggersTab = () => {

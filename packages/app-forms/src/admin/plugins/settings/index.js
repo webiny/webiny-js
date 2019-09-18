@@ -12,9 +12,7 @@ export default ([
         type: "settings",
         name: "settings-forms",
         settings: {
-            show: () => {
-                return hasRoles(["forms-settings"]);
-            },
+            show: () => hasRoles(["forms-settings"]),
             type: "app",
             name: "Forms",
             route: (

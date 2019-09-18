@@ -2,32 +2,24 @@
 import React from "react";
 import { ReactComponent as I18NIcon } from "./../assets/icons/round-translate-24px.svg";
 import { i18n } from "@webiny/app/i18n";
-import { hasRoles } from "@webiny/app-security";
+import { SecureView } from "@webiny/app-security/components";
 
-const t = i18n.namespace("Pb.Categories");
+const t = i18n.ns("app-forms/admin/menus");
 
 export default [
     {
-        name: "i18n-menu",
         type: "menu",
-        render({ Menu }: Object) {
-            const { locales }: Object = (hasRoles({
-                locales: ["i18n-locales"]
-            }): any);
-
-            if (locales) {
-                return (
-                    <Menu label={t`Languages`} icon={<I18NIcon />}>
-                        {locales && (
-                            <Menu label={t`Locales`}>
-                                {locales && <Menu label={t`Locales`} path="/i18n/locales" />}
-                            </Menu>
-                        )}
+        name: "menu-languages",
+        render({ Menu, Section, Item }: Object) {
+            return (
+                <SecureView roles={["i18n-locales"]}>
+                    <Menu name="languages" label={t`Languages`} icon={<I18NIcon />}>
+                        <Section label={t`Locales`}>
+                            <Item label={t`Locales`} path="/i18n/locales" />
+                        </Section>
                     </Menu>
-                );
-            }
-
-            return null;
+                </SecureView>
+            );
         }
     }
 ];

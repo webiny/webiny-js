@@ -1,0 +1,36 @@
+name: webiny-cms
+
+components:
+  function: '../../../node_modules/@webiny/serverless-function'
+  api: '../../../node_modules/@webiny/serverless-api'
+
+site:
+  component: ${components.function}
+  inputs:
+    timeout: 10
+    root: ../code/site
+    code: ../code/site/build
+    handler: handler.handler
+    name: webiny-site
+    description: Webiny Site
+    #hook: yarn build:prod
+#admin:
+#  component: '@serverless/function'
+#  inputs:
+#    code: ../code/admin/build
+#    handler: handler.handler
+#    name: webiny-admin
+#    description: Webiny Admin
+
+api:
+  component: ${components.api}
+  inputs:
+    description: Serverless Site
+    stage: prod
+    endpoints:
+      - path: /{key+}
+        method: ANY
+        function: ${site}
+      - path: /
+        method: ANY
+        function: ${site}

@@ -8,9 +8,14 @@ import { ButtonSecondary, ButtonPrimary } from "@webiny/ui/Button";
 import { Elevation } from "@webiny/ui/Elevation";
 import { validation } from "@webiny/validation";
 
+const menuFormStyle = {
+    color: "var(--mdc-theme-on-surface)",
+    backgroundColor: "var(--mdc-theme-background) !important"
+};
+
 const LinkForm = ({ data, onSubmit, onCancel }: Object) => {
     return (
-        <Elevation z={4}>
+        <Elevation z={4} css={menuFormStyle}>
             <Form data={data} onSubmit={onSubmit}>
                 {({ submit, Bind }) => (
                     <>
