@@ -1,34 +1,31 @@
 // @flow
 import { flow } from "lodash";
-import { withFields, setOnce } from "@commodo/fields";
+import { withFields } from "@commodo/fields";
 import { string, boolean } from "@commodo/fields/fields";
 import { ref } from "@commodo/fields-storage-ref";
 import { withName } from "@commodo/name";
 import { withHooks } from "@commodo/hooks";
-import { validation } from "@webiny/validation";
-import withStorage from "./withStorage";
 
-export default config => ({ getModel, getUser }) =>
-    flow(
-        withStorage(config),
+export default ({ createBase, SecurityRole, SecurityRoles2Models }) => {
+    const SecurityGroup = flow(
         withName("SecurityGroup"),
         withFields(() => ({
             createdBy: string(),
             description: string(),
+            name: string(),
+            slug: string(),
             system: boolean(),
             roles: ref({
                 list: true,
-                instanceOf: [getModel("SecurityRole"), "entity"],
-                using: [getModel("SecurityRoles2Models"), "role"]
+                instanceOf: [SecurityRole, "entity"],
+                using: [SecurityRoles2Models, "role"]
             })
         })),
         withHooks({
             async beforeCreate() {
-                if (getUser()) {
-                    this.createdBy = getUser().id;
-                }
+                this.createdBy = this.getUserId();
 
-                const existingGroup = await getModel("SecurityGroup").findOne({
+                const existingGroup = await SecurityGroup.findOne({
                     query: { slug: this.slug }
                 });
                 if (existingGroup) {
@@ -41,4 +38,7 @@ export default config => ({ getModel, getUser }) =>
                 }
             }
         })
-    )();
+    )(createBase());
+
+    return SecurityGroup;
+};

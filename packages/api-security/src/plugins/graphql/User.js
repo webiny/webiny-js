@@ -13,7 +13,7 @@ import resolveUpdateCurrentSecurityUser from "./userResolvers/updateCurrentUser"
 import resolveGetCurrentSecurityUserSettings from "./userResolvers/getCurrentUserSettings";
 import resolveUpdateCurrentSecurityUserSettings from "./userResolvers/updateCurrentUserSettings";
 
-const userFetcher = ctx => ctx.getModel("SecurityUser");
+const userFetcher = ctx => ctx.models.SecurityUser;
 const userSettingsFetcher = ctx => ctx.getEntity("SecurityUserSettings");
 
 export default {
@@ -171,7 +171,7 @@ export default {
             }
         },
         SecurityQuery: {
-            getCurrentUser: resolveGetCurrentSecurityUser(userFetcher),
+            getCurrentUser: resolveGetCurrentSecurityUser,
             getCurrentUserSettings: resolveGetCurrentSecurityUserSettings(userSettingsFetcher),
             getUser: resolveGet(userFetcher),
             listUsers: resolveList(userFetcher)

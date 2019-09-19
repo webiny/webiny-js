@@ -6,13 +6,17 @@ import { ref } from "@commodo/fields-storage-ref";
 import { withName } from "@commodo/name";
 import { validation } from "@webiny/validation";
 import { withProps } from "repropose";
-import withStorage from "./withStorage";
 import md5 from "md5";
 import bcrypt from "bcryptjs";
 
-export default config => ({ security, getModel }) =>
-    flow(
-        withStorage(config),
+export default ({
+    createBase,
+    SecurityRole,
+    SecurityRoles2Models,
+    SecurityGroup,
+    SecurityGroups2Models
+}) => {
+    const SecurityUser = flow(
         withName("SecurityUser"),
         withFields(instance => ({
             email: onSet(value => {
@@ -22,7 +26,7 @@ export default config => ({ security, getModel }) =>
 
                 value = value.toLowerCase().trim();
                 this.registerHookCallback("beforeSave", async () => {
-                    const existingUser = await getModel("SecurityUser").findOne({
+                    const existingUser = await SecurityUser.findOne({
                         query: { email: value }
                     });
                     if (existingUser) {
@@ -52,13 +56,13 @@ export default config => ({ security, getModel }) =>
             enabled: boolean({ value: true }),
             roles: ref({
                 list: true,
-                instanceOf: [getModel("SecurityRole"), "entity"],
-                using: [getModel("SecurityRoles2Models"), "role"]
+                instanceOf: [SecurityRole, "entity"],
+                using: [SecurityRoles2Models, "role"]
             }),
             groups: ref({
                 list: true,
-                instanceOf: [getModel("SecurityGroup"), "entity"],
-                using: [getModel("SecurityGroups2Models"), "group"]
+                instanceOf: [SecurityGroup, "entity"],
+                using: [SecurityGroups2Models, "group"]
             })
         })),
         withProps(instance => ({
@@ -73,14 +77,6 @@ export default config => ({ security, getModel }) =>
                 return "https://www.gravatar.com/avatar/" + md5(instance.email);
             },
             get access() {
-                if (!security) {
-                    return {
-                        scopes: [],
-                        roles: [],
-                        fullAccess: true
-                    };
-                }
-
                 if (this.__access) {
                     return this.__access;
                 }
@@ -110,6 +106,7 @@ export default config => ({ security, getModel }) =>
                     const roles = await this.roles;
                     for (let j = 0; j < roles.length; j++) {
                         const role = roles[j];
+                        console.log('roleeee', role.id)
                         !access.roles.includes(role.slug) && access.roles.push(role.slug);
                         role.scopes.forEach(scope => {
                             !access.scopes.includes(scope) && access.scopes.push(scope);
@@ -129,4 +126,7 @@ export default config => ({ security, getModel }) =>
                 });
             }
         }))
-    )();
+    )(createBase());
+
+    return SecurityUser;
+};

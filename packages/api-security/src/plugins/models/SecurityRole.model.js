@@ -1,28 +1,26 @@
 // @flow
 import { flow } from "lodash";
-import { withFields, setOnce } from "@commodo/fields";
+import { withFields } from "@commodo/fields";
 import { string, boolean } from "@commodo/fields/fields";
 import { withName } from "@commodo/name";
 import { withHooks } from "@commodo/hooks";
-import { validation } from "@webiny/validation";
-import withStorage from "./withStorage";
 
-export default config => ({ getModel, getUser }) =>
-    flow(
-        withStorage(config),
+export default ({ createBase }) => {
+    const SecurityRole = flow(
         withName("SecurityRole"),
         withFields({
             createdBy: string(),
+            name: string(),
+            slug: string(),
             description: string(),
             system: boolean(),
             scopes: string({ list: true })
         }),
         withHooks({
             async beforeCreate() {
-                if (getUser()) {
-                    this.createdBy = getUser().id;
-                }
-                const existingRole = await getModel("SecurityRole").findOne({
+                this.createdBy = this.getUserId();
+
+                const existingRole = await SecurityRole.findOne({
                     query: { slug: this.slug }
                 });
                 if (existingRole) {
@@ -35,4 +33,7 @@ export default config => ({ getModel, getUser }) =>
                 }
             }
         })
-    )();
+    )(createBase());
+
+    return SecurityRole;
+};
