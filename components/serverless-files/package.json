@@ -1,14 +1,9 @@
 {
-  "name": "@webiny/serverless-apollo-service",
+  "name": "@webiny/serverless-files",
   "version": "1.0.0",
   "main": "serverless.js",
   "license": "MIT",
   "dependencies": {
-    "@babel/plugin-proposal-class-properties": "^7.5.5",
-    "@babel/plugin-proposal-object-rest-spread": "^7.5.5",
-    "@babel/plugin-transform-destructuring": "^7.6.0",
-    "@babel/preset-env": "^7.6.0",
-    "@serverless/aws-api-gateway": "^1.2.0",
     "@serverless/core": "^1.0.0",
     "@serverless/function": "^3.0.0",
     "fs-extra": "^8.1.0",

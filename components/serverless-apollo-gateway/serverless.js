@@ -2,16 +2,16 @@ const path = require("path");
 const fs = require("fs-extra");
 const { transform } = require("@babel/core");
 const prettier = require("prettier");
-const { Component, utils } = require("@serverless/core");
+const { Component } = require("@serverless/core");
 const webpack = require("webpack");
 
-class ApolloService extends Component {
+class ApolloGateway extends Component {
     async default(inputs = {}) {
         const {
-            name: componentName,
-            plugins = [],
+            name: componentName = null,
+            services = [],
+            buildHeaders = __dirname + "/boilerplate/buildHeaders.js",
             env = {},
-            database,
             memory = 128,
             timeout = 10,
             description
@@ -21,27 +21,18 @@ class ApolloService extends Component {
             throw Error(`"inputs.name" is a required parameter!`);
         }
 
-        if (database) {
-            env["MONGODB_SERVER"] = database.server;
-            env["MONGODB_NAME"] = database.name;
-        }
-
-        const injectPlugins = [];
         const boilerplateRoot = path.join(this.context.instance.root, ".webiny");
         const componentRoot = path.join(boilerplateRoot, componentName);
-        fs.ensureDirSync(path.join(boilerplateRoot, componentName));
 
         this.state.inputs = inputs;
         await this.save();
 
-        plugins.forEach((pl, index) => {
-            injectPlugins.push({ name: `injectedPlugins${index + 1}`, path: pl });
-        });
+        fs.ensureDirSync(path.join(boilerplateRoot, componentName));
 
         // Generate boilerplate code
         const source = fs.readFileSync(__dirname + "/boilerplate/handler.js", "utf8");
         const { code } = await transform(source, {
-            plugins: [[__dirname + "/transform/plugins", { plugins: injectPlugins }]]
+            plugins: [[__dirname + "/transform/services", { services }]]
         });
 
         fs.writeFileSync(
@@ -50,14 +41,11 @@ class ApolloService extends Component {
         );
 
         fs.copyFileSync(
-            path.join(__dirname, "boilerplate", "config.js"),
-            path.join(componentRoot, "config.js")
-        );
-
-        fs.copyFileSync(
             path.join(__dirname, "boilerplate", "webpack.config.js"),
             path.join(componentRoot, "/webpack.config.js")
         );
+
+        fs.copyFileSync(path.resolve(buildHeaders), path.join(componentRoot, "/buildHeaders.js"));
 
         // Bundle code (switch CWD before running webpack)
         const cwd = process.cwd();
@@ -89,45 +77,21 @@ class ApolloService extends Component {
 
         // Deploy lambda
         const lambda = await this.load("@serverless/function");
-        const apiGw = await this.load("@serverless/aws-api-gateway");
 
-        const lambdaOut = await lambda({
-            description: description || `Apollo Server: ${componentName}`,
+        return await lambda({
+            description: description || `Apollo Gateway: ${componentName}`,
             code: path.join(componentRoot, "build"),
             handler: "handler.handler",
             env,
             memory,
             timeout
         });
-
-        const apiGwOut = await apiGw({
-            name: componentName,
-            description: `API for ${componentName}`,
-            stage: "prod",
-            endpointTypes: ["REGIONAL"],
-            endpoints: [{ path: "/graphql", method: "ANY", function: lambdaOut.arn }]
-        });
-
-        const output = {
-            api: apiGwOut,
-            graphql: lambdaOut
-        };
-
-        this.state.output = output;
-        await this.save();
-
-        await utils.sleep(1000);
-
-        return output;
     }
 
     async remove(inputs = {}) {
-        const apiGw = await this.load("@serverless/aws-api-gateway");
-        await apiGw.remove(inputs);
-
         const lambda = await this.load("@serverless/function");
         await lambda.remove(inputs);
     }
 }
 
-module.exports = ApolloService;
+module.exports = ApolloGateway;
