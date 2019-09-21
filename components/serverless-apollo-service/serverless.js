@@ -2,7 +2,7 @@ const path = require("path");
 const fs = require("fs-extra");
 const { transform } = require("@babel/core");
 const prettier = require("prettier");
-const { Component, utils } = require("@serverless/core");
+const { Component } = require("@serverless/core");
 const webpack = require("webpack");
 
 class ApolloService extends Component {
@@ -14,7 +14,8 @@ class ApolloService extends Component {
             database,
             memory = 128,
             timeout = 10,
-            description
+            description,
+            endpointTypes = ["REGIONAL"]
         } = inputs;
 
         if (!componentName) {
@@ -100,11 +101,12 @@ class ApolloService extends Component {
             timeout
         });
 
+        this.context.debug(`[${componentName}] Deploying API Gateway`);
         const apiGwOut = await apiGw({
             name: componentName,
             description: `API for ${componentName}`,
             stage: "prod",
-            endpointTypes: ["REGIONAL"],
+            endpointTypes,
             endpoints: [{ path: "/graphql", method: "ANY", function: lambdaOut.arn }]
         });
 
@@ -115,8 +117,6 @@ class ApolloService extends Component {
 
         this.state.output = output;
         await this.save();
-
-        await utils.sleep(1000);
 
         return output;
     }
