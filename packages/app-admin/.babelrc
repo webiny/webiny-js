@@ -10,7 +10,7 @@
     ],
     "plugins": [
         ["babel-plugin-emotion", { "autoLabel": true }],
-        ["babel-plugin-lodash", { "id": ["lodash", "recompose"] }],
+        ["babel-plugin-lodash", { "id": ["lodash"] }],
         ["@babel/plugin-proposal-object-rest-spread", {"useBuiltIns": true}],
         ["@babel/plugin-transform-runtime"],
         ["@babel/plugin-proposal-class-properties"],

@@ -1,6 +1,5 @@
 // @flow
-import * as React from "react";
-import { useUi } from "@webiny/app/components";
+import { useUi } from "@webiny/app/hooks/useUi";
 
 export const useSnackbar = () => {
     const ui = useUi();
