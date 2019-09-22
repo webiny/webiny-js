@@ -28,7 +28,7 @@ export default [
     {
         type: "webiny-init",
         name: "webiny-init-settings",
-        callback() {
+        init() {
             // Settings
             // Apps / integrations can register settings plugins and add menu items like the following.
             let settingsPlugins: Array<SettingsPluginType> = getPlugins("settings");
