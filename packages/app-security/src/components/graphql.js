@@ -27,7 +27,7 @@ export const GET_CURRENT_USER = gql`
 
 export const ID_TOKEN_LOGIN = gql`
     mutation IdTokenLogin($idToken: String!) {
-        login(idToken: $idToken) {
+        loginUsingIdToken(idToken: $idToken) {
             data {
                 token
                 user ${dataFields}
