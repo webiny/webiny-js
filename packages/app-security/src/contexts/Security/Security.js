@@ -85,9 +85,9 @@ export const SecurityProvider = (props: Props) => {
      */
     const onIdToken = useHandler(null, () => async idToken => {
         const { token, user } = await loginUsingIdToken(idToken);
+        setIdentity(user);
         setToken(token);
         setState({ user });
-        setIdentity(user);
     });
 
     // Run authentication plugin hook

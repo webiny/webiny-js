@@ -3,6 +3,7 @@
 import React from "react";
 import { useQuery } from "react-apollo";
 import gql from "graphql-tag";
+import { CircularProgress } from "@webiny/ui/Progress";
 
 export const getI18NInformation = gql`
     query GetI18NInformation {
@@ -29,7 +30,7 @@ const I18NProvider = ({ children }: Object) => {
     const { loading, data } = useQuery(getI18NInformation);
 
     if (loading) {
-        return null;
+        return <CircularProgress />;
     }
 
     const { currentLocale, locales } = data.i18n.getI18NInformation;
