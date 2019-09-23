@@ -7,12 +7,19 @@ import { css } from "emotion";
 
 const linkStyle = css({
     color: "var(--mdc-theme-text-primary-on-background)",
-    textDecoration: "none"
+    textDecoration: "none",
+    display: "block",
+    width: "100%",
+    outline: "none",
+    paddingLeft: 65,
+    "&:hover": {
+        textDecoration: "none"
+    }
 });
 
 const submenuItems = css({
     ".mdc-drawer &.mdc-list-item": {
-        paddingLeft: 65
+        paddingLeft: 0
     }
 });
 
