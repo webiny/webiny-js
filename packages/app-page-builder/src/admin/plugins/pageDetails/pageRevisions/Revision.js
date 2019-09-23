@@ -122,16 +122,14 @@ const Revision = ({ rev }: RevisionProps) => {
                                 Preview
                             </MenuItem>
 
+                            {!rev.locked && <MenuDivider />}
                             {!rev.locked && (
-                                <React.Fragment>
-                                    <MenuDivider />
-                                    <MenuItem onClick={() => showConfirmation(deleteRevision)}>
-                                        <ListItemGraphic>
-                                            <Icon icon={<DeleteIcon />} />
-                                        </ListItemGraphic>
-                                        Delete
-                                    </MenuItem>
-                                </React.Fragment>
+                                <MenuItem onClick={() => showConfirmation(deleteRevision)}>
+                                    <ListItemGraphic>
+                                        <Icon icon={<DeleteIcon />} />
+                                    </ListItemGraphic>
+                                    Delete
+                                </MenuItem>
                             )}
                         </Menu>
                     </ListItemMeta>

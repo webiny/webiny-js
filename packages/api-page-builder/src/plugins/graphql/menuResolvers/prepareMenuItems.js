@@ -86,13 +86,11 @@ export default async ({ entity: menu, context: graphqlContext }: Object) => {
                         if (!context.distinctParents.loaded) {
                             const ids = Object.keys(context.distinctParents.data);
 
-                            const Page = graphqlContext.getEntity("PbPage");
-                            const Category = graphqlContext.getEntity("PbCategory");
-
+                            const { PbPage, PbCategory } = graphqlContext;
                             await listPublishedPages({
                                 args: { parent: ids },
-                                Page,
-                                Category
+                                PbPage,
+                                PbCategory
                             }).then(results => {
                                 for (let i = 0; i < results.length; i++) {
                                     let { title, url, parent: id } = results[i];
@@ -114,13 +112,12 @@ export default async ({ entity: menu, context: graphqlContext }: Object) => {
                     case "page-list": {
                         const { category, sortBy, sortDir } = item;
 
-                        const Page = graphqlContext.getEntity("PbPage");
-                        const Category = graphqlContext.getEntity("PbCategory");
+                        const { PbPage, PbCategory } = graphqlContext;
 
                         item.children = await listPublishedPages({
                             args: { category, sort: { [sortBy]: parseInt(sortDir) } },
-                            Page,
-                            Category
+                            PbPage,
+                            PbCategory
                         });
 
                         item.children = await item.children.toJSON("id,title,url");

@@ -3,11 +3,13 @@ import { flow } from "lodash";
 import { withFields, onSet } from "@commodo/fields";
 import { string, boolean } from "@commodo/fields/fields";
 import { ref } from "@commodo/fields-storage-ref";
+import { id } from "@commodo/fields-storage-mongodb";
 import { withName } from "@commodo/name";
 import { validation } from "@webiny/validation";
 import { withProps } from "repropose";
 import md5 from "md5";
 import bcrypt from "bcryptjs";
+import { withHooks } from "@commodo/hooks";
 
 export default ({
     createBase,
@@ -18,6 +20,7 @@ export default ({
 }) => {
     const SecurityUser = flow(
         withName("SecurityUser"),
+        withHooks(),
         withFields(instance => ({
             email: onSet(value => {
                 if (value === instance.email) {
@@ -25,7 +28,7 @@ export default ({
                 }
 
                 value = value.toLowerCase().trim();
-                this.registerHookCallback("beforeSave", async () => {
+                instance.registerHookCallback("beforeSave", async () => {
                     const existingUser = await SecurityUser.findOne({
                         query: { email: value }
                     });
@@ -63,15 +66,13 @@ export default ({
                 list: true,
                 instanceOf: [SecurityGroup, "entity"],
                 using: [SecurityGroups2Models, "group"]
-            })
+            }),
+            avatar: id()
         })),
         withProps(instance => ({
             __access: null,
             get fullName() {
                 return `${instance.firstName} ${instance.lastName}`.trim();
-            },
-            get avatar() {
-                return "https://s.gravatar.com/avatar/d06e12c98e6a5bd21801c86916325e9f?size=100&default=retro";
             },
             get gravatar() {
                 return "https://www.gravatar.com/avatar/" + md5(instance.email);
@@ -106,7 +107,6 @@ export default ({
                     const roles = await this.roles;
                     for (let j = 0; j < roles.length; j++) {
                         const role = roles[j];
-                        console.log('roleeee', role.id)
                         !access.roles.includes(role.slug) && access.roles.push(role.slug);
                         role.scopes.forEach(scope => {
                             !access.scopes.includes(scope) && access.scopes.push(scope);

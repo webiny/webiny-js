@@ -10,11 +10,8 @@ import resolveLoginSecurityUser from "./userResolvers/loginUser";
 import resolveLoginUsingToken from "./userResolvers/loginUsingToken";
 import resolveGetCurrentSecurityUser from "./userResolvers/getCurrentUser";
 import resolveUpdateCurrentSecurityUser from "./userResolvers/updateCurrentUser";
-import resolveGetCurrentSecurityUserSettings from "./userResolvers/getCurrentUserSettings";
-import resolveUpdateCurrentSecurityUserSettings from "./userResolvers/updateCurrentUserSettings";
 
 const userFetcher = ctx => ctx.models.SecurityUser;
-const userSettingsFetcher = ctx => ctx.getEntity("SecurityUserSettings");
 
 export default {
     typeDefs: /* GraphQL */ `
@@ -172,17 +169,13 @@ export default {
         },
         SecurityQuery: {
             getCurrentUser: resolveGetCurrentSecurityUser,
-            getCurrentUserSettings: resolveGetCurrentSecurityUserSettings(userSettingsFetcher),
             getUser: resolveGet(userFetcher),
             listUsers: resolveList(userFetcher)
         },
         SecurityMutation: {
             loginUser: resolveLoginSecurityUser(userFetcher),
             loginUsingToken: resolveLoginUsingToken(userFetcher),
-            updateCurrentUser: resolveUpdateCurrentSecurityUser(userFetcher),
-            updateCurrentUserSettings: resolveUpdateCurrentSecurityUserSettings(
-                userSettingsFetcher
-            ),
+            updateCurrentUser: resolveUpdateCurrentSecurityUser,
             createUser: resolveCreate(userFetcher),
             updateUser: resolveUpdate(userFetcher),
             deleteUser: resolveDelete(userFetcher)

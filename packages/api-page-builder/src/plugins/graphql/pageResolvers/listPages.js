@@ -1,16 +1,9 @@
 // @flow
-import type { Entity } from "@webiny/entity";
 import { createPaginationMeta } from "@webiny/entity";
 import { ListResponse } from "@webiny/api/graphql/responses";
 
-type EntityFetcher = (context: Object) => Class<Entity>;
-
-export default (entityFetcher: EntityFetcher) => async (
-    root: any,
-    args: Object,
-    context: Object
-) => {
-    const entityClass = entityFetcher(context);
+export default async (root: any, args: Object, context: Object) => {
+    const { PbPage } = context.models;
 
     const { page = 1, perPage = 10, sort = null, search = null, parent = null } = args;
 
@@ -54,18 +47,14 @@ export default (entityFetcher: EntityFetcher) => async (
         });
     }
 
-    const collection = entityClass.getDriver().getCollectionName(entityClass);
+    const ids = await PbPage.aggregate([
+        ...pipeline,
+        { $project: { _id: -1, id: 1 } },
+        { $skip: (page - 1) * perPage },
+        { $limit: perPage }
+    ]);
 
-    const ids = await entityClass
-        .getDriver()
-        .aggregate(collection, [
-            ...pipeline,
-            { $project: { _id: -1, id: 1 } },
-            { $skip: (page - 1) * perPage },
-            { $limit: perPage }
-        ]);
-
-    const [totalCount] = await entityClass.getDriver().aggregate(collection, [
+    const [totalCount] = await PbPage.aggregate([
         ...pipeline,
         {
             $count: "totalCount"
@@ -73,7 +62,7 @@ export default (entityFetcher: EntityFetcher) => async (
     ]);
 
     return new ListResponse(
-        await entityClass.find({ sort, query: { id: { $in: ids.map(item => item.id) } } }),
+        await PbPage.find({ sort, query: { id: { $in: ids.map(item => item.id) } } }),
         createPaginationMeta({
             page,
             perPage,

@@ -7,7 +7,7 @@ import {
     resolveUpdate
 } from "@webiny/api/graphql";
 
-const categoryFetcher = ctx => ctx.getEntity("PbCategory");
+const categoryFetcher = ctx => ctx.models.PbCategory;
 
 export default {
     typeDefs: `
@@ -72,11 +72,11 @@ export default {
         }
     `,
     resolvers: {
-       PbQuery: {
+        PbQuery: {
             getCategory: resolveGet(categoryFetcher),
             listCategories: resolveList(categoryFetcher)
         },
-       PbMutation: {
+        PbMutation: {
             createCategory: resolveCreate(categoryFetcher),
             updateCategory: resolveUpdate(categoryFetcher),
             deleteCategory: resolveDelete(categoryFetcher)

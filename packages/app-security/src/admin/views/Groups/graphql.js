@@ -10,7 +10,7 @@ const fields = `
 `;
 
 export const LIST_GROUPS = gql`
-    query LoadGroups(
+    query listGroups(
         $where: JSON
         $sort: JSON
         $page: Int
@@ -44,7 +44,7 @@ export const LIST_GROUPS = gql`
 `;
 
 export const READ_GROUP = gql`
-    query LoadGroup($id: ID!) {
+    query getGroup($id: ID!) {
         security {
             group: getGroup(id: $id){
                 data {
@@ -60,7 +60,7 @@ export const READ_GROUP = gql`
 `;
 
 export const CREATE_GROUP = gql`
-    mutation CreateGroup($data: SecurityGroupInput!){
+    mutation createGroup($data: SecurityGroupInput!){
         security {
             group: createGroup(data: $data) {
                 data {
@@ -77,7 +77,7 @@ export const CREATE_GROUP = gql`
 `;
 
 export const UPDATE_GROUP = gql`
-    mutation UpdateGroup($id: ID!, $data: SecurityGroupInput!){
+    mutation updateGroup($id: ID!, $data: SecurityGroupInput!){
         security {
             group: updateGroup(id: $id, data: $data) {
                 data {
@@ -94,7 +94,7 @@ export const UPDATE_GROUP = gql`
 `;
 
 export const DELETE_GROUP = gql`
-    mutation DeleteGroup($id: ID!) {
+    mutation deleteGroup($id: ID!) {
         security {
             deleteGroup(id: $id) {
                 data

@@ -1,34 +1,23 @@
 // @flow
-import type { Entity } from "@webiny/entity";
 import { ErrorResponse } from "./responses";
-import getEntityClass from "./getEntityClass";
-type EntityFetcher = string | ((context: Object) => Class<Entity>);
 
-export const resolveGetSettings = (entityFetcher: EntityFetcher) => async (
-    _: any,
-    args: Object,
-    context: Object
-) => {
-    const EntityClass = getEntityClass(context, entityFetcher);
-    let settings = await EntityClass.load();
+export const resolveGetSettings = getClass => async (_: any, args: Object, context: Object) => {
+    const Class = getClass(context);
+    let settings = await Class.load();
     if (!settings) {
-        settings = new EntityClass();
+        settings = new Class();
         await settings.save();
     }
 
     return settings;
 };
 
-export const resolveUpdateSettings = (entityFetcher: EntityFetcher) => async (
-    _: any,
-    args: Object,
-    context: Object
-) => {
+export const resolveUpdateSettings = getClass => async (_: any, args: Object, context: Object) => {
     const { data } = args;
-    const EntityClass = getEntityClass(context, entityFetcher);
-    let settings = await EntityClass.load();
+    const Class = getClass(context);
+    let settings = await Class.load();
     if (!settings) {
-        settings = new EntityClass();
+        settings = new Class();
     }
 
     if (!settings.data) {

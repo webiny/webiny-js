@@ -7,7 +7,7 @@ import {
     resolveUpdate
 } from "@webiny/api/graphql";
 
-const menuFetcher = ctx => ctx.getEntity("PbMenu");
+const menuFetcher = ctx => ctx.models.PbMenu;
 import getMenuBySlug from "./menuResolvers/getMenuBySlug";
 
 export default {
@@ -82,7 +82,7 @@ export default {
         PbQuery: {
             getMenu: resolveGet(menuFetcher),
             listMenus: resolveList(menuFetcher),
-            getMenuBySlug: getMenuBySlug(menuFetcher)
+            getMenuBySlug: getMenuBySlug
         },
         PbMutation: {
             createMenu: resolveCreate(menuFetcher),

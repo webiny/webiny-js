@@ -10,7 +10,6 @@ export default ({ createBase, SecurityRole, SecurityRoles2Models }) => {
     const SecurityGroup = flow(
         withName("SecurityGroup"),
         withFields(() => ({
-            createdBy: string(),
             description: string(),
             name: string(),
             slug: string(),
@@ -23,8 +22,6 @@ export default ({ createBase, SecurityRole, SecurityRoles2Models }) => {
         })),
         withHooks({
             async beforeCreate() {
-                this.createdBy = this.getUserId();
-
                 const existingGroup = await SecurityGroup.findOne({
                     query: { slug: this.slug }
                 });

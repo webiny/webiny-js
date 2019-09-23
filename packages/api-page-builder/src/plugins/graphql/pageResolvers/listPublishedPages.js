@@ -2,7 +2,9 @@
 import { createPaginationMeta } from "@webiny/entity";
 import { ListResponse } from "@webiny/api/graphql/responses";
 import get from "lodash/get";
-export const listPublishedPages = async ({ args, Page, Category }: Object) => {
+import { Collection } from "@commodo/fields-storage";
+
+export const listPublishedPages = async ({ args, PbPage, PbCategory }: Object) => {
     const {
         page = 1,
         search,
@@ -47,10 +49,10 @@ export const listPublishedPages = async ({ args, Page, Category }: Object) => {
     }
 
     if (category) {
-        if (Category.isId(category)) {
+        if (PbCategory.isId(category)) {
             baseFilters.push({ category });
         } else {
-            const categoryEntity = await Category.findOne({ query: { slug: category } });
+            const categoryEntity = await PbCategory.findOne({ query: { slug: category } });
             baseFilters.push({ category: categoryEntity.id });
         }
     }
@@ -70,32 +72,28 @@ export const listPublishedPages = async ({ args, Page, Category }: Object) => {
         });
     }
 
-    return Page.find({
-        aggregation: async ({ aggregate, QueryResult }) => {
-            const pipelines = {
-                results: pipeline.concat({ $skip: (page - 1) * perPage }, { $limit: perPage }),
-                totalCount: pipeline.concat({
-                    $count: "count"
-                })
-            };
+    const pipelines = {
+        results: pipeline.concat({ $skip: (page - 1) * perPage }, { $limit: perPage }),
+        totalCount: pipeline.concat({
+            $count: "count"
+        })
+    };
 
-            const results = (await aggregate(pipelines.results)) || [];
-            const totalCount = get(await aggregate(pipelines.totalCount), "0.count") || 0;
+    const results = (await PbPage.aggregate(pipelines.results)) || [];
+    const totalCount = get(await PbPage.aggregate(pipelines.totalCount), "0.count") || 0;
 
-            const meta = createPaginationMeta({
-                totalCount,
-                page,
-                perPage
-            });
-
-            return new QueryResult(results, meta);
-        }
+    const meta = createPaginationMeta({
+        totalCount,
+        page,
+        perPage
     });
+
+    return new Collection(results).setMeta(meta);
 };
 
 export default async (root: any, args: Object, context: Object) => {
-    const Page = context.getEntity("PbPage");
-    const Category = context.getEntity("PbCategory");
-    const data = await listPublishedPages({ args, Page, Category });
+    const { PbPage, PbCategory } = context.models;
+
+    const data = await listPublishedPages({ args, PbPage, PbCategory });
     return new ListResponse(data, data.getMeta());
 };

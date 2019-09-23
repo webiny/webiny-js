@@ -1,18 +1,13 @@
 // @flow
 import { Response, NotFoundResponse, ErrorResponse } from "@webiny/api/graphql";
 import type { Entity } from "@webiny/entity";
-type EntityFetcher = (context: Object) => Class<Entity>;
 
-export default (entityFetcher: EntityFetcher) => async (
-    root: any,
-    args: Object,
-    context: Object
-) => {
-    const User = entityFetcher(context);
+export default async (root: any, args: Object, context: Object) => {
+    const { SecurityUser } = context.models;
 
     const { user } = context;
 
-    const currentUser: ?Entity = await User.findById(user.id);
+    const currentUser: ?Entity = await SecurityUser.findById(user.id);
     if (currentUser) {
         try {
             currentUser.populate(args.data);

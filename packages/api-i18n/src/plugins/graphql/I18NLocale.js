@@ -9,7 +9,7 @@ import {
 import searchLocaleCodes from "./resolvers/searchLocaleCodes";
 import getI18NInformation from "./resolvers/getI18NInformation";
 
-const I18NLocaleFetcher = ({ getEntity }) => getEntity("I18NLocale");
+const i18NLocaleFetcher = ctx => ctx.models.I18NLocale;
 
 export default {
     typeDefs: `
@@ -91,15 +91,15 @@ export default {
     `,
     resolvers: {
         I18NQuery: {
-            getI18NLocale: resolveGet(I18NLocaleFetcher),
-            listI18NLocales: resolveList(I18NLocaleFetcher),
+            getI18NLocale: resolveGet(i18NLocaleFetcher),
+            listI18NLocales: resolveList(i18NLocaleFetcher),
             searchLocaleCodes,
             getI18NInformation
         },
         I18NMutation: {
-            createI18NLocale: resolveCreate(I18NLocaleFetcher),
-            updateI18NLocale: resolveUpdate(I18NLocaleFetcher),
-            deleteI18NLocale: resolveDelete(I18NLocaleFetcher)
+            createI18NLocale: resolveCreate(i18NLocaleFetcher),
+            updateI18NLocale: resolveUpdate(i18NLocaleFetcher),
+            deleteI18NLocale: resolveDelete(i18NLocaleFetcher)
         }
     }
 };

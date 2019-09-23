@@ -7,10 +7,11 @@ import UsersForm from "./UsersForm";
 import { CREATE_USER, DELETE_USER, READ_USER, LIST_USERS, UPDATE_USER } from "./graphql";
 import { CrudProvider } from "@webiny/app-admin/contexts/Crud";
 
+// TODO: missing "avatar" field.
 const variables = data => {
     return {
         data: {
-            ...pick(data, ["email", "password", "firstName", "lastName", "avatar", "enabled"]),
+            ...pick(data, ["email", "password", "firstName", "lastName", /*"avatar",*/ "enabled"]),
             roles: (data.roles || []).map(x => x.id),
             groups: (data.groups || []).map(x => x.id)
         }

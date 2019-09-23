@@ -5,13 +5,15 @@ import servicePlugins from "@webiny/api/plugins/service";
 //import securityPlugins from "@webiny/api-security/plugins/service";
 import i18nPlugins from "@webiny/api-i18n/plugins";
 
-const plugins = new PluginsContainer([servicePlugins, /*securityPlugins,*/ i18nPlugins]);
-
 let apolloHandler;
 
 export const handler = async (event: Object, context: Object) => {
     if (!apolloHandler) {
         const config = await createConfig();
+        const plugins = new PluginsContainer([
+            servicePlugins,
+            /*securityPlugins,*/ i18nPlugins(config)
+        ]);
         const { handler } = await createHandler({ plugins, config });
         apolloHandler = handler;
     }
