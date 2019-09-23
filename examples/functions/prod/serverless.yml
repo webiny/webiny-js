@@ -35,6 +35,10 @@ security:
     env: ${vars.env}
     plugins:
       - "@webiny/api-security/plugins"
+      - factory: "@webiny/api-plugin-security-cognito"
+        options:
+          region: us-east-1
+          userPoolId: us-east-1_patnytnzK
 
 # Example of a custom service using generic component
 files:

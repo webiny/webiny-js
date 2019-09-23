@@ -7,7 +7,7 @@ import { ThemeProvider } from "@webiny/app-admin/contexts/Theme";
 import { PageBuilderProvider } from "@webiny/app-page-builder/contexts/PageBuilder";
 import { SecurityProvider } from "@webiny/app-security/contexts/Security";
 import { I18NProvider } from "@webiny/app-i18n/contexts/I18N";
-import cognito from "@webiny/security-provider-cognito";
+import cognito from "@webiny/app-plugin-security-cognito";
 import myTheme from "theme";
 import "./App.scss";
 import plugins from "./plugins";

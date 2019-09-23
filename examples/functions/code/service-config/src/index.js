@@ -9,7 +9,7 @@ async function init() {
     if (database && database.serverConfig.isConnected()) {
         return database;
     }
-
+    
     const server = process.env.MONGODB_SERVER;
     const databaseName = process.env.MONGODB_DB_NAME;
     const client = await MongoClient.connect(server, {
@@ -22,7 +22,7 @@ async function init() {
 
 export default async () => {
     database = await init();
-
+    
     Entity.driver = new MongoDbDriver({ database });
     Entity.crud = {
         logs: true,
@@ -43,7 +43,7 @@ export default async () => {
             mongodb: database
         },
         security: {
-            enabled: false,
+            enabled: true,
             token: {
                 secret: process.env.WEBINY_JWT_SECRET,
                 expiresOn: () => addDays(new Date(), 30)
