@@ -1,5 +1,5 @@
 {
-  "name": "@webiny/security-provider-cognito",
+  "name": "@webiny/app-plugin-security-cognito",
   "version": "1.0.0",
   "main": "index.js",
   "repository": {
