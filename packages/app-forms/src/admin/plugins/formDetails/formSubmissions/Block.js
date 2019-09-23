@@ -12,6 +12,7 @@ const BlockWrapper = styled("div")({
 const titleStyle = css({
     display: "flex",
     alignItems: "center",
+    color: "var(--mdc-theme-on-surface)",
     ".tooltip-content-wrapper": {
         lineHeight: "100%",
         svg: {
