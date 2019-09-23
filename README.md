@@ -1,6 +1,6 @@
 <br/>
 <p align="center">
-  <img src="./static/webiny-logo.svg" width="200" />
+  <img src="./static/webiny-logo.svg" width="250" />
   <br/><br/>
   <strong>Developer-friendly Serverless CMS powered by GraphQL and React</strong>
 </p>
