@@ -36,7 +36,21 @@ class ApolloService extends Component {
         await this.save();
 
         plugins.forEach((pl, index) => {
-            injectPlugins.push({ name: `injectedPlugins${index + 1}`, path: pl });
+            let factory,
+                options = null;
+
+            if (typeof pl === "string") {
+                factory = pl;
+            } else {
+                factory = pl.factory;
+                options = pl.options || null;
+            }
+
+            injectPlugins.push({
+                name: `injectedPlugins${index + 1}`,
+                path: factory,
+                options
+            });
         });
 
         // Generate boilerplate code

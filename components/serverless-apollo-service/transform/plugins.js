@@ -1,5 +1,6 @@
 module.exports = function({ types, template }, { plugins }) {
     const importPlugin = template(`import PLUGIN_NAME from "PLUGIN_PATH";`);
+    const { identifier, callExpression } = types;
 
     return {
         visitor: {
@@ -22,7 +23,11 @@ module.exports = function({ types, template }, { plugins }) {
             NewExpression({ node }) {
                 if (node.callee.name === "PluginsContainer") {
                     plugins.forEach(pl => {
-                        node.arguments[0].elements.push(types.Identifier(pl.name));
+                        let plDef = identifier(pl.name);
+                        if (pl.options) {
+                            plDef = callExpression(plDef, [template.expression(JSON.stringify(pl.options))()]);
+                        }
+                        node.arguments[0].elements.push(plDef);
                     });
                 }
             }
