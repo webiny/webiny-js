@@ -278,6 +278,16 @@ Fix the width of input components when inside grids
   }
 }
 
+// checkbox
+.mdc-checkbox{
+  @include mdc-checkbox-container-colors('text-secondary-on-background')
+}
+
+// radio button
+.mdc-radio{
+  @include mdc-radio-unchecked-stroke-color('text-secondary-on-background')
+}
+
 // snackbar
 .mdc-snackbar	{
   @include mdc-snackbar-shape-radius(2px);
