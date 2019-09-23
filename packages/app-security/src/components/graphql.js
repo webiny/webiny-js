@@ -1,13 +1,19 @@
 // @flow
 import gql from "graphql-tag";
 
-const dataFields = /* GraphQL */ `
+const userFields = /* GraphQL */ `
     {
         id
         email
-        firstName
-        lastName
-        gravatar
+        fullName
+        access {
+            scopes
+            roles
+            fullAccess
+        }
+        avatar {
+            src
+        }
     }
 `;
 
@@ -15,7 +21,7 @@ export const GET_CURRENT_USER = gql`
     {
         security {
             getCurrentUser {
-                data ${dataFields}
+                data ${userFields}
                 error {
                     code
                     message
@@ -27,14 +33,16 @@ export const GET_CURRENT_USER = gql`
 
 export const ID_TOKEN_LOGIN = gql`
     mutation IdTokenLogin($idToken: String!) {
-        loginUsingIdToken(idToken: $idToken) {
-            data {
-                token
-                user ${dataFields}
-            }
-            error {
-                code
-                message
+        security {
+            loginUsingIdToken(idToken: $idToken) {
+                data {
+                    token
+                    user ${userFields}
+                }
+                error {
+                    code
+                    message
+                }
             }
         }
     }

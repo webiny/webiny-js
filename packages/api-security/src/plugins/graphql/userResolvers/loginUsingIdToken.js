@@ -1,12 +1,9 @@
 // @flow
-import bcrypt from "bcryptjs";
-import util from "util";
 import { Response, ErrorResponse } from "@webiny/api/graphql";
-import { JwtToken } from "../../authentication/jwtToken";
 import type { Entity } from "@webiny/entity";
-type EntityFetcher = (context: Object) => Class<Entity>;
+import { JwtToken } from "../../authentication/jwtToken";
 
-const verifyPassword = util.promisify(bcrypt.compare);
+type EntityFetcher = (context: Object) => Class<Entity>;
 
 const invalidCredentials = new ErrorResponse({
     code: "INVALID_CREDENTIALS",
@@ -18,18 +15,25 @@ export default (entityFetcher: EntityFetcher) => async (
     args: Object,
     context: Object
 ) => {
+    // Decode the login token
+    let email;
+    try {
+        const authPlugin = context.plugins.byType("security-authentication-provider").pop();
+        email = await authPlugin.getEmail({ idToken: args.idToken });
+    } catch (err) {
+        return new ErrorResponse({
+            code: err.code,
+            message: err.message
+        });
+    }
+
     const User = entityFetcher(context);
 
     const user: User = (await User.findOne({
-        query: { email: args.username }
+        query: { email }
     }): any);
 
     if (!user) {
-        return invalidCredentials;
-    }
-
-    // $FlowFixMe - user has a "password" attribute.
-    if (!(await verifyPassword(args.password, user.password))) {
         return invalidCredentials;
     }
 
@@ -40,7 +44,6 @@ export default (entityFetcher: EntityFetcher) => async (
     }
 
     const jwt = new JwtToken({ secret: context.config.security.token.secret });
-    // $FlowFixMe
     const access = await user.access;
     const token = await jwt.encode(
         // $FlowFixMe - instance that will be validated will have "password" attribute.

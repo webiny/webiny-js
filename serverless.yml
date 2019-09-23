@@ -34,6 +34,11 @@ functions:
       MONGODB_SERVER: ${self:custom.webiny.database.server}
       MONGODB_DB_NAME: ${self:custom.webiny.database.name}
       WEBINY_JWT_SECRET: ${self:custom.webiny.jwtSecret}
+      SERVICE_FILES: http://localhost:9000/graphql/files
+      SERVICE_I18N: http://localhost:9000/graphql/i18n
+      SERVICE_PB: http://localhost:9000/graphql/page-builder
+      SERVICE_SECURITY: http://localhost:9000/graphql/security
+      SERVICE_FORMS: http://localhost:9000/graphql/forms
     events:
       - http:
           path: /graphql

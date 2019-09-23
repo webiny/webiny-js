@@ -1,1 +1,0 @@
-# @webiny/security-provider-cognito

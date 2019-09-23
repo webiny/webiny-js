@@ -1,7 +1,13 @@
 // @flow
 import { gql } from "apollo-server-lambda";
-import { dummyResolver, resolveGetSettings, resolveUpdateSettings } from "@webiny/api/graphql";
-import { ListErrorResponse, ListResponse, ErrorResponse } from "@webiny/api/graphql";
+import {
+    dummyResolver,
+    resolveGetSettings,
+    resolveUpdateSettings,
+    ListErrorResponse,
+    ListResponse,
+    ErrorResponse
+} from "@webiny/api/graphql";
 import { hasScope } from "@webiny/api-security";
 import MailchimpSettingsEntity from "./MailchimpSettings.entity";
 import MailchimpApi from "./MailchimpApi";
@@ -69,7 +75,7 @@ export default [
                     addToList(list: String!, email: String!): MailchimpAddToListResponse
                     updateSettings(data: MailchimpSettingsInput): MailchimpSettingsResponse
                 }
-                
+
                 extend type Query {
                     mailchimp: MailchimpQuery
                 }
@@ -86,11 +92,7 @@ export default [
                     mailchimp: dummyResolver
                 },
                 MailchimpQuery: {
-                    listLists: async (
-                        _: any,
-                        args: Object,
-                        { getEntity }: Object
-                    ) => {
+                    listLists: async (_: any, args: Object, { getEntity }: Object) => {
                         const MailchimpSettings = getEntity("MailchimpSettings");
                         const settings = await MailchimpSettings.load();
                         if (!settings || !(await settings.get("data.apiKey"))) {

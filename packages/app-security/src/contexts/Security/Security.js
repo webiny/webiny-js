@@ -44,14 +44,13 @@ export const SecurityProvider = (props: Props) => {
     });
 
     const loginUsingIdToken = async (idToken: string) => {
-        console.log("idTokenLogin", idToken);
         const res = await client.mutate({
             mutation: ID_TOKEN_LOGIN,
             variables: { idToken }
         });
 
         if (!res.error) {
-            return res.data.login.data;
+            return res.data.security.loginUsingIdToken.data;
         }
 
         return { user: null, token: null };
@@ -128,6 +127,7 @@ export const SecurityProvider = (props: Props) => {
         // Try loading user data using Webiny token
         const user = await getUser();
         if (user) {
+            setIdentity(user);
             setState({ user, checkingUser: false });
         } else {
             removeToken();
@@ -142,8 +142,8 @@ export const SecurityProvider = (props: Props) => {
                 return setState({ user: null });
             }
             const user = await getUser();
-            setState({ user, firstLoad: false });
             setIdentity(user);
+            setState({ user, firstLoad: false });
         });
 
         checkUser();
