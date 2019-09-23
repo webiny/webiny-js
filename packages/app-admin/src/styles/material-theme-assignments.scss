@@ -123,6 +123,7 @@
 .mdc-switch{
   @include mdc-switch-toggled-off-track-color($mdc-theme-on-surface);
   margin-left: 5px;
+  margin-right: 10px;
 }
 
 // menu
