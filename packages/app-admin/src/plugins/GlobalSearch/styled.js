@@ -40,7 +40,8 @@ export const searchBarInput = css({
         height: "25px !important",
         color: "var(--mdc-theme-surface)",
         "&::placeholder": {
-            color: "var(--mdc-theme-surface) !important"
+            color: "var(--mdc-theme-surface) !important",
+            opacity: "1 !important"
         },
         "&:focus::placeholder": {
             color: "var(--mdc-theme-text-secondary-on-background) !important"
