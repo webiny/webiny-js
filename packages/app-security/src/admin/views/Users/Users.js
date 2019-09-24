@@ -10,7 +10,7 @@ import { CrudProvider } from "@webiny/app-admin/contexts/Crud";
 const variables = data => {
     return {
         data: {
-            ...pick(data, ["email", "password", "firstName", "lastName", "avatar", "enabled"]),
+            ...pick(data, ["email", "password", "firstName", "lastName", "avatar"]),
             roles: (data.roles || []).map(x => x.id),
             groups: (data.groups || []).map(x => x.id)
         }
@@ -36,7 +36,7 @@ const Users = () => {
                             <UsersDataList />
                         </LeftPanel>
                         <RightPanel>
-                            <UsersForm />
+                            <UsersForm/>
                         </RightPanel>
                     </SplitView>
                     <FloatingActionButton onClick={actions.resetForm} />

@@ -1,3 +1,5 @@
+import { CognitoIdentityServiceProvider } from "aws-sdk";
+import { gql } from "apollo-server-lambda";
 import jwt from "jsonwebtoken";
 import jwkToPem from "jwk-to-pem";
 import request from "request-promise";
@@ -18,37 +20,105 @@ export default ({ region, userPoolId }) => {
         return jwksCache;
     };
 
-    return {
-        name: "security-authentication-provider-cognito",
-        type: "security-authentication-provider",
-        async getEmail({ idToken }) {
-            const jwks = await getJWKs();
+    const cognito = new CognitoIdentityServiceProvider();
 
-            let jwt;
-            for (let i = 0; i < jwks.length; i++) {
-                try {
-                    jwt = await verify(idToken, jwkToPem(jwks[i]));
-                    break;
-                } catch (e) {
-                    // If verification failed, continue to next JWK
+    // The following attributes will
+    const updateAttributes = { family_name: "lastName", given_name: "firstName" };
+    const attrKeys = Object.keys(updateAttributes);
+
+    return [
+        {
+            type: "graphql-schema",
+            name: "graphql-schema-cognito",
+            schema: {
+                typeDefs: gql`
+                    extend input SecurityUserInput {
+                        password: String
+                    }
+
+                    # This input type is used by the user who is updating his own account
+                    extend input SecurityCurrentUserInput {
+                        password: String
+                    }
+                `
+            }
+        },
+        {
+            name: "security-authentication-provider-cognito",
+            type: "security-authentication-provider",
+            async getUser({ idToken, SecurityUser }) {
+                const jwks = await getJWKs();
+                const { header } = jwt.decode(idToken, { complete: true });
+                const jwk = jwks.find(key => key.kid === header.kid);
+
+                const token = await verify(idToken, jwkToPem(jwk));
+                if (token.token_use !== "id") {
+                    const error = new Error("idToken is invalid!");
+                    throw Object.assign(error, {
+                        code: "SECURITY_COGNITO_INVALID_TOKEN"
+                    });
                 }
-            }
 
-            if (!jwt) {
-                const error = new Error("Unable to verify idToken!");
-                throw Object.assign(error, {
-                    code: "SECURITY_COGNITO_NOT_VERIFIED"
-                });
-            }
+                const user = await SecurityUser.findOne({ query: { email: token.email } });
 
-            if (jwt.token_use !== "id") {
-                const error = new Error("idToken is invalid!");
-                throw Object.assign(error, {
-                    code: "SECURITY_COGNITO_INVALID_TOKEN"
-                });
-            }
+                if (attrKeys.some(attr => token.hasOwnProperty(attr))) {
+                    attrKeys.forEach(attr => {
+                        user[updateAttributes[attr]] = token[attr];
+                    });
 
-            return jwt.email;
+                    await user.save();
+                }
+
+                return user;
+            },
+            async createUser({ data, user }) {
+                const params = {
+                    UserPoolId: userPoolId,
+                    Username: user.email,
+                    DesiredDeliveryMediums: [],
+                    ForceAliasCreation: false,
+                    MessageAction: "SUPPRESS",
+                    TemporaryPassword: data.password,
+                    UserAttributes: [
+                        {
+                            Name: "given_name",
+                            Value: user.firstName
+                        },
+                        {
+                            Name: "family_name",
+                            Value: user.lastName
+                        }
+                    ]
+                };
+                await cognito.adminCreateUser(params).promise();
+            },
+            async updateUser({ data, user }) {
+                const params = {
+                    UserAttributes: attrKeys.map(attr => {
+                        return { Name: attr, Value: user[updateAttributes[attr]] };
+                    }),
+                    UserPoolId: userPoolId,
+                    Username: user.email
+                };
+
+                await cognito.adminUpdateUserAttributes(params).promise();
+
+                if (data.password) {
+                    const pass = {
+                        Permanent: true,
+                        Password: data.password,
+                        Username: user.email,
+                        UserPoolId: userPoolId
+                    };
+
+                    await cognito.adminSetUserPassword(pass).promise();
+                }
+            },
+            async deleteUser({ user }) {
+                await cognito
+                    .adminDeleteUser({ UserPoolId: userPoolId, Username: user.email })
+                    .promise();
+            }
         }
-    };
+    ];
 };

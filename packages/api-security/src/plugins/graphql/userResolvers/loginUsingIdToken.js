@@ -15,23 +15,23 @@ export default (entityFetcher: EntityFetcher) => async (
     args: Object,
     context: Object
 ) => {
+    const SecurityUser = entityFetcher(context);
+
     // Decode the login token
-    let email;
+    let user;
     try {
-        const authPlugin = context.plugins.byType("security-authentication-provider").pop();
-        email = await authPlugin.getEmail({ idToken: args.idToken });
+        const authPlugin = context.plugins
+            .byType("security-authentication-provider")
+            .filter(pl => pl.hasOwnProperty("getUser"))
+            .pop();
+
+        user = await authPlugin.getUser({ idToken: args.idToken, SecurityUser }, context);
     } catch (err) {
         return new ErrorResponse({
             code: err.code,
             message: err.message
         });
     }
-
-    const User = entityFetcher(context);
-
-    const user: User = (await User.findOne({
-        query: { email }
-    }): any);
 
     if (!user) {
         return invalidCredentials;

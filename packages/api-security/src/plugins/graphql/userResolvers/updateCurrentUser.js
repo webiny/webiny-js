@@ -10,13 +10,21 @@ export default (entityFetcher: EntityFetcher) => async (
 ) => {
     const User = entityFetcher(context);
 
-    const { user } = context;
+    const { user, plugins } = context;
 
     const currentUser: ?Entity = await User.findById(user.id);
     if (currentUser) {
         try {
             currentUser.populate(args.data);
             await currentUser.save();
+
+            const authPlugin = plugins
+                .byType("security-authentication-provider")
+                .filter(pl => pl.hasOwnProperty("updateUser"))
+                .pop();
+
+            await authPlugin.updateUser({ data: args.data, user: currentUser }, context);
+
             return new Response(currentUser);
         } catch (e) {
             return new ErrorResponse({

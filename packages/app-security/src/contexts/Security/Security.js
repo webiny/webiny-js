@@ -29,6 +29,12 @@ export const SecurityConsumer = ({ children }: Object) => (
 export const SecurityProvider = (props: Props) => {
     const auth = getPlugins("security-authentication-provider").pop();
 
+    if (!auth) {
+        throw Error(
+            `You must register a "security-authentication-provider" plugin to use Security provider!`
+        );
+    }
+
     const AUTH_TOKEN = props.AUTH_TOKEN || DEFAULT_AUTH_TOKEN;
     const client = useApolloClient();
 
@@ -74,7 +80,7 @@ export const SecurityProvider = (props: Props) => {
         }
 
         // Get user using default authentication query
-        const { data } = await client.query({ query: GET_CURRENT_USER });
+        const { data } = await client.query({ query: GET_CURRENT_USER, fetchPolicy: "no-cache" });
         setState({ loading: false });
         return data.security.getCurrentUser.data;
     });
@@ -84,14 +90,17 @@ export const SecurityProvider = (props: Props) => {
      * an `idToken` from the authentication provider.
      */
     const onIdToken = useHandler(null, () => async idToken => {
+        setState({ checkingUser: true });
         const { token, user } = await loginUsingIdToken(idToken);
         setIdentity(user);
         setToken(token);
-        setState({ user });
+        setState({ user, checkingUser: false });
     });
 
     // Run authentication plugin hook
-    const { getIdToken, renderAuthentication, logout: authLogout } = auth.hook({ onIdToken });
+    const { getIdToken, renderAuthentication, logout: authLogout } = auth.securityProviderHook({
+        onIdToken
+    });
 
     const logout = useCallback(async () => {
         await authLogout();
@@ -117,6 +126,7 @@ export const SecurityProvider = (props: Props) => {
             const { token, user } = await loginUsingIdToken(idToken);
 
             if (token) {
+                setIdentity(user);
                 setToken(token);
                 setState({ user, checkingUser: false });
             }
@@ -125,10 +135,13 @@ export const SecurityProvider = (props: Props) => {
         }
 
         // Try loading user data using Webiny token
+        setState({ checkingUser: true });
         const user = await getUser();
+        setState({ checkingUser: false });
+
         if (user) {
             setIdentity(user);
-            setState({ user, checkingUser: false });
+            setState({ user });
         } else {
             removeToken();
             await checkUser();

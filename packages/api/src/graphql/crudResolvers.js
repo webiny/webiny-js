@@ -135,32 +135,14 @@ export const resolveDelete = (entityFetcher: EntityFetcher) => async (
         return notFound(args.id);
     }
 
-    return entity
-        .delete()
-        .then(() => new Response(true))
-        .catch(
-            e =>
-                new ErrorResponse({
-                    code: e.code,
-                    message: e.message
-                })
-        );
-};
+    try {
+        await entity.delete();
 
-const resolveMap = {
-    get: resolveGet,
-    list: resolveList,
-    create: resolveCreate,
-    update: resolveUpdate,
-    delete: resolveDelete
-};
-
-export default (entityClass: Class<Entity>, include: Array<string>) => {
-    const resolvers = {};
-
-    include.forEach(name => {
-        resolvers[name] = resolveMap[name](entityClass);
-    });
-
-    return resolvers;
+        return new Response(true);
+    } catch (e) {
+        new ErrorResponse({
+            code: e.code,
+            message: e.message
+        });
+    }
 };
