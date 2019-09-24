@@ -2,7 +2,7 @@
 import { gql } from "apollo-server-lambda";
 import { dummyResolver, resolveGetSettings, resolveUpdateSettings } from "@webiny/api/graphql";
 import { hasScope } from "@webiny/api-security";
-import CookiePolicySettingsEntity from "./CookiePolicySettings.entity";
+import cookiePolicySettings from "./cookiePolicySettings.model";
 
 export default [
     {
@@ -75,9 +75,7 @@ export default [
                 }
 
                 type CookiePolicyMutation {
-                    updateSettings(
-                        data: CookiePolicySettingsInput
-                    ): CookiePolicySettingsResponse
+                    updateSettings(data: CookiePolicySettingsInput): CookiePolicySettingsResponse
                 }
 
                 extend type Query {
@@ -87,7 +85,6 @@ export default [
                 extend type Mutation {
                     cookiePolicy: CookiePolicyMutation
                 }
-                
             `,
             resolvers: {
                 Query: {
@@ -97,10 +94,12 @@ export default [
                     cookiePolicy: dummyResolver
                 },
                 CookiePolicyQuery: {
-                    getSettings: resolveGetSettings("CookiePolicySettings")
+                    getSettings: resolveGetSettings(({ models }) => models.CookiePolicySettings)
                 },
                 CookiePolicyMutation: {
-                    updateSettings: resolveUpdateSettings("CookiePolicySettings")
+                    updateSettings: resolveUpdateSettings(
+                        ({ models }) => models.CookiePolicySettings
+                    )
                 }
             }
         },
@@ -116,8 +115,10 @@ export default [
         }
     },
     {
-        type: "entity",
-        name: "entity-cookie-policy-settings",
-        entity: CookiePolicySettingsEntity
+        type: "api-page-builder-model",
+        name: "api-page-builder-model-cookie-policy-settings",
+        model({ models, createBase }) {
+            models.CookiePolicySettings = cookiePolicySettings({ createBase });
+        }
     }
 ];

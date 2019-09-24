@@ -28,15 +28,19 @@ export default ({ database }) => ({
         const PbCategory = pbCategory({ createBase });
         const PbMenu = pbMenu({ createBase });
         const PbPageElement = pbPageElement({ createBase, context });
-        const Settings = pbSettings({ createBase, context });
-        const PbPage = pbPage({ createBase, context, PbCategory, Settings });
+        const PbSettings = pbSettings({ createBase, context });
+        const PbPage = pbPage({ createBase, context, PbCategory, PbSettings });
 
         context.models = {
             PbCategory,
             PbPageElement,
             PbMenu,
-            Settings,
+            PbSettings,
             PbPage
         };
+
+        context.plugins.byType("api-page-builder-model").forEach(plugin => {
+            plugin.model({ models: context.models, createBase });
+        });
     }
 });

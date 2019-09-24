@@ -13,7 +13,7 @@ import { withProps } from "repropose";
 import mdbid from "mdbid";
 import content from "./pbPage/contentField";
 
-export default ({ createBase, context, PbCategory, Settings }) => {
+export default ({ createBase, context, PbCategory, PbSettings }) => {
     const PbPage = flow(
         withName("PbPage"),
         withAggregate(),
@@ -50,7 +50,9 @@ export default ({ createBase, context, PbCategory, Settings }) => {
                     if (value && value !== instance.published && instance.isExisting()) {
                         instance.locked = true;
                         instance.publishedOn = new Date();
-                        instance.registerHookCallback("beforeSave", async () => {
+                        const remove = instance.registerHookCallback("beforeSave", async () => {
+                            remove(); // Make sure this is executed only once.
+
                             // Deactivate previously published revision
                             const publishedRev: PbPage = (await PbPage.findOne({
                                 query: { published: true, parent: instance.parent }
@@ -60,7 +62,6 @@ export default ({ createBase, context, PbCategory, Settings }) => {
                                 publishedRev.published = false;
                                 await publishedRev.save();
                             }
-                            console.log("TODO: setOnce");
                         });
                     }
                     return value;
@@ -82,19 +83,19 @@ export default ({ createBase, context, PbCategory, Settings }) => {
             },
             get isHomePage() {
                 return new Promise(async resolve => {
-                    const settings = await Settings.load();
+                    const settings = await PbSettings.load();
                     resolve(settings.data.pages.home === this.parent);
                 });
             },
             get isErrorPage() {
                 return new Promise(async resolve => {
-                    const settings = await Settings.load();
+                    const settings = await PbSettings.load();
                     resolve(settings.data.pages.error === this.parent);
                 });
             },
             get isNotFoundPage() {
                 return new Promise(async resolve => {
-                    const settings = await Settings.load();
+                    const settings = await PbSettings.load();
                     resolve(settings.data.pages.notFound === this.parent);
                 });
             },

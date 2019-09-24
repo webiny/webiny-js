@@ -28,14 +28,15 @@ export default ({
                 }
 
                 value = value.toLowerCase().trim();
-                instance.registerHookCallback("beforeSave", async () => {
+                const remove = instance.registerHookCallback("beforeSave", async () => {
+                    remove(); // Make sure this is executed only once.
+
                     const existingUser = await SecurityUser.findOne({
                         query: { email: value }
                     });
                     if (existingUser) {
                         throw Error("User with given e-mail already exists.");
                     }
-                    console.log("TODO: setOnce hook"); // eslint-disable-line
                 });
 
                 return value;
