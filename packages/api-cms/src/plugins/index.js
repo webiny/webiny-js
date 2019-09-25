@@ -1,7 +1,7 @@
-import entities from "./entities";
+import models from "./models";
 import graphql from "./graphql";
 import validators from "./validators";
 import fieldTypes from "./fieldTypes";
 import filterOperators from "./filterOperators";
 
-export default [entities, graphql, validators, fieldTypes, filterOperators];
+export default config => [models(config), graphql, validators, fieldTypes, filterOperators];

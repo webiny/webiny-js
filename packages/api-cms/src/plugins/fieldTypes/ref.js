@@ -1,6 +1,6 @@
 // @flow
 import { ObjectId } from "mongodb";
-import { ListResponse, ListErrorResponse } from "@webiny/api/graphql";
+import { ListResponse, ListErrorResponse } from "@webiny/api/graphql/commodo";
 import type { CmsFieldTypePlugin } from "@webiny/api-cms/types";
 import { createReadTypeName } from "@webiny/api-cms/utils/createTypeName";
 import createListArgs from "@webiny/api-cms/utils/createListArgs";

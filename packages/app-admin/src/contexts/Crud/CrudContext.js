@@ -89,7 +89,6 @@ export const CrudProvider = ({ children, ...props }: Props) => {
             list.refresh();
         },
         save: async (formData: Object) => {
-            console.log('gooo')
             const action = id ? "update" : "create";
             setMutationInProgress(true);
             setInvalidFields(null);

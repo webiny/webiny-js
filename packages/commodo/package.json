@@ -1,0 +1,31 @@
+{
+  "name": "@webiny/commodo",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/webiny/webiny-js.git"
+  },
+  "description": "A set of frequently used Commodo higher order functions.",
+  "contributors": [
+    "Pavel Denisjuk <pavel@webiny.com>",
+    "Sven Al Hamad <sven@webiny.com>",
+    "Adrian Smijulj <adrian@webiny.com>"
+  ],
+  "license": "MIT",
+  "dependencies": {
+    "@commodo/fields": "^0.2.6",
+    "@commodo/fields-storage": "^0.3.0",
+    "@commodo/fields-storage-mongodb": "^0.2.11",
+    "@commodo/fields-storage-ref": "^0.3.0",
+    "@commodo/hooks": "^0.1.0",
+    "@commodo/name": "^1.0.1",
+    "commodo-fields-date": "^1.0.1",
+    "commodo-fields-object": "^1.0.0"
+  },
+  "scripts": {
+    "build": "babel src -d ${DEST:-build} --source-maps --copy-files",
+    "flow-copy-source": "flow-copy-source src ${DEST:-build}",
+    "postbuild": "yarn flow-copy-source"
+  }
+}

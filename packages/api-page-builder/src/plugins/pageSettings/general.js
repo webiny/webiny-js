@@ -1,6 +1,5 @@
 import { gql } from "apollo-server-lambda";
-import { withFields } from "@commodo/fields";
-import { string, fields } from "@commodo/fields/fields";
+import { string, fields, withFields } from "@webiny/commodo";
 import { id } from "@commodo/fields-storage-mongodb/fields";
 
 export default [

@@ -1,8 +1,6 @@
-import { withProps } from "repropose";
-import { withHooks } from "@commodo/hooks";
-import { withFields } from "@commodo/fields";
 import { flow } from "lodash";
 import { id } from "@commodo/fields-storage-mongodb";
+import { withFields, skipOnPopulate, withHooks, withProps } from "@webiny/commodo";
 
 export default context => baseFn => {
     return flow(
@@ -15,9 +13,9 @@ export default context => baseFn => {
             }
         }),
         withFields({
-            createdBy: id(),
-            updatedBY: id(),
-            deletedBy: id()
+            createdBy: skipOnPopulate()(id()),
+            updatedBY: skipOnPopulate()(id()),
+            deletedBy: skipOnPopulate()(id())
         }),
         withHooks({
             beforeCreate() {

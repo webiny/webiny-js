@@ -1,17 +1,23 @@
 // @flow
 import { flow } from "lodash";
-import { withFields, onSet, skipOnPopulate } from "@commodo/fields";
-import { string, boolean, number, fields } from "@commodo/fields/fields";
-import { withName } from "@commodo/name";
-import { withHooks } from "@commodo/hooks";
-import { id } from "@commodo/fields-storage-mongodb/fields";
-import { withAggregate } from "@commodo/fields-storage-mongodb";
-import { ref } from "@commodo/fields-storage-ref";
+import { id, withAggregate } from "@commodo/fields-storage-mongodb";
 import { validation } from "@webiny/validation";
-import { date } from "commodo-fields-date";
 import { withProps } from "repropose";
 import mdbid from "mdbid";
 import content from "./pbPage/contentField";
+import {
+    withFields,
+    onSet,
+    skipOnPopulate,
+    string,
+    boolean,
+    number,
+    date,
+    ref,
+    fields,
+    withName,
+    withHooks
+} from "@webiny/commodo";
 
 export default ({ createBase, context, PbCategory, PbSettings }) => {
     const PbPage = flow(
@@ -50,8 +56,8 @@ export default ({ createBase, context, PbCategory, PbSettings }) => {
                     if (value && value !== instance.published && instance.isExisting()) {
                         instance.locked = true;
                         instance.publishedOn = new Date();
-                        const remove = instance.registerHookCallback("beforeSave", async () => {
-                            remove(); // Make sure this is executed only once.
+                        instance.registerHookCallback("beforeSave", async () => {
+                            console.log("TODO: setOnce");
 
                             // Deactivate previously published revision
                             const publishedRev: PbPage = (await PbPage.findOne({

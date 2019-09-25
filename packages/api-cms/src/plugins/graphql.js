@@ -7,15 +7,14 @@ import {
     resolveList,
     resolveUpdate,
     dummyResolver
-} from "@webiny/api/graphql";
+} from "@webiny/api/graphql/commodo";
+
 import { gql } from "apollo-server-lambda";
 import { hasScope } from "@webiny/api-security";
 import { get } from "lodash";
 import setupDynamicSchema from "./dynamicSchema";
 
-const contentModelFetcher = ctx => {
-    return ctx.getEntity("CmsContentModel");
-};
+const contentModelFetcher = ctx => ctx.models.CmsContent;
 
 function renderTypes(plugins, type) {
     return Object.values(plugins)

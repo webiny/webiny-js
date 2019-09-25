@@ -1,10 +1,15 @@
 // @flow
 import { flow } from "lodash";
-import { withFields, setOnce } from "@commodo/fields";
-import { string, boolean, fields } from "@commodo/fields/fields";
-import { withName } from "@commodo/name";
-import { withStaticProps } from "repropose";
 import { validation } from "@webiny/validation";
+import {
+    withFields,
+    setOnce,
+    string,
+    boolean,
+    fields,
+    withName,
+    withStaticProps
+} from "@webiny/commodo";
 
 const SETTINGS_KEY = "cookie-policy";
 
@@ -24,6 +29,7 @@ export default ({ createBase }) => {
         withFields({
             key: setOnce()(string({ value: SETTINGS_KEY })),
             data: fields({
+                list: true,
                 instanceOf: withFields({
                     enabled: boolean(),
                     position: string({

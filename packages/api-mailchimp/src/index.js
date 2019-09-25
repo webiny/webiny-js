@@ -1,7 +1,7 @@
 // @flow
 import { gql } from "apollo-server-lambda";
-import { dummyResolver, resolveGetSettings, resolveUpdateSettings } from "@webiny/api/graphql";
-import { ListErrorResponse, ListResponse, ErrorResponse } from "@webiny/api/graphql";
+import { dummyResolver, resolveGetSettings, resolveUpdateSettings } from "@webiny/api/graphql/commodo";
+import { ListErrorResponse, ListResponse, ErrorResponse } from "@webiny/api/graphql/commodo";
 import { hasScope } from "@webiny/api-security";
 import mailchimpSettings from "./mailchimpSettings.model";
 import MailchimpApi from "./MailchimpApi";

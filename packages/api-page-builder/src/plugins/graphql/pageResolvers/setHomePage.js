@@ -1,5 +1,5 @@
 // @flow
-import { ErrorResponse, Response, NotFoundResponse } from "@webiny/api/graphql";
+import { ErrorResponse, Response, NotFoundResponse } from "@webiny/api/graphql/commodo";
 
 export default async (root: any, args: Object, context: Object) => {
     const Page = context.getEntity("PbPage");

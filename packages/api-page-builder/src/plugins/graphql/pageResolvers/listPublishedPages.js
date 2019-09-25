@@ -1,8 +1,7 @@
 // @flow
-import { createPaginationMeta } from "@webiny/entity";
-import { ListResponse } from "@webiny/api/graphql/responses";
+import { Collection, createPaginationMeta } from "@webiny/commodo";
+import { ListResponse } from "@webiny/api/graphql/commodo/responses";
 import get from "lodash/get";
-import { Collection } from "@commodo/fields-storage";
 
 export const listPublishedPages = async ({ args, PbPage, PbCategory }: Object) => {
     const {

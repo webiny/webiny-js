@@ -1,13 +1,12 @@
 // @flow
-import { Response, NotFoundResponse, ErrorResponse } from "@webiny/api/graphql";
-import type { Entity } from "@webiny/entity";
+import { Response, NotFoundResponse, ErrorResponse } from "@webiny/api/graphql/commodo";
 
 export default async (root: any, args: Object, context: Object) => {
     const { SecurityUser } = context.models;
 
     const { user } = context;
 
-    const currentUser: ?Entity = await SecurityUser.findById(user.id);
+    const currentUser = await SecurityUser.findById(user.id);
     if (currentUser) {
         try {
             currentUser.populate(args.data);

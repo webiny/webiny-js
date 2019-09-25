@@ -1,9 +1,14 @@
 // @flow
 import { flow } from "lodash";
-import { withFields, setOnce } from "@commodo/fields";
-import { string, boolean, fields } from "@commodo/fields/fields";
-import { withName } from "@commodo/name";
-import { withStaticProps } from "repropose";
+import {
+    withFields,
+    setOnce,
+    string,
+    boolean,
+    fields,
+    withName,
+    withStaticProps
+} from "@webiny/commodo";
 
 const SETTINGS_KEY = "google-tag-manager";
 

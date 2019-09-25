@@ -1,4 +1,4 @@
-import createPaginationMeta from "@webiny/entity/createPaginationMeta";
+import { createPaginationMeta } from "@webiny/commodo";
 import createCollectionName from "@webiny/api-cms/utils/createCollectionName";
 import createMongoSorters from "@webiny/api-cms/utils/createMongoSorters";
 import createMongoQuery from "@webiny/api-cms/utils/createMongoQuery";

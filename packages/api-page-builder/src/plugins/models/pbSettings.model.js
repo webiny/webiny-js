@@ -1,10 +1,7 @@
 // @flow
 import { flow } from "lodash";
-import { withFields, setOnce } from "@commodo/fields";
-import { string, fields } from "@commodo/fields/fields";
-import { withName } from "@commodo/name";
 import { id } from "@commodo/fields-storage-mongodb/fields";
-import { withStaticProps } from "repropose";
+import { withStaticProps, withName, string, fields, withFields, setOnce } from "@webiny/commodo";
 
 const SETTINGS_KEY = "page-builder";
 

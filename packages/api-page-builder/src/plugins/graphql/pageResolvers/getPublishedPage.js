@@ -1,5 +1,5 @@
 // @flow
-import { Response, NotFoundResponse } from "@webiny/api/graphql/responses";
+import { Response, NotFoundResponse } from "@webiny/api/graphql/commodo/responses";
 import { listPublishedPages } from "./listPublishedPages";
 
 export default async (root: any, args: Object, context: Object) => {

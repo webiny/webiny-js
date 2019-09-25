@@ -1,5 +1,4 @@
 // @flow
-import type { Entity } from "@webiny/entity";
 import type { PluginsContainer } from "./PluginsContainer";
 
 export type PluginType = Object & {
@@ -8,20 +7,6 @@ export type PluginType = Object & {
 };
 
 export type PluginsContainerType = PluginsContainer;
-
-export type EntityPluginType = PluginType & {
-    namespace?: string,
-    entity:
-        | {
-              name: string,
-              factory: (context: Object) => Class<Entity>
-          }
-        | Function
-};
-
-export type ModelPluginType = PluginType & {
-    model: Function
-};
 
 export type GraphQLSchemaType = {
     namespace: string,
@@ -38,15 +23,7 @@ export type GraphQLMiddlewarePluginType = PluginType & {
     middleware: () => Object
 };
 
-export type GraphQLContextPluginType = PluginType & {
-    apply: (context: Object) => any
-};
-
-export type SettingsPluginType = PluginType & {};
-
 export type ApiContext = {
     getDatabase: () => Object,
-    config: Object,
-    getEntity: (name: string) => ?Object,
-    getEntities: () => Array<Object>
+    config: Object
 };

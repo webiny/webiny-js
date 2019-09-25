@@ -15,6 +15,7 @@
   "dependencies": {
     "@babel/runtime": "^7.5.5",
     "@webiny/api": "^1.0.0",
+    "@webiny/commodo": "^1.0.0",
     "form-data": "^2.5.0",
     "fs-extra": "^7.0.1",
     "got": "^9.6.0",

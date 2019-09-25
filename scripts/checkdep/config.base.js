@@ -17,8 +17,6 @@ module.exports = {
         "packages/app-admin",
         "packages/ui",
         "packages/validation",
-        "packages/entity",
-        "packages/entity-mongodb"
     ],
     ignoredDirs: ["/node_modules/"]
 };

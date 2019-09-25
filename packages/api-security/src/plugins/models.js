@@ -1,9 +1,8 @@
 // @flow
 import { flow } from "lodash";
-import { withStorage } from "@commodo/fields-storage";
+import { withStorage } from "@webiny/commodo";
 import { MongoDbDriver, withId } from "@commodo/fields-storage-mongodb";
 import { withUser } from "@webiny/api-security";
-
 import securityGroup from "./models/securityGroup.model";
 import securityGroups2Models from "./models/securityGroups2Models.model";
 import securityRole from "./models/securityRole.model";
@@ -35,7 +34,6 @@ export default ({ database }) => ({
             SecurityRoles2Models,
             SecurityGroups2Models,
             SecurityGroup
-
         });
 
         context.models = {

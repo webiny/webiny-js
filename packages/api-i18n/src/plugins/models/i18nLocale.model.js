@@ -1,10 +1,7 @@
 // @flow
 import { flow } from "lodash";
-import { withFields, onSet } from "@commodo/fields";
-import { string, boolean } from "@commodo/fields/fields";
-import { withName } from "@commodo/name";
-import { withHooks } from "@commodo/hooks";
 import localesList from "i18n-locales";
+import { withFields, onSet, string, boolean, withName, withHooks } from "@webiny/commodo";
 
 export default ({ createBase }) => {
     const I18NLocale = flow(
@@ -12,8 +9,8 @@ export default ({ createBase }) => {
         withFields(instance => ({
             default: onSet(value => {
                 if (value !== instance.code && value === true) {
-                    const remove = instance.registerHookCallback("afterSave", async () => {
-                        remove(); // Make sure this is executed only once.
+                    instance.registerHookCallback("afterSave", async () => {
+                        console.log("TODO: setOnce");
 
                         const defaultLocales = await I18NLocale.find({
                             query: { default: true, id: { $ne: instance.id } }
@@ -51,7 +48,9 @@ export default ({ createBase }) => {
             },
             async beforeDelete() {
                 if (this.default) {
-                    throw Error("Cannot delete default locale, please set another locale as default first.");
+                    throw Error(
+                        "Cannot delete default locale, please set another locale as default first."
+                    );
                 }
 
                 const remainingLocalesCount = await I18NLocale.count({

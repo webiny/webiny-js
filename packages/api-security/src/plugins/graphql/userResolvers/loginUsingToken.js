@@ -1,19 +1,14 @@
 // @flow
-import { Response, ErrorResponse } from "@webiny/api/graphql";
+import { Response, ErrorResponse } from "@webiny/api/graphql/commodo";
 import { JwtToken } from "../../authentication/jwtToken";
-import type { Entity } from "@webiny/entity";
-type EntityFetcher = (context: Object) => Class<Entity>;
+type GetModelType = (context: Object) => Function;
 
 const invalidCredentials = new ErrorResponse({
     code: "INVALID_CREDENTIALS",
     message: "Invalid credentials."
 });
 
-export default (entityFetcher: EntityFetcher) => async (
-    root: any,
-    args: Object,
-    context: Object
-) => {
+export default (getModel: GetModelType) => async (root: any, args: Object, context: Object) => {
     const jwt = new JwtToken({ secret: context.config.security.token.secret });
 
     // Decode the login token
@@ -28,7 +23,7 @@ export default (entityFetcher: EntityFetcher) => async (
         });
     }
 
-    const User = entityFetcher(context);
+    const User = getModel(context);
 
     const user: User = (await User.findOne({
         query: { email }

@@ -1,6 +1,6 @@
 // @flow
-import { createPaginationMeta } from "@webiny/entity";
-import { ListResponse } from "@webiny/api/graphql/responses";
+import { createPaginationMeta } from "@webiny/commodo";
+import { ListResponse } from "@webiny/api/graphql/commodo/responses";
 
 export default async (root: any, args: Object, context: Object) => {
     const { PbPage } = context.models;

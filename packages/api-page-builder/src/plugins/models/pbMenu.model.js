@@ -1,11 +1,7 @@
 // @flow
 import { flow } from "lodash";
-import { withFields, setOnce } from "@commodo/fields";
-import { string } from "@commodo/fields/fields";
-import { withName } from "@commodo/name";
 import { validation } from "@webiny/validation";
-import { object } from "commodo-fields-object";
-import { withHooks } from "@commodo/hooks";
+import { withFields, setOnce, string, withName, object, withHooks } from "@webiny/commodo";
 
 export default ({ createBase }) => {
     const PbMenu = flow(

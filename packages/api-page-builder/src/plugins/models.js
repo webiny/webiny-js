@@ -1,11 +1,11 @@
 // @flow
 import { flow } from "lodash";
-import { withStorage } from "@commodo/fields-storage";
+import { withStorage } from "@webiny/commodo";
 import { MongoDbDriver, withId } from "@commodo/fields-storage-mongodb";
 import { withUser } from "@webiny/api-security";
 
 import pbCategory from "./models/pbCategory.model";
-import pbPageElement from "./models/PbPageElement.model";
+import pbPageElement from "./models/pbPageElement.model";
 import pbMenu from "./models/pbMenu.model";
 import pbPage from "./models/pbPage.model";
 import pbSettings from "./models/pbSettings.model";

@@ -15,6 +15,7 @@
   "license": "MIT",
   "dependencies": {
     "@babel/runtime": "^7.5.5",
+    "@webiny/commodo": "^1.0.0",
     "@webiny/api": "^1.0.0",
     "@webiny/plugins": "^1.0.0",
     "graphql-shield": "^5.1.0",

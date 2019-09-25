@@ -1,15 +1,10 @@
 // @flow
 import { flow } from "lodash";
-import { withFields, onSet } from "@commodo/fields";
-import { string, boolean } from "@commodo/fields/fields";
-import { ref } from "@commodo/fields-storage-ref";
-import { id } from "@commodo/fields-storage-mongodb";
-import { withName } from "@commodo/name";
 import { validation } from "@webiny/validation";
-import { withProps } from "repropose";
 import md5 from "md5";
 import bcrypt from "bcryptjs";
-import { withHooks } from "@commodo/hooks";
+import { id } from "@commodo/fields-storage-mongodb";
+import { withHooks, withProps, withName, string, withFields, onSet, ref } from "@webiny/commodo";
 
 export default ({
     createBase,
@@ -28,8 +23,8 @@ export default ({
                 }
 
                 value = value.toLowerCase().trim();
-                const remove = instance.registerHookCallback("beforeSave", async () => {
-                    remove(); // Make sure this is executed only once.
+                instance.registerHookCallback("beforeSave", async () => {
+                    console.log("TODO: setOnce");
 
                     const existingUser = await SecurityUser.findOne({
                         query: { email: value }
@@ -57,7 +52,6 @@ export default ({
             ),
             firstName: string(),
             lastName: string(),
-            enabled: boolean({ value: true }),
             roles: ref({
                 list: true,
                 instanceOf: [SecurityRole, "entity"],

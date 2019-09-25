@@ -1,5 +1,5 @@
 // @flow
-import { resolveUpdateSettings, resolveGetSettings } from "@webiny/api/graphql";
+import { resolveUpdateSettings, resolveGetSettings } from "@webiny/api/graphql/commodo";
 
 export default {
     name: "graphql-schema-settings-page-builder",

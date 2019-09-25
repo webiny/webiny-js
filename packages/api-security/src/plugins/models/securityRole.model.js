@@ -1,9 +1,6 @@
 // @flow
 import { flow } from "lodash";
-import { withFields } from "@commodo/fields";
-import { string, boolean } from "@commodo/fields/fields";
-import { withName } from "@commodo/name";
-import { withHooks } from "@commodo/hooks";
+import {withHooks, withName, string, boolean, withFields } from "@webiny/commodo";
 
 export default ({ createBase }) => {
     const SecurityRole = flow(

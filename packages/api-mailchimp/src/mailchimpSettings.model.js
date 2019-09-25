@@ -1,10 +1,17 @@
 // @flow
 import { flow } from "lodash";
-import { withFields, setOnce, onSet } from "@commodo/fields";
-import { string, boolean, fields } from "@commodo/fields/fields";
-import { withName } from "@commodo/name";
-import { withStaticProps } from "repropose";
 import MailchimpApi from "./MailchimpApi";
+
+import {
+    withFields,
+    setOnce,
+    onSet,
+    string,
+    boolean,
+    fields,
+    withName,
+    withStaticProps
+} from "@webiny/commodo";
 
 const SETTINGS_KEY = "mailchimp";
 
@@ -23,7 +30,8 @@ export default ({ createBase }) => {
                     enabled: boolean(),
                     apiKey: onSet(value => {
                         if (value && value !== instance.apiKey) {
-                            const remove = instance.registerHookCallback("beforeSave", async () => {
+                            instance.registerHookCallback("beforeSave", async () => {
+                                console.log("TODO: setOnce");
 
                                 const mailchimp = new MailchimpApi({ apiKey: value });
                                 const valid = await mailchimp.isValidApiKey();

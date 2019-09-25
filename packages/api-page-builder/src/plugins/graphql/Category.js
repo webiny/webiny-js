@@ -5,7 +5,7 @@ import {
     resolveGet,
     resolveList,
     resolveUpdate
-} from "@webiny/api/graphql";
+} from "@webiny/api/graphql/commodo";
 
 const categoryFetcher = ctx => ctx.models.PbCategory;
 

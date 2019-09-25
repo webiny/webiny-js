@@ -1,9 +1,8 @@
 // @flow
 import { flow } from "lodash";
-import { withFields } from "@commodo/fields";
-import { string } from "@commodo/fields/fields";
-import { withName } from "@commodo/name";
 import { validation } from "@webiny/validation";
+
+import { withFields, string, withName } from "@webiny/commodo";
 
 export default ({ createBase }) =>
     flow(
