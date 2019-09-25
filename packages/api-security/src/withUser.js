@@ -14,7 +14,7 @@ export default context => baseFn => {
         }),
         withFields({
             createdBy: skipOnPopulate()(id()),
-            updatedBY: skipOnPopulate()(id()),
+            updatedBy: skipOnPopulate()(id()),
             deletedBy: skipOnPopulate()(id())
         }),
         withHooks({
