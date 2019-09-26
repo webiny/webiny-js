@@ -16,7 +16,7 @@ module.exports = {
         "packages/app-cms",
         "packages/app-admin",
         "packages/ui",
-        "packages/validation",
+        "packages/validation"
     ],
     ignoredDirs: ["/node_modules/"]
 };

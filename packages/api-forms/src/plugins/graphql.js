@@ -19,7 +19,7 @@ export default {
     name: "graphql-schema-forms",
     namespace: "forms",
     schema: {
-        typeDefs: gql`    
+        typeDefs: gql`
             ${I18NStringValueType("")}
             ${I18NJSONValueType("")}
             ${I18NStringValueInput("")}

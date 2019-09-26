@@ -53,7 +53,10 @@ const MetaTags = ({ prefix, value, onChange, Bind, ...other }: Props) => {
                                 </Bind>
                             </Cell>
                             <Cell span={4}>
-                                <Bind name={`${prefix}.${index}.content`} validators={validation.create("required")}>
+                                <Bind
+                                    name={`${prefix}.${index}.content`}
+                                    validators={validation.create("required")}
+                                >
                                     <Input label={"Content"} />
                                 </Bind>
                             </Cell>

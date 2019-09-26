@@ -9,9 +9,7 @@ let apolloHandler;
 export const handler = async (event: Object, context: Object) => {
     if (!apolloHandler) {
         const config = await createConfig();
-        const plugins = new PluginsContainer([
-            /*securityPlugins,*/ i18nPlugins(config)
-        ]);
+        const plugins = new PluginsContainer([/*securityPlugins,*/ i18nPlugins(config)]);
         const { handler } = await createHandler({ plugins, config });
         apolloHandler = handler;
     }

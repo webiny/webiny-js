@@ -3,7 +3,7 @@ export {
     resolveList,
     resolveCreate,
     resolveUpdate,
-    resolveDelete,
+    resolveDelete
 } from "./crudResolvers";
 
 export { resolveUpdateSettings, resolveGetSettings } from "./settingsResolvers";

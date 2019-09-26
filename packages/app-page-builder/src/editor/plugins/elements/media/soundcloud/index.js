@@ -44,7 +44,10 @@ export default (): Array<PluginType> => [
                 <Tab icon={<MediaIcon />} label="Soundcloud">
                     <Grid>
                         <Cell span={12}>
-                            <Bind name={"source.url"} validators={validation.create("required,url")}>
+                            <Bind
+                                name={"source.url"}
+                                validators={validation.create("required,url")}
+                            >
                                 <Input label={"Song URL"} description={"Enter a song URL"} />
                             </Bind>
                         </Cell>

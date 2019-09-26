@@ -55,7 +55,10 @@ export default (): Array<PluginType> => [
                 <Tab icon={<SocialIcon />} label="Instagram">
                     <Grid>
                         <Cell span={12}>
-                            <Bind name={"source.url"} validators={validation.create("required,url")}>
+                            <Bind
+                                name={"source.url"}
+                                validators={validation.create("required,url")}
+                            >
                                 <Input
                                     label={"Instagram URL"}
                                     description={"Enter an Instagram URL"}

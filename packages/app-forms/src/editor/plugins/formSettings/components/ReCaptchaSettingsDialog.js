@@ -70,7 +70,10 @@ const ReCaptchaSettingsDialog = ({ open, onClose, reCaptchaSettings, onSubmit }:
                                     <DialogContent>
                                         <Grid>
                                             <Cell span={12}>
-                                                <Bind name={"siteKey"} validators={validation.create("required")}>
+                                                <Bind
+                                                    name={"siteKey"}
+                                                    validators={validation.create("required")}
+                                                >
                                                     <Input
                                                         label={"Site key"}
                                                         description={
@@ -88,7 +91,10 @@ const ReCaptchaSettingsDialog = ({ open, onClose, reCaptchaSettings, onSubmit }:
                                                 </Bind>
                                             </Cell>
                                             <Cell span={12}>
-                                                <Bind name={"secretKey"} validators={validation.create("required")}>
+                                                <Bind
+                                                    name={"secretKey"}
+                                                    validators={validation.create("required")}
+                                                >
                                                     <Input
                                                         label={"Secret key"}
                                                         description={

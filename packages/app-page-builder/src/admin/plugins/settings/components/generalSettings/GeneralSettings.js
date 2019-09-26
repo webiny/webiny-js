@@ -53,7 +53,9 @@ const GeneralSettings = () => {
                                                         <Cell span={12}>
                                                             <Bind
                                                                 name={"name"}
-                                                                validators={validation.create("required")}
+                                                                validators={validation.create(
+                                                                    "required"
+                                                                )}
                                                             >
                                                                 <Input label="Website name" />
                                                             </Bind>
@@ -101,7 +103,9 @@ const GeneralSettings = () => {
                                                         <Cell span={12}>
                                                             <Bind
                                                                 name={"social.facebook"}
-                                                                validators={validation.create("url")}
+                                                                validators={validation.create(
+                                                                    "url"
+                                                                )}
                                                             >
                                                                 <Input label="Facebook" />
                                                             </Bind>
@@ -109,7 +113,9 @@ const GeneralSettings = () => {
                                                         <Cell span={12}>
                                                             <Bind
                                                                 name={"social.twitter"}
-                                                                validators={validation.create("url")}
+                                                                validators={validation.create(
+                                                                    "url"
+                                                                )}
                                                             >
                                                                 <Input label="Twitter" />
                                                             </Bind>
@@ -117,7 +123,9 @@ const GeneralSettings = () => {
                                                         <Cell span={12}>
                                                             <Bind
                                                                 name={"social.instagram"}
-                                                                validators={validation.create("url")}
+                                                                validators={validation.create(
+                                                                    "url"
+                                                                )}
                                                             >
                                                                 <Input label="Instagram" />
                                                             </Bind>

@@ -106,12 +106,18 @@ const UsersForm = () => {
                             <Cell span={9}>
                                 <Grid>
                                     <Cell span={12}>
-                                        <Bind name="email" validators={validation.create("required")}>
+                                        <Bind
+                                            name="email"
+                                            validators={validation.create("required")}
+                                        >
                                             <Input label={t`E-mail`} />
                                         </Bind>
                                     </Cell>
                                     <Cell span={12}>
-                                        <Bind name="password" validators={validation.create("password")}>
+                                        <Bind
+                                            name="password"
+                                            validators={validation.create("password")}
+                                        >
                                             <Input
                                                 autoComplete="off"
                                                 description={

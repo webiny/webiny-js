@@ -14,7 +14,10 @@ export default async (root: any, args: Object, context: Object) => {
     try {
         await model.populate(args.data).save();
     } catch (e) {
-        if (e instanceof WithFieldsError && e.code === WithFieldsError.VALIDATION_FAILED_INVALID_FIELDS) {
+        if (
+            e instanceof WithFieldsError &&
+            e.code === WithFieldsError.VALIDATION_FAILED_INVALID_FIELDS
+        ) {
             const attrError = InvalidFieldsError.from(e);
             return new ErrorResponse({
                 code: attrError.code || "VALIDATION_FAILED_INVALID_FIELDS",

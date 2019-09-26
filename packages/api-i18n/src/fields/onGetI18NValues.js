@@ -1,5 +1,5 @@
 // @flow
-export default (value:Array<Object>, i18n: Object) => {
+export default (value: Array<Object>, i18n: Object) => {
     // Let's make current locale's value the first element of the array.
     if (value.length < 2) {
         return value;

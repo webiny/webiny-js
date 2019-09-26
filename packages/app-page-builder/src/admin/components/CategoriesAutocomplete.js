@@ -41,7 +41,11 @@ export function CategoriesAutocomplete(props) {
     return (
         <Query skip={!props.value} variables={{ id: props.value }} query={GET_CATEGORY}>
             {({ data }) => (
-                <AutoComplete {...props} {...autoComplete} value={get(data, "pageBuilder.getCategory.data")}/>
+                <AutoComplete
+                    {...props}
+                    {...autoComplete}
+                    value={get(data, "pageBuilder.getCategory.data")}
+                />
             )}
         </Query>
     );

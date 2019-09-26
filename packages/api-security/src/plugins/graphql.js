@@ -18,7 +18,7 @@ export default ([
                 extend type File @key(fields: "id") {
                     id: ID @external
                 }
-                
+
                 type SecurityQuery {
                     # Returns all scopes that were registered throughout the schema.
                     scopes: [String]
@@ -43,7 +43,7 @@ export default ([
             resolvers: merge(
                 {
                     Query: {
-                         security: dummyResolver
+                        security: dummyResolver
                     },
                     Mutation: {
                         security: dummyResolver

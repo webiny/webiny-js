@@ -71,7 +71,7 @@ story.add("usage", () => {
                             <React.Fragment>
                                 <Bind name="phone">
                                     <Input
-                                        leadingIcon={<AutoRenewIcon/>}
+                                        leadingIcon={<AutoRenewIcon />}
                                         label={"Your phone number"}
                                         description={"Please enter a real number"}
                                         disabled={disabled}

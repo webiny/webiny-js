@@ -13,11 +13,7 @@ const invalidCredentials = new ErrorResponse({
     message: "Invalid credentials."
 });
 
-export default (getModel: GetModel) => async (
-    root: any,
-    args: Object,
-    context: Object
-) => {
+export default (getModel: GetModel) => async (root: any, args: Object, context: Object) => {
     const User = getModel(context);
 
     const user: User = (await User.findOne({

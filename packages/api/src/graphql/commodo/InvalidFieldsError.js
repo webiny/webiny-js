@@ -41,9 +41,7 @@ class InvalidFieldsError extends WithFieldsError {
         const { message, code } = error;
 
         let data: Object = (error.data: any);
-        data.invalidFields = formatInvalidFields(
-            get(error, "data.invalidFields", {})
-        );
+        data.invalidFields = formatInvalidFields(get(error, "data.invalidFields", {}));
 
         return new InvalidFieldsError(message, code, data);
     }

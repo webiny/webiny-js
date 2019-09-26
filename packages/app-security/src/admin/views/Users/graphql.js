@@ -6,7 +6,13 @@ const fields = `
 `;
 
 export const LIST_USERS = gql`
-    query listUsers($where: JSON, $sort: JSON, $page: Int, $perPage: Int, $search: SecurityUserSearchInput) {
+    query listUsers(
+        $where: JSON
+        $sort: JSON
+        $page: Int
+        $perPage: Int
+        $search: SecurityUserSearchInput
+    ) {
         security {
             users: listUsers(
                 where: $where

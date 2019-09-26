@@ -4,9 +4,7 @@ import { useDataList } from "@webiny/app/hooks/useDataList";
 import { debounce } from "lodash";
 
 export const useAutocomplete = (props: Object): Function => {
-    const useDataListProps = props.query
-        ? props
-        : { query: props };
+    const useDataListProps = props.query ? props : { query: props };
 
     const dataList = useDataList({ useRouter: false, ...useDataListProps });
 

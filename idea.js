@@ -28,6 +28,6 @@ System.config({
         "@webiny/app-mailchimp/*": "./packages/app-mailchimp/src/*",
         "@webiny/api-mailchimp/*": "./packages/api-mailchimp/src/*",
         "@webiny/app-typeform/*": "./packages/app-typeform/src/*",
-        "@webiny/api-typeform/*": "./packages/api-typeform/src/*",
+        "@webiny/api-typeform/*": "./packages/api-typeform/src/*"
     }
 });
