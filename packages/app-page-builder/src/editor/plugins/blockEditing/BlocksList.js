@@ -1,43 +1,56 @@
 // @flow
-import * as React from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { get } from "lodash";
 import { List, WindowScroller } from "react-virtualized";
 import BlockPreview from "./BlockPreview";
 
 const listWidth = 800;
 
-class BlocksList extends React.Component<*, *> {
-    state = { listHeight: 0 };
-    rightPanelElement: ?HTMLElement;
+const BlocksList = props => {
+    const [, setTimestamp] = useState(null);
+    const rightPanelElement = useRef(null);
+    const prevProps = useRef(null);
 
-    componentDidUpdate(prevProps: Object) {
+    useEffect(() => {
+        rightPanelElement.current = document.getElementById("webiny-split-view-right-panel");
+        setTimestamp(new Date().getTime());
+    }, []);
+
+    useEffect(() => {
+        if (!prevProps.current) {
+            return;
+        }
+
         // Scroll only if the active block category has changed
-        if (this.rightPanelElement && prevProps.category !== this.props.category) {
-            if (this.rightPanelElement.scrollTop === 0) {
+        if (rightPanelElement && prevProps.current.category !== props.category) {
+            if (rightPanelElement.current.scrollTop === 0) {
                 // $FlowFixMe
-                this.rightPanelElement.scroll(0, 1);
+                rightPanelElement.current.scroll(0, 1);
                 return;
             }
             // $FlowFixMe
-            this.rightPanelElement.scroll(0, 0);
+            rightPanelElement.current.scroll(0, 0);
         }
-    }
+    });
 
-    getRowHeight = ({ index }: Object) => {
-        let height = get(this.props.blocks[index], "image.meta.height", 50);
-        let width = get(this.props.blocks[index], "image.meta.width", 50);
+    useEffect(() => {
+        prevProps.current = props;
+    });
 
+    const { blocks, category, onEdit, onDelete, deactivatePlugin, addBlock } = props;
+
+    const getRowHeight = ({ index }: Object) => {
+        let height = get(blocks[index], "image.meta.height", 50);
+
+        let width = get(blocks[index], "image.meta.width", 50);
         if (width > listWidth) {
             let downscaleRatio = width / listWidth;
             height = height / downscaleRatio;
         }
-
         return height + 100;
     };
 
-    renderRow = ({ index, key, style }: Object) => {
-        const { blocks, onEdit, onDelete, deactivatePlugin, addBlock } = this.props;
-
+    const renderRow = ({ index, key, style }: Object) => {
         const plugin = blocks[index];
 
         return (
@@ -53,37 +66,33 @@ class BlocksList extends React.Component<*, *> {
         );
     };
 
-    render() {
-        const { blocks } = this.props;
-
-        this.rightPanelElement = document.getElementById("@webiny/secondary-view-right-panel");
-        if (!this.rightPanelElement) {
-            return null;
-        }
-
-        return (
-            <WindowScroller scrollElement={this.rightPanelElement}>
-                {({ isScrolling, registerChild, onChildScroll, scrollTop }) => (
-                    <div style={{ flex: "1 1 auto" }}>
-                        <div style={{ width: "800px", margin: "0 auto" }} ref={registerChild}>
-                            <List
-                                autoHeight
-                                height={window.innerHeight - 70}
-                                isScrolling={isScrolling}
-                                onScroll={onChildScroll}
-                                rowCount={blocks.length}
-                                rowHeight={this.getRowHeight}
-                                rowRenderer={this.renderRow}
-                                scrollTop={scrollTop}
-                                width={listWidth}
-                                overscanRowCount={2}
-                            />
-                        </div>
-                    </div>
-                )}
-            </WindowScroller>
-        );
+    if (!rightPanelElement.current) {
+        return null;
     }
-}
+
+    return (
+        <WindowScroller scrollElement={rightPanelElement.current}>
+            {({ isScrolling, registerChild, onChildScroll, scrollTop }) => (
+                <div style={{ flex: "1 1 auto" }}>
+                    <div style={{ width: "800px", margin: "0 auto" }} ref={registerChild}>
+                        <List
+                            key={category}
+                            autoHeight
+                            height={window.innerHeight - 70}
+                            isScrolling={isScrolling}
+                            onScroll={onChildScroll}
+                            rowCount={blocks.length}
+                            rowHeight={getRowHeight}
+                            rowRenderer={renderRow}
+                            scrollTop={scrollTop}
+                            width={listWidth}
+                            overscanRowCount={2}
+                        />
+                    </div>
+                </div>
+            )}
+        </WindowScroller>
+    );
+};
 
 export default BlocksList;

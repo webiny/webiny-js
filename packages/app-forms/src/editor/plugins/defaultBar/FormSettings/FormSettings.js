@@ -1,7 +1,6 @@
 //@flow
 // $FlowFixMe
 import React, { useState } from "react";
-import { compose } from "recompose";
 import { getPlugins } from "@webiny/plugins";
 import { OverlayLayout } from "@webiny/app-admin/components/OverlayLayout";
 import { SplitView, LeftPanel, RightPanel } from "@webiny/app-admin/components/SplitView";
@@ -11,7 +10,7 @@ import { Icon } from "@webiny/ui/Icon";
 import { ButtonPrimary } from "@webiny/ui/Button";
 import { List, ListItem, ListItemGraphic } from "@webiny/ui/List";
 import { useFormEditor } from "@webiny/app-forms/admin/components/FormEditor/Context";
-import { withSnackbar, type WithSnackbarProps } from "@webiny/app-admin/components";
+import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 
 import { i18n } from "@webiny/app/i18n";
 const t = i18n.namespace("FormsApp.Editor.FormSettings");
@@ -26,11 +25,12 @@ import { Title, listItem, ListItemTitle, listStyle, TitleContent } from "./FormS
 
 type Props = {
     onExited: Function
-} & WithSnackbarProps;
+};
 
-const FormSettings = ({ onExited, showSnackbar }: Props) => {
+const FormSettings = ({ onExited }: Props) => {
     const plugins: Array<Object> = getPlugins("form-editor-form-settings");
     const { data, setData } = useFormEditor();
+    const { showSnackbar } = useSnackbar();
 
     const [activePlugin, setActivePlugin] = useState(plugins[0]);
 
@@ -93,4 +93,4 @@ const FormSettings = ({ onExited, showSnackbar }: Props) => {
     );
 };
 
-export default compose(withSnackbar())(FormSettings);
+export default FormSettings;

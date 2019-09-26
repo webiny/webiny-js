@@ -1,13 +1,10 @@
 // @flow
 import React from "react";
 import { List } from "@webiny/ui/List";
-import type { WithPageDetailsProps } from "@webiny/app-page-builder/admin/components";
 import Revision from "./Revision";
 import { Elevation } from "@webiny/ui/Elevation";
 import { css } from "emotion";
 import { CircularProgress } from "@webiny/ui/Progress";
-
-type RevisionsProps = WithPageDetailsProps;
 
 const listWrapper = css({
     margin: 25,
@@ -23,7 +20,7 @@ const listWrapper = css({
     }
 });
 
-const RevisionsList = ({ pageDetails: { page }, loading }: RevisionsProps) => {
+const RevisionsList = ({ pageDetails: { page }, loading }: Object) => {
     return (
         <Elevation className={listWrapper} z={2}>
             <div style={{ position: "relative" }}>

@@ -1,7 +1,7 @@
 // @flow
 import { merge } from "lodash";
 import { gql } from "apollo-server-lambda";
-import { dummyResolver } from "@webiny/api/graphql";
+import { dummyResolver } from "@webiny/api/graphql/commodo";
 import { type PluginType } from "@webiny/api/types";
 import { hasScope } from "@webiny/api-security";
 import i18nLocale from "./graphql/I18NLocale";

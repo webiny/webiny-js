@@ -5,13 +5,7 @@ import { withRouter } from "react-router-dom";
 import type { RouterHistory } from "react-router-dom";
 import gql from "graphql-tag";
 import { Query } from "react-apollo";
-import {
-    Dialog,
-    DialogHeader,
-    DialogHeaderTitle,
-    DialogBody,
-    DialogFooter
-} from "@webiny/ui/Dialog";
+import { Dialog, DialogTitle, DialogContent, DialogActions } from "@webiny/ui/Dialog";
 import {
     List,
     ListItem,
@@ -55,10 +49,8 @@ const CategoriesDialog = ({
 }) => {
     return (
         <Dialog open={open} onClose={onClose} className={narrowDialog}>
-            <DialogHeader>
-                <DialogHeaderTitle>Select a category</DialogHeaderTitle>
-            </DialogHeader>
-            <DialogBody>
+            <DialogTitle>Select a category</DialogTitle>
+            <DialogContent>
                 <List twoLine>
                     <Query query={loadCategories} variables={{ sort: { name: 1 } }}>
                         {({ data, loading }) => {
@@ -85,12 +77,12 @@ const CategoriesDialog = ({
                         }}
                     </Query>
                 </List>
-            </DialogBody>
-            <DialogFooter>
+            </DialogContent>
+            <DialogActions>
                 <ButtonDefault onClick={() => history.push("/page-builder/categories")}>
                     + Create new category
                 </ButtonDefault>
-            </DialogFooter>
+            </DialogActions>
         </Dialog>
     );
 };

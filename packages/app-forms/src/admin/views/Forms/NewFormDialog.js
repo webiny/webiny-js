@@ -1,27 +1,19 @@
 // @flow
 import React from "react";
 import { css } from "emotion";
-import { withRouter } from "react-router-dom";
-import type { RouterHistory } from "react-router-dom";
+import useReactRouter from "use-react-router";
 import { Mutation } from "react-apollo";
 import { Form } from "@webiny/form";
 import { Input } from "@webiny/ui/Input";
-import { createForm } from "@webiny/app-forms/admin/viewsGraphql";
+import { CREATE_FORM } from "@webiny/app-forms/admin/viewsGraphql";
 import get from "lodash.get";
-import { compose } from "recompose";
-import { withSnackbar } from "@webiny/app-admin/components";
+import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { CircularProgress } from "@webiny/ui/Progress";
 
 import { i18n } from "@webiny/app/i18n";
 const t = i18n.namespace("Forms.NewFormDialog");
 
-import {
-    Dialog,
-    DialogHeader,
-    DialogHeaderTitle,
-    DialogBody,
-    DialogFooter
-} from "@webiny/ui/Dialog";
+import { Dialog, DialogTitle, DialogContent, DialogActions } from "@webiny/ui/Dialog";
 import { ButtonDefault } from "@webiny/ui/Button";
 
 const narrowDialog = css({
@@ -31,23 +23,15 @@ const narrowDialog = css({
     }
 });
 
-const NewFormDialog = ({
-    open,
-    onClose,
-    history,
-    showSnackbar
-}: {
-    open: boolean,
-    onClose: Function,
-    history: RouterHistory,
-    showSnackbar: Function
-}) => {
+const NewFormDialog = ({ open, onClose }: { open: boolean, onClose: Function }) => {
     // $FlowFixMe
     const [loading, setLoading] = React.useState(false);
+    const { showSnackbar } = useSnackbar();
+    const { history } = useReactRouter();
 
     return (
         <Dialog open={open} onClose={onClose} className={narrowDialog}>
-            <Mutation mutation={createForm}>
+            <Mutation mutation={CREATE_FORM}>
                 {update => (
                     <Form
                         onSubmit={async data => {
@@ -71,17 +55,15 @@ const NewFormDialog = ({
                         {({ Bind, submit }) => (
                             <>
                                 {loading && <CircularProgress />}
-                                <DialogHeader>
-                                    <DialogHeaderTitle>{t`New form`}</DialogHeaderTitle>
-                                </DialogHeader>
-                                <DialogBody>
+                                <DialogTitle>{t`New form`}</DialogTitle>
+                                <DialogContent>
                                     <Bind name={"name"}>
-                                        <Input />
+                                        <Input placeholder={"Enter a name for your new form"} />
                                     </Bind>
-                                </DialogBody>
-                                <DialogFooter>
+                                </DialogContent>
+                                <DialogActions>
                                     <ButtonDefault onClick={submit}>+ {t`Create`}</ButtonDefault>
-                                </DialogFooter>
+                                </DialogActions>
                             </>
                         )}
                     </Form>
@@ -91,7 +73,4 @@ const NewFormDialog = ({
     );
 };
 
-export default compose(
-    withSnackbar(),
-    withRouter
-)(NewFormDialog);
+export default NewFormDialog;

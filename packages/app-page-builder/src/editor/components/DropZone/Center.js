@@ -1,12 +1,11 @@
 //@flow
 import * as React from "react";
-import styled from "react-emotion";
+import styled from "@emotion/styled";
 import { getElementProps } from "@webiny/app-page-builder/editor/selectors";
 import { connect } from "@webiny/app-page-builder/editor/redux";
-import { pure } from "recompose";
 import Droppable from "./../Droppable";
 
-const Container = pure(
+const Container = React.memo(
     styled("div")(({ isOver }) => ({
         backgroundColor: "transparent",
         boxSizing: "border-box",
@@ -44,11 +43,11 @@ type Props = {
     highlight: boolean
 };
 
-const Center = pure(({ type, onDrop, children, active, highlight }: Props) => {
+const Center = React.memo(({ type, onDrop, children, active, highlight }: Props) => {
     return (
         <Droppable onDrop={onDrop} type={type} isVisible={isVisible}>
-            {({ isOver, isDroppable }) => (
-                <div style={{ width: "100%", height: "100%" }}>
+            {({ isOver, isDroppable, drop }) => (
+                <div style={{ width: "100%", height: "100%" }} ref={drop}>
                     <Container isOver={(isOver && isDroppable) || active} highlight={highlight}>
                         <Add>{children}</Add>
                     </Container>

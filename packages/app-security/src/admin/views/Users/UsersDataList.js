@@ -1,11 +1,10 @@
 import React from "react";
-import { withRouter } from "react-router-dom";
-import { compose } from "recompose";
 import { i18n } from "@webiny/app/i18n";
-import { withSecurity } from "@webiny/app-security/admin/context";
+import { useSecurity } from "@webiny/app-security/hooks/useSecurity";
 import { ConfirmationDialog } from "@webiny/ui/ConfirmationDialog";
 import { Tooltip } from "@webiny/ui/Tooltip";
 import { Image } from "@webiny/app/components";
+import { useCrud } from "@webiny/app-admin/hooks/useCrud";
 
 import {
     DataList,
@@ -21,38 +20,38 @@ import {
 import { DeleteIcon } from "@webiny/ui/List/DataList/icons";
 import { Avatar } from "@webiny/ui/Avatar";
 
-const t = i18n.namespace("Security.UsersDataList");
+const t = i18n.ns("app-security/admin/users/data-list");
 
-const UsersDataList = ({ dataList, location, history, security, deleteRecord }) => {
-    const query = new URLSearchParams(location.search);
-
+const UsersDataList = () => {
+    const security = useSecurity();
+    const { actions, list } = useCrud();
     return (
         <DataList
-            {...dataList}
+            {...list}
             title={t`Security Users`}
             sorters={[
                 {
-                    label: "Newest to oldest",
+                    label: t`Newest to oldest`,
                     sorters: { savedOn: -1 }
                 },
                 {
-                    label: "Oldest to newest",
+                    label: t`Oldest to newest`,
                     sorters: { savedOn: 1 }
                 },
                 {
-                    label: "Name A-Z",
+                    label: t`Name A-Z`,
                     sorters: { lastName: 1 }
                 },
                 {
-                    label: "Name Z-A",
+                    label: t`Name Z-A`,
                     sorters: { lastName: -1 }
                 }
             ]}
         >
-            {({ data }) => (
+            {({ data, isSelected, select }) => (
                 <ScrollList twoLine avatarList>
                     {data.map(item => (
-                        <ListItem key={item.id} selected={query.get("id") === item.id}>
+                        <ListItem key={item.id} selected={isSelected(item)}>
                             <ListItemGraphic>
                                 <Avatar
                                     renderImage={props => (
@@ -63,12 +62,7 @@ const UsersDataList = ({ dataList, location, history, security, deleteRecord }) 
                                     alt={t`User's avatar.`}
                                 />
                             </ListItemGraphic>
-                            <ListItemText
-                                onClick={() => {
-                                    query.set("id", item.id);
-                                    history.push({ search: query.toString() });
-                                }}
-                            >
+                            <ListItemText onClick={() => select(item)}>
                                 {item.fullName}
                                 <ListItemTextSecondary>{item.email}</ListItemTextSecondary>
                             </ListItemText>
@@ -80,7 +74,7 @@ const UsersDataList = ({ dataList, location, history, security, deleteRecord }) 
                                             {({ showConfirmation }) => (
                                                 <DeleteIcon
                                                     onClick={() =>
-                                                        showConfirmation(() => deleteRecord(item))
+                                                        showConfirmation(() => actions.delete(item))
                                                     }
                                                 />
                                             )}
@@ -105,7 +99,4 @@ const UsersDataList = ({ dataList, location, history, security, deleteRecord }) 
     );
 };
 
-export default compose(
-    withSecurity(),
-    withRouter
-)(UsersDataList);
+export default UsersDataList;

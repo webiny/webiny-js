@@ -1,19 +1,12 @@
 // @flow
-import { Response, NotFoundResponse } from "@webiny/api/graphql";
-import type { Entity } from "@webiny/entity";
-type EntityFetcher = (context: Object) => Class<Entity>;
+import { Response, NotFoundResponse } from "@webiny/api/graphql/commodo";
 
-export default (entityFetcher: EntityFetcher) => async (
-    root: any,
-    args: Object,
-    context: Object
-) => {
-    const User = entityFetcher(context);
-
+export default async (root: any, args: Object, context: Object) => {
     const { user } = context;
 
     if (user) {
-        const instance = await User.findById(user.id);
+        const { SecurityUser } = context.models;
+        const instance = await SecurityUser.findById(user.id);
         if (!instance) {
             return new NotFoundResponse(`User with ID ${user.id} was not found!`);
         }

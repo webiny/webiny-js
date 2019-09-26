@@ -6,9 +6,12 @@ import { Grid, Cell } from "@webiny/ui/Grid";
 import { Input } from "@webiny/ui/Input";
 import { ButtonPrimary } from "@webiny/ui/Button";
 import { MultiAutoComplete } from "@webiny/ui/AutoComplete";
-import type { WithCrudFormProps } from "@webiny/app-admin/components";
 import { CircularProgress } from "@webiny/ui/Progress";
-
+import { useQuery } from "react-apollo";
+import { useCrud } from "@webiny/app-admin/hooks/useCrud";
+import { validation } from "@webiny/validation";
+import { get } from "lodash";
+import { LIST_SCOPES } from "./graphql";
 import {
     SimpleForm,
     SimpleFormFooter,
@@ -16,37 +19,35 @@ import {
     SimpleFormHeader
 } from "@webiny/app-admin/components/SimpleForm";
 
-const t = i18n.namespace("Security.RolesForm");
+const t = i18n.ns("app-security/admin/roles/form");
 
-const RoleForm = ({
-    onSubmit,
-    loading,
-    data,
-    invalidFields,
-    scopes
-}: WithCrudFormProps & { scopes: Array<string> }) => {
+const RoleForm = () => {
+    const scopesQuery = useQuery(LIST_SCOPES);
+    const scopes = get(scopesQuery, "data.security.scopes") || [];
+    const { form } = useCrud();
+
     return (
-        <Form invalidFields={invalidFields} data={data} onSubmit={onSubmit}>
+        <Form {...form}>
             {({ data, form, Bind }) => (
                 <SimpleForm>
-                    {loading && <CircularProgress />}
-                    <SimpleFormHeader title={data.name ? data.name : "Untitled"} />
+                    {form.loading && <CircularProgress />}
+                    <SimpleFormHeader title={data.name ? data.name : t`Untitled`} />
                     <SimpleFormContent>
                         <Grid>
                             <Cell span={6}>
-                                <Bind name="name" validators={["required"]}>
+                                <Bind name="name" validators={validation.create("required")}>
                                     <Input label={t`Name`} />
                                 </Bind>
                             </Cell>
                             <Cell span={6}>
-                                <Bind name="slug" validators={["required"]}>
+                                <Bind name="slug" validators={validation.create("required")}>
                                     <Input disabled={data.id} label={t`Slug`} />
                                 </Bind>
                             </Cell>
                         </Grid>
                         <Grid>
                             <Cell span={12}>
-                                <Bind name="description" validators={["required"]}>
+                                <Bind name="description" validators={validation.create("required")}>
                                     <Input label={t`Description`} rows={4} />
                                 </Bind>
                             </Cell>

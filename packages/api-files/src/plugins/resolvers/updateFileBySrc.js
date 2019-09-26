@@ -1,11 +1,12 @@
 // @flow
-import { ModelError } from "@webiny/model";
-import { ErrorResponse, Response, NotFoundResponse } from "@webiny/api/graphql/responses";
-import { InvalidAttributesError } from "@webiny/api/graphql";
+import { WithFieldsError } from "@webiny/commodo";
+import { ErrorResponse, Response, NotFoundResponse } from "@webiny/api/graphql/commodo/responses";
+import { InvalidFieldsError } from "@webiny/api/graphql/commodo";
 
-export default (modelFetcher: Function) => async (root: any, args: Object, context: Object) => {
-    const modelClass = modelFetcher(context);
-    const model = await modelClass.findOne({ query: { src: args.src } });
+export default async (root: any, args: Object, context: Object) => {
+    const { File } = context.models;
+
+    const model = await File.findOne({ query: { src: args.src } });
     if (!model) {
         return new NotFoundResponse();
     }
@@ -13,10 +14,10 @@ export default (modelFetcher: Function) => async (root: any, args: Object, conte
     try {
         await model.populate(args.data).save();
     } catch (e) {
-        if (e instanceof ModelError && e.code === ModelError.INVALID_ATTRIBUTES) {
-            const attrError = InvalidAttributesError.from(e);
+        if (e instanceof WithFieldsError && e.code === WithFieldsError.VALIDATION_FAILED_INVALID_FIELDS) {
+            const attrError = InvalidFieldsError.from(e);
             return new ErrorResponse({
-                code: attrError.code || "INVALID_ATTRIBUTES",
+                code: attrError.code || "VALIDATION_FAILED_INVALID_FIELDS",
                 message: attrError.message,
                 data: attrError.data
             });

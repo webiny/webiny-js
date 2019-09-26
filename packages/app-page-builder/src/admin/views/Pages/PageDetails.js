@@ -1,14 +1,13 @@
 import React from "react";
-import { compose, withProps } from "recompose";
 import { Query } from "react-apollo";
-import { renderPlugins } from "@webiny/app/plugins";
-import { withRouter } from "react-router-dom";
-import styled from "react-emotion";
+import useReactRouter from "use-react-router";
+import styled from "@emotion/styled";
 import { Elevation } from "@webiny/ui/Elevation";
-import { getPage } from "@webiny/app-page-builder/admin/graphql/pages";
-import { PageDetailsProvider, PageDetailsConsumer } from "../../components/PageDetailsContext";
+import { renderPlugins } from "@webiny/app/plugins";
+import { GET_PAGE } from "@webiny/app-page-builder/admin/graphql/pages";
+import { PageDetailsProvider, PageDetailsConsumer } from "../../contexts/PageDetails";
 import { ElementAnimation } from "@webiny/app-page-builder/render/components";
-import { withSnackbar } from "@webiny/app-admin/components";
+import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { get } from "lodash";
 
 const EmptySelect = styled("div")({
@@ -47,14 +46,20 @@ const EmptyPageDetails = () => {
     );
 };
 
-const PageDetails = ({ pageId, history, query, showSnackbar, refreshPages }) => {
+const PageDetails = ({ refreshPages }) => {
+    const { history, location } = useReactRouter();
+    const { showSnackbar } = useSnackbar();
+
+    const query = new URLSearchParams(location.search);
+    const pageId = query.get("id");
+
     if (!pageId) {
         return <EmptyPageDetails />;
     }
 
     return (
         <Query
-            query={getPage()}
+            query={GET_PAGE()}
             variables={{ id: pageId }}
             onCompleted={data => {
                 const error = get(data, "pageBuilder.page.error.message");
@@ -93,11 +98,4 @@ const PageDetails = ({ pageId, history, query, showSnackbar, refreshPages }) => 
     );
 };
 
-export default compose(
-    withRouter,
-    withSnackbar(),
-    withProps(({ location }) => {
-        const query = new URLSearchParams(location.search);
-        return { pageId: query.get("id"), query };
-    })
-)(PageDetails);
+export default PageDetails;

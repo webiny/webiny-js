@@ -2,7 +2,6 @@
 import * as React from "react";
 import { connect } from "react-redux";
 import { get } from "lodash";
-import { pure } from "recompose";
 import { Typography } from "@webiny/ui/Typography";
 import { Grid, Cell } from "@webiny/ui/Grid";
 import ColorPickerCmp from "@webiny/app-page-builder/editor/components/ColorPicker";
@@ -15,7 +14,7 @@ type Props = {
     updateValue: Function
 };
 
-const ColorPicker = pure(({ label, value, updatePreview, updateValue }: Props) => {
+const ColorPicker = React.memo(({ label, value, updatePreview, updateValue }: Props) => {
     return (
         <Grid>
             <Cell span={4}>

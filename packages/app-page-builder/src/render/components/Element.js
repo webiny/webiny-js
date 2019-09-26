@@ -1,6 +1,6 @@
 //@flow
 import { getPlugins } from "@webiny/plugins";
-import { withPageBuilder } from "@webiny/app-page-builder/context";
+import { usePageBuilder } from "@webiny/app-page-builder/hooks/usePageBuilder";
 import type { PbElementType } from "@webiny/app-page-builder/types";
 
 declare type ElementProps = {
@@ -8,7 +8,9 @@ declare type ElementProps = {
     pageBuilder: Object
 };
 
-const Element = ({ element, pageBuilder: { theme } }: ElementProps) => {
+const Element = ({ element }: ElementProps) => {
+    const { theme } = usePageBuilder();
+
     if (!element) {
         return null;
     }
@@ -22,4 +24,4 @@ const Element = ({ element, pageBuilder: { theme } }: ElementProps) => {
     return plugin.render({ theme, element });
 };
 
-export default withPageBuilder()(Element);
+export default Element;

@@ -18,7 +18,7 @@ export async function prepareSchema({ config, plugins }: PrepareSchemaParamsType
 
     for (let i = 0; i < gqlPlugins.length; i++) {
         if (typeof gqlPlugins[i].prepare === "function") {
-            await gqlPlugins[i].prepare(config);
+            await gqlPlugins[i].prepare({ plugins, config });
         }
     }
 
@@ -53,7 +53,7 @@ export async function prepareSchema({ config, plugins }: PrepareSchemaParamsType
         }
 
         if (typeof schema === "function") {
-            schemaDefs.push(await schema(config));
+            schemaDefs.push(await schema({ config, plugins }));
         } else {
             schemaDefs.push(schema);
         }

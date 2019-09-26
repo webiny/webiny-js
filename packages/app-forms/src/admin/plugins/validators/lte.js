@@ -1,6 +1,7 @@
 import React from "react";
 import { Grid, Cell } from "@webiny/ui/Grid";
 import { Input } from "@webiny/ui/Input";
+import { validation } from "@webiny/validation";
 
 export default {
     type: "form-editor-field-validator",
@@ -14,7 +15,7 @@ export default {
             return (
                 <Grid>
                     <Cell span={12}>
-                        <Bind name={"settings.value"} validators={["required", "numeric"]}>
+                        <Bind name={"settings.value"} validators={validation.create("required,numeric")}>
                             <Input
                                 type={"number"}
                                 label={"Value"}

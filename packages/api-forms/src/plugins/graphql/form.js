@@ -4,13 +4,15 @@ import {
     resolveUpdate,
     resolveDelete,
     resolveGet
-} from "@webiny/api/graphql/crudResolvers";
+} from "@webiny/api/graphql/commodo/crudResolvers";
 
 import createRevisionFrom from "./formResolvers/createRevisionFrom";
 import listForms from "./formResolvers/listForms";
 import listPublishedForms from "./formResolvers/listPublishedForms";
 import getPublishedForm from "./formResolvers/getPublishedForm";
 import saveFormView from "./formResolvers/saveFormView";
+
+const getForm = ctx => ctx.models.Form;
 
 export default {
     typeDefs: /* GraphQL*/ `
@@ -267,33 +269,33 @@ export default {
     `,
     resolvers: {
         FormsQuery: {
-            getForm: resolveGet("Form"),
+            getForm: resolveGet(getForm),
             listForms,
             listPublishedForms,
             getPublishedForm
         },
         FormsMutation: {
             // Creates a new form
-            createForm: resolveCreate("Form"),
+            createForm: resolveCreate(getForm),
             // Deletes the entire form
-            deleteForm: resolveDelete("Form"),
+            deleteForm: resolveDelete(getForm),
             // Creates a revision from the given revision
             createRevisionFrom: createRevisionFrom,
             // Updates revision
-            updateRevision: resolveUpdate("Form"),
+            updateRevision: resolveUpdate(getForm),
             // Publish revision (must be given an exact revision ID to publish)
             publishRevision: (_: any, args: Object, ctx: Object) => {
                 args.data = { published: true };
 
-                return resolveUpdate("Form")(_, args, ctx);
+                return resolveUpdate(getForm)(_, args, ctx);
             },
             unpublishRevision: (_: any, args: Object, ctx: Object) => {
                 args.data = { published: false };
 
-                return resolveUpdate("Form")(_, args, ctx);
+                return resolveUpdate(getForm)(_, args, ctx);
             },
             // Delete a revision
-            deleteRevision: resolveDelete("Form"),
+            deleteRevision: resolveDelete(getForm),
             saveFormView
         }
     }

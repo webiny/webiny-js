@@ -1,19 +1,25 @@
 // @flow
 import * as React from "react";
-import { pure } from "recompose";
 import { Cell, Grid } from "@webiny/ui/Grid";
 import { Typography } from "@webiny/ui/Typography";
 import { Switch } from "@webiny/ui/Switch";
 import { Footer } from "@webiny/app-page-builder/editor/plugins/elementSettings/components/StyledComponents";
+import { css } from "emotion";
 
-export default pure(({ advanced, toggleAdvanced }) => (
+const switchStyle = css({
+    "&.webiny-ui-switch": {
+        marginRight: "0"
+    }
+});
+
+export default React.memo(({ advanced, toggleAdvanced }) => (
     <Footer>
         <Grid className={"no-bottom-padding"}>
             <Cell span={8}>
                 <Typography use={"subtitle2"}>Show advanced options</Typography>
             </Cell>
             <Cell span={4}>
-                <Switch value={advanced} onChange={toggleAdvanced} />
+                <Switch className={switchStyle} value={advanced} onChange={toggleAdvanced} />
             </Cell>
         </Grid>
     </Footer>

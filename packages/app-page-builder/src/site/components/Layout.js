@@ -1,8 +1,9 @@
 // @flow
 import * as React from "react";
-import { withPageBuilder } from "@webiny/app-page-builder/context";
+import { usePageBuilder } from "@webiny/app-page-builder/hooks/usePageBuilder";
 
-const Layout = ({ pageBuilder: { theme }, layout, children }) => {
+const Layout = ({ layout, children }) => {
+    const { theme } = usePageBuilder();
     const themeLayout = theme.layouts.find(l => l.name === layout);
 
     if (!themeLayout) {
@@ -12,4 +13,4 @@ const Layout = ({ pageBuilder: { theme }, layout, children }) => {
     return React.createElement(themeLayout.component, null, children);
 };
 
-export default withPageBuilder()(Layout);
+export default Layout;

@@ -1,25 +1,16 @@
 // @flow
-import type { Model } from "@webiny/model";
+export default async (root: any, args: Object, context: Object) => {
+    const { File } = context.models;
 
-type ModelFetcher = (context: Object) => Class<Model>;
-
-export default (modelFetcher: ModelFetcher) => async (root: any, args: Object, context: Object) => {
-    const model = modelFetcher(context);
-
-    const results = await model
-        .getDriver()
-        .getDatabase()
-        .collection("File")
-        .aggregate([
-            { $sort: { _id: 1 } },
-            { $match: { tags: { $exists: true, $ne: [] } } },
-            { $project: { tags: 1 } },
-            { $unwind: "$tags" },
-            { $group: { _id: "$tags" } },
-            { $sort: { _id: 1 } },
-            { $limit: 100 }
-        ])
-        .toArray();
+    const results = await File.aggregate([
+        { $sort: { _id: 1 } },
+        { $match: { tags: { $exists: true, $ne: [] } } },
+        { $project: { tags: 1 } },
+        { $unwind: "$tags" },
+        { $group: { _id: "$tags" } },
+        { $sort: { _id: 1 } },
+        { $limit: 100 }
+    ]);
 
     return results.map(item => item._id);
 };

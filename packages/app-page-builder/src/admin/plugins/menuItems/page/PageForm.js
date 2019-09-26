@@ -5,12 +5,18 @@ import { Input } from "@webiny/ui/Input";
 import { Typography } from "@webiny/ui/Typography";
 import { Grid, Cell } from "@webiny/ui/Grid";
 import { ButtonSecondary, ButtonPrimary } from "@webiny/ui/Button";
-import PagesAutoComplete from "@webiny/app-page-builder/admin/components/PagesAutoComplete";
+import { PagesAutocomplete } from "@webiny/app-page-builder/admin/components/PagesAutocomplete";
 import { Elevation } from "@webiny/ui/Elevation";
+import { validation } from "@webiny/validation";
+
+const menuPageFormStyle = {
+    color: "var(--mdc-theme-on-surface)",
+    backgroundColor: "var(--mdc-theme-background) !important"
+};
 
 const LinkForm = ({ data, onSubmit, onCancel }: Object) => {
     return (
-        <Elevation z={4}>
+        <Elevation z={4} css={menuPageFormStyle}>
             <Form data={data} onSubmit={onSubmit}>
                 {({ submit, Bind, data, form }) => (
                     <>
@@ -22,9 +28,9 @@ const LinkForm = ({ data, onSubmit, onCancel }: Object) => {
 
                         <Grid>
                             <Cell span={12}>
-                                <Bind name="page" validators={["required"]}>
+                                <Bind name="page" validators={validation.create("required")}>
                                     {({ onChange, ...rest }) => (
-                                        <PagesAutoComplete
+                                        <PagesAutocomplete
                                             {...rest}
                                             onChange={(value, selection) => {
                                                 onChange(value);
@@ -42,7 +48,7 @@ const LinkForm = ({ data, onSubmit, onCancel }: Object) => {
                         </Grid>
                         <Grid>
                             <Cell span={12}>
-                                <Bind name="title" validators={["required"]}>
+                                <Bind name="title" validators={validation.create("required")}>
                                     <Input label="Title" />
                                 </Bind>
                             </Cell>

@@ -1,12 +1,11 @@
 // @flow
 // $FlowFixMe
 import React, { useEffect, useRef } from "react";
+import { useApolloClient } from "react-apollo";
 import { get, cloneDeep } from "lodash";
-import { withPageBuilder } from "@webiny/app-page-builder/context";
-import { withApollo } from "react-apollo";
+import { usePageBuilder } from "@webiny/app-page-builder/hooks/usePageBuilder";
 import { getPlugins } from "@webiny/plugins";
 import { I18NValue } from "@webiny/app-i18n/components";
-import { compose } from "recompose";
 import { createTermsOfServiceComponent, createReCaptchaComponent } from "./components";
 import {
     onFormMounted,
@@ -24,20 +23,23 @@ import type {
     FormSubmissionData
 } from "@webiny/app-forms/types";
 
-const FormRender = compose(
-    withPageBuilder(),
-    withApollo
-)((props: FormRenderComponentPropsType) => {
-    const data = props.data;
-    if (!data) {
-        // TODO: handle this - loader?
-        return null;
-    }
+const FormRender = (props: FormRenderComponentPropsType) => {
+    const { theme } = usePageBuilder();
+    const client = useApolloClient();
+    const data = props.data || {};
 
-    useEffect(() => onFormMounted(props), [data.id]);
+    useEffect(() => {
+        if (data.id) {
+            onFormMounted({ ...props, client });
+        }
+    }, [data.id]);
 
     const reCaptchaResponseToken = useRef("");
     const termsOfServiceAccepted = useRef(false);
+
+    if (!data.id) {
+        return null;
+    }
 
     const formData: FormDataType = cloneDeep(data);
     const { layout, fields, settings } = formData;
@@ -135,6 +137,7 @@ const FormRender = compose(
         }
 
         const formSubmission = await createFormSubmission({
+            client,
             props,
             data,
             reCaptchaResponseToken: reCaptchaResponseToken.current
@@ -145,7 +148,7 @@ const FormRender = compose(
     };
 
     // Get form layout, defined in theme.
-    let LayoutRenderComponent = get(props.pageBuilder, "theme.forms.layouts", []).find(
+    let LayoutRenderComponent = get(theme, "forms.layouts", []).find(
         item => item.name === settings.layout.renderer
     );
 
@@ -179,6 +182,6 @@ const FormRender = compose(
     };
 
     return <LayoutRenderComponent {...layoutProps} />;
-});
+};
 
 export default FormRender;

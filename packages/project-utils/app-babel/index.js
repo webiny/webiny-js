@@ -9,7 +9,7 @@ const appBabel = api => {
             ["babel-plugin-module-resolver", { alias: aliases }],
             isDevelopment && ["react-hot-loader/babel"],
             ["babel-plugin-emotion", { autoLabel: true }],
-            ["babel-plugin-lodash", { id: ["lodash", "recompose"] }]
+            ["babel-plugin-lodash", { id: ["lodash"] }]
         ].filter(Boolean)
     };
 };
@@ -21,7 +21,6 @@ module.exports = (customizer = null) => {
 
     return appBabel;
 };
-
 
 /*
 const customizer = api => appBabel => {

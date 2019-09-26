@@ -3,15 +3,15 @@ import React from "react";
 import { css } from "emotion";
 import {
     Dialog,
-    DialogHeader,
-    DialogHeaderTitle,
-    DialogBody,
-    DialogFooter,
+    DialogTitle,
+    DialogContent,
+    DialogActions,
     DialogAccept,
     DialogCancel
 } from "@webiny/ui/Dialog";
 import { Select } from "@webiny/ui/Select";
 import { Form } from "@webiny/form";
+import { validation } from "@webiny/validation";
 
 const narrowDialog = css({
     ".mdc-dialog__surface": {
@@ -37,25 +37,25 @@ const PublishRevisionDialog = ({ open, onClose, onSubmit, revisions, selected }:
             >
                 {({ submit, Bind }) => (
                     <React.Fragment>
-                        <DialogHeader>
-                            <DialogHeaderTitle>Select a revision to publish</DialogHeaderTitle>
-                        </DialogHeader>
-                        <DialogBody>
-                            <Bind name={"revision"} validators={["required"]}>
+                        <DialogTitle>Select a revision to publish</DialogTitle>
+                        <DialogContent>
+                            <Bind name={"revision"} validators={validation.create("required")}>
                                 <Select label={"Revision to publish"}>
-                                    {revisions.filter(r => !r.published).map(rev => (
-                                        <option key={rev.id} value={rev.id}>
-                                            {rev.title} (#
-                                            {rev.version})
-                                        </option>
-                                    ))}
+                                    {revisions
+                                        .filter(r => !r.published)
+                                        .map(rev => (
+                                            <option key={rev.id} value={rev.id}>
+                                                {rev.title} (#
+                                                {rev.version})
+                                            </option>
+                                        ))}
                                 </Select>
                             </Bind>
-                        </DialogBody>
-                        <DialogFooter>
+                        </DialogContent>
+                        <DialogActions>
                             <DialogCancel>Cancel</DialogCancel>
                             <DialogAccept onClick={submit}>Publish</DialogAccept>
-                        </DialogFooter>
+                        </DialogActions>
                     </React.Fragment>
                 )}
             </Form>

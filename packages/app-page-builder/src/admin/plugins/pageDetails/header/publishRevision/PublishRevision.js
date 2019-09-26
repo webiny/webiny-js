@@ -1,13 +1,13 @@
 // @flow
-import React from "react";
-import { compose, withHandlers, withProps, withState } from "recompose";
-import withPublishRevisionHandler from "../../utils/withPublishRevisionHandler";
+import React, { useState, useCallback } from "react";
+import { usePublishRevisionHandler } from "../../utils/usePublishRevisionHandler";
+import { usePageDetails } from "@webiny/app-page-builder/admin/hooks/usePageDetails";
 import PublishRevisionDialog from "./PublishRevisionDialog";
-import { type WithPageDetailsProps } from "@webiny/app-page-builder/admin/components";
 import { IconButton } from "@webiny/ui/Button";
 import { Tooltip } from "@webiny/ui/Tooltip";
 import { ReactComponent as PublishIcon } from "@webiny/app-page-builder/admin/assets/round-publish-24px.svg";
 import { get } from "lodash";
+
 function getPublishSuggestion(page, revisions) {
     if (!page.published) {
         return page.id;
@@ -28,16 +28,24 @@ function getPublishableRevisions(revisions) {
         });
 }
 
-type Props = WithPageDetailsProps;
+const PublishRevision = () => {
+    const { page } = usePageDetails();
+    const { publishRevision } = usePublishRevisionHandler({ page });
+    const publishableRevisions = getPublishableRevisions(get(page, "revisions") || []);
+    const publishSuggestion = getPublishSuggestion(page, publishableRevisions);
+    const [openDialog, setOpenDialog] = useState(false);
 
-const PublishRevision = ({
-    openDialog,
-    showDialog,
-    hideDialog,
-    publishRevision,
-    publishableRevisions,
-    publishSuggestion
-}: Props) => {
+    const showDialog = useCallback(() => setOpenDialog(true), []);
+    const hideDialog = useCallback(() => setOpenDialog(false), []);
+
+    const onSubmit = useCallback(
+        revision => {
+            hideDialog();
+            return publishRevision(revision);
+        },
+        [publishRevision]
+    );
+
     if (!publishableRevisions.length) {
         return null;
     }
@@ -50,7 +58,7 @@ const PublishRevision = ({
             <PublishRevisionDialog
                 open={openDialog}
                 onClose={hideDialog}
-                onSubmit={publishRevision}
+                onSubmit={onSubmit}
                 selected={publishSuggestion}
                 revisions={publishableRevisions}
             />
@@ -58,24 +66,4 @@ const PublishRevision = ({
     );
 };
 
-export default compose(
-    withProps(({ pageDetails: { page } }) => {
-        const publishableRevisions = getPublishableRevisions(get(page, "revisions") || []);
-        return {
-            publishableRevisions,
-            publishSuggestion: getPublishSuggestion(page, publishableRevisions)
-        };
-    }),
-    withPublishRevisionHandler("publish"),
-    withState("openDialog", "setOpenDialog", false),
-    withHandlers({
-        showDialog: ({ setOpenDialog }) => () => setOpenDialog(true),
-        hideDialog: ({ setOpenDialog }) => () => setOpenDialog(false)
-    }),
-    withHandlers({
-        publishRevision: ({ publish, hideDialog }) => (revision: Object) => {
-            hideDialog();
-            publish(revision);
-        }
-    })
-)(PublishRevision);
+export default PublishRevision;

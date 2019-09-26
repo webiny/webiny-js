@@ -2,7 +2,7 @@
 import * as React from "react";
 import Downshift from "downshift";
 import { Input } from "@webiny/ui/Input";
-import { Chips, Chip, ChipText, ChipIcon } from "@webiny/ui/Chips";
+import { Chips, Chip } from "@webiny/ui/Chips";
 import { getOptionValue, getOptionText } from "./utils";
 
 import { ReactComponent as BaselineCloseIcon } from "./icons/baseline-close-24px.svg";
@@ -177,9 +177,11 @@ export class MultiAutoComplete extends React.Component<Props, State> {
                     <Chips disabled={disabled}>
                         {value.map((item, index) => (
                             <Chip
+                                label={getOptionText(item, this.props)}
                                 disabled
                                 key={`${getOptionValue(item, this.props)}-${index}`}
-                                onRemoval={() => {
+                                trailingIcon={<BaselineCloseIcon />}
+                                onRemove={() => {
                                     // On removal, let's update the value and call "onChange" callback.
                                     if (onChange) {
                                         const newValue = [...value];
@@ -187,10 +189,7 @@ export class MultiAutoComplete extends React.Component<Props, State> {
                                         onChange(newValue);
                                     }
                                 }}
-                            >
-                                <ChipText>{getOptionText(item, this.props)}</ChipText>
-                                <ChipIcon trailing icon={<BaselineCloseIcon />} />
-                            </Chip>
+                            />
                         ))}
                     </Chips>
                 ) : null}

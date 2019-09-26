@@ -6,10 +6,16 @@ import { Typography } from "@webiny/ui/Typography";
 import { Grid, Cell } from "@webiny/ui/Grid";
 import { ButtonSecondary, ButtonPrimary } from "@webiny/ui/Button";
 import { Elevation } from "@webiny/ui/Elevation";
+import { validation } from "@webiny/validation";
+
+const menuFormStyle = {
+    color: "var(--mdc-theme-on-surface)",
+    backgroundColor: "var(--mdc-theme-background) !important"
+};
 
 const LinkForm = ({ data, onSubmit, onCancel }: Object) => {
     return (
-        <Elevation z={4}>
+        <Elevation z={4} css={menuFormStyle}>
             <Form data={data} onSubmit={onSubmit}>
                 {({ submit, Bind }) => (
                     <>
@@ -20,14 +26,14 @@ const LinkForm = ({ data, onSubmit, onCancel }: Object) => {
                         </Grid>
                         <Grid>
                             <Cell span={12}>
-                                <Bind name="title" validators={["required"]}>
+                                <Bind name="title" validators={validation.create("required")}>
                                     <Input label="Title" />
                                 </Bind>
                             </Cell>
                         </Grid>
                         <Grid>
                             <Cell span={12}>
-                                <Bind name="url" validators={["required", "url"]}>
+                                <Bind name="url" validators={validation.create("required,url")}>
                                     <Input label="URL" />
                                 </Bind>
                             </Cell>

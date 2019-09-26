@@ -1,15 +1,15 @@
 // @flow
 import React, { useReducer } from "react";
 import { css } from "emotion";
-import { ImageEditorDialog } from "@webiny/ui/ImageUpload";
+import { Hotkeys } from "react-hotkeyz";
 import dataURLtoBlob from "dataurl-to-blob";
+import { ImageEditorDialog } from "@webiny/ui/ImageUpload";
 import { Image } from "@webiny/app/components";
 import { Tooltip } from "@webiny/ui/Tooltip";
 import { IconButton } from "@webiny/ui/Button";
-import { ReactComponent as EditIcon } from "./icons/edit.svg";
-import { Hotkeys } from "react-hotkeyz";
 import outputFileSelectionError from "@webiny/app-admin/components/FileManager/outputFileSelectionError";
-import { withSnackbar } from "@webiny/app-admin/components";
+import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
+import { ReactComponent as EditIcon } from "./icons/edit.svg";
 
 const styles = css({
     maxHeight: 200,
@@ -55,9 +55,10 @@ const reducer = (state, action) => {
     return next;
 };
 
-const EditAction = withSnackbar()(function(props: Object) {
-    const { file, uploadFile, validateFiles, showSnackbar } = props;
+const EditAction = (props: Object) => {
+    const { file, uploadFile, validateFiles } = props;
     const [state, dispatch] = useReducer(reducer, initialState);
+    const { showSnackbar } = useSnackbar();
 
     return (
         <>
@@ -92,12 +93,20 @@ const EditAction = withSnackbar()(function(props: Object) {
             </Hotkeys>
         </>
     );
-});
+};
 
 export default {
     name: "file-manager-file-type-image",
     type: "file-manager-file-type",
-    types: ["image/jpeg", "image/jpg", "image/gif", "image/png", "image/svg+xml", "image/x-icon", "image/vnd.microsoft.icon"],
+    types: [
+        "image/jpeg",
+        "image/jpg",
+        "image/gif",
+        "image/png",
+        "image/svg+xml",
+        "image/x-icon",
+        "image/vnd.microsoft.icon"
+    ],
     render: function render({ file }: Object) {
         return (
             <Image className={styles} src={file.src} alt={file.name} transform={{ width: 300 }} />

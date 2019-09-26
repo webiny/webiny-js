@@ -4,17 +4,14 @@ import {
     resolveGet,
     resolveList,
     resolveUpdate
-} from "@webiny/api/graphql";
+} from "@webiny/api/graphql/commodo";
 
 import resolveLoginSecurityUser from "./userResolvers/loginUser";
 import resolveLoginUsingToken from "./userResolvers/loginUsingToken";
 import resolveGetCurrentSecurityUser from "./userResolvers/getCurrentUser";
 import resolveUpdateCurrentSecurityUser from "./userResolvers/updateCurrentUser";
-import resolveGetCurrentSecurityUserSettings from "./userResolvers/getCurrentUserSettings";
-import resolveUpdateCurrentSecurityUserSettings from "./userResolvers/updateCurrentUserSettings";
 
-const userFetcher = ctx => ctx.getEntity("SecurityUser");
-const userSettingsFetcher = ctx => ctx.getEntity("SecurityUserSettings");
+const userFetcher = ctx => ctx.models.SecurityUser;
 
 export default {
     typeDefs: /* GraphQL */ `
@@ -65,7 +62,7 @@ export default {
         }
 
         # This input type is used by the user who is updating his own account
-        input CurrentSecurityUserInput {
+        input SecurityCurrentUserInput {
             email: String
             firstName: String
             lastName: String
@@ -149,7 +146,7 @@ export default {
             loginUsingToken(token: String!): SecurityUserLoginResponse
 
             "Update current user"
-            updateCurrentUser(data: CurrentSecurityUserInput!): SecurityUserResponse
+            updateCurrentUser(data: SecurityCurrentUserInput!): SecurityUserResponse
 
             "Update settings of current user"
             updateCurrentUserSettings(key: String!, data: JSON!): JSON
@@ -171,18 +168,14 @@ export default {
             }
         },
         SecurityQuery: {
-            getCurrentUser: resolveGetCurrentSecurityUser(userFetcher),
-            getCurrentUserSettings: resolveGetCurrentSecurityUserSettings(userSettingsFetcher),
+            getCurrentUser: resolveGetCurrentSecurityUser,
             getUser: resolveGet(userFetcher),
             listUsers: resolveList(userFetcher)
         },
         SecurityMutation: {
             loginUser: resolveLoginSecurityUser(userFetcher),
             loginUsingToken: resolveLoginUsingToken(userFetcher),
-            updateCurrentUser: resolveUpdateCurrentSecurityUser(userFetcher),
-            updateCurrentUserSettings: resolveUpdateCurrentSecurityUserSettings(
-                userSettingsFetcher
-            ),
+            updateCurrentUser: resolveUpdateCurrentSecurityUser,
             createUser: resolveCreate(userFetcher),
             updateUser: resolveUpdate(userFetcher),
             deleteUser: resolveDelete(userFetcher)

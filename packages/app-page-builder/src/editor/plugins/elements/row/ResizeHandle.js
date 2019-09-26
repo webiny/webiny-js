@@ -1,9 +1,8 @@
 //@flow
 import React from "react";
-import styled from "react-emotion";
-import { pure } from "recompose";
+import styled from "@emotion/styled";
 
-const Handle = pure(
+const Handle = React.memo(
     styled("div")(({ isResizing }) => ({
         position: "absolute",
         left: -5,
@@ -25,7 +24,7 @@ const Handle = pure(
     }))
 );
 
-const RatioContainer = pure(
+const RatioContainer = React.memo(
     styled("div")({
         position: "absolute",
         top: -12,
@@ -39,7 +38,7 @@ const RatioContainer = pure(
     })
 );
 
-const Ratio = pure(({ left, right }) => {
+const Ratio = React.memo(({ left, right }) => {
     return (
         <RatioContainer>
             {left.toFixed(1)}
@@ -49,7 +48,7 @@ const Ratio = pure(({ left, right }) => {
     );
 });
 
-const ResizeHandle = pure(({ leftWidth, rightWidth, ...props }) => {
+const ResizeHandle = React.memo(({ leftWidth, rightWidth, ...props }) => {
     return (
         <React.Fragment>
             <Handle className={"resize-handle"} {...props} />

@@ -13,7 +13,7 @@ const fileFields = /* GraphQL */ `
     }
 `;
 
-export const listFiles = gql`
+export const LIST_FILES = gql`
      query ListFiles($types: [String], $tags: [String], $sort: JSON, $page: Int, $perPage: Int, $search: String) {
         files {
             listFiles(types: $types, sort: $sort, page: $page, perPage: $perPage, search: $search, tags: $tags) {
@@ -30,7 +30,7 @@ export const listFiles = gql`
     }
 `;
 
-export const listTags = gql`
+export const LIST_TAGS = gql`
     query ListTags {
         files {
             listTags
@@ -38,7 +38,7 @@ export const listTags = gql`
     }
 `;
 
-export const createFile = gql`
+export const CREATE_FILE = gql`
     mutation CreateFile($data: FileInput!) {
         files {
             createFile(data: $data) {
@@ -51,7 +51,7 @@ export const createFile = gql`
     }
 `;
 
-export const updateFileBySrc = gql`
+export const UPDATE_FILE_BY_SRC = gql`
     mutation UpdateFile($src: String!, $data: FileInput!) {
         files {
             updateFileBySrc(src: $src, data: $data) {

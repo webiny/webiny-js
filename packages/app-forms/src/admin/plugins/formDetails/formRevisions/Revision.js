@@ -1,6 +1,5 @@
 // @flow
 import React from "react";
-import { compose } from "recompose";
 import { css } from "emotion";
 import TimeAgo from "timeago-react";
 import {
@@ -14,11 +13,8 @@ import {
 import { IconButton } from "@webiny/ui/Button";
 import { Icon } from "@webiny/ui/Icon";
 import { MenuItem, Menu, MenuDivider } from "@webiny/ui/Menu";
-import { withRouter } from "react-router-dom";
-import { withSnackbar } from "@webiny/app-admin/components";
 import { ConfirmationDialog } from "@webiny/ui/ConfirmationDialog";
 import { Tooltip } from "@webiny/ui/Tooltip";
-import withRevisionHandlers from "./withRevisionHandlers";
 import { ReactComponent as AddIcon } from "@webiny/app-forms/admin/icons/add.svg";
 import { ReactComponent as BeenHereIcon } from "@webiny/app-forms/admin/icons/beenhere.svg";
 import { ReactComponent as DeleteIcon } from "@webiny/app-forms/admin/icons/delete.svg";
@@ -28,6 +24,7 @@ import { ReactComponent as LockIcon } from "@webiny/app-forms/admin/icons/lock.s
 import { ReactComponent as MoreVerticalIcon } from "@webiny/app-forms/admin/icons/more_vert.svg";
 import { ReactComponent as PublishIcon } from "@webiny/app-forms/admin/icons/publish.svg";
 import { ReactComponent as UnpublishIcon } from "@webiny/app-forms/admin/icons/unpublish.svg";
+import { useRevision } from "./useRevision";
 
 const primaryColor = css({ color: "var(--mdc-theme-primary)" });
 
@@ -58,15 +55,15 @@ const getIcon = (rev: Object) => {
 };
 
 const Revision = (props: Object) => {
-    const {
-        revision: rev,
-        createRevision,
-        editRevision,
-        deleteRevision,
-        unpublishRevision,
-        publishRevision
-    } = props;
+    const { revision: rev, form } = props;
     const { icon, text: tooltipText } = getIcon(rev);
+    const {
+        publishRevision,
+        createRevision,
+        deleteRevision,
+        editRevision,
+        unpublishRevision
+    } = useRevision({ revision: rev, form });
 
     return (
         <ListItem>
@@ -130,30 +127,24 @@ const Revision = (props: Object) => {
                         </ConfirmationDialog>
                     )}
 
-                    <React.Fragment>
-                        <MenuDivider />
-                        <ConfirmationDialog
-                            title="Confirmation required!"
-                            message={<span>Are you sure you want to delete this revision?</span>}
-                        >
-                            {({ showConfirmation }) => (
-                                <MenuItem onClick={() => showConfirmation(deleteRevision)}>
-                                    <ListItemGraphic>
-                                        <Icon icon={<DeleteIcon />} />
-                                    </ListItemGraphic>
-                                    Delete
-                                </MenuItem>
-                            )}
-                        </ConfirmationDialog>
-                    </React.Fragment>
+                    <MenuDivider />
+                    <ConfirmationDialog
+                        title="Confirmation required!"
+                        message={<span>Are you sure you want to delete this revision?</span>}
+                    >
+                        {({ showConfirmation }) => (
+                            <MenuItem onClick={() => showConfirmation(deleteRevision)}>
+                                <ListItemGraphic>
+                                    <Icon icon={<DeleteIcon />} />
+                                </ListItemGraphic>
+                                Delete
+                            </MenuItem>
+                        )}
+                    </ConfirmationDialog>
                 </Menu>
             </ListItemMeta>
         </ListItem>
     );
 };
 
-export default compose(
-    withRouter,
-    withSnackbar(),
-    withRevisionHandlers
-)(Revision);
+export default Revision;

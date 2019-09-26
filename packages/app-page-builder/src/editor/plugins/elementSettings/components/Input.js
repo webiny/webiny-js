@@ -2,7 +2,6 @@
 import * as React from "react";
 import { connect } from "react-redux";
 import { get } from "lodash";
-import { pure } from "recompose";
 import { Typography } from "@webiny/ui/Typography";
 import { Grid, Cell } from "@webiny/ui/Grid";
 import { Input as InputCmp } from "@webiny/ui/Input";
@@ -18,7 +17,7 @@ type Props = {
     inputWidth?: number
 };
 
-const Input = pure(({ label, value, placeholder, updateValue, inputWidth }: Props) => {
+const Input = React.memo(({ label, value, placeholder, updateValue, inputWidth }: Props) => {
     return (
         <Grid>
             <Cell span={4}>

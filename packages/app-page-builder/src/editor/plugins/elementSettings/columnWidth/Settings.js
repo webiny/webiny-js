@@ -1,7 +1,6 @@
 //@flow
 import React from "react";
 import { connect } from "@webiny/app-page-builder/editor/redux";
-import { compose } from "recompose";
 import { get } from "lodash";
 import { set } from "dot-prop-immutable";
 
@@ -66,7 +65,7 @@ class Settings extends React.Component<Props> {
                                 </Cell>
                                 <Cell span={7}>
                                     <InputContainer width={"auto"} margin={0}>
-                                        <Bind name={"value"} validators={[validateWidth]}>
+                                        <Bind name={"value"} validators={validateWidth}>
                                             <Input />
                                         </Bind>
                                     </InputContainer>
@@ -80,9 +79,7 @@ class Settings extends React.Component<Props> {
     }
 }
 
-export default compose(
-    connect(
-        state => ({ element: getActiveElement(state) }),
-        { updateElement }
-    )
+export default connect(
+    state => ({ element: getActiveElement(state) }),
+    { updateElement }
 )(Settings);

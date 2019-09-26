@@ -1,21 +1,20 @@
-import React from "react";
+import React, { useCallback } from "react";
 import { Provider } from "react-redux";
-import { compose, withHandlers } from "recompose";
+import useReactRouter from "use-react-router";
+import { Query, useApolloClient } from "react-apollo";
+import { get } from "lodash";
 import { Editor as PbEditor } from "@webiny/app-page-builder/editor";
 import { createElement } from "@webiny/app-page-builder/editor/utils";
 import { redux } from "@webiny/app-page-builder/editor/redux";
 import { SETUP_EDITOR } from "@webiny/app-page-builder/editor/actions";
-import { withRouter } from "react-router-dom";
-import { Query, withApollo } from "react-apollo";
-import { getPage } from "@webiny/app-page-builder/admin/graphql/pages";
-import { withSavedElements } from "@webiny/app-page-builder/admin/components";
+import { GET_PAGE } from "@webiny/app-page-builder/admin/graphql/pages";
+import { useSavedElements } from "@webiny/app-page-builder/admin/hooks/useSavedElements";
 import Snackbar from "@webiny/app-admin/plugins/Snackbar/Snackbar";
-import { withSnackbar } from "@webiny/app-admin/components";
+import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 
 import { Typography } from "@webiny/ui/Typography";
 import { LoadingEditor, LoadingTitle } from "./EditorStyled.js";
 import editorMock from "@webiny/app-page-builder/admin/assets/editor-mock.png";
-import { get } from "lodash";
 
 const getEmptyData = (page = {}, revisions = []) => {
     return {
@@ -34,33 +33,15 @@ const getEmptyData = (page = {}, revisions = []) => {
 
 let pageSet = null;
 
-const Editor = ({ renderEditor, match, history, showSnackbar }) => {
-    return (
-        <Query
-            query={getPage()}
-            variables={{ id: match.params.id }}
-            onCompleted={data => {
-                const error = get(data, "pageBuilder.page.error.message");
-                if (error) {
-                    history.push(`/page-builder/pages`);
-                    showSnackbar(error);
-                }
-            }}
-        >
-            {renderEditor}
-        </Query>
-    );
-};
+const Editor = () => {
+    const client = useApolloClient();
+    const { match, history } = useReactRouter();
+    const { showSnackbar } = useSnackbar();
+    const ready = useSavedElements();
 
-export default compose(
-    withApollo,
-    withRouter,
-    withSnackbar(),
-    withSavedElements(),
-    withHandlers({
-        // eslint-disable-next-line react/display-name
-        renderEditor: ({ elements, client }) => ({ data, loading }) => {
-            if (loading || !Array.isArray(elements)) {
+    const renderEditor = useCallback(
+        ({ data, loading }) => {
+            if (loading || !ready) {
                 return (
                     <LoadingEditor>
                         <img src={editorMock} />
@@ -109,6 +90,25 @@ export default compose(
                     </div>
                 </React.Fragment>
             );
-        }
-    })
-)(Editor);
+        },
+        [ready]
+    );
+
+    return (
+        <Query
+            query={GET_PAGE()}
+            variables={{ id: match.params.id }}
+            onCompleted={data => {
+                const error = get(data, "pageBuilder.page.error.message");
+                if (error) {
+                    history.push(`/page-builder/pages`);
+                    showSnackbar(error);
+                }
+            }}
+        >
+            {renderEditor}
+        </Query>
+    );
+};
+
+export default Editor;

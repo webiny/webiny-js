@@ -3,7 +3,7 @@ import * as React from "react";
 import classSet from "classnames";
 import { Cell, Grid, GridInner, type Props } from "@webiny/ui/Grid";
 import { css } from "emotion";
-import styled from "react-emotion";
+import styled from "@emotion/styled";
 
 const grid = css({
     "&.mdc-layout-grid": {
@@ -64,7 +64,7 @@ const RightPanel = (props: Props) => {
     const { children, ...rest } = props;
     return (
         <Cell span={props.span ? props.span : 7} {...rest}>
-            <RightPanelWrapper id={"webiny-secondary-view-right-panel"}>
+            <RightPanelWrapper id={"webiny-split-view-right-panel"}>
                 {children}
             </RightPanelWrapper>
         </Cell>

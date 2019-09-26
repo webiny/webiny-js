@@ -4,11 +4,14 @@ import SortableTree from "react-sortable-tree";
 import { getPlugins } from "@webiny/plugins";
 import MenuItemRenderer from "./MenuItemRenderer";
 import { Typography } from "@webiny/ui/Typography";
-import styled from "react-emotion";
+import styled from "@emotion/styled";
 
 const TreeWrapper = styled("div")({
     width: "100%",
-    height: 400
+    height: 400,
+    ".rst__lineHalfHorizontalRight::before, .rst__lineFullVertical::after, .rst__lineHalfVerticalTop::after, .rst__lineHalfVerticalBottom::after, .rst__lineChildren::after": {
+        backgroundColor: "var(--mdc-theme-on-surface)"
+    }
 });
 
 const EmptyTree = styled("div")({
@@ -16,13 +19,14 @@ const EmptyTree = styled("div")({
     height: "100%",
     display: "flex",
     alignItems: "center",
-    justifyContent: "center"
+    justifyContent: "center",
+    color: "var(--mdc-theme-on-surface)"
 });
 
 class MenuItemsList extends React.Component<*> {
     static canHaveChildren(node: Object) {
         const plugin = getPlugins("pb-menu-item").find(pl => pl.menuItem.type === node.type);
-        return plugin ? plugin.canHaveChildren : false;
+        return plugin ? plugin.menuItem.canHaveChildren : false;
     }
 
     render() {
@@ -41,7 +45,7 @@ class MenuItemsList extends React.Component<*> {
                     onChange={onChange}
                     canNodeHaveChildren={MenuItemsList.canHaveChildren}
                     nodeContentRenderer={MenuItemRenderer}
-                    rowHeight={45}
+                    rowHeight={80}
                     generateNodeProps={() => ({
                         editItem,
                         deleteItem

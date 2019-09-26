@@ -1,6 +1,6 @@
 // @flow
-import { DropTarget } from "react-dnd";
-import { compose, pure } from "recompose";
+import * as React from "react";
+import { useDrop } from "react-dnd";
 import { connect } from "@webiny/app-page-builder/editor/redux";
 import { getIsDragging } from "@webiny/app-page-builder/editor/selectors";
 
@@ -14,44 +14,34 @@ const defaultVisibility = ({ type, isDragging, item }) => {
     return isDragging;
 };
 
-const Droppable = pure(
-    ({
-        item,
-        type,
-        children,
-        connectDropTarget,
-        isDragging,
-        isOver,
-        isDroppable = () => true,
-        isVisible
-    }) => {
-        if (!isVisible) {
-            isVisible = defaultVisibility;
+const Droppable = React.memo(props => {
+    let { type, children, isDragging, isDroppable = () => true, isVisible, onDrop } = props;
+
+    const [{ item, isOver }, drop] = useDrop({
+        accept: "element",
+        collect: monitor => ({
+            isOver: monitor.isOver() && monitor.isOver({ shallow: true }),
+            item: monitor.getItem()
+        }),
+        drop(item, monitor) {
+            if (typeof onDrop === "function") {
+                onDrop(monitor.getItem());
+            }
         }
+    });
 
-        if (!isVisible({ type, item, isDragging })) {
-            return null;
-        }
-
-        // $FlowFixMe
-        return connectDropTarget(children({ isDragging, isOver, isDroppable: isDroppable(item) }));
+    if (!isVisible) {
+        isVisible = defaultVisibility;
     }
-);
 
-// Dragging
-const spec = {
-    drop(props, monitor) {
-        props.onDrop(monitor.getItem());
+    if (!isVisible({ type, item, isDragging })) {
+        return null;
     }
-};
 
-const props = (connect, monitor) => ({
-    connectDropTarget: connect.dropTarget(),
-    isOver: monitor.isOver() && monitor.isOver({ shallow: true }),
-    item: monitor.getItem()
+    // $FlowFixMe
+    return children({ isDragging, isOver, isDroppable: isDroppable(item), drop });
 });
 
-export default compose(
-    connect(state => ({ isDragging: getIsDragging(state) })),
-    DropTarget("element", spec, props)
-)(Droppable);
+const mapStateToProps = state => ({ isDragging: getIsDragging(state) });
+
+export default connect(mapStateToProps)(Droppable);

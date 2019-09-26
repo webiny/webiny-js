@@ -5,10 +5,8 @@ import {
     Menu as BaseMenu,
     MenuItem as BaseMenuItem,
     MenuSurface,
-    MenuSurfaceAnchor,
-    type SelectedEventDetailT
+    MenuSurfaceAnchor
 } from "@rmwc/menu";
-import type { CustomEventT } from "@rmwc/base";
 import { css } from "emotion";
 import classNames from "classnames";
 
@@ -26,7 +24,7 @@ type Props = {
     // A handler which triggers the menu, eg. button or link.
     handle?: React.Node,
 
-    onSelect?: (evt: CustomEventT<SelectedEventDetailT>) => mixed,
+    onSelect?: (evt: any) => mixed,
 
     // Position the menu to one of anchor corners.
     // 'bottomEnd' | 'bottomLeft' | 'bottomRight' | 'bottomStart' | 'topEnd' | 'topLeft' | 'topRight' | 'topStart'
@@ -132,7 +130,7 @@ class Menu extends React.Component<Props, State> {
 
     render() {
         return (
-            <MenuSurfaceAnchor elementRef={this.anchorRef}>
+            <MenuSurfaceAnchor ref={this.anchorRef}>
                 {this.renderMenuContent()}
                 {this.props.handle &&
                     /* $FlowFixMe */

@@ -1,13 +1,18 @@
 // @flow
 import _ from "lodash";
 import ValidationError from "./validationError";
-import type { Validator, ValidateOptions, ParsedValidators } from "./../types";
+import type { Validator, ValidateOptions, ParsedValidators } from "./types";
 
 const entries = (validators: ParsedValidators): Array<[string, Array<string>]> => {
     return (Object.entries(validators): any);
 };
 
 const invalidRules = "Validators must be specified as a string (eg. required,minLength:10,email).";
+
+const createdValidators = {
+    async: {},
+    sync: {}
+};
 
 /**
  * Main class of Validation library.
@@ -129,11 +134,21 @@ class Validation {
     }
 
     create(validators: string) {
-        return value => this.validate(value, validators);
+        if (createdValidators.async[validators]) {
+            return createdValidators.async[validators];
+        }
+
+        createdValidators.async[validators] = value => this.validate(value, validators);
+        return createdValidators.async[validators];
     }
 
     createSync(validators: string) {
-        return value => this.validateSync(value, validators);
+        if (createdValidators.sync[validators]) {
+            return createdValidators.sync[validators];
+        }
+
+        createdValidators.sync[validators] = value => this.validateSync(value, validators);
+        return createdValidators.sync[validators];
     }
 
     /**

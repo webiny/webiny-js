@@ -5,10 +5,10 @@ import { Form } from "@webiny/form";
 import { Grid, Cell } from "@webiny/ui/Grid";
 import { Input } from "@webiny/ui/Input";
 import { ButtonPrimary } from "@webiny/ui/Button";
-import RolesAutoComplete from "./../Components/RolesAutoComplete";
-import type { WithCrudFormProps } from "@webiny/app-admin/components";
+import RolesAutocomplete from "./../Components/RolesAutocomplete";
 import { CircularProgress } from "@webiny/ui/Progress";
-
+import { useCrud } from "@webiny/app-admin/hooks/useCrud";
+import { validation } from "@webiny/validation";
 import {
     SimpleForm,
     SimpleFormFooter,
@@ -16,36 +16,32 @@ import {
     SimpleFormHeader
 } from "@webiny/app-admin/components/SimpleForm";
 
-const t = i18n.namespace("Security.GroupsForm");
+const t = i18n.ns("app-security/admin/groups/form");
 
-const GroupForm = ({
-    onSubmit,
-    loading,
-    data,
-    invalidFields
-}: WithCrudFormProps & { scopes: Array<string> }) => {
+const GroupForm = () => {
+    const { form } = useCrud();
     return (
-        <Form invalidFields={invalidFields} data={data} onSubmit={onSubmit}>
+        <Form {...form}>
             {({ data, form, Bind }) => (
                 <SimpleForm>
-                    {loading && <CircularProgress />}
+                    {form.loading && <CircularProgress />}
                     <SimpleFormHeader title={data.name ? data.name : "Untitled"} />
                     <SimpleFormContent>
                         <Grid>
                             <Cell span={6}>
-                                <Bind name="name" validators={["required"]}>
+                                <Bind name="name" validators={validation.create("required")}>
                                     <Input label={t`Name`} />
                                 </Bind>
                             </Cell>
                             <Cell span={6}>
-                                <Bind name="slug" validators={["required"]}>
+                                <Bind name="slug" validators={validation.create("required")}>
                                     <Input disabled={data.id} label={t`Slug`} />
                                 </Bind>
                             </Cell>
                         </Grid>
                         <Grid>
                             <Cell span={12}>
-                                <Bind name="description" validators={["required"]}>
+                                <Bind name="description" validators={validation.create("required")}>
                                     <Input label={t`Description`} rows={4} />
                                 </Bind>
                             </Cell>
@@ -53,7 +49,7 @@ const GroupForm = ({
                         <Grid>
                             <Cell span={12}>
                                 <Bind name="roles">
-                                    <RolesAutoComplete label={t`Roles`} />
+                                    <RolesAutocomplete label={t`Roles`} />
                                 </Bind>
                             </Cell>
                         </Grid>

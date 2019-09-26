@@ -83,7 +83,7 @@ export const DATA_FIELDS = `
     }
 `;
 
-export const getPublishedForm = gql`
+export const GET_PUBLISHED_FORM = gql`
     query GetPublishedForm($id: ID, $parent: ID) {
         forms {
             getPublishedForm(id: $id, parent: $parent) {

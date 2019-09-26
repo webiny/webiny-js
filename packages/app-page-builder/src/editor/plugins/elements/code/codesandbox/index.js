@@ -1,6 +1,6 @@
 // @flow
 import React from "react";
-import styled from "react-emotion";
+import styled from "@emotion/styled";
 import { Tab } from "@webiny/ui/Tabs";
 import { Input } from "@webiny/ui/Input";
 import { Grid, Cell } from "@webiny/ui/Grid";
@@ -12,6 +12,7 @@ import {
 } from "./../../utils/oembed/createEmbedPlugin";
 
 import { ReactComponent as LogoIcon } from "./codesandbox-logo.svg";
+import { validation } from "@webiny/validation";
 
 const PreviewBox = styled("div")({
     textAlign: "center",
@@ -50,7 +51,7 @@ export default (): Array<PluginType> => [
                 <Tab icon={<CodeIcon />} label="CodeSandbox">
                     <Grid>
                         <Cell span={12}>
-                            <Bind name={"source.url"} validators={["required", "url"]}>
+                            <Bind name={"source.url"} validators={validation.create("required,url")}>
                                 <Input
                                     label={"CodeSandbox URL"}
                                     description={"Enter a CodeSandbox URL"}

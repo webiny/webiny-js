@@ -2,7 +2,7 @@
 import * as React from "react";
 import Block from "./Block";
 import { Typography } from "@webiny/ui/Typography";
-import styled from "react-emotion";
+import styled from "@emotion/styled";
 
 type Props = {
     form: Object

@@ -1,10 +1,9 @@
-//@flow
 import React from "react";
-import { connect } from "@webiny/app-page-builder/editor/redux";
-import { compose } from "recompose";
 import { get } from "lodash";
 import { set } from "dot-prop-immutable";
 
+import { connect } from "@webiny/app-page-builder/editor/redux";
+import { useHandler } from "@webiny/app/hooks/useHandler";
 import { Tabs, Tab } from "@webiny/ui/Tabs";
 import { Input } from "@webiny/ui/Input";
 import { InputContainer } from "@webiny/app-page-builder/editor/plugins/elementSettings/components/StyledComponents";
@@ -32,74 +31,60 @@ const validateHeight = value => {
     throw Error("Specify % or px!");
 };
 
-type Props = {
-    element: Object,
-    updateElement: Function
-};
-
-class Settings extends React.Component<Props> {
-    historyUpdated = {};
-
-    updateSettings = async (data, form) => {
+const Settings = props => {
+    const updateSettings = useHandler(props, ({ element, updateElement }) => async (data, form) => {
         const valid = await form.validate();
         if (!valid) {
             return;
         }
 
-        const { element, updateElement } = this.props;
         const attrKey = `data.settings.height`;
         const newElement = set(element, attrKey, data);
 
         updateElement({ element: newElement });
-    };
+    });
 
-    render() {
-        const { element } = this.props;
+    const data = get(props.element.data, "settings.height", { fullHeight: false, value: "100%" });
 
-        const data = get(element.data, "settings.height", { fullHeight: false, value: "100%" });
-
-        return (
-            <Form data={data} onChange={this.updateSettings}>
-                {({ Bind, data }) => (
-                    <Tabs>
-                        <Tab label={"height"}>
+    return (
+        <Form data={data} onChange={updateSettings}>
+            {({ Bind, data }) => (
+                <Tabs>
+                    <Tab label={"height"}>
+                        <Grid>
+                            <Cell span={5}>
+                                <Typography use={"overline"}>full height</Typography>
+                            </Cell>
+                            <Cell span={7}>
+                                <InputContainer width={"auto"} margin={0}>
+                                    <Bind name={"fullHeight"}>
+                                        <Switch />
+                                    </Bind>
+                                </InputContainer>
+                            </Cell>
+                        </Grid>
+                        {!data.fullHeight && (
                             <Grid>
                                 <Cell span={5}>
-                                    <Typography use={"overline"}>full height</Typography>
+                                    <Typography use={"overline"}>height</Typography>
                                 </Cell>
                                 <Cell span={7}>
                                     <InputContainer width={"auto"} margin={0}>
-                                        <Bind name={"fullHeight"}>
-                                            <Switch />
+                                        <Bind name={"value"} validators={validateHeight}>
+                                            <Input />
                                         </Bind>
                                     </InputContainer>
                                 </Cell>
                             </Grid>
-                            {!data.fullHeight && (
-                                <Grid>
-                                    <Cell span={5}>
-                                        <Typography use={"overline"}>height</Typography>
-                                    </Cell>
-                                    <Cell span={7}>
-                                        <InputContainer width={"auto"} margin={0}>
-                                            <Bind name={"value"} validators={[validateHeight]}>
-                                                <Input />
-                                            </Bind>
-                                        </InputContainer>
-                                    </Cell>
-                                </Grid>
-                            )}
-                        </Tab>
-                    </Tabs>
-                )}
-            </Form>
-        );
-    }
-}
+                        )}
+                    </Tab>
+                </Tabs>
+            )}
+        </Form>
+    );
+};
 
-export default compose(
-    connect(
-        state => ({ element: getActiveElement(state) }),
-        { updateElement }
-    )
+export default connect(
+    state => ({ element: getActiveElement(state) }),
+    { updateElement }
 )(Settings);

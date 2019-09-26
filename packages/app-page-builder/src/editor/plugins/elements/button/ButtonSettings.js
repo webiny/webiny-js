@@ -1,34 +1,61 @@
 // @flow
-import * as React from "react";
+import React, { useCallback, useMemo } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { getPlugins } from "@webiny/plugins";
 import { connect } from "@webiny/app-page-builder/editor/redux";
-import { compose, withHandlers } from "recompose";
 import { set } from "dot-prop-immutable";
 import { get, isEqual } from "lodash";
 import { Tabs, Tab } from "@webiny/ui/Tabs";
 import { Select } from "@webiny/ui/Select";
 import { Grid, Cell } from "@webiny/ui/Grid";
 import { Typography } from "@webiny/ui/Typography";
-import { withPageBuilder } from "@webiny/app-page-builder/context";
+import { usePageBuilder } from "@webiny/app-page-builder/hooks/usePageBuilder";
 import { updateElement } from "@webiny/app-page-builder/editor/actions";
 import { getActiveElement } from "@webiny/app-page-builder/editor/selectors";
 import Input from "@webiny/app-page-builder/editor/plugins/elementSettings/components/Input";
 import ColorPicker from "@webiny/app-page-builder/editor/plugins/elementSettings/components/ColorPicker";
 import IconPicker from "@webiny/app-page-builder/editor/plugins/elementSettings/components/IconPicker";
 
-const ButtonSettings = ({
-    element,
-    pageBuilder: { theme },
-    updateType,
-    updateIcon,
-    updateIconColor,
-    updateIconColorPreview,
-    updateIconWidth,
-    updateIconPosition
-}: Object) => {
+const ButtonSettings = React.memo(({ element, updateElement }: Object) => {
+    const { theme } = usePageBuilder();
     const { types } = get(theme, "elements.button", []);
     const { type = get(types, "0.name", ""), icon = {} } = get(element, "data", {});
+
+    const setData = useMemo(() => {
+        const historyUpdated = {};
+
+        return (name, value, history = true) => {
+            const attrKey = `data.${name}`;
+
+            let newElement = set(element, attrKey, value);
+            if (name.startsWith("icon")) {
+                const { id, width, color } = get(newElement, "data.icon");
+                newElement = set(newElement, "data.icon.svg", getSvg(id, { width, color }));
+            }
+
+            if (!history) {
+                updateElement({ element: newElement, history });
+                return;
+            }
+
+            if (historyUpdated[name] !== value) {
+                historyUpdated[name] = value;
+                updateElement({ element: newElement });
+            }
+        };
+    }, [element, updateElement]);
+
+    const updateType = useCallback((value: Object) => setData("type", value), [setData]);
+    const updateIcon = useCallback((value: Object) => setData("icon.id", value.id), [setData]);
+    const updateIconColor = useCallback((value: string) => setData("icon.color", value), [setData]);
+    const updateIconColorPreview = useCallback(
+        (value: string) => setData("icon.color", value, false),
+        [setData]
+    );
+    const updateIconWidth = useCallback((value: string) => setData("icon.width", value), [setData]);
+    const updateIconPosition = useCallback((value: string) => setData("icon.position", value), [
+        setData
+    ]);
 
     return (
         <React.Fragment>
@@ -75,7 +102,7 @@ const ButtonSettings = ({
             </Tabs>
         </React.Fragment>
     );
-};
+});
 
 let icons;
 const getIcons = () => {
@@ -98,45 +125,7 @@ const getSvg = (id: Array<string>, props: Object) => {
     return renderToStaticMarkup(React.cloneElement(icon.svg, props));
 };
 
-export default compose(
-    connect(
-        state => ({ element: getActiveElement(state) }),
-        { updateElement }
-    ),
-    withPageBuilder(),
-    withHandlers({
-        updateData: ({ updateElement, element }) => {
-            const historyUpdated = {};
-
-            return (name, value, history = true) => {
-                const attrKey = `data.${name}`;
-
-                let newElement = set(element, attrKey, value);
-                if (name.startsWith("icon")) {
-                    const { id, width, color } = get(newElement, "data.icon");
-                    newElement = set(newElement, "data.icon.svg", getSvg(id, { width, color }));
-                }
-
-                if (!history) {
-                    updateElement({ element: newElement, history });
-                    return;
-                }
-
-                if (historyUpdated[name] !== value) {
-                    historyUpdated[name] = value;
-                    updateElement({ element: newElement });
-                }
-            };
-        }
-    }),
-    withHandlers({
-        updateType: ({ updateData }) => (value: Object) => updateData("type", value),
-        updateIcon: ({ updateData }) => (value: Object) => updateData("icon.id", value.id),
-        updateIconColor: ({ updateData }) => (value: string) => updateData("icon.color", value),
-        updateIconColorPreview: ({ updateData }) => (value: string) =>
-            updateData("icon.color", value, false),
-        updateIconWidth: ({ updateData }) => (value: string) => updateData("icon.width", value),
-        updateIconPosition: ({ updateData }) => (value: string) =>
-            updateData("icon.position", value)
-    })
+export default connect(
+    state => ({ element: getActiveElement(state) }),
+    { updateElement }
 )(ButtonSettings);

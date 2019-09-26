@@ -1,12 +1,18 @@
 // @flow
-import * as React from "react";
+import React from "react";
+import { useHandler } from "@webiny/app/hooks/useHandler";
 import { connect } from "@webiny/app-page-builder/editor/redux";
-import { compose, withHandlers } from "recompose";
 import { getPlugins } from "@webiny/plugins";
 import { deleteElement } from "@webiny/app-page-builder/editor/actions";
 import { getActiveElement } from "@webiny/app-page-builder/editor/selectors";
 
-const DeleteAction = ({ element, children, deleteElement }: Object) => {
+const DeleteAction = (props: Object) => {
+    const { element, children } = props;
+
+    const onClick = useHandler(props, ({ element, deleteElement }) => () => {
+        deleteElement({ element });
+    });
+
     const plugin = getPlugins("pb-page-element").find(pl => pl.elementType === element.type);
     if (!plugin) {
         return null;
@@ -18,17 +24,10 @@ const DeleteAction = ({ element, children, deleteElement }: Object) => {
         }
     }
 
-    return React.cloneElement(children, { onClick: deleteElement });
+    return React.cloneElement(children, { onClick });
 };
 
-export default compose(
-    connect(
-        state => ({ element: getActiveElement(state) }),
-        { deleteElement }
-    ),
-    withHandlers({
-        deleteElement: ({ deleteElement, element }) => () => {
-            deleteElement({ element });
-        }
-    })
+export default connect(
+    state => ({ element: getActiveElement(state) }),
+    { deleteElement }
 )(DeleteAction);

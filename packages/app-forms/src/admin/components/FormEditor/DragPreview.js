@@ -1,10 +1,10 @@
 import React from "react";
-import { DragLayer } from "react-dnd";
+import { useDragLayer } from "react-dnd";
 
 const layerStyles = {
     position: "fixed",
     pointerEvents: "none",
-    zIndex: 1000,
+    zIndex: 100,
     left: 0,
     top: 0,
     width: "100%",
@@ -26,37 +26,34 @@ const onOffsetChange = monitor => () => {
     dragPreviewRef.style["-webkit-transform"] = transform;
 };
 
-export default DragLayer(monitor => {
-    if (!subscribedToOffsetChange) {
-        monitor.subscribeToOffsetChange(onOffsetChange(monitor));
-        subscribedToOffsetChange = true;
-    }
-
-    return {
-        item: monitor.getItem(),
-        itemType: monitor.getItemType(),
-        currentOffset: monitor.getClientOffset(),
-        isDragging: monitor.isDragging()
-    };
-})(
-    React.memo(({ isDragging }) => {
-        if (!isDragging) {
-            return null;
+export default () => {
+    const { isDragging } = useDragLayer(monitor => {
+        if (!subscribedToOffsetChange) {
+            monitor.subscribeToOffsetChange(onOffsetChange(monitor));
+            subscribedToOffsetChange = true;
         }
 
-        return (
-            <div style={layerStyles}>
-                <div style={{ display: "block" }} ref={el => (dragPreviewRef = el)}>
-                    <div
-                        style={{
-                            width: 30,
-                            height: 30,
-                            backgroundColor: "var(--mdc-theme-primary)",
-                            borderRadius: "50%"
-                        }}
-                    />
-                </div>
+        return {
+            isDragging: monitor.isDragging()
+        };
+    });
+
+    if (!isDragging) {
+        return null;
+    }
+
+    return (
+        <div style={layerStyles}>
+            <div style={{ display: "block" }} ref={el => (dragPreviewRef = el)}>
+                <div
+                    style={{
+                        width: 30,
+                        height: 30,
+                        backgroundColor: "var(--mdc-theme-primary)",
+                        borderRadius: "50%"
+                    }}
+                />
             </div>
-        );
-    })
-);
+        </div>
+    );
+};

@@ -2,7 +2,7 @@
 // $FlowFixMe
 import React, { useEffect, useState } from "react";
 import { Tab } from "@webiny/ui/Tabs";
-import styled from "react-emotion";
+import styled from "@emotion/styled";
 import { Elevation } from "@webiny/ui/Elevation";
 import FormPreview from "./FormPreview";
 import Header from "./Header";

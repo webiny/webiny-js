@@ -1,7 +1,6 @@
 // @flow
 import React from "react";
 import { css } from "emotion";
-import { withRouter } from "react-router-dom";
 import { ButtonDefault } from "@webiny/ui/Button";
 import { Icon } from "@webiny/ui/Icon";
 import { ReactComponent as DownButton } from "@webiny/app-forms/admin/icons/round-arrow_drop_down-24px.svg";
@@ -46,4 +45,4 @@ const RevisionSelector = ({ revision, form, selectRevision }: *) => {
     );
 };
 
-export default withRouter(RevisionSelector);
+export default RevisionSelector;

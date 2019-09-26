@@ -4,13 +4,16 @@ import { Grid, Cell } from "@webiny/ui/Grid";
 import { camelCase } from "lodash";
 import { useFormEditor } from "@webiny/app-forms/admin/components/FormEditor/Context";
 import { I18NInput } from "@webiny/app-i18n/admin/components";
-import { useI18N } from "@webiny/app-i18n/context";
+import { useI18N } from "@webiny/app-i18n/hooks/useI18N";
+import { validation } from "@webiny/validation";
 
 const GeneralTab = ({ field, form }) => {
     const { Bind, setValue } = form;
     const inputRef = useRef(null);
     const { getField, getFieldPlugin } = useFormEditor();
     const { getValue } = useI18N();
+
+    const setRef = useCallback(ref => (inputRef.current = ref), []);
 
     useEffect(() => {
         inputRef.current && inputRef.current.focus();
@@ -48,12 +51,19 @@ const GeneralTab = ({ field, form }) => {
         <>
             <Grid>
                 <Cell span={6}>
-                    <Bind name={"label"} validators={["required"]} afterChange={afterChangeLabel}>
-                        <I18NInput label={"Label"} inputRef={inputRef} />
+                    <Bind
+                        name={"label"}
+                        validators={validation.create("required")}
+                        afterChange={afterChangeLabel}
+                    >
+                        <I18NInput label={"Label"} inputRef={setRef} />
                     </Bind>
                 </Cell>
                 <Cell span={6}>
-                    <Bind name={"fieldId"} validators={["required", uniqueFieldIdValidator]}>
+                    <Bind
+                        name={"fieldId"}
+                        validators={[validation.create("required"), uniqueFieldIdValidator]}
+                    >
                         <Input label={"Field ID"} />
                     </Bind>
                 </Cell>

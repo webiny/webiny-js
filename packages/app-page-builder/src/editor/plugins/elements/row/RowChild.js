@@ -1,10 +1,10 @@
 // @flow
-import * as React from "react";
-import { compose, withHandlers, pure, setDisplayName } from "recompose";
-import { connect } from "@webiny/app-page-builder/editor/redux";
+import React, { useCallback } from "react";
 import { css } from "emotion";
 import { get } from "lodash";
-import styled from "react-emotion";
+import styled from "@emotion/styled";
+import { useHandlers } from "@webiny/app/hooks/useHandlers";
+import { connect } from "@webiny/app-page-builder/editor/redux";
 import DropZone from "@webiny/app-page-builder/editor/components/DropZone";
 import Resizer from "@webiny/app-page-builder/editor/components/Resizer";
 import Element from "@webiny/app-page-builder/editor/components/Element";
@@ -42,68 +42,63 @@ const noPointer = css({
     }
 });
 
-const RowChild = pure(
-    ({
+const RowChild = React.memo((props: Props) => {
+    const {
+        onResize,
+        onResizeStop,
         target,
         resizing,
         element,
         index,
         leftElement,
-        last = false,
-        dropElementLeft,
-        dropElementRight,
-        resizeStart,
-        resizeStop,
-        resize
-    }: Props) => {
-        return (
-            <ColumnContainer
-                data-type="row-column-container"
-                style={{ width: get(element, "data.width", 100) + "%", position: "relative" }}
-            >
-                {index > 0 && (
-                    <Resizer
-                        axis={"x"}
-                        onResizeStart={resizeStart}
-                        onResizeStop={resizeStop}
-                        onResize={resize}
-                    >
-                        {resizeProps => (
-                            <ResizeHandle
-                                {...resizeProps}
-                                leftWidth={leftElement.data.width}
-                                rightWidth={element.data.width}
-                            />
-                        )}
-                    </Resizer>
-                )}
-                <DropZone.Left type={target.type} onDrop={dropElementLeft} />
-                <Element id={element.id} className={resizing && noPointer} />
-                {last && <DropZone.Right type={target.type} onDrop={dropElementRight} />}
-            </ColumnContainer>
-        );
-    }
-);
+        last = false
+    } = props;
 
-export default compose(
-    setDisplayName("RowChild"),
-    connect(
-        state => ({
-            isDragging: getIsDragging(state)
-        }),
-        { dropElement }
-    ),
-    withHandlers({
+    const resize = useCallback(diff => onResize(diff), [onResize]);
+
+    const { resizeStart, dropElementLeft, dropElementRight } = useHandlers(props, {
         resizeStart: ({ onResizeStart, element, leftElement }) => () => {
             onResizeStart(leftElement, element);
         },
-        resizeStop: ({ onResizeStop }) => () => onResizeStop(),
-        resize: ({ onResize }) => diff => onResize(diff),
-        dropElementLeft: ({ dropElement, target, index }) => (source: Object) => {
+        dropElementLeft: ({ target, index, dropElement }) => source => {
             dropElement({ source, target: { ...target, position: index } });
         },
-        dropElementRight: ({ dropElement, target, count }) => (source: Object) => {
+        dropElementRight: ({ target, count, dropElement }) => source => {
             dropElement({ source, target: { ...target, position: count } });
         }
-    })
+    });
+
+    return (
+        <ColumnContainer
+            data-type="row-column-container"
+            style={{ width: get(element, "data.width", 100) + "%", position: "relative" }}
+        >
+            {index > 0 && (
+                <Resizer
+                    axis={"x"}
+                    onResizeStart={resizeStart}
+                    onResizeStop={onResizeStop}
+                    onResize={resize}
+                >
+                    {resizeProps => (
+                        <ResizeHandle
+                            {...resizeProps}
+                            leftWidth={leftElement.data.width}
+                            rightWidth={element.data.width}
+                        />
+                    )}
+                </Resizer>
+            )}
+            <DropZone.Left type={target.type} onDrop={dropElementLeft} />
+            <Element id={element.id} className={resizing && noPointer} />
+            {last && <DropZone.Right type={target.type} onDrop={dropElementRight} />}
+        </ColumnContainer>
+    );
+});
+
+export default connect(
+    state => ({
+        isDragging: getIsDragging(state)
+    }),
+    { dropElement }
 )(RowChild);

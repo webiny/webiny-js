@@ -1,7 +1,6 @@
 // @flow
-import * as React from "react";
+import React, { useEffect, useCallback } from "react";
 import { css } from "emotion";
-import { compose, withHandlers, lifecycle } from "recompose";
 import { get } from "lodash";
 
 function appendSDK(props) {
@@ -9,7 +8,7 @@ function appendSDK(props) {
     const { url } = get(element, "data.source") || {};
 
     if (!sdk || !url || window[global]) {
-        return;
+        return Promise.resolve();
     }
 
     return new Promise(resolve => {
@@ -35,38 +34,33 @@ function initEmbed(props) {
 }
 
 const centerAlign = css({
-    "*:first-child": {
+    "*:first-of-type": {
         marginLeft: "auto !important",
         marginRight: "auto !important"
     }
 });
 
-export default compose(
-    withHandlers({
-        renderEmbed: ({ renderEmbed, ...props }: Object) => () => {
-            if (typeof renderEmbed === "function") {
-                return renderEmbed(props);
-            }
-
-            const { element } = props;
-
-            return (
-                <div
-                    id={element.id}
-                    className={centerAlign}
-                    dangerouslySetInnerHTML={{ __html: get(element, "data.oembed.html") || "" }}
-                />
-            );
-        }
-    }),
-    lifecycle({
-        async componentDidMount() {
-            await appendSDK(this.props);
-            initEmbed(this.props);
-        }
-    })
-)(({ element, renderEmbed }: Object) => {
+export default (props: Object) => {
+    const { element, renderEmbed } = props;
     const { url } = get(element, "data.source") || {};
 
-    return url ? renderEmbed() : null;
-});
+    const renderer = useCallback(() => {
+        if (typeof renderEmbed === "function") {
+            return renderEmbed(props);
+        }
+
+        return (
+            <div
+                id={element.id}
+                className={centerAlign}
+                dangerouslySetInnerHTML={{ __html: get(element, "data.oembed.html") || "" }}
+            />
+        );
+    }, [element, renderEmbed]);
+
+    useEffect(() => {
+        appendSDK(props).then(() => initEmbed(props));
+    });
+
+    return url ? renderer() : null;
+};

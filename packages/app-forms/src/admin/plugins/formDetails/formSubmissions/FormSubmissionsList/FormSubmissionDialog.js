@@ -3,20 +3,13 @@ import React from "react";
 import { css } from "emotion";
 import { Typography } from "@webiny/ui/Typography";
 import { I18NValue } from "@webiny/app-i18n/components";
-import {
-    Dialog,
-    DialogBody,
-    DialogHeader,
-    DialogHeaderTitle,
-    DialogCancel,
-    DialogFooter
-} from "@webiny/ui/Dialog";
+import { Dialog, DialogContent, DialogTitle, DialogCancel, DialogActions } from "@webiny/ui/Dialog";
 
 import { i18n } from "@webiny/app/i18n";
 const t = i18n.namespace("FormEditor.FormSubmissionDialog");
 
 const dialogBody = css({
-    "&.mdc-dialog__body": {
+    "&.webiny-ui-dialog__content": {
         marginTop: 0,
         padding: "25",
         div: {
@@ -54,11 +47,9 @@ const FormSubmissionDialog = ({ formSubmission, onClose }: Props) => {
         <Dialog open={!!formSubmission} onClose={onClose}>
             {formSubmission && (
                 <>
-                    <DialogHeader>
-                        <DialogHeaderTitle>{t`Form Submission`}</DialogHeaderTitle>
-                    </DialogHeader>
+                    <DialogTitle>{t`Form Submission`}</DialogTitle>
 
-                    <DialogBody className={dialogBody}>
+                    <DialogContent className={dialogBody}>
                         <div>
                             {formSubmission.form.revision.layout.map(row => {
                                 return row.map(id => {
@@ -97,10 +88,10 @@ const FormSubmissionDialog = ({ formSubmission, onClose }: Props) => {
                                 });
                             })}
                         </div>
-                    </DialogBody>
-                    <DialogFooter>
+                    </DialogContent>
+                    <DialogActions>
                         <DialogCancel onClick={onClose}>{t`Cancel`}</DialogCancel>
-                    </DialogFooter>
+                    </DialogActions>
                 </>
             )}
         </Dialog>

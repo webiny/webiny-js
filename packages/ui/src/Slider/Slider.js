@@ -2,8 +2,8 @@
 import * as React from "react";
 import { Slider as RmwcSlider } from "@rmwc/slider";
 import type { FormComponentProps } from "./../types";
-import styled from "react-emotion";
-import {FormElementMessage} from "../FormElementMessage";
+import styled from "@emotion/styled";
+import { FormElementMessage } from "../FormElementMessage";
 
 type Props = FormComponentProps & {
     // Component label.
@@ -80,15 +80,11 @@ class Slider extends React.Component<Props> {
                 </Wrapper>
 
                 {validation.isValid === false && (
-                    <FormElementMessage error>
-                        {validation.message}
-                    </FormElementMessage>
+                    <FormElementMessage error>{validation.message}</FormElementMessage>
                 )}
 
                 {validation.isValid !== false && description && (
-                    <FormElementMessage>
-                        {description}
-                    </FormElementMessage>
+                    <FormElementMessage>{description}</FormElementMessage>
                 )}
             </React.Fragment>
         );

@@ -7,7 +7,6 @@ import { Query } from "react-apollo";
 import { get } from "lodash";
 import { GET_RECAPTCHA_SETTINGS } from "./graphql";
 import ReCaptchaSettingsDialog from "./ReCaptchaSettingsDialog";
-import { withSnackbar } from "@webiny/app-admin/components";
 import { Alert } from "@webiny/ui/Alert";
 import { I18NInput } from "@webiny/app-i18n/admin/components";
 
@@ -21,7 +20,7 @@ const ReCaptchaSettings = ({ Bind, formData }) => {
     return (
         <Query query={GET_RECAPTCHA_SETTINGS} onCompleted={() => setSettingsLoaded(true)}>
             {({ data, refetch }) => {
-                const settings = get(data, "settings.forms.data.reCaptcha") || {};
+                const settings = get(data, "forms.getSettings.data.reCaptcha") || {};
                 const reCaptchaEnabledInSettings =
                     settings.enabled && settings.siteKey && settings.secretKey;
                 const reCaptchaEnabled = get(formData, "reCaptcha.enabled");
@@ -84,4 +83,4 @@ const ReCaptchaSettings = ({ Bind, formData }) => {
     );
 };
 
-export default withSnackbar()(ReCaptchaSettings);
+export default ReCaptchaSettings;

@@ -1,6 +1,5 @@
 // @flow
 import React from "react";
-import { compose } from "recompose";
 import { css } from "emotion";
 import TimeAgo from "timeago-react";
 import {
@@ -14,31 +13,22 @@ import {
 import { IconButton } from "@webiny/ui/Button";
 import { Icon } from "@webiny/ui/Icon";
 import { MenuItem, Menu, MenuDivider } from "@webiny/ui/Menu";
-import { withRouter } from "react-router-dom";
-import { withSnackbar } from "@webiny/app-admin/components";
 import { ConfirmationDialog } from "@webiny/ui/ConfirmationDialog";
 import { Tooltip } from "@webiny/ui/Tooltip";
-import { withPageDetails, type WithPageDetailsProps } from "@webiny/app-page-builder/admin/components";
 import { ReactComponent as MoreVerticalIcon } from "@webiny/app-page-builder/admin/assets/more_vert.svg";
 import { ReactComponent as LockIcon } from "@webiny/app-page-builder/admin/assets/lock.svg";
 import { ReactComponent as BeenHereIcon } from "@webiny/app-page-builder/admin/assets/beenhere.svg";
 import { ReactComponent as GestureIcon } from "@webiny/app-page-builder/admin/assets/gesture.svg";
-import withRevisionHandlers from "./withRevisionHandlers";
-import { withPageBuilderSettings } from "@webiny/app-page-builder/admin/components";
+import { useRevisionHandlers } from "./useRevisionHandlers";
+import { usePageBuilderSettings } from "@webiny/app-page-builder/admin/hooks/usePageBuilderSettings";
 import { ReactComponent as AddIcon } from "@webiny/app-page-builder/admin/assets/add.svg";
 import { ReactComponent as EditIcon } from "@webiny/app-page-builder/admin/assets/edit.svg";
 import { ReactComponent as PublishIcon } from "@webiny/app-page-builder/admin/assets/round-publish-24px.svg";
 import { ReactComponent as DeleteIcon } from "@webiny/app-page-builder/admin/assets/delete.svg";
 import { ReactComponent as PreviewIcon } from "@webiny/app-page-builder/admin/assets/visibility.svg";
 
-type RevisionProps = WithPageDetailsProps & {
-    rev: Object,
-    createRevision: Function,
-    editRevision: Function,
-    deleteRevision: Function,
-    publishRevision: Function,
-    submitCreateRevision: Function,
-    pageBuilderSettings: { getPagePreviewUrl: Function }
+type RevisionProps = {
+    rev: Object
 };
 
 const primaryColor = css({ color: "var(--mdc-theme-primary)" });
@@ -69,16 +59,16 @@ const getIcon = (rev: Object) => {
     }
 };
 
-const Revision = (props: RevisionProps) => {
-    const {
-        rev,
-        createRevision,
-        editRevision,
-        deleteRevision,
-        publishRevision,
-        pageBuilderSettings: { getPagePreviewUrl }
-    } = props;
+const Div = ({ children }) => {
+    return <div>{children}</div>;
+};
+
+const Revision = ({ rev }: RevisionProps) => {
     const { icon, text: tooltipText } = getIcon(rev);
+    const { getPagePreviewUrl } = usePageBuilderSettings();
+    const { deleteRevision, createRevision, publishRevision, editRevision } = useRevisionHandlers({
+        rev
+    });
 
     return (
         <ConfirmationDialog
@@ -137,7 +127,7 @@ const Revision = (props: RevisionProps) => {
                             </MenuItem>
 
                             {!rev.locked && (
-                                <React.Fragment>
+                                <Div>
                                     <MenuDivider />
                                     <MenuItem onClick={() => showConfirmation(deleteRevision)}>
                                         <ListItemGraphic>
@@ -145,7 +135,7 @@ const Revision = (props: RevisionProps) => {
                                         </ListItemGraphic>
                                         Delete
                                     </MenuItem>
-                                </React.Fragment>
+                                </Div>
                             )}
                         </Menu>
                     </ListItemMeta>
@@ -155,10 +145,4 @@ const Revision = (props: RevisionProps) => {
     );
 };
 
-export default compose(
-    withRouter,
-    withSnackbar(),
-    withPageDetails(),
-    withRevisionHandlers,
-    withPageBuilderSettings()
-)(Revision);
+export default Revision;

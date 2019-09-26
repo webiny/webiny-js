@@ -6,10 +6,16 @@ import { Typography } from "@webiny/ui/Typography";
 import { Grid, Cell } from "@webiny/ui/Grid";
 import { ButtonSecondary, ButtonPrimary } from "@webiny/ui/Button";
 import { Elevation } from "@webiny/ui/Elevation";
+import { validation } from "@webiny/validation";
+
+const menuFolderFormStyle = {
+    color: "var(--mdc-theme-on-surface)",
+    backgroundColor: "var(--mdc-theme-background) !important"
+};
 
 const FolderForm = ({ data, onSubmit, onCancel }: Object) => {
     return (
-        <Elevation z={4}>
+        <Elevation z={4} css={menuFolderFormStyle}>
             <Form data={data} onSubmit={onSubmit}>
                 {({ submit, Bind }) => (
                     <>
@@ -20,7 +26,7 @@ const FolderForm = ({ data, onSubmit, onCancel }: Object) => {
                         </Grid>
                         <Grid>
                             <Cell span={12}>
-                                <Bind name="title" validators={["required"]}>
+                                <Bind name="title" validators={validation.create("required")}>
                                     <Input label={`Title`} />
                                 </Bind>
                             </Cell>

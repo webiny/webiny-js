@@ -36,7 +36,7 @@ story.add("usage", () => {
                                 <Select
                                     label="Pets"
                                     disabled={disabled}
-                                    box={box}
+                                    box={box.toString()}
                                     description="Choose a pet of your liking."
                                 >
                                     <optgroup label="Dogs">
@@ -62,7 +62,7 @@ story.add("usage", () => {
                                <Select
                                     label="Pets"
                                     disabled={disabled}
-                                    box={box}
+                                    box={box.toString()}
                                     description="Choose a pet of your liking."
                                 >
                                    <optgroup label="Dogs">

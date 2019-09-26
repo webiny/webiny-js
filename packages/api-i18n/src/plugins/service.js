@@ -1,6 +1,5 @@
 // @flow
-import type { PluginType } from "@webiny/api/types";
-import type { ApiContext } from "@webiny/api/types";
+import type { ApiContext, PluginType } from "@webiny/api/types";
 import acceptLanguageParser from "accept-language-parser";
 
 export default ([

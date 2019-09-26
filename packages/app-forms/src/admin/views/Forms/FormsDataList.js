@@ -1,16 +1,17 @@
 // @flow
-import * as React from "react";
+import React, { useRef, useCallback } from "react";
 import TimeAgo from "timeago-react";
-import { withRouter } from "react-router-dom";
+import useReactRouter from "use-react-router";
 import { css } from "emotion";
+import { get, upperFirst } from "lodash";
 import { Typography } from "@webiny/ui/Typography";
 import { ConfirmationDialog } from "@webiny/ui/ConfirmationDialog";
 import { DeleteIcon, EditIcon } from "@webiny/ui/List/DataList/icons";
-import { deleteForm, createRevisionFrom } from "@webiny/app-forms/admin/viewsGraphql";
-import { graphql } from "react-apollo";
-import { withHandlers, compose } from "recompose";
-import { withSnackbar } from "@webiny/app-admin/components";
-import { get, upperFirst } from "lodash";
+import { DELETE_FORM, CREATE_REVISION_FROM } from "@webiny/app-forms/admin/viewsGraphql";
+import { useApolloClient } from "react-apollo";
+import { useHandler } from "@webiny/app/hooks/useHandler";
+import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
+
 import {
     DataList,
     List,
@@ -30,7 +31,59 @@ const rightAlign = css({
 });
 
 const FormsDataList = props => {
-    const { dataList, location, history, deleteRecord, gqlCreate, showSnackbar } = props;
+    const editHandlers = useRef({});
+
+    const { dataList } = props;
+    const { location, history } = useReactRouter();
+    const client = useApolloClient();
+    const { showSnackbar } = useSnackbar();
+
+    const deleteRecord = useHandler(props, ({ id }: Object) => async (item: Object) => {
+        const res = await client.mutate({ mutation: DELETE_FORM, variables: { id: item.id } });
+        const { data, error } = get(res, "data.forms.deleteForm");
+
+        if (data) {
+            showSnackbar(t`Form {name} deleted.`({ name: item.name }));
+        } else {
+            showSnackbar(error.message, {
+                title: t`Something unexpected happened.`
+            });
+        }
+
+        if (item.id === id) {
+            const query = new URLSearchParams(location.search);
+            query.delete("id");
+            history.push({ search: query.toString() });
+        }
+
+        dataList.refresh();
+    });
+
+    const editRecord = useCallback(form => {
+        if (!editHandlers.current[form.id]) {
+            editHandlers.current[form.id] = async () => {
+                if (form.published) {
+                    const { data: res } = await client.mutate({
+                        mutation: CREATE_REVISION_FROM,
+                        variables: { revision: form.id },
+                        refetchQueries: ["FormsListForms"]
+                    });
+                    const { data, error } = res.forms.revision;
+
+                    if (error) {
+                        return showSnackbar(error.message);
+                    }
+
+                    history.push(`/forms/${data.id}`);
+                } else {
+                    history.push("/forms/" + form.id);
+                }
+            };
+        }
+
+        return editHandlers.current[form.id];
+    }, []);
+
     const query = new URLSearchParams(location.search);
 
     return (
@@ -89,32 +142,12 @@ const FormsDataList = props => {
                                     {upperFirst(form.status)} (v{form.version})
                                 </Typography>
                                 <ListActions>
-                                    <EditIcon
-                                        onClick={async () => {
-                                            if (form.published) {
-                                                const { data: res } = await gqlCreate({
-                                                    variables: { revision: form.id },
-                                                    refetchQueries: ["FormsListForms"]
-                                                });
-                                                const { data, error } = res.forms.revision;
-
-                                                if (error) {
-                                                    return showSnackbar(error.message);
-                                                }
-
-                                                history.push(`/forms/${data.id}`);
-                                            } else {
-                                                history.push("/forms/" + form.id);
-                                            }
-                                        }}
-                                    />
+                                    <EditIcon onClick={editRecord(form)} />
                                     <ConfirmationDialog>
                                         {({ showConfirmation }) => (
                                             <DeleteIcon
                                                 onClick={() =>
-                                                    showConfirmation(async () => {
-                                                        deleteRecord(form);
-                                                    })
+                                                    showConfirmation(async () => deleteRecord(form))
                                                 }
                                             />
                                         )}
@@ -129,33 +162,4 @@ const FormsDataList = props => {
     );
 };
 
-export default compose(
-    withRouter,
-    withSnackbar(),
-    graphql(deleteForm, { name: "deleteRecord" }),
-    graphql(createRevisionFrom, { name: "gqlCreate" }),
-    withHandlers({
-        deleteRecord: ({ deleteRecord, showSnackbar, location, history, dataList, id }: Object) => {
-            return async (item: Object) => {
-                const res = await deleteRecord({ variables: { id: item.id } });
-                const { data, error } = get(res, "data.forms.deleteForm");
-
-                if (data) {
-                    showSnackbar(t`Form {name} deleted.`({ name: item.name }));
-                } else {
-                    showSnackbar(error.message, {
-                        title: t`Something unexpected happened.`
-                    });
-                }
-
-                if (item.id === id) {
-                    const query = new URLSearchParams(location.search);
-                    query.delete("id");
-                    history.push({ search: query.toString() });
-                }
-
-                dataList.refresh();
-            };
-        }
-    })
-)(FormsDataList);
+export default FormsDataList;

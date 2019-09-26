@@ -1,7 +1,6 @@
 // @flow
 import * as React from "react";
 import { connect } from "@webiny/app-page-builder/editor/redux";
-import { compose } from "recompose";
 import { isEqual } from "lodash";
 import { get, merge } from "dot-prop-immutable";
 import { Tabs, Tab } from "@webiny/ui/Tabs";
@@ -13,6 +12,7 @@ import { withActiveElement } from "@webiny/app-page-builder/editor/components";
 import { DelayedOnChange } from "@webiny/app-page-builder/editor/components/DelayedOnChange";
 import { updateElement } from "@webiny/app-page-builder/editor/actions";
 import { Form } from "@webiny/form";
+import { validation } from "@webiny/validation";
 
 class LinkSettings extends React.Component<*> {
     historyUpdated = {};
@@ -43,7 +43,7 @@ class LinkSettings extends React.Component<*> {
                             <React.Fragment>
                                 <Grid>
                                     <Cell span={12}>
-                                        <Bind name={"href"} validators={["url"]}>
+                                        <Bind name={"href"} validators={validation.create("url")}>
                                             <DelayedOnChange>
                                                 {props => <Input {...props} label={"URL"} />}
                                             </DelayedOnChange>
@@ -69,10 +69,7 @@ class LinkSettings extends React.Component<*> {
     }
 }
 
-export default compose(
-    connect(
-        null,
-        { updateElement }
-    ),
-    withActiveElement()
-)(LinkSettings);
+export default connect(
+    null,
+    { updateElement }
+)(withActiveElement()(LinkSettings));

@@ -16,25 +16,17 @@ const fields = /* GraphQL */ `
 `;
 
 export const GET_RECAPTCHA_SETTINGS = gql`
-    query GetReCaptchaSettings {
-        settings {
-            forms {
-                data {
-                    reCaptcha {
-                        enabled
-                        siteKey
-                        secretKey
-                    }
-                }
-            }
+    query getReCaptchaSettings {
+        forms {
+            getSettings ${fields}
         }
     }
 `;
 
 export const UPDATE_FORMS_SETTINGS = gql`
     mutation updateSettings($data: FormsSettingsInput) {
-        settings {
-            forms(data: $data) ${fields}
+        forms {
+            updateSettings(data: $data) ${fields}
         }
     }
 `;

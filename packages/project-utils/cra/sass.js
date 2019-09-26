@@ -5,8 +5,7 @@ const path = require("path");
 const includePaths = [
     path.resolve("./src"),
     path.resolve("./node_modules"),
-    path.resolve("../../node_modules"),
-    path.resolve("../../../node_modules")
+    path.resolve("../../../../node_modules")
 ];
 
 const overrideSass = function(rules) {

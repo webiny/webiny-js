@@ -67,7 +67,7 @@ function FileManagerProvider(props) {
             state,
             dispatch
         };
-    });
+    }, [state]);
 
     return <FileManagerContext.Provider value={value} {...props} />;
 }

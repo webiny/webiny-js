@@ -1,9 +1,9 @@
 // @flow
-import { createPaginationMeta } from "@webiny/entity";
-import { ListResponse } from "@webiny/api/graphql/responses";
+import { createPaginationMeta } from "@webiny/commodo";
+import { ListResponse } from "@webiny/api/graphql/commodo/responses";
 
-export default async (root: any, args: Object, { getEntities }: Object) => {
-    const { Form } = getEntities();
+export default async (root: any, args: Object, context: Object) => {
+    const { Form } = context.models;
 
     const { page = 1, perPage = 10, sort = null, search = null, parent = null } = args;
 
@@ -47,16 +47,14 @@ export default async (root: any, args: Object, { getEntities }: Object) => {
         });
     }
 
-    const collection = Form.getDriver().getCollectionName(Form);
-
-    const ids = await Form.getDriver().aggregate(collection, [
+    const ids = await Form.aggregate([
         ...pipeline,
         { $project: { _id: -1, id: 1 } },
         { $skip: (page - 1) * perPage },
         { $limit: perPage }
     ]);
 
-    const [totalCount] = await Form.getDriver().aggregate(collection, [
+    const [totalCount] = await Form.aggregate([
         ...pipeline,
         {
             $count: "totalCount"

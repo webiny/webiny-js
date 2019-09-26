@@ -1,5 +1,5 @@
 import * as React from "react";
-import styled from "react-emotion";
+import styled from "@emotion/styled";
 import { css } from "emotion";
 import { Typography } from "@webiny/ui/Typography";
 import { Elevation } from "@webiny/ui/Elevation";
@@ -12,6 +12,7 @@ const BlockWrapper = styled("div")({
 const titleStyle = css({
     display: "flex",
     alignItems: "center",
+    color: "var(--mdc-theme-on-surface)",
     ".tooltip-content-wrapper": {
         lineHeight: "100%",
         svg: {

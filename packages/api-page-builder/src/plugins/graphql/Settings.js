@@ -1,5 +1,5 @@
 // @flow
-import { resolveUpdateSettings, resolveGetSettings } from "@webiny/api/graphql";
+import { resolveUpdateSettings, resolveGetSettings } from "@webiny/api/graphql/commodo";
 
 export default {
     name: "graphql-schema-settings-page-builder",
@@ -70,28 +70,28 @@ export default {
             notFound: ID
             error: ID
         }
-        
+
         extend type PbQuery {
             getSettings: PbSettingsResponse
-        }   
-        
+        }
+
         extend type PbMutation {
             updateSettings(data: PbSettingsInput): PbSettingsResponse
         }
     `,
     resolvers: {
-       PbQuery: {
-            getSettings: resolveGetSettings("PbSettings")
+        PbQuery: {
+            getSettings: resolveGetSettings(ctx => ctx.models.Settings)
         },
-       PbMutation: {
-            updateSettings: resolveUpdateSettings("PbSettings")
+        PbMutation: {
+            updateSettings: resolveUpdateSettings(ctx => ctx.models.Settings)
         },
-       PbSocialMedia: {
+        PbSocialMedia: {
             image({ image }) {
                 return { __typename: "File", id: image };
             }
         },
-       PbSettings: {
+        PbSettings: {
             favicon({ favicon }) {
                 return { __typename: "File", id: favicon };
             },

@@ -1,6 +1,6 @@
 // @flow
 export default async (root: any, args: Object, context: Object) => {
-    const Page = context.getEntity("PbPage");
+    const { PbPage } = context.models;
     const { query } = args;
     const pipeline = [
         { $match: { deleted: false } },
@@ -10,11 +10,7 @@ export default async (root: any, args: Object, context: Object) => {
         { $group: { _id: "$settings.general.tags" } }
     ];
 
-    const results = await Page.getDriver()
-        .getDatabase()
-        .collection(Page.getDriver().getCollectionName(Page))
-        .aggregate(pipeline)
-        .toArray();
+    const results = await PbPage.aggregate(pipeline);
 
     return {
         data: results.map(item => item._id)

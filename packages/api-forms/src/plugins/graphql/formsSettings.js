@@ -1,5 +1,7 @@
 // @flow
-import { resolveUpdateSettings, resolveGetSettings } from "@webiny/api/graphql";
+import { resolveUpdateSettings, resolveGetSettings } from "@webiny/api/graphql/commodo";
+
+const getFormSettings = ctx => ctx.models.FormSettings;
 
 export default {
     typeDefs: /* GraphQL*/ `
@@ -38,10 +40,10 @@ export default {
     `,
     resolvers: {
         FormsQuery: {
-            getSettings: resolveGetSettings("FormsSettings")
+            getSettings: resolveGetSettings(getFormSettings)
         },
         FormsMutation: {
-            updateSettings: resolveUpdateSettings("FormsSettings")
+            updateSettings: resolveUpdateSettings(getFormSettings)
         }
     }
 };

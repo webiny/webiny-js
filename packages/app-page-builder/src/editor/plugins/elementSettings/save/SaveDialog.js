@@ -1,17 +1,15 @@
 // @flow
 import React from "react";
-import { compose, shouldUpdate } from "recompose";
 import { css } from "emotion";
 import { getPlugins } from "@webiny/plugins";
 import ElementPreview from "./SaveDialog/ElementPreview";
 
 import {
     Dialog,
-    DialogHeader,
-    DialogHeaderTitle,
-    DialogBody,
-    DialogFooter,
-    DialogFooterButton,
+    DialogTitle,
+    DialogContent,
+    DialogActions,
+    DialogButton,
     DialogCancel
 } from "@webiny/ui/Dialog";
 import { Input } from "@webiny/ui/Input";
@@ -19,7 +17,8 @@ import { Switch } from "@webiny/ui/Switch";
 import { Select } from "@webiny/ui/Select";
 import { Grid, Cell } from "@webiny/ui/Grid";
 import { Form } from "@webiny/form";
-import styled from "react-emotion";
+import styled from "@emotion/styled";
+import { validation } from "@webiny/validation";
 
 const narrowDialog = css({
     ".mdc-dialog__surface": {
@@ -50,91 +49,95 @@ type Props = {
     type: string
 };
 
-const SaveDialog = (props: Props) => {
-    const { element, open, onClose, onSubmit, type } = props;
+const SaveDialog = React.memo(
+    (props: Props) => {
+        const { element, open, onClose, onSubmit, type } = props;
 
-    const blockCategoriesOptions = getPlugins("pb-editor-block-category").map((item: Object) => {
-        return {
-            value: item.name,
-            label: item.title
-        };
-    });
+        const blockCategoriesOptions = getPlugins("pb-editor-block-category").map(
+            (item: Object) => {
+                return {
+                    value: item.name,
+                    label: item.title
+                };
+            }
+        );
 
-    return (
-        <Dialog open={open} onClose={onClose} className={narrowDialog}>
-            <Form onSubmit={onSubmit} data={{ type, category: "pb-editor-block-category-general" }}>
-                {({ data, submit, Bind }) => (
-                    <React.Fragment>
-                        <DialogHeader>
-                            <DialogHeaderTitle>Save {type}</DialogHeaderTitle>
-                        </DialogHeader>
-                        <DialogBody>
-                            {element.source && (
-                                <Grid>
-                                    <Cell span={12}>
-                                        <Bind name="overwrite">
-                                            <Switch label="Update existing" />
-                                        </Bind>
-                                    </Cell>
-                                </Grid>
-                            )}
-                            {!data.overwrite && (
-                                <Grid>
-                                    <Cell span={12}>
-                                        <Bind name={"name"} validators={"required"}>
-                                            <Input label={"Name"} autoFocus />
-                                        </Bind>
-                                    </Cell>
-                                </Grid>
-                            )}
-                            {data.type === "block" && !data.overwrite && (
-                                <>
+        return (
+            <Dialog open={open} onClose={onClose} className={narrowDialog}>
+                <Form
+                    onSubmit={onSubmit}
+                    data={{ type, category: "pb-editor-block-category-general" }}
+                >
+                    {({ data, submit, Bind }) => (
+                        <React.Fragment>
+                            <DialogTitle>Save {type}</DialogTitle>
+                            <DialogContent>
+                                {element.source && (
                                     <Grid>
                                         <Cell span={12}>
-                                            <Bind name="category" validators={["required"]}>
-                                                <Select
-                                                    label="Category"
-                                                    description="Select a block category"
-                                                    options={blockCategoriesOptions}
-                                                />
+                                            <Bind name="overwrite">
+                                                <Switch label="Update existing" />
                                             </Bind>
                                         </Cell>
                                     </Grid>
-                                </>
-                            )}
-                            <Grid>
-                                <Cell span={12}>
-                                    <PreviewBox>
-                                        <Bind name={"preview"}>
-                                            {({ value, onChange }) =>
-                                                value ? (
-                                                    <img src={value} alt={""} />
-                                                ) : open ? (
-                                                    <ElementPreview
-                                                        key={element.id}
-                                                        onChange={onChange}
-                                                        element={element}
+                                )}
+                                {!data.overwrite && (
+                                    <Grid>
+                                        <Cell span={12}>
+                                            <Bind name={"name"} validators={validation.create("required")}>
+                                                <Input label={"Name"} autoFocus />
+                                            </Bind>
+                                        </Cell>
+                                    </Grid>
+                                )}
+                                {data.type === "block" && !data.overwrite && (
+                                    <>
+                                        <Grid>
+                                            <Cell span={12}>
+                                                <Bind name="category" validators={validation.create("required")}>
+                                                    <Select
+                                                        label="Category"
+                                                        description="Select a block category"
+                                                        options={blockCategoriesOptions}
                                                     />
-                                                ) : null
-                                            }
-                                        </Bind>
-                                    </PreviewBox>
-                                </Cell>
-                            </Grid>
-                        </DialogBody>
-                        <DialogFooter>
-                            <DialogCancel>Cancel</DialogCancel>
-                            <DialogFooterButton onClick={submit}>Save</DialogFooterButton>
-                        </DialogFooter>
-                    </React.Fragment>
-                )}
-            </Form>
-        </Dialog>
-    );
-};
+                                                </Bind>
+                                            </Cell>
+                                        </Grid>
+                                    </>
+                                )}
+                                <Grid>
+                                    <Cell span={12}>
+                                        <PreviewBox>
+                                            <Bind name={"preview"}>
+                                                {({ value, onChange }) =>
+                                                    value ? (
+                                                        <img src={value} alt={""} />
+                                                    ) : open ? (
+                                                        <ElementPreview
+                                                            key={element.id}
+                                                            onChange={onChange}
+                                                            element={element}
+                                                        />
+                                                    ) : null
+                                                }
+                                            </Bind>
+                                        </PreviewBox>
+                                    </Cell>
+                                </Grid>
+                            </DialogContent>
+                            <DialogActions>
+                                <DialogCancel>Cancel</DialogCancel>
+                                <DialogButton onClick={submit}>Save</DialogButton>
+                            </DialogActions>
+                        </React.Fragment>
+                    )}
+                </Form>
+            </Dialog>
+        );
+    },
+    (props, nextProps) => {
+        return props.open === nextProps.open;
+    }
+);
 
-export default compose(
-    shouldUpdate((props, nextProps) => {
-        return props.open !== nextProps.open;
-    })
-)(SaveDialog);
+export default SaveDialog;

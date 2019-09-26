@@ -1,22 +1,29 @@
-import { DropTarget } from "react-dnd";
+// @flow
+import * as React from "react";
+import { useDrop } from "react-dnd";
 
-const Droppable = ({ children, connectDropTarget, item, isOver, isVisible = () => true }) => {
+const Droppable = React.memo(props => {
+    let { children, onDrop, isVisible = () => true } = props;
+
+    const [{ item, isOver }, drop] = useDrop({
+        accept: "element",
+        collect: monitor => ({
+            isOver: monitor.isOver() && monitor.isOver({ shallow: true }),
+            item: monitor.getItem()
+        }),
+        drop(item, monitor) {
+            if (typeof onDrop === "function") {
+                onDrop(monitor.getItem());
+            }
+        }
+    });
+
     if (item && !isVisible(item)) {
         return null;
     }
-    return connectDropTarget(children({ isDragging: Boolean(item), isOver, item }));
-};
-// Dragging
-const spec = {
-    drop(props, monitor) {
-        props.onDrop(monitor.getItem());
-    }
-};
 
-const props = (connect, monitor) => ({
-    connectDropTarget: connect.dropTarget(),
-    isOver: monitor.isOver() && monitor.isOver({ shallow: true }),
-    item: monitor.getItem()
+    // $FlowFixMe
+    return children({ isDragging: Boolean(item), isOver, item, drop });
 });
 
-export default DropTarget("element", spec, props)(Droppable);
+export default Droppable;

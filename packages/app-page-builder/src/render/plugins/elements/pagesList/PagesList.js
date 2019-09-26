@@ -1,12 +1,11 @@
 // @flow
 import * as React from "react";
 import warning from "warning";
-import { pure } from "recompose";
 import { useQuery } from "react-apollo";
 import { loadPages } from "./graphql";
 import { getPlugins } from "@webiny/plugins";
 
-const PagesList = pure((props: Object = {}) => {
+const PagesList = React.memo((props: Object = {}) => {
     const {
         data: { component, ...vars },
         theme

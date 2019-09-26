@@ -1,6 +1,6 @@
 // @flow
 import * as React from "react";
-import styled from "react-emotion";
+import styled from "@emotion/styled";
 import classNames from "classnames";
 import Loader from "./Loader";
 import NoData from "./NoData";
@@ -174,7 +174,9 @@ type Props = {
     isAllMultiSelected: () => boolean,
 
     // Callback which returns true if none of the items were selected, otherwise returns false.
-    isNoneMultiSelected: () => boolean
+    isNoneMultiSelected: () => boolean,
+
+    showOptions: Object
 };
 
 const MultiSelectAll = (props: Props) => {
@@ -340,18 +342,22 @@ export const DataList = (props: Props) => {
                 </Grid>
             )}
 
-            <Grid className={listSubHeader}>
-                <Cell span={5}>
-                    <MultiSelectAll {...props} />
-                    <RefreshButton {...props} />
-                    <Sorters {...props} />
-                    <MultiSelectActions {...props} />
-                </Cell>
+            {Object.keys(props.showOptions).length > 0 && (
+                <Grid className={listSubHeader}>
+                    <Cell span={props.showOptions.pagination ? 5 : 12}>
+                        <MultiSelectAll {...props} />
+                        {props.showOptions.refresh && <RefreshButton {...props} />}
+                        {props.showOptions.sorters && <Sorters {...props} />}
+                        <MultiSelectActions {...props} />
+                    </Cell>
 
-                <Cell span={7} style={{ textAlign: "right" }}>
-                    <Pagination {...props} />
-                </Cell>
-            </Grid>
+                    {props.showOptions.pagination && (
+                        <Cell span={7} style={{ textAlign: "right" }}>
+                            <Pagination {...props} />
+                        </Cell>
+                    )}
+                </Grid>
+            )}
 
             {render}
         </ListContainer>
@@ -375,7 +381,12 @@ DataList.defaultProps = {
     isAllMultiSelected: () => false,
     isNoneMultiSelected: () => false,
     loader: <Loader />,
-    noData: <NoData />
+    noData: <NoData />,
+    showOptions: {
+        refresh: true,
+        pagination: true,
+        sorters: true
+    }
 };
 
 export const ScrollList = (props: {

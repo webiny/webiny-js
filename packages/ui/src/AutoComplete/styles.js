@@ -18,7 +18,10 @@ export const autoCompleteStyle = css({
         width: "100%",
         padding: 0,
         li: {
-            padding: 10
+            padding: 10,
+            span: {
+                color: "var(--mdc-theme-on-surface)"
+            }
         }
     }
 });

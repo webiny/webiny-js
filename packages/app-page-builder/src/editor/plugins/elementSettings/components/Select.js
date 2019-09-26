@@ -2,11 +2,18 @@
 import * as React from "react";
 import { connect } from "react-redux";
 import { get } from "lodash";
-import { pure } from "recompose";
 import { Typography } from "@webiny/ui/Typography";
 import { Grid, Cell } from "@webiny/ui/Grid";
 import { Select as SelectCmp } from "@webiny/ui/Select";
 import { getActiveElement } from "@webiny/app-page-builder/editor/selectors";
+import { css } from "emotion";
+
+const selectStyle = css({
+    select: {
+        height: 35,
+        paddingTop: "4px !important"
+    }
+});
 
 type Props = {
     label: string,
@@ -17,14 +24,19 @@ type Props = {
     children?: React.ChildrenArray<React.Element<"option"> | React.Element<"optgroup">>
 };
 
-const Select = pure(({ label, value, updateValue, options, children }: Props) => {
+const Select = React.memo(({ label, value, updateValue, options, children }: Props) => {
     return (
         <Grid>
             <Cell span={4}>
                 <Typography use={"overline"}>{label}</Typography>
             </Cell>
             <Cell span={8}>
-                <SelectCmp value={value} onChange={updateValue} options={options}>
+                <SelectCmp
+                    className={selectStyle}
+                    value={value}
+                    onChange={updateValue}
+                    options={options}
+                >
                     {children}
                 </SelectCmp>
             </Cell>

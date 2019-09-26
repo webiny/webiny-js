@@ -7,15 +7,13 @@ import Draggable from "./Draggable";
 const Field = ({ label, name }) => {
     return (
         <Draggable beginDrag={{ name }}>
-            {({ connectDragSource }) => (
+            {({ drag }) => (
                 <Elevation z={2}>
                     <div>
                         {label}{" "}
-                        {connectDragSource(
-                            <div>
-                                <Icon icon={<HandleIcon />} />
-                            </div>
-                        )}
+                        <div ref={drag}>
+                            <Icon icon={<HandleIcon />} />
+                        </div>
                     </div>
                 </Elevation>
             )}

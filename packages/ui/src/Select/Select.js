@@ -20,7 +20,7 @@ type Props = FormComponentProps & {
     placeholder?: string,
 
     // Makes the Select have a visual box.
-    box?: boolean,
+    box?: string,
 
     // One or more <option> or <optgroup> elements.
     children?: React.ChildrenArray<React.Element<"option"> | React.Element<"optgroup">>,
@@ -69,7 +69,9 @@ export const Select = (props: Props) => {
             <RmwcSelect
                 {...getRmwcProps(other)}
                 value={value}
-                className={classNames(props.className, { [noLabel]: !props.label })}
+                className={classNames("webiny-ui-select", props.className, {
+                    [noLabel]: !props.label
+                })}
                 onChange={e => {
                     props.onChange && props.onChange(e.target.value);
                 }}

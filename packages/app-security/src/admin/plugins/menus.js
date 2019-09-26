@@ -2,44 +2,48 @@
 import React from "react";
 import { ReactComponent as SecurityIcon } from "./../assets/icons/baseline-security-24px.svg";
 import { i18n } from "@webiny/app/i18n";
-import { hasRoles } from "@webiny/app-security";
+import { SecureView } from "@webiny/app-security/components";
 
-const t = i18n.namespace("Pb.Categories");
+const t = i18n.ns("app-security/admin/menus");
 
 export default [
     {
-        name: "security-menu",
+        name: "menu-security",
         type: "menu",
-        render({ Menu }: Object) {
-            const { groups, roles, users }: Object = (hasRoles({
-                groups: ["security-groups"],
-                roles: ["security-roles"],
-                users: ["security-users"]
-            }): any);
+        render({ Menu, Section, Item }) {
+            return (
+                <SecureView
+                    roles={{
+                        groups: ["security-groups"],
+                        roles: ["security-roles"],
+                        users: ["security-users"]
+                    }}
+                >
+                    {({ roles: identityRoles }) => {
+                        const { groups, roles, users } = identityRoles;
+                        if (!groups && !roles && !users) {
+                            return null;
+                        }
 
-            const identities = users;
-            const rolesGroups = groups || roles;
+                        return (
+                            <Menu name="security" label={t`Security`} icon={<SecurityIcon />}>
+                                {users && (
+                                    <Section label={t`Identities`}>
+                                        {users && <Item label={t`Users`} path="/users" />}
+                                    </Section>
+                                )}
 
-            if (identities || rolesGroups) {
-                return (
-                    <Menu label={t`Security`} icon={<SecurityIcon />}>
-                        {identities && (
-                            <Menu label={t`Identities`}>
-                                {users && <Menu label={t`Users`} path="/users" />}
+                                {(groups || roles) && (
+                                    <Section label={t`Roles and Groups`}>
+                                        {groups && <Item label={t`Groups`} path="/groups" />}
+                                        {roles && <Item label={t`Roles`} path="/roles" />}
+                                    </Section>
+                                )}
                             </Menu>
-                        )}
-
-                        {rolesGroups && (
-                            <Menu label={t`Roles and Groups`}>
-                                {groups && <Menu label={t`Groups`} path="/groups" />}
-                                {roles && <Menu label={t`Roles`} path="/roles" />}
-                            </Menu>
-                        )}
-                    </Menu>
-                );
-            }
-
-            return null;
+                        );
+                    }}
+                </SecureView>
+            );
         }
     }
 ];

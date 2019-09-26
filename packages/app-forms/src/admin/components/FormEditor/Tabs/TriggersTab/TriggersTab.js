@@ -1,23 +1,24 @@
 import React from "react";
-import styled from "react-emotion";
+import styled from "@emotion/styled";
 import { Accordion, AccordionItem } from "@webiny/ui/Accordion";
 import { Typography } from "@webiny/ui/Typography";
 import { Form } from "@webiny/form";
 import { useFormEditor } from "@webiny/app-forms/admin/components/FormEditor/Context";
 import { getPlugins } from "@webiny/plugins";
 import { get, set } from "lodash";
-import { withSnackbar } from "@webiny/app-admin/components";
-import { compose } from "recompose";
+import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { i18n } from "@webiny/app/i18n";
 const t = i18n.namespace("FormsApp.Editor.TriggersTab");
 
 const Container = styled("div")({
-    padding: "40px 60px"
+    padding: "40px 60px",
+    color: "var(--mdc-theme-on-surface)"
 });
 
-export const TriggersTab = compose(withSnackbar())(({ showSnackbar }) => {
+export const TriggersTab = () => {
     const { setData, data: formData } = useFormEditor();
     const plugins = getPlugins("form-editor-trigger");
+    const { showSnackbar } = useSnackbar();
 
     return (
         <Container>
@@ -53,4 +54,4 @@ export const TriggersTab = compose(withSnackbar())(({ showSnackbar }) => {
             </Accordion>
         </Container>
     );
-});
+};

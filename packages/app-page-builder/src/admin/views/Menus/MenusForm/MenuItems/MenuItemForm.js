@@ -1,20 +1,12 @@
 // @flow
-import { compose, withHandlers } from "recompose";
 import { omit, omitBy, isNull } from "lodash";
+import uniqid from "uniqid";
+import { useHandlers } from "@webiny/app/hooks/useHandlers";
 import { getPlugins } from "@webiny/plugins";
 import findObject from "./findObject";
-import uniqid from "uniqid";
 
-const MenuItemForm = ({ onSubmit, onCancel, currentMenuItem }: Object) => {
-    const plugin = getPlugins("pb-menu-item").find(pl => pl.menuItem.type === currentMenuItem.type);
-    if (!plugin) {
-        return null;
-    }
-    return plugin.menuItem.renderForm({ onSubmit, onCancel, data: currentMenuItem });
-};
-
-export default compose(
-    withHandlers({
+const MenuItemForm = (props: Object) => {
+    const { onCancel, onSubmit } = useHandlers(props, {
         onCancel: ({ editItem, currentMenuItem, deleteItem }) => () => {
             if (currentMenuItem.__new) {
                 deleteItem(currentMenuItem);
@@ -37,5 +29,14 @@ export default compose(
 
             editItem(null);
         }
-    })
-)(MenuItemForm);
+    });
+
+    const { currentMenuItem } = props;
+    const plugin = getPlugins("pb-menu-item").find(pl => pl.menuItem.type === currentMenuItem.type);
+    if (!plugin) {
+        return null;
+    }
+    return plugin.menuItem.renderForm({ onSubmit, onCancel, data: currentMenuItem });
+};
+
+export default MenuItemForm;

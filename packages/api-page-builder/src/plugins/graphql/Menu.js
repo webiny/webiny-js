@@ -5,9 +5,9 @@ import {
     resolveGet,
     resolveList,
     resolveUpdate
-} from "@webiny/api/graphql";
+} from "@webiny/api/graphql/commodo";
 
-const menuFetcher = ctx => ctx.getEntity("PbMenu");
+const menuFetcher = ctx => ctx.models.PbMenu;
 import getMenuBySlug from "./menuResolvers/getMenuBySlug";
 
 export default {
@@ -22,6 +22,7 @@ export default {
         }
     
         input PbMenuInput {
+            id: ID
             title: String
             slug: String
             description: String
@@ -78,12 +79,12 @@ export default {
         }
     `,
     resolvers: {
-       PbQuery: {
+        PbQuery: {
             getMenu: resolveGet(menuFetcher),
             listMenus: resolveList(menuFetcher),
-            getMenuBySlug: getMenuBySlug(menuFetcher)
+            getMenuBySlug: getMenuBySlug
         },
-       PbMutation: {
+        PbMutation: {
             createMenu: resolveCreate(menuFetcher),
             updateMenu: resolveUpdate(menuFetcher),
             deleteMenu: resolveDelete(menuFetcher)

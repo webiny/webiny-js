@@ -7,6 +7,7 @@ import { Grid, Cell } from "@webiny/ui/Grid";
 import { Input } from "@webiny/ui/Input";
 import { Typography } from "@webiny/ui/Typography";
 import { css } from "emotion";
+import { validation } from "@webiny/validation";
 
 type Props = {
     prefix: string,
@@ -45,14 +46,14 @@ const MetaTags = ({ prefix, value, onChange, Bind, ...other }: Props) => {
                             <Cell span={3}>
                                 <Bind
                                     name={`${prefix}.${index}.property`}
-                                    validators={["required"]}
+                                    validators={validation.create("required")}
                                     beforeChange={(tag, cb) => cb(trim(tag))}
                                 >
                                     <Input label={"Property"} />
                                 </Bind>
                             </Cell>
                             <Cell span={4}>
-                                <Bind name={`${prefix}.${index}.content`} validators={["required"]}>
+                                <Bind name={`${prefix}.${index}.content`} validators={validation.create("required")}>
                                     <Input label={"Content"} />
                                 </Bind>
                             </Cell>

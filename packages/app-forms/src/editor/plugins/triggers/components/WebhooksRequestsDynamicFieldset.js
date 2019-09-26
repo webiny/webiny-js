@@ -1,9 +1,10 @@
 import React from "react";
 import { DynamicFieldset } from "@webiny/ui/DynamicFieldset";
 import { Input } from "@webiny/ui/Input";
-import styled from "react-emotion";
+import styled from "@emotion/styled";
 import { Typography } from "@webiny/ui/Typography";
 import { ButtonSecondary, ButtonDefault } from "@webiny/ui/Button";
+import { validation } from "@webiny/validation";
 
 const Fieldset = styled("div")({
     position: "relative",
@@ -46,7 +47,10 @@ const WebhooksRequestsDynamicFieldset = (props: Props) => {
                 <>
                     {row(({ index }) => (
                         <Fieldset>
-                            <Bind validators={["required", "url"]} name={`urls.${index}`}>
+                            <Bind
+                                validators={validation.create("required,url")}
+                                name={`urls.${index}`}
+                            >
                                 <Input label={props.inputLabel} />
                             </Bind>
                             <ButtonSecondary small onClick={actions.remove(index)}>
@@ -57,19 +61,13 @@ const WebhooksRequestsDynamicFieldset = (props: Props) => {
                     {empty(() => (
                         <Header>
                             <Typography use={"overline"}>{props.title}</Typography>
-                            <ButtonDefault onClick={addUrl}>
-                                {props.addButtonLabel}
-                            </ButtonDefault>
+                            <ButtonDefault onClick={addUrl}>{props.addButtonLabel}</ButtonDefault>
                         </Header>
                     ))}
                     {header(() => (
                         <Header>
                             <Typography use={"overline"}>{props.title}</Typography>
-                            <ButtonDefault
-                                onClick={addUrl}
-                            >
-                                {props.addButtonLabel}
-                            </ButtonDefault>
+                            <ButtonDefault onClick={addUrl}>{props.addButtonLabel}</ButtonDefault>
                         </Header>
                     ))}
                 </>

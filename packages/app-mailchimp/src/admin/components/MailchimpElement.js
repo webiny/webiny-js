@@ -1,12 +1,11 @@
 // @flow
 import * as React from "react";
-import { pure } from "recompose";
 import { ElementRoot } from "@webiny/app-page-builder/render/components/ElementRoot";
 import { Form } from "@webiny/form";
 import { get } from "lodash";
 import { getPlugins } from "@webiny/plugins";
 
-const MailchimpElement = pure(({ element }: *) => {
+const MailchimpElement = React.memo(({ element }: *) => {
     let selected = get(element, "data.settings.component", get(element, "settings.component"));
     const component = getPlugins("pb-page-element-mailchimp-component").find(
         cmp => cmp.componentName === selected
@@ -44,5 +43,7 @@ const MailchimpElement = pure(({ element }: *) => {
         </ElementRoot>
     );
 });
+
+MailchimpElement.displayName = "MailchimpElement";
 
 export default MailchimpElement;

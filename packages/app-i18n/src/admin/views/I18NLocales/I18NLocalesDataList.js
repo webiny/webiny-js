@@ -1,10 +1,8 @@
 // @flow
 import * as React from "react";
-import { withRouter } from "react-router-dom";
-import type { Location, RouterHistory } from "react-router-dom";
-import type { WithCrudListProps } from "@webiny/app-admin/components";
 import { i18n } from "@webiny/app/i18n";
 import { ConfirmationDialog } from "@webiny/ui/ConfirmationDialog";
+import { useCrud } from "@webiny/app-admin/hooks/useCrud";
 import {
     DataList,
     ScrollList,
@@ -16,51 +14,38 @@ import {
 
 import { DeleteIcon } from "@webiny/ui/List/DataList/icons";
 
-const t = i18n.namespace("I18N.I18NLocalesDataList");
+const t = i18n.ns("app-i18n/admin/locales/data-list");
 
-const I18NLocalesDataList = ({
-    dataList,
-    location,
-    history,
-    deleteRecord
-}: WithCrudListProps & { location: Location, history: RouterHistory }) => {
-    const query = new URLSearchParams(location.search);
+const I18NLocalesDataList = () => {
+    const { actions, list } = useCrud();
 
     return (
         <DataList
-            {...dataList}
+            {...list}
             title={t`Locales`}
             sorters={[
                 {
-                    label: "Name A-Z",
-                    sorters: { name: 1 }
+                    label: t`Language A-Z`,
+                    sorters: { code: 1 }
                 },
                 {
-                    label: "Name Z-A",
-                    sorters: { name: -1 }
+                    label: t`Language Z-A`,
+                    sorters: { code: -1 }
                 }
             ]}
         >
-            {({ data }) => (
+            {({ data, isSelected, select }) => (
                 <ScrollList>
                     {data.map(item => (
-                        <ListItem key={item.id} selected={query.get("id") === item.id}>
-                            <ListItemText
-                                onClick={() => {
-                                    query.set("id", item.id);
-                                    history.push({ search: query.toString() });
-                                }}
-                            >
-                                {item.code}
-                            </ListItemText>
-
+                        <ListItem key={item.id} selected={isSelected(item)}>
+                            <ListItemText onClick={() => select(item)}>{item.code}</ListItemText>
                             <ListItemMeta>
                                 <ListActions>
                                     <ConfirmationDialog>
                                         {({ showConfirmation }) => (
                                             <DeleteIcon
                                                 onClick={() =>
-                                                    showConfirmation(() => deleteRecord(item))
+                                                    showConfirmation(() => actions.delete(item))
                                                 }
                                             />
                                         )}
@@ -75,4 +60,4 @@ const I18NLocalesDataList = ({
     );
 };
 
-export default withRouter(I18NLocalesDataList);
+export default I18NLocalesDataList;

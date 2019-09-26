@@ -1,46 +1,42 @@
 // @flow
-import React from "react";
-import { compose, withProps, withHandlers, setDisplayName } from "recompose";
-import {
-    Dialog,
-    DialogAccept,
-    DialogHeader,
-    DialogHeaderTitle,
-    DialogFooter,
-    DialogBody
-} from "@webiny/ui/Dialog";
+import React, { useCallback } from "react";
+import { get } from "lodash";
+import { useUi } from "@webiny/app/hooks/useUi";
+import { Dialog, DialogAccept, DialogTitle, DialogActions, DialogContent } from "@webiny/ui/Dialog";
 
-import _ from "lodash";
-import { withUi } from "@webiny/app/components";
+const DialogMain = () => {
+    const ui = useUi();
+    const message = get(ui, "dialog.message");
+    const { title, actions = { cancel: null, accept: { label: "OK" } } } = get(
+        ui,
+        "dialog.options",
+        {}
+    );
 
-const DialogMain = ({ message, options, hideDialog }) => {
+    const hideDialog = useCallback(() => {
+        ui.setState(ui => ({ ...ui, dialog: null }));
+    }, [ui]);
+
     return (
         <Dialog>
             <Dialog open={!!message} onClose={hideDialog}>
-                {options.title && (
-                    <DialogHeader>
-                        <DialogHeaderTitle>{options.title}</DialogHeaderTitle>
-                    </DialogHeader>
-                )}
-                <DialogBody>{message}</DialogBody>
-                <DialogFooter>
-                    <DialogAccept>OK</DialogAccept>
-                </DialogFooter>
+                {title && <DialogTitle>{title}</DialogTitle>}
+                <DialogContent>{message}</DialogContent>
+                <DialogActions>
+                    {actions.cancel && (
+                        <DialogAccept onClick={actions.cancel.onClick}>
+                            {actions.cancel.label}
+                        </DialogAccept>
+                    )}
+                    {actions.accept && (
+                        <DialogAccept onClick={actions.accept.onClick}>
+                            {actions.accept.label}
+                        </DialogAccept>
+                    )}
+                </DialogActions>
             </Dialog>
         </Dialog>
     );
 };
 
-export default compose(
-    setDisplayName("DialogMain"),
-    withUi(),
-    withProps(props => ({
-        message: _.get(props.ui, "dialog.message"),
-        options: _.get(props.ui, "dialog.options", {})
-    })),
-    withHandlers({
-        hideDialog: props => () => {
-            props.ui.setState(ui => ({ ...ui, dialog: null }));
-        }
-    })
-)(DialogMain);
+export default DialogMain;

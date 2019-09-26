@@ -1,5 +1,5 @@
 //@flow
-import styled from "react-emotion";
+import styled from "@emotion/styled";
 
 export const Footer = styled("div")({
     backgroundColor: "var(--mdc-theme-background)",
@@ -19,7 +19,7 @@ export const InputContainer = styled("div")(props => ({
         width: props.width || 50,
         margin: props.hasOwnProperty("margin") ? props.margin : "0 0 0 18px",
         ".mdc-text-field__input": {
-            paddingTop: 5
+            paddingTop: 16
         }
     }
 }));

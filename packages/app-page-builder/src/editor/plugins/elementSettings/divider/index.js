@@ -1,9 +1,8 @@
 // @flow
 import React from "react";
-import styled from "react-emotion";
-import { pure } from "recompose";
+import styled from "@emotion/styled";
 
-const Divider = pure(
+const Divider = React.memo(
     styled("div")({
         backgroundColor: "var(--mdc-theme-on-background)",
         width: 1,

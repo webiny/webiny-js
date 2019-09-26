@@ -1,7 +1,6 @@
 //@flow
 import React from "react";
-import styled from "react-emotion";
-import { pure } from "recompose";
+import styled from "@emotion/styled";
 import { ElementRoot } from "@webiny/app-page-builder/render/components/ElementRoot";
 import BlockContainer from "./BlockContainer";
 import ElementAnimation from "@webiny/app-page-builder/render/components/ElementAnimation";
@@ -13,7 +12,7 @@ const BlockStyle = styled("div")({
     boxSizing: "border-box"
 });
 
-const Block = pure(({ element }) => {
+const Block = React.memo(({ element }) => {
     const { id } = element;
 
     return (

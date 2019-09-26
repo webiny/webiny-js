@@ -5,8 +5,8 @@ const fields = `
     id email firstName lastName fullName avatar { id src } enabled groups { id name } roles { id name }
 `;
 
-export const loadUsers = gql`
-    query LoadUsers($where: JSON, $sort: JSON, $page: Int, $perPage: Int, $search: SecurityUserSearchInput) {
+export const LIST_USERS = gql`
+    query listUsers($where: JSON, $sort: JSON, $page: Int, $perPage: Int, $search: SecurityUserSearchInput) {
         security {
             users: listUsers(
                 where: $where
@@ -39,8 +39,8 @@ export const loadUsers = gql`
     }
 `;
 
-export const loadUser = gql`
-    query LoadUser($id: ID!) {
+export const READ_USER = gql`
+    query getUser($id: ID!) {
         security {
             user: getUser(id: $id){
                 data {
@@ -55,8 +55,8 @@ export const loadUser = gql`
     }
 `;
 
-export const createUser = gql`
-    mutation CreateUser($data: UserInput!){
+export const CREATE_USER = gql`
+    mutation createUser($data: SecurityUserInput!){
         security {
             user: createUser(data: $data) {
                 data {
@@ -72,8 +72,8 @@ export const createUser = gql`
     }
 `;
 
-export const updateUser = gql`
-    mutation UpdateUser($id: ID!, $data: UserInput!){
+export const UPDATE_USER = gql`
+    mutation updateUser($id: ID!, $data: SecurityUserInput!){
         security {
             user: updateUser(id: $id, data: $data) {
                 data {
@@ -89,8 +89,8 @@ export const updateUser = gql`
     }
 `;
 
-export const deleteUser = gql`
-    mutation DeleteUser($id: ID!) {
+export const DELETE_USER = gql`
+    mutation deleteUser($id: ID!) {
         security {
             deleteUser(id: $id) {
                 data

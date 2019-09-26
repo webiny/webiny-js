@@ -5,10 +5,9 @@ import {
     Dialog,
     DialogAccept,
     DialogCancel,
-    DialogFooter,
-    DialogHeader,
-    DialogHeaderTitle,
-    DialogBody
+    DialogActions,
+    DialogTitle,
+    DialogContent
 } from "./../Dialog";
 
 type Props = {
@@ -73,14 +72,12 @@ class ConfirmationDialog extends React.Component<Props, State> {
         return (
             <React.Fragment>
                 <Dialog open={this.state.show} onClose={this.hideConfirmation}>
-                    <DialogHeader>
-                        <DialogHeaderTitle>{this.props.title}</DialogHeaderTitle>
-                    </DialogHeader>
-                    <DialogBody>{this.props.message}</DialogBody>
-                    <DialogFooter>
+                    <DialogTitle>{this.props.title}</DialogTitle>
+                    <DialogContent>{this.props.message}</DialogContent>
+                    <DialogActions>
                         <DialogCancel onClick={this.onCancel}>Cancel</DialogCancel>
                         <DialogAccept onClick={this.onAccept}>Confirm</DialogAccept>
-                    </DialogFooter>
+                    </DialogActions>
                 </Dialog>
                 {this.props.children({
                     showConfirmation: this.showConfirmation

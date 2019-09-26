@@ -1,6 +1,6 @@
 //@flow
 import React from "react";
-import styled from "react-emotion";
+import styled from "@emotion/styled";
 import { ElementRoot } from "@webiny/app-page-builder/render/components/ElementRoot";
 import SpacerContainer from "./SpacerContainer";
 export { MIN_HEIGHT, INIT_HEIGHT } from "./SpacerContainer";

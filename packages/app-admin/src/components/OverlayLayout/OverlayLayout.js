@@ -1,7 +1,7 @@
 //@flow
 import * as React from "react";
 import { Transition } from "react-transition-group";
-import styled from "react-emotion";
+import styled from "@emotion/styled";
 import { css } from "emotion";
 import { TopAppBarSecondary, TopAppBarSection } from "@webiny/ui/TopAppBar";
 import { IconButton } from "@webiny/ui/Button";

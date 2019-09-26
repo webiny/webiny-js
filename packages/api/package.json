@@ -16,8 +16,6 @@
   "dependencies": {
     "@apollo/federation": "^0.6.8",
     "@babel/runtime": "^7.5.5",
-    "@webiny/entity": "^1.0.0",
-    "@webiny/model": "^1.0.0",
     "apollo-server-lambda": "^2.6.7",
     "graphql": "^14.4.2",
     "graphql-middleware": "^3.0.2",

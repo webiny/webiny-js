@@ -1,6 +1,6 @@
 import React, { useRef } from "react";
 import { css } from "emotion";
-import styled from "react-emotion";
+import styled from "@emotion/styled";
 import { SplitView, LeftPanel, RightPanel } from "@webiny/app-admin/components/SplitView";
 import { Typography } from "@webiny/ui/Typography";
 import { Tabs, Tab } from "@webiny/ui/Tabs";
@@ -31,7 +31,9 @@ const titleIcon = css({
 });
 
 const LeftBarFieldList = styled("div")({
-    padding: 40
+    padding: 40,
+    overflow: "scroll",
+    height: "calc(100vh - 250px)"
 });
 
 const formTabs = css({

@@ -3,8 +3,7 @@ import * as React from "react";
 import type { Location } from "react-router-dom";
 import { useQuery } from "react-apollo";
 import { Content, buildQueryProps } from "./Page/index";
-import { withPageBuilder } from "@webiny/app-page-builder/context";
-import type { WithPageBuilderPropsType } from "@webiny/app-page-builder/context";
+import { usePageBuilder } from "@webiny/app-page-builder/hooks/usePageBuilder";
 import { get } from "lodash";
 import invariant from "invariant";
 import { CircularProgress } from "@webiny/ui/Progress";
@@ -14,15 +13,16 @@ const defaultPages = {
     notFound: null
 };
 
-type Props = { match: Object, location: Location, pageBuilder: WithPageBuilderPropsType };
+type Props = { match: Object, location: Location };
 
 const NO_404_PAGE_DEFAULT =
     "Could not fetch 404 (not found) page nor was a default page provided (set via PageBuilderProvider).";
 const NO_ERROR_PAGE_DEFAULT =
     "Could not fetch error page nor was a default page provided (set via PageBuilderProvider).";
 
-const Page = ({ pageBuilder, location }: Props) => {
+const Page = ({ location }: Props) => {
     const { query, ...options } = buildQueryProps({ location, defaultPages });
+    const pageBuilder = usePageBuilder();
 
     const { loading, data, error: gqlError } = useQuery(query, options);
 
@@ -72,4 +72,4 @@ const Page = ({ pageBuilder, location }: Props) => {
     return <Component />;
 };
 
-export default withPageBuilder()(Page);
+export default Page;

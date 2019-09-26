@@ -1,10 +1,9 @@
 // @flow
 import * as React from "react";
-import { withRouter } from "react-router-dom";
-import type { Location, RouterHistory } from "react-router-dom";
-import type { WithCrudListProps } from "@webiny/app-admin/components";
 import { i18n } from "@webiny/app/i18n";
 import { ConfirmationDialog } from "@webiny/ui/ConfirmationDialog";
+import { DeleteIcon } from "@webiny/ui/List/DataList/icons";
+import { useCrud } from "@webiny/app-admin/hooks/useCrud";
 import {
     DataList,
     ScrollList,
@@ -12,65 +11,42 @@ import {
     ListItemText,
     ListItemTextSecondary,
     ListItemMeta,
-    ListActions,
-    ListItemGraphic
+    ListActions
 } from "@webiny/ui/List";
 
-import { DeleteIcon } from "@webiny/ui/List/DataList/icons";
-import { Checkbox } from "@webiny/ui/Checkbox";
+const t = i18n.ns("app-security/admin/roles/data-list");
 
-const t = i18n.namespace("Security.RolesDataList");
-
-const RolesDataList = ({
-    dataList,
-    location,
-    history,
-    deleteRecord
-}: WithCrudListProps & { location: Location, history: RouterHistory }) => {
-    const query = new URLSearchParams(location.search);
+const RolesDataList = () => {
+    const { actions, list } = useCrud();
 
     return (
         <DataList
-            {...dataList}
+            {...list}
             title={t`Security Roles`}
             sorters={[
                 {
-                    label: "Newest to oldest",
+                    label: t`Newest to oldest`,
                     sorters: { savedOn: -1 }
                 },
                 {
-                    label: "Oldest to newest",
+                    label: t`Oldest to newest`,
                     sorters: { savedOn: 1 }
                 },
                 {
-                    label: "Name A-Z",
+                    label: t`Name A-Z`,
                     sorters: { name: 1 }
                 },
                 {
-                    label: "Name Z-A",
+                    label: t`Name Z-A`,
                     sorters: { name: -1 }
                 }
             ]}
         >
-            {({ data, multiSelect, isMultiSelected }) => (
+            {({ data, isSelected, select }) => (
                 <ScrollList>
                     {data.map(item => (
-                        <ListItem key={item.id} selected={query.get("id") === item.id}>
-                            <ListItemGraphic>
-                                <Checkbox
-                                    value={isMultiSelected(item)}
-                                    onClick={() => {
-                                        multiSelect(item);
-                                    }}
-                                />
-                            </ListItemGraphic>
-
-                            <ListItemText
-                                onClick={() => {
-                                    query.set("id", item.id);
-                                    history.push({ search: query.toString() });
-                                }}
-                            >
+                        <ListItem key={item.id} selected={isSelected(item)}>
+                            <ListItemText onClick={() => select(item)}>
                                 {item.name}
                                 <ListItemTextSecondary>{item.description}</ListItemTextSecondary>
                             </ListItemText>
@@ -81,7 +57,7 @@ const RolesDataList = ({
                                         {({ showConfirmation }) => (
                                             <DeleteIcon
                                                 onClick={() =>
-                                                    showConfirmation(() => deleteRecord(item))
+                                                    showConfirmation(() => actions.delete(item))
                                                 }
                                             />
                                         )}
@@ -96,4 +72,4 @@ const RolesDataList = ({
     );
 };
 
-export default withRouter(RolesDataList);
+export default RolesDataList;

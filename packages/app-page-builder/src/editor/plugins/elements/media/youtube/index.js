@@ -1,6 +1,6 @@
 // @flow
 import React from "react";
-import styled from "react-emotion";
+import styled from "@emotion/styled";
 import { Tab } from "@webiny/ui/Tabs";
 import { Input } from "@webiny/ui/Input";
 import { Grid, Cell } from "@webiny/ui/Grid";
@@ -9,7 +9,7 @@ import { createEmbedSettingsPlugin, createEmbedPlugin } from "./../../utils/oemb
 import { ReactComponent as MediaIcon } from "./../../../elementGroups/media/round-music_video-24px.svg";
 import YoutubeEmbed from "./YoutubeEmbed";
 import placeholder from "./placeholder.png";
-
+import { validation } from "@webiny/validation";
 import { ReactComponent as LogoIcon } from "./youtube-brands.svg";
 
 const PreviewBox = styled("div")({
@@ -52,7 +52,7 @@ export default (): Array<PbElementPluginType> => [
                 <Tab icon={<MediaIcon />} label="YouTube">
                     <Grid>
                         <Cell span={12}>
-                            <Bind name={"source.url"} validators={["required", "url"]}>
+                            <Bind name={"source.url"} validators={validation.create("required,url")}>
                                 <Input label={"Video URL"} description={"Enter a video URL"} />
                             </Bind>
                         </Cell>

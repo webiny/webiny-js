@@ -6,6 +6,7 @@
 
 .rc-tooltip {
   opacity: 1;
+  max-width: 250px;
 }
 
 .rc-tooltip-arrow{
@@ -47,11 +48,13 @@
   -moz-osx-font-smoothing: grayscale;
   -webkit-font-smoothing: antialiased;
   font-size: 0.75rem;
-  line-height: 80%;
+  line-height: 125%;
   font-weight: 500;
   letter-spacing: 0.16667em;
   text-decoration: none;
   text-transform: uppercase;
+  text-align: center;
+  font-weight: 600;
 }
 
 .rc-tooltip.rc-tooltip-fade-enter{

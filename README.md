@@ -1,7 +1,7 @@
 <br/>
 <p align="center">
-  <img src="https://s3.amazonaws.com/owler-image/logo/webiny_owler_20160228_232453_original.png" width="400" />
-  <br/>
+  <img src="./static/webiny-logo.svg" width="250" />
+  <br/><br/>
   <strong>Developer-friendly Serverless CMS powered by GraphQL and React</strong>
 </p>
 <p align="center">

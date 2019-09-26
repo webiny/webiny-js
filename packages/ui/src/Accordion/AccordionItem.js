@@ -3,7 +3,7 @@ import * as React from "react";
 import { ListItem, ListItemGraphic, ListItemMeta } from "@webiny/ui/List";
 import Transition from "react-transition-group/Transition";
 import { Icon } from "@webiny/ui/Icon";
-import styled from "react-emotion";
+import styled from "@emotion/styled";
 import { css } from "emotion";
 import { Typography } from "@webiny/ui/Typography";
 

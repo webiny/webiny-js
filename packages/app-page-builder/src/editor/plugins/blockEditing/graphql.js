@@ -1,7 +1,7 @@
 // @flow
 import gql from "graphql-tag";
 
-export const deleteElement = gql`
+export const DELETE_ELEMENT = gql`
     mutation deleteElement($id: ID!) {
         pageBuilder {
             deleteElement(id: $id) {
@@ -14,8 +14,8 @@ export const deleteElement = gql`
     }
 `;
 
-export const updateElement = gql`
-    mutation updateElement($id: ID!, $data: UpdateElementInput!) {
+export const UPDATE_ELEMENT = gql`
+    mutation updateElement($id: ID!, $data: PbUpdateElementInput!) {
         pageBuilder {
             updateElement(id: $id, data: $data) {
                 data {

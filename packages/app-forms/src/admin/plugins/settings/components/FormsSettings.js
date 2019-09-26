@@ -1,15 +1,14 @@
 import React from "react";
+import { get } from "lodash";
+import { Query, Mutation } from "react-apollo";
 import { Form } from "@webiny/form";
 import { Grid, Cell } from "@webiny/ui/Grid";
 import { ButtonPrimary } from "@webiny/ui/Button";
 import { Input } from "@webiny/ui/Input";
 import { Switch } from "@webiny/ui/Switch";
-import { Query, Mutation } from "react-apollo";
-import { withSnackbar } from "@webiny/app-admin/components";
-import graphql from "./graphql";
+import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { CircularProgress } from "@webiny/ui/Progress";
-
-import { get } from "lodash";
+import graphql from "./graphql";
 
 import {
     SimpleForm,
@@ -18,7 +17,8 @@ import {
     SimpleFormHeader
 } from "@webiny/app-admin/components/SimpleForm";
 
-const FormsSettings = ({ showSnackbar }) => {
+const FormsSettings = () => {
+    const { showSnackbar } = useSnackbar();
     return (
         <Query query={graphql.query}>
             {({ data, loading: queryInProgress }) => {
@@ -121,4 +121,4 @@ const FormsSettings = ({ showSnackbar }) => {
     );
 };
 
-export default withSnackbar()(FormsSettings);
+export default FormsSettings;

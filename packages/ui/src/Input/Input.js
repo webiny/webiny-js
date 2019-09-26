@@ -37,7 +37,7 @@ type Props = FormComponentProps & {
     outlined?: boolean,
 
     // Creates a box around the input.
-    box?: boolean,
+    box?: string,
 
     // Stretches the input to fit available width.
     fullwidth?: boolean,
@@ -46,7 +46,7 @@ type Props = FormComponentProps & {
     inputRef?: React.Ref<any>,
 
     // A leading icon. Use `<InputIcon/>` component.
-    leadingIcon?: React.Node,
+    icon?: React.Node,
 
     // A trailing icon. Use `<InputIcon/>` component.
     trailingIcon?: React.Node,
@@ -123,9 +123,8 @@ class Input extends React.Component<Props> {
             outlined,
             rows,
             validation = { isValid: null },
-            leadingIcon,
+            icon,
             trailingIcon,
-            box,
             ...props
         } = this.props;
 
@@ -140,14 +139,13 @@ class Input extends React.Component<Props> {
                     {...pick(props, Input.rmwcProps)}
                     autoFocus={autoFocus}
                     textarea={Boolean(rows)}
-                    box={box || (!outlined && (Boolean(leadingIcon) || Boolean(trailingIcon)))}
                     value={inputValue}
                     onChange={this.onChange}
                     onBlur={this.onBlur}
                     label={label}
-                    withLeadingIcon={leadingIcon}
+                    icon={icon}
                     placeholder={(!label && placeholder) || undefined}
-                    withTrailingIcon={trailingIcon}
+                    trailingIcon={trailingIcon}
                     rows={this.props.rows}
                 />
 

@@ -1,7 +1,7 @@
 //@flow
 import React from "react";
 import { css } from "emotion";
-import { keyframes } from "react-emotion";
+import { keyframes } from "emotion";
 import classnames from "classnames";
 
 import SlideOutline from "./SlideOutline";
@@ -90,7 +90,7 @@ const hoverStyleSlide6 = css({
 });
 
 const hoverStyleSlide6AnimInit = css({
-   opacity: 0
+    opacity: 0
 });
 
 const hoverStyleSlide6Anim = css({

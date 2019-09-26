@@ -1,7 +1,7 @@
 //@flow
 import * as React from "react";
 import { css } from "emotion";
-import styled from "react-emotion";
+import styled from "@emotion/styled";
 import { Typography } from "@webiny/ui/Typography";
 import { Select } from "@webiny/ui/Select";
 import RenderElement from "@webiny/app-page-builder/render/components/Element";
@@ -31,10 +31,20 @@ const PagePreviewToolbar = styled("div")({
     transform: "translateZ(0)",
     display: "flex",
     overflow: "hidden",
-    select: {
-        fontSize: 14,
+    ".webiny-ui-select": {
         color: "var(--mdc-theme-text-secondary-on-background)",
-        width: 75
+        backgroundColor: "transparent !important",
+        width: "120px !important",
+        ".mdc-select__dropdown-icon": {
+            display: "none"
+        },
+        select: {
+            fontSize: 14,
+            border: "none",
+            height: 30,
+            padding: 0,
+            backgroundColor: "transparent !important"
+        }
     }
 });
 

@@ -1,6 +1,6 @@
 // @flow
 import React from "react";
-import styled from "react-emotion";
+import styled from "@emotion/styled";
 import type { PluginType } from "@webiny/app-page-builder/types";
 import { Tab } from "@webiny/ui/Tabs";
 import { Input } from "@webiny/ui/Input";
@@ -11,6 +11,7 @@ import {
     createEmbedPlugin,
     createEmbedSettingsPlugin
 } from "./../../utils/oembed/createEmbedPlugin";
+import { validation } from "@webiny/validation";
 
 import { ReactComponent as LogoIcon } from "./twitter-brands.svg";
 
@@ -55,7 +56,10 @@ export default (): Array<PluginType> => [
                 <Tab icon={<SocialIcon />} label="Twitter">
                     <Grid>
                         <Cell span={12}>
-                            <Bind name={"source.url"} validators={["required", "url"]}>
+                            <Bind
+                                name={"source.url"}
+                                validators={validation.create("required,url")}
+                            >
                                 <Input label={"Tweet URL"} description={"Enter a Tweet URL"} />
                             </Bind>
                         </Cell>

@@ -1,6 +1,6 @@
 //@flow
 import * as React from "react";
-import styled from "react-emotion";
+import styled from "@emotion/styled";
 import Droppable from "./../Droppable";
 
 const Container = styled("div")(({ isOver }) => ({
@@ -29,14 +29,13 @@ const Add = styled("div")(({ isOver }) => ({
 type Props = {
     onDrop: Function,
     children: React.Node
-
 };
 
 export default function Center({ onDrop, children }: Props) {
     return (
         <Droppable onDrop={onDrop}>
-            {({ isOver }) => (
-                <div style={{ width: "100%", height: "100%" }}>
+            {({ isOver, drop }) => (
+                <div ref={drop} style={{ width: "100%", height: "100%" }}>
                     <Container isOver={isOver}>
                         <Add isOver={isOver}>{children}</Add>
                     </Container>

@@ -7,10 +7,11 @@ import { ButtonPrimary } from "@webiny/ui/Button";
 import SingleImageUpload from "@webiny/app-admin/components/SingleImageUpload";
 
 import { Query, Mutation } from "react-apollo";
-import { withSnackbar } from "@webiny/app-admin/components";
+import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import graphql from "./graphql";
 import { CircularProgress } from "@webiny/ui/Progress";
 import { get } from "lodash";
+import { validation } from "@webiny/validation";
 
 import {
     SimpleForm,
@@ -19,7 +20,8 @@ import {
     SimpleFormHeader
 } from "@webiny/app-admin/components/SimpleForm";
 
-const GeneralSettings = ({ showSnackbar }) => {
+const GeneralSettings = () => {
+    const { showSnackbar } = useSnackbar();
     return (
         <Query query={graphql.query}>
             {({ data, loading: queryInProgress }) => {
@@ -51,7 +53,7 @@ const GeneralSettings = ({ showSnackbar }) => {
                                                         <Cell span={12}>
                                                             <Bind
                                                                 name={"name"}
-                                                                validators={["required"]}
+                                                                validators={validation.create("required")}
                                                             >
                                                                 <Input label="Website name" />
                                                             </Bind>
@@ -99,7 +101,7 @@ const GeneralSettings = ({ showSnackbar }) => {
                                                         <Cell span={12}>
                                                             <Bind
                                                                 name={"social.facebook"}
-                                                                validators={["url"]}
+                                                                validators={validation.create("url")}
                                                             >
                                                                 <Input label="Facebook" />
                                                             </Bind>
@@ -107,7 +109,7 @@ const GeneralSettings = ({ showSnackbar }) => {
                                                         <Cell span={12}>
                                                             <Bind
                                                                 name={"social.twitter"}
-                                                                validators={["url"]}
+                                                                validators={validation.create("url")}
                                                             >
                                                                 <Input label="Twitter" />
                                                             </Bind>
@@ -115,7 +117,7 @@ const GeneralSettings = ({ showSnackbar }) => {
                                                         <Cell span={12}>
                                                             <Bind
                                                                 name={"social.instagram"}
-                                                                validators={["url"]}
+                                                                validators={validation.create("url")}
                                                             >
                                                                 <Input label="Instagram" />
                                                             </Bind>
@@ -144,4 +146,4 @@ const GeneralSettings = ({ showSnackbar }) => {
     );
 };
 
-export default withSnackbar()(GeneralSettings);
+export default GeneralSettings;

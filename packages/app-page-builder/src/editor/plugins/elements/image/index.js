@@ -1,6 +1,6 @@
 // @flow
 import React from "react";
-import styled from "react-emotion";
+import styled from "@emotion/styled";
 import { getPlugins } from "@webiny/plugins";
 import { ELEMENT_CREATED } from "@webiny/app-page-builder/editor/actions";
 import type { PluginType } from "@webiny/plugins/types";

@@ -1,12 +1,6 @@
 // @flow
 import type { Node, ComponentType } from "react";
 import type { PluginType } from "@webiny/plugins/types";
-import type { WithPageDetailsProps } from "@webiny/app-page-builder/admin/components";
-import type { WithPageBuilderPropsType, PbProviderPropsType } from "@webiny/app-page-builder/context";
-
-export type { WithPageDetailsProps };
-export type { WithPageBuilderPropsType };
-export type { PbProviderPropsType };
 export type { PluginType };
 
 export type PbElementType = {
@@ -73,7 +67,7 @@ export type PbRenderElementPluginType = PluginType & {
 };
 
 export type PbPageDetailsPluginType = PluginType & {
-    render: (params: WithPageDetailsProps) => Node
+    render: (params: Object) => Node
 };
 
 export type PbPageSettingsPluginType = PluginType & {

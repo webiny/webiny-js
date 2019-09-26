@@ -4,43 +4,30 @@ import { Mutation } from "react-apollo";
 import { Form } from "@webiny/form";
 import { Input } from "@webiny/ui/Input";
 import get from "lodash.get";
-import { compose } from "recompose";
-import { withSnackbar } from "@webiny/app-admin/components";
+import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { CircularProgress } from "@webiny/ui/Progress";
 import { Grid, Cell } from "@webiny/ui/Grid";
 import { UPDATE_FORMS_SETTINGS } from "./graphql";
 import { useFormEditor } from "@webiny/app-forms/admin/components/FormEditor/Context";
-
+import { validation } from "@webiny/validation";
 import { i18n } from "@webiny/app/i18n";
 const t = i18n.namespace("Forms.ReCaptchaSettingsDialog");
 
-import {
-    Dialog,
-    DialogHeader,
-    DialogHeaderTitle,
-    DialogBody,
-    DialogFooter
-} from "@webiny/ui/Dialog";
+import { Dialog, DialogTitle, DialogContent, DialogActions } from "@webiny/ui/Dialog";
 import { ButtonDefault } from "@webiny/ui/Button";
 
 type Props = {
     open: boolean,
     onClose: Function,
     onSubmit: Function,
-    showSnackbar: Function,
     reCaptchaSettings: Object
 };
 
-const ReCaptchaSettingsDialog = ({
-    open,
-    onClose,
-    showSnackbar,
-    reCaptchaSettings,
-    onSubmit
-}: Props) => {
+const ReCaptchaSettingsDialog = ({ open, onClose, reCaptchaSettings, onSubmit }: Props) => {
     // $FlowFixMe
     const [loading, setLoading] = React.useState(false);
     const { setData } = useFormEditor();
+    const { showSnackbar } = useSnackbar();
 
     return (
         <Dialog open={open} onClose={onClose}>
@@ -56,7 +43,7 @@ const ReCaptchaSettingsDialog = ({
                                         data: { reCaptcha: { enabled: true, siteKey, secretKey } }
                                     }
                                 }),
-                                "data.settings.forms"
+                                "data.forms.updateSettings"
                             );
                             setData(data => {
                                 data.settings.reCaptcha.settings = {
@@ -79,13 +66,11 @@ const ReCaptchaSettingsDialog = ({
                             return (
                                 <>
                                     {loading && <CircularProgress />}
-                                    <DialogHeader>
-                                        <DialogHeaderTitle>{t`Edit Google reCAPTCHA settings`}</DialogHeaderTitle>
-                                    </DialogHeader>
-                                    <DialogBody>
+                                    <DialogTitle>{t`Edit Google reCAPTCHA settings`}</DialogTitle>
+                                    <DialogContent>
                                         <Grid>
                                             <Cell span={12}>
-                                                <Bind name={"siteKey"} validators={"required"}>
+                                                <Bind name={"siteKey"} validators={validation.create("required")}>
                                                     <Input
                                                         label={"Site key"}
                                                         description={
@@ -95,7 +80,7 @@ const ReCaptchaSettingsDialog = ({
                                                                     href="https://www.google.com/recaptcha/admin"
                                                                     target={"_blank"}
                                                                 >
-                                                                    Don't have a site key?
+                                                                    Don&apos;t have a site key?
                                                                 </a>
                                                             </>
                                                         }
@@ -103,7 +88,7 @@ const ReCaptchaSettingsDialog = ({
                                                 </Bind>
                                             </Cell>
                                             <Cell span={12}>
-                                                <Bind name={"secretKey"} validators={"required"}>
+                                                <Bind name={"secretKey"} validators={validation.create("required")}>
                                                     <Input
                                                         label={"Secret key"}
                                                         description={
@@ -113,7 +98,7 @@ const ReCaptchaSettingsDialog = ({
                                                                     href="https://www.google.com/recaptcha/admin"
                                                                     target={"_blank"}
                                                                 >
-                                                                    Don't have a site key?
+                                                                    Don&apos;t have a site key?
                                                                 </a>
                                                             </>
                                                         }
@@ -121,12 +106,12 @@ const ReCaptchaSettingsDialog = ({
                                                 </Bind>
                                             </Cell>
                                         </Grid>
-                                    </DialogBody>
-                                    <DialogFooter>
+                                    </DialogContent>
+                                    <DialogActions>
                                         <ButtonDefault
                                             onClick={submit}
                                         >{t`Enable Google reCAPTCHA`}</ButtonDefault>
-                                    </DialogFooter>
+                                    </DialogActions>
                                 </>
                             );
                         }}
@@ -137,4 +122,4 @@ const ReCaptchaSettingsDialog = ({
     );
 };
 
-export default compose(withSnackbar())(ReCaptchaSettingsDialog);
+export default ReCaptchaSettingsDialog;

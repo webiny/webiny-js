@@ -1,7 +1,6 @@
 //@flow
 import React from "react";
-import { pure } from "recompose";
-import styled from "react-emotion";
+import styled from "@emotion/styled";
 import Droppable from "./../Droppable";
 
 const InnerDivVertical = styled("div")({
@@ -13,7 +12,7 @@ const InnerDivVertical = styled("div")({
     display: "none"
 });
 
-const OuterDivVertical = pure(
+const OuterDivVertical = React.memo(
     styled("div")(
         {
             position: "absolute",
@@ -44,11 +43,12 @@ type Props = {
     isVisible: boolean
 };
 
-const Vertical = pure(({ last, onDrop, isVisible, type }: Props) => {
+const Vertical = React.memo(({ last, onDrop, isVisible, type }: Props) => {
     return (
         <Droppable type={type} isVisible={isVisible} onDrop={onDrop}>
-            {({ isOver }) => (
+            {({ isOver, drop }) => (
                 <div
+                    ref={drop}
                     style={{
                         width: "30%",
                         maxWidth: "100px",

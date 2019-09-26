@@ -1,7 +1,6 @@
 // @flow
 import * as React from "react";
 import { css } from "emotion";
-import { compose, withState, withHandlers, withProps } from "recompose";
 import { getPlugins } from "@webiny/plugins";
 import { Typography } from "@webiny/ui/Typography";
 import { Grid } from "react-virtualized";
@@ -9,8 +8,6 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { DelayedOnChange } from "@webiny/app-page-builder/editor/components/DelayedOnChange";
 import { Menu } from "@webiny/ui/Menu";
 import { Input } from "@webiny/ui/Input";
-
-let icons = null;
 
 const COLUMN_COUNT = 6;
 
@@ -68,35 +65,31 @@ const searchInput = css({
     }
 });
 
-const IconPicker = ({ value, renderGrid }: Object) => {
-    return (
-        <Menu
-            handle={
-                <div className={pickIcon}>
-                    <FontAwesomeIcon icon={value || ["far", "star"]} size={"2x"} />
-                </div>
-            }
-        >
-            {renderGrid}
-        </Menu>
+const { useState, useCallback, useMemo, Fragment } = React;
+
+const IconPicker = ({ value, onChange }: Object) => {
+    const [filter, setFilter] = useState("");
+
+    const onFilterChange = useCallback(
+        (value, cb) => {
+            setFilter(value);
+            cb();
+        },
+        [filter]
     );
-};
 
-export default compose(
-    withState("filter", "setFilter", ""),
-    withProps(({ filter }) => {
-        if (!icons) {
-            icons = getPlugins("pb-icons").reduce((icons: Array<Object>, pl: Object) => {
-                return icons.concat(pl.getIcons());
-            }, []);
-        }
+    const allIcons = useMemo(() => {
+        return getPlugins("pb-icons").reduce((icons: Array<Object>, pl: Object) => {
+            return icons.concat(pl.getIcons());
+        }, []);
+    }, []);
 
-        return {
-            icons: icons ? (filter ? icons.filter(ic => ic.name.includes(filter)) : icons) : []
-        };
-    }),
-    withHandlers({
-        renderCell: ({ onChange, icons }) => ({ closeMenu }) => {
+    const icons = useMemo(() => {
+        return filter ? allIcons.filter(ic => ic.name.includes(filter)) : allIcons;
+    }, [filter]);
+
+    const renderCell = useCallback(
+        ({ closeMenu }) => {
             return function renderCell({ columnIndex, key, rowIndex, style }) {
                 const item = icons[rowIndex * COLUMN_COUNT + columnIndex];
                 if (!item) {
@@ -118,36 +111,49 @@ export default compose(
                     </div>
                 );
             };
-        }
-    }),
-    withHandlers({
-        renderGrid: ({ filter, setFilter, renderCell, icons }) =>
-            function renderGrid({ closeMenu }) {
-                return (
-                    <React.Fragment>
-                        <DelayedOnChange value={filter} onChange={setFilter}>
-                            {({ value, onChange }) => (
-                                <Input
-                                    autoFocus
-                                    className={searchInput}
-                                    value={value}
-                                    onChange={onChange}
-                                    placeholder={"Search icons..."}
-                                />
-                            )}
-                        </DelayedOnChange>
-                        <Grid
-                            className={grid}
-                            cellRenderer={renderCell({ closeMenu })}
-                            columnCount={COLUMN_COUNT}
-                            columnWidth={100}
-                            height={440}
-                            rowCount={Math.ceil(icons.length / COLUMN_COUNT)}
-                            rowHeight={100}
-                            width={640}
+        },
+        [icons]
+    );
+
+    const renderGrid = useCallback(({ closeMenu }) => {
+        return (
+            <Fragment>
+                <DelayedOnChange value={filter} onChange={onFilterChange}>
+                    {({ value, onChange }) => (
+                        <Input
+                            autoFocus
+                            className={searchInput}
+                            value={value}
+                            onChange={onChange}
+                            placeholder={"Search icons..."}
                         />
-                    </React.Fragment>
-                );
+                    )}
+                </DelayedOnChange>
+                <Grid
+                    className={grid}
+                    cellRenderer={renderCell({ closeMenu })}
+                    columnCount={COLUMN_COUNT}
+                    columnWidth={100}
+                    height={440}
+                    rowCount={Math.ceil(icons.length / COLUMN_COUNT)}
+                    rowHeight={100}
+                    width={640}
+                />
+            </Fragment>
+        );
+    });
+
+    return (
+        <Menu
+            handle={
+                <div className={pickIcon}>
+                    <FontAwesomeIcon icon={value || ["far", "star"]} size={"2x"} />
+                </div>
             }
-    })
-)(IconPicker);
+        >
+            {renderGrid}
+        </Menu>
+    );
+};
+
+export default IconPicker;

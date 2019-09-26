@@ -1,10 +1,10 @@
 // @flow
 import bcrypt from "bcryptjs";
 import util from "util";
-import { Response, ErrorResponse } from "@webiny/api/graphql";
+import { Response, ErrorResponse } from "@webiny/api/graphql/commodo";
 import { JwtToken } from "../../authentication/jwtToken";
-import type { Entity } from "@webiny/entity";
-type EntityFetcher = (context: Object) => Class<Entity>;
+
+type GetModel = (context: Object) => Function;
 
 const verifyPassword = util.promisify(bcrypt.compare);
 
@@ -13,12 +13,12 @@ const invalidCredentials = new ErrorResponse({
     message: "Invalid credentials."
 });
 
-export default (entityFetcher: EntityFetcher) => async (
+export default (getModel: GetModel) => async (
     root: any,
     args: Object,
     context: Object
 ) => {
-    const User = entityFetcher(context);
+    const User = getModel(context);
 
     const user: User = (await User.findOne({
         query: { email: args.username }

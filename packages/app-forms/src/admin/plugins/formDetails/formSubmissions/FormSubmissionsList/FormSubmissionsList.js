@@ -17,10 +17,10 @@ import {
 import FormSubmissionDialog from "./FormSubmissionDialog";
 import { ReactComponent as ImportExport } from "./icons/round-cloud_download-24px.svg";
 import { IconButton } from "@webiny/ui/Button";
-import { exportFormSubmissions } from "@webiny/app-forms/admin/viewsGraphql";
+import { EXPORT_FORM_SUBMISSIONS } from "@webiny/app-forms/admin/viewsGraphql";
 import { Mutation } from "react-apollo";
 import { Tooltip } from "@webiny/ui/Tooltip";
-import { withSnackbar } from "@webiny/app-admin/components";
+import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { i18n } from "@webiny/app/i18n";
 const t = i18n.namespace("FormsApp.FormsDataList");
 
@@ -53,13 +53,15 @@ const renderExportFormSubmissionsTooltip = dataList => {
 };
 
 const FormSubmissionsList = (props: Object) => {
-    const { dataList, form, showSnackbar } = props;
+    const { dataList, form } = props;
     const [selectedFormSubmission, selectFormSubmission] = useState(null);
     const [exportInProgress, setExportInProgress] = useState(false);
+    const { showSnackbar } = useSnackbar();
 
     if (!dataList) {
         return;
     }
+
     return (
         <>
             <Block title="Submissions">
@@ -68,7 +70,7 @@ const FormSubmissionsList = (props: Object) => {
                     multiSelectAll={dataList.multiSelectAll}
                     multiSelect={dataList.multiSelect}
                     multiSelectActions={
-                        <Mutation mutation={exportFormSubmissions}>
+                        <Mutation mutation={EXPORT_FORM_SUBMISSIONS}>
                             {update => (
                                 <Tooltip
                                     content={renderExportFormSubmissionsTooltip(dataList)}
@@ -161,4 +163,4 @@ const FormSubmissionsList = (props: Object) => {
     );
 };
 
-export default withSnackbar()(FormSubmissionsList);
+export default FormSubmissionsList;

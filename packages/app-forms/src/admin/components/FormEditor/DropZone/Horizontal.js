@@ -1,6 +1,6 @@
 //@flow
 import React from "react";
-import styled from "react-emotion";
+import styled from "@emotion/styled";
 import Droppable from "../Droppable";
 
 const InnerDiv = styled("div")({
@@ -54,8 +54,9 @@ type Props = {
 const Horizontal = ({ last, onDrop, isVisible }: Props) => {
     return (
         <Droppable onDrop={onDrop} isVisible={isVisible}>
-            {({ isOver, isDragging }) => (
+            {({ isOver, isDragging, drop }) => (
                 <div
+                    ref={drop}
                     style={{
                         height: "25px",
                         width: "100%",

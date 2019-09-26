@@ -2,7 +2,7 @@
 import * as React from "react";
 import { renderPlugins } from "@webiny/app/plugins";
 import { Tab } from "@webiny/ui/Tabs";
-import styled from "react-emotion";
+import styled from "@emotion/styled";
 import FormSubmissionsOverview from "./FormSubmissionsOverview";
 import FormSubmissionsList from "./FormSubmissionsList";
 import { CircularProgress } from "@webiny/ui/Progress";

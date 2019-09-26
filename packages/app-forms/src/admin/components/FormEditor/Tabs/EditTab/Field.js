@@ -1,10 +1,10 @@
 import React from "react";
-import styled from "react-emotion";
+import styled from "@emotion/styled";
 import { IconButton } from "@webiny/ui/Button";
 import { Typography } from "@webiny/ui/Typography";
 import { ReactComponent as EditIcon } from "../../icons/edit.svg";
 import { ReactComponent as DeleteIcon } from "../../icons/delete.svg";
-import { useI18N } from "@webiny/app-i18n/context";
+import { useI18N } from "@webiny/app-i18n/hooks/useI18N";
 import { useFormEditor } from "@webiny/app-forms/admin/components/FormEditor/Context";
 
 const FieldContainer = styled("div")({

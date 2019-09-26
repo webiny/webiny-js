@@ -2,11 +2,10 @@
 import * as React from "react";
 import { Grid, Cell } from "@webiny/ui/Grid";
 import { Select } from "@webiny/ui/Select";
-import { withPageBuilder } from "@webiny/app-page-builder/context";
 import ImagesList from "./ImagesList";
 import { getPlugins } from "@webiny/plugins";
 
-const ImagesListDesignSettings = ({ pageBuilder: { theme }, Bind, data }: Object) => {
+const ImagesListDesignSettings = ({ Bind, data }: Object) => {
     const components = getPlugins("pb-page-element-images-list-component");
 
     return (
@@ -33,11 +32,11 @@ const ImagesListDesignSettings = ({ pageBuilder: { theme }, Bind, data }: Object
 
             <Grid>
                 <Cell span={12} style={{ overflowY: "scroll" }}>
-                    <ImagesList data={data} theme={theme} />
+                    <ImagesList data={data} />
                 </Cell>
             </Grid>
         </React.Fragment>
     );
 };
 
-export default withPageBuilder()(ImagesListDesignSettings);
+export default ImagesListDesignSettings;

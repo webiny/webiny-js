@@ -1,14 +1,12 @@
 //@flow
-import React from "react";
+import React, { useState, useCallback } from "react";
 import classnames from "classnames";
-import styled from "react-emotion";
+import styled from "@emotion/styled";
 import { css } from "emotion";
 import { isEqual } from "lodash";
 import { ChromePicker } from "react-color";
 import { Menu } from "@webiny/ui/Menu";
-import { withPageBuilder } from "@webiny/app-page-builder/context";
-import { type WithPageBuilderPropsType } from "@webiny/app-page-builder/types";
-
+import { usePageBuilder } from "@webiny/app-page-builder/hooks/usePageBuilder";
 import { ReactComponent as IconPalette } from "@webiny/app-page-builder/editor/assets/icons/round-color_lens-24px.svg";
 
 const ColorPickerStyle = styled("div")({
@@ -112,131 +110,116 @@ const styles = {
     })
 };
 
-type Props = {
-    pageBuilder: WithPageBuilderPropsType,
-    onChange: Function,
-    onChangeComplete: Function,
-    value: string,
-    compact?: boolean
-};
+const ColorPicker = React.memo(({ value, onChange, onChangeComplete, compact }) => {
+    const [showPicker, setShowPicker] = useState(false);
 
-type State = {
-    showPicker: boolean
-};
-
-class ColorPicker extends React.Component<Props, State> {
-    state = {
-        showPicker: false
-    };
-
-    getColorValue = rgb => {
+    const getColorValue = useCallback(rgb => {
         return `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, ${rgb.a})`;
-    };
+    }, []);
 
-    onChange = color => {
-        this.props.onChange(this.getColorValue(color.rgb));
-    };
+    const onColorChange = useCallback(
+        color => {
+            onChange(getColorValue(color.rgb));
+        },
+        [onChange]
+    );
 
-    onChangeComplete = ({ rgb }) => {
-        this.props.onChangeComplete(this.getColorValue(rgb));
-    };
+    const onColorChangeComplete = useCallback(
+        ({ rgb }) => {
+            onChangeComplete(getColorValue(rgb));
+        },
+        [onChangeComplete]
+    );
 
-    hidePicker = () => {
-        this.setState({ showPicker: false });
-    };
+    const hidePicker = useCallback(() => {
+        setShowPicker(false);
+    }, [setShowPicker]);
 
-    togglePicker = e => {
-        e.stopPropagation();
-        this.setState(state => ({ showPicker: !state.showPicker }));
-    };
+    const togglePicker = useCallback(
+        e => {
+            e.stopPropagation();
+            setShowPicker(!showPicker);
+        },
+        [showPicker, setShowPicker]
+    );
 
-    shouldComponentUpdate(props, state) {
-        return !isEqual(props, this.props) || !isEqual(state, this.state);
-    }
+    const { theme } = usePageBuilder();
 
-    render() {
-        const {
-            pageBuilder: { theme },
-            value,
-            compact = false
-        } = this.props;
+    let themeColor = false;
 
-        let themeColor = false;
+    const colorPicker = (
+        <ColorPickerStyle onClick={hidePicker}>
+            {Object.values(theme.colors).map((color, index) => {
+                if (color === value || value === "transparent") {
+                    themeColor = true;
+                }
 
-        const colorPicker = (
-            <ColorPickerStyle onClick={this.hidePicker}>
-                {Object.values(theme.colors).map((color, index) => {
-                    if (color === value || value === "transparent") {
-                        themeColor = true;
-                    }
-
-                    return (
-                        <ColorBox key={index}>
-                            <Color
-                                className={color === value ? styles.selectedColor : null}
-                                style={{ backgroundColor: color }}
-                                onClick={() => {
-                                    this.hidePicker();
-                                    this.props.onChangeComplete(color);
-                                }}
-                            />
-                        </ColorBox>
-                    );
-                })}
-
-                <ColorBox>
-                    <Color
-                        className={classnames(transparent, {
-                            [styles.selectedColor]: value === "transparent"
-                        })}
-                        onClick={() => {
-                            this.hidePicker();
-                            this.props.onChangeComplete("transparent");
-                        }}
-                    />
-                </ColorBox>
-
-                <ColorBox>
-                    <Color
-                        className={value && !themeColor ? styles.selectedColor : null}
-                        style={{ backgroundColor: themeColor ? "#fff" : value }}
-                        onClick={this.togglePicker}
-                    >
-                        <IconPalette className={iconPaletteStyle} />
-                    </Color>
-                </ColorBox>
-                {this.state.showPicker && (
-                    <span onClick={e => e.stopPropagation()} className={chromePickerStyles}>
-                        <ChromePicker
-                            color={value || "#fff"}
-                            onChange={this.onChange}
-                            onChangeComplete={this.onChangeComplete}
+                return (
+                    <ColorBox key={index}>
+                        <Color
+                            className={color === value ? styles.selectedColor : null}
+                            style={{ backgroundColor: color }}
+                            onClick={() => {
+                                hidePicker();
+                                onChangeComplete(color);
+                            }}
                         />
-                    </span>
-                )}
-            </ColorPickerStyle>
+                    </ColorBox>
+                );
+            })}
+
+            <ColorBox>
+                <Color
+                    className={classnames(transparent, {
+                        [styles.selectedColor]: value === "transparent"
+                    })}
+                    onClick={() => {
+                        hidePicker();
+                        onChangeComplete("transparent");
+                    }}
+                />
+            </ColorBox>
+
+            <ColorBox>
+                <Color
+                    className={value && !themeColor ? styles.selectedColor : null}
+                    style={{ backgroundColor: themeColor ? "#fff" : value }}
+                    onClick={togglePicker}
+                >
+                    <IconPalette className={iconPaletteStyle} />
+                </Color>
+            </ColorBox>
+            {showPicker && (
+                <span onClick={e => e.stopPropagation()} className={chromePickerStyles}>
+                    <ChromePicker
+                        color={value || "#fff"}
+                        onChange={onColorChange}
+                        onChangeComplete={onColorChangeComplete}
+                    />
+                </span>
+            )}
+        </ColorPickerStyle>
+    );
+
+    if (compact) {
+        return (
+            <CompactColorPicker>
+                <Menu
+                    handle={
+                        <div className={styles.swatch}>
+                            <div className={styles.color} style={{ backgroundColor: value }} />
+                        </div>
+                    }
+                >
+                    <ColorList>
+                        {React.cloneElement(colorPicker, { style: { width: 240 } })}
+                    </ColorList>
+                </Menu>
+            </CompactColorPicker>
         );
-
-        if (compact) {
-            return (
-                <CompactColorPicker>
-                    <Menu
-                        handle={
-                            <div className={styles.swatch}>
-                                <div className={styles.color} style={{ backgroundColor: value }} />
-                            </div>
-                        }
-                    >
-                        <ColorList>
-                            {React.cloneElement(colorPicker, { style: { width: 240 } })}
-                        </ColorList>
-                    </Menu>
-                </CompactColorPicker>
-            );
-        }
-
-        return colorPicker;
     }
-}
 
-export default withPageBuilder()(ColorPicker);
+    return colorPicker;
+}, isEqual);
+
+export default ColorPicker;

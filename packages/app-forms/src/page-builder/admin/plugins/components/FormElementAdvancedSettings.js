@@ -6,7 +6,8 @@ import { get } from "lodash";
 import { Grid, Cell } from "@webiny/ui/Grid";
 import { Alert } from "@webiny/ui/Alert";
 import { AutoComplete } from "@webiny/ui/AutoComplete";
-import styled from "react-emotion";
+import styled from "@emotion/styled";
+import { validation } from "@webiny/validation";
 
 const FormOptionsWrapper = styled("div")({
     minHeight: 250
@@ -41,7 +42,10 @@ const getOptions = ({ gqlResponse, data }): Object => {
             name: `${item.name} (version ${item.version})`
         }));
         if (output.publishedRevisions.options.length > 0) {
-            output.publishedRevisions.options.unshift({ id: "latest", name: "Latest published revision" });
+            output.publishedRevisions.options.unshift({
+                id: "latest",
+                name: "Latest published revision"
+            });
         }
 
         output.publishedRevisions.value =
@@ -79,7 +83,7 @@ const FormElementAdvancedSettings = ({ Bind, data }: Object) => {
                     return (
                         <Grid>
                             <Cell span={12}>
-                                <Bind name={"settings.form.parent"} validators={["required"]}>
+                                <Bind name={"settings.form.parent"} validators={validation.create("required")}>
                                     {({ onChange }) => {
                                         return (
                                             <AutoComplete
@@ -93,7 +97,7 @@ const FormElementAdvancedSettings = ({ Bind, data }: Object) => {
                                 </Bind>
                             </Cell>
                             <Cell span={12}>
-                                <Bind name={"settings.form.revision"} validators={["required"]}>
+                                <Bind name={"settings.form.revision"} validators={validation.create("required")}>
                                     {({ onChange }) => {
                                         const parentSelected = !!options.parents.value;
                                         const noPublished =

@@ -1,16 +1,16 @@
 // @flow
 import * as React from "react";
-import { pure } from "recompose";
 import { Query } from "react-apollo";
-import { withPageBuilder } from "@webiny/app-page-builder/context";
+import { usePageBuilder } from "@webiny/app-page-builder/hooks/usePageBuilder";
 import { loadPages } from "./graphql";
 import { getPlugins } from "@webiny/plugins";
 import { get } from "lodash";
 
-const PagesList = pure(({ data = {}, pageBuilder: { theme } }: Object = {}) => {
+const PagesList = React.memo(({ data = {} }: Object = {}) => {
     const { component, ...vars } = data;
     const components = getPlugins("pb-page-element-pages-list-component");
     const pageList = components.find(cmp => cmp.componentName === component);
+    const { theme } = usePageBuilder();
 
     if (!pageList) {
         return "Selected page list component not found!";
@@ -75,4 +75,4 @@ const PagesList = pure(({ data = {}, pageBuilder: { theme } }: Object = {}) => {
     );
 });
 
-export default withPageBuilder()(PagesList);
+export default PagesList;

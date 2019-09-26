@@ -1,13 +1,12 @@
 // @flow
-import React from "react";
+import React, { useEffect } from "react";
 import { connect } from "@webiny/app-page-builder/editor/redux";
-import { compose, lifecycle, pure } from "recompose";
 import { TopAppBarSecondary, TopAppBarSection } from "@webiny/ui/TopAppBar";
 import { ButtonDefault, ButtonIcon } from "@webiny/ui/Button";
 import { deactivateElement } from "@webiny/app-page-builder/editor/actions";
 import { getPlugin, getPlugins } from "@webiny/plugins";
 import { getActiveElement } from "@webiny/app-page-builder/editor/selectors";
-import { withKeyHandler } from "@webiny/app-page-builder/editor/components";
+import { useKeyHandler } from "@webiny/app-page-builder/editor/hooks/useKeyHandler";
 import Menu from "./components/Menu";
 import { ReactComponent as NavigateBeforeIcon } from "@webiny/app-page-builder/editor/assets/icons/navigate_before.svg";
 
@@ -37,18 +36,33 @@ const getElementActions = (plugin: Object) => {
     ].filter(pl => pl);
 };
 
-const ElementSettingsBar = pure(({ elementType, deactivateElement }) => {
+const ElementSettingsBar = React.memo(({ elementType, deactivateElement }) => {
     if (!elementType) {
         return null;
     }
 
     const plugin = getPlugins("pb-page-element").find(pl => pl.elementType === elementType);
+
     if (!plugin) {
         return null;
     }
 
+    return <ElementSettingsBarContent plugin={plugin} deactivateElement={deactivateElement} />;
+});
+
+const ElementSettingsBarContent = React.memo(({ plugin, deactivateElement }) => {
+    const { addKeyHandler, removeKeyHandler } = useKeyHandler();
+
+    useEffect(() => {
+        addKeyHandler("escape", e => {
+            e.preventDefault();
+            deactivateElement();
+        });
+        return () => removeKeyHandler("escape");
+    });
+
     const actions = getElementActions(plugin);
-    
+
     return (
         <React.Fragment>
             <TopAppBarSecondary fixed>
@@ -79,27 +93,12 @@ const ElementSettingsBar = pure(({ elementType, deactivateElement }) => {
     );
 });
 
-export default compose(
-    connect(
-        state => {
-            const element = getActiveElement(state);
-            return {
-                elementType: element ? element.type : null
-            };
-        },
-        { deactivateElement }
-    ),
-    withKeyHandler(),
-    lifecycle({
-        componentDidMount() {
-            const { addKeyHandler, deactivateElement } = this.props;
-            addKeyHandler("escape", e => {
-                e.preventDefault();
-                deactivateElement();
-            });
-        },
-        componentWillUnmount() {
-            this.props.removeKeyHandler("escape");
-        }
-    })
+export default connect(
+    state => {
+        const element = getActiveElement(state);
+        return {
+            elementType: element ? element.type : null
+        };
+    },
+    { deactivateElement }
 )(ElementSettingsBar);

@@ -1,0 +1,97 @@
+name: webiny-cms-project
+
+components:
+  function: '../../../node_modules/@webiny/serverless-function'
+  api: '../../../node_modules/@webiny/serverless-api'
+
+services:
+  env:
+    MONGODB_SERVER: __wby_inject__
+    MONGODB_DB_NAME: __wby_inject__
+    WEBINY_JWT_SECRET: __wby_inject__
+
+gateway:
+  component: ${components.function}
+  inputs:
+    description: Apollo Gateway
+    memory: 512
+    code: ../code/api-gateway/build
+    handler: handler.handler
+    root: ../code/api-gateway
+    hook: yarn build:deploy
+    env:
+      STAGE: __wby_inject__
+      API_HOST: https://api.mywebiny.com
+files:
+  component: ${components.function}
+  inputs:
+    memory: 512
+    code: ../code/api-service-files/build
+    handler: handler.handler
+    install:
+      - handler.install
+      - install.createData
+      - install.createFiles
+    root: ../code/api-service-files
+    hook: yarn build:deploy
+    env: ${services.env}
+i18n:
+  component: ${components.function}
+  inputs:
+    memory: 512
+    code: ../code/api-service-i18n/build
+    handler: handler.handler
+    root: ../code/api-service-i18n
+    hook: yarn build:deploy
+    env: ${services.env}
+forms:
+  component: ${components.function}
+  inputs:
+    memory: 512
+    code: ../code/api-service-forms/build
+    handler: handler.handler
+    root: ../code/api-service-forms
+    hook: yarn build:deploy
+    env: ${services.env}
+security:
+  component: ${components.function}
+  inputs:
+    memory: 512
+    code: ../code/api-service-security/build
+    handler: handler.handler
+    root: ../code/api-service-security
+    hook: yarn build:deploy
+    env: ${services.env}
+pageBuilder:
+  component: ${components.function}
+  inputs:
+    memory: 512
+    code: ../code/api-service-page-builder/build
+    handler: handler.handler
+    root: ../code/api-service-page-builder
+    hook: yarn build:deploy
+    env: ${services.env}
+api:
+  component: ${components.api}
+  inputs:
+    domain: api.mywebiny.com
+    stage: prod
+    endpoints:
+      - path: /graphql
+        method: ANY
+        function: ${gateway}
+      - path: /graphql/files
+        method: ANY
+        function: ${files}
+      - path: /graphql/security
+        method: ANY
+        function: ${security}
+      - path: /graphql/forms
+        method: ANY
+        function: ${forms}
+      - path: /graphql/i18n
+        method: ANY
+        function: ${i18n}
+      - path: /graphql/page-builder
+        method: ANY
+        function: ${pageBuilder}

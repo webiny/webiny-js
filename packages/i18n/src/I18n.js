@@ -90,6 +90,10 @@ class I18N {
         };
     }
 
+    ns(...args): Function {
+        return this.namespace(...args);
+    }
+
     /**
      * Formats and outputs date.
      * It will try to load format from currently selected locale's settings. If not defined, default formats will be used.

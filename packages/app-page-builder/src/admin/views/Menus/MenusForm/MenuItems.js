@@ -1,7 +1,7 @@
 // @flow
 import React from "react";
 import { css } from "emotion";
-import styled from "react-emotion";
+import styled from "@emotion/styled";
 import uniqid from "uniqid";
 import { getPlugins } from "@webiny/plugins";
 import { Grid, Cell } from "@webiny/ui/Grid";
@@ -79,7 +79,7 @@ class MenuItems extends React.Component<Props, State> {
         return (
             <>
                 <Grid>
-                    <Cell span={6} className={leftPanel}>
+                    <Cell span={7} className={leftPanel}>
                         <MenuItemsList
                             menuForm={this.props.menuForm}
                             items={items}
@@ -88,7 +88,7 @@ class MenuItems extends React.Component<Props, State> {
                             deleteItem={this.deleteItem}
                         />
                     </Cell>
-                    <Cell span={6}>
+                    <Cell span={5}>
                         {!currentMenuItem && (
                             <>
                                 <MenuHolder>

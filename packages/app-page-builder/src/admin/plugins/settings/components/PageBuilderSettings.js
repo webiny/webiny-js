@@ -3,9 +3,9 @@ import { Form } from "@webiny/form";
 import { Grid, Cell } from "@webiny/ui/Grid";
 import { ButtonPrimary } from "@webiny/ui/Button";
 import { Query, Mutation } from "react-apollo";
-import { withSnackbar } from "@webiny/app-admin/components";
+import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import graphql from "./graphql";
-import PagesAutoComplete from "@webiny/app-page-builder/admin/components/PagesAutoComplete";
+import { PagesAutocomplete } from "@webiny/app-page-builder/admin/components/PagesAutocomplete";
 import { CircularProgress } from "@webiny/ui/Progress";
 import SingleImageUpload from "@webiny/app-admin/components/SingleImageUpload";
 import { get } from "lodash";
@@ -17,7 +17,9 @@ import {
     SimpleFormHeader
 } from "@webiny/app-admin/components/SimpleForm";
 
-const PageBuilderSettings = ({ showSnackbar }) => {
+const PageBuilderSettings = () => {
+    const { showSnackbar } = useSnackbar();
+
     return (
         <Query query={graphql.query}>
             {({ data, loading: queryInProgress }) => {
@@ -50,7 +52,7 @@ const PageBuilderSettings = ({ showSnackbar }) => {
                                                     <Grid>
                                                         <Cell span={12}>
                                                             <Bind name={"pages.home"}>
-                                                                <PagesAutoComplete
+                                                                <PagesAutocomplete
                                                                     label={"Homepage"}
                                                                     description={`This is the homepage of your website.`}
                                                                 />
@@ -58,7 +60,7 @@ const PageBuilderSettings = ({ showSnackbar }) => {
                                                         </Cell>
                                                         <Cell span={12}>
                                                             <Bind name={"pages.error"}>
-                                                                <PagesAutoComplete
+                                                                <PagesAutocomplete
                                                                     label={"Error page"}
                                                                     description={`Shown when an error occurs during a page load.`}
                                                                 />
@@ -66,7 +68,7 @@ const PageBuilderSettings = ({ showSnackbar }) => {
                                                         </Cell>
                                                         <Cell span={12}>
                                                             <Bind name={"pages.notFound"}>
-                                                                <PagesAutoComplete
+                                                                <PagesAutocomplete
                                                                     label={"Not found (404) page"}
                                                                     description={`Shown when the requested page is not found.`}
                                                                 />
@@ -115,4 +117,4 @@ const PageBuilderSettings = ({ showSnackbar }) => {
     );
 };
 
-export default withSnackbar()(PageBuilderSettings);
+export default PageBuilderSettings;

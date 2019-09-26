@@ -1,7 +1,7 @@
 //@flow
-import React from "react";
+import React, { useMemo } from "react";
 import { connect } from "@webiny/app-page-builder/editor/redux";
-import { compose, withHandlers } from "recompose";
+import { useHandler } from "@webiny/app/hooks/useHandler";
 import { Tabs, Tab } from "@webiny/ui/Tabs";
 import { get, isEqual } from "lodash";
 import { set, merge } from "dot-prop-immutable";
@@ -24,7 +24,60 @@ type Props = Object & {
     value: Object | number
 };
 
-const PMSettings = ({ advanced, valueKey, getUpdateValue, getUpdatePreview }: Props) => {
+const PMSettings = (props: Props) => {
+    const { advanced, valueKey } = props;
+
+    const updateSettings = useHandler(props, ({ element, updateElement }) => {
+        return (name: string, newValue: mixed, history = false) => {
+            const propName = `${valueKey}.${name}`;
+
+            if (name !== "advanced") {
+                newValue = parseInt(newValue) || 0;
+            }
+
+            let newElement = set(element, propName, newValue);
+
+            // Update all values in advanced settings
+            if (propName.endsWith(".all")) {
+                const prefix = propName.includes("desktop") ? "desktop" : "mobile";
+                newElement = merge(newElement, `${valueKey}.${prefix}`, {
+                    top: newValue,
+                    right: newValue,
+                    bottom: newValue,
+                    left: newValue
+                });
+            }
+
+            updateElement({
+                element: newElement,
+                history,
+                merge: true
+            });
+        };
+    });
+
+    const getUpdateValue = useMemo(() => {
+        const handlers = {};
+        return (name: string) => {
+            if (!handlers[name]) {
+                handlers[name] = value => updateSettings(name, value, true);
+            }
+
+            return handlers[name];
+        };
+    }, [updateSettings]);
+
+    const getUpdatePreview = useMemo(() => {
+        const handlers = {};
+        return (name: string) => {
+            if (!handlers[name]) {
+                handlers[name] = value => updateSettings(name, value, false);
+            }
+
+            return handlers[name];
+        };
+    }, [updateSettings]);
+
     return (
         <Tabs>
             <Tab label={"Desktop"}>
@@ -65,7 +118,7 @@ const PMSettings = ({ advanced, valueKey, getUpdateValue, getUpdatePreview }: Pr
                         />
                     </React.Fragment>
                 )}
-                <Footer advanced={advanced || false} toggleAdvanced={getUpdateValue("advanced")} />
+                <Footer advanced={Boolean(advanced)} toggleAdvanced={getUpdateValue("advanced")} />
             </Tab>
             <Tab label={"Mobile"}>
                 {!advanced ? (
@@ -105,93 +158,29 @@ const PMSettings = ({ advanced, valueKey, getUpdateValue, getUpdatePreview }: Pr
                         />
                     </React.Fragment>
                 )}
-                <Footer advanced={advanced || false} toggleAdvanced={getUpdateValue("advanced")} />
+                <Footer advanced={Boolean(advanced)} toggleAdvanced={getUpdateValue("advanced")} />
             </Tab>
         </Tabs>
     );
 };
 
-export default compose(
-    connect(
-        (state, { styleAttribute }: Object) => {
-            const valueKey = "data.settings." + styleAttribute;
-            const element = getActiveElement(state);
-            return {
-                valueKey,
-                advanced: get(element, valueKey + ".advanced", false),
-                element: {
-                    id: element.id,
-                    type: element.type,
-                    path: element.path
-                }
-            };
-        },
-        { updateElement },
-        null,
-        {
-            areStatePropsEqual: isEqual
-        }
-    ),
-    withHandlers({
-        updateSettings: ({ element, updateElement, valueKey }: Object) => {
-            let historyUpdated = {};
-
-            return (name: string, newValue: mixed, history = false) => {
-                const propName = `${valueKey}.${name}`;
-
-                if (name !== "advanced") {
-                    newValue = parseInt(newValue) || 0;
-                }
-
-                let newElement = set(element, propName, newValue);
-
-                // Update all values in advanced settings
-                if (propName.endsWith(".all")) {
-                    const prefix = propName.includes("desktop") ? "desktop" : "mobile";
-                    newElement = merge(newElement, `${valueKey}.${prefix}`, {
-                        top: newValue,
-                        right: newValue,
-                        bottom: newValue,
-                        left: newValue
-                    });
-                }
-
-                if (!history) {
-                    updateElement({
-                        element: newElement,
-                        history,
-                        merge: true
-                    });
-                    return;
-                }
-
-                if (historyUpdated[propName] !== newValue) {
-                    historyUpdated[propName] = newValue;
-                    updateElement({ element: newElement, merge: true });
-                }
-            };
-        }
-    }),
-    withHandlers({
-        getUpdateValue: ({ updateSettings }: Object) => {
-            const handlers = {};
-            return (name: string) => {
-                if (!handlers[name]) {
-                    return value => updateSettings(name, value, true);
-                }
-
-                return handlers[name];
-            };
-        },
-        getUpdatePreview: ({ updateSettings }: Object) => {
-            const handlers = {};
-            return (name: string) => {
-                if (!handlers[name]) {
-                    return value => updateSettings(name, value, false);
-                }
-
-                return handlers[name];
-            };
-        }
-    })
+export default connect(
+    (state, { styleAttribute }: Object) => {
+        const valueKey = "data.settings." + styleAttribute;
+        const element = getActiveElement(state);
+        return {
+            valueKey,
+            advanced: get(element, valueKey + ".advanced", false),
+            element: {
+                id: element.id,
+                type: element.type,
+                path: element.path
+            }
+        };
+    },
+    { updateElement },
+    null,
+    {
+        areStatePropsEqual: isEqual
+    }
 )(PMSettings);

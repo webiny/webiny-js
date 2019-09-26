@@ -1,13 +1,12 @@
 //@flow
-import React from "react";
+import React, { useState, useCallback, useEffect } from "react";
 import { connect } from "@webiny/app-page-builder/editor/redux";
-import { compose, lifecycle, withHandlers, withState } from "recompose";
 import { omit } from "lodash";
 import { getPlugins } from "@webiny/plugins";
 import { deactivatePlugin, updateRevision } from "@webiny/app-page-builder/editor/actions";
 import { getPage } from "@webiny/app-page-builder/editor/selectors";
-import { withKeyHandler } from "@webiny/app-page-builder/editor/components";
-import { withSnackbar } from "@webiny/app-admin/components";
+import { useKeyHandler } from "@webiny/app-page-builder/editor/hooks/useKeyHandler";
+import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { OverlayLayout } from "@webiny/app-admin/components/OverlayLayout";
 import { SplitView, LeftPanel, RightPanel } from "@webiny/app-admin/components/SplitView";
 import { Typography } from "@webiny/ui/Typography";
@@ -24,21 +23,52 @@ import {
 import { Title, listItem, ListItemTitle, listStyle, TitleContent } from "./PageSettingsStyled";
 import type { PbPageSettingsPluginType } from "@webiny/app-page-builder/types";
 
-type Props = {
-    deactivatePlugin: Function,
-    page: Object,
-    savePage: Function,
-    active: string,
-    setActive: Function
-};
-
-const PageSettings = ({ deactivatePlugin, page, savePage, active, setActive }: Props) => {
+const PageSettings = (props: Object) => {
     const plugins = getPlugins("pb-editor-page-settings");
+    const [active, setActive] = useState("pb-editor-page-settings-general");
     const activePlugin: ?PbPageSettingsPluginType = plugins.find(pl => pl.name === active);
-
     if (!activePlugin) {
         return null;
     }
+
+    return (
+        <PageSettingsContent
+            {...props}
+            setActive={setActive}
+            plugins={plugins}
+            activePlugin={activePlugin}
+        />
+    );
+};
+
+const PageSettingsContent = ({
+    page,
+    plugins,
+    setActive,
+    activePlugin,
+    deactivatePlugin,
+    updateRevision
+}) => {
+    const { showSnackbar } = useSnackbar();
+    const { removeKeyHandler, addKeyHandler } = useKeyHandler();
+
+    const savePage = useCallback(
+        page => {
+            updateRevision(page, {
+                onFinish: () => showSnackbar("Settings saved")
+            });
+        },
+        [page]
+    );
+
+    useEffect(() => {
+        addKeyHandler("escape", e => {
+            e.preventDefault();
+            deactivatePlugin({ name: "pb-editor-page-settings-bar" });
+        });
+
+        return () => removeKeyHandler("escape");
+    });
 
     return (
         <OverlayLayout
@@ -89,29 +119,7 @@ const PageSettings = ({ deactivatePlugin, page, savePage, active, setActive }: P
     );
 };
 
-export default compose(
-    connect(
-        state => ({ page: omit(getPage(state), ["content"]) }),
-        { deactivatePlugin, updateRevision }
-    ),
-    withSnackbar(),
-    withKeyHandler(),
-    withState("active", "setActive", "pb-editor-page-settings-general"),
-    withHandlers({
-        savePage: ({ showSnackbar, updateRevision }) => (page: Object) =>
-            updateRevision(page, {
-                onFinish: () => showSnackbar("Settings saved")
-            })
-    }),
-    lifecycle({
-        componentDidMount() {
-            this.props.addKeyHandler("escape", e => {
-                e.preventDefault();
-                this.props.deactivatePlugin({ name: "pb-editor-page-settings-bar" });
-            });
-        },
-        componentWillUnmount() {
-            this.props.removeKeyHandler("escape");
-        }
-    })
+export default connect(
+    state => ({ page: omit(getPage(state), ["content"]) }),
+    { deactivatePlugin, updateRevision }
 )(PageSettings);

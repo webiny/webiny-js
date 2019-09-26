@@ -1,8 +1,7 @@
-import React from "react";
+import React, { useCallback } from "react";
 import ReactDOM from "react-dom";
 import { get, set } from "dot-prop-immutable";
-import { compose, withHandlers } from "recompose";
-import { withUi } from "@webiny/app/components";
+import { useUi } from "@webiny/app/hooks/useUi";
 import { IconButton } from "@webiny/ui/Button";
 import { ReactComponent as MenuIcon } from "@webiny/app-admin/assets/icons/baseline-menu-24px.svg";
 import Navigation from "./Navigation";
@@ -18,7 +17,13 @@ const getElement = () => {
     return el;
 };
 
-const Hamburger = ({ toggleMenu }) => {
+const Hamburger = () => {
+    const ui = useUi();
+
+    const toggleMenu = useCallback(() => {
+        ui.setState(ui => set(ui, "appsMenu.show", !(get(ui, "appsMenu.show") || false)));
+    }, [ui]);
+
     return (
         <React.Fragment>
             <IconButton icon={<MenuIcon style={{ color: "white" }} />} onClick={toggleMenu} />
@@ -27,11 +32,4 @@ const Hamburger = ({ toggleMenu }) => {
     );
 };
 
-export default compose(
-    withUi(),
-    withHandlers({
-        toggleMenu: props => () => {
-            props.ui.setState(ui => set(ui, "appsMenu.show", !(get(ui, "appsMenu.show") || false)));
-        }
-    })
-)(Hamburger);
+export default Hamburger;

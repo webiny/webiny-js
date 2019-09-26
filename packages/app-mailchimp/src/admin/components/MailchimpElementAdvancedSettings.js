@@ -1,15 +1,14 @@
 // @flow
-import * as React from "react";
-import { graphql } from "react-apollo";
+import React, { useState } from "react";
+import { useApolloClient } from "react-apollo";
 import { Query } from "react-apollo";
-import { compose, withHandlers, withState } from "recompose";
 import gql from "graphql-tag";
 import { get } from "lodash";
-import { css } from "react-emotion";
+import { css } from "emotion";
 import { Grid, Cell } from "@webiny/ui/Grid";
 import { Typography } from "@webiny/ui/Typography";
-import { withSnackbar } from "@webiny/app-admin/components";
-import { withPageBuilder } from "@webiny/app-page-builder/context";
+import { useHandler } from "@webiny/app/hooks/useHandler";
+import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { AutoComplete } from "@webiny/ui/AutoComplete";
 import { getPlugins } from "@webiny/plugins";
 import { Form } from "@webiny/form";
@@ -18,6 +17,7 @@ import { ButtonPrimary } from "@webiny/ui/Button";
 import { CircularProgress } from "@webiny/ui/Progress";
 import MailchimpElement from "./MailchimpElement";
 import settingsGql from "./graphql";
+import { validation } from "@webiny/validation";
 
 const formPreview = css({
     padding: 25,
@@ -34,28 +34,48 @@ const enableMailchimpLink = css({
     cursor: "pointer"
 });
 
-const MailchimpElementAdvancedSettings = ({ Bind, submitApiKeyForm, loading }: Object) => {
-    return (
-        <Query
-            query={gql`
-                {
-                    mailchimp {
-                        getSettings {
-                            data {
-                                enabled
-                                apiKey
-                            }
-                        }
-                        listLists {
-                            data {
-                                id
-                                name
-                            }
-                        }
-                    }
+const MAILCHIMP_SETTINGS = gql`
+    {
+        mailchimp {
+            getSettings {
+                data {
+                    enabled
+                    apiKey
                 }
-            `}
-        >
+            }
+            listLists {
+                data {
+                    id
+                    name
+                }
+            }
+        }
+    }
+`;
+
+const MailchimpElementAdvancedSettings = ({ Bind }: Object) => {
+    const [loading, setLoading] = useState(false);
+    const { showSnackbar } = useSnackbar();
+    const client = useApolloClient();
+
+    const submitApiKeyForm = useHandler({}, () => async ({ data = {}, settingsLists }) => {
+        setLoading(true);
+        const response = await client.mutate({
+            mutation: settingsGql.mutation,
+            variables: { data: { ...data, enabled: true } }
+        });
+        setLoading(false);
+        const error = get(response, "data.mailchimp.updateSettings.error");
+        if (error) {
+            showSnackbar(error.message);
+        } else {
+            showSnackbar("Settings updated successfully.");
+            settingsLists.refetch();
+        }
+    });
+
+    return (
+        <Query query={MAILCHIMP_SETTINGS}>
             {settingsLists => {
                 const { apiKey, enabled } =
                     get(settingsLists.data, "mailchimp.getSettings.data") || {};
@@ -67,7 +87,7 @@ const MailchimpElementAdvancedSettings = ({ Bind, submitApiKeyForm, loading }: O
                             {apiKey && enabled ? (
                                 <>
                                     <Cell span={12}>
-                                        <Bind name={"settings.list"} validators={["required"]}>
+                                        <Bind name={"settings.list"} validators={validation.create("required")}>
                                             {({ value: id, onChange, ...rest }) => {
                                                 const options = (
                                                     get(
@@ -92,7 +112,7 @@ const MailchimpElementAdvancedSettings = ({ Bind, submitApiKeyForm, loading }: O
                                         </Bind>
                                     </Cell>
                                     <Cell span={12}>
-                                        <Bind name={"settings.component"} validators={["required"]}>
+                                        <Bind name={"settings.component"} validators={validation.create("required")}>
                                             {({ onChange, value: name, ...rest }) => {
                                                 const options = getPlugins(
                                                     "pb-page-element-mailchimp-component"
@@ -165,7 +185,7 @@ const MailchimpElementAdvancedSettings = ({ Bind, submitApiKeyForm, loading }: O
                                                         <>
                                                             <Cell span={12}>
                                                                 <Bind
-                                                                    validators={["required"]}
+                                                                    validators={validation.create("required")}
                                                                     name={"apiKey"}
                                                                 >
                                                                     <Input label="API key" />
@@ -212,28 +232,4 @@ const MailchimpElementAdvancedSettings = ({ Bind, submitApiKeyForm, loading }: O
     );
 };
 
-export default compose(
-    withPageBuilder(),
-    withSnackbar(),
-    withState("loading", "setLoading", false),
-    graphql(settingsGql.mutation, { name: "updateApiKey" }),
-    withHandlers({
-        submitApiKeyForm: ({ updateApiKey, showSnackbar, setLoading }) => async ({
-            data = {},
-            settingsLists
-        }) => {
-            setLoading(true);
-            const response = await updateApiKey({
-                variables: { data: { ...data, enabled: true } }
-            });
-            setLoading(false);
-            const error = get(response, "data.mailchimp.updateSettings.error");
-            if (error) {
-                showSnackbar(error.message);
-            } else {
-                showSnackbar("Settings updated successfully.");
-                settingsLists.refetch();
-            }
-        }
-    })
-)(MailchimpElementAdvancedSettings);
+export default MailchimpElementAdvancedSettings;

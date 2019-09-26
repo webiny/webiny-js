@@ -10,7 +10,11 @@ const Form = (props: FormComponentPropsType) => {
         return <FormRender {...props} />;
     }
 
-    return <FormLoad {...props} />;
+    if (props.parent || props.id) {
+        return <FormLoad {...props} />;
+    }
+
+    return null;
 };
 
 export default Form;

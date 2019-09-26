@@ -1,12 +1,16 @@
 //@flow
-import * as React from "react";
+import React, { useCallback, useState } from "react";
 import { connect } from "@webiny/app-page-builder/editor/redux";
-import { compose, withHandlers } from "recompose";
 import Draggable from "@webiny/app-page-builder/editor/components/Draggable";
-import { dragStart, dragEnd, deactivatePlugin, dropElement } from "@webiny/app-page-builder/editor/actions";
+import {
+    dragStart,
+    dragEnd,
+    deactivatePlugin,
+    dropElement
+} from "@webiny/app-page-builder/editor/actions";
 import { getPlugins } from "@webiny/plugins";
 import { getActivePluginParams } from "@webiny/app-page-builder/editor/selectors";
-import { withPageBuilder } from "@webiny/app-page-builder/context";
+import { usePageBuilder } from "@webiny/app-page-builder/hooks/usePageBuilder";
 import * as Styled from "./StyledComponents";
 import { css } from "emotion";
 import { List, ListItem, ListItemMeta } from "@webiny/ui/List";
@@ -14,11 +18,7 @@ import { Icon } from "@webiny/ui/Icon";
 import { Typography } from "@webiny/ui/Typography";
 import { ButtonFloating } from "@webiny/ui/Button";
 import { ReactComponent as AddIcon } from "@webiny/app-page-builder/editor/assets/icons/add.svg";
-import type {
-    PbElementPluginType,
-    PbElementGroupPluginType
-} from "@webiny/app-page-builder/types";
-import type { PbProviderPropsType } from "@webiny/app-page-builder/context";
+import type { PbElementPluginType } from "@webiny/app-page-builder/types";
 
 const ADD_ELEMENT = "pb-editor-toolbar-add-element";
 
@@ -40,188 +40,168 @@ const categoriesList = css({
     }
 });
 
-type Props = {
-    dragStart: Function,
-    dragEnd: Function,
-    deactivatePlugin: Function,
-    dropElement: Function,
-    params: Object | null,
-    pageBuilder: PbProviderPropsType,
-    enableDragOverlay: Function,
-    disableDragOverlay: Function
-};
-
-type State = {
-    group: string | null
-};
-
-class AddElement extends React.Component<Props, State> {
-    state = {
-        group: this.getGroups()[0].name
-    };
-
-    getGroups(): Array<PbElementGroupPluginType> {
+const AddElement = ({ params, dropElement, dragStart, deactivatePlugin, dragEnd }) => {
+    const getGroups = useCallback(() => {
         return getPlugins("pb-editor-page-element-group");
-    }
+    }, []);
 
-    getGroupElements(group: string) {
+    const getGroupElements = useCallback(group => {
         return getPlugins("pb-page-element").filter(
             (el: PbElementPluginType) => el.toolbar && el.toolbar.group === group
         );
-    }
+    }, []);
 
-    renderDraggable = (element, plugin) => {
-        const { elementType } = plugin;
-        const { dragStart, deactivatePlugin, dragEnd } = this.props;
+    const [group, setGroup] = useState(getGroups()[0].name);
 
-        return (
-            <Draggable
-                key={plugin.name}
-                target={plugin.target}
-                beginDrag={props => {
-                    dragStart({ element: { type: elementType } });
-                    setTimeout(
-                        () =>
-                            deactivatePlugin({
-                                name: ADD_ELEMENT
-                            }),
-                        20
-                    );
-                    return { type: elementType, target: props.target };
-                }}
-                endDrag={(props, monitor) => {
-                    dragEnd({ element: monitor.getItem() });
-                }}
-            >
-                {({ connectDragSource }) =>
-                    connectDragSource(<div>{this.renderOverlay(element, null, "Drag to Add")}</div>)
-                }
-            </Draggable>
-        );
-    };
+    const { theme } = usePageBuilder();
 
-    renderClickable = (element, plugin) => {
-        const { params, dropElement, deactivatePlugin } = this.props;
+    const refresh = useCallback(() => {
+        setGroup(group);
+    }, []);
 
-        const item = this.renderOverlay(
-            element,
-            () => {
-                dropElement({
-                    source: { type: plugin.elementType },
-                    target: { ...params }
-                });
-                deactivatePlugin({
-                    name: ADD_ELEMENT
-                });
-            },
-            "Click to Add"
-        );
-
-        return React.cloneElement(item, { key: plugin.name });
-    };
-
-    renderOverlay = (element, onClick = null, label) => {
-        const { enableDragOverlay, disableDragOverlay } = this.props;
-        return (
-            <Styled.ElementPreview>
-                <Styled.Overlay>
-                    <Styled.Backdrop className={"backdrop"} />
-                    <Styled.AddBlock className={"add-block"}>
-                        <ButtonFloating
-                            onClick={onClick}
-                            label={label}
-                            icon={<AddIcon />}
-                            onMouseDown={enableDragOverlay}
-                            onMouseUp={disableDragOverlay}
-                        />
-                    </Styled.AddBlock>
-                </Styled.Overlay>
-                {element}
-            </Styled.ElementPreview>
-        );
-    };
-
-    refresh = () => {
-        this.setState({ group: this.state.group });
-    };
-
-    render() {
-        const {
-            params,
-            pageBuilder: { theme }
-        } = this.props;
-
-        return (
-            <Styled.Flex>
-                <List className={categoriesList}>
-                    {this.getGroups().map(plugin => (
-                        <ListItem
-                            onClick={() => this.setState({ group: plugin.name })}
-                            key={plugin.name}
-                            className={plugin.name === this.state.group && "active"}
-                        >
-                            {plugin.group.title}
-
-                            {plugin.group.icon && (
-                                <ListItemMeta>
-                                    <Icon icon={plugin.group.icon} />
-                                </ListItemMeta>
-                            )}
-                        </ListItem>
-                    ))}
-                </List>
-                <Styled.Elements>
-                    {this.state.group &&
-                        this.getGroupElements(this.state.group).map(plugin => {
-                            return (params ? this.renderClickable : this.renderDraggable)(
-                                <div data-role="draggable">
-                                    <Styled.ElementBox>
-                                        <Styled.ElementTitle>
-                                            {typeof plugin.toolbar.title === "function" ? (
-                                                plugin.toolbar.title({ refresh: this.refresh })
-                                            ) : (
-                                                <Typography use="overline">
-                                                    {plugin.toolbar.title}
-                                                </Typography>
-                                            )}
-                                        </Styled.ElementTitle>
-                                        <Styled.ElementPreviewCanvas>
-                                            {plugin.toolbar.preview({ theme })}
-                                        </Styled.ElementPreviewCanvas>
-                                    </Styled.ElementBox>
-                                </div>,
-                                plugin
-                            );
-                        })}
-                </Styled.Elements>
-            </Styled.Flex>
-        );
-    }
-}
-
-export default compose(
-    connect(
-        state => {
-            const getParams = getActivePluginParams("pb-editor-toolbar-add-element");
-            return {
-                params: getParams ? getParams(state) : null
-            };
-        },
-        { dragStart, dragEnd, deactivatePlugin, dropElement }
-    ),
-    withPageBuilder(),
-    withHandlers({
-        enableDragOverlay: () => () => {
-            const el = document.querySelector(".pb-editor");
-            if (el) {
-                el.classList.add("pb-editor-dragging");
-            }
-        },
-        disableDragOverlay: () => () => {
-            const el = document.querySelector(".pb-editor");
-            if (el) {
-                el.classList.remove("pb-editor-dragging");
-            }
+    const enableDragOverlay = useCallback(() => {
+        const el = document.querySelector(".pb-editor");
+        if (el) {
+            el.classList.add("pb-editor-dragging");
         }
-    })
+    }, []);
+
+    const disableDragOverlay = useCallback(() => {
+        const el = document.querySelector(".pb-editor");
+        if (el) {
+            el.classList.remove("pb-editor-dragging");
+        }
+    }, []);
+
+    const renderDraggable = useCallback(
+        (element, plugin) => {
+            const { elementType } = plugin;
+
+            return (
+                <Draggable
+                    key={plugin.name}
+                    target={plugin.target}
+                    beginDrag={props => {
+                        dragStart({ element: { type: elementType } });
+                        setTimeout(
+                            () =>
+                                deactivatePlugin({
+                                    name: ADD_ELEMENT
+                                }),
+                            20
+                        );
+                        return { type: elementType, target: props.target };
+                    }}
+                    endDrag={(props, monitor) => {
+                        dragEnd({ element: monitor.getItem() });
+                    }}
+                >
+                    {({ drag }) => (
+                        <div ref={drag}>{renderOverlay(element, null, "Drag to Add")}</div>
+                    )}
+                </Draggable>
+            );
+        },
+        [dragStart, deactivatePlugin, dragEnd]
+    );
+
+    const renderOverlay = useCallback(
+        (element, onClick = null, label) => {
+            return (
+                <Styled.ElementPreview>
+                    <Styled.Overlay>
+                        <Styled.Backdrop className={"backdrop"} />
+                        <Styled.AddBlock className={"add-block"}>
+                            <ButtonFloating
+                                onClick={onClick}
+                                label={label}
+                                icon={<AddIcon />}
+                                onMouseDown={enableDragOverlay}
+                                onMouseUp={disableDragOverlay}
+                            />
+                        </Styled.AddBlock>
+                    </Styled.Overlay>
+                    {element}
+                </Styled.ElementPreview>
+            );
+        },
+        [enableDragOverlay, disableDragOverlay]
+    );
+
+    const renderClickable = useCallback(
+        (element, plugin) => {
+            const item = renderOverlay(
+                element,
+                () => {
+                    dropElement({
+                        source: { type: plugin.elementType },
+                        target: { ...params }
+                    });
+                    deactivatePlugin({
+                        name: ADD_ELEMENT
+                    });
+                },
+                "Click to Add"
+            );
+
+            return React.cloneElement(item, { key: plugin.name });
+        },
+        [params, deactivatePlugin, dropElement, renderOverlay]
+    );
+
+    return (
+        <Styled.Flex>
+            <List className={categoriesList}>
+                {getGroups().map(plugin => (
+                    <ListItem
+                        onClick={() => setGroup(plugin.name)}
+                        key={plugin.name}
+                        className={plugin.name === group && "active"}
+                    >
+                        {plugin.group.title}
+
+                        {plugin.group.icon && (
+                            <ListItemMeta>
+                                <Icon icon={plugin.group.icon} />
+                            </ListItemMeta>
+                        )}
+                    </ListItem>
+                ))}
+            </List>
+            <Styled.Elements>
+                {group &&
+                    getGroupElements(group).map(plugin => {
+                        return (params ? renderClickable : renderDraggable)(
+                            <div data-role="draggable">
+                                <Styled.ElementBox>
+                                    <Styled.ElementTitle>
+                                        {typeof plugin.toolbar.title === "function" ? (
+                                            plugin.toolbar.title({ refresh })
+                                        ) : (
+                                            <Typography use="overline">
+                                                {plugin.toolbar.title}
+                                            </Typography>
+                                        )}
+                                    </Styled.ElementTitle>
+                                    <Styled.ElementPreviewCanvas>
+                                        {plugin.toolbar.preview({ theme })}
+                                    </Styled.ElementPreviewCanvas>
+                                </Styled.ElementBox>
+                            </div>,
+                            plugin
+                        );
+                    })}
+            </Styled.Elements>
+        </Styled.Flex>
+    );
+};
+
+export default connect(
+    state => {
+        const getParams = getActivePluginParams("pb-editor-toolbar-add-element");
+        return {
+            params: getParams ? getParams(state) : null
+        };
+    },
+    { dragStart, dragEnd, deactivatePlugin, dropElement }
 )(AddElement);

@@ -3,14 +3,12 @@ import * as React from "react";
 import ReactDOM from "react-dom";
 import {
     Dialog as RmwcDialog,
-    DialogSurface as RmwcDialogSurface,
-    DialogHeader as RmwcDialogHeader,
-    DialogHeaderTitle as RmwcDialogHeaderTitle,
-    DialogBody as RmwcDialogBody,
-    DialogFooter as RmwcDialogFooter,
-    DialogFooterButton as RmwcDialogFooterButton,
-    DialogBackdrop as RmwcDialogBackdrop
+    DialogContent as RmwcDialogContent,
+    DialogTitle as RmwcDialogTitle,
+    DialogActions as RmwcDialogActions,
+    DialogButton as RmwcDialogButton
 } from "@rmwc/dialog";
+import { getClasses } from "@webiny/ui/Helpers";
 
 type Props = {
     children: any,
@@ -42,17 +40,12 @@ export class Dialog extends React.Component<Props> {
     }
 
     render() {
-        const { children, preventOutsideDismiss = false, ...props } = this.props;
+        const { children, ...props } = this.props;
         const container: Element = (this.container: any);
 
         // Let's pass "permanent" / "persistent" / "temporary" flags as "mode" prop instead.
         return ReactDOM.createPortal(
-            <RmwcDialog {...props}>
-                <RmwcDialogSurface>{children}</RmwcDialogSurface>
-                <RmwcDialogBackdrop
-                    style={{ pointerEvents: preventOutsideDismiss ? "none" : "all" }}
-                />
-            </RmwcDialog>,
+            <RmwcDialog {...getClasses(props, "webiny-ui-dialog")}>{children}</RmwcDialog>,
             container
         );
     }
@@ -64,15 +57,9 @@ export class Dialog extends React.Component<Props> {
  * @returns {*}
  * @constructor
  */
-export const DialogHeader = (props: Object) => <RmwcDialogHeader {...props} />;
-
-/**
- * A simple component for showing dialog's title.
- * @param props
- * @returns {*}
- * @constructor
- */
-export const DialogHeaderTitle = (props: Object) => <RmwcDialogHeaderTitle {...props} />;
+export const DialogTitle = (props: Object) => (
+    <RmwcDialogTitle {...getClasses(props, "webiny-ui-dialog__title")} />
+);
 
 /**
  * A simple component for showing dialog's body.
@@ -80,7 +67,9 @@ export const DialogHeaderTitle = (props: Object) => <RmwcDialogHeaderTitle {...p
  * @returns {*}
  * @constructor
  */
-export const DialogBody = (props: Object) => <RmwcDialogBody {...props} />;
+export const DialogContent = (props: Object) => (
+    <RmwcDialogContent {...getClasses(props, "webiny-ui-dialog__content")} />
+);
 
 /**
  * Can be used to show accept and cancel buttons.
@@ -88,7 +77,9 @@ export const DialogBody = (props: Object) => <RmwcDialogBody {...props} />;
  * @returns {*}
  * @constructor
  */
-export const DialogFooter = (props: Object) => <RmwcDialogFooter {...props} />;
+export const DialogActions = (props: Object) => (
+    <RmwcDialogActions {...getClasses(props, "webiny-ui-dialog__actions")} />
+);
 
 /**
  * Use this to show a simple button.
@@ -96,7 +87,9 @@ export const DialogFooter = (props: Object) => <RmwcDialogFooter {...props} />;
  * @returns {*}
  * @constructor
  */
-export const DialogFooterButton = (props: Object) => <RmwcDialogFooterButton {...props} />;
+export const DialogButton = (props: Object) => (
+    <RmwcDialogButton {...getClasses(props, "webiny-ui-dialog__button")} />
+);
 
 /**
  * Use this to close the dialog without taking any additional action.
@@ -106,9 +99,12 @@ export const DialogFooterButton = (props: Object) => <RmwcDialogFooterButton {..
  */
 export const DialogCancel = (props: { children: React.Node }) => {
     return (
-        <DialogFooterButton {...props} cancel>
+        <DialogButton
+            {...getClasses(props, "webiny-ui-dialog__button webiny-ui-dialog__button--cancel")}
+            action="close"
+        >
             {props.children}
-        </DialogFooterButton>
+        </DialogButton>
     );
 };
 
@@ -120,8 +116,11 @@ export const DialogCancel = (props: { children: React.Node }) => {
  */
 export const DialogAccept = (props: { children: React.Node }) => {
     return (
-        <DialogFooterButton {...props} accept>
+        <DialogButton
+            {...getClasses(props, "webiny-ui-dialog__button webiny-ui-dialog__button--accept")}
+            action="accept"
+        >
             {props.children}
-        </DialogFooterButton>
+        </DialogButton>
     );
 };

@@ -3,7 +3,7 @@ const execa = require("execa");
 const webpack = require("webpack");
 const get = require("lodash.get");
 
-const relativeRoot = "examples/functions";
+const relativeRoot = "examples/functions/code";
 
 class BuildFunctions {
     constructor(serverless, options) {
@@ -82,7 +82,9 @@ class BuildFunctions {
         functions.forEach(fn => {
             const isSpa = get(this.serverless.service.functions[fn], "webiny.spa", false);
             if (isSpa) {
-                configs.push(require(path.resolve(relativeRoot, fn, "handler", "webpack.config.js")));
+                configs.push(
+                    require(path.resolve(relativeRoot, fn, "handler", "webpack.config.js"))
+                );
             } else {
                 configs.push(require(path.resolve(relativeRoot, fn, "webpack.config.js")));
             }

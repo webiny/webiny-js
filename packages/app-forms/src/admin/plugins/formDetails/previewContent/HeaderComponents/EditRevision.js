@@ -1,14 +1,15 @@
 // @flow
 import React from "react";
-import { withRouter } from "react-router-dom";
+import useReactRouter from "use-react-router";
 import { IconButton } from "@webiny/ui/Button";
 import { Tooltip } from "@webiny/ui/Tooltip";
 import { ReactComponent as EditIcon } from "@webiny/app-forms/admin/icons/edit.svg";
-import withRevisionHandlers from "../../formRevisions/withRevisionHandlers";
-import { compose } from "recompose";
-import { withSnackbar } from "@webiny/app-admin/components";
+import { useRevision } from "../../formRevisions/useRevision";
 
-const EditRevision = ({ revision, history, gqlCreate, showSnackbar }: *) => {
+const EditRevision = ({ revision }) => {
+    const { createRevision } = useRevision(revision);
+    const { history } = useReactRouter();
+
     if (revision.status === "draft") {
         return (
             <Tooltip content={"Edit"} placement={"top"}>
@@ -22,28 +23,9 @@ const EditRevision = ({ revision, history, gqlCreate, showSnackbar }: *) => {
 
     return (
         <Tooltip content={"New draft based on this version..."} placement={"top"}>
-            <IconButton
-                icon={<EditIcon />}
-                onClick={async () => {
-                    const { data: res } = await gqlCreate({
-                        variables: { revision: revision.id },
-                        refetchQueries: ["FormsListForms"]
-                    });
-                    const { data, error } = res.forms.revision;
-
-                    if (error) {
-                        return showSnackbar(error.message);
-                    }
-
-                    history.push(`/forms/${data.id}`);
-                }}
-            />
+            <IconButton icon={<EditIcon />} onClick={createRevision} />
         </Tooltip>
     );
 };
 
-export default compose(
-    withSnackbar(),
-    withRouter,
-    withRevisionHandlers
-)(EditRevision);
+export default EditRevision;

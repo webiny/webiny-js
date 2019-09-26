@@ -2,7 +2,7 @@
 import React from "react";
 import { ReactComponent as IconSvg } from "./round-star_border-24px.svg";
 import IconSettings from "./IconSettings";
-import styled from "react-emotion";
+import styled from "@emotion/styled";
 import Icon from "./Icon";
 import { getSvg } from "./utils";
 import Action from "./../../elementSettings/components/Action";

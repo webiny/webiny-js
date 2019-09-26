@@ -15,7 +15,8 @@
   "license": "MIT",
   "dependencies": {
     "@babel/runtime": "^7.5.5",
-    "@svgr/webpack": "^4.1.0",
+    "@svgr/webpack": "^4.3.2",
+    "@webiny/commodo": "^1.0.0",
     "bcryptjs": "^2.4.3",
     "graphql-shield": "^5.1.0",
     "invariant": "^2.2.4",

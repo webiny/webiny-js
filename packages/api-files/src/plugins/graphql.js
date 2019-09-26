@@ -1,15 +1,15 @@
 // @flow
 import { gql } from "apollo-server-lambda";
-import { dummyResolver } from "@webiny/api/graphql";
+import { dummyResolver } from "@webiny/api/graphql/commodo";
 import { type PluginType } from "@webiny/api/types";
 import { hasScope } from "@webiny/api-security";
-import { resolveCreate, resolveDelete, resolveGet } from "@webiny/api/graphql";
+import { resolveCreate, resolveDelete, resolveGet } from "@webiny/api/graphql/commodo";
 
 import listFiles from "./resolvers/listFiles";
 import listTags from "./resolvers/listTags";
 import updateFileBySrc from "./resolvers/updateFileBySrc";
 
-const fileFetcher = ctx => ctx.getEntity("File");
+const fileFetcher = ctx => ctx.models.File;
 
 export default ([
     {
@@ -114,12 +114,12 @@ export default ([
                 },
                 FilesQuery: {
                     getFile: resolveGet(fileFetcher),
-                    listFiles: listFiles(fileFetcher),
-                    listTags: listTags(fileFetcher)
+                    listFiles: listFiles,
+                    listTags: listTags
                 },
                 FilesMutation: {
                     createFile: resolveCreate(fileFetcher),
-                    updateFileBySrc: updateFileBySrc(fileFetcher),
+                    updateFileBySrc: updateFileBySrc,
                     deleteFile: resolveDelete(fileFetcher)
                 }
             }

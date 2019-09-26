@@ -1,18 +1,23 @@
 //@flow
 import * as React from "react";
 import { connect } from "@webiny/app-page-builder/editor/redux";
-import { compose } from "recompose";
 import { isEqual } from "lodash";
 import { getActiveElement } from "@webiny/app-page-builder/editor/selectors";
 import { Tabs, Tab } from "@webiny/ui/Tabs";
 import { updateElement } from "@webiny/app-page-builder/editor/actions";
 import ColorPicker from "@webiny/app-page-builder/editor/plugins/elementSettings/components/ColorPicker";
 import Input from "@webiny/app-page-builder/editor/plugins/elementSettings/components/Input";
-import withUpdateHandlers from "@webiny/app-page-builder/editor/plugins/elementSettings/components/withUpdateHandlers";
+import useUpdateHandlers from "@webiny/app-page-builder/editor/plugins/elementSettings/useUpdateHandlers";
 
 const DATA_NAMESPACE = "data.settings.shadow";
 
-const Settings = ({ getUpdateValue, getUpdatePreview }: Object) => {
+const Settings = ({ element, updateElement }: Object) => {
+    const { getUpdateValue, getUpdatePreview } = useUpdateHandlers({
+        element,
+        updateElement,
+        dataNamespace: DATA_NAMESPACE
+    });
+
     return (
         <React.Fragment>
             <Tabs>
@@ -53,15 +58,12 @@ const Settings = ({ getUpdateValue, getUpdatePreview }: Object) => {
     );
 };
 
-export default compose(
-    connect(
-        state => {
-            const { id, type, path } = getActiveElement(state);
-            return { element: { id, type, path } };
-        },
-        { updateElement },
-        null,
-        { areStatePropsEqual: isEqual }
-    ),
-    withUpdateHandlers({ namespace: DATA_NAMESPACE })
+export default connect(
+    state => {
+        const { id, type, path } = getActiveElement(state);
+        return { element: { id, type, path } };
+    },
+    { updateElement },
+    null,
+    { areStatePropsEqual: isEqual }
 )(Settings);
