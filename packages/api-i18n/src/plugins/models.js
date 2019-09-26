@@ -1,6 +1,6 @@
 // @flow
 import { flow } from "lodash";
-import { withStorage } from "@webiny/commodo";
+import { withStorage, withCrudLogs, withSoftDelete } from "@webiny/commodo";
 import { MongoDbDriver, withId } from "@commodo/fields-storage-mongodb";
 import { withUser } from "@webiny/api-security";
 import i18NLocale from "./models/i18nLocale.model";
@@ -13,14 +13,16 @@ export default ({ database }) => ({
             database: database.mongodb
         });
 
+        const I18NLocale = i18NLocale({ createBase });
+
         const createBase = () =>
             flow(
                 withId(),
                 withStorage({ driver }),
-                withUser(context)
+                withUser(context),
+                withSoftDelete(),
+                withCrudLogs()
             )();
-
-        const I18NLocale = i18NLocale({ createBase });
 
         context.models = {
             I18NLocale

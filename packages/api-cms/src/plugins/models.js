@@ -1,7 +1,7 @@
 // @flow
 import { flow } from "lodash";
 import { withUser } from "@webiny/api-security";
-import { withStorage } from "@webiny/commodo";
+import { withStorage, withCrudLogs, withSoftDelete } from "@webiny/commodo";
 import { MongoDbDriver, withId } from "@commodo/fields-storage-mongodb";
 import cmsContent from "./models/cmsContent.model";
 
@@ -17,7 +17,9 @@ export default ({ database }) => ({
             flow(
                 withId(),
                 withStorage({ driver }),
-                withUser(context)
+                withUser(context),
+                withSoftDelete(),
+                withCrudLogs()
             )();
 
         const ContentModel = cmsContent({ createBase });

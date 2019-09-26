@@ -14,14 +14,16 @@
   ],
   "license": "MIT",
   "dependencies": {
-    "@commodo/fields": "^0.2.6",
-    "@commodo/fields-storage": "^0.3.0",
-    "@commodo/fields-storage-mongodb": "^0.2.11",
-    "@commodo/fields-storage-ref": "^0.3.0",
-    "@commodo/hooks": "^0.1.0",
-    "@commodo/name": "^1.0.1",
-    "commodo-fields-date": "^1.0.1",
-    "commodo-fields-object": "^1.0.0"
+    "@commodo/fields": "^0.2.7",
+    "@commodo/fields-storage": "^0.3.1",
+    "@commodo/fields-storage-mongodb": "^0.2.12",
+    "@commodo/fields-storage-ref": "^0.3.1",
+    "@commodo/fields-storage-soft-delete": "^0.2.0",
+    "@commodo/hooks": "^0.1.1",
+    "@commodo/name": "^1.0.2",
+    "commodo-fields-date": "^1.0.2",
+    "commodo-fields-object": "^1.0.2",
+    "commodo-fields-storage-crud-logs": "^1.0.1"
   },
   "scripts": {
     "build": "babel src -d ${DEST:-build} --source-maps --copy-files",

@@ -61,6 +61,7 @@ export default async (root: any, args: Object, context: Object) => {
         }
     ]);
 
+    console.log("list pids", Object.keys((await PbPage.findOne()).getFields()));
     return new ListResponse(
         await PbPage.find({ sort, query: { id: { $in: ids.map(item => item.id) } } }),
         createPaginationMeta({

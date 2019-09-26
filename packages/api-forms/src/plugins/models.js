@@ -1,7 +1,7 @@
 // @flow
 import { flow } from "lodash";
 import { withUser } from "@webiny/api-security";
-import { withStorage } from "@webiny/commodo";
+import { withStorage, withCrudLogs, withSoftDelete } from "@webiny/commodo";
 import { MongoDbDriver, withId } from "@commodo/fields-storage-mongodb";
 
 import formModel from "./models/form.model";
@@ -20,7 +20,9 @@ export default ({ database }) => ({
             flow(
                 withId(),
                 withStorage({ driver, maxPerPage }),
-                withUser(context)
+                withUser(context),
+                withSoftDelete(),
+                withCrudLogs()
             )();
 
         const FormSettings = formSettings({ createBase });
