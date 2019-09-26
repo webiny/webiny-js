@@ -1,4 +1,4 @@
-import { CognitoIdentityServiceProvider } from "aws-sdk";
+import CognitoIdentityServiceProvider from "aws-sdk/clients/cognitoidentityserviceprovider";
 import { gql } from "apollo-server-lambda";
 import jwt from "jsonwebtoken";
 import jwkToPem from "jwk-to-pem";
@@ -91,6 +91,18 @@ export default ({ region, userPoolId }) => {
                     ]
                 };
                 await cognito.adminCreateUser(params).promise();
+
+                const verify = {
+                    UserPoolId: userPoolId,
+                    Username: user.email,
+                    UserAttributes: [
+                        {
+                            Name: "email_verified",
+                            Value: "true"
+                        }
+                    ]
+                };
+                await cognito.adminUpdateUserAttributes(verify).promise();
             },
             async updateUser({ data, user }) {
                 const params = {

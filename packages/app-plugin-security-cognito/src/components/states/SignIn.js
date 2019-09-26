@@ -29,6 +29,19 @@ export default (authProps: Object) => {
                                         </h1>
                                     </Title>
 
+                                    {authProps.message && (
+                                        <Grid>
+                                            <Cell span={12}>
+                                                <Alert
+                                                    title={authProps.message.title}
+                                                    type={authProps.message.type}
+                                                >
+                                                    {authProps.message.text}
+                                                </Alert>
+                                            </Cell>
+                                        </Grid>
+                                    )}
+
                                     {error && (
                                         <Grid>
                                             <Cell span={12} className={errorMessage}>

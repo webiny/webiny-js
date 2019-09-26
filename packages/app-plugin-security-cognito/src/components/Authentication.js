@@ -4,6 +4,7 @@ import Authenticator from "./cognito/Authenticator";
 import SignIn from "./states/SignIn";
 import RequireNewPassword from "./states/RequireNewPassword";
 import ForgotPassword from "./states/ForgotPassword";
+import SetNewPassword from "./states/SetNewPassword";
 import { CircularProgress } from "@webiny/ui/Progress";
 
 const Authentication = ({ onIdToken }: Object) => {
@@ -17,6 +18,7 @@ const Authentication = ({ onIdToken }: Object) => {
                         <SignIn {...authProps} />
                         <RequireNewPassword {...authProps} />
                         <ForgotPassword {...authProps} />
+                        <SetNewPassword {...authProps} />
                     </>
                 )
             }

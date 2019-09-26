@@ -6,18 +6,18 @@ class ForgotPassword extends React.Component {
     authStates = ["forgotPassword"];
 
     state = {
-        linkSent: null,
+        codeSent: null,
         error: null,
         loading: false
     };
 
-    requestLink = async data => {
+    requestCode = async data => {
         this.setState({ loading: true });
         const { username } = data;
         try {
             const res = await Auth.forgotPassword(username.toLowerCase());
             debug("Forgot password %O", res);
-            this.setState({ loading: false, linkSent: res.CodeDeliveryDetails });
+            this.setState({ loading: false, codeSent: res.CodeDeliveryDetails, error: null });
         } catch (err) {
             if (err.code === "LimitExceededException") {
                 this.setState({
@@ -31,18 +31,9 @@ class ForgotPassword extends React.Component {
         }
     };
 
-    setPassword = async data => {
-        this.setState({ loading: true });
-        const { username, code, password } = data;
-
-        try {
-            const res = await Auth.forgotPasswordSubmit(username.toLowerCase(), code, password);
-            debug("forgot-password:setPassword %O", res);
-            this.props.changeState("signIn");
-            this.setState({ loading: false, linkSent: null, username: null, code: null });
-        } catch (err) {
-            this.setState({ loading: false, error: err.message });
-        }
+    setPassword = async ({ username }) => {
+        this.setState({ codeSent: null, error: null });
+        this.props.changeState("setNewPassword", username);
     };
 
     render() {
@@ -52,9 +43,9 @@ class ForgotPassword extends React.Component {
         }
 
         return children({
-            requestLink: this.requestLink,
+            requestCode: this.requestCode,
             setPassword: this.setPassword,
-            linkSent: this.state.linkSent,
+            codeSent: this.state.codeSent,
             error: this.state.error,
             loading: this.state.loading
         });

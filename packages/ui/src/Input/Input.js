@@ -120,7 +120,6 @@ class Input extends React.Component<Props> {
             label,
             description,
             placeholder,
-            outlined,
             rows,
             validation = { isValid: null },
             icon,

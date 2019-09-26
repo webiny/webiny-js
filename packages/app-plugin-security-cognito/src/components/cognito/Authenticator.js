@@ -41,7 +41,9 @@ class Authenticator extends React.Component {
         }
     };
 
-    onChangeState = async (state, data) => {
+    onChangeState = async (state, data, message = null) => {
+        this.setState({ message });
+
         debug("Requested state change %s %O", state, data);
         if (state === this.state.authState) {
             return;
@@ -61,14 +63,15 @@ class Authenticator extends React.Component {
     };
 
     render() {
-        const { user, authState, authData, checkingUser } = this.state;
+        const { user, authState, authData, checkingUser, message } = this.state;
 
         return this.props.children({
             user,
             authState,
             authData,
             changeState: this.onChangeState,
-            checkingUser
+            checkingUser,
+            message
         });
     }
 }
