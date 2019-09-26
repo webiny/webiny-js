@@ -78,14 +78,18 @@ class Carousel extends React.Component<Props> {
     ];
 
     render() {
-
-
         return (
             <NukaCarousel
                 {...pick(this.props, Carousel.nukaProps)}
-                {...(this.props.renderPreviousSlide ? { renderCenterLeftControls: this.props.renderPreviousSlide } : {})}
-                {...(this.props.renderNextSlide ? { renderCenterRightControls: this.props.renderNextSlide } : {})}
-                {...(this.props.renderBottomNav ? { renderBottomCenterControls: this.props.renderBottomNav } : {})}
+                {...(this.props.renderPreviousSlide
+                    ? { renderCenterLeftControls: this.props.renderPreviousSlide }
+                    : {})}
+                {...(this.props.renderNextSlide
+                    ? { renderCenterRightControls: this.props.renderNextSlide }
+                    : {})}
+                {...(this.props.renderBottomNav
+                    ? { renderBottomCenterControls: this.props.renderBottomNav }
+                    : {})}
             >
                 {this.props.children}
             </NukaCarousel>

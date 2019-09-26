@@ -1,36 +1,27 @@
 import { gql } from "apollo-server-lambda";
-import { EntityModel } from "@webiny/entity";
-import { Model } from "@webiny/model";
-
-class OpenGraphTagModel extends Model {
-    constructor() {
-        super();
-        this.attr("property").char();
-        this.attr("content").char();
-    }
-}
-
-const createSocialSettings = context =>
-    class SocialSettings extends EntityModel {
-        constructor() {
-            super();
-            this.setParentEntity(context.page);
-            this.attr("meta").models(OpenGraphTagModel);
-            this.attr("title").char();
-            this.attr("description").char();
-            this.attr("image").char();
-        }
-    };
+import { withFields, string, fields } from "@webiny/commodo";
+import { id } from "@commodo/fields-storage-mongodb/fields";
 
 export default [
     {
         name: "pb-page-settings-social",
         type: "pb-page-settings-model",
-        apply(context) {
-            context.model
-                .attr("social")
-                .model(createSocialSettings(context))
-                .setDefaultValue({});
+        apply(settingsFields) {
+            settingsFields.social = fields({
+                value: {},
+                instanceOf: withFields({
+                    meta: fields({
+                        list: true,
+                        instanceOf: withFields({
+                            property: string(),
+                            content: string()
+                        })()
+                    }),
+                    title: string(),
+                    description: string(),
+                    image: id()
+                })()
+            });
         }
     },
     {

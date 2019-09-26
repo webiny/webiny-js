@@ -5,9 +5,9 @@ import {
     resolveGet,
     resolveList,
     resolveUpdate
-} from "@webiny/api/graphql";
+} from "@webiny/api/graphql/commodo";
 
-const groupFetcher = ctx => ctx.getEntity("SecurityGroup");
+const groupFetcher = ctx => ctx.models.SecurityGroup;
 
 export default {
     typeDefs: /* GraphQL */ `

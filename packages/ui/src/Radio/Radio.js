@@ -38,8 +38,9 @@ class Radio extends React.Component<Props> {
                     <FormElementMessage error>{validation.message}</FormElementMessage>
                 )}
 
-                {validation.isValid !== false &&
-                    description && <FormElementMessage>{description}</FormElementMessage>}
+                {validation.isValid !== false && description && (
+                    <FormElementMessage>{description}</FormElementMessage>
+                )}
             </React.Fragment>
         );
     }

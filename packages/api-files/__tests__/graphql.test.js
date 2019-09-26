@@ -1,6 +1,5 @@
 import { graphql } from "graphql";
 import apiPlugins from "@webiny/api/plugins";
-import servicePlugins from "@webiny/api/plugins/service";
 import { createHandler, PluginsContainer } from "@webiny/api";
 import filesPlugins from "@webiny/api-files/plugins";
 import createConfig from "./config";
@@ -18,7 +17,7 @@ describe("GraphQL plugins", () => {
 
         // Configure handler
         const appConfig = { database: { mongodb: config.database } };
-        const plugins = new PluginsContainer([apiPlugins, servicePlugins, filesPlugins]);
+        const plugins = new PluginsContainer([apiPlugins, filesPlugins]);
 
         schema = (await createHandler({ plugins, config: appConfig })).schema;
         context = {

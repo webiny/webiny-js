@@ -12,6 +12,6 @@ module.exports = {
     rootDir: process.cwd(),
     testRegex: `packages/(${packages.join("|")})/.*test.js$`,
     // testEnvironment: "node",
-    modulePathIgnorePatterns: ["dist"],
+    modulePathIgnorePatterns: ["dist", ".verdaccio", "build"],
     preset: "@shelf/jest-mongodb"
 };

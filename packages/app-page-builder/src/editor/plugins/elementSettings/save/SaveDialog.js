@@ -84,7 +84,10 @@ const SaveDialog = React.memo(
                                 {!data.overwrite && (
                                     <Grid>
                                         <Cell span={12}>
-                                            <Bind name={"name"} validators={validation.create("required")}>
+                                            <Bind
+                                                name={"name"}
+                                                validators={validation.create("required")}
+                                            >
                                                 <Input label={"Name"} autoFocus />
                                             </Bind>
                                         </Cell>
@@ -94,7 +97,10 @@ const SaveDialog = React.memo(
                                     <>
                                         <Grid>
                                             <Cell span={12}>
-                                                <Bind name="category" validators={validation.create("required")}>
+                                                <Bind
+                                                    name="category"
+                                                    validators={validation.create("required")}
+                                                >
                                                     <Select
                                                         label="Category"
                                                         description="Select a block category"

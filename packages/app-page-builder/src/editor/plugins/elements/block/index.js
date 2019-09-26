@@ -10,7 +10,11 @@ import {
     cloneElement,
     addElementToParent
 } from "@webiny/app-page-builder/editor/utils";
-import { updateElement, deleteElement, elementCreated } from "@webiny/app-page-builder/editor/actions";
+import {
+    updateElement,
+    deleteElement,
+    elementCreated
+} from "@webiny/app-page-builder/editor/actions";
 import type { PbElementPluginType } from "@webiny/app-page-builder/types";
 
 export default (): PbElementPluginType => {

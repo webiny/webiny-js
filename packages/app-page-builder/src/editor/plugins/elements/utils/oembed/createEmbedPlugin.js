@@ -50,7 +50,7 @@ export const createEmbedPlugin = (config: EmbedPluginConfig): PbElementPluginTyp
                 return config.render(props);
             }
 
-            return <OEmbed element={props.element} {...config.oembed || {}} />;
+            return <OEmbed element={props.element} {...(config.oembed || {})} />;
         },
         onCreate: config.onCreate || "open-settings",
         renderElementPreview: config.renderElementPreview

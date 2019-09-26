@@ -48,7 +48,11 @@ const GeneralSettings = ({ form, Bind }: Object) => {
                     </Bind>
                 </Cell>
                 <Cell span={12}>
-                    <Bind name={"url"} validators={validation.create("required")} beforeChange={toSlug}>
+                    <Bind
+                        name={"url"}
+                        validators={validation.create("required")}
+                        beforeChange={toSlug}
+                    >
                         <Input label="URL" description="Page URL" />
                     </Bind>
                 </Cell>

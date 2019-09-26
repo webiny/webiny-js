@@ -1,7 +1,7 @@
 // @flow
 import { gql } from "apollo-server-lambda";
 import { merge } from "lodash";
-import { dummyResolver } from "@webiny/api/graphql";
+import { dummyResolver } from "@webiny/api/graphql/commodo";
 import { hasScope } from "@webiny/api-security";
 import page from "./graphql/Page";
 import category from "./graphql/Category";
@@ -83,16 +83,16 @@ export default {
     },
     security: {
         shield: {
-           PbQuery: {
+            PbQuery: {
                 getMenu: hasScope("cms:menu:crud"),
                 listMenus: hasScope("cms:menu:crud"),
                 getCategory: hasScope("cms:category:crud"),
                 listCategories: hasScope("cms:category:crud"),
                 listPages: hasScope("cms:page:crud"),
                 listElements: hasScope("cms:element:crud"),
-                oembedData: hasScope("cms:oembed:read"),
+                oembedData: hasScope("cms:oembed:read")
             },
-           PbMutation: {
+            PbMutation: {
                 createMenu: hasScope("cms:menu:crud"),
                 updateMenu: hasScope("cms:menu:crud"),
                 deleteMenu: hasScope("cms:menu:crud"),

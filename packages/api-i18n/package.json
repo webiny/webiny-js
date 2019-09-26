@@ -14,6 +14,7 @@
   "description": "The API for the Webiny I18N (webiny-app-i18n) app.",
   "license": "MIT",
   "dependencies": {
+    "@webiny/commodo": "^1.0.0",
     "@babel/runtime": "^7.5.5",
     "@svgr/webpack": "^4.3.2",
     "accept-language-parser": "^1.5.0",

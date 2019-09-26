@@ -326,7 +326,9 @@ function newUtil() {
     }
 
     function mimeType(url) {
-        const extension = parseExtension(url).toLowerCase().split("?")[0];
+        const extension = parseExtension(url)
+            .toLowerCase()
+            .split("?")[0];
         return mimes()[extension] || "";
     }
 

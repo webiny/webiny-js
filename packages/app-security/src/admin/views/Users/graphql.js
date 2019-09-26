@@ -6,7 +6,13 @@ const fields = `
 `;
 
 export const LIST_USERS = gql`
-    query LoadUsers($where: JSON, $sort: JSON, $page: Int, $perPage: Int, $search: SecurityUserSearchInput) {
+    query listUsers(
+        $where: JSON
+        $sort: JSON
+        $page: Int
+        $perPage: Int
+        $search: SecurityUserSearchInput
+    ) {
         security {
             users: listUsers(
                 where: $where
@@ -40,7 +46,7 @@ export const LIST_USERS = gql`
 `;
 
 export const READ_USER = gql`
-    query LoadUser($id: ID!) {
+    query getUser($id: ID!) {
         security {
             user: getUser(id: $id){
                 data {
@@ -56,7 +62,7 @@ export const READ_USER = gql`
 `;
 
 export const CREATE_USER = gql`
-    mutation CreateUser($data: SecurityUserInput!){
+    mutation createUser($data: SecurityUserInput!){
         security {
             user: createUser(data: $data) {
                 data {
@@ -73,7 +79,7 @@ export const CREATE_USER = gql`
 `;
 
 export const UPDATE_USER = gql`
-    mutation UpdateUser($id: ID!, $data: SecurityUserInput!){
+    mutation updateUser($id: ID!, $data: SecurityUserInput!){
         security {
             user: updateUser(id: $id, data: $data) {
                 data {
@@ -90,7 +96,7 @@ export const UPDATE_USER = gql`
 `;
 
 export const DELETE_USER = gql`
-    mutation DeleteUser($id: ID!) {
+    mutation deleteUser($id: ID!) {
         security {
             deleteUser(id: $id) {
                 data

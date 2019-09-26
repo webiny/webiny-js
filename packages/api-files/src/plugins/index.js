@@ -1,5 +1,5 @@
 // @flow
-import entities from "./entities";
+import models from "./models";
 import graphql from "./graphql";
 
-export default [entities, graphql];
+export default config => [models(config), graphql];

@@ -1,33 +1,26 @@
 // @flow
 import { gql } from "apollo-server-lambda";
-import { EntityModel } from "@webiny/entity";
-
-class MetaTagModel extends EntityModel {
-    constructor() {
-        super();
-        this.attr("name").char();
-        this.attr("content").char();
-    }
-}
-
-class SeoSettings extends EntityModel {
-    constructor() {
-        super();
-        this.attr("meta").models(MetaTagModel, false);
-        this.attr("title").char();
-        this.attr("description").char();
-    }
-}
+import { withFields, string, fields } from "@webiny/commodo";
 
 export default [
     {
         name: "pb-page-settings-seo",
         type: "pb-page-settings-model",
-        apply({ model }: { model: EntityModel }) {
-            model
-                .attr("seo")
-                .model(SeoSettings)
-                .setDefaultValue({});
+        apply(settingsFields) {
+            settingsFields.seo = fields({
+                value: {},
+                instanceOf: withFields({
+                    title: string(),
+                    description: string(),
+                    meta: fields({
+                        list: true,
+                        instanceOf: withFields({
+                            name: string(),
+                            content: string()
+                        })()
+                    })
+                })()
+            });
         }
     },
     {

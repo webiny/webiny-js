@@ -16,7 +16,7 @@ export const deleteElement = gql`
 `;
 
 export const updateElement = gql`
-    mutation updateElement($id: ID!, $data: UpdateElementInput!) {
+    mutation updateElement($id: ID!, $data: PbUpdateElementInput!) {
         pageBuilder {
             updateElement(id: $id, data: $data) {
                 data {

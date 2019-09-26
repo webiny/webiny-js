@@ -127,22 +127,20 @@ const Revision = (props: Object) => {
                         </ConfirmationDialog>
                     )}
 
-                    <React.Fragment>
-                        <MenuDivider />
-                        <ConfirmationDialog
-                            title="Confirmation required!"
-                            message={<span>Are you sure you want to delete this revision?</span>}
-                        >
-                            {({ showConfirmation }) => (
-                                <MenuItem onClick={() => showConfirmation(deleteRevision)}>
-                                    <ListItemGraphic>
-                                        <Icon icon={<DeleteIcon />} />
-                                    </ListItemGraphic>
-                                    Delete
-                                </MenuItem>
-                            )}
-                        </ConfirmationDialog>
-                    </React.Fragment>
+                    <MenuDivider />
+                    <ConfirmationDialog
+                        title="Confirmation required!"
+                        message={<span>Are you sure you want to delete this revision?</span>}
+                    >
+                        {({ showConfirmation }) => (
+                            <MenuItem onClick={() => showConfirmation(deleteRevision)}>
+                                <ListItemGraphic>
+                                    <Icon icon={<DeleteIcon />} />
+                                </ListItemGraphic>
+                                Delete
+                            </MenuItem>
+                        )}
+                    </ConfirmationDialog>
                 </Menu>
             </ListItemMeta>
         </ListItem>

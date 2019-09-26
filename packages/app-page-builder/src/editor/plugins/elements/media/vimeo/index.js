@@ -53,7 +53,10 @@ export default (): Array<PluginType> => [
                 <Tab icon={<MediaIcon />} label="Vimeo">
                     <Grid>
                         <Cell span={12}>
-                            <Bind name={"source.url"} validators={validation.create("required,url")}>
+                            <Bind
+                                name={"source.url"}
+                                validators={validation.create("required,url")}
+                            >
                                 <Input label={"Video URL"} description={"Enter a video URL"} />
                             </Bind>
                         </Cell>

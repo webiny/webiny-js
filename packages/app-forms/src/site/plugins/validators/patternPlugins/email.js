@@ -4,6 +4,6 @@ export default {
     pattern: {
         name: "email",
         regex: `^\\w[\\w.-]*@([\\w-]+\\.)+[\\w-]+$`,
-        flags: "i",
+        flags: "i"
     }
 };

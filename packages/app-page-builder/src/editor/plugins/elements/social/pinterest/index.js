@@ -49,7 +49,10 @@ export default (): Array<PluginType> => [
                 <Tab icon={<SocialIcon />} label="Pinterest">
                     <Grid>
                         <Cell span={12}>
-                            <Bind name={"source.url"} validators={validation.create("required,url")}>
+                            <Bind
+                                name={"source.url"}
+                                validators={validation.create("required,url")}
+                            >
                                 <Input
                                     label={"Pinterest URL"}
                                     description={"Enter a Pinterest URL"}

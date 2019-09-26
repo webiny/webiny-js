@@ -30,50 +30,6 @@ export const logoStyle = css({
     }
 });
 
-export const menuTitle = css({
-    ".mdc-drawer &.mdc-list": {
-        borderBottom: "1px solid var(--mdc-theme-on-background)",
-        padding: 0,
-        ".mdc-list-item": {
-            margin: 0,
-            padding: "0 15px",
-            height: "auto",
-            width: "100%",
-            fontWeight: "600",
-            boxSizing: "border-box"
-        },
-        '>a[data-expanded="true"]': {
-            ".mdc-list-item": {
-                backgroundColor: "var(--mdc-theme-background)"
-            }
-        }
-    }
-});
-
-export const linkStyle = css({
-    color: "var(--mdc-theme-text-primary-on-background)",
-    textDecoration: "none",
-    fontWeight: "600"
-});
-
-export const submenuItems = css({
-    ".mdc-drawer &.mdc-list-item": {
-        paddingLeft: 65
-    }
-});
-
-export const submenuList = css({
-    "&.mdc-list": {
-        padding: 0
-    }
-});
-
-export const menuSubtitle = css({
-    marginLeft: 20,
-    display: "block",
-    color: "var(--mdc-theme-on-surface)"
-});
-
 export const MenuFooter = styled("div")({
     borderTop: "1px solid var(--mdc-theme-on-background)",
     a: {

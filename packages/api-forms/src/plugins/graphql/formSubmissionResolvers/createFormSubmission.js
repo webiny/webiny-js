@@ -1,10 +1,9 @@
 // @flow
-import type { IForm } from "@webiny/api-forms/entities";
-import { ErrorResponse, NotFoundResponse, Response } from "@webiny/api/graphql";
+import { ErrorResponse, NotFoundResponse, Response } from "@webiny/api/graphql/commodo";
 
 export default async (root: any, args: Object, context: Object) => {
-    const { Form } = context.getEntities();
-    const form: ?IForm = await Form.findById(args.id);
+    const { Form } = context.models;
+    const form = await Form.findById(args.id);
 
     if (!form || !form.published) {
         return new NotFoundResponse(`Form with id "${args.id}" was not found!`);

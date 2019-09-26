@@ -1,8 +1,12 @@
 // @flow
 import { gql } from "apollo-server-lambda";
-import { dummyResolver, resolveUpdateSettings, resolveGetSettings } from "@webiny/api/graphql";
+import {
+    dummyResolver,
+    resolveUpdateSettings,
+    resolveGetSettings
+} from "@webiny/api/graphql/commodo";
 import { hasScope } from "@webiny/api-security";
-import GoogleTagManagerEntity from "./GoogleTagManagerSettings.entity";
+import googleTagManagerSettings from "./googleTagManagerSettings.model";
 
 export default [
     {
@@ -36,9 +40,7 @@ export default [
                 }
 
                 type GtmMutation {
-                    updateSettings(
-                        data: GtmSettingsInput
-                    ): GtmSettingsResponse
+                    updateSettings(data: GtmSettingsInput): GtmSettingsResponse
                 }
 
                 extend type Query {
@@ -57,10 +59,12 @@ export default [
                     googleTagManager: dummyResolver
                 },
                 GtmQuery: {
-                    getSettings: resolveGetSettings("GoogleTagManagerSettings")
+                    getSettings: resolveGetSettings(({ models }) => models.GoogleTagManagerSettings)
                 },
                 GtmMutation: {
-                    updateSettings: resolveUpdateSettings("GoogleTagManagerSettings")
+                    updateSettings: resolveUpdateSettings(
+                        ({ models }) => models.GoogleTagManagerSettings
+                    )
                 }
             }
         },
@@ -76,8 +80,10 @@ export default [
         }
     },
     {
-        type: "entity",
-        name: "entity-google-tag-manager-settings",
-        entity: GoogleTagManagerEntity
+        type: "api-page-builder-model",
+        name: "api-page-builder-model-google-tag-manager-settings",
+        model({ models, createBase }) {
+            models.GoogleTagManagerSettings = googleTagManagerSettings({ createBase });
+        }
     }
 ];

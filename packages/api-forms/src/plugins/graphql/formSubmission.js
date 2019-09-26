@@ -1,7 +1,9 @@
 // @flow
-import { resolveGet, resolveList } from "@webiny/api/graphql/crudResolvers";
+import { resolveGet, resolveList } from "@webiny/api/graphql/commodo/crudResolvers";
 import exportFormSubmissions from "./formSubmissionResolvers/exportFormSubmissions";
 import createFormSubmission from "./formSubmissionResolvers/createFormSubmission";
+
+const getFormSubmission = ctx => ctx.models.FormSubmission;
 
 export default {
     typeDefs: /* GraphQL*/ `type FormSubmission {
@@ -71,8 +73,8 @@ export default {
     `,
     resolvers: {
         FormsQuery: {
-            listFormSubmissions: resolveList("FormSubmission"),
-            getFormSubmission: resolveGet("FormSubmission")
+            listFormSubmissions: resolveList(getFormSubmission),
+            getFormSubmission: resolveGet(getFormSubmission)
         },
         FormsMutation: {
             createFormSubmission,

@@ -59,6 +59,10 @@ const getIcon = (rev: Object) => {
     }
 };
 
+const Div = ({ children }) => {
+    return <div>{children}</div>;
+};
+
 const Revision = ({ rev }: RevisionProps) => {
     const { icon, text: tooltipText } = getIcon(rev);
     const { getPagePreviewUrl } = usePageBuilderSettings();
@@ -123,7 +127,7 @@ const Revision = ({ rev }: RevisionProps) => {
                             </MenuItem>
 
                             {!rev.locked && (
-                                <React.Fragment>
+                                <Div>
                                     <MenuDivider />
                                     <MenuItem onClick={() => showConfirmation(deleteRevision)}>
                                         <ListItemGraphic>
@@ -131,7 +135,7 @@ const Revision = ({ rev }: RevisionProps) => {
                                         </ListItemGraphic>
                                         Delete
                                     </MenuItem>
-                                </React.Fragment>
+                                </Div>
                             )}
                         </Menu>
                     </ListItemMeta>

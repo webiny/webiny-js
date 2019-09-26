@@ -69,7 +69,10 @@ export default [
                 <Tab icon={<CodeIcon />} label="Typeform">
                     <Grid>
                         <Cell span={12}>
-                            <Bind name={"source.url"} validators={validation.create("required,url")}>
+                            <Bind
+                                name={"source.url"}
+                                validators={validation.create("required,url")}
+                            >
                                 <Input
                                     label={"Typeform URL"}
                                     description={"Enter a Typeform URL"}

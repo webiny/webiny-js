@@ -1,8 +1,8 @@
 // @flow
-import { ListResponse } from "@webiny/api/graphql/responses";
+import { ListResponse } from "@webiny/api/graphql/commodo/responses";
 
-export default (entityFetcher: Function) => async (root: any, args: Object, context: Object) => {
-    const entityClass = entityFetcher(context);
+export default async (root: any, args: Object, context: Object) => {
+    const { File } = context.models;
     const { page = 1, perPage = 10, sort = null, search = "", types = [], tags = [] } = args;
     const findArgs = { page, perPage, sort };
 
@@ -32,6 +32,6 @@ export default (entityFetcher: Function) => async (root: any, args: Object, cont
         findArgs.query = { $and };
     }
 
-    const data = await entityClass.find(findArgs);
+    const data = await File.find(findArgs);
     return new ListResponse(data, data.getMeta());
 };

@@ -87,7 +87,10 @@ const MailchimpElementAdvancedSettings = ({ Bind }: Object) => {
                             {apiKey && enabled ? (
                                 <>
                                     <Cell span={12}>
-                                        <Bind name={"settings.list"} validators={validation.create("required")}>
+                                        <Bind
+                                            name={"settings.list"}
+                                            validators={validation.create("required")}
+                                        >
                                             {({ value: id, onChange, ...rest }) => {
                                                 const options = (
                                                     get(
@@ -112,7 +115,10 @@ const MailchimpElementAdvancedSettings = ({ Bind }: Object) => {
                                         </Bind>
                                     </Cell>
                                     <Cell span={12}>
-                                        <Bind name={"settings.component"} validators={validation.create("required")}>
+                                        <Bind
+                                            name={"settings.component"}
+                                            validators={validation.create("required")}
+                                        >
                                             {({ onChange, value: name, ...rest }) => {
                                                 const options = getPlugins(
                                                     "pb-page-element-mailchimp-component"
@@ -185,7 +191,9 @@ const MailchimpElementAdvancedSettings = ({ Bind }: Object) => {
                                                         <>
                                                             <Cell span={12}>
                                                                 <Bind
-                                                                    validators={validation.create("required")}
+                                                                    validators={validation.create(
+                                                                        "required"
+                                                                    )}
                                                                     name={"apiKey"}
                                                                 >
                                                                     <Input label="API key" />

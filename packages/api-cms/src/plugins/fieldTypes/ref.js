@@ -1,6 +1,6 @@
 // @flow
 import { ObjectId } from "mongodb";
-import { ListResponse, ListErrorResponse } from "@webiny/api/graphql";
+import { ListResponse, ListErrorResponse } from "@webiny/api/graphql/commodo";
 import type { CmsFieldTypePlugin } from "@webiny/api-cms/types";
 import { createReadTypeName } from "@webiny/api-cms/utils/createTypeName";
 import createListArgs from "@webiny/api-cms/utils/createListArgs";
@@ -93,8 +93,7 @@ export default ({
             const { type } = field.settings;
 
             return (
-                field.fieldId +
-                `: ${type === "many" ? `[CmsManageRefMany]` : `[CmsManageRefOne]`}`
+                field.fieldId + `: ${type === "many" ? `[CmsManageRefMany]` : `[CmsManageRefOne]`}`
             );
         },
         createInputField({ field }) {
@@ -102,9 +101,7 @@ export default ({
 
             return (
                 field.fieldId +
-                `: ${
-                    type === "many" ? "[CmsManageRefManyInput]" : "[CmsManageRefOneInput]"
-                }`
+                `: ${type === "many" ? "[CmsManageRefManyInput]" : "[CmsManageRefOneInput]"}`
             );
         }
     }

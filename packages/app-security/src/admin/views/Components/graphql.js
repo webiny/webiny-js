@@ -2,7 +2,13 @@
 import gql from "graphql-tag";
 
 export const rolesAutoComplete = gql`
-    query LoadRoles($where: JSON, $sort: JSON, $page: Int, $perPage: Int, $search: SecurityRoleSearchInput) {
+    query LoadRoles(
+        $where: JSON
+        $sort: JSON
+        $page: Int
+        $perPage: Int
+        $search: SecurityRoleSearchInput
+    ) {
         security {
             roles: listRoles(
                 where: $where
@@ -21,7 +27,13 @@ export const rolesAutoComplete = gql`
 `;
 
 export const groupsAutoComplete = gql`
-    query LoadGroups($where: JSON, $sort: JSON, $page: Int, $perPage: Int, $search: SecurityGroupSearchInput) {
+    query LoadGroups(
+        $where: JSON
+        $sort: JSON
+        $page: Int
+        $perPage: Int
+        $search: SecurityGroupSearchInput
+    ) {
         security {
             groups: listGroups(
                 where: $where

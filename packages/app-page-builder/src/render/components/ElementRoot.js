@@ -39,7 +39,7 @@ class ElementRoot extends React.Component<*> {
         const attributes = this.attributePlugins.reduce((attributes, pl) => {
             return pl.renderAttributes({ element: shallowElement, attributes });
         }, {});
-        
+
         const classNames = get(element, "data.settings.className", "");
 
         const getAllClasses = (...extraClasses) => {

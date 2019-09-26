@@ -8,7 +8,7 @@ const imageGroup: PbElementGroupPluginType = {
     type: "pb-editor-page-element-group",
     group: {
         title: "Image",
-        icon: <ImageGroupIcon/>
+        icon: <ImageGroupIcon />
     }
 };
 

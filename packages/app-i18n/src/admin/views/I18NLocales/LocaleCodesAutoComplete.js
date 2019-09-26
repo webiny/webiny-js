@@ -11,7 +11,7 @@ const LocaleCodesAutoComplete = props => {
         options.push(props.value);
     }
 
-    return <AutoComplete {...props} {...autoComplete} options={options} useSimpleValues  />;
+    return <AutoComplete {...props} {...autoComplete} options={options} useSimpleValues />;
 };
 
 export default LocaleCodesAutoComplete;

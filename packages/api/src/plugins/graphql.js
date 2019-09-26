@@ -1,7 +1,7 @@
 // @flow
 import { type GraphQLSchemaPluginType } from "@webiny/api/types";
 import { gql } from "apollo-server-lambda";
-import { dummyResolver } from "../graphql";
+import { dummyResolver } from "../graphql/commodo";
 
 export default ({
     type: "graphql-schema",

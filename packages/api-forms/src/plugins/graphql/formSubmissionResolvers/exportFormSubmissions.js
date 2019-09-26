@@ -1,5 +1,5 @@
 // @flow
-import { Response, ErrorResponse, NotFoundResponse } from "@webiny/api/graphql";
+import { Response, ErrorResponse, NotFoundResponse } from "@webiny/api/graphql/commodo";
 const { parseAsync } = require("json2csv");
 import uploadFile from "./uploadFile";
 
@@ -7,7 +7,7 @@ export default async (root: any, args: Object, context: Object) => {
     const { ids, form, parent } = args;
     let submissions = [];
 
-    const { FormSubmission } = context.getEntities();
+    const { FormSubmission } = context.models;
     if (ids) {
         submissions = await FormSubmission.find({ query: { id: { $in: args.ids } } });
     } else {

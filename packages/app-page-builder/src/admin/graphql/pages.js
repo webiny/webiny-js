@@ -165,7 +165,7 @@ export const LIST_ELEMENTS = gql`
 `;
 
 export const CREATE_ELEMENT = gql`
-    mutation PbCreateElement($data: ElementInput!) {
+    mutation PbCreateElement($data: PbElementInput!) {
         pageBuilder {
             element: createElement(data: $data) {
                 data {
@@ -178,7 +178,7 @@ export const CREATE_ELEMENT = gql`
 `;
 
 export const UPDATE_ELEMENT = gql`
-    mutation PbUpdateElement($id: ID!, $data: UpdateElementInput!) {
+    mutation PbUpdateElement($id: ID!, $data: PbUpdateElementInput!) {
         pageBuilder {
             element: updateElement(id: $id, data: $data) {
                 data {

@@ -83,7 +83,10 @@ const FormElementAdvancedSettings = ({ Bind, data }: Object) => {
                     return (
                         <Grid>
                             <Cell span={12}>
-                                <Bind name={"settings.form.parent"} validators={validation.create("required")}>
+                                <Bind
+                                    name={"settings.form.parent"}
+                                    validators={validation.create("required")}
+                                >
                                     {({ onChange }) => {
                                         return (
                                             <AutoComplete
@@ -97,7 +100,10 @@ const FormElementAdvancedSettings = ({ Bind, data }: Object) => {
                                 </Bind>
                             </Cell>
                             <Cell span={12}>
-                                <Bind name={"settings.form.revision"} validators={validation.create("required")}>
+                                <Bind
+                                    name={"settings.form.revision"}
+                                    validators={validation.create("required")}
+                                >
                                     {({ onChange }) => {
                                         const parentSelected = !!options.parents.value;
                                         const noPublished =

@@ -1,4 +1,4 @@
-import createPaginationMeta from "@webiny/entity/createPaginationMeta";
+import { createPaginationMeta } from "@webiny/commodo";
 import createCollectionName from "@webiny/api-cms/utils/createCollectionName";
 import createMongoSorters from "@webiny/api-cms/utils/createMongoSorters";
 import createMongoQuery from "@webiny/api-cms/utils/createMongoQuery";
@@ -14,7 +14,7 @@ export default async function findEntries({ model, args, context, info }) {
     if (args.locale) {
         localContext.locale = args.locale;
     }
-    
+
     parseBoolean(args);
     let { where = {}, sort = [], perPage, page } = args;
     page = isNaN(page) || page < 1 ? 1 : page;
@@ -22,7 +22,7 @@ export default async function findEntries({ model, args, context, info }) {
 
     const match = createMongoQuery(model, where, localContext);
     const sorters = createMongoSorters(model, sort);
-    
+
     const entries = await collection
         .find(match)
         .sort(sorters)

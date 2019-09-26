@@ -9,8 +9,7 @@ import resolveCreateUser from "./userResolvers/createUser";
 import resolveUpdateUser from "./userResolvers/updateUser";
 import resolveDeleteUser from "./userResolvers/deleteUser";
 
-const userFetcher = ctx => ctx.getEntity("SecurityUser");
-const userSettingsFetcher = ctx => ctx.getEntity("SecurityUserSettings");
+const userFetcher = ctx => ctx.models.SecurityUser;
 
 export default {
     typeDefs: /* GraphQL */ `

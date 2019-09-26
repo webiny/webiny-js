@@ -4,7 +4,7 @@ import {
     resolveDelete,
     resolveGet,
     resolveList
-} from "@webiny/api/graphql";
+} from "@webiny/api/graphql/commodo";
 import createRevisionFrom from "./pageResolvers/createRevisionFrom";
 import listPages from "./pageResolvers/listPages";
 import listPublishedPages from "./pageResolvers/listPublishedPages";
@@ -16,8 +16,8 @@ import getErrorPage from "./pageResolvers/getErrorPage";
 import searchTags from "./pageResolvers/searchTags";
 import oembed from "./pageResolvers/oembed";
 
-const pageFetcher = ctx => ctx.getEntity("PbPage");
-const elementFetcher = ctx => ctx.getEntity("PbPageElement");
+const pageFetcher = ctx => ctx.models.PbPage;
+const elementFetcher = ctx => ctx.models.PbPageElement;
 
 export default {
     typeDefs: /* GraphQL*/ `
@@ -257,7 +257,7 @@ export default {
         },
     `,
     resolvers: {
-       PbPage: {
+        PbPage: {
             createdBy(page) {
                 return { __typename: "SecurityUser", id: page.createdBy };
             },
@@ -265,9 +265,9 @@ export default {
                 return { __typename: "SecurityUser", id: page.updatedBy };
             }
         },
-       PbQuery: {
+        PbQuery: {
             getPage: resolveGet(pageFetcher),
-            listPages: listPages(pageFetcher),
+            listPages: listPages,
             listPublishedPages,
             getPublishedPage,
             getHomePage,
@@ -277,7 +277,7 @@ export default {
             searchTags: searchTags,
             oembedData: oembed
         },
-       PbMutation: {
+        PbMutation: {
             // Creates a new page
             createPage: resolveCreate(pageFetcher),
             // Deletes the entire page
@@ -303,7 +303,7 @@ export default {
             // Deletes an element
             deleteElement: resolveDelete(elementFetcher)
         },
-       PbPageSettings: {
+        PbPageSettings: {
             _empty: () => ""
         }
     }

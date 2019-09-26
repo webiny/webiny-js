@@ -4,6 +4,6 @@ export default {
     pattern: {
         name: "upperCase",
         regex: `^([A-Z]*)$`,
-        flags: "",
+        flags: ""
     }
 };

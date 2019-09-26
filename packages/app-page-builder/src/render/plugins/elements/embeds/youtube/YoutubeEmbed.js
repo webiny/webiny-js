@@ -41,7 +41,7 @@ const YoutubeEmbed = props => {
         <div className={outerWrapper}>
             <div className={innerWrapper}>
                 <div
-                    id={ element.id}
+                    id={element.id}
                     className={scaleableVideo}
                     dangerouslySetInnerHTML={{ __html: get(element, "data.oembed.html") || "" }}
                 />

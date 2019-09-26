@@ -1,6 +1,6 @@
 // @flow
 import { fetchEmbed, findProvider } from "./oembed/index";
-import { ErrorResponse, Response } from "@webiny/api/graphql";
+import { ErrorResponse, Response } from "@webiny/api/graphql/commodo";
 
 export default async (_: Object, args: Object) => {
     try {

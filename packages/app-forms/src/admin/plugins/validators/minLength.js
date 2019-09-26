@@ -15,7 +15,10 @@ export default {
             return (
                 <Grid>
                     <Cell span={12}>
-                        <Bind name={"settings.value"} validators={validation.create("required,numeric")}>
+                        <Bind
+                            name={"settings.value"}
+                            validators={validation.create("required,numeric")}
+                        >
                             <Input
                                 type={"number"}
                                 label={"Value"}

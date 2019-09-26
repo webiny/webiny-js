@@ -7,11 +7,16 @@
     "url": "https://github.com/webiny/webiny-js.git"
   },
   "description": "The API for the Webiny Page Builder (webiny-app-page-builder) app.",
-  "author": "Pavel Denisjuk",
+  "contributors": [
+    "Pavel Denisjuk <pavel@webiny.com>",
+    "Sven Al Hamad <sven@webiny.com>",
+    "Adrian Smijulj <adrian@webiny.com>"
+  ],
   "license": "MIT",
   "dependencies": {
     "@babel/runtime": "^7.5.5",
     "@webiny/api": "^1.0.0",
+    "@webiny/commodo": "^1.0.0",
     "fs-extra": "^7.0.1",
     "lodash": "^4.17.11",
     "mdbid": "^1.0.0",

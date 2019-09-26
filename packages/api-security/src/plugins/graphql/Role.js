@@ -5,9 +5,9 @@ import {
     resolveGet,
     resolveList,
     resolveUpdate
-} from "@webiny/api/graphql";
+} from "@webiny/api/graphql/commodo";
 
-const roleFetcher = ctx => ctx.getEntity("SecurityRole");
+const roleFetcher = ctx => ctx.models.SecurityRole;
 
 export default {
     /* GraphQL */

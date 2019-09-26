@@ -53,15 +53,11 @@ class Checkbox extends React.Component<Props> {
                     label={label}
                 />
                 {validation.isValid === false && (
-                    <FormElementMessage error>
-                        {validation.message}
-                    </FormElementMessage>
+                    <FormElementMessage error>{validation.message}</FormElementMessage>
                 )}
 
                 {validation.isValid !== false && description && (
-                    <FormElementMessage>
-                        {description}
-                    </FormElementMessage>
+                    <FormElementMessage>{description}</FormElementMessage>
                 )}
             </React.Fragment>
         );

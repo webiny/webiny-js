@@ -3,13 +3,11 @@ import { gql } from "apollo-server-lambda";
 import {
     dummyResolver,
     resolveGetSettings,
-    resolveUpdateSettings,
-    ListErrorResponse,
-    ListResponse,
-    ErrorResponse
-} from "@webiny/api/graphql";
+    resolveUpdateSettings
+} from "@webiny/api/graphql/commodo";
+import { ListErrorResponse, ListResponse, ErrorResponse } from "@webiny/api/graphql/commodo";
 import { hasScope } from "@webiny/api-security";
-import MailchimpSettingsEntity from "./MailchimpSettings.entity";
+import mailchimpSettings from "./mailchimpSettings.model";
 import MailchimpApi from "./MailchimpApi";
 
 export default [
@@ -116,7 +114,7 @@ export default [
                             return new ListErrorResponse(e);
                         }
                     },
-                    getSettings: resolveGetSettings("MailchimpSettings")
+                    getSettings: resolveGetSettings(({ models }) => models.MailchimpSettings)
                 },
                 MailchimpMutation: {
                     addToList: async (
@@ -164,7 +162,7 @@ export default [
                             });
                         }
                     },
-                    updateSettings: resolveUpdateSettings("MailchimpSettings")
+                    updateSettings: resolveUpdateSettings(({ models }) => models.MailchimpSettings)
                 }
             }
         },
@@ -180,8 +178,10 @@ export default [
         }
     },
     {
-        type: "entity",
-        name: "entity-mailchimp-settings",
-        entity: MailchimpSettingsEntity
+        type: "api-page-builder-model",
+        name: "api-page-builder-model-mailchimp-settings",
+        model({ models, createBase }) {
+            models.MailchimpSettings = mailchimpSettings({ createBase });
+        }
     }
 ];

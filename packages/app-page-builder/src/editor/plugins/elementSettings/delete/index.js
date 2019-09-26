@@ -10,7 +10,11 @@ export default {
     renderAction() {
         return (
             <DeleteAction>
-                <Action tooltip={"Delete element"} shortcut={["Backspace", "Delete"]} icon={<DeleteIcon />} />
+                <Action
+                    tooltip={"Delete element"}
+                    shortcut={["Backspace", "Delete"]}
+                    icon={<DeleteIcon />}
+                />
             </DeleteAction>
         );
     }

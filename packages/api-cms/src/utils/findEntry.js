@@ -19,7 +19,7 @@ export default async function findEntry({ model, args, context }) {
 
     const match = createMongoQuery(model, where, localContext);
     const sorters = createMongoSorters(model, sort);
-    
+
     const [entry] = await collection
         .find(match)
         .sort(sorters)

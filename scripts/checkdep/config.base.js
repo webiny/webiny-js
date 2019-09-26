@@ -16,9 +16,7 @@ module.exports = {
         "packages/app-cms",
         "packages/app-admin",
         "packages/ui",
-        "packages/validation",
-        "packages/entity",
-        "packages/entity-mongodb"
+        "packages/validation"
     ],
     ignoredDirs: ["/node_modules/"]
 };

@@ -1,6 +1,6 @@
 // @flow
 import { merge } from "lodash";
-import { dummyResolver } from "@webiny/api/graphql";
+import { dummyResolver } from "@webiny/api/graphql/commodo";
 import { hasScope } from "@webiny/api-security";
 import gql from "graphql-tag";
 import {
@@ -19,7 +19,7 @@ export default {
     name: "graphql-schema-forms",
     namespace: "forms",
     schema: {
-        typeDefs: gql`    
+        typeDefs: gql`
             ${I18NStringValueType("")}
             ${I18NJSONValueType("")}
             ${I18NStringValueInput("")}

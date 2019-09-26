@@ -52,7 +52,10 @@ export default (): Array<PbElementPluginType> => [
                 <Tab icon={<MediaIcon />} label="YouTube">
                     <Grid>
                         <Cell span={12}>
-                            <Bind name={"source.url"} validators={validation.create("required,url")}>
+                            <Bind
+                                name={"source.url"}
+                                validators={validation.create("required,url")}
+                            >
                                 <Input label={"Video URL"} description={"Enter a video URL"} />
                             </Bind>
                         </Cell>

@@ -16,6 +16,7 @@ System.config({
         "@webiny/api/*": "./packages/api/src/*",
         "@webiny/api-files/*": "./packages/api-files/src/*",
         "@webiny/api-headless/*": "./packages/api-headless/src/*",
+        "@webiny/commodo/*": "./packages/commodo/src/*",
         "@webiny/install/*": "./packages/install/src/*",
         "@webiny/ui/*": "./packages/ui/src/*",
         "@webiny/plugins/*": "./packages/plugins/src/*",
@@ -27,7 +28,6 @@ System.config({
         "@webiny/app-mailchimp/*": "./packages/app-mailchimp/src/*",
         "@webiny/api-mailchimp/*": "./packages/api-mailchimp/src/*",
         "@webiny/app-typeform/*": "./packages/app-typeform/src/*",
-        "@webiny/api-typeform/*": "./packages/api-typeform/src/*",
-        "@webiny/entity/*": "./packages/entity/src/*"
+        "@webiny/api-typeform/*": "./packages/api-typeform/src/*"
     }
 });
