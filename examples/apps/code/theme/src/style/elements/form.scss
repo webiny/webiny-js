@@ -1,0 +1,154 @@
+.webiny-pb-form{
+    width: 100%;
+    padding: 0 5px 5px 5px;
+    box-sizing: border-box;
+    background-color: $webiny-pb-theme-surface;
+
+    .webiny-pb-layout-row, .webiny-pb-layout-column{
+        width: 100%;
+        padding: 0;
+    }
+
+    .webiny-pb-layout-column{
+        padding: 15px;
+
+        @include desktop{
+            &:first-child{
+                padding-left: 0;
+            }
+    
+            &:last-child{
+                padding-right: 0;
+            }
+        }
+    }
+
+    &-tos{
+        margin: 15px 0 25px 0;
+    }
+
+    &-recaptcha{
+        margin: 0 0 20px 0;
+        padding: 0 15px;
+        @include desktop{
+            padding: 0;
+        }
+    }
+
+    &-submit-button{
+        padding: 0 15px;
+        @include desktop{
+            padding: 0;
+        }
+    }
+
+    &__success-message{
+        text-align: center;
+    }
+
+    &-field{
+        width: 100%;
+        box-sizing: border-box;
+        font-size: 1rem;
+        background-color: $webiny-pb-theme-surface;
+
+        &__input, &__select, &__textarea{
+            font-size: 1rem;
+            border: 1px solid $webiny-pb-theme-background;
+            background-color: $webiny-pb-theme-background;
+            width: 100%;
+            padding: 10px;
+            border-radius: $webiny-pb-theme-border-radius;
+            box-sizing: border-box;
+            transition: border-color .15s ease-in-out,box-shadow .15s ease-in-out;
+            &:focus{
+                border-color: $webiny-pb-theme-secondary;
+                box-shadow: 0 0 0 0.2rem rgba(0,123,255,.25);
+                outline: none;
+            }
+        }
+
+        &__select{
+            height: 40px;
+            -webkit-appearance: none;
+            position: relative;
+            background-image: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0Ij48cGF0aCBmaWxsPSJub25lIiBkPSJNMCAwaDI0djI0SDBWMHoiLz48cGF0aCBkPSJNOC43MSAxMS43MWwyLjU5IDIuNTljLjM5LjM5IDEuMDIuMzkgMS40MSAwbDIuNTktMi41OWMuNjMtLjYzLjE4LTEuNzEtLjcxLTEuNzFIOS40MWMtLjg5IDAtMS4zMyAxLjA4LS43IDEuNzF6Ii8+PC9zdmc+");
+            background-repeat: no-repeat;
+            background-position: center right;
+        }
+
+        &__radio-group, &__checkbox-group{
+            width: 100%;
+        }
+
+        &__radio, &__checkbox{
+            width: 100%;
+            margin-top: 5px;
+            margin-bottom: 5px;
+            margin: 5px 50px 5px 2px;
+            display: flex;
+            align-items: center;
+            &-label{
+                margin-left: 10px;
+                padding-top: 2px;
+                line-height: 100%;
+            }
+            &-input{
+                font-size: 1.5rem;
+                margin-left: 0;
+                line-height: 100%;
+                background-color: $webiny-pb-theme-background;
+                width: 25px;
+                height: 25px;
+                border-radius: 50%;
+                -webkit-appearance: none;
+                &:focus{
+                    border-color: $webiny-pb-theme-secondary;
+                    box-shadow: 0 0 0 0.2rem rgba(0,123,255,.25);
+                    outline: none;
+                }
+                &:checked{
+                    background-image: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0Ij48cGF0aCBmaWxsPSJub25lIiBkPSJNMCAwaDI0djI0SDBWMHoiLz48cGF0aCBkPSJNMTIgMkM2LjQ4IDIgMiA2LjQ4IDIgMTJzNC40OCAxMCAxMCAxMCAxMC00LjQ4IDEwLTEwUzE3LjUyIDIgMTIgMnptMCAxOGMtNC40MiAwLTgtMy41OC04LThzMy41OC04IDgtOCA4IDMuNTggOCA4LTMuNTggOC04IDh6Ii8+PGNpcmNsZSBjeD0iMTIiIGN5PSIxMiIgcj0iNSIvPjwvc3ZnPg==");
+                    background-repeat: no-repeat;
+                    background-size: cover;
+                }
+            }
+        }
+
+        &__checkbox{
+            &-input{
+                border-radius: $webiny-pb-theme-border-radius;
+                &:checked{
+                    background-image: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0Ij48cGF0aCBmaWxsPSJub25lIiBkPSJNMCAwaDI0djI0SDBWMHoiLz48cGF0aCBkPSJNMTkgM0g1Yy0xLjEgMC0yIC45LTIgMnYxNGMwIDEuMS45IDIgMiAyaDE0YzEuMSAwIDItLjkgMi0yVjVjMC0xLjEtLjktMi0yLTJ6bS04LjI5IDEzLjI5Yy0uMzkuMzktMS4wMi4zOS0xLjQxIDBMNS43MSAxMi43Yy0uMzktLjM5LS4zOS0xLjAyIDAtMS40MS4zOS0uMzkgMS4wMi0uMzkgMS40MSAwTDEwIDE0LjE3bDYuODgtNi44OGMuMzktLjM5IDEuMDItLjM5IDEuNDEgMCAuMzkuMzkuMzkgMS4wMiAwIDEuNDFsLTcuNTggNy41OXoiLz48L3N2Zz4=");
+                }
+            }
+        }
+
+        &__label{
+            width: 100%;
+            display: inline-block;
+            line-height: 100%;
+            margin: 0 0 5px 1px;
+            @include mobile{
+                text-align: left !important;
+            }
+        }
+        &__helper-text{
+            font-size: 0.8rem;
+            margin-left: 2px;
+            margin-top: 5px;
+            color: $webiny-pb-theme-text-secondary;
+            @include mobile{
+                text-align: left !important;
+            }
+            &--error{
+                color: $webiny-pb-theme-primary;
+            }
+        }
+    }
+
+    .webiny-pb-page-element-button{
+        width: 100%;
+    }
+
+}

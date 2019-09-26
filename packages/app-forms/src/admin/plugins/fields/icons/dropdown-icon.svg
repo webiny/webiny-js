@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="815px" height="815px" viewBox="0 0 815 815" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 55.2 (78181) - https://sketchapp.com -->
+    <title>input</title>
+    <desc>Created with Sketch.</desc>
+    <g id="Form-Icons" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Artboard">
+            <g id="input">
+                <polygon id="Path" stroke="none" points="0 0 815 0 815 815 0 815"></polygon>
+                <rect id="Rectangle" stroke="currentColor" stroke-width="50" x="57" y="282" width="700" height="250" rx="8"></rect>
+                <path d="M524,329 L524,503" id="Line" stroke="currentColor" stroke-width="50" stroke-linecap="square"></path>
+                <path d="M594.839903,408.340773 L628.384973,442.178552 C633.436161,447.273816 641.595772,447.273816 646.646961,442.178552 L680.19203,408.340773 C688.351642,400.109962 682.523348,386 670.996278,386 L603.906138,386 C592.379067,386 586.680291,400.109962 594.839903,408.340773 Z" id="Path" fill="currentColor" fill-rule="nonzero"></path>
+            </g>
+        </g>
+    </g>
+</svg>

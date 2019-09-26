@@ -1,0 +1,20 @@
+// make images responsive
+img{
+  @include mobile{
+    max-width: 100%;
+  }
+}
+
+.webiny-pb-page-element-image{
+  overflow: hidden;
+  box-sizing: border-box;
+  //display: flex; removed because of testimonial #2
+  img{
+    max-width: 100%;
+  }
+
+  @include mobile{
+    display: block;
+    text-align: center !important;
+  }
+}

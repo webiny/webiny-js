@@ -1,13 +1,21 @@
 {
-  "changelog": {
-    "repo": "webiny/webiny-js",
-    "labels": {
-      "tag: new feature": ":rocket: New Feature",
-      "tag: breaking change": ":boom: Breaking Change",
-      "tag: bug fix": ":bug: Bug Fix",
-      "tag: enhancement": ":nail_care: Enhancement",
-      "tag: documentation": ":memo: Documentation",
-      "tag: internal": ":house: Internal"
+  "packages": [
+    "packages/*",
+    "components/*"
+  ],
+  "version": "independent",
+  "command": {
+    "version": {
+      "preid": "next",
+      "ignoreChanges": ["scripts/**", ",**/__fixtures__/**", "**/__tests__/**", "**/*.md"],
+      "allowBranch": ["master", "refactor/scoped-packages"],
+      "conventionalCommits": true,
+      "message": "New release :tada: :rocket:"
+    },
+    "publish": {
+      "contents": "dist",
+      "registry": "http://localhost:4800",
+      "createRelease": "github"
     }
   }
 }

@@ -6,16 +6,15 @@ const getPackages = require("get-yarn-workspaces");
 
 const blacklist = [
     // Client
-    "webiny-app",
-    "webiny-app-admin",
-    "webiny-app-cms",
-    "webiny-ui",
-    "webiny-form",
-    "webiny-react-router"
+    "app",
+    "app-admin",
+    "app-cms",
+    "ui",
+    "form"
 ];
 
 /**
- * Get a list of packages in form: `packages/webiny-ui` and `independent/webiny-app-....`
+ * Get a list of packages in form: `packages/ui`
  * @returns Array<String>
  */
 function listPackages() {

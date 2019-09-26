@@ -1,0 +1,10 @@
+{
+  "private": true,
+  "name": "@webiny/webpack-externals",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "dependencies": {
+    "webpack-node-externals": "^1.7.2"
+  }
+}

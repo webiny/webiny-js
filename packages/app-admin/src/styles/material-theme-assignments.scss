@@ -1,0 +1,307 @@
+// top app bar should use theme-surface as the fill color
+.mdc-top-app-bar {
+  @include mdc-top-app-bar-fill-color($mdc-theme-surface)
+}
+
+.mdc-top-app-bar.primary {
+  @include mdc-top-app-bar-fill-color($mdc-theme-primary)
+}
+
+// elevation should use theme-surface as fill color so it can be used as surface
+.mdc-elevation--z1{
+  @include mdc-elevation(1, $mdc-theme-on-surface);
+}
+
+.mdc-elevation--z2{
+  @include mdc-elevation(2, $mdc-theme-on-surface);
+}
+
+.mdc-elevation--z3{
+  @include mdc-elevation(3, $mdc-theme-on-surface);
+}
+
+.mdc-elevation--z1,
+.mdc-elevation--z2,
+.mdc-elevation--z3,
+.mdc-elevation--z4,
+.mdc-elevation--z5,
+.mdc-elevation--z6,
+.mdc-elevation--z7,
+.mdc-elevation--z8,
+.mdc-elevation--z9{
+  background-color: $mdc-theme-surface;
+}
+
+// button styles
+.mdc-button{
+  @include mdc-button-shape-radius(2px);
+  .mdc-button__label{
+    display: flex;
+    align-items: center;
+  }
+}
+
+// set icon colors
+.mdc-icon, .mdc-icon-button {
+  @include mdc-icon-button-ink-color($mdc-theme-text-secondary-on-background)
+}
+
+// drawer
+.mcd-drawer {
+  @include mdc-drawer-title-ink-color($mdc-theme-text-primary-on-background);
+  @include mdc-drawer-subtitle-ink-color($mdc-theme-text-primary-on-background);
+  @include mdc-drawer-item-icon-ink-color($mdc-theme-text-primary-on-background);
+  @include mdc-drawer-item-text-ink-color($mdc-theme-text-primary-on-background);
+  @include mdc-drawer-surface-fill-color($mdc-theme-surface);
+  @include mdc-drawer-item-shape-radius(0);
+}
+
+// fix for drawer positioning
+.mdc-drawer{
+  background-color: $mdc-theme-surface;
+  &.mdc-drawer--modal.mdc-drawer--open{
+    top: 0;
+    background-color: $mdc-theme-surface;
+  }
+}
+
+// fix drawer display so we can have a nice drawer footer
+.mdc-drawer--modal.mdc-drawer--open{
+  display: flex;
+}
+
+// tabs
+.mdc-tab-bar{
+  @include mdc-tab-bar-width('100%');
+
+  .mdc-tab{
+    @include mdc-tab-fixed-width('100px');
+    @include mdc-tab-text-label-color($mdc-theme-text-primary-on-background);
+    @include mdc-tab-icon-color($mdc-theme-text-primary-on-background);
+
+    // fixes tab width
+    flex: 1 0;
+  }
+
+  .mdc-tab-indicator{
+    @include mdc-tab-indicator-underline-color($mdc-theme-primary);
+  }
+}
+
+// list
+.mdc-list{
+  @include mdc-list-item-primary-text-ink-color($mdc-theme-text-primary-on-background);
+  @include mdc-list-item-secondary-text-ink-color($mdc-theme-text-secondary-on-background);
+  @include mdc-list-item-graphic-ink-color($mdc-theme-text-secondary-on-background);
+  @include mdc-list-item-meta-ink-color($mdc-theme-text-secondary-on-background);
+  @include mdc-list-divider-color($mdc-theme-on-background);
+  @include mdc-list-group-subheader-ink-color($mdc-theme-text-primary-on-background);
+  @include mdc-list-item-shape-radius(0);
+
+  .mdc-list-item{
+    color: $mdc-theme-text-primary-on-background;
+  }
+
+  .mdc-list-item:hover,
+  .mdc-list-item::after,
+  .mdc-list-item::before{
+    background-color: transparent;
+  }
+  &:not(.mdc-list--non-interactive){
+    .mdc-list-item:hover{
+      background-color: $mdc-theme-text-hint-on-dark;
+      cursor: pointer;
+    }
+    .mdc-list-item::after,
+    .mdc-list-item::before{
+      background-color: $mdc-theme-text-primary-on-background;
+    }
+  }
+}
+
+// switch
+.mdc-switch{
+  @include mdc-switch-toggled-off-track-color($mdc-theme-on-surface);
+  margin-left: 5px;
+  margin-right: 10px;
+}
+
+// menu
+.mdc-menu{
+  background-color: $mdc-theme-surface;
+}
+
+/*
+Fix the width of input components when inside grids
+ */
+.mdc-text-field {
+  width: 100%;
+  @include mdc-text-field-shape-radius(0);
+  @include mdc-text-field-textarea-shape-radius(0);
+  @include mdc-text-field-fill-color($mdc-theme-on-background);
+  @include mdc-text-field-label-color($mdc-theme-text-primary-on-background)	
+  @include mdc-text-field-ink-color($mdc-theme-on-surface)
+  &.mdc-text-field--textarea{
+    textarea{
+      padding-top: 25px;
+    }
+    .mdc-floating-label.mdc-floating-label{
+      margin-left: 11px;
+      top: 35px;
+    }
+    &.--focused{
+      .mdc-floating-label.mdc-floating-label{
+        top: 0px;
+      }
+    }
+  }
+  &.mdc-text-field--disabled{
+    background-color: $mdc-theme-background;
+    opacity: 0.55;
+    .mdc-text-field__input{
+      color: $mdc-theme-text-primary-on-background;
+      &::placeholder{
+        color: $mdc-theme-text-primary-on-background;
+      }
+    }
+  }
+  .mdc-text-field__input{
+    width: 100%;
+    resize: none;
+    //border: 1px solid $mdc-theme-on-background;
+  }
+}
+
+// textfield helper - color fix
+.mdc-text-field-helper-text{
+  margin-left: 2px !important;
+  color: $mdc-theme-text-secondary-on-background;
+  &--error{
+    color: $webiny-theme-dark-primary !important;
+  }
+}
+
+// dialog
+.mdc-dialog{
+  .mdc-dialog__container{
+    width: 100%;
+  }
+  .mdc-dialog__surface{
+    border-radius: 0px;
+    max-width: 875px;
+    position: relative;
+    .mdc-dialog__title{
+      background-color: $mdc-theme-secondary;
+      padding-bottom: 24px;
+      font-size: 1.4rem;
+      font-weight: 600;
+      color: $mdc-theme-on-secondary;
+    }
+    .mdc-dialog__content{
+      color: $mdc-theme-text-primary-on-background;
+      max-height: 70vh;
+      overflow: auto;
+      margin-top: 0;
+      padding-top: 24px;
+      background-color: $mdc-theme-surface;
+
+      // add options for when tabs are inside the body
+      >.webiny-ui-tabs{
+        margin: -24px;
+        >.mdc-tab-bar{
+          position: absolute;
+          z-index: 10;
+          @include mdc-tab-bar-width(100%);
+          background-color: $mdc-theme-secondary;
+          .mdc-tab{
+            @include mdc-tab-text-label-color($mdc-theme-on-secondary);
+            @include mdc-tab-icon-color($mdc-theme-on-secondary);
+            @include mdc-tab-fixed-width(100px);
+            justify-content: flex-start;
+            font-weight: 600;
+          }
+          .mdc-tab-indicator{
+            padding-bottom: 5px;
+            margin-top: -1px;
+            @include mdc-tab-indicator-underline-color($mdc-theme-on-secondary);
+            background-color: $mdc-theme-secondary;
+          }
+        }
+        >.webiny-ui-tabs__content{
+          padding-top: 50px;
+          padding-bottom: 25px;
+        }
+      }
+
+    }
+    .mdc-dialog__actions{
+      border-top: 1px solid $mdc-theme-on-background;
+      background-color: $mdc-theme-surface;
+      padding: 24px;
+    }
+  }
+  &.mdc-dialog--open .mdc-dialog__scrim{
+    opacity: 0.7;
+    background-color: var(--mdc-theme-on-surface);
+  }
+}
+
+// select
+.mdc-select {
+  width: 100%;
+  @include mdc-select-ink-color($mdc-theme-text-primary-on-background);
+  @include mdc-select-label-color($mdc-theme-text-secondary-on-background);
+  @include mdc-select-bottom-line-color($mdc-theme-text-secondary-on-background);
+  @include mdc-select-hover-bottom-line-color($mdc-theme-text-primary-on-background);
+  @include mdc-select-container-fill-color($mdc-theme-on-background);
+  @include mdc-select-shape-radius(0);
+  @include mdc-select-outline-shape-radius(2);
+
+  /*
+  Fix for select box appearance. For some reason browser prefix css attributes are striped away.
+   */
+  .mdc-select__native-control{
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    border-radius: 2px;
+  }
+
+  &.mdc-select--box {
+    border-radius: 2px;
+    .mdc-select__native-control{
+      padding-top: 10px;
+    }
+  }
+
+  .mdc-select__dropdown-icon{
+    bottom: 50%;
+    transform: translateY(50%);
+  }
+}
+
+// checkbox
+.mdc-checkbox{
+  @include mdc-checkbox-container-colors('text-secondary-on-background')
+}
+
+// radio button
+.mdc-radio{
+  @include mdc-radio-unchecked-stroke-color('text-secondary-on-background')
+}
+
+// snackbar
+.mdc-snackbar	{
+  @include mdc-snackbar-shape-radius(2px);
+  @include mdc-snackbar-z-index(1000);
+}
+
+// when grid is inside another grid cell, child grid should not have any padding
+.mdc-layout-grid{
+  >.mdc-layout-grid__inner{
+    >.mdc-layout-grid__cell{
+      >.mdc-layout-grid{
+        padding: 0;
+      }
+    }
+  }
+}

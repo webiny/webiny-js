@@ -33,7 +33,7 @@ async function publishPackages() {
     logger.log(`Publishing packages %s`, version);
     const nodeModulesRoot = path.resolve("build/node_modules");
 
-    const paths = glob.sync("webiny-*", { cwd: nodeModulesRoot });
+    const paths = glob.sync("*", { cwd: nodeModulesRoot });
 
     const updateDeps = (deps, packages, version) => {
         each(deps, (v, dep) => {

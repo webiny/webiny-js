@@ -1,0 +1,29 @@
+{
+  "name": "@webiny/project-utils",
+  "version": "1.0.0",
+  "main": "index.js",
+  "description": "A collection of utilities for Webiny project.",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/webiny/webiny-js.git"
+  },
+  "author": "Pavel Denisjuk <pavel@webiny.com>",
+  "contributors": [
+    "Sven Al Hamad <sven@webiny.com>",
+    "Adrian Smijulj <adrian@webiny.com>"
+  ],
+  "dependencies": {
+    "@hot-loader/react-dom": "^16.9.0",
+    "@rescripts/utilities": "^0.0.5",
+    "get-yarn-workspaces": "^1.0.2",
+    "lodash.get": "^4.4.2",
+    "lodash.isobject": "^3.0.2",
+    "lodash.set": "^4.3.2",
+    "read-json-sync": "^2.0.1"
+  },
+  "license": "MIT",
+  "scripts": {
+    "build": "rm -rf dist && mkdir dist && cp -r aliases app-babel cra packages package.json dist/",
+    "prepublishOnly": "yarn build"
+  }
+}

@@ -1,0 +1,97 @@
+// Ensures we have a "solid" child for the tooltip.
+// Will take height / width of its child element, making it easier for the tooltip to be applied.
+.tooltip-content-wrapper {
+  display: inline-block;
+}
+
+.rc-tooltip {
+  opacity: 1;
+  max-width: 250px;
+}
+
+.rc-tooltip-arrow{
+  //display: none;
+}
+
+.rc-tooltip-placement-top .rc-tooltip-arrow,
+.rc-tooltip-placement-topLeft .rc-tooltip-arrow,
+.rc-tooltip-placement-topRight .rc-tooltip-arrow {
+  border-top-color: var(--mdc-theme-secondary);
+}
+
+.rc-tooltip-placement-right .rc-tooltip-arrow,
+.rc-tooltip-placement-rightTop .rc-tooltip-arrow,
+.rc-tooltip-placement-rightBottom .rc-tooltip-arrow {
+  border-right-color: var(--mdc-theme-secondary);
+}
+
+.rc-tooltip-placement-left .rc-tooltip-arrow,
+.rc-tooltip-placement-leftTop .rc-tooltip-arrow,
+.rc-tooltip-placement-leftBottom .rc-tooltip-arrow {
+  border-left-color: var(--mdc-theme-secondary);
+}
+
+.rc-tooltip-placement-bottom .rc-tooltip-arrow,
+.rc-tooltip-placement-bottomLeft .rc-tooltip-arrow,
+.rc-tooltip-placement-bottomRight .rc-tooltip-arrow {
+  border-bottom-color: var(--mdc-theme-secondary);
+}
+
+.rc-tooltip-inner{
+  min-height: auto;
+  background-color: var(--mdc-theme-secondary);
+  border: none;
+  color: var(--mdc-theme-on-secondary);
+  border-radius: 0;
+
+  font-family: var(--mdc-typography-font-family);
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-font-smoothing: antialiased;
+  font-size: 0.75rem;
+  line-height: 125%;
+  font-weight: 500;
+  letter-spacing: 0.16667em;
+  text-decoration: none;
+  text-transform: uppercase;
+  text-align: center;
+  font-weight: 600;
+}
+
+.rc-tooltip.rc-tooltip-fade-enter{
+  display: block;
+  opacity: 0;
+}
+
+.rc-tooltip.rc-tooltip-fade-enter.rc-tooltip-fade-enter-active{
+  opacity: 1;
+  transition-timing-function: cubic-bezier(0.18, 0.89, 0.32, 1.28);
+  transition: opacity 0.2s;
+}
+
+.rc-tooltip.rc-tooltip-fade-leave{
+  opacity: 0;
+}
+
+.rc-tooltip.rc-tooltip-fade-enter.rc-tooltip-fade-lave-active{
+  opacity: 0;
+  transition-timing-function: cubic-bezier(0.18, 0.89, 0.32, 1.28);
+  transition: opacity 0.2s;
+}
+
+.example-enter {
+  opacity: 0.01;
+}
+
+.example-enter.example-enter-active {
+  opacity: 1;
+  transition: opacity 500ms ease-in;
+}
+
+.example-leave {
+  opacity: 1;
+}
+
+.example-leave.example-leave-active {
+  opacity: 0.01;
+  transition: opacity 300ms ease-in;
+}

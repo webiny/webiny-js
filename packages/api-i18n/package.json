@@ -1,0 +1,54 @@
+{
+  "name": "@webiny/api-i18n",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/webiny/webiny-js.git"
+  },
+  "contributors": [
+    "Pavel Denisjuk <pavel@webiny.com>",
+    "Sven Al Hamad <sven@webiny.com>",
+    "Adrian Smijulj <adrian@webiny.com>"
+  ],
+  "description": "The API for the Webiny I18N (webiny-app-i18n) app.",
+  "license": "MIT",
+  "dependencies": {
+    "@webiny/commodo": "^1.0.0",
+    "@babel/runtime": "^7.5.5",
+    "@svgr/webpack": "^4.3.2",
+    "accept-language-parser": "^1.5.0",
+    "bcryptjs": "^2.4.3",
+    "graphql-iso-date": "^3.6.1",
+    "graphql-shield": "^5.1.0",
+    "graphql-type-json": "^0.3.0",
+    "i18n-locales": "^0.0.2",
+    "invariant": "^2.2.4",
+    "lodash": "^4.17.4",
+    "md5": "^2.2.1"
+  },
+  "devDependencies": {
+    "@babel/cli": "^7.5.5",
+    "@babel/core": "^7.5.5",
+    "@babel/plugin-proposal-object-rest-spread": "^7.5.5",
+    "@babel/plugin-transform-runtime": "^7.5.5",
+    "@babel/preset-env": "^7.5.5",
+    "@babel/preset-flow": "^7.0.0"
+  },
+  "optionalDependencies": {
+    "fsevents": "^1.2.4"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "build": "babel src -d ${DEST:-build} --source-maps --copy-files",
+    "flow-copy-source": "flow-copy-source src ${DEST:-build}",
+    "postbuild": "yarn flow-copy-source"
+  },
+  "svgo": {
+    "plugins": {
+      "removeViewBox": false
+    }
+  }
+}
