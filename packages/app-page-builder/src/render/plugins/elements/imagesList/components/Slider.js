@@ -1,7 +1,6 @@
 // @flow
 import * as React from "react";
 
-
 const Slider = ({ data }: Object) => {
     if (Array.isArray(data)) {
         const settings = {

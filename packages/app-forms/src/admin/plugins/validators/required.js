@@ -5,6 +5,6 @@ export default {
         name: "required",
         label: "Required",
         description: "You won't be able to submit the form if this field is empty",
-        defaultMessage: "Value is required.",
+        defaultMessage: "Value is required."
     }
 };

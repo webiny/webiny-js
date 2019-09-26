@@ -45,7 +45,8 @@ const VimeoEmbed = (props: Object) => {
     return (
         <div
             className={
-                "webiny-pb-base-page-element-style webiny-pb-page-element-embed-youtube " + outerWrapper
+                "webiny-pb-base-page-element-style webiny-pb-page-element-embed-youtube " +
+                outerWrapper
             }
         >
             <div className={innerWrapper}>

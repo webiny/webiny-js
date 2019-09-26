@@ -45,10 +45,7 @@ const tool: ImageEditorTool = {
     icon({ activateTool }) {
         return (
             <Tooltip placement={"bottom"} content={"Rotate"}>
-                <IconButton
-                    icon={<RotateRight />}
-                    onClick={activateTool}
-                />
+                <IconButton icon={<RotateRight />} onClick={activateTool} />
             </Tooltip>
         );
     },

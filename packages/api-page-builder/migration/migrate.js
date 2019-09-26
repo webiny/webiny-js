@@ -62,7 +62,11 @@ module.exports = async (dbInstance, { dbName, host }) => {
 
             await execa(
                 "sed",
-                ["-i.bak", '-es/"pages-list-component-/"/g', `./out/${dbName}/${cmsCollection}.json`],
+                [
+                    "-i.bak",
+                    '-es/"pages-list-component-/"/g',
+                    `./out/${dbName}/${cmsCollection}.json`
+                ],
                 opts
             );
 

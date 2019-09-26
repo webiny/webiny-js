@@ -9,10 +9,9 @@ const Image = ({ element }: Object) => {
             element={element}
             className={"webiny-pb-base-page-element-style webiny-pb-page-element-image"}
         >
-            <ImageContainer elementId={element.id}/>
+            <ImageContainer elementId={element.id} />
         </ElementRoot>
     );
 };
-
 
 export default Image;

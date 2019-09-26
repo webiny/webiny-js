@@ -8,11 +8,10 @@ export default function withDelayedOnChange() {
             return (
                 <Delayed value={value} onChange={onChange}>
                     {({ value, onChange }) => (
-                        <Component {...rest} value={value} onChange={onChange}/>
+                        <Component {...rest} value={value} onChange={onChange} />
                     )}
                 </Delayed>
             );
         };
     };
 }
-

@@ -15,4 +15,3 @@ export default class FileModel extends Model {
         this.attr("meta").object();
     }
 }
-

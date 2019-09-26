@@ -6,8 +6,6 @@ export default {
     name: "pb-editor-content-background",
     type: "pb-editor-content",
     render() {
-        return (
-            <Background/>
-        );
+        return <Background />;
     }
 };

@@ -75,9 +75,9 @@ export class Redux {
                 })) ||
             compose;
 
-        const middlewareFromPlugins = getPlugins("pb-editor-redux-middleware").map(pl =>
-            wrapMiddleware(pl.middleware, Array.isArray(pl.actions) ? pl.actions : null)
-        ).reverse();
+        const middlewareFromPlugins = getPlugins("pb-editor-redux-middleware")
+            .map(pl => wrapMiddleware(pl.middleware, Array.isArray(pl.actions) ? pl.actions : null))
+            .reverse();
 
         this.store = createStore(
             createRootReducer(INIT_STATE, this),

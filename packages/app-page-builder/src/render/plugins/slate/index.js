@@ -7,12 +7,4 @@ import code from "./code";
 import typography from "./typography";
 import link from "./link";
 
-export default [
-    bold(),
-    italic(),
-    underline(),
-    lists(),
-    code(),
-    typography(),
-    link(),
-];
+export default [bold(), italic(), underline(), lists(), code(), typography(), link()];

@@ -8,7 +8,7 @@ const layoutGroup: PbElementGroupPluginType = {
     type: "pb-editor-page-element-group",
     group: {
         title: "Layout",
-        icon: <LayoutIcon/>
+        icon: <LayoutIcon />
     }
 };
 

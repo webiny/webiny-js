@@ -21,14 +21,14 @@ export default [
             <Query
                 query={gql`
                     query PbGetFavicon {
-                        pageBuilder{
+                        pageBuilder {
                             getSettings {
                                 data {
                                     favicon {
                                         src
                                     }
                                 }
-                            }   
+                            }
                         }
                     }
                 `}

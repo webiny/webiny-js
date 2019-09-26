@@ -41,6 +41,6 @@ export default async (file: FileType) => {
         // TODO: Save file into file manager?
         // TODO: what about files piling up? some kind of TTL policy would be nice here?
     } catch (e) {
-        throw new Error('File upload could not be completed: ' + e.message);
+        throw new Error("File upload could not be completed: " + e.message);
     }
 };

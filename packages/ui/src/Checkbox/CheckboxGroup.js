@@ -2,7 +2,7 @@
 import * as React from "react";
 import type { FormComponentProps } from "./../types";
 import { webinyCheckboxTitle } from "./Checkbox.styles";
-import {FormElementMessage} from "@webiny/ui/FormElementMessage";
+import { FormElementMessage } from "@webiny/ui/FormElementMessage";
 
 type Props = FormComponentProps & {
     // Form element's label.
@@ -56,15 +56,11 @@ class CheckboxGroup extends React.Component<Props> {
                 })}
 
                 {validation.isValid === false && (
-                    <FormElementMessage error>
-                        {validation.message}
-                    </FormElementMessage>
+                    <FormElementMessage error>{validation.message}</FormElementMessage>
                 )}
 
                 {validation.isValid !== false && description && (
-                    <FormElementMessage>
-                        {description}
-                    </FormElementMessage>
+                    <FormElementMessage>{description}</FormElementMessage>
                 )}
             </React.Fragment>
         );

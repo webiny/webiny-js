@@ -5,7 +5,7 @@ const chalk = require("chalk");
 
 const getConfig = require("./getConfig");
 
-module.exports = async (name) => {
+module.exports = async name => {
     const { config, filepath } = await getConfig();
 
     const appConfig = get(config.apps, name);
