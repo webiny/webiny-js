@@ -13,8 +13,6 @@ export default ({ database }) => ({
             database: database.mongodb
         });
 
-        const I18NLocale = i18NLocale({ createBase });
-
         const createBase = () =>
             flow(
                 withId(),
@@ -23,6 +21,8 @@ export default ({ database }) => ({
                 withSoftDelete(),
                 withCrudLogs()
             )();
+
+        const I18NLocale = i18NLocale({ createBase });
 
         context.models = {
             I18NLocale
