@@ -10,7 +10,7 @@ import { hasScope } from "@webiny/api-security";
 import mailchimpSettings from "./mailchimpSettings.model";
 import MailchimpApi from "./MailchimpApi";
 
-export default [
+export default () => [
     {
         name: "graphql-schema-mailchimp",
         type: "graphql-schema",

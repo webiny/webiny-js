@@ -8,7 +8,7 @@ import {
 import { hasScope } from "@webiny/api-security";
 import googleTagManagerSettings from "./googleTagManagerSettings.model";
 
-export default [
+export default () => [
     {
         name: "graphql-schema-google-tag-manager",
         type: "graphql-schema",

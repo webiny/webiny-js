@@ -1,10 +1,8 @@
-import { resolveGet, resolveList } from "@webiny/api/graphql";
+import { resolveGet, resolveList } from "@webiny/api/graphql/commodo";
 
 import resolveLoginUsingIdToken from "./userResolvers/loginUsingIdToken";
 import resolveGetCurrentUser from "./userResolvers/getCurrentUser";
 import resolveUpdateCurrentSecurityUser from "./userResolvers/updateCurrentUser";
-import resolveGetCurrentUserSettings from "./userResolvers/getCurrentUserSettings";
-import resolveUpdateCurrentUserSettings from "./userResolvers/updateCurrentUserSettings";
 import resolveCreateUser from "./userResolvers/createUser";
 import resolveUpdateUser from "./userResolvers/updateUser";
 import resolveDeleteUser from "./userResolvers/deleteUser";
@@ -114,9 +112,6 @@ export default {
             "Get current user"
             getCurrentUser: SecurityUserResponse
 
-            "Get settings of current user"
-            getCurrentUserSettings(key: String!): JSON
-
             "Get a single user by id or specific search criteria"
             getUser(id: ID, where: JSON, sort: String): SecurityUserResponse
 
@@ -137,9 +132,6 @@ export default {
             "Update current user"
             updateCurrentUser(data: SecurityCurrentUserInput!): SecurityUserResponse
 
-            "Update settings of current user"
-            updateCurrentUserSettings(key: String!, data: JSON!): JSON
-
             createUser(data: SecurityUserInput!): SecurityUserResponse
 
             updateUser(id: ID!, data: SecurityUserInput!): SecurityUserResponse
@@ -157,15 +149,13 @@ export default {
             }
         },
         SecurityQuery: {
-            getCurrentUser: resolveGetCurrentUser(userFetcher),
-            getCurrentUserSettings: resolveGetCurrentUserSettings(userSettingsFetcher),
+            getCurrentUser: resolveGetCurrentUser,
             getUser: resolveGet(userFetcher),
             listUsers: resolveList(userFetcher)
         },
         SecurityMutation: {
             loginUsingIdToken: resolveLoginUsingIdToken(userFetcher),
-            updateCurrentUser: resolveUpdateCurrentSecurityUser(userFetcher),
-            updateCurrentUserSettings: resolveUpdateCurrentUserSettings(userSettingsFetcher),
+            updateCurrentUser: resolveUpdateCurrentSecurityUser,
             createUser: resolveCreateUser(userFetcher),
             updateUser: resolveUpdateUser(userFetcher),
             deleteUser: resolveDeleteUser(userFetcher)

@@ -1,6 +1,6 @@
-import { ModelError } from "@webiny/model";
-import { ErrorResponse, Response } from "@webiny/api/graphql";
-import InvalidAttributesError from "@webiny/api/graphql/InvalidAttributesError";
+import { WithFieldsError } from "@webiny/commodo";
+import { ErrorResponse, Response } from "@webiny/api/graphql/commodo";
+import InvalidFieldsError from "@webiny/api/graphql/commodo/InvalidFieldsError";
 
 export default userFetcher => async (root: any, args: Object, context: Object) => {
     const User = userFetcher(context);
@@ -16,10 +16,10 @@ export default userFetcher => async (root: any, args: Object, context: Object) =
 
         await authPlugin.createUser({ data: args.data, user }, context);
     } catch (e) {
-        if (e instanceof ModelError && e.code === ModelError.INVALID_ATTRIBUTES) {
-            const attrError = InvalidAttributesError.from(e);
+        if (e.code === WithFieldsError.VALIDATION_FAILED_INVALID_FIELDS) {
+            const attrError = InvalidFieldsError.from(e);
             return new ErrorResponse({
-                code: attrError.code || "INVALID_ATTRIBUTES",
+                code: attrError.code || WithFieldsError.VALIDATION_FAILED_INVALID_FIELDS,
                 message: attrError.message,
                 data: attrError.data
             });

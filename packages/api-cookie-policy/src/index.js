@@ -8,7 +8,7 @@ import {
 import { hasScope } from "@webiny/api-security";
 import cookiePolicySettings from "./cookiePolicySettings.model";
 
-export default [
+export default () => [
     {
         name: "graphql-schema-settings-cookie-policy",
         type: "graphql-schema",
