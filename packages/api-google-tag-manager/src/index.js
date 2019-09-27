@@ -1,10 +1,6 @@
 // @flow
 import { gql } from "apollo-server-lambda";
-import {
-    dummyResolver,
-    resolveUpdateSettings,
-    resolveGetSettings
-} from "@webiny/api/graphql/commodo";
+import { emptyResolver, resolveUpdateSettings, resolveGetSettings } from "@webiny/commodo-graphql";
 import { hasScope } from "@webiny/api-security";
 import googleTagManagerSettings from "./googleTagManagerSettings.model";
 
@@ -53,10 +49,10 @@ export default [
             `,
             resolvers: {
                 Query: {
-                    googleTagManager: dummyResolver
+                    googleTagManager: emptyResolver
                 },
                 Mutation: {
-                    googleTagManager: dummyResolver
+                    googleTagManager: emptyResolver
                 },
                 GtmQuery: {
                     getSettings: resolveGetSettings(({ models }) => models.GoogleTagManagerSettings)

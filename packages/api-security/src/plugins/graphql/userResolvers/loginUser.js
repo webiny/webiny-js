@@ -1,7 +1,7 @@
 // @flow
 import bcrypt from "bcryptjs";
 import util from "util";
-import { Response, ErrorResponse } from "@webiny/api/graphql/commodo";
+import { Response, ErrorResponse } from "@webiny/commodo-graphql";
 import { JwtToken } from "../../authentication/jwtToken";
 
 type GetModel = (context: Object) => Function;

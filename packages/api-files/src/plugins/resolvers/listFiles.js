@@ -1,5 +1,5 @@
 // @flow
-import { ListResponse } from "@webiny/api/graphql/commodo/responses";
+import { ListResponse } from "@webiny/api";
 
 export default async (root: any, args: Object, context: Object) => {
     const { File } = context.models;

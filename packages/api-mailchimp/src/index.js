@@ -1,11 +1,7 @@
 // @flow
 import { gql } from "apollo-server-lambda";
-import {
-    dummyResolver,
-    resolveGetSettings,
-    resolveUpdateSettings
-} from "@webiny/api/graphql/commodo";
-import { ListErrorResponse, ListResponse, ErrorResponse } from "@webiny/api/graphql/commodo";
+import { emptyResolver, resolveGetSettings, resolveUpdateSettings } from "@webiny/commodo-graphql";
+import { ListErrorResponse, ListResponse, ErrorResponse } from "@webiny/api";
 import { hasScope } from "@webiny/api-security";
 import mailchimpSettings from "./mailchimpSettings.model";
 import MailchimpApi from "./MailchimpApi";
@@ -84,10 +80,10 @@ export default [
             `,
             resolvers: {
                 Query: {
-                    mailchimp: dummyResolver
+                    mailchimp: emptyResolver
                 },
                 Mutation: {
-                    mailchimp: dummyResolver
+                    mailchimp: emptyResolver
                 },
                 MailchimpQuery: {
                     listLists: async (_: any, args: Object, { getEntity }: Object) => {

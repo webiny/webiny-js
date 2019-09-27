@@ -1,5 +1,5 @@
 import { ObjectId } from "mongodb";
-import { Response } from "@webiny/api/graphql/commodo";
+import { Response } from "@webiny/commodo-graphql";
 import entryNotFound from "./entryNotFound";
 import findEntry from "@webiny/api-cms/utils/findEntry";
 

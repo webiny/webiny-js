@@ -1,5 +1,5 @@
 // @flow
-import { Response, NotFoundResponse } from "@webiny/api/graphql/commodo/responses";
+import { Response, NotFoundResponse } from "@webiny/api";
 import prepareMenuItems from "./prepareMenuItems";
 
 export default async (root: any, args: Object, context: Object) => {

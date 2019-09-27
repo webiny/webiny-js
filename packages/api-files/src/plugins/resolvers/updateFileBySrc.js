@@ -1,7 +1,7 @@
 // @flow
 import { WithFieldsError } from "@webiny/commodo";
-import { ErrorResponse, Response, NotFoundResponse } from "@webiny/api/graphql/commodo/responses";
-import { InvalidFieldsError } from "@webiny/api/graphql/commodo";
+import { ErrorResponse, Response, NotFoundResponse } from "@webiny/api";
+import { InvalidFieldsError } from "@webiny/commodo-graphql";
 
 export default async (root: any, args: Object, context: Object) => {
     const { File } = context.models;

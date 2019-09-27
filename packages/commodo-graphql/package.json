@@ -1,0 +1,26 @@
+{
+  "name": "@webiny/commodo-graphql",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/webiny/webiny-js.git"
+  },
+  "description": "A set of frequently used Commodo higher order functions.",
+  "contributors": [
+    "Pavel Denisjuk <pavel@webiny.com>",
+    "Sven Al Hamad <sven@webiny.com>",
+    "Adrian Smijulj <adrian@webiny.com>"
+  ],
+  "license": "MIT",
+  "dependencies": {
+    "@webiny/api": "^1.0.0",
+    "@webiny/commodo": "^1.0.0",
+    "lodash": "^4.17.4"
+  },
+  "scripts": {
+    "build": "babel src -d ${DEST:-build} --source-maps --copy-files",
+    "flow-copy-source": "flow-copy-source src ${DEST:-build}",
+    "postbuild": "yarn flow-copy-source"
+  }
+}

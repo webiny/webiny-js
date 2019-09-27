@@ -1,7 +1,7 @@
 // @flow
 import { gql } from "apollo-server-lambda";
 import { merge } from "lodash";
-import { dummyResolver } from "@webiny/api/graphql/commodo";
+import { emptyResolver } from "@webiny/api";
 import { hasScope } from "@webiny/api-security";
 import page from "./graphql/Page";
 import category from "./graphql/Category";
@@ -69,10 +69,10 @@ export default {
         resolvers: merge(
             {
                 Query: {
-                    pageBuilder: dummyResolver
+                    pageBuilder: emptyResolver
                 },
                 Mutation: {
-                    pageBuilder: dummyResolver
+                    pageBuilder: emptyResolver
                 }
             },
             page.resolvers,

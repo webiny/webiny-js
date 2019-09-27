@@ -7,7 +7,6 @@ export {
 } from "./crudResolvers";
 
 export { resolveUpdateSettings, resolveGetSettings } from "./settingsResolvers";
-export { default as InvalidFieldsError } from "./InvalidFieldsError";
 
 export {
     Response,
@@ -15,6 +14,6 @@ export {
     ErrorResponse,
     NotFoundResponse,
     ListErrorResponse
-} from "./responses";
+} from "@webiny/api/graphql/responses";
 
-export const dummyResolver = () => ({});
+export const emptyResolver = () => ({});

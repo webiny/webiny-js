@@ -4,7 +4,7 @@ import {
     resolveGet,
     resolveList,
     resolveUpdate
-} from "@webiny/api/graphql/commodo";
+} from "@webiny/commodo-graphql";
 
 import resolveLoginSecurityUser from "./userResolvers/loginUser";
 import resolveLoginUsingToken from "./userResolvers/loginUsingToken";

@@ -1,6 +1,6 @@
 // @flow
 import { merge } from "lodash";
-import { dummyResolver } from "@webiny/api/graphql/commodo";
+import { emptyResolver } from "@webiny/api";
 import { hasScope } from "@webiny/api-security";
 import gql from "graphql-tag";
 import {
@@ -70,10 +70,10 @@ export default {
         resolvers: merge(
             {
                 Query: {
-                    forms: dummyResolver
+                    forms: emptyResolver
                 },
                 Mutation: {
-                    forms: dummyResolver
+                    forms: emptyResolver
                 }
             },
             form.resolvers,

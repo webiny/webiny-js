@@ -1,5 +1,5 @@
 // @flow
-import { Response, ErrorResponse } from "@webiny/api/graphql/commodo";
+import { Response, ErrorResponse } from "@webiny/commodo-graphql";
 import { JwtToken } from "../../authentication/jwtToken";
 type GetModelType = (context: Object) => Function;
 

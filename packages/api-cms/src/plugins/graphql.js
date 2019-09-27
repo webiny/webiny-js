@@ -6,8 +6,8 @@ import {
     resolveGet,
     resolveList,
     resolveUpdate,
-    dummyResolver
-} from "@webiny/api/graphql/commodo";
+    emptyResolver
+} from "@webiny/commodo-graphql";
 
 import { gql } from "apollo-server-lambda";
 import { hasScope } from "@webiny/api-security";
@@ -169,11 +169,11 @@ export default ([
                 `,
                 resolvers: {
                     Query: {
-                        cmsRead: dummyResolver,
-                        cmsManage: dummyResolver
+                        cmsRead: emptyResolver,
+                        cmsManage: emptyResolver
                     },
                     Mutation: {
-                        cmsManage: dummyResolver
+                        cmsManage: emptyResolver
                     },
                     CmsManageQuery: {
                         getContentModel: resolveGet(contentModelFetcher),

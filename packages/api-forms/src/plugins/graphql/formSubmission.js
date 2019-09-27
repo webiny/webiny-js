@@ -1,5 +1,5 @@
 // @flow
-import { resolveGet, resolveList } from "@webiny/api/graphql/commodo/crudResolvers";
+import { resolveGet, resolveList } from "@webiny/commodo-graphql";
 import exportFormSubmissions from "./formSubmissionResolvers/exportFormSubmissions";
 import createFormSubmission from "./formSubmissionResolvers/createFormSubmission";
 

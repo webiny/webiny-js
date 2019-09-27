@@ -5,7 +5,7 @@ import {
     resolveGet,
     resolveList,
     resolveUpdate
-} from "@webiny/api/graphql/commodo";
+} from "@webiny/commodo-graphql";
 import searchLocaleCodes from "./resolvers/searchLocaleCodes";
 import getI18NInformation from "./resolvers/getI18NInformation";
 

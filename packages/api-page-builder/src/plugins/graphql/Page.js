@@ -4,7 +4,7 @@ import {
     resolveDelete,
     resolveGet,
     resolveList
-} from "@webiny/api/graphql/commodo";
+} from "@webiny/commodo-graphql";
 import createRevisionFrom from "./pageResolvers/createRevisionFrom";
 import listPages from "./pageResolvers/listPages";
 import listPublishedPages from "./pageResolvers/listPublishedPages";

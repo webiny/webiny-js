@@ -1,10 +1,10 @@
 // @flow
 import { gql } from "apollo-server-lambda";
 import {
-    dummyResolver,
+    emptyResolver,
     resolveGetSettings,
     resolveUpdateSettings
-} from "@webiny/api/graphql/commodo";
+} from "@webiny/commodo-graphql";
 import { hasScope } from "@webiny/api-security";
 import cookiePolicySettings from "./cookiePolicySettings.model";
 
@@ -92,10 +92,10 @@ export default [
             `,
             resolvers: {
                 Query: {
-                    cookiePolicy: dummyResolver
+                    cookiePolicy: emptyResolver
                 },
                 Mutation: {
-                    cookiePolicy: dummyResolver
+                    cookiePolicy: emptyResolver
                 },
                 CookiePolicyQuery: {
                     getSettings: resolveGetSettings(({ models }) => models.CookiePolicySettings)
