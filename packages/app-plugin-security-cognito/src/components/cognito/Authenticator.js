@@ -2,7 +2,6 @@ import React from "react";
 import Auth from "@aws-amplify/auth";
 import { withApollo } from "react-apollo";
 import localStorage from "store";
-import qs from "query-string";
 import observe from "store/plugins/observe";
 import debug from "./debug";
 localStorage.addPlugin(observe);
@@ -18,7 +17,10 @@ class Authenticator extends React.Component {
     }
 
     async componentDidMount() {
-        const { state, ...params } = qs.parse(window.location.search);
+        const query = new URLSearchParams(window.location.search);
+        const queryData = {};
+        query.forEach((value, key) => (queryData[key] = value));
+        const { state, ...params } = queryData;
 
         if (state) {
             await this.onChangeState(state, params);

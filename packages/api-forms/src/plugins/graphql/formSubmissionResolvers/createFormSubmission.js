@@ -1,5 +1,5 @@
 // @flow
-import { ErrorResponse, NotFoundResponse, Response } from "@webiny/api/graphql/commodo";
+import { ErrorResponse, NotFoundResponse, Response } from "@webiny/api";
 
 export default async (root: any, args: Object, context: Object) => {
     const { Form } = context.models;

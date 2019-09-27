@@ -1,7 +1,7 @@
 // @flow
 import { merge } from "lodash";
 import { gql } from "apollo-server-lambda";
-import { dummyResolver } from "@webiny/api/graphql/commodo";
+import { emptyResolver } from "@webiny/commodo-graphql";
 import { type PluginType } from "@webiny/api/types";
 import { hasScope } from "@webiny/api-security";
 import i18nLocale from "./graphql/I18NLocale";
@@ -55,10 +55,10 @@ export default ([
             resolvers: merge(
                 {
                     Query: {
-                        i18n: dummyResolver
+                        i18n: emptyResolver
                     },
                     Mutation: {
-                        i18n: dummyResolver
+                        i18n: emptyResolver
                     }
                 },
                 i18nLocale.resolvers

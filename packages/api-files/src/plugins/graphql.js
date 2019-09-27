@@ -1,9 +1,9 @@
 // @flow
 import { gql } from "apollo-server-lambda";
-import { dummyResolver } from "@webiny/api/graphql/commodo";
+import { emptyResolver } from "@webiny/commodo-graphql";
 import { type PluginType } from "@webiny/api/types";
 import { hasScope } from "@webiny/api-security";
-import { resolveCreate, resolveDelete, resolveGet } from "@webiny/api/graphql/commodo";
+import { resolveCreate, resolveDelete, resolveGet } from "@webiny/commodo-graphql";
 
 import listFiles from "./resolvers/listFiles";
 import listTags from "./resolvers/listTags";
@@ -107,10 +107,10 @@ export default ([
                     }
                 },
                 Query: {
-                    files: dummyResolver
+                    files: emptyResolver
                 },
                 Mutation: {
-                    files: dummyResolver
+                    files: emptyResolver
                 },
                 FilesQuery: {
                     getFile: resolveGet(fileFetcher),

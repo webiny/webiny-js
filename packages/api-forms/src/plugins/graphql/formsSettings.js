@@ -1,5 +1,5 @@
 // @flow
-import { resolveUpdateSettings, resolveGetSettings } from "@webiny/api/graphql/commodo";
+import { resolveUpdateSettings, resolveGetSettings } from "@webiny/commodo-graphql";
 
 const getFormSettings = ctx => ctx.models.FormSettings;
 

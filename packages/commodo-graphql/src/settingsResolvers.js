@@ -1,5 +1,5 @@
 // @flow
-import { ErrorResponse } from "./responses";
+import { ErrorResponse } from "@webiny/api";
 
 export const resolveGetSettings = getClass => async (_: any, args: Object, context: Object) => {
     const Class = getClass(context);

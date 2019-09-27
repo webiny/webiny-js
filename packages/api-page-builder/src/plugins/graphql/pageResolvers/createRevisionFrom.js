@@ -1,7 +1,5 @@
 // @flow
-import type { Entity } from "@webiny/entity";
-import type { IPage } from "../../../entities/Page.entity";
-import { ErrorResponse, NotFoundResponse, Response } from "@webiny/api/graphql/commodo";
+import { ErrorResponse, NotFoundResponse, Response } from "@webiny/api";
 
 type EntityFetcher = (context: Object) => Class<Entity>;
 

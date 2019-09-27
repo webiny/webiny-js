@@ -1,6 +1,6 @@
 import pluralize from "pluralize";
 import { gql } from "apollo-server-lambda";
-import * as resolve from "@webiny/api/graphql/commodo";
+import * as resolve from "@webiny/commodo-graphql";
 import { createTypeName, createManageTypeName, createReadTypeName } from "../utils/createTypeName";
 import { resolveGet } from "../utils/resolveGet";
 import { resolveList } from "../utils/resolveList";
@@ -172,7 +172,7 @@ export default async ({ plugins, config }) => {
                         }
                     },
                     Mutation: {
-                        cmsManage: resolve.dummyResolver
+                        cmsManage: resolve.emptyResolver
                     },
                     CmsManageQuery: {
                         [`get${typeName}`]: resolveGet({ models, model }),
@@ -181,7 +181,7 @@ export default async ({ plugins, config }) => {
                     CmsManageMutation: {
                         [`create${typeName}`]: resolveCreate({ models, model }),
                         [`update${typeName}`]: resolveUpdate({ models, model }),
-                        [`delete${typeName}`]: resolve.dummyResolver
+                        [`delete${typeName}`]: resolve.emptyResolver
                     },
                     [mTypeName]: model.fields.reduce((resolvers, field) => {
                         const { manage } = fieldTypePlugins[field.type];

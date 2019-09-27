@@ -1,4 +1,4 @@
-import { Response, ErrorResponse } from "@webiny/api/graphql/commodo";
+import { Response, ErrorResponse } from "@webiny/commodo-graphql";
 import populateEntry from "@webiny/api-cms/utils/populateEntry";
 import saveEntry from "@webiny/api-cms/utils/saveEntry";
 

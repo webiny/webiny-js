@@ -32,7 +32,6 @@ export async function prepareSchema({ config, plugins }: PrepareSchemaParamsType
                 scalar Long
                 scalar DateTime
                 scalar RefInput
-                scalar I18N
             `,
             resolvers: {
                 ...scalars,

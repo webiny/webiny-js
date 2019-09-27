@@ -1,4 +1,4 @@
-import { ListResponse, ListErrorResponse } from "@webiny/api/graphql/commodo";
+import { ListResponse, ListErrorResponse } from "@webiny/commodo-graphql";
 import findEntries from "@webiny/api-cms/utils/findEntries";
 
 export const resolveList = ({ model }: Object) => async (

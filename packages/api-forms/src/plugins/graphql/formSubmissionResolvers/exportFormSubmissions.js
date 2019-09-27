@@ -1,5 +1,5 @@
 // @flow
-import { Response, ErrorResponse, NotFoundResponse } from "@webiny/api/graphql/commodo";
+import { Response, ErrorResponse, NotFoundResponse } from "@webiny/api";
 const { parseAsync } = require("json2csv");
 import uploadFile from "./uploadFile";
 

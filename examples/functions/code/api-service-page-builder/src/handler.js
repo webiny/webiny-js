@@ -1,7 +1,6 @@
 // @flow
 import { createHandler, PluginsContainer } from "@webiny/api";
 import createConfig from "service-config";
-import apiPlugins from "@webiny/api/plugins";
 import securityPlugins from "@webiny/api-security/plugins/service";
 import pageBuilderPlugins from "@webiny/api-page-builder/plugins";
 import mailchimpPlugins from "@webiny/api-mailchimp";
@@ -15,7 +14,6 @@ export const handler = async (event: Object, context: Object) => {
     if (!apolloHandler) {
         const config = await createConfig();
         const plugins = new PluginsContainer([
-            apiPlugins,
             securityPlugins,
             i18nPlugins,
             pageBuilderPlugins(config),

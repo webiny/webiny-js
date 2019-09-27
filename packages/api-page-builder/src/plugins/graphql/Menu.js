@@ -5,7 +5,7 @@ import {
     resolveGet,
     resolveList,
     resolveUpdate
-} from "@webiny/api/graphql/commodo";
+} from "@webiny/commodo-graphql";
 
 const menuFetcher = ctx => ctx.models.PbMenu;
 import getMenuBySlug from "./menuResolvers/getMenuBySlug";

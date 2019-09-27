@@ -5,7 +5,7 @@ import {
     resolveGet,
     resolveList,
     resolveUpdate
-} from "@webiny/api/graphql/commodo";
+} from "@webiny/commodo-graphql";
 
 const roleFetcher = ctx => ctx.models.SecurityRole;
 

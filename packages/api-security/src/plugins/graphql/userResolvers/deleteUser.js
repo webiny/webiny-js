@@ -1,4 +1,4 @@
-import { ErrorResponse, Response, NotFoundResponse } from "@webiny/api/graphql/commodo";
+import { ErrorResponse, Response, NotFoundResponse } from "@webiny/api";
 
 export default userFetcher => async (root: any, args: Object, context: Object) => {
     const { id } = args;

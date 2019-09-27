@@ -1,6 +1,6 @@
+import { ErrorResponse, Response } from "@webiny/api";
 import { WithFieldsError } from "@webiny/commodo";
-import { ErrorResponse, Response } from "@webiny/api/graphql/commodo";
-import InvalidFieldsError from "@webiny/api/graphql/commodo/InvalidFieldsError";
+import { InvalidFieldsError } from "@webiny/commodo-graphql";
 
 export default userFetcher => async (root: any, args: Object, context: Object) => {
     const User = userFetcher(context);

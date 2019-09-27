@@ -2,7 +2,7 @@
 import { WithFieldsError } from "@commodo/fields";
 import parseBoolean from "./parseBoolean";
 import InvalidFieldsError from "./InvalidFieldsError";
-import { ListResponse, ErrorResponse, NotFoundResponse, Response } from "./responses";
+import { Response, ListResponse, ErrorResponse, NotFoundResponse } from "@webiny/api";
 
 type GetModelType = (context: Object) => Function;
 
@@ -79,7 +79,7 @@ export const resolveCreate = (getModel: GetModelType) => async (
         ) {
             const fieldError = InvalidFieldsError.from(e);
             return new ErrorResponse({
-                code: fieldError.code || "VALIDATION_FAILED_INVALID_FIELDS",
+                code: fieldError.code || WithFieldsError.VALIDATION_FAILED_INVALID_FIELDS,
                 message: fieldError.message,
                 data: fieldError.data
             });
@@ -114,7 +114,7 @@ export const resolveUpdate = (getModel: GetModelType) => async (
         ) {
             const fieldError = InvalidFieldsError.from(e);
             return new ErrorResponse({
-                code: fieldError.code || "VALIDATION_FAILED_INVALID_FIELDS",
+                code: fieldError.code || WithFieldsError.VALIDATION_FAILED_INVALID_FIELDS,
                 message: fieldError.message,
                 data: fieldError.data
             });
