@@ -43,7 +43,6 @@ const UsersForm = () => {
                         {auth.renderUserForm({
                             Bind,
                             data,
-                            t,
                             fields: {
                                 firstName: (
                                     <Bind

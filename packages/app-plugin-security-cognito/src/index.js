@@ -3,7 +3,11 @@ import Auth from "@aws-amplify/auth";
 import { Grid, Cell } from "@webiny/ui/Grid";
 import { Input } from "@webiny/ui/Input";
 import { validation } from "@webiny/validation";
+import { i18n } from "@webiny/app/i18n";
 import Authentication from "./components/Authentication";
+
+const t1 = i18n.ns("app-plugin-security-cognito/users/form");
+const t2 = i18n.ns("app-plugin-security-cognito/users/account");
 
 export default config => {
     // Configure Amplify Auth
@@ -28,7 +32,7 @@ export default config => {
 
             return { getIdToken, renderAuthentication, logout };
         },
-        renderUserAccountForm({ Bind, data, t, fields }) {
+        renderUserAccountForm({ Bind, data, fields }) {
             return (
                 <Grid>
                     <Cell span={3}>
@@ -43,9 +47,9 @@ export default config => {
                                 <Bind name="password" validators={validation.create("password")}>
                                     <Input
                                         autoComplete="off"
-                                        description={data.id && t`Type a new password to reset it.`}
+                                        description={data.id && t1`Type a new password to reset it.`}
                                         type="password"
-                                        label={t`Password`}
+                                        label={t1`Password`}
                                     />
                                 </Bind>
                             </Cell>
@@ -56,7 +60,7 @@ export default config => {
                 </Grid>
             );
         },
-        renderUserForm({ Bind, data, t, fields }) {
+        renderUserForm({ Bind, data, fields }) {
             return (
                 <Grid>
                     <Cell span={6}>
@@ -71,9 +75,9 @@ export default config => {
                                 >
                                     <Input
                                         autoComplete="off"
-                                        description={data.id && t`Type a new password to reset it.`}
+                                        description={data.id && t2`Type a new password to reset it.`}
                                         type="password"
-                                        label={t`Password`}
+                                        label={t2`Password`}
                                     />
                                 </Bind>
                             </Cell>

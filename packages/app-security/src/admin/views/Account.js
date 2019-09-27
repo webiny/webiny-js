@@ -116,7 +116,6 @@ const UsersForm = () => {
                         {renderUserAccountForm({
                             Bind,
                             data,
-                            t,
                             fields: {
                                 firstName: (
                                     <Bind
