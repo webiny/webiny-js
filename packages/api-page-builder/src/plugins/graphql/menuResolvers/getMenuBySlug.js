@@ -6,14 +6,14 @@ export default async (root: any, args: Object, context: Object) => {
     const { slug } = args;
     const { PbMenu } = context.models;
 
-    const entity = await PbMenu.findOne({ query: { slug } });
-    if (!entity) {
+    const menu = await PbMenu.findOne({ query: { slug } });
+    if (!menu) {
         return new NotFoundResponse("Menu not found.");
     }
 
     return new Response({
-        id: entity.id,
-        title: entity.title,
-        items: prepareMenuItems({ entity, context })
+        id: menu.id,
+        title: menu.title,
+        items: prepareMenuItems({ menu, context })
     });
 };

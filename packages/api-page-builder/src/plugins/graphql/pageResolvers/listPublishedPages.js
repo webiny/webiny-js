@@ -51,8 +51,8 @@ export const listPublishedPages = async ({ args, PbPage, PbCategory }: Object) =
         if (PbCategory.isId(category)) {
             baseFilters.push({ category });
         } else {
-            const categoryEntity = await PbCategory.findOne({ query: { slug: category } });
-            baseFilters.push({ category: categoryEntity.id });
+            const categoryModel = await PbCategory.findOne({ query: { slug: category } });
+            baseFilters.push({ category: categoryModel.id });
         }
     }
 

@@ -54,7 +54,7 @@ const prepareItems = async ({
     await applyCleanup(items);
 };
 
-export default async ({ entity: menu, context: graphqlContext }: Object) => {
+export default async ({ menu, context: graphqlContext }: Object) => {
     const items = cloneDeep(menu.items);
 
     // Each modifier is recursively applied to all items.

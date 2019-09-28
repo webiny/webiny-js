@@ -1,7 +1,7 @@
 import { set, get } from "lodash";
 
-const getFileById = async ({ id, context: { getEntity } }) => {
-    const file = await getEntity("File").findById(id);
+const getFileById = async ({ id, context }) => {
+    const file = context.models.File.findById(id);
     if (file) {
         return { id: file.id, src: file.src };
     }
