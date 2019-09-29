@@ -7,7 +7,7 @@
 Initializes Google Tag Manager (https://marketingplatform.google.com/about/tag-manager/) 
 on your site.
 
-Use together with [@webiny/api-google-tag-manager](../@webiny/api-google-tag-manager) 
+Use together with [@webiny/api-google-tag-manager](../api-google-tag-manager) 
 package.
   
 ## Install
@@ -20,7 +20,7 @@ Or if you prefer yarn:
 yarn add @webiny/app-google-tag-manager
 ```
 
-Note: the [@webiny/api-google-tag-manager](../@webiny/api-google-tag-manager) is also required.
+Note: the [@webiny/api-google-tag-manager](../api-google-tag-manager) is also required.
 
 ## Setup
 To setup, you must register a set of plugins. For more information on 

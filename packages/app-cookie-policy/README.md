@@ -7,7 +7,7 @@
 Renders a simple cookie policy info banner on your site. 
 Powered by Cookie Consent (https://cookieconsent.insites.com/).
 
-Use together with [@webiny/api-cookie-policy](../@webiny/api-cookie-policy) package.
+Use together with [@webiny/api-cookie-policy](../api-cookie-policy) package.
   
 ## Install
 ```
@@ -19,7 +19,7 @@ Or if you prefer yarn:
 yarn add @webiny/app-cookie-policy
 ```
 
-Note: the [@webiny/api-cookie-policy](../@webiny/api-cookie-policy) is also required.
+Note: the [@webiny/api-cookie-policy](../api-cookie-policy) is also required.
 
 ## Setup
 To setup, you must register a set of plugins. For more information on 

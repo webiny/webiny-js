@@ -16,7 +16,7 @@ Or if you prefer yarn:
 yarn add @webiny/app-mailchimp
 ```
 
-Note: the [@webiny/api-mailchimp](../@webiny/api-mailchimp) is also required.
+Note: the [@webiny/api-mailchimp](../api-mailchimp) is also required.
 
 ## Setup
 To setup, you must register a set of plugins. For more information on 

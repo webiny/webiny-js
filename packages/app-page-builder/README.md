@@ -6,7 +6,7 @@
 
 Enables Webiny CMS in the Admin area and on your site. 
 
-Use together with [@webiny/api-cms](../@webiny/api-cms) package.
+Use together with [@webiny/api-cms](../api-cms) package.
 
 For more information, please visit the Webiny documentation:
 1. [Webiny Theme Tutorial Overview](https://docs.webiny.com/docs/developer-tutorials/new-theme-overview)
@@ -22,7 +22,7 @@ Or if you prefer yarn:
 yarn add @webiny/app-page-builder
 ```
 
-Note: the [@webiny/api-cms](../@webiny/api-cms) is also required.
+Note: the [@webiny/api-cms](../api-cms) is also required.
 
 ## Setup
 To setup, you must register a set of plugins. For more information on 

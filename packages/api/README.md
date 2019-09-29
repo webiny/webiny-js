@@ -22,6 +22,6 @@ yarn add @webiny/api
 
 Some of the packages that are built on top of the `@webiny/api`:
 
-- [@webiny/api-cms](../@webiny/api-cms) 
-- [@webiny/api-security](../@webiny/api-security) 
-- [@webiny/api-cookie-policy](../@webiny/api-cookie-policy) 
+- [@webiny/api-cms](../api-cms) 
+- [@webiny/api-security](../api-security) 
+- [@webiny/api-cookie-policy](../api-cookie-policy) 
