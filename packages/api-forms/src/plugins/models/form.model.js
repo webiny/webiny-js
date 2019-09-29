@@ -1,7 +1,7 @@
 // @flow
 import { flow } from "lodash";
 import { validation } from "@webiny/validation";
-import { createFieldModel, createSettingsModel, createFormStatsModel } from "./Form";
+import { createFieldsModel, createSettingsModel, createFormStatsModel } from "./Form";
 import { withProps } from "repropose";
 import got from "got";
 import { pick } from "lodash";
@@ -23,6 +23,10 @@ import {
 import { withAggregate } from "@commodo/fields-storage-mongodb";
 
 export default ({ context, createBase, FormSubmission, FormSettings }) => {
+    const FormStatsModel = createFormStatsModel();
+    const FormSettingsModel = createSettingsModel({ context, FormSettings });
+    const FormFieldsModel = createFieldsModel(context);
+
     const Form = flow(
         withName("Form"),
         withAggregate(),
@@ -34,15 +38,15 @@ export default ({ context, createBase, FormSubmission, FormSettings }) => {
                 fields({
                     list: true,
                     value: [],
-                    instanceOf: createFieldModel(context)
+                    instanceOf: FormFieldsModel
                 })
             ),
             layout: onSet(value => (instance.locked ? instance.layout : value))(
                 object({ value: [] })
             ),
-            stats: skipOnPopulate()(fields({ instanceOf: createFormStatsModel(), value: {} })),
+            stats: skipOnPopulate()(fields({ instanceOf: FormStatsModel, value: {} })),
             settings: onSet(value => (instance.locked ? instance.settings : value))(
-                fields({ instanceOf: createSettingsModel({ context, FormSettings }), value: {} })
+                fields({ instanceOf: FormSettingsModel, value: {} })
             ),
             trigger: onSet(value => (instance.locked ? instance.trigger : value))(object()),
             version: number(),
