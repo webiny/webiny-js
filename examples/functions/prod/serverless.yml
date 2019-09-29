@@ -1,8 +1,5 @@
 name: webiny-cms-project
 
-components:
-  function: '../../../node_modules/@webiny/serverless-function'
-
 vars:
   env:
     WEBINY_JWT_SECRET: ${env.WEBINY_JWT_SECRET}

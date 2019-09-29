@@ -20,6 +20,10 @@ class PageBuilder extends Component {
         const apolloService = await this.load("@webiny/serverless-apollo-service");
         return await apolloService.remove(inputs);
     }
+
+    async install(inputs = {}) {
+        console.log("Installing....");
+    }
 }
 
 module.exports = PageBuilder;
