@@ -15,7 +15,7 @@
     "webpack": "^4.39.2"
   },
   "scripts": {
-    "build": "rm -rf dist && mkdir dist && cp serverless.js package.json dist/",
+    "build": "rm -rf dist && mkdir dist && cp -R serverless.js package.json transform boilerplate dist/",
     "prepublishOnly": "yarn build"
   }
 }

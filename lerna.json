@@ -8,7 +8,7 @@
     "version": {
       "preid": "next",
       "ignoreChanges": ["scripts/**", ",**/__fixtures__/**", "**/__tests__/**", "**/*.md"],
-      "allowBranch": ["master", "refactor/scoped-packages"],
+      "allowBranch": ["master"],
       "conventionalCommits": true,
       "message": "New release :tada: :rocket:"
     },
