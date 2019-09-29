@@ -86,7 +86,7 @@ export default async ({ menu, context: graphqlContext }: Object) => {
                         if (!context.distinctParents.loaded) {
                             const ids = Object.keys(context.distinctParents.data);
 
-                            const { PbPage, PbCategory } = graphqlContext;
+                            const { PbPage, PbCategory } = graphqlContext.models;
                             await listPublishedPages({
                                 args: { parent: ids },
                                 PbPage,
