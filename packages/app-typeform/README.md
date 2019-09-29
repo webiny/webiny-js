@@ -23,8 +23,8 @@ To setup, you must register a set of [plugins](https://docs.webiny.com/docs/deve
 #### Admin
 
 ```
-import typeformPlugins from "@webiny/app-typeform/admin"
 import { registerPlugins } from "@webiny/plugins";
+import typeformPlugins from "@webiny/app-typeform/admin";
 
 registerPlugins(typeformPlugins);
 ```
@@ -34,8 +34,8 @@ The element will be registered under the "Form" element category.
 
 #### Site
 ```
-import typeformPlugins from "@webiny/app-typeform/render"
 import { registerPlugins } from "@webiny/plugins";
+import typeformPlugins from "@webiny/app-typeform/render";
 
 registerPlugins(typeformPlugins);
 ```

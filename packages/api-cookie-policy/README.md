@@ -15,16 +15,3 @@ Or if you prefer yarn:
 ```
 yarn add @webiny/app-cookie-policy
 ```
-
-## Setup
-To setup, you must register a set of plugins. For more information on 
-plugins, please visit [Webiny documentation](https://docs.webiny.com/docs/developer-tutorials/plugins-crash-course).
-
-```
-import cookiePolicyPlugins from "@webiny/api-cookie-policy"
-import { registerPlugins } from "@webiny/plugins";
-
-registerPlugins(cookiePolicyPlugins);
-```
-
-Exposes necessary GraphQL fields for updating app settings.

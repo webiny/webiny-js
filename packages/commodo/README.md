@@ -11,10 +11,10 @@ For more information, please visit
   
 ## Install
 ```
-npm install --save webiny-commodo
+npm install --save @webiny/commodo
 ```
 
 Or if you prefer yarn: 
 ```
-yarn add webiny-commodo
+yarn add @webiny/commodo
 ```

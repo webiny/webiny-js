@@ -27,20 +27,21 @@ plugins, please visit [Webiny documentation](https://docs.webiny.com/docs/develo
 
 #### Admin
 ```
-import cookiePolicyPlugins from "@webiny/app-cookie-policy/admin"
 import { registerPlugins } from "@webiny/plugins";
+import cookiePolicyPlugins from "@webiny/app-cookie-policy/admin";
 
 registerPlugins(cookiePolicyPlugins);
 ```
 
-Enables management of cookie policy settings, which can be accessed via Settings section in the main menu. Here you
-can edit things like banner position, colors and labels.
+Enables management of cookie policy settings, which can be accessed via 
+Settings section in the main menu. Here you can edit things like banner 
+position, colors and labels.
 
 
 #### Site
 ```
-import cookiePolicyPlugins from "@webiny/app-cookie-policy/render"
 import { registerPlugins } from "@webiny/plugins";
+import cookiePolicyPlugins from "@webiny/app-cookie-policy/render"
 
 registerPlugins(cookiePolicyPlugins);
 ```

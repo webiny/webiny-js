@@ -20,16 +20,14 @@ Or if you prefer yarn:
 yarn add @webiny/app-google-tag-manager
 ```
 
-Note: the [@webiny/api-google-tag-manager](../api-google-tag-manager) is also required.
-
 ## Setup
 To setup, you must register a set of plugins. For more information on 
 plugins, please visit [Webiny documentation](https://docs.webiny.com/docs/developer-tutorials/plugins-crash-course).
 
 #### Admin
 ```
-import gtmPlugins from "@webiny/app-google-tag-manager/admin"
 import { registerPlugins } from "@webiny/plugins";
+import gtmPlugins from "@webiny/app-google-tag-manager/admin"
 
 registerPlugins(gtmPlugins);
 ```
@@ -40,8 +38,8 @@ section in the main menu. You will paste your GTM "Container ID" here
     
 #### Site
 ```
-import gtmPlugins from "@webiny/app-google-tag-manager/render"
 import { registerPlugins } from "@webiny/plugins";
+import gtmPlugins from "@webiny/app-google-tag-manager/render"
 
 registerPlugins(gtmPlugins);
 ```
