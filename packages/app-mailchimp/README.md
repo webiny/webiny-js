@@ -1,6 +1,6 @@
-# webiny-app-mailchimp
-[![](https://img.shields.io/npm/dw/webiny-app-mailchimp.svg)](https://www.npmjs.com/package/webiny-app-mailchimp) 
-[![](https://img.shields.io/npm/v/webiny-app-mailchimp.svg)](https://www.npmjs.com/package/webiny-app-mailchimp)
+# @webiny/app-mailchimp
+[![](https://img.shields.io/npm/dw/@webiny/app-mailchimp.svg)](https://www.npmjs.com/package/@webiny/app-mailchimp) 
+[![](https://img.shields.io/npm/v/@webiny/app-mailchimp.svg)](https://www.npmjs.com/package/@webiny/app-mailchimp)
 [![code style: prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg?style=flat-square)](https://github.com/prettier/prettier)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](http://makeapullrequest.com)
 
@@ -8,15 +8,15 @@ Enables inserting Mailchimp newsletter signup forms on your site.
   
 ## Install
 ```
-npm install --save webiny-app-mailchimp
+npm install --save @webiny/app-mailchimp
 ```
 
 Or if you prefer yarn: 
 ```
-yarn add webiny-app-mailchimp
+yarn add @webiny/app-mailchimp
 ```
 
-Note: the [webiny-api-mailchimp](../webiny-api-mailchimp) is also required.
+Note: the [@webiny/api-mailchimp](../@webiny/api-mailchimp) is also required.
 
 ## Setup
 To setup, you must register a set of plugins. For more information on 

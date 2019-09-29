@@ -1,1 +1,1 @@
-# webiny-app-forms
+# @webiny/app-forms

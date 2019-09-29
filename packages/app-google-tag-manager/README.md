@@ -1,26 +1,26 @@
-# webiny-app-google-tag-manager
-[![](https://img.shields.io/npm/dw/webiny-app-google-tag-manager.svg)](https://www.npmjs.com/package/webiny-app-google-tag-manager) 
-[![](https://img.shields.io/npm/v/webiny-app-google-tag-manager.svg)](https://www.npmjs.com/package/webiny-app-google-tag-manager)
+# @webiny/app-google-tag-manager
+[![](https://img.shields.io/npm/dw/@webiny/app-google-tag-manager.svg)](https://www.npmjs.com/package/@webiny/app-google-tag-manager) 
+[![](https://img.shields.io/npm/v/@webiny/app-google-tag-manager.svg)](https://www.npmjs.com/package/@webiny/app-google-tag-manager)
 [![code style: prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg?style=flat-square)](https://github.com/prettier/prettier)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](http://makeapullrequest.com)
 
 Initializes Google Tag Manager (https://marketingplatform.google.com/about/tag-manager/) 
 on your site.
 
-Use together with [webiny-api-google-tag-manager](../webiny-api-google-tag-manager) 
+Use together with [@webiny/api-google-tag-manager](../@webiny/api-google-tag-manager) 
 package.
   
 ## Install
 ```
-npm install --save webiny-app-google-tag-manager
+npm install --save @webiny/app-google-tag-manager
 ```
 
 Or if you prefer yarn: 
 ```
-yarn add webiny-app-google-tag-manager
+yarn add @webiny/app-google-tag-manager
 ```
 
-Note: the [webiny-api-google-tag-manager](../webiny-api-google-tag-manager) is also required.
+Note: the [@webiny/api-google-tag-manager](../@webiny/api-google-tag-manager) is also required.
 
 ## Setup
 To setup, you must register a set of plugins. For more information on 

@@ -1,25 +1,25 @@
-# webiny-app-cookie-policy
-[![](https://img.shields.io/npm/dw/webiny-app-cookie-policy.svg)](https://www.npmjs.com/package/webiny-app-cookie-policy) 
-[![](https://img.shields.io/npm/v/webiny-app-cookie-policy.svg)](https://www.npmjs.com/package/webiny-app-cookie-policy)
+# @webiny/app-cookie-policy
+[![](https://img.shields.io/npm/dw/@webiny/app-cookie-policy.svg)](https://www.npmjs.com/package/@webiny/app-cookie-policy) 
+[![](https://img.shields.io/npm/v/@webiny/app-cookie-policy.svg)](https://www.npmjs.com/package/@webiny/app-cookie-policy)
 [![code style: prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg?style=flat-square)](https://github.com/prettier/prettier)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](http://makeapullrequest.com)
 
 Renders a simple cookie policy info banner on your site. 
 Powered by Cookie Consent (https://cookieconsent.insites.com/).
 
-Use together with [webiny-api-cookie-policy](../webiny-api-cookie-policy) package.
+Use together with [@webiny/api-cookie-policy](../@webiny/api-cookie-policy) package.
   
 ## Install
 ```
-npm install --save webiny-app-cookie-policy
+npm install --save @webiny/app-cookie-policy
 ```
 
 Or if you prefer yarn: 
 ```
-yarn add webiny-app-cookie-policy
+yarn add @webiny/app-cookie-policy
 ```
 
-Note: the [webiny-api-cookie-policy](../webiny-api-cookie-policy) is also required.
+Note: the [@webiny/api-cookie-policy](../@webiny/api-cookie-policy) is also required.
 
 ## Setup
 To setup, you must register a set of plugins. For more information on 

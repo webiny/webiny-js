@@ -1,1 +1,1 @@
-# webiny-api-forms
+# @webiny/api-forms
