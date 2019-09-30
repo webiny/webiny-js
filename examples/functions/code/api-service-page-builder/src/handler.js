@@ -17,9 +17,9 @@ export const handler = async (event: Object, context: Object) => {
             securityPlugins,
             i18nPlugins,
             pageBuilderPlugins(config),
-            mailchimpPlugins,
-            gtmPlugins,
-            cookiePolicyPlugins
+            mailchimpPlugins(config),
+            gtmPlugins(config),
+            cookiePolicyPlugins(config)
         ]);
 
         const { handler } = await createHandler({ plugins, config });
