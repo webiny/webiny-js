@@ -50,15 +50,14 @@ const useDataList = params => {
             multiSelect([]);
 
             if (!params) {
-                queryData.refetch(dataListProps.__loadParams);
-                return;
+                return queryData.refetch(dataListProps.__loadParams);
             }
 
             if (history) {
-                redirectToRouteWithQueryParams(params, { history, location });
-            } else {
-                queryData.refetch(params);
+                return redirectToRouteWithQueryParams(params, { history, location });
             }
+
+            return queryData.refetch(params);
         },
         setPerPage(perPage: number): void {
             const preparedParams = {
