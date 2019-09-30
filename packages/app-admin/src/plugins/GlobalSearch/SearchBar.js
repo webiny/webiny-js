@@ -45,6 +45,7 @@ class SearchBar extends React.Component<*, State> {
         plugins: {
             // List of all registered "global-search" plugins.
             list: getPlugins("global-search"),
+            hotKeys: getPlugins("global-search-prevent-hotkey"),
             // Current plugin - set by examining current route and its query params (on construct).
             current: undefined
         }
@@ -86,8 +87,11 @@ class SearchBar extends React.Component<*, State> {
     }
 
     handleOpenHotkey = e => {
-        if (e.target.nodeName !== "BODY") {
-            return;
+        for (let i = 0; i < this.state.plugins.hotKeys.length; i++) {
+            let hotKey = this.state.plugins.hotKeys[i];
+            if (hotKey.preventOpen(e)) {
+                return;
+            }
         }
 
         e.preventDefault();
