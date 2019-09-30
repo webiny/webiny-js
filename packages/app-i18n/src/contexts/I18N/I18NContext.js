@@ -27,7 +27,7 @@ const I18NContext = React.createContext();
 const defState = { initializing: false, currentLocale: null, locales: [] };
 
 const I18NProvider = ({ children }: Object) => {
-    const { loading, data } = useQuery(getI18NInformation);
+    const { loading, data, refetch } = useQuery(getI18NInformation);
 
     if (loading) {
         return <CircularProgress />;
@@ -36,6 +36,7 @@ const I18NProvider = ({ children }: Object) => {
     const { currentLocale, locales } = data.i18n.getI18NInformation;
 
     const value = {
+        refetchLocales: refetch,
         state: {
             ...defState,
             currentLocale,

@@ -3,6 +3,7 @@ import gql from "graphql-tag";
 
 const fields = /* GraphQL */ `
     {
+        id
         data {
             domain
             name

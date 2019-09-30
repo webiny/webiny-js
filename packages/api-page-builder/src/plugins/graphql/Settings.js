@@ -29,6 +29,7 @@ export default {
 
         type PbSettingsResponse {
             error: PbSettingsError
+            id: ID
             data: PbSettings
         }
 
@@ -81,10 +82,10 @@ export default {
     `,
     resolvers: {
         PbQuery: {
-            getSettings: resolveGetSettings(ctx => ctx.models.Settings)
+            getSettings: resolveGetSettings(ctx => ctx.models.PbSettings)
         },
         PbMutation: {
-            updateSettings: resolveUpdateSettings(ctx => ctx.models.Settings)
+            updateSettings: resolveUpdateSettings(ctx => ctx.models.PbSettings)
         },
         PbSocialMedia: {
             image({ image }) {

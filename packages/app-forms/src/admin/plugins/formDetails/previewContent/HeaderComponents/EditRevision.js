@@ -7,7 +7,7 @@ import { ReactComponent as EditIcon } from "@webiny/app-forms/admin/icons/edit.s
 import { useRevision } from "../../formRevisions/useRevision";
 
 const EditRevision = ({ revision }) => {
-    const { createRevision } = useRevision(revision);
+    const { createRevision } = useRevision({ revision });
     const { history } = useReactRouter();
 
     if (revision.status === "draft") {

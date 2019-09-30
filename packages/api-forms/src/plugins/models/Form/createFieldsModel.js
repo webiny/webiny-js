@@ -13,6 +13,7 @@ export default context =>
         placeholderText: i18nString({ context }),
         options: fields({
             list: true,
+            value: [],
             instanceOf: withFields({
                 label: i18nString({ context }),
                 value: string({ value: "" })
@@ -20,6 +21,7 @@ export default context =>
         }),
         validation: fields({
             list: true,
+            value: [],
             instanceOf: withFields({
                 name: string({ validation: validation.create("required") }),
                 message: i18nString({ context }),

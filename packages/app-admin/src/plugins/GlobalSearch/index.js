@@ -10,3 +10,13 @@ export const globalSearch: HeaderMiddlePlugin = {
         return <SearchBar />;
     }
 };
+
+export const globalSearchHotkey = {
+    type: "global-search-prevent-hotkey",
+    name: "global-search-prevent-hotkey-input",
+    preventOpen(e) {
+        if (e.target.nodeName === "INPUT") {
+            return true;
+        }
+    }
+};

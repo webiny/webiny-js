@@ -2,17 +2,17 @@
 import { ErrorResponse, Response, NotFoundResponse } from "@webiny/api";
 
 export default async (root: any, args: Object, context: Object) => {
-    const Page = context.getEntity("PbPage");
-    const Settings = context.getEntity("PbSettings");
+    const { PbPage, PbSettings } = context.models;
+
     const { id } = args;
 
-    const newHomePage = await Page.findById(id);
+    const newHomePage = await PbPage.findById(id);
 
     if (!newHomePage) {
         return new NotFoundResponse(id);
     }
 
-    const settings = await Settings.load();
+    const settings = await PbSettings.load();
     if (settings.data.pages.home === newHomePage.parent) {
         return new ErrorResponse({
             code: "ALREADY_HOMEPAGE",

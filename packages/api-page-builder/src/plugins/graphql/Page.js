@@ -285,7 +285,7 @@ export default {
             // Sets given page as home page.
             setHomePage,
             // Creates a revision from the given revision
-            createRevisionFrom: createRevisionFrom(pageFetcher),
+            createRevisionFrom: createRevisionFrom,
             // Updates revision
             updateRevision: resolveUpdate(pageFetcher),
             // Publish revision (must be given an exact revision ID to publish)

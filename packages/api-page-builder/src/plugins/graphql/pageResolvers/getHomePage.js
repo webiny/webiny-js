@@ -1,10 +1,11 @@
 // @flow
 import getPublishedPage from "./getPublishedPage";
+import { get } from "lodash";
 
 export default async (root: any, args: Object, context: Object) => {
-    const Settings = context.getEntity("PbSettings");
-    const settings = await Settings.load();
-    const parent = await settings.get("data.pages.home");
+    const { PbSettings } = context.models;
+    const settings = await PbSettings.load();
+    const parent = get(settings, "data.pages.home");
 
     return getPublishedPage(root, { ...args, parent }, context);
 };

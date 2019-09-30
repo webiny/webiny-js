@@ -5,6 +5,7 @@ import { ListErrorResponse, ListResponse, ErrorResponse } from "@webiny/api";
 import { hasScope } from "@webiny/api-security";
 import mailchimpSettings from "./mailchimpSettings.model";
 import MailchimpApi from "./MailchimpApi";
+import { get } from "lodash";
 
 export default () => [
     {
@@ -86,10 +87,10 @@ export default () => [
                     mailchimp: emptyResolver
                 },
                 MailchimpQuery: {
-                    listLists: async (_: any, args: Object, { getEntity }: Object) => {
-                        const MailchimpSettings = getEntity("MailchimpSettings");
+                    listLists: async (_: any, args: Object, context: Object) => {
+                        const { MailchimpSettings } = context.models;
                         const settings = await MailchimpSettings.load();
-                        if (!settings || !(await settings.get("data.apiKey"))) {
+                        if (!get(settings, "data.apiKey")) {
                             throw Error("Mailchimp API key not set.");
                         }
 
@@ -113,15 +114,11 @@ export default () => [
                     getSettings: resolveGetSettings(({ models }) => models.MailchimpSettings)
                 },
                 MailchimpMutation: {
-                    addToList: async (
-                        _: any,
-                        { list: listId, email }: Object,
-                        { mailchimp: { entities } }: Object
-                    ) => {
-                        const { MailchimpSettings } = entities;
+                    addToList: async (_: any, { list: listId, email }: Object, context: Object) => {
+                        const { MailchimpSettings } = context.models;
 
                         const settings = await MailchimpSettings.load();
-                        if (!settings || !(await settings.get("data.apiKey"))) {
+                        if (!get(settings, "data.apiKey")) {
                             throw Error("Mailchimp API key not set.");
                         }
 

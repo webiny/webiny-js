@@ -1,5 +1,5 @@
 // @flow
-import cmsPlugins from "@webiny/app-page-builder/site/plugins";
+import pageBuilderPlugins from "@webiny/app-page-builder/site/plugins";
 import { fileUploadPlugin, imagePlugin } from "@webiny/app/plugins";
 import cookiePolicyPlugins from "@webiny/app-cookie-policy/render";
 import typeformPlugins from "@webiny/app-typeform/render";
@@ -12,7 +12,7 @@ import formsCmsPlugins from "@webiny/app-forms/page-builder/site/plugins";
 const plugins = [
     fileUploadPlugin(),
     imagePlugin,
-    cmsPlugins,
+    pageBuilderPlugins,
     cookiePolicyPlugins,
     typeformPlugins,
     mailchimpPlugins,

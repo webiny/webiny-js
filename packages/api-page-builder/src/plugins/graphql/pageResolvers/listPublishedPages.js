@@ -51,8 +51,8 @@ export const listPublishedPages = async ({ args, PbPage, PbCategory }: Object) =
         if (PbCategory.isId(category)) {
             baseFilters.push({ category });
         } else {
-            const categoryEntity = await PbCategory.findOne({ query: { slug: category } });
-            baseFilters.push({ category: categoryEntity.id });
+            const categoryModel = await PbCategory.findOne({ query: { slug: category } });
+            baseFilters.push({ category: categoryModel.id });
         }
     }
 
@@ -72,13 +72,19 @@ export const listPublishedPages = async ({ args, PbPage, PbCategory }: Object) =
     }
 
     const pipelines = {
-        results: pipeline.concat({ $skip: (page - 1) * perPage }, { $limit: perPage }),
+        results: pipeline.concat(
+            { $skip: (page - 1) * perPage },
+            { $limit: perPage },
+            { $project: { id: 1 } }
+        ),
         totalCount: pipeline.concat({
             $count: "count"
         })
     };
 
-    const results = (await PbPage.aggregate(pipelines.results)) || [];
+    const ids = (await PbPage.aggregate(pipelines.results)) || [];
+    const results = await PbPage.findByIds(ids.map(item => item.id));
+
     const totalCount = get(await PbPage.aggregate(pipelines.totalCount), "0.count") || 0;
 
     const meta = createPaginationMeta({
