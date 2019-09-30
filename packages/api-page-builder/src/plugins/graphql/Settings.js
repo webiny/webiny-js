@@ -29,6 +29,7 @@ export default {
 
         type PbSettingsResponse {
             error: PbSettingsError
+            id: ID
             data: PbSettings
         }
 
