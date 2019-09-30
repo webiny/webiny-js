@@ -23,6 +23,9 @@ export default async (root: any, args: Object, context: Object) => {
                 createdOn: {
                     $first: "$createdOn"
                 },
+                savedOn: {
+                    $first: "$savedOn"
+                },
                 id: {
                     $first: "$id"
                 },
