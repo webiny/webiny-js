@@ -56,7 +56,7 @@ const NewFormDialog = ({
                                 return showSnackbar(response.error.message);
                             }
 
-                            formsDataList.refresh();
+                            await formsDataList.refresh();
                             history.push("/forms/" + response.data.id);
                         }}
                     >
