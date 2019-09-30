@@ -22,7 +22,7 @@ import {
 } from "@webiny/commodo";
 import { withAggregate } from "@commodo/fields-storage-mongodb";
 
-export default ({ context, createBase, FormSubmission, FormSettings }) => {
+export default ({ context, createBase, FormSettings }) => {
     const FormStatsModel = createFormStatsModel();
     const FormSettingsModel = createSettingsModel({ context, FormSettings });
     const FormFieldsModel = createFieldsModel(context);
@@ -240,6 +240,7 @@ export default ({ context, createBase, FormSubmission, FormSettings }) => {
                 // Validation passed, let's create a form submission.
                 const { i18n } = context;
 
+                const { FormSubmission } = context.models;
                 const formSubmission = new FormSubmission();
                 formSubmission.data = data;
                 formSubmission.meta = { ...meta, locale: i18n.getLocale().id };
