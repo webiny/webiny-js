@@ -7,8 +7,9 @@ export function useI18N() {
         return null;
     }
 
-    const { state, dispatch } = context;
+    const { state, refetchLocales, dispatch } = context;
     const self = {
+        refetchLocales,
         getDefaultLocale() {
             return state.locales.find(item => item.default === true);
         },
