@@ -1,0 +1,17 @@
+{
+ "body": {
+   "site": {
+     "id": "__tests__",
+     "uploadsFolder": {
+        "bucket": "webiny-cloud-z1",
+       "paths": {
+         "relative": "uploads/__tests__"
+       }
+     },
+     "region": "us-east-2"
+   },
+   "file": {
+     "name": "sample.jpg"
+   }
+ }
+}

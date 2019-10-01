@@ -1,0 +1,16 @@
+name: serverless-files
+
+vars:
+  env:
+    WEBINY_JWT_SECRET: ${env.WEBINY_JWT_SECRET}
+  database:
+    server: ${env.MONGODB_SERVER}
+    name: ${env.MONGODB_NAME}
+
+files:
+  component: ".."
+  inputs:
+    name: files
+    memory: 128
+    database: ${vars.database}
+    env: ${vars.env}
