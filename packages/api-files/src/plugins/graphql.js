@@ -18,7 +18,7 @@ export default ([
         schema: {
             typeDefs: gql`
                 input FileInput {
-                    id: ID!
+                    id: ID
                     name: String
                     size: Int
                     type: String

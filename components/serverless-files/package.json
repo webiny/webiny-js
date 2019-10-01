@@ -10,6 +10,7 @@
     "webpack": "^4.39.2"
   },
   "scripts": {
+    "deploy-it": "webpack && cd test && sls remove && rm -rf .serverless && sls --debug",
     "build": "rm -rf dist && mkdir dist && cp serverless.js package.json dist/",
     "prepublishOnly": "yarn build"
   }

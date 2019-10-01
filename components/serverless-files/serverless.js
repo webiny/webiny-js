@@ -19,11 +19,11 @@ class FilesComponent extends Component {
         const lambda1 = await this.load("@serverless/function", "read");
         const readFn = await lambda1({
             timeout: 10,
-            code: join(__dirname, "functions", "read"),
+            code: join(__dirname, "functions", "download"),
             handler: "handler.handler",
-            description: "Read files",
+            description: "Serves previously uploaded files.",
             env: {
-                BUCKET: s3Output.arn
+                S3_BUCKET: s3Output.arn
             }
         });
 
@@ -32,9 +32,9 @@ class FilesComponent extends Component {
             timeout: 10,
             code: join(__dirname, "build", "upload"),
             handler: "handler.handler",
-            description: "Upload files",
+            description: "Returns pre-signed POST data for client-side file uploads.",
             env: {
-                BUCKET: s3Output.arn
+                S3_BUCKET: s3Output.arn
             }
         });
 
@@ -43,8 +43,8 @@ class FilesComponent extends Component {
         const apolloOutput = await apolloService({
             plugins,
             extraEndpoints: [
-                { path: "/download", method: "GET", function: readFn.arn },
-                { path: "/upload", method: "POST", function: uploadFn.arn }
+                { path: "/download/{key+}", method: "ANY", function: readFn.arn },
+                { path: "/upload", method: "ANY", function: uploadFn.arn },
             ],
             ...rest
         });
