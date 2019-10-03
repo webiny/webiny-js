@@ -1,10 +1,6 @@
 const ConfigureApiGateway = require("aws-sdk/clients/apigateway");
 
-const DOWNLOAD_ENDPOINT_PATH = "/download/{path}";
-
 const BINARY_MEDIA_TYPES = ["*/*"];
-
-const isDownloadEndpoint = endpoint => endpoint.path === DOWNLOAD_ENDPOINT_PATH;
 
 /**
  * Enables support for binary media types and conversion of base64-encoded
@@ -18,19 +14,8 @@ module.exports = async apiGatewayOutput => {
     });
 
     const restApiId = apiGatewayOutput.id;
-    const resourceId = apiGatewayOutput.endpoints.find(isDownloadEndpoint).id;
 
     try {
-        await apiGatewayInstance
-            .putIntegrationResponse({
-                statusCode: "200",
-                httpMethod: "GET",
-                contentHandling: "CONVERT_TO_BINARY",
-                restApiId,
-                resourceId
-            })
-            .promise();
-
         await apiGatewayInstance
             .updateRestApi({
                 restApiId,

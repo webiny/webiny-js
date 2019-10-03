@@ -48,7 +48,7 @@ class FilesComponent extends Component {
             plugins,
             extraEndpoints: [
                 { path: "/download/{path}", method: "GET", function: readFn.arn },
-                { path: "/upload", method: "ANY", function: uploadFn.arn }
+                { path: "/upload", method: "POST", function: uploadFn.arn }
             ],
             ...rest
         });
