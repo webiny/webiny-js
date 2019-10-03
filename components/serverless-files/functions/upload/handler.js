@@ -5,10 +5,9 @@ const mime = require("mime");
 const { getS3Data, createHandler } = require("../utils");
 
 module.exports.handler = createHandler(async event => {
-    console.log('dobeeeeeo', event)
-    const file = JSON.parse(event.body);
+    const body = Buffer.from(event.body, 'base64').toString('utf-8');
+    const file = JSON.parse(body);
 
-    console.log('a u kurac')
     if (!file) {
         throw Error(`Field "file" is missing.`);
     }
