@@ -38,7 +38,7 @@ class FilesComponent extends Component {
             handler: "handler.handler",
             description: "Returns pre-signed POST data for client-side file uploads.",
             env: {
-                S3_BUCKET: s3Output.arn
+                S3_BUCKET: '123'
             }
         });
 
@@ -47,8 +47,8 @@ class FilesComponent extends Component {
         const apolloOutput = await apolloService({
             plugins,
             extraEndpoints: [
-                { path: "/download/{path}", method: "GET", function: readFn.arn },
-                { path: "/upload", method: "POST", function: uploadFn.arn }
+                { path: "/download/{path}", method: "ANY", function: readFn.arn },
+                { path: "/upload", method: "ANY", function: uploadFn.arn }
             ],
             ...rest
         });
