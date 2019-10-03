@@ -7,7 +7,7 @@ export default (config: Object = {}): FileUploaderPlugin => ({
     type: "file-uploader",
     name: "file-uploader",
     upload: async (file: File) => {
-        const uri = config.uri || "https://9l196dvtn4.execute-api.us-east-1.amazonaws.com/prod/upload";
+        const uri = config.uri || "https://9qaw9vy7d0.execute-api.us-east-1.amazonaws.com/prod/upload";
 
         const presignedPostPayload = await new Promise(resolve => {
             const xhr = new window.XMLHttpRequest();

@@ -3,12 +3,10 @@ import objectHash from "object-hash";
 
 const SUPPORTED_IMAGE_RESIZE_WIDTHS = [100, 300, 500, 750, 1000, 1500, 2500];
 
-type SanitizedImageOptionsType = { hasOptions: boolean, options: Object, hash: string };
-
 /**
  * Takes only allowed options into consideration, and discards the rest.
  */
-const sanitizeImageOptions = (args): SanitizedImageOptionsType => {
+const sanitizeImageOptions = args => {
     const output = { options: {}, hasOptions: false, hash: "" };
 
     if (args) {

@@ -1,6 +1,5 @@
 // @flow
 import { sanitizeImageOptions } from "./images";
-import type { DownloadFileProcessorType } from "webiny-proxy-files/types";
 import Lambda from "aws-sdk/clients/lambda";
 
 const SUPPORTED_IMAGES = [".jpg", ".jpeg", ".png", ".svg", ".gif"];
@@ -14,7 +13,7 @@ const SUPPORTED_PROCESSABLE_IMAGES = [".jpg", ".jpeg", ".png"];
 const PROCESSED_IMAGE_PREFIX = "image_processed_";
 const ORIGINAL_IMAGE_PREFIX = "image_original_";
 
-export default ({
+export default {
     canProcess: ({ file }) => {
         return SUPPORTED_IMAGES.includes(file.extension);
     },
@@ -100,4 +99,4 @@ export default ({
             };
         }
     }
-}: DownloadFileProcessorType);
+};

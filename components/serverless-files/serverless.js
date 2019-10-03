@@ -1,4 +1,5 @@
 const { join } = require("path");
+const { configureS3, configureApiGateway } = require("./components");
 const { Component } = require("@serverless/core");
 
 /**
@@ -11,15 +12,17 @@ class FilesComponent extends Component {
         const { bucket = "webiny-files", ...rest } = input;
         const plugins = ["@webiny/api-files/plugins"];
 
-        // Create s3 bucket
+        // Create S3 bucket for storing files.
         const s3 = await this.load("@serverless/aws-s3");
-        const s3Output = s3({ name: bucket });
+        const s3Output = await s3({ name: bucket });
+        await configureS3(s3Output);
 
         // Deploy read/upload lambdas
-        const lambda1 = await this.load("@serverless/function", "read");
+        const lambda1 = await this.load("@serverless/function", "download");
         const readFn = await lambda1({
+            name: "Files component - download files",
             timeout: 10,
-            code: join(__dirname, "functions", "download"),
+            code: join(__dirname, "build", "download"),
             handler: "handler.handler",
             description: "Serves previously uploaded files.",
             env: {
@@ -29,6 +32,7 @@ class FilesComponent extends Component {
 
         const lambda2 = await this.load("@serverless/function", "upload");
         const uploadFn = await lambda2({
+            name: "Files component - upload files",
             timeout: 10,
             code: join(__dirname, "build", "upload"),
             handler: "handler.handler",
@@ -43,11 +47,13 @@ class FilesComponent extends Component {
         const apolloOutput = await apolloService({
             plugins,
             extraEndpoints: [
-                { path: "/download/{key+}", method: "ANY", function: readFn.arn },
-                { path: "/upload", method: "ANY", function: uploadFn.arn },
+                { path: "/download/{path}", method: "GET", function: readFn.arn },
+                { path: "/upload", method: "ANY", function: uploadFn.arn }
             ],
             ...rest
         });
+
+        await configureApiGateway(apolloOutput.api);
 
         const output = {
             api: apolloOutput.api,
@@ -55,15 +61,13 @@ class FilesComponent extends Component {
             cdnOrigin: {
                 url: apolloOutput.api.url,
                 pathPatterns: {
-                    // potweakaj kako ti pase
+                    // TODO: potweakaj kako ti pase
                     "/read": {
                         ttl: 60
                     }
                 }
             }
         };
-
-        console.log(output.api)
 
         this.state.output = output;
         await this.save();
