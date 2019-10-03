@@ -1,5 +1,3 @@
-const path = require("path");
-const execa = require("execa");
 const { Component } = require("@serverless/core");
 
 class ServerlessApp extends Component {

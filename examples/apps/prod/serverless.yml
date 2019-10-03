@@ -1,8 +1,8 @@
 name: webiny-cms
 
 components:
-  function: '../../../node_modules/@webiny/serverless-function'
-  api: '../../../node_modules/@webiny/serverless-api'
+  function: '@webiny/serverless-function'
+  api: '@webiny/serverless-api'
 
 site:
   component: ${components.function}
@@ -13,7 +13,7 @@ site:
     handler: handler.handler
     name: webiny-site
     description: Webiny Site
-    #hook: yarn build:prod
+    hook: yarn build:prod
 #admin:
 #  component: '@serverless/function'
 #  inputs:
@@ -23,7 +23,7 @@ site:
 #    description: Webiny Admin
 
 api:
-  component: ${components.api}
+  component: "@serverless/api"
   inputs:
     description: Serverless Site
     stage: prod

@@ -8,6 +8,7 @@ import plugins from "./plugins";
 import myTheme from "theme";
 import { GenericNotFoundPage, GenericErrorPage } from "./pageBuilder";
 import { I18NProvider } from "@webiny/app-i18n/contexts/I18N";
+import slika from "./slika.png";
 
 registerPlugins(plugins);
 
@@ -30,6 +31,7 @@ const App = () => {
                         React.cloneElement(pl.route, { key: pl.name, exact: true })
                     )}
                 </PageBuilderProvider>
+                <img src={slika} alt={"Slika"}/>
             </UiProvider>
         </I18NProvider>
     );
