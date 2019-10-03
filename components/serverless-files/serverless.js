@@ -7,8 +7,8 @@ const { Component } = require("@serverless/core");
  * - API GW for /graphql, /read, /upload
  */
 class FilesComponent extends Component {
-    async default(input = {}) {
-        const { bucket = "webiny-files", ...rest } = input;
+    async default(inputs = {}) {
+        const { bucket = "webiny-files", ...rest } = inputs;
         const plugins = ["@webiny/api-files/plugins"];
 
         // Deploy graphql API
@@ -74,7 +74,7 @@ class FilesComponent extends Component {
         return output;
     }
 
-    async remove(input = {}) {
+    async remove(inputs = {}) {
         // TODO: remove all created resources
     }
 }

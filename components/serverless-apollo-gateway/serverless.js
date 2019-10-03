@@ -4,9 +4,14 @@ const { transform } = require("@babel/core");
 const prettier = require("prettier");
 const { Component } = require("@serverless/core");
 const webpack = require("webpack");
+const tracking = require("@webiny/serverless-component-tracking");
+
+const component = "@webiny/serverless-apollo-gateway";
 
 class ApolloGateway extends Component {
-    async default(inputs = {}) {
+    async default({ track, ...inputs } = {}) {
+        await tracking({ track, context: this.context, component });
+
         const {
             name: componentName = null,
             services = [],
@@ -88,7 +93,9 @@ class ApolloGateway extends Component {
         });
     }
 
-    async remove(inputs = {}) {
+    async remove({ track, ...inputs } = {}) {
+        await tracking({ track, context: this.context, component, method: "remove" });
+
         const lambda = await this.load("@serverless/function");
         await lambda.remove(inputs);
     }

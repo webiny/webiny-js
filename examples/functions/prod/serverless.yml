@@ -72,7 +72,7 @@ pageBuilder:
       - "@webiny/api-cookie-policy"
 
 api:
-  component: "@serverless/aws-api-gateway"
+  component: "@webiny/serverless-api-gateway"
   inputs:
     description: "Main GraphQL API"
     stage: prod
@@ -80,7 +80,7 @@ api:
     endpoints:
       - path: /graphql
         method: ANY
-        function: ${gateway.arn}
+        function: ${gateway}
 
 cdn:
   component: "@serverless/aws-cloudfront"

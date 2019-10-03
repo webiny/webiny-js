@@ -1,6 +1,6 @@
 const Cognito = require("aws-sdk/clients/cognitoidentityserviceprovider");
 const { Component } = require("@serverless/core");
-const createTracker = require("@webiny/serverless-component-tracking");
+const tracking = require("@webiny/serverless-component-tracking");
 const isEqual = require("lodash.isequal");
 
 const defaultPasswordPolicy = {
@@ -15,21 +15,18 @@ const defaultPasswordPolicy = {
 const component = "@webiny/serverless-aws-cognito-user-pool";
 
 class ServerlessAwsCognito extends Component {
-    async default(input = {}) {
-        const track = await createTracker(this.context);
-        await track({ component, method: "deploy" });
+    async default({ track, ...inputs } = {}) {
+        await tracking({ track, context: this.context, component });
 
-        return;
-
-        if (isEqual(this.state.input, input)) {
+        if (isEqual(this.state.input, inputs)) {
             this.context.debug("Input was not changed, no action required.");
             return this.state.output;
         } else {
             // TODO: need to update userPool if it already exists.
         }
 
-        const { region = "us-east-1", name, tags = {} } = input;
-        const passwordPolicy = Object.assign({}, defaultPasswordPolicy, input.passwordPolicy);
+        const { region = "us-east-1", name, tags = {} } = inputs;
+        const passwordPolicy = Object.assign({}, defaultPasswordPolicy, inputs.passwordPolicy);
 
         const params = {
             PoolName: name,
@@ -126,15 +123,16 @@ class ServerlessAwsCognito extends Component {
 
         this.state.output = UserPool;
         this.state.output.id = UserPool.Id;
-        this.state.input = input;
+        this.state.inputs = inputs;
         await this.save();
 
         return UserPool;
     }
 
-    async remove(input = {}) {
-        const { region = "us-east-1" } = input;
+    async remove({ track, ...inputs } = {}) {
+        await tracking({ track, context: this.context, component, method: "remove" });
 
+        const { region = "us-east-1" } = inputs;
         const cognito = new Cognito({ region });
 
         this.context.debug(`Removing Cognito User Pool ${this.state.output.id}`);

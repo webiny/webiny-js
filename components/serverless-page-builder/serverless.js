@@ -1,14 +1,19 @@
 const { Component } = require("@serverless/core");
+const tracking = require("@webiny/serverless-component-tracking");
 
-class PageBuilder extends Component {
-    async default(inputs = {}) {
+const component = "@webiny/serverless-page-builder";
+
+class ServerlessPageBuilder extends Component {
+    async default({ track, ...inputs } = {}) {
+        await tracking({ track, context: this.context, component });
+
         const { plugins = [], ...rest } = inputs;
 
         plugins.unshift("@webiny/api-page-builder/plugins");
 
         // Deploy graphql API
         const apolloService = await this.load("@webiny/serverless-apollo-service");
-        const output = await apolloService({ plugins, ...rest });
+        const output = await apolloService({ plugins, ...rest, track: false });
 
         this.state.output = output;
         await this.save();
@@ -16,14 +21,12 @@ class PageBuilder extends Component {
         return output;
     }
 
-    async remove(inputs = {}) {
-        const apolloService = await this.load("@webiny/serverless-apollo-service");
-        return await apolloService.remove(inputs);
-    }
+    async remove({ track, ...inputs } = {}) {
+        await tracking({ track, context: this.context, component, method: "remove" });
 
-    async install(inputs = {}) {
-        console.log("Installing....");
+        const apolloService = await this.load("@webiny/serverless-apollo-service");
+        return await apolloService.remove({ ...inputs, track: false });
     }
 }
 
-module.exports = PageBuilder;
+module.exports = ServerlessPageBuilder;

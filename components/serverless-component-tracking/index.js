@@ -9,12 +9,16 @@ const prefix = "[Webiny]";
 
 let visitor, config;
 
-module.exports = async context => {
+module.exports = ({ context, component, method = "deploy", track = true }) => {
+    if (track === false) {
+        return;
+    }
+
     if (!config) {
         const dataPath = path.join(os.homedir(), ".webiny", "config");
         let userId, trackingDisabled;
         try {
-            config = await readJson(dataPath);
+            config = readJson.sync(dataPath);
             userId = config.id;
             if (!userId) {
                 throw Error("Invalid Webiny config!");
@@ -25,7 +29,7 @@ module.exports = async context => {
             userId = uuid();
             trackingDisabled = false;
             context.debug(`${prefix} Created new config, user ID: ${userId}`);
-            await writeJson(dataPath, { id: userId });
+            writeJson.sync(dataPath, { id: userId });
             config = { id: userId, trackingDisabled };
         }
 
@@ -36,22 +40,23 @@ module.exports = async context => {
     }
 
     if (config.trackingDisabled) {
-        return () => {};
+        return;
     }
 
-    return ({ component, method }) => {
-        context.debug(`${prefix} Tracking event: ${component} - ${method}`);
-        return new Promise(resolve => {
-            visitor
-                .event(
-                    {
-                        ec: component,
-                        ea: method,
-                        instance: context.instance.id
-                    },
-                    resolve
-                )
-                .send();
-        });
-    };
+    context.debug(`${prefix} Tracking component: ${component} (${method})`);
+
+    return;
+
+    return new Promise(resolve => {
+        visitor
+            .event(
+                {
+                    ec: component,
+                    ea: method,
+                    instance: context.instance.id
+                },
+                resolve
+            )
+            .send();
+    });
 };

@@ -2807,6 +2807,22 @@
   dependencies:
     any-observable "^0.3.0"
 
+"@serverless/api@^2.0.0":
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/@serverless/api/-/api-2.0.0.tgz#f2bac3a1217259132eafb848c0e2f8eeb025fb9a"
+  integrity sha512-V9FmaZ68g5YGv05lARJOi6MZ1vDOnR0QWi1POypfD7BTFZFdmwDXSuPMz3NODwWILVf8gD3GihIztv3QMEc/jw==
+  dependencies:
+    "@serverless/aws-api-gateway" "^1.0.0"
+    "@serverless/core" "^1.0.0"
+
+"@serverless/aws-api-gateway@^1.0.0":
+  version "1.2.0"
+  resolved "https://registry.yarnpkg.com/@serverless/aws-api-gateway/-/aws-api-gateway-1.2.0.tgz#ea64b326c08de58811ed1f348dc62071ff989719"
+  integrity sha512-UAHe1TnzoUAiwFtif0VLySyrjIF6uso1cBIl2Pb1Xx9Zju/qwfxGdmDK+NcUdybNB5a260ovALTZvC5M0QE92Q==
+  dependencies:
+    "@serverless/core" "^1.0.0"
+    aws-sdk "^2.0.0"
+
 "@serverless/aws-api-gateway@^2.0.0":
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/@serverless/aws-api-gateway/-/aws-api-gateway-2.0.0.tgz#3a2de01aed6d4b9abb026b2c46dbb560c96a65bb"
