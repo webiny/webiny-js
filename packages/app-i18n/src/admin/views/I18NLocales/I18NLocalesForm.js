@@ -8,6 +8,7 @@ import { Switch } from "@webiny/ui/Switch";
 import { CircularProgress } from "@webiny/ui/Progress";
 import LocaleCodesAutoComplete from "./LocaleCodesAutoComplete";
 import { useCrud } from "@webiny/app-admin/hooks/useCrud";
+import { useI18N } from "@webiny/app-i18n/hooks/useI18N";
 import {
     SimpleForm,
     SimpleFormFooter,
@@ -20,9 +21,16 @@ const t = i18n.ns("app-i18n/admin/locales/form");
 
 const I18NLocaleForm = () => {
     const { form } = useCrud();
+    const { refetchLocales } = useI18N();
 
     return (
-        <Form {...form}>
+        <Form
+            {...form}
+            onSubmit={async data => {
+                await form.onSubmit(data);
+                refetchLocales();
+            }}
+        >
             {({ data, form, Bind }) => (
                 <SimpleForm>
                     {form.loading && <CircularProgress />}

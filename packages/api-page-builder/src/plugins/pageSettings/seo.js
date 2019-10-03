@@ -14,6 +14,7 @@ export default [
                     description: string(),
                     meta: fields({
                         list: true,
+                        value: [],
                         instanceOf: withFields({
                             name: string(),
                             content: string()

@@ -19,7 +19,12 @@ function Forms() {
 
     return (
         <>
-            <NewFormDialog open={newFormDialogOpened} onClose={() => openNewFormDialog(false)} />
+            <NewFormDialog
+                open={newFormDialogOpened}
+                onClose={() => openNewFormDialog(false)}
+                formsDataList={dataList}
+            />
+
             <SplitView>
                 <LeftPanel span={4}>
                     <FormsDataList dataList={dataList} />

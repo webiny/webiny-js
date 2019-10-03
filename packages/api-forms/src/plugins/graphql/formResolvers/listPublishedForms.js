@@ -52,13 +52,19 @@ export const listPublishedForms = async ({ args, Form }: Object) => {
     }
 
     const pipelines = {
-        results: pipeline.concat({ $skip: (page - 1) * perPage }, { $limit: perPage }),
+        results: pipeline.concat(
+            { $skip: (page - 1) * perPage },
+            { $limit: perPage },
+            { $project: { id: 1 } }
+        ),
         totalCount: pipeline.concat({
             $count: "count"
         })
     };
 
-    const results = (await Form.aggregate(pipelines.results)) || [];
+    const ids = (await Form.aggregate(pipelines.results)) || [];
+    const results = await Form.findByIds(ids.map(item => item.id));
+
     const totalCount = get(await Form.aggregate(pipelines.totalCount), "0.count") || 0;
 
     const meta = createPaginationMeta({

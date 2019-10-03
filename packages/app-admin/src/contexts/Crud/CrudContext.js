@@ -105,9 +105,9 @@ export const CrudProvider = ({ children, ...props }: Props) => {
                 const error = get(props[action], "getError", getError)(response.data);
 
                 if (error) {
-                    if (error.code === "INVALID_ATTRIBUTES") {
+                    if (error.code === "VALIDATION_FAILED_INVALID_FIELDS") {
                         showSnackbar(t`One or more fields invalid.`);
-                        setInvalidFields(error.data.invalidAttributes);
+                        setInvalidFields(error.data.invalidFields);
                     } else {
                         let message = error.message || t`Could not save record.`;
                         showDialog(message, {

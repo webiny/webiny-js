@@ -11,6 +11,7 @@ export default [
                 value: {},
                 instanceOf: withFields({
                     meta: fields({
+                        value: [],
                         list: true,
                         instanceOf: withFields({
                             property: string(),

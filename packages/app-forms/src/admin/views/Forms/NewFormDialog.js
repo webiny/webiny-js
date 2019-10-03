@@ -23,7 +23,15 @@ const narrowDialog = css({
     }
 });
 
-const NewFormDialog = ({ open, onClose }: { open: boolean, onClose: Function }) => {
+const NewFormDialog = ({
+    open,
+    onClose,
+    formsDataList
+}: {
+    open: boolean,
+    onClose: Function,
+    formsDataList: Object
+}) => {
     // $FlowFixMe
     const [loading, setLoading] = React.useState(false);
     const { showSnackbar } = useSnackbar();
@@ -38,17 +46,17 @@ const NewFormDialog = ({ open, onClose }: { open: boolean, onClose: Function }) 
                             setLoading(true);
                             const response = get(
                                 await update({
-                                    variables: data,
-                                    refetchQueries: ["FormsListForms"]
+                                    variables: data
                                 }),
                                 "data.forms.form"
                             );
-                            setLoading(false);
 
                             if (response.error) {
+                                setLoading(false);
                                 return showSnackbar(response.error.message);
                             }
 
+                            await formsDataList.refresh();
                             history.push("/forms/" + response.data.id);
                         }}
                     >

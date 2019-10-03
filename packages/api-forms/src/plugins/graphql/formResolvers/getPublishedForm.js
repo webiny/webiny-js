@@ -20,7 +20,7 @@ export default async (root: any, args: Object, context: Object) => {
         listArgs.sort = { version: -1 };
     }
 
-    const listContext = { Form: context.getEntity("Form"), args: listArgs };
+    const listContext = { Form: context.models.Form, args: listArgs };
     const [form] = await listPublishedForms(listContext);
 
     if (!form) {

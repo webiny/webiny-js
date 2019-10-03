@@ -3,6 +3,8 @@ import * as React from "react";
 import { i18n } from "@webiny/app/i18n";
 import { ConfirmationDialog } from "@webiny/ui/ConfirmationDialog";
 import { useCrud } from "@webiny/app-admin/hooks/useCrud";
+import { useI18N } from "@webiny/app-i18n/hooks/useI18N";
+
 import {
     DataList,
     ScrollList,
@@ -18,6 +20,7 @@ const t = i18n.ns("app-i18n/admin/locales/data-list");
 
 const I18NLocalesDataList = () => {
     const { actions, list } = useCrud();
+    const { refetchLocales } = useI18N();
 
     return (
         <DataList
@@ -45,7 +48,10 @@ const I18NLocalesDataList = () => {
                                         {({ showConfirmation }) => (
                                             <DeleteIcon
                                                 onClick={() =>
-                                                    showConfirmation(() => actions.delete(item))
+                                                    showConfirmation(async () => {
+                                                        await actions.delete(item);
+                                                        refetchLocales();
+                                                    })
                                                 }
                                             />
                                         )}

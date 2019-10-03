@@ -15,7 +15,7 @@ const saveFormView = ({ data, client }: FormRenderComponentPropsType) => {
         return;
     }
 
-    set(window, "localStorage.form_view_" + data.id);
+    set(window, "localStorage.form_view_" + data.id, 1);
     client.mutate({
         mutation: SAVE_FORM_VIEW,
         variables: {

@@ -1,21 +1,14 @@
 // @flow
 import { ErrorResponse, NotFoundResponse, Response } from "@webiny/api";
 
-type EntityFetcher = (context: Object) => Class<Entity>;
-
-export default (entityFetcher: EntityFetcher) => async (
-    root: any,
-    args: Object,
-    context: Object
-) => {
-    const pageClass = entityFetcher(context);
-
-    const sourceRev: IPage = (await pageClass.findById(args.revision): any);
+export default async (root: any, args: Object, context: Object) => {
+    const { PbPage } = context.models;
+    const sourceRev = (await PbPage.findById(args.revision): any);
     if (!sourceRev) {
         return new NotFoundResponse(`Revision with id "${args.revision}" was not found!`);
     }
 
-    const newRevision: IPage = (new pageClass(): any);
+    const newRevision = (new PbPage(): any);
     try {
         newRevision.populate({
             url: sourceRev.url,

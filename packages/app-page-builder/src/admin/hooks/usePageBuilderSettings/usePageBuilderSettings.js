@@ -5,10 +5,11 @@ import gql from "graphql-tag";
 import { get } from "lodash";
 import formatPreviewUrl from "./formatPreviewUrl";
 
-const domainQuery = gql`
+const DOMAIN_QUERY = gql`
     {
         pageBuilder {
             getSettings {
+                id
                 data {
                     domain
                 }
@@ -18,7 +19,7 @@ const domainQuery = gql`
 `;
 
 export function usePageBuilderSettings() {
-    const { data, loading } = useQuery(domainQuery);
+    const { data, loading } = useQuery(DOMAIN_QUERY);
 
     const getPagePreviewUrl = useCallback(
         (page: Object) => {

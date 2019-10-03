@@ -11,7 +11,7 @@ import Menu from "@webiny/app-admin/plugins/Menu";
 import Logo from "@webiny/app-admin/plugins/Logo";
 import FileManager from "@webiny/app-admin/plugins/FileManager";
 import UserMenu from "@webiny/app-admin/plugins/UserMenu";
-import { globalSearch } from "@webiny/app-admin/plugins/GlobalSearch";
+import { globalSearch, globalSearchHotkey } from "@webiny/app-admin/plugins/GlobalSearch";
 
 // User menu plugins
 import DarkMode from "@webiny/app-admin/plugins/UserMenu/plugins/DarkMode";
@@ -36,6 +36,7 @@ export default [
     FileManager,
     UserMenu,
     globalSearch,
+    globalSearchHotkey,
     DarkMode,
     DefaultHandle,
     Help,

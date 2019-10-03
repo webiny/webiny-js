@@ -1,13 +1,42 @@
-# Webiny API
+# @webiny/app-i18n
+[![](https://img.shields.io/npm/dw/@webiny/app-i18n.svg)](https://www.npmjs.com/package/@webiny/app-i18n) 
+[![](https://img.shields.io/npm/v/@webiny/app-i18n.svg)](https://www.npmjs.com/package/@webiny/app-i18n)
+[![code style: prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg?style=flat-square)](https://github.com/prettier/prettier)
+[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](http://makeapullrequest.com)
 
-Express middleware to quickly build powerful REST APIs.
+An app for creating forms that can be embedded into pages created with [Webiny Page Builder](../api-page-builder). 
 
-It provides support for running multiple apps, both 3rd party and the ones you create.
-In combination with `webiny-entity` library it makes development of business applications a breeze.
+Use together with [@webiny/api-i18n](../api-i18n) package.
 
-We are developing this with `serverless` in mind so you will not be limited by your server (or the lack of one :)).
+## Install
+```
+npm install --save @webiny/app-i18n
+```
 
-Integration with your existing node apps will also be seamless as long as you support the standard middleware function signature: `(req, res, next)`.     
-  
-## Usage
-Docs coming before the first official release.
+Or if you prefer yarn: 
+```
+yarn add @webiny/app-i18n
+```
+
+## Setup
+To setup, you must register a set of plugins. For more information on 
+plugins, please visit [Webiny documentation](https://docs.webiny.com/docs/developer-tutorials/plugins-crash-course).
+
+#### Admin
+```
+import { registerPlugins } from "@webiny/plugins";
+import i18nPlugins from "@webiny/app-i18n/admin/plugins";
+
+registerPlugins(i18nPlugins);
+```
+
+Note: the `i18nCmsPlugins` contains plugins for the Page Builder, which will
+enable you to embed i18n in your pages.
+    
+#### Site
+```
+import { registerPlugins } from "@webiny/plugins";
+import i18nPlugins from "@webiny/app-i18n/site/plugins";
+
+registerPlugins(i18nPlugins);
+```
