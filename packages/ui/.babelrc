@@ -16,10 +16,7 @@
           "ReactComponent": "@svgr/webpack![path]"
         }
       }
-    }],
-    ["@babel/plugin-proposal-class-properties"],
-    ["@babel/plugin-proposal-object-rest-spread", {"useBuiltIns": true}],
-    ["@babel/plugin-transform-runtime"]
+    }]
   ]
 }
 

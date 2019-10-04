@@ -9,8 +9,6 @@
         "@babel/preset-flow"
     ],
     "plugins": [
-        ["babel-plugin-lodash"],
-        ["@babel/plugin-proposal-object-rest-spread", {"useBuiltIns": true}],
-        ["@babel/plugin-transform-runtime"]
+        ["babel-plugin-lodash"]
     ]
 }
