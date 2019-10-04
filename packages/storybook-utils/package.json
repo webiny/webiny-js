@@ -31,7 +31,7 @@
   },
   "peerDependencies": {
     "react": "^16.8.0",
-    "react-dom": "^16.4.0"
+    "react-dom": "^16.8.0"
   },
   "scripts": {
     "build": "babel src -d dist --source-maps --copy-files",

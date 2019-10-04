@@ -8,5 +8,9 @@
     "request": "^2.88.0",
     "uuid": "^3.3.3",
     "write-json-file": "^4.2.0"
+  },
+  "scripts": {
+    "build": "rm -rf dist && mkdir dist && cp index.js package.json dist/",
+    "prepublishOnly": "yarn build"
   }
 }

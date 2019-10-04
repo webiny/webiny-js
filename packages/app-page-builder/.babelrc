@@ -9,6 +9,7 @@
         "@babel/preset-flow"
     ],
     "plugins": [
+        ["@babel/plugin-proposal-class-properties"],
         ["babel-plugin-emotion", { "autoLabel": true }],
         ["babel-plugin-lodash", { "id": ["lodash"] }],
         ["babel-plugin-named-asset-import", {

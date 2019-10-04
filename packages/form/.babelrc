@@ -9,7 +9,8 @@
         "@babel/preset-flow"
     ],
     "plugins": [
-        ["babel-plugin-lodash"]
+        "babel-plugin-lodash",
+        "@babel/plugin-proposal-class-properties"
     ]
 }
 

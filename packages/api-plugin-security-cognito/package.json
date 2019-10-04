@@ -25,6 +25,7 @@
     "access": "public"
   },
   "scripts": {
-    "build": "babel src -d dist --source-maps --copy-files"
+    "build": "babel src -d dist --source-maps --copy-files",
+    "prepublishOnly": "yarn build"
   }
 }

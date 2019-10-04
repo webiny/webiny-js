@@ -4,6 +4,7 @@
             "targets": {
                 "node": "8.10"
             }
-        }]
+        }],
+        "@babel/preset-flow"
     ]
 }
