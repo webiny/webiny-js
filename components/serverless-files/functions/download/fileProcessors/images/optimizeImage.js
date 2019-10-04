@@ -1,4 +1,4 @@
-import sharp from "sharp";
+const sharp = require("sharp");
 
 const optimizeImage = async (buffer, type) => {
     switch (type) {

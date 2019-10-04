@@ -1,4 +1,4 @@
-import sharp from "sharp";
+const sharp = require("sharp");
 
 /**
  * Only processing "width" at the moment.
