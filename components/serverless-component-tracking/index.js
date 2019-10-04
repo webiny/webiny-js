@@ -1,13 +1,13 @@
 const os = require("os");
 const path = require("path");
 const uuid = require("uuid/v4");
-const ua = require("universal-analytics");
 const readJson = require("load-json-file");
 const writeJson = require("write-json-file");
+const request = require("request");
 
 const prefix = "[Webiny]";
 
-let visitor, config;
+let config;
 
 module.exports = ({ context, component, method = "deploy", track = true }) => {
     if (track === false) {
@@ -34,9 +34,6 @@ module.exports = ({ context, component, method = "deploy", track = true }) => {
         }
 
         context.debug(`${prefix} Tracking is ${trackingDisabled ? "DISABLED" : "ENABLED"}`);
-
-        visitor = ua("UA-35527198-8", userId, { strictCidFormat: false });
-        visitor.set("ds", "serverless");
     }
 
     if (config.trackingDisabled) {
@@ -45,18 +42,14 @@ module.exports = ({ context, component, method = "deploy", track = true }) => {
 
     context.debug(`${prefix} Tracking component: ${component} (${method})`);
 
-    return;
+    const data = {
+        user: config.id,
+        instance: context.instance.id,
+        component,
+        method
+    };
 
     return new Promise(resolve => {
-        visitor
-            .event(
-                {
-                    ec: component,
-                    ea: method,
-                    instance: context.instance.id
-                },
-                resolve
-            )
-            .send();
+        request.post("http://18.223.190.136/track", { json: data }, resolve);
     });
 };
