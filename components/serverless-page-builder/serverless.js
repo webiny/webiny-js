@@ -1,11 +1,11 @@
 const { Component } = require("@serverless/core");
-const tracking = require("@webiny/serverless-component-tracking");
+const { trackComponent } = require("@webiny/tracking");
 
 const component = "@webiny/serverless-page-builder";
 
 class ServerlessPageBuilder extends Component {
     async default({ track, ...inputs } = {}) {
-        await tracking({ track, context: this.context, component });
+        await trackComponent({ track, context: this.context, component });
 
         const { plugins = [], ...rest } = inputs;
 
@@ -22,7 +22,7 @@ class ServerlessPageBuilder extends Component {
     }
 
     async remove({ track, ...inputs } = {}) {
-        await tracking({ track, context: this.context, component, method: "remove" });
+        await trackComponent({ track, context: this.context, component, method: "remove" });
 
         const apolloService = await this.load("@webiny/serverless-apollo-service");
         return await apolloService.remove({ ...inputs, track: false });

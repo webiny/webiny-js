@@ -1,10 +1,10 @@
 {
-  "name": "@webiny/serverless-aws-cognito",
-  "version": "1.0.0",
+  "name": "@webiny/serverless-aws-cognito-user-pool",
+  "version": "0.0.0",
   "main": "serverless.js",
   "license": "MIT",
   "dependencies": {
-    "@webiny/serverless-component-tracking": "^1.0.0",
+    "@webiny/tracking": "^0.0.0",
     "execa": "^2.0.3",
     "lodash.isequal": "^4.5.0"
   },

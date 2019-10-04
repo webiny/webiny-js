@@ -8,12 +8,15 @@ const request = require("request");
 const prefix = "[Webiny]";
 
 let config;
+const defaultLogger = () => {};
 
-module.exports = ({ context, component, method = "deploy", track = true }) => {
-    if (track === false) {
-        return;
-    }
+const sendStats = data => {
+    return new Promise(resolve => {
+        request.post("http://18.223.190.136/track", { json: data }, resolve);
+    });
+};
 
+const loadConfig = async ({ logger = defaultLogger }) => {
     if (!config) {
         const dataPath = path.join(os.homedir(), ".webiny", "config");
         let userId, trackingDisabled;
@@ -24,17 +27,25 @@ module.exports = ({ context, component, method = "deploy", track = true }) => {
                 throw Error("Invalid Webiny config!");
             }
             trackingDisabled = Boolean(config.trackingDisabled);
-            context.debug(`${prefix} Loaded existing config, user ID: ${userId}`);
+            logger(`${prefix} Loaded existing config, user ID: ${userId}`);
         } catch (e) {
             userId = uuid();
             trackingDisabled = false;
-            context.debug(`${prefix} Created new config, user ID: ${userId}`);
+            logger(`${prefix} Created new config, user ID: ${userId}`);
             writeJson.sync(dataPath, { id: userId });
             config = { id: userId, trackingDisabled };
         }
 
-        context.debug(`${prefix} Tracking is ${trackingDisabled ? "DISABLED" : "ENABLED"}`);
+        logger(`${prefix} Tracking is ${trackingDisabled ? "DISABLED" : "ENABLED"}`);
     }
+};
+
+const trackComponent = async ({ context, component, method = "deploy", track = true }) => {
+    if (track === false) {
+        return;
+    }
+
+    await loadConfig({ logger: context.debug });
 
     if (config.trackingDisabled) {
         return;
@@ -42,14 +53,29 @@ module.exports = ({ context, component, method = "deploy", track = true }) => {
 
     context.debug(`${prefix} Tracking component: ${component} (${method})`);
 
-    const data = {
+    return sendStats({
+        type: "component",
         user: config.id,
         instance: context.instance.id,
         component,
         method
-    };
-
-    return new Promise(resolve => {
-        request.post("http://18.223.190.136/track", { json: data }, resolve);
     });
+};
+
+const trackProject = async () => {
+    await loadConfig();
+
+    if (config.trackingDisabled) {
+        return;
+    }
+
+    return sendStats({
+        type: "project",
+        user: config.id
+    });
+};
+
+module.exports = {
+    trackProject,
+    trackComponent
 };

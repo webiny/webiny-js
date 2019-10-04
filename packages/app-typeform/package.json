@@ -1,6 +1,6 @@
 {
   "name": "@webiny/app-typeform",
-  "version": "1.0.0",
+  "version": "0.0.0",
   "main": "index.js",
   "repository": {
     "type": "git",
@@ -11,8 +11,8 @@
   "license": "MIT",
   "dependencies": {
     "@babel/runtime": "^7.5.5",
-    "@webiny/app-page-builder": "^1.0.0",
-    "@webiny/ui": "^1.0.0",
+    "@webiny/app-page-builder": "^0.0.0",
+    "@webiny/ui": "^0.0.0",
     "lodash": "^4.17.4",
     "@emotion/styled": "^10.0.17"
   },

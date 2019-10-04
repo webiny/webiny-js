@@ -1,6 +1,6 @@
 {
   "name": "@webiny/api-cms",
-  "version": "1.0.0",
+  "version": "0.0.0",
   "main": "index.js",
   "repository": {
     "type": "git",
@@ -15,9 +15,9 @@
   "license": "MIT",
   "dependencies": {
     "@babel/runtime": "^7.5.5",
-    "@webiny/commodo": "^1.0.0",
-    "@webiny/api": "^1.0.0",
-    "@webiny/plugins": "^1.0.0",
+    "@webiny/commodo": "^0.0.0",
+    "@webiny/api": "^0.0.0",
+    "@webiny/plugins": "^0.0.0",
     "graphql-shield": "^5.1.0",
     "invariant": "^2.2.4",
     "pluralize": "^8.0.0"

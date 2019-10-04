@@ -1,6 +1,6 @@
 {
   "name": "@webiny/app-forms",
-  "version": "1.0.0",
+  "version": "0.0.0",
   "main": "index.js",
   "repository": {
     "type": "git",
@@ -17,9 +17,9 @@
     "@emotion/core": "^10.0.17",
     "@emotion/styled": "^10.0.17",
     "@svgr/webpack": "^4.3.2",
-    "@webiny/form": "^1.0.0",
-    "@webiny/plugins": "^1.0.0",
-    "@webiny/ui": "^1.0.0",
+    "@webiny/form": "^0.0.0",
+    "@webiny/plugins": "^0.0.0",
+    "@webiny/ui": "^0.0.0",
     "emotion": "^10.0.17",
     "lodash.clonedeep": "^4.5.0",
     "lodash.debounce": "^4.0.8",
