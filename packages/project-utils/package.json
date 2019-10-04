@@ -23,7 +23,7 @@
   },
   "license": "MIT",
   "scripts": {
-    "build": "rm -rf dist && mkdir dist && cp -r aliases app-babel cra packages package.json dist/",
+    "build": "rm -rf dist && mkdir dist && cp -r aliases app-babel cra packages package.json LICENSE README.md dist/",
     "prepublishOnly": "yarn build"
   }
 }

@@ -30,9 +30,9 @@
     "@babel/preset-flow": "^7.0.0"
   },
   "scripts": {
-    "build": "babel src -d dist --source-maps --copy-files",
+    "build": "babel src -d dist --source-maps --copy-files && cp package.json dist",
     "flow-copy-source": "flow-copy-source src dist",
-    "postbuild": "yarn flow-copy-source",
+    "postbuild": "yarn flow-copy-source && cp package.json LICENSE README.md dist/",
     "prepublishOnly": "yarn build"
   }
 }

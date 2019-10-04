@@ -37,8 +37,8 @@
     "access": "public"
   },
   "scripts": {
-    "build": "babel src -d dist --source-maps --copy-files && cp package.json dist",
-    "postbuild": "yarn flow-copy-source",
+    "build": "babel src -d dist --source-maps --copy-files",
+    "postbuild": "yarn flow-copy-source && cp package.json LICENSE README.md dist/",
     "flow-copy-source": "flow-copy-source src dist",
     "prepublishOnly": "yarn build"
   }

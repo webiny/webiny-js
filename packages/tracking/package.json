@@ -10,7 +10,7 @@
     "write-json-file": "^4.2.0"
   },
   "scripts": {
-    "build": "rm -rf dist && mkdir dist && cp index.js package.json dist/",
+    "build": "rm -rf dist && mkdir dist && cp index.js package.json LICENSE README.md dist/",
     "prepublishOnly": "yarn build"
   }
 }
