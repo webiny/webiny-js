@@ -14,5 +14,8 @@
   "scripts": {
     "build": "rm -rf dist && mkdir dist && cp -R serverless.js package.json transform boilerplate dist/",
     "prepublishOnly": "yarn build"
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }

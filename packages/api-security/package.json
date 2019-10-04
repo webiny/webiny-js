@@ -30,8 +30,6 @@
   "devDependencies": {
     "@babel/cli": "^7.5.5",
     "@babel/core": "^7.5.5",
-    "@babel/plugin-proposal-object-rest-spread": "^7.5.5",
-    "@babel/plugin-transform-runtime": "^7.5.5",
     "@babel/preset-env": "^7.5.5",
     "@babel/preset-flow": "^7.0.0",
     "eslint-plugin-jest": "^22.17.0"
@@ -43,8 +41,8 @@
     "access": "public"
   },
   "scripts": {
-    "build": "babel src -d ${DEST:-build} --source-maps --copy-files",
-    "flow-copy-source": "flow-copy-source src ${DEST:-build}",
+    "build": "babel src -d dist --source-maps --copy-files",
+    "flow-copy-source": "flow-copy-source src dist",
     "postbuild": "yarn flow-copy-source"
   },
   "svgo": {

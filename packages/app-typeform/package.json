@@ -36,8 +36,8 @@
     "access": "public"
   },
   "scripts": {
-    "build": "babel src -d ${DEST:-build} --source-maps --copy-files",
-    "flow-copy-source": "flow-copy-source src ${DEST:-build}",
+    "build": "babel src -d dist --source-maps --copy-files",
+    "flow-copy-source": "flow-copy-source src dist",
     "postbuild": "yarn flow-copy-source"
   }
 }
