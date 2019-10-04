@@ -8,7 +8,7 @@ const { getS3Data } = require("../utils");
  * @param path
  */
 export const extractFilenameOptions = path => {
-    let filename = path.replace("/download/", "");
+    let filename = path.replace("/files/", "");
     let options = null;
 
     let queryParams = path.match(/.*?(\?.*)/); // return ?width=123&xyz=abc

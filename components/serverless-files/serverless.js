@@ -26,7 +26,7 @@ class FilesComponent extends Component {
             handler: "handler.handler",
             description: "Serves previously uploaded files.",
             env: {
-                S3_BUCKET: s3Output.arn
+                S3_BUCKET: bucket
             }
         });
 
@@ -47,8 +47,8 @@ class FilesComponent extends Component {
         const apolloOutput = await apolloService({
             plugins,
             extraEndpoints: [
-                { path: "/download/{path}", method: "ANY", function: readFn.arn },
-                { path: "/upload", method: "ANY", function: uploadFn.arn }
+                { path: "/files/{path}", method: "ANY", function: readFn.arn },
+                { path: "/files", method: "ANY", function: uploadFn.arn }
             ],
             ...rest
         });

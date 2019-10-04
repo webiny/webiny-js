@@ -57,7 +57,7 @@ module.exports.handler = createHandler(async event => {
                         name: key,
                         type: contentType,
                         size: file.size,
-                        src: key
+                        src: '/files/' + key
                     }
                 }
             });

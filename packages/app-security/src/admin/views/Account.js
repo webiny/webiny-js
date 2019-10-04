@@ -63,6 +63,7 @@ const UPDATE_CURRENT_USER = gql`
 `;
 
 const UsersForm = () => {
+    console.log(process.env.REACT_APP_FILES_PROXY)
     const auth = getPlugins("security-authentication-provider")
         .filter(pl => pl.hasOwnProperty("renderUserAccountForm"))
         .pop();
