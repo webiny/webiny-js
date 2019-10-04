@@ -1,7 +1,7 @@
 // @flow
 const S3 = require("aws-sdk/clients/s3");
-const { /*imageLoader*/ defaultLoader } = require("./fileLoaders");
-const { createHandler, getS3Data } = require("../utils");
+const { imageLoader, defaultLoader } = require("./fileLoaders");
+const { createHandler, getEnvironment } = require("../utils");
 const {
     promisifyS3ObjectFunction,
     extractFilenameOptions,
@@ -13,11 +13,12 @@ const {
  * Loaders are listed here. The "defaultLoader" simply just returns the requested file,
  * and additionally does nothing to it. Leave it as the last item in the loaders array.
  */
-const loaders = [/*imageLoader*/ defaultLoader];
+const loaders = [imageLoader, defaultLoader];
 
 module.exports.handler = createHandler(async event => {
     const { path } = event;
-    const s3Client = new S3({ region: getS3Data().region });
+    const { region } = getEnvironment();
+    const s3Client = new S3({ region });
     const s3 = {
         client: s3Client,
         createObject: promisifyS3ObjectFunction({ s3: s3Client, action: "putObject" }),

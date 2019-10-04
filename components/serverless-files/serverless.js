@@ -17,6 +17,18 @@ class FilesComponent extends Component {
         const s3Output = await s3({ name: bucket });
         await configureS3(s3Output);
 
+        const lambda0 = await this.load("@serverless/function", "image-processor");
+        await lambda0({
+            name: "Files component - image processor",
+            timeout: 10,
+            code: join(__dirname, "build", "upload"),
+            handler: "handler.handler",
+            description: "Performs various tasks on image files like e.g. image optimization or image resizing.",
+            env: {
+                S3_BUCKET: bucket
+            }
+        });
+
         // Deploy read/upload lambdas
         const lambda1 = await this.load("@serverless/function", "download");
         const readFn = await lambda1({
@@ -26,7 +38,8 @@ class FilesComponent extends Component {
             handler: "handler.handler",
             description: "Serves previously uploaded files.",
             env: {
-                S3_BUCKET: bucket
+                S3_BUCKET: bucket,
+                IMAGE_PROCESSOR_LAMBDA_NAME: lambda0.name
             }
         });
 
@@ -38,7 +51,7 @@ class FilesComponent extends Component {
             handler: "handler.handler",
             description: "Returns pre-signed POST data for client-side file uploads.",
             env: {
-                S3_BUCKET: '123'
+                S3_BUCKET: bucket
             }
         });
 

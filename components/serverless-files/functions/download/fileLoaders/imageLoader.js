@@ -1,7 +1,7 @@
 // @flow
-import { sanitizeImageOptions } from "./images";
-import Lambda from "aws-sdk/clients/lambda";
-
+const { sanitizeImageOptions } = require("./images");
+const Lambda = require("aws-sdk/clients/lambda");
+const { getEnvironment } = require("../../utils");
 const SUPPORTED_IMAGES = [".jpg", ".jpeg", ".png", ".svg", ".gif"];
 const SUPPORTED_PROCESSABLE_IMAGES = [".jpg", ".jpeg", ".png"];
 
@@ -12,13 +12,16 @@ const SUPPORTED_PROCESSABLE_IMAGES = [".jpg", ".jpeg", ".png"];
  */
 const PROCESSED_IMAGE_PREFIX = "image_processed_";
 const ORIGINAL_IMAGE_PREFIX = "image_original_";
+const IMAGE_PROCESSOR_LAMBDA_NAME = process.env.IMAGE_PROCESSOR_LAMBDA_NAME;
 
 export default {
     canProcess: ({ file }) => {
         return SUPPORTED_IMAGES.includes(file.extension);
     },
-    async process({ site, s3, file, options }) {
+    async process({ s3, file, options }) {
         let params, image;
+
+        const env = getEnvironment();
 
         const sanitized = sanitizeImageOptions(options);
 
@@ -31,13 +34,12 @@ export default {
                     src: s3.getObjectUrl(params.Key)
                 };
             } catch (e) {
-                const getProcessedImageLambda = new Lambda({ region: site.region });
+                const getProcessedImageLambda = new Lambda({ region: env.region });
                 let processedImageLambdaResponse = await getProcessedImageLambda
                     .invoke({
-                        FunctionName: "webiny-proxy-files-processor-image",
+                        FunctionName: IMAGE_PROCESSOR_LAMBDA_NAME,
                         Payload: JSON.stringify({
                             body: {
-                                site,
                                 params: {
                                     original: s3.getObjectParams(ORIGINAL_IMAGE_PREFIX + file.name),
                                     processed: params,
@@ -51,7 +53,7 @@ export default {
 
                 processedImageLambdaResponse = JSON.parse(processedImageLambdaResponse.Payload);
                 if (processedImageLambdaResponse.error) {
-                    throw Error(originalImageLambdaResponse.message);
+                    throw Error("Image could not be processed.");
                 }
 
                 image = await s3.getObject({ params });
@@ -70,13 +72,12 @@ export default {
                 src: s3.getObjectUrl(params.Key)
             };
         } catch (e) {
-            const getOriginalImageLambda = new Lambda({ region: site.region });
+            const getOriginalImageLambda = new Lambda({ region: env.region });
             let originalImageLambdaResponse = await getOriginalImageLambda
                 .invoke({
-                    FunctionName: "webiny-proxy-files-processor-image",
+                    FunctionName: IMAGE_PROCESSOR_LAMBDA_NAME,
                     Payload: JSON.stringify({
                         body: {
-                            site,
                             params: {
                                 original: params,
                                 initial: s3.getObjectParams(file.name)

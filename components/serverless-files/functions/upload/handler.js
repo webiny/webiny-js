@@ -2,10 +2,10 @@ const uniqueId = require("uniqid");
 const sanitizeFilename = require("sanitize-filename");
 const S3 = require("aws-sdk/clients/s3");
 const mime = require("mime");
-const { getS3Data, createHandler } = require("../utils");
+const { getEnvironment, createHandler } = require("../utils");
 
 module.exports.handler = createHandler(async event => {
-    const body = Buffer.from(event.body, 'base64').toString('utf-8');
+    const body = Buffer.from(event.body, "base64").toString("utf-8");
     const file = JSON.parse(body);
 
     if (!file) {
@@ -29,10 +29,11 @@ module.exports.handler = createHandler(async event => {
     // Replace all whitespace.
     key = key.replace(/\s/g, "");
 
+    const { bucket: Bucket } = getEnvironment();
     return new Promise((resolve, reject) => {
         const params = {
             Expires: 60,
-            Bucket: getS3Data().bucket,
+            Bucket,
             Conditions: [["content-length-range", 100, 26214400]], // 100Byte - 25MB
             Fields: {
                 "Content-Type": contentType,
@@ -57,7 +58,7 @@ module.exports.handler = createHandler(async event => {
                         name: key,
                         type: contentType,
                         size: file.size,
-                        src: '/files/' + key
+                        src: "/files/" + key
                     }
                 }
             });

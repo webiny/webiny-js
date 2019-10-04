@@ -1,11 +1,13 @@
 // @flow
-import S3 from "aws-sdk/clients/s3";
-import { promisifyS3ObjectFunction } from "./../utils";
-import { processImage, optimizeImage } from "./images";
+const S3 = require("aws-sdk/clients/s3");
+const { promisifyS3ObjectFunction } = require("./../utils");
+const { processImage, optimizeImage } = require("./images");
+const { getEnvironment } = require("../../utils");
 
-export const imageProcessor = async ({ body: { site, options, params } }) => {
+module.exports.imageProcessor = async ({ body: { options, params } }) => {
     try {
-        const s3Client = new S3({ region: site.region });
+        const env = getEnvironment();
+        const s3Client = new S3({ region: env.region });
         const s3 = {
             createObject: promisifyS3ObjectFunction({ s3: s3Client, action: "putObject" }),
             deleteObject: promisifyS3ObjectFunction({ s3: s3Client, action: "deleteObject" }),

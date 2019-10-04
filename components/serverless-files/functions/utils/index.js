@@ -1,7 +1,7 @@
-const getS3Data = require("./getS3Data");
+const getEnvironment = require("./getEnvironment");
 const createHandler = require("./createHandler");
 
 module.exports = {
     createHandler,
-    getS3Data
+    getEnvironment
 };

@@ -1,7 +1,7 @@
 const queryString = require("query-string");
 const sanitizeFilename = require("sanitize-filename");
 const pathLib = require("path");
-const { getS3Data } = require("../utils");
+const { getEnvironment } = require("../utils");
 
 /**
  * Based on given path, extracts file key and additional options sent via query params.
@@ -26,8 +26,8 @@ export const extractFilenameOptions = path => {
  * @returns {string}
  */
 export const getObjectUrl = key => {
-    const s3 = getS3Data();
-    return `https://${s3.bucket}.s3.${s3.region}.amazonaws.com/${key}`;
+    const { bucket, region } = getEnvironment();
+    return `https://${bucket}.s3.${region}.amazonaws.com/${key}`;
 };
 
 /**
@@ -36,10 +36,10 @@ export const getObjectUrl = key => {
  * @returns {{Bucket: string, Key: string}}
  */
 export const getObjectParams = filename => {
-    const s3 = getS3Data();
+    const { bucket: Bucket } = getEnvironment();
 
     return {
-        Bucket: s3.bucket,
+        Bucket,
         Key: `${filename}`
     };
 };
