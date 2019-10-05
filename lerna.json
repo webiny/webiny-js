@@ -7,11 +7,11 @@
   "command": {
     "version": {
       "preid": "next",
-      "ignoreChanges": ["scripts/**", ",**/__fixtures__/**", "**/__tests__/**", "**/*.md", "lerna.json"],
+      "ignoreChanges": ["scripts/**", ",**/__fixtures__/**", "**/__tests__/**", "**/*.md", "*/lerna."],
       "allowBranch": ["master"],
       "conventionalCommits": true,
       "commitHooks": false,
-      "message": "chore(release): %s"
+      "message": "chore(release): New release :tada: :rocket:"
     },
     "publish": {
       "contents": "dist",
