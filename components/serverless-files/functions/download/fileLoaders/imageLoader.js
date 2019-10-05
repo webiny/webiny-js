@@ -1,7 +1,7 @@
 // @flow
 const { sanitizeImageOptions } = require("./images");
 const Lambda = require("aws-sdk/clients/lambda");
-const { getEnvironment } = require("../../utils");
+const { getEnvironment } = require("./../../utils");
 const SUPPORTED_IMAGES = [".jpg", ".jpeg", ".png", ".svg", ".gif"];
 const SUPPORTED_PROCESSABLE_IMAGES = [".jpg", ".jpeg", ".png"];
 
@@ -19,20 +19,17 @@ export default {
         return SUPPORTED_IMAGES.includes(file.extension);
     },
     async process({ s3, file, options }) {
-        let params, image;
+        let params;
 
         const env = getEnvironment();
 
         const sanitized = sanitizeImageOptions(options);
 
+        console.log('saniitzed', sanitized)
         if (sanitized.hasOptions && SUPPORTED_PROCESSABLE_IMAGES.includes(file.extension)) {
             params = s3.getObjectParams(`${PROCESSED_IMAGE_PREFIX}${sanitized.hash}_${file.name}`);
             try {
-                image = await s3.getObject({ params });
-                return {
-                    contentType: image.ContentType,
-                    src: s3.getObjectUrl(params.Key)
-                };
+                return await s3.getObject({ params });
             } catch (e) {
                 const getProcessedImageLambda = new Lambda({ region: env.region });
                 let processedImageLambdaResponse = await getProcessedImageLambda
@@ -56,21 +53,13 @@ export default {
                     throw Error("Image could not be processed.");
                 }
 
-                image = await s3.getObject({ params });
-                return {
-                    contentType: image.ContentType,
-                    src: s3.getObjectUrl(params.Key)
-                };
+                return await s3.getObject({ params });
             }
         }
 
         params = s3.getObjectParams(ORIGINAL_IMAGE_PREFIX + file.name);
         try {
-            image = await s3.getObject({ params });
-            return {
-                contentType: image.ContentType,
-                src: s3.getObjectUrl(params.Key)
-            };
+            return await s3.getObject({ params });
         } catch (e) {
             const getOriginalImageLambda = new Lambda({ region: env.region });
             let originalImageLambdaResponse = await getOriginalImageLambda
@@ -93,11 +82,7 @@ export default {
                 throw Error(originalImageLambdaResponse.message);
             }
 
-            image = await s3.getObject({ params });
-            return {
-                contentType: image.ContentType,
-                src: s3.getObjectUrl(params.Key)
-            };
+            return await s3.getObject({ params });
         }
     }
 };

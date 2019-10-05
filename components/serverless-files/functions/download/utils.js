@@ -1,23 +1,18 @@
-const queryString = require("query-string");
 const sanitizeFilename = require("sanitize-filename");
 const pathLib = require("path");
 const { getEnvironment } = require("../utils");
 
 /**
  * Based on given path, extracts file key and additional options sent via query params.
- * @param path
+ * @param event
  */
-export const extractFilenameOptions = path => {
-    let filename = path.replace("/files/", "");
-    let options = null;
-
-    let queryParams = path.match(/.*?(\?.*)/); // return ?width=123&xyz=abc
-    if (queryParams) {
-        options = queryString.parse(queryParams[1]);
-        filename = sanitizeFilename(filename.replace(queryParams[1], ""));
-    }
-
-    return { filename, options, extension: pathLib.extname(filename) };
+export const extractFilenameOptions = event => {
+    const path = sanitizeFilename(event.pathParameters.path);
+    return {
+        filename: path,
+        options: event.queryStringParameters,
+        extension: pathLib.extname(path)
+    };
 };
 
 /**
@@ -41,26 +36,5 @@ export const getObjectParams = filename => {
     return {
         Bucket,
         Key: `${filename}`
-    };
-};
-
-/**
- * Promisifies s3 CRUD object functions, for easier use in processors.
- * Could not promisify using NodeJS "util.promisify" utility function, "this" is lost in the process.
- * @param s3
- * @param action
- * @returns {function({params?: *}): Promise<any>}
- */
-export const promisifyS3ObjectFunction = ({ s3, action }) => {
-    return async ({ params }) => {
-        return new Promise((resolve, reject) => {
-            s3[action](params, function(err, data) {
-                if (err) {
-                    reject(err);
-                    return;
-                }
-                resolve(data);
-            });
-        });
     };
 };

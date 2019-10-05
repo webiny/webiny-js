@@ -18,10 +18,10 @@ class FilesComponent extends Component {
         await configureS3(s3Output);
 
         const lambda0 = await this.load("@serverless/function", "image-processor");
-        await lambda0({
+        const lambda0Result = await lambda0({
             name: "Files component - image processor",
             timeout: 10,
-            code: join(__dirname, "build", "upload"),
+            code: join(__dirname, "build/fileProcessors/images"),
             handler: "handler.handler",
             description: "Performs various tasks on image files like e.g. image optimization or image resizing.",
             env: {
@@ -39,7 +39,7 @@ class FilesComponent extends Component {
             description: "Serves previously uploaded files.",
             env: {
                 S3_BUCKET: bucket,
-                IMAGE_PROCESSOR_LAMBDA_NAME: lambda0.name
+                IMAGE_PROCESSOR_LAMBDA_NAME: lambda0Result.name
             }
         });
 

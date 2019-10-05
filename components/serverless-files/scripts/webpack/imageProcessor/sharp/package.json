@@ -1,0 +1,350 @@
+{
+  "_from": "sharp",
+  "_id": "sharp@0.21.3",
+  "_inBundle": false,
+  "_integrity": "sha512-5qZk8r+YgfyztLEKkNez20Wynq/Uh1oNyP5T/3gTYwt2lBYGs9iDs5m0yVsZEPm8eVBbAJhS08J1wp/g+Ai1Qw==",
+  "_location": "/sharp",
+  "_phantomChildren": {
+    "chownr": "1.1.1",
+    "fs-minipass": "1.2.5",
+    "minipass": "2.3.5",
+    "minizlib": "1.2.1",
+    "mkdirp": "0.5.1",
+    "safe-buffer": "5.1.2",
+    "yallist": "3.0.3"
+  },
+  "_requested": {
+    "type": "tag",
+    "registry": true,
+    "raw": "sharp",
+    "name": "sharp",
+    "escapedName": "sharp",
+    "rawSpec": "",
+    "saveSpec": null,
+    "fetchSpec": "latest"
+  },
+  "_requiredBy": [
+    "#USER",
+    "/"
+  ],
+  "_resolved": "https://registry.npmjs.org/sharp/-/sharp-0.21.3.tgz",
+  "_shasum": "381937de66c123687f2ac7186f85921c6bb19cdd",
+  "_spec": "sharp",
+  "_where": "/home/leon/projects/test-bajo",
+  "author": {
+    "name": "Lovell Fuller",
+    "email": "npm@lovell.info"
+  },
+  "bugs": {
+    "url": "https://github.com/lovell/sharp/issues"
+  },
+  "bundleDependencies": false,
+  "cc": {
+    "linelength": "120",
+    "filter": [
+      "build/c++11",
+      "build/include",
+      "runtime/indentation_namespace",
+      "runtime/references"
+    ]
+  },
+  "config": {
+    "libvips": "8.7.0"
+  },
+  "contributors": [
+    {
+      "name": "Pierre Inglebert",
+      "email": "pierre.inglebert@gmail.com"
+    },
+    {
+      "name": "Jonathan Ong",
+      "email": "jonathanrichardong@gmail.com"
+    },
+    {
+      "name": "Chanon Sajjamanochai",
+      "email": "chanon.s@gmail.com"
+    },
+    {
+      "name": "Juliano Julio",
+      "email": "julianojulio@gmail.com"
+    },
+    {
+      "name": "Daniel Gasienica",
+      "email": "daniel@gasienica.ch"
+    },
+    {
+      "name": "Julian Walker",
+      "email": "julian@fiftythree.com"
+    },
+    {
+      "name": "Amit Pitaru",
+      "email": "pitaru.amit@gmail.com"
+    },
+    {
+      "name": "Brandon Aaron",
+      "email": "hello.brandon@aaron.sh"
+    },
+    {
+      "name": "Andreas Lind",
+      "email": "andreas@one.com"
+    },
+    {
+      "name": "Maurus Cuelenaere",
+      "email": "mcuelenaere@gmail.com"
+    },
+    {
+      "name": "Linus Unnebäck",
+      "email": "linus@folkdatorn.se"
+    },
+    {
+      "name": "Victor Mateevitsi",
+      "email": "mvictoras@gmail.com"
+    },
+    {
+      "name": "Alaric Holloway",
+      "email": "alaric.holloway@gmail.com"
+    },
+    {
+      "name": "Bernhard K. Weisshuhn",
+      "email": "bkw@codingforce.com"
+    },
+    {
+      "name": "Chris Riley",
+      "email": "criley@primedia.com"
+    },
+    {
+      "name": "David Carley",
+      "email": "dacarley@gmail.com"
+    },
+    {
+      "name": "John Tobin",
+      "email": "john@limelightmobileinc.com"
+    },
+    {
+      "name": "Kenton Gray",
+      "email": "kentongray@gmail.com"
+    },
+    {
+      "name": "Felix Bünemann",
+      "email": "Felix.Buenemann@gmail.com"
+    },
+    {
+      "name": "Samy Al Zahrani",
+      "email": "samyalzahrany@gmail.com"
+    },
+    {
+      "name": "Chintan Thakkar",
+      "email": "lemnisk8@gmail.com"
+    },
+    {
+      "name": "F. Orlando Galashan",
+      "email": "frulo@gmx.de"
+    },
+    {
+      "name": "Kleis Auke Wolthuizen",
+      "email": "info@kleisauke.nl"
+    },
+    {
+      "name": "Matt Hirsch",
+      "email": "mhirsch@media.mit.edu"
+    },
+    {
+      "name": "Matthias Thoemmes",
+      "email": "thoemmes@gmail.com"
+    },
+    {
+      "name": "Patrick Paskaris",
+      "email": "patrick@paskaris.gr"
+    },
+    {
+      "name": "Jérémy Lal",
+      "email": "kapouer@melix.org"
+    },
+    {
+      "name": "Rahul Nanwani",
+      "email": "r.nanwani@gmail.com"
+    },
+    {
+      "name": "Alice Monday",
+      "email": "alice0meta@gmail.com"
+    },
+    {
+      "name": "Kristo Jorgenson",
+      "email": "kristo.jorgenson@gmail.com"
+    },
+    {
+      "name": "YvesBos",
+      "email": "yves_bos@outlook.com"
+    },
+    {
+      "name": "Guy Maliar",
+      "email": "guy@tailorbrands.com"
+    },
+    {
+      "name": "Nicolas Coden",
+      "email": "nicolas@ncoden.fr"
+    },
+    {
+      "name": "Matt Parrish",
+      "email": "matt.r.parrish@gmail.com"
+    },
+    {
+      "name": "Marcel Bretschneider",
+      "email": "marcel.bretschneider@gmail.com"
+    },
+    {
+      "name": "Matthew McEachen",
+      "email": "matthew+github@mceachen.org"
+    },
+    {
+      "name": "Jarda Kotěšovec",
+      "email": "jarda.kotesovec@gmail.com"
+    },
+    {
+      "name": "Kenric D'Souza",
+      "email": "kenric.dsouza@gmail.com"
+    },
+    {
+      "name": "Oleh Aleinyk",
+      "email": "oleg.aleynik@gmail.com"
+    },
+    {
+      "name": "Marcel Bretschneider",
+      "email": "marcel.bretschneider@gmail.com"
+    },
+    {
+      "name": "Andrea Bianco",
+      "email": "andrea.bianco@unibas.ch"
+    },
+    {
+      "name": "Rik Heywood",
+      "email": "rik@rik.org"
+    },
+    {
+      "name": "Thomas Parisot",
+      "email": "hi@oncletom.io"
+    },
+    {
+      "name": "Nathan Graves",
+      "email": "nathanrgraves+github@gmail.com"
+    },
+    {
+      "name": "Tom Lokhorst",
+      "email": "tom@lokhorst.eu"
+    },
+    {
+      "name": "Espen Hovlandsdal",
+      "email": "espen@hovlandsdal.com"
+    },
+    {
+      "name": "Sylvain Dumont",
+      "email": "sylvain.dumont35@gmail.com"
+    },
+    {
+      "name": "Alun Davies",
+      "email": "alun.owain.davies@googlemail.com"
+    },
+    {
+      "name": "Aidan Hoolachan",
+      "email": "ajhoolachan21@gmail.com"
+    },
+    {
+      "name": "Axel Eirola",
+      "email": "axel.eirola@iki.fi"
+    },
+    {
+      "name": "Freezy",
+      "email": "freezy@xbmc.org"
+    },
+    {
+      "name": "Daiz",
+      "email": "taneli.vatanen@gmail.com"
+    },
+    {
+      "name": "Julian Aubourg",
+      "email": "j@ubourg.net"
+    },
+    {
+      "name": "Keith Belovay",
+      "email": "keith@picthrive.com"
+    },
+    {
+      "name": "Michael B. Klein",
+      "email": "mbklein@gmail.com"
+    }
+  ],
+  "dependencies": {
+    "bindings": "^1.3.1",
+    "color": "^3.1.0",
+    "detect-libc": "^1.0.3",
+    "fs-copy-file-sync": "^1.1.1",
+    "nan": "^2.12.1",
+    "npmlog": "^4.1.2",
+    "prebuild-install": "^5.2.2",
+    "semver": "^5.6.0",
+    "simple-get": "^3.0.3",
+    "tar": "^4.4.8",
+    "tunnel-agent": "^0.6.0"
+  },
+  "deprecated": false,
+  "description": "High performance Node.js image processing, the fastest module to resize JPEG, PNG, WebP and TIFF images",
+  "devDependencies": {
+    "async": "^2.6.1",
+    "cc": "^1.0.2",
+    "decompress-zip": "^0.3.2",
+    "documentation": "^9.1.1",
+    "exif-reader": "^1.0.2",
+    "icc": "^1.0.0",
+    "license-checker": "^25.0.1",
+    "mocha": "^5.2.0",
+    "mock-fs": "^4.7.0",
+    "nyc": "^13.1.0",
+    "prebuild": "^8.1.2",
+    "prebuild-ci": "^2.3.0",
+    "rimraf": "^2.6.3",
+    "semistandard": "^13.0.1"
+  },
+  "engines": {
+    "node": ">=6"
+  },
+  "homepage": "https://github.com/lovell/sharp",
+  "keywords": [
+    "jpeg",
+    "png",
+    "webp",
+    "tiff",
+    "gif",
+    "svg",
+    "dzi",
+    "image",
+    "resize",
+    "thumbnail",
+    "crop",
+    "embed",
+    "libvips",
+    "vips"
+  ],
+  "license": "Apache-2.0",
+  "main": "lib/index.js",
+  "name": "sharp",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/lovell/sharp.git"
+  },
+  "scripts": {
+    "clean": "rm -rf node_modules/ build/ vendor/ .nyc_output/ coverage/ test/fixtures/output.*",
+    "docs": "for m in constructor input resize composite operation colour channel output utility; do documentation build --shallow --format=md --markdown-toc=false lib/$m.js >docs/api-$m.md; done",
+    "install": "(node install/libvips && node install/dll-copy && prebuild-install) || (node-gyp rebuild && node install/dll-copy)",
+    "test": "semistandard && cc && npm run test-unit && npm run test-licensing && prebuild-ci",
+    "test-coverage": "./test/coverage/report.sh",
+    "test-leak": "./test/leak/leak.sh",
+    "test-licensing": "license-checker --production --summary --onlyAllow=\"Apache-2.0;BSD;ISC;MIT\"",
+    "test-unit": "nyc --reporter=lcov --branches=99 mocha --slow=5000 --timeout=60000 ./test/unit/*.js"
+  },
+  "semistandard": {
+    "env": [
+      "mocha"
+    ]
+  },
+  "version": "0.21.3"
+}
