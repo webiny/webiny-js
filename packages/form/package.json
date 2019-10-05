@@ -1,6 +1,6 @@
 {
   "name": "@webiny/form",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "main": "index.js",
   "repository": {
     "type": "git",
@@ -15,16 +15,16 @@
   "license": "MIT",
   "dependencies": {
     "@babel/runtime": "^7.5.5",
-    "@webiny/validation": "^0.0.0",
+    "@webiny/validation": "^0.1.0",
     "invariant": "^2.2.4",
     "lodash": "^4.17.5"
   },
   "devDependencies": {
     "@babel/cli": "^7.5.5",
     "@babel/core": "^7.5.5",
+    "@babel/plugin-proposal-class-properties": "^7.5.5",
     "@babel/preset-env": "^7.5.5",
     "@babel/preset-flow": "^7.0.0",
-    "@babel/plugin-proposal-class-properties": "^7.5.5",
     "babel-plugin-lodash": "^3.3.4"
   },
   "peerDependencies": {

@@ -1,7 +1,7 @@
 {
   "name": "@webiny/cli",
   "private": true,
-  "version": "0.0.0",
+  "version": "0.1.0",
   "main": "index.js",
   "bin": {
     "webiny": "./lib/index.js",
@@ -18,9 +18,6 @@
   ],
   "description": "A tool to bootstrap, develop and deploy a Webiny project.",
   "license": "MIT",
-  "dependencies": {
-
-  },
   "publishConfig": {
     "access": "public"
   },

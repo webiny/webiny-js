@@ -1,6 +1,6 @@
 {
   "name": "@webiny/api-files",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "main": "index.js",
   "repository": {
     "type": "git",
@@ -16,7 +16,7 @@
   "dependencies": {
     "@babel/runtime": "^7.5.5",
     "@svgr/webpack": "^4.3.2",
-    "@webiny/commodo": "^0.0.0",
+    "@webiny/commodo": "^0.1.0",
     "bcryptjs": "^2.4.3",
     "graphql-shield": "^5.1.0",
     "invariant": "^2.2.4",
