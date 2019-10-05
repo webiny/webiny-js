@@ -25,6 +25,9 @@
     "commodo-fields-object": "^1.0.2",
     "commodo-fields-storage-crud-logs": "^1.0.1"
   },
+  "publishConfig": {
+    "access": "public"
+  },
   "scripts": {
     "build": "babel src -d dist --source-maps --copy-files",
     "flow-copy-source": "flow-copy-source src dist",
