@@ -27,6 +27,9 @@
     "chai": "^3.5.0",
     "chai-as-promised": "^7.1.1"
   },
+  "publishConfig": {
+    "access": "public"
+  },
   "scripts": {
     "build": "babel src -d dist --source-maps --copy-files",
     "flow-copy-source": "flow-copy-source src dist",
