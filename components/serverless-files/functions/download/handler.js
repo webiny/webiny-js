@@ -2,7 +2,7 @@
 const S3 = require("aws-sdk/clients/s3");
 const { imageLoader, defaultLoader } = require("./fileLoaders");
 const { createHandler, getEnvironment, promisifyS3ObjectFunction } = require("../utils");
-const { extractFilenameOptions, getObjectUrl, getObjectParams } = require("./utils");
+const { extractFilenameOptions, getObjectParams } = require("./utils");
 
 /**
  * Loaders are listed here. The "defaultLoader" simply just returns the requested file,
@@ -11,8 +11,6 @@ const { extractFilenameOptions, getObjectUrl, getObjectParams } = require("./uti
 const loaders = [imageLoader, defaultLoader];
 
 module.exports.handler = createHandler(async event => {
-    console.log("event", JSON.stringify(event, null, 2));
-    const { path } = event;
     const { region } = getEnvironment();
     const s3Client = new S3({ region });
     const s3 = {
@@ -20,7 +18,6 @@ module.exports.handler = createHandler(async event => {
         createObject: promisifyS3ObjectFunction({ s3: s3Client, action: "putObject" }),
         deleteObject: promisifyS3ObjectFunction({ s3: s3Client, action: "deleteObject" }),
         getObject: promisifyS3ObjectFunction({ s3: s3Client, action: "getObject" }),
-        getObjectUrl: key => getObjectUrl(key),
         getObjectParams: filename => getObjectParams(filename)
     };
 
@@ -47,7 +44,6 @@ module.exports.handler = createHandler(async event => {
                 }
             });
 
-            console.log("vracam", s3Object);
             return {
                 data: s3Object.Body,
                 headers: {

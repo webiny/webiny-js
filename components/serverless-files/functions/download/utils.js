@@ -16,16 +16,6 @@ export const extractFilenameOptions = event => {
 };
 
 /**
- * Returns S3 Object's public URL. Used by Webiny Proxy Layer to send the file back to client.
- * @param key
- * @returns {string}
- */
-export const getObjectUrl = key => {
-    const { bucket, region } = getEnvironment();
-    return `https://${bucket}.s3.${region}.amazonaws.com/${key}`;
-};
-
-/**
  * Returns site's Bucket and file's Key values.
  * @param filename
  * @returns {{Bucket: string, Key: string}}
