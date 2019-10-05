@@ -23,7 +23,8 @@ class FilesComponent extends Component {
             timeout: 10,
             code: join(__dirname, "build/fileProcessors/images"),
             handler: "handler.handler",
-            description: "Performs various tasks on image files like e.g. image optimization or image resizing.",
+            description:
+                "Performs various tasks on image files like e.g. image optimization or image resizing.",
             env: {
                 S3_BUCKET: bucket
             }
