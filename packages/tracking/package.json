@@ -9,6 +9,9 @@
     "uuid": "^3.3.3",
     "write-json-file": "^4.2.0"
   },
+  "publishConfig": {
+    "access": "public"
+  },
   "scripts": {
     "build": "rm -rf dist && mkdir dist && cp index.js package.json LICENSE README.md dist/",
     "prepublishOnly": "yarn build"
