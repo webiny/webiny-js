@@ -26,7 +26,9 @@ module.exports = createWebpackConfig({
                 compiler.hooks.afterEmit.tap("AfterEmitPlugin", () => {
                     const extract = require("extract-zip");
                     extract(PATHS.nodeModules.from, { dir: PATHS.nodeModules.to }, e => {
-                        throw e;
+                        if (e) {
+                            throw e;
+                        }
                     });
                 });
             }
