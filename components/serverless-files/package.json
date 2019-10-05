@@ -20,6 +20,8 @@
     "prepublishOnly": "yarn build"
   },
   "devDependencies": {
-    "file-loader": "^4.2.0"
+    "extract-zip": "^1.6.7",
+    "file-loader": "^4.2.0",
+    "yauzl": "^2.10.0"
   }
 }

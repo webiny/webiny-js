@@ -1,24 +1,33 @@
 const path = require("path");
 const createWebpackConfig = require("./createWebpackConfig");
-const fs = require("fs-extra");
+
+const PATHS = {
+    build: {
+        entry: path.join(process.cwd(), "functions/fileProcessors/images/handler.js"),
+        output: path.join(process.cwd(), "build/fileProcessors/images")
+    },
+    nodeModules: {
+        from: path.join(__dirname, "imageProcessor/node_modules.zip"),
+        to: path.join(process.cwd(), "build/fileProcessors/images")
+    }
+};
 
 module.exports = createWebpackConfig({
-    entry: process.cwd() + "/functions/fileProcessors/images/handler.js",
+    entry: PATHS.build.entry,
     output: {
         libraryTarget: "commonjs",
-        path: path.join(process.cwd(), "build/fileProcessors/images"),
+        path: PATHS.build.output,
         filename: "handler.js"
     },
-    externals: ['aws-sdk', 'sharp'],
+    externals: ["aws-sdk", "sharp"],
     plugins: [
         {
             apply: compiler => {
-                compiler.hooks.afterEmit.tap("AfterEmitPlugin", compilation => {
-                    // We copy the sharp
-                    /*exec('<path to your post-build script here>', (err, stdout, stderr) => {
-                        if (stdout) process.stdout.write(stdout);
-                        if (stderr) process.stderr.write(stderr);
-                    });*/
+                compiler.hooks.afterEmit.tap("AfterEmitPlugin", () => {
+                    const extract = require("extract-zip");
+                    extract(PATHS.nodeModules.from, { dir: PATHS.nodeModules.to }, e => {
+                        throw e;
+                    });
                 });
             }
         }
