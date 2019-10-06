@@ -7,7 +7,7 @@
   "command": {
     "version": {
       "preid": "next",
-      "ignoreChanges": ["scripts/**", ",**/__fixtures__/**", "**/__tests__/**", "**/*.md", "*/lerna."],
+      "ignoreChanges": ["scripts/**", ",**/__fixtures__/**", "**/__tests__/**", "**/*.md", "*/lerna.json", "examples/**"],
       "allowBranch": ["master"],
       "conventionalCommits": true,
       "createRelease": "github",
