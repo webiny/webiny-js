@@ -8,7 +8,7 @@ const webpack = require("webpack");
 class ApolloService extends Component {
     async default(inputs = {}) {
         const {
-            extraEndpoints = [],
+            endpoints = [],
             name: componentName,
             plugins = [],
             env = {},
@@ -122,7 +122,10 @@ class ApolloService extends Component {
             description: `API for ${componentName}`,
             stage: "prod",
             endpointTypes,
-            endpoints: [{ path: "/graphql", method: "ANY", function: lambdaOut.arn }, ...extraEndpoints]
+            endpoints: [
+                { path: "/graphql", method: "ANY", function: lambdaOut.arn },
+                ...endpoints
+            ]
         });
 
         const output = {
