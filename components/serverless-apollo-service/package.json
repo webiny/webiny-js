@@ -4,10 +4,12 @@
   "main": "serverless.js",
   "license": "MIT",
   "dependencies": {
+    "@babel/core": "^7.6.2",
     "@babel/preset-env": "^7.6.0",
     "@serverless/aws-api-gateway": "^2.0.0",
     "@serverless/core": "^1.1.1",
     "@serverless/function": "^3.0.0",
+    "prettier": "^1.18.2",
     "fs-extra": "^8.1.0",
     "webpack": "^4.39.2"
   },
