@@ -1,6 +1,6 @@
 {
   "name": "@webiny/api-mailchimp",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "main": "index.js",
   "repository": {
     "type": "git",
@@ -11,10 +11,10 @@
   "license": "MIT",
   "dependencies": {
     "@babel/runtime": "^7.5.5",
-    "@webiny/api": "^0.1.0",
-    "@webiny/api-security": "^0.1.1",
+    "@webiny/api": "^0.1.1",
+    "@webiny/api-security": "^0.1.2",
     "@webiny/commodo": "^0.1.1",
-    "@webiny/commodo-graphql": "^0.1.1",
+    "@webiny/commodo-graphql": "^0.1.2",
     "got": "^9.6.0"
   },
   "devDependencies": {

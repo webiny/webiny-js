@@ -1,6 +1,6 @@
 {
   "name": "@webiny/api-page-builder",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "main": "index.js",
   "repository": {
     "type": "git",
@@ -15,9 +15,9 @@
   "license": "MIT",
   "dependencies": {
     "@babel/runtime": "^7.5.5",
-    "@webiny/api": "^0.1.0",
+    "@webiny/api": "^0.1.1",
     "@webiny/commodo": "^0.1.1",
-    "@webiny/commodo-graphql": "^0.1.1",
+    "@webiny/commodo-graphql": "^0.1.2",
     "fs-extra": "^7.0.1",
     "lodash": "^4.17.11",
     "mdbid": "^1.0.0",
