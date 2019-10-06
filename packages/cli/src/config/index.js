@@ -19,4 +19,18 @@ const verifyConfig = () => {
     }
 };
 
-module.exports = { verifyConfig };
+const setTracking = enabled => {
+    try {
+        const config = readJson.sync(configPath);
+        if (!config.id) {
+            config.id = uuid();
+        }
+        config.tracking = enabled;
+        writeJson.sync(configPath, config);
+    } catch (e) {
+        // A new config file is written if it doesn't exist.
+        writeJson.sync(configPath, { id: uuid(), tracking: enabled });
+    }
+};
+
+module.exports = { verifyConfig, setTracking };
