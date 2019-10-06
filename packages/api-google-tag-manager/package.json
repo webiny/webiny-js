@@ -1,6 +1,6 @@
 {
   "name": "@webiny/api-google-tag-manager",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "main": "index.js",
   "repository": {
     "type": "git",
@@ -12,8 +12,8 @@
   "dependencies": {
     "@babel/runtime": "^7.5.5",
     "@webiny/api": "^0.1.0",
-    "@webiny/api-security": "^0.1.0",
-    "@webiny/commodo": "^0.1.0"
+    "@webiny/api-security": "^0.1.1",
+    "@webiny/commodo": "^0.1.1"
   },
   "devDependencies": {
     "@babel/cli": "^7.5.5",

@@ -1,6 +1,6 @@
 {
   "name": "@webiny/form",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "main": "index.js",
   "repository": {
     "type": "git",
@@ -15,7 +15,7 @@
   "license": "MIT",
   "dependencies": {
     "@babel/runtime": "^7.5.5",
-    "@webiny/validation": "^0.1.0",
+    "@webiny/validation": "^0.1.1",
     "invariant": "^2.2.4",
     "lodash": "^4.17.5"
   },

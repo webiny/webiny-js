@@ -1,12 +1,12 @@
 {
   "name": "@webiny/serverless-app",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "main": "serverless.js",
   "license": "MIT",
   "dependencies": {
     "@serverless/core": "^1.1.1",
-    "@webiny/serverless-function": "^0.1.0",
-    "@webiny/tracking": "^0.1.0"
+    "@webiny/serverless-function": "^0.1.1",
+    "@webiny/tracking": "^0.1.1"
   },
   "scripts": {
     "build": "rm -rf dist && mkdir dist && cp serverless.js package.json dist/",

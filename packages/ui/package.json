@@ -1,6 +1,6 @@
 {
   "name": "@webiny/ui",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "main": "index.js",
   "repository": {
     "type": "git",
@@ -75,7 +75,7 @@
     "@storybook/addon-knobs": "^5.0.5",
     "@storybook/addon-links": "^5.0.5",
     "@storybook/react": "^5.0.5",
-    "@webiny/form": "^0.1.0",
+    "@webiny/form": "^0.1.1",
     "@webiny/storybook-utils": "^0.1.0",
     "babel-loader": "^8.0.0-beta.6",
     "babel-plugin-emotion": "^9.2.8",
