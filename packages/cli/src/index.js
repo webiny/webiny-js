@@ -3,6 +3,7 @@
 
 const chalk = require("chalk");
 const execa = require("execa");
+const { verifyConfig } = require("./config");
 const currentNodeVersion = process.versions.node;
 const majorVersion = parseInt(currentNodeVersion.split(".")[0]);
 const minorVersion = parseInt(currentNodeVersion.split(".")[1]);
@@ -31,5 +32,6 @@ const minorVersion = parseInt(currentNodeVersion.split(".")[1]);
         process.exit(1);
     }
 
+    verifyConfig();
     require("./cli");
 })();

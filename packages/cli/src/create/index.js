@@ -5,6 +5,8 @@ const glob = require("glob");
 const util = require("util");
 const execa = require("execa");
 const { green, blue } = require("chalk");
+const { trackProject } = require("@webiny/tracking");
+
 const globFiles = util.promisify(glob);
 
 function copyFile(from, to) {
@@ -49,6 +51,8 @@ module.exports = async ({ name }) => {
     await fs.writeFile(envFile, env);
 
     await execa("yarn", [], { cwd: root, stdio: "inherit" });
+
+    await trackProject();
 
     console.log();
     console.log("Your local Webiny project is ready!!");
