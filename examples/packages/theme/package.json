@@ -14,7 +14,6 @@
     "react-hamburger-menu": "^1.1.1"
   },
   "peerDependencies": {
-    "react": "^16.8.6",
-    "@webiny/app-page-builder": "^1"
+    "react": "^16.8.6"
   }
 }
