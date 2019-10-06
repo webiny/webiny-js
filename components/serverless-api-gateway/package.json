@@ -5,7 +5,8 @@
   "license": "MIT",
   "dependencies": {
     "@serverless/api": "^2.0.0",
-    "@serverless/core": "^1.1.1"
+    "@serverless/core": "^1.1.1",
+    "@webiny/tracking": "^0.1.0"
   },
   "scripts": {
     "build": "rm -rf dist && mkdir dist && cp serverless.js package.json dist/",

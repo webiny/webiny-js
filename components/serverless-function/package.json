@@ -6,6 +6,7 @@
   "dependencies": {
     "@serverless/core": "^1.1.1",
     "@serverless/function": "^3.0.0",
+    "@webiny/tracking": "^0.1.0",
     "execa": "^2.0.3"
   },
   "scripts": {

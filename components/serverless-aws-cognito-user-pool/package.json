@@ -4,8 +4,8 @@
   "main": "serverless.js",
   "license": "MIT",
   "dependencies": {
+    "@serverless/core": "^1.1.1",
     "@webiny/tracking": "^0.1.0",
-    "execa": "^2.0.3",
     "lodash.isequal": "^4.5.0"
   },
   "peerDependencies": {
