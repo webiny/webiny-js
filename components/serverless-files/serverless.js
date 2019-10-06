@@ -44,26 +44,14 @@ class FilesComponent extends Component {
             }
         });
 
-        const lambda2 = await this.load("@serverless/function", "upload");
-        const uploadFn = await lambda2({
-            name: "Files component - upload files",
-            timeout: 10,
-            code: join(__dirname, "build", "upload"),
-            handler: "handler.handler",
-            description: "Returns pre-signed POST data for client-side file uploads.",
-            env: {
-                S3_BUCKET: bucket
-            }
-        });
-
         // Deploy graphql API
         const apolloService = await this.load("@webiny/serverless-apollo-service");
         const apolloOutput = await apolloService({
             plugins,
-            extraEndpoints: [
-                { path: "/files/{path}", method: "ANY", function: readFn.arn },
-                { path: "/files", method: "ANY", function: uploadFn.arn }
-            ],
+            endpoints: [{ path: "/files/{path}", method: "ANY", function: readFn.arn }],
+            env: {
+                S3_BUCKET: bucket
+            },
             ...rest
         });
 
