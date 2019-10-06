@@ -3,6 +3,7 @@
 .webiny
 .serverless
 .env*
+!packages/cli/**/.env*
 .npmrc
 htpasswd
 lerna-debug.log
