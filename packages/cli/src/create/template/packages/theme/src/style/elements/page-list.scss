@@ -1,0 +1,43 @@
+.webiny-pb-page-element-page-list{
+  &__items{
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+  }
+  &__navigation{
+    display: flex;
+    width: 100%;
+    justify-content: space-around;
+    a{
+      font-size: 1rem;
+      display: flex;
+      align-content: center;
+      cursor: pointer;
+      svg{
+        height: 18px;
+        display: block;
+      }
+    }
+  }
+  &__item{
+    width: 280px;
+    flex: 1 1 280px;
+    margin-bottom: 35px;
+    &:hover{
+      text-decoration: none;
+    }
+    @include desktop{
+      flex: 0 0 280px;
+    }
+  }
+  &__media{
+    width: 100%;
+    height: 180px;
+    background-size: cover;
+  }
+  &__title{
+    &:hover{
+      text-decoration: underline;
+    }
+  }
+}

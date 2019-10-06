@@ -1,0 +1,96 @@
+name: webiny-cms-project
+
+vars:
+  env:
+    WEBINY_JWT_SECRET: ${env.WEBINY_JWT_SECRET}
+  database:
+    server: ${env.MONGODB_SERVER}
+    name: ${env.MONGODB_NAME}
+
+gateway:
+  component: "@webiny/serverless-apollo-gateway"
+  inputs:
+    name: gateway
+    memory: 128
+    timeout: 30
+    services:
+      - name: security
+        url: ${security.api.url}/graphql
+      - name: files
+        url: ${files.api.url}/graphql
+      - name: pageBuilder
+        url: ${pageBuilder.api.url}/graphql
+      - name: i18n
+        url: ${i18n.api.url}/graphql
+
+security:
+  component: "@webiny/serverless-apollo-service"
+  inputs:
+    name: security
+    memory: 128
+    database: ${vars.database}
+    env: ${vars.env}
+    plugins:
+      - "@webiny/api-security/plugins"
+      - factory: "@webiny/api-plugin-security-cognito"
+        options:
+          region: us-east-1
+          userPoolId: us-east-1_patnytnzK
+
+# Example of a custom service using generic component
+files:
+  component: "@webiny/serverless-apollo-service"
+  inputs:
+    name: files
+    memory: 128
+    database: ${vars.database}
+    env: ${vars.env}
+    plugins:
+      - "@webiny/api-files/plugins"
+
+i18n:
+  component: "@webiny/serverless-apollo-service"
+  inputs:
+    name: i18n
+    memory: 128
+    database: ${vars.database}
+    env: ${vars.env}
+    plugins:
+      - "@webiny/api-i18n/plugins"
+
+# Example of a specific use-case component
+pageBuilder:
+  component: "@webiny/serverless-page-builder"
+  inputs:
+    name: pageBuilder
+    memory: 128
+    database: ${vars.database}
+    env: ${vars.env}
+    plugins:
+      - "@webiny/api-google-tag-manager"
+      - "@webiny/api-mailchimp"
+      - "@webiny/api-cookie-policy"
+
+api:
+  component: "@webiny/serverless-api-gateway"
+  inputs:
+    description: "Main GraphQL API"
+    stage: prod
+    endpointTypes: ['REGIONAL']
+    endpoints:
+      - path: /graphql
+        method: ANY
+        function: ${gateway}
+
+cdn:
+  component: "@serverless/aws-cloudfront"
+  inputs:
+    origins:
+      #- ${files.cdnOrigin}
+      - url: ${api.url}
+        pathPatterns:
+          "/graphql":
+            ttl: 0
+            forward:
+              headers: ["Accept", "Accept-Language"]
+            allowedHttpMethods: ["GET", "HEAD", "OPTIONS", "PUT", "POST", "PATCH", "DELETE"]

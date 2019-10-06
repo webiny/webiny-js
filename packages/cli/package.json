@@ -4,8 +4,8 @@
   "version": "0.1.1",
   "main": "index.js",
   "bin": {
-    "webiny": "./lib/index.js",
-    "wby": "./lib/index.js"
+    "webiny": "./index.js",
+    "wby": "./index.js"
   },
   "repository": {
     "type": "git",

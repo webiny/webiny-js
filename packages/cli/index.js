@@ -1,2 +1,2 @@
-// @flow
-export * from "./src";
+#!/usr/bin/env node
+require("./src/index");
