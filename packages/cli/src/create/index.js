@@ -30,6 +30,9 @@ module.exports = async ({ name }) => {
 
     // Setup monorepo packages
     await setupFolder("apps/code");
+    fs.renameSync("apps/code/admin/.gitignore.example", "apps/code/admin/.gitignore");
+    fs.renameSync("apps/code/site/.gitignore.example", "apps/code/site/.gitignore");
+
     await setupFolder("apps/prod");
     await setupFolder("functions/prod");
     await setupFolder("packages/theme");
