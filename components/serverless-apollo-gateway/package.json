@@ -11,6 +11,7 @@
     "@serverless/function": "^3.0.0",
     "@webiny/tracking": "^0.1.1",
     "apollo-server-lambda": "^2.9.3",
+    "babel-loader": "^8.0.6",
     "fs-extra": "^8.1.0",
     "prettier": "^1.18.2",
     "webpack": "^4.39.2"

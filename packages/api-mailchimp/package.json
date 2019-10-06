@@ -14,6 +14,7 @@
     "@webiny/api": "^0.1.0",
     "@webiny/api-security": "^0.1.1",
     "@webiny/commodo": "^0.1.1",
+    "@webiny/commodo-graphql": "^0.1.1",
     "got": "^9.6.0"
   },
   "devDependencies": {

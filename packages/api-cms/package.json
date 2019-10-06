@@ -18,6 +18,7 @@
     "@babel/runtime": "^7.5.5",
     "@webiny/api": "^0.1.0",
     "@webiny/commodo": "^0.1.1",
+    "@webiny/commodo-graphql": "^0.1.1",
     "@webiny/plugins": "^0.1.0",
     "graphql-shield": "^5.1.0",
     "invariant": "^2.2.4",
