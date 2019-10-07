@@ -1,4 +1,4 @@
-const path = require("path");
+const { join } = require("path");
 const fs = require("fs-extra");
 const { transform } = require("@babel/core");
 const prettier = require("prettier");
@@ -11,6 +11,14 @@ const writeJson = require("write-json-file");
 
 const component = "@webiny/serverless-apollo-service";
 const defaultDependencies = ["date-fns", "mongodb", "@webiny/api", "@webiny/api-security"];
+
+const getDeps = async deps => {
+    const { dependencies } = await loadJson(join(__dirname, "package.json"));
+    return deps.reduce((acc, item) => {
+        acc[item] = dependencies[item];
+        return acc;
+    }, {});
+};
 
 class ApolloService extends Component {
     async default({ track, ...inputs } = {}) {
@@ -26,7 +34,7 @@ class ApolloService extends Component {
             timeout = 10,
             description,
             endpointTypes = ["REGIONAL"],
-            dependencies = []
+            dependencies = {}
         } = inputs;
 
         if (!componentName) {
@@ -39,9 +47,9 @@ class ApolloService extends Component {
         }
 
         const injectPlugins = [];
-        const boilerplateRoot = path.join(this.context.instance.root, ".webiny");
-        const componentRoot = path.join(boilerplateRoot, componentName);
-        fs.ensureDirSync(path.join(boilerplateRoot, componentName));
+        const boilerplateRoot = join(this.context.instance.root, ".webiny");
+        const componentRoot = join(boilerplateRoot, componentName);
+        fs.ensureDirSync(join(boilerplateRoot, componentName));
 
         this.state.inputs = inputs;
         await this.save();
@@ -71,32 +79,26 @@ class ApolloService extends Component {
         });
 
         fs.writeFileSync(
-            path.join(componentRoot, "handler.js"),
+            join(componentRoot, "handler.js"),
             prettier.format(code, { parser: "babel" })
         );
 
         fs.copyFileSync(
-            path.join(__dirname, "boilerplate", "config.js"),
-            path.join(componentRoot, "config.js")
+            join(__dirname, "boilerplate", "config.js"),
+            join(componentRoot, "config.js")
         );
 
         fs.copyFileSync(
-            path.join(__dirname, "boilerplate", "webpack.config.js"),
-            path.join(componentRoot, "webpack.config.js")
+            join(__dirname, "boilerplate", "webpack.config.js"),
+            join(componentRoot, "webpack.config.js")
         );
 
-        const pkgJsonPath = path.join(componentRoot, "package.json");
-        const cmpPkgJsonPath = path.join(__dirname, "package.json");
-        fs.copyFileSync(path.join(__dirname, "boilerplate", "package.json"), pkgJsonPath);
+        const pkgJsonPath = join(componentRoot, "package.json");
+        fs.copyFileSync(join(__dirname, "boilerplate", "package.json"), pkgJsonPath);
 
         // Inject dependencies
         const pkgJson = await loadJson(pkgJsonPath);
-        const componentPkgJson = await loadJson(cmpPkgJsonPath);
-
-        defaultDependencies.concat(dependencies).forEach(dep => {
-            pkgJson.dependencies[dep] = componentPkgJson.dependencies[dep];
-        });
-
+        Object.assign(pkgJson.dependencies, await getDeps(defaultDependencies), dependencies);
         await writeJson(pkgJsonPath, pkgJson);
 
         await execa("npm", ["install"], { cwd: componentRoot });
@@ -136,7 +138,7 @@ class ApolloService extends Component {
 
         const lambdaOut = await lambda({
             description: description || `Apollo Server: ${componentName}`,
-            code: path.join(componentRoot, "build"),
+            code: join(componentRoot, "build"),
             handler: "handler.handler",
             env,
             memory,

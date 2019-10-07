@@ -1,7 +1,17 @@
+const { join } = require("path");
 const { Component } = require("@serverless/core");
 const { trackComponent } = require("@webiny/tracking");
+const loadJson = require("load-json-file");
 
 const component = "@webiny/serverless-page-builder";
+
+const getDeps = async deps => {
+    const { dependencies } = await loadJson(join(__dirname, "package.json"));
+    return deps.reduce((acc, item) => {
+        acc[item] = dependencies[item];
+        return acc;
+    }, {});
+};
 
 class ServerlessPageBuilder extends Component {
     async default({ track, ...inputs } = {}) {
@@ -17,7 +27,7 @@ class ServerlessPageBuilder extends Component {
             plugins,
             ...rest,
             track: false,
-            dependencies: ["@webiny/api-page-builder"]
+            dependencies: await getDeps(["@webiny/api-page-builder"])
         });
 
         this.state.output = output;
