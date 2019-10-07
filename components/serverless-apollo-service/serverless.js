@@ -127,10 +127,7 @@ class ApolloService extends Component {
             description: `API for ${componentName}`,
             stage: "prod",
             endpointTypes,
-            endpoints: [
-                { path: "/graphql", method: "ANY", function: lambdaOut.arn },
-                ...endpoints
-            ]
+            endpoints: [{ path: "/graphql", method: "ANY", function: lambdaOut.arn }, ...endpoints]
         });
 
         const output = {

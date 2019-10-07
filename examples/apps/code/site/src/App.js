@@ -31,7 +31,7 @@ const App = () => {
                         React.cloneElement(pl.route, { key: pl.name, exact: true })
                     )}
                 </PageBuilderProvider>
-                <img src={slika} alt={"Slika"}/>
+                <img src={slika} alt={"Slika"} />
             </UiProvider>
         </I18NProvider>
     );
