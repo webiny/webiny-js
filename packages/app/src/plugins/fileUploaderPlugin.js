@@ -1,22 +1,37 @@
 // @flow
-/* global window */
-
 import type { FileUploaderPlugin } from "@webiny/app/types";
+import gql from "graphql-tag";
 
-export default (config: Object = {}): FileUploaderPlugin => ({
+const UPLOAD_FILE = gql`
+    mutation UploadFile($data: UploadFileInput!) {
+        files {
+            upload(data: $data) {
+                data {
+                    data
+                    file {
+                        src
+                        type
+                        name
+                        size
+                    }
+                }
+            }
+        }
+    }
+`;
+
+export default (): FileUploaderPlugin => ({
     type: "file-uploader",
     name: "file-uploader",
-    upload: async (file: File) => {
-        const uri = config.uri || process.env.REACT_APP_FILES_PROXY + "/files";
-
-        const presignedPostPayload = await new Promise(resolve => {
-            const xhr = new window.XMLHttpRequest();
-            xhr.open("POST", uri, true);
-            xhr.send(JSON.stringify({ size: file.size, name: file.name, type: file.type }));
-            xhr.onload = function() {
-                resolve(JSON.parse(this.responseText));
-            };
+    upload: async (file: File, { apolloClient }) => {
+        console.log("ideeee");
+        const presignedPostPayload = await apolloClient.mutate({
+            mutation: UPLOAD_FILE,
+            variables: {
+                data: { size: file.size, name: file.name, type: file.type }
+            }
         });
+        console.log("dobeo presigned", presignedPostPayload);
 
         return await new Promise((resolve, reject) => {
             const formData = new window.FormData();

@@ -8,8 +8,9 @@ import { resolveCreate, resolveDelete, resolveGet } from "@webiny/commodo-graphq
 import listFiles from "./resolvers/listFiles";
 import listTags from "./resolvers/listTags";
 import updateFileBySrc from "./resolvers/updateFileBySrc";
+import upload from "./resolvers/upload";
 
-const fileFetcher = ctx => ctx.models.File;
+const getFile = ({ models }) => models.File;
 
 export default ([
     {
@@ -25,6 +26,29 @@ export default ([
                     src: String
                     tags: [String]
                     meta: JSON
+                }
+
+                input UploadFileInput {
+                    name: String!
+                    type: String!
+                    size: Int!
+                }
+
+                type UploadFileResponseDataFile {
+                    name: String
+                    type: String
+                    size: Int
+                    src: String
+                }
+
+                type UploadFileResponseData {
+                    data: JSON
+                    file: UploadFileResponseDataFile
+                }
+
+                type UploadFileResponse {
+                    error: FileError
+                    data: UploadFileResponseData
                 }
 
                 type FileListMeta {
@@ -87,6 +111,7 @@ export default ([
                 }
 
                 type FilesMutation {
+                    upload(data: UploadFileInput!): UploadFileResponse
                     createFile(data: FileInput!): FileResponse
                     updateFileBySrc(src: String!, data: FileInput!): FileResponse
                     deleteFile(id: ID!): FilesDeleteResponse
@@ -103,7 +128,7 @@ export default ([
             resolvers: {
                 File: {
                     __resolveReference(reference, context) {
-                        return fileFetcher(context).findById(reference.id);
+                        return getFile(context).findById(reference.id);
                     }
                 },
                 Query: {
@@ -113,14 +138,15 @@ export default ([
                     files: emptyResolver
                 },
                 FilesQuery: {
-                    getFile: resolveGet(fileFetcher),
+                    getFile: resolveGet(getFile),
                     listFiles: listFiles,
                     listTags: listTags
                 },
                 FilesMutation: {
-                    createFile: resolveCreate(fileFetcher),
+                    upload,
+                    createFile: resolveCreate(getFile),
                     updateFileBySrc: updateFileBySrc,
-                    deleteFile: resolveDelete(fileFetcher)
+                    deleteFile: resolveDelete(getFile)
                 }
             }
         },
@@ -131,6 +157,7 @@ export default ([
                     listFiles: hasScope("files:file:crud")
                 },
                 FilesMutation: {
+                    upload: hasScope("files:file:crud"),
                     createFile: hasScope("files:file:crud"),
                     updateFileBySrc: hasScope("files:file:crud"),
                     deleteFile: hasScope("files:file:crud")

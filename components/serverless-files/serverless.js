@@ -49,9 +49,6 @@ class FilesComponent extends Component {
         const apolloOutput = await apolloService({
             plugins,
             endpoints: [{ path: "/files/{path}", method: "ANY", function: readFn.arn }],
-            env: {
-                S3_BUCKET: bucket
-            },
             ...rest
         });
 

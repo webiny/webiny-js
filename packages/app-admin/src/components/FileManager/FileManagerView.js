@@ -4,7 +4,7 @@ import Files from "react-butterfiles";
 import { ButtonPrimary, ButtonIcon } from "@webiny/ui/Button";
 import { Icon } from "@webiny/ui/Icon";
 import File from "./File";
-import { useQuery, useMutation } from "react-apollo";
+import { useQuery, useMutation, useApolloClient } from "react-apollo";
 import type { FilesRules } from "react-butterfiles";
 import { LIST_FILES, CREATE_FILE } from "./graphql";
 import getFileTypePlugin from "./getFileTypePlugin";
@@ -150,7 +150,6 @@ function FileManagerView(props: Props) {
 
     const { showSnackbar } = useSnackbar();
 
-
     const searchOnChange = useCallback(debounce(search => setQueryParams({ search }), 500), []);
 
     const toggleTag = useCallback(async ({ tag, queryParams }) => {
@@ -222,6 +221,8 @@ function FileManagerView(props: Props) {
 
     const searchInput = useRef();
 
+    const apolloClient = useApolloClient();
+
     const gqlQuery = useQuery(LIST_FILES, {
         variables: queryParams,
         onCompleted: response => {
@@ -241,7 +242,7 @@ function FileManagerView(props: Props) {
 
         await Promise.all(
             list.map(async file => {
-                const response = await getFileUploader()(file);
+                const response = await getFileUploader()(file, { apolloClient });
                 await createFile({ variables: { data: response } });
             })
         );

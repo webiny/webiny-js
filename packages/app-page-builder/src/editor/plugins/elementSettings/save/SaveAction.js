@@ -41,7 +41,7 @@ const SaveAction = (props: Props) => {
         blob.name = "pb-page-element-" + element.id + ".png";
 
         const fileUploaderPlugin = getPlugin("file-uploader");
-        formData.preview = await fileUploaderPlugin.upload(blob);
+        formData.preview = await fileUploaderPlugin.upload(blob, { apolloClient: client });
 
         formData.preview.meta = meta;
         formData.preview.meta.private = true;
