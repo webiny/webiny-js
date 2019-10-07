@@ -5,20 +5,6 @@
                 "node": "8.10"
             }
         }],
-        "@babel/preset-flow",
-        "@babel/preset-react"
-    ],
-    "plugins": [
-        ["@babel/plugin-proposal-object-rest-spread", {"useBuiltIns": true}],
-        ["@babel/plugin-transform-runtime"],
-        ["@babel/plugin-proposal-class-properties"],
-        ["babel-plugin-dynamic-import-node"],
-        ["babel-plugin-named-asset-import", {
-            "loaderMap": {
-                "svg": {
-                    "ReactComponent": "@svgr/webpack![path]"
-                }
-            }
-        }]
+        "@babel/preset-flow"
     ]
 }

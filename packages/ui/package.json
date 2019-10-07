@@ -1,6 +1,6 @@
 {
   "name": "@webiny/ui",
-  "version": "1.0.0",
+  "version": "0.1.1",
   "main": "index.js",
   "repository": {
     "type": "git",
@@ -70,17 +70,16 @@
     "@babel/cli": "^7.5.5",
     "@babel/core": "^7.5.5",
     "@babel/plugin-proposal-class-properties": "^7.5.5",
-    "@babel/plugin-proposal-object-rest-spread": "^7.5.5",
-    "@babel/plugin-transform-runtime": "^7.5.5",
     "@babel/preset-env": "^7.5.5",
     "@babel/preset-flow": "^7.0.0",
     "@storybook/addon-knobs": "^5.0.5",
     "@storybook/addon-links": "^5.0.5",
     "@storybook/react": "^5.0.5",
-    "@webiny/form": "^1.0.0",
-    "@webiny/storybook-utils": "^1.0.0",
+    "@webiny/form": "^0.1.1",
+    "@webiny/storybook-utils": "^0.1.0",
     "babel-loader": "^8.0.0-beta.6",
     "babel-plugin-emotion": "^9.2.8",
+    "babel-plugin-named-asset-import": "^1.0.0-next.3e165448",
     "jest-dom": "^3.0.0",
     "node-sass": "^4.9.3",
     "raw-loader": "^0.5.1",
@@ -88,18 +87,19 @@
     "sass-loader": "^7.1.0"
   },
   "peerDependencies": {
-    "react": "^16.4.0",
-    "react-dom": "^16.4.0"
+    "react": "^16.8.0",
+    "react-dom": "^16.8.0"
   },
   "publishConfig": {
     "access": "public"
   },
   "scripts": {
-    "build": "babel src -d ${DEST:-build} --source-maps --copy-files",
-    "flow-copy-source": "flow-copy-source src ${DEST:-build}",
-    "postbuild": "yarn flow-copy-source",
+    "build": "babel src -d dist --source-maps --copy-files",
+    "flow-copy-source": "flow-copy-source src dist",
+    "postbuild": "yarn flow-copy-source && cp package.json LICENSE README.md dist/",
     "storybook": "start-storybook -p 6006",
-    "build-storybook": "build-storybook -c .storybook -o ${OUT:-.out}"
+    "build-storybook": "build-storybook -c .storybook -o ${OUT:-.out}",
+    "prepublishOnly": "yarn build"
   },
   "jest": {
     "transform": {

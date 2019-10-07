@@ -1,6 +1,6 @@
 {
   "name": "@webiny/app-forms",
-  "version": "1.0.0",
+  "version": "0.1.1",
   "main": "index.js",
   "repository": {
     "type": "git",
@@ -17,9 +17,9 @@
     "@emotion/core": "^10.0.17",
     "@emotion/styled": "^10.0.17",
     "@svgr/webpack": "^4.3.2",
-    "@webiny/form": "^1.0.0",
-    "@webiny/plugins": "^1.0.0",
-    "@webiny/ui": "^1.0.0",
+    "@webiny/form": "^0.1.1",
+    "@webiny/plugins": "^0.1.0",
+    "@webiny/ui": "^0.1.1",
     "emotion": "^10.0.17",
     "lodash.clonedeep": "^4.5.0",
     "lodash.debounce": "^4.0.8",
@@ -34,16 +34,11 @@
   "devDependencies": {
     "@babel/cli": "^7.5.5",
     "@babel/core": "^7.5.5",
-    "@babel/plugin-proposal-class-properties": "^7.5.5",
-    "@babel/plugin-proposal-object-rest-spread": "^7.5.5",
-    "@babel/plugin-syntax-dynamic-import": "^7.2.0",
-    "@babel/plugin-transform-runtime": "^7.5.5",
     "@babel/preset-env": "^7.5.5",
     "@babel/preset-flow": "^7.0.0",
     "@babel/preset-react": "^7.0.0",
     "babel-plugin-emotion": "^9.2.8",
     "babel-plugin-lodash": "^3.3.4",
-    "babel-plugin-module-resolver": "^3.1.1",
     "babel-plugin-named-asset-import": "^1.0.0-next.3e165448",
     "graphql.macro": "^1.4.2"
   },
@@ -55,9 +50,10 @@
     "access": "public"
   },
   "scripts": {
-    "build": "babel src -d ${DEST:-build} --source-maps --copy-files",
-    "flow-copy-source": "flow-copy-source src ${DEST:-build}",
-    "postbuild": "yarn flow-copy-source"
+    "build": "babel src -d dist --source-maps --copy-files",
+    "flow-copy-source": "flow-copy-source src dist",
+    "postbuild": "yarn flow-copy-source && cp package.json LICENSE README.md dist/",
+    "prepublishOnly": "yarn build"
   },
   "svgo": {
     "plugins": {

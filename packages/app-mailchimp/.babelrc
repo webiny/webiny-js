@@ -12,10 +12,8 @@
         "@babel/preset-flow"
     ],
     "plugins": [
-        ["babel-plugin-emotion", { "autoLabel": true }],
-        ["@babel/plugin-proposal-object-rest-spread", { "useBuiltIns": true }],
-        ["@babel/plugin-transform-runtime"],
         ["@babel/plugin-proposal-class-properties"],
+        ["babel-plugin-emotion", { "autoLabel": true }],
         [
             "babel-plugin-named-asset-import",
             {

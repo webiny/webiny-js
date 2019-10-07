@@ -1,8 +1,5 @@
 name: webiny-cms-project
 
-components:
-  function: '../../../node_modules/@webiny/serverless-function'
-
 vars:
   env:
     WEBINY_JWT_SECRET: ${env.WEBINY_JWT_SECRET}
@@ -75,7 +72,7 @@ pageBuilder:
       - "@webiny/api-cookie-policy"
 
 api:
-  component: "@serverless/aws-api-gateway"
+  component: "@webiny/serverless-api-gateway"
   inputs:
     description: "Main GraphQL API"
     stage: prod
@@ -83,7 +80,7 @@ api:
     endpoints:
       - path: /graphql
         method: ANY
-        function: ${gateway.arn}
+        function: ${gateway}
 
 cdn:
   component: "@serverless/aws-cloudfront"

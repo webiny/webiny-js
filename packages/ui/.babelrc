@@ -9,6 +9,7 @@
     "@babel/preset-flow"
   ],
   "plugins": [
+    ["@babel/plugin-proposal-class-properties"],
     ["babel-plugin-emotion", { "autoLabel": true }],
     ["babel-plugin-named-asset-import", {
       "loaderMap": {
@@ -16,10 +17,7 @@
           "ReactComponent": "@svgr/webpack![path]"
         }
       }
-    }],
-    ["@babel/plugin-proposal-class-properties"],
-    ["@babel/plugin-proposal-object-rest-spread", {"useBuiltIns": true}],
-    ["@babel/plugin-transform-runtime"]
+    }]
   ]
 }
 

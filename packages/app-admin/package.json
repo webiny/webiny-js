@@ -1,6 +1,6 @@
 {
   "name": "@webiny/app-admin",
-  "version": "1.0.0",
+  "version": "0.1.1",
   "main": "index.js",
   "description": "A collection of plugins that together form a complete admin interface, customizable and extensible with Webiny apps and plugins.",
   "repository": {
@@ -14,10 +14,10 @@
     "@emotion/core": "^10.0.17",
     "@emotion/styled": "^10.0.17",
     "@svgr/webpack": "^4.3.2",
-    "@webiny/app": "^1.0.0",
-    "@webiny/form": "^1.0.0",
-    "@webiny/plugins": "^1.0.0",
-    "@webiny/ui": "^1.0.0",
+    "@webiny/app": "^0.1.0",
+    "@webiny/form": "^0.1.1",
+    "@webiny/plugins": "^0.1.0",
+    "@webiny/ui": "^0.1.1",
     "bytes": "^3.1.0",
     "classnames": "^2.2.6",
     "dataurl-to-blob": "^0.0.1",
@@ -42,8 +42,6 @@
     "@babel/cli": "^7.5.5",
     "@babel/core": "^7.5.5",
     "@babel/plugin-proposal-class-properties": "^7.5.5",
-    "@babel/plugin-proposal-object-rest-spread": "^7.5.5",
-    "@babel/plugin-transform-runtime": "^7.5.5",
     "@babel/preset-env": "^7.5.5",
     "@babel/preset-flow": "^7.0.0",
     "@babel/preset-react": "^7.0.0",
@@ -60,9 +58,10 @@
     "access": "public"
   },
   "scripts": {
-    "build": "babel src -d ${DEST:-build} --source-maps --copy-files",
-    "flow-copy-source": "flow-copy-source src ${DEST:-build}",
-    "postbuild": "yarn flow-copy-source"
+    "build": "babel src -d dist --source-maps --copy-files",
+    "flow-copy-source": "flow-copy-source src dist",
+    "postbuild": "yarn flow-copy-source && cp package.json LICENSE README.md dist/",
+    "prepublishOnly": "yarn build"
   },
   "svgo": {
     "plugins": {

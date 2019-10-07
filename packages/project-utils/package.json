@@ -1,6 +1,6 @@
 {
   "name": "@webiny/project-utils",
-  "version": "1.0.0",
+  "version": "0.1.1",
   "main": "index.js",
   "description": "A collection of utilities for Webiny project.",
   "repository": {
@@ -22,8 +22,11 @@
     "read-json-sync": "^2.0.1"
   },
   "license": "MIT",
+  "publishConfig": {
+    "access": "public"
+  },
   "scripts": {
-    "build": "rm -rf dist && mkdir dist && cp -r aliases app-babel cra packages package.json dist/",
+    "build": "rm -rf dist && mkdir dist && cp -r aliases app-babel cra packages package.json LICENSE README.md dist/",
     "prepublishOnly": "yarn build"
   }
 }

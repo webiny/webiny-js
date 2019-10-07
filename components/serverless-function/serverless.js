@@ -1,17 +1,16 @@
 const path = require("path");
 const execa = require("execa");
 const { Component } = require("@serverless/core");
+const { trackComponent } = require("@webiny/tracking");
+
+const component = "@webiny/serverless-function";
 
 class ServerlessFunction extends Component {
-    async default(inputs = {}) {
+    async default({ track, ...inputs } = {}) {
+        await trackComponent({ track, context: this.context, component });
+
         const functionRoot = path.join(this.context.instance.root, inputs.root);
-        if (inputs.env) {
-            Object.keys(inputs.env).forEach(key => {
-                if (inputs.env[key] === "__wby_inject__") {
-                    inputs.env[key] = process.env[key];
-                }
-            });
-        }
+
         if (inputs.hook) {
             this.context.log("Building function");
             const hooks = Array.isArray(inputs.hook) ? inputs.hook : [inputs.hook];
@@ -29,7 +28,9 @@ class ServerlessFunction extends Component {
         return await lambda(inputs);
     }
 
-    async remove(inputs = {}) {
+    async remove({ track, ...inputs } = {}) {
+        await trackComponent({ track, context: this.context, component, method: "remove" });
+
         const lambda = await this.load("@serverless/function");
 
         return await lambda.remove(inputs);

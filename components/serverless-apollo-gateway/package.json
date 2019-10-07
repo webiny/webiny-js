@@ -1,22 +1,26 @@
 {
   "name": "@webiny/serverless-apollo-gateway",
-  "version": "1.0.0",
+  "version": "0.1.2",
   "main": "serverless.js",
   "license": "MIT",
   "dependencies": {
     "@apollo/gateway": "^0.10.4",
-    "@babel/plugin-proposal-class-properties": "^7.5.5",
-    "@babel/plugin-proposal-object-rest-spread": "^7.5.5",
-    "@babel/plugin-transform-destructuring": "^7.6.0",
+    "@babel/core": "^7.6.2",
     "@babel/preset-env": "^7.6.0",
     "@serverless/core": "^1.1.1",
     "@serverless/function": "^3.0.0",
+    "@webiny/tracking": "^0.1.1",
     "apollo-server-lambda": "^2.9.3",
+    "babel-loader": "^8.0.6",
     "fs-extra": "^8.1.0",
+    "prettier": "^1.18.2",
     "webpack": "^4.39.2"
   },
   "scripts": {
-    "build": "rm -rf dist && mkdir dist && cp serverless.js package.json dist/",
+    "build": "rm -rf dist && mkdir dist && cp -R serverless.js package.json boilerplate transform dist/",
     "prepublishOnly": "yarn build"
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }

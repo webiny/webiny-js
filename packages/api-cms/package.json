@@ -1,6 +1,7 @@
 {
   "name": "@webiny/api-cms",
-  "version": "1.0.0",
+  "version": "0.1.2",
+  "private": true,
   "main": "index.js",
   "repository": {
     "type": "git",
@@ -15,9 +16,10 @@
   "license": "MIT",
   "dependencies": {
     "@babel/runtime": "^7.5.5",
-    "@webiny/commodo": "^1.0.0",
-    "@webiny/api": "^1.0.0",
-    "@webiny/plugins": "^1.0.0",
+    "@webiny/api": "^0.1.1",
+    "@webiny/commodo": "^0.1.1",
+    "@webiny/commodo-graphql": "^0.1.2",
+    "@webiny/plugins": "^0.1.0",
     "graphql-shield": "^5.1.0",
     "invariant": "^2.2.4",
     "pluralize": "^8.0.0"
@@ -25,14 +27,16 @@
   "devDependencies": {
     "@babel/cli": "^7.5.5",
     "@babel/core": "^7.5.5",
-    "@babel/plugin-proposal-object-rest-spread": "^7.5.5",
-    "@babel/plugin-transform-runtime": "^7.5.5",
     "@babel/preset-env": "^7.5.5",
     "@babel/preset-flow": "^7.0.0"
   },
+  "publishConfig": {
+    "access": "public"
+  },
   "scripts": {
-    "build": "babel src -d ${DEST:-build} --source-maps --copy-files",
-    "flow-copy-source": "flow-copy-source src ${DEST:-build}",
-    "postbuild": "yarn flow-copy-source"
+    "build": "babel src -d dist --source-maps --copy-files && cp package.json dist",
+    "flow-copy-source": "flow-copy-source src dist",
+    "postbuild": "yarn flow-copy-source && cp package.json LICENSE README.md dist/",
+    "prepublishOnly": "yarn build"
   }
 }

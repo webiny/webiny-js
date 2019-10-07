@@ -1,7 +1,8 @@
 {
   "private": true,
   "name": "@webiny/webpack-externals",
-  "version": "1.0.0",
+  "description": "This package is only meant to be used in this repository!",
+  "version": "0.1.0",
   "main": "index.js",
   "license": "MIT",
   "dependencies": {

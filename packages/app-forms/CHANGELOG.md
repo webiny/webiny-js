@@ -3,25 +3,6 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
-<a name="1.0.0-next.1"></a>
-# 1.0.0-next.1 (2019-08-24)
-
-**Note:** Version bump only for package @webiny/app-forms
-
-
-
-
-
-<a name="1.0.1-alpha.0"></a>
-## 1.0.1-alpha.0 (2019-08-24)
-
-**Note:** Version bump only for package @webiny/app-forms
-
-
-
-
-
-<a name="1.0.0"></a>
-# 1.0.0 (2019-08-24)
+## [0.1.1](https://github.com/webiny/webiny-js/compare/@webiny/app-forms@0.1.0...@webiny/app-forms@0.1.1) (2019-10-06)
 
 **Note:** Version bump only for package @webiny/app-forms

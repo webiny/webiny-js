@@ -42,12 +42,10 @@ module.exports = {
                                     node: "10.16"
                                 }
                             }
-                        ],
-                        "@babel/preset-flow"
+                        ]
                     ],
                     plugins: [
                         "@babel/plugin-proposal-class-properties",
-                        "@babel/plugin-proposal-object-rest-spread",
                         ["babel-plugin-module-resolver", { alias: aliases }]
                     ]
                 }

@@ -1,6 +1,7 @@
 {
   "name": "@webiny/serverless-files",
-  "version": "1.0.0",
+  "private": true,
+  "version": "0.1.0",
   "main": "serverless.js",
   "license": "MIT",
   "dependencies": {
@@ -17,6 +18,9 @@
     "deploy": "cd test && sls --debug",
     "build-old": "rm -rf dist && mkdir dist && cp serverless.js package.json dist/",
     "prepublishOnly": "yarn build"
+  },
+  "publishConfig": {
+    "access": "public"
   },
   "devDependencies": {
     "extract-zip": "^1.6.7",

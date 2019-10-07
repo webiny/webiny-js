@@ -9,14 +9,9 @@
         "@babel/preset-flow"
     ],
     "plugins": [
-        ["babel-plugin-emotion", { "autoLabel": true }],
-        ["babel-plugin-module-resolver", {
-            "root": ["./src"]
-        }],
-        ["babel-plugin-lodash", { "id": ["lodash"] }],
         ["@babel/plugin-proposal-class-properties"],
-        ["@babel/plugin-proposal-object-rest-spread", {"useBuiltIns": true}],
-        ["@babel/plugin-transform-runtime"],
+        ["babel-plugin-emotion", { "autoLabel": true }],
+        ["babel-plugin-lodash", { "id": ["lodash"] }],
         ["babel-plugin-named-asset-import", {
             "loaderMap": {
                 "svg": {

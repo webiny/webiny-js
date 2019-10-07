@@ -1,5 +1,6 @@
 .idea
 .webpack
+.webiny
 .serverless
 .env*
 .npmrc

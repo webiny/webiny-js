@@ -1,16 +1,19 @@
 {
   "name": "@webiny/serverless-page-builder",
-  "version": "1.0.0",
+  "version": "0.1.2",
   "main": "serverless.js",
   "license": "MIT",
   "dependencies": {
     "@serverless/core": "^1.1.1",
-    "@serverless/function": "^3.0.0",
-    "fs-extra": "^8.1.0",
-    "webpack": "^4.39.2"
+    "@webiny/api-page-builder": "^0.1.2",
+    "@webiny/serverless-apollo-service": "^0.1.2",
+    "@webiny/tracking": "^0.1.1"
   },
   "scripts": {
     "build": "rm -rf dist && mkdir dist && cp serverless.js package.json dist/",
     "prepublishOnly": "yarn build"
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }

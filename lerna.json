@@ -7,15 +7,15 @@
   "command": {
     "version": {
       "preid": "next",
-      "ignoreChanges": ["scripts/**", ",**/__fixtures__/**", "**/__tests__/**", "**/*.md"],
-      "allowBranch": ["master", "refactor/scoped-packages"],
+      "ignoreChanges": ["scripts/**", ",**/__fixtures__/**", "**/__tests__/**", "**/*.md", "*/lerna.json", "examples/**"],
+      "allowBranch": ["master"],
       "conventionalCommits": true,
-      "message": "New release :tada: :rocket:"
+      "createRelease": "github",
+      "commitHooks": false,
+      "message": "chore(release): New release :tada: :rocket:"
     },
     "publish": {
-      "contents": "dist",
-      "registry": "http://localhost:4800",
-      "createRelease": "github"
+      "contents": "dist"
     }
   }
 }
