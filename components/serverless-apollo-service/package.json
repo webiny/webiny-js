@@ -1,6 +1,6 @@
 {
   "name": "@webiny/serverless-apollo-service",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "main": "serverless.js",
   "license": "MIT",
   "dependencies": {
