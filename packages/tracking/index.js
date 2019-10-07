@@ -10,7 +10,7 @@ const defaultLogger = () => {};
 
 const sendStats = data => {
     return new Promise(resolve => {
-        request.post("http://18.223.190.136/track", { json: data }, resolve);
+        request.post("http://stats.webiny.com/track", { json: data }, resolve);
     });
 };
 
