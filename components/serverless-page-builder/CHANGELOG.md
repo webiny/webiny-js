@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.1.6](https://github.com/Webiny/webiny-js/compare/@webiny/serverless-page-builder@0.1.5...@webiny/serverless-page-builder@0.1.6) (2019-10-07)
+
+
+### Bug Fixes
+
+* improve handling of boilerplate dependencies. ([cc4404b](https://github.com/Webiny/webiny-js/commit/cc4404b))
+
+
+
+
+
 ## [0.1.5](https://github.com/Webiny/webiny-js/compare/@webiny/serverless-page-builder@0.1.4...@webiny/serverless-page-builder@0.1.5) (2019-10-07)
 
 **Note:** Version bump only for package @webiny/serverless-page-builder

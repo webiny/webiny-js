@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.1.6](https://github.com/Webiny/webiny-js/compare/@webiny/serverless-apollo-service@0.1.5...@webiny/serverless-apollo-service@0.1.6) (2019-10-07)
+
+
+### Bug Fixes
+
+* improve handling of boilerplate dependencies. ([cc4404b](https://github.com/Webiny/webiny-js/commit/cc4404b))
+* track proper method on component removal. ([e3cf4b8](https://github.com/Webiny/webiny-js/commit/e3cf4b8))
+
+
+
+
+
 ## [0.1.5](https://github.com/Webiny/webiny-js/compare/@webiny/serverless-apollo-service@0.1.4...@webiny/serverless-apollo-service@0.1.5) (2019-10-07)
 
 
