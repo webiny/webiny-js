@@ -13,7 +13,12 @@ class ServerlessPageBuilder extends Component {
 
         // Deploy graphql API
         const apolloService = await this.load("@webiny/serverless-apollo-service");
-        const output = await apolloService({ plugins, ...rest, track: false });
+        const output = await apolloService({
+            plugins,
+            ...rest,
+            track: false,
+            dependencies: ["@webiny/api-page-builder"]
+        });
 
         this.state.output = output;
         await this.save();

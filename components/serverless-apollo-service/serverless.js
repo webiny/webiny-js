@@ -4,9 +4,13 @@ const { transform } = require("@babel/core");
 const prettier = require("prettier");
 const { Component } = require("@serverless/core");
 const webpack = require("webpack");
+const execa = require("execa");
 const { trackComponent } = require("@webiny/tracking");
+const loadJson = require("load-json-file");
+const writeJson = require("write-json-file");
 
 const component = "@webiny/serverless-apollo-service";
+const defaultDependencies = ["date-fns", "mongodb", "@webiny/api", "@webiny/api-security"];
 
 class ApolloService extends Component {
     async default({ track, ...inputs } = {}) {
@@ -21,7 +25,8 @@ class ApolloService extends Component {
             memory = 128,
             timeout = 10,
             description,
-            endpointTypes = ["REGIONAL"]
+            endpointTypes = ["REGIONAL"],
+            dependencies = []
         } = inputs;
 
         if (!componentName) {
@@ -77,8 +82,24 @@ class ApolloService extends Component {
 
         fs.copyFileSync(
             path.join(__dirname, "boilerplate", "webpack.config.js"),
-            path.join(componentRoot, "/webpack.config.js")
+            path.join(componentRoot, "webpack.config.js")
         );
+
+        const pkgJsonPath = path.join(componentRoot, "package.json");
+        const cmpPkgJsonPath = path.join(__dirname, "package.json");
+        fs.copyFileSync(path.join(__dirname, "boilerplate", "package.json"), pkgJsonPath);
+
+        // Inject dependencies
+        const pkgJson = await loadJson(pkgJsonPath);
+        const componentPkgJson = await loadJson(cmpPkgJsonPath);
+
+        defaultDependencies.concat(dependencies).forEach(dep => {
+            pkgJson.dependencies[dep] = componentPkgJson.dependencies[dep];
+        });
+
+        await writeJson(pkgJsonPath, pkgJson);
+
+        await execa("npm", ["install"], { cwd: componentRoot });
 
         // Bundle code (switch CWD before running webpack)
         const cwd = process.cwd();
