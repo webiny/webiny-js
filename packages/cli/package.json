@@ -16,7 +16,7 @@
     "lib",
     "lib/**/.gitignore"
   ],
-  "description": "A tool to bootstrap, develop and deploy a Webiny project.",
+  "description": "A tool to bootstrap a Webiny project.",
   "dependencies": {
     "@webiny/tracking": "^0.1.1",
     "chalk": "^2.4.2",

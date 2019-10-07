@@ -5,7 +5,7 @@ yargs.usage("Usage: $0 <command>").demandCommand(1);
 
 yargs.command(
     "create <name>",
-    "Create a new Webiny project",
+    "Create a new Webiny project.",
     yargs => {
         yargs.positional("name", {
             describe: "Project name"
