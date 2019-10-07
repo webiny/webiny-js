@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.1.3](https://github.com/Webiny/webiny-js/compare/@webiny/tracking@0.1.2...@webiny/tracking@0.1.3) (2019-10-07)
+
+
+### Bug Fixes
+
+* update stats URL. ([5875469](https://github.com/Webiny/webiny-js/commit/5875469))
+
+
+
+
+
 ## [0.1.2](https://github.com/Webiny/webiny-js/compare/@webiny/tracking@0.1.1...@webiny/tracking@0.1.2) (2019-10-07)
 
 

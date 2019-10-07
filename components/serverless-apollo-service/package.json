@@ -1,6 +1,6 @@
 {
   "name": "@webiny/serverless-apollo-service",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "main": "serverless.js",
   "license": "MIT",
   "dependencies": {
@@ -12,7 +12,7 @@
     "@serverless/function": "^3.0.0",
     "@webiny/api": "^0.1.1",
     "@webiny/api-security": "^0.1.2",
-    "@webiny/tracking": "^0.1.2",
+    "@webiny/tracking": "^0.1.3",
     "babel-loader": "^8.0.6",
     "babel-plugin-module-resolver": "^3.2.0",
     "date-fns": "^2.4.1",
