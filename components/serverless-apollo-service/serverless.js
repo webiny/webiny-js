@@ -167,7 +167,7 @@ class ApolloService extends Component {
     }
 
     async remove({ track, ...inputs } = {}) {
-        await trackComponent({ track, context: this.context, component });
+        await trackComponent({ track, context: this.context, component, method: "remove" });
         const apiGw = await this.load("@serverless/aws-api-gateway");
         await apiGw.remove(inputs);
 
