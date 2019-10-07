@@ -25,7 +25,10 @@ class ServerlessApp extends Component {
         await trackComponent({ track, context: this.context, component, method: "remove" });
 
         const fn = await this.load("@webiny/serverless-function");
-        return await fn.remove({ ...inputs, track: false });
+        await fn.remove({ ...inputs, track: false });
+
+        this.state = {};
+        await this.save();
     }
 }
 

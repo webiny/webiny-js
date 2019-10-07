@@ -98,6 +98,9 @@ class ApolloGateway extends Component {
 
         const lambda = await this.load("@serverless/function");
         await lambda.remove(inputs);
+
+        this.state = {};
+        await this.save();
     }
 }
 

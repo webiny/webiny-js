@@ -40,7 +40,10 @@ class ServerlessPageBuilder extends Component {
         await trackComponent({ track, context: this.context, component, method: "remove" });
 
         const apolloService = await this.load("@webiny/serverless-apollo-service");
-        return await apolloService.remove({ ...inputs, track: false });
+        await apolloService.remove({ ...inputs, track: false });
+
+        this.state = {};
+        await this.save();
     }
 }
 

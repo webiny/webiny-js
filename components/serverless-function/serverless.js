@@ -32,8 +32,10 @@ class ServerlessFunction extends Component {
         await trackComponent({ track, context: this.context, component, method: "remove" });
 
         const lambda = await this.load("@serverless/function");
+        await lambda.remove(inputs);
 
-        return await lambda.remove(inputs);
+        this.state = {};
+        await this.save();
     }
 }
 

@@ -15,7 +15,10 @@ class ServerlessApiGateway extends Component {
     async remove({ track, ...inputs } = {}) {
         await trackComponent({ track, context: this.context, component });
         const gw = await this.load("@serverless/api");
-        return await gw.remove(inputs);
+        await gw.remove(inputs);
+
+        this.state = {};
+        await this.save();
     }
 }
 
