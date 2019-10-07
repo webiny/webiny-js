@@ -93,11 +93,12 @@ class ApolloService extends Component {
                 }
 
                 if (stats.hasErrors()) {
-                    this.context.log(
-                        stats.toString({
-                            colors: true
-                        })
-                    );
+                    const info = stats.toJson();
+
+                    if (stats.hasErrors()) {
+                        console.error(info.errors);
+                    }
+
                     return reject("Build failed!");
                 }
 
