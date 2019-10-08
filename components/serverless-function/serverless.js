@@ -7,7 +7,7 @@ const component = "@webiny/serverless-function";
 
 class ServerlessFunction extends Component {
     async default({ track, ...inputs } = {}) {
-        await trackComponent({ track, context: this.context, component });
+        await trackComponent({ track, context: this.context, component: __dirname });
 
         const functionRoot = path.join(this.context.instance.root, inputs.root);
 
@@ -29,7 +29,12 @@ class ServerlessFunction extends Component {
     }
 
     async remove({ track, ...inputs } = {}) {
-        await trackComponent({ track, context: this.context, component, method: "remove" });
+        await trackComponent({
+            track,
+            context: this.context,
+            component: __dirname,
+            method: "remove"
+        });
 
         const lambda = await this.load("@serverless/function");
         await lambda.remove(inputs);

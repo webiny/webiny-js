@@ -22,7 +22,7 @@ const getDeps = async deps => {
 
 class ApolloService extends Component {
     async default({ track, ...inputs } = {}) {
-        await trackComponent({ track, context: this.context, component });
+        await trackComponent({ track, context: this.context, component: __dirname });
 
         const {
             extraEndpoints = [],
@@ -169,7 +169,12 @@ class ApolloService extends Component {
     }
 
     async remove({ track, ...inputs } = {}) {
-        await trackComponent({ track, context: this.context, component, method: "remove" });
+        await trackComponent({
+            track,
+            context: this.context,
+            component: __dirname,
+            method: "remove"
+        });
         const apiGw = await this.load("@serverless/aws-api-gateway");
         await apiGw.remove(inputs);
 

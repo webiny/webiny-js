@@ -10,7 +10,7 @@ const component = "@webiny/serverless-apollo-gateway";
 
 class ApolloGateway extends Component {
     async default({ track, ...inputs } = {}) {
-        await trackComponent({ track, context: this.context, component });
+        await trackComponent({ track, context: this.context, component: __dirname });
 
         const {
             name: componentName = null,
@@ -94,7 +94,12 @@ class ApolloGateway extends Component {
     }
 
     async remove({ track, ...inputs } = {}) {
-        await trackComponent({ track, context: this.context, component, method: "remove" });
+        await trackComponent({
+            track,
+            context: this.context,
+            component: __dirname,
+            method: "remove"
+        });
 
         const lambda = await this.load("@serverless/function");
         await lambda.remove(inputs);

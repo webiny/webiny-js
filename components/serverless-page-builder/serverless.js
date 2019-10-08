@@ -15,7 +15,7 @@ const getDeps = async deps => {
 
 class ServerlessPageBuilder extends Component {
     async default({ track, ...inputs } = {}) {
-        await trackComponent({ track, context: this.context, component });
+        await trackComponent({ track, context: this.context, component: __dirname });
 
         const { plugins = [], ...rest } = inputs;
 
@@ -37,7 +37,12 @@ class ServerlessPageBuilder extends Component {
     }
 
     async remove({ track, ...inputs } = {}) {
-        await trackComponent({ track, context: this.context, component, method: "remove" });
+        await trackComponent({
+            track,
+            context: this.context,
+            component: __dirname,
+            method: "remove"
+        });
 
         const apolloService = await this.load("@webiny/serverless-apollo-service");
         await apolloService.remove({ ...inputs, track: false });

@@ -5,7 +5,11 @@ const component = "@webiny/serverless-api-gateway";
 
 class ServerlessApiGateway extends Component {
     async default({ track, ...inputs } = {}) {
-        await trackComponent({ track, context: this.context, component });
+        await trackComponent({
+            track,
+            context: this.context,
+            component: __dirname
+        });
 
         const gw = await this.load("@serverless/api");
 
@@ -13,7 +17,7 @@ class ServerlessApiGateway extends Component {
     }
 
     async remove({ track, ...inputs } = {}) {
-        await trackComponent({ track, context: this.context, component });
+        await trackComponent({ track, context: this.context, component: __dirname });
         const gw = await this.load("@serverless/api");
         await gw.remove(inputs);
 
