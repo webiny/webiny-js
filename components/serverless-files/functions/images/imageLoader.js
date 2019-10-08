@@ -20,7 +20,7 @@ const callImageTransformerLambda = async ({ key, transformations }) => {
         })
         .promise();
 
-    return JSON.parse(response);
+    return JSON.parse(response.Payload);
 };
 
 module.exports = {
