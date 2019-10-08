@@ -1,6 +1,7 @@
 name: serverless-files
 
 vars:
+  region: "us-east-1"
   env:
     WEBINY_JWT_SECRET: ${env.WEBINY_JWT_SECRET}
   database:
@@ -10,6 +11,8 @@ vars:
 files:
   component: ".."
   inputs:
+    region: ${vars.region}
+    bucket: "webiny-files-4"
     name: files
     memory: 128
     database: ${vars.database}
