@@ -7,7 +7,7 @@ const PATHS = {
         output: path.join(process.cwd(), "dist/functions/imageTransformer")
     },
     nodeModules: {
-        from: path.join(__dirname, "imageProcessor/node_modules.zip"),
+        from: path.join(__dirname, "imageTransformer/node_modules.zip"),
         to: path.join(process.cwd(), "dist/functions/imageTransformer")
     }
 };
