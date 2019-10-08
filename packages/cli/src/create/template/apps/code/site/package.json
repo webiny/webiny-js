@@ -1,0 +1,75 @@
+{
+  "name": "site",
+  "version": "0.1.0",
+  "private": true,
+  "dependencies": {
+    "@webiny/app": "^0.1.0",
+    "@webiny/app-cookie-policy": "^0.1.0",
+    "@webiny/app-forms": "^0.1.0",
+    "@webiny/app-google-tag-manager": "^0.1.0",
+    "@webiny/app-i18n": "^0.1.0",
+    "@webiny/app-mailchimp": "^0.1.0",
+    "@webiny/app-page-builder": "^0.1.0",
+    "@webiny/app-typeform": "^0.1.0",
+    "@webiny/plugins": "^0.1.0",
+    "apollo-link-batch-http": "^1.2.3",
+    "apollo-link-http": "^1.5.9",
+    "core-js": "^3.2.1",
+    "cross-fetch": "^3.0.2",
+    "dotenv": "^8.1.0",
+    "env-cmd": "^9.0.3",
+    "react-apollo": "^3.1.0",
+    "react-app-env": "^1.2.3",
+    "react-helmet": "^5.2.0",
+    "react-hot-loader": "^4.3.5",
+    "react-router-dom": "^5.0.0",
+    "regenerator-runtime": "^0.13.3",
+    "theme": "^1.0.0"
+  },
+  "devDependencies": {
+    "@apollo/react-ssr": "^3.0.1",
+    "apollo-link-error": "^1.1.11",
+    "file-loader": "^4.2.0",
+    "mime": "1.4.1",
+    "node-sass": "^4.9.3",
+    "null-loader": "^1.0.0",
+    "raw-loader": "^2.0.0",
+    "react-scripts": "^3.0.1",
+    "source-map-explorer": "^1.6.0"
+  },
+  "peerDependencies": {
+    "apollo-cache-inmemory": "^1.4.2",
+    "apollo-client": "^2.2.8",
+    "apollo-link": "^1.2.1",
+    "react": "^16.4.0",
+    "react-dom": "^16.6.0"
+  },
+  "scripts": {
+    "analyze": "source-map-explorer build/static/js/main.*",
+    "build": "rescripts build",
+    "build:prod": "cross-env REACT_APP_ENV=browser env-cmd -f .env.prod yarn build && yarn build:prod:ssr",
+    "build:prod:ssr": "cross-env NODE_ENV=production REACT_APP_ENV=ssr env-cmd -f .env.prod webpack --progress --mode production --config ./ssr/webpack.config.js",
+    "build:handler": "webpack --config ./handler/webpack.config.js ",
+    "postbuild": "yarn build:handler",
+    "start": "rescripts start",
+    "test": "rescripts test --env=jsdom",
+    "eject": "react-scripts eject"
+  },
+  "browserslist": {
+    "development": [
+      "last 2 chrome versions",
+      "last 2 firefox versions",
+      "last 2 edge versions"
+    ],
+    "production": [
+      ">0.25%",
+      "not op_mini all",
+      "ie 11"
+    ]
+  },
+  "svgo": {
+    "plugins": {
+      "removeViewBox": false
+    }
+  }
+}

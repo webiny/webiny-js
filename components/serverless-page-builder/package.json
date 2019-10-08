@@ -1,13 +1,13 @@
 {
   "name": "@webiny/serverless-page-builder",
-  "version": "0.1.2",
+  "version": "0.1.6",
   "main": "serverless.js",
   "license": "MIT",
   "dependencies": {
     "@serverless/core": "^1.1.1",
     "@webiny/api-page-builder": "^0.1.2",
-    "@webiny/serverless-apollo-service": "^0.1.2",
-    "@webiny/tracking": "^0.1.1"
+    "@webiny/serverless-apollo-service": "^0.1.6",
+    "@webiny/tracking": "^0.1.3"
   },
   "scripts": {
     "build": "rm -rf dist && mkdir dist && cp serverless.js package.json dist/",

@@ -1,19 +1,31 @@
-const path = require("path");
+const { join } = require("path");
 const fs = require("fs-extra");
 const { transform } = require("@babel/core");
 const prettier = require("prettier");
 const { Component } = require("@serverless/core");
 const webpack = require("webpack");
+const execa = require("execa");
 const { trackComponent } = require("@webiny/tracking");
+const loadJson = require("load-json-file");
+const writeJson = require("write-json-file");
 
 const component = "@webiny/serverless-apollo-service";
+const defaultDependencies = ["date-fns", "mongodb", "@webiny/api", "@webiny/api-security"];
+
+const getDeps = async deps => {
+    const { dependencies } = await loadJson(join(__dirname, "package.json"));
+    return deps.reduce((acc, item) => {
+        acc[item] = dependencies[item];
+        return acc;
+    }, {});
+};
 
 class ApolloService extends Component {
     async default({ track, ...inputs } = {}) {
         await trackComponent({ track, context: this.context, component });
 
         const {
-            endpoints = [],
+            extraEndpoints = [],
             name: componentName,
             plugins = [],
             env = {},
@@ -21,7 +33,8 @@ class ApolloService extends Component {
             memory = 128,
             timeout = 10,
             description,
-            endpointTypes = ["REGIONAL"]
+            endpointTypes = ["REGIONAL"],
+            dependencies = {}
         } = inputs;
 
         if (!componentName) {
@@ -34,9 +47,9 @@ class ApolloService extends Component {
         }
 
         const injectPlugins = [];
-        const boilerplateRoot = path.join(this.context.instance.root, ".webiny");
-        const componentRoot = path.join(boilerplateRoot, componentName);
-        fs.ensureDirSync(path.join(boilerplateRoot, componentName));
+        const boilerplateRoot = join(this.context.instance.root, ".webiny");
+        const componentRoot = join(boilerplateRoot, componentName);
+        fs.ensureDirSync(join(boilerplateRoot, componentName));
 
         this.state.inputs = inputs;
         await this.save();
@@ -66,19 +79,29 @@ class ApolloService extends Component {
         });
 
         fs.writeFileSync(
-            path.join(componentRoot, "handler.js"),
+            join(componentRoot, "handler.js"),
             prettier.format(code, { parser: "babel" })
         );
 
         fs.copyFileSync(
-            path.join(__dirname, "boilerplate", "config.js"),
-            path.join(componentRoot, "config.js")
+            join(__dirname, "boilerplate", "config.js"),
+            join(componentRoot, "config.js")
         );
 
         fs.copyFileSync(
-            path.join(__dirname, "boilerplate", "webpack.config.js"),
-            path.join(componentRoot, "/webpack.config.js")
+            join(__dirname, "boilerplate", "webpack.config.js"),
+            join(componentRoot, "webpack.config.js")
         );
+
+        const pkgJsonPath = join(componentRoot, "package.json");
+        fs.copyFileSync(join(__dirname, "boilerplate", "package.json"), pkgJsonPath);
+
+        // Inject dependencies
+        const pkgJson = await loadJson(pkgJsonPath);
+        Object.assign(pkgJson.dependencies, await getDeps(defaultDependencies), dependencies);
+        await writeJson(pkgJsonPath, pkgJson);
+
+        await execa("npm", ["install"], { cwd: componentRoot });
 
         // Bundle code (switch CWD before running webpack)
         const cwd = process.cwd();
@@ -93,14 +116,12 @@ class ApolloService extends Component {
                 }
 
                 if (stats.hasErrors()) {
-                    console.log('------------------------------------------------------------')
-                    console.log(stats)
-                    console.log('------------------------------------------------------------')
-                    this.context.log(
-                        stats.toString({
-                            colors: true
-                        })
-                    );
+                    const info = stats.toJson();
+
+                    if (stats.hasErrors()) {
+                        console.error(info.errors);
+                    }
+
                     return reject("Build failed!");
                 }
 
@@ -117,7 +138,7 @@ class ApolloService extends Component {
 
         const lambdaOut = await lambda({
             description: description || `Apollo Server: ${componentName}`,
-            code: path.join(componentRoot, "build"),
+            code: join(componentRoot, "build"),
             handler: "handler.handler",
             env,
             memory,
@@ -130,7 +151,10 @@ class ApolloService extends Component {
             description: `API for ${componentName}`,
             stage: "prod",
             endpointTypes,
-            endpoints: [{ path: "/graphql", method: "ANY", function: lambdaOut.arn }, ...endpoints]
+            endpoints: [
+                { path: "/graphql", method: "ANY", function: lambdaOut.arn },
+                ...extraEndpoints
+            ]
         });
 
         const output = {
@@ -145,7 +169,7 @@ class ApolloService extends Component {
     }
 
     async remove({ track, ...inputs } = {}) {
-        await trackComponent({ track, context: this.context, component });
+        await trackComponent({ track, context: this.context, component, method: "remove" });
         const apiGw = await this.load("@serverless/aws-api-gateway");
         await apiGw.remove(inputs);
 

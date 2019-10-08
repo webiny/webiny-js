@@ -1,11 +1,11 @@
 {
   "name": "@webiny/cli",
   "private": true,
-  "version": "0.1.1",
+  "version": "0.2.1",
   "main": "index.js",
   "bin": {
-    "webiny": "./lib/index.js",
-    "wby": "./lib/index.js"
+    "webiny": "./index.js",
+    "wby": "./index.js"
   },
   "repository": {
     "type": "git",
@@ -16,7 +16,19 @@
     "lib",
     "lib/**/.gitignore"
   ],
-  "description": "A tool to bootstrap, develop and deploy a Webiny project.",
+  "description": "A tool to bootstrap a Webiny project.",
+  "dependencies": {
+    "@webiny/tracking": "^0.1.3",
+    "chalk": "^2.4.2",
+    "crypto": "^1.0.1",
+    "execa": "^2.0.5",
+    "fs-extra": "^8.1.0",
+    "glob": "^7.1.4",
+    "load-json-file": "^6.2.0",
+    "uuid": "^3.3.3",
+    "write-json-file": "^4.2.0",
+    "yargs": "^14.0.0"
+  },
   "license": "MIT",
   "publishConfig": {
     "access": "public"

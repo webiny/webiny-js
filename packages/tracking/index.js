@@ -1,8 +1,6 @@
 const os = require("os");
 const path = require("path");
-const uuid = require("uuid/v4");
 const readJson = require("load-json-file");
-const writeJson = require("write-json-file");
 const request = require("request");
 
 const prefix = "[Webiny]";
@@ -12,31 +10,24 @@ const defaultLogger = () => {};
 
 const sendStats = data => {
     return new Promise(resolve => {
-        request.post("http://18.223.190.136/track", { json: data }, resolve);
+        request.post("http://stats.webiny.com/track", { json: data }, resolve);
     });
 };
 
 const loadConfig = async ({ logger = defaultLogger }) => {
     if (!config) {
         const dataPath = path.join(os.homedir(), ".webiny", "config");
-        let userId, trackingDisabled;
         try {
             config = readJson.sync(dataPath);
-            userId = config.id;
-            if (!userId) {
-                throw Error("Invalid Webiny config!");
+            if (!config.id) {
+                config.id = "unknown";
             }
-            trackingDisabled = Boolean(config.trackingDisabled);
-            logger(`${prefix} Loaded existing config, user ID: ${userId}`);
         } catch (e) {
-            userId = uuid();
-            trackingDisabled = false;
-            logger(`${prefix} Created new config, user ID: ${userId}`);
-            writeJson.sync(dataPath, { id: userId });
-            config = { id: userId, trackingDisabled };
+            config = { id: "unknown", tracking: true };
         }
 
-        logger(`${prefix} Tracking is ${trackingDisabled ? "DISABLED" : "ENABLED"}`);
+        logger(`${prefix} Loaded user ID: ${config.id}`);
+        logger(`${prefix} Tracking is ${config.tracking ? "ENABLED" : "DISABLED"}`);
     }
 };
 
@@ -47,7 +38,7 @@ const trackComponent = async ({ context, component, method = "deploy", track = t
 
     await loadConfig({ logger: context.debug });
 
-    if (config.trackingDisabled) {
+    if (config.tracking !== true) {
         return;
     }
 
@@ -65,7 +56,7 @@ const trackComponent = async ({ context, component, method = "deploy", track = t
 const trackProject = async () => {
     await loadConfig();
 
-    if (config.trackingDisabled) {
+    if (config.tracking !== true) {
         return;
     }
 
