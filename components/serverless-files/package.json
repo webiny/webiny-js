@@ -7,24 +7,26 @@
   "dependencies": {
     "@serverless/core": "^1.1.1",
     "@serverless/function": "^3.0.0",
-    "fs-extra": "^8.1.0",
-    "sharp": "^0.21.3",
-    "webpack": "^4.39.2"
+    "@webiny/serverless-apollo-service": "^0",
+    "aws-sdk": "^2.539.0",
+    "sanitize-filename": "^1.6.3"
   },
   "scripts": {
     "build:download": "webpack --config scripts/webpack/webpack.config.download.js",
     "build:image-processor": "webpack --config scripts/webpack/webpack.config.imageProcessor.js",
-    "build": "yarn build:image-processor && yarn build:download",
+    "build:manage-s3-objects": "webpack --config scripts/webpack/webpack.config.manageS3Objects.js",
+    "build": "concurrently \"yarn build:image-processor\" \"yarn build:download\" \"yarn build:manage-s3-objects\"",
+    "postbuild": "cp package.json serverless.js LICENSE README.md dist/",
     "deploy": "cd test && sls --debug",
-    "build-old": "rm -rf dist && mkdir dist && cp serverless.js package.json dist/",
     "prepublishOnly": "yarn build"
   },
   "publishConfig": {
     "access": "public"
   },
   "devDependencies": {
+    "concurrently": "^5.0.0",
     "extract-zip": "^1.6.7",
-    "file-loader": "^4.2.0",
-    "yauzl": "^2.10.0"
+    "webpack": "^4.39.2",
+    "webpack-cli": "^3.3.9"
   }
 }
