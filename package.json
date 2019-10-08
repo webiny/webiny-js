@@ -74,7 +74,7 @@
     "prettier": "^1.14.2",
     "rimraf": "^2.6.2",
     "semver": "^6.3.0",
-    "serverless": "^1.52.0",
+    "serverless": "^1.53.0",
     "serverless-dotenv-plugin": "^2.1.1",
     "serverless-offline": "^5.10.1",
     "source-map-support": "^0.5.0",
