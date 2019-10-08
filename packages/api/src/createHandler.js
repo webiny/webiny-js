@@ -4,6 +4,7 @@ import { applyMiddleware } from "graphql-middleware";
 import { addSchemaLevelResolveFunction } from "graphql-tools";
 import type { PluginsContainerType, GraphQLMiddlewarePluginType } from "@webiny/api/types";
 import { prepareSchema } from "./graphql/prepareSchema";
+import normalizeEvent from "./graphql/normalizeEvent";
 
 export type CreateHandlerParamsType = {
     plugins: PluginsContainerType,
@@ -95,6 +96,7 @@ export const createHandler = async ({ config, plugins }: CreateHandlerParamsType
     return {
         schema,
         handler(event: Object, context: Object): Promise<Object> {
+            normalizeEvent(event);
             return new Promise((resolve, reject) => {
                 handler(event, context, (error, data) => {
                     if (error) {
