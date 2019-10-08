@@ -37,7 +37,7 @@ export default async (root: any, args: Object) => {
     }
 
     const s3 = new S3();
-    const data = s3.createPresignedPost(params).promise();
+    const data = s3.createPresignedPost(params);
 
     return new Response({
         data,

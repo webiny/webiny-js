@@ -112,7 +112,7 @@ export default ([
                 }
 
                 type FilesMutation {
-                    upload(data: UploadFileInput!): UploadFileResponse
+                    uploadFile(data: UploadFileInput!): UploadFileResponse
                     createFile(data: FileInput!): FileResponse
                     updateFileBySrc(src: String!, data: FileInput!): FileResponse
                     deleteFile(id: ID!): FilesDeleteResponse
