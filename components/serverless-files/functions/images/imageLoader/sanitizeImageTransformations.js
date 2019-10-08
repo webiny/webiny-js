@@ -4,7 +4,7 @@ const SUPPORTED_IMAGE_RESIZE_WIDTHS = [100, 300, 500, 750, 1000, 1500, 2500];
 /**
  * Takes only allowed transformations into consideration, and discards the rest.
  */
-const sanitizeImageTransformations = args => {
+module.exports = args => {
     const output = { transformations: {}, empty: true };
 
     if (args) {
@@ -35,5 +35,3 @@ const sanitizeImageTransformations = args => {
 
     return output;
 };
-
-export default sanitizeImageTransformations;

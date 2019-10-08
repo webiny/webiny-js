@@ -9,7 +9,7 @@ const loaders = require("./../loaders");
  * Based on given path, extracts file key and additional options sent via query params.
  * @param event
  */
-export const extractFilenameOptions = event => {
+const extractFilenameOptions = event => {
     const path = sanitizeFilename(event.pathParameters.path);
     return {
         filename: path,

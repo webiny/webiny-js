@@ -2,9 +2,7 @@
 const { sanitizeImageTransformations } = require("./imageLoader/sanitizeImageTransformations");
 const Lambda = require("aws-sdk/clients/lambda");
 const { getObjectParams, getEnvironment } = require("./../utils");
-
 const { SUPPORTED_IMAGES, SUPPORTED_TRANSFORMABLE_IMAGES, getImageKey } = require("./utils");
-
 const IMAGE_TRANSFORMER_LAMBDA_NAME = process.env.IMAGE_TRANSFORMER_LAMBDA_NAME;
 
 const callImageTransformerLambda = async ({ key, transformations }) => {
@@ -25,7 +23,7 @@ const callImageTransformerLambda = async ({ key, transformations }) => {
     return JSON.parse(response);
 };
 
-export default {
+module.exports = {
     canProcess: ({ file }) => {
         return SUPPORTED_IMAGES.includes(file.extension);
     },

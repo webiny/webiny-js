@@ -1,9 +1,8 @@
 // @flow
 const { getEnvironment } = require("./../utils");
-
 const { SUPPORTED_IMAGES, SUPPORTED_TRANSFORMABLE_IMAGES, getImageKey } = require("./utils");
 
-export default {
+module.exports = {
     canProcess: ({ extension }) => {
         return SUPPORTED_IMAGES.includes(extension);
     },
