@@ -3,12 +3,13 @@ import { gql } from "apollo-server-lambda";
 import { emptyResolver } from "@webiny/commodo-graphql";
 import { type PluginType } from "@webiny/api/types";
 import { hasScope } from "@webiny/api-security";
-import { resolveCreate, resolveDelete, resolveGet } from "@webiny/commodo-graphql";
+import { resolveCreate, resolveGet } from "@webiny/commodo-graphql";
 
 import listFiles from "./resolvers/listFiles";
 import listTags from "./resolvers/listTags";
 import updateFileBySrc from "./resolvers/updateFileBySrc";
-import upload from "./resolvers/upload";
+import uploadFile from "./resolvers/uploadFile";
+import deleteFile from "./resolvers/deleteFile";
 
 const getFile = ({ models }) => models.File;
 
@@ -143,10 +144,10 @@ export default ([
                     listTags: listTags
                 },
                 FilesMutation: {
-                    upload,
+                    uploadFile,
                     createFile: resolveCreate(getFile),
                     updateFileBySrc: updateFileBySrc,
-                    deleteFile: resolveDelete(getFile)
+                    deleteFile
                 }
             }
         },
@@ -157,7 +158,7 @@ export default ([
                     listFiles: hasScope("files:file:crud")
                 },
                 FilesMutation: {
-                    upload: hasScope("files:file:crud"),
+                    uploadFile: hasScope("files:file:crud"),
                     createFile: hasScope("files:file:crud"),
                     updateFileBySrc: hasScope("files:file:crud"),
                     deleteFile: hasScope("files:file:crud")
