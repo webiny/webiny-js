@@ -1,4 +1,4 @@
-name: serverless-files
+name: my-app
 
 vars:
   region: "us-east-1"
