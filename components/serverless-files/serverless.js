@@ -13,7 +13,6 @@ class FilesComponent extends Component {
         await trackComponent({ track, context: this.context, component: __dirname });
 
         const { region = "us-east-1", bucket = "webiny-files", env, ...rest } = inputs;
-        const plugins = ["@webiny/api-files/plugins"];
 
         const manageFilesLambda = await this.load("@serverless/function", "manageFiles");
         const manageFilesLambdaOutput = await manageFilesLambda({
@@ -69,7 +68,7 @@ class FilesComponent extends Component {
         const apolloService = await this.load("@webiny/serverless-apollo-service");
         const apolloOutput = await apolloService({
             track: false,
-            plugins,
+            plugins: ["@webiny/api-files/plugins"],
             endpoints: [
                 { path: "/files/{path}", method: "ANY", function: downloadLambdaOutput.arn }
             ],
