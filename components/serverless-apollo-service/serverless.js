@@ -25,7 +25,7 @@ class ApolloService extends Component {
         await trackComponent({ track, context: this.context, component });
 
         const {
-            extraEndpoints = [],
+            endpoints = [],
             name: componentName,
             plugins = [],
             env = {},
@@ -153,7 +153,7 @@ class ApolloService extends Component {
             endpointTypes,
             endpoints: [
                 { path: "/graphql", method: "ANY", function: lambdaOut.arn },
-                ...extraEndpoints
+                ...endpoints
             ]
         });
 
