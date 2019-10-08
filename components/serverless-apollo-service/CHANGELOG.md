@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.1.7](https://github.com/Webiny/webiny-js/compare/@webiny/serverless-apollo-service@0.1.6...@webiny/serverless-apollo-service@0.1.7) (2019-10-08)
+
+
+### Bug Fixes
+
+* add component version to tracking. ([6fdaad9](https://github.com/Webiny/webiny-js/commit/6fdaad9))
+* empty component state on component removal. ([2dc7899](https://github.com/Webiny/webiny-js/commit/2dc7899))
+
+
+
+
+
 ## [0.1.6](https://github.com/Webiny/webiny-js/compare/@webiny/serverless-apollo-service@0.1.5...@webiny/serverless-apollo-service@0.1.6) (2019-10-07)
 
 
