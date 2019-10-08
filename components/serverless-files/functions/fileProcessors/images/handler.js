@@ -16,7 +16,6 @@ module.exports.handler = async ({ body: { options, params } }) => {
 
         let originalS3Object;
 
-        console.log('idemo probati', params)
         // 1. Get original image.
         try {
             originalS3Object = await s3.getObject({ params: params.original });

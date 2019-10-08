@@ -25,7 +25,6 @@ export default {
 
         const sanitized = sanitizeImageOptions(options);
 
-        console.log('saniitzed', sanitized)
         if (sanitized.hasOptions && SUPPORTED_PROCESSABLE_IMAGES.includes(file.extension)) {
             params = s3.getObjectParams(`${PROCESSED_IMAGE_PREFIX}${sanitized.hash}_${file.name}`);
             try {
