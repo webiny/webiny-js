@@ -1,4 +1,4 @@
 module.exports = {
     configureApiGateway: require("./configureApiGateway"),
-    configureS3: require("./configureS3")
+    configureS3Bucket: require("./configureS3Bucket")
 };
