@@ -1,6 +1,7 @@
 const { join } = require("path");
 const { Component } = require("@serverless/core");
 const { configureS3Bucket, configureApiGateway } = require("./components");
+const { trackComponent } = require("@webiny/tracking");
 
 /**
  * This component needs to deploy:
@@ -8,7 +9,9 @@ const { configureS3Bucket, configureApiGateway } = require("./components");
  * - API GW for /graphql, /read, /upload
  */
 class FilesComponent extends Component {
-    async default(inputs = {}) {
+    async default({ track, ...inputs } = {}) {
+        await trackComponent({ track, context: this.context, component: __dirname });
+
         const { region = "us-east-1", bucket = "webiny-files", env, ...rest } = inputs;
         const plugins = ["@webiny/api-files/plugins"];
 
@@ -65,6 +68,7 @@ class FilesComponent extends Component {
         // Deploy graphql API
         const apolloService = await this.load("@webiny/serverless-apollo-service");
         const apolloOutput = await apolloService({
+            track: false,
             plugins,
             endpoints: [
                 { path: "/files/{path}", method: "ANY", function: downloadLambdaOutput.arn }
@@ -73,7 +77,7 @@ class FilesComponent extends Component {
             ...rest
         });
 
-        await configureApiGateway({ apolloOutput, component: this });
+        await configureApiGateway({ region, apolloOutput, component: this });
 
         const output = {
             api: apolloOutput.api,
@@ -95,7 +99,13 @@ class FilesComponent extends Component {
         return output;
     }
 
-    async remove(inputs = {}) {
+    async remove({ track } = {}) {
+        await trackComponent({
+            track,
+            context: this.context,
+            component: __dirname,
+            method: "remove"
+        });
         // TODO: remove all created resources
     }
 }

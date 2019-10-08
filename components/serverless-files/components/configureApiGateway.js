@@ -8,14 +8,14 @@ const set = require("lodash.set");
  * Enables support for binary media types and conversion of base64-encoded
  * data (return from lambda function) to binary.
  * @param region
- * @param apiGatewayOutput
+ * @param apolloOutput
  * @param component
  * @returns {Promise<void>}
  */
-module.exports = async ({ region, apiGatewayOutput, component }) => {
+module.exports = async ({ region, apolloOutput, component }) => {
     const apiGw = new ApiGw({ region });
 
-    const { id: restApiId } = apiGatewayOutput;
+    const { id: restApiId } = apolloOutput.api;
 
     let path = "state.apiGateway.binaryMediaTypes";
     if (!get(component, path)) {
