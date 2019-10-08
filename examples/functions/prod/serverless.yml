@@ -23,6 +23,11 @@ gateway:
       - name: i18n
         url: ${i18n.api.url}/graphql
 
+userPool:
+  component: "@webiny/serverless-aws-cognito-user-pool"
+  inputs:
+    name: 'MojPool'
+
 security:
   component: "@webiny/serverless-apollo-service"
   inputs:
@@ -35,18 +40,13 @@ security:
       - factory: "@webiny/api-plugin-security-cognito"
         options:
           region: us-east-1
-          userPoolId: us-east-1_patnytnzK
+          userPoolId: ${userPool.id}
 
 # Example of a custom service using generic component
 files:
-  component: "@webiny/serverless-apollo-service"
+  component: "@webiny/serverless-files"
   inputs:
-    name: files
-    memory: 128
-    database: ${vars.database}
-    env: ${vars.env}
-    plugins:
-      - "@webiny/api-files/plugins"
+    bucket: "webiny-files-2"
 
 i18n:
   component: "@webiny/serverless-apollo-service"
