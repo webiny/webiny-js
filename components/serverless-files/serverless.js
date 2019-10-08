@@ -1,6 +1,6 @@
 const { join } = require("path");
-const { configureS3, configureApiGateway } = require("./components");
 const { Component } = require("@serverless/core");
+const { configureS3Bucket, configureApiGateway } = require("./components");
 
 /**
  * This component needs to deploy:
@@ -9,19 +9,37 @@ const { Component } = require("@serverless/core");
  */
 class FilesComponent extends Component {
     async default(inputs = {}) {
-        const { bucket = "webiny-files", ...rest } = inputs;
+        const { region = "us-east-1", bucket = "webiny-files", env, ...rest } = inputs;
         const plugins = ["@webiny/api-files/plugins"];
 
-        // Create S3 bucket for storing files.
-        const s3 = await this.load("@serverless/aws-s3");
-        const s3Output = await s3({ name: bucket });
-        await configureS3(s3Output);
+        const manageS3ObjectsLambda = await this.load("@serverless/function", "manageS3Objects");
+        const manageS3ObjectsLambdaOutput = await manageS3ObjectsLambda({
+            name: "Files component - manage S3 objects",
+            timeout: 10,
+            code: join(__dirname, "dist/manageS3Objects"),
+            handler: "handler.handler",
+            description: "Triggered once a file was deleted.",
+            env: {
+                S3_BUCKET: bucket
+            }
+        });
 
-        const lambda0 = await this.load("@serverless/function", "image-processor");
-        const lambda0Result = await lambda0({
+        // Create S3 bucket for storing files.
+        const s3 = await this.load("./../../../node_modules/@serverless/aws-s3");
+        const s3Output = await s3({ name: bucket });
+        await configureS3Bucket({
+            component: this,
+            s3Output,
+            manageS3ObjectsLambdaOutput,
+            region,
+            bucket
+        });
+
+        const imageProcessorLambda = await this.load("@serverless/function", "image-processor");
+        const imageProcessorLambdaOutput = await imageProcessorLambda({
             name: "Files component - image processor",
             timeout: 10,
-            code: join(__dirname, "build/fileProcessors/images"),
+            code: join(__dirname, "dist/fileProcessors/images"),
             handler: "handler.handler",
             description:
                 "Performs various tasks on image files like e.g. image optimization or image resizing.",
@@ -31,16 +49,16 @@ class FilesComponent extends Component {
         });
 
         // Deploy read/upload lambdas
-        const lambda1 = await this.load("@serverless/function", "download");
-        const readFn = await lambda1({
+        const downloadLambda = await this.load("@serverless/function", "download");
+        const downloadLambdaOutput = await downloadLambda({
             name: "Files component - download files",
             timeout: 10,
-            code: join(__dirname, "build", "download"),
+            code: join(__dirname, "dist/download"),
             handler: "handler.handler",
             description: "Serves previously uploaded files.",
             env: {
                 S3_BUCKET: bucket,
-                IMAGE_PROCESSOR_LAMBDA_NAME: lambda0Result.name
+                IMAGE_PROCESSOR_LAMBDA_NAME: imageProcessorLambdaOutput.name
             }
         });
 
@@ -48,11 +66,14 @@ class FilesComponent extends Component {
         const apolloService = await this.load("@webiny/serverless-apollo-service");
         const apolloOutput = await apolloService({
             plugins,
-            endpoints: [{ path: "/files/{path}", method: "ANY", function: readFn.arn }],
+            endpoints: [
+                { path: "/files/{path}", method: "ANY", function: downloadLambdaOutput.arn }
+            ],
+            env: { ...env, S3_BUCKET: bucket },
             ...rest
         });
 
-        await configureApiGateway(apolloOutput.api);
+        await configureApiGateway({ apolloOutput, component: this });
 
         const output = {
             api: apolloOutput.api,
