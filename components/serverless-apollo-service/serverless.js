@@ -93,6 +93,9 @@ class ApolloService extends Component {
                 }
 
                 if (stats.hasErrors()) {
+                    console.log('------------------------------------------------------------')
+                    console.log(stats)
+                    console.log('------------------------------------------------------------')
                     this.context.log(
                         stats.toString({
                             colors: true

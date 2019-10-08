@@ -12,7 +12,7 @@ files:
   component: ".."
   inputs:
     region: ${vars.region}
-    bucket: "webiny-files-4"
+    bucket: "moj-bucket"
     name: files
     memory: 128
     database: ${vars.database}

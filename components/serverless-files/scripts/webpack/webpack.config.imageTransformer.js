@@ -3,12 +3,12 @@ const createWebpackConfig = require("./createWebpackConfig");
 
 const PATHS = {
     build: {
-        entry: path.join(process.cwd(), "functions/fileProcessors/images/handler.js"),
-        output: path.join(process.cwd(), "dist/fileProcessors/images")
+        entry: path.join(process.cwd(), "functions/images/imageTransformer/handler.js"),
+        output: path.join(process.cwd(), "dist/functions/imageTransformer")
     },
     nodeModules: {
         from: path.join(__dirname, "imageProcessor/node_modules.zip"),
-        to: path.join(process.cwd(), "dist/fileProcessors/images")
+        to: path.join(process.cwd(), "dist/functions/imageTransformer")
     }
 };
 

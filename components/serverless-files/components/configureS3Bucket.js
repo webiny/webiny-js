@@ -5,7 +5,7 @@ const PRETRY_ARGS = { retries: 3 };
 const get = require("lodash.get");
 const set = require("lodash.set");
 
-module.exports = async ({ bucket, region, component, s3Output, manageS3ObjectsLambdaOutput }) => {
+module.exports = async ({ bucket, region, component, s3Output, manageFilesLambdaOutput }) => {
     const s3 = new S3({ region });
 
     let path = "state.s3Bucket.CORSConfiguration";
@@ -42,7 +42,7 @@ module.exports = async ({ bucket, region, component, s3Output, manageS3ObjectsLa
     if (!get(component, path)) {
         set(component, path, {
             Action: "lambda:InvokeFunction",
-            FunctionName: manageS3ObjectsLambdaOutput.name,
+            FunctionName: manageFilesLambdaOutput.name,
             Principal: "s3.amazonaws.com",
             StatementId: `s3invoke`,
             SourceArn: `arn:aws:s3:::${s3Output.name}`
@@ -62,7 +62,7 @@ module.exports = async ({ bucket, region, component, s3Output, manageS3ObjectsLa
         set(component, path, {
             LambdaFunctionConfigurations: [
                 {
-                    LambdaFunctionArn: manageS3ObjectsLambdaOutput.arn,
+                    LambdaFunctionArn: manageFilesLambdaOutput.arn,
                     Events: ["s3:ObjectRemoved:*"]
                 }
             ]
@@ -84,4 +84,5 @@ module.exports = async ({ bucket, region, component, s3Output, manageS3ObjectsLa
             `[Webiny] Saved state for serverless-files component: applied bucket notification configuration to the "${bucket}" S3 bucket.`
         );
     }
+
 };

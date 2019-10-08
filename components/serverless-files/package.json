@@ -13,9 +13,9 @@
   },
   "scripts": {
     "build:download": "webpack --config scripts/webpack/webpack.config.download.js",
-    "build:image-processor": "webpack --config scripts/webpack/webpack.config.imageProcessor.js",
-    "build:manage-s3-objects": "webpack --config scripts/webpack/webpack.config.manageS3Objects.js",
-    "build": "concurrently \"yarn build:image-processor\" \"yarn build:download\" \"yarn build:manage-s3-objects\"",
+    "build:image-transformer": "webpack --config scripts/webpack/webpack.config.imageTransformer.js",
+    "build:manage-files": "webpack --config scripts/webpack/webpack.config.manageFiles.js",
+    "build": "concurrently \"yarn build:image-transformer\" \"yarn build:download\" \"yarn build:manage-files\"",
     "postbuild": "cp package.json serverless.js LICENSE README.md dist/",
     "deploy": "cd test && sls --debug",
     "prepublishOnly": "yarn build"
