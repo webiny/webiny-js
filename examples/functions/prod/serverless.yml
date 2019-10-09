@@ -1,6 +1,7 @@
 name: webiny-cms-project
 
 vars:
+  region: "us-east-1"
   env:
     WEBINY_JWT_SECRET: ${env.WEBINY_JWT_SECRET}
   database:
@@ -39,14 +40,19 @@ security:
       - "@webiny/api-security/plugins"
       - factory: "@webiny/api-plugin-security-cognito"
         options:
-          region: us-east-1
+          region: ${vars.region}
           userPoolId: ${userPool.id}
 
-# Example of a custom service using generic component
 files:
-  component: "@webiny/serverless-files"
+  component: "../../../components/serverless-files"
   inputs:
-    bucket: "webiny-files-2"
+    region: ${vars.region}
+    bucket: "my-test-bucket-2"
+    name: files
+    memory: 128
+    database: ${vars.database}
+    env: ${vars.env}
+
 
 i18n:
   component: "@webiny/serverless-apollo-service"
