@@ -42,7 +42,7 @@ const trackComponent = async ({ context, component, method = "deploy", track = t
         }
 
         const { name, version } = readJson.sync(path.join(component, "package.json"));
-        context.debug(`${prefix} Tracking component: ${component} (${method})`);
+        context.debug(`${prefix} Tracking component: ${name} (${method})`);
         sendStats({
             type: "component",
             user: config.id,
