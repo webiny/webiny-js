@@ -18,6 +18,7 @@ module.exports.handler = async ({ body: { transformations, key } }) => {
             optimizedTransformed: getObjectParams(getImageKey(key, transformations))
         };
 
+        console.log("svi moguci paramsi", params);
         // 1. Get optimized image.
         try {
             optimizedImageObject = await s3.getObject(params.optimized).promise();
@@ -26,37 +27,31 @@ module.exports.handler = async ({ body: { transformations, key } }) => {
             optimizedImageObject = await s3.getObject(params.initial).promise();
 
             await s3
-                .createObject({
-                    params: {
-                        ...params.optimized,
-                        ContentType: optimizedImageObject.ContentType,
-                        Body: await optimizeImage(
-                            optimizedImageObject.Body,
-                            optimizedImageObject.ContentType
-                        )
-                    }
+                .putObject({
+                    ...params.optimized,
+                    ContentType: optimizedImageObject.ContentType,
+                    Body: await optimizeImage(
+                        optimizedImageObject.Body,
+                        optimizedImageObject.ContentType
+                    )
                 })
                 .promise();
 
+            console.log("ponovo dohvacam params.optimized", params.optimized);
             optimizedImageObject = await s3.getObject(params.optimized);
         }
 
         // 2. If no transformations requested, just exit.
-        if (transformations.empty) {
+        if (!transformations) {
             return { error: false, message: "" };
         }
 
         // 3. If transformations requested, apply them in save it into the bucket.
         await s3
-            .createObject({
-                params: {
-                    ...params.optimizedTransformed,
-                    ContentType: optimizedImageObject.ContentType,
-                    Body: await processImage(
-                        optimizedImageObject.Body,
-                        transformations.transformations
-                    )
-                }
+            .putObject({
+                ...params.optimizedTransformed,
+                ContentType: optimizedImageObject.ContentType,
+                Body: await processImage(optimizedImageObject.Body, transformations)
             })
             .promise();
 

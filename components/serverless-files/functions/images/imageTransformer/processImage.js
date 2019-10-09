@@ -2,13 +2,13 @@ const sharp = require("sharp");
 
 /**
  * Only processing "width" at the moment.
- * Check "sanitizeImageOptions.js" to allow additional image processing options.
+ * Check "sanitizeImagetransformations.js" to allow additional image processing transformations.
  * @param buffer
- * @param options
+ * @param transformations
  * @returns {Promise<void>}
  */
-module.exports = async (buffer, options) => {
-    const { width } = options;
+module.exports = async (buffer, transformations) => {
+    const { width } = transformations;
     return await sharp(buffer)
         .resize({ width })
         .toBuffer();

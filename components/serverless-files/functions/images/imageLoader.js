@@ -28,47 +28,44 @@ module.exports = {
         return SUPPORTED_IMAGES.includes(file.extension);
     },
     async process({ s3, file, options }) {
-        let params, key;
+        let objectParams;
 
-        const sanitizedTransformations = sanitizeImageTransformations(options);
+        const transformations = sanitizeImageTransformations(options);
 
-        if (
-            !sanitizedTransformations.empty &&
-            SUPPORTED_TRANSFORMABLE_IMAGES.includes(file.extension)
-        ) {
-            key = getImageKey(file.name, sanitizedTransformations.transformations);
-            params = getObjectParams(key);
+        if (transformations && SUPPORTED_TRANSFORMABLE_IMAGES.includes(file.extension)) {
+
+            objectParams = getObjectParams(getImageKey(file.name, transformations));
+        console.log('transformationsszzzz', transformations, objectParams)
             try {
-                return await s3.getObject(params).promise();
+                return await s3.getObject(objectParams).promise();
             } catch (e) {
                 let imageTransformerLambdaResponse = await callImageTransformerLambda({
                     key: file.name,
-                    transformations: sanitizedTransformations
+                    transformations
                 });
 
                 if (imageTransformerLambdaResponse.error) {
                     throw Error(imageTransformerLambdaResponse.message);
                 }
 
-                return await s3.getObject(params).promise();
+                return await s3.getObject(objectParams).promise();
             }
         }
 
-        key = getImageKey(file.name);
-        params = getObjectParams(key);
+        console.log('nista od trasnforma')
+        objectParams = getObjectParams(getImageKey(file.name));
         try {
-            return await s3.getObject(params).promise();
+            return await s3.getObject(objectParams).promise();
         } catch (e) {
             let imageTransformerLambdaResponse = await callImageTransformerLambda({
-                key: file.name,
-                transformations: sanitizedTransformations
+                key: file.name
             });
 
             if (imageTransformerLambdaResponse.error) {
                 throw Error(imageTransformerLambdaResponse.message);
             }
 
-            return await s3.getObject(params).promise();
+            return await s3.getObject(objectParams).promise();
         }
     }
 };

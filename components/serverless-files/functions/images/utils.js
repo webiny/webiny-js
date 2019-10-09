@@ -16,7 +16,7 @@ const getImageKey = (key, options) => {
         return `${OPTIMIZED_IMAGE_PREFIX}${objectHash(key)}_${key}`;
     }
 
-    return `${OPTIMIZED_TRANSFORMED_IMAGE_PREFIX}${objectHash(key)}_${objectHash(options)}_{${key}`;
+    return `${OPTIMIZED_TRANSFORMED_IMAGE_PREFIX}${objectHash(key)}_${objectHash(options)}_${key}`;
 };
 
 module.exports = {
