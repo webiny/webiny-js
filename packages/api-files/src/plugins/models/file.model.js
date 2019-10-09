@@ -1,6 +1,16 @@
 // @flow
 import { flow } from "lodash";
-import { withFields, onSet, object, number, string, withName, withHooks } from "@webiny/commodo";
+import {
+    withFields,
+    onSet,
+    setOnce,
+    object,
+    number,
+    string,
+    withName,
+    withHooks
+} from "@webiny/commodo";
+
 import { withAggregate } from "@commodo/fields-storage-mongodb";
 import { validation } from "@webiny/validation";
 
@@ -9,7 +19,8 @@ export default ({ createBase }) => {
         withAggregate(),
         withName("File"),
         withFields({
-            src: string({ validation: validation.create("required,maxLength:200") }),
+            src: setOnce()(string({ validation: validation.create("required,maxLength:200") })),
+            key: setOnce()(string({ validation: validation.create("required,maxLength:200") })),
             size: number(),
             type: string({ validation: validation.create("maxLength:50") }),
             name: string({ validation: validation.create("maxLength:100") }),

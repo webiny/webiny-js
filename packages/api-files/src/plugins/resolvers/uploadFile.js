@@ -43,6 +43,7 @@ export default async (root: any, args: Object) => {
         data,
         file: {
             name: key,
+            key,
             type: contentType,
             size: file.size,
             src: "/files/" + key

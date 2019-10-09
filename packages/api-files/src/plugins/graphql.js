@@ -21,6 +21,7 @@ export default ([
             typeDefs: gql`
                 input FileInput {
                     id: ID
+                    key: String
                     name: String
                     size: Int
                     type: String
@@ -40,6 +41,7 @@ export default ([
                     type: String
                     size: Int
                     src: String
+                    key: String
                 }
 
                 type UploadFileResponseData {
@@ -82,6 +84,7 @@ export default ([
 
                 type File @key(fields: "id") {
                     id: ID
+                    key: String
                     name: String
                     size: Int
                     type: String
