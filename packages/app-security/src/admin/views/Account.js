@@ -31,6 +31,8 @@ const GET_CURRENT_USER = gql`
                 data {
                     id
                     email
+                    firstName
+                    lastName
                     avatar {
                         id
                         src
