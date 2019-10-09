@@ -12,8 +12,6 @@ const defaultPasswordPolicy = {
     temporaryPasswordValidityDays: 7
 };
 
-const component = "@webiny/serverless-aws-cognito-user-pool";
-
 class ServerlessAwsCognito extends Component {
     async default({ track, ...inputs } = {}) {
         await trackComponent({ track, context: this.context, component: __dirname });

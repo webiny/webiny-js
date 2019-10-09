@@ -9,7 +9,6 @@ const { trackComponent } = require("@webiny/tracking");
 const loadJson = require("load-json-file");
 const writeJson = require("write-json-file");
 
-const component = "@webiny/serverless-apollo-service";
 const defaultDependencies = ["date-fns", "mongodb", "@webiny/api", "@webiny/api-security"];
 
 const getDeps = async deps => {

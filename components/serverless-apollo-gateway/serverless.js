@@ -6,8 +6,6 @@ const { Component } = require("@serverless/core");
 const webpack = require("webpack");
 const { trackComponent } = require("@webiny/tracking");
 
-const component = "@webiny/serverless-apollo-gateway";
-
 class ApolloGateway extends Component {
     async default({ track, ...inputs } = {}) {
         await trackComponent({ track, context: this.context, component: __dirname });
@@ -83,7 +81,7 @@ class ApolloGateway extends Component {
         // Deploy lambda
         const lambda = await this.load("@serverless/function");
 
-        return await lambda({
+        const output = await lambda({
             description: description || `Apollo Gateway: ${componentName}`,
             code: path.join(componentRoot, "build"),
             handler: "handler.handler",
@@ -91,6 +89,11 @@ class ApolloGateway extends Component {
             memory,
             timeout
         });
+
+        this.state.output = output;
+        await this.save();
+
+        return output;
     }
 
     async remove({ track, ...inputs } = {}) {

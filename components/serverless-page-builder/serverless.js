@@ -3,8 +3,6 @@ const { Component } = require("@serverless/core");
 const { trackComponent } = require("@webiny/tracking");
 const loadJson = require("load-json-file");
 
-const component = "@webiny/serverless-page-builder";
-
 const getDeps = async deps => {
     const { dependencies } = await loadJson(join(__dirname, "package.json"));
     return deps.reduce((acc, item) => {
