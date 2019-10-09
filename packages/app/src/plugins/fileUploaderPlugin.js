@@ -1,11 +1,12 @@
 // @flow
 import type { FileUploaderPlugin } from "@webiny/app/types";
 import gql from "graphql-tag";
+import get from "lodash.get";
 
 const UPLOAD_FILE = gql`
     mutation UploadFile($data: UploadFileInput!) {
         files {
-            upload(data: $data) {
+            uploadFile(data: $data) {
                 data {
                     data
                     file {
@@ -13,7 +14,11 @@ const UPLOAD_FILE = gql`
                         type
                         name
                         size
+                        key
                     }
+                }
+                error {
+                    message
                 }
             }
         }
@@ -24,14 +29,18 @@ export default (): FileUploaderPlugin => ({
     type: "file-uploader",
     name: "file-uploader",
     upload: async (file: File, { apolloClient }) => {
-        console.log("ideeee");
-        const presignedPostPayload = await apolloClient.mutate({
+        let presignedPostPayload = await apolloClient.mutate({
             mutation: UPLOAD_FILE,
             variables: {
                 data: { size: file.size, name: file.name, type: file.type }
             }
         });
-        console.log("dobeo presigned", presignedPostPayload);
+
+        presignedPostPayload = get(presignedPostPayload, "data.files.uploadFile");
+        if (presignedPostPayload.error) {
+            console.log(presignedPostPayload.error.message); // eslint-disable-line
+            return;
+        }
 
         return await new Promise((resolve, reject) => {
             const formData = new window.FormData();
