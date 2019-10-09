@@ -18,7 +18,6 @@ module.exports.handler = async ({ body: { transformations, key } }) => {
             optimizedTransformed: getObjectParams(getImageKey(key, transformations))
         };
 
-        console.log("svi moguci paramsi", params);
         // 1. Get optimized image.
         try {
             optimizedImageObject = await s3.getObject(params.optimized).promise();
@@ -37,7 +36,6 @@ module.exports.handler = async ({ body: { transformations, key } }) => {
                 })
                 .promise();
 
-            console.log("ponovo dohvacam params.optimized", params.optimized);
             optimizedImageObject = await s3.getObject(params.optimized);
         }
 
