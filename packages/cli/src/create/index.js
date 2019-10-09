@@ -4,9 +4,10 @@ const fs = require("fs-extra");
 const glob = require("glob");
 const util = require("util");
 const execa = require("execa");
-const { green, blue } = require("chalk");
+const { green } = require("chalk");
 const { trackProject } = require("@webiny/tracking");
 const { version } = require(require.resolve("@webiny/cli/package.json"));
+const { getSuccessBanner } = require("./gists");
 
 const globFiles = util.promisify(glob);
 
@@ -58,17 +59,7 @@ module.exports = async ({ name }) => {
 
     await trackProject({ cliVersion: version });
 
-    console.log(`\n🏁 Your Webiny project is ready!!`);
-    console.log(
-        `\nIf this is your first Webiny project, or maybe you simply forgot what to do next, head over to to our 📚 ${blue(
-            "https://docs.webiny.com/"
-        )}.`
-    );
-    console.log(
-        `In case of any issues, get in touch via ${blue(
-            "https://github.com/webiny/webiny-js/issues"
-        )}`
-    );
+    console.log(await getSuccessBanner());
 };
 
 async function setupFolder(appFolder) {
