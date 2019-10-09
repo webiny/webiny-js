@@ -10,7 +10,7 @@ export default async (root: any, args: Object, context: Object) => {
 
     const file = await File.findById(id);
     if (!file) {
-        return new NotFoundResponse(id ? `Record "${id}" not found!` : "Record not found!");
+        return new NotFoundResponse(id ? `File "${id}" not found!` : "File not found!");
     }
 
     const s3 = new S3();
@@ -18,7 +18,7 @@ export default async (root: any, args: Object, context: Object) => {
     await s3
         .deleteObject({
             Bucket: S3_BUCKET,
-            Key: file.src
+            Key: file.key
         })
         .promise();
 
