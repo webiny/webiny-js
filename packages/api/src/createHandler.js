@@ -6,6 +6,7 @@ import normalizeEvent from "./graphql/normalizeEvent";
 
 import type { PluginsContainerType, GraphQLMiddlewarePluginType } from "@webiny/api/types";
 import { prepareSchema } from "./graphql/prepareSchema";
+import normalizeEvent from "./graphql/normalizeEvent";
 
 export type CreateHandlerParamsType = {
     plugins: PluginsContainerType,

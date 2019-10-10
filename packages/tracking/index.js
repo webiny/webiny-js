@@ -9,9 +9,7 @@ let config;
 const defaultLogger = () => {};
 
 const sendStats = data => {
-    return new Promise(resolve => {
-        request.post("http://stats.webiny.com/track", { json: data }, resolve);
-    });
+    request.post("https://stats.webiny.com/track", { json: data }, () => {});
 };
 
 const loadConfig = async ({ logger = defaultLogger }) => {
@@ -36,34 +34,44 @@ const trackComponent = async ({ context, component, method = "deploy", track = t
         return;
     }
 
-    await loadConfig({ logger: context.debug });
+    try {
+        await loadConfig({ logger: context.debug });
 
-    if (config.tracking !== true) {
-        return;
+        if (config.tracking !== true) {
+            return;
+        }
+
+        const { name, version } = readJson.sync(path.join(component, "package.json"));
+        context.debug(`${prefix} Tracking component: ${name} (${method})`);
+        sendStats({
+            type: "component",
+            user: config.id,
+            instance: context.instance.id,
+            component: name,
+            version,
+            method
+        });
+    } catch (e) {
+        // Ignore errors
     }
-
-    context.debug(`${prefix} Tracking component: ${component} (${method})`);
-
-    return sendStats({
-        type: "component",
-        user: config.id,
-        instance: context.instance.id,
-        component,
-        method
-    });
 };
 
-const trackProject = async () => {
-    await loadConfig();
+const trackProject = async ({ cliVersion }) => {
+    try {
+        await loadConfig();
 
-    if (config.tracking !== true) {
-        return;
+        if (config.tracking !== true) {
+            return;
+        }
+
+        sendStats({
+            type: "project",
+            user: config.id,
+            version: cliVersion
+        });
+    } catch (e) {
+        // Ignore errors
     }
-
-    return sendStats({
-        type: "project",
-        user: config.id
-    });
 };
 
 module.exports = {

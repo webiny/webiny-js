@@ -1,21 +1,30 @@
 const { Component } = require("@serverless/core");
 const { trackComponent } = require("@webiny/tracking");
 
-const component = "@webiny/serverless-api-gateway";
-
 class ServerlessApiGateway extends Component {
     async default({ track, ...inputs } = {}) {
-        await trackComponent({ track, context: this.context, component });
+        await trackComponent({
+            track,
+            context: this.context,
+            component: __dirname
+        });
 
         const gw = await this.load("@serverless/api");
+        const output = await gw(inputs);
 
-        return await gw(inputs);
+        this.state.output = output;
+        await this.save();
+
+        return output;
     }
 
     async remove({ track, ...inputs } = {}) {
-        await trackComponent({ track, context: this.context, component });
+        await trackComponent({ track, context: this.context, component: __dirname });
         const gw = await this.load("@serverless/api");
-        return await gw.remove(inputs);
+        await gw.remove(inputs);
+
+        this.state = {};
+        await this.save();
     }
 }
 

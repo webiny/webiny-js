@@ -3,8 +3,6 @@ const { Component } = require("@serverless/core");
 const { trackComponent } = require("@webiny/tracking");
 const loadJson = require("load-json-file");
 
-const component = "@webiny/serverless-page-builder";
-
 const getDeps = async deps => {
     const { dependencies } = await loadJson(join(__dirname, "package.json"));
     return deps.reduce((acc, item) => {
@@ -15,7 +13,7 @@ const getDeps = async deps => {
 
 class ServerlessPageBuilder extends Component {
     async default({ track, ...inputs } = {}) {
-        await trackComponent({ track, context: this.context, component });
+        await trackComponent({ track, context: this.context, component: __dirname });
 
         const { plugins = [], ...rest } = inputs;
 
@@ -37,10 +35,18 @@ class ServerlessPageBuilder extends Component {
     }
 
     async remove({ track, ...inputs } = {}) {
-        await trackComponent({ track, context: this.context, component, method: "remove" });
+        await trackComponent({
+            track,
+            context: this.context,
+            component: __dirname,
+            method: "remove"
+        });
 
         const apolloService = await this.load("@webiny/serverless-apollo-service");
-        return await apolloService.remove({ ...inputs, track: false });
+        await apolloService.remove({ ...inputs, track: false });
+
+        this.state = {};
+        await this.save();
     }
 }
 

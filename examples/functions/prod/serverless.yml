@@ -89,7 +89,7 @@ api:
         function: ${gateway}
 
 cdn:
-  component: "@serverless/aws-cloudfront"
+  component: "@webiny/serverless-aws-cloudfront"
   inputs:
     origins:
       #- ${files.cdnOrigin}

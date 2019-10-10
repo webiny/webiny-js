@@ -1,20 +1,22 @@
-const path = require("path");
+const { join, resolve } = require("path");
 const crypto = require("crypto");
 const fs = require("fs-extra");
 const glob = require("glob");
 const util = require("util");
 const execa = require("execa");
-const { green, blue } = require("chalk");
+const { green } = require("chalk");
 const { trackProject } = require("@webiny/tracking");
+const { version } = require(require.resolve("@webiny/cli/package.json"));
+const { getSuccessBanner } = require("./gists");
 
 const globFiles = util.promisify(glob);
 
 function copyFile(from, to) {
-    fs.copySync(path.join(__dirname, from), path.resolve(to));
+    fs.copySync(join(__dirname, from), resolve(to));
 }
 
 module.exports = async ({ name }) => {
-    const root = path.join(process.cwd(), name);
+    const root = join(process.cwd(), name);
 
     console.log(`Creating a new Webiny project in ${green(root)}...`);
     fs.ensureDirSync(root);
@@ -43,53 +45,27 @@ module.exports = async ({ name }) => {
         .toString("base64")
         .slice(0, 60);
 
-    const envExample = path.resolve("functions/prod/.env.example");
+    const envExample = resolve("functions/prod/.env.example");
     if (fs.existsSync(envExample)) {
         fs.renameSync(envExample, "functions/prod/.env");
     }
 
-    const envFile = path.resolve("functions/prod/.env");
+    const envFile = resolve("functions/prod/.env");
     let env = fs.readFileSync(envFile, "utf-8");
-    env = env.replace("MyS3cr3tK3Y", jwtSecret);
+    env = env.replace("[JWT_SECRET]", jwtSecret);
     await fs.writeFile(envFile, env);
 
     await execa("yarn", [], { cwd: root, stdio: "inherit" });
 
-    await trackProject();
+    await trackProject({ cliVersion: version });
 
-    console.log();
-    console.log("Your local Webiny project is ready!!");
-    console.log("Now it is time to deploy your API 🚀");
-    console.log(
-        `\n1) Navigate to your ${blue(
-            "functions/prod"
-        )} folder and update the ENV variables in ${blue(".env")} file.`
-    );
-    console.log(
-        `   NOTE: if you don't already have a Mongo database up and running in the cloud, to get one as fast as possible, we suggest ${blue(
-            "Mongo Atlas"
-        )}.`
-    );
-    console.log(
-        `\n2) Next, run ${blue("sls")} inside of your ${blue(
-            "functions/prod"
-        )} folder to kick off the first deployment of your API.\n   It will take a minute or two to deploy, so be patient.`
-    );
-    console.log(
-        `\n3) Once your API is deployed, you will see a list of cloud resources that were created.\n   Take note of the ${blue(
-            "cdn.url"
-        )}, you'll need it for your apps.`
-    );
-
-    console.log(
-        `🏁 That's it! Now you have your API, admin and site apps up and running!\n  Happy coding :)`
-    );
+    console.log(await getSuccessBanner());
 };
 
 async function setupFolder(appFolder) {
     // copy custom files and override CRA config
     const files = await globFiles("**/*", {
-        cwd: path.join(__dirname, "template", appFolder),
+        cwd: join(__dirname, "template", appFolder),
         nodir: true,
         dot: true
     });

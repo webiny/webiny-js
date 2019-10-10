@@ -1,22 +1,12 @@
-const path = require("path");
 const { Component } = require("@serverless/core");
 const { trackComponent } = require("@webiny/tracking");
 
-class ServerlessApp extends Component {
+class ServerlessAwsCloudfront extends Component {
     async default({ track, ...inputs } = {}) {
         await trackComponent({ track, context: this.context, component: __dirname });
 
-        if (!inputs.code) {
-            inputs.code = path.join(inputs.root, "build");
-        }
-
-        if (!inputs.handler) {
-            inputs.handler = "handler.handler";
-        }
-
-        const fn = await this.load("@webiny/serverless-function");
-
-        const output = await fn({ ...inputs, track: false });
+        const cf = await this.load("@serverless/aws-cloudfront");
+        const output = await cf(inputs);
 
         this.state.output = output;
         await this.save();
@@ -32,12 +22,12 @@ class ServerlessApp extends Component {
             method: "remove"
         });
 
-        const fn = await this.load("@webiny/serverless-function");
-        await fn.remove({ ...inputs, track: false });
+        const cf = await this.load("@serverless/aws-cloudfront");
+        await cf.remove(inputs);
 
         this.state = {};
         await this.save();
     }
 }
 
-module.exports = ServerlessApp;
+module.exports = ServerlessAwsCloudfront;

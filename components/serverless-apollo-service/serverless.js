@@ -9,7 +9,6 @@ const { trackComponent } = require("@webiny/tracking");
 const loadJson = require("load-json-file");
 const writeJson = require("write-json-file");
 
-const component = "@webiny/serverless-apollo-service";
 const defaultDependencies = ["date-fns", "mongodb", "@webiny/api", "@webiny/api-security"];
 
 const getDeps = async deps => {
@@ -22,7 +21,7 @@ const getDeps = async deps => {
 
 class ApolloService extends Component {
     async default({ track, ...inputs } = {}) {
-        await trackComponent({ track, context: this.context, component });
+        await trackComponent({ track, context: this.context, component: __dirname });
 
         const {
             endpoints = [],
@@ -151,10 +150,7 @@ class ApolloService extends Component {
             description: `API for ${componentName}`,
             stage: "prod",
             endpointTypes,
-            endpoints: [
-                { path: "/graphql", method: "ANY", function: lambdaOut.arn },
-                ...endpoints
-            ]
+            endpoints: [{ path: "/graphql", method: "ANY", function: lambdaOut.arn }, ...endpoints]
         });
 
         const output = {
@@ -169,12 +165,20 @@ class ApolloService extends Component {
     }
 
     async remove({ track, ...inputs } = {}) {
-        await trackComponent({ track, context: this.context, component, method: "remove" });
+        await trackComponent({
+            track,
+            context: this.context,
+            component: __dirname,
+            method: "remove"
+        });
         const apiGw = await this.load("@serverless/aws-api-gateway");
         await apiGw.remove(inputs);
 
         const lambda = await this.load("@serverless/function");
         await lambda.remove(inputs);
+
+        this.state = {};
+        await this.save();
     }
 }
 
