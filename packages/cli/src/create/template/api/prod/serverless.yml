@@ -1,6 +1,7 @@
 name: webiny-cms-project
 
 vars:
+  region: "us-east-1"
   env:
     WEBINY_JWT_SECRET: ${env.WEBINY_JWT_SECRET}
   database:
@@ -11,7 +12,6 @@ gateway:
   component: "@webiny/serverless-apollo-gateway"
   inputs:
     name: gateway
-    memory: 128
     timeout: 30
     services:
       - name: security
@@ -22,6 +22,13 @@ gateway:
         url: ${pageBuilder.api.url}/graphql
       - name: i18n
         url: ${i18n.api.url}/graphql
+      - name: forms
+        url: ${forms.api.url}/graphql
+
+userPool:
+  component: "@webiny/serverless-aws-cognito-user-pool"
+  inputs:
+    name: "WebinyCmsPool"
 
 security:
   component: "@webiny/serverless-apollo-service"
@@ -35,35 +42,41 @@ security:
       - factory: "@webiny/api-plugin-security-cognito"
         options:
           region: us-east-1
-          userPoolId: us-east-1_patnytnzK
+          userPoolId: ${userPool.id}
 
 # Example of a custom service using generic component
 files:
-  component: "@webiny/serverless-apollo-service"
+  component: "@webiny/serverless-files"
   inputs:
+    region: ${vars.region}
     name: files
-    memory: 128
+    bucket: "webiny-files"
     database: ${vars.database}
     env: ${vars.env}
-    plugins:
-      - "@webiny/api-files/plugins"
 
 i18n:
   component: "@webiny/serverless-apollo-service"
   inputs:
     name: i18n
-    memory: 128
     database: ${vars.database}
     env: ${vars.env}
     plugins:
       - "@webiny/api-i18n/plugins"
+
+forms:
+  component: "@webiny/serverless-apollo-service"
+  inputs:
+    name: forms
+    database: ${vars.database}
+    env: ${vars.env}
+    plugins:
+      - "@webiny/api-forms/plugins"
 
 # Example of a specific use-case component
 pageBuilder:
   component: "@webiny/serverless-page-builder"
   inputs:
     name: pageBuilder
-    memory: 128
     database: ${vars.database}
     env: ${vars.env}
     plugins:
@@ -86,7 +99,7 @@ cdn:
   component: "@serverless/aws-cloudfront"
   inputs:
     origins:
-      #- ${files.cdnOrigin}
+      - ${files.cdnOrigin}
       - url: ${api.url}
         pathPatterns:
           "/graphql":
