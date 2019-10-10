@@ -23,12 +23,19 @@ module.exports = async ({ name }) => {
     process.chdir(root);
 
     fs.ensureDirSync("apps");
-    fs.ensureDirSync("functions");
+    fs.ensureDirSync("api");
     fs.ensureDirSync("packages");
 
     // Copy project files
-    const files = ["README.md", ".gitignore", ".prettierrc.js", "babel.config.js", "package.json"];
+    const files = [
+        "README.md",
+        ".gitignore.example",
+        ".prettierrc.js",
+        "babel.config.js",
+        "package.json"
+    ];
     files.forEach(file => copyFile(`template/${file}`, file));
+    fs.renameSync("api/.gitignore.example", "api/.gitignore");
 
     // Setup monorepo packages
     await setupFolder("apps/code");
@@ -36,7 +43,7 @@ module.exports = async ({ name }) => {
     fs.renameSync("apps/code/site/.gitignore.example", "apps/code/site/.gitignore");
 
     await setupFolder("apps/prod");
-    await setupFolder("functions/prod");
+    await setupFolder("api/prod");
     await setupFolder("packages/theme");
 
     // Update config
@@ -45,12 +52,12 @@ module.exports = async ({ name }) => {
         .toString("base64")
         .slice(0, 60);
 
-    const envExample = resolve("functions/prod/.env.example");
+    const envExample = resolve("api/prod/.env.example");
     if (fs.existsSync(envExample)) {
-        fs.renameSync(envExample, "functions/prod/.env");
+        fs.renameSync(envExample, "api/prod/.env");
     }
 
-    const envFile = resolve("functions/prod/.env");
+    const envFile = resolve("api/prod/.env");
     let env = fs.readFileSync(envFile, "utf-8");
     env = env.replace("[JWT_SECRET]", jwtSecret);
     await fs.writeFile(envFile, env);
