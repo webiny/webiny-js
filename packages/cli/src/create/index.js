@@ -35,7 +35,7 @@ module.exports = async ({ name }) => {
         "package.json"
     ];
     files.forEach(file => copyFile(`template/${file}`, file));
-    fs.renameSync("api/.gitignore.example", "api/.gitignore");
+    fs.renameSync(".gitignore.example", ".gitignore");
 
     // Setup monorepo packages
     await setupFolder("apps/code");

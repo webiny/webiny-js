@@ -6,7 +6,7 @@
       "apps/code/*"
     ]
   },
-  "devDependencies": {
+  "dependencies": {
     "@webiny/serverless-apollo-gateway": "^0",
     "@webiny/serverless-apollo-service": "^0",
     "@webiny/serverless-page-builder":"^0",
@@ -17,8 +17,11 @@
     "@webiny/api-i18n": "^0",
     "@webiny/api-google-tag-manager":"^0",
     "@webiny/api-mailchimp": "^0",
-    "@webiny/api-cookie-policy":"^0",
+    "@webiny/api-cookie-policy":"^0"
+  },
+  "devDependencies": {
     "prettier": "^1",
-    "flow-bin": "^0"
+    "flow-bin": "^0",
+    "serverless": "^1.54.0"
   }
 }
