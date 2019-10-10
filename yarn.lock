@@ -2793,14 +2793,23 @@
     "@serverless/core" "^1.0.0"
     aws-sdk "^2.0.0"
 
-"@serverless/aws-api-gateway@^2.0.0":
-  version "2.0.0"
-  resolved "https://registry.yarnpkg.com/@serverless/aws-api-gateway/-/aws-api-gateway-2.0.0.tgz#3a2de01aed6d4b9abb026b2c46dbb560c96a65bb"
-  integrity sha512-TOqh9s8wFIQ9yOGkwf4JiB3TBEpyxphGB5Q1hHnqr3q61+VDoijYCAjdAsBDXaPU82XDJpFjWX8q5sVSmSHgKA==
+"@serverless/aws-api-gateway@^4.0.0":
+  version "4.0.0"
+  resolved "https://registry.yarnpkg.com/@serverless/aws-api-gateway/-/aws-api-gateway-4.0.0.tgz#2918a110d088a91049bf2f3743999b9d7969ca4f"
+  integrity sha512-dGD7KbfWEiZYY/5bWRO0YKAS9aJjmcZVHgT1q18lfAOTOR+5pfoGPL0PjWVIppI7kk81mGy5I3HBFKjBLt2HxA==
   dependencies:
     "@serverless/core" "^1.0.0"
     aws-sdk "^2.0.0"
     p-retry "^4.1.0"
+
+"@serverless/aws-cloudfront@^6.0.0":
+  version "6.0.0"
+  resolved "https://registry.yarnpkg.com/@serverless/aws-cloudfront/-/aws-cloudfront-6.0.0.tgz#d6b203e4ff32506b3632717dda6e0d6af3983c7e"
+  integrity sha512-WBaozIIugBWGct3OfDQnNHQ0BexTX8+uWNHqLqg0G2Qgj8GE9kyxrMi+FYUuDC+vOt8u+6WnCBrdhwuPrljuDg==
+  dependencies:
+    "@serverless/core" "^1.0.0"
+    aws-sdk "^2.499.0"
+    ramda "^0.26.1"
 
 "@serverless/aws-iam-role@^1.0.0":
   version "1.0.0"
@@ -5038,6 +5047,36 @@ aws-sdk@^2.0.0, aws-sdk@^2.387.0, aws-sdk@^2.474.0, aws-sdk@^2.488.0, aws-sdk@^2
   version "2.543.0"
   resolved "https://registry.yarnpkg.com/aws-sdk/-/aws-sdk-2.543.0.tgz#08b69a6fab9b3ab08e329888d06a8c4ee583f26d"
   integrity sha512-ABHsA4W7LLYnTBCgtbTt0NF7+66nMCtdcJuAn30+RGzF0bOw3lCguqzootFrMlIOXklddQFJ9kKTXd+p/+uCVQ==
+  dependencies:
+    buffer "4.9.1"
+    events "1.1.1"
+    ieee754 "1.1.13"
+    jmespath "0.15.0"
+    querystring "0.2.0"
+    sax "1.2.1"
+    url "0.10.3"
+    uuid "3.3.2"
+    xml2js "0.4.19"
+
+aws-sdk@^2.499.0:
+  version "2.545.0"
+  resolved "https://registry.yarnpkg.com/aws-sdk/-/aws-sdk-2.545.0.tgz#98c50ddfc806376a18cf72f4d4c3d2fdfe25046d"
+  integrity sha512-oQjpvvTkh2a7CvWhSUcFQWkpfkM3wVpzvLgGMInoZ6QIOsuQ+oNKz+zq48yQ619/GP8XnOh0zBQJLcYaa3XAKw==
+  dependencies:
+    buffer "4.9.1"
+    events "1.1.1"
+    ieee754 "1.1.13"
+    jmespath "0.15.0"
+    querystring "0.2.0"
+    sax "1.2.1"
+    url "0.10.3"
+    uuid "3.3.2"
+    xml2js "0.4.19"
+
+aws-sdk@^2.539.0:
+  version "2.544.0"
+  resolved "https://registry.yarnpkg.com/aws-sdk/-/aws-sdk-2.544.0.tgz#d99eeada8237ee67699ce6644f8070eeb84996e7"
+  integrity sha512-wwiBJgAUGKXY/xoCSrUXVZnNtefoH3YcPwGxQrQXOIDnLMQ32yh/SWc52qmwdxA7WJzpTcIj8y+5keH3P1LYaw==
   dependencies:
     buffer "4.9.1"
     events "1.1.1"
