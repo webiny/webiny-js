@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.3.3](https://github.com/webiny/webiny-js/compare/@webiny/cli@0.3.2...@webiny/cli@0.3.3) (2019-10-10)
+
+
+### Bug Fixes
+
+* remove "files" key from package.json. ([4a2e42a](https://github.com/webiny/webiny-js/commit/4a2e42a))
+
+
+
+
+
 ## [0.3.2](https://github.com/webiny/webiny-js/compare/@webiny/cli@0.3.1...@webiny/cli@0.3.2) (2019-10-10)
 
 
