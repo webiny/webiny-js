@@ -2,6 +2,7 @@ const { join } = require("path");
 const { Component } = require("@serverless/core");
 const { configureS3Bucket, configureApiGateway } = require("./components");
 const { trackComponent } = require("@webiny/tracking");
+
 /**
  * This component deploys:
  * - S3 bucket for file storage
