@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.3.4](https://github.com/webiny/webiny-js/compare/@webiny/cli@0.3.3...@webiny/cli@0.3.4) (2019-10-10)
+
+
+### Bug Fixes
+
+* rename functions to api and update setup code. ([3167bb8](https://github.com/webiny/webiny-js/commit/3167bb8))
+
+
+
+
+
 ## [0.3.3](https://github.com/webiny/webiny-js/compare/@webiny/cli@0.3.2...@webiny/cli@0.3.3) (2019-10-10)
 
 
