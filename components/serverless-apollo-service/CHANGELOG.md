@@ -3,6 +3,23 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.2.0](https://github.com/Webiny/webiny-js/compare/@webiny/serverless-apollo-service@0.1.7...@webiny/serverless-apollo-service@0.2.0) (2019-10-10)
+
+
+### Bug Fixes
+
+* remove unused component name. ([8a3587f](https://github.com/Webiny/webiny-js/commit/8a3587f))
+* renamed "extraEndpoints" to just "endpoints" ([9538b13](https://github.com/Webiny/webiny-js/commit/9538b13))
+
+
+### Features
+
+* rename extraEndpoints to endpoints ([92e8a4e](https://github.com/Webiny/webiny-js/commit/92e8a4e))
+
+
+
+
+
 ## [0.1.7](https://github.com/Webiny/webiny-js/compare/@webiny/serverless-apollo-service@0.1.6...@webiny/serverless-apollo-service@0.1.7) (2019-10-08)
 
 

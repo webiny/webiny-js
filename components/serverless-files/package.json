@@ -1,12 +1,12 @@
 {
   "name": "@webiny/serverless-files",
   "private": true,
-  "version": "0.1.0",
+  "version": "0.1.1",
   "main": "serverless.js",
   "license": "MIT",
   "dependencies": {
     "@serverless/core": "^1.1.1",
-    "@webiny/tracking": "^0",
+    "@webiny/tracking": "^0.1.5",
     "aws-sdk": "^2.539.0",
     "lodash.get": "^4.4.2",
     "lodash.set": "^4.3.2",

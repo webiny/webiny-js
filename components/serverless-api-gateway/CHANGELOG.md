@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.1.5](https://github.com/Webiny/webiny-js/compare/@webiny/serverless-api-gateway@0.1.4...@webiny/serverless-api-gateway@0.1.5) (2019-10-10)
+
+
+### Bug Fixes
+
+* remove unused component name. ([8a3587f](https://github.com/Webiny/webiny-js/commit/8a3587f))
+
+
+
+
+
 ## [0.1.4](https://github.com/Webiny/webiny-js/compare/@webiny/serverless-api-gateway@0.1.3...@webiny/serverless-api-gateway@0.1.4) (2019-10-08)
 
 
