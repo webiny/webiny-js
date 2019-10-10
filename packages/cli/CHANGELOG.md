@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.3.2](https://github.com/webiny/webiny-js/compare/@webiny/cli@0.3.1...@webiny/cli@0.3.2) (2019-10-10)
+
+
+### Bug Fixes
+
+* update serverless config template. ([ae06654](https://github.com/webiny/webiny-js/commit/ae06654))
+
+
+
+
+
 ## [0.3.1](https://github.com/webiny/webiny-js/compare/@webiny/cli@0.3.0...@webiny/cli@0.3.1) (2019-10-10)
 
 
