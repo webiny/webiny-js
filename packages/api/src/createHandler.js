@@ -2,8 +2,6 @@
 import { ApolloServer } from "apollo-server-lambda";
 import { applyMiddleware } from "graphql-middleware";
 import { addSchemaLevelResolveFunction } from "graphql-tools";
-import normalizeEvent from "./graphql/normalizeEvent";
-
 import type { PluginsContainerType, GraphQLMiddlewarePluginType } from "@webiny/api/types";
 import { prepareSchema } from "./graphql/prepareSchema";
 import normalizeEvent from "./graphql/normalizeEvent";
