@@ -2,11 +2,14 @@ const { join } = require("path");
 const { Component } = require("@serverless/core");
 const { configureS3Bucket, configureApiGateway } = require("./components");
 const { trackComponent } = require("@webiny/tracking");
-
 /**
- * This component needs to deploy:
- * - S3 bucket
- * - API GW for /graphql, /read, /upload
+ * This component deploys:
+ * - S3 bucket for file storage
+ * - API GW with "/files/{key}" route
+ * - Three functions:
+ *  - manage files - when a file is deleted, this makes sure all other related files are deleted too
+ *  - download files - handles file download and calls image transformer if needed
+ *  - image transformer - performs various image transformations
  */
 class FilesComponent extends Component {
     async default({ track, ...inputs } = {}) {
@@ -14,9 +17,9 @@ class FilesComponent extends Component {
 
         const { region = "us-east-1", bucket = "webiny-files", env, ...rest } = inputs;
 
-        const manageFilesLambda = await this.load("@serverless/function", "manageFiles");
+        const manageFilesLambda = await this.load("@serverless/function", "manage-files");
         const manageFilesLambdaOutput = await manageFilesLambda({
-            name: "Files component - manage S3 objects",
+            name: "Files component - manage files",
             timeout: 10,
             code: join(__dirname, "dist/functions/manageFiles"),
             handler: "handler.handler",
@@ -105,7 +108,24 @@ class FilesComponent extends Component {
             component: __dirname,
             method: "remove"
         });
-        // TODO: remove all created resources
+
+        const apolloService = await this.load("@webiny/serverless-apollo-service");
+        await apolloService.remove();
+
+        let lambda = await this.load("@serverless/function", "manage-files");
+        await lambda.remove();
+
+        lambda = await this.load("@serverless/function", "image-transformer");
+        await lambda.remove();
+
+        lambda = await this.load("@serverless/function", "download");
+        await lambda.remove();
+
+        const s3 = await this.load("@serverless/aws-s3");
+        await s3.remove();
+
+        this.state = {};
+        await this.save();
     }
 }
 
