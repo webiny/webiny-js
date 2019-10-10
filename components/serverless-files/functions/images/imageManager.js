@@ -22,10 +22,13 @@ module.exports = {
         ) {
             return false;
         }
+
+        return true;
     },
     async process({ s3, key, extension }) {
         // 1. Get optimized image's key.
-        s3.deleteObject(getObjectParams(getImageKey({ key })));
+
+        await s3.deleteObject(getObjectParams(getImageKey({ key }))).promise();
 
         // 2. Search for all transformed images and delete those too.
         if (SUPPORTED_TRANSFORMABLE_IMAGES.includes(extension)) {
@@ -37,10 +40,9 @@ module.exports = {
                 })
                 .promise();
 
-            console.log({ imagesList });
-            for (let i = 0; i < imagesList.length; i++) {
-                let imageObject = imagesList[i];
-                console.log(imageObject)
+            for (let i = 0; i < imagesList.Contents.length; i++) {
+                let imageObject = imagesList.Contents[i];
+                await s3.deleteObject(getObjectParams(imageObject.Key)).promise();
             }
         }
     }
