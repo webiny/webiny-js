@@ -34,14 +34,6 @@ module.exports = config => ({
                         ]
                     ]
                 }
-            },
-            {
-                test: /\.node$/i,
-                use: [
-                    {
-                        loader: "file-loader"
-                    }
-                ]
             }
         ]
     },
