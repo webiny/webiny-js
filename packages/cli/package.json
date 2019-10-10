@@ -11,10 +11,6 @@
     "url": "https://github.com/webiny/webiny-js.git"
   },
   "author": "Pavel Denisjuk <pavel@webiny.com>",
-  "files": [
-    "lib",
-    "lib/**/.gitignore"
-  ],
   "description": "A tool to bootstrap a Webiny project.",
   "dependencies": {
     "@webiny/tracking": "^0.1.5",
