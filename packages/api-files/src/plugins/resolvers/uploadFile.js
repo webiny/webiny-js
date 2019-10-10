@@ -16,7 +16,7 @@ export default async (root: any, args: Object) => {
 
     let key = sanitizeFilename(file.name);
     if (key) {
-        key = uniqueId() + "_" + key;
+        key = uniqueId() + "-" + key;
     }
 
     // Replace all whitespace.

@@ -14,8 +14,8 @@ module.exports.handler = async ({ body: { transformations, key } }) => {
 
         const params = {
             initial: getObjectParams(key),
-            optimized: getObjectParams(getImageKey(key)),
-            optimizedTransformed: getObjectParams(getImageKey(key, transformations))
+            optimized: getObjectParams(getImageKey({ key })),
+            optimizedTransformed: getObjectParams(getImageKey({ key, transformations }))
         };
 
         // 1. Get optimized image.

@@ -9,7 +9,9 @@ module.exports.handler = async event => {
     const keys = [];
     for (let i = 0; i < event.Records.length; i++) {
         let record = event.Records[i];
-        keys.push(record.s3.object);
+        if (typeof record.s3.object.key === "string") {
+            keys.push(record.s3.object.key);
+        }
     }
 
     const { region } = getEnvironment();

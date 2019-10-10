@@ -33,9 +33,7 @@ module.exports = {
         const transformations = sanitizeImageTransformations(options);
 
         if (transformations && SUPPORTED_TRANSFORMABLE_IMAGES.includes(file.extension)) {
-
-            objectParams = getObjectParams(getImageKey(file.name, transformations));
-        console.log('transformationsszzzz', transformations, objectParams)
+            objectParams = getObjectParams(getImageKey({ key: file.name, transformations }));
             try {
                 return await s3.getObject(objectParams).promise();
             } catch (e) {
@@ -52,8 +50,7 @@ module.exports = {
             }
         }
 
-        console.log('nista od trasnforma')
-        objectParams = getObjectParams(getImageKey(file.name));
+        objectParams = getObjectParams(getImageKey({ key: file.name }));
         try {
             return await s3.getObject(objectParams).promise();
         } catch (e) {
