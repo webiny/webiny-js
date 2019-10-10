@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.3.5](https://github.com/webiny/webiny-js/compare/@webiny/cli@0.3.4...@webiny/cli@0.3.5) (2019-10-10)
+
+
+### Bug Fixes
+
+* update gitignore path. ([702b543](https://github.com/webiny/webiny-js/commit/702b543))
+
+
+
+
+
 ## [0.3.4](https://github.com/webiny/webiny-js/compare/@webiny/cli@0.3.3...@webiny/cli@0.3.4) (2019-10-10)
 
 
