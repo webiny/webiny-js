@@ -1,25 +1,13 @@
 // @flow
 import React, { useReducer } from "react";
-import { css } from "emotion";
 import { Hotkeys } from "react-hotkeyz";
 import dataURLtoBlob from "dataurl-to-blob";
 import { ImageEditorDialog } from "@webiny/ui/ImageUpload";
-import { Image } from "@webiny/app/components";
 import { Tooltip } from "@webiny/ui/Tooltip";
 import { IconButton } from "@webiny/ui/Button";
 import outputFileSelectionError from "@webiny/app-admin/components/FileManager/outputFileSelectionError";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
-import { ReactComponent as EditIcon } from "./icons/edit.svg";
-
-const styles = css({
-    maxHeight: 200,
-    maxWidth: 200,
-    width: "auto",
-    position: "absolute",
-    top: "50%",
-    left: "50%",
-    transform: "translateX(-50%) translateY(-50%)"
-});
+import { ReactComponent as EditIcon } from "./../icons/edit.svg";
 
 function toDataUrl(url) {
     return new Promise(resolve => {
@@ -95,24 +83,4 @@ const EditAction = (props: Object) => {
     );
 };
 
-export default {
-    name: "file-manager-file-type-image",
-    type: "file-manager-file-type",
-    types: [
-        "image/jpeg",
-        "image/jpg",
-        "image/gif",
-        "image/png",
-        "image/svg+xml",
-        "image/x-icon",
-        "image/vnd.microsoft.icon"
-    ],
-    render: function render({ file }: Object) {
-        return (
-            <Image className={styles} src={file.src} alt={file.name} transform={{ width: 300 }} />
-        );
-    },
-    fileDetails: {
-        actions: [EditAction]
-    }
-};
+export default EditAction;

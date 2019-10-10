@@ -6,14 +6,21 @@ import { css } from "emotion";
 import { Drawer, DrawerContent } from "@webiny/ui/Drawer";
 import { IconButton } from "@webiny/ui/Button";
 import getFileTypePlugin from "./getFileTypePlugin";
-import get from "lodash/get";
+import get from "lodash.get";
 import Tags from "./FileDetails/Tags";
 import Name from "./FileDetails/Name";
 import { Tooltip } from "@webiny/ui/Tooltip";
 import { useHotkeys } from "react-hotkeyz";
 import { ReactComponent as DownloadIcon } from "./icons/round-cloud_download-24px.svg";
+import { ReactComponent as DeleteIcon } from "./icons/delete.svg";
 import TimeAgo from "timeago-react";
 import { useFileManager } from "./FileManagerContext";
+import { useMutation } from "react-apollo";
+import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
+import { useConfirmationDialog } from "@webiny/app-admin/hooks/useConfirmationDialog";
+import gql from "graphql-tag";
+import { i18n } from "@webiny/app/i18n";
+const t = i18n.ns("app-admin/file-manager/file-details");
 
 const style = {
     wrapper: css({
@@ -72,6 +79,16 @@ const style = {
     })
 };
 
+const DELETE_FILE = gql`
+    mutation deleteFile($id: ID!) {
+        files {
+            deleteFile(id: $id) {
+                data
+            }
+        }
+    }
+`;
+
 export default function FileDetails(props: *) {
     const { file, uploadFile, validateFiles } = props;
     const filePlugin = getFileTypePlugin(file);
@@ -87,6 +104,20 @@ export default function FileDetails(props: *) {
         }
     });
 
+    const [deleteFile] = useMutation(DELETE_FILE);
+    const { showSnackbar } = useSnackbar();
+
+    const { showConfirmation: showDeleteConfirmation } = useConfirmationDialog({
+        title: t`Delete file`,
+        message: file && (
+            <span>
+                {t`You're about to delete file {name}. Are you sure you want to continue?`({
+                    name: file.name
+                })}
+            </span>
+        )
+    });
+
     return (
         <Drawer dir="rtl" modal open={file} onClose={hideFileDetails}>
             {file && (
@@ -97,7 +128,7 @@ export default function FileDetails(props: *) {
                     </div>
                     <div className={style.download}>
                         <>
-                            <Tooltip content={<span>Download file</span>} placement={"bottom"}>
+                            <Tooltip content={<span>{t`Download file`}</span>} placement={"bottom"}>
                                 <IconButton
                                     onClick={() => window.open(file.src, "_blank")}
                                     icon={<DownloadIcon style={{ margin: "0 8px 0 0" }} />}
@@ -107,28 +138,44 @@ export default function FileDetails(props: *) {
                             {actions.map((Component, index) => (
                                 <Component key={index} {...props} />
                             ))}
+
+                            <Tooltip content={<span>{t`Delete image`}</span>} placement={"bottom"}>
+                                <IconButton
+                                    icon={<DeleteIcon style={{ margin: "0 8px 0 0" }} />}
+                                    onClick={() =>
+                                        showDeleteConfirmation(async () => {
+                                            await deleteFile({
+                                                variables: {
+                                                    id: file.id
+                                                }
+                                            });
+                                            showSnackbar(t`File deleted successfully.`);
+                                        })
+                                    }
+                                />
+                            </Tooltip>
                         </>
                     </div>
                     <DrawerContent dir="ltr">
                         <ul className={style.list}>
                             <li>
-                                <li-title>Name:</li-title>
+                                <li-title>{t`Name:`}</li-title>
                                 <Name {...props} />
                             </li>
                             <li>
-                                <li-title>Size:</li-title>
+                                <li-title>{t`Size:`}</li-title>
                                 <li-content>{bytes.format(file.size)}</li-content>
                             </li>
                             <li>
-                                <li-title>Type:</li-title>
+                                <li-title>{t`Type:`}</li-title>
                                 <li-content>{file.type}</li-content>
                             </li>
                             <li>
-                                <li-title>Tags:</li-title>
+                                <li-title>{t`Tags:`}</li-title>
                                 <Tags {...props} />
                             </li>
                             <li>
-                                <li-title>Created:</li-title>
+                                <li-title>{t`Created:`}</li-title>
                                 <li-content>
                                     <TimeAgo datetime={file.createdOn} />
                                 </li-content>
