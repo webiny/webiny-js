@@ -92,7 +92,7 @@ cdn:
   component: "@webiny/serverless-aws-cloudfront"
   inputs:
     origins:
-      #- ${files.cdnOrigin}
+      - ${files.cdnOrigin}
       - url: ${api.url}
         pathPatterns:
           "/graphql":

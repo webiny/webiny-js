@@ -70,7 +70,7 @@ class FilesComponent extends Component {
 
         // Deploy graphql API
         const apolloService = await this.load("@webiny/serverless-apollo-service");
-        const apolloOutput = await apolloService({
+        const apolloServiceOutput = await apolloService({
             track: false,
             plugins: ["@webiny/api-files/plugins"],
             endpoints: [
@@ -80,17 +80,16 @@ class FilesComponent extends Component {
             ...rest
         });
 
-        await configureApiGateway({ region, apolloOutput, component: this });
+        await configureApiGateway({ region, apolloOutput: apolloServiceOutput, component: this });
 
         const output = {
-            api: apolloOutput.api,
+            api: apolloServiceOutput.api,
             s3: s3Output,
             cdnOrigin: {
-                url: apolloOutput.api.url,
+                url: apolloServiceOutput.api.url,
                 pathPatterns: {
-                    // TODO: potweakaj kako ti pase
-                    "/read": {
-                        ttl: 60
+                    "/files/{path}": {
+                        ttl: 2592000 // 1 month
                     }
                 }
             }
