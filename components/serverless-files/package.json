@@ -1,6 +1,5 @@
 {
   "name": "@webiny/serverless-files",
-  "private": true,
   "version": "0.1.1",
   "main": "serverless.js",
   "license": "MIT",
