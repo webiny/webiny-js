@@ -15,6 +15,7 @@
   "dependencies": {
     "@hot-loader/react-dom": "^16.9.0",
     "@rescripts/utilities": "^0.0.5",
+    "babel-plugin-lodash": "^3.3.4",
     "get-yarn-workspaces": "^1.0.2",
     "lodash.get": "^4.4.2",
     "lodash.isobject": "^3.0.2",
