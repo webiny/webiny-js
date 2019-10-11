@@ -88,7 +88,7 @@ class FilesComponent extends Component {
             cdnOrigin: {
                 url: apolloServiceOutput.api.url,
                 pathPatterns: {
-                    "/files/{path}": {
+                    "/files/*": {
                         ttl: 2592000 // 1 month
                     }
                 }
