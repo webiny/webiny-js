@@ -1,6 +1,6 @@
 {
   "name": "@webiny/api-cookie-policy",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "main": "index.js",
   "repository": {
     "type": "git",
@@ -10,12 +10,12 @@
   "author": "Adrian Smijulj",
   "license": "MIT",
   "dependencies": {
-    "apollo-server-lambda": "^2.6.7",
     "@babel/runtime": "^7.5.5",
     "@webiny/api-security": "^0.1.4",
     "@webiny/commodo": "^0.1.2",
     "@webiny/commodo-graphql": "^0.1.4",
-    "@webiny/validation": "^0.1.2"
+    "@webiny/validation": "^0.1.3",
+    "apollo-server-lambda": "^2.6.7"
   },
   "devDependencies": {
     "@babel/cli": "^7.5.5",

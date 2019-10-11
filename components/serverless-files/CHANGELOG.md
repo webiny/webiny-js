@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.1.6](https://github.com/Webiny/webiny-js/compare/@webiny/serverless-files@0.1.5...@webiny/serverless-files@0.1.6) (2019-10-11)
+
+
+### Bug Fixes
+
+* remove "dist" from paths ([9991c20](https://github.com/Webiny/webiny-js/commit/9991c20d330b1f996ea9be7339ba83ab509de3e3))
+* update dependencies ([2def479](https://github.com/Webiny/webiny-js/commit/2def479886ed356e7981b7be61b957edcc87f887))
+
+
+
+
+
 <a name="0.1.5"></a>
 ## [0.1.5](https://github.com/Webiny/webiny-js/compare/@webiny/serverless-files@0.1.4...@webiny/serverless-files@0.1.5) (2019-10-11)
 
