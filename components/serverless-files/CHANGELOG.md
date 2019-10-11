@@ -3,6 +3,26 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="0.1.5"></a>
+## [0.1.5](https://github.com/Webiny/webiny-js/compare/@webiny/serverless-files@0.1.4...@webiny/serverless-files@0.1.5) (2019-10-11)
+
+
+### Bug Fixes
+
+* files service path pattern for CDN ([0f40f9a](https://github.com/Webiny/webiny-js/commit/0f40f9a))
+* rename verb "process" to "transform" ([c26001a](https://github.com/Webiny/webiny-js/commit/c26001a))
+* update dependencies ([70a0004](https://github.com/Webiny/webiny-js/commit/70a0004))
+* wait for promise to resolve ([3611214](https://github.com/Webiny/webiny-js/commit/3611214))
+
+
+
+
+
+# Change Log
+
+All notable changes to this project will be documented in this file.
+See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
+
 ## [0.1.4](https://github.com/Webiny/webiny-js/compare/@webiny/serverless-files@0.1.3...@webiny/serverless-files@0.1.4) (2019-10-10)
 
 

@@ -3,6 +3,23 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="0.2.1"></a>
+## [0.2.1](https://github.com/webiny/webiny-js/compare/@webiny/app-admin@0.2.0...@webiny/app-admin@0.2.1) (2019-10-11)
+
+
+### Bug Fixes
+
+* move createFile function up ([ba08063](https://github.com/webiny/webiny-js/commit/ba08063))
+
+
+
+
+
+# Change Log
+
+All notable changes to this project will be documented in this file.
+See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
+
 # [0.2.0](https://github.com/webiny/webiny-js/compare/@webiny/app-admin@0.1.1...@webiny/app-admin@0.2.0) (2019-10-10)
 
 
