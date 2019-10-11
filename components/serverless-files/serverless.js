@@ -22,7 +22,7 @@ class FilesComponent extends Component {
         const manageFilesLambdaOutput = await manageFilesLambda({
             name: "Files component - manage files",
             timeout: 10,
-            code: join(__dirname, "dist/functions/manageFiles"),
+            code: join(__dirname, "functions/manageFiles"),
             handler: "handler.handler",
             description: "Triggered once a file was deleted.",
             env: {
@@ -45,7 +45,7 @@ class FilesComponent extends Component {
         const imageTransformerLambdaOutput = await imageTransformerLambda({
             name: "Files component - image transformer",
             timeout: 10,
-            code: join(__dirname, "dist/functions/imageTransformer"),
+            code: join(__dirname, "functions/imageTransformer"),
             handler: "handler.handler",
             description:
                 "Performs various tasks on image files like e.g. image optimization or image resizing.",
@@ -59,7 +59,7 @@ class FilesComponent extends Component {
         const downloadLambdaOutput = await downloadLambda({
             name: "Files component - download files",
             timeout: 10,
-            code: join(__dirname, "dist/functions/downloadFile"),
+            code: join(__dirname, "functions/downloadFile"),
             handler: "handler.handler",
             description: "Serves previously uploaded files.",
             env: {

@@ -9,7 +9,7 @@ vars:
     name: ${env.MONGODB_NAME}
 
 files:
-  component: ".."
+  component: "../dist"
   inputs:
     region: ${vars.region}
     bucket: "moj-bucket"
