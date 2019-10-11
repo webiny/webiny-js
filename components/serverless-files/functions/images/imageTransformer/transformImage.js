@@ -2,7 +2,7 @@ const sharp = require("sharp");
 
 /**
  * Only processing "width" at the moment.
- * Check "sanitizeImagetransformations.js" to allow additional image processing transformations.
+ * Check "sanitizeImageTransformations.js" to allow additional image processing transformations.
  * @param buffer
  * @param transformations
  * @returns {Promise<void>}

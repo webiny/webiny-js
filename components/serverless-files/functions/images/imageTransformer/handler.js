@@ -1,6 +1,6 @@
 // @flow
 const S3 = require("aws-sdk/clients/s3");
-const processImage = require("./processImage");
+const transformImage = require("./transformImage");
 const optimizeImage = require("./optimizeImage");
 const { getEnvironment, getObjectParams } = require("../../utils");
 const { getImageKey } = require("./../utils");
@@ -49,7 +49,7 @@ module.exports.handler = async ({ body: { transformations, key } }) => {
             .putObject({
                 ...params.optimizedTransformed,
                 ContentType: optimizedImageObject.ContentType,
-                Body: await processImage(optimizedImageObject.Body, transformations)
+                Body: await transformImage(optimizedImageObject.Body, transformations)
             })
             .promise();
 
