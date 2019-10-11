@@ -236,6 +236,7 @@ function FileManagerView(props: Props) {
     const { data, fetchMore } = gqlQuery;
 
     const list = get(data, "files.listFiles.data") || [];
+    const [createFile] = useMutation(CREATE_FILE, { update: updateCacheAfterCreateFile });
     const uploadFile = async files => {
         setUploading(true);
         const list = Array.isArray(files) ? files : [files];
@@ -257,7 +258,6 @@ function FileManagerView(props: Props) {
         setTimeout(() => showSnackbar("File upload complete."), 750);
     };
 
-    const [createFile] = useMutation(CREATE_FILE, { update: updateCacheAfterCreateFile });
 
     return (
         <Files
