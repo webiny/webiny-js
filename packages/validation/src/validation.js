@@ -20,7 +20,7 @@ const createdValidators = {
  *
  * @class Validation
  * @example
- * import { validation } from 'webiny-validation';
+ * import { validation } from '@webiny/validation';
  *
  * // `validation` is a preconfigured instance of Validation class.
  * // From here you can either add new validators or use it as-is.

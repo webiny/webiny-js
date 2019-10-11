@@ -7,7 +7,7 @@ import ValidationError from "./../validationError";
  * @param {any} value This is the value that will be validated.
  * @throws {ValidationError}
  * @example
- * import { validation } from 'webiny-validation';
+ * import { validation } from '@webiny/validation';
  * validation.validate('notACreditCard', 'creditCard').then(() => {
  *  // Valid
  * }).catch(e => {

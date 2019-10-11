@@ -8,7 +8,7 @@ import ValidationError from "./../validationError";
  * @param {any} params This is the array of values to search in. It is passed as a validator parameter: `in:1:2:3`. Array values are separated by `:`.
  * @throws {ValidationError}
  * @example
- * import { validation } from 'webiny-validation';
+ * import { validation } from '@webiny/validation';
  * validation.validate(10, 'in:10:20:30').then(() => {
  *  // Valid
  * }).catch(e => {

@@ -41,5 +41,6 @@
     "flow-copy-source": "flow-copy-source src dist",
     "postbuild": "yarn flow-copy-source && cp package.json LICENSE README.md dist/",
     "prepublishOnly": "yarn build"
-  }
+  },
+  "gitHead": "a01796de9d1045f9007bd09f86b6ab74c6a58241"
 }

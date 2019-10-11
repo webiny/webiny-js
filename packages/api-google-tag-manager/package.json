@@ -11,10 +11,10 @@
   "license": "MIT",
   "dependencies": {
     "@babel/runtime": "^7.5.5",
-    "@webiny/api": "^0.2.0",
     "@webiny/api-security": "^0.1.4",
     "@webiny/commodo": "^0.1.2",
-    "@webiny/commodo-graphql": "^0.1.4"
+    "@webiny/commodo-graphql": "^0.1.4",
+    "apollo-server-lambda": "^2.6.7"
   },
   "devDependencies": {
     "@babel/cli": "^7.5.5",

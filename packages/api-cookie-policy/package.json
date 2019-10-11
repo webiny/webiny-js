@@ -10,11 +10,12 @@
   "author": "Adrian Smijulj",
   "license": "MIT",
   "dependencies": {
+    "apollo-server-lambda": "^2.6.7",
     "@babel/runtime": "^7.5.5",
-    "@webiny/api": "^0.2.0",
     "@webiny/api-security": "^0.1.4",
     "@webiny/commodo": "^0.1.2",
-    "@webiny/commodo-graphql": "^0.1.4"
+    "@webiny/commodo-graphql": "^0.1.4",
+    "@webiny/validation": "^0.1.2"
   },
   "devDependencies": {
     "@babel/cli": "^7.5.5",

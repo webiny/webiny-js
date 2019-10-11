@@ -8,7 +8,7 @@ import ValidationError from "./../validationError";
  * @param {Array<string>} params This is the value to validate against. It is passed as a validator parameter: `eq:valueToCompareWith`
  * @throws {ValidationError}
  * @example
- * import { validation } from 'webiny-validation';
+ * import { validation } from '@webiny/validation';
  * validation.validate('email@gmail.com', 'eq:another@gmail.com').then(() => {
  *  // Valid
  * }).catch(e => {

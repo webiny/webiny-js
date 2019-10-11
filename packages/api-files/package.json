@@ -23,7 +23,9 @@
     "invariant": "^2.2.4",
     "jsonwebtoken": "^8.2.2",
     "lodash": "^4.17.4",
-    "md5": "^2.2.1"
+    "md5": "^2.2.1",
+    "mime": "^2.4.4",
+    "sanitize-filename": "^1.6.3"
   },
   "devDependencies": {
     "@babel/cli": "^7.5.5",

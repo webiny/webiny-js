@@ -1,5 +1,5 @@
 module.exports = {
     ignore: {
-        dependencies: ["@svgr/webpack"]
+        dependencies: ["@svgr/webpack", "@emotion/core"]
     }
 };

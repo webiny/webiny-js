@@ -13,7 +13,7 @@ module.exports = {
         "packages/app-mailchimp",
         "packages/api-mailchimp",
         "packages/app-typeform",
-        "packages/app-cms",
+        "packages/app-page-builder",
         "packages/app-admin",
         "packages/ui",
         "packages/validation"

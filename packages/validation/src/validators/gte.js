@@ -8,7 +8,7 @@ import ValidationError from "./../validationError";
  * @param {any} min This is the value to validate against. It is passed as a validator parameter: `gte:valueToCompareAgainst`
  * @throws {ValidationError}
  * @example
- * import { validation } from 'webiny-validation';
+ * import { validation } from '@webiny/validation';
  * validation.validate(10, 'gte:100').then(() => {
  *  // Valid
  * }).catch(e => {
