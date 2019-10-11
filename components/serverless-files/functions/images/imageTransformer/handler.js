@@ -36,7 +36,7 @@ module.exports.handler = async ({ body: { transformations, key } }) => {
                 })
                 .promise();
 
-            optimizedImageObject = await s3.getObject(params.optimized);
+            optimizedImageObject = await s3.getObject(params.optimized).promise();
         }
 
         // 2. If no transformations requested, just exit.
