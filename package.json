@@ -32,6 +32,7 @@
     "@babel/cli": "^7.0.0",
     "@babel/core": "^7.0.0",
     "@shelf/jest-mongodb": "^1.1.0",
+    "adio": "^1.0.0",
     "all-contributors-cli": "^6.2.0",
     "babel-core": "^7.0.0-bridge.0",
     "babel-eslint": "^9.0.0-beta.3",
@@ -84,12 +85,11 @@
     "yargs": "^12.0.1"
   },
   "scripts": {
-    "checkdep": "node scripts/checkDep.js --config ./scripts/checkdep/config.base.js",
     "contributors:add": "all-contributors add",
     "contributors:generate": "all-contributors generate",
     "commit": "node ./scripts/commitizen.js",
     "commit:no-verify": "yarn commit --no-verify",
-    "commit:verify": "yarn checkdep && yarn lint-staged",
+    "commit:verify": "yarn lint-staged",
     "lint-staged": "lint-staged",
     "prettier": "prettier --config .prettierrc.js --write",
     "publish-to-verdaccio": " yarn build && cross-env REGISTRY=http://localhost:4800 node scripts/publish-to-verdaccio",
@@ -105,6 +105,7 @@
   ],
   "lint-staged": {
     "**/*.js": [
+      "adio",
       "prettier --write",
       "eslint --fix",
       "git add",

@@ -1,5 +1,5 @@
 // @flow
-import { WithFieldsError } from "@commodo/fields";
+import { WithFieldsError } from "@webiny/commodo";
 import parseBoolean from "./parseBoolean";
 import InvalidFieldsError from "./InvalidFieldsError";
 import { Response, ListResponse, ErrorResponse, NotFoundResponse } from "@webiny/api";

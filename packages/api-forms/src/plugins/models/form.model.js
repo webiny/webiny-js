@@ -2,12 +2,12 @@
 import { flow } from "lodash";
 import { validation } from "@webiny/validation";
 import { createFieldsModel, createSettingsModel, createFormStatsModel } from "./Form";
-import { withProps } from "repropose";
 import got from "got";
 import { pick } from "lodash";
 import mdbid from "mdbid";
 
 import {
+    withProps,
     withFields,
     onSet,
     skipOnPopulate,

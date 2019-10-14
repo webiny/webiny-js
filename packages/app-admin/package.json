@@ -70,5 +70,11 @@
       "removeViewBox": false
     }
   },
+  "adio": {
+    "ignore": {
+      "dependencies": ["@svgr/webpack", "@emotion/core"],
+      "peerDependencies": ["react-dom"]
+    }
+  },
   "gitHead": "a01796de9d1045f9007bd09f86b6ab74c6a58241"
 }

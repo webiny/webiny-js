@@ -15,18 +15,16 @@
   "license": "MIT",
   "dependencies": {
     "@babel/runtime": "^7.5.5",
-    "@svgr/webpack": "^4.3.2",
+    "@commodo/fields-storage-mongodb": "^0.2.12",
+    "@webiny/api": "^0.2.0",
+    "@webiny/api-security": "^0.1.4",
     "@webiny/commodo": "^0.1.2",
     "@webiny/commodo-graphql": "^0.1.4",
+    "@webiny/validation": "^0.1.3",
     "accept-language-parser": "^1.5.0",
-    "bcryptjs": "^2.4.3",
-    "graphql-iso-date": "^3.6.1",
-    "graphql-shield": "^5.1.0",
-    "graphql-type-json": "^0.3.0",
+    "apollo-server-lambda": "^2.6.7",
     "i18n-locales": "^0.0.2",
-    "invariant": "^2.2.4",
-    "lodash": "^4.17.4",
-    "md5": "^2.2.1"
+    "lodash": "^4.17.4"
   },
   "devDependencies": {
     "@babel/cli": "^7.5.5",
@@ -50,5 +48,8 @@
     "plugins": {
       "removeViewBox": false
     }
+  },
+  "adio": {
+    "ignoreDirs": ["src/install"]
   }
 }

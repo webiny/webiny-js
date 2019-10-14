@@ -1,5 +1,5 @@
 // @flow
-import { object } from "commodo-fields-object";
+import { object } from "@webiny/commodo";
 
 const isValidElement = element => {
     return element && element.type;

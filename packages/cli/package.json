@@ -35,5 +35,13 @@
     "postbuild": "cp package.json LICENSE README.md dist/",
     "prepublishOnly": "yarn build"
   },
+  "adio": {
+    "ignoreDirs": [
+      "/src/create/template/",
+      "/node_modules/",
+      "/backup/",
+      "/dist/"
+    ]
+  },
   "gitHead": "a01796de9d1045f9007bd09f86b6ab74c6a58241"
 }

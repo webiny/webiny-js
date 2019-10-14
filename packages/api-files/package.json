@@ -15,17 +15,17 @@
   "license": "MIT",
   "dependencies": {
     "@babel/runtime": "^7.5.5",
-    "@svgr/webpack": "^4.3.2",
+    "@commodo/fields-storage-mongodb": "^0.2.12",
+    "@webiny/api": "^0.2.0",
+    "@webiny/api-security": "^0.1.4",
     "@webiny/commodo": "^0.1.2",
     "@webiny/commodo-graphql": "^0.1.4",
-    "bcryptjs": "^2.4.3",
-    "graphql-shield": "^5.1.0",
-    "invariant": "^2.2.4",
-    "jsonwebtoken": "^8.2.2",
+    "@webiny/validation": "^0.1.3",
+    "apollo-server-lambda": "^2.6.7",
     "lodash": "^4.17.4",
-    "md5": "^2.2.1",
     "mime": "^2.4.4",
-    "sanitize-filename": "^1.6.3"
+    "sanitize-filename": "^1.6.3",
+    "uniqid": "^5.0.3"
   },
   "devDependencies": {
     "@babel/cli": "^7.5.5",
@@ -50,6 +50,16 @@
   "svgo": {
     "plugins": {
       "removeViewBox": false
+    }
+  },
+  "adio": {
+    "ignoreDirs": [
+      "__tests__"
+    ],
+    "ignore": {
+      "src": [
+        "aws-sdk"
+      ]
     }
   }
 }
