@@ -1,6 +1,6 @@
 {
   "name": "@webiny/serverless-apollo-gateway",
-  "version": "0.1.6",
+  "version": "0.1.7",
   "main": "serverless.js",
   "license": "MIT",
   "dependencies": {
@@ -25,7 +25,10 @@
   },
   "adio": {
     "ignore": {
-      "dependencies": ["@babel/preset-env", "babel-loader"]
+      "dependencies": [
+        "@babel/preset-env",
+        "babel-loader"
+      ]
     }
   }
 }

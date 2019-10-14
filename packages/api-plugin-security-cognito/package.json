@@ -1,6 +1,6 @@
 {
   "name": "@webiny/api-plugin-security-cognito",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "main": "index.js",
   "repository": {
     "type": "git",
@@ -31,7 +31,9 @@
   },
   "adio": {
     "ignore": {
-      "src": ["aws-sdk"]
+      "src": [
+        "aws-sdk"
+      ]
     }
   }
 }

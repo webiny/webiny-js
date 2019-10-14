@@ -1,12 +1,12 @@
 {
   "name": "@webiny/serverless-page-builder",
-  "version": "0.1.8",
+  "version": "0.1.9",
   "main": "serverless.js",
   "license": "MIT",
   "dependencies": {
     "@serverless/core": "^1.1.1",
-    "@webiny/api-page-builder": "^0.1.4",
-    "@webiny/serverless-apollo-service": "^0.2.0",
+    "@webiny/api-page-builder": "^0.1.5",
+    "@webiny/serverless-apollo-service": "^0.2.1",
     "@webiny/tracking": "^0.1.5",
     "load-json-file": "^6.2.0"
   },
@@ -19,7 +19,9 @@
   },
   "adio": {
     "ignore": {
-      "dependencies": ["@webiny/api-page-builder"]
+      "dependencies": [
+        "@webiny/api-page-builder"
+      ]
     }
   }
 }
