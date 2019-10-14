@@ -1,6 +1,6 @@
 {
   "name": "@webiny/app-page-builder",
-  "version": "0.1.5",
+  "version": "0.1.6",
   "main": "index.js",
   "repository": {
     "type": "git",
@@ -33,8 +33,8 @@
     "downshift": "^2.1.1",
     "emotion": "^10.0.17",
     "graphql-tag": "^2.10.1",
-    "invariant": "^2.2.4",
     "immutable": "^3.8.2",
+    "invariant": "^2.2.4",
     "is-hotkey": "^0.1.3",
     "isnumeric": "^0.3.3",
     "lodash": "^4.17.10",

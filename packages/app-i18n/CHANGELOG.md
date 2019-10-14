@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.1.6](https://github.com/webiny/webiny-js/compare/@webiny/app-i18n@0.1.5...@webiny/app-i18n@0.1.6) (2019-10-14)
+
+
+### Bug Fixes
+
+* incorrect import ([fee11e3](https://github.com/webiny/webiny-js/commit/fee11e333581206ffc6e86d6731d7eaa07130d58))
+
+
+
+
+
 ## [0.1.5](https://github.com/webiny/webiny-js/compare/@webiny/app-i18n@0.1.4...@webiny/app-i18n@0.1.5) (2019-10-14)
 
 

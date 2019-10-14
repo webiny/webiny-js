@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.1.6](https://github.com/webiny/webiny-js/compare/@webiny/app-page-builder@0.1.5...@webiny/app-page-builder@0.1.6) (2019-10-14)
+
+
+### Bug Fixes
+
+* add missing dependency ([f32fce5](https://github.com/webiny/webiny-js/commit/f32fce5da50efb3e090dd1ebea57c4a4d4528d23))
+
+
+
+
+
 ## [0.1.5](https://github.com/webiny/webiny-js/compare/@webiny/app-page-builder@0.1.4...@webiny/app-page-builder@0.1.5) (2019-10-14)
 
 

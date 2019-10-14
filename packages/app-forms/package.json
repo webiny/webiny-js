@@ -1,6 +1,6 @@
 {
   "name": "@webiny/app-forms",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "main": "index.js",
   "repository": {
     "type": "git",
@@ -20,8 +20,8 @@
     "@svgr/webpack": "^4.3.2",
     "@webiny/app": "^0.1.2",
     "@webiny/app-admin": "^0.2.3",
-    "@webiny/app-i18n": "^0.1.5",
-    "@webiny/app-page-builder": "^0.1.5",
+    "@webiny/app-i18n": "^0.1.6",
+    "@webiny/app-page-builder": "^0.1.6",
     "@webiny/app-security": "^0.1.5",
     "@webiny/form": "^0.1.4",
     "@webiny/plugins": "^0.1.1",
