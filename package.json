@@ -105,6 +105,7 @@
   ],
   "lint-staged": {
     "**/*.js": [
+      "adio",
       "prettier --write",
       "eslint --fix",
       "git add",

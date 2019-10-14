@@ -25,5 +25,5 @@ module.exports = {
         devDependencies: true
     },
     ignoreDirs: ["node_modules", "dist"],
-    packages: ["components/*"]
+    packages: ["packages/*", "components/*"]
 };
