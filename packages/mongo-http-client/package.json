@@ -3,5 +3,9 @@
   "name": "@webiny/mongo-http-client",
   "version": "0.1.1",
   "main": "index.js",
-  "license": "MIT"
+  "license": "MIT",
+  "dependencies": {
+    "cross-fetch": "^3.0.4",
+    "bson": "^1.1.1"
+  }
 }

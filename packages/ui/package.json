@@ -111,5 +111,15 @@
     "plugins": {
       "removeViewBox": false
     }
+  },
+  "adio": {
+    "ignore": {
+      "dependencies": [
+        "@svgr/webpack",
+        "material-components-web",
+        "@emotion/core",
+        "@rmwc/base"
+      ]
+    }
   }
 }

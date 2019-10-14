@@ -7,7 +7,8 @@
     "@serverless/core": "^1.1.1",
     "@webiny/api-page-builder": "^0.1.4",
     "@webiny/serverless-apollo-service": "^0.2.0",
-    "@webiny/tracking": "^0.1.5"
+    "@webiny/tracking": "^0.1.5",
+    "load-json-file": "^6.2.0"
   },
   "scripts": {
     "build": "rm -rf dist && mkdir dist && cp serverless.js package.json dist/",
@@ -15,5 +16,10 @@
   },
   "publishConfig": {
     "access": "public"
+  },
+  "adio": {
+    "ignore": {
+      "dependencies": ["@webiny/api-page-builder"]
+    }
   }
 }

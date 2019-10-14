@@ -12,6 +12,7 @@
     "@serverless/function": "^3.0.0",
     "@webiny/api": "^0.2.0",
     "@webiny/api-security": "^0.1.4",
+    "@webiny/project-utils": "^0.1.2",
     "@webiny/tracking": "^0.1.5",
     "babel-loader": "^8.0.6",
     "babel-plugin-module-resolver": "^3.2.0",
@@ -30,5 +31,15 @@
   },
   "publishConfig": {
     "access": "public"
+  },
+  "adio": {
+    "ignore": {
+      "dependencies": [
+        "@babel/plugin-proposal-class-properties",
+        "@babel/preset-env",
+        "babel-loader",
+        "babel-plugin-module-resolver"
+      ]
+    }
   }
 }

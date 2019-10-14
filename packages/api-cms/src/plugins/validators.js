@@ -1,7 +1,7 @@
 // @flow
 import { validation } from "@webiny/validation";
 import type { PluginType } from "@webiny/api/types";
-import type { Entity } from "@webiny/entity";
+// import type { Entity } from "@webiny/entity";
 
 type CmsFieldValidatorPlugin = PluginType & {
     validatorId: string,

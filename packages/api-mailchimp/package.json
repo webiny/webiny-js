@@ -15,6 +15,7 @@
     "@webiny/api-security": "^0.1.4",
     "@webiny/commodo": "^0.1.2",
     "@webiny/commodo-graphql": "^0.1.4",
+    "lodash": "^4.17.4",
     "got": "^9.6.0"
   },
   "devDependencies": {
