@@ -1,7 +1,7 @@
 // @flow
 import each from "lodash/each";
 import get from "lodash/get";
-import { WithFieldsError } from "@commodo/fields";
+import { WithFieldsError } from "@webiny/commodo";
 
 function formatInvalidFields(invalidFields, prefix = "") {
     const formatted = {};

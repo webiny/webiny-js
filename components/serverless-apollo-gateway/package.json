@@ -22,5 +22,10 @@
   },
   "publishConfig": {
     "access": "public"
+  },
+  "adio": {
+    "ignore": {
+      "dependencies": ["@babel/preset-env", "babel-loader"]
+    }
   }
 }

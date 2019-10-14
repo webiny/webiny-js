@@ -17,7 +17,8 @@
     "accounting": "^0.4.1",
     "fecha": "^2.3.3",
     "lodash": "^4.17.4",
-    "short-hash": "^1.0.0"
+    "short-hash": "^1.0.0",
+    "yargs": "12.0.5"
   },
   "devDependencies": {
     "@babel/cli": "^7.5.5",

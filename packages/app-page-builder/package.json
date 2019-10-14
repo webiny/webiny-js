@@ -33,7 +33,6 @@
     "downshift": "^2.1.1",
     "emotion": "^10.0.17",
     "graphql-tag": "^2.10.1",
-    "immutable": "^3.8.2",
     "invariant": "^2.2.4",
     "is-hotkey": "^0.1.3",
     "isnumeric": "^0.3.3",
@@ -91,6 +90,11 @@
   "svgo": {
     "plugins": {
       "removeViewBox": false
+    }
+  },
+  "adio": {
+    "ignore": {
+      "dependencies": ["@svgr/webpack", "@emotion/core"]
     }
   },
   "gitHead": "a01796de9d1045f9007bd09f86b6ab74c6a58241"
