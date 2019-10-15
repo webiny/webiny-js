@@ -17,13 +17,9 @@ class ImageEditorDialog extends React.Component<Props, { imageProcessing: boolea
 
     render() {
         const { src, options, onAccept, open, dialogZIndex, ...dialogProps } = this.props;
+
         return (
-            <Dialog
-                style={{ zIndex: dialogZIndex }}
-                open={open}
-                onAccept={() => onAccept(this.imageEditor.current.getCanvasDataUrl())}
-                {...dialogProps}
-            >
+            <Dialog style={{ zIndex: dialogZIndex }} open={open} {...dialogProps}>
                 {open && (
                     <ImageEditor ref={this.imageEditor} src={src} options={options}>
                         {({ render, activeTool }) => (
@@ -39,7 +35,15 @@ class ImageEditorDialog extends React.Component<Props, { imageProcessing: boolea
                                             <DialogAccept disabled>Save</DialogAccept>
                                         </Tooltip>
                                     ) : (
-                                        <DialogAccept>Save</DialogAccept>
+                                        <DialogAccept
+                                            onClick={() =>
+                                                onAccept(
+                                                    this.imageEditor.current.getCanvasDataUrl()
+                                                )
+                                            }
+                                        >
+                                            Save
+                                        </DialogAccept>
                                     )}
                                 </DialogActions>
                             </>
