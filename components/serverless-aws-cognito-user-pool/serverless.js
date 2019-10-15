@@ -16,7 +16,7 @@ class ServerlessAwsCognito extends Component {
     async default({ track, ...inputs } = {}) {
         await trackComponent({ track, context: this.context, component: __dirname });
 
-        if (isEqual(this.state.input, inputs)) {
+        if (isEqual(this.state.inputs, inputs)) {
             this.context.debug("Input was not changed, no action required.");
             return this.state.output;
         } else {
