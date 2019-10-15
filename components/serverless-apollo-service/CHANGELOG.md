@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.2.2](https://github.com/Webiny/webiny-js/compare/@webiny/serverless-apollo-service@0.2.1...@webiny/serverless-apollo-service@0.2.2) (2019-10-15)
+
+
+### Bug Fixes
+
+* add babel-loader to dependencies ([08a50d3](https://github.com/Webiny/webiny-js/commit/08a50d309fb45bed7107aa70d6923ad48838a264))
+
+
+
+
+
 ## [0.2.1](https://github.com/Webiny/webiny-js/compare/@webiny/serverless-apollo-service@0.2.0...@webiny/serverless-apollo-service@0.2.1) (2019-10-14)
 
 

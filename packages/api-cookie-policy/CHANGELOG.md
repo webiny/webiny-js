@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.1.7](https://github.com/webiny/webiny-js/compare/@webiny/api-cookie-policy@0.1.6...@webiny/api-cookie-policy@0.1.7) (2019-10-15)
+
+**Note:** Version bump only for package @webiny/api-cookie-policy
+
+
+
+
+
 ## [0.1.6](https://github.com/webiny/webiny-js/compare/@webiny/api-cookie-policy@0.1.5...@webiny/api-cookie-policy@0.1.6) (2019-10-14)
 
 

@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.3.9](https://github.com/webiny/webiny-js/compare/@webiny/cli@0.3.8...@webiny/cli@0.3.9) (2019-10-15)
+
+
+### Bug Fixes
+
+* add webpack-cli to devDependencies ([8e74255](https://github.com/webiny/webiny-js/commit/8e742554fbdd4aeb3ef96b8095936546fef2f0b5))
+
+
+
+
+
 ## [0.3.8](https://github.com/webiny/webiny-js/compare/@webiny/cli@0.3.7...@webiny/cli@0.3.8) (2019-10-14)
 
 
