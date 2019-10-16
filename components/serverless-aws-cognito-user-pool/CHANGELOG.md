@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.1.7](https://github.com/Webiny/webiny-js/compare/@webiny/serverless-aws-cognito-user-pool@0.1.6...@webiny/serverless-aws-cognito-user-pool@0.1.7) (2019-10-16)
+
+
+### Bug Fixes
+
+* use "region" value from state, not from inputs ([64e2631](https://github.com/Webiny/webiny-js/commit/64e2631))
+
+
+
+
+
 ## [0.1.6](https://github.com/Webiny/webiny-js/compare/@webiny/serverless-aws-cognito-user-pool@0.1.5...@webiny/serverless-aws-cognito-user-pool@0.1.6) (2019-10-15)
 
 

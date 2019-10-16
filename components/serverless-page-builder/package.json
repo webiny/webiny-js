@@ -1,12 +1,12 @@
 {
   "name": "@webiny/serverless-page-builder",
-  "version": "0.1.11",
+  "version": "0.1.12",
   "main": "serverless.js",
   "license": "MIT",
   "dependencies": {
     "@serverless/core": "^1.1.1",
     "@webiny/api-page-builder": "^0.1.6",
-    "@webiny/serverless-apollo-service": "^0.2.3",
+    "@webiny/serverless-apollo-service": "^0.3.0",
     "@webiny/tracking": "^0.1.5",
     "load-json-file": "^6.2.0"
   },

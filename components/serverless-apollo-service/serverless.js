@@ -134,7 +134,7 @@ class ApolloService extends Component {
 
         // Deploy lambda
         const lambda = await this.load("@serverless/function");
-        const apiGw = await this.load("@serverless/aws-api-gateway");
+        const apiGw = await this.load("@webiny/serverless-aws-api-gateway");
 
         const lambdaOut = await lambda({
             region,
@@ -174,7 +174,7 @@ class ApolloService extends Component {
             component: __dirname,
             method: "remove"
         });
-        const apiGw = await this.load("@serverless/aws-api-gateway");
+        const apiGw = await this.load("@webiny/serverless-aws-api-gateway");
         await apiGw.remove(inputs);
 
         const lambda = await this.load("@serverless/function");
