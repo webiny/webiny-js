@@ -148,6 +148,7 @@ class ApolloService extends Component {
 
         this.context.debug(`[${componentName}] Deploying API Gateway`);
         const apiGwOut = await apiGw({
+            region,
             name: componentName,
             description: `API for ${componentName}`,
             stage: "prod",
