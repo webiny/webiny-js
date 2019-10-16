@@ -24,6 +24,9 @@ Follow these steps to start developing on `webiny-js` repo:
     Grab the URL of the created distribution, because you will need it
     in the frontend React app.
     
+    Note that even though the process is done, the CDN will
+    probably take another 5 minutes to be accessible via the URL.
+    
 6.  Moving on to the frontend, the first step is to again setup a few
     params in the `.env` files. Note that there are two React apps, 
     `site` and `admin` app, and you will need to set these params for
