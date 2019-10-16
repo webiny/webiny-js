@@ -3,7 +3,7 @@ import React from "react";
 import type { PluginType } from "@webiny/plugins/types";
 import ImagesList from "./ImagesList";
 import Mosaic from "./components/Mosaic";
-import Slider from "./components/Slider";
+// import Slider from "./components/Slider";
 
 export default ([
     {
@@ -20,12 +20,12 @@ export default ([
         title: "Mosaic",
         componentName: "mosaic",
         component: Mosaic
-    },
-    {
+    }
+    /*{ TODO
         name: "pb-page-element-images-list-component-slider",
         type: "pb-page-element-images-list-component",
         title: "Slider",
         componentName: "slider",
         component: Slider
-    }
+    }*/
 ]: Array<PluginType>);
