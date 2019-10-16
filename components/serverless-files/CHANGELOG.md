@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.1.10](https://github.com/Webiny/webiny-js/compare/@webiny/serverless-files@0.1.9...@webiny/serverless-files@0.1.10) (2019-10-16)
+
+
+### Bug Fixes
+
+* add region input to each component ([328fce7](https://github.com/Webiny/webiny-js/commit/328fce7cc91dbe96bcb7dbb770c6958c3dfb254e))
+
+
+
+
+
 ## [0.1.9](https://github.com/Webiny/webiny-js/compare/@webiny/serverless-files@0.1.8...@webiny/serverless-files@0.1.9) (2019-10-16)
 
 
