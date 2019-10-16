@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.1.9](https://github.com/Webiny/webiny-js/compare/@webiny/serverless-files@0.1.8...@webiny/serverless-files@0.1.9) (2019-10-16)
+
+
+### Bug Fixes
+
+* pass region when creating functions ([4db8636](https://github.com/Webiny/webiny-js/commit/4db86362b8d43d7d88a1dc5f9fcbade55977da8e))
+
+
+
+
+
 ## [0.1.8](https://github.com/Webiny/webiny-js/compare/@webiny/serverless-files@0.1.7...@webiny/serverless-files@0.1.8) (2019-10-15)
 
 **Note:** Version bump only for package @webiny/serverless-files

@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.2.4](https://github.com/webiny/webiny-js/compare/@webiny/app-admin@0.2.3...@webiny/app-admin@0.2.4) (2019-10-16)
+
+
+### Bug Fixes
+
+* add tags on "enter" and save on "esc" key ([ac03fed](https://github.com/webiny/webiny-js/commit/ac03fed96756c5e967da94e4de22af0ddc5dc8e6))
+* return "id" too ([d343b59](https://github.com/webiny/webiny-js/commit/d343b595dd03893652bda5adf978d34181658c78))
+
+
+
+
+
 ## [0.2.3](https://github.com/webiny/webiny-js/compare/@webiny/app-admin@0.2.2...@webiny/app-admin@0.2.3) (2019-10-14)
 
 

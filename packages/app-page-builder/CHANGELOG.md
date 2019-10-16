@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.1.7](https://github.com/webiny/webiny-js/compare/@webiny/app-page-builder@0.1.6...@webiny/app-page-builder@0.1.7) (2019-10-16)
+
+
+### Bug Fixes
+
+* temporary disable the slider page-builder element ([8eb6c0b](https://github.com/webiny/webiny-js/commit/8eb6c0b1cff79f7f7b8da41b3ac8960f97f49c42))
+
+
+
+
+
 ## [0.1.6](https://github.com/webiny/webiny-js/compare/@webiny/app-page-builder@0.1.5...@webiny/app-page-builder@0.1.6) (2019-10-14)
 
 

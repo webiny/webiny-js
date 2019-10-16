@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.1.5](https://github.com/webiny/webiny-js/compare/@webiny/ui@0.1.4...@webiny/ui@0.1.5) (2019-10-16)
+
+
+### Bug Fixes
+
+* onAccept callback must be passed to button (new rmwc) ([3cc533d](https://github.com/webiny/webiny-js/commit/3cc533d44a0ee0a647b9ffa580c19d6dec6aa70f))
+
+
+
+
+
 ## [0.1.4](https://github.com/webiny/webiny-js/compare/@webiny/ui@0.1.3...@webiny/ui@0.1.4) (2019-10-14)
 
 
