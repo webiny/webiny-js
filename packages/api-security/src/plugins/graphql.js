@@ -8,6 +8,7 @@ import { getRegisteredScopes, hasScope } from "@webiny/api-security";
 import role from "./graphql/Role";
 import group from "./graphql/Group";
 import user from "./graphql/User";
+import install from "./graphql/Install";
 
 export default ([
     {
@@ -36,6 +37,18 @@ export default ([
                     security: SecurityMutation
                 }
 
+                type SecurityError {
+                    code: String
+                    message: String
+                    data: JSON
+                }
+
+                type SecurityBooleanResponse {
+                    data: Boolean
+                    error: SecurityError
+                }
+
+                ${install.typeDefs}
                 ${role.typeDefs}
                 ${group.typeDefs}
                 ${user.typeDefs}
@@ -52,6 +65,7 @@ export default ([
                         scopes: getRegisteredScopes
                     }
                 },
+                install.resolvers,
                 role.resolvers,
                 group.resolvers,
                 user.resolvers

@@ -32,6 +32,10 @@ export default ({ region, userPoolId }) => {
             name: "graphql-schema-cognito",
             schema: {
                 typeDefs: gql`
+                    extend input SecurityInstallInput {
+                        password: String
+                    }
+
                     extend input SecurityUserInput {
                         password: String
                     }
@@ -71,7 +75,7 @@ export default ({ region, userPoolId }) => {
 
                 return user;
             },
-            async createUser({ data, user }) {
+            async createUser({ data, user, permanent = false }) {
                 const params = {
                     UserPoolId: userPoolId,
                     Username: user.email,
@@ -102,7 +106,19 @@ export default ({ region, userPoolId }) => {
                         }
                     ]
                 };
+
                 await cognito.adminUpdateUserAttributes(verify).promise();
+
+                if (permanent) {
+                    await cognito
+                        .adminSetUserPassword({
+                            Permanent: true,
+                            Password: data.password,
+                            Username: user.email,
+                            UserPoolId: userPoolId
+                        })
+                        .promise();
+                }
             },
             async updateUser({ data, user }) {
                 const params = {

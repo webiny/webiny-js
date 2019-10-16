@@ -9,7 +9,7 @@ const { trackComponent } = require("@webiny/tracking");
 const loadJson = require("load-json-file");
 const writeJson = require("write-json-file");
 
-const defaultDependencies = ["date-fns", "mongodb", "@webiny/api", "@webiny/api-security"];
+const defaultDependencies = ["date-fns", "mongodb", "@webiny/api", "@webiny/api-security", "@webiny/commodo"];
 
 const getDeps = async deps => {
     const { dependencies } = await loadJson(join(__dirname, "package.json"));

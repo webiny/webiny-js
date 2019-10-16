@@ -24,6 +24,7 @@
     "dot-prop-immutable": "^1.4.0",
     "downshift": "^3.1.2",
     "emotion": "^10.0.17",
+    "graphlib": "^2.1.7",
     "graphql-tag": "^2.10.1",
     "invariant": "^2.2.4",
     "lodash": "^4.17.11",

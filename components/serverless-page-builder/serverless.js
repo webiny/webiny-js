@@ -48,6 +48,12 @@ class ServerlessPageBuilder extends Component {
         this.state = {};
         await this.save();
     }
+
+    async install({ dbName, dbServer }) {
+        // Generate lambda with DB data in ENV
+        // Connect to DB, configure Commodo
+        // Copy
+    }
 }
 
 module.exports = ServerlessPageBuilder;

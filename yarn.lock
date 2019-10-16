@@ -1109,10 +1109,10 @@
     exec-sh "^0.3.2"
     minimist "^1.2.0"
 
-"@commodo/fields-storage-mongodb@^0.2.12":
-  version "0.2.12"
-  resolved "https://registry.yarnpkg.com/@commodo/fields-storage-mongodb/-/fields-storage-mongodb-0.2.12.tgz#b773be14db66b2602a762fc1e9dc791c5aebde76"
-  integrity sha512-Yk8LlGlLCot1syeCyNjjOd6YTRytUX5UXwCkUA/hxMmUXvuP+a6W0zFna/U1tuNfAVstZmBerCQ1m+Lx0njbGw==
+"@commodo/fields-storage-mongodb@^0.2.13":
+  version "0.2.13"
+  resolved "https://registry.yarnpkg.com/@commodo/fields-storage-mongodb/-/fields-storage-mongodb-0.2.13.tgz#0fe37edaa0a22bf9e3c1c1d3537094ff52c1e699"
+  integrity sha512-jvkwLWzoaNvUnmphYEc1tZOyFGJBfSoUmEPJKSX+D+22FfcVdQ3dyg4V7KeamE6/EI72Ny2BR3LsLCwHXtt19g==
   dependencies:
     "@commodo/fields" "^0.2.7"
     "@commodo/fields-storage" "^0.3.1"
@@ -1120,21 +1120,22 @@
     mongodb "^3.1.13"
     repropose "^1.0.2"
 
-"@commodo/fields-storage-ref@^0.3.1":
-  version "0.3.1"
-  resolved "https://registry.yarnpkg.com/@commodo/fields-storage-ref/-/fields-storage-ref-0.3.1.tgz#d3f4078a6439db03d5fd02bf3368b50cecb86058"
-  integrity sha512-BVpeVbAEzfL6U2f4P1A0YOFDSJFKYuiZH9ngcbz293YzLXbbrJB414NCsRr2nP5/bcopTL18QLw4/+nKnjMKIA==
+"@commodo/fields-storage-ref@^0.3.2":
+  version "0.3.2"
+  resolved "https://registry.yarnpkg.com/@commodo/fields-storage-ref/-/fields-storage-ref-0.3.2.tgz#32f5922b1c46f6ce215a036240a554c21f48b9eb"
+  integrity sha512-+nRypFkcNvqcSyji+Fyq3Gj9ZCZnRxVtFjDUNV8+jEGWO8CarBqcjqnVMR3CYGXQtiFaZmwm5airOzJuh8FvuA==
   dependencies:
     "@commodo/fields" "^0.2.7"
     "@commodo/hooks" "^0.1.1"
     "@commodo/name" "^1.0.2"
     repropose "^1.0.2"
 
-"@commodo/fields-storage-soft-delete@^0.2.0":
-  version "0.2.0"
-  resolved "https://registry.yarnpkg.com/@commodo/fields-storage-soft-delete/-/fields-storage-soft-delete-0.2.0.tgz#0549b6b057cfb29fae549ecae22c20dd18c8edb1"
-  integrity sha512-ocXyO73d7cu3aDreuqtcmyccM7lgkIex0nJ5kL3EBQj8MU250oBvJnM63/lCZbC9VmrVYdMAGLmZON80QMKgGA==
+"@commodo/fields-storage-soft-delete@^0.2.1":
+  version "0.2.1"
+  resolved "https://registry.yarnpkg.com/@commodo/fields-storage-soft-delete/-/fields-storage-soft-delete-0.2.1.tgz#821926aea1440ebd03d430299fb55d1cbf38b2f5"
+  integrity sha512-jBO0Wy1S4zoHXLCZxX+8FrOnuKa7pLMDV2S9bA2E5xduwv0N1htaOIduuk54ecqXd3TN9oP/9t6M7M4Q9SN69A==
   dependencies:
+    "@commodo/fields" "^0.2.7"
     repropose "^1.0.0"
 
 "@commodo/fields-storage@^0.3.1":
@@ -8501,11 +8502,6 @@ duplexify@^3.4.2, duplexify@^3.6.0:
     inherits "^2.0.1"
     readable-stream "^2.0.0"
     stream-shift "^1.0.0"
-
-dynamics.js@^1.1.5:
-  version "1.1.5"
-  resolved "https://registry.yarnpkg.com/dynamics.js/-/dynamics.js-1.1.5.tgz#b90bdc33605cefe652b8416e701f79bf6eefce32"
-  integrity sha1-uQvcM2Bc7+ZSuEFucB95v27vzjI=
 
 ecc-jsbn@~0.1.1:
   version "0.1.2"

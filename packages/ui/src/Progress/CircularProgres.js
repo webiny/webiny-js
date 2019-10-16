@@ -27,7 +27,11 @@ const SpinnerWrapper = styled("div")({
     }
 });
 
-const CircularProgress = ({ size, spinnerWidth, spinnerColor, visible }: Props) => {
+const Label = styled("div")({
+
+});
+
+const CircularProgress = ({ label, size, spinnerWidth, spinnerColor, visible }: Props) => {
     return (
         <SpinnerWrapper>
             <div>
@@ -39,6 +43,7 @@ const CircularProgress = ({ size, spinnerWidth, spinnerColor, visible }: Props) 
                         visible={visible}
                     />
                 )}
+                <Label>{label}</Label>
             </div>
         </SpinnerWrapper>
     );

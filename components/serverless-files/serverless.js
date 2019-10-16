@@ -127,6 +127,11 @@ class FilesComponent extends Component {
         this.state = {};
         await this.save();
     }
+
+    async install(inputs = {}) {
+        console.log("files install", this.state);
+        return { installed: true };
+    }
 }
 
 module.exports = FilesComponent;
