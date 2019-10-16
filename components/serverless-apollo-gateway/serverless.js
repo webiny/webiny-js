@@ -11,6 +11,7 @@ class ApolloGateway extends Component {
         await trackComponent({ track, context: this.context, component: __dirname });
 
         const {
+            region,
             name: componentName = null,
             services = [],
             buildHeaders = __dirname + "/boilerplate/buildHeaders.js",
@@ -82,6 +83,7 @@ class ApolloGateway extends Component {
         const lambda = await this.load("@serverless/function");
 
         const output = await lambda({
+            region,
             description: description || `Apollo Gateway: ${componentName}`,
             code: path.join(componentRoot, "build"),
             handler: "handler.handler",

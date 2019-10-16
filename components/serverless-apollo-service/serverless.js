@@ -24,6 +24,7 @@ class ApolloService extends Component {
         await trackComponent({ track, context: this.context, component: __dirname });
 
         const {
+            region,
             endpoints = [],
             name: componentName,
             plugins = [],
@@ -136,6 +137,7 @@ class ApolloService extends Component {
         const apiGw = await this.load("@serverless/aws-api-gateway");
 
         const lambdaOut = await lambda({
+            region,
             description: description || `Apollo Server: ${componentName}`,
             code: join(componentRoot, "build"),
             handler: "handler.handler",
