@@ -33,7 +33,7 @@ class FilesComponent extends Component {
 
         // Create S3 bucket for storing files.
         const s3 = await this.load("@serverless/aws-s3");
-        const s3Output = await s3({ name: bucket });
+        const s3Output = await s3({ name: bucket, region });
         await configureS3Bucket({
             component: this,
             s3Output,
@@ -74,6 +74,7 @@ class FilesComponent extends Component {
         // Deploy graphql API
         const apolloService = await this.load("@webiny/serverless-apollo-service");
         const apolloServiceOutput = await apolloService({
+            region,
             track: false,
             plugins: ["@webiny/api-files/plugins"],
             endpoints: [
