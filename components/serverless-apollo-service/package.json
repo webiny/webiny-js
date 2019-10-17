@@ -26,7 +26,8 @@
     "write-json-file": "^4.2.0"
   },
   "scripts": {
-    "build": "rm -rf dist && mkdir dist && cp -R serverless.js package.json transform boilerplate dist/",
+    "build": "rm -rf dist && mkdir dist && cp -R serverless.js transform boilerplate dist/",
+    "postbuild": "cp package.json README.md LICENSE dist/",
     "prepublishOnly": "yarn build"
   },
   "publishConfig": {

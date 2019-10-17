@@ -6,8 +6,9 @@
     "access": "public"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "lint": "eslint . --fix --cache"
+    "build": "rm -rf dist && mkdir dist && cp serverless.js utils.js dist/",
+    "postbuild": "cp package.json LICENSE README.md COPYRIGHT dist/",
+    "prepublishOnly": "yarn build"
   },
   "author": "Serverless, Inc.",
   "contributors": [
