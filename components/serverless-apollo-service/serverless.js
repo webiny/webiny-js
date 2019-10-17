@@ -1,13 +1,13 @@
 const { join } = require("path");
 const fs = require("fs-extra");
-const { transform } = require("@babel/core");
 const prettier = require("prettier");
-const { Component } = require("@serverless/core");
 const webpack = require("webpack");
 const execa = require("execa");
-const { trackComponent } = require("@webiny/tracking");
 const loadJson = require("load-json-file");
 const writeJson = require("write-json-file");
+const { transform } = require("@babel/core");
+const { Component } = require("@serverless/core");
+const { trackComponent } = require("@webiny/tracking");
 
 const defaultDependencies = ["date-fns", "mongodb", "@webiny/api", "@webiny/api-security", "babel-loader"];
 
@@ -30,7 +30,7 @@ class ApolloService extends Component {
             plugins = [],
             env = {},
             database,
-            memory = 128,
+            memory = 512,
             timeout = 10,
             description,
             endpointTypes = ["REGIONAL"],
