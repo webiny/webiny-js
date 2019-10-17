@@ -20,13 +20,22 @@ const avatarImage = css({
 
 const linkStyles = css({
     backgroundColor: "var(--mdc-theme-background)",
-    marginTop: -15,
-    paddingTop: 15,
-    paddingBottom: 15,
+    marginTop: -25,
+    marginBottom: 0,
+    paddingTop: 0,
+    paddingBottom: 0,
     textDecoration: "none",
     display: "block",
     "&:hover": {
         textDecoration: "none"
+    },
+    ">.mdc-list-item": {
+        display: "flex",
+        height: "65px !important",
+        marginTop: 15,
+        ".avatar": {
+            marginTop: 10
+        }
     },
     "h3, h3>.mdc-typography--headline6": {
         lineHeight: "1em !important"
@@ -62,6 +71,7 @@ const UserInfo = () => {
             <ListItem ripple={false}>
                 <ListItemGraphic className={avatarImage}>
                     <Avatar
+                        className={"avatar"}
                         src={avatar && avatar.src}
                         alt={fullName}
                         fallbackText={fullName}
