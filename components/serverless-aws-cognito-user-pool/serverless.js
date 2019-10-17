@@ -127,15 +127,14 @@ class ServerlessAwsCognito extends Component {
         return UserPool;
     }
 
-    async remove({ track, ...inputs } = {}) {
+    async remove({ track } = {}) {
         await trackComponent({
             track,
             context: this.context,
             component: __dirname,
             method: "remove"
         });
-
-        const { region = "us-east-1" } = inputs;
+        const { region } = this.state.inputs;
         const cognito = new Cognito({ region });
 
         this.context.debug(`Removing Cognito User Pool ${this.state.output.id}`);

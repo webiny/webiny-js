@@ -29,6 +29,7 @@
   "devDependencies": {
     "@apollo/react-ssr": "^3.0.1",
     "apollo-link-error": "^1.1.11",
+    "babel-loader": "^8.0.6",
     "file-loader": "^4.2.0",
     "mime": "1.4.1",
     "node-sass": "^4.9.3",
