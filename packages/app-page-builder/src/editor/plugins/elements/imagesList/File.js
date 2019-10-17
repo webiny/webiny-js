@@ -10,7 +10,6 @@ const COMPONENT_HEIGHT = 176;
 const styles = css({
     cursor: "move",
     display: "inline-block",
-    float: "left",
     position: "relative",
     zIndex: 1,
     margin: 10,

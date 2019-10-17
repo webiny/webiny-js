@@ -1,0 +1,7 @@
+{
+  "name": "apollo-gateway-boilerplate",
+  "private": true,
+  "dependencies": {
+    "babel-loader": "^8.0.6"
+  }
+}

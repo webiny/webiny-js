@@ -4,11 +4,14 @@ import { css } from "emotion";
 import classNames from "classnames";
 const avatar = css({
     borderRadius: "50%",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    width: 32,
-    height: 32,
+    display: "block",
+    //alignItems: "center",
+    //justifyContent: "center",
+    width: 38,
+    height: 38,
+    position: "relative",
+    top: -7,
+    right: 7,
     overflow: "hidden",
     background: "var(--mdc-theme-background)",
     color: "var(--mdc-theme-text-secondary-on-background)",
@@ -16,8 +19,8 @@ const avatar = css({
         textAlign: "center"
     },
     img: {
-        width: "100%",
-        height: "auto"
+        width: "100% !important",
+        height: "100% !important"
     }
 });
 
@@ -80,8 +83,8 @@ const Avatar = (props: Props) => {
 };
 
 Avatar.defaultProps = {
-    width: 32,
-    height: 32
+    width: 38,
+    height: 38
 };
 
 export { Avatar };
