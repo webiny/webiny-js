@@ -1,15 +1,16 @@
 {
   "name": "@webiny/serverless-app",
-  "version": "0.1.5",
+  "version": "0.1.6",
   "main": "serverless.js",
   "license": "MIT",
   "dependencies": {
     "@serverless/core": "^1.1.1",
-    "@webiny/serverless-function": "^0.1.5",
-    "@webiny/tracking": "^0.1.5"
+    "@webiny/serverless-function": "^0.1.6",
+    "@webiny/tracking": "^0.1.6"
   },
   "scripts": {
-    "build": "rm -rf dist && mkdir dist && cp serverless.js package.json dist/",
+    "build": "rm -rf dist && mkdir dist && cp serverless.js dist/",
+    "postbuild": "cp package.json README.md LICENSE dist/",
     "prepublishOnly": "yarn build"
   },
   "publishConfig": {

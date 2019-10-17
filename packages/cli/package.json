@@ -1,6 +1,6 @@
 {
   "name": "@webiny/cli",
-  "version": "0.3.9",
+  "version": "0.3.10",
   "main": "index.js",
   "bin": {
     "webiny": "./index.js",
@@ -13,7 +13,7 @@
   "author": "Pavel Denisjuk <pavel@webiny.com>",
   "description": "A tool to bootstrap a Webiny project.",
   "dependencies": {
-    "@webiny/tracking": "^0.1.5",
+    "@webiny/tracking": "^0.1.6",
     "chalk": "^2.4.2",
     "crypto": "^1.0.1",
     "execa": "^2.0.5",

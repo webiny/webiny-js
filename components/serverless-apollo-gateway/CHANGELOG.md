@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.1.9](https://github.com/Webiny/webiny-js/compare/@webiny/serverless-apollo-gateway@0.1.8...@webiny/serverless-apollo-gateway@0.1.9) (2019-10-17)
+
+
+### Bug Fixes
+
+* add 'babel-loader' to dependencies ([8b6fd47](https://github.com/Webiny/webiny-js/commit/8b6fd47))
+* add missing LICENSE and README files. ([4b2b895](https://github.com/Webiny/webiny-js/commit/4b2b895))
+
+
+
+
+
 ## [0.1.8](https://github.com/Webiny/webiny-js/compare/@webiny/serverless-apollo-gateway@0.1.7...@webiny/serverless-apollo-gateway@0.1.8) (2019-10-16)
 
 

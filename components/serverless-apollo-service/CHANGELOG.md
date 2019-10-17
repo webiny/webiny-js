@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.3.1](https://github.com/Webiny/webiny-js/compare/@webiny/serverless-apollo-service@0.3.0...@webiny/serverless-apollo-service@0.3.1) (2019-10-17)
+
+
+### Bug Fixes
+
+* add missing LICENSE and README files. ([4b2b895](https://github.com/Webiny/webiny-js/commit/4b2b895))
+* increase default memory to 512 ([5eae46d](https://github.com/Webiny/webiny-js/commit/5eae46d))
+
+
+
+
+
 # [0.3.0](https://github.com/Webiny/webiny-js/compare/@webiny/serverless-apollo-service@0.2.3...@webiny/serverless-apollo-service@0.3.0) (2019-10-16)
 
 

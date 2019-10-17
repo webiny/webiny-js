@@ -1,6 +1,6 @@
 {
   "name": "@webiny/serverless-apollo-service",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "main": "serverless.js",
   "license": "MIT",
   "dependencies": {
@@ -9,11 +9,11 @@
     "@babel/preset-env": "^7.6.0",
     "@serverless/core": "^1.1.1",
     "@serverless/function": "^3.0.0",
-    "@webiny/api": "^0.2.1",
-    "@webiny/api-security": "^0.1.6",
-    "@webiny/project-utils": "^0.1.3",
-    "@webiny/serverless-aws-api-gateway": "^0.1.0",
-    "@webiny/tracking": "^0.1.5",
+    "@webiny/api": "^0.2.2",
+    "@webiny/api-security": "^0.1.7",
+    "@webiny/project-utils": "^0.1.4",
+    "@webiny/serverless-aws-api-gateway": "^0.1.1",
+    "@webiny/tracking": "^0.1.6",
     "babel-loader": "^8.0.6",
     "babel-plugin-module-resolver": "^3.2.0",
     "date-fns": "^2.4.1",
@@ -26,7 +26,8 @@
     "write-json-file": "^4.2.0"
   },
   "scripts": {
-    "build": "rm -rf dist && mkdir dist && cp -R serverless.js package.json transform boilerplate dist/",
+    "build": "rm -rf dist && mkdir dist && cp -R serverless.js transform boilerplate dist/",
+    "postbuild": "cp package.json README.md LICENSE dist/",
     "prepublishOnly": "yarn build"
   },
   "publishConfig": {

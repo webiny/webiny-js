@@ -4,7 +4,7 @@ This component is a fork of [@serverless/aws-api-gateway](https://github.com/ser
 It is published under the original Apache 2.0 license.
 
 ### Why?
-During our own development we encountered numerous problems with this component and PRs were not fast and effective enough.
+During our own development we encountered several problems which required trial-and-error approach so we couldn't spam the Serverless team with PRs.
 So for the sake of saving some time and iterating faster with our own product, we decided to clone the component and introduce changes as needed.
 Once we're happy with how the component works we'll open appropriate PRs on the original component repository.
 
