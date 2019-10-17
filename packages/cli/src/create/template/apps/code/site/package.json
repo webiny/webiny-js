@@ -48,11 +48,11 @@
   "scripts": {
     "analyze": "source-map-explorer build/static/js/main.*",
     "build": "rescripts build",
-    "build:prod": "cross-env REACT_APP_ENV=browser env-cmd -f .env.prod yarn build && yarn build:prod:ssr",
-    "build:prod:ssr": "cross-env NODE_ENV=production REACT_APP_ENV=ssr env-cmd -f .env.prod webpack --progress --mode production --config ./ssr/webpack.config.js",
+    "build:prod": "cross-env REACT_APP_ENV=browser env-cmd -r .env.js -e default,prod yarn build && yarn build:prod:ssr",
+    "build:prod:ssr": "cross-env NODE_ENV=production REACT_APP_ENV=ssr env-cmd -r .env.js -e default,prod webpack --progress --mode production --config ./ssr/webpack.config.js",
     "build:handler": "webpack --config ./handler/webpack.config.js ",
     "postbuild": "yarn build:handler",
-    "start": "rescripts start",
+    "start": "env-cmd -r .env.js -e default,local rescripts start",
     "test": "rescripts test --env=jsdom",
     "eject": "react-scripts eject"
   },
