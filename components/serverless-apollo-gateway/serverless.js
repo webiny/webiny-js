@@ -31,7 +31,8 @@ class ApolloGateway extends Component {
             env = {},
             memory = 128,
             timeout = 10,
-            description
+            description,
+            dependencies = {}
         } = inputs;
 
         if (!componentName) {
