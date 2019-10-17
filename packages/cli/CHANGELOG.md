@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.3.10](https://github.com/webiny/webiny-js/compare/@webiny/cli@0.3.9...@webiny/cli@0.3.10) (2019-10-17)
+
+
+### Bug Fixes
+
+* add "babel-loader" to devDependencies ([b98d201](https://github.com/webiny/webiny-js/commit/b98d201))
+* remove unnecessary REACT_APP_API_HOST env variable in project tpl ([71694fc](https://github.com/webiny/webiny-js/commit/71694fc))
+
+
+
+
+
 ## [0.3.9](https://github.com/webiny/webiny-js/compare/@webiny/cli@0.3.8...@webiny/cli@0.3.9) (2019-10-15)
 
 

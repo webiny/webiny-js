@@ -1,6 +1,6 @@
 {
   "name": "@webiny/api-forms",
-  "version": "0.1.6",
+  "version": "0.1.7",
   "main": "index.js",
   "repository": {
     "type": "git",
@@ -15,12 +15,12 @@
   "dependencies": {
     "@babel/runtime": "^7.5.5",
     "@commodo/fields-storage-mongodb": "^0.2.12",
-    "@webiny/api": "^0.2.1",
-    "@webiny/api-i18n": "^0.1.6",
-    "@webiny/api-security": "^0.1.6",
-    "@webiny/commodo": "^0.1.4",
-    "@webiny/commodo-graphql": "^0.1.6",
-    "@webiny/validation": "^0.1.3",
+    "@webiny/api": "^0.2.2",
+    "@webiny/api-i18n": "^0.1.7",
+    "@webiny/api-security": "^0.1.7",
+    "@webiny/commodo": "^0.1.5",
+    "@webiny/commodo-graphql": "^0.1.7",
+    "@webiny/validation": "^0.1.4",
     "form-data": "^2.5.0",
     "got": "^9.6.0",
     "graphql-tag": "^2.10.1",
