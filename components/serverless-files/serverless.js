@@ -20,6 +20,7 @@ class FilesComponent extends Component {
 
         const manageFilesLambda = await this.load("@serverless/function", "manage-files");
         const manageFilesLambdaOutput = await manageFilesLambda({
+            region,
             name: "Files component - manage files",
             timeout: 10,
             code: join(__dirname, "functions/manageFiles"),
@@ -32,7 +33,7 @@ class FilesComponent extends Component {
 
         // Create S3 bucket for storing files.
         const s3 = await this.load("@serverless/aws-s3");
-        const s3Output = await s3({ name: bucket });
+        const s3Output = await s3({ name: bucket, region });
         await configureS3Bucket({
             component: this,
             s3Output,
@@ -43,6 +44,7 @@ class FilesComponent extends Component {
 
         const imageTransformerLambda = await this.load("@serverless/function", "image-transformer");
         const imageTransformerLambdaOutput = await imageTransformerLambda({
+            region,
             name: "Files component - image transformer",
             timeout: 10,
             code: join(__dirname, "functions/imageTransformer"),
@@ -57,6 +59,7 @@ class FilesComponent extends Component {
         // Deploy read/upload lambdas
         const downloadLambda = await this.load("@serverless/function", "download");
         const downloadLambdaOutput = await downloadLambda({
+            region,
             name: "Files component - download files",
             timeout: 10,
             code: join(__dirname, "functions/downloadFile"),
@@ -71,6 +74,7 @@ class FilesComponent extends Component {
         // Deploy graphql API
         const apolloService = await this.load("@webiny/serverless-apollo-service");
         const apolloServiceOutput = await apolloService({
+            region,
             track: false,
             plugins: ["@webiny/api-files/plugins"],
             endpoints: [

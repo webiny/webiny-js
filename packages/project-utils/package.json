@@ -1,6 +1,6 @@
 {
   "name": "@webiny/project-utils",
-  "version": "0.1.2",
+  "version": "0.1.4",
   "main": "index.js",
   "description": "A collection of utilities for Webiny project.",
   "repository": {
@@ -15,10 +15,13 @@
   "dependencies": {
     "@hot-loader/react-dom": "^16.9.0",
     "@rescripts/utilities": "^0.0.5",
+    "babel-plugin-lodash": "^3.3.4",
     "get-yarn-workspaces": "^1.0.2",
+    "lodash.clonedeep": "^4.5.0",
     "lodash.get": "^4.4.2",
     "lodash.isobject": "^3.0.2",
     "lodash.set": "^4.3.2",
+    "react-scripts": "^3.2.0",
     "read-json-sync": "^2.0.1"
   },
   "license": "MIT",
@@ -28,5 +31,13 @@
   "scripts": {
     "build": "rm -rf dist && mkdir dist && cp -r aliases app-babel cra packages package.json LICENSE README.md dist/",
     "prepublishOnly": "yarn build"
+  },
+  "adio": {
+    "ignore": {
+      "dependencies": [
+        "@hot-loader/react-dom",
+        "babel-plugin-lodash"
+      ]
+    }
   }
 }

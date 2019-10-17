@@ -1,6 +1,6 @@
 {
   "name": "@webiny/cli",
-  "version": "0.3.7",
+  "version": "0.3.10",
   "main": "index.js",
   "bin": {
     "webiny": "./index.js",
@@ -13,7 +13,7 @@
   "author": "Pavel Denisjuk <pavel@webiny.com>",
   "description": "A tool to bootstrap a Webiny project.",
   "dependencies": {
-    "@webiny/tracking": "^0.1.5",
+    "@webiny/tracking": "^0.1.6",
     "chalk": "^2.4.2",
     "crypto": "^1.0.1",
     "execa": "^2.0.5",
@@ -34,6 +34,14 @@
     "build:watch": "rimraf ./lib && babel src -d lib --source-maps --copy-files --ignore=src/init/template --watch -v --include-dotfiles",
     "postbuild": "cp package.json LICENSE README.md dist/",
     "prepublishOnly": "yarn build"
+  },
+  "adio": {
+    "ignoreDirs": [
+      "/src/create/template/",
+      "/node_modules/",
+      "/backup/",
+      "/dist/"
+    ]
   },
   "gitHead": "a01796de9d1045f9007bd09f86b6ab74c6a58241"
 }

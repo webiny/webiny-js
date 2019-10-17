@@ -8,12 +8,19 @@ import { ButtonPrimary } from "@webiny/ui/Button";
 import File from "./File";
 
 const style = {
-    addImagesButton: css({ clear: "both", padding: "20px 10px", textAlign: "center" })
+    addImagesButton: css({ clear: "both", padding: "20px 10px", textAlign: "center" }),
+    liItem: {
+        display: "inline-block"
+    }
 };
 
 class Item extends React.Component {
     render() {
-        return <li {...this.props}>{this.props.children}</li>;
+        return (
+            <li style={style.liItem} {...this.props}>
+                {this.props.children}
+            </li>
+        );
     }
 }
 

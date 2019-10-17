@@ -1,16 +1,17 @@
 {
   "name": "@webiny/serverless-aws-cognito-user-pool",
-  "version": "0.1.5",
+  "version": "0.1.8",
   "main": "serverless.js",
   "license": "MIT",
   "dependencies": {
     "@serverless/core": "^1.1.1",
-    "@webiny/tracking": "^0.1.5",
+    "@webiny/tracking": "^0.1.6",
     "aws-sdk": "^2.539.0",
     "lodash.isequal": "^4.5.0"
   },
   "scripts": {
-    "build": "rm -rf dist && mkdir dist && cp serverless.js package.json dist/",
+    "build": "rm -rf dist && mkdir dist && cp serverless.js dist/",
+    "postbuild": "cp package.json README.md LICENSE dist/",
     "prepublishOnly": "yarn build"
   },
   "publishConfig": {

@@ -1,6 +1,6 @@
 {
   "name": "@webiny/commodo",
-  "version": "0.1.2",
+  "version": "0.1.5",
   "main": "index.js",
   "repository": {
     "type": "git",
@@ -23,7 +23,8 @@
     "@commodo/name": "^1.0.2",
     "commodo-fields-date": "^1.0.2",
     "commodo-fields-object": "^1.0.2",
-    "commodo-fields-storage-crud-logs": "^1.0.1"
+    "commodo-fields-storage-crud-logs": "^1.0.1",
+    "repropose": "^1.0.2"
   },
   "publishConfig": {
     "access": "public"

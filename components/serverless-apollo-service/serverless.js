@@ -1,15 +1,15 @@
 const { join } = require("path");
 const fs = require("fs-extra");
-const { transform } = require("@babel/core");
 const prettier = require("prettier");
-const { Component } = require("@serverless/core");
 const webpack = require("webpack");
 const execa = require("execa");
-const { trackComponent } = require("@webiny/tracking");
 const loadJson = require("load-json-file");
 const writeJson = require("write-json-file");
+const { transform } = require("@babel/core");
+const { Component } = require("@serverless/core");
+const { trackComponent } = require("@webiny/tracking");
 
-const defaultDependencies = ["date-fns", "mongodb", "@webiny/api", "@webiny/api-security", "@webiny/commodo"];
+const defaultDependencies = ["date-fns", "mongodb", "@webiny/api", "@webiny/api-security", "babel-loader"];
 
 const getDeps = async deps => {
     const { dependencies } = await loadJson(join(__dirname, "package.json"));
@@ -24,12 +24,13 @@ class ApolloService extends Component {
         await trackComponent({ track, context: this.context, component: __dirname });
 
         const {
+            region,
             endpoints = [],
             name: componentName,
             plugins = [],
             env = {},
             database,
-            memory = 128,
+            memory = 512,
             timeout = 10,
             description,
             endpointTypes = ["REGIONAL"],
@@ -133,9 +134,10 @@ class ApolloService extends Component {
 
         // Deploy lambda
         const lambda = await this.load("@serverless/function");
-        const apiGw = await this.load("@serverless/aws-api-gateway");
+        const apiGw = await this.load("@webiny/serverless-aws-api-gateway");
 
         const lambdaOut = await lambda({
+            region,
             description: description || `Apollo Server: ${componentName}`,
             code: join(componentRoot, "build"),
             handler: "handler.handler",
@@ -146,6 +148,7 @@ class ApolloService extends Component {
 
         this.context.debug(`[${componentName}] Deploying API Gateway`);
         const apiGwOut = await apiGw({
+            region,
             name: componentName,
             description: `API for ${componentName}`,
             stage: "prod",
@@ -171,7 +174,7 @@ class ApolloService extends Component {
             component: __dirname,
             method: "remove"
         });
-        const apiGw = await this.load("@serverless/aws-api-gateway");
+        const apiGw = await this.load("@webiny/serverless-aws-api-gateway");
         await apiGw.remove(inputs);
 
         const lambda = await this.load("@serverless/function");

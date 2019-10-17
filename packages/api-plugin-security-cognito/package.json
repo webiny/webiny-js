@@ -1,6 +1,6 @@
 {
   "name": "@webiny/api-plugin-security-cognito",
-  "version": "0.1.1",
+  "version": "0.1.3",
   "main": "index.js",
   "repository": {
     "type": "git",
@@ -12,9 +12,9 @@
   ],
   "license": "MIT",
   "dependencies": {
+    "apollo-server-lambda": "^2.6.7",
     "jsonwebtoken": "^8.5.1",
     "jwk-to-pem": "^2.0.1",
-    "request": "^2.88.0",
     "request-promise": "^4.2.4"
   },
   "devDependencies": {
@@ -28,5 +28,12 @@
     "build": "babel src -d dist --source-maps --copy-files",
     "postbuild": "cp package.json LICENSE README.md dist/",
     "prepublishOnly": "yarn build"
+  },
+  "adio": {
+    "ignore": {
+      "src": [
+        "aws-sdk"
+      ]
+    }
   }
 }

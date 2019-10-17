@@ -1,6 +1,6 @@
 {
   "name": "@webiny/app",
-  "version": "0.1.1",
+  "version": "0.1.4",
   "main": "index.js",
   "repository": {
     "type": "git",
@@ -15,21 +15,19 @@
   "license": "MIT",
   "dependencies": {
     "@babel/runtime": "^7.5.5",
-    "@webiny/i18n": "^0.1.1",
-    "@webiny/i18n-react": "^0.1.1",
-    "@webiny/plugins": "^0.1.1",
-    "apollo-cache-inmemory": "^1.1.12",
-    "apollo-client": "^2.2.8",
+    "@webiny/i18n": "^0.1.3",
+    "@webiny/i18n-react": "^0.1.2",
+    "@webiny/plugins": "^0.1.2",
+    "@webiny/ui": "^0.1.6",
     "apollo-link": "^1.2.1",
-    "apollo-link-context": "^1.0.7",
-    "apollo-link-http": "^1.5.3",
-    "console-polyfill": "^0.3.0",
-    "graphql": "^14.4.2",
+    "graphql-tag": "^2.10.1",
     "invariant": "^2.2.4",
     "lodash": "^4.17.4",
+    "lodash.get": "^4.4.2",
     "react": "^16.6.0",
     "react-apollo": "^3.1.0-beta.0",
     "react-dom": "^16.6.0",
+    "use-react-router": "^1.0.7",
     "warning": "^4.0.2"
   },
   "devDependencies": {
@@ -49,5 +47,12 @@
     "flow-copy-source": "flow-copy-source src dist",
     "postbuild": "yarn flow-copy-source && cp package.json LICENSE README.md dist/",
     "prepublishOnly": "yarn build"
+  },
+  "adio": {
+    "ignore": {
+      "dependencies": [
+        "react-dom"
+      ]
+    }
   }
 }

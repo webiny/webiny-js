@@ -1,15 +1,15 @@
 {
   "name": "@webiny/serverless-files",
-  "version": "0.1.6",
+  "version": "0.1.12",
   "main": "serverless.js",
   "license": "MIT",
   "dependencies": {
     "@serverless/aws-s3": "^4.0.0",
     "@serverless/core": "^1.1.1",
     "@serverless/function": "^3.0.0",
-    "@webiny/api-files": "^0.1.5",
-    "@webiny/serverless-apollo-service": "^0.2.0",
-    "@webiny/tracking": "^0.1.5",
+    "@webiny/api-files": "^0.1.8",
+    "@webiny/serverless-apollo-service": "^0.3.1",
+    "@webiny/tracking": "^0.1.6",
     "aws-sdk": "^2.539.0",
     "lodash.get": "^4.4.2",
     "lodash.set": "^4.3.2",
@@ -37,5 +37,14 @@
   "publishConfig": {
     "access": "public"
   },
-  "gitHead": "a01796de9d1045f9007bd09f86b6ab74c6a58241"
+  "adio": {
+    "ignore": {
+      "src": [
+        "sharp"
+      ],
+      "dependencies": [
+        "@webiny/api-files"
+      ]
+    }
+  }
 }

@@ -1,7 +1,11 @@
 {
   "private": true,
   "name": "@webiny/mongo-http-client",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "main": "index.js",
-  "license": "MIT"
+  "license": "MIT",
+  "dependencies": {
+    "bson": "^1.1.1",
+    "cross-fetch": "^3.0.4"
+  }
 }

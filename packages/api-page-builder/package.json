@@ -1,6 +1,6 @@
 {
   "name": "@webiny/api-page-builder",
-  "version": "0.1.4",
+  "version": "0.1.7",
   "main": "index.js",
   "repository": {
     "type": "git",
@@ -15,10 +15,13 @@
   "license": "MIT",
   "dependencies": {
     "@babel/runtime": "^7.5.5",
-    "@webiny/api": "^0.2.0",
-    "@webiny/commodo": "^0.1.2",
-    "@webiny/commodo-graphql": "^0.1.4",
-    "fs-extra": "^7.0.1",
+    "@commodo/fields-storage-mongodb": "^0.2.12",
+    "@webiny/api": "^0.2.2",
+    "@webiny/api-security": "^0.1.7",
+    "@webiny/commodo": "^0.1.5",
+    "@webiny/commodo-graphql": "^0.1.7",
+    "@webiny/validation": "^0.1.4",
+    "apollo-server-lambda": "^2.6.7",
     "lodash": "^4.17.11",
     "mdbid": "^1.0.0",
     "request": "^2.88.0"
@@ -38,5 +41,11 @@
     "flow-copy-source": "flow-copy-source src dist",
     "postbuild": "yarn flow-copy-source && cp package.json LICENSE README.md dist/",
     "prepublishOnly": "yarn build"
+  },
+  "adio": {
+    "ignoreDirs": [
+      "migration",
+      "src/install"
+    ]
   }
 }

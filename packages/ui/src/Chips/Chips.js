@@ -17,32 +17,35 @@ const disabledChips = css({
     pointerEvents: "none"
 });
 
+const chipIconWrapper = css({
+    ".mdc-chip__icon": {
+        svg: {
+            width: 18,
+            height: 18,
+            "&.mdc-chip__icon--trailing": {
+                boxSizing: "border-box",
+                display: "flex"
+            }
+        }
+    }
+});
+
 export const Chips = (props: Props) => {
     const { children, className, disabled, ...rest } = props;
 
     return (
         <React.Fragment>
-            <ChipSet {...rest} className={classNames(className, { [disabledChips]: disabled })}>
+            <ChipSet
+                {...rest}
+                className={classNames(className, chipIconWrapper, {
+                    [disabledChips]: disabled
+                })}
+            >
                 {children}
             </ChipSet>
         </React.Fragment>
     );
 };
-
-const chipIconWrapper = css({
-    "&.mdc-chip__icon": {
-        svg: {
-            width: 20,
-            height: 20
-        },
-        "&.mdc-chip__icon--trailing": {
-            svg: {
-                width: 18,
-                height: 18
-            }
-        }
-    }
-});
 
 const ChipIcon = (props: Object) => {
     return <RwmcChipIcon className={chipIconWrapper} {...props} />;

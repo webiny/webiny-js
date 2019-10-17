@@ -1,7 +1,7 @@
 // @flow
 import React from "react";
 import { css } from "emotion";
-import { Image } from "@webiny/app/src/components";
+import { Image } from "@webiny/app/components";
 
 import EditAction from "./EditAction";
 

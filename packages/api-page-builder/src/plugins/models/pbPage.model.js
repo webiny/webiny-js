@@ -2,7 +2,7 @@
 import { flow } from "lodash";
 import { id, withAggregate } from "@commodo/fields-storage-mongodb";
 import { validation } from "@webiny/validation";
-import { withProps } from "repropose";
+import { withProps } from "@webiny/commodo";
 import mdbid from "mdbid";
 import content from "./pbPage/contentField";
 import {

@@ -11,6 +11,7 @@ vars:
 gateway:
   component: "@webiny/serverless-apollo-gateway"
   inputs:
+    region: ${vars.region}
     name: gateway
     memory: 512
     timeout: 30
@@ -25,13 +26,15 @@ gateway:
         url: ${i18n.api.url}/graphql
 
 userPool:
-  component: "../../../components/serverless-aws-cognito-user-pool"
+  component: "@webiny/serverless-aws-cognito-user-pool"
   inputs:
-    name: 'MojPool'
+    region: ${vars.region}
+    name: 'WebinyPool'
 
 security:
-  component: "../../../components/serverless-apollo-service"
+  component: "@webiny/serverless-apollo-service"
   inputs:
+    region: ${vars.region}
     name: security
     memory: 512
     database: ${vars.database}
@@ -57,6 +60,7 @@ files:
 i18n:
   component: "@webiny/serverless-apollo-service"
   inputs:
+    region: ${vars.region}
     name: i18n
     memory: 512
     database: ${vars.database}
@@ -67,6 +71,7 @@ i18n:
 pageBuilder:
   component: "@webiny/serverless-page-builder"
   inputs:
+    region: ${vars.region}
     name: pageBuilder
     memory: 512
     database: ${vars.database}
@@ -79,6 +84,7 @@ pageBuilder:
 api:
   component: "@webiny/serverless-api-gateway"
   inputs:
+    region: ${vars.region}
     description: "Main GraphQL API"
     stage: prod
     endpointTypes: ['REGIONAL']

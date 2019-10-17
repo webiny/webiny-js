@@ -24,6 +24,7 @@
   "devDependencies": {
     "prettier": "^1",
     "flow-bin": "^0",
-    "serverless": "^1.54.0"
+    "serverless": "^1.54.0",
+    "webpack-cli": "^3.3.9"
   }
 }

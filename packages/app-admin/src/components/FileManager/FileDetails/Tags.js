@@ -5,13 +5,12 @@ import { css } from "emotion";
 import { useApolloClient } from "react-apollo";
 import { get, cloneDeep } from "lodash";
 import { Chips, Chip } from "@webiny/ui/Chips";
-import { ButtonSecondary, ButtonPrimary } from "@webiny/ui/Button";
 import { Tags as TagsComponent } from "@webiny/ui/Tags";
-import { Form } from "@webiny/form";
-import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { UPDATE_FILE_BY_SRC, LIST_FILES, LIST_TAGS } from "./../graphql";
 import { ReactComponent as EditIcon } from "./../icons/round-edit-24px.svg";
 import { useFileManager } from "./../FileManagerContext";
+import { Hotkeys } from "react-hotkeyz";
+import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 
 const style = {
     editTag: css({
@@ -21,78 +20,76 @@ const style = {
 };
 
 function Tags({ file }) {
-    const { showSnackbar } = useSnackbar();
     const client = useApolloClient();
 
     const [editing, setEdit] = useState(false);
+    const [saving, setSaving] = useState(false);
     const initialTags = Array.isArray(file.tags) ? [...file.tags] : [];
+    const [currentTags, setCurrentTags] = useState(initialTags);
+    const { showSnackbar } = useSnackbar();
 
     const { queryParams } = useFileManager();
 
     if (editing) {
         return (
-            <Form
-                data={{ tags: [...initialTags] }}
-                onSubmit={async ({ tags }) => {
-                    setEdit(false);
-                    await client.mutate({
-                        mutation: UPDATE_FILE_BY_SRC,
-                        variables: {
-                            src: file.src,
-                            data: { tags }
-                        },
-                        refetchQueries: [{ query: LIST_TAGS }],
-                        update: (cache, updated) => {
-                            const newFileData = get(updated, "data.files.updateFileBySrc.data");
+            <>
+                <Hotkeys
+                    disabled={!editing}
+                    zIndex={60}
+                    keys={{
+                        esc: () => {
+                            setSaving(true);
+                            client
+                                .mutate({
+                                    mutation: UPDATE_FILE_BY_SRC,
+                                    variables: {
+                                        src: file.src,
+                                        data: { tags: currentTags }
+                                    },
+                                    refetchQueries: [{ query: LIST_TAGS }],
+                                    update: (cache, updated) => {
+                                        const newFileData = get(
+                                            updated,
+                                            "data.files.updateFileBySrc.data"
+                                        );
 
-                            // 1. Update files list cache
-                            let data = cloneDeep(
-                                cache.readQuery({
-                                    query: LIST_FILES,
-                                    variables: queryParams
+                                        // 1. Update files list cache
+                                        let data = cloneDeep(
+                                            cache.readQuery({
+                                                query: LIST_FILES,
+                                                variables: queryParams
+                                            })
+                                        );
+
+                                        data.files.listFiles.data.forEach(item => {
+                                            if (item.src === newFileData.src) {
+                                                item.tags = newFileData.tags;
+                                            }
+                                        });
+
+                                        cache.writeQuery({
+                                            query: LIST_FILES,
+                                            variables: queryParams,
+                                            data
+                                        });
+                                    }
                                 })
-                            );
-
-                            data.files.listFiles.data.forEach(item => {
-                                if (item.src === newFileData.src) {
-                                    item.tags = newFileData.tags;
-                                }
-                            });
-
-                            cache.writeQuery({
-                                query: LIST_FILES,
-                                variables: queryParams,
-                                data
-                            });
+                                .then(() => {
+                                    setSaving(false);
+                                    setEdit(false);
+                                    showSnackbar("Tags successfully updated.");
+                                });
                         }
-                    });
-
-                    showSnackbar("Tags successfully updated.");
-                }}
-            >
-                {({ Bind, submit }) => (
-                    <>
-                        <Bind name={"tags"}>
-                            {({ value, onChange }) => (
-                                <TagsComponent
-                                    value={value}
-                                    onChange={tags => onChange(tags.map(tag => tag.toLowerCase()))}
-                                    autoFocus
-                                    placeholder={"Enter a tag and press enter"}
-                                />
-                            )}
-                        </Bind>
-                        <div style={{ marginTop: "10px" }}>
-                            <ButtonPrimary small onClick={submit}>
-                                Submit
-                            </ButtonPrimary>{" "}
-                            <ButtonSecondary small onClick={() => setEdit(false)}>
-                                Cancel
-                            </ButtonSecondary>
-                        </div>
-                    </>
-                )}
-            </Form>
+                    }}
+                />
+                <TagsComponent
+                    disabled={saving}
+                    value={currentTags}
+                    onChange={tags => setCurrentTags(tags.map(tag => tag.toLowerCase()))}
+                    autoFocus
+                    placeholder={"Enter a tag and press enter"}
+                />
+            </>
         );
     }
 

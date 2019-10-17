@@ -49,7 +49,7 @@ const Toolbar = styled("div")({
 });
 
 const ToolOptions = styled("div")({
-    margin: "25px -24px 10px -24px",
+    margin: "50px -24px 10px -24px",
     boxSizing: "border-box",
     padding: 10,
     backgroundColor: "var(--mdc-theme-background)",

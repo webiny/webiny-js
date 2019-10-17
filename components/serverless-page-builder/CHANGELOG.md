@@ -3,6 +3,52 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.1.13](https://github.com/Webiny/webiny-js/compare/@webiny/serverless-page-builder@0.1.12...@webiny/serverless-page-builder@0.1.13) (2019-10-17)
+
+
+### Bug Fixes
+
+* add missing LICENSE and README files. ([4b2b895](https://github.com/Webiny/webiny-js/commit/4b2b895))
+
+
+
+
+
+## [0.1.12](https://github.com/Webiny/webiny-js/compare/@webiny/serverless-page-builder@0.1.11...@webiny/serverless-page-builder@0.1.12) (2019-10-16)
+
+**Note:** Version bump only for package @webiny/serverless-page-builder
+
+
+
+
+
+## [0.1.11](https://github.com/Webiny/webiny-js/compare/@webiny/serverless-page-builder@0.1.10...@webiny/serverless-page-builder@0.1.11) (2019-10-16)
+
+**Note:** Version bump only for package @webiny/serverless-page-builder
+
+
+
+
+
+## [0.1.10](https://github.com/Webiny/webiny-js/compare/@webiny/serverless-page-builder@0.1.9...@webiny/serverless-page-builder@0.1.10) (2019-10-15)
+
+**Note:** Version bump only for package @webiny/serverless-page-builder
+
+
+
+
+
+## [0.1.9](https://github.com/Webiny/webiny-js/compare/@webiny/serverless-page-builder@0.1.8...@webiny/serverless-page-builder@0.1.9) (2019-10-14)
+
+
+### Bug Fixes
+
+* synced dependencies across all packages ([#567](https://github.com/Webiny/webiny-js/issues/567)) ([38eda54](https://github.com/Webiny/webiny-js/commit/38eda547bead6e8a2c46875730bbcd8f1227e475))
+
+
+
+
+
 ## [0.1.8](https://github.com/Webiny/webiny-js/compare/@webiny/serverless-page-builder@0.1.7...@webiny/serverless-page-builder@0.1.8) (2019-10-10)
 
 
