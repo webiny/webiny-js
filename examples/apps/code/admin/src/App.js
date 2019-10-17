@@ -17,9 +17,9 @@ import plugins from "./plugins";
 registerPlugins(
     plugins,
     cognito({
-        region: "us-east-1",
-        userPoolId: "us-east-1_f9LnTDvu8",
-        userPoolWebClientId: "1e9l5hls5tk46hvfo6c3fj8ibk" // TODO: add parameter to UserPool component
+        region: process.env.REACT_APP_USER_POOL_REGION,
+        userPoolId: process.env.REACT_APP_USER_POOL_ID,
+        userPoolWebClientId: process.env.REACT_APP_USER_POOL_WEB_CLIENT_ID
     })
 );
 
