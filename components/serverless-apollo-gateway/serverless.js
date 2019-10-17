@@ -1,10 +1,23 @@
 const path = require("path");
 const fs = require("fs-extra");
-const { transform } = require("@babel/core");
 const prettier = require("prettier");
-const { Component } = require("@serverless/core");
+const execa = require("execa");
 const webpack = require("webpack");
+const loadJson = require("load-json-file");
+const writeJson = require("write-json-file");
+const { transform } = require("@babel/core");
+const { Component } = require("@serverless/core");
 const { trackComponent } = require("@webiny/tracking");
+
+const defaultDependencies = ["babel-loader"];
+
+const getDeps = async deps => {
+    const { dependencies } = await loadJson(path.join(__dirname, "package.json"));
+    return deps.reduce((acc, item) => {
+        acc[item] = dependencies[item];
+        return acc;
+    }, {});
+};
 
 class ApolloGateway extends Component {
     async default({ track, ...inputs } = {}) {
@@ -50,6 +63,16 @@ class ApolloGateway extends Component {
         );
 
         fs.copyFileSync(path.resolve(buildHeaders), path.join(componentRoot, "/buildHeaders.js"));
+
+        const pkgJsonPath = path.join(componentRoot, "package.json");
+        fs.copyFileSync(path.join(__dirname, "boilerplate", "package.json"), pkgJsonPath);
+
+        // Inject dependencies
+        const pkgJson = await loadJson(pkgJsonPath);
+        Object.assign(pkgJson.dependencies, await getDeps(defaultDependencies), dependencies);
+        await writeJson(pkgJsonPath, pkgJson);
+
+        await execa("npm", ["install"], { cwd: componentRoot });
 
         // Bundle code (switch CWD before running webpack)
         const cwd = process.cwd();
