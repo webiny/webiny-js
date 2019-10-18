@@ -47,7 +47,7 @@ security:
           userPoolId: ${userPool.id}
 
 files:
-  component: "../components/serverless-files/dist"
+  component: "@webiny/serverless-files/dist"
   inputs:
     region: ${vars.region}
     bucket: "my-test-bucket-3"

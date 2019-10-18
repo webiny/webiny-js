@@ -14,6 +14,20 @@ const {
     getOutputs
 } = require("./utils");
 
+const findFile = name => {
+    if (fs.existsSync(`${name}.yml`)) {
+        return `${name}.yml`;
+    }
+
+    if (fs.existsSync(`${name}.yaml`)) {
+        return `${name}.yaml`;
+    }
+
+    throw Error(
+        `Template file was not found! Make sure your ${name} file has either ".yml" or ".yaml" extension.`
+    );
+};
+
 const validateInputs = ({ env, apps, api }) => {
     if (typeof env !== "string" || env.length === 0) {
         throw Error("An `--env` parameter must be specified!");
@@ -34,7 +48,7 @@ class Template extends Component {
 
         const type = inputs.apps ? "apps" : "api";
 
-        const slsYaml = `serverless.${type}.yml`;
+        const slsYaml = findFile(`serverless.${type}`);
         const envJs = `.env.${type}.js`;
 
         // Load ENV variables
@@ -97,7 +111,9 @@ class Template extends Component {
     async remove(inputs = {}) {
         validateInputs(inputs);
 
-        this.context.status("Removing");
+        const type = inputs.apps ? "apps" : "api";
+
+        this.context.status(`Removing ${type}`);
 
         this.context.debug("Flushing template state and removing all components.");
         await syncState({}, this);
