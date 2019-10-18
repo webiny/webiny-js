@@ -25,7 +25,7 @@ gateway:
       - name: i18n
         url: ${i18n.api.url}/graphql
 
-userPool:
+cognito:
   component: "@webiny/serverless-aws-cognito-user-pool"
   inputs:
     region: ${vars.region}
@@ -46,7 +46,7 @@ security:
       - factory: "@webiny/api-plugin-security-cognito"
         options:
           region: ${vars.region}
-          userPoolId: ${userPool.id}
+          userPoolId: ${cognito.userPool.Id}
 
 files:
   component: "@webiny/serverless-files/dist"

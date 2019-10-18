@@ -1,4 +1,5 @@
 const { Component } = require("@serverless/core");
+const { green } = require("chalk");
 
 const getAlias = inputs => {
     const type = inputs.apps ? "apps" : "api";
@@ -12,10 +13,17 @@ class Deploy extends Component {
         const template = await this.load("@webiny/serverless-template", alias);
         const output = await template(inputs);
 
-        // TODO: add user-friendly messaging
         if (inputs.api) {
             if (output.cdn) {
-                console.log(`Your API URL is ${output.cdn.url}`);
+                console.log(`\n🚀 Your GraphQL API URL is ${green(output.cdn.url + "/graphql")}`);
+            }
+            if (output.cognito) {
+                console.log(`🔒 Cognito UserPool ID: ${green(output.cognito.userPool.Id)}`);
+                output.cognito.appClients.forEach(client => {
+                    console.log(
+                        `🔑 App Client ID [${client.ClientName}]: ${green(client.ClientId)}`
+                    );
+                });
             }
         }
     }
