@@ -16,123 +16,170 @@ class ServerlessAwsCognito extends Component {
         if (isEqual(this.state.inputs, inputs)) {
             this.context.debug("Input was not changed, no action required.");
             return this.state.output;
-        } else {
-            // TODO: need to update userPool if it already exists.
         }
 
-        const { region = "us-east-1", name, tags = {} } = inputs;
+        const { region = "us-east-1", name, tags = {}, appClients = [] } = inputs;
         const passwordPolicy = Object.assign({}, defaultPasswordPolicy, inputs.passwordPolicy);
 
-        const params = {
-            PoolName: name,
-            AdminCreateUserConfig: {
-                AllowAdminCreateUserOnly: false
-            },
-            /*AliasAttributes: [
-                phone_number | email | preferred_username
-            ],*/
-            AutoVerifiedAttributes: ["email"],
-            /*DeviceConfiguration: {
-                ChallengeRequiredOnNewDevice: true || false,
-                DeviceOnlyRememberedOnUserPrompt: true || false
-            },*/
-            EmailConfiguration: {
-                EmailSendingAccount: "COGNITO_DEFAULT"
-                /*ReplyToEmailAddress: "STRING_VALUE",
-                SourceArn: "STRING_VALUE"*/
-            },
-            /*EmailVerificationMessage: "STRING_VALUE",
-            EmailVerificationSubject: "STRING_VALUE",*/
-            /*LambdaConfig: {
-                CreateAuthChallenge: "STRING_VALUE",
-                CustomMessage: "STRING_VALUE",
-                DefineAuthChallenge: "STRING_VALUE",
-                PostAuthentication: "STRING_VALUE",
-                PostConfirmation: "STRING_VALUE",
-                PreAuthentication: "STRING_VALUE",
-                PreSignUp: "STRING_VALUE",
-                PreTokenGeneration: "STRING_VALUE",
-                UserMigration: "STRING_VALUE",
-                VerifyAuthChallengeResponse: "STRING_VALUE"
-            },*/
-            MfaConfiguration: "OFF",
-            Policies: {
-                PasswordPolicy: {
-                    MinimumLength: passwordPolicy.minimumLength,
-                    RequireLowercase: passwordPolicy.requireLowercase,
-                    RequireNumbers: passwordPolicy.requireNumbers,
-                    RequireSymbols: passwordPolicy.requireSymbols,
-                    RequireUppercase: passwordPolicy.requireUppercase,
-                    TemporaryPasswordValidityDays: passwordPolicy.temporaryPasswordValidityDays
-                }
-            },
-            Schema: [
-                {
-                    AttributeDataType: "String",
-                    DeveloperOnlyAttribute: false,
-                    Mutable: true,
-                    Name: "email",
-                    Required: true
-                },
-                {
-                    AttributeDataType: "String",
-                    DeveloperOnlyAttribute: false,
-                    Mutable: true,
-                    Name: "family_name",
-                    Required: true
-                },
-                {
-                    AttributeDataType: "String",
-                    DeveloperOnlyAttribute: false,
-                    Mutable: true,
-                    Name: "given_name",
-                    Required: true
-                }
-            ],
-            /*SmsAuthenticationMessage: "STRING_VALUE",
-            SmsConfiguration: {
-                SnsCallerArn: "STRING_VALUE" /!* required *!/,
-                ExternalId: "STRING_VALUE"
-            },
-            SmsVerificationMessage: "STRING_VALUE",*/
-            UserPoolAddOns: {
-                AdvancedSecurityMode: "OFF" /* required */
-            },
-            UserPoolTags: Object.assign({}, tags),
-            UsernameAttributes: ["email"],
-            VerificationMessageTemplate: {
-                DefaultEmailOption: "CONFIRM_WITH_CODE"
-                /*EmailMessage: "STRING_VALUE",
-                EmailMessageByLink: "STRING_VALUE",
-                EmailSubject: "STRING_VALUE",
-                EmailSubjectByLink: "STRING_VALUE",
-                SmsMessage: "STRING_VALUE"*/
-            }
-        };
-
         const cognito = new Cognito({ region });
+        this.state.output = this.state.output || { appClients: [] };
 
-        const { UserPool } = await cognito.createUserPool(params).promise();
+        if (this.state.output.userPool) {
+            // At this point we do not update user pool since we don't support
+            // configuration parameters that can be updated.
 
-        this.context.debug(`Created Cognito User Pool ${UserPool.Id}`);
+            // Update app clients
+            const count = Math.max(appClients.length, this.state.output.appClients.length);
 
-        this.state.output = UserPool;
-        this.state.output.id = UserPool.Id;
+            for (let i = 0; i < count; i++) {
+                const { name, refreshTokenValidity = 30, generateSecret = false } =
+                    appClients[i] || {};
+                const clientInState = this.state.output.appClients[i];
+                const clientInInput = appClients[i];
+
+                if (clientInState && clientInInput) {
+                    this.context.debug(
+                        `Updating client ${clientInState.ClientName} (${clientInState.ClientId}).`
+                    );
+
+                    const clientParams = {
+                        UserPoolId: this.state.output.userPool.Id,
+                        ClientId: clientInState.ClientId,
+                        ClientName: name,
+                        RefreshTokenValidity: refreshTokenValidity
+                    };
+                    const { UserPoolClient } = await cognito
+                        .updateUserPoolClient(clientParams)
+                        .promise();
+                    this.state.output.appClients[i] = UserPoolClient;
+                    continue;
+                }
+
+                if (clientInState && !clientInInput) {
+                    // Delete existing client
+                    this.context.debug(
+                        `Deleting client ${clientInState.ClientName} (${clientInState.ClientId}).`
+                    );
+                    const clientParams = {
+                        UserPoolId: this.state.output.userPool.Id,
+                        ClientId: clientInState.ClientId
+                    };
+                    await cognito.deleteUserPoolClient(clientParams).promise();
+                    this.state.output.appClients[i] = null;
+                    continue;
+                }
+
+                // Create new client
+                this.context.debug(`Creating new user pool client ${name}.`);
+                const clientParams = {
+                    UserPoolId: this.state.output.userPool.Id,
+                    ClientName: name,
+                    GenerateSecret: generateSecret,
+                    RefreshTokenValidity: refreshTokenValidity
+                };
+                const { UserPoolClient } = await cognito
+                    .createUserPoolClient(clientParams)
+                    .promise();
+
+                this.state.output.appClients[i] = UserPoolClient;
+            }
+            // Filter null values
+            this.state.output.appClients = this.state.output.appClients.filter(Boolean);
+        } else {
+            this.context.debug(`Creating new user pool.`);
+
+            const params = {
+                PoolName: name,
+                AdminCreateUserConfig: {
+                    AllowAdminCreateUserOnly: false
+                },
+                AutoVerifiedAttributes: ["email"],
+                EmailConfiguration: {
+                    EmailSendingAccount: "COGNITO_DEFAULT"
+                },
+                MfaConfiguration: "OFF",
+                Policies: {
+                    PasswordPolicy: {
+                        MinimumLength: passwordPolicy.minimumLength,
+                        RequireLowercase: passwordPolicy.requireLowercase,
+                        RequireNumbers: passwordPolicy.requireNumbers,
+                        RequireSymbols: passwordPolicy.requireSymbols,
+                        RequireUppercase: passwordPolicy.requireUppercase,
+                        TemporaryPasswordValidityDays: passwordPolicy.temporaryPasswordValidityDays
+                    }
+                },
+                Schema: [
+                    {
+                        AttributeDataType: "String",
+                        DeveloperOnlyAttribute: false,
+                        Mutable: true,
+                        Name: "email",
+                        Required: true
+                    },
+                    {
+                        AttributeDataType: "String",
+                        DeveloperOnlyAttribute: false,
+                        Mutable: true,
+                        Name: "family_name",
+                        Required: true
+                    },
+                    {
+                        AttributeDataType: "String",
+                        DeveloperOnlyAttribute: false,
+                        Mutable: true,
+                        Name: "given_name",
+                        Required: true
+                    }
+                ],
+                UserPoolAddOns: {
+                    AdvancedSecurityMode: "OFF" /* required */
+                },
+                UserPoolTags: Object.assign({}, tags),
+                UsernameAttributes: ["email"],
+                VerificationMessageTemplate: {
+                    DefaultEmailOption: "CONFIRM_WITH_CODE"
+                }
+            };
+
+            const { UserPool } = await cognito.createUserPool(params).promise();
+            this.state.output.userPool = UserPool;
+            await this.save();
+
+            this.context.debug(`Created user pool ${UserPool.Id}.`);
+
+            // Create app clients
+            for (let i = 0; i < appClients.length; i++) {
+                this.context.debug(`Creating new user pool client.`);
+                const { name, refreshTokenValidity = 30, generateSecret = false } = appClients[i];
+                const clientParams = {
+                    UserPoolId: this.state.output.userPool.Id,
+                    ClientName: name,
+                    GenerateSecret: generateSecret,
+                    RefreshTokenValidity: refreshTokenValidity
+                };
+                const { UserPoolClient } = await cognito
+                    .createUserPoolClient(clientParams)
+                    .promise();
+                this.state.output.appClients[i] = UserPoolClient;
+            }
+        }
+
         this.state.inputs = inputs;
         await this.save();
 
-        return UserPool;
+        return this.state.output;
     }
 
     async remove() {
         const { region } = this.state.inputs;
         const cognito = new Cognito({ region });
+        const UserPoolId = this.state.output.userPool.Id;
 
-        this.context.debug(`Removing Cognito User Pool ${this.state.output.id}`);
+        this.context.debug(`Removing Cognito User Pool ${UserPoolId}.`);
 
         await cognito
             .deleteUserPool({
-                UserPoolId: this.state.output.id
+                UserPoolId
             })
             .promise();
 

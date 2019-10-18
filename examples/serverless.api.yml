@@ -30,6 +30,8 @@ userPool:
   inputs:
     region: ${vars.region}
     name: 'WebinyPool'
+    appClients:
+      - name: ReactApp
 
 security:
   component: "@webiny/serverless-apollo-service"
