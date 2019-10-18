@@ -97,28 +97,30 @@ const Title = (props: Object) => {
                     <DeleteIconWrapper>
                         <IconButton
                             icon={<DeleteIcon />}
-                            onClick={showConfirmation(async () => {
-                                const { plugin, refresh, id } = props;
-                                const { data: res } = await client.mutate({
-                                    mutation: deleteElement,
-                                    variables: { id }
-                                });
+                            onClick={() =>
+                                showConfirmation(async () => {
+                                    const { plugin, refresh, id } = props;
+                                    const { data: res } = await client.mutate({
+                                        mutation: deleteElement,
+                                        variables: { id }
+                                    });
 
-                                const { error } = res.pageBuilder.deleteElement;
-                                if (error) {
-                                    return showSnackbar(error.message);
-                                }
+                                    const { error } = res.pageBuilder.deleteElement;
+                                    if (error) {
+                                        return showSnackbar(error.message);
+                                    }
 
-                                unregisterPlugin(plugin);
+                                    unregisterPlugin(plugin);
 
-                                refresh();
+                                    refresh();
 
-                                showSnackbar(
-                                    <span>
-                                        Element <strong>{title}</strong> deleted!
-                                    </span>
-                                );
-                            })}
+                                    showSnackbar(
+                                        <span>
+                                            Element <strong>{title}</strong> deleted!
+                                        </span>
+                                    );
+                                })
+                            }
                         />
                     </DeleteIconWrapper>
                 </Typography>
