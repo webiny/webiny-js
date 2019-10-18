@@ -265,6 +265,11 @@ export default {
                 return { __typename: "SecurityUser", id: page.updatedBy };
             }
         },
+        PbElement: {
+            preview(pbElement) {
+                return { __typename: "File", id: pbElement.preview };
+            }
+        },
         PbQuery: {
             getPage: resolveGet(pageFetcher),
             listPages: listPages,
@@ -275,7 +280,7 @@ export default {
             getErrorPage,
             listElements: resolveList(elementFetcher),
             searchTags: searchTags,
-            oembedData: oembed
+            oembedData: oembed,
         },
         PbMutation: {
             // Creates a new page
