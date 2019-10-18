@@ -16,6 +16,9 @@ import createElementPlugin from "@webiny/app-page-builder/admin/utils/createElem
 import createBlockPlugin from "@webiny/app-page-builder/admin/utils/createBlockPlugin";
 import { CREATE_ELEMENT, UPDATE_ELEMENT } from "@webiny/app-page-builder/admin/graphql/pages";
 import SaveDialog from "./SaveDialog";
+import { CREATE_FILE } from "./SaveDialog/graphql";
+import get from "lodash.get";
+import pick from "lodash.pick";
 
 type Props = {
     isDialogOpened: boolean,
@@ -41,18 +44,32 @@ const SaveAction = (props: Props) => {
         blob.name = "pb-page-element-" + element.id + ".png";
 
         const fileUploaderPlugin = getPlugin("file-uploader");
-        formData.preview = await fileUploaderPlugin.upload(blob, { apolloClient: client });
+        const previewImage = await fileUploaderPlugin.upload(blob, { apolloClient: client });
+        previewImage.meta = meta;
+        previewImage.meta.private = true;
 
-        formData.preview.meta = meta;
-        formData.preview.meta.private = true;
+        const createdImageResponse = await client.mutate({
+            mutation: CREATE_FILE,
+            variables: {
+                data: previewImage
+            }
+        });
+
+        const createdImage = get(createdImageResponse, "data.files.createFile", {});
+        if (createdImage.error) {
+            return showSnackbar("Image could not be saved.");
+        }
+
+        formData.preview = createdImage.data.id; // eslint-disable-line
 
         let query = formData.overwrite ? UPDATE_ELEMENT : CREATE_ELEMENT;
+
         const { data: res } = await client.mutate({
             mutation: query,
             variables: formData.overwrite
                 ? {
                       id: element.source,
-                      data: { content: formData.content, preview: formData.preview }
+                      data: pick(formData, ["content", "id"])
                   }
                 : { data: formData }
         });
