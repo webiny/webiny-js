@@ -47,7 +47,7 @@ security:
           userPoolId: ${userPool.id}
 
 files:
-  component: "@webiny/serverless-files"
+  component: "../components/serverless-files/dist"
   inputs:
     region: ${vars.region}
     bucket: "my-test-bucket-3"
@@ -93,15 +93,15 @@ api:
         method: ANY
         function: ${gateway}
 
-#cdn:
-#  component: "@webiny/serverless-aws-cloudfront"
-#  inputs:
-#    origins:
-#      - ${files.cdnOrigin}
-#      - url: ${api.url}
-#        pathPatterns:
-#          "/graphql":
-#            ttl: 0
-#            forward:
-#              headers: ["Accept", "Accept-Language"]
-#            allowedHttpMethods: ["GET", "HEAD", "OPTIONS", "PUT", "POST", "PATCH", "DELETE"]
+cdn:
+  component: "@webiny/serverless-aws-cloudfront"
+  inputs:
+    origins:
+      - ${files.cdnOrigin}
+      - url: ${api.url}
+        pathPatterns:
+          "/graphql":
+            ttl: 0
+            forward:
+              headers: ["Accept", "Accept-Language"]
+            allowedHttpMethods: ["GET", "HEAD", "OPTIONS", "PUT", "POST", "PATCH", "DELETE"]

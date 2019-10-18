@@ -1,7 +1,6 @@
 const { join } = require("path");
 const { Component } = require("@serverless/core");
 const { configureS3Bucket, configureApiGateway } = require("./components");
-const { trackComponent } = require("@webiny/tracking");
 
 /**
  * This component deploys:
@@ -13,9 +12,7 @@ const { trackComponent } = require("@webiny/tracking");
  *  - image transformer - performs various image transformations
  */
 class FilesComponent extends Component {
-    async default({ track, ...inputs } = {}) {
-        await trackComponent({ track, context: this.context, component: __dirname });
-
+    async default(inputs = {}) {
         const { region = "us-east-1", bucket = "webiny-files", env, ...rest } = inputs;
 
         const manageFilesLambda = await this.load("@serverless/function", "manage-files");
@@ -75,7 +72,6 @@ class FilesComponent extends Component {
         const apolloService = await this.load("@webiny/serverless-apollo-service");
         const apolloServiceOutput = await apolloService({
             region,
-            track: false,
             plugins: ["@webiny/api-files/plugins"],
             endpoints: [
                 { path: "/files/{path}", method: "ANY", function: downloadLambdaOutput.arn }
@@ -105,14 +101,7 @@ class FilesComponent extends Component {
         return output;
     }
 
-    async remove({ track } = {}) {
-        await trackComponent({
-            track,
-            context: this.context,
-            component: __dirname,
-            method: "remove"
-        });
-
+    async remove() {
         const apolloService = await this.load("@webiny/serverless-apollo-service");
         await apolloService.remove();
 
@@ -130,11 +119,6 @@ class FilesComponent extends Component {
 
         this.state = {};
         await this.save();
-    }
-
-    async install(inputs = {}) {
-        console.log("files install", this.state);
-        return { installed: true };
     }
 }
 

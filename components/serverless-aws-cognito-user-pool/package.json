@@ -5,7 +5,6 @@
   "license": "MIT",
   "dependencies": {
     "@serverless/core": "^1.1.1",
-    "@webiny/tracking": "^0.1.6",
     "aws-sdk": "^2.539.0",
     "lodash.isequal": "^4.5.0"
   },

@@ -1,10 +1,7 @@
 const { Component } = require("@serverless/core");
-const { trackComponent } = require("@webiny/tracking");
 
 class ServerlessAwsCloudfront extends Component {
-    async default({ track, ...inputs } = {}) {
-        await trackComponent({ track, context: this.context, component: __dirname });
-
+    async default(inputs = {}) {
         const cf = await this.load("@serverless/aws-cloudfront");
         const output = await cf(inputs);
 
@@ -14,14 +11,7 @@ class ServerlessAwsCloudfront extends Component {
         return output;
     }
 
-    async remove({ track, ...inputs } = {}) {
-        await trackComponent({
-            track,
-            context: this.context,
-            component: __dirname,
-            method: "remove"
-        });
-
+    async remove(inputs = {}) {
         const cf = await this.load("@serverless/aws-cloudfront");
         await cf.remove(inputs);
 

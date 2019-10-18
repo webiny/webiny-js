@@ -7,7 +7,6 @@ const loadJson = require("load-json-file");
 const writeJson = require("write-json-file");
 const { transform } = require("@babel/core");
 const { Component } = require("@serverless/core");
-const { trackComponent } = require("@webiny/tracking");
 
 const defaultDependencies = ["babel-loader"];
 
@@ -20,9 +19,7 @@ const getDeps = async deps => {
 };
 
 class ApolloGateway extends Component {
-    async default({ track, ...inputs } = {}) {
-        await trackComponent({ track, context: this.context, component: __dirname });
-
+    async default(inputs = {}) {
         const {
             region,
             name: componentName = null,
@@ -121,14 +118,7 @@ class ApolloGateway extends Component {
         return output;
     }
 
-    async remove({ track, ...inputs } = {}) {
-        await trackComponent({
-            track,
-            context: this.context,
-            component: __dirname,
-            method: "remove"
-        });
-
+    async remove(inputs = {}) {
         const lambda = await this.load("@serverless/function");
         await lambda.remove(inputs);
 

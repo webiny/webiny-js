@@ -1,0 +1,26 @@
+{
+  "name": "@webiny/serverless-template",
+  "version": "0.0.0",
+  "main": "serverless.js",
+  "license": "Apache-2.0",
+  "author": "Serverless, Inc.",
+  "contributors": [
+    "Pavel Denisjuk <pavel@webiny.com>",
+    "Sven Al Hamad <sven@webiny.com>",
+    "Adrian Smijulj <adrian@webiny.com>"
+  ],
+  "dependencies": {
+    "@serverless/core": "^1.1.1",
+    "@webiny/tracking": "^0.1.6",
+    "ramda": "^0.26.1",
+    "traverse": "^0.6.6"
+  },
+  "scripts": {
+    "build": "rm -rf dist && mkdir dist && cp serverless.js utils.js dist/",
+    "postbuild": "cp package.json README.md LICENSE dist/",
+    "prepublishOnly": "yarn build"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}

@@ -1,6 +1,5 @@
 const Cognito = require("aws-sdk/clients/cognitoidentityserviceprovider");
 const { Component } = require("@serverless/core");
-const { trackComponent } = require("@webiny/tracking");
 const isEqual = require("lodash.isequal");
 
 const defaultPasswordPolicy = {
@@ -13,9 +12,7 @@ const defaultPasswordPolicy = {
 };
 
 class ServerlessAwsCognito extends Component {
-    async default({ track, ...inputs } = {}) {
-        await trackComponent({ track, context: this.context, component: __dirname });
-
+    async default(inputs = {}) {
         if (isEqual(this.state.inputs, inputs)) {
             this.context.debug("Input was not changed, no action required.");
             return this.state.output;
@@ -127,13 +124,7 @@ class ServerlessAwsCognito extends Component {
         return UserPool;
     }
 
-    async remove({ track } = {}) {
-        await trackComponent({
-            track,
-            context: this.context,
-            component: __dirname,
-            method: "remove"
-        });
+    async remove() {
         const { region } = this.state.inputs;
         const cognito = new Cognito({ region });
 
