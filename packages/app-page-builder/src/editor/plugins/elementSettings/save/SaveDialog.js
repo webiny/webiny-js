@@ -1,8 +1,9 @@
 // @flow
-import React from "react";
+import React, { useState } from "react";
 import { css } from "emotion";
 import { getPlugins } from "@webiny/plugins";
 import ElementPreview from "./SaveDialog/ElementPreview";
+import { CircularProgress } from "@webiny/ui/Progress";
 
 import {
     Dialog,
@@ -52,6 +53,7 @@ type Props = {
 const SaveDialog = React.memo(
     (props: Props) => {
         const { element, open, onClose, onSubmit, type } = props;
+        const [loading, setLoading] = useState(false);
 
         const blockCategoriesOptions = getPlugins("pb-editor-block-category").map(
             (item: Object) => {
@@ -65,13 +67,19 @@ const SaveDialog = React.memo(
         return (
             <Dialog open={open} onClose={onClose} className={narrowDialog}>
                 <Form
-                    onSubmit={onSubmit}
+                    onSubmit={async data => {
+                        setLoading(true);
+                        await onSubmit(data);
+                        setLoading(false);
+                    }}
                     data={{ type, category: "pb-editor-block-category-general" }}
                 >
                     {({ data, submit, Bind }) => (
                         <React.Fragment>
                             <DialogTitle>Save {type}</DialogTitle>
                             <DialogContent>
+                                {loading && <CircularProgress />}
+
                                 {element.source && (
                                     <Grid>
                                         <Cell span={12}>

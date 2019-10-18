@@ -32,7 +32,7 @@ export default (el: Element) => {
             title({ refresh }) {
                 return <Title plugin={name} title={el.name} id={el.id} refresh={refresh} />;
             },
-            group: "pb-page-element-group-saved",
+            group: "pb-editor-element-group-saved",
             preview() {
                 return (
                     <img

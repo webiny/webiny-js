@@ -1114,9 +1114,20 @@
     exec-sh "^0.3.2"
     minimist "^1.2.0"
 
-"@commodo/fields-storage-mongodb@^0.2.12", "@commodo/fields-storage-mongodb@^0.2.13":
+"@commodo/fields-storage-mongodb@^0.2.12":
+  version "0.2.12"
+  resolved "https://registry.yarnpkg.com/@commodo/fields-storage-mongodb/-/fields-storage-mongodb-0.2.12.tgz#b773be14db66b2602a762fc1e9dc791c5aebde76"
+  integrity sha512-Yk8LlGlLCot1syeCyNjjOd6YTRytUX5UXwCkUA/hxMmUXvuP+a6W0zFna/U1tuNfAVstZmBerCQ1m+Lx0njbGw==
+  dependencies:
+    "@commodo/fields" "^0.2.7"
+    "@commodo/fields-storage" "^0.3.1"
+    mdbid "^1.0.0"
+    mongodb "^3.1.13"
+    repropose "^1.0.2"
+
+"@commodo/fields-storage-mongodb@^0.2.13":
   version "0.2.13"
-  resolved "https://registry.yarnpkg.com/@commodo/fields-storage-mongodb/-/fields-storage-mongodb-0.2.13.tgz#0fe37edaa0a22bf9e3c1c1d3537094ff52c1e699"
+  resolved "https://registry.npmjs.org/@commodo/fields-storage-mongodb/-/fields-storage-mongodb-0.2.13.tgz#0fe37edaa0a22bf9e3c1c1d3537094ff52c1e699"
   integrity sha512-jvkwLWzoaNvUnmphYEc1tZOyFGJBfSoUmEPJKSX+D+22FfcVdQ3dyg4V7KeamE6/EI72Ny2BR3LsLCwHXtt19g==
   dependencies:
     "@commodo/fields" "^0.2.7"
@@ -1127,7 +1138,7 @@
 
 "@commodo/fields-storage-ref@^0.3.2":
   version "0.3.2"
-  resolved "https://registry.yarnpkg.com/@commodo/fields-storage-ref/-/fields-storage-ref-0.3.2.tgz#32f5922b1c46f6ce215a036240a554c21f48b9eb"
+  resolved "https://registry.npmjs.org/@commodo/fields-storage-ref/-/fields-storage-ref-0.3.2.tgz#32f5922b1c46f6ce215a036240a554c21f48b9eb"
   integrity sha512-+nRypFkcNvqcSyji+Fyq3Gj9ZCZnRxVtFjDUNV8+jEGWO8CarBqcjqnVMR3CYGXQtiFaZmwm5airOzJuh8FvuA==
   dependencies:
     "@commodo/fields" "^0.2.7"
@@ -1137,7 +1148,7 @@
 
 "@commodo/fields-storage-soft-delete@^0.2.1":
   version "0.2.1"
-  resolved "https://registry.yarnpkg.com/@commodo/fields-storage-soft-delete/-/fields-storage-soft-delete-0.2.1.tgz#821926aea1440ebd03d430299fb55d1cbf38b2f5"
+  resolved "https://registry.npmjs.org/@commodo/fields-storage-soft-delete/-/fields-storage-soft-delete-0.2.1.tgz#821926aea1440ebd03d430299fb55d1cbf38b2f5"
   integrity sha512-jBO0Wy1S4zoHXLCZxX+8FrOnuKa7pLMDV2S9bA2E5xduwv0N1htaOIduuk54ecqXd3TN9oP/9t6M7M4Q9SN69A==
   dependencies:
     "@commodo/fields" "^0.2.7"
@@ -14152,6 +14163,11 @@ lodash.padstart@^4.1.0:
   version "4.6.1"
   resolved "https://registry.yarnpkg.com/lodash.padstart/-/lodash.padstart-4.6.1.tgz#d2e3eebff0d9d39ad50f5cbd1b52a7bce6bb611b"
   integrity sha1-0uPuv/DZ05rVD1y9G1KnvOa7YRs=
+
+lodash.pick@^4.4.0:
+  version "4.4.0"
+  resolved "https://registry.npmjs.org/lodash.pick/-/lodash.pick-4.4.0.tgz#52f05610fff9ded422611441ed1fc123a03001b3"
+  integrity sha1-UvBWEP/53tQiYRRB7R/BI6AwAbM=
 
 lodash.set@^4.3.2:
   version "4.3.2"
