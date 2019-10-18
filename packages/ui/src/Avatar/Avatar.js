@@ -16,7 +16,17 @@ const avatar = css({
     background: "var(--mdc-theme-background)",
     color: "var(--mdc-theme-text-secondary-on-background)",
     div: {
-        textAlign: "center"
+        textAlign: "center",
+        display: "flex",
+        alignContent: "center",
+        justifyContent: "center",
+        flexDirection: "column",
+        width: 38,
+        height: 38,
+        fontSize: "1rem",
+        span: {
+            paddingBottom: 2
+        }
     },
     img: {
         width: "100% !important",
@@ -71,11 +81,13 @@ const Avatar = (props: Props) => {
                 renderedImage
             ) : (
                 <div>
-                    {fallbackText
-                        .split(" ")
-                        .map(word => word.charAt(0))
-                        .join("")
-                        .toUpperCase()}
+                    <span>
+                        {fallbackText
+                            .split(" ")
+                            .map(word => word.charAt(0))
+                            .join("")
+                            .toUpperCase()}
+                    </span>
                 </div>
             )}
         </div>
