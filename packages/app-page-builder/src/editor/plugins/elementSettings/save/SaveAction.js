@@ -71,7 +71,7 @@ const SaveAction = (props: Props) => {
                       id: element.source,
                       data: pick(formData, ["content", "id"])
                   }
-                : { data: formData }
+                : { data: pick(formData, ["type", "category", "preview", "name", "content"]) }
         });
 
         hideDialog();
