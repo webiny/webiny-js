@@ -18,6 +18,15 @@ function copyFile(from, to) {
 module.exports = async ({ name }) => {
     const root = join(process.cwd(), name);
 
+    if (fs.existsSync(root)) {
+        console.log(
+            `🚨 Aborting: destination folder ${green(
+                name
+            )} already exists! Please enter a different folder name.`
+        );
+        process.exit(1);
+    }
+
     console.log(`Creating a new Webiny project in ${green(root)}...`);
     fs.ensureDirSync(root);
     process.chdir(root);
