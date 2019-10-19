@@ -9,7 +9,7 @@ module.exports = {
         AWS_PROFILE: "default",
         MONGODB_SERVER: "[MONGODB_SERVER]",
         MONGODB_NAME: "webiny",
-        WEBINY_JWT_SECRET: "MyS3cr3tK3Y!",
+        JWT_SECRET: "MyS3cr3tK3Y!",
         STAGE: "prod"
     }
 };
