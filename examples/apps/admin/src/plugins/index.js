@@ -10,7 +10,6 @@ import typeformPlugins from "@webiny/app-typeform/admin";
 import mailchimpPlugins from "@webiny/app-mailchimp/admin";
 import formsPlugins from "@webiny/app-forms/admin/plugins";
 import formsCmsPlugins from "@webiny/app-forms/page-builder/admin/plugins";
-import install from "./install";
 
 const plugins = [
     fileUploadPlugin({}),
@@ -24,8 +23,7 @@ const plugins = [
     cookiePolicyPlugins,
     googleTagManagerPlugins,
     typeformPlugins,
-    mailchimpPlugins,
-    install
+    mailchimpPlugins
 ];
 
 export default plugins;

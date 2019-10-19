@@ -28,7 +28,7 @@ class Deploy extends Component {
         const output = await template(inputs);
 
         if (inputs.api) {
-            console.log(`\n🏁 Done! Here are some resources you will need to run your client apps:`);
+            console.log(`\n🎉 Done! Here are some resources you will need to run your client apps:`);
             console.log(`----------`);
 
             if (output.cdn) {

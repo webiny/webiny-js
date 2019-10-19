@@ -18,7 +18,13 @@ class ServerlessAwsCognito extends Component {
             return this.state.output;
         }
 
-        const { region = "us-east-1", name, tags = {}, appClients = [] } = inputs;
+        const {
+            region = "us-east-1",
+            name,
+            tags = {},
+            appClients = [],
+            allowSignup = false
+        } = inputs;
         const passwordPolicy = Object.assign({}, defaultPasswordPolicy, inputs.passwordPolicy);
 
         const cognito = new Cognito({ region });
@@ -91,7 +97,7 @@ class ServerlessAwsCognito extends Component {
             const params = {
                 PoolName: name,
                 AdminCreateUserConfig: {
-                    AllowAdminCreateUserOnly: false
+                    AllowAdminCreateUserOnly: !allowSignup
                 },
                 AutoVerifiedAttributes: ["email"],
                 EmailConfiguration: {

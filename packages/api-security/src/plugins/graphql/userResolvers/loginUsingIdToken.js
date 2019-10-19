@@ -16,10 +16,10 @@ export default (getModel: GetModelType) => async (root: any, args: Object, conte
     try {
         const authPlugin = context.plugins
             .byType("security-authentication-provider")
-            .filter(pl => pl.hasOwnProperty("getUser"))
+            .filter(pl => pl.hasOwnProperty("userFromToken"))
             .pop();
 
-        user = await authPlugin.getUser({ idToken: args.idToken, SecurityUser }, context);
+        user = await authPlugin.userFromToken({ idToken: args.idToken, SecurityUser }, context);
     } catch (err) {
         return new ErrorResponse({
             code: err.code,

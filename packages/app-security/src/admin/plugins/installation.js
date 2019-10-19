@@ -3,9 +3,11 @@ import React, { useState, useCallback } from "react";
 import { useApolloClient } from "react-apollo";
 import { Form } from "@webiny/form";
 import { i18n } from "@webiny/app/i18n";
-import { Alert } from "@webiny/ui/Alert";
 import { ButtonPrimary } from "@webiny/ui/Button";
 import { Input } from "@webiny/ui/Input";
+import { Alert } from "@webiny/ui/Alert";
+import { Typography } from "@webiny/ui/Typography";
+import { Grid, Cell } from "@webiny/ui/Grid";
 import { CircularProgress } from "@webiny/ui/Progress";
 import { validation } from "@webiny/validation";
 import { getPlugins } from "@webiny/plugins";
@@ -36,7 +38,10 @@ const INSTALL = gql`
     mutation InstallSecurity($data: SecurityInstallInput!) {
         security {
             install(data: $data) {
-                data
+                data {
+                    user
+                    authUser
+                }
                 error {
                     code
                     message
@@ -59,6 +64,7 @@ const Install = ({ onInstalled }) => {
 
     const client = useApolloClient();
     const [loading, setLoading] = useState(false);
+    const [authUserMessage, setAuthUserMessage] = useState(null);
     const [error, setError] = useState(null);
 
     const onSubmit = useCallback(async form => {
@@ -66,57 +72,93 @@ const Install = ({ onInstalled }) => {
         setError(null);
         const { data: res } = await client.mutate({ mutation: INSTALL, variables: { data: form } });
         setLoading(false);
-        const { error } = res.security.install;
+        const { error, data } = res.security.install;
         if (error) {
-            setError(error.message);
+            setError(error);
             return;
         }
 
-        onInstalled();
+        if (data.user && data.authUser) {
+            onInstalled();
+            return;
+        }
+
+        if (!data.authUser) {
+            setAuthUserMessage(true);
+        }
     }, []);
 
     return (
-        <Form onSubmit={onSubmit}>
+        <Form onSubmit={onSubmit} submitOnEnter>
             {({ data, Bind, submit }) => (
                 <SimpleForm>
                     {loading && <CircularProgress />}
-                    {error && (
-                        <Alert title={"Something went wrong"} type={"danger"}>
-                            {error}
-                        </Alert>
-                    )}
                     <SimpleFormHeader title={"Install Security"} />
                     <SimpleFormContent>
-                        {renderInstallForm({
-                            Bind,
-                            data,
-                            fields: {
-                                firstName: (
-                                    <Bind
-                                        name="firstName"
-                                        validators={validation.create("required")}
-                                    >
-                                        <Input label={t`First Name`} />
-                                    </Bind>
-                                ),
-                                lastName: (
-                                    <Bind
-                                        name="lastName"
-                                        validators={validation.create("required")}
-                                    >
-                                        <Input label={t`Last name`} />
-                                    </Bind>
-                                ),
-                                email: (
-                                    <Bind name="email" validators={validation.create("required")}>
-                                        <Input label={t`E-mail`} />
-                                    </Bind>
-                                )
-                            }
-                        })}
+                        {authUserMessage && (
+                            <Grid>
+                                <Cell span={12}>
+                                    <Alert type={"success"} title={"Success"}>
+                                        Admin user created successfully!
+                                    </Alert>
+                                </Cell>
+                                <Cell span={12}>
+                                    <Typography use={"body1"}>
+                                        However, there already is a user with the same email address
+                                        on your authentication provider. For security reasons, the
+                                        password you provided was not applied.
+                                    </Typography>
+                                </Cell>
+                                <Cell span={12}>
+                                    <Typography use={"body1"}>
+                                        If you are the owner of that account, simply use your
+                                        credentials to login, when prompted.
+                                    </Typography>
+                                </Cell>
+                            </Grid>
+                        )}
+                        {!authUserMessage &&
+                            renderInstallForm({
+                                Bind,
+                                data,
+                                error,
+                                fields: {
+                                    firstName: (
+                                        <Bind
+                                            name="firstName"
+                                            validators={validation.create("required")}
+                                        >
+                                            <Input label={t`First Name`} />
+                                        </Bind>
+                                    ),
+                                    lastName: (
+                                        <Bind
+                                            name="lastName"
+                                            validators={validation.create("required")}
+                                        >
+                                            <Input label={t`Last name`} />
+                                        </Bind>
+                                    ),
+                                    email: (
+                                        <Bind
+                                            name="email"
+                                            validators={validation.create("required")}
+                                        >
+                                            <Input label={t`E-mail`} />
+                                        </Bind>
+                                    )
+                                }
+                            })}
                     </SimpleFormContent>
                     <SimpleFormFooter>
-                        <ButtonPrimary onClick={submit}>Install security</ButtonPrimary>
+                        {!authUserMessage && (
+                            <ButtonPrimary onClick={submit}>Install security</ButtonPrimary>
+                        )}
+                        {authUserMessage && (
+                            <ButtonPrimary onClick={onInstalled}>
+                                OK, finish installation!
+                            </ButtonPrimary>
+                        )}
                     </SimpleFormFooter>
                 </SimpleForm>
             )}

@@ -2,23 +2,14 @@ import { ErrorResponse, Response } from "@webiny/api";
 import { WithFieldsError } from "@webiny/commodo";
 import { InvalidFieldsError } from "@webiny/commodo-graphql";
 
-export default userFetcher => async (root: any, args: Object, context: Object) => {
-    const User = userFetcher(context);
-    const user = new User();
+export const install = async (root: any, args: Object, context: Object) => {
+    const { I18NLocale } = context.models;
 
     try {
-        await user.populate(args.data).save();
-
-        const authPlugin = context.plugins
-            .byType("security-authentication-provider")
-            .filter(pl => pl.hasOwnProperty("createUser"))
-            .pop();
-
-        try {
-            await authPlugin.createUser({ data: args.data, user }, context);
-        } catch {
-            // If user already exists we don't do anything on the auth provider side.
-        }
+        const defaultLocale = new I18NLocale();
+        defaultLocale.code = args.data.code;
+        defaultLocale.default = true;
+        await defaultLocale.save();
     } catch (e) {
         if (e.code === WithFieldsError.VALIDATION_FAILED_INVALID_FIELDS) {
             const attrError = InvalidFieldsError.from(e);
@@ -34,5 +25,15 @@ export default userFetcher => async (root: any, args: Object, context: Object) =
             data: e.data
         });
     }
-    return new Response(user);
+
+    return new Response(true);
+};
+
+export const isInstalled = async (root: any, args: Object, context: Object) => {
+    const { I18NLocale } = context.models;
+
+    // Check if at least 1 user exists in the system
+    const localeCount = await I18NLocale.count();
+
+    return new Response(localeCount > 0);
 };

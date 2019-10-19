@@ -1,8 +1,9 @@
 // @flow
+import i18nSitePlugins from "@webiny/app-i18n/site/plugins";
 import routes from "./routes";
 import menus from "./menus";
 import richTextEditor from "./richTextEditor";
-import i18nSitePlugins from "@webiny/app-i18n/site/plugins";
+import install from "./install";
 
 /**
  * Prevents opening global search menu when pressing "/" inside of I18N Rich Text Editor.
@@ -18,4 +19,4 @@ const globalSearchHotkey = {
     }
 };
 
-export default [routes, menus, richTextEditor, i18nSitePlugins, globalSearchHotkey];
+export default [routes, menus, richTextEditor, i18nSitePlugins, globalSearchHotkey, install];

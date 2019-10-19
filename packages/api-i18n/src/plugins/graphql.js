@@ -5,6 +5,7 @@ import { emptyResolver } from "@webiny/commodo-graphql";
 import { type PluginType } from "@webiny/api/types";
 import { hasScope } from "@webiny/api-security";
 import i18nLocale from "./graphql/I18NLocale";
+import install from "./graphql/Install";
 
 export default ([
     {
@@ -28,6 +29,11 @@ export default ([
                     i18n: I18NMutation
                 }
 
+                type I18NBooleanResponse {
+                    data: Boolean
+                    error: I18NError
+                }
+
                 type I18NDeleteResponse {
                     data: Boolean
                     error: I18NError
@@ -49,7 +55,7 @@ export default ([
                     message: String
                     data: JSON
                 }
-
+                ${install.typeDefs}
                 ${i18nLocale.typeDefs}
             `,
             resolvers: merge(
@@ -61,7 +67,8 @@ export default ([
                         i18n: emptyResolver
                     }
                 },
-                i18nLocale.resolvers
+                i18nLocale.resolvers,
+                install.resolvers
             )
         },
         security: {

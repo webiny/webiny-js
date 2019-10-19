@@ -14,9 +14,21 @@ export default {
             isInstalled: SecurityBooleanResponse
         }
         
+        type SecurityInstallResult {
+            "Webiny user was created"
+            user: Boolean
+            "Authentication provider user was created"
+            authUser: Boolean
+        }
+        
+        type SecurityInstallResponse {
+            data: SecurityInstallResult
+            error: SecurityError
+        }
+        
         extend type SecurityMutation {
             "Install Security"
-            install(data: SecurityInstallInput!): SecurityBooleanResponse
+            install(data: SecurityInstallInput!): SecurityInstallResponse
         }
     `,
     resolvers: {
