@@ -130,7 +130,7 @@ class ApolloService extends Component {
         process.chdir(cwd);
 
         // Deploy lambda
-        const lambda = await this.load("@serverless/function");
+        const lambda = await this.load("@webiny/serverless-function");
         const apiGw = await this.load("@webiny/serverless-aws-api-gateway");
 
         const lambdaOut = await lambda({
@@ -168,7 +168,7 @@ class ApolloService extends Component {
         const apiGw = await this.load("@webiny/serverless-aws-api-gateway");
         await apiGw.remove(inputs);
 
-        const lambda = await this.load("@serverless/function");
+        const lambda = await this.load("@webiny/serverless-function");
         await lambda.remove(inputs);
 
         this.state = {};

@@ -101,7 +101,7 @@ class ApolloGateway extends Component {
         process.chdir(cwd);
 
         // Deploy lambda
-        const lambda = await this.load("@serverless/function");
+        const lambda = await this.load("@webiny/serverless-function");
 
         const output = await lambda({
             region,
@@ -120,7 +120,7 @@ class ApolloGateway extends Component {
     }
 
     async remove(inputs = {}) {
-        const lambda = await this.load("@serverless/function");
+        const lambda = await this.load("@@webiny/serverless-function");
         await lambda.remove(inputs);
 
         this.state = {};

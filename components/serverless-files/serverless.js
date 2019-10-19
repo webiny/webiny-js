@@ -15,7 +15,7 @@ class FilesComponent extends Component {
     async default(inputs = {}) {
         const { region = "us-east-1", bucket = "webiny-files", env, ...rest } = inputs;
 
-        const manageFilesLambda = await this.load("@serverless/function", "manage-files");
+        const manageFilesLambda = await this.load("@webiny/serverless-function", "manage-files");
         const manageFilesLambdaOutput = await manageFilesLambda({
             region,
             name: "Files component - manage files",
@@ -39,7 +39,7 @@ class FilesComponent extends Component {
             bucket
         });
 
-        const imageTransformerLambda = await this.load("@serverless/function", "image-transformer");
+        const imageTransformerLambda = await this.load("@webiny/serverless-function", "image-transformer");
         const imageTransformerLambdaOutput = await imageTransformerLambda({
             region,
             name: "Files component - image transformer",
@@ -54,7 +54,7 @@ class FilesComponent extends Component {
         });
 
         // Deploy read/upload lambdas
-        const downloadLambda = await this.load("@serverless/function", "download");
+        const downloadLambda = await this.load("@webiny/serverless-function", "download");
         const downloadLambdaOutput = await downloadLambda({
             region,
             name: "Files component - download files",
@@ -105,13 +105,13 @@ class FilesComponent extends Component {
         const apolloService = await this.load("@webiny/serverless-apollo-service");
         await apolloService.remove();
 
-        let lambda = await this.load("@serverless/function", "manage-files");
+        let lambda = await this.load("@webiny/serverless-function", "manage-files");
         await lambda.remove();
 
-        lambda = await this.load("@serverless/function", "image-transformer");
+        lambda = await this.load("@webiny/serverless-function", "image-transformer");
         await lambda.remove();
 
-        lambda = await this.load("@serverless/function", "download");
+        lambda = await this.load("@webiny/serverless-function", "download");
         await lambda.remove();
 
         const s3 = await this.load("@serverless/aws-s3");
