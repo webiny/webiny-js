@@ -5,14 +5,14 @@ site:
   inputs:
     description: Webiny Site
     hook: yarn build:prod
-    root: ../code/site
+    root: ./apps/site
     timeout: 10
 #admin:
 #  component: "@webiny/serverless-app"
 #  inputs:
 #    description: Webiny Admin
 #    hook: yarn build:prod
-#    root: ../code/admin
+#    root: ./apps/admin
 
 api:
   component: "@webiny/serverless-api-gateway"
@@ -21,12 +21,12 @@ api:
     endpointTypes: ['REGIONAL']
     stage: prod
     endpoints:
-#      - path: /admin/{key+}
-#        method: GET
-#        function: ${admin}
-#      - path: /admin
-#        method: GET
-#        function: ${admin}
+      #      - path: /admin/{key+}
+      #        method: GET
+      #        function: ${admin}
+      #      - path: /admin
+      #        method: GET
+      #        function: ${admin}
       - path: /{key+}
         method: GET
         function: ${site}

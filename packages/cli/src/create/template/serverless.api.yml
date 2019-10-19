@@ -3,7 +3,7 @@ name: webiny-cms-project
 vars:
   region: "us-east-1"
   env:
-    WEBINY_JWT_SECRET: ${env.WEBINY_JWT_SECRET}
+    JWT_SECRET: ${env.JWT_SECRET}
   database:
     server: ${env.MONGODB_SERVER}
     name: ${env.MONGODB_NAME}
@@ -11,7 +11,9 @@ vars:
 gateway:
   component: "@webiny/serverless-apollo-gateway"
   inputs:
+    region: ${vars.region}
     name: gateway
+    memory: 512
     timeout: 30
     services:
       - name: security
@@ -22,61 +24,58 @@ gateway:
         url: ${pageBuilder.api.url}/graphql
       - name: i18n
         url: ${i18n.api.url}/graphql
-      - name: forms
-        url: ${forms.api.url}/graphql
 
-userPool:
+cognito:
   component: "@webiny/serverless-aws-cognito-user-pool"
   inputs:
-    name: "WebinyCmsPool"
+    region: ${vars.region}
+    name: WebinyPool
+    appClients:
+      - name: ReactApp
 
 security:
   component: "@webiny/serverless-apollo-service"
   inputs:
+    region: ${vars.region}
     name: security
-    memory: 128
+    memory: 512
     database: ${vars.database}
     env: ${vars.env}
     plugins:
       - "@webiny/api-security/plugins"
       - factory: "@webiny/api-plugin-security-cognito"
         options:
-          region: us-east-1
-          userPoolId: ${userPool.id}
+          region: ${vars.region}
+          userPoolId: ${cognito.userPool.Id}
 
-# Example of a custom service using generic component
 files:
   component: "@webiny/serverless-files"
   inputs:
     region: ${vars.region}
+    bucket: "my-test-bucket-3"
     name: files
-    bucket: "webiny-files"
+    memory: 512
     database: ${vars.database}
     env: ${vars.env}
+
 
 i18n:
   component: "@webiny/serverless-apollo-service"
   inputs:
+    region: ${vars.region}
     name: i18n
+    memory: 512
     database: ${vars.database}
     env: ${vars.env}
     plugins:
       - "@webiny/api-i18n/plugins"
 
-forms:
-  component: "@webiny/serverless-apollo-service"
-  inputs:
-    name: forms
-    database: ${vars.database}
-    env: ${vars.env}
-    plugins:
-      - "@webiny/api-forms/plugins"
-
-# Example of a specific use-case component
 pageBuilder:
   component: "@webiny/serverless-page-builder"
   inputs:
+    region: ${vars.region}
     name: pageBuilder
+    memory: 512
     database: ${vars.database}
     env: ${vars.env}
     plugins:
@@ -87,6 +86,7 @@ pageBuilder:
 api:
   component: "@webiny/serverless-api-gateway"
   inputs:
+    region: ${vars.region}
     description: "Main GraphQL API"
     stage: prod
     endpointTypes: ['REGIONAL']
@@ -96,7 +96,7 @@ api:
         function: ${gateway}
 
 cdn:
-  component: "@serverless/aws-cloudfront"
+  component: "@webiny/serverless-aws-cloudfront"
   inputs:
     origins:
       - ${files.cdnOrigin}
