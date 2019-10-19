@@ -137,6 +137,7 @@ class ApolloService extends Component {
             region,
             description: description || `Apollo Server: ${componentName}`,
             code: join(componentRoot, "build"),
+            root: componentRoot,
             handler: "handler.handler",
             env,
             memory,

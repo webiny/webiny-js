@@ -107,6 +107,7 @@ class ApolloGateway extends Component {
             region,
             description: description || `Apollo Gateway: ${componentName}`,
             code: path.join(componentRoot, "build"),
+            root: componentRoot,
             handler: "handler.handler",
             env,
             memory,
