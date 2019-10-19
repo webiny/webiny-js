@@ -15,13 +15,13 @@ class Deploy extends Component {
 
         if (inputs.api) {
             if (output.cdn) {
-                console.log(`\n🚀 Your GraphQL API URL is ${green(output.cdn.url + "/graphql")}`);
+                console.log(`\n🚀 Your GraphQL API URL: ${green(output.cdn.url + "/graphql")}`);
             }
             if (output.cognito) {
-                console.log(`🔒 Cognito UserPool ID: ${green(output.cognito.userPool.Id)}`);
+                console.log(`🔐 Cognito UserPool ID: ${green(output.cognito.userPool.Id)}`);
                 output.cognito.appClients.forEach(client => {
                     console.log(
-                        `🔑 App Client ID [${client.ClientName}]: ${green(client.ClientId)}`
+                        `🔑 ${green(client.ClientName)} client ID: ${green(client.ClientId)}`
                     );
                 });
             }
