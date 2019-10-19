@@ -8,6 +8,11 @@ const getAlias = inputs => {
 
 class Deploy extends Component {
     async default(inputs = {}) {
+        if (inputs.help) {
+            require("./help");
+            process.exit(0);
+        }
+
         const alias = getAlias(inputs);
 
         const template = await this.load("@webiny/serverless-template", alias);

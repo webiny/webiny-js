@@ -6,7 +6,8 @@
   "dependencies": {
     "@serverless/core": "^1.1.1",
     "@webiny/serverless-template": "^0",
-    "chalk": "^2.4.2"
+    "chalk": "^2.4.2",
+    "cliui": "^5.0.0"
   },
   "scripts": {
     "build": "rm -rf dist && mkdir dist && cp serverless.js dist/",
