@@ -88,8 +88,6 @@ api:
   inputs:
     region: ${vars.region}
     description: "Main GraphQL API"
-    stage: prod
-    endpointTypes: ['REGIONAL']
     endpoints:
       - path: /graphql
         method: ANY

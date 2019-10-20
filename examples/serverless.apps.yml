@@ -18,7 +18,6 @@ api:
   component: "@webiny/serverless-api-gateway"
   inputs:
     description: Serverless Site
-    stage: prod
     endpoints:
       - path: /{key+}
         method: GET

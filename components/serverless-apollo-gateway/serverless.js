@@ -121,7 +121,7 @@ class ApolloGateway extends Component {
     }
 
     async remove(inputs = {}) {
-        const lambda = await this.load("@@webiny/serverless-function");
+        const lambda = await this.load("@webiny/serverless-function");
         await lambda.remove(inputs);
 
         this.state = {};

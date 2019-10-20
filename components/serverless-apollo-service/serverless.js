@@ -8,7 +8,13 @@ const writeJson = require("write-json-file");
 const { transform } = require("@babel/core");
 const { Component } = require("@serverless/core");
 
-const defaultDependencies = ["date-fns", "mongodb", "@webiny/api", "@webiny/api-security", "babel-loader"];
+const defaultDependencies = [
+    "date-fns",
+    "mongodb",
+    "@webiny/api",
+    "@webiny/api-security",
+    "babel-loader"
+];
 
 const getDeps = async deps => {
     const { dependencies } = await loadJson(join(__dirname, "package.json"));
@@ -131,7 +137,7 @@ class ApolloService extends Component {
 
         // Deploy lambda
         const lambda = await this.load("@webiny/serverless-function");
-        const apiGw = await this.load("@webiny/serverless-aws-api-gateway");
+        const apiGw = await this.load("@webiny/serverless-api-gateway");
 
         const lambdaOut = await lambda({
             region,
@@ -166,7 +172,7 @@ class ApolloService extends Component {
     }
 
     async remove(inputs = {}) {
-        const apiGw = await this.load("@webiny/serverless-aws-api-gateway");
+        const apiGw = await this.load("@webiny/serverless-api-gateway");
         await apiGw.remove(inputs);
 
         const lambda = await this.load("@webiny/serverless-function");
