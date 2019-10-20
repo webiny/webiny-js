@@ -1,11 +1,8 @@
 const path = require("path");
 const { Component } = require("@serverless/core");
-const { trackComponent } = require("@webiny/tracking");
 
 class ServerlessApp extends Component {
-    async default({ track, ...inputs } = {}) {
-        await trackComponent({ track, context: this.context, component: __dirname });
-
+    async default(inputs = {}) {
         if (!inputs.code) {
             inputs.code = path.join(inputs.root, "build");
         }
@@ -16,7 +13,7 @@ class ServerlessApp extends Component {
 
         const fn = await this.load("@webiny/serverless-function");
 
-        const output = await fn({ ...inputs, track: false });
+        const output = await fn(inputs);
 
         this.state.output = output;
         await this.save();
@@ -24,16 +21,9 @@ class ServerlessApp extends Component {
         return output;
     }
 
-    async remove({ track, ...inputs } = {}) {
-        await trackComponent({
-            track,
-            context: this.context,
-            component: __dirname,
-            method: "remove"
-        });
-
+    async remove(inputs = {}) {
         const fn = await this.load("@webiny/serverless-function");
-        await fn.remove({ ...inputs, track: false });
+        await fn.remove(inputs);
 
         this.state = {};
         await this.save();

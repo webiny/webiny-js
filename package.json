@@ -4,8 +4,7 @@
     "packages": [
       "packages/*",
       "components/*",
-      "examples/functions/code/*",
-      "examples/apps/code/*",
+      "examples/apps/*",
       "examples/packages/*"
     ],
     "nohoist": [

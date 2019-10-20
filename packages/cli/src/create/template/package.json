@@ -3,7 +3,7 @@
   "workspaces": {
     "packages": [
       "packages/*",
-      "apps/code/*"
+      "apps/*"
     ]
   },
   "dependencies": {

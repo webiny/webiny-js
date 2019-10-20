@@ -1,6 +1,6 @@
 // @flow
 import { Response, ErrorResponse } from "@webiny/commodo-graphql";
-import { JwtToken } from "../../authentication/jwtToken";
+import generateJWT from "../generateJWT";
 type GetModelType = (context: Object) => Function;
 
 const invalidCredentials = new ErrorResponse({
@@ -16,10 +16,10 @@ export default (getModel: GetModelType) => async (root: any, args: Object, conte
     try {
         const authPlugin = context.plugins
             .byType("security-authentication-provider")
-            .filter(pl => pl.hasOwnProperty("getUser"))
+            .filter(pl => pl.hasOwnProperty("userFromToken"))
             .pop();
 
-        user = await authPlugin.getUser({ idToken: args.idToken, SecurityUser }, context);
+        user = await authPlugin.userFromToken({ idToken: args.idToken, SecurityUser }, context);
     } catch (err) {
         return new ErrorResponse({
             code: err.code,
@@ -32,27 +32,11 @@ export default (getModel: GetModelType) => async (root: any, args: Object, conte
     }
 
     // Generate token
-    let expiration = context.config.security.token.expiresOn(args);
-    if (expiration instanceof Date) {
-        expiration = Math.floor(expiration.getTime() / 1000);
-    }
-
-    const jwt = new JwtToken({ secret: context.config.security.token.secret });
-    const access = await user.access;
-    const token = await jwt.encode(
-        // $FlowFixMe - instance that will be validated will have "password" attribute.
-        {
-            id: user.id,
-            type: "user",
-            access
-        },
-        // 2147483647 = maximum value of unix timestamp (year 2038).
-        2147483647
-    );
+    const { token, expiresOn } = await generateJWT(user, context);
 
     return new Response({
         user,
         token,
-        expiresOn: expiration
+        expiresOn
     });
 };

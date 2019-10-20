@@ -32,6 +32,10 @@ export default ({ region, userPoolId }) => {
             name: "graphql-schema-cognito",
             schema: {
                 typeDefs: gql`
+                    extend input SecurityInstallInput {
+                        password: String
+                    }
+
                     extend input SecurityUserInput {
                         password: String
                     }
@@ -46,7 +50,7 @@ export default ({ region, userPoolId }) => {
         {
             name: "security-authentication-provider-cognito",
             type: "security-authentication-provider",
-            async getUser({ idToken, SecurityUser }) {
+            async userFromToken({ idToken, SecurityUser }) {
                 const jwks = await getJWKs();
                 const { header } = jwt.decode(idToken, { complete: true });
                 const jwk = jwks.find(key => key.kid === header.kid);
@@ -61,6 +65,10 @@ export default ({ region, userPoolId }) => {
 
                 const user = await SecurityUser.findOne({ query: { email: token.email } });
 
+                if (!user) {
+                    return null;
+                }
+
                 if (attrKeys.some(attr => token.hasOwnProperty(attr))) {
                     attrKeys.forEach(attr => {
                         user[updateAttributes[attr]] = token[attr];
@@ -71,7 +79,13 @@ export default ({ region, userPoolId }) => {
 
                 return user;
             },
-            async createUser({ data, user }) {
+            async getUser({ email }) {
+                return await cognito
+                    .adminGetUser({ Username: email, UserPoolId: userPoolId })
+                    .promise()
+                    .catch(() => null);
+            },
+            async createUser({ data, user, permanent = false }) {
                 const params = {
                     UserPoolId: userPoolId,
                     Username: user.email,
@@ -102,7 +116,19 @@ export default ({ region, userPoolId }) => {
                         }
                     ]
                 };
+
                 await cognito.adminUpdateUserAttributes(verify).promise();
+
+                if (permanent) {
+                    await cognito
+                        .adminSetUserPassword({
+                            Permanent: true,
+                            Password: data.password,
+                            Username: user.email,
+                            UserPoolId: userPoolId
+                        })
+                        .promise();
+                }
             },
             async updateUser({ data, user }) {
                 const params = {
@@ -130,6 +156,13 @@ export default ({ region, userPoolId }) => {
                 await cognito
                     .adminDeleteUser({ UserPoolId: userPoolId, Username: user.email })
                     .promise();
+            },
+            async countUsers() {
+                const { UserPool } = await cognito
+                    .describeUserPool({ UserPoolId: userPoolId })
+                    .promise();
+
+                return UserPool.EstimatedNumberOfUsers;
             }
         }
     ];

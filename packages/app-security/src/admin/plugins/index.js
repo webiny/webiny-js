@@ -4,6 +4,7 @@ import { globalSearchUsers } from "./GlobalSearch";
 import routes from "./routes";
 import menus from "./menus";
 import secureRouteError from "./secureRouteError";
+import installation from "./installation";
 
 export default [
     // Layout plugins
@@ -11,5 +12,6 @@ export default [
     globalSearchUsers,
     routes,
     menus,
-    secureRouteError
+    secureRouteError,
+    installation
 ];

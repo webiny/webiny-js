@@ -6,8 +6,8 @@ export default ({ createBase, SecurityRole }) =>
     flow(
         withName("SecurityRoles2Models"),
         withFields(() => ({
-            entity: ref({ instanceOf: [], refNameField: "entityClassId" }),
-            entityClassId: string(),
+            model: ref({ instanceOf: [], refNameField: "modelClassId" }),
+            modelClassId: string(),
             role: ref({
                 instanceOf: SecurityRole
             })

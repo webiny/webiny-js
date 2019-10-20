@@ -1125,21 +1125,33 @@
     mongodb "^3.1.13"
     repropose "^1.0.2"
 
-"@commodo/fields-storage-ref@^0.3.1":
-  version "0.3.1"
-  resolved "https://registry.yarnpkg.com/@commodo/fields-storage-ref/-/fields-storage-ref-0.3.1.tgz#d3f4078a6439db03d5fd02bf3368b50cecb86058"
-  integrity sha512-BVpeVbAEzfL6U2f4P1A0YOFDSJFKYuiZH9ngcbz293YzLXbbrJB414NCsRr2nP5/bcopTL18QLw4/+nKnjMKIA==
+"@commodo/fields-storage-mongodb@^0.2.13":
+  version "0.2.13"
+  resolved "https://registry.npmjs.org/@commodo/fields-storage-mongodb/-/fields-storage-mongodb-0.2.13.tgz#0fe37edaa0a22bf9e3c1c1d3537094ff52c1e699"
+  integrity sha512-jvkwLWzoaNvUnmphYEc1tZOyFGJBfSoUmEPJKSX+D+22FfcVdQ3dyg4V7KeamE6/EI72Ny2BR3LsLCwHXtt19g==
+  dependencies:
+    "@commodo/fields" "^0.2.7"
+    "@commodo/fields-storage" "^0.3.1"
+    mdbid "^1.0.0"
+    mongodb "^3.1.13"
+    repropose "^1.0.2"
+
+"@commodo/fields-storage-ref@^0.3.2":
+  version "0.3.2"
+  resolved "https://registry.npmjs.org/@commodo/fields-storage-ref/-/fields-storage-ref-0.3.2.tgz#32f5922b1c46f6ce215a036240a554c21f48b9eb"
+  integrity sha512-+nRypFkcNvqcSyji+Fyq3Gj9ZCZnRxVtFjDUNV8+jEGWO8CarBqcjqnVMR3CYGXQtiFaZmwm5airOzJuh8FvuA==
   dependencies:
     "@commodo/fields" "^0.2.7"
     "@commodo/hooks" "^0.1.1"
     "@commodo/name" "^1.0.2"
     repropose "^1.0.2"
 
-"@commodo/fields-storage-soft-delete@^0.2.0":
-  version "0.2.0"
-  resolved "https://registry.yarnpkg.com/@commodo/fields-storage-soft-delete/-/fields-storage-soft-delete-0.2.0.tgz#0549b6b057cfb29fae549ecae22c20dd18c8edb1"
-  integrity sha512-ocXyO73d7cu3aDreuqtcmyccM7lgkIex0nJ5kL3EBQj8MU250oBvJnM63/lCZbC9VmrVYdMAGLmZON80QMKgGA==
+"@commodo/fields-storage-soft-delete@^0.2.1":
+  version "0.2.1"
+  resolved "https://registry.npmjs.org/@commodo/fields-storage-soft-delete/-/fields-storage-soft-delete-0.2.1.tgz#821926aea1440ebd03d430299fb55d1cbf38b2f5"
+  integrity sha512-jBO0Wy1S4zoHXLCZxX+8FrOnuKa7pLMDV2S9bA2E5xduwv0N1htaOIduuk54ecqXd3TN9oP/9t6M7M4Q9SN69A==
   dependencies:
+    "@commodo/fields" "^0.2.7"
     repropose "^1.0.0"
 
 "@commodo/fields-storage@^0.3.1":
@@ -2816,15 +2828,6 @@
   dependencies:
     "@serverless/core" "^1.0.0"
     aws-sdk "^2.0.0"
-
-"@serverless/aws-api-gateway@^4.0.0":
-  version "4.0.0"
-  resolved "https://registry.yarnpkg.com/@serverless/aws-api-gateway/-/aws-api-gateway-4.0.0.tgz#2918a110d088a91049bf2f3743999b9d7969ca4f"
-  integrity sha512-dGD7KbfWEiZYY/5bWRO0YKAS9aJjmcZVHgT1q18lfAOTOR+5pfoGPL0PjWVIppI7kk81mGy5I3HBFKjBLt2HxA==
-  dependencies:
-    "@serverless/core" "^1.0.0"
-    aws-sdk "^2.0.0"
-    p-retry "^4.1.0"
 
 "@serverless/aws-cloudfront@^6.0.0":
   version "6.0.0"
@@ -7446,11 +7449,6 @@ crypto-random-string@^1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/crypto-random-string/-/crypto-random-string-1.0.0.tgz#a230f64f568310e1498009940790ec99545bca7e"
   integrity sha1-ojD2T1aDEOFJgAmUB5DsmVRbyn4=
-
-crypto@^1.0.1:
-  version "1.0.1"
-  resolved "https://registry.yarnpkg.com/crypto/-/crypto-1.0.1.tgz#2af1b7cad8175d24c8a1b0778255794a21803037"
-  integrity sha512-VxBKmeNcqQdiUQUW2Tzq0t377b54N2bMtXO/qiLa+6eRRmmC4qT3D4OnTGoT/U6O9aklQ/jTwbOtRMTTY8G0Ig==
 
 css-animation@^1.3.2:
   version "1.6.1"
@@ -14160,6 +14158,11 @@ lodash.padstart@^4.1.0:
   version "4.6.1"
   resolved "https://registry.yarnpkg.com/lodash.padstart/-/lodash.padstart-4.6.1.tgz#d2e3eebff0d9d39ad50f5cbd1b52a7bce6bb611b"
   integrity sha1-0uPuv/DZ05rVD1y9G1KnvOa7YRs=
+
+lodash.pick@^4.4.0:
+  version "4.4.0"
+  resolved "https://registry.npmjs.org/lodash.pick/-/lodash.pick-4.4.0.tgz#52f05610fff9ded422611441ed1fc123a03001b3"
+  integrity sha1-UvBWEP/53tQiYRRB7R/BI6AwAbM=
 
 lodash.set@^4.3.2:
   version "4.3.2"

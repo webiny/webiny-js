@@ -14,7 +14,11 @@ export default userFetcher => async (root: any, args: Object, context: Object) =
             .filter(pl => pl.hasOwnProperty("createUser"))
             .pop();
 
-        await authPlugin.createUser({ data: args.data, user }, context);
+        try {
+            await authPlugin.createUser({ data: args.data, user }, context);
+        } catch {
+            // If user already exists we don't do anything on the auth provider side.
+        }
     } catch (e) {
         if (e.code === WithFieldsError.VALIDATION_FAILED_INVALID_FIELDS) {
             const attrError = InvalidFieldsError.from(e);

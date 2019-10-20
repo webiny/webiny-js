@@ -15,7 +15,6 @@
   "dependencies": {
     "@webiny/tracking": "^0.1.6",
     "chalk": "^2.4.2",
-    "crypto": "^1.0.1",
     "execa": "^2.0.5",
     "fs-extra": "^8.1.0",
     "glob": "^7.1.4",
@@ -42,6 +41,5 @@
       "/backup/",
       "/dist/"
     ]
-  },
-  "gitHead": "a01796de9d1045f9007bd09f86b6ab74c6a58241"
+  }
 }

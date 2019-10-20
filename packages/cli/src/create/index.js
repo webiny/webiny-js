@@ -18,32 +18,42 @@ function copyFile(from, to) {
 module.exports = async ({ name }) => {
     const root = join(process.cwd(), name);
 
+    if (fs.existsSync(root)) {
+        console.log(
+            `🚨 Aborting: destination folder ${green(
+                name
+            )} already exists! Please enter a different folder name.`
+        );
+        process.exit(1);
+    }
+
     console.log(`Creating a new Webiny project in ${green(root)}...`);
     fs.ensureDirSync(root);
     process.chdir(root);
 
     fs.ensureDirSync("apps");
-    fs.ensureDirSync("api");
     fs.ensureDirSync("packages");
 
     // Copy project files
     const files = [
         "README.md",
-        ".gitignore.example",
+        "example.gitignore",
+        "example.env.api.js",
         ".prettierrc.js",
         "babel.config.js",
+        "serverless.api.yml",
+        "serverless.apps.yml",
         "package.json"
     ];
     files.forEach(file => copyFile(`template/${file}`, file));
-    fs.renameSync(".gitignore.example", ".gitignore");
+    fs.renameSync("example.gitignore", ".gitignore");
 
     // Setup monorepo packages
-    await setupFolder("apps/code");
-    fs.renameSync("apps/code/admin/.gitignore.example", "apps/code/admin/.gitignore");
-    fs.renameSync("apps/code/site/.gitignore.example", "apps/code/site/.gitignore");
-
-    await setupFolder("apps/prod");
-    await setupFolder("api/prod");
+    await setupFolder("apps");
+    fs.renameSync("apps/admin/example.gitignore", "apps/admin/.gitignore");
+    fs.renameSync("apps/admin/example.env.js", "apps/admin/.env.js");
+    fs.renameSync("apps/site/example.gitignore", "apps/site/.gitignore");
+    fs.renameSync("apps/site/example.env.js", "apps/site/.env.js");
     await setupFolder("packages/theme");
 
     // Update config
@@ -52,12 +62,12 @@ module.exports = async ({ name }) => {
         .toString("base64")
         .slice(0, 60);
 
-    const envExample = resolve("api/prod/.env.example");
+    const envExample = resolve("example.env.api.js");
     if (fs.existsSync(envExample)) {
-        fs.renameSync(envExample, "api/prod/.env");
+        fs.renameSync(envExample, ".env.api.js");
     }
 
-    const envFile = resolve("api/prod/.env");
+    const envFile = resolve(".env.api.js");
     let env = fs.readFileSync(envFile, "utf-8");
     env = env.replace("[JWT_SECRET]", jwtSecret);
     await fs.writeFile(envFile, env);

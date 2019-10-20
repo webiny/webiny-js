@@ -1,7 +1,6 @@
 const { join } = require("path");
 const { Component } = require("@serverless/core");
 const { configureS3Bucket, configureApiGateway } = require("./components");
-const { trackComponent } = require("@webiny/tracking");
 
 /**
  * This component deploys:
@@ -13,12 +12,10 @@ const { trackComponent } = require("@webiny/tracking");
  *  - image transformer - performs various image transformations
  */
 class FilesComponent extends Component {
-    async default({ track, ...inputs } = {}) {
-        await trackComponent({ track, context: this.context, component: __dirname });
-
+    async default(inputs = {}) {
         const { region = "us-east-1", bucket = "webiny-files", env, ...rest } = inputs;
 
-        const manageFilesLambda = await this.load("@serverless/function", "manage-files");
+        const manageFilesLambda = await this.load("@webiny/serverless-function", "manage-files");
         const manageFilesLambdaOutput = await manageFilesLambda({
             region,
             name: "Files component - manage files",
@@ -42,7 +39,7 @@ class FilesComponent extends Component {
             bucket
         });
 
-        const imageTransformerLambda = await this.load("@serverless/function", "image-transformer");
+        const imageTransformerLambda = await this.load("@webiny/serverless-function", "image-transformer");
         const imageTransformerLambdaOutput = await imageTransformerLambda({
             region,
             name: "Files component - image transformer",
@@ -57,7 +54,7 @@ class FilesComponent extends Component {
         });
 
         // Deploy read/upload lambdas
-        const downloadLambda = await this.load("@serverless/function", "download");
+        const downloadLambda = await this.load("@webiny/serverless-function", "download");
         const downloadLambdaOutput = await downloadLambda({
             region,
             name: "Files component - download files",
@@ -75,7 +72,6 @@ class FilesComponent extends Component {
         const apolloService = await this.load("@webiny/serverless-apollo-service");
         const apolloServiceOutput = await apolloService({
             region,
-            track: false,
             plugins: ["@webiny/api-files/plugins"],
             endpoints: [
                 { path: "/files/{path}", method: "ANY", function: downloadLambdaOutput.arn }
@@ -105,24 +101,17 @@ class FilesComponent extends Component {
         return output;
     }
 
-    async remove({ track } = {}) {
-        await trackComponent({
-            track,
-            context: this.context,
-            component: __dirname,
-            method: "remove"
-        });
-
+    async remove() {
         const apolloService = await this.load("@webiny/serverless-apollo-service");
         await apolloService.remove();
 
-        let lambda = await this.load("@serverless/function", "manage-files");
+        let lambda = await this.load("@webiny/serverless-function", "manage-files");
         await lambda.remove();
 
-        lambda = await this.load("@serverless/function", "image-transformer");
+        lambda = await this.load("@webiny/serverless-function", "image-transformer");
         await lambda.remove();
 
-        lambda = await this.load("@serverless/function", "download");
+        lambda = await this.load("@webiny/serverless-function", "download");
         await lambda.remove();
 
         const s3 = await this.load("@serverless/aws-s3");

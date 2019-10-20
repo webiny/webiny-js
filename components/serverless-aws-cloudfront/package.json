@@ -5,8 +5,7 @@
   "license": "MIT",
   "dependencies": {
     "@serverless/aws-cloudfront": "^6.0.0",
-    "@serverless/core": "^1.1.1",
-    "@webiny/tracking": "^0.1.6"
+    "@serverless/core": "^1.1.1"
   },
   "scripts": {
     "build": "rm -rf dist && mkdir dist && cp serverless.js dist/",

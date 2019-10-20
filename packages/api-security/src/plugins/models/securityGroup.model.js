@@ -12,7 +12,7 @@ export default ({ createBase, SecurityRole, SecurityRoles2Models }) => {
             system: boolean(),
             roles: ref({
                 list: true,
-                instanceOf: [SecurityRole, "entity"],
+                instanceOf: [SecurityRole, "model"],
                 using: [SecurityRoles2Models, "role"]
             })
         })),

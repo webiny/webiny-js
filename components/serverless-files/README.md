@@ -20,7 +20,7 @@ name: my-app
 vars:
   region: "us-east-1"
   env:
-    WEBINY_JWT_SECRET: ${env.WEBINY_JWT_SECRET}
+    JWT_SECRET: ${env.JWT_SECRET}
   database:
     server: ${env.MONGODB_SERVER}
     name: ${env.MONGODB_NAME}
