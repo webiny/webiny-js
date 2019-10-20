@@ -7,6 +7,7 @@
 module.exports = {
     default: {
         AWS_PROFILE: "default",
+        AWS_REGION: "us-east-1",
         MONGODB_SERVER: "[MONGODB_SERVER]",
         MONGODB_NAME: "webiny",
         JWT_SECRET: "MyS3cr3tK3Y!",
