@@ -12,6 +12,8 @@
   "dependencies": {
     "@serverless/core": "^1.1.1",
     "@webiny/tracking": "^0.1.6",
+    "env-cmd": "^9.0.3",
+    "graphlib": "^2.1.7",
     "ramda": "^0.26.1",
     "traverse": "^0.6.6"
   },
