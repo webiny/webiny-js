@@ -78,14 +78,12 @@ const Install = ({ onInstalled }) => {
             return;
         }
 
-        if (data.user && data.authUser) {
-            onInstalled();
+        if (!data.authUser) {
+            setAuthUserMessage(true);
             return;
         }
 
-        if (!data.authUser) {
-            setAuthUserMessage(true);
-        }
+        onInstalled();
     }, []);
 
     return (
