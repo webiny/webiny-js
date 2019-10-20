@@ -20,7 +20,7 @@ module.exports = {
         }
     },
     ignore: {
-        src: ["path", "os", "fs", "util", "events"],
+        src: ["path", "os", "fs", "util", "events", "crypto"],
         dependencies: ["@babel/runtime"],
         devDependencies: true
     },
