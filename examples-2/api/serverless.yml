@@ -1,0 +1,107 @@
+name: webiny-cms-project
+
+vars:
+  region: ${env.AWS_REGION}
+  env:
+    JWT_SECRET: ${env.JWT_SECRET}
+  database:
+    server: ${env.MONGODB_SERVER}
+    name: ${env.MONGODB_NAME}
+
+gateway:
+  component: "@webiny/serverless-apollo-gateway"
+  inputs:
+    region: ${vars.region}
+    name: gateway
+    memory: 512
+    timeout: 30
+    services:
+      - name: security
+        url: ${security.api.url}/graphql
+      - name: files
+        url: ${files.api.url}/graphql
+      - name: pageBuilder
+        url: ${pageBuilder.api.url}/graphql
+      - name: i18n
+        url: ${i18n.api.url}/graphql
+
+cognito:
+  component: "@webiny/serverless-aws-cognito-user-pool"
+  inputs:
+    region: ${vars.region}
+    name: 'WebinyPool'
+    appClients:
+      - name: ReactApp
+
+security:
+  component: "@webiny/serverless-apollo-service"
+  inputs:
+    region: ${vars.region}
+    name: security
+    memory: 512
+    database: ${vars.database}
+    env: ${vars.env}
+    plugins:
+      - "@webiny/api-security/plugins"
+      - factory: "@webiny/api-plugin-security-cognito"
+        options:
+          region: ${vars.region}
+          userPoolId: ${cognito.userPool.Id}
+
+files:
+  component: "@webiny/serverless-files/dist"
+  inputs:
+    region: ${vars.region}
+    bucket: "my-test-bucket-3"
+    name: files
+    memory: 512
+    database: ${vars.database}
+    env: ${vars.env}
+
+
+i18n:
+  component: "@webiny/serverless-apollo-service"
+  inputs:
+    region: ${vars.region}
+    name: i18n
+    memory: 512
+    database: ${vars.database}
+    env: ${vars.env}
+    plugins:
+      - "@webiny/api-i18n/plugins"
+
+pageBuilder:
+  component: "@webiny/serverless-page-builder"
+  inputs:
+    region: ${vars.region}
+    name: pageBuilder
+    memory: 512
+    database: ${vars.database}
+    env: ${vars.env}
+    plugins:
+      - "@webiny/api-google-tag-manager"
+      - "@webiny/api-mailchimp"
+      - "@webiny/api-cookie-policy"
+
+api:
+  component: "@webiny/serverless-api-gateway"
+  inputs:
+    region: ${vars.region}
+    description: "Main GraphQL API"
+    endpoints:
+      - path: /graphql
+        method: ANY
+        function: ${gateway}
+
+cdn:
+  component: "@webiny/serverless-aws-cloudfront"
+  inputs:
+    origins:
+      - ${files.cdnOrigin}
+      - url: ${api.url}
+        pathPatterns:
+          "/graphql":
+            ttl: 0
+            forward:
+              headers: ["Accept", "Accept-Language"]
+            allowedHttpMethods: ["GET", "HEAD", "OPTIONS", "PUT", "POST", "PATCH", "DELETE"]
