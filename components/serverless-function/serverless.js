@@ -4,9 +4,11 @@ const { Component } = require("@serverless/core");
 
 class ServerlessFunction extends Component {
     async default(inputs = {}) {
-        const functionRoot = path.join(this.context.instance.root, inputs.root);
-
         if (inputs.hook) {
+            if (!inputs.root) {
+                throw Error(`"hook" input requires "root" to be set.`);
+            }
+            const functionRoot = path.join(this.context.instance.root, inputs.root);
             this.context.log("Building function");
             const hooks = Array.isArray(inputs.hook) ? inputs.hook : [inputs.hook];
             for (let i = 0; i < hooks.length; i++) {
