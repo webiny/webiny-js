@@ -1,4 +1,4 @@
-import { gql } from "apollo-server-lambda";
+import gql from "graphql-tag";
 import React, { useState, useCallback } from "react";
 import { useApolloClient } from "react-apollo";
 import { Form } from "@webiny/form";

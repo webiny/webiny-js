@@ -1,5 +1,5 @@
 import React, { useState, useCallback } from "react";
-import { gql } from "apollo-server-lambda";
+import gql from "graphql-tag";
 import { useApolloClient } from "react-apollo";
 import { i18n } from "@webiny/app/i18n";
 import { Form } from "@webiny/form";
