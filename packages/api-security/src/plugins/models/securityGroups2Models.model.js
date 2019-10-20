@@ -6,8 +6,8 @@ export default ({ createBase, SecurityGroup }) =>
     flow(
         withName("SecurityGroups2Models"),
         withFields(() => ({
-            entity: ref({ instanceOf: [], refNameField: "entityClassId" }),
-            entityClassId: string(),
+            model: ref({ instanceOf: [], refNameField: "modelName" }),
+            modelName: string(),
             group: ref({
                 instanceOf: SecurityGroup
             })

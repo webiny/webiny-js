@@ -24,7 +24,7 @@ export default ({
 
                 value = value.toLowerCase().trim();
                 instance.registerHookCallback("beforeSave", async () => {
-                    console.log("TODO: setOnce");
+                    console.log("TODO: setOnce"); // eslint-disable-line
 
                     const existingUser = await SecurityUser.findOne({
                         query: { email: value }
@@ -54,12 +54,12 @@ export default ({
             lastName: string(),
             roles: ref({
                 list: true,
-                instanceOf: [SecurityRole, "entity"],
+                instanceOf: [SecurityRole, "model"],
                 using: [SecurityRoles2Models, "role"]
             }),
             groups: ref({
                 list: true,
-                instanceOf: [SecurityGroup, "entity"],
+                instanceOf: [SecurityGroup, "model"],
                 using: [SecurityGroups2Models, "group"]
             }),
             avatar: id()
