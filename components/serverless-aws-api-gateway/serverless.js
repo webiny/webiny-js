@@ -20,9 +20,9 @@ const {
 
 const defaults = {
     region: "us-east-1",
-    stage: "dev",
+    stage: "prod",
     description: "Serverless Components API",
-    endpointTypes: ["EDGE"]
+    endpointTypes: ["REGIONAL"]
 };
 
 class AwsApiGateway extends Component {
