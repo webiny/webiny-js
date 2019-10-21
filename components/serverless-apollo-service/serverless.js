@@ -104,7 +104,7 @@ class ApolloService extends Component {
         Object.assign(pkgJson.dependencies, await getDeps(defaultDependencies), dependencies);
         await writeJson(pkgJsonPath, pkgJson);
 
-        await execa("npm", ["install"], { cwd: componentRoot });
+        await execa("npm", ["install", "--production"], { cwd: componentRoot });
 
         // Bundle code (switch CWD before running webpack)
         const cwd = process.cwd();
