@@ -44,7 +44,7 @@ export default () => {
                 return {
                     type: "images-list",
                     data: {
-                        component: "pb-page-element-images-list-component-mosaic",
+                        component: "mosaic",
                         settings: {
                             margin: {
                                 desktop: { all: 0 },

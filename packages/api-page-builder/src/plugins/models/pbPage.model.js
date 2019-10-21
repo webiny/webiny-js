@@ -20,6 +20,12 @@ import {
 } from "@webiny/commodo";
 
 export default ({ createBase, context, PbCategory, PbSettings }) => {
+    const PbPageSettings = withFields(() => {
+        const fields = {};
+        context.plugins.byType("pb-page-settings-model").forEach(plugin => plugin.apply(fields));
+        return fields;
+    })();
+
     const PbPage = flow(
         withName("PbPage"),
         withAggregate(),
@@ -38,13 +44,7 @@ export default ({ createBase, context, PbCategory, PbSettings }) => {
             ),
             settings: onSet(value => (instance.locked ? instance.settings : value))(
                 fields({
-                    instanceOf: withFields(() => {
-                        const fields = {};
-                        context.plugins
-                            .byType("pb-page-settings-model")
-                            .forEach(plugin => plugin.apply(fields));
-                        return fields;
-                    })()
+                    instanceOf: PbPageSettings
                 })
             ),
             version: number(),
@@ -72,7 +72,8 @@ export default ({ createBase, context, PbCategory, PbSettings }) => {
                     }
                     return value;
                 })
-            )(boolean({ value: false }))
+            )(boolean({ value: false })),
+            locked: skipOnPopulate()(boolean({ value: false }))
         })),
         withProps({
             async getNextVersion() {

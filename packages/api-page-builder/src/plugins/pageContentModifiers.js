@@ -1,10 +1,19 @@
 import { set, get } from "lodash";
 
 const getFileById = async ({ id, context }) => {
-    const file = context.models.File.findById(id);
-    if (file) {
-        return { id: file.id, src: file.src };
+    // Rethink this part, get files via GraphQL directly, but via a single-gql-call-fetch-everything.
+    const { getDatabase } = context;
+    const searchResults = await getDatabase()
+        .collection("File")
+        .find({ id, deleted: { $ne: true } })
+        .project({ _id: 0, id: 1, src: 1 })
+        .toArray();
+
+    if (!Array.isArray(searchResults)) {
+        return null;
     }
+
+    return searchResults[0] || null;
 };
 
 export default [

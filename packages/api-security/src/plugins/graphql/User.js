@@ -143,8 +143,8 @@ export default {
             __resolveReference(reference, context) {
                 return userFetcher(context).findById(reference.id);
             },
-            avatar(user) {
-                return { __typename: "File", id: user.avatar };
+            avatar({ avatar }) {
+                return avatar ? { __typename: "File", id: avatar } : null;
             }
         },
         SecurityQuery: {

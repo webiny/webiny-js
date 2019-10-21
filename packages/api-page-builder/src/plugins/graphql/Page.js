@@ -266,8 +266,8 @@ export default {
             }
         },
         PbElement: {
-            preview(pbElement) {
-                return { __typename: "File", id: pbElement.preview };
+            preview({ preview }) {
+                return preview ? { __typename: "File", id: preview } : null;
             }
         },
         PbQuery: {
@@ -280,7 +280,7 @@ export default {
             getErrorPage,
             listElements: resolveList(elementFetcher),
             searchTags: searchTags,
-            oembedData: oembed,
+            oembedData: oembed
         },
         PbMutation: {
             // Creates a new page

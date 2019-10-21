@@ -45,7 +45,7 @@ export default [
             resolvers: {
                 PbGeneralPageSettings: {
                     image: ({ image }) => {
-                        return { __typename: "File", id: image };
+                        return image ? { __typename: "File", id: image } : null;
                     }
                 }
             }

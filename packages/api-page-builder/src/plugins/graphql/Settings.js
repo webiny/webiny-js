@@ -89,15 +89,15 @@ export default {
         },
         PbSocialMedia: {
             image({ image }) {
-                return { __typename: "File", id: image };
+                return image ? { __typename: "File", id: image } : null;
             }
         },
         PbSettings: {
             favicon({ favicon }) {
-                return { __typename: "File", id: favicon };
+                return favicon ? { __typename: "File", id: favicon } : null;
             },
             logo({ logo }) {
-                return { __typename: "File", id: logo };
+                return logo ? { __typename: "File", id: logo } : null;
             }
         }
     }

@@ -55,15 +55,18 @@ const asyncModifiers = async ({ context, modifierType, element }) => {
 export default ({ context, ...rest }) => {
     return object({
         ...rest,
-        async getStorageValue(element) {
+        async getStorageValue() {
+            // Not using getValue method because it would load the model without need.
+            let element = this.current;
             await asyncModifiers({
                 context,
                 element,
                 modifierType: "getStorageValue"
             });
+
             return element;
         },
-        async setStorageValue(element) {
+        setStorageValue(element) {
             syncModifiers({
                 context,
                 element,
