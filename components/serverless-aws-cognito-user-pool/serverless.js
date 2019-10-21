@@ -149,6 +149,7 @@ class ServerlessAwsCognito extends Component {
 
             const { UserPool } = await cognito.createUserPool(params).promise();
             this.state.output.userPool = UserPool;
+            this.state.output.userPool.Region = region;
             await this.save();
 
             this.context.debug(`Created user pool ${UserPool.Id}.`);
