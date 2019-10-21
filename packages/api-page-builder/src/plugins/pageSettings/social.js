@@ -65,7 +65,7 @@ export default [
             resolvers: {
                 PbSocialSettings: {
                     image: ({ image }) => {
-                        return { __typename: "File", id: image };
+                        return image ? { __typename: "File", id: image } : null;
                     }
                 }
             }
