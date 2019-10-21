@@ -12,12 +12,12 @@ module.exports = async (inputs, method = "default") => {
         root,
         stateRoot: join(root, ".serverless"),
         debug,
-        entity: "Wby"
+        entity: "Webiny"
     };
 
     const context = new Context(config);
     const Template = require("./template/serverless.js");
-    const component = new Template(`Wby.${env}`, context);
+    const component = new Template(`Webiny.${env}`, context);
     await component.init();
 
     const output = await component[method]({ env });
@@ -25,5 +25,7 @@ module.exports = async (inputs, method = "default") => {
     process.stdout.write(ansiEscapes.cursorLeft);
     process.stdout.write(ansiEscapes.eraseDown);
     process.stdout.write(ansiEscapes.cursorShow);
+    process.chdir(cwd);
+
     return output;
 };

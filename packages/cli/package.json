@@ -3,8 +3,8 @@
   "version": "0.3.10",
   "main": "index.js",
   "bin": {
-    "webiny": "./index.js",
-    "wby": "./index.js"
+    "webiny": "./bin.js",
+    "wby": "./bin.js"
   },
   "repository": {
     "type": "git",
@@ -13,19 +13,20 @@
   "author": "Pavel Denisjuk <pavel@webiny.com>",
   "description": "A tool to bootstrap a Webiny project.",
   "dependencies": {
-    "@serverless/core": "^1.1.1",
     "@serverless/cli": "^1.1.1",
+    "@serverless/core": "^1.1.1",
     "@webiny/tracking": "^0.1.6",
     "ansi-escapes": "^4.2.1",
-    "env-cmd": "^9.0.3",
-    "graphlib": "^2.1.7",
     "chalk": "^2.4.2",
+    "env-cmd": "^9.0.3",
     "execa": "^2.0.5",
     "fs-extra": "^8.1.0",
     "glob": "^7.1.4",
+    "graphlib": "^2.1.7",
     "inquirer": "^7.0.0",
     "load-json-file": "^6.2.0",
     "node-fetch": "^2.6.0",
+    "ora": "^4.0.2",
     "ramda": "^0.26.1",
     "traverse": "^0.6.6",
     "uuid": "^3.3.3",
@@ -37,8 +38,7 @@
     "access": "public"
   },
   "scripts": {
-    "build": "rimraf ./lib && babel src -d dist --source-maps --copy-files --ignore=src/create/template --include-dotfiles",
-    "build:watch": "rimraf ./lib && babel src -d lib --source-maps --copy-files --ignore=src/init/template --watch -v --include-dotfiles",
+    "build": "rimraf ./dist && cp -R cli.js bin.js config create helpers sls dist/",
     "postbuild": "cp package.json LICENSE README.md dist/",
     "prepublishOnly": "yarn build"
   },

@@ -13,10 +13,10 @@ const minorVersion = parseInt(currentNodeVersion.split(".")[1]);
         console.error(
             chalk.red(
                 "You are running Node " +
-                    currentNodeVersion +
-                    ".\n" +
-                    "Webiny requires Node 8.10 or higher. \n" +
-                    "Please update your version of Node."
+                currentNodeVersion +
+                ".\n" +
+                "Webiny requires Node 8.10 or higher. \n" +
+                "Please update your version of Node."
             )
         );
         process.exit(1);

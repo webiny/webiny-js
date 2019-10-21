@@ -38,14 +38,14 @@ class Template extends Component {
     async default(inputs = {}) {
         validateInputs(inputs);
 
-        const envJs = `.env.js`;
+        const envJson = `.env.json`;
 
         // Load ENV variables
-        if (fs.existsSync(envJs)) {
+        if (fs.existsSync(envJson)) {
             const env = await GetEnvVars({
                 rc: {
                     environments: ["default", inputs.env],
-                    filePath: path.join(envJs)
+                    filePath: path.join(envJson)
                 }
             });
 

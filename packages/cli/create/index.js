@@ -38,11 +38,8 @@ module.exports = async ({ name }) => {
     const files = [
         "README.md",
         "example.gitignore",
-        "example.env.api.js",
         ".prettierrc.js",
         "babel.config.js",
-        "serverless.api.yml",
-        "serverless.apps.yml",
         "package.json"
     ];
     files.forEach(file => copyFile(`template/${file}`, file));
@@ -50,10 +47,11 @@ module.exports = async ({ name }) => {
 
     // Setup monorepo packages
     await setupFolder("apps");
+    await setupFolder("api");
     fs.renameSync("apps/admin/example.gitignore", "apps/admin/.gitignore");
-    fs.renameSync("apps/admin/example.env.js", "apps/admin/.env.js");
+    fs.renameSync("apps/admin/example.env.json", "apps/admin/.env.json");
     fs.renameSync("apps/site/example.gitignore", "apps/site/.gitignore");
-    fs.renameSync("apps/site/example.env.js", "apps/site/.env.js");
+    fs.renameSync("apps/site/example.env.json", "apps/site/.env.json");
     await setupFolder("packages/theme");
 
     // Update config
@@ -62,12 +60,12 @@ module.exports = async ({ name }) => {
         .toString("base64")
         .slice(0, 60);
 
-    const envExample = resolve("example.env.api.js");
+    const envExample = resolve("api/example.env.json");
     if (fs.existsSync(envExample)) {
-        fs.renameSync(envExample, ".env.api.js");
+        fs.renameSync(envExample, "api/.env.json");
     }
 
-    const envFile = resolve(".env.api.js");
+    const envFile = resolve(".env.json");
     let env = fs.readFileSync(envFile, "utf-8");
     env = env.replace("[JWT_SECRET]", jwtSecret);
     await fs.writeFile(envFile, env);

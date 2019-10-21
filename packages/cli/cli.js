@@ -25,7 +25,7 @@ yargs.command(
         });
         yargs.option("env", {
             describe: "Environment to deploy.",
-            default: "dev"
+            default: "local"
         });
     },
     async argv => {
@@ -43,7 +43,7 @@ yargs.command(
         });
         yargs.option("env", {
             describe: "Environment to remove.",
-            default: "dev"
+            default: "local"
         });
     },
     async argv => {
