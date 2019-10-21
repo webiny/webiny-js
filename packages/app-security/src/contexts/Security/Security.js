@@ -107,8 +107,6 @@ export const SecurityProvider = (props: Props) => {
         localStorage.remove(AUTH_TOKEN);
     }, []);
 
-    const value = useMemo(() => ({ user: state.user, logout }), [state.user]);
-
     /**
      * Check if user is logged-in and update state accordingly.
      */
@@ -147,6 +145,24 @@ export const SecurityProvider = (props: Props) => {
             await checkUser();
         }
     });
+
+    const value = useMemo(
+        () => ({
+            user: state.user,
+            logout,
+            refreshUser: async () => {
+                const user = await getUser();
+                if (user) {
+                    setIdentity(user);
+                    setState({ user });
+                } else {
+                    removeToken();
+                    await checkUser();
+                }
+            }
+        }),
+        [state.user]
+    );
 
     useEffect(() => {
         localStorage.observe(AUTH_TOKEN, async (token: any) => {

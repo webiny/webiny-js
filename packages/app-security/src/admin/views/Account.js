@@ -14,6 +14,7 @@ import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { CircularProgress } from "@webiny/ui/Progress";
 import AvatarImage from "./Components/AvatarImage";
 import { validation } from "@webiny/validation";
+import { useSecurity } from "@webiny/app-security/hooks/useSecurity";
 
 import {
     SimpleForm,
@@ -84,6 +85,7 @@ const UsersForm = () => {
 
     const client = useApolloClient();
     const { showSnackbar } = useSnackbar();
+    const security = useSecurity();
 
     const onSubmit = useHandler(null, () => async formData => {
         setState({ loading: true });
@@ -99,6 +101,7 @@ const UsersForm = () => {
             });
         }
 
+        security.refreshUser();
         showSnackbar("Account saved successfully!");
     });
 
