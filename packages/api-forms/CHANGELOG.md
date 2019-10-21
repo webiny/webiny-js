@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.1.8](https://github.com/webiny/webiny-js/compare/@webiny/api-forms@0.1.7...@webiny/api-forms@0.1.8) (2019-10-21)
+
+**Note:** Version bump only for package @webiny/api-forms
+
+
+
+
+
 ## [0.1.7](https://github.com/webiny/webiny-js/compare/@webiny/api-forms@0.1.6...@webiny/api-forms@0.1.7) (2019-10-17)
 
 **Note:** Version bump only for package @webiny/api-forms

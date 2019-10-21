@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.1.6](https://github.com/webiny/webiny-js/compare/@webiny/commodo@0.1.5...@webiny/commodo@0.1.6) (2019-10-21)
+
+
+### Bug Fixes
+
+* update versions ([b78e637](https://github.com/webiny/webiny-js/commit/b78e63756034301f50b11f5f95dfe91350797812))
+
+
+
+
+
 ## [0.1.5](https://github.com/webiny/webiny-js/compare/@webiny/commodo@0.1.4...@webiny/commodo@0.1.5) (2019-10-17)
 
 **Note:** Version bump only for package @webiny/commodo

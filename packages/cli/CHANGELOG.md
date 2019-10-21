@@ -3,6 +3,23 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.4.0](https://github.com/webiny/webiny-js/compare/@webiny/cli@0.3.10...@webiny/cli@0.4.0) (2019-10-21)
+
+
+### Bug Fixes
+
+* check if destination folder exists. ([7bffc85](https://github.com/webiny/webiny-js/commit/7bffc855c4d944feee520a64c648efa8297ea223))
+* update new project setup. ([bb9365a](https://github.com/webiny/webiny-js/commit/bb9365a8e0cc8e65d3ae4dcfebc3e00f953ae7d4))
+
+
+### Features
+
+* replace all app .env files with a single .env.js file. ([831eb55](https://github.com/webiny/webiny-js/commit/831eb5561250b223d8bc82b23be642c565f88a3c))
+
+
+
+
+
 ## [0.3.10](https://github.com/webiny/webiny-js/compare/@webiny/cli@0.3.9...@webiny/cli@0.3.10) (2019-10-17)
 
 

@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.1.7](https://github.com/Webiny/webiny-js/compare/@webiny/serverless-function@0.1.6...@webiny/serverless-function@0.1.7) (2019-10-21)
+
+
+### Bug Fixes
+
+* validate "root" input if "hook" input is present. ([e370be5](https://github.com/Webiny/webiny-js/commit/e370be516c7ae5eb6d2abbe1907a18599abe404a))
+
+
+
+
+
 ## [0.1.6](https://github.com/Webiny/webiny-js/compare/@webiny/serverless-function@0.1.5...@webiny/serverless-function@0.1.6) (2019-10-17)
 
 

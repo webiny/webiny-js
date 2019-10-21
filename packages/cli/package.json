@@ -1,6 +1,6 @@
 {
   "name": "@webiny/cli",
-  "version": "0.3.10",
+  "version": "0.4.0",
   "main": "index.js",
   "bin": {
     "webiny": "./index.js",
@@ -13,16 +13,16 @@
   "author": "Pavel Denisjuk <pavel@webiny.com>",
   "description": "A tool to bootstrap a Webiny project.",
   "dependencies": {
-    "@serverless/core": "^1.1.1",
     "@serverless/cli": "^1.1.1",
-    "@webiny/tracking": "^0.1.6",
+    "@serverless/core": "^1.1.1",
+    "@webiny/tracking": "^0.1.7",
     "ansi-escapes": "^4.2.1",
-    "env-cmd": "^9.0.3",
-    "graphlib": "^2.1.7",
     "chalk": "^2.4.2",
+    "env-cmd": "^9.0.3",
     "execa": "^2.0.5",
     "fs-extra": "^8.1.0",
     "glob": "^7.1.4",
+    "graphlib": "^2.1.7",
     "inquirer": "^7.0.0",
     "load-json-file": "^6.2.0",
     "node-fetch": "^2.6.0",

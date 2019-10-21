@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.2.0](https://github.com/webiny/webiny-js/compare/@webiny/api-files@0.1.8...@webiny/api-files@0.2.0) (2019-10-21)
+
+
+### Features
+
+* enable listing images by an array of IDs ([c43f95e](https://github.com/webiny/webiny-js/commit/c43f95e0240f60b7af6dcf90e7dfe9990df62c92))
+
+
+
+
+
 ## [0.1.8](https://github.com/webiny/webiny-js/compare/@webiny/api-files@0.1.7...@webiny/api-files@0.1.8) (2019-10-17)
 
 **Note:** Version bump only for package @webiny/api-files

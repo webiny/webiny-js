@@ -1,11 +1,11 @@
 {
   "name": "@webiny/serverless-deploy",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "main": "serverless.js",
   "license": "MIT",
   "dependencies": {
     "@serverless/core": "^1.1.1",
-    "@webiny/serverless-template": "^0",
+    "@webiny/serverless-template": "^0.0.1",
     "chalk": "^2.4.2",
     "cliui": "^5.0.0"
   },
