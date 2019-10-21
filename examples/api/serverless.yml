@@ -52,7 +52,7 @@ files:
   component: "@webiny/serverless-files/dist"
   inputs:
     region: ${vars.region}
-    bucket: "my-test-bucket-3"
+    bucket: "my-test-bucket-4"
     name: files
     memory: 512
     database: ${vars.database}
