@@ -97,6 +97,8 @@ const I18NInstaller = ({ onInstalled }) => {
 export default {
     name: "install-i18n",
     type: "install",
+    title: "I18N app",
+    dependencies: ["install-security"],
     secure: true,
     async isInstalled({ client }) {
         const { data } = await client.query({ query: IS_INSTALLED });

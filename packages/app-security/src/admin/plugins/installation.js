@@ -169,6 +169,7 @@ export default [
         name: "install-security",
         type: "install",
         secure: false,
+        title: "Security app",
         async isInstalled({ client }) {
             const { data } = await client.query({ query: IS_INSTALLED });
             return data.security.isInstalled.data;

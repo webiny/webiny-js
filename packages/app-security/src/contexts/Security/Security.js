@@ -95,6 +95,7 @@ export const SecurityProvider = (props: Props) => {
         setIdentity(user);
         setToken(token);
         setState({ user, checkingUser: false });
+        props.onUser && props.onUser(user);
     });
 
     // Run authentication plugin hook
@@ -142,6 +143,7 @@ export const SecurityProvider = (props: Props) => {
         if (user) {
             setIdentity(user);
             setState({ user });
+            props.onUser && props.onUser(user);
         } else {
             removeToken();
             await checkUser();

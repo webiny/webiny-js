@@ -4,8 +4,7 @@ import React from "react";
 import { UiProvider } from "@webiny/app/contexts/Ui";
 import { registerPlugins, getPlugins } from "@webiny/plugins";
 import { ThemeProvider } from "@webiny/app-admin/contexts/Theme";
-import { PublicInstall } from "@webiny/app-admin/components/Install/PublicInstall";
-import { SecureInstall } from "@webiny/app-admin/components/Install/SecureInstall";
+import { AppInstaller } from "@webiny/app-admin/components/Install/AppInstaller";
 import { PageBuilderProvider } from "@webiny/app-page-builder/contexts/PageBuilder";
 import { SecurityProvider } from "@webiny/app-security/contexts/Security";
 import { I18NProvider } from "@webiny/app-i18n/contexts/I18N";
@@ -30,22 +29,18 @@ const App = () => {
     return (
         <UiProvider>
             <I18NProvider>
-                <PublicInstall>
-                    <SecurityProvider>
-                        <SecureInstall>
-                            <PageBuilderProvider theme={myTheme} isEditor>
-                                <ThemeProvider>
-                                    {getPlugins("route").map((pl: Object) =>
-                                        React.cloneElement(pl.route, {
-                                            key: pl.name,
-                                            exact: true
-                                        })
-                                    )}
-                                </ThemeProvider>
-                            </PageBuilderProvider>
-                        </SecureInstall>
-                    </SecurityProvider>
-                </PublicInstall>
+                <AppInstaller security={<SecurityProvider />}>
+                    <PageBuilderProvider theme={myTheme} isEditor>
+                        <ThemeProvider>
+                            {getPlugins("route").map((pl: Object) =>
+                                React.cloneElement(pl.route, {
+                                    key: pl.name,
+                                    exact: true
+                                })
+                            )}
+                        </ThemeProvider>
+                    </PageBuilderProvider>
+                </AppInstaller>
             </I18NProvider>
         </UiProvider>
     );
