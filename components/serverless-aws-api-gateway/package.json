@@ -21,5 +21,6 @@
     "@serverless/core": "^1.0.0",
     "aws-sdk": "^2.0.0",
     "p-retry": "^4.1.0"
-  }
+  },
+  "gitHead": "71cab7d5607b2e32a63034e324a663770507b32b"
 }

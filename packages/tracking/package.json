@@ -13,5 +13,6 @@
   "scripts": {
     "build": "rm -rf dist && mkdir dist && cp index.js package.json LICENSE README.md dist/",
     "prepublishOnly": "yarn build"
-  }
+  },
+  "gitHead": "71cab7d5607b2e32a63034e324a663770507b32b"
 }

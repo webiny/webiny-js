@@ -41,5 +41,6 @@
         "babel-plugin-module-resolver"
       ]
     }
-  }
+  },
+  "gitHead": "71cab7d5607b2e32a63034e324a663770507b32b"
 }
