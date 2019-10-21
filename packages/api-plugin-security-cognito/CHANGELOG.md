@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.1.5](https://github.com/webiny/webiny-js/compare/@webiny/api-plugin-security-cognito@0.1.4...@webiny/api-plugin-security-cognito@0.1.5) (2019-10-21)
+
+
+### Bug Fixes
+
+* update package versions ([878baa5](https://github.com/webiny/webiny-js/commit/878baa51dd747e3a2962da89cbb68ea15779a04f))
+
+
+
+
+
 ## [0.1.4](https://github.com/webiny/webiny-js/compare/@webiny/api-plugin-security-cognito@0.1.3...@webiny/api-plugin-security-cognito@0.1.4) (2019-10-21)
 
 

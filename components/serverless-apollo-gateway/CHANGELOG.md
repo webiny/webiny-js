@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.1.12](https://github.com/Webiny/webiny-js/compare/@webiny/serverless-apollo-gateway@0.1.11...@webiny/serverless-apollo-gateway@0.1.12) (2019-10-21)
+
+
+### Bug Fixes
+
+* update package versions ([878baa5](https://github.com/Webiny/webiny-js/commit/878baa51dd747e3a2962da89cbb68ea15779a04f))
+
+
+
+
+
 ## [0.1.11](https://github.com/Webiny/webiny-js/compare/@webiny/serverless-apollo-gateway@0.1.10...@webiny/serverless-apollo-gateway@0.1.11) (2019-10-21)
 
 

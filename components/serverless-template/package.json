@@ -1,6 +1,6 @@
 {
   "name": "@webiny/serverless-template",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "main": "serverless.js",
   "license": "Apache-2.0",
   "author": "Serverless, Inc.",
@@ -11,7 +11,7 @@
   ],
   "dependencies": {
     "@serverless/core": "^1.1.1",
-    "@webiny/tracking": "^0.1.7",
+    "@webiny/tracking": "^0.1.8",
     "env-cmd": "^9.0.3",
     "graphlib": "^2.1.7",
     "ramda": "^0.26.1",

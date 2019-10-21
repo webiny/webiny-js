@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.2.1](https://github.com/webiny/webiny-js/compare/@webiny/api-files@0.2.0...@webiny/api-files@0.2.1) (2019-10-21)
+
+
+### Bug Fixes
+
+* update package versions ([878baa5](https://github.com/webiny/webiny-js/commit/878baa51dd747e3a2962da89cbb68ea15779a04f))
+
+
+
+
+
 # [0.2.0](https://github.com/webiny/webiny-js/compare/@webiny/api-files@0.1.8...@webiny/api-files@0.2.0) (2019-10-21)
 
 
