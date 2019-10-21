@@ -22,7 +22,7 @@
     "@webiny/validation": "^0.1.4",
     "apollo-server-lambda": "^2.6.7",
     "bcryptjs": "^2.4.3",
-    "graphql-shield": "^5.1.0",
+    "graphql-shield": "^6.1.0",
     "jsonwebtoken": "^8.2.2",
     "lodash": "^4.17.4",
     "md5": "^2.2.1"

@@ -18,7 +18,7 @@
     "apollo-server-lambda": "^2.6.7",
     "graphql": "^14.4.2",
     "graphql-iso-date": "^3.6.1",
-    "graphql-middleware": "^3.0.2",
+    "graphql-middleware": "^4.0.1",
     "graphql-tools": "^4.0.5",
     "graphql-type-json": "^0.3.0",
     "graphql-type-long": "^0.1.1"
