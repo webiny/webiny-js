@@ -8,7 +8,6 @@ export default ([
         type: "graphql-middleware",
         name: "graphql-middleware-shield",
         middleware: ({ plugins }) => {
-            // If "security.enabled" was set to false, only then we exit.
             const middleware = [];
             plugins.byType("graphql-schema").forEach(plugin => {
                 let { security } = plugin;
