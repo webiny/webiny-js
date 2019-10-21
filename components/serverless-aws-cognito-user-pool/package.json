@@ -1,6 +1,6 @@
 {
   "name": "@webiny/serverless-aws-cognito-user-pool",
-  "version": "0.1.8",
+  "version": "0.2.1",
   "main": "serverless.js",
   "license": "MIT",
   "dependencies": {
@@ -15,5 +15,6 @@
   },
   "publishConfig": {
     "access": "public"
-  }
+  },
+  "gitHead": "71cab7d5607b2e32a63034e324a663770507b32b"
 }

@@ -3,6 +3,25 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.3.1](https://github.com/webiny/webiny-js/compare/@webiny/app-admin@0.3.0...@webiny/app-admin@0.3.1) (2019-10-21)
+
+**Note:** Version bump only for package @webiny/app-admin
+
+
+
+
+
+# [0.3.0](https://github.com/webiny/webiny-js/compare/@webiny/app-admin@0.2.6...@webiny/app-admin@0.3.0) (2019-10-21)
+
+
+### Features
+
+* new app installation mechanism. ([83b6417](https://github.com/webiny/webiny-js/commit/83b641757d43dd3573bfa8d40cf053da35cb0180))
+
+
+
+
+
 ## [0.2.6](https://github.com/webiny/webiny-js/compare/@webiny/app-admin@0.2.5...@webiny/app-admin@0.2.6) (2019-10-17)
 
 **Note:** Version bump only for package @webiny/app-admin

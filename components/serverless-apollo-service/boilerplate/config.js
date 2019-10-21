@@ -30,7 +30,6 @@ export default async () => {
             mongodb: database
         },
         security: {
-            enabled: false,
             token: {
                 secret: process.env.JWT_SECRET,
                 expiresOn: () => addDays(new Date(), 30)

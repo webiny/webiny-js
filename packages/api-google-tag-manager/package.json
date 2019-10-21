@@ -1,6 +1,6 @@
 {
   "name": "@webiny/api-google-tag-manager",
-  "version": "0.1.8",
+  "version": "0.1.10",
   "main": "index.js",
   "repository": {
     "type": "git",
@@ -11,10 +11,10 @@
   "license": "MIT",
   "dependencies": {
     "@babel/runtime": "^7.5.5",
-    "@webiny/api-security": "^0.1.7",
-    "@webiny/commodo": "^0.1.5",
-    "@webiny/commodo-graphql": "^0.1.7",
-    "apollo-server-lambda": "^2.6.7",
+    "@webiny/api-security": "^0.1.9",
+    "@webiny/commodo": "^0.1.7",
+    "@webiny/commodo-graphql": "^0.1.9",
+    "apollo-server-lambda": "^2.9.6",
     "lodash": "^4.17.4"
   },
   "devDependencies": {
@@ -32,5 +32,6 @@
     "flow-copy-source": "flow-copy-source src dist",
     "postbuild": "yarn flow-copy-source && cp package.json LICENSE README.md dist/",
     "prepublishOnly": "yarn build"
-  }
+  },
+  "gitHead": "71cab7d5607b2e32a63034e324a663770507b32b"
 }

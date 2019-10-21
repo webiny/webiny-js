@@ -1,6 +1,6 @@
 {
   "name": "@webiny/project-utils",
-  "version": "0.1.4",
+  "version": "0.1.6",
   "main": "index.js",
   "description": "A collection of utilities for Webiny project.",
   "repository": {
@@ -39,5 +39,6 @@
         "babel-plugin-lodash"
       ]
     }
-  }
+  },
+  "gitHead": "71cab7d5607b2e32a63034e324a663770507b32b"
 }

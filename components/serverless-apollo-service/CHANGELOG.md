@@ -3,6 +3,27 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.3.3](https://github.com/Webiny/webiny-js/compare/@webiny/serverless-apollo-service@0.3.2...@webiny/serverless-apollo-service@0.3.3) (2019-10-21)
+
+**Note:** Version bump only for package @webiny/serverless-apollo-service
+
+
+
+
+
+## [0.3.2](https://github.com/Webiny/webiny-js/compare/@webiny/serverless-apollo-service@0.3.1...@webiny/serverless-apollo-service@0.3.2) (2019-10-21)
+
+
+### Bug Fixes
+
+* make sure all API Gateways are deployed through serverless-api-gateway component. ([e1afd3d](https://github.com/Webiny/webiny-js/commit/e1afd3d7921747fc3e995b9f7dcead3aef72d651))
+* remove the "enabled" flag, security must always be enabled ([b14cb32](https://github.com/Webiny/webiny-js/commit/b14cb3215591b53f7a2c75e6c06b79592cc0acdb))
+* remove WEBINY prefix usage. ([8ea936e](https://github.com/Webiny/webiny-js/commit/8ea936ea4c2aeb6ff42ea2f01642440cfbcf5184))
+
+
+
+
+
 ## [0.3.1](https://github.com/Webiny/webiny-js/compare/@webiny/serverless-apollo-service@0.3.0...@webiny/serverless-apollo-service@0.3.1) (2019-10-17)
 
 

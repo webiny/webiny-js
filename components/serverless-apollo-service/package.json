@@ -1,6 +1,6 @@
 {
   "name": "@webiny/serverless-apollo-service",
-  "version": "0.3.1",
+  "version": "0.3.3",
   "main": "serverless.js",
   "license": "MIT",
   "dependencies": {
@@ -8,11 +8,11 @@
     "@babel/plugin-proposal-class-properties": "^7.5.5",
     "@babel/preset-env": "^7.6.0",
     "@serverless/core": "^1.1.1",
-    "@webiny/serverless-function": "^0.1.6",
-    "@webiny/api": "^0.2.2",
-    "@webiny/api-security": "^0",
-    "@webiny/project-utils": "^0.1.4",
-    "@webiny/serverless-api-gateway": "^0.1.6",
+    "@webiny/api": "^0.2.4",
+    "@webiny/api-security": "^0.1.9",
+    "@webiny/project-utils": "^0.1.6",
+    "@webiny/serverless-api-gateway": "^0.1.8",
+    "@webiny/serverless-function": "^0.1.8",
     "babel-loader": "^8.0.6",
     "babel-plugin-module-resolver": "^3.2.0",
     "date-fns": "^2.4.1",
@@ -41,5 +41,6 @@
         "babel-plugin-module-resolver"
       ]
     }
-  }
+  },
+  "gitHead": "71cab7d5607b2e32a63034e324a663770507b32b"
 }

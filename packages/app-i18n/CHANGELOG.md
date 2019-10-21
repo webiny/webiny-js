@@ -3,6 +3,31 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.2.1](https://github.com/webiny/webiny-js/compare/@webiny/app-i18n@0.2.0...@webiny/app-i18n@0.2.1) (2019-10-21)
+
+**Note:** Version bump only for package @webiny/app-i18n
+
+
+
+
+
+# [0.2.0](https://github.com/webiny/webiny-js/compare/@webiny/app-i18n@0.1.9...@webiny/app-i18n@0.2.0) (2019-10-21)
+
+
+### Bug Fixes
+
+* security and i18n installation. ([bb8aa0c](https://github.com/webiny/webiny-js/commit/bb8aa0ca0287d31a82de2af0392547500aff7913))
+* use graphql-tag instead of apollo-server-lambda ([5531e33](https://github.com/webiny/webiny-js/commit/5531e33682ca3721701abc3415da85261d0283de))
+
+
+### Features
+
+* new app installation mechanism. ([83b6417](https://github.com/webiny/webiny-js/commit/83b641757d43dd3573bfa8d40cf053da35cb0180))
+
+
+
+
+
 ## [0.1.9](https://github.com/webiny/webiny-js/compare/@webiny/app-i18n@0.1.8...@webiny/app-i18n@0.1.9) (2019-10-17)
 
 **Note:** Version bump only for package @webiny/app-i18n

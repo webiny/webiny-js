@@ -3,6 +3,25 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.1.7](https://github.com/webiny/webiny-js/compare/@webiny/app-plugin-security-cognito@0.1.6...@webiny/app-plugin-security-cognito@0.1.7) (2019-10-21)
+
+**Note:** Version bump only for package @webiny/app-plugin-security-cognito
+
+
+
+
+
+## [0.1.6](https://github.com/webiny/webiny-js/compare/@webiny/app-plugin-security-cognito@0.1.5...@webiny/app-plugin-security-cognito@0.1.6) (2019-10-21)
+
+
+### Bug Fixes
+
+* security and i18n installation. ([bb8aa0c](https://github.com/webiny/webiny-js/commit/bb8aa0ca0287d31a82de2af0392547500aff7913))
+
+
+
+
+
 ## [0.1.5](https://github.com/webiny/webiny-js/compare/@webiny/app-plugin-security-cognito@0.1.4...@webiny/app-plugin-security-cognito@0.1.5) (2019-10-17)
 
 **Note:** Version bump only for package @webiny/app-plugin-security-cognito

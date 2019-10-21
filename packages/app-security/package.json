@@ -1,6 +1,6 @@
 {
   "name": "@webiny/app-security",
-  "version": "0.1.8",
+  "version": "0.2.1",
   "main": "index.js",
   "repository": {
     "type": "git",
@@ -15,12 +15,12 @@
   "dependencies": {
     "@babel/runtime": "^7.5.5",
     "@emotion/styled": "^10.0.17",
-    "@webiny/app": "^0.1.5",
-    "@webiny/app-admin": "^0.2.6",
-    "@webiny/form": "^0.1.5",
-    "@webiny/plugins": "^0.1.2",
-    "@webiny/ui": "^0.1.7",
-    "@webiny/validation": "^0.1.4",
+    "@webiny/app": "^0.1.7",
+    "@webiny/app-admin": "^0.3.1",
+    "@webiny/form": "^0.1.7",
+    "@webiny/plugins": "^0.1.4",
+    "@webiny/ui": "^0.1.9",
+    "@webiny/validation": "^0.1.6",
     "apollo-link": "^1.2.1",
     "dot-prop-immutable": "^1.4.0",
     "emotion": "10.0.17",
@@ -67,5 +67,5 @@
       ]
     }
   },
-  "gitHead": "a01796de9d1045f9007bd09f86b6ab74c6a58241"
+  "gitHead": "71cab7d5607b2e32a63034e324a663770507b32b"
 }

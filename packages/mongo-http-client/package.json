@@ -1,7 +1,7 @@
 {
   "private": true,
   "name": "@webiny/mongo-http-client",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "main": "index.js",
   "license": "MIT",
   "dependencies": {

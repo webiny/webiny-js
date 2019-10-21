@@ -1,6 +1,6 @@
 {
   "name": "@webiny/app-mailchimp",
-  "version": "0.1.9",
+  "version": "0.1.11",
   "main": "index.js",
   "repository": {
     "type": "git",
@@ -12,14 +12,14 @@
   "dependencies": {
     "@babel/runtime": "^7.5.5",
     "@emotion/styled": "^10.0.17",
-    "@webiny/app": "^0.1.5",
-    "@webiny/app-admin": "^0.2.6",
-    "@webiny/app-page-builder": "^0.1.9",
-    "@webiny/app-security": "^0.1.8",
-    "@webiny/form": "^0.1.5",
-    "@webiny/plugins": "^0.1.2",
-    "@webiny/ui": "^0.1.7",
-    "@webiny/validation": "^0.1.4",
+    "@webiny/app": "^0.1.7",
+    "@webiny/app-admin": "^0.3.1",
+    "@webiny/app-page-builder": "^0.1.11",
+    "@webiny/app-security": "^0.2.1",
+    "@webiny/form": "^0.1.7",
+    "@webiny/plugins": "^0.1.4",
+    "@webiny/ui": "^0.1.9",
+    "@webiny/validation": "^0.1.6",
     "emotion": "10.0.17",
     "lodash": "^4.17.11",
     "react-helmet": "^5.2.0",
@@ -50,5 +50,5 @@
     "postbuild": "yarn flow-copy-source && cp package.json LICENSE README.md dist/",
     "prepublishOnly": "yarn build"
   },
-  "gitHead": "a01796de9d1045f9007bd09f86b6ab74c6a58241"
+  "gitHead": "71cab7d5607b2e32a63034e324a663770507b32b"
 }

@@ -1,6 +1,6 @@
 {
   "name": "@webiny/commodo",
-  "version": "0.1.5",
+  "version": "0.1.7",
   "main": "index.js",
   "repository": {
     "type": "git",
@@ -34,5 +34,6 @@
     "flow-copy-source": "flow-copy-source src dist",
     "postbuild": "yarn flow-copy-source && cp package.json LICENSE README.md dist/",
     "prepublishOnly": "yarn build"
-  }
+  },
+  "gitHead": "71cab7d5607b2e32a63034e324a663770507b32b"
 }

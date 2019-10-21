@@ -3,6 +3,26 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.1.14](https://github.com/Webiny/webiny-js/compare/@webiny/serverless-files@0.1.13...@webiny/serverless-files@0.1.14) (2019-10-21)
+
+**Note:** Version bump only for package @webiny/serverless-files
+
+
+
+
+
+## [0.1.13](https://github.com/Webiny/webiny-js/compare/@webiny/serverless-files@0.1.12...@webiny/serverless-files@0.1.13) (2019-10-21)
+
+
+### Bug Fixes
+
+* dependency errors ([6122edd](https://github.com/Webiny/webiny-js/commit/6122edd1d63f4a934f41b95001e4fd5a023c2757))
+* remove WEBINY prefix usage. ([8ea936e](https://github.com/Webiny/webiny-js/commit/8ea936ea4c2aeb6ff42ea2f01642440cfbcf5184))
+
+
+
+
+
 ## [0.1.12](https://github.com/Webiny/webiny-js/compare/@webiny/serverless-files@0.1.11...@webiny/serverless-files@0.1.12) (2019-10-17)
 
 

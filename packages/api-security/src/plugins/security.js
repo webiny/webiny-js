@@ -1,19 +1,13 @@
 // @flow
 import type { PluginType } from "@webiny/api/types";
 import { shield } from "graphql-shield";
-import { get } from "lodash";
 import authenticate from "./authentication/authenticate";
 
 export default ([
     {
         type: "graphql-middleware",
         name: "graphql-middleware-shield",
-        middleware: ({ config, plugins }) => {
-            // If "security.enabled" was set to false, only then we exit.
-            if (get(config, "security.enabled") === false) {
-                return [];
-            }
-
+        middleware: ({ plugins }) => {
             const middleware = [];
             plugins.byType("graphql-schema").forEach(plugin => {
                 let { security } = plugin;

@@ -3,6 +3,28 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.1.9](https://github.com/webiny/webiny-js/compare/@webiny/api-i18n@0.1.8...@webiny/api-i18n@0.1.9) (2019-10-21)
+
+
+### Bug Fixes
+
+* update package versions ([878baa5](https://github.com/webiny/webiny-js/commit/878baa51dd747e3a2962da89cbb68ea15779a04f))
+
+
+
+
+
+## [0.1.8](https://github.com/webiny/webiny-js/compare/@webiny/api-i18n@0.1.7...@webiny/api-i18n@0.1.8) (2019-10-21)
+
+
+### Bug Fixes
+
+* security and i18n installation. ([bb8aa0c](https://github.com/webiny/webiny-js/commit/bb8aa0ca0287d31a82de2af0392547500aff7913))
+
+
+
+
+
 ## [0.1.7](https://github.com/webiny/webiny-js/compare/@webiny/api-i18n@0.1.6...@webiny/api-i18n@0.1.7) (2019-10-17)
 
 **Note:** Version bump only for package @webiny/api-i18n

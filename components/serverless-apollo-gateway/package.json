@@ -1,6 +1,6 @@
 {
   "name": "@webiny/serverless-apollo-gateway",
-  "version": "0.1.10",
+  "version": "0.1.12",
   "main": "serverless.js",
   "license": "MIT",
   "dependencies": {
@@ -8,8 +8,8 @@
     "@babel/core": "^7.6.2",
     "@babel/preset-env": "^7.6.0",
     "@serverless/core": "^1.1.1",
-    "@webiny/serverless-function": "^0.1.6",
-    "apollo-server-lambda": "^2.9.3",
+    "@webiny/serverless-function": "^0.1.8",
+    "apollo-server-lambda": "^2.9.6",
     "babel-loader": "^8.0.6",
     "execa": "^2.0.5",
     "fs-extra": "^8.1.0",
@@ -33,5 +33,6 @@
         "babel-loader"
       ]
     }
-  }
+  },
+  "gitHead": "71cab7d5607b2e32a63034e324a663770507b32b"
 }

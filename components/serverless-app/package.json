@@ -1,11 +1,11 @@
 {
   "name": "@webiny/serverless-app",
-  "version": "0.1.6",
+  "version": "0.1.8",
   "main": "serverless.js",
   "license": "MIT",
   "dependencies": {
     "@serverless/core": "^1.1.1",
-    "@webiny/serverless-function": "^0.1.6"
+    "@webiny/serverless-function": "^0.1.8"
   },
   "scripts": {
     "build": "rm -rf dist && mkdir dist && cp serverless.js dist/",
@@ -14,5 +14,6 @@
   },
   "publishConfig": {
     "access": "public"
-  }
+  },
+  "gitHead": "71cab7d5607b2e32a63034e324a663770507b32b"
 }

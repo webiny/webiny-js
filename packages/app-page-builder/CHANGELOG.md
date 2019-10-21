@@ -3,6 +3,29 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.1.11](https://github.com/webiny/webiny-js/compare/@webiny/app-page-builder@0.1.10...@webiny/app-page-builder@0.1.11) (2019-10-21)
+
+**Note:** Version bump only for package @webiny/app-page-builder
+
+
+
+
+
+## [0.1.10](https://github.com/webiny/webiny-js/compare/@webiny/app-page-builder@0.1.9...@webiny/app-page-builder@0.1.10) (2019-10-21)
+
+
+### Bug Fixes
+
+* add loading overlay on save elements/blocks dialog ([e9f1e5b](https://github.com/webiny/webiny-js/commit/e9f1e5ba2368dd3a87f5a3774305e6be96337854))
+* clicking on "Overwrite", deselecting it and submitting the form produces errors ([4856113](https://github.com/webiny/webiny-js/commit/48561136186c1ff740dd100bda1aa229a746915f))
+* name of image-list (mosaic) plugin ([c0543a7](https://github.com/webiny/webiny-js/commit/c0543a737a7cb1e434479d0dae3e997e6f35afd7))
+* save image via files service once upload is complete ([d0a29c1](https://github.com/webiny/webiny-js/commit/d0a29c123a92161a5c9194dedd1c81af5a56852b))
+* saved elements section ([893c677](https://github.com/webiny/webiny-js/commit/893c677d26261698286f9799a63bb65eaf9cc029))
+
+
+
+
+
 ## [0.1.9](https://github.com/webiny/webiny-js/compare/@webiny/app-page-builder@0.1.8...@webiny/app-page-builder@0.1.9) (2019-10-17)
 
 **Note:** Version bump only for package @webiny/app-page-builder

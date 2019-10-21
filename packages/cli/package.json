@@ -1,6 +1,6 @@
 {
   "name": "@webiny/cli",
-  "version": "0.3.10",
+  "version": "0.4.1",
   "main": "index.js",
   "bin": {
     "webiny": "./bin.js",
@@ -24,6 +24,7 @@
     "glob": "^7.1.4",
     "graphlib": "^2.1.7",
     "load-json-file": "^6.2.0",
+    "lodash.get": "^4.4.2",
     "node-fetch": "^2.6.0",
     "ramda": "^0.26.1",
     "traverse": "^0.6.6",
@@ -42,9 +43,8 @@
   },
   "adio": {
     "ignoreDirs": [
-      "/src/create/template/",
+      "/create/template/",
       "/node_modules/",
-      "/backup/",
       "/dist/"
     ]
   }

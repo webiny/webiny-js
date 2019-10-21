@@ -3,6 +3,25 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.1.8](https://github.com/Webiny/webiny-js/compare/@webiny/serverless-api-gateway@0.1.7...@webiny/serverless-api-gateway@0.1.8) (2019-10-21)
+
+**Note:** Version bump only for package @webiny/serverless-api-gateway
+
+
+
+
+
+## [0.1.7](https://github.com/Webiny/webiny-js/compare/@webiny/serverless-api-gateway@0.1.6...@webiny/serverless-api-gateway@0.1.7) (2019-10-21)
+
+
+### Bug Fixes
+
+* use serverless-aws-api-gateway component and normalize inputs. ([71a813f](https://github.com/Webiny/webiny-js/commit/71a813f44966cd53bad237931712e1aa8df8b26b))
+
+
+
+
+
 ## [0.1.6](https://github.com/Webiny/webiny-js/compare/@webiny/serverless-api-gateway@0.1.5...@webiny/serverless-api-gateway@0.1.6) (2019-10-17)
 
 
