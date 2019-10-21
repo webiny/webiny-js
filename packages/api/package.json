@@ -14,8 +14,8 @@
   ],
   "license": "MIT",
   "dependencies": {
-    "@apollo/federation": "^0.6.8",
-    "apollo-server-lambda": "^2.6.7",
+    "@apollo/federation": "^0.10.2",
+    "apollo-server-lambda": "^2.9.6",
     "graphql": "^14.4.2",
     "graphql-iso-date": "^3.6.1",
     "graphql-middleware": "^4.0.1",

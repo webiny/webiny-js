@@ -12,7 +12,7 @@
   ],
   "license": "MIT",
   "dependencies": {
-    "apollo-server-lambda": "^2.6.7",
+    "apollo-server-lambda": "^2.9.6",
     "jsonwebtoken": "^8.5.1",
     "jwk-to-pem": "^2.0.1",
     "request-promise": "^4.2.4"

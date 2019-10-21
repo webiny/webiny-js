@@ -22,7 +22,7 @@
     "@webiny/commodo-graphql": "^0.1.8",
     "@webiny/validation": "^0.1.5",
     "accept-language-parser": "^1.5.0",
-    "apollo-server-lambda": "^2.6.7",
+    "apollo-server-lambda": "^2.9.6",
     "i18n-locales": "^0.0.2",
     "lodash": "^4.17.4"
   },

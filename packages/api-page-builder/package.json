@@ -21,7 +21,7 @@
     "@webiny/commodo": "^0.1.6",
     "@webiny/commodo-graphql": "^0.1.8",
     "@webiny/validation": "^0.1.5",
-    "apollo-server-lambda": "^2.6.7",
+    "apollo-server-lambda": "^2.9.6",
     "lodash": "^4.17.11",
     "mdbid": "^1.0.0",
     "request": "^2.88.0"
