@@ -17,6 +17,42 @@ yargs.command(
 );
 
 yargs.command(
+    "deploy <what>",
+    "Deploy API or Apps.",
+    yargs => {
+        yargs.positional("what", {
+            describe: "What to deploy: api or apps"
+        });
+        yargs.option("env", {
+            describe: "Environment to deploy.",
+            default: "dev"
+        });
+    },
+    async argv => {
+        await require("./sls/deploy")(argv);
+        process.exit(0);
+    }
+);
+
+yargs.command(
+    "remove <what>",
+    "Remove API or Apps.",
+    yargs => {
+        yargs.positional("what", {
+            describe: "What to remove: api or apps"
+        });
+        yargs.option("env", {
+            describe: "Environment to remove.",
+            default: "dev"
+        });
+    },
+    async argv => {
+        await require("./sls/remove")(argv);
+        process.exit(0);
+    }
+);
+
+yargs.command(
     "disable-tracking",
     "Disable tracking of Webiny stats.",
     () => {},

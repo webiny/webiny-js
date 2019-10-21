@@ -1,9 +1,9 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import { useApolloClient } from "react-apollo";
 import styled from "@emotion/styled";
 import { CircularProgress } from "@webiny/ui/Progress";
 import { Graph, alg } from "graphlib";
-import { EmptyLayout } from "@webiny/app-admin/components/EmptyLayout";
+import { SplitView, LeftPanel, RightPanel } from "@webiny/app-admin/components/SplitView";
 
 export const Wrapper = styled("section")({
     display: "flex",
@@ -64,31 +64,56 @@ const createGraph = plugins => {
     return graph;
 };
 
-const Install = ({ plugins, children }) => {
+const Install = ({ plugins, children, security }) => {
     const client = useApolloClient();
     const [ready, setReady] = useState(false);
-    const [currentInstallation, setCurrentInstallation] = useState(null);
+    const [login, setLogin] = useState(false);
+    const [user, setUser] = useState(null);
+    const [current, setCurrentInstaller] = useState(null);
     const toInstall = useRef([]);
     const graph = useRef(null);
 
-    const executeGraph = async () => {
+    const onUser = user => {
+        setUser(user);
+        setLogin(false);
+        console.log("onUser", user);
+    };
+
+    const nextInstaller = () => {
+        const currentIndex = !current
+            ? -1
+            : toInstall.current.findIndex(inst => inst.plugin.name === current.plugin.name);
+        const nextIndex = currentIndex + 1;
+
+        if (toInstall.current[nextIndex].plugin.secure && (!current || !current.plugin.secure)) {
+            console.log("SET LOGIN");
+            setLogin(true);
+        }
+
+        //toInstall.current[currentIndex].installed = true;
+
+        if (!toInstall.current.find(inst => !inst.installed)) {
+            setCurrentInstaller(null);
+            setReady(true);
+            return;
+        }
+
+        setCurrentInstaller(toInstall.current[nextIndex]);
+    };
+
+    const getInstallers = useCallback((list = []) => {
         const installers = toInstall.current;
         const leaf = graph.current.sinks()[0];
         if (leaf) {
             const installer = installers.find(inst => inst.plugin.name === leaf);
             graph.current.removeNode(leaf);
             if (!installer.installed) {
-                setCurrentInstallation(installer.plugin);
-            } else {
-                executeGraph();
+                list.push(installer);
             }
-
-            return;
+            return getInstallers(list);
         }
-
-        setCurrentInstallation(null);
-        setReady(true);
-    };
+        return list;
+    }, []);
 
     useEffect(() => {
         (async () => {
@@ -100,29 +125,67 @@ const Install = ({ plugins, children }) => {
             );
 
             graph.current = createGraph(plugins);
-            executeGraph();
+            toInstall.current = getInstallers();
+            nextInstaller();
         })();
     }, []);
 
-    if (!ready && !currentInstallation) {
+    if (!ready && !current && !login) {
         return <CircularProgress label={"Checking apps..."} />;
     }
 
-    if (currentInstallation) {
+    if (login || current) {
         return (
-            <EmptyLayout>
-                <Wrapper>
-                    <InstallContent>
-                        <InnerContent>
-                            {currentInstallation.render({ onInstalled: executeGraph })}
-                        </InnerContent>
-                    </InstallContent>
-                </Wrapper>
-            </EmptyLayout>
+            <SplitView>
+                <LeftPanel span={2}>
+                    <PluginsList
+                        allPlugins={toInstall.current.map(inst => inst.plugin)}
+                        current={current}
+                        login={login}
+                    />
+                </LeftPanel>
+                <RightPanel span={10}>
+                    {login && React.cloneElement(security, { onUser })}
+                    {!login && (
+                        <Wrapper>
+                            <InstallContent>
+                                <InnerContent>
+                                    {current.plugin.render({ onInstalled: nextInstaller })}
+                                </InnerContent>
+                            </InstallContent>
+                        </Wrapper>
+                    )}
+                </RightPanel>
+            </SplitView>
         );
     }
 
-    return children;
+    return React.cloneElement(security, null, children);
+};
+
+const PluginsList = ({ allPlugins, current, login }) => {
+    const renderList = () => {
+        const loginItem = <li key={"login"}>{login && "-> "}Login Required</li>;
+
+        const items = [];
+        for (let i = 0; i < allPlugins.length; i++) {
+            const plugin = allPlugins[i];
+            const prev = i === 0 ? null : allPlugins[i - 1];
+            if ((!prev || !prev.secure) && plugin.secure) {
+                items.push(loginItem);
+            }
+            const active = !login && plugin.name === current.plugin.name;
+            items.push(
+                <li key={plugin.name}>
+                    {active && "-> "}
+                    {plugin.name}
+                </li>
+            );
+        }
+        return items;
+    };
+
+    return <ul>{renderList()}</ul>;
 };
 
 export default Install;
