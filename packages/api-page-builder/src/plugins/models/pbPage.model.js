@@ -72,7 +72,8 @@ export default ({ createBase, context, PbCategory, PbSettings }) => {
                     }
                     return value;
                 })
-            )(boolean({ value: false }))
+            )(boolean({ value: false })),
+            locked: skipOnPopulate()(boolean({ value: false }))
         })),
         withProps({
             async getNextVersion() {
