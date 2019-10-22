@@ -1,7 +1,7 @@
-name: webiny-cms-project
+name: webiny-api-[PROJECT_ID]
 
 vars:
-  region: "us-east-1"
+  region: ${env.AWS_REGION}
   env:
     JWT_SECRET: ${env.JWT_SECRET}
   database:
@@ -29,9 +29,9 @@ cognito:
   component: "@webiny/serverless-aws-cognito-user-pool"
   inputs:
     region: ${vars.region}
-    name: WebinyPool
+    name: webiny-pool-[PROJECT_ID]
     appClients:
-      - name: ReactApp
+      - name: "react-app-[PROJECT_ID]"
 
 security:
   component: "@webiny/serverless-apollo-service"
@@ -52,7 +52,7 @@ files:
   component: "@webiny/serverless-files"
   inputs:
     region: ${vars.region}
-    bucket: "my-test-bucket-3"
+    bucket: "webiny-files-[PROJECT_ID]"
     name: files
     memory: 512
     database: ${vars.database}
@@ -88,8 +88,6 @@ api:
   inputs:
     region: ${vars.region}
     description: "Main GraphQL API"
-    stage: prod
-    endpointTypes: ['REGIONAL']
     endpoints:
       - path: /graphql
         method: ANY

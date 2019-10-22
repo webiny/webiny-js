@@ -20,7 +20,7 @@ module.exports = async (inputs, method = "default") => {
     const component = new Template(`Webiny.${env}`, context);
     await component.init();
 
-    const output = await component[method]({ env });
+    const output = await component[method]({ env, debug });
     context._.status.running = false;
     process.stdout.write(ansiEscapes.cursorLeft);
     process.stdout.write(ansiEscapes.eraseDown);

@@ -5,6 +5,8 @@ const glob = require("glob");
 const util = require("util");
 const execa = require("execa");
 const { green } = require("chalk");
+const uuid = require("uuid/v4");
+const writeJsonFile = require("write-json-file");
 const { trackProject } = require("@webiny/tracking");
 const { version } = require(require.resolve("@webiny/cli/package.json"));
 const { getSuccessBanner } = require("./gists");
@@ -65,11 +67,25 @@ module.exports = async ({ name }) => {
         fs.renameSync(envExample, "api/.env.json");
     }
 
-    const envFile = resolve(".env.json");
-    let env = fs.readFileSync(envFile, "utf-8");
-    env = env.replace("[JWT_SECRET]", jwtSecret);
-    await fs.writeFile(envFile, env);
+    // Update .env.json
+    let envFile = getFileContents("api/.env.json");
+    envFile = envFile.replace("[JWT_SECRET]", jwtSecret);
+    writeFileContents("api/.env.json", envFile);
 
+    // Generate and inject project ID
+    const apiId = getUniqueId();
+    let apiYaml = getFileContents("api/serverless.yml");
+    apiYaml = apiYaml.replace(/\[PROJECT_ID\]/g, apiId);
+    writeFileContents("api/serverless.yml", apiYaml);
+    writeJsonFile.sync(resolve("api/.serverless/_.json"), { id: apiId });
+
+    let appsYaml = getFileContents("apps/serverless.yml");
+    const appsId = getUniqueId();
+    appsYaml = appsYaml.replace(/\[PROJECT_ID\]/g, appsId);
+    writeFileContents("apps/serverless.yml", appsYaml);
+    writeJsonFile.sync(resolve("apps/.serverless/_.json"), { id: appsId });
+
+    // Install all project deps
     await execa("yarn", [], { cwd: root, stdio: "inherit" });
 
     await trackProject({ cliVersion: version });
@@ -86,3 +102,17 @@ async function setupFolder(appFolder) {
     });
     files.forEach(file => copyFile(`template/${appFolder}/${file}`, `${appFolder}/${file}`));
 }
+
+const getUniqueId = () => {
+    return uuid()
+        .split("-")
+        .shift();
+};
+
+const getFileContents = file => {
+    return fs.readFileSync(resolve(file), "utf-8");
+};
+
+const writeFileContents = (file, contents) => {
+    fs.writeFileSync(resolve(file), contents);
+};

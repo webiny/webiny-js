@@ -1,12 +1,36 @@
 const { join } = require("path");
 const { green } = require("chalk");
 const execute = require("./execute");
+const { isApiEnvDeployed } = require("./utils");
+
+const perks = ["a 🍪", "☕️", "an 🍎", "a 🍺"];
 
 module.exports = async inputs => {
     const { what, env } = inputs;
-    const output = await execute(inputs);
+
+    if (what === "apps") {
+        if (env === "local") {
+            console.log(
+                `🚨 You can't deploy "local" apps environment as it is reserved for local development.`
+            );
+            process.exit(1);
+        }
+        return await execute(inputs);
+    }
 
     if (what === "api") {
+        const isFirstDeploy = !(await isApiEnvDeployed(env));
+        if (isFirstDeploy) {
+            const perk = perks[Math.floor(Math.random() * perks.length)];
+            console.log(
+                `This is the first deploy of ${green(
+                    env
+                )} environment, so it may take a few minutes.\nHere's ${perk} to make the time pass faster :)`
+            );
+        }
+
+        const output = await execute(inputs);
+
         // Run app state hooks
         const config = require(join(process.cwd(), "webiny"));
         for (let i = 0; i < config.apps.length; i++) {
@@ -29,6 +53,11 @@ module.exports = async inputs => {
         console.log(`\n🎉 Done!`);
         if (output.cdn) {
             console.log(`🚀 GraphQL API URL: ${green(output.cdn.url + "/graphql")}`);
+            if (isFirstDeploy) {
+                console.log(
+                    `⏳ Please note that CDN distribution takes some time to propagate, so expect this URL to become accessible in ~10 minutes.`
+                );
+            }
         }
     }
 };

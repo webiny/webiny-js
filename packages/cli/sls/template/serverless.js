@@ -53,7 +53,7 @@ class Template extends Component {
         }
 
         // Run template
-        return await this.deploy({ template: findFile() });
+        return await this.deploy({ ...inputs, template: findFile() });
     }
 
     async deploy(inputs = {}) {
@@ -61,7 +61,7 @@ class Template extends Component {
 
         const template = await getTemplate(inputs);
 
-        const resolvedTemplate = resolveTemplate(template);
+        const resolvedTemplate = resolveTemplate(inputs, template);
 
         this.context.debug("Collecting components from the template.");
 

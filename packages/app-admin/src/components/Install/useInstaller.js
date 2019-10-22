@@ -85,7 +85,10 @@ export const useInstaller = () => {
 
         let showLogin = false;
         const nextInstaller = installers[nextIndex];
-        if ((!prevInstaller || !prevInstaller.plugin.secure) && nextInstaller.plugin.secure) {
+
+        const prevSecure = prevInstaller && prevInstaller.plugin.secure;
+        const nextSecure = nextInstaller && nextInstaller.plugin.secure;
+        if (!prevSecure && nextSecure) {
             showLogin = true;
         }
         setState({ installerIndex: nextIndex, showLogin });

@@ -23,17 +23,17 @@ const resolveObject = (object, context) => {
         if (matches) {
             let newValue = value;
             for (const match of matches) {
-                const referencedPropertyPath = match.substring(2, match.length - 1).split(".");
-                const referencedPropertyValue = path(referencedPropertyPath, context);
+                const propPath = match.substring(2, match.length - 1).split(".");
+                const propValue = path(propPath, context);
 
-                if (referencedPropertyValue === undefined) {
+                if (propValue === undefined) {
                     throw Error(`invalid reference ${match}`);
                 }
 
                 if (match === value) {
-                    newValue = referencedPropertyValue;
-                } else if (typeof referencedPropertyValue === "string") {
-                    newValue = newValue.replace(match, referencedPropertyValue);
+                    newValue = propValue;
+                } else if (typeof propValue === "string") {
+                    newValue = newValue.replace(match, propValue);
                 } else {
                     throw Error(`the referenced substring is not a string`);
                 }
@@ -83,7 +83,7 @@ const getTemplate = async inputs => {
     return template;
 };
 
-const resolveTemplate = template => {
+const resolveTemplate = (inputs, template) => {
     const regex = /\${(\w*:?[\w\d.-]+)}/g;
     let variableResolved = false;
     const resolvedTemplate = traverse(template).forEach(function(value) {
@@ -91,28 +91,35 @@ const resolveTemplate = template => {
         if (matches) {
             let newValue = value;
             for (const match of matches) {
-                const referencedPropertyPath = match.substring(2, match.length - 1).split(".");
-                const referencedTopLevelProperty = referencedPropertyPath[0];
+                // If ${cli.env} was matched, `propPath` will be ['cli', 'env']
+                const propPath = match.substring(2, match.length - 1).split(".");
+                const topLevelProp = propPath[0];
                 if (/\${env\.(\w*:?[\w\d.-]+)}/g.test(match)) {
-                    newValue = process.env[referencedPropertyPath[1]];
+                    // This block handles references to `env` variables
+                    newValue = process.env[propPath[1]];
+                    variableResolved = true;
+                } else if (/\${cli\.(\w*:?[\w\d.-]+)}/g.test(match)) {
+                    // This block handles handles references to CLI parameters (--env, etc.)
+                    newValue = value.replace(match, inputs[propPath[1]]);
                     variableResolved = true;
                 } else {
-                    if (!template[referencedTopLevelProperty]) {
+                    // This block handles references to component output
+                    if (!template[topLevelProp]) {
                         throw Error(`invalid reference ${match}`);
                     }
 
-                    if (!template[referencedTopLevelProperty].component) {
+                    if (!template[topLevelProp].component) {
                         variableResolved = true;
-                        const referencedPropertyValue = path(referencedPropertyPath, template);
+                        const propValue = path(propPath, template);
 
-                        if (referencedPropertyValue === undefined) {
+                        if (propValue === undefined) {
                             throw Error(`invalid reference ${match}`);
                         }
 
                         if (match === value) {
-                            newValue = referencedPropertyValue;
-                        } else if (typeof referencedPropertyValue === "string") {
-                            newValue = newValue.replace(match, referencedPropertyValue);
+                            newValue = propValue;
+                        } else if (typeof propValue === "string") {
+                            newValue = newValue.replace(match, propValue);
                         } else {
                             throw Error(`the referenced substring is not a string`);
                         }
@@ -123,7 +130,7 @@ const resolveTemplate = template => {
         }
     });
     if (variableResolved) {
-        return resolveTemplate(resolvedTemplate);
+        return resolveTemplate(inputs, resolvedTemplate);
     }
     return resolvedTemplate;
 };
