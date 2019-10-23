@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.1.16](https://github.com/Webiny/webiny-js/compare/@webiny/serverless-page-builder@0.1.15...@webiny/serverless-page-builder@0.1.16) (2019-10-23)
+
+
+### Bug Fixes
+
+* add explicit webpack module resolve folder priorities for boilerplate code. ([ce29b32](https://github.com/Webiny/webiny-js/commit/ce29b32))
+
+
+
+
+
 ## [0.1.15](https://github.com/Webiny/webiny-js/compare/@webiny/serverless-page-builder@0.1.14...@webiny/serverless-page-builder@0.1.15) (2019-10-21)
 
 **Note:** Version bump only for package @webiny/serverless-page-builder

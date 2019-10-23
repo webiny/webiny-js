@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.3.4](https://github.com/Webiny/webiny-js/compare/@webiny/serverless-apollo-service@0.3.3...@webiny/serverless-apollo-service@0.3.4) (2019-10-23)
+
+
+### Bug Fixes
+
+* add explicit webpack module resolve folder priorities for boilerplate code. ([ce29b32](https://github.com/Webiny/webiny-js/commit/ce29b32))
+
+
+
+
+
 ## [0.3.3](https://github.com/Webiny/webiny-js/compare/@webiny/serverless-apollo-service@0.3.2...@webiny/serverless-apollo-service@0.3.3) (2019-10-21)
 
 **Note:** Version bump only for package @webiny/serverless-apollo-service

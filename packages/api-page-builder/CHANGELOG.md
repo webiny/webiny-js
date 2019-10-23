@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.1.10](https://github.com/webiny/webiny-js/compare/@webiny/api-page-builder@0.1.9...@webiny/api-page-builder@0.1.10) (2019-10-23)
+
+**Note:** Version bump only for package @webiny/api-page-builder
+
+
+
+
+
 ## [0.1.9](https://github.com/webiny/webiny-js/compare/@webiny/api-page-builder@0.1.8...@webiny/api-page-builder@0.1.9) (2019-10-21)
 
 

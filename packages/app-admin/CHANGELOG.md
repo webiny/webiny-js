@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.3.2](https://github.com/webiny/webiny-js/compare/@webiny/app-admin@0.3.1...@webiny/app-admin@0.3.2) (2019-10-23)
+
+
+### Bug Fixes
+
+* finalize CLI help and project setup. ([bae62d9](https://github.com/webiny/webiny-js/commit/bae62d9))
+
+
+
+
+
 ## [0.3.1](https://github.com/webiny/webiny-js/compare/@webiny/app-admin@0.3.0...@webiny/app-admin@0.3.1) (2019-10-21)
 
 **Note:** Version bump only for package @webiny/app-admin

@@ -3,6 +3,23 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.5.0](https://github.com/webiny/webiny-js/compare/@webiny/cli@0.4.1...@webiny/cli@0.5.0) (2019-10-23)
+
+
+### Bug Fixes
+
+* add webiny.js to project setup and check if it exists before running hooks. ([f64a3a9](https://github.com/webiny/webiny-js/commit/f64a3a9))
+* finalize CLI help and project setup. ([bae62d9](https://github.com/webiny/webiny-js/commit/bae62d9))
+
+
+### Features
+
+* add support for deploy hooks to inject state values. ([01f310f](https://github.com/webiny/webiny-js/commit/01f310f))
+
+
+
+
+
 ## [0.4.1](https://github.com/webiny/webiny-js/compare/@webiny/cli@0.4.0...@webiny/cli@0.4.1) (2019-10-21)
 
 **Note:** Version bump only for package @webiny/cli

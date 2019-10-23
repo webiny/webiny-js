@@ -1,6 +1,6 @@
 {
   "name": "@webiny/api-cms",
-  "version": "0.1.9",
+  "version": "0.1.10",
   "private": true,
   "main": "index.js",
   "repository": {
@@ -17,12 +17,12 @@
   "dependencies": {
     "@babel/runtime": "^7.5.5",
     "@commodo/fields-storage-mongodb": "^0.2.12",
-    "@webiny/api": "^0.2.4",
-    "@webiny/api-security": "^0.1.9",
-    "@webiny/commodo": "^0.1.7",
-    "@webiny/commodo-graphql": "^0.1.9",
-    "@webiny/plugins": "^0.1.4",
-    "@webiny/validation": "^0.1.6",
+    "@webiny/api": "^0.2.5",
+    "@webiny/api-security": "^0.1.10",
+    "@webiny/commodo": "^0.1.8",
+    "@webiny/commodo-graphql": "^0.1.10",
+    "@webiny/plugins": "^0.1.5",
+    "@webiny/validation": "^0.1.7",
     "apollo-server-lambda": "^2.9.6",
     "lodash": "^4.17.4",
     "mongodb": "^3.3.2",

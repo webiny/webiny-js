@@ -1,6 +1,6 @@
 {
   "name": "@webiny/serverless-function",
-  "version": "0.1.8",
+  "version": "0.1.9",
   "main": "serverless.js",
   "license": "MIT",
   "dependencies": {

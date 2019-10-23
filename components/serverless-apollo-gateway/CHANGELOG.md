@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.1.13](https://github.com/Webiny/webiny-js/compare/@webiny/serverless-apollo-gateway@0.1.12...@webiny/serverless-apollo-gateway@0.1.13) (2019-10-23)
+
+
+### Bug Fixes
+
+* add explicit webpack module resolve folder priorities for boilerplate code. ([ce29b32](https://github.com/Webiny/webiny-js/commit/ce29b32))
+
+
+
+
+
 ## [0.1.12](https://github.com/Webiny/webiny-js/compare/@webiny/serverless-apollo-gateway@0.1.11...@webiny/serverless-apollo-gateway@0.1.12) (2019-10-21)
 
 
