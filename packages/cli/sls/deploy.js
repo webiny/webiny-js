@@ -53,6 +53,7 @@ module.exports = async inputs => {
                     await hooks.stateChanged({ env, state: output });
                 }
             } catch (err) {
+                console.log(err);
                 // if webiny.js file is not found in the app, ignore it.
             }
         }

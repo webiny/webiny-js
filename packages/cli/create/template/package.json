@@ -22,8 +22,7 @@
         "@webiny/api-i18n": "^0",
         "@webiny/api-google-tag-manager": "^0",
         "@webiny/api-mailchimp": "^0",
-        "@webiny/api-cookie-policy": "^0",
-        "@webiny/project-utils": "^0"
+        "@webiny/api-cookie-policy": "^0"
     },
     "devDependencies": {
         "prettier": "^1.18.2",

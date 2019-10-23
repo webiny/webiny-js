@@ -1,4 +1,5 @@
 {
+  "private": true,
   "name": "@webiny/project-utils",
   "version": "0.1.7",
   "main": "index.js",
