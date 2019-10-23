@@ -135,8 +135,9 @@ const resolveTemplate = (inputs, template) => {
     return resolvedTemplate;
 };
 
-const getAllComponents = async (obj = {}) => {
+const getAllComponents = (obj = {}) => {
     const allComponents = {};
+    const options = { paths: [process.cwd()] };
 
     for (const key in obj) {
         if (obj[key] && obj[key].component) {
@@ -144,8 +145,11 @@ const getAllComponents = async (obj = {}) => {
             if (componentPath.startsWith(".")) {
                 componentPath = join(process.cwd(), componentPath);
             }
+
+            const resolvedPath = require.resolve(componentPath, options);
+
             allComponents[key] = {
-                path: require.resolve(componentPath),
+                path: resolvedPath,
                 inputs: obj[key].inputs || {}
             };
         }

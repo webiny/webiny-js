@@ -16,11 +16,11 @@ const {
 
 const findFile = () => {
     if (fs.existsSync(`serverless.yml`)) {
-        return `serverless.yml`;
+        return path.resolve(`serverless.yml`);
     }
 
     if (fs.existsSync(`serverless.yaml`)) {
-        return `serverless.yaml`;
+        return path.resolve(`serverless.yaml`);
     }
 
     throw Error(
@@ -65,7 +65,7 @@ class Template extends Component {
 
         this.context.debug("Collecting components from the template.");
 
-        const allComponents = await getAllComponents(resolvedTemplate);
+        const allComponents = getAllComponents(resolvedTemplate);
 
         const allComponentsWithDependencies = setDependencies(allComponents);
 
