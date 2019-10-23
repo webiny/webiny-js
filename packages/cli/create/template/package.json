@@ -7,10 +7,14 @@
     ]
   },
   "dependencies": {
+    "@webiny/serverless-api-gateway": "^0",
+    "@webiny/serverless-app":"^0",
     "@webiny/serverless-apollo-gateway": "^0",
     "@webiny/serverless-apollo-service": "^0",
+    "@webiny/serverless-aws-cloudfront": "^0",
+    "@webiny/serverless-aws-cognito-user-pool": "^0",
+    "@webiny/serverless-files":"^0",
     "@webiny/serverless-page-builder":"^0",
-    "@webiny/serverless-api-gateway": "^0",
     "@webiny/api-security":"^0",
     "@webiny/api-plugin-security-cognito": "^0",
     "@webiny/api-files":"^0",
