@@ -27,113 +27,125 @@ const defaults = {
 
 class AwsApiGateway extends Component {
     async default(inputs = {}) {
-        this.context.status("Deploying");
+        try {
+            this.context.status("Deploying");
 
-        const config = { ...defaults, ...inputs };
+            const config = { ...defaults, ...inputs };
 
-        config.name = this.state.name || this.context.resourceId();
+            config.name = this.state.name || this.context.resourceId();
 
-        const { name, description, region, stage, endpointTypes } = config;
+            const { name, description, region, stage, endpointTypes } = config;
 
-        this.context.debug(
-            `Starting API Gateway deployment with name ${name} in the ${region} region`
-        );
+            this.context.debug(
+                `Starting API Gateway deployment with name ${name} in the ${region} region`
+            );
 
-        // todo quick fix for array of objects in yaml issue
-        config.endpoints = Object.keys(config.endpoints).map(e => config.endpoints[e]);
+            // todo quick fix for array of objects in yaml issue
+            config.endpoints = Object.keys(config.endpoints).map(e => config.endpoints[e]);
 
-        const apig = new AWS.APIGateway({
-            region,
-            credentials: this.context.credentials.aws
-        });
+            const apig = new AWS.APIGateway({
+                region,
+                credentials: this.context.credentials.aws
+            });
 
-        const lambda = new AWS.Lambda({
-            region: config.region,
-            credentials: this.context.credentials.aws
-        });
+            const lambda = new AWS.Lambda({
+                region: config.region,
+                credentials: this.context.credentials.aws
+            });
 
-        let apiId = this.state.id || config.id;
+            let apiId = this.state.id || config.id;
 
-        if (!apiId) {
-            this.context.debug(`API ID not found in state. Creating a new API.`);
-            apiId = await createApi({ apig, name, description, endpointTypes });
-            this.context.debug(`API with ID ${apiId} created.`);
-            this.state.id = apiId;
+            if (!apiId) {
+                this.context.debug(`API ID not found in state. Creating a new API.`);
+                apiId = await retry(() => createApi({ apig, name, description, endpointTypes }));
+                this.context.debug(`API with ID ${apiId} created.`);
+                this.state.id = apiId;
+                await this.save();
+            } else if (!(await apiExists({ apig, apiId }))) {
+                throw Error(`the specified api id "${apiId}" does not exist`);
+            }
+
+            this.context.debug(
+                `Validating ownership for the provided endpoints for API ID ${apiId}.`
+            );
+
+            let endpoints = await validateEndpoints({
+                apig,
+                apiId,
+                endpoints: config.endpoints,
+                state: this.state,
+                stage,
+                region
+            });
+
+            this.context.debug(`Deploying authorizers if any for API ID ${apiId}.`);
+
+            endpoints = await createAuthorizers({ apig, lambda, apiId, endpoints });
+
+            this.context.debug(`Deploying paths/resources for API ID ${apiId}.`);
+
+            endpoints = await createPaths({ apig, apiId, endpoints });
+
+            this.context.debug(`Deploying methods for API ID ${apiId}.`);
+
+            endpoints = await createMethods({ apig, apiId, endpoints });
+
+            this.context.debug(
+                `Sleeping for couple of seconds before creating method integration.`
+            );
+
+            // need to sleep for a bit between method and integration creation
+            await utils.sleep(2000);
+
+            this.context.debug(
+                `Creating integrations for the provided methods for API ID ${apiId}.`
+            );
+
+            endpoints = await createIntegrations({ apig, lambda, apiId, endpoints });
+
+            this.context.debug(`Removing any old endpoints for API ID ${apiId}.`);
+
+            // keep endpoints in sync with provider
+            await removeOutdatedEndpoints({
+                apig,
+                apiId,
+                endpoints,
+                stateEndpoints: this.state.endpoints || []
+            });
+
+            this.context.debug(
+                `Creating deployment for API ID ${apiId} in the ${stage} stage and the ${region} region.`
+            );
+
+            await retry(() => createDeployment({ apig, apiId, stage }));
+
+            config.url = `https://${apiId}.execute-api.${region}.amazonaws.com/${stage}`;
+
+            this.state.endpoints = endpoints;
+            this.state.name = config.name;
+            this.state.region = config.region;
+            this.state.stage = config.stage;
+            this.state.url = config.url;
             await this.save();
-        } else if (!(await apiExists({ apig, apiId }))) {
-            throw Error(`the specified api id "${apiId}" does not exist`);
+
+            this.context.debug(
+                `Deployment successful for the API named ${name} in the ${region} region.`
+            );
+            this.context.debug(`API URL is ${config.url}.`);
+
+            const outputs = {
+                name: config.name,
+                id: apiId,
+                endpoints,
+                url: config.url
+            };
+
+            return outputs;
+        } catch (err) {
+            console.log("Error deploying API GATEWAY", inputs);
+            console.log(err);
+            throw err;
         }
-
-        this.context.debug(`Validating ownership for the provided endpoints for API ID ${apiId}.`);
-
-        let endpoints = await validateEndpoints({
-            apig,
-            apiId,
-            endpoints: config.endpoints,
-            state: this.state,
-            stage,
-            region
-        });
-
-        this.context.debug(`Deploying authorizers if any for API ID ${apiId}.`);
-
-        endpoints = await createAuthorizers({ apig, lambda, apiId, endpoints });
-
-        this.context.debug(`Deploying paths/resources for API ID ${apiId}.`);
-
-        endpoints = await createPaths({ apig, apiId, endpoints });
-
-        this.context.debug(`Deploying methods for API ID ${apiId}.`);
-
-        endpoints = await createMethods({ apig, apiId, endpoints });
-
-        this.context.debug(`Sleeping for couple of seconds before creating method integration.`);
-
-        // need to sleep for a bit between method and integration creation
-        await utils.sleep(2000);
-
-        this.context.debug(`Creating integrations for the provided methods for API ID ${apiId}.`);
-
-        endpoints = await createIntegrations({ apig, lambda, apiId, endpoints });
-
-        this.context.debug(`Removing any old endpoints for API ID ${apiId}.`);
-
-        // keep endpoints in sync with provider
-        await removeOutdatedEndpoints({
-            apig,
-            apiId,
-            endpoints,
-            stateEndpoints: this.state.endpoints || []
-        });
-
-        this.context.debug(
-            `Creating deployment for API ID ${apiId} in the ${stage} stage and the ${region} region.`
-        );
-
-        await retry(() => createDeployment({ apig, apiId, stage }));
-
-        config.url = `https://${apiId}.execute-api.${region}.amazonaws.com/${stage}`;
-
-        this.state.endpoints = endpoints;
-        this.state.name = config.name;
-        this.state.region = config.region;
-        this.state.stage = config.stage;
-        this.state.url = config.url;
-        await this.save();
-
-        this.context.debug(
-            `Deployment successful for the API named ${name} in the ${region} region.`
-        );
-        this.context.debug(`API URL is ${config.url}.`);
-
-        const outputs = {
-            name: config.name,
-            id: apiId,
-            endpoints,
-            url: config.url
-        };
-
-        return outputs;
     }
 
     async remove(inputs = {}) {
