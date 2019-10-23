@@ -1,4 +1,5 @@
-const { join } = require("path");
+const { join, resolve } = require("path");
+const fs = require("fs");
 const { green } = require("chalk");
 const execute = require("./execute");
 const { isApiEnvDeployed } = require("./utils");
@@ -32,10 +33,16 @@ module.exports = async inputs => {
         const output = await execute(inputs);
 
         // Run app state hooks
-        const config = require(join(process.cwd(), "webiny"));
+        const webinyJs = resolve("webiny.js");
+        if (!fs.existsSync(webinyJs)) {
+            console.log(`\n🎉 Done!`);
+            return;
+        }
+
+        const config = require(webinyJs);
         for (let i = 0; i < config.apps.length; i++) {
             const app = config.apps[i];
-            const appLocation = join(process.cwd(), app.location);
+            const appLocation = resolve(app.location);
             try {
                 const { hooks } = require(join(appLocation, "webiny"));
                 if (hooks && hooks.stateChanged) {

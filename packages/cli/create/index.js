@@ -40,6 +40,7 @@ module.exports = async ({ name }) => {
     const files = [
         "README.md",
         "example.gitignore",
+        "webiny.js",
         ".prettierrc.js",
         "babel.config.js",
         "package.json"
