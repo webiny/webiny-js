@@ -2,6 +2,7 @@ name: webiny-cms-project
 
 vars:
   region: ${env.AWS_REGION}
+  bucket: ${env.S3_BUCKET}
   env:
     JWT_SECRET: ${env.JWT_SECRET}
   database:
@@ -52,7 +53,7 @@ files:
   component: "@webiny/serverless-files/dist"
   inputs:
     region: ${vars.region}
-    bucket: "my-test-bucket-4"
+    bucket: ${vars.bucket}
     name: files
     memory: 512
     database: ${vars.database}
