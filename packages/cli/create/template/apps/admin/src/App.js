@@ -4,6 +4,7 @@ import React from "react";
 import { UiProvider } from "@webiny/app/contexts/Ui";
 import { registerPlugins, getPlugins } from "@webiny/plugins";
 import { ThemeProvider } from "@webiny/app-admin/contexts/Theme";
+import { AppInstaller } from "@webiny/app-admin/components/Install/AppInstaller";
 import { PageBuilderProvider } from "@webiny/app-page-builder/contexts/PageBuilder";
 import { SecurityProvider } from "@webiny/app-security/contexts/Security";
 import { I18NProvider } from "@webiny/app-i18n/contexts/I18N";
@@ -15,9 +16,9 @@ import plugins from "./plugins";
 registerPlugins(
     plugins,
     cognito({
-        region: "us-east-1",
-        userPoolId: "us-east-1_patnytnzK",
-        userPoolWebClientId: "4o0sgim1pol4mr75el5iqu0jcp"
+        region: process.env.REACT_APP_USER_POOL_REGION,
+        userPoolId: process.env.REACT_APP_USER_POOL_ID,
+        userPoolWebClientId: process.env.REACT_APP_USER_POOL_WEB_CLIENT_ID
     })
 );
 
@@ -28,7 +29,7 @@ const App = () => {
     return (
         <UiProvider>
             <I18NProvider>
-                <SecurityProvider>
+                <AppInstaller security={<SecurityProvider />}>
                     <PageBuilderProvider theme={myTheme} isEditor>
                         <ThemeProvider>
                             {getPlugins("route").map((pl: Object) =>
@@ -39,7 +40,7 @@ const App = () => {
                             )}
                         </ThemeProvider>
                     </PageBuilderProvider>
-                </SecurityProvider>
+                </AppInstaller>
             </I18NProvider>
         </UiProvider>
     );
