@@ -37,7 +37,7 @@
     "access": "public"
   },
   "scripts": {
-    "build": "rimraf ./dist && cp -R cli.js bin.js config create helpers sls dist/",
+    "build": "rimraf ./dist && mkdir dist && cp -R cli.js bin.js config create helpers sls dist/",
     "postbuild": "cp package.json LICENSE README.md dist/",
     "prepublishOnly": "yarn build"
   },
