@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import styled from "@emotion/styled";
+import { css } from "emotion";
 import { CircularProgress } from "@webiny/ui/Progress";
 import { ButtonPrimary } from "@webiny/ui/Button";
 import { SplitView, LeftPanel, RightPanel } from "@webiny/app-admin/components/SplitView";
@@ -23,6 +24,15 @@ export const InstallContent = styled("div")({
     }
 });
 
+const installerSplitView = css({
+    ".webiny-split-view__inner": {
+        height: "100vh",
+        ".webiny-split-view__right-panel-wrapper": {
+            height: "100vh"
+        }
+    }
+});
+
 export const InnerContent = styled("div")({
     padding: 25,
     position: "relative"
@@ -34,7 +44,7 @@ export const AppInstaller = ({ children, security }) => {
 
     const renderLayout = (content, secure = false) => {
         return (
-            <SplitView>
+            <SplitView className={installerSplitView}>
                 <LeftPanel span={2}>
                     <Sidebar
                         allInstallers={installers}

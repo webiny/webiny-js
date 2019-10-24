@@ -1,4 +1,9 @@
 import React from "react";
+import styled from "@emotion/styled";
+
+import { ReactComponent as WebinyLogo } from "../../assets/images/webiny-orange-logo.svg";
+
+const SidebarWrapper = styled("div")({});
 
 const Sidebar = ({ allInstallers, installer, showLogin }) => {
     const renderList = () => {
@@ -26,7 +31,12 @@ const Sidebar = ({ allInstallers, installer, showLogin }) => {
         return items;
     };
 
-    return <ul>{renderList()}</ul>;
+    return (
+        <SidebarWrapper>
+            <img src={WebinyLogo} alt="Webiny CMS" />
+            <ul>{renderList()}</ul>
+        </SidebarWrapper>
+    );
 };
 
 export default Sidebar;
