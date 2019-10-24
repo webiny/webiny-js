@@ -12,7 +12,7 @@ const getDeps = async deps => {
 
 class ServerlessPageBuilder extends Component {
     async default(inputs = {}) {
-        const { plugins = [], env, /*files,*/ ...rest } = inputs;
+        const { plugins = [], env, ...rest } = inputs;
 
         plugins.unshift("@webiny/api-page-builder/plugins");
 
@@ -20,10 +20,7 @@ class ServerlessPageBuilder extends Component {
         const apolloService = await this.load("@webiny/serverless-apollo-service");
         const output = await apolloService({
             plugins,
-            env: {
-                ...env
-                //FILES_API_URL: files.api.url
-            },
+            env,
             ...rest,
             dependencies: await getDeps(["@webiny/api-page-builder"])
         });
