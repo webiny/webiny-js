@@ -16,7 +16,16 @@ module.exports = async inputs => {
             );
             process.exit(1);
         }
-        return await execute(inputs);
+        const { output } = await execute(inputs);
+
+        if (output.cdn) {
+            console.log(`🚀 Your website URL: ${green(output.cdn.url)}`);
+            if (isFirstDeploy) {
+                console.log(
+                    `⏳ Please note that CDN distribution takes some time to propagate, so expect this URL to become accessible in ~10 minutes.`
+                );
+            }
+        }
     }
 
     if (what === "api") {
