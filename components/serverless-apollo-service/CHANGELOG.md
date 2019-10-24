@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.4.0](https://github.com/Webiny/webiny-js/compare/@webiny/serverless-apollo-service@0.3.5...@webiny/serverless-apollo-service@0.4.0) (2019-10-24)
+
+
+### Bug Fixes
+
+* remove dependency on project-utils. ([a026795](https://github.com/Webiny/webiny-js/commit/a026795))
+
+
+### Features
+
+* expose "webpackConfig" input to customize build of apollo-service component. ([48dfa94](https://github.com/Webiny/webiny-js/commit/48dfa94))
+
+
+
+
+
 ## [0.3.5](https://github.com/Webiny/webiny-js/compare/@webiny/serverless-apollo-service@0.3.4...@webiny/serverless-apollo-service@0.3.5) (2019-10-24)
 
 **Note:** Version bump only for package @webiny/serverless-apollo-service

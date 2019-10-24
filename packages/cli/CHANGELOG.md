@@ -3,6 +3,23 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.5.3](https://github.com/webiny/webiny-js/compare/@webiny/cli@0.5.2...@webiny/cli@0.5.3) (2019-10-24)
+
+
+### Bug Fixes
+
+* add helper to check if apps are already deployed. ([080fa6b](https://github.com/webiny/webiny-js/commit/080fa6b))
+* ensure app environment is configured before attempting to deploy apps. ([244fa33](https://github.com/webiny/webiny-js/commit/244fa33))
+* increase default lambda timeout. ([bdf4238](https://github.com/webiny/webiny-js/commit/bdf4238))
+* point to correct ssr build script. ([d9bc2ab](https://github.com/webiny/webiny-js/commit/d9bc2ab))
+* update template yaml. ([a1522bf](https://github.com/webiny/webiny-js/commit/a1522bf))
+* update template yaml. ([2e9cdd1](https://github.com/webiny/webiny-js/commit/2e9cdd1))
+* update template yaml. ([5980625](https://github.com/webiny/webiny-js/commit/5980625))
+
+
+
+
+
 ## [0.5.2](https://github.com/webiny/webiny-js/compare/@webiny/cli@0.5.1...@webiny/cli@0.5.2) (2019-10-24)
 
 
