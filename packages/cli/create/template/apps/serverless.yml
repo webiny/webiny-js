@@ -6,7 +6,7 @@ site:
     description: Webiny Site
     hook: yarn build:${cli.env}
     root: ./site
-    timeout: 10
+    timeout: 30
 admin:
   component: "@webiny/serverless-app"
   inputs:
