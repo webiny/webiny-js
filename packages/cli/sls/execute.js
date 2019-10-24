@@ -27,5 +27,5 @@ module.exports = async (inputs, method = "default") => {
     process.stdout.write(ansiEscapes.cursorShow);
     process.chdir(cwd);
 
-    return output;
+    return { output, duration: context._.seconds };
 };

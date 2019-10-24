@@ -30,12 +30,12 @@ module.exports = async inputs => {
             );
         }
 
-        const output = await execute(inputs);
+        const { output, duration } = await execute(inputs);
 
         // Run app state hooks
         const webinyJs = resolve("webiny.js");
         if (!fs.existsSync(webinyJs)) {
-            console.log(`\n🎉 Done!`);
+            console.log(`\n🎉 Done! Deploy finished in ${green(duration + "s")}.`);
             return;
         }
 
@@ -57,7 +57,7 @@ module.exports = async inputs => {
             }
         }
 
-        console.log(`\n🎉 Done!`);
+        console.log(`\n🎉 Done! Deploy finished in ${green(duration + "s")}.`);
         if (output.cdn) {
             console.log(`🚀 GraphQL API URL: ${green(output.cdn.url + "/graphql")}`);
             if (isFirstDeploy) {
