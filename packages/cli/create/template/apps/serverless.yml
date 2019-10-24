@@ -1,30 +1,30 @@
-name: webiny-apps-[PROJECT_ID]
+name: webiny-cms
 
 site:
   component: "@webiny/serverless-app"
   inputs:
     description: Webiny Site
     hook: yarn build:${cli.env}
-    root: ./apps/site
+    root: ./site
     timeout: 10
-#admin:
-#  component: "@webiny/serverless-app"
-#  inputs:
-#    description: Webiny Admin
-#    hook: yarn build:prod
-#    root: ./apps/admin
+admin:
+  component: "@webiny/serverless-app"
+  inputs:
+    description: Webiny Admin
+    hook: yarn build:${cli.env}
+    root: ./admin
 
 api:
   component: "@webiny/serverless-api-gateway"
   inputs:
-    description: Serverless Apps
+    description: Serverless Site
     endpoints:
-      #      - path: /admin/{key+}
-      #        method: GET
-      #        function: ${admin}
-      #      - path: /admin
-      #        method: GET
-      #        function: ${admin}
+      - path: /admin/{key+}
+        method: GET
+        function: ${site}
+      - path: /admin
+        method: GET
+        function: ${site}
       - path: /{key+}
         method: GET
         function: ${site}
@@ -32,8 +32,8 @@ api:
         method: GET
         function: ${site}
 
-#cdn:
-#  component: "@webiny/serverless-aws-cloudfront"
-#  inputs:
-#    origins:
-#      - url: ${api.url}
+cdn:
+  component: "@webiny/serverless-aws-cloudfront"
+  inputs:
+    origins:
+      - url: ${api.url}
