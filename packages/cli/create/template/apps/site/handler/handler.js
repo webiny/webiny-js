@@ -1,6 +1,7 @@
 const fs = require("fs");
 const path = require("path");
 const mime = require("mime-types");
+const clearModule = require("clear-module");
 
 const ssrCache = {};
 
@@ -26,6 +27,7 @@ module.exports.handler = async event => {
     if (!type) {
         type = "text/html";
         if (!ssrCache[key]) {
+            clearModule("./ssr");
             const { handler } = require("./ssr");
             ssrCache[key] = await handler("/" + key);
         }
