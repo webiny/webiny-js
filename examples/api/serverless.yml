@@ -45,6 +45,7 @@ security:
     memory: 512
     database: ${vars.database}
     env: ${vars.env}
+    webpackConfig: ./webpack.config.js
     plugins:
       - "@webiny/api-security/plugins"
       - factory: "@webiny/api-plugin-security-cognito"
@@ -61,6 +62,7 @@ files:
     memory: 512
     database: ${vars.database}
     env: ${vars.env}
+    webpackConfig: ./webpack.config.js
 
 i18n:
   component: "@webiny/serverless-apollo-service"
@@ -70,6 +72,7 @@ i18n:
     memory: 512
     database: ${vars.database}
     env: ${vars.env}
+    webpackConfig: ./webpack.config.js
     plugins:
       - "@webiny/api-i18n/plugins"
 
@@ -81,6 +84,7 @@ pageBuilder:
     memory: 512
     database: ${vars.database}
     env: ${vars.env}
+    webpackConfig: ./webpack.config.js
     plugins:
       - "@webiny/api-google-tag-manager"
       - "@webiny/api-mailchimp"
