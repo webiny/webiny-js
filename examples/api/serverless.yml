@@ -5,6 +5,8 @@ vars:
   bucket: ${env.S3_BUCKET}
   env:
     JWT_SECRET: ${env.JWT_SECRET}
+    GRAPHQL_INTROSPECTION: ${env.GRAPHQL_INTROSPECTION}
+    GRAPHQL_PLAYGROUND: ${env.GRAPHQL_PLAYGROUND}
   database:
     server: ${env.MONGODB_SERVER}
     name: ${env.MONGODB_NAME}
@@ -12,6 +14,7 @@ vars:
 gateway:
   component: "@webiny/serverless-apollo-gateway"
   inputs:
+    env: ${vars.env}
     region: ${vars.region}
     name: gateway
     memory: 512
@@ -30,7 +33,7 @@ cognito:
   component: "@webiny/serverless-aws-cognito-user-pool"
   inputs:
     region: ${vars.region}
-    name: 'WebinyPool'
+    name: "WebinyPool"
     appClients:
       - name: ReactApp
 
@@ -58,7 +61,6 @@ files:
     memory: 512
     database: ${vars.database}
     env: ${vars.env}
-
 
 i18n:
   component: "@webiny/serverless-apollo-service"
