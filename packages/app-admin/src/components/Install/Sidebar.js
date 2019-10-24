@@ -33,7 +33,7 @@ const Sidebar = ({ allInstallers, installer, showLogin }) => {
 
     return (
         <SidebarWrapper>
-            <img src={WebinyLogo} alt="Webiny CMS" />
+            <WebinyLogo />
             <ul>{renderList()}</ul>
         </SidebarWrapper>
     );
