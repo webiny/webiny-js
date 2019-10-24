@@ -105,11 +105,8 @@ export default () => [
         },
         security: {
             shield: {
-                CookiePolicyQuery: {
-                    getSettings: hasScope("cms:settings")
-                },
                 CookiePolicyMutation: {
-                    updateSettings: hasScope("cms:settings")
+                    updateSettings: hasScope("pb:settings")
                 }
             }
         }
