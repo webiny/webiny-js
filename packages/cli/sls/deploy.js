@@ -2,7 +2,7 @@ const { join, resolve } = require("path");
 const fs = require("fs");
 const { green } = require("chalk");
 const execute = require("./execute");
-const { isApiEnvDeployed } = require("./utils");
+const { isApiEnvDeployed, isAppsEnvDeployed } = require("./utils");
 
 const perks = ["a 🍪", "☕️", "an 🍎", "a 🍺"];
 
@@ -16,6 +16,9 @@ module.exports = async inputs => {
             );
             process.exit(1);
         }
+
+        const isFirstDeploy = !(await isAppsEnvDeployed(env));
+
         const { output } = await execute(inputs);
 
         if (output.cdn) {
