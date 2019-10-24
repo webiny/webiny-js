@@ -9,12 +9,39 @@ const perks = ["a 🍪", "☕️", "an 🍎", "a 🍺"];
 module.exports = async inputs => {
     const { what, env } = inputs;
 
+    const webinyJs = resolve("webiny.js");
+    const config = require(webinyJs);
+
     if (what === "apps") {
+        if (typeof env === "undefined") {
+            console.log(
+                `🚨 You must specify the ${green("--env")} to deploy when running ${green(
+                    "deploy-apps"
+                )} command.`
+            );
+            process.exit(1);
+        }
+
         if (env === "local") {
             console.log(
                 `🚨 You can't deploy "local" apps environment as it is reserved for local development.`
             );
             process.exit(1);
+        }
+
+        // Check if all apps have the requested environment in .env.json
+        for (let i = 0; i < config.apps.length; i++) {
+            const app = config.apps[i];
+            const appLocation = resolve(app.location);
+            const envJson = require(join(appLocation, ".env.json"));
+            if (!envJson[env]) {
+                console.log(
+                    `🚨 Environment ${green(env)} is missing in ${green(
+                        app.name
+                    )} app. Check your ${green(app.location + "/.env.json")} file.`
+                );
+                process.exit(1);
+            }
         }
 
         const isFirstDeploy = !(await isAppsEnvDeployed(env));
@@ -47,13 +74,11 @@ module.exports = async inputs => {
         const { output, duration } = await execute(inputs);
 
         // Run app state hooks
-        const webinyJs = resolve("webiny.js");
         if (!fs.existsSync(webinyJs)) {
             console.log(`\n🎉 Done! Deploy finished in ${green(duration + "s")}.`);
             return;
         }
 
-        const config = require(webinyJs);
         for (let i = 0; i < config.apps.length; i++) {
             const app = config.apps[i];
             const appLocation = resolve(app.location);
