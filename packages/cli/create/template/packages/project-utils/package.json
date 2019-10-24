@@ -1,6 +1,7 @@
 {
   "private": true,
   "name": "@webiny/project-utils",
+  "version": "0.1.0",
   "main": "index.js",
   "description": "A collection of utilities for Webiny project.",
   "author": "Webiny Ltd.",
