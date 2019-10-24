@@ -26,6 +26,8 @@ module.exports = async inputs => {
                 );
             }
         }
+
+        return;
     }
 
     if (what === "api") {
