@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.4.1](https://github.com/Webiny/webiny-js/compare/@webiny/serverless-apollo-service@0.4.0...@webiny/serverless-apollo-service@0.4.1) (2019-10-24)
+
+
+### Bug Fixes
+
+* remove project-utils usages from apollo-service. ([2aee36a](https://github.com/Webiny/webiny-js/commit/2aee36a))
+
+
+
+
+
 # [0.4.0](https://github.com/Webiny/webiny-js/compare/@webiny/serverless-apollo-service@0.3.5...@webiny/serverless-apollo-service@0.4.0) (2019-10-24)
 
 

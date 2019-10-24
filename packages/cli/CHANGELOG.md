@@ -3,6 +3,19 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.5.4](https://github.com/webiny/webiny-js/compare/@webiny/cli@0.5.3...@webiny/cli@0.5.4) (2019-10-24)
+
+
+### Bug Fixes
+
+* add missing build script. ([cbd52ff](https://github.com/webiny/webiny-js/commit/cbd52ff))
+* add missing env variables to gateway template. ([0491aaf](https://github.com/webiny/webiny-js/commit/0491aaf))
+* remove test image from template. ([0cbac67](https://github.com/webiny/webiny-js/commit/0cbac67))
+
+
+
+
+
 ## [0.5.3](https://github.com/webiny/webiny-js/compare/@webiny/cli@0.5.2...@webiny/cli@0.5.3) (2019-10-24)
 
 
