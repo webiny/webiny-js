@@ -1,6 +1,6 @@
 {
   "name": "@webiny/app-security",
-  "version": "0.2.2",
+  "version": "0.2.3",
   "main": "index.js",
   "repository": {
     "type": "git",
@@ -16,7 +16,7 @@
     "@babel/runtime": "^7.5.5",
     "@emotion/styled": "^10.0.17",
     "@webiny/app": "^0.1.8",
-    "@webiny/app-admin": "^0.3.2",
+    "@webiny/app-admin": "^0.3.3",
     "@webiny/form": "^0.1.8",
     "@webiny/plugins": "^0.1.5",
     "@webiny/ui": "^0.1.10",

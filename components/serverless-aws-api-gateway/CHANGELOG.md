@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.1.5](https://github.com/Webiny/webiny-js/compare/@webiny/serverless-aws-api-gateway@0.1.4...@webiny/serverless-aws-api-gateway@0.1.5) (2019-10-24)
+
+
+### Bug Fixes
+
+* add retries to all sdk methods. ([86fc8a5](https://github.com/Webiny/webiny-js/commit/86fc8a5))
+
+
+
+
+
 ## [0.1.4](https://github.com/Webiny/webiny-js/compare/@webiny/serverless-aws-api-gateway@0.1.3...@webiny/serverless-aws-api-gateway@0.1.4) (2019-10-23)
 
 **Note:** Version bump only for package @webiny/serverless-aws-api-gateway

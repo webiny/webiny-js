@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.5.2](https://github.com/webiny/webiny-js/compare/@webiny/cli@0.5.1...@webiny/cli@0.5.2) (2019-10-24)
+
+
+### Bug Fixes
+
+* add AppInstaller to admin app. ([d6b31d4](https://github.com/webiny/webiny-js/commit/d6b31d4))
+* add missing deps to project template. ([1b25b0c](https://github.com/webiny/webiny-js/commit/1b25b0c))
+* execute components one-by-one. ([eb1e550](https://github.com/webiny/webiny-js/commit/eb1e550))
+* print website URL after deploy. ([1006c29](https://github.com/webiny/webiny-js/commit/1006c29))
+* resolve components based on cwd. ([b93cefa](https://github.com/webiny/webiny-js/commit/b93cefa))
+* update prettierrc config. ([15c72ce](https://github.com/webiny/webiny-js/commit/15c72ce))
+
+
+
+
+
 ## [0.5.1](https://github.com/webiny/webiny-js/compare/@webiny/cli@0.5.0...@webiny/cli@0.5.1) (2019-10-23)
 
 **Note:** Version bump only for package @webiny/cli
