@@ -37,7 +37,8 @@ class ApolloService extends Component {
             timeout = 10,
             description,
             endpointTypes = ["REGIONAL"],
-            dependencies = {}
+            dependencies = {},
+            webpackConfig = null
         } = inputs;
 
         if (!componentName) {
@@ -110,9 +111,28 @@ class ApolloService extends Component {
         const cwd = process.cwd();
         process.chdir(componentRoot);
 
-        await new Promise((resolve, reject) => {
+        await new Promise((res, reject) => {
             this.context.status("Building");
-            const config = require(componentRoot + "/webpack.config.js");
+            let config = require(componentRoot + "/webpack.config.js");
+            if (webpackConfig) {
+                try {
+                    // Resolve customizer path relative to serverless.yml file
+                    const customizerPath = require.resolve(webpackConfig, { paths: [cwd] });
+                    if (!fs.existsSync(customizerPath)) {
+                        this.context.debug(
+                            `Webpack customizer does not exist at "${customizerPath}"!`
+                        );
+                    } else {
+                        const customizer = require(customizerPath);
+                        config = customizer({ config, instance: this, root: componentRoot });
+                    }
+                } catch (err) {
+                    this.context.debug(
+                        `Error loading webpack customizer ${webpackConfig}: ${err.message}`
+                    );
+                }
+            }
+
             webpack(config).run((err, stats) => {
                 if (err) {
                     return reject(err);
@@ -128,7 +148,7 @@ class ApolloService extends Component {
                     return reject("Build failed!");
                 }
 
-                resolve();
+                res();
             });
         });
 

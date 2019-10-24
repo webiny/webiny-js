@@ -1,4 +1,6 @@
 const path = require("path");
+const aliases = require("@webiny/project-utils/aliases");
+const packages = require("@webiny/project-utils/packages");
 
 module.exports = {
     entry: __dirname + "/handler.js",
@@ -28,8 +30,10 @@ module.exports = {
                 test: /\.js$/,
                 loader: "babel-loader",
                 exclude: /node_modules/,
-                include: [__dirname],
+                include: [__dirname, ...packages],
                 options: {
+                    babelrc: true,
+                    babelrcRoots: packages,
                     presets: [
                         [
                             "@babel/preset-env",
@@ -40,7 +44,10 @@ module.exports = {
                             }
                         ]
                     ],
-                    plugins: ["@babel/plugin-proposal-class-properties"]
+                    plugins: [
+                        "@babel/plugin-proposal-class-properties",
+                        ["babel-plugin-module-resolver", { alias: aliases }]
+                    ]
                 }
             }
         ]
