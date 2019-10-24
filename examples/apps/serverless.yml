@@ -5,14 +5,14 @@ site:
   inputs:
     description: Webiny Site
     hook: yarn build:${cli.env}
-    root: ../code/site
+    root: ./site
     timeout: 10
 #admin:
 #  component: "@webiny/serverless-app"
 #  inputs:
 #    description: Webiny Admin
 #    hook: yarn build:prod
-#    root: ../code/admin
+#    root: ./admin
 
 api:
   component: "@webiny/serverless-api-gateway"
