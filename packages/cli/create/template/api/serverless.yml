@@ -4,6 +4,8 @@ vars:
   region: ${env.AWS_REGION}
   env:
     JWT_SECRET: ${env.JWT_SECRET}
+    GRAPHQL_INTROSPECTION: ${env.GRAPHQL_INTROSPECTION}
+    GRAPHQL_PLAYGROUND: ${env.GRAPHQL_PLAYGROUND}
   database:
     server: ${env.MONGODB_SERVER}
     name: ${env.MONGODB_NAME}
@@ -13,6 +15,7 @@ gateway:
   inputs:
     region: ${vars.region}
     name: gateway
+    env: ${vars.env}
     memory: 512
     timeout: 30
     services:
