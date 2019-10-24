@@ -26,13 +26,6 @@
     "read-json-sync": "^2.0.1"
   },
   "license": "MIT",
-  "publishConfig": {
-    "access": "public"
-  },
-  "scripts": {
-    "build": "rm -rf dist && mkdir dist && cp -r aliases app-babel cra packages package.json LICENSE README.md dist/",
-    "prepublishOnly": "yarn build"
-  },
   "adio": {
     "ignore": {
       "dependencies": [
@@ -40,6 +33,5 @@
         "babel-plugin-lodash"
       ]
     }
-  },
-  "gitHead": "71cab7d5607b2e32a63034e324a663770507b32b"
+  }
 }
