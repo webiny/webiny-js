@@ -1,11 +1,80 @@
 // @flow
 import { flow } from "lodash";
 import { id } from "@commodo/fields-storage-mongodb/fields";
-import { withStaticProps, withName, string, fields, withFields, setOnce, boolean } from "@webiny/commodo";
+import {
+    withStaticProps,
+    withProps,
+    withName,
+    string,
+    date,
+    fields,
+    withFields,
+    setOnce,
+    boolean
+} from "@webiny/commodo";
 
 const SETTINGS_KEY = "page-builder";
 
+const step = () =>
+    fields({
+        value: {},
+        instanceOf: flow(
+            withFields({
+                started: boolean({ value: false }),
+                startedOn: date(),
+                completed: boolean({ value: false }),
+                completedOn: date()
+            }),
+            withProps({
+                markAsStarted() {
+                    this.started = true;
+                    this.startedOn = new Date();
+                },
+                markAsCompleted() {
+                    this.completed = true;
+                    this.completedOn = new Date();
+                }
+            })
+        )()
+    });
+
 export default ({ createBase }) => {
+    const InstallationFields = flow(
+        withFields({
+            steps: fields({
+                value: {},
+                instanceOf: withFields({
+                    step1: step(),
+                    step2: step(),
+                    step3: step(),
+                    step4: step(),
+                    step5: step()
+                })()
+            })
+        }),
+        withProps({
+            stepAvailable(number) {
+                if (this.getStep(number).completed) {
+                    return false;
+                }
+
+                return this.getStep(number - 1).completed;
+            },
+            getStep(number) {
+                return this.steps["step" + number];
+            },
+            get completed() {
+                for (let number = 1; number <= 5; number++) {
+                    if (!this.getStep(number).completed) {
+                        return false;
+                    }
+                }
+
+                return true;
+            }
+        })
+    )();
+
     return flow(
         withName("Settings"),
         withStaticProps({
@@ -16,6 +85,7 @@ export default ({ createBase }) => {
         withFields({
             key: setOnce()(string({ value: SETTINGS_KEY })),
             data: fields({
+                value: {},
                 instanceOf: withFields({
                     pages: fields({
                         instanceOf: withFields({
@@ -24,7 +94,7 @@ export default ({ createBase }) => {
                             error: id()
                         })()
                     }),
-                    installed: boolean(),
+                    installation: fields({ instanceOf: InstallationFields, value: {} }),
                     name: string(),
                     domain: string(),
                     favicon: id(),

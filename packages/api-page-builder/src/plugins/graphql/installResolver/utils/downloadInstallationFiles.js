@@ -39,12 +39,7 @@ export default async () => {
         return INSTALL_EXTRACT_DIR;
     }
 
-    // Start the download of initial Page Builder page / block images.
-    // eslint-disable-next-line
     const s3 = new S3({ region: process.env.AWS_REGION });
-
-    // 5. ⚠️ Save files.
-    // Before continuing, let's make sure the download has finished.
     const installationFilesUrl = await s3.getSignedUrlPromise("getObject", {
         Bucket: "wby-pb-install",
         Key: "page_builder_install_files.zip"

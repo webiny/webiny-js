@@ -39,9 +39,14 @@ export default async ({ context, INSTALL_EXTRACT_DIR }) => {
                     data: pick(elementsFileData, ["name", "size", "type"])
                 })
                 .then(async response => {
+                    await console.log(response);
                     const { file, data } = get(response, "files.uploadFile.data");
                     const buffer = fs.readFileSync(
-                        path.join(INSTALL_EXTRACT_DIR, "blocks/images/", elementsFileData.__physicalFileName)
+                        path.join(
+                            INSTALL_EXTRACT_DIR,
+                            "blocks/images/",
+                            elementsFileData.__physicalFileName
+                        )
                     );
 
                     return uploadToS3(buffer, data).then(() =>

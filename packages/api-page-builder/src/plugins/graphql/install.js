@@ -9,13 +9,13 @@ export default {
         }
         
         extend type PbQuery {
-            # Is page-builder installed?
+            # Is Page Builder installed?
             isInstalled: PbBooleanResponse
         }
         
         extend type PbMutation {
-            "Install Pb"
-            install(data: PbInstallInput!): PbBooleanResponse
+            # Install Page Builder (there are x steps because the process takes a long time).
+            install(step: Int!, data: PbInstallInput!): PbBooleanResponse
         }
     `,
     resolvers: {
