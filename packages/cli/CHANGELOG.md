@@ -3,6 +3,23 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.6.0](https://github.com/webiny/webiny-js/compare/@webiny/cli@0.5.4...@webiny/cli@0.6.0) (2019-10-25)
+
+
+### Bug Fixes
+
+* clear ssr module before running render. ([ccf79df](https://github.com/webiny/webiny-js/commit/ccf79df))
+* update project template. ([d209119](https://github.com/webiny/webiny-js/commit/d209119))
+
+
+### Features
+
+* show push notification when deploy finishes. ([b7e7ecd](https://github.com/webiny/webiny-js/commit/b7e7ecd))
+
+
+
+
+
 ## [0.5.4](https://github.com/webiny/webiny-js/compare/@webiny/cli@0.5.3...@webiny/cli@0.5.4) (2019-10-24)
 
 
