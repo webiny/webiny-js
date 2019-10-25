@@ -2,7 +2,7 @@ import get from "lodash.get";
 import pick from "lodash.pick";
 import blockFiles from "./importData/blockFiles";
 import { ErrorResponse, Response } from "@webiny/api";
-import { CREATE_FILE, UPLOAD_FILE } from "./graphql";
+import { CREATE_FILE, UPLOAD_FILE } from "./utils/graphql";
 import { GraphQLClient } from "graphql-request";
 import download from "download";
 import fs from "fs-extra";
