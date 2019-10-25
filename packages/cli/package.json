@@ -26,6 +26,7 @@
     "load-json-file": "^6.2.0",
     "lodash.get": "^4.4.2",
     "node-fetch": "^2.6.0",
+    "node-notifier": "^6.0.0",
     "ramda": "^0.26.1",
     "traverse": "^0.6.6",
     "uuid": "^3.3.3",

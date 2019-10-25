@@ -1,10 +1,21 @@
 const { join, resolve } = require("path");
 const fs = require("fs");
-const { green } = require("chalk");
+const { green, red } = require("chalk");
+const notifier = require("node-notifier");
 const execute = require("./execute");
 const { isApiEnvDeployed, isAppsEnvDeployed } = require("./utils");
 
-const perks = ["a 🍪", "☕️", "an 🍎", "a 🍺"];
+const perks = ["a 🍪", "☕️", "an 🍎", "a 🍺", "a 🥤"];
+
+const notify = ({ message }) => {
+    notifier.notify({
+        title: "Webiny CLI",
+        message,
+        icon: join(__dirname, "logo.png"),
+        sound: false,
+        wait: true
+    });
+};
 
 module.exports = async inputs => {
     const { what, env } = inputs;
@@ -46,7 +57,11 @@ module.exports = async inputs => {
 
         const isFirstDeploy = !(await isAppsEnvDeployed(env));
 
-        const { output } = await execute(inputs);
+        const { output, duration } = await execute(inputs);
+
+        console.log(`\n🎉 Done! Deploy finished in ${green(duration + "s")}.`);
+
+        notify({ message: `Apps deploy completed in ${duration}s.` });
 
         if (output.cdn) {
             console.log(`🚀 Your website URL: ${green(output.cdn.url)}`);
@@ -75,6 +90,11 @@ module.exports = async inputs => {
 
         // Run app state hooks
         if (!fs.existsSync(webinyJs)) {
+            console.log(
+                `⚠️ ${green("webiny.js")} was not found at ${green(
+                    webinyJs
+                )}, skipping processing of hooks.`
+            );
             console.log(`\n🎉 Done! Deploy finished in ${green(duration + "s")}.`);
             return;
         }
@@ -92,11 +112,15 @@ module.exports = async inputs => {
                     await hooks.stateChanged({ env, state: output });
                 }
             } catch (err) {
-                // if webiny.js file is not found in the app, ignore it.
+                console.log(
+                    `⚠️ ${red(err.message)}, while processing hooks at ${green(appLocation)}.`
+                );
             }
         }
 
         console.log(`\n🎉 Done! Deploy finished in ${green(duration + "s")}.`);
+        notify({ message: `API deploy completed in ${duration}s.` });
+
         if (output.cdn) {
             console.log(`🚀 GraphQL API URL: ${green(output.cdn.url + "/graphql")}`);
             if (isFirstDeploy) {

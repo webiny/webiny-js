@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 const yargs = require("yargs");
-const { blue, green, dim, magenta } = require("chalk");
+const { blue, green, dim } = require("chalk");
 
 yargs
     .usage("Usage: $0 <command>")
