@@ -7,6 +7,7 @@ import page from "./graphql/Page";
 import category from "./graphql/Category";
 import menu from "./graphql/Menu";
 import settings from "./graphql/Settings";
+import install from "./graphql/Install";
 
 export default {
     type: "graphql-schema",
@@ -45,6 +46,11 @@ export default {
                 error: PbError
             }
 
+            type PbBooleanResponse {
+                data: Boolean
+                error: PbError
+            }
+
             type PbQuery {
                 pageBuilder: PbQuery
             }
@@ -65,6 +71,7 @@ export default {
             ${category.typeDefs}
             ${menu.typeDefs}
             ${settings.typeDefs}
+            ${install.typeDefs}
         `,
         resolvers: merge(
             {
@@ -78,7 +85,8 @@ export default {
             page.resolvers,
             category.resolvers,
             menu.resolvers,
-            settings.resolvers
+            settings.resolvers,
+            install.resolvers
         )
     },
     security: {

@@ -1,7 +1,7 @@
 // @flow
 import { flow } from "lodash";
 import { id } from "@commodo/fields-storage-mongodb/fields";
-import { withStaticProps, withName, string, fields, withFields, setOnce } from "@webiny/commodo";
+import { withStaticProps, withName, string, fields, withFields, setOnce, boolean } from "@webiny/commodo";
 
 const SETTINGS_KEY = "page-builder";
 
@@ -24,6 +24,7 @@ export default ({ createBase }) => {
                             error: id()
                         })()
                     }),
+                    installed: boolean(),
                     name: string(),
                     domain: string(),
                     favicon: id(),
