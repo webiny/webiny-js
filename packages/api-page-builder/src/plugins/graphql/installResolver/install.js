@@ -35,7 +35,7 @@ export const install = async (root: any, args: Object, context: Object) => {
 
     // 3. Save elements and pages.
     await Promise.all([
-        savePages({ INSTALL_EXTRACT_DIR, context }), // TODO: vrati ovo
+        savePages({ INSTALL_EXTRACT_DIR, context }),
         saveElements({ INSTALL_EXTRACT_DIR, context })
     ]);
 
@@ -47,9 +47,17 @@ export const install = async (root: any, args: Object, context: Object) => {
 
     // 5. Finally, set "name", "domain" and "installed" values.
     const { name, domain } = args;
-    // settings.data.installed = true; TODO: vrati ovo
+    settings.data.installed = true;
     settings.data.name = name;
     settings.data.domain = domain;
+
+    // These IDs are always the same, so they can be hardcoded.
+    settings.data.pages = {
+        home: "5c86c7564527eea07b295f9d",
+        notFound: "5c6860fda0b03cef2e544bd7",
+        error: "5c6862e4a0b03cef2ef1dec1"
+    };
+
     await settings.save();
     return new Response(true);
 };
