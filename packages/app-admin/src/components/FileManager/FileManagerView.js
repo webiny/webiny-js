@@ -182,9 +182,9 @@ function FileManagerView(props: Props) {
 
                             const next = { ...fetchMoreResult };
 
-                            next.files.listFiles.data = [
-                                ...prev.files.listFiles.data,
-                                ...fetchMoreResult.files.listFiles.data
+                            next.blockFiles.listFiles.data = [
+                                ...prev.blockFiles.listFiles.data,
+                                ...fetchMoreResult.blockFiles.listFiles.data
                             ];
 
                             return next;
@@ -199,7 +199,7 @@ function FileManagerView(props: Props) {
         const newFileData = get(newFile, "data.files.createFile.data");
 
         const data = cloneDeep(cache.readQuery({ query: LIST_FILES, variables: queryParams }));
-        data.files.listFiles.data.unshift(newFileData);
+        data.blockFiles.listFiles.data.unshift(newFileData);
 
         cache.writeQuery({
             query: LIST_FILES,
