@@ -9,9 +9,10 @@ module.exports = {
         path: path.resolve("build"),
         libraryTarget: "commonjs"
     },
-    externals: ["./ssr"],
+    externals: ["./renderer"],
     target: "node",
     node: {
+        __filename: false,
         __dirname: false
-    }
+    },
 };

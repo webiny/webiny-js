@@ -2,7 +2,7 @@ const path = require("path");
 const webpack = require("webpack");
 
 module.exports = {
-    entry: path.resolve("ssr", "handler.js"),
+    entry: path.resolve("handler", "ssr.js"),
     output: {
         filename: "ssr.js",
         path: path.resolve("build"),

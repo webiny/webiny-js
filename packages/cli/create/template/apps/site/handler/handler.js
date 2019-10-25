@@ -1,9 +1,6 @@
 const fs = require("fs");
 const path = require("path");
 const mime = require("mime-types");
-const clearModule = require("clear-module");
-
-const ssrCache = {};
 
 const createResponse = ({ type, body, isBase64Encoded, headers }) => {
     return {
@@ -22,19 +19,23 @@ module.exports.handler = async event => {
     let key = event.pathParameters ? event.pathParameters.key : "";
     let type = mime.lookup(key);
     let isBase64Encoded = false;
-    console.log("KEY", key);
+
+    if(key.endsWith("undefined")) {
+        return createResponse({
+            type,
+            body: "",
+            isBase64Encoded,
+            headers: { "Cache-Control": "public, max-age=60" }
+        });
+    }
 
     if (!type) {
         type = "text/html";
-        if (!ssrCache[key]) {
-            clearModule("./ssr");
-            const { handler } = require("./ssr");
-            ssrCache[key] = await handler("/" + key);
-        }
+        const { html } = await require("./renderer")("/" + key);
 
         return createResponse({
             type,
-            body: ssrCache[key],
+            body: html,
             isBase64Encoded,
             headers: { "Cache-Control": "public, max-age=60" }
         });
