@@ -22,7 +22,7 @@ export const install = async (root: any, args: Object, context: Object) => {
     // 1.1 Let's immediately download the installation files.
     const INSTALL_EXTRACT_DIR = await downloadInstallationFiles();
 
-    await console.log("skinup fileove");
+    await console.log("Install: Files downloaded..."); // eslint-disable-line
 
     // 2. Create "Static" page category.
     const staticPageCount = await PbCategory.count({ query: { slug: "static" } });

@@ -19,7 +19,7 @@ export default async ({ context, INSTALL_EXTRACT_DIR }) => {
         saving.push(instance.populate(elementsData[i]).save());
     }
 
-    await console.log("saveElements: instances");
+    await console.log("saveElements: instances are being saved.");
 
     // 2. Save files.
     // 2.1 Get pre-signed POST payloads.
@@ -58,6 +58,6 @@ export default async ({ context, INSTALL_EXTRACT_DIR }) => {
     }
 
     // Wait for all to finish.
-    await console.log("saveElements: gotovo!");
+    await console.log("saveElements: process done.");
     return Promise.all([...filesWithPreSignedPostPayload, ...saving]);
 };

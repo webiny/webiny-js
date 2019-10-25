@@ -19,7 +19,7 @@ export default async ({ context, INSTALL_EXTRACT_DIR }) => {
         saving.push(instance.populate(pagesData[i]).save());
     }
 
-    await console.log("savePages: instances");
+    await console.log("savePages: instances are being saved.");
 
     // 2. Save files.
     // 2.1 Get pre-signed POST payloads.
@@ -62,6 +62,6 @@ export default async ({ context, INSTALL_EXTRACT_DIR }) => {
     }
 
     // Wait for all to finish.
-    await console.log("savePages: gotovo!");
+    await console.log("savePages: process done.");
     return Promise.all([...filesWithPreSignedPostPayload, ...saving]);
 };
