@@ -31,7 +31,7 @@ const createClient = () => {
     });
 };
 
-export const handler = async url => {
+export const renderer = async url => {
     const apolloClient = createClient();
     const context = {};
 
@@ -52,5 +52,5 @@ export const handler = async url => {
     const content = ReactDOMServer.renderToStaticMarkup(app);
     const state = apolloClient.extract();
     const helmet = Helmet.renderStatic();
-    return injectContent(content, helmet, state);
+    return { html: injectContent(content, helmet, state), state };
 };
