@@ -2,10 +2,10 @@ const path = require("path");
 const webpack = require("webpack");
 
 module.exports = {
-    entry: path.resolve("handler", "ssr.js"),
+    entry: path.resolve("ssr", "ssr.js"),
     output: {
         filename: "ssr.js",
-        path: path.resolve("build"),
+        path: path.resolve("build-ssr"),
         libraryTarget: "commonjs",
         publicPath: process.env.PUBLIC_URL
     },

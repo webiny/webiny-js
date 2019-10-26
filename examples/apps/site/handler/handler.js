@@ -32,11 +32,18 @@ module.exports.handler = async event => {
 
     if (!type) {
         type = "text/html";
-        const { html } = await require("./renderer")("/" + key);
+        const LambdaClient = require("aws-sdk/clients/lambda");
+        const Lambda = new LambdaClient();
+        const params = {
+            FunctionName: process.env.SSR_FUNCTION,
+            InvocationType: "RequestResponse",
+            Payload: JSON.stringify({ url: "/" + key })
+        };
+        const { Payload } = await Lambda.invoke(params).promise();
 
         return createResponse({
             type,
-            body: html,
+            body: Payload,
             isBase64Encoded,
             headers: { "Cache-Control": "public, max-age=60" }
         });
