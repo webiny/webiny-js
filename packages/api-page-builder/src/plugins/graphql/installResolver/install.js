@@ -1,4 +1,3 @@
-import get from "lodash.get";
 import categoriesData from "./importData/categoriesData";
 import { ErrorResponse, Response } from "@webiny/api";
 import menuData from "./importData/menusData";
@@ -109,5 +108,9 @@ export const install = async (root: any, args: Object, context: Object) => {
 export const isInstalled = async (root: any, args: Object, context: Object) => {
     const { PbSettings } = context.models;
     const settings = await PbSettings.load();
-    return settings.data.installation.completed;
+    if (!settings) {
+        return new Response(false);
+    }
+
+    return new Response(settings.data.installation.completed);
 };
