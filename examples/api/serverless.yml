@@ -97,7 +97,6 @@ api:
     region: ${vars.region}
     description: "Main API Gateway"
     endpoints:
-      - path: /rest
       - path: /graphql
         method: ANY
         function: ${gateway}
