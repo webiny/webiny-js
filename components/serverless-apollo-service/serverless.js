@@ -30,6 +30,7 @@ class ApolloService extends Component {
         const {
             region,
             endpoints = [],
+            graphqlPath = "/graphql",
             name,
             plugins = [],
             env = {},
@@ -180,11 +181,11 @@ class ApolloService extends Component {
             stage: "prod",
             binaryMediaTypes,
             endpointTypes,
-            endpoints: [{ path: "/graphql", method: "ANY", function: lambdaOut.arn }, ...endpoints]
+            endpoints: [{ path: graphqlPath, method: "ANY", function: lambdaOut.arn }, ...endpoints]
         });
 
         const output = {
-            api: apiGwOut,
+            api: { ...apiGwOut, graphqlUrl: apiGwOut.api.url + graphqlPath },
             graphql: lambdaOut
         };
 
