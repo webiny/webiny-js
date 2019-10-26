@@ -32,7 +32,7 @@ function deleteFile(path) {
     });
 }
 
-const INSTALL_DIR = "/tmp/installation-files";
+const INSTALL_DIR = "/tmp/installationfiles";
 const INSTALL_ZIP_PATH = path.join(INSTALL_DIR, "apiPageBuilder.zip");
 const INSTALL_EXTRACT_DIR = path.join(INSTALL_DIR, "apiPageBuilder");
 

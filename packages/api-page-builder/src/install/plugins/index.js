@@ -4,8 +4,8 @@ import { general, seo, social } from "@webiny/api-page-builder/plugins/pageSetti
 import importData from "./importData";
 
 const plugin: InstallPluginType = {
-    type: "install",
-    name: "install-cms",
+    type: "installation",
+    name: "installation-cms",
     meta: {
         name: "Webiny PB",
         description: "Webiny PB is a powerful visual page builder."

@@ -52,7 +52,7 @@ class FilesComponent extends Component {
             timeout: 10,
             code: join(__dirname, "functions/imageTransformer"),
             handler: "handler.handler",
-            description: `${prefix}: Performs various tasks on image files, e.g. optimization, resizing, etc.`,
+            description: `${prefix}: Performs image optimization, resizing, etc.`,
             env: {
                 S3_BUCKET: bucket
             }
