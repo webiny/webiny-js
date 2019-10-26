@@ -5,13 +5,18 @@
   "main": "index.js",
   "license": "MIT",
   "dependencies": {
-    "@rmwc/card": "^5.6.0",
-    "@rmwc/typography": "^5.6.0",
+    "@webiny/app": "^0",
+    "@webiny/app-forms": "^0",
+    "@webiny/app-i18n": "^0",
+    "@webiny/app-page-builder": "^0",
+    "@webiny/form": "^0",
+    "@webiny/validation": "^0",
     "classnames": "^2.2.6",
-    "emotion": "^10.0.6",
+    "graphql-tag": "2.10.1",
     "lodash": "^4.17.11",
     "react-apollo": "^3.1.0",
-    "react-hamburger-menu": "^1.1.1"
+    "react-hamburger-menu": "^1.1.1",
+    "react-router-dom": "^5.0.0"
   },
   "peerDependencies": {
     "react": "^16.8.0"

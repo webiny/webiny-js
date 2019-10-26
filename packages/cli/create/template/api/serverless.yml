@@ -80,6 +80,7 @@ pageBuilder:
     name: "Page Builder"
     region: ${vars.region}
     memory: 512
+    timeout: 30
     database: ${vars.database}
     env: ${vars.env}
     plugins:

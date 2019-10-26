@@ -5,6 +5,9 @@ import path from "path";
 import rimraf from "rimraf";
 import S3 from "aws-sdk/clients/s3";
 
+const PAGE_BUILDER_S3_BUCKET = process.env.PAGE_BUILDER_S3_BUCKET;
+const PAGE_BUILDER_INSTALLATION_FILES_ZIP_KEY = process.env.PAGE_BUILDER_INSTALLATION_FILES_ZIP_KEY;
+
 function extractZip(zipPath, dir) {
     return new Promise((resolve, reject) => {
         extract(zipPath, { dir }, e => {
@@ -41,8 +44,8 @@ export default async () => {
 
     const s3 = new S3({ region: process.env.AWS_REGION });
     const installationFilesUrl = await s3.getSignedUrlPromise("getObject", {
-        Bucket: "wby-pb-install",
-        Key: "page_builder_install_files.zip"
+        Bucket: PAGE_BUILDER_S3_BUCKET,
+        Key: PAGE_BUILDER_INSTALLATION_FILES_ZIP_KEY
     });
 
     fs.ensureDirSync(INSTALL_DIR);
