@@ -4,9 +4,23 @@ site:
   component: "@webiny/serverless-app"
   inputs:
     description: Webiny Site
+    memory: 128
+    timeout: 30
+    code: ./site/build
+    env:
+      SSR_FUNCTION: ${ssr.name}
+
+ssr:
+  component: "@webiny/serverless-function"
+  inputs:
+    description: Site SSR
     hook: yarn build:${cli.env}
     root: ./site
+    code: ./site/build-ssr
+    handler: handler.handler
+    memory: 2048
     timeout: 30
+
 admin:
   component: "@webiny/serverless-app"
   inputs:
