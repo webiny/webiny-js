@@ -51,7 +51,7 @@ function Name({ file }: *) {
                                 })
                             );
 
-                            data.files.listFiles.data.forEach(item => {
+                            data.blockFiles.listFiles.data.forEach(item => {
                                 if (item.src === newFileData.src) {
                                     item.name = newFileData.name;
                                 }

@@ -1,52 +1,67 @@
 {
-  "name": "@webiny/api-page-builder",
-  "version": "0.1.10",
-  "main": "index.js",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/webiny/webiny-js.git"
-  },
-  "description": "The API for the Webiny Page Builder (webiny-app-page-builder) app.",
-  "contributors": [
-    "Pavel Denisjuk <pavel@webiny.com>",
-    "Sven Al Hamad <sven@webiny.com>",
-    "Adrian Smijulj <adrian@webiny.com>"
-  ],
-  "license": "MIT",
-  "dependencies": {
-    "@babel/runtime": "^7.5.5",
-    "@commodo/fields-storage-mongodb": "^0.2.12",
-    "@webiny/api": "^0.2.5",
-    "@webiny/api-security": "^0.1.10",
-    "@webiny/commodo": "^0.1.8",
-    "@webiny/commodo-graphql": "^0.1.10",
-    "@webiny/validation": "^0.1.7",
-    "apollo-server-lambda": "^2.9.6",
-    "lodash": "^4.17.11",
-    "mdbid": "^1.0.0",
-    "request": "^2.88.0"
-  },
-  "devDependencies": {
-    "@babel/cli": "^7.5.5",
-    "@babel/core": "^7.5.5",
-    "@babel/preset-env": "^7.5.5",
-    "@babel/preset-flow": "^7.0.0",
-    "flow-copy-source": "^2.0.2"
-  },
-  "publishConfig": {
-    "access": "public"
-  },
-  "scripts": {
-    "build": "babel src -d dist --source-maps --copy-files",
-    "flow-copy-source": "flow-copy-source src dist",
-    "postbuild": "yarn flow-copy-source && cp package.json LICENSE README.md dist/",
-    "prepublishOnly": "yarn build"
-  },
-  "adio": {
-    "ignoreDirs": [
-      "migration",
-      "src/install"
-    ]
-  },
-  "gitHead": "71cab7d5607b2e32a63034e324a663770507b32b"
+    "name": "@webiny/api-page-builder",
+    "version": "0.1.10",
+    "main": "index.js",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/webiny/webiny-js.git"
+    },
+    "description": "The API for the Webiny Page Builder (webiny-app-page-builder) app.",
+    "contributors": [
+        "Pavel Denisjuk <pavel@webiny.com>",
+        "Sven Al Hamad <sven@webiny.com>",
+        "Adrian Smijulj <adrian@webiny.com>"
+    ],
+    "license": "MIT",
+    "dependencies": {
+        "@babel/runtime": "^7.5.5",
+        "@commodo/fields-storage-mongodb": "^0.2.12",
+        "@webiny/api": "^0.2.5",
+        "@webiny/api-security": "^0.1.10",
+        "@webiny/commodo": "^0.1.8",
+        "@webiny/commodo-graphql": "^0.1.10",
+        "@webiny/validation": "^0.1.7",
+        "apollo-server-lambda": "^2.9.6",
+        "download": "^5.0.3",
+        "extract-zip": "^1.6.7",
+        "form-data": "^2.5.0",
+        "fs-extra": "^7.0.0",
+        "got": "^9.6.0",
+        "graphql-request": "^1.8.2",
+        "lodash": "^4.17.11",
+        "lodash.get": "^4.4.0",
+        "lodash.pick": "^4.4.0",
+        "mdbid": "^1.0.0",
+        "request": "^2.88.0",
+        "rimraf": "^2.6.2"
+    },
+    "devDependencies": {
+        "@babel/cli": "^7.5.5",
+        "@babel/core": "^7.5.5",
+        "@babel/plugin-proposal-export-default-from": "^7.5.2",
+        "@babel/preset-env": "^7.5.5",
+        "@babel/preset-flow": "^7.0.0",
+        "flow-copy-source": "^2.0.2"
+    },
+    "publishConfig": {
+        "access": "public"
+    },
+    "scripts": {
+        "build": "babel src -d dist --source-maps --copy-files",
+        "flow-copy-source": "flow-copy-source src dist",
+        "postbuild": "yarn flow-copy-source && cp package.json LICENSE README.md dist/",
+        "prepublishOnly": "yarn build"
+    },
+    "adio": {
+        "ignoreDirs": [
+            "migration",
+            "src/install"
+        ],
+        "ignore": {
+            "src": [
+                "aws-sdk"
+            ]
+        }
+    },
+    "gitHead": "71cab7d5607b2e32a63034e324a663770507b32b"
 }

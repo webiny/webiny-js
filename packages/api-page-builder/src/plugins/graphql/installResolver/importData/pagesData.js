@@ -1,31 +1,633 @@
-// NOTE: THIS FILE IS AUTO-GENERATED. MANUAL CHANGES OF THIS FILE WILL BE LOST!
-
-export const categories = [
+export default [
     {
-        _id: "5c436a2b4527ee6f2b8bf3d5",
-        id: "5c436a2b4527ee6f2b8bf3d5",
-        name: "Blog",
-        slug: "blog",
-        url: "/blog/",
-        layout: "blog"
+        id: "5c6860fda0b03cef2e544bd7",
+        category: "5c436a2b4527ee6f2b8bf3d7",
+        title: "404",
+        url: "/not-found",
+        content: {
+            id: "ikN6TMxu7",
+            data: {},
+            settings: {},
+            elements: [
+                {
+                    id: "OqBcnPf6K",
+                    data: {
+                        settings: {
+                            padding: {
+                                advanced: true,
+                                desktop: {
+                                    top: 100,
+                                    bottom: 100
+                                },
+                                mobile: {
+                                    top: 15,
+                                    bottom: 15,
+                                    right: 15,
+                                    left: 15
+                                }
+                            },
+                            width: {
+                                value: "1000px"
+                            }
+                        }
+                    },
+                    elements: [
+                        {
+                            data: {
+                                settings: {
+                                    margin: {
+                                        desktop: {
+                                            all: 0
+                                        },
+                                        mobile: {
+                                            all: 0
+                                        }
+                                    },
+                                    padding: {
+                                        desktop: {
+                                            all: 0
+                                        },
+                                        mobile: {
+                                            all: 0
+                                        }
+                                    }
+                                }
+                            },
+                            elements: [
+                                {
+                                    data: {
+                                        width: 100,
+                                        settings: {
+                                            margin: {
+                                                desktop: {
+                                                    all: 0
+                                                },
+                                                mobile: {
+                                                    all: 0
+                                                }
+                                            },
+                                            padding: {
+                                                desktop: {
+                                                    all: 0
+                                                },
+                                                mobile: {
+                                                    all: 0
+                                                }
+                                            }
+                                        }
+                                    },
+                                    elements: [
+                                        {
+                                            data: {
+                                                text: {
+                                                    object: "value",
+                                                    document: {
+                                                        object: "document",
+                                                        data: {},
+                                                        nodes: [
+                                                            {
+                                                                object: "block",
+                                                                type: "h2",
+                                                                data: {
+                                                                    align: "center"
+                                                                },
+                                                                nodes: [
+                                                                    {
+                                                                        object: "text",
+                                                                        leaves: [
+                                                                            {
+                                                                                object: "leaf",
+                                                                                text:
+                                                                                    "Page not found",
+                                                                                marks: []
+                                                                            }
+                                                                        ]
+                                                                    }
+                                                                ]
+                                                            }
+                                                        ]
+                                                    }
+                                                },
+                                                settings: {
+                                                    margin: {
+                                                        advanced: true,
+                                                        mobile: {
+                                                            bottom: 15
+                                                        }
+                                                    }
+                                                }
+                                            },
+                                            elements: [],
+                                            type: "text",
+                                            id: "q0l8eb-1X1",
+                                            path: "0.0.0.0.0"
+                                        },
+                                        {
+                                            id: "cObTtI3R8",
+                                            data: {
+                                                settings: {
+                                                    horizontalAlign: "center",
+                                                    margin: {
+                                                        desktop: {
+                                                            all: 25,
+                                                            top: 25,
+                                                            right: 25,
+                                                            bottom: 25,
+                                                            left: 25
+                                                        },
+                                                        mobile: {
+                                                            top: 15,
+                                                            left: 15,
+                                                            right: 15,
+                                                            bottom: 15,
+                                                            all: 15
+                                                        },
+                                                        advanced: false
+                                                    },
+                                                    padding: {
+                                                        desktop: {
+                                                            all: 0
+                                                        },
+                                                        mobile: {
+                                                            all: 0
+                                                        }
+                                                    }
+                                                },
+                                                image: {
+                                                    width: "250",
+                                                    file: "5db3410646e6da8d61cc1391"
+                                                }
+                                            },
+                                            elements: [],
+                                            path: "0.0.0.0.1",
+                                            type: "image"
+                                        },
+                                        {
+                                            data: {
+                                                text: {
+                                                    object: "value",
+                                                    document: {
+                                                        object: "document",
+                                                        data: {},
+                                                        nodes: [
+                                                            {
+                                                                object: "block",
+                                                                type: "paragraph",
+                                                                data: {
+                                                                    align: "center"
+                                                                },
+                                                                nodes: [
+                                                                    {
+                                                                        object: "text",
+                                                                        leaves: [
+                                                                            {
+                                                                                object: "leaf",
+                                                                                text:
+                                                                                    "Seems the page that you are looking for doesn't exists, or is no longer available. ",
+                                                                                marks: []
+                                                                            }
+                                                                        ]
+                                                                    }
+                                                                ]
+                                                            },
+                                                            {
+                                                                object: "block",
+                                                                type: "paragraph",
+                                                                data: {
+                                                                    align: "center"
+                                                                },
+                                                                nodes: [
+                                                                    {
+                                                                        object: "text",
+                                                                        leaves: [
+                                                                            {
+                                                                                object: "leaf",
+                                                                                text: "",
+                                                                                marks: []
+                                                                            }
+                                                                        ]
+                                                                    },
+                                                                    {
+                                                                        object: "inline",
+                                                                        type: "link",
+                                                                        data: {
+                                                                            href: "/"
+                                                                        },
+                                                                        nodes: [
+                                                                            {
+                                                                                object: "text",
+                                                                                leaves: [
+                                                                                    {
+                                                                                        object:
+                                                                                            "leaf",
+                                                                                        text:
+                                                                                            "Click here to go back to the homepage",
+                                                                                        marks: []
+                                                                                    }
+                                                                                ]
+                                                                            }
+                                                                        ]
+                                                                    },
+                                                                    {
+                                                                        object: "text",
+                                                                        leaves: [
+                                                                            {
+                                                                                object: "leaf",
+                                                                                text: "",
+                                                                                marks: []
+                                                                            }
+                                                                        ]
+                                                                    }
+                                                                ]
+                                                            }
+                                                        ]
+                                                    }
+                                                },
+                                                settings: {
+                                                    padding: {
+                                                        desktop: {
+                                                            all: 200,
+                                                            right: 300,
+                                                            left: 300,
+                                                            bottom: 0,
+                                                            top: 0
+                                                        },
+                                                        advanced: true
+                                                    },
+                                                    margin: {
+                                                        advanced: true,
+                                                        desktop: {
+                                                            top: 25,
+                                                            bottom: 50
+                                                        }
+                                                    }
+                                                }
+                                            },
+                                            elements: [],
+                                            type: "text",
+                                            id: "ccmga_z8J3",
+                                            path: "0.0.0.0.2"
+                                        }
+                                    ],
+                                    type: "column",
+                                    id: "INbopVNADD",
+                                    path: "0.0.0.0"
+                                }
+                            ],
+                            type: "row",
+                            id: "V58gMh4NkG",
+                            path: "0.0.0"
+                        }
+                    ],
+                    path: "0.0",
+                    type: "block",
+                    source: "5c27a54ca0b03cc8d9e32fcf"
+                }
+            ],
+            path: "0",
+            type: "document"
+        },
+        settings: {
+            general: {
+                tags: ["page", "404", "not-found"],
+                layout: "static",
+                image: null
+            },
+            seo: {
+                meta: [],
+                title: null,
+                description: null
+            },
+            social: {
+                meta: [],
+                title: null,
+                description: null,
+                image: null
+            }
+        },
+        version: 1,
+        parent: "5c6860fda0b03cef2e544bd7",
+        locked: true,
+        published: true
     },
     {
-        _id: "5c436a2b4527ee6f2b8bf3d7",
-        id: "5c436a2b4527ee6f2b8bf3d7",
-        name: "Static",
-        slug: "static",
-        url: "/",
-        layout: "static"
-    }
-];
-export const pages = [
+        id: "5c6862e4a0b03cef2ef1dec1",
+        category: "5c436a2b4527ee6f2b8bf3d7",
+        title: "Error Page",
+        url: "/error",
+        content: {
+            id: "P3NNeXWAk",
+            data: {},
+            settings: {},
+            elements: [
+                {
+                    id: "jjmIfB57p",
+                    data: {
+                        settings: {
+                            padding: {
+                                advanced: true,
+                                desktop: {
+                                    top: 100,
+                                    bottom: 100
+                                },
+                                mobile: {
+                                    top: 15,
+                                    bottom: 15,
+                                    right: 15,
+                                    left: 15
+                                }
+                            },
+                            width: {
+                                value: "1000px"
+                            }
+                        }
+                    },
+                    elements: [
+                        {
+                            data: {
+                                settings: {
+                                    margin: {
+                                        desktop: {
+                                            all: 0
+                                        },
+                                        mobile: {
+                                            all: 0
+                                        }
+                                    },
+                                    padding: {
+                                        desktop: {
+                                            all: 0
+                                        },
+                                        mobile: {
+                                            all: 0
+                                        }
+                                    }
+                                }
+                            },
+                            elements: [
+                                {
+                                    data: {
+                                        width: 100,
+                                        settings: {
+                                            margin: {
+                                                desktop: {
+                                                    all: 0
+                                                },
+                                                mobile: {
+                                                    all: 0
+                                                }
+                                            },
+                                            padding: {
+                                                desktop: {
+                                                    all: 0
+                                                },
+                                                mobile: {
+                                                    all: 0
+                                                }
+                                            }
+                                        }
+                                    },
+                                    elements: [
+                                        {
+                                            data: {
+                                                text: {
+                                                    object: "value",
+                                                    document: {
+                                                        object: "document",
+                                                        data: {},
+                                                        nodes: [
+                                                            {
+                                                                object: "block",
+                                                                type: "h2",
+                                                                data: {
+                                                                    align: "center"
+                                                                },
+                                                                nodes: [
+                                                                    {
+                                                                        object: "text",
+                                                                        leaves: [
+                                                                            {
+                                                                                object: "leaf",
+                                                                                text:
+                                                                                    "Oops ... there has been an error",
+                                                                                marks: []
+                                                                            }
+                                                                        ]
+                                                                    }
+                                                                ]
+                                                            }
+                                                        ]
+                                                    }
+                                                },
+                                                settings: {
+                                                    margin: {
+                                                        advanced: true,
+                                                        mobile: {
+                                                            bottom: 15
+                                                        }
+                                                    }
+                                                }
+                                            },
+                                            elements: [],
+                                            type: "text",
+                                            id: "nEXNvcLJO5",
+                                            path: "0.0.0.0.0"
+                                        },
+                                        {
+                                            id: "EoAI5_Y9t",
+                                            data: {
+                                                settings: {
+                                                    horizontalAlign: "center",
+                                                    margin: {
+                                                        desktop: {
+                                                            all: 25,
+                                                            top: 25,
+                                                            right: 25,
+                                                            bottom: 25,
+                                                            left: 25
+                                                        },
+                                                        mobile: {
+                                                            top: 15,
+                                                            left: 15,
+                                                            right: 15,
+                                                            bottom: 15,
+                                                            all: 15
+                                                        },
+                                                        advanced: false
+                                                    },
+                                                    padding: {
+                                                        desktop: {
+                                                            all: 0
+                                                        },
+                                                        mobile: {
+                                                            all: 0
+                                                        }
+                                                    }
+                                                },
+                                                image: {
+                                                    width: "250",
+                                                    responsive: true,
+                                                    height: "",
+                                                    title: "",
+                                                    file: "5db3410646e6da8d61cc1392"
+                                                }
+                                            },
+                                            elements: [],
+                                            path: "0.0.0.0.1",
+                                            type: "image"
+                                        },
+                                        {
+                                            data: {
+                                                text: {
+                                                    object: "value",
+                                                    document: {
+                                                        object: "document",
+                                                        data: {},
+                                                        nodes: [
+                                                            {
+                                                                object: "block",
+                                                                type: "paragraph",
+                                                                data: {
+                                                                    align: "center"
+                                                                },
+                                                                nodes: [
+                                                                    {
+                                                                        object: "text",
+                                                                        leaves: [
+                                                                            {
+                                                                                object: "leaf",
+                                                                                text:
+                                                                                    "An error has happened somewhere.",
+                                                                                marks: []
+                                                                            }
+                                                                        ]
+                                                                    }
+                                                                ]
+                                                            },
+                                                            {
+                                                                object: "block",
+                                                                type: "paragraph",
+                                                                data: {
+                                                                    align: "center"
+                                                                },
+                                                                nodes: [
+                                                                    {
+                                                                        object: "text",
+                                                                        leaves: [
+                                                                            {
+                                                                                object: "leaf",
+                                                                                text: "",
+                                                                                marks: []
+                                                                            }
+                                                                        ]
+                                                                    },
+                                                                    {
+                                                                        object: "inline",
+                                                                        type: "link",
+                                                                        data: {
+                                                                            href: "/"
+                                                                        },
+                                                                        nodes: [
+                                                                            {
+                                                                                object: "text",
+                                                                                leaves: [
+                                                                                    {
+                                                                                        object:
+                                                                                            "leaf",
+                                                                                        text:
+                                                                                            "Click here to go back to the homepage",
+                                                                                        marks: []
+                                                                                    }
+                                                                                ]
+                                                                            }
+                                                                        ]
+                                                                    },
+                                                                    {
+                                                                        object: "text",
+                                                                        leaves: [
+                                                                            {
+                                                                                object: "leaf",
+                                                                                text: "",
+                                                                                marks: []
+                                                                            }
+                                                                        ]
+                                                                    }
+                                                                ]
+                                                            }
+                                                        ]
+                                                    }
+                                                },
+                                                settings: {
+                                                    padding: {
+                                                        desktop: {
+                                                            all: 200,
+                                                            right: 300,
+                                                            left: 300,
+                                                            bottom: 0,
+                                                            top: 0
+                                                        },
+                                                        advanced: true
+                                                    },
+                                                    margin: {
+                                                        advanced: true,
+                                                        desktop: {
+                                                            top: 25,
+                                                            bottom: 50
+                                                        }
+                                                    }
+                                                }
+                                            },
+                                            elements: [],
+                                            type: "text",
+                                            id: "DK3FJSgHH-",
+                                            path: "0.0.0.0.2"
+                                        }
+                                    ],
+                                    type: "column",
+                                    id: "h4Xd4xXx_2",
+                                    path: "0.0.0.0"
+                                }
+                            ],
+                            type: "row",
+                            id: "gRhWPLjCEt",
+                            path: "0.0.0"
+                        }
+                    ],
+                    path: "0.0",
+                    type: "block",
+                    source: "5c27a54ca0b03cc8d9e32fcf"
+                }
+            ],
+            path: "0",
+            type: "document"
+        },
+        settings: {
+            general: {
+                tags: ["page", "error"],
+                layout: "static",
+                image: null
+            },
+            seo: {
+                meta: [],
+                title: null,
+                description: null
+            },
+            social: {
+                meta: [],
+                title: null,
+                description: null,
+                image: null
+            }
+        },
+        version: 1,
+        parent: "5c6862e4a0b03cef2ef1dec1",
+        locked: true,
+        published: true
+    },
     {
-        _id: "5c6864baa0b03cef2e3989f0",
         id: "5c6864baa0b03cef2e3989f0",
-        category: "5c436a2b4527ee6f2b8bf3d5",
+        category: "5c436a2b4527ee6f2b8bf3d7",
         title: "Get started",
-        snippet:
-            "If you're new to Webiny, this page is a must. There are few essential steps that you need to go through to have a great experience when building page for your website. ",
         url: "/blog/get-started",
         content: {
             id: "pUC9_pojF",
@@ -35,13 +637,32 @@ export const pages = [
                     id: "oYRFENCkb5",
                     data: {
                         settings: {
-                            width: { value: "800px" },
+                            width: {
+                                value: "800px"
+                            },
                             margin: {
-                                mobile: { top: 15, left: 15, right: 15, bottom: 15 },
-                                desktop: { top: 25, left: 0, right: 0, bottom: 25 },
+                                mobile: {
+                                    top: 15,
+                                    left: 15,
+                                    right: 15,
+                                    bottom: 15
+                                },
+                                desktop: {
+                                    top: 25,
+                                    left: 0,
+                                    right: 0,
+                                    bottom: 25
+                                },
                                 advanced: true
                             },
-                            padding: { mobile: { all: 10 }, desktop: { all: 0 } }
+                            padding: {
+                                mobile: {
+                                    all: 10
+                                },
+                                desktop: {
+                                    all: 0
+                                }
+                            }
                         }
                     },
                     elements: [
@@ -49,8 +670,22 @@ export const pages = [
                             id: "vQZ87_gY8s",
                             data: {
                                 settings: {
-                                    margin: { desktop: { all: 0 }, mobile: { all: 0 } },
-                                    padding: { desktop: { all: 0 }, mobile: { all: 0 } }
+                                    margin: {
+                                        desktop: {
+                                            all: 0
+                                        },
+                                        mobile: {
+                                            all: 0
+                                        }
+                                    },
+                                    padding: {
+                                        desktop: {
+                                            all: 0
+                                        },
+                                        mobile: {
+                                            all: 0
+                                        }
+                                    }
                                 }
                             },
                             elements: [
@@ -59,8 +694,22 @@ export const pages = [
                                     data: {
                                         width: 100,
                                         settings: {
-                                            margin: { desktop: { all: 0 }, mobile: { all: 0 } },
-                                            padding: { desktop: { all: 0 }, mobile: { all: 0 } }
+                                            margin: {
+                                                desktop: {
+                                                    all: 0
+                                                },
+                                                mobile: {
+                                                    all: 0
+                                                }
+                                            },
+                                            padding: {
+                                                desktop: {
+                                                    all: 0
+                                                },
+                                                mobile: {
+                                                    all: 0
+                                                }
+                                            }
                                         }
                                     },
                                     elements: [
@@ -110,14 +759,18 @@ export const pages = [
                                                         advanced: true
                                                     },
                                                     padding: {
-                                                        desktop: { all: 0 },
-                                                        mobile: { all: 0 }
+                                                        desktop: {
+                                                            all: 0
+                                                        },
+                                                        mobile: {
+                                                            all: 0
+                                                        }
                                                     }
                                                 }
                                             },
                                             elements: [],
                                             path: "0.0.0.0.0",
-                                            type: "cms-element-text"
+                                            type: "text"
                                         },
                                         {
                                             id: "1hJvGh0Vg",
@@ -288,14 +941,18 @@ export const pages = [
                                                         advanced: true
                                                     },
                                                     padding: {
-                                                        desktop: { all: 0 },
-                                                        mobile: { all: 0 }
+                                                        desktop: {
+                                                            all: 0
+                                                        },
+                                                        mobile: {
+                                                            all: 0
+                                                        }
                                                     }
                                                 }
                                             },
                                             elements: [],
                                             path: "0.0.0.0.1",
-                                            type: "cms-element-text"
+                                            type: "text"
                                         },
                                         {
                                             id: "Of2JQrobK",
@@ -303,7 +960,9 @@ export const pages = [
                                                 settings: {
                                                     horizontalAlign: "center",
                                                     margin: {
-                                                        desktop: { all: 0 },
+                                                        desktop: {
+                                                            all: 0
+                                                        },
                                                         mobile: {
                                                             top: 0,
                                                             left: 0,
@@ -313,15 +972,21 @@ export const pages = [
                                                         advanced: true
                                                     },
                                                     padding: {
-                                                        desktop: { all: 0 },
-                                                        mobile: { all: 0 }
+                                                        desktop: {
+                                                            all: 0
+                                                        },
+                                                        mobile: {
+                                                            all: 0
+                                                        }
                                                     }
                                                 },
-                                                image: { file: "5d28626923832522a761fe18" }
+                                                image: {
+                                                    file: "5db3410646e6da8d61cc1393"
+                                                }
                                             },
                                             elements: [],
                                             path: "0.0.0.0.2",
-                                            type: "cms-element-image"
+                                            type: "image"
                                         },
                                         {
                                             id: "N4NlCLIk4",
@@ -388,14 +1053,18 @@ export const pages = [
                                                         advanced: true
                                                     },
                                                     padding: {
-                                                        desktop: { all: 0 },
-                                                        mobile: { all: 0 }
+                                                        desktop: {
+                                                            all: 0
+                                                        },
+                                                        mobile: {
+                                                            all: 0
+                                                        }
                                                     }
                                                 }
                                             },
                                             elements: [],
                                             path: "0.0.0.0.3",
-                                            type: "cms-element-text"
+                                            type: "text"
                                         },
                                         {
                                             id: "9RSt9H-QJ",
@@ -403,7 +1072,10 @@ export const pages = [
                                                 settings: {
                                                     horizontalAlign: "center",
                                                     margin: {
-                                                        desktop: { all: 0, top: 0 },
+                                                        desktop: {
+                                                            all: 0,
+                                                            top: 0
+                                                        },
                                                         mobile: {
                                                             top: 0,
                                                             left: 0,
@@ -413,15 +1085,21 @@ export const pages = [
                                                         advanced: true
                                                     },
                                                     padding: {
-                                                        desktop: { all: 0 },
-                                                        mobile: { all: 0 }
+                                                        desktop: {
+                                                            all: 0
+                                                        },
+                                                        mobile: {
+                                                            all: 0
+                                                        }
                                                     }
                                                 },
-                                                image: { file: "5d2862bf23832522a761fe1a" }
+                                                image: {
+                                                    file: "5db3410646e6da8d61cc1394"
+                                                }
                                             },
                                             elements: [],
                                             path: "0.0.0.0.4",
-                                            type: "cms-element-image"
+                                            type: "image"
                                         },
                                         {
                                             id: "9GM-1yMU_",
@@ -488,26 +1166,38 @@ export const pages = [
                                                         advanced: true
                                                     },
                                                     padding: {
-                                                        desktop: { all: 0 },
-                                                        mobile: { all: 0 }
+                                                        desktop: {
+                                                            all: 0
+                                                        },
+                                                        mobile: {
+                                                            all: 0
+                                                        }
                                                     }
                                                 }
                                             },
                                             elements: [],
                                             path: "0.0.0.0.5",
-                                            type: "cms-element-text"
+                                            type: "text"
                                         },
                                         {
                                             id: "uNbNNqAeS",
                                             data: {
                                                 settings: {
                                                     margin: {
-                                                        desktop: { all: 0 },
-                                                        mobile: { all: 0 }
+                                                        desktop: {
+                                                            all: 0
+                                                        },
+                                                        mobile: {
+                                                            all: 0
+                                                        }
                                                     },
                                                     padding: {
-                                                        desktop: { all: 0 },
-                                                        mobile: { all: 0 }
+                                                        desktop: {
+                                                            all: 0
+                                                        },
+                                                        mobile: {
+                                                            all: 0
+                                                        }
                                                     }
                                                 },
                                                 source: {
@@ -539,7 +1229,7 @@ export const pages = [
                                             },
                                             elements: [],
                                             path: "0.0.0.0.6",
-                                            type: "cms-element-youtube"
+                                            type: "youtube"
                                         },
                                         {
                                             data: {
@@ -605,13 +1295,17 @@ export const pages = [
                                                         advanced: true
                                                     },
                                                     padding: {
-                                                        desktop: { all: 0 },
-                                                        mobile: { all: 0 }
+                                                        desktop: {
+                                                            all: 0
+                                                        },
+                                                        mobile: {
+                                                            all: 0
+                                                        }
                                                     }
                                                 }
                                             },
                                             elements: [],
-                                            type: "cms-element-text",
+                                            type: "text",
                                             id: "njy1ax7SK",
                                             path: "0.0.0.0.7"
                                         },
@@ -647,12 +1341,20 @@ export const pages = [
                                                 },
                                                 settings: {
                                                     margin: {
-                                                        desktop: { all: 0 },
-                                                        mobile: { all: 0 }
+                                                        desktop: {
+                                                            all: 0
+                                                        },
+                                                        mobile: {
+                                                            all: 0
+                                                        }
                                                     },
                                                     padding: {
-                                                        desktop: { all: 0 },
-                                                        mobile: { all: 0 }
+                                                        desktop: {
+                                                            all: 0
+                                                        },
+                                                        mobile: {
+                                                            all: 0
+                                                        }
                                                     },
                                                     horizontalAlignFlex: "center",
                                                     link: {
@@ -675,39 +1377,51 @@ export const pages = [
                                             },
                                             elements: [],
                                             path: "0.0.0.0.8",
-                                            type: "cms-element-button"
+                                            type: "button"
                                         }
                                     ],
                                     path: "0.0.0.0",
-                                    type: "cms-element-column"
+                                    type: "column"
                                 }
                             ],
                             path: "0.0.0",
-                            type: "cms-element-row"
+                            type: "row"
                         }
                     ],
                     path: "0.0",
-                    type: "cms-element-block"
+                    type: "block"
                 }
             ],
             path: "0",
-            type: "cms-element-document"
+            type: "document"
         },
         settings: {
-            general: { tags: null, layout: "blog", image: "5d2862ed23832522a761fe1b" },
-            seo: { meta: [], title: null, description: null },
-            social: { meta: [], title: null, description: null, image: "5d2862ed23832522a761fe1b" }
+            general: {
+                tags: null,
+                layout: "blog",
+                image: "5db3410646e6da8d61cc138b"
+            },
+            seo: {
+                meta: [],
+                title: null,
+                description: null
+            },
+            social: {
+                meta: [],
+                title: null,
+                description: null,
+                image: "5db3410646e6da8d61cc138c"
+            }
         },
         version: 1,
-        locked: true
+        parent: "5c6864baa0b03cef2e3989f0",
+        locked: true,
+        published: true
     },
     {
-        _id: "5c86c2824527ee934921ccd8",
         id: "5c86c2824527ee934921ccd8",
-        category: "5c436a2b4527ee6f2b8bf3d5",
+        category: "5c436a2b4527ee6f2b8bf3d7",
         title: "For Developers",
-        snippet:
-            "If you're willing to develop something cool with Webiny, this article will show you how to get started.",
         url: "/blog/for-developers",
         content: {
             id: "VFZ-isOPq",
@@ -717,13 +1431,32 @@ export const pages = [
                     id: "7I5U_8IZwB",
                     data: {
                         settings: {
-                            width: { value: "800px" },
+                            width: {
+                                value: "800px"
+                            },
                             margin: {
-                                mobile: { top: 15, left: 15, right: 15, bottom: 15 },
-                                desktop: { top: 25, left: 0, right: 0, bottom: 25 },
+                                mobile: {
+                                    top: 15,
+                                    left: 15,
+                                    right: 15,
+                                    bottom: 15
+                                },
+                                desktop: {
+                                    top: 25,
+                                    left: 0,
+                                    right: 0,
+                                    bottom: 25
+                                },
                                 advanced: true
                             },
-                            padding: { mobile: { all: 10 }, desktop: { all: 0 } }
+                            padding: {
+                                mobile: {
+                                    all: 10
+                                },
+                                desktop: {
+                                    all: 0
+                                }
+                            }
                         }
                     },
                     elements: [
@@ -731,8 +1464,22 @@ export const pages = [
                             id: "3Z2MyEFcp3",
                             data: {
                                 settings: {
-                                    margin: { desktop: { all: 0 }, mobile: { all: 0 } },
-                                    padding: { desktop: { all: 0 }, mobile: { all: 0 } }
+                                    margin: {
+                                        desktop: {
+                                            all: 0
+                                        },
+                                        mobile: {
+                                            all: 0
+                                        }
+                                    },
+                                    padding: {
+                                        desktop: {
+                                            all: 0
+                                        },
+                                        mobile: {
+                                            all: 0
+                                        }
+                                    }
                                 }
                             },
                             elements: [
@@ -741,8 +1488,22 @@ export const pages = [
                                     data: {
                                         width: 100,
                                         settings: {
-                                            margin: { desktop: { all: 0 }, mobile: { all: 0 } },
-                                            padding: { desktop: { all: 0 }, mobile: { all: 0 } }
+                                            margin: {
+                                                desktop: {
+                                                    all: 0
+                                                },
+                                                mobile: {
+                                                    all: 0
+                                                }
+                                            },
+                                            padding: {
+                                                desktop: {
+                                                    all: 0
+                                                },
+                                                mobile: {
+                                                    all: 0
+                                                }
+                                            }
                                         }
                                     },
                                     elements: [
@@ -1095,46 +1856,322 @@ export const pages = [
                                                         advanced: true
                                                     },
                                                     padding: {
-                                                        desktop: { all: 0 },
-                                                        mobile: { all: 0 }
+                                                        desktop: {
+                                                            all: 0
+                                                        },
+                                                        mobile: {
+                                                            all: 0
+                                                        }
                                                     }
                                                 }
                                             },
                                             elements: [],
                                             path: "0.0.0.0.0",
-                                            type: "cms-element-text"
+                                            type: "text"
                                         }
                                     ],
                                     path: "0.0.0.0",
-                                    type: "cms-element-column"
+                                    type: "column"
                                 }
                             ],
                             path: "0.0.0",
-                            type: "cms-element-row"
+                            type: "row"
                         }
                     ],
                     path: "0.0",
-                    type: "cms-element-block"
+                    type: "block"
                 }
             ],
             path: "0",
-            type: "cms-element-document"
+            type: "document"
         },
         settings: {
-            general: { tags: null, layout: "blog", image: "5d2866a023832522a761fe30" },
-            seo: { meta: [], title: null, description: null },
-            social: { meta: [], title: null, description: null, image: "5d2866a023832522a761fe30" }
+            general: {
+                tags: null,
+                layout: "blog",
+                image: "5db3410646e6da8d61cc138d"
+            },
+            seo: {
+                meta: [],
+                title: null,
+                description: null
+            },
+            social: {
+                meta: [],
+                title: null,
+                description: null,
+                image: "5db3410646e6da8d61cc138e"
+            }
         },
         version: 1,
-        locked: true
+        parent: "5c86c2824527ee934921ccd8",
+        locked: true,
+        published: true
     },
     {
-        _id: "5c86c83b4527eea07b2b7f8e",
+        id: "5c86c7564527eea07b295f9d",
+        category: "5c436a2b4527ee6f2b8bf3d7",
+        title: "Welcome to Webiny",
+        url: "/welcome-to-webiny",
+        content: {
+            id: "bRM0OvTBQ",
+            data: {},
+            elements: [
+                {
+                    id: "DRJ1k209Aw",
+                    data: {
+                        settings: {
+                            width: {
+                                value: "1000px"
+                            },
+                            margin: {
+                                mobile: {
+                                    top: 15,
+                                    left: 15,
+                                    right: 15,
+                                    bottom: 15
+                                },
+                                desktop: {
+                                    top: 25,
+                                    left: 0,
+                                    right: 0,
+                                    bottom: 25
+                                },
+                                advanced: true
+                            },
+                            padding: {
+                                mobile: {
+                                    all: 10
+                                },
+                                desktop: {
+                                    all: 0
+                                }
+                            }
+                        }
+                    },
+                    elements: [
+                        {
+                            id: "mXp2AYjBAW",
+                            data: {
+                                settings: {
+                                    margin: {
+                                        desktop: {
+                                            all: 0
+                                        },
+                                        mobile: {
+                                            all: 0
+                                        }
+                                    },
+                                    padding: {
+                                        desktop: {
+                                            all: 0
+                                        },
+                                        mobile: {
+                                            all: 0
+                                        }
+                                    }
+                                }
+                            },
+                            elements: [
+                                {
+                                    id: "9LoF-7PWRy",
+                                    data: {
+                                        width: 100,
+                                        settings: {
+                                            margin: {
+                                                desktop: {
+                                                    all: 0
+                                                },
+                                                mobile: {
+                                                    all: 0
+                                                }
+                                            },
+                                            padding: {
+                                                desktop: {
+                                                    all: 0
+                                                },
+                                                mobile: {
+                                                    all: 0
+                                                }
+                                            }
+                                        }
+                                    },
+                                    elements: [
+                                        {
+                                            id: "8ViwYG1TL",
+                                            data: {
+                                                text: {
+                                                    object: "value",
+                                                    document: {
+                                                        object: "document",
+                                                        data: {},
+                                                        nodes: [
+                                                            {
+                                                                object: "block",
+                                                                type: "h1",
+                                                                data: {
+                                                                    align: "center"
+                                                                },
+                                                                nodes: [
+                                                                    {
+                                                                        object: "text",
+                                                                        leaves: [
+                                                                            {
+                                                                                object: "leaf",
+                                                                                text:
+                                                                                    "Welcome to Webiny",
+                                                                                marks: []
+                                                                            }
+                                                                        ]
+                                                                    }
+                                                                ]
+                                                            },
+                                                            {
+                                                                object: "block",
+                                                                type: "h3",
+                                                                data: {
+                                                                    align: "center"
+                                                                },
+                                                                nodes: [
+                                                                    {
+                                                                        object: "text",
+                                                                        leaves: [
+                                                                            {
+                                                                                object: "leaf",
+                                                                                text:
+                                                                                    "This is your new website. ",
+                                                                                marks: []
+                                                                            }
+                                                                        ]
+                                                                    }
+                                                                ]
+                                                            },
+                                                            {
+                                                                object: "block",
+                                                                type: "paragraph",
+                                                                data: {
+                                                                    align: "center"
+                                                                },
+                                                                nodes: [
+                                                                    {
+                                                                        object: "text",
+                                                                        leaves: [
+                                                                            {
+                                                                                object: "leaf",
+                                                                                text:
+                                                                                    "Below you will find few helpful articles to get you started.",
+                                                                                marks: []
+                                                                            }
+                                                                        ]
+                                                                    }
+                                                                ]
+                                                            }
+                                                        ]
+                                                    }
+                                                },
+                                                settings: {
+                                                    margin: {
+                                                        mobile: {
+                                                            top: 0,
+                                                            left: 0,
+                                                            right: 0,
+                                                            bottom: 15
+                                                        },
+                                                        desktop: {
+                                                            top: 0,
+                                                            left: 0,
+                                                            right: 0,
+                                                            bottom: 25
+                                                        },
+                                                        advanced: true
+                                                    },
+                                                    padding: {
+                                                        desktop: {
+                                                            all: 0
+                                                        },
+                                                        mobile: {
+                                                            all: 0
+                                                        }
+                                                    }
+                                                }
+                                            },
+                                            elements: [],
+                                            path: "0.0.0.0.0",
+                                            type: "text"
+                                        },
+                                        {
+                                            id: "MbPbWes6q",
+                                            data: {
+                                                limit: 3,
+                                                component: "default",
+                                                settings: {
+                                                    margin: {
+                                                        desktop: {
+                                                            all: 0
+                                                        },
+                                                        mobile: {
+                                                            all: 0
+                                                        }
+                                                    },
+                                                    padding: {
+                                                        desktop: {
+                                                            all: 0
+                                                        },
+                                                        mobile: {
+                                                            all: 0
+                                                        }
+                                                    }
+                                                },
+                                                category: "5c436a2b4527ee6f2b8bf3d7",
+                                                resultsPerPage: 10
+                                            },
+                                            elements: [],
+                                            path: "0.0.0.0.1",
+                                            type: "pages-list"
+                                        }
+                                    ],
+                                    path: "0.0.0.0",
+                                    type: "column"
+                                }
+                            ],
+                            path: "0.0.0",
+                            type: "row"
+                        }
+                    ],
+                    path: "0.0",
+                    type: "block"
+                }
+            ],
+            path: "0",
+            type: "document"
+        },
+        settings: {
+            general: {
+                tags: ["page", "homepage"],
+                layout: "static",
+                image: null
+            },
+            seo: {
+                meta: [],
+                title: null,
+                description: null
+            },
+            social: {
+                meta: [],
+                title: null,
+                description: null,
+                image: null
+            }
+        },
+        version: 1,
+        parent: "5c86c7564527eea07b295f9d",
+        locked: true,
+        published: true
+    },
+    {
         id: "5c86c83b4527eea07b2b7f8e",
-        category: "5c436a2b4527ee6f2b8bf3d5",
+        category: "5c436a2b4527ee6f2b8bf3d7",
         title: "Resources",
-        snippet:
-            "A list of pages from which you can download userful resources like pictures, backgrounds, icons and illustrations.",
         url: "/blog/resources",
         content: {
             id: "HuK27kokp",
@@ -1144,13 +2181,32 @@ export const pages = [
                     id: "_wxB9KR9l6",
                     data: {
                         settings: {
-                            width: { value: "800px" },
+                            width: {
+                                value: "800px"
+                            },
                             margin: {
-                                mobile: { top: 15, left: 15, right: 15, bottom: 15 },
-                                desktop: { top: 25, left: 0, right: 0, bottom: 25 },
+                                mobile: {
+                                    top: 15,
+                                    left: 15,
+                                    right: 15,
+                                    bottom: 15
+                                },
+                                desktop: {
+                                    top: 25,
+                                    left: 0,
+                                    right: 0,
+                                    bottom: 25
+                                },
                                 advanced: true
                             },
-                            padding: { mobile: { all: 10 }, desktop: { all: 0 } }
+                            padding: {
+                                mobile: {
+                                    all: 10
+                                },
+                                desktop: {
+                                    all: 0
+                                }
+                            }
                         }
                     },
                     elements: [
@@ -1158,8 +2214,22 @@ export const pages = [
                             id: "_9RRIScTMH",
                             data: {
                                 settings: {
-                                    margin: { desktop: { all: 0 }, mobile: { all: 0 } },
-                                    padding: { desktop: { all: 0 }, mobile: { all: 0 } }
+                                    margin: {
+                                        desktop: {
+                                            all: 0
+                                        },
+                                        mobile: {
+                                            all: 0
+                                        }
+                                    },
+                                    padding: {
+                                        desktop: {
+                                            all: 0
+                                        },
+                                        mobile: {
+                                            all: 0
+                                        }
+                                    }
                                 }
                             },
                             elements: [
@@ -1168,8 +2238,22 @@ export const pages = [
                                     data: {
                                         width: 100,
                                         settings: {
-                                            margin: { desktop: { all: 0 }, mobile: { all: 0 } },
-                                            padding: { desktop: { all: 0 }, mobile: { all: 0 } }
+                                            margin: {
+                                                desktop: {
+                                                    all: 0
+                                                },
+                                                mobile: {
+                                                    all: 0
+                                                }
+                                            },
+                                            padding: {
+                                                desktop: {
+                                                    all: 0
+                                                },
+                                                mobile: {
+                                                    all: 0
+                                                }
+                                            }
                                         }
                                     },
                                     elements: [
@@ -2077,805 +3161,56 @@ export const pages = [
                                                         advanced: true
                                                     },
                                                     padding: {
-                                                        desktop: { all: 0 },
-                                                        mobile: { all: 0 }
+                                                        desktop: {
+                                                            all: 0
+                                                        },
+                                                        mobile: {
+                                                            all: 0
+                                                        }
                                                     }
                                                 }
                                             },
                                             elements: [],
                                             path: "0.0.0.0.0",
-                                            type: "cms-element-text"
+                                            type: "text"
                                         }
                                     ],
                                     path: "0.0.0.0",
-                                    type: "cms-element-column"
+                                    type: "column"
                                 }
                             ],
                             path: "0.0.0",
-                            type: "cms-element-row"
+                            type: "row"
                         }
                     ],
                     path: "0.0",
-                    type: "cms-element-block"
+                    type: "block"
                 }
             ],
             path: "0",
-            type: "cms-element-document"
+            type: "document"
         },
         settings: {
-            general: { tags: null, layout: "blog", image: "5d2866c723832522a761fe32" },
-            seo: { meta: [], title: null, description: null },
-            social: { meta: [], title: null, description: null, image: "5d2866c723832522a761fe32" }
-        },
-        version: 1,
-        locked: true
-    },
-    {
-        _id: "5c86c7564527eea07b295f9d",
-        id: "5c86c7564527eea07b295f9d",
-        category: "5c436a2b4527ee6f2b8bf3d7",
-        title: "Welcome to Webiny",
-        url: "/welcome-to-webiny",
-        content: {
-            id: "bRM0OvTBQ",
-            data: {},
-            elements: [
-                {
-                    id: "DRJ1k209Aw",
-                    data: {
-                        settings: {
-                            width: { value: "1000px" },
-                            margin: {
-                                mobile: { top: 15, left: 15, right: 15, bottom: 15 },
-                                desktop: { top: 25, left: 0, right: 0, bottom: 25 },
-                                advanced: true
-                            },
-                            padding: { mobile: { all: 10 }, desktop: { all: 0 } }
-                        }
-                    },
-                    elements: [
-                        {
-                            id: "mXp2AYjBAW",
-                            data: {
-                                settings: {
-                                    margin: { desktop: { all: 0 }, mobile: { all: 0 } },
-                                    padding: { desktop: { all: 0 }, mobile: { all: 0 } }
-                                }
-                            },
-                            elements: [
-                                {
-                                    id: "9LoF-7PWRy",
-                                    data: {
-                                        width: 100,
-                                        settings: {
-                                            margin: { desktop: { all: 0 }, mobile: { all: 0 } },
-                                            padding: { desktop: { all: 0 }, mobile: { all: 0 } }
-                                        }
-                                    },
-                                    elements: [
-                                        {
-                                            id: "8ViwYG1TL",
-                                            data: {
-                                                text: {
-                                                    object: "value",
-                                                    document: {
-                                                        object: "document",
-                                                        data: {},
-                                                        nodes: [
-                                                            {
-                                                                object: "block",
-                                                                type: "h1",
-                                                                data: { align: "center" },
-                                                                nodes: [
-                                                                    {
-                                                                        object: "text",
-                                                                        leaves: [
-                                                                            {
-                                                                                object: "leaf",
-                                                                                text:
-                                                                                    "Welcome to Webiny",
-                                                                                marks: []
-                                                                            }
-                                                                        ]
-                                                                    }
-                                                                ]
-                                                            },
-                                                            {
-                                                                object: "block",
-                                                                type: "h3",
-                                                                data: { align: "center" },
-                                                                nodes: [
-                                                                    {
-                                                                        object: "text",
-                                                                        leaves: [
-                                                                            {
-                                                                                object: "leaf",
-                                                                                text:
-                                                                                    "This is your new website. ",
-                                                                                marks: []
-                                                                            }
-                                                                        ]
-                                                                    }
-                                                                ]
-                                                            },
-                                                            {
-                                                                object: "block",
-                                                                type: "paragraph",
-                                                                data: { align: "center" },
-                                                                nodes: [
-                                                                    {
-                                                                        object: "text",
-                                                                        leaves: [
-                                                                            {
-                                                                                object: "leaf",
-                                                                                text:
-                                                                                    "Below you will find few helpful articles to get you started.",
-                                                                                marks: []
-                                                                            }
-                                                                        ]
-                                                                    }
-                                                                ]
-                                                            }
-                                                        ]
-                                                    }
-                                                },
-                                                settings: {
-                                                    margin: {
-                                                        mobile: {
-                                                            top: 0,
-                                                            left: 0,
-                                                            right: 0,
-                                                            bottom: 15
-                                                        },
-                                                        desktop: {
-                                                            top: 0,
-                                                            left: 0,
-                                                            right: 0,
-                                                            bottom: 25
-                                                        },
-                                                        advanced: true
-                                                    },
-                                                    padding: {
-                                                        desktop: { all: 0 },
-                                                        mobile: { all: 0 }
-                                                    }
-                                                }
-                                            },
-                                            elements: [],
-                                            path: "0.0.0.0.0",
-                                            type: "cms-element-text"
-                                        },
-                                        {
-                                            id: "MbPbWes6q",
-                                            data: {
-                                                limit: 3,
-                                                component:
-                                                    "cms-element-pages-list-component-default",
-                                                settings: {
-                                                    margin: {
-                                                        desktop: { all: 0 },
-                                                        mobile: { all: 0 }
-                                                    },
-                                                    padding: {
-                                                        desktop: { all: 0 },
-                                                        mobile: { all: 0 }
-                                                    }
-                                                },
-                                                category: "5c436a2b4527ee6f2b8bf3d5",
-                                                resultsPerPage: 10
-                                            },
-                                            elements: [],
-                                            path: "0.0.0.0.1",
-                                            type: "cms-element-pages-list"
-                                        }
-                                    ],
-                                    path: "0.0.0.0",
-                                    type: "cms-element-column"
-                                }
-                            ],
-                            path: "0.0.0",
-                            type: "cms-element-row"
-                        }
-                    ],
-                    path: "0.0",
-                    type: "cms-element-block"
-                }
-            ],
-            path: "0",
-            type: "cms-element-document"
-        },
-        settings: {
-            general: { tags: ["page", "homepage"], layout: "static", image: null },
-            seo: { meta: [], title: null, description: null },
-            social: { meta: [], title: null, description: null, image: null }
-        },
-        version: 1,
-        locked: true
-    },
-    {
-        _id: "5c6862e4a0b03cef2ef1dec1",
-        id: "5c6862e4a0b03cef2ef1dec1",
-        category: "5c436a2b4527ee6f2b8bf3d7",
-        title: "Error Page",
-        url: "/error",
-        content: {
-            id: "P3NNeXWAk",
-            data: {},
-            settings: {},
-            elements: [
-                {
-                    id: "jjmIfB57p",
-                    data: {
-                        settings: {
-                            padding: {
-                                advanced: true,
-                                desktop: { top: 100, bottom: 100 },
-                                mobile: { top: 15, bottom: 15, right: 15, left: 15 }
-                            },
-                            width: { value: "1000px" }
-                        }
-                    },
-                    elements: [
-                        {
-                            data: {
-                                settings: {
-                                    margin: { desktop: { all: 0 }, mobile: { all: 0 } },
-                                    padding: { desktop: { all: 0 }, mobile: { all: 0 } }
-                                }
-                            },
-                            elements: [
-                                {
-                                    data: {
-                                        width: 100,
-                                        settings: {
-                                            margin: { desktop: { all: 0 }, mobile: { all: 0 } },
-                                            padding: { desktop: { all: 0 }, mobile: { all: 0 } }
-                                        }
-                                    },
-                                    elements: [
-                                        {
-                                            data: {
-                                                text: {
-                                                    object: "value",
-                                                    document: {
-                                                        object: "document",
-                                                        data: {},
-                                                        nodes: [
-                                                            {
-                                                                object: "block",
-                                                                type: "h2",
-                                                                data: { align: "center" },
-                                                                nodes: [
-                                                                    {
-                                                                        object: "text",
-                                                                        leaves: [
-                                                                            {
-                                                                                object: "leaf",
-                                                                                text:
-                                                                                    "Oops ... there has been an error",
-                                                                                marks: []
-                                                                            }
-                                                                        ]
-                                                                    }
-                                                                ]
-                                                            }
-                                                        ]
-                                                    }
-                                                },
-                                                settings: {
-                                                    margin: {
-                                                        advanced: true,
-                                                        mobile: { bottom: 15 }
-                                                    }
-                                                }
-                                            },
-                                            elements: [],
-                                            type: "cms-element-text",
-                                            id: "nEXNvcLJO5",
-                                            path: "0.0.0.0.0"
-                                        },
-                                        {
-                                            id: "EoAI5_Y9t",
-                                            data: {
-                                                settings: {
-                                                    horizontalAlign: "center",
-                                                    margin: {
-                                                        desktop: {
-                                                            all: 25,
-                                                            top: 25,
-                                                            right: 25,
-                                                            bottom: 25,
-                                                            left: 25
-                                                        },
-                                                        mobile: {
-                                                            top: 15,
-                                                            left: 15,
-                                                            right: 15,
-                                                            bottom: 15,
-                                                            all: 15
-                                                        },
-                                                        advanced: false
-                                                    },
-                                                    padding: {
-                                                        desktop: { all: 0 },
-                                                        mobile: { all: 0 }
-                                                    }
-                                                },
-                                                image: {
-                                                    file: "5d28e17610e693086148d943",
-                                                    width: "250",
-                                                    responsive: true,
-                                                    height: "",
-                                                    title: ""
-                                                }
-                                            },
-                                            elements: [],
-                                            path: "0.0.0.0.1",
-                                            type: "cms-element-image"
-                                        },
-                                        {
-                                            data: {
-                                                text: {
-                                                    object: "value",
-                                                    document: {
-                                                        object: "document",
-                                                        data: {},
-                                                        nodes: [
-                                                            {
-                                                                object: "block",
-                                                                type: "paragraph",
-                                                                data: { align: "center" },
-                                                                nodes: [
-                                                                    {
-                                                                        object: "text",
-                                                                        leaves: [
-                                                                            {
-                                                                                object: "leaf",
-                                                                                text:
-                                                                                    "An error has happened somewhere.",
-                                                                                marks: []
-                                                                            }
-                                                                        ]
-                                                                    }
-                                                                ]
-                                                            },
-                                                            {
-                                                                object: "block",
-                                                                type: "paragraph",
-                                                                data: { align: "center" },
-                                                                nodes: [
-                                                                    {
-                                                                        object: "text",
-                                                                        leaves: [
-                                                                            {
-                                                                                object: "leaf",
-                                                                                text: "",
-                                                                                marks: []
-                                                                            }
-                                                                        ]
-                                                                    },
-                                                                    {
-                                                                        object: "inline",
-                                                                        type: "link",
-                                                                        data: { href: "/" },
-                                                                        nodes: [
-                                                                            {
-                                                                                object: "text",
-                                                                                leaves: [
-                                                                                    {
-                                                                                        object:
-                                                                                            "leaf",
-                                                                                        text:
-                                                                                            "Click here to go back to the homepage",
-                                                                                        marks: []
-                                                                                    }
-                                                                                ]
-                                                                            }
-                                                                        ]
-                                                                    },
-                                                                    {
-                                                                        object: "text",
-                                                                        leaves: [
-                                                                            {
-                                                                                object: "leaf",
-                                                                                text: "",
-                                                                                marks: []
-                                                                            }
-                                                                        ]
-                                                                    }
-                                                                ]
-                                                            }
-                                                        ]
-                                                    }
-                                                },
-                                                settings: {
-                                                    padding: {
-                                                        desktop: {
-                                                            all: 200,
-                                                            right: 300,
-                                                            left: 300,
-                                                            bottom: 0,
-                                                            top: 0
-                                                        },
-                                                        advanced: true
-                                                    },
-                                                    margin: {
-                                                        advanced: true,
-                                                        desktop: { top: 25, bottom: 50 }
-                                                    }
-                                                }
-                                            },
-                                            elements: [],
-                                            type: "cms-element-text",
-                                            id: "DK3FJSgHH-",
-                                            path: "0.0.0.0.2"
-                                        }
-                                    ],
-                                    type: "cms-element-column",
-                                    id: "h4Xd4xXx_2",
-                                    path: "0.0.0.0"
-                                }
-                            ],
-                            type: "cms-element-row",
-                            id: "gRhWPLjCEt",
-                            path: "0.0.0"
-                        }
-                    ],
-                    path: "0.0",
-                    type: "cms-element-block",
-                    source: "5c27a54ca0b03cc8d9e32fcf"
-                }
-            ],
-            path: "0",
-            type: "cms-element-document"
-        },
-        settings: {
-            general: { tags: ["page", "error"], layout: "static", image: null },
-            seo: { meta: [], title: null, description: null },
-            social: { meta: [], title: null, description: null, image: null }
-        },
-        version: 1,
-        locked: true
-    },
-    {
-        _id: "5c6860fda0b03cef2e544bd7",
-        id: "5c6860fda0b03cef2e544bd7",
-        category: "5c436a2b4527ee6f2b8bf3d7",
-        title: "404",
-        url: "/not-found",
-        content: {
-            id: "ikN6TMxu7",
-            data: {},
-            settings: {},
-            elements: [
-                {
-                    id: "OqBcnPf6K",
-                    data: {
-                        settings: {
-                            padding: {
-                                advanced: true,
-                                desktop: { top: 100, bottom: 100 },
-                                mobile: { top: 15, bottom: 15, right: 15, left: 15 }
-                            },
-                            width: { value: "1000px" }
-                        }
-                    },
-                    elements: [
-                        {
-                            data: {
-                                settings: {
-                                    margin: { desktop: { all: 0 }, mobile: { all: 0 } },
-                                    padding: { desktop: { all: 0 }, mobile: { all: 0 } }
-                                }
-                            },
-                            elements: [
-                                {
-                                    data: {
-                                        width: 100,
-                                        settings: {
-                                            margin: { desktop: { all: 0 }, mobile: { all: 0 } },
-                                            padding: { desktop: { all: 0 }, mobile: { all: 0 } }
-                                        }
-                                    },
-                                    elements: [
-                                        {
-                                            data: {
-                                                text: {
-                                                    object: "value",
-                                                    document: {
-                                                        object: "document",
-                                                        data: {},
-                                                        nodes: [
-                                                            {
-                                                                object: "block",
-                                                                type: "h2",
-                                                                data: { align: "center" },
-                                                                nodes: [
-                                                                    {
-                                                                        object: "text",
-                                                                        leaves: [
-                                                                            {
-                                                                                object: "leaf",
-                                                                                text:
-                                                                                    "Page not found",
-                                                                                marks: []
-                                                                            }
-                                                                        ]
-                                                                    }
-                                                                ]
-                                                            }
-                                                        ]
-                                                    }
-                                                },
-                                                settings: {
-                                                    margin: {
-                                                        advanced: true,
-                                                        mobile: { bottom: 15 }
-                                                    }
-                                                }
-                                            },
-                                            elements: [],
-                                            type: "cms-element-text",
-                                            id: "q0l8eb-1X1",
-                                            path: "0.0.0.0.0"
-                                        },
-                                        {
-                                            id: "cObTtI3R8",
-                                            data: {
-                                                settings: {
-                                                    horizontalAlign: "center",
-                                                    margin: {
-                                                        desktop: {
-                                                            all: 25,
-                                                            top: 25,
-                                                            right: 25,
-                                                            bottom: 25,
-                                                            left: 25
-                                                        },
-                                                        mobile: {
-                                                            top: 15,
-                                                            left: 15,
-                                                            right: 15,
-                                                            bottom: 15,
-                                                            all: 15
-                                                        },
-                                                        advanced: false
-                                                    },
-                                                    padding: {
-                                                        desktop: { all: 0 },
-                                                        mobile: { all: 0 }
-                                                    }
-                                                },
-                                                image: {
-                                                    file: "5d28672f23832522a761fe36",
-                                                    width: "250"
-                                                }
-                                            },
-                                            elements: [],
-                                            path: "0.0.0.0.1",
-                                            type: "cms-element-image"
-                                        },
-                                        {
-                                            data: {
-                                                text: {
-                                                    object: "value",
-                                                    document: {
-                                                        object: "document",
-                                                        data: {},
-                                                        nodes: [
-                                                            {
-                                                                object: "block",
-                                                                type: "paragraph",
-                                                                data: { align: "center" },
-                                                                nodes: [
-                                                                    {
-                                                                        object: "text",
-                                                                        leaves: [
-                                                                            {
-                                                                                object: "leaf",
-                                                                                text:
-                                                                                    "Seems the page that you are looking for doesn't exists, or is no longer available. ",
-                                                                                marks: []
-                                                                            }
-                                                                        ]
-                                                                    }
-                                                                ]
-                                                            },
-                                                            {
-                                                                object: "block",
-                                                                type: "paragraph",
-                                                                data: { align: "center" },
-                                                                nodes: [
-                                                                    {
-                                                                        object: "text",
-                                                                        leaves: [
-                                                                            {
-                                                                                object: "leaf",
-                                                                                text: "",
-                                                                                marks: []
-                                                                            }
-                                                                        ]
-                                                                    },
-                                                                    {
-                                                                        object: "inline",
-                                                                        type: "link",
-                                                                        data: { href: "/" },
-                                                                        nodes: [
-                                                                            {
-                                                                                object: "text",
-                                                                                leaves: [
-                                                                                    {
-                                                                                        object:
-                                                                                            "leaf",
-                                                                                        text:
-                                                                                            "Click here to go back to the homepage",
-                                                                                        marks: []
-                                                                                    }
-                                                                                ]
-                                                                            }
-                                                                        ]
-                                                                    },
-                                                                    {
-                                                                        object: "text",
-                                                                        leaves: [
-                                                                            {
-                                                                                object: "leaf",
-                                                                                text: "",
-                                                                                marks: []
-                                                                            }
-                                                                        ]
-                                                                    }
-                                                                ]
-                                                            }
-                                                        ]
-                                                    }
-                                                },
-                                                settings: {
-                                                    padding: {
-                                                        desktop: {
-                                                            all: 200,
-                                                            right: 300,
-                                                            left: 300,
-                                                            bottom: 0,
-                                                            top: 0
-                                                        },
-                                                        advanced: true
-                                                    },
-                                                    margin: {
-                                                        advanced: true,
-                                                        desktop: { top: 25, bottom: 50 }
-                                                    }
-                                                }
-                                            },
-                                            elements: [],
-                                            type: "cms-element-text",
-                                            id: "ccmga_z8J3",
-                                            path: "0.0.0.0.2"
-                                        }
-                                    ],
-                                    type: "cms-element-column",
-                                    id: "INbopVNADD",
-                                    path: "0.0.0.0"
-                                }
-                            ],
-                            type: "cms-element-row",
-                            id: "V58gMh4NkG",
-                            path: "0.0.0"
-                        }
-                    ],
-                    path: "0.0",
-                    type: "cms-element-block",
-                    source: "5c27a54ca0b03cc8d9e32fcf"
-                }
-            ],
-            path: "0",
-            type: "cms-element-document"
-        },
-        settings: {
-            general: { tags: ["page", "404", "not-found"], layout: "static", image: null },
-            seo: { meta: [], title: null, description: null },
-            social: { meta: [], title: null, description: null, image: null }
-        },
-        version: 1,
-        locked: true
-    }
-];
-export const files = [
-    {
-        _id: "5d28626923832522a761fe18",
-        savedOn: "2019-07-14T19:01:57.991Z",
-        createdOn: "2019-07-14T19:01:57.991Z",
-        deleted: false,
-        id: "5d28626923832522a761fe18",
-        src: "/files/Screenshot2019-02-16at19.41.25_1chojs7y1wbf.png",
-        size: 67223,
-        type: "image/png",
-        name: "Screenshot2019-02-16at19.41.25_1chojs7y1wbf.png",
-        meta: { private: true }
-    },
-    {
-        _id: "5d2862bf23832522a761fe1a",
-        savedOn: "2019-07-14T19:01:57.995Z",
-        createdOn: "2019-07-14T19:01:57.995Z",
-        deleted: false,
-        id: "5d2862bf23832522a761fe1a",
-        src: "/files/Screenshot2019-02-16at20.40.53_1chojs7y5u8l.png",
-        size: 89556,
-        type: "image/png",
-        name: "Screenshot2019-02-16at20.40.53_1chojs7y5u8l.png",
-        meta: { private: true }
-    },
-    {
-        _id: "5d2862ed23832522a761fe1b",
-        savedOn: "2019-07-14T19:01:57.999Z",
-        createdOn: "2019-07-14T19:01:57.999Z",
-        deleted: false,
-        id: "5d2862ed23832522a761fe1b",
-        src: "/files/cms-basic-admin-overview_e2ljshs0ktb.png",
-        name: "cms-basic-admin-overview_e2ljshs0ktb.png",
-        meta: { private: true }
-    },
-    {
-        _id: "5d2866a023832522a761fe30",
-        savedOn: "2019-07-14T19:01:58.002Z",
-        createdOn: "2019-07-14T19:01:58.002Z",
-        deleted: false,
-        id: "5d2866a023832522a761fe30",
-        src: "/files/laptop-3190194_1280_vp7jt4tid20.jpeg",
-        name: "laptop-3190194_1280_vp7jt4tid20.jpeg",
-        meta: { private: true }
-    },
-    {
-        _id: "5d2866c723832522a761fe32",
-        savedOn: "2019-07-14T19:01:58.006Z",
-        createdOn: "2019-07-14T19:01:58.006Z",
-        deleted: false,
-        id: "5d2866c723832522a761fe32",
-        src: "/files/blonde-629726_1280_vp7jt4tfa97.jpeg",
-        size: 170116,
-        type: "image/jpeg",
-        name: "blonde-629726_1280_vp7jt4tfa97.jpeg",
-        meta: { private: true }
-    },
-    {
-        _id: "5d28e17610e693086148d943",
-        savedOn: "2019-07-14T19:01:58.009Z",
-        createdOn: "2019-07-14T19:01:58.009Z",
-        deleted: false,
-        id: "5d28e17610e693086148d943",
-        src: "/files/undraw_warning_cyit_1b8ujs7vdjzp.svg",
-        size: 37173,
-        type: "image/svg+xml",
-        name: "undraw_warning_cyit_1b8ujs7vdjzp.svg",
-        meta: { private: true }
-    },
-    {
-        _id: "5d28672f23832522a761fe36",
-        savedOn: "2019-07-14T19:01:58.012Z",
-        createdOn: "2019-07-14T19:01:58.012Z",
-        deleted: false,
-        id: "5d28672f23832522a761fe36",
-        src: "/files/undraw_page_not_found_su7k_1b8ujs7v2x7p.svg",
-        size: 21104,
-        type: "image/svg+xml",
-        name: "undraw_page_not_found_su7k_1b8ujs7v2x7p.svg",
-        meta: { private: true }
-    }
-];
-export const menus = [
-    {
-        _id: "5c436a2b4527ee6f2b8bf3d4",
-        id: "5c436a2b4527ee6f2b8bf3d4",
-        title: "Main menu",
-        slug: "main-menu",
-        description: "This is a demo menu.",
-        items: [
-            {
-                type: "cms-menu-item-page",
-                id: "js7whjme",
-                title: "Home",
-                page: "5c86c7564527eea07b295f9d"
+            general: {
+                tags: null,
+                layout: "blog",
+                image: "5db3410646e6da8d61cc138f"
+            },
+            seo: {
+                meta: [],
+                title: null,
+                description: null
+            },
+            social: {
+                meta: [],
+                title: null,
+                description: null,
+                image: "5db3410646e6da8d61cc1390"
             }
-        ]
+        },
+        version: 1,
+        parent: "5c86c83b4527eea07b2b7f8e",
+        locked: true,
+        published: true
     }
 ];

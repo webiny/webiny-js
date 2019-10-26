@@ -61,7 +61,7 @@ function Tags({ file }) {
                                             })
                                         );
 
-                                        data.files.listFiles.data.forEach(item => {
+                                        data.blockFiles.listFiles.data.forEach(item => {
                                             if (item.src === newFileData.src) {
                                                 item.tags = newFileData.tags;
                                             }
