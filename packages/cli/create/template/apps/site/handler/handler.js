@@ -1,6 +1,7 @@
 const fs = require("fs");
 const path = require("path");
 const mime = require("mime-types");
+const isUtf8 = require("isutf8");
 
 const createResponse = ({ type, body, isBase64Encoded, headers }) => {
     return {
@@ -20,7 +21,7 @@ module.exports.handler = async event => {
     let type = mime.lookup(key);
     let isBase64Encoded = false;
 
-    if(key.endsWith("undefined")) {
+    if (key.endsWith("undefined")) {
         return createResponse({
             type,
             body: "",
@@ -43,8 +44,6 @@ module.exports.handler = async event => {
 
     const filePath = path.resolve(key);
 
-    // TODO: check if file should be base64 encoded (binary files)
-
     try {
         let buffer = await new Promise((resolve, reject) => {
             fs.readFile(filePath, (err, data) => {
@@ -53,6 +52,7 @@ module.exports.handler = async event => {
             });
         });
 
+        isBase64Encoded = !isUtf8(buffer);
         const headers = {};
 
         if (key.includes("static")) {
