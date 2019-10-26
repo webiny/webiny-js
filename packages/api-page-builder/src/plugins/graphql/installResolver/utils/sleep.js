@@ -1,7 +1,7 @@
-export default () => {
+export default ms => {
     return new Promise(resolve => {
         setTimeout(() => {
             resolve();
-        }, 5);
+        }, ms);
     });
 };

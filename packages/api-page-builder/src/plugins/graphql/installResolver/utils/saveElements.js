@@ -31,7 +31,10 @@ export default async ({ context, INSTALL_EXTRACT_DIR }) => {
 
     let filesWithPreSignedPostPayload = [];
     for (let i = 0; i < elementsFilesData.length; i++) {
-        await sleep();
+        if (i % 10 === 0) {
+            await sleep(500);
+        }
+
         const elementsFileData = elementsFilesData[i];
         filesWithPreSignedPostPayload.push(
             client
@@ -39,7 +42,6 @@ export default async ({ context, INSTALL_EXTRACT_DIR }) => {
                     data: pick(elementsFileData, ["name", "size", "type"])
                 })
                 .then(async response => {
-                    await console.log(response);
                     const { file, data } = get(response, "files.uploadFile.data");
                     const buffer = fs.readFileSync(
                         path.join(
@@ -50,13 +52,15 @@ export default async ({ context, INSTALL_EXTRACT_DIR }) => {
                     );
 
                     return uploadToS3(buffer, data).then(() =>
-                        client.request(CREATE_FILE, {
-                            data: {
-                                meta: elementsFileData.meta,
-                                ...file,
-                                id: elementsFileData.id
-                            }
-                        })
+                        client
+                            .request(CREATE_FILE, {
+                                data: {
+                                    meta: elementsFileData.meta,
+                                    ...file,
+                                    id: elementsFileData.id
+                                }
+                            })
+                            .then(async () => await console.log(`File at index ${i} was successfully saved.`))
                     );
                 })
         );

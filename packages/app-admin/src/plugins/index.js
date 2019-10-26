@@ -18,6 +18,7 @@ import DarkMode from "@webiny/app-admin/plugins/UserMenu/plugins/DarkMode";
 import DefaultHandle from "@webiny/app-admin/plugins/UserMenu/plugins/DefaultHandle";
 import Help from "@webiny/app-admin/plugins/UserMenu/plugins/Help";
 import SendFeedback from "@webiny/app-admin/plugins/UserMenu/plugins/Feedback";
+import install from "@webiny/app-admin/plugins/install";
 
 import init from "./init";
 
@@ -41,5 +42,6 @@ export default [
     DefaultHandle,
     Help,
     SendFeedback,
+    // install,
     ...init
 ];

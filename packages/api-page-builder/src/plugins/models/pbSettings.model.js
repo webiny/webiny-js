@@ -54,6 +54,10 @@ export default ({ createBase }) => {
         }),
         withProps({
             stepAvailable(number) {
+                if (number === 1) {
+                    return !this.getStep(1).completed;
+                }
+
                 if (this.getStep(number).completed) {
                     return false;
                 }

@@ -8,6 +8,7 @@ import globalSearch from "./globalSearch";
 import settings from "./settings";
 import routes from "./routes";
 import menus from "./menus";
+import install from "./install";
 
 export default [
     header,
@@ -18,5 +19,6 @@ export default [
     globalSearch,
     settings,
     routes,
-    menus
+    menus,
+    install
 ];
