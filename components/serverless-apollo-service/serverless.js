@@ -5,6 +5,7 @@ const webpack = require("webpack");
 const execa = require("execa");
 const loadJson = require("load-json-file");
 const writeJson = require("write-json-file");
+const camelCase = require("lodash.camelcase");
 const { transform } = require("@babel/core");
 const { Component } = require("@serverless/core");
 
@@ -29,7 +30,7 @@ class ApolloService extends Component {
         const {
             region,
             endpoints = [],
-            name: componentName,
+            name,
             plugins = [],
             env = {},
             database,
@@ -37,11 +38,12 @@ class ApolloService extends Component {
             timeout = 10,
             description,
             endpointTypes = ["REGIONAL"],
+            binaryMediaTypes = [],
             dependencies = {},
             webpackConfig = null
         } = inputs;
 
-        if (!componentName) {
+        if (!name) {
             throw Error(`"inputs.name" is a required parameter!`);
         }
 
@@ -52,8 +54,8 @@ class ApolloService extends Component {
 
         const injectPlugins = [];
         const boilerplateRoot = join(this.context.instance.root, ".webiny");
-        const componentRoot = join(boilerplateRoot, componentName);
-        fs.ensureDirSync(join(boilerplateRoot, componentName));
+        const componentRoot = join(boilerplateRoot, camelCase(name));
+        fs.ensureDirSync(componentRoot);
 
         this.state.inputs = inputs;
         await this.save();
@@ -161,7 +163,7 @@ class ApolloService extends Component {
 
         const lambdaOut = await lambda({
             region,
-            description: description || `Apollo Server: ${componentName}`,
+            description: `serverless-apollo-service: ${description || name}`,
             code: join(componentRoot, "build"),
             root: componentRoot,
             handler: "handler.handler",
@@ -170,12 +172,13 @@ class ApolloService extends Component {
             timeout
         });
 
-        this.context.debug(`[${componentName}] Deploying API Gateway`);
+        this.context.debug(`Deploying API Gateway`);
         const apiGwOut = await apiGw({
             region,
-            name: componentName,
-            description: `API for ${componentName}`,
+            name,
+            description: `API for ${name}`,
             stage: "prod",
+            binaryMediaTypes,
             endpointTypes,
             endpoints: [{ path: "/graphql", method: "ANY", function: lambdaOut.arn }, ...endpoints]
         });

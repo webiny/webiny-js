@@ -4,6 +4,7 @@ const prettier = require("prettier");
 const execa = require("execa");
 const webpack = require("webpack");
 const loadJson = require("load-json-file");
+const camelCase = require("lodash.camelcase");
 const writeJson = require("write-json-file");
 const { transform } = require("@babel/core");
 const { Component } = require("@serverless/core");
@@ -22,7 +23,7 @@ class ApolloGateway extends Component {
     async default(inputs = {}) {
         const {
             region,
-            name: componentName = null,
+            name = null,
             services = [],
             buildHeaders = __dirname + "/boilerplate/buildHeaders.js",
             env = {},
@@ -32,17 +33,16 @@ class ApolloGateway extends Component {
             dependencies = {}
         } = inputs;
 
-        if (!componentName) {
+        if (!name) {
             throw Error(`"inputs.name" is a required parameter!`);
         }
 
         const boilerplateRoot = path.join(this.context.instance.root, ".webiny");
-        const componentRoot = path.join(boilerplateRoot, componentName);
+        const componentRoot = path.join(boilerplateRoot, camelCase(name));
+        fs.ensureDirSync(componentRoot);
 
         this.state.inputs = inputs;
         await this.save();
-
-        fs.ensureDirSync(path.join(boilerplateRoot, componentName));
 
         // Generate boilerplate code
         const source = fs.readFileSync(__dirname + "/boilerplate/handler.js", "utf8");
@@ -105,7 +105,7 @@ class ApolloGateway extends Component {
 
         const output = await lambda({
             region,
-            description: description || `Apollo Gateway: ${componentName}`,
+            description: `serverless-apollo-gateway: ${description || name}`,
             code: path.join(componentRoot, "build"),
             root: componentRoot,
             handler: "handler.handler",

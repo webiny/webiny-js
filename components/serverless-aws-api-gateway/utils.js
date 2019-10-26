@@ -35,11 +35,12 @@ const apiExists = async ({ apig, apiId }) => {
     }
 };
 
-const createApi = async ({ apig, name, description, endpointTypes }) => {
+const createApi = async ({ apig, name, description, endpointTypes, binaryMediaTypes }) => {
     const api = await apig
         .createRestApi({
             name,
             description,
+            binaryMediaTypes,
             endpointConfiguration: {
                 types: endpointTypes
             }

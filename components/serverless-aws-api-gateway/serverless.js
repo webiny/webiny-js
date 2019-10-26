@@ -22,7 +22,8 @@ const defaults = {
     region: "us-east-1",
     stage: "prod",
     description: "Serverless Components API",
-    endpointTypes: ["REGIONAL"]
+    endpointTypes: ["REGIONAL"],
+    binaryMediaTypes: []
 };
 
 class AwsApiGateway extends Component {
@@ -32,16 +33,22 @@ class AwsApiGateway extends Component {
 
             const config = { ...defaults, ...inputs };
 
-            config.name = this.state.name || this.context.resourceId();
+            config.name = this.state.name;
 
-            const { name, description, region, stage, endpointTypes } = config;
+            if (!config.name) {
+                config.name = inputs.name
+                    ? `${this.context.instance.id} - ${inputs.name}`
+                    : this.context.resourceId();
+            }
+
+            const { name, description, region, stage, endpointTypes, binaryMediaTypes } = config;
 
             this.context.debug(
                 `Starting API Gateway deployment with name ${name} in the ${region} region`
             );
 
-            // todo quick fix for array of objects in yaml issue
-            config.endpoints = Object.keys(config.endpoints).map(e => config.endpoints[e]);
+            // quick fix for array of objects in yaml issue
+            config.endpoints = Object.values(config.endpoints);
 
             const apig = new AWS.APIGateway({
                 region,
@@ -57,7 +64,9 @@ class AwsApiGateway extends Component {
 
             if (!apiId) {
                 this.context.debug(`API ID not found in state. Creating a new API.`);
-                apiId = await retry(() => createApi({ apig, name, description, endpointTypes }));
+                apiId = await retry(() =>
+                    createApi({ apig, name, description, endpointTypes, binaryMediaTypes })
+                );
                 this.context.debug(`API with ID ${apiId} created.`);
                 this.state.id = apiId;
                 await this.save();

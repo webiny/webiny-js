@@ -13,7 +13,10 @@ class ServerlessApp extends Component {
 
         const fn = await this.load("@webiny/serverless-function");
 
-        const output = await fn(inputs);
+        const output = await fn({
+            ...inputs,
+            description: `serverless-app: ${inputs.description}`
+        });
 
         this.state.output = output;
         await this.save();
