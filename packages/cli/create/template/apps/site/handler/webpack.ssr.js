@@ -6,7 +6,8 @@ module.exports = {
     output: {
         filename: "ssr.js",
         path: path.resolve("build"),
-        libraryTarget: "commonjs"
+        libraryTarget: "commonjs",
+        publicPath: process.env.PUBLIC_URL
     },
     resolve: {
         alias: {
@@ -31,18 +32,28 @@ module.exports = {
     module: {
         rules: [
             {
-                test: /\.js$/,
-                exclude: /node_modules/,
-                use: "babel-loader"
-            },
-            {
-                exclude: [/\.mjs$/, /\.js$/, /\.html$/, /\.json$/],
-                loader: "file-loader",
-                options: {
-                    name: "static/media/[name].[hash:8].[ext]",
-                    publicPath: process.env.PUBLIC_URL,
-                    emitFile: false
-                }
+                oneOf: [
+                    {
+                        test: [/\.mjs$/, /\.js$/, /\.jsx$/],
+                        exclude: /node_modules/,
+                        use: "babel-loader"
+                    },
+                    {
+                        test: [/\.bmp$/, /\.gif$/, /\.jpe?g$/, /\.png$/],
+                        loader: "url-loader",
+                        options: { limit: 10000, name: "static/media/[name].[hash:8].[ext]" }
+                    },
+                    {
+                        exclude: [/\.mjs$/, /\.js$/, /\.html$/, /\.json$/],
+                        loader: "file-loader",
+                        options: {
+                            name: "static/media/[name].[hash:8].[ext]",
+                            publicPath: process.env.PUBLIC_URL,
+                            // Do not emit file since this is a server-side render
+                            emitFile: false
+                        }
+                    }
+                ]
             }
         ]
     }
