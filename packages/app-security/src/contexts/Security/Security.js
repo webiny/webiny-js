@@ -181,7 +181,7 @@ export const SecurityProvider = (props: Props) => {
     }, []);
 
     if (state.checkingUser) {
-        return <CircularProgress />;
+        return <CircularProgress label={"Checking user..."}/>;
     }
 
     if (!state.user) {
