@@ -82,7 +82,7 @@ export const install = async (root: any, args: Object, context: Object) => {
 
         if (step === 5) {
             installation.getStep(5).markAsStarted();
-            const { name, domain } = args;
+            const { name, domain } = args.data;
             settings.data.name = name;
             settings.data.domain = domain;
 
