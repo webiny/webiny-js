@@ -2,6 +2,7 @@
 import * as React from "react";
 import styled from "@emotion/styled";
 import Spinner from "react-spinner-material";
+import { Typography } from "@webiny/ui/Typography";
 
 type Props = {
     size: number,
@@ -23,11 +24,17 @@ const SpinnerWrapper = styled("div")({
         position: "absolute",
         top: "50%",
         left: "50%",
-        transform: "translate(-50%, -50%)"
+        transform: "translate(-50%, -50%)",
+        display: "flex",
+        flexDirection: "column",
+        justifyContent: "center",
+        alignItems: "center"
     }
 });
 
-const Label = styled("div")({});
+const Label = styled("div")({
+    marginTop: 15
+});
 
 const CircularProgress = ({ label, size, spinnerWidth, spinnerColor, visible }: Props) => {
     return (
@@ -41,7 +48,9 @@ const CircularProgress = ({ label, size, spinnerWidth, spinnerColor, visible }: 
                         visible={visible}
                     />
                 )}
-                <Label>{label}</Label>
+                <Label>
+                    <Typography use={"overline"}>{label}</Typography>
+                </Label>
             </div>
         </SpinnerWrapper>
     );
