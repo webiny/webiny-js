@@ -8,8 +8,6 @@ import cookiePolicyPlugins from "@webiny/app-cookie-policy/admin";
 import googleTagManagerPlugins from "@webiny/app-google-tag-manager/admin";
 import typeformPlugins from "@webiny/app-typeform/admin";
 import mailchimpPlugins from "@webiny/app-mailchimp/admin";
-import formsPlugins from "@webiny/app-forms/admin/plugins";
-import formsCmsPlugins from "@webiny/app-forms/page-builder/admin/plugins";
 
 const plugins = [
     fileUploadPlugin({}),
@@ -18,8 +16,6 @@ const plugins = [
     i18nPlugins,
     securityPlugins,
     pageBuilderPlugins,
-    formsPlugins,
-    formsCmsPlugins,
     cookiePolicyPlugins,
     googleTagManagerPlugins,
     typeformPlugins,
