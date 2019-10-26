@@ -1,7 +1,7 @@
 const { join } = require("path");
 const { Component } = require("@serverless/core");
 const loadJson = require("load-json-file");
-import get from "lodash.get";
+const get = require("lodash.get");
 
 const getDeps = async deps => {
     const { dependencies } = await loadJson(join(__dirname, "package.json"));
