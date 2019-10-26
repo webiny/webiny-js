@@ -13,7 +13,7 @@ yargs
     .epilogue(`Want to contribute? ${blue("https://github.com/webiny/webiny-js")}.`)
     .fail(function(msg, err) {
         if (msg) console.log(msg);
-        if (err) throw err;
+        if (err) console.log(err);
         process.exit(1);
     });
 
