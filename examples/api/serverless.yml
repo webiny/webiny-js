@@ -21,13 +21,13 @@ gateway:
     timeout: 30
     services:
       - name: security
-        url: ${security.api.url}/graphql
+        url: ${security.api.graphqlUrl}
       - name: files
-        url: ${files.api.url}/graphql
+        url: ${files.api.graphqlUrl}
       - name: pageBuilder
-        url: ${pageBuilder.api.url}/graphql
+        url: ${pageBuilder.api.graphqlUrl}
       - name: i18n
-        url: ${i18n.api.url}/graphql
+        url: ${i18n.api.graphqlUrl}
 
 cognito:
   component: "@webiny/serverless-aws-cognito-user-pool"
