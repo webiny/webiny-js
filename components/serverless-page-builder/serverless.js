@@ -1,6 +1,7 @@
 const { join } = require("path");
 const { Component } = require("@serverless/core");
 const loadJson = require("load-json-file");
+import get from "lodash.get";
 
 const getDeps = async deps => {
     const { dependencies } = await loadJson(join(__dirname, "package.json"));
@@ -12,7 +13,7 @@ const getDeps = async deps => {
 
 class ServerlessPageBuilder extends Component {
     async default(inputs = {}) {
-        const { plugins = [], env, /*files,*/ ...rest } = inputs;
+        const { plugins = [], env, files, ...rest } = inputs;
 
         plugins.unshift("@webiny/api-page-builder/plugins");
 
@@ -21,8 +22,8 @@ class ServerlessPageBuilder extends Component {
         const output = await apolloService({
             plugins,
             env: {
-                ...env
-                //FILES_API_URL: files.api.url
+                ...env,
+                FILES_API_URL: get(files, "api.url")
             },
             ...rest,
             dependencies: await getDeps(["@webiny/api-page-builder"])
