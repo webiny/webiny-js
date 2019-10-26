@@ -1,7 +1,7 @@
 const { join } = require("path");
 const loadJson = require("load-json-file");
 const writeJson = require("write-json-file");
-const { getStateValues } = require("@webiny/cli/helpers");
+const { getStateValues } = require("@webiny/project-utils/serverless");
 
 const envMap = {
     REACT_APP_API_ENDPOINT: "${cdn.url}/graphql",

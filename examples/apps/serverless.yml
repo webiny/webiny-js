@@ -17,7 +17,8 @@ admin:
 api:
   component: "@webiny/serverless-api-gateway"
   inputs:
-    description: Serverless Site
+    name: Apps Gateway
+    description: Serverless React Apps
     endpoints:
       - path: /admin/{key+}
         method: GET
