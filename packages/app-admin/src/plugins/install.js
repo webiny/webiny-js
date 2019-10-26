@@ -86,10 +86,10 @@ const FilesInstaller = ({ onInstalled }) => {
 };
 
 export default {
-    name: "install-files",
-    type: "install",
+    name: "installation-files",
+    type: "installation",
     title: "Files app",
-    dependencies: ["install-files"],
+    dependencies: ["installation-files"],
     secure: true,
     async isInstalled({ client }) {
         const { data } = await client.query({ query: IS_INSTALLED });

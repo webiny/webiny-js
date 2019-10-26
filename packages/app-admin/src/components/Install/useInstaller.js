@@ -98,7 +98,7 @@ export const useInstaller = () => {
         (async () => {
             const allInstallers = [];
             await Promise.all(
-                getPlugins("install").map(async pl => {
+                getPlugins("installation").map(async pl => {
                     const installed = await pl.isInstalled({ client });
                     allInstallers.push({ plugin: pl, installed });
                 })

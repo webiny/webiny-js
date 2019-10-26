@@ -111,9 +111,9 @@ const PBInstaller = ({ onInstalled }) => {
 };
 
 export default {
-    name: "install-pb",
-    type: "install",
-    title: "PB app",
+    name: "installation-pb",
+    type: "installation",
+    title: "Page Builder app",
     dependencies: [],
     secure: true,
     async isInstalled({ client }) {
