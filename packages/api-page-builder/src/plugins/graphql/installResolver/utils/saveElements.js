@@ -32,7 +32,7 @@ export default async ({ context, INSTALL_EXTRACT_DIR }) => {
     let filesWithPreSignedPostPayload = [];
     for (let i = 0; i < elementsFilesData.length; i++) {
         if (i % 10 === 0) {
-            await sleep(500);
+            await sleep(1000);
         }
 
         const elementsFileData = elementsFilesData[i];
