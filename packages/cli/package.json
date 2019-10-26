@@ -1,6 +1,6 @@
 {
   "name": "@webiny/cli",
-  "version": "0.5.1",
+  "version": "0.6.0",
   "main": "index.js",
   "bin": {
     "webiny": "./bin.js",
@@ -26,6 +26,7 @@
     "load-json-file": "^6.2.0",
     "lodash.get": "^4.4.2",
     "node-fetch": "^2.6.0",
+    "node-notifier": "^6.0.0",
     "ramda": "^0.26.1",
     "traverse": "^0.6.6",
     "uuid": "^3.3.3",
@@ -37,7 +38,7 @@
     "access": "public"
   },
   "scripts": {
-    "build": "rimraf ./dist && mkdir dist && cp -R cli.js bin.js config create helpers sls dist/",
+    "build": "rimraf ./dist && mkdir dist && cp -R cli.js bin.js config create sls dist/",
     "postbuild": "cp package.json LICENSE README.md dist/",
     "prepublishOnly": "yarn build"
   },

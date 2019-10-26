@@ -1,8 +1,7 @@
 import { graphql } from "graphql";
-import apiPlugins from "@webiny/api/plugins";
+import { MongoClient } from "mongodb";
 import { createHandler, PluginsContainer } from "@webiny/api";
 import filesPlugins from "@webiny/api-files/plugins";
-import createConfig from "./config";
 
 // Configure default storage
 let config;
@@ -12,14 +11,20 @@ describe("GraphQL plugins", () => {
     let context;
 
     beforeAll(async () => {
-        // Setup database and entity
-        config = await createConfig();
+        // Setup database
+        const client = await MongoClient.connect(global.__MONGO_URI__, {
+            useNewUrlParser: true,
+            useUnifiedTopology: true
+        });
 
-        // Configure handler
+        config = { client, database: await client.db(global.__MONGO_DB_NAME__) };
+
+        // Configure schema
         const appConfig = { database: { mongodb: config.database } };
-        const plugins = new PluginsContainer([apiPlugins, filesPlugins]);
+        const plugins = new PluginsContainer([filesPlugins(appConfig)]);
 
         schema = (await createHandler({ plugins, config: appConfig })).schema;
+
         context = {
             config,
             plugins,
@@ -39,6 +44,7 @@ describe("GraphQL plugins", () => {
                     createFile(
                         data: {
                             id: "5c96410bf32d248a1a73b8c3"
+                            key: "filename.png"
                             name: "filename.png"
                             size: 123456
                             type: "image/png"

@@ -1,6 +1,6 @@
 const { join } = require("path");
 const { Component } = require("@serverless/core");
-const { configureS3Bucket, configureApiGateway } = require("./components");
+const { configureS3Bucket } = require("./components");
 
 /**
  * This component deploys:
@@ -11,6 +11,9 @@ const { configureS3Bucket, configureApiGateway } = require("./components");
  *  - download files - handles file download and calls image transformer if needed
  *  - image transformer - performs various image transformations
  */
+
+const prefix = "serverless-files";
+
 class FilesComponent extends Component {
     async default(inputs = {}) {
         const { region = "us-east-1", bucket = "webiny-files", env, ...rest } = inputs;
@@ -22,7 +25,7 @@ class FilesComponent extends Component {
             timeout: 10,
             code: join(__dirname, "functions/manageFiles"),
             handler: "handler.handler",
-            description: "Triggered once a file was deleted.",
+            description: `${prefix}: Triggered once a file was deleted.`,
             env: {
                 S3_BUCKET: bucket
             }
@@ -39,15 +42,17 @@ class FilesComponent extends Component {
             bucket
         });
 
-        const imageTransformerLambda = await this.load("@webiny/serverless-function", "image-transformer");
+        const imageTransformerLambda = await this.load(
+            "@webiny/serverless-function",
+            "image-transformer"
+        );
         const imageTransformerLambdaOutput = await imageTransformerLambda({
             region,
             name: "Files component - image transformer",
             timeout: 10,
             code: join(__dirname, "functions/imageTransformer"),
             handler: "handler.handler",
-            description:
-                "Performs various tasks on image files like e.g. image optimization or image resizing.",
+            description: `${prefix}: Performs various tasks on image files, e.g. optimization, resizing, etc.`,
             env: {
                 S3_BUCKET: bucket
             }
@@ -61,7 +66,7 @@ class FilesComponent extends Component {
             timeout: 10,
             code: join(__dirname, "functions/downloadFile"),
             handler: "handler.handler",
-            description: "Serves previously uploaded files.",
+            description: `${prefix}: Serves previously uploaded files.`,
             env: {
                 S3_BUCKET: bucket,
                 IMAGE_TRANSFORMER_LAMBDA_NAME: imageTransformerLambdaOutput.name
@@ -73,14 +78,13 @@ class FilesComponent extends Component {
         const apolloServiceOutput = await apolloService({
             region,
             plugins: ["@webiny/api-files/plugins"],
+            binaryMediaTypes: ["*/*"],
             endpoints: [
                 { path: "/files/{path}", method: "ANY", function: downloadLambdaOutput.arn }
             ],
             env: { ...env, S3_BUCKET: bucket },
             ...rest
         });
-
-        await configureApiGateway({ region, apolloOutput: apolloServiceOutput, component: this });
 
         const output = {
             api: apolloServiceOutput.api,

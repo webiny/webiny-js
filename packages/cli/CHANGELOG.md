@@ -3,6 +3,69 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.6.0](https://github.com/webiny/webiny-js/compare/@webiny/cli@0.5.4...@webiny/cli@0.6.0) (2019-10-25)
+
+
+### Bug Fixes
+
+* clear ssr module before running render. ([ccf79df](https://github.com/webiny/webiny-js/commit/ccf79df))
+* update project template. ([d209119](https://github.com/webiny/webiny-js/commit/d209119))
+
+
+### Features
+
+* show push notification when deploy finishes. ([b7e7ecd](https://github.com/webiny/webiny-js/commit/b7e7ecd))
+
+
+
+
+
+## [0.5.4](https://github.com/webiny/webiny-js/compare/@webiny/cli@0.5.3...@webiny/cli@0.5.4) (2019-10-24)
+
+
+### Bug Fixes
+
+* add missing build script. ([cbd52ff](https://github.com/webiny/webiny-js/commit/cbd52ff))
+* add missing env variables to gateway template. ([0491aaf](https://github.com/webiny/webiny-js/commit/0491aaf))
+* remove test image from template. ([0cbac67](https://github.com/webiny/webiny-js/commit/0cbac67))
+
+
+
+
+
+## [0.5.3](https://github.com/webiny/webiny-js/compare/@webiny/cli@0.5.2...@webiny/cli@0.5.3) (2019-10-24)
+
+
+### Bug Fixes
+
+* add helper to check if apps are already deployed. ([080fa6b](https://github.com/webiny/webiny-js/commit/080fa6b))
+* ensure app environment is configured before attempting to deploy apps. ([244fa33](https://github.com/webiny/webiny-js/commit/244fa33))
+* increase default lambda timeout. ([bdf4238](https://github.com/webiny/webiny-js/commit/bdf4238))
+* point to correct ssr build script. ([d9bc2ab](https://github.com/webiny/webiny-js/commit/d9bc2ab))
+* update template yaml. ([a1522bf](https://github.com/webiny/webiny-js/commit/a1522bf))
+* update template yaml. ([2e9cdd1](https://github.com/webiny/webiny-js/commit/2e9cdd1))
+* update template yaml. ([5980625](https://github.com/webiny/webiny-js/commit/5980625))
+
+
+
+
+
+## [0.5.2](https://github.com/webiny/webiny-js/compare/@webiny/cli@0.5.1...@webiny/cli@0.5.2) (2019-10-24)
+
+
+### Bug Fixes
+
+* add AppInstaller to admin app. ([d6b31d4](https://github.com/webiny/webiny-js/commit/d6b31d4))
+* add missing deps to project template. ([1b25b0c](https://github.com/webiny/webiny-js/commit/1b25b0c))
+* execute components one-by-one. ([eb1e550](https://github.com/webiny/webiny-js/commit/eb1e550))
+* print website URL after deploy. ([1006c29](https://github.com/webiny/webiny-js/commit/1006c29))
+* resolve components based on cwd. ([b93cefa](https://github.com/webiny/webiny-js/commit/b93cefa))
+* update prettierrc config. ([15c72ce](https://github.com/webiny/webiny-js/commit/15c72ce))
+
+
+
+
+
 ## [0.5.1](https://github.com/webiny/webiny-js/compare/@webiny/cli@0.5.0...@webiny/cli@0.5.1) (2019-10-23)
 
 **Note:** Version bump only for package @webiny/cli

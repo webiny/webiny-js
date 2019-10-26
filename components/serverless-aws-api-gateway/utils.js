@@ -35,11 +35,12 @@ const apiExists = async ({ apig, apiId }) => {
     }
 };
 
-const createApi = async ({ apig, name, description, endpointTypes }) => {
+const createApi = async ({ apig, name, description, endpointTypes, binaryMediaTypes }) => {
     const api = await apig
         .createRestApi({
             name,
             description,
+            binaryMediaTypes,
             endpointConfiguration: {
                 types: endpointTypes
             }
@@ -190,7 +191,7 @@ const createPath = async ({ apig, apiId, endpoint }) => {
     if (parentEndpoint.path === "") {
         parentId = await getPathId({ apig, apiId });
     } else {
-        parentId = await createPath({ apig, apiId, endpoint: parentEndpoint });
+        parentId = await retry(() => createPath({ apig, apiId, endpoint: parentEndpoint }));
     }
 
     const params = {
@@ -208,7 +209,7 @@ const createPaths = async ({ apig, apiId, endpoints }) => {
     const createdEndpoints = [];
 
     for (const endpoint of endpoints) {
-        endpoint.id = await createPath({ apig, apiId, endpoint });
+        endpoint.id = await retry(() => createPath({ apig, apiId, endpoint }));
         createdEndpoints.push(endpoint);
     }
 
@@ -263,7 +264,7 @@ const createMethods = async ({ apig, apiId, endpoints }) => {
     const promises = [];
 
     for (const endpoint of endpoints) {
-        promises.push(createMethod({ apig, apiId, endpoint }));
+        promises.push(retry(() => createMethod({ apig, apiId, endpoint })));
     }
 
     await Promise.all(promises);
@@ -331,7 +332,7 @@ const createIntegrations = async ({ apig, lambda, apiId, endpoints }) => {
     const promises = [];
 
     for (const endpoint of endpoints) {
-        promises.push(createIntegration({ apig, lambda, apiId, endpoint }));
+        promises.push(retry(() => createIntegration({ apig, lambda, apiId, endpoint })));
     }
 
     return Promise.all(promises);

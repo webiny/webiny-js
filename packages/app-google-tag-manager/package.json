@@ -1,6 +1,6 @@
 {
   "name": "@webiny/app-google-tag-manager",
-  "version": "0.1.11",
+  "version": "0.1.12",
   "main": "index.js",
   "repository": {
     "type": "git",
@@ -11,8 +11,8 @@
   "license": "MIT",
   "dependencies": {
     "@babel/runtime": "^7.5.5",
-    "@webiny/app-admin": "^0.3.2",
-    "@webiny/app-security": "^0.2.2",
+    "@webiny/app-admin": "^0.3.3",
+    "@webiny/app-security": "^0.2.3",
     "@webiny/form": "^0.1.8",
     "@webiny/ui": "^0.1.10",
     "lodash.get": "^4.4.2",

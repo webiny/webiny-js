@@ -1,34 +1,33 @@
 {
-  "private": true,
-  "workspaces": {
-    "packages": [
-      "packages/*",
-      "apps/*"
-    ]
-  },
-  "dependencies": {
-    "@webiny/serverless-api-gateway": "^0",
-    "@webiny/serverless-app":"^0",
-    "@webiny/serverless-apollo-gateway": "^0",
-    "@webiny/serverless-apollo-service": "^0",
-    "@webiny/serverless-aws-cloudfront": "^0",
-    "@webiny/serverless-aws-cognito-user-pool": "^0",
-    "@webiny/serverless-files":"^0",
-    "@webiny/serverless-page-builder":"^0",
-    "@webiny/api-security":"^0",
-    "@webiny/api-plugin-security-cognito": "^0",
-    "@webiny/api-files":"^0",
-    "@webiny/api-forms":"^0",
-    "@webiny/api-i18n": "^0",
-    "@webiny/api-google-tag-manager":"^0",
-    "@webiny/api-mailchimp": "^0",
-    "@webiny/api-cookie-policy":"^0",
-    "@webiny/project-utils":"^0"
-  },
-  "devDependencies": {
-    "prettier": "^1",
-    "flow-bin": "^0",
-    "serverless": "^1.54.0",
-    "webpack-cli": "^3.3.9"
-  }
+    "private": true,
+    "workspaces": {
+        "packages": [
+            "packages/*",
+            "apps/*"
+        ]
+    },
+    "dependencies": {
+        "@webiny/serverless-api-gateway": "^0",
+        "@webiny/serverless-app": "^0",
+        "@webiny/serverless-apollo-gateway": "^0",
+        "@webiny/serverless-apollo-service": "^0",
+        "@webiny/serverless-aws-cloudfront": "^0",
+        "@webiny/serverless-aws-cognito-user-pool": "^0",
+        "@webiny/serverless-files": "^0",
+        "@webiny/serverless-page-builder": "^0",
+        "@webiny/api-security": "^0",
+        "@webiny/api-plugin-security-cognito": "^0",
+        "@webiny/api-files": "^0",
+        "@webiny/api-forms": "^0",
+        "@webiny/api-i18n": "^0",
+        "@webiny/api-google-tag-manager": "^0",
+        "@webiny/api-mailchimp": "^0",
+        "@webiny/api-cookie-policy": "^0"
+    },
+    "devDependencies": {
+        "prettier": "^1.18.2",
+        "flow-bin": "^0.110.0",
+        "serverless": "^1.55.0",
+        "webpack-cli": "^3.3.9"
+    }
 }

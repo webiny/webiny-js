@@ -4,6 +4,8 @@ import classSet from "classnames";
 import { Cell, Grid, GridInner, type Props } from "@webiny/ui/Grid";
 import { css } from "emotion";
 import styled from "@emotion/styled";
+import { clone } from "lodash";
+import { getClasses } from "@webiny/ui/Helpers";
 
 const grid = css({
     "&.mdc-layout-grid": {
@@ -46,25 +48,46 @@ const leftPanel = css({
 
 const SplitView = (props: { children: React.ChildrenArray<React.Element<any>> }) => {
     return (
-        <Grid className={grid}>
-            <GridInner className={gridInner}>{props.children}</GridInner>
+        <Grid className={classSet(grid, props.className, "webiny-split-view")}>
+            <GridInner className={gridInner + " webiny-split-view__inner"}>
+                {props.children}
+            </GridInner>
         </Grid>
     );
 };
 
 const LeftPanel = (props: Props) => {
+    let propList = clone(props);
+    if (!propList.hasOwnProperty("span")) {
+        propList.span = 5;
+    }
+
     return (
-        <Cell className={classSet(leftPanel, props.className)} span={props.span ? props.span : 5}>
-            {props.children}
+        <Cell
+            {...getClasses(
+                propList,
+                classSet(leftPanel, props.className, "webiny-split-view__left-panel")
+            )}
+        >
+            {propList.children}
         </Cell>
     );
 };
 
 const RightPanel = (props: Props) => {
-    const { children, ...rest } = props;
+    let propList = clone(props);
+    if (!propList.hasOwnProperty("span")) {
+        propList.span = 7;
+    }
+
     return (
-        <Cell span={props.span ? props.span : 7} {...rest}>
-            <RightPanelWrapper id={"webiny-split-view-right-panel"}>{children}</RightPanelWrapper>
+        <Cell {...getClasses(propList, "webiny-split-view__right-panel")}>
+            <RightPanelWrapper
+                className={"webiny-split-view__right-panel-wrapper"}
+                id={"webiny-split-view-right-panel"}
+            >
+                {propList.children}
+            </RightPanelWrapper>
         </Cell>
     );
 };

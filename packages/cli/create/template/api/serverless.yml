@@ -2,8 +2,11 @@ name: webiny-api-[PROJECT_ID]
 
 vars:
   region: ${env.AWS_REGION}
+  bucket: ${env.S3_BUCKET}
   env:
     JWT_SECRET: ${env.JWT_SECRET}
+    GRAPHQL_INTROSPECTION: ${env.GRAPHQL_INTROSPECTION}
+    GRAPHQL_PLAYGROUND: ${env.GRAPHQL_PLAYGROUND}
   database:
     server: ${env.MONGODB_SERVER}
     name: ${env.MONGODB_NAME}
@@ -11,8 +14,9 @@ vars:
 gateway:
   component: "@webiny/serverless-apollo-gateway"
   inputs:
+    name: Apollo Gateway
+    env: ${vars.env}
     region: ${vars.region}
-    name: gateway
     memory: 512
     timeout: 30
     services:
@@ -28,16 +32,16 @@ gateway:
 cognito:
   component: "@webiny/serverless-aws-cognito-user-pool"
   inputs:
+    name: "webiny-pool-[PROJECT_ID]"
     region: ${vars.region}
-    name: webiny-pool-[PROJECT_ID]
     appClients:
       - name: "react-app-[PROJECT_ID]"
 
 security:
   component: "@webiny/serverless-apollo-service"
   inputs:
+    name: "Security"
     region: ${vars.region}
-    name: security
     memory: 512
     database: ${vars.database}
     env: ${vars.env}
@@ -51,9 +55,9 @@ security:
 files:
   component: "@webiny/serverless-files"
   inputs:
+    name: "Files"
     region: ${vars.region}
-    bucket: "webiny-files-[PROJECT_ID]"
-    name: files
+    bucket: ${vars.bucket}
     memory: 512
     database: ${vars.database}
     env: ${vars.env}
@@ -62,8 +66,8 @@ files:
 i18n:
   component: "@webiny/serverless-apollo-service"
   inputs:
+    name: "I18N"
     region: ${vars.region}
-    name: i18n
     memory: 512
     database: ${vars.database}
     env: ${vars.env}
@@ -73,8 +77,8 @@ i18n:
 pageBuilder:
   component: "@webiny/serverless-page-builder"
   inputs:
+    name: "Page Builder"
     region: ${vars.region}
-    name: pageBuilder
     memory: 512
     database: ${vars.database}
     env: ${vars.env}
@@ -86,8 +90,9 @@ pageBuilder:
 api:
   component: "@webiny/serverless-api-gateway"
   inputs:
+    name: "API Gateway"
     region: ${vars.region}
-    description: "Main GraphQL API"
+    description: "Main API Gateway"
     endpoints:
       - path: /graphql
         method: ANY

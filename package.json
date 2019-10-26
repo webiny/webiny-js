@@ -1,124 +1,126 @@
 {
-    "private": true,
-    "workspaces": {
-        "packages": [
-            "packages/*",
-            "components/*",
-            "examples/apps/*",
-            "examples/packages/*"
-        ],
-        "nohoist": [
-            "**/inquirer/**",
-            "**/mime/**",
-            "@webiny/cli/sharp"
-        ]
-    },
-    "contributors": [
-        "Pavel Denisjuk <pavel@webiny.com>",
-        "Sven Al Hamad <sven@webiny.com>",
-        "Adrian Smijulj <adrian@webiny.com>"
+  "private": true,
+  "workspaces": {
+    "packages": [
+      "packages/*",
+      "components/*",
+      "examples/apps/*",
+      "examples/packages/*"
     ],
-    "repository": {
-        "type": "git",
-        "url": "https://github.com/webiny/webiny-js.git"
-    },
-    "dependencies": {
-        "bufferutil": "^4.0.1",
-        "fsevents": "^2.0.7",
-        "utf-8-validate": "^5.0.2"
-    },
-    "devDependencies": {
-        "@babel/cli": "^7.0.0",
-        "@babel/core": "^7.0.0",
-        "@shelf/jest-mongodb": "^1.1.0",
-        "adio": "^1.0.0",
-        "all-contributors-cli": "^6.2.0",
-        "babel-core": "^7.0.0-bridge.0",
-        "babel-eslint": "^9.0.0-beta.3",
-        "babel-jest": "^23.4.2",
-        "chalk": "^2.4.1",
-        "commitizen": "^2.10.1",
-        "cross-env": "^5.2.0",
-        "cz-customizable": "^5.2.0",
-        "dotenv": "^5.0.1",
-        "empty": "^0.10.1",
-        "env-ci": "2.0.1",
-        "eslint": "^4.16.0",
-        "eslint-config-standard": "^11.0.0-beta.0",
-        "eslint-plugin-flowtype": "^2.41.0",
-        "eslint-plugin-jest": "^21.17.0",
-        "eslint-plugin-node": "^5.2.1",
-        "eslint-plugin-promise": "^3.6.0",
-        "eslint-plugin-react": "^7.7.0",
-        "eslint-plugin-standard": "^3.0.1",
-        "execa": "^1.0.0",
-        "flatten": "^1.0.2",
-        "flow-bin": "^0.80.0",
-        "flow-copy-source": "^1.3.0",
-        "flow-typed": "^2.4.0",
-        "fs-extra": "^7.0.0",
-        "get-stream": "^3.0.0",
-        "get-yarn-workspaces": "^1.0.2",
-        "git-cz": "^1.7.1",
-        "glob": "^7.1.3",
-        "globby": "^8.0.1",
-        "jest": "^23.1.0",
-        "jest-extended": "^0.7.2",
-        "lint-staged": "^7.2.2",
-        "load-json-file": "^6.2.0",
-        "lodash": "^4.17.11",
-        "longest": "^2.0.1",
-        "minimatch": "^3.0.4",
-        "node-fetch": "^2.6.0",
-        "pre-commit": "^1.2.2",
-        "prettier": "^1.14.2",
-        "rimraf": "^2.6.2",
-        "semver": "^6.3.0",
-        "serverless": "^1.53.0",
-        "serverless-dotenv-plugin": "^2.1.1",
-        "serverless-offline": "^5.10.1",
-        "source-map-support": "^0.5.0",
-        "verdaccio": "^3.11.6",
-        "webpack": "^4.39.2",
-        "write-json-file": "^4.2.0",
-        "yargs": "^12.0.1"
-    },
-    "scripts": {
-        "clear-dist": "rimraf components/*/dist packages/*/dist",
-        "contributors:add": "all-contributors add",
-        "contributors:generate": "all-contributors generate",
-        "commit": "node ./scripts/commitizen.js",
-        "commit:no-verify": "yarn commit --no-verify",
-        "commit:verify": "yarn lint-staged",
-        "lint-staged": "lint-staged",
-        "prettier": "prettier --config .prettierrc.js --write",
-        "publish-to-verdaccio": " yarn build && cross-env REGISTRY=http://localhost:4800 node scripts/publish-to-verdaccio",
-        "start-verdaccio": "yarn verdaccio -c ./verdaccio.yaml",
-        "test": "jest --config ./scripts/jest/config.src.js",
-        "test:build": "jest --config ./scripts/jest/config.build.js",
-        "webiny-ui-build-storybook": "cd packages/ui && cross-env OUT=../../netlify-static yarn build-storybook",
-        "wby:fns": "cross-env NODE_ENV=development sls offline start --stage=local",
-        "wby:fns:inspect": "yarn wby:fns --inspect=9001"
-    },
-    "pre-commit": [
-        "lint-staged"
-    ],
-    "lint-staged": {
-        "**/*.js": [
-            "adio",
-            "prettier --write",
-            "eslint --fix",
-            "git add",
-            "jest --config ./scripts/jest/config.src.js --findRelatedTests"
-        ]
-    },
-    "yargs": {
-        "populate--": true
-    },
-    "config": {
-        "commitizen": {
-            "cliPath": "node_modules/commitizen",
-            "path": "./scripts/cz-adapter"
-        }
+    "nohoist": [
+      "**/inquirer/**",
+      "**/mime/**",
+      "@webiny/cli/sharp"
+    ]
+  },
+  "contributors": [
+    "Pavel Denisjuk <pavel@webiny.com>",
+    "Sven Al Hamad <sven@webiny.com>",
+    "Adrian Smijulj <adrian@webiny.com>"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/webiny/webiny-js.git"
+  },
+  "dependencies": {
+    "bufferutil": "^4.0.1",
+    "utf-8-validate": "^5.0.2"
+  },
+  "devDependencies": {
+    "@babel/cli": "^7.0.0",
+    "@babel/core": "^7.0.0",
+    "@shelf/jest-mongodb": "^1.1.0",
+    "adio": "^1.0.0",
+    "all-contributors-cli": "^6.2.0",
+    "babel-core": "^7.0.0-bridge.0",
+    "babel-eslint": "^9.0.0-beta.3",
+    "babel-jest": "^23.4.2",
+    "chalk": "^2.4.1",
+    "commitizen": "^2.10.1",
+    "cross-env": "^5.2.0",
+    "cz-customizable": "^5.2.0",
+    "dotenv": "^5.0.1",
+    "empty": "^0.10.1",
+    "env-ci": "2.0.1",
+    "eslint": "^4.16.0",
+    "eslint-config-standard": "^11.0.0-beta.0",
+    "eslint-plugin-flowtype": "^2.41.0",
+    "eslint-plugin-jest": "^21.17.0",
+    "eslint-plugin-node": "^5.2.1",
+    "eslint-plugin-promise": "^3.6.0",
+    "eslint-plugin-react": "^7.7.0",
+    "eslint-plugin-standard": "^3.0.1",
+    "execa": "^1.0.0",
+    "flatten": "^1.0.2",
+    "flow-bin": "^0.80.0",
+    "flow-copy-source": "^1.3.0",
+    "flow-typed": "^2.4.0",
+    "fs-extra": "^7.0.0",
+    "get-stream": "^3.0.0",
+    "get-yarn-workspaces": "^1.0.2",
+    "git-cz": "^1.7.1",
+    "glob": "^7.1.3",
+    "globby": "^8.0.1",
+    "jest": "^23.1.0",
+    "jest-extended": "^0.7.2",
+    "lint-staged": "^7.2.2",
+    "load-json-file": "^6.2.0",
+    "lodash": "^4.17.11",
+    "longest": "^2.0.1",
+    "minimatch": "^3.0.4",
+    "node-fetch": "^2.6.0",
+    "pre-commit": "^1.2.2",
+    "prettier": "^1.14.2",
+    "rimraf": "^2.6.2",
+    "semver": "^6.3.0",
+    "serverless": "^1.53.0",
+    "serverless-dotenv-plugin": "^2.1.1",
+    "serverless-offline": "^5.10.1",
+    "source-map-support": "^0.5.0",
+    "verdaccio": "^3.11.6",
+    "webpack": "^4.39.2",
+    "write-json-file": "^4.2.0",
+    "yargs": "^12.0.1"
+  },
+  "optionalDependencies": {
+    "fsevents": "^2.0.7"
+  },
+  "scripts": {
+    "clear-dist": "rimraf components/*/dist packages/*/dist",
+    "contributors:add": "all-contributors add",
+    "contributors:generate": "all-contributors generate",
+    "commit": "node ./scripts/commitizen.js",
+    "commit:no-verify": "yarn commit --no-verify",
+    "commit:verify": "yarn lint-staged",
+    "lint-staged": "lint-staged",
+    "prettier": "prettier --config .prettierrc.js --write",
+    "publish-to-verdaccio": " yarn build && cross-env REGISTRY=http://localhost:4800 node scripts/publish-to-verdaccio",
+    "start-verdaccio": "yarn verdaccio -c ./verdaccio.yaml",
+    "test": "jest --config ./scripts/jest/config.src.js",
+    "test:build": "jest --config ./scripts/jest/config.build.js",
+    "webiny-ui-build-storybook": "cd packages/ui && cross-env OUT=../../netlify-static yarn build-storybook",
+    "wby:fns": "cross-env NODE_ENV=development sls offline start --stage=local",
+    "wby:fns:inspect": "yarn wby:fns --inspect=9001"
+  },
+  "pre-commit": [
+    "lint-staged"
+  ],
+  "lint-staged": {
+    "**/*.js": [
+      "adio",
+      "prettier --write",
+      "eslint --fix",
+      "git add",
+      "jest --config ./scripts/jest/config.src.js --findRelatedTests"
+    ]
+  },
+  "yargs": {
+    "populate--": true
+  },
+  "config": {
+    "commitizen": {
+      "cliPath": "node_modules/commitizen",
+      "path": "./scripts/cz-adapter"
     }
+  }
 }

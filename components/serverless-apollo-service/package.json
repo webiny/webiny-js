@@ -1,6 +1,6 @@
 {
   "name": "@webiny/serverless-apollo-service",
-  "version": "0.3.4",
+  "version": "0.4.1",
   "main": "serverless.js",
   "license": "MIT",
   "dependencies": {
@@ -10,8 +10,7 @@
     "@serverless/core": "^1.1.1",
     "@webiny/api": "^0.2.5",
     "@webiny/api-security": "^0.1.10",
-    "@webiny/project-utils": "^0.1.7",
-    "@webiny/serverless-api-gateway": "^0.1.9",
+    "@webiny/serverless-api-gateway": "^0.1.10",
     "@webiny/serverless-function": "^0.1.9",
     "babel-loader": "^8.0.6",
     "babel-plugin-module-resolver": "^3.2.0",
@@ -19,6 +18,7 @@
     "execa": "^2.0.5",
     "fs-extra": "^8.1.0",
     "load-json-file": "^6.2.0",
+    "lodash.camelcase": "^4.3.0",
     "mongodb": "^3.3.2",
     "prettier": "^1.18.2",
     "webpack": "^4.39.2",

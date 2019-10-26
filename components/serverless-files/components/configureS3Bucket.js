@@ -34,7 +34,7 @@ module.exports = async ({ bucket, region, component, s3Output, manageFilesLambda
 
         await component.save();
         component.context.debug(
-            `[Webiny] Saved state for serverless-files component: applied CORS configuration to the "${bucket}" S3 bucket.`
+            `Saved state for serverless-files component: applied CORS configuration to the "${bucket}" S3 bucket.`
         );
     }
 
@@ -53,7 +53,7 @@ module.exports = async ({ bucket, region, component, s3Output, manageFilesLambda
 
         await component.save();
         component.context.debug(
-            `[Webiny] Saved state for serverless-files component: added "lambda:InvokeFunction" permission to the "manageS3Objects" Lambda.`
+            `Saved state for serverless-files component: added "lambda:InvokeFunction" permission to the "manageS3Objects" Lambda.`
         );
     }
 
@@ -81,8 +81,7 @@ module.exports = async ({ bucket, region, component, s3Output, manageFilesLambda
 
         await component.save();
         component.context.debug(
-            `[Webiny] Saved state for serverless-files component: applied bucket notification configuration to the "${bucket}" S3 bucket.`
+            `Saved state for serverless-files component: applied bucket notification configuration to the "${bucket}" S3 bucket.`
         );
     }
-
 };

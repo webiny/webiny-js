@@ -23,8 +23,8 @@ export default async () => {
 
     return {
         apollo: {
-            introspection: true,
-            playground: true
+            introspection: process.env.GRAPHQL_INTROSPECTION,
+            playground: process.env.GRAPHQL_PLAYGROUND
         },
         database: {
             mongodb: database

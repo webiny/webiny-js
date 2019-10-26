@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 const yargs = require("yargs");
-const { blue, green, dim, magenta } = require("chalk");
+const { blue, green, dim } = require("chalk");
 
 yargs
     .usage("Usage: $0 <command>")
@@ -12,6 +12,7 @@ yargs
     )
     .epilogue(`Want to contribute? ${blue("https://github.com/webiny/webiny-js")}.`)
     .fail(function(msg, err) {
+        if (msg) console.log(msg);
         if (err) throw err;
         process.exit(1);
     });
@@ -54,8 +55,7 @@ yargs.command(
     `Deploy Apps from ${green("apps")} folder.\n${dim("(NOTE: run from project root)")}`,
     yargs => {
         yargs.option("env", {
-            describe: `Environment to deploy. Must match an environment in .env.json. \nNOTE: "local" environment is reserved for local development.`,
-            default: "dev"
+            describe: `Environment to deploy. Must match an environment in .env.json. \nNOTE: "local" environment is reserved for local development.`
         });
         yargs.option("debug", {
             describe: "Show debug messages.",

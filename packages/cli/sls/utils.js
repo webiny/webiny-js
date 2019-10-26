@@ -6,9 +6,19 @@ const isApiEnvDeployed = async env => {
     try {
         const json = await loadJson(envFile);
         return json.components && json.outputs;
-    } catch(err) {
+    } catch (err) {
         return false;
     }
 };
 
-module.exports = { isApiEnvDeployed };
+const isAppsEnvDeployed = async env => {
+    const envFile = join(process.cwd(), "apps", ".serverless", `Webiny.${env}.json`);
+    try {
+        const json = await loadJson(envFile);
+        return json.components && json.outputs;
+    } catch (err) {
+        return false;
+    }
+};
+
+module.exports = { isApiEnvDeployed, isAppsEnvDeployed };

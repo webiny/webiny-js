@@ -66,9 +66,6 @@ export default () => [
         },
         security: {
             shield: {
-                GtmQuery: {
-                    getSettings: hasScope("pb:settings")
-                },
                 GtmMutation: {
                     updateSettings: hasScope("pb:settings")
                 }

@@ -3,8 +3,6 @@ const path = require("path");
 const readJson = require("load-json-file");
 const request = require("request");
 
-const prefix = "[Webiny]";
-
 let config;
 const defaultLogger = () => {};
 
@@ -32,8 +30,8 @@ const loadConfig = async ({ logger = defaultLogger }) => {
             config = { id: "unknown", tracking: true };
         }
 
-        logger(`${prefix} Loaded user ID: ${config.id}`);
-        logger(`${prefix} Tracking is ${config.tracking ? "ENABLED" : "DISABLED"}`);
+        logger(`Loaded user ID: ${config.id}`);
+        logger(`Tracking is ${config.tracking ? "ENABLED" : "DISABLED"}`);
     }
 };
 
@@ -46,7 +44,7 @@ const trackComponent = async ({ context, component, method = "deploy" }) => {
         }
 
         const { name, version } = readJson.sync(path.join(path.dirname(component), "package.json"));
-        context.debug(`${prefix} Tracking component: ${name} (${method})`);
+        context.debug(`Tracking component: ${name} (${method})`);
         await sendStats({
             type: "component",
             user: config.id,

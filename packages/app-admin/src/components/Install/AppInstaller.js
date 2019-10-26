@@ -1,10 +1,12 @@
 import React, { useState } from "react";
 import styled from "@emotion/styled";
+import { css } from "emotion";
 import { CircularProgress } from "@webiny/ui/Progress";
 import { ButtonPrimary } from "@webiny/ui/Button";
 import { SplitView, LeftPanel, RightPanel } from "@webiny/app-admin/components/SplitView";
 import { useInstaller } from "./useInstaller";
 import Sidebar from "./Sidebar";
+import { Elevation } from "@webiny/ui/Elevation";
 
 export const Wrapper = styled("section")({
     display: "flex",
@@ -23,9 +25,26 @@ export const InstallContent = styled("div")({
     }
 });
 
+const installerSplitView = css({
+    ".webiny-split-view__inner": {
+        height: "100vh",
+        ".webiny-split-view__right-panel-wrapper": {
+            height: "100vh"
+        }
+    }
+});
+
+const SuccessDialog = styled("div")({
+    padding: 40,
+    p: {
+        paddingBottom: 40
+    }
+});
+
 export const InnerContent = styled("div")({
     padding: 25,
-    position: "relative"
+    position: "relative",
+    textAlign: "center"
 });
 
 export const AppInstaller = ({ children, security }) => {
@@ -34,7 +53,7 @@ export const AppInstaller = ({ children, security }) => {
 
     const renderLayout = (content, secure = false) => {
         return (
-            <SplitView>
+            <SplitView className={installerSplitView}>
                 <LeftPanel span={2}>
                     <Sidebar
                         allInstallers={installers}
@@ -80,10 +99,14 @@ export const AppInstaller = ({ children, security }) => {
     // TODO: @sven if you don't need the white wrapper, you can remove the call to `renderBody`
     return renderLayout(
         renderBody(
-            <div>
-                You have successfully installed all new applications!
-                <ButtonPrimary onClick={() => setFinished(true)}>Get me out of here!</ButtonPrimary>
-            </div>
+            <Elevation z={1}>
+                <SuccessDialog>
+                    <p>You have successfully installed all new applications!</p>
+                    <ButtonPrimary onClick={() => setFinished(true)}>
+                        Open Webiny CMS Administration
+                    </ButtonPrimary>
+                </SuccessDialog>
+            </Elevation>
         ),
         true
     );

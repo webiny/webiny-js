@@ -38,7 +38,7 @@ const footer = css({
     color: "var(--mdc-theme-text-primary-on-background)",
     textAlign: "right",
     "&.mdc-layout-grid": {
-        padding: "25px 50px"
+        padding: 25 // "25px 50px"
     }
 });
 

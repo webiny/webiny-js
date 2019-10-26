@@ -4,6 +4,7 @@ const { Graph, alg } = require("graphlib");
 const traverse = require("traverse");
 const { utils } = require("@serverless/core");
 const { trackComponent } = require("@webiny/tracking");
+const { red } = require("chalk");
 
 const getOutputs = allComponents => {
     const outputs = {};
@@ -216,26 +217,24 @@ const executeGraph = async (allComponents, graph, instance) => {
         return allComponents;
     }
 
-    const promises = [];
-
     for (const alias of leaves) {
         const componentData = graph.node(alias);
 
-        const fn = async () => {
-            const component = await instance.load(componentData.path, alias);
-            const availableOutputs = getOutputs(allComponents);
-            const inputs = resolveObject(allComponents[alias].inputs, availableOutputs);
-            instance.context.status("Deploying", alias);
+        const component = await instance.load(componentData.path, alias);
+        const availableOutputs = getOutputs(allComponents);
+        const inputs = resolveObject(allComponents[alias].inputs, availableOutputs);
+        instance.context.status("Deploying", alias);
+        try {
             allComponents[alias].outputs = (await component(inputs)) || {};
             await trackComponent({ context: instance.context, component: componentData.path });
-        };
+        } catch (err) {
+            instance.context.debug(`An error occurred during deployment of ${red(alias)}`);
+            console.log();
+            console.log(red(err));
+            console.log();
+            process.exit(1);
+        }
 
-        promises.push(fn());
-    }
-
-    await Promise.all(promises);
-
-    for (const alias of leaves) {
         graph.removeNode(alias);
     }
 
@@ -251,7 +250,7 @@ const syncState = async (allComponents, instance) => {
                 const component = await instance.load(instance.state.components[alias], alias);
                 instance.context.status("Removing", alias);
                 await component.remove();
-                await trackComponent({
+                trackComponent({
                     context: instance.context,
                     component: instance.state.components[alias],
                     method: "remove"

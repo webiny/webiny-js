@@ -1,2 +1,2 @@
 // @flow
-export { default as CircularProgress } from "./CircularProgres";
+export { default as CircularProgress } from "./CircularProgress";

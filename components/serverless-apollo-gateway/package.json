@@ -1,6 +1,6 @@
 {
   "name": "@webiny/serverless-apollo-gateway",
-  "version": "0.1.13",
+  "version": "0.1.14",
   "main": "serverless.js",
   "license": "MIT",
   "dependencies": {
