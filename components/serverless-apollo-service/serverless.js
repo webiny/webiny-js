@@ -185,7 +185,7 @@ class ApolloService extends Component {
         });
 
         const output = {
-            api: { ...apiGwOut, graphqlUrl: apiGwOut.api.url + graphqlPath },
+            api: { ...apiGwOut, graphqlUrl: apiGwOut.url + graphqlPath },
             graphql: lambdaOut
         };
 
