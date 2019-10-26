@@ -84,7 +84,6 @@ pageBuilder:
     timeout: 30
     database: ${vars.database}
     env: ${vars.env}
-    files: ${files}
     plugins:
       - "@webiny/api-google-tag-manager"
       - "@webiny/api-mailchimp"
