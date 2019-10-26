@@ -22,8 +22,8 @@ module.exports = {
     },
     plugins: [
         new webpack.DefinePlugin({
-            "process.env.REACT_APP_API_ENDPOINT": JSON.stringify(
-                process.env.REACT_APP_API_ENDPOINT
+            "process.env.REACT_APP_GRAPHQL_API_URL": JSON.stringify(
+                process.env.REACT_APP_GRAPHQL_API_URL
             ),
             "process.env.REACT_APP_ENV": JSON.stringify(process.env.REACT_APP_ENV || "browser"),
             "process.env.PUBLIC_URL": JSON.stringify(process.env.PUBLIC_URL)
