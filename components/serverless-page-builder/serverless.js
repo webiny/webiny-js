@@ -62,7 +62,7 @@ class ServerlessPageBuilder extends Component {
             plugins,
             env: {
                 ...env,
-                FILES_API_URL: get(files, "api.url"),
+                FILES_API_URL: get(files, "api.graphqlUrl"),
                 PAGE_BUILDER_S3_BUCKET: s3Output.name,
                 PAGE_BUILDER_INSTALLATION_FILES_ZIP_KEY
             },
