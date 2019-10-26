@@ -26,8 +26,8 @@ const createHandler = async () => {
     let apollo = new ApolloServer({
         schema,
         executor,
-        introspection: process.env.GRAPHQL_INTROSPECTION,
-        playground: process.env.GRAPHQL_PLAYGROUND,
+        introspection: process.env.GRAPHQL_INTROSPECTION === "true",
+        playground: process.env.GRAPHQL_PLAYGROUND === "true",
         context: async ({ event }) => {
             return { headers: buildHeaders(event) };
         }
