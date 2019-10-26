@@ -1,7 +1,7 @@
 const fs = require("fs");
 const path = require("path");
 const mime = require("mime-types");
-const isutf8 = require("isutf8");
+const isUtf8 = require("isutf8");
 
 const createResponse = ({ type, body, isBase64Encoded, headers }) => {
     return {
@@ -32,7 +32,15 @@ module.exports.handler = async event => {
 
     if (!type) {
         type = "text/html";
-        const { html } = await require("./renderer")("/" + key);
+        const LambdaClient = require("aws-sdk/clients/lambda");
+        const Lambda = new LambdaClient();
+        const params = {
+            FunctionName: process.env.SSR_FUNCTION,
+            InvocationType: "RequestResponse",
+            Payload: JSON.stringify({ url: "/" + key })
+        };
+        const { Payload } = await Lambda.invoke(params).promise();
+        const { html } = JSON.parse(Payload);
 
         return createResponse({
             type,
@@ -52,7 +60,7 @@ module.exports.handler = async event => {
             });
         });
 
-        isBase64Encoded = !isutf8(buffer);
+        isBase64Encoded = !isUtf8(buffer);
         const headers = {};
 
         if (key.includes("static")) {

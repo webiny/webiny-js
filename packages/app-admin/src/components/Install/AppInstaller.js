@@ -96,7 +96,6 @@ export const AppInstaller = ({ children, security }) => {
         );
     }
 
-    // TODO: @sven if you don't need the white wrapper, you can remove the call to `renderBody`
     return renderLayout(
         renderBody(
             <Elevation z={1}>

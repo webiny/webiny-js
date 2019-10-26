@@ -21,7 +21,7 @@ const createClient = () => {
         link: ApolloLink.from([
             createOmitTypenameLink(),
             createHttpLink({
-                uri: process.env.REACT_APP_API_ENDPOINT
+                uri: process.env.REACT_APP_GRAPHQL_API_URL
             })
         ]),
         cache: new InMemoryCache({

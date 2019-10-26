@@ -9,7 +9,7 @@ export default new ApolloClient({
     link: ApolloLink.from([
         createOmitTypenameLink(),
         createAuthLink(),
-        new BatchHttpLink({ uri: process.env.REACT_APP_API_ENDPOINT })
+        new BatchHttpLink({ uri: process.env.REACT_APP_GRAPHQL_API_URL })
     ]),
     cache: new InMemoryCache({
         addTypename: true,

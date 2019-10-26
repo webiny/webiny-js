@@ -4,7 +4,8 @@ const writeJson = require("write-json-file");
 const { getStateValues } = require("@webiny/project-utils/serverless");
 
 const envMap = {
-    REACT_APP_API_ENDPOINT: "${cdn.url}/graphql",
+    REACT_APP_GRAPHQL_API_URL: "${cdn.url}/graphql",
+    REACT_APP_API_URL: "${cdn.url}",
     REACT_APP_FILES_PROXY: "${cdn.url}"
 };
 

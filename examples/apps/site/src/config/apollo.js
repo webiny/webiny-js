@@ -19,7 +19,7 @@ if (isProduction && process.env.REACT_APP_ENV === "browser") {
 export default new ApolloClient({
     link: ApolloLink.from([
         createOmitTypenameLink(),
-        new BatchHttpLink({ uri: process.env.REACT_APP_API_ENDPOINT })
+        new BatchHttpLink({ uri: process.env.REACT_APP_GRAPHQL_API_URL })
     ]),
     cache
 });
