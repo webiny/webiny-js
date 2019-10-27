@@ -18,17 +18,17 @@ import {
 const t = i18n.ns("app-page-builder/admin/menus/form");
 
 function MenusForm() {
-    const { form } = useCrud();
+    const { form: crudForm } = useCrud();
 
     return (
-        <Form {...form} data={form.id ? form.data : { items: [] }}>
+        <Form {...crudForm} data={crudForm.id ? crudForm.data : { items: [] }}>
             {({ data, form, Bind }) => (
                 <SimpleForm>
-                    {form.loading && <CircularProgress />}
+                    {crudForm.loading && <CircularProgress />}
                     <SimpleFormContent>
                         <Grid>
                             <Cell span={6}>
-                                <Bind name="title" validators={validation.create("required,email")}>
+                                <Bind name="title" validators={validation.create("required")}>
                                     <Input label={t`Name`} />
                                 </Bind>
                             </Cell>

@@ -20,20 +20,20 @@ import { validation } from "@webiny/validation";
 const t = i18n.ns("app-i18n/admin/locales/form");
 
 const I18NLocaleForm = () => {
-    const { form } = useCrud();
+    const { form: crudForm } = useCrud();
     const { refetchLocales } = useI18N();
 
     return (
         <Form
-            {...form}
+            {...crudForm}
             onSubmit={async data => {
-                await form.onSubmit(data);
+                await crudForm.onSubmit(data);
                 refetchLocales();
             }}
         >
             {({ data, form, Bind }) => (
                 <SimpleForm>
-                    {form.loading && <CircularProgress />}
+                    {crudForm.loading && <CircularProgress />}
                     <SimpleFormHeader title={data.code || t`New locale`} />
                     <SimpleFormContent>
                         <Grid>

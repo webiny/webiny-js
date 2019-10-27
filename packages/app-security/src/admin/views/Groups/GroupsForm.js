@@ -19,12 +19,12 @@ import {
 const t = i18n.ns("app-security/admin/groups/form");
 
 const GroupForm = () => {
-    const { form } = useCrud();
+    const { form: crudForm } = useCrud();
     return (
-        <Form {...form}>
+        <Form {...crudForm}>
             {({ data, form, Bind }) => (
                 <SimpleForm>
-                    {form.loading && <CircularProgress />}
+                    {crudForm.loading && <CircularProgress />}
                     <SimpleFormHeader title={data.name ? data.name : "Untitled"} />
                     <SimpleFormContent>
                         <Grid>
