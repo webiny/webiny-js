@@ -12,6 +12,7 @@ const execa = require("execa");
  * - run `build` in `serverless-files`
  */
 (async () => {
+    console.log(`✍️  Writing environment config files...`);
     // Create API .env.json
     const envJsonPath = path.resolve("examples", "api", ".env.json");
     const exampleEnvJsonPath = path.resolve("examples", "api", "example.env.json");
@@ -31,6 +32,7 @@ const execa = require("execa");
             .shift()}`;
         envJson.default.JWT_SECRET = jwtSecret;
         await writeJson(envJsonPath, envJson);
+        console.log(`✅️ ${green("examples/api/.env.json")} was created successfully!`);
     }
 
     // Create `admin` .env.json
@@ -40,6 +42,7 @@ const execa = require("execa");
         console.log(`⚠️  ${green("examples/apps/admin/.env.json")} already exists, skipping.`);
     } else {
         fs.copyFileSync(exampleAdminEnvJsonPath, adminEnvJsonPath);
+        console.log(`✅️ ${green("examples/apps/admin/.env.json")} was created successfully!`);
     }
 
     // Create `site` .env.json
@@ -49,6 +52,7 @@ const execa = require("execa");
         console.log(`⚠️  ${green("examples/apps/site/.env.json")} already exists, skipping.`);
     } else {
         fs.copyFileSync(exampleSiteEnvJsonPath, siteEnvJsonPath);
+        console.log(`✅️ ${green("examples/apps/site/.env.json")} was created successfully!`);
     }
 
     // Run build in `serverless-files`
@@ -57,6 +61,7 @@ const execa = require("execa");
         await execa("yarn", ["build"], {
             cwd: path.resolve("components", "serverless-files")
         });
+        console.log(`✅️ ${green("@webiny/serverless-files")} was built successfully!`);
     } catch (err) {
         console.log(
             `🚨 Failed to build ${green("@webiny/serverless-files")} package: ${err.message}`
