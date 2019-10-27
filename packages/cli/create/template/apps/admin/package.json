@@ -6,7 +6,6 @@
     "@webiny/app": "^0",
     "@webiny/app-admin": "^0",
     "@webiny/app-cookie-policy": "^0",
-    "@webiny/app-forms": "^0",
     "@webiny/app-google-tag-manager": "^0",
     "@webiny/app-i18n": "^0",
     "@webiny/app-mailchimp": "^0",
