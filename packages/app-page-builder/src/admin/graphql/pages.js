@@ -37,7 +37,7 @@ export const CREATE_PAGE = gql`
 `;
 
 export const LIST_PAGES = gql`
-    query listPages($sort: JSON, $page: Int, $perPage: Int, $search: String) {
+    query PbListPages($sort: JSON, $page: Int, $perPage: Int, $search: String) {
         pageBuilder {
             pages: listPages(sort: $sort, page: $page, perPage: $perPage, search: $search) {
                 data {
