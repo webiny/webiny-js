@@ -10,6 +10,7 @@ import listTags from "./resolvers/listTags";
 import updateFileBySrc from "./resolvers/updateFileBySrc";
 import uploadFile from "./resolvers/uploadFile";
 import deleteFile from "./resolvers/deleteFile";
+import { install, isInstalled } from "./resolvers/install";
 
 const getFile = ({ models }) => models.File;
 
@@ -94,6 +95,11 @@ export default ([
                     createdOn: DateTime
                 }
 
+                type FilesBooleanResponse {
+                    data: Boolean
+                    error: FileError
+                }
+
                 type FilesQuery {
                     getFile(id: ID, where: JSON, sort: String): FileResponse
 
@@ -107,6 +113,9 @@ export default ([
                     ): FileListResponse
 
                     listTags: [String]
+
+                    # Is File Manager installed?
+                    isInstalled: FilesBooleanResponse
                 }
 
                 type FilesDeleteResponse {
@@ -119,6 +128,13 @@ export default ([
                     createFile(data: FileInput!): FileResponse
                     updateFileBySrc(src: String!, data: FileInput!): FileResponse
                     deleteFile(id: ID!): FilesDeleteResponse
+
+                    # Install File manager
+                    install(srcPrefix: String): FilesBooleanResponse
+                }
+
+                input FilesInstallInput {
+                    srcPrefix: String!
                 }
 
                 extend type Query {
@@ -144,13 +160,15 @@ export default ([
                 FilesQuery: {
                     getFile: resolveGet(getFile),
                     listFiles: listFiles,
-                    listTags: listTags
+                    listTags: listTags,
+                    isInstalled
                 },
                 FilesMutation: {
                     uploadFile,
                     createFile: resolveCreate(getFile),
                     updateFileBySrc: updateFileBySrc,
-                    deleteFile
+                    deleteFile,
+                    install
                 }
             }
         },
