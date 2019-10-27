@@ -29,7 +29,7 @@
     "build:image-transformer": "webpack --config scripts/webpack/webpack.config.imageTransformer.js",
     "build:manage-files": "webpack --config scripts/webpack/webpack.config.manageFiles.js",
     "build": "concurrently \"yarn build:image-transformer\" \"yarn build:download\" \"yarn build:manage-files\"",
-    "postbuild": "cp -r components package.json serverless.js LICENSE README.md dist/",
+    "postbuild": "cp -r configureS3Bucket.js package.json serverless.js LICENSE README.md dist/",
     "deploy": "cd test && sls --debug",
     "prepublishOnly": "yarn build"
   },
