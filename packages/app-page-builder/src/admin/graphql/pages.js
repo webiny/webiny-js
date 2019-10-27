@@ -24,7 +24,7 @@ const sharedFields = `
 `;
 
 export const CREATE_PAGE = gql`
-    mutation createPage($category: ID!) {
+    mutation PbCreatePage($category: ID!) {
         pageBuilder {
             page: createPage(data: { category: $category }) {
                 data {
@@ -64,7 +64,7 @@ export const LIST_PAGES = gql`
 `;
 
 export const GET_PAGE = () => gql`
-    query getPage($id: ID!) {
+    query PbGetPage($id: ID!) {
         pageBuilder {
             page: getPage(id: $id) {
                 data {
@@ -93,7 +93,7 @@ export const GET_PAGE = () => gql`
 `;
 
 export const CREATE_REVISION_FORM = gql`
-    mutation createRevisionFrom($revision: ID!) {
+    mutation PbCreateRevisionFrom($revision: ID!) {
         pageBuilder {
             revision: createRevisionFrom(revision: $revision) {
                 data {
@@ -130,7 +130,7 @@ export const DELETE_REVISION = gql`
 `;
 
 export const DELETE_PAGE = gql`
-    mutation DeletePage($id: ID!) {
+    mutation PbDeletePage($id: ID!) {
         pageBuilder {
             deletePage(id: $id) {
                 data

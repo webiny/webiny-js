@@ -45,9 +45,9 @@ export const LIST_CATEGORIES = gql`
 `;
 
 export const LIST_CATEGORIES_BY_NAME = gql`
-    {
+    query PbListCategoriesByName {
         pageBuilder {
-            categories: listCategories(sort: { name: 1 }) {
+            categories: listCategories(sort: { name: 1 }, perPage: 100) {
                 data {
                     id
                     name

@@ -13,7 +13,7 @@ import {
     ListItemTextSecondary
 } from "@webiny/ui/List";
 import { ButtonDefault } from "@webiny/ui/Button";
-import { LIST_CATEGORIES } from "./graphql";
+import { LIST_CATEGORIES_BY_NAME } from "./graphql";
 
 const narrowDialog = css({
     ".mdc-dialog__surface": {
@@ -41,7 +41,7 @@ const CategoriesDialog = ({
             <DialogTitle>Select a category</DialogTitle>
             <DialogContent>
                 <List twoLine>
-                    <Query query={LIST_CATEGORIES} variables={{ sort: { name: 1 } }}>
+                    <Query query={LIST_CATEGORIES_BY_NAME}>
                         {({ data, loading }) => {
                             if (loading) {
                                 return "Loading categories...";

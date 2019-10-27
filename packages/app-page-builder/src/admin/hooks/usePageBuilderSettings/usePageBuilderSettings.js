@@ -6,7 +6,7 @@ import { get } from "lodash";
 import formatPreviewUrl from "./formatPreviewUrl";
 
 const DOMAIN_QUERY = gql`
-    {
+    query PbGetDomain {
         pageBuilder {
             getSettings {
                 id
