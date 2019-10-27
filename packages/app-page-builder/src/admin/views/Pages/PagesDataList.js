@@ -62,7 +62,7 @@ const PagesDataList = props => {
                                 <ListTextOverline>{page.category.name}</ListTextOverline>
                                 {page.createdBy && (
                                     <ListItemTextSecondary>
-                                        Created by: {page.createdBy.firstName}. Last modified:{" "}
+                                        Created by: {page.createdBy.firstName || "N/A"}. Last modified:{" "}
                                         <TimeAgo datetime={page.savedOn} />.
                                     </ListItemTextSecondary>
                                 )}
