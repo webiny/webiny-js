@@ -41,7 +41,7 @@ export const CrudProvider = ({ children, ...props }: Props) => {
 
     const urlSearchParams = new URLSearchParams(location.search);
     const id = urlSearchParams.get("id");
-    
+
     const [createMutation] = useMutation(
         props.create.mutation || props.create,
         props.create.options || null
@@ -98,6 +98,7 @@ export const CrudProvider = ({ children, ...props }: Props) => {
             list.refresh();
         },
         save: async (formData: Object) => {
+            delete formData["id"];
             const action = id ? "update" : "create";
             setMutationInProgress(true);
             setInvalidFields(null);
