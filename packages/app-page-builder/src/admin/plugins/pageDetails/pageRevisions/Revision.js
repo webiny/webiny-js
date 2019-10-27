@@ -126,7 +126,7 @@ const Revision = ({ rev }: RevisionProps) => {
                                 Preview
                             </MenuItem>
 
-                            {!rev.locked && (
+                            {!rev.locked && rev.id !== rev.parent && (
                                 <Div>
                                     <MenuDivider />
                                     <MenuItem onClick={() => showConfirmation(deleteRevision)}>
