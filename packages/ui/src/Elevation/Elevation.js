@@ -11,16 +11,19 @@ type Props = {
 
     // Adds smooth transitions when the z value changes.
     transition?: boolean,
-
-    // Ref for inner DOM element
-    elementRef?: any
 };
 
 /**
  * Elevation component visually raises any content by applying shadow.
  */
-const Elevation = (props: Props) => {
-    return <RmwcElevation {...props}>{props.children}</RmwcElevation>;
-};
+const Elevation = React.forwardRef((props: Props, ref: React.ElementRef) => {
+    return (
+        <RmwcElevation ref={ref} {...props}>
+            {props.children}
+        </RmwcElevation>
+    );
+});
+
+Elevation.displayName = "Elevation";
 
 export { Elevation };
