@@ -39,6 +39,26 @@ const allBlockCategory = {
     icon: <AllIcon />
 };
 
+const sortBlocks = blocks => {
+    return blocks.sort(function(a, b) {
+        if (a.name === "pb-editor-block-empty") {
+            return -1;
+        }
+
+        if (b.name === "pb-editor-block-empty") {
+            return 1;
+        }
+
+        if (a.title < b.title) {
+            return -1;
+        }
+        if (a.title > b.title) {
+            return 1;
+        }
+        return 0;
+    });
+};
+
 const SearchBar = props => {
     const { updateElement, content, deactivatePlugin } = props;
 
@@ -51,7 +71,7 @@ const SearchBar = props => {
         []
     );
 
-    const allBlocks = useMemo(() => getPlugins("pb-editor-block"), []);
+    const allBlocks = getPlugins("pb-editor-block");
 
     const { addKeyHandler, removeKeyHandler } = useKeyHandler();
 
@@ -106,15 +126,7 @@ const SearchBar = props => {
             });
         }
 
-        return output.sort(function(a, b) {
-            if (a.title < b.title) {
-                return -1;
-            }
-            if (a.title > b.title) {
-                return 1;
-            }
-            return 0;
-        });
+        return sortBlocks(output);
     };
 
     const getCategoryBlocksCount = useCallback(category => {
