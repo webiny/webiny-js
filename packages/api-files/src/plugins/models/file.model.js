@@ -8,18 +8,24 @@ import {
     number,
     string,
     withName,
-    withHooks
+    withHooks,
+    withProps
 } from "@webiny/commodo";
 
 import { withAggregate } from "@commodo/fields-storage-mongodb";
 import { validation } from "@webiny/validation";
 
-export default ({ createBase }) => {
+export default ({ createBase, context }) => {
     const File = flow(
         withAggregate(),
         withName("File"),
+        withProps({
+            get src() {
+                const settings = context.files.getSettings();
+                return settings.data.srcPrefix + this.key;
+            }
+        }),
         withFields({
-            src: setOnce()(string({ validation: validation.create("required,maxLength:200") })),
             key: setOnce()(string({ validation: validation.create("required,maxLength:200") })),
             size: number(),
             type: string({ validation: validation.create("maxLength:50") }),
