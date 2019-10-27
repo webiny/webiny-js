@@ -20,7 +20,7 @@ module.exports = {
         }
     },
     ignore: {
-        src: ["path", "os", "fs", "util", "events", "crypto"],
+        src: ["path", "os", "fs", "util", "events", "crypto", "aws-sdk"],
         dependencies: ["@babel/runtime"],
         devDependencies: true
     },

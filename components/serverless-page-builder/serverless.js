@@ -3,7 +3,7 @@ const { Component } = require("@serverless/core");
 const loadJson = require("load-json-file");
 const get = require("lodash.get");
 const S3 = require("aws-sdk/clients/s3");
-const fs = require("fs-extra");
+const fs = require("fs");
 const path = require("path");
 
 const getDeps = async deps => {

@@ -5,9 +5,11 @@
   "license": "MIT",
   "dependencies": {
     "@serverless/core": "^1.1.1",
+    "@serverless/aws-s3": "^4.1.0",
     "@webiny/api-page-builder": "^0.1.10",
     "@webiny/serverless-apollo-service": "^0.4.1",
-    "load-json-file": "^6.2.0"
+    "load-json-file": "^6.2.0",
+    "lodash.get": "^4.4.2"
   },
   "scripts": {
     "build": "rm -rf dist && mkdir dist && cp serverless.js dist/",

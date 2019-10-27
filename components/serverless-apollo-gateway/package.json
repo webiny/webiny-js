@@ -13,6 +13,7 @@
     "babel-loader": "^8.0.6",
     "execa": "^2.0.5",
     "fs-extra": "^8.1.0",
+    "lodash.camelcase": "^4.3.0",
     "load-json-file": "^6.2.0",
     "prettier": "^1.18.2",
     "webpack": "^4.39.2",
