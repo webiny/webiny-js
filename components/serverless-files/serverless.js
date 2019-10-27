@@ -1,6 +1,6 @@
 const { join } = require("path");
 const { Component } = require("@serverless/core");
-const { configureS3Bucket } = require("./components");
+const configureS3Bucket = require("./configureS3Bucket");
 
 /**
  * This component deploys:
