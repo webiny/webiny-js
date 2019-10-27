@@ -36,7 +36,7 @@ const execa = require("execa");
     // Create `admin` .env.json
     const adminEnvJsonPath = path.resolve("examples", "apps", "admin", ".env.json");
     const exampleAdminEnvJsonPath = path.resolve("examples", "apps", "admin", "example.env.json");
-    if (fs.existsSync(envJsonPath)) {
+    if (fs.existsSync(adminEnvJsonPath)) {
         console.log(`⚠️  ${green("examples/apps/admin/.env.json")} already exists, skipping.`);
     } else {
         fs.copyFileSync(exampleAdminEnvJsonPath, adminEnvJsonPath);
