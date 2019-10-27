@@ -7,7 +7,7 @@ import page from "./graphql/Page";
 import category from "./graphql/Category";
 import menu from "./graphql/Menu";
 import settings from "./graphql/Settings";
-import install from "./graphql/Install";
+import install from "./graphql/install";
 
 export default {
     type: "graphql-schema",
