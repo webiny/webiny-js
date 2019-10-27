@@ -41,10 +41,19 @@ export const CrudProvider = ({ children, ...props }: Props) => {
 
     const urlSearchParams = new URLSearchParams(location.search);
     const id = urlSearchParams.get("id");
-
-    const [createMutation] = useMutation(props.create.mutation || props.create);
-    const [updateMutation] = useMutation(props.update.mutation || props.update);
-    const [deleteMutation] = useMutation(props.delete.mutation || props.delete);
+    
+    const [createMutation] = useMutation(
+        props.create.mutation || props.create,
+        props.create.options || null
+    );
+    const [updateMutation] = useMutation(
+        props.update.mutation || props.update,
+        props.update.options || null
+    );
+    const [deleteMutation] = useMutation(
+        props.delete.mutation || props.delete,
+        props.delete.options || null
+    );
 
     const readQuery = useQuery(props.read.query || props.read, {
         variables: { id },
