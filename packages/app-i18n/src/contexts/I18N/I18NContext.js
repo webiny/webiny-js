@@ -30,7 +30,7 @@ const I18NProvider = ({ children }: Object) => {
     const { loading, data, refetch } = useQuery(getI18NInformation);
 
     if (loading) {
-        return <CircularProgress />;
+        return <CircularProgress label={"Loading locales..."} />;
     }
 
     const { currentLocale, locales } = data.i18n.getI18NInformation;
