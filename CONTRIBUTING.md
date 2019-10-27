@@ -1,6 +1,6 @@
 # CONTRIBUTING
 
-This guide is intended for anyone that wants to contribute to the Webiny project.
+This guide is for anyone who wants to contribute to the Webiny project.
 
 ## Working on an issue
 
@@ -21,7 +21,7 @@ This guide is intended for anyone that wants to contribute to the Webiny project
 
 ## Repo overview
 
-Once you clone the repo to your local filesystem, you will receive a monorepo which consists of a bunch of different packages, located in `/packages` and `/components` directory.
+Once you clone the repository, you will have a monorepo which consists of a bunch of different packages, located in `/packages` and `/components` directory.
 
 - `components` folder contains `serverless` components that are responsible for deployment of your infrastructure.
 - `packages` folder contains app packages, api packages, utility packages, etc.
