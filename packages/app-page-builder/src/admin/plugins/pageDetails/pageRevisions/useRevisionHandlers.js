@@ -21,7 +21,8 @@ export function useRevisionHandlers({ rev }) {
         const { data: res } = await client.mutate({
             mutation: CREATE_REVISION_FORM,
             variables: { revision: rev.id },
-            refetchQueries: ["PbListPages"]
+            refetchQueries: ["PbListPages"],
+            awaitRefetchQueries: true
         });
         const { data, error } = res.pageBuilder.revision;
 
@@ -39,8 +40,9 @@ export function useRevisionHandlers({ rev }) {
     const deleteRevision = useCallback(async () => {
         const { data: res } = await client.mutate({
             mutation: DELETE_REVISION,
-            refetchQueries: ["PbLoadPageRevisions"],
-            variables: { id: rev.id }
+            variables: { id: rev.id },
+            refetchQueries: ["PbListPages"],
+            awaitRefetchQueries: true
         });
         const { error } = res.pageBuilder.deleteRevision;
         if (error) {

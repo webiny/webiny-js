@@ -6,12 +6,14 @@ import { SplitView, LeftPanel, RightPanel } from "@webiny/app-admin/components/S
 import { FloatingActionButton } from "@webiny/app-admin/components/FloatingActionButton";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { CREATE_PAGE, LIST_PAGES } from "@webiny/app-page-builder/admin/graphql/pages";
+import { useDataList } from "@webiny/app/hooks/useDataList";
+import { CircularProgress } from "@webiny/ui/Progress";
 import PagesDataList from "./PagesDataList";
 import PageDetails from "./PageDetails";
-import CategoriesDialog from "./CategoriesDialog";
-import { useDataList } from "@webiny/app/hooks/useDataList";
+import CategoriesDialog from "../Categories/CategoriesDialog";
 
 const Pages = props => {
+    const [creatingPage, setCreatingPage] = useState(false);
     const [showCategoriesDialog, setCategoriesDialog] = useState(false);
     const client = useApolloClient();
     const { showSnackbar } = useSnackbar();
@@ -24,13 +26,20 @@ const Pages = props => {
         }
     });
 
+    const openDialog = useCallback(() => setCategoriesDialog(true), []);
+    const closeDialog = useCallback(() => setCategoriesDialog(false), []);
+
     const createPageMutation = useHandler(props, () => async category => {
         try {
+            setCreatingPage(true);
             const res = await client.mutate({
                 mutation: CREATE_PAGE,
                 variables: { category },
-                refetchQueries: ["PbListPages"]
+                refetchQueries: ["PbListPages"],
+                awaitRefetchQueries: true
             });
+            setCreatingPage(false);
+            closeDialog();
             const { data } = res.data.pageBuilder.page;
             history.push(`/page-builder/editor/${data.id}`);
         } catch (e) {
@@ -38,21 +47,15 @@ const Pages = props => {
         }
     });
 
-    const openDialog = useCallback(() => setCategoriesDialog(true), []);
-    const closeDialog = useCallback(() => setCategoriesDialog(false), []);
-
     const onSelect = useCallback(category => {
-        closeDialog();
         createPageMutation(category.id);
     }, []);
 
     return (
         <React.Fragment>
-            <CategoriesDialog
-                open={showCategoriesDialog}
-                onClose={closeDialog}
-                onSelect={onSelect}
-            />
+            <CategoriesDialog open={showCategoriesDialog} onClose={closeDialog} onSelect={onSelect}>
+                {creatingPage && <CircularProgress label={"Creating page..."} />}
+            </CategoriesDialog>
             <SplitView>
                 <LeftPanel span={4}>
                     <PagesDataList dataList={dataList} />
