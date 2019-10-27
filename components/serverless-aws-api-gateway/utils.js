@@ -422,9 +422,7 @@ const removeResources = async ({ apig, apiId, endpoints }) => {
 };
 
 const removeApi = async ({ apig, apiId }) => {
-    try {
-        await apig.deleteRestApi({ restApiId: apiId }).promise();
-    } catch (e) {}
+    await apig.deleteRestApi({ restApiId: apiId }).promise();
 };
 
 const createAuthorizer = async ({ apig, lambda, apiId, endpoint }) => {

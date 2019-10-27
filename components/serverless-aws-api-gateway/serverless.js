@@ -169,7 +169,7 @@ class AwsApiGateway extends Component {
             this.context.debug(
                 `API ID ${this.state.id} found in state. Removing from the ${this.state.region}.`
             );
-            await removeApi({ apig, apiId: this.state.id });
+            await retry(() => removeApi({ apig, apiId: this.state.id }));
 
             this.context.debug(
                 `API with ID ${this.state.id} was successfully removed from the ${this.state.region} region.`
