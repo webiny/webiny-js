@@ -36,6 +36,7 @@ const installerSplitView = css({
 
 const SuccessDialog = styled("div")({
     padding: 40,
+    textAlign: "center",
     p: {
         paddingBottom: 40
     }
@@ -43,8 +44,7 @@ const SuccessDialog = styled("div")({
 
 export const InnerContent = styled("div")({
     padding: 25,
-    position: "relative",
-    textAlign: "center"
+    position: "relative"
 });
 
 export const AppInstaller = ({ children, security }) => {
