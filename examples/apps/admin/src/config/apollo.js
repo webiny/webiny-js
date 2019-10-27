@@ -10,6 +10,7 @@ import { createAuthLink } from "@webiny/app-security/components";
 import { createOmitTypenameLink } from "@webiny/app/graphql";
 import { Alert } from "@webiny/ui/Alert";
 import { Elevation } from "@webiny/ui/Elevation";
+import { css } from "emotion";
 
 const GET_ERROR = gql`
     {
@@ -40,11 +41,17 @@ export default new ApolloClient({
     })
 });
 
+const errorStyle = css({
+    margin: 50,
+    padding: "15px 25px 5px 25px",
+    boxSizing: "border-box"
+});
+
 export const NetworkMonitor = ({ children }) => {
     const { data } = useQuery(GET_ERROR, { fetchPolicy: "cache-only" });
 
     return data && data.error ? (
-        <Elevation z={2}>
+        <Elevation css={errorStyle} z={2}>
             <Alert type={"danger"} title={"Network error"}>
                 {data.error}
                 <br />
