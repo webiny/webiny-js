@@ -47,34 +47,54 @@ const INSTALL = gql`
     }
 `;
 
+const installationSteps = {
+    1: t`Creating page categories...`,
+    2: t`Creating page blocks...`,
+    3: t`Creating pages...`,
+    4: t`Creating menus...`,
+    5: t`Finalizing...`
+};
+
 const PBInstaller = ({ onInstalled }) => {
     const client = useApolloClient();
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
+    const [installationStep, setInstallationStep] = useState(0);
 
-    const onSubmit = useCallback(async form => {
-        setLoading(true);
-        setError(null);
+    const onSubmit = useCallback(
+        async form => {
+            setLoading(true);
+            setError(null);
 
-        for (let step = 1; step <= 5; step++) {
-            await client.mutate({ mutation: INSTALL, variables: { step: step, data: form } });
-        }
+            try {
+                for (let step = 1; step <= 5; step++) {
+                    setInstallationStep(step);
+                    const response = await client.mutate({
+                        mutation: INSTALL,
+                        variables: { step: step, data: form }
+                    });
 
-        setLoading(false);
-        /*const { error } = res.pb.install;
-        if (error) {
-            setError(error.message);
-            return;
-        }*/
+                    const { error } = response.data.pageBuilder.install;
+                    if (error) {
+                        throw new Error(error.message);
+                    }
+                }
+            } catch (e) {
+                setError(e.message);
+            } finally {
+                setLoading(false);
+            }
 
-        onInstalled();
-    }, []);
+            onInstalled();
+        },
+        [installationStep]
+    );
 
     return (
         <Form onSubmit={onSubmit} data={{ domain: window.location.origin }}>
             {({ Bind, submit }) => (
                 <SimpleForm>
-                    {loading && <CircularProgress />}
+                    {loading && <CircularProgress label={installationSteps[installationStep]} />}
                     {error && (
                         <Alert title={"Something went wrong"} type={"danger"}>
                             {error}
