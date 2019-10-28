@@ -24,6 +24,10 @@ module.exports = async (inputs, method = "default") => {
     await component.init();
 
     const output = await component[method]({ env, debug });
+    if (debug) {
+        // Add an empty line after debug output for nicer output
+        console.log();
+    }
     context._.status.running = false;
     process.stdout.write(ansiEscapes.cursorLeft);
     process.stdout.write(ansiEscapes.eraseDown);

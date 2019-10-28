@@ -36,7 +36,7 @@ const loadEnv = async (envPath, env, { debug = false }) => {
         Object.assign(process.env, envConfig);
         if (debug) {
             console.log(
-                `📝 Loaded ${green(env)} environment from ${green(envPath)}...`
+                `💡 Loaded ${green(env)} environment from ${green(envPath)}...`
             );
         }
     }
