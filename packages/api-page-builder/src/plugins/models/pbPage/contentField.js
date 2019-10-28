@@ -14,25 +14,6 @@ const getModifierPlugins = (elementType, modifierType, plugins) => {
     });
 };
 
-const syncModifiers = ({ context, modifierType, element }) => {
-    if (!isValidElement(element)) {
-        return;
-    }
-
-    const plugins = getModifierPlugins(element.type, modifierType, context.plugins);
-
-    for (let i = 0; i < plugins.length; i++) {
-        let plugin = plugins[i];
-        plugin[modifierType]({ element, context });
-    }
-
-    if (Array.isArray(element.elements)) {
-        for (let i = 0; i < element.elements.length; i++) {
-            syncModifiers({ context, element: element.elements[i], modifierType });
-        }
-    }
-};
-
 const asyncModifiers = async ({ context, modifierType, element }) => {
     if (!isValidElement(element)) {
         return;
@@ -66,8 +47,8 @@ export default ({ context, ...rest }) => {
 
             return element;
         },
-        setStorageValue(element) {
-            syncModifiers({
+        async setStorageValue(element) {
+            await asyncModifiers({
                 context,
                 element,
                 modifierType: "setStorageValue"
