@@ -45,7 +45,7 @@ export default async ({ context, INSTALL_EXTRACT_DIR }) => {
         // Gives an array of chunks (each consists of FILES_COUNT_IN_EACH_BATCH items).
         const filesChunks = chunk(pagesFilesData, FILES_COUNT_IN_EACH_BATCH);
         await console.log(
-            `savePages: there are total of ${filesChunks.length} chunks of 5 files to save.`
+            `savePages: there are total of ${filesChunks.length} chunks of ${FILES_COUNT_IN_EACH_BATCH} files to save.`
         );
 
         for (let i = 0; i < filesChunks.length; i++) {
