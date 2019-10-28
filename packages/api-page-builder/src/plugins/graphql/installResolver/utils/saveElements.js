@@ -1,7 +1,5 @@
 import get from "lodash.get";
 import pick from "lodash.pick";
-import elementsFilesData from "./../importData/elementsFilesData";
-import elementsData from "./../importData/elementsData";
 import { CREATE_FILES, UPLOAD_FILES } from "./graphql";
 import { GraphQLClient } from "graphql-request";
 import fs from "fs-extra";
@@ -9,10 +7,14 @@ import path from "path";
 import uploadToS3 from "./uploadToS3";
 import sleep from "./sleep";
 import chunk from "lodash.chunk";
+const loadJson = require("load-json-file");
 
 const FILES_COUNT_IN_EACH_BATCH = 7;
 
 export default async ({ context, INSTALL_EXTRACT_DIR }) => {
+    const elementsData = await loadJson(path.join(INSTALL_EXTRACT_DIR, "data/elementsData.json"));
+    const elementsFilesData = await loadJson(path.join(INSTALL_EXTRACT_DIR, "data/elementsFilesData.json"));
+
     try {
         const { PbPageElement } = context.models;
 
@@ -72,7 +74,7 @@ export default async ({ context, INSTALL_EXTRACT_DIR }) => {
                             const buffer = fs.readFileSync(
                                 path.join(
                                     INSTALL_EXTRACT_DIR,
-                                    "blocks/images/",
+                                    "images/elements/images/",
                                     currentFile.__physicalFileName
                                 )
                             );

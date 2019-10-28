@@ -1,9 +1,9 @@
-import categoriesData from "./importData/categoriesData";
 import { ErrorResponse, Response } from "@webiny/api";
-import menuData from "./importData/menusData";
 import downloadInstallationFiles from "./utils/downloadInstallationFiles";
 import saveElements from "./utils/saveElements";
 import savePages from "./utils/savePages";
+import path from "path";
+import loadJson from "load-json-file";
 
 export const install = async (root: any, args: Object, context: Object) => {
     // Start the download of initial Page Builder page / block images.
@@ -34,6 +34,9 @@ export const install = async (root: any, args: Object, context: Object) => {
         }
 
         if (step === 1) {
+            // /tmp/installation-files/apiPageBuilder/data/categoriesData.json'","
+            const INSTALL_EXTRACT_DIR = await downloadInstallationFiles();
+            const categoriesData = await loadJson(path.join(INSTALL_EXTRACT_DIR, "data/categoriesData.json"));
             installation.getStep(1).markAsStarted();
             const staticPageCount = await PbCategory.count({ query: { slug: "static" } });
             if (staticPageCount === 0) {
@@ -69,10 +72,12 @@ export const install = async (root: any, args: Object, context: Object) => {
         }
 
         if (step === 4) {
+            const INSTALL_EXTRACT_DIR = await downloadInstallationFiles();
+            const menusData = await loadJson(path.join(INSTALL_EXTRACT_DIR, "data/menusData.json"));
             installation.getStep(4).markAsStarted();
-            for (let i = 0; i < menuData.length; i++) {
+            for (let i = 0; i < menusData.length; i++) {
                 const instance = new PbMenu();
-                await instance.populate(menuData[i]).save();
+                await instance.populate(menusData[i]).save();
             }
 
             installation.getStep(4).markAsCompleted();

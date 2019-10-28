@@ -1,7 +1,5 @@
 import get from "lodash.get";
 import pick from "lodash.pick";
-import pagesFilesData from "./../importData/pagesFilesData";
-import pagesData from "./../importData/pagesData";
 import { CREATE_FILES, UPLOAD_FILES } from "./graphql";
 import { GraphQLClient } from "graphql-request";
 import fs from "fs-extra";
@@ -9,10 +7,14 @@ import path from "path";
 import uploadToS3 from "./uploadToS3";
 import sleep from "./sleep";
 import chunk from "lodash.chunk";
+const loadJson = require("load-json-file");
 
 const FILES_COUNT_IN_EACH_BATCH = 7;
 
 export default async ({ context, INSTALL_EXTRACT_DIR }) => {
+    const pagesData = await loadJson(path.join(INSTALL_EXTRACT_DIR, "data/pagesData.json"));
+    const pagesFilesData = await loadJson(path.join(INSTALL_EXTRACT_DIR, "data/pagesFilesData.json"));
+
     try {
         const { PbPage } = context.models;
 
@@ -72,7 +74,7 @@ export default async ({ context, INSTALL_EXTRACT_DIR }) => {
                             const buffer = fs.readFileSync(
                                 path.join(
                                     INSTALL_EXTRACT_DIR,
-                                    "pages/images/",
+                                    "images/pages/images/",
                                     currentFile.__physicalFileName
                                 )
                             );
