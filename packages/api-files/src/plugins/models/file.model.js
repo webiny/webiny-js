@@ -8,18 +8,23 @@ import {
     number,
     string,
     withName,
-    withHooks
+    withProps
 } from "@webiny/commodo";
 
 import { withAggregate } from "@commodo/fields-storage-mongodb";
 import { validation } from "@webiny/validation";
 
-export default ({ createBase }) => {
+export default ({ createBase, context }) => {
     const File = flow(
         withAggregate(),
         withName("File"),
+        withProps({
+            get src() {
+                const settings = context.files.getSettings();
+                return settings.data.srcPrefix + this.key;
+            }
+        }),
         withFields({
-            src: setOnce()(string({ validation: validation.create("required,maxLength:200") })),
             key: setOnce()(string({ validation: validation.create("required,maxLength:200") })),
             size: number(),
             type: string({ validation: validation.create("maxLength:50") }),
@@ -57,19 +62,6 @@ export default ({ createBase }) => {
                 })
             )
         }),
-        withHooks({
-            async beforeCreate() {
-                if (!this.src.startsWith("/") || this.src.startsWith("http")) {
-                    throw Error(
-                        `File "src" must be a relative path, starting with forward slash ("/").`
-                    );
-                }
-
-                if (await File.findOne({ query: { src: this.src } })) {
-                    throw Error(`File "src" must be unique (used "${this.src}").`);
-                }
-            }
-        })
     )(createBase());
 
     return File;

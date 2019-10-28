@@ -19,7 +19,7 @@ describe("url test", () => {
     });
 
     it("should fail - no TLD", () => {
-        return validation.validate("http://localhost", "url").should.be.rejected;
+        return validation.validate("http://abc", "url").should.be.rejected;
     });
 
     it("should pass - a valid IP was given", () => {
@@ -32,5 +32,17 @@ describe("url test", () => {
 
     it("should pass - a valid HTTPS URL given", () => {
         return validation.validate("https://www.google.com", "url").should.become(true);
+    });
+
+    it("should pass - allow localhost", async () => {
+        await validation.validate("http://localhost", "url").should.become(true);
+        await validation.validate("http://localhost/graphql", "url").should.become(true);
+        await validation.validate("http://localhost:3000", "url").should.become(true);
+        await validation.validate("http://localhost:3000/graphql", "url").should.become(true);
+
+        await validation.validate("https://localhost", "url").should.become(true);
+        await validation.validate("https://localhost/graphql", "url").should.become(true);
+        await validation.validate("https://localhost:3000", "url").should.become(true);
+        await validation.validate("https://localhost:3000/graphql", "url").should.become(true);
     });
 });

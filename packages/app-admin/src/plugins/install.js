@@ -1,21 +1,18 @@
-import React, { useState, useCallback } from "react";
+import React, { useState, useEffect } from "react";
 import gql from "graphql-tag";
 import { useApolloClient } from "react-apollo";
 import { i18n } from "@webiny/app/i18n";
-import { Form } from "@webiny/form";
 import { Alert } from "@webiny/ui/Alert";
-import { Grid, Cell } from "@webiny/ui/Grid";
-import { ButtonPrimary } from "@webiny/ui/Button";
 import { CircularProgress } from "@webiny/ui/Progress";
+import { SimpleForm, SimpleFormContent } from "@webiny/app-admin/components/SimpleForm";
+import styled from "@emotion/styled";
 
-import {
-    SimpleForm,
-    SimpleFormHeader,
-    SimpleFormFooter,
-    SimpleFormContent
-} from "@webiny/app-admin/components/SimpleForm";
+const SimpleFormPlaceholder = styled.div({
+    minHeight: 300,
+    minWidth: 400
+});
 
-const t = i18n.ns("app-admin/files/installation");
+const t = i18n.ns("app-admin/admin/installation");
 
 const IS_INSTALLED = gql`
     {
@@ -32,9 +29,9 @@ const IS_INSTALLED = gql`
 `;
 
 const INSTALL = gql`
-    mutation InstallFiles($data: FilesInstallInput!) {
+    mutation InstallFileManager($srcPrefix: String) {
         files {
-            install(data: $data) {
+            install(srcPrefix: $srcPrefix) {
                 data
                 error {
                     code
@@ -45,57 +42,54 @@ const INSTALL = gql`
     }
 `;
 
-const FilesInstaller = ({ onInstalled }) => {
+const FMInstaller = ({ onInstalled }) => {
     const client = useApolloClient();
-    const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
 
-    const submit = useCallback(async form => {
-        setLoading(true);
-        setError(null);
-        const { data: res } = await client.mutate({ mutation: INSTALL, variables: { data: form } });
-        setLoading(false);
-        const { error } = res.files.install;
-        if (error) {
-            setError(error.message);
-            return;
-        }
+    useEffect(() => {
+        client
+            .mutate({
+                mutation: INSTALL,
+                variables: { srcPrefix: process.env.REACT_APP_API_URL + "/files" }
+            })
+            .then(({ data }) => {
+                const { error } = data.files.install;
+                if (error) {
+                    setError(error.message);
+                    return;
+                }
 
-        onInstalled();
+                // Just so the user sees the actual message.
+                setTimeout(onInstalled, 3000);
+            });
     }, []);
 
     return (
         <SimpleForm>
-            {loading && <CircularProgress />}
+            <CircularProgress label={t`Installing File Manager...`} />
             {error && (
-                <Alert title={"Something went wrong"} type={"danger"}>
+                <Alert title={t`Something went wrong`} type={"danger"}>
                     {error}
                 </Alert>
             )}
-            <SimpleFormHeader title={"Install Files"} />
             <SimpleFormContent>
-                <Grid>
-                    <Cell>{t`Click next to install.`}</Cell>
-                </Grid>
+                <SimpleFormPlaceholder />
             </SimpleFormContent>
-            <SimpleFormFooter>
-                <ButtonPrimary onClick={submit}>{t`Next`}</ButtonPrimary>
-            </SimpleFormFooter>
         </SimpleForm>
     );
 };
 
 export default {
-    name: "installation-files",
+    name: "installation-fm",
     type: "installation",
-    title: "Files app",
-    dependencies: ["installation-files"],
+    title: t`File Manager app`,
+    dependencies: ["installation-security"],
     secure: true,
     async isInstalled({ client }) {
         const { data } = await client.query({ query: IS_INSTALLED });
         return data.files.isInstalled.data;
     },
     render({ onInstalled }) {
-        return <FilesInstaller onInstalled={onInstalled} />;
+        return <FMInstaller onInstalled={onInstalled} />;
     }
 };

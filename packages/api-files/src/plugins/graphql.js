@@ -9,7 +9,10 @@ import listFiles from "./resolvers/listFiles";
 import listTags from "./resolvers/listTags";
 import updateFileBySrc from "./resolvers/updateFileBySrc";
 import uploadFile from "./resolvers/uploadFile";
+import uploadFiles from "./resolvers/uploadFiles";
+import createFiles from "./resolvers/createFiles";
 import deleteFile from "./resolvers/deleteFile";
+import { install, isInstalled } from "./resolvers/install";
 
 const getFile = ({ models }) => models.File;
 
@@ -25,7 +28,6 @@ export default ([
                     name: String
                     size: Int
                     type: String
-                    src: String
                     tags: [String]
                     meta: JSON
                 }
@@ -40,7 +42,6 @@ export default ([
                     name: String
                     type: String
                     size: Int
-                    src: String
                     key: String
                 }
 
@@ -52,6 +53,11 @@ export default ([
                 type UploadFileResponse {
                     error: FileError
                     data: UploadFileResponseData
+                }
+                
+                type UploadFilesResponse {
+                    error: FileError
+                    data: JSON!
                 }
 
                 type FileListMeta {
@@ -82,6 +88,11 @@ export default ([
                     error: FileError
                 }
 
+                type CreateFilesResponse {
+                    data: JSON!
+                    error: FileError
+                }
+
                 type File @key(fields: "id") {
                     id: ID
                     key: String
@@ -92,6 +103,11 @@ export default ([
                     tags: [String]
                     meta: JSON
                     createdOn: DateTime
+                }
+
+                type FilesBooleanResponse {
+                    data: Boolean
+                    error: FileError
                 }
 
                 type FilesQuery {
@@ -107,6 +123,9 @@ export default ([
                     ): FileListResponse
 
                     listTags: [String]
+
+                    # Is File Manager installed?
+                    isInstalled: FilesBooleanResponse
                 }
 
                 type FilesDeleteResponse {
@@ -116,9 +135,18 @@ export default ([
 
                 type FilesMutation {
                     uploadFile(data: UploadFileInput!): UploadFileResponse
+                    uploadFiles(data: [UploadFileInput]!): UploadFilesResponse
                     createFile(data: FileInput!): FileResponse
+                    createFiles(data: [FileInput]!): CreateFilesResponse
                     updateFileBySrc(src: String!, data: FileInput!): FileResponse
                     deleteFile(id: ID!): FilesDeleteResponse
+
+                    # Install File manager
+                    install(srcPrefix: String): FilesBooleanResponse
+                }
+
+                input FilesInstallInput {
+                    srcPrefix: String!
                 }
 
                 extend type Query {
@@ -144,13 +172,17 @@ export default ([
                 FilesQuery: {
                     getFile: resolveGet(getFile),
                     listFiles: listFiles,
-                    listTags: listTags
+                    listTags: listTags,
+                    isInstalled
                 },
                 FilesMutation: {
                     uploadFile,
+                    uploadFiles,
                     createFile: resolveCreate(getFile),
+                    createFiles,
                     updateFileBySrc: updateFileBySrc,
-                    deleteFile
+                    deleteFile,
+                    install
                 }
             }
         },

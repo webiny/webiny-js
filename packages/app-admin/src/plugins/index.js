@@ -42,6 +42,6 @@ export default [
     DefaultHandle,
     Help,
     SendFeedback,
-    // install,
+    install,
     ...init
 ];
