@@ -12,7 +12,7 @@ import {
 } from "@webiny/commodo";
 import { validation } from "@webiny/validation";
 
-const SETTINGS_KEY = "files";
+const SETTINGS_KEY = "file-manager";
 
 export default ({ createBase }) => {
     const FilesSettings = flow(
