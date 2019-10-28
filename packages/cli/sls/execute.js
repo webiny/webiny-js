@@ -1,10 +1,13 @@
-const { join } = require("path");
+const { join, resolve } = require("path");
 const ansiEscapes = require("ansi-escapes");
 const Context = require("@serverless/cli/src/Context");
-
+const { loadEnv } = require("./utils");
 module.exports = async (inputs, method = "default") => {
     const { what, env, debug = false } = inputs;
     const cwd = process.cwd();
+    // Load .env.json from project root
+    await loadEnv(resolve(".env.json"), env, { debug });
+
     const root = join(cwd, what);
     process.chdir(root);
 

@@ -40,6 +40,7 @@ module.exports = async ({ name }) => {
     const files = [
         "README.md",
         "example.gitignore",
+        "example.env.json",
         "webiny.js",
         ".prettierrc.js",
         "babel.config.js",
@@ -47,6 +48,7 @@ module.exports = async ({ name }) => {
     ];
     files.forEach(file => copyFile(`template/${file}`, file));
     fs.renameSync("example.gitignore", ".gitignore");
+    fs.renameSync("example.env.json", ".env.json");
 
     // Setup monorepo packages
     await setupFolder("apps");
