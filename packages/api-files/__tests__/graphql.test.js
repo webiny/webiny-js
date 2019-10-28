@@ -1,40 +1,16 @@
 import { graphql } from "graphql";
-import { MongoClient } from "mongodb";
-import { createHandler, PluginsContainer } from "@webiny/api";
+import { setupSchema } from "@webiny/api/testing";
 import filesPlugins from "@webiny/api-files/plugins";
 
-// Configure default storage
-let config;
-
 describe("GraphQL plugins", () => {
-    let schema;
-    let context;
+    let testing;
 
     beforeAll(async () => {
-        // Setup database
-        const client = await MongoClient.connect(global.__MONGO_URI__, {
-            useNewUrlParser: true,
-            useUnifiedTopology: true
-        });
-
-        config = { client, database: await client.db(global.__MONGO_DB_NAME__) };
-
-        // Configure schema
-        const appConfig = { database: { mongodb: config.database } };
-        const plugins = new PluginsContainer([filesPlugins(appConfig)]);
-
-        schema = (await createHandler({ plugins, config: appConfig })).schema;
-
-        context = {
-            config,
-            plugins,
-            getDatabase: () => config.database
-        };
+        testing = await setupSchema(config => filesPlugins(config));
     });
 
     afterAll(async () => {
-        await config.client.close();
-        await config.database.close();
+        await testing.tearDown();
     });
 
     test("create file", async () => {
@@ -44,11 +20,10 @@ describe("GraphQL plugins", () => {
                     createFile(
                         data: {
                             id: "5c96410bf32d248a1a73b8c3"
-                            key: "filename.png"
+                            key: "/files/filename.png"
                             name: "filename.png"
                             size: 123456
                             type: "image/png"
-                            src: "/files/filename.png"
                             tags: ["sketch"]
                         }
                     ) {
@@ -65,7 +40,7 @@ describe("GraphQL plugins", () => {
             }
         `;
 
-        const response = await graphql(schema, query, {}, context);
+        const response = await graphql(testing.schema, query, {}, testing.context);
 
         expect(response).toMatchObject({
             data: {
@@ -90,15 +65,15 @@ describe("GraphQL plugins", () => {
                             name
                             size
                             type
-                            src
                             tags
+                            key
                         }
                     }
                 }
             }
         `;
 
-        const response = await graphql(schema, query, {}, context);
+        const response = await graphql(testing.schema, query, {}, testing.context);
         expect(response).toMatchObject({
             data: {
                 files: {
@@ -109,7 +84,7 @@ describe("GraphQL plugins", () => {
                                 name: "filename.png",
                                 size: 123456,
                                 type: "image/png",
-                                src: "/files/filename.png",
+                                key: "/files/filename.png",
                                 tags: ["sketch"]
                             }
                         ]
@@ -129,7 +104,7 @@ describe("GraphQL plugins", () => {
                             name
                             size
                             type
-                            src
+                            key
                             tags
                         }
                     }
@@ -137,7 +112,7 @@ describe("GraphQL plugins", () => {
             }
         `;
 
-        const response = await graphql(schema, query, {}, context);
+        const response = await graphql(testing.schema, query, {}, testing.context);
         expect(response).toMatchObject({
             data: {
                 files: {
@@ -147,7 +122,7 @@ describe("GraphQL plugins", () => {
                             name: "filename.png",
                             size: 123456,
                             type: "image/png",
-                            src: "/files/filename.png",
+                            key: "/files/filename.png",
                             tags: ["sketch"]
                         }
                     }
@@ -165,7 +140,7 @@ describe("GraphQL plugins", () => {
             }
         `;
 
-        const response = await graphql(schema, query, {}, context);
+        const response = await graphql(testing.schema, query, {}, testing.context);
         expect(response).toMatchObject({
             data: {
                 files: {
