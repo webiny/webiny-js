@@ -3,12 +3,14 @@ import * as React from "react";
 
 import {
     Dialog,
-    DialogAccept,
+    DialogButton,
     DialogCancel,
     DialogActions,
     DialogTitle,
     DialogContent
 } from "./../Dialog";
+
+import { CircularProgress } from "../Progress";
 
 type Props = {
     // Title of confirmation dialog.
@@ -16,6 +18,9 @@ type Props = {
 
     // Message of confirmation dialog.
     message?: React.Node,
+
+    // This element will be rendered during loading
+    loading?: React.Node,
 
     // An element that will trigger the confirmation dialog.
     children: ({
@@ -33,8 +38,11 @@ type State = {
 class ConfirmationDialog extends React.Component<Props, State> {
     static defaultProps = {
         title: "Confirmation",
-        message: "Are you sure you want to continue?"
+        message: "Are you sure you want to continue?",
+        loading: <CircularProgress />
     };
+
+    __isMounted = false;
 
     callbacks: { onAccept: ?Function, onCancel: ?Function } = {
         onAccept: () => {},
@@ -42,8 +50,17 @@ class ConfirmationDialog extends React.Component<Props, State> {
     };
 
     state = {
-        show: false
+        show: false,
+        loading: false
     };
+
+    componentDidMount() {
+        this.__isMounted = true;
+    }
+
+    componentWillUnmount() {
+        this.__isMounted = false;
+    }
 
     showConfirmation = (onAccept: ?Function, onCancel: ?Function) => {
         this.callbacks = { onAccept, onCancel };
@@ -57,7 +74,11 @@ class ConfirmationDialog extends React.Component<Props, State> {
     onAccept = async () => {
         const { onAccept } = this.callbacks;
         if (typeof onAccept === "function") {
+            this.setState({ loading: true });
             await onAccept();
+            if (this.__isMounted) {
+                this.setState({ loading: false, show: false });
+            }
         }
     };
 
@@ -72,11 +93,12 @@ class ConfirmationDialog extends React.Component<Props, State> {
         return (
             <React.Fragment>
                 <Dialog open={this.state.show} onClose={this.hideConfirmation}>
+                    {this.state.loading ? this.props.loading : null}
                     <DialogTitle>{this.props.title}</DialogTitle>
                     <DialogContent>{this.props.message}</DialogContent>
                     <DialogActions>
                         <DialogCancel onClick={this.onCancel}>Cancel</DialogCancel>
-                        <DialogAccept onClick={this.onAccept}>Confirm</DialogAccept>
+                        <DialogButton onClick={this.onAccept}>Confirm</DialogButton>
                     </DialogActions>
                 </Dialog>
                 {this.props.children({
