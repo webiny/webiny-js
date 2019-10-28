@@ -13,7 +13,9 @@ const FILES_COUNT_IN_EACH_BATCH = 15;
 
 export default async ({ context, INSTALL_EXTRACT_DIR }) => {
     const pagesData = await loadJson(path.join(INSTALL_EXTRACT_DIR, "data/pagesData.json"));
-    const pagesFilesData = await loadJson(path.join(INSTALL_EXTRACT_DIR, "data/pagesFilesData.json"));
+    const pagesFilesData = await loadJson(
+        path.join(INSTALL_EXTRACT_DIR, "data/pagesFilesData.json")
+    );
 
     try {
         const { PbPage } = context.models;
@@ -22,7 +24,13 @@ export default async ({ context, INSTALL_EXTRACT_DIR }) => {
         const savingInstancesProcess = [];
         for (let i = 0; i < pagesData.length; i++) {
             const instance = new PbPage();
-            savingInstancesProcess.push(instance.populate(pagesData[i]).save());
+            instance.populate(pagesData[i]);
+            savingInstancesProcess.push(
+                instance.save().then(() => {
+                    instance.published = true;
+                    return instance.save();
+                })
+            );
         }
 
         await Promise.all(savingInstancesProcess);
