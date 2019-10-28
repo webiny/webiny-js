@@ -5,6 +5,7 @@ import { Elevation } from "@webiny/ui/Elevation";
 import { ReactComponent as AddIcon } from "@webiny/app-page-builder/editor/assets/icons/add.svg";
 import { Tooltip } from "@webiny/ui/Tooltip";
 import { Typography } from "@webiny/ui/Typography";
+import { CircularProgress } from "@webiny/ui/Progress";
 import { ConfirmationDialog } from "@webiny/ui/ConfirmationDialog";
 import { ReactComponent as EditIcon } from "./icons/round-edit-24px.svg";
 import { ReactComponent as DeleteIcon } from "./icons/round-close-24px.svg";
@@ -35,6 +36,7 @@ const BlockPreview = props => {
                         <ConfirmationDialog
                             title="Delete block"
                             message="Are you sure you want to delete this block?"
+                            loading={<CircularProgress label={"Deleting block..."} />}
                         >
                             {({ showConfirmation }) => (
                                 <>

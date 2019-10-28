@@ -152,7 +152,11 @@ const SearchBar = props => {
         }
 
         unregisterPlugin(plugin.name);
-        showSnackbar("Block " + plugin.title + " successfully deleted.");
+        showSnackbar(
+            <span>
+                Block <strong>{plugin.title}</strong> was deleted!
+            </span>
+        );
     }, []);
 
     const updateBlock = useCallback(
@@ -179,8 +183,12 @@ const SearchBar = props => {
 
             setEditingBlock(null);
             setTimeout(() => {
-                // For better UX, success message is shown after 300ms has passed.
-                showSnackbar("Block " + editingBlock.title + " successfully saved.");
+                // For better UX, success message is shown after 300ms.
+                showSnackbar(
+                    <span>
+                        Block <strong>{name}</strong> was saved!
+                    </span>
+                );
             }, 300);
         },
         [editingBlock]
@@ -239,7 +247,7 @@ const SearchBar = props => {
                 </LeftPanel>
                 <RightPanel span={9}>
                     <Mutation mutation={UPDATE_ELEMENT}>
-                        {updateElement => (
+                        {(updateElement, { loading: updateInProgress }) => (
                             <Mutation mutation={DELETE_ELEMENT}>
                                 {deleteElement =>
                                     activeCategory && (
@@ -272,6 +280,7 @@ const SearchBar = props => {
                                                     }
                                                     open={!!editingBlock}
                                                     plugin={editingBlock}
+                                                    loading={updateInProgress}
                                                 />
                                             </SimpleFormContent>
                                         </SimpleForm>
