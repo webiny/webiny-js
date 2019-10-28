@@ -43,7 +43,6 @@ module.exports = async ({ name }) => {
         "example.env.json",
         "webiny.js",
         ".prettierrc.js",
-        "babel.config.js",
         "package.json"
     ];
     files.forEach(file => copyFile(`template/${file}`, file));
