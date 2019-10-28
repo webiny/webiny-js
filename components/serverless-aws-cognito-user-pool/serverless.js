@@ -178,6 +178,10 @@ class ServerlessAwsCognito extends Component {
     }
 
     async remove() {
+        if (!this.state.inputs) {
+            return;
+        }
+
         const { region } = this.state.inputs;
         const cognito = new Cognito({ region });
         const UserPoolId = this.state.output.userPool.Id;
