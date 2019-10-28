@@ -1,30 +1,8 @@
-const fileFields = /* GraphQL */ `
-    {
-        __typename
-        id
-        name
-        src
-        size
-        type
-        tags
-        createdOn
-    }
-`;
-
-export const UPLOAD_FILE = /* GraphQL */`
-    mutation UploadFile($data: UploadFileInput!) {
+export const UPLOAD_FILES = /* GraphQL */ `
+    mutation UploadFiles($data: [UploadFileInput]!) {
         files {
-            uploadFile(data: $data) {
-                data {
-                    data
-                    file {
-                        src
-                        type
-                        name
-                        size
-                        key
-                    }
-                }
+            uploadFiles(data: $data) {
+                data
                 error {
                     message
                 }
@@ -33,14 +11,13 @@ export const UPLOAD_FILE = /* GraphQL */`
     }
 `;
 
-export const CREATE_FILE = /* GraphQL */`
-    mutation CreateFile($data: FileInput!) {
+export const CREATE_FILES = /* GraphQL */ `
+    mutation CreateFile($data: [FileInput]!) {
         files {
-            createFile(data: $data) {
+            createFiles(data: $data) {
                 error {
                     message
                 }
-                data ${fileFields}
             }
         }
     }

@@ -2,71 +2,110 @@ import get from "lodash.get";
 import pick from "lodash.pick";
 import elementsFilesData from "./../importData/elementsFilesData";
 import elementsData from "./../importData/elementsData";
-import { CREATE_FILE, UPLOAD_FILE } from "./graphql";
+import { CREATE_FILES, UPLOAD_FILES } from "./graphql";
 import { GraphQLClient } from "graphql-request";
 import fs from "fs-extra";
 import path from "path";
 import uploadToS3 from "./uploadToS3";
 import sleep from "./sleep";
+import chunk from "lodash.chunk";
+
+const FILES_COUNT_IN_EACH_BATCH = 7;
 
 export default async ({ context, INSTALL_EXTRACT_DIR }) => {
-    const { PbPageElement } = context.models;
+    try {
+        const { PbPageElement } = context.models;
 
-    // 1. Save page elements.
-    const saving = [];
-    for (let i = 0; i < elementsData.length; i++) {
-        const instance = new PbPageElement();
-        saving.push(instance.populate(elementsData[i]).save());
-    }
-
-    await console.log("saveElements: instances are being saved.");
-
-    // 2. Save files.
-    // 2.1 Get pre-signed POST payloads.
-    const client = new GraphQLClient(process.env.FILES_API_URL, {
-        headers: {
-            Authorization: context.token
-        }
-    });
-
-    let filesWithPreSignedPostPayload = [];
-    for (let i = 0; i < elementsFilesData.length; i++) {
-        if (i % 20 === 0) {
-            await sleep(1000);
+        // 1. Save page elements.
+        const savingInstancesProcess = [];
+        for (let i = 0; i < elementsData.length; i++) {
+            const instance = new PbPageElement();
+            savingInstancesProcess.push(instance.populate(elementsData[i]).save());
         }
 
-        const elementsFileData = elementsFilesData[i];
-        filesWithPreSignedPostPayload.push(
-            client
-                .request(UPLOAD_FILE, {
-                    data: pick(elementsFileData, ["name", "size", "type"])
-                })
-                .then(async response => {
-                    const { file, data } = get(response, "files.uploadFile.data");
-                    const buffer = fs.readFileSync(
-                        path.join(
-                            INSTALL_EXTRACT_DIR,
-                            "blocks/images/",
-                            elementsFileData.__physicalFileName
-                        )
-                    );
+        await Promise.all(savingInstancesProcess);
 
-                    return uploadToS3(buffer, data).then(() =>
-                        client
-                            .request(CREATE_FILE, {
-                                data: {
-                                    meta: elementsFileData.meta,
-                                    ...file,
-                                    id: elementsFileData.id
-                                }
-                            })
-                            .then(async () => await console.log(`File at index ${i} was successfully saved.`))
-                    );
-                })
+        await console.log("saveElements: PbPageElement instances saved successfully.");
+
+        await console.log("saveElements: moving on to file uploads...");
+
+        // 2. Save files.
+        // 2.1 Get pre-signed POST payloads.
+        const client = new GraphQLClient(process.env.FILES_API_URL, {
+            headers: {
+                Authorization: context.token
+            }
+        });
+
+        // Contains all parallel file saving chunks.
+        const chunksProcesses = [];
+
+        // Gives an array of chunks (each consists of FILES_COUNT_IN_EACH_BATCH items).
+        const filesChunks = chunk(elementsFilesData, FILES_COUNT_IN_EACH_BATCH);
+        await console.log(
+            `saveElements: there are total of ${filesChunks.length} chunks of 5 files to save.`
         );
-    }
 
-    // Wait for all to finish.
-    await console.log("saveElements: process done.");
-    return Promise.all([...filesWithPreSignedPostPayload, ...saving]);
+        for (let i = 0; i < filesChunks.length; i++) {
+            chunksProcesses.push(
+                // eslint-disable-next-line
+                new Promise(async (promise, reject) => {
+                    try {
+                        await console.log(`saveElements: started with chunk index ${i}`);
+                        let filesChunk = filesChunks[i];
+
+                        // 1. Get pre-signed POST payloads for current files chunk.
+                        const response = await client.request(UPLOAD_FILES, {
+                            data: filesChunk.map(item => pick(item, ["name", "size", "type"]))
+                        });
+
+                        const preSignedPostPayloads =
+                            get(response, "files.uploadFiles.data.data") || [];
+                        await console.log(
+                            `saveElements: received pre-signed POST payloads for ${preSignedPostPayloads.length} files.`
+                        );
+
+                        // 2. Use received pre-signed POST payloads to upload files directly to S3.
+                        const s3UploadProcess = [];
+                        for (let j = 0; j < filesChunk.length; j++) {
+                            const currentFile = filesChunk[j];
+                            const buffer = fs.readFileSync(
+                                path.join(
+                                    INSTALL_EXTRACT_DIR,
+                                    "blocks/images/",
+                                    currentFile.__physicalFileName
+                                )
+                            );
+
+                            s3UploadProcess.push(uploadToS3(buffer, preSignedPostPayloads[j].data));
+                        }
+
+                        await Promise.all(s3UploadProcess);
+
+                        // 3. Now that all of the files were successfully uploaded, we create files entries in the database.
+                        await console.log("saveElements: saving File entries into the database...");
+                        await client.request(CREATE_FILES, {
+                            data: filesChunk.map((item, i) => {
+                                return {
+                                    meta: item.meta,
+                                    ...preSignedPostPayloads[i].file,
+                                    id: item.id
+                                };
+                            })
+                        });
+
+                        promise();
+                    } catch (e) {
+                        reject(e);
+                    }
+                })
+            );
+
+            await sleep(500);
+        }
+
+        return Promise.all(chunksProcesses);
+    } catch (e) {
+        return await console.log(`saveElements: error occurred: ${e.stack}`);
+    }
 };
