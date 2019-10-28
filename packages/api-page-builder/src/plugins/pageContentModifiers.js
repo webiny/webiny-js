@@ -1,19 +1,35 @@
 import { set, get } from "lodash";
 
+// TODO: Do not read the database directly. Do it via GraphQL.
 const getFileById = async ({ id, context }) => {
     // Rethink this part, get files via GraphQL directly, but via a single-gql-call-fetch-everything.
     const { getDatabase } = context;
-    const searchResults = await getDatabase()
-        .collection("File")
-        .find({ id, deleted: { $ne: true } })
-        .project({ _id: 0, id: 1, src: 1 })
-        .toArray();
 
-    if (!Array.isArray(searchResults)) {
+    try {
+        if (!context.files) {
+            // eslint-disable-next-line
+            context.files = {
+                settings: await getDatabase()
+                    .collection("Settings")
+                    .findOne({ key: "file-manager", deleted: { $ne: true } })
+            };
+        }
+
+        const result = await getDatabase()
+            .collection("File")
+            .findOne({ id, deleted: { $ne: true } });
+
+        if (!result) {
+            return null;
+        }
+
+        return {
+            id: result.id,
+            src: get(context, "files.settings.data.srcPrefix") + result.key
+        };
+    } catch (e) {
         return null;
     }
-
-    return searchResults[0] || null;
 };
 
 export default [
