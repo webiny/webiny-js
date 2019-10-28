@@ -85,7 +85,7 @@ const SaveAction = (props: Props) => {
         showSnackbar(
             <span>
                 {formData.type[0].toUpperCase() + formData.type.slice(1)}{" "}
-                <strong>{data.name}</strong> saved!
+                <strong>{data.name}</strong> was saved!
             </span>
         );
     });

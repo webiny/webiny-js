@@ -1,7 +1,7 @@
 const fs = require("fs");
 const path = require("path");
-const { GetEnvVars } = require("env-cmd");
 const { Component } = require("@serverless/core");
+const { loadEnv } = require("../utils");
 
 const {
     getTemplate,
@@ -38,19 +38,8 @@ class Template extends Component {
     async default(inputs = {}) {
         validateInputs(inputs);
 
-        const envJson = `.env.json`;
-
-        // Load ENV variables
-        if (fs.existsSync(envJson)) {
-            const env = await GetEnvVars({
-                rc: {
-                    environments: ["default", inputs.env],
-                    filePath: path.join(envJson)
-                }
-            });
-
-            Object.assign(process.env, env);
-        }
+        // Load .env.json from cwd (this will change depending on command you ran)
+        await loadEnv(path.resolve(".env.json"), inputs.env, { debug: inputs.debug });
 
         // Run template
         return await this.deploy({ ...inputs, template: findFile() });

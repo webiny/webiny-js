@@ -21,7 +21,7 @@ import {
 const t = i18n.ns("app-security/admin/users/form");
 
 const UsersForm = () => {
-    const { form } = useCrud();
+    const { form: crudForm } = useCrud();
 
     const auth = getPlugins("security-authentication-provider")
         .filter(pl => pl.hasOwnProperty("renderUserForm"))
@@ -34,10 +34,10 @@ const UsersForm = () => {
     }
 
     return (
-        <Form {...form}>
+        <Form {...crudForm}>
             {({ data, form, Bind }) => (
                 <SimpleForm>
-                    {form.loading && <CircularProgress />}
+                    {crudForm.loading && <CircularProgress />}
                     <SimpleFormHeader title={data.fullName || t`N/A`} />
                     <SimpleFormContent>
                         {auth.renderUserForm({

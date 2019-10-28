@@ -58,7 +58,7 @@ const SaveDialog = React.memo(
         const blockCategoriesOptions = getPlugins("pb-editor-block-category").map(
             (item: Object) => {
                 return {
-                    value: item.name,
+                    value: item.categoryName,
                     label: item.title
                 };
             }
@@ -72,13 +72,13 @@ const SaveDialog = React.memo(
                         await onSubmit(data);
                         setLoading(false);
                     }}
-                    data={{ type, category: "pb-editor-block-category-general" }}
+                    data={{ type, category: "general" }}
                 >
                     {({ data, submit, Bind }) => (
                         <React.Fragment>
                             <DialogTitle>Save {type}</DialogTitle>
                             <DialogContent>
-                                {loading && <CircularProgress />}
+                                {loading && <CircularProgress label={`Saving ${type}...`} />}
 
                                 {element.source && (
                                     <Grid>

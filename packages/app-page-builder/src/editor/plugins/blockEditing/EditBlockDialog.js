@@ -13,6 +13,7 @@ import {
 import { validation } from "@webiny/validation";
 import { Input } from "@webiny/ui/Input";
 import { Select } from "@webiny/ui/Select";
+import { CircularProgress } from "@webiny/ui/Progress";
 import { Grid, Cell } from "@webiny/ui/Grid";
 import { Form } from "@webiny/form";
 import styled from "@emotion/styled";
@@ -47,7 +48,7 @@ type Props = {
 
 const EditBlockDialog = React.memo(
     (props: Props) => {
-        const { open, onClose, onSubmit, plugin } = props;
+        const { open, onClose, onSubmit, plugin, loading } = props;
 
         const blockCategoriesOptions = getPlugins("pb-editor-block-category").map(
             (item: Object) => ({
@@ -58,6 +59,7 @@ const EditBlockDialog = React.memo(
 
         return (
             <Dialog open={open} onClose={onClose} className={narrowDialog}>
+                {loading && <CircularProgress label={"Saving block..."} />}
                 {plugin && (
                     <Form onSubmit={onSubmit} data={plugin}>
                         {({ data, submit, Bind }) => (
@@ -110,7 +112,7 @@ const EditBlockDialog = React.memo(
         );
     },
     (props, nextProps) => {
-        return props.open === nextProps.open;
+        return props.open === nextProps.open && props.loading === nextProps.loading;
     }
 );
 

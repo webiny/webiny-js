@@ -57,8 +57,7 @@ export default ({ createBase, context, PbCategory, PbSettings }) => {
                         instance.locked = true;
                         instance.publishedOn = new Date();
                         instance.registerHookCallback("beforeSave", async () => {
-                            console.log("TODO: setOnce");
-
+                            // TODO: setOnce
                             // Deactivate previously published revision
                             const publishedRev: PbPage = (await PbPage.findOne({
                                 query: { published: true, parent: instance.parent }
@@ -92,19 +91,19 @@ export default ({ createBase, context, PbCategory, PbSettings }) => {
                 return new Promise(async resolve => {
                     const settings = await PbSettings.load();
                     resolve(settings.data.pages.home === this.parent);
-                });
+                }).catch(() => false);
             },
             get isErrorPage() {
                 return new Promise(async resolve => {
                     const settings = await PbSettings.load();
                     resolve(settings.data.pages.error === this.parent);
-                });
+                }).catch(() => false);
             },
             get isNotFoundPage() {
                 return new Promise(async resolve => {
                     const settings = await PbSettings.load();
                     resolve(settings.data.pages.notFound === this.parent);
-                });
+                }).catch(() => false);
             },
             get revisions() {
                 return new Promise(async resolve => {

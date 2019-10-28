@@ -10,7 +10,7 @@ const fields = `
 `;
 
 export const LIST_CATEGORIES = gql`
-    query LoadCategories(
+    query PbLoadCategories(
         $where: JSON
         $sort: JSON
         $page: Int
@@ -44,8 +44,23 @@ export const LIST_CATEGORIES = gql`
     }
 `;
 
+export const LIST_CATEGORIES_BY_NAME = gql`
+    query PbListCategoriesByName {
+        pageBuilder {
+            categories: listCategories(sort: { name: 1 }, perPage: 100) {
+                data {
+                    id
+                    name
+                    slug
+                    url
+                }
+            }
+        }
+    }
+`;
+
 export const READ_CATEGORY = gql`
-    query LoadCategory($id: ID!) {
+    query PbLoadCategory($id: ID!) {
         pageBuilder {
             category: getCategory(id: $id){
                 data {
@@ -61,7 +76,7 @@ export const READ_CATEGORY = gql`
 `;
 
 export const CREATE_CATEGORY = gql`
-    mutation CreateCategory($data: PbCategoryInput!){
+    mutation PbCreateCategory($data: PbCategoryInput!){
         pageBuilder {
             category: createCategory(data: $data) {
                 data {
@@ -78,7 +93,7 @@ export const CREATE_CATEGORY = gql`
 `;
 
 export const UPDATE_CATEGORY = gql`
-    mutation UpdateCategory($id: ID!, $data: PbCategoryInput!){
+    mutation PbUpdateCategory($id: ID!, $data: PbCategoryInput!){
         pageBuilder {
             category: updateCategory(id: $id, data: $data) {
                 data {
@@ -95,7 +110,7 @@ export const UPDATE_CATEGORY = gql`
 `;
 
 export const DELETE_CATEGORY = gql`
-    mutation DeleteCategory($id: ID!) {
+    mutation PbDeleteCategory($id: ID!) {
         pageBuilder {
             deleteCategory(id: $id) {
                 data

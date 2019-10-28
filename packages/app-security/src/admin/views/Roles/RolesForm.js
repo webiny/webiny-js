@@ -24,13 +24,13 @@ const t = i18n.ns("app-security/admin/roles/form");
 const RoleForm = () => {
     const scopesQuery = useQuery(LIST_SCOPES);
     const scopes = get(scopesQuery, "data.security.scopes") || [];
-    const { form } = useCrud();
+    const { form: crudForm } = useCrud();
 
     return (
-        <Form {...form}>
+        <Form {...crudForm}>
             {({ data, form, Bind }) => (
                 <SimpleForm>
-                    {form.loading && <CircularProgress />}
+                    {crudForm.loading && <CircularProgress />}
                     <SimpleFormHeader title={data.name ? data.name : t`Untitled`} />
                     <SimpleFormContent>
                         <Grid>

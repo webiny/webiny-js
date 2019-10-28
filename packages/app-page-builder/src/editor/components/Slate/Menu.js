@@ -89,7 +89,7 @@ class Menu extends React.Component<*, *> {
                     <React.Fragment>
                         <Elevation
                             z={1}
-                            elementRef={this.menu}
+                            ref={this.menu}
                             className={hoverMenuStyle}
                             style={{ ...defaultStyle, ...transitionStyles[state] }}
                         >

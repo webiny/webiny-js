@@ -16,7 +16,7 @@ export type WithConfirmationProps = {
 export const withConfirmation = (dialogProps: WithConfirmationParams): Function => {
     return (Component: typeof React.Component) => {
         return function withConfirmationRender(ownProps) {
-            const props = typeof dialogProps === "function" ? dialogProps(ownProps) : ownProps;
+            const props = typeof dialogProps === "function" ? dialogProps(ownProps) : dialogProps;
             return (
                 <ConfirmationDialog {...props}>
                     {({ showConfirmation }) => (

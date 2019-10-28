@@ -24,14 +24,14 @@ const fields = /* GraphQL */ `
 
 const graphql = {
     query: gql`
-        {
+        query PbGetSettings{
             pageBuilder {
                 getSettings ${fields}
             }
         }
     `,
     mutation: gql`
-        mutation updateSettings($data: PbSettingsInput) {
+        mutation PbUpdateSettings($data: PbSettingsInput) {
             pageBuilder {
                 updateSettings(data: $data) ${fields}
             }

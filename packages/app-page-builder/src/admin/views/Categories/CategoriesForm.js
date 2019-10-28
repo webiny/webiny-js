@@ -22,13 +22,13 @@ const t = i18n.ns("app-page-builder/admin/categories/form");
 
 const CategoriesForm = () => {
     const { theme } = usePageBuilder();
-    const { form } = useCrud();
+    const { form: crudForm } = useCrud();
 
     return (
-        <Form {...form}>
+        <Form {...crudForm}>
             {({ data, form, Bind }) => (
                 <SimpleForm>
-                    {form.loading && <CircularProgress />}
+                    {crudForm.loading && <CircularProgress />}
                     <SimpleFormHeader title={data.name || t`New Category`} />
                     <SimpleFormContent>
                         <Grid>
