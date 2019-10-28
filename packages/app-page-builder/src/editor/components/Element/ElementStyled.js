@@ -45,7 +45,7 @@ export const ElementContainer = React.memo(
         const color = active ? "var(--mdc-theme-primary)" : "var(--mdc-theme-secondary)";
 
         return {
-            width: "100%",
+            /*width: "100%", // removed this because it's breaking positioning when a Row has a fixed width */
             position: "relative",
             flex: "100%",
             padding: 0,
