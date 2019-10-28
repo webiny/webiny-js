@@ -9,9 +9,7 @@ export default ({ database }) => ({
     name: "graphql-context-models",
     type: "graphql-context",
     apply(context) {
-        const driver = new MongoDbDriver({
-            database: database.mongodb
-        });
+        const driver = new MongoDbDriver({ database });
 
         const createBase = () =>
             flow(

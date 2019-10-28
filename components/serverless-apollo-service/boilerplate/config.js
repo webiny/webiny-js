@@ -26,9 +26,7 @@ export default async () => {
             introspection: process.env.GRAPHQL_INTROSPECTION === "true",
             playground: process.env.GRAPHQL_PLAYGROUND === "true"
         },
-        database: {
-            mongodb: database
-        },
+        database,
         security: {
             token: {
                 secret: process.env.JWT_SECRET,

@@ -71,10 +71,7 @@ export const createHandler = async ({ config, plugins }: CreateHandlerParamsType
             const reqContext = {
                 event,
                 config,
-                plugins,
-                getDatabase() {
-                    return config.database.mongodb;
-                }
+                plugins
             };
 
             if (typeof apolloConfig.context === "function") {
