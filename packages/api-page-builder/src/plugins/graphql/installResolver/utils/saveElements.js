@@ -9,11 +9,13 @@ import sleep from "./sleep";
 import chunk from "lodash.chunk";
 const loadJson = require("load-json-file");
 
-const FILES_COUNT_IN_EACH_BATCH = 7;
+const FILES_COUNT_IN_EACH_BATCH = 15;
 
 export default async ({ context, INSTALL_EXTRACT_DIR }) => {
     const elementsData = await loadJson(path.join(INSTALL_EXTRACT_DIR, "data/elementsData.json"));
-    const elementsFilesData = await loadJson(path.join(INSTALL_EXTRACT_DIR, "data/elementsFilesData.json"));
+    const elementsFilesData = await loadJson(
+        path.join(INSTALL_EXTRACT_DIR, "data/elementsFilesData.json")
+    );
 
     try {
         const { PbPageElement } = context.models;
@@ -45,7 +47,7 @@ export default async ({ context, INSTALL_EXTRACT_DIR }) => {
         // Gives an array of chunks (each consists of FILES_COUNT_IN_EACH_BATCH items).
         const filesChunks = chunk(elementsFilesData, FILES_COUNT_IN_EACH_BATCH);
         await console.log(
-            `saveElements: there are total of ${filesChunks.length} chunks of 5 files to save.`
+            `saveElements: there are total of ${filesChunks.length} chunks of ${FILES_COUNT_IN_EACH_BATCH} files to save.`
         );
 
         for (let i = 0; i < filesChunks.length; i++) {
@@ -103,7 +105,7 @@ export default async ({ context, INSTALL_EXTRACT_DIR }) => {
                 })
             );
 
-            await sleep(500);
+            await sleep(750);
         }
 
         return Promise.all(chunksProcesses);

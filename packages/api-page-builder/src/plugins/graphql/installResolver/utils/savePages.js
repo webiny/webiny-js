@@ -9,7 +9,7 @@ import sleep from "./sleep";
 import chunk from "lodash.chunk";
 const loadJson = require("load-json-file");
 
-const FILES_COUNT_IN_EACH_BATCH = 7;
+const FILES_COUNT_IN_EACH_BATCH = 15;
 
 export default async ({ context, INSTALL_EXTRACT_DIR }) => {
     const pagesData = await loadJson(path.join(INSTALL_EXTRACT_DIR, "data/pagesData.json"));
@@ -103,7 +103,7 @@ export default async ({ context, INSTALL_EXTRACT_DIR }) => {
                 })
             );
 
-            await sleep(300);
+            await sleep(750);
         }
 
         return Promise.all(chunksProcesses);
