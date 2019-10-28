@@ -8,7 +8,6 @@ import {
     number,
     string,
     withName,
-    withHooks,
     withProps
 } from "@webiny/commodo";
 
@@ -63,19 +62,6 @@ export default ({ createBase, context }) => {
                 })
             )
         }),
-        withHooks({
-            async beforeCreate() {
-                if (!this.src.startsWith("/") || this.src.startsWith("http")) {
-                    throw Error(
-                        `File "src" must be a relative path, starting with forward slash ("/").`
-                    );
-                }
-
-                if (await File.findOne({ query: { src: this.src } })) {
-                    throw Error(`File "src" must be unique (used "${this.src}").`);
-                }
-            }
-        })
     )(createBase());
 
     return File;

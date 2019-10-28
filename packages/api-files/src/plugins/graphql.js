@@ -9,6 +9,8 @@ import listFiles from "./resolvers/listFiles";
 import listTags from "./resolvers/listTags";
 import updateFileBySrc from "./resolvers/updateFileBySrc";
 import uploadFile from "./resolvers/uploadFile";
+import uploadFiles from "./resolvers/uploadFiles";
+import createFiles from "./resolvers/createFiles";
 import deleteFile from "./resolvers/deleteFile";
 import { install, isInstalled } from "./resolvers/install";
 
@@ -26,7 +28,6 @@ export default ([
                     name: String
                     size: Int
                     type: String
-                    src: String
                     tags: [String]
                     meta: JSON
                 }
@@ -41,7 +42,6 @@ export default ([
                     name: String
                     type: String
                     size: Int
-                    src: String
                     key: String
                 }
 
@@ -53,6 +53,11 @@ export default ([
                 type UploadFileResponse {
                     error: FileError
                     data: UploadFileResponseData
+                }
+                
+                type UploadFilesResponse {
+                    error: FileError
+                    data: JSON!
                 }
 
                 type FileListMeta {
@@ -80,6 +85,11 @@ export default ([
 
                 type FileResponse {
                     data: File
+                    error: FileError
+                }
+
+                type CreateFilesResponse {
+                    data: JSON!
                     error: FileError
                 }
 
@@ -125,7 +135,9 @@ export default ([
 
                 type FilesMutation {
                     uploadFile(data: UploadFileInput!): UploadFileResponse
+                    uploadFiles(data: [UploadFileInput]!): UploadFilesResponse
                     createFile(data: FileInput!): FileResponse
+                    createFiles(data: [FileInput]!): CreateFilesResponse
                     updateFileBySrc(src: String!, data: FileInput!): FileResponse
                     deleteFile(id: ID!): FilesDeleteResponse
 
@@ -165,7 +177,9 @@ export default ([
                 },
                 FilesMutation: {
                     uploadFile,
+                    uploadFiles,
                     createFile: resolveCreate(getFile),
+                    createFiles,
                     updateFileBySrc: updateFileBySrc,
                     deleteFile,
                     install
