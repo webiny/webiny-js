@@ -247,14 +247,18 @@ const syncState = async (allComponents, instance) => {
     for (const alias in instance.state.components || {}) {
         if (!allComponents[alias]) {
             const fn = async () => {
-                const component = await instance.load(instance.state.components[alias], alias);
-                instance.context.status("Removing", alias);
-                await component.remove();
-                trackComponent({
-                    context: instance.context,
-                    component: instance.state.components[alias],
-                    method: "remove"
-                });
+                try {
+                    const component = await instance.load(instance.state.components[alias], alias);
+                    instance.context.status("Removing", alias);
+                    await component.remove();
+                    trackComponent({
+                        context: instance.context,
+                        component: instance.state.components[alias],
+                        method: "remove"
+                    });
+                } catch (e) {
+                    instance.context.log(`An error occurred while removing ${alias}: ${e.stack}`);
+                }
             };
 
             promises.push(fn());
