@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.1.21](https://github.com/Webiny/webiny-js/compare/@webiny/serverless-page-builder@0.1.20...@webiny/serverless-page-builder@0.1.21) (2019-10-29)
+
+
+### Bug Fixes
+
+* add installation folder to build script. ([7f4248a](https://github.com/Webiny/webiny-js/commit/7f4248a))
+
+
+
+
+
 ## [0.1.20](https://github.com/Webiny/webiny-js/compare/@webiny/serverless-page-builder@0.1.19...@webiny/serverless-page-builder@0.1.20) (2019-10-29)
 
 

@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.8.0](https://github.com/webiny/webiny-js/compare/@webiny/cli@0.7.0...@webiny/cli@0.8.0) (2019-10-29)
+
+
+### Features
+
+* generate database name using api ID. ([e436663](https://github.com/webiny/webiny-js/commit/e436663))
+
+
+
+
+
 # [0.7.0](https://github.com/webiny/webiny-js/compare/@webiny/cli@0.6.0...@webiny/cli@0.7.0) (2019-10-29)
 
 
