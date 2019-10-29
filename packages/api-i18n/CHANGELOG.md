@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.1.11](https://github.com/webiny/webiny-js/compare/@webiny/api-i18n@0.1.10...@webiny/api-i18n@0.1.11) (2019-10-29)
+
+
+### Bug Fixes
+
+* remove getDatabase from context and remove "mongodb" key from config. ([191e419](https://github.com/webiny/webiny-js/commit/191e419))
+
+
+
+
+
 ## [0.1.10](https://github.com/webiny/webiny-js/compare/@webiny/api-i18n@0.1.9...@webiny/api-i18n@0.1.10) (2019-10-23)
 
 **Note:** Version bump only for package @webiny/api-i18n

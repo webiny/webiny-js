@@ -1,6 +1,6 @@
 {
   "name": "@webiny/serverless-aws-api-gateway",
-  "version": "0.1.5",
+  "version": "0.1.6",
   "main": "./serverless.js",
   "publishConfig": {
     "access": "public"

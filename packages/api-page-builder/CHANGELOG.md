@@ -3,6 +3,32 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.1.11](https://github.com/webiny/webiny-js/compare/@webiny/api-page-builder@0.1.10...@webiny/api-page-builder@0.1.11) (2019-10-29)
+
+
+### Bug Fixes
+
+* check if there are existing entries before saving ([556520c](https://github.com/webiny/webiny-js/commit/556520c))
+* fix message ([00cb94e](https://github.com/webiny/webiny-js/commit/00cb94e))
+* handle errors on missing settings or lack of settings values. ([07f61d8](https://github.com/webiny/webiny-js/commit/07f61d8))
+* import ([748bea5](https://github.com/webiny/webiny-js/commit/748bea5))
+* increase number of concurrent requests ([b0a6854](https://github.com/webiny/webiny-js/commit/b0a6854))
+* increase number of files in a single batch ([8ffffc7](https://github.com/webiny/webiny-js/commit/8ffffc7))
+* optimize initial files installation ([c2007f1](https://github.com/webiny/webiny-js/commit/c2007f1))
+* publish initial pages ([c9c1b31](https://github.com/webiny/webiny-js/commit/c9c1b31))
+* remove getDatabase from context and remove "mongodb" key from config. ([191e419](https://github.com/webiny/webiny-js/commit/191e419))
+* remove old folder ([629eb3d](https://github.com/webiny/webiny-js/commit/629eb3d))
+* return "src" dynamically ([ecc1e09](https://github.com/webiny/webiny-js/commit/ecc1e09))
+* update deps ([eb28320](https://github.com/webiny/webiny-js/commit/eb28320))
+* update on onInstalled field ([dd2eab7](https://github.com/webiny/webiny-js/commit/dd2eab7))
+* use async all the time ([9b9b106](https://github.com/webiny/webiny-js/commit/9b9b106))
+* use JSON data from installation ZIP, not from code ([e20c647](https://github.com/webiny/webiny-js/commit/e20c647))
+* wrong keys ([444ea25](https://github.com/webiny/webiny-js/commit/444ea25))
+
+
+
+
+
 ## [0.1.10](https://github.com/webiny/webiny-js/compare/@webiny/api-page-builder@0.1.9...@webiny/api-page-builder@0.1.10) (2019-10-23)
 
 **Note:** Version bump only for package @webiny/api-page-builder

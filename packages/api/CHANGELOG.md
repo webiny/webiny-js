@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.3.0](https://github.com/webiny/webiny-js/compare/@webiny/api@0.2.5...@webiny/api@0.3.0) (2019-10-29)
+
+
+### Bug Fixes
+
+* remove getDatabase from context and remove "mongodb" key from config. ([191e419](https://github.com/webiny/webiny-js/commit/191e419))
+
+
+### Features
+
+* add helper to bootstrap graphql schema for testing. ([03a5d98](https://github.com/webiny/webiny-js/commit/03a5d98))
+
+
+
+
+
 ## [0.2.5](https://github.com/webiny/webiny-js/compare/@webiny/api@0.2.4...@webiny/api@0.2.5) (2019-10-23)
 
 **Note:** Version bump only for package @webiny/api

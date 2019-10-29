@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.2.4](https://github.com/webiny/webiny-js/compare/@webiny/app-i18n@0.2.3...@webiny/app-i18n@0.2.4) (2019-10-29)
+
+
+### Bug Fixes
+
+* add progress label. ([181f3e6](https://github.com/webiny/webiny-js/commit/181f3e6))
+* rename variables to fix name clash in form views. ([108586d](https://github.com/webiny/webiny-js/commit/108586d))
+
+
+
+
+
 ## [0.2.3](https://github.com/webiny/webiny-js/compare/@webiny/app-i18n@0.2.2...@webiny/app-i18n@0.2.3) (2019-10-24)
 
 **Note:** Version bump only for package @webiny/app-i18n

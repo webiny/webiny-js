@@ -3,6 +3,23 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.4.0](https://github.com/webiny/webiny-js/compare/@webiny/app-admin@0.3.3...@webiny/app-admin@0.4.0) (2019-10-29)
+
+
+### Bug Fixes
+
+* unset "id" from "data" object on update. ([33db3a1](https://github.com/webiny/webiny-js/commit/33db3a1))
+
+
+### Features
+
+* add support for mutation options on CrudContext. ([519f655](https://github.com/webiny/webiny-js/commit/519f655))
+* implement file-manager install step ([94c44b8](https://github.com/webiny/webiny-js/commit/94c44b8))
+
+
+
+
+
 ## [0.3.3](https://github.com/webiny/webiny-js/compare/@webiny/app-admin@0.3.2...@webiny/app-admin@0.3.3) (2019-10-24)
 
 **Note:** Version bump only for package @webiny/app-admin

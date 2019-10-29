@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.1.6](https://github.com/Webiny/webiny-js/compare/@webiny/serverless-aws-api-gateway@0.1.5...@webiny/serverless-aws-api-gateway@0.1.6) (2019-10-29)
+
+
+### Bug Fixes
+
+* add retry to API removal. ([cd29a45](https://github.com/Webiny/webiny-js/commit/cd29a45))
+* improve resource naming and add binaryMediaTypes support. ([42f8da0](https://github.com/Webiny/webiny-js/commit/42f8da0))
+
+
+
+
+
 ## [0.1.5](https://github.com/Webiny/webiny-js/compare/@webiny/serverless-aws-api-gateway@0.1.4...@webiny/serverless-aws-api-gateway@0.1.5) (2019-10-24)
 
 

@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.2.3](https://github.com/Webiny/webiny-js/compare/@webiny/serverless-aws-cognito-user-pool@0.2.2...@webiny/serverless-aws-cognito-user-pool@0.2.3) (2019-10-29)
+
+
+### Bug Fixes
+
+* do not run remove if already removed ([84ec3b2](https://github.com/Webiny/webiny-js/commit/84ec3b2))
+
+
+
+
+
 ## [0.2.2](https://github.com/Webiny/webiny-js/compare/@webiny/serverless-aws-cognito-user-pool@0.2.1...@webiny/serverless-aws-cognito-user-pool@0.2.2) (2019-10-23)
 
 
