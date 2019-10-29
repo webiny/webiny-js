@@ -3,6 +3,28 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.1.14](https://github.com/webiny/webiny-js/compare/@webiny/app-page-builder@0.1.13...@webiny/app-page-builder@0.1.14) (2019-10-29)
+
+
+### Bug Fixes
+
+* add awaitRefetchQueries to revision handler. ([155c20c](https://github.com/webiny/webiny-js/commit/155c20c))
+* add progress loaders and better messaging. ([f40132f](https://github.com/webiny/webiny-js/commit/f40132f))
+* disable deletion of root revision. ([0495e26](https://github.com/webiny/webiny-js/commit/0495e26))
+* improve circular progress labels ([cafa344](https://github.com/webiny/webiny-js/commit/cafa344))
+* pass native React ref. ([d88b7d4](https://github.com/webiny/webiny-js/commit/d88b7d4))
+* print N/A if page author can't be loaded. ([7b34940](https://github.com/webiny/webiny-js/commit/7b34940))
+* refresh block list and assign the correct block category on save. ([cadc4c7](https://github.com/webiny/webiny-js/commit/cadc4c7))
+* rename gql query to match usages. ([4ac8beb](https://github.com/webiny/webiny-js/commit/4ac8beb))
+* rename variables to fix name clash in form views. ([108586d](https://github.com/webiny/webiny-js/commit/108586d))
+* send new reference to showConfirmation to useHandler. ([cd92acc](https://github.com/webiny/webiny-js/commit/cd92acc))
+* update query names and load 100 categories for "CreatePage" dialog. ([643097f](https://github.com/webiny/webiny-js/commit/643097f))
+* when installation error is caught, do not call onInstalled callback. ([f63d918](https://github.com/webiny/webiny-js/commit/f63d918))
+
+
+
+
+
 ## [0.1.13](https://github.com/webiny/webiny-js/compare/@webiny/app-page-builder@0.1.12...@webiny/app-page-builder@0.1.13) (2019-10-24)
 
 **Note:** Version bump only for package @webiny/app-page-builder

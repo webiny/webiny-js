@@ -3,6 +3,31 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.1.21](https://github.com/Webiny/webiny-js/compare/@webiny/serverless-page-builder@0.1.20...@webiny/serverless-page-builder@0.1.21) (2019-10-29)
+
+
+### Bug Fixes
+
+* add installation folder to build script. ([7f4248a](https://github.com/Webiny/webiny-js/commit/7f4248a))
+
+
+
+
+
+## [0.1.20](https://github.com/Webiny/webiny-js/compare/@webiny/serverless-page-builder@0.1.19...@webiny/serverless-page-builder@0.1.20) (2019-10-29)
+
+
+### Bug Fixes
+
+* use files more carefully ([8c388d4](https://github.com/Webiny/webiny-js/commit/8c388d4))
+* use graphqlUrl instead of url ([6286e27](https://github.com/Webiny/webiny-js/commit/6286e27))
+* use JSON data from installation ZIP, not from code ([e20c647](https://github.com/Webiny/webiny-js/commit/e20c647))
+* use require instead of import ([b991ee8](https://github.com/Webiny/webiny-js/commit/b991ee8))
+
+
+
+
+
 ## [0.1.19](https://github.com/Webiny/webiny-js/compare/@webiny/serverless-page-builder@0.1.18...@webiny/serverless-page-builder@0.1.19) (2019-10-24)
 
 **Note:** Version bump only for package @webiny/serverless-page-builder

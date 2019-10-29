@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.1.15](https://github.com/Webiny/webiny-js/compare/@webiny/serverless-apollo-gateway@0.1.14...@webiny/serverless-apollo-gateway@0.1.15) (2019-10-29)
+
+
+### Bug Fixes
+
+* improve resource naming and add binaryMediaTypes support. ([42f8da0](https://github.com/Webiny/webiny-js/commit/42f8da0))
+* make sure apollo flags are booleans. ([43456f1](https://github.com/Webiny/webiny-js/commit/43456f1))
+
+
+
+
+
 ## [0.1.14](https://github.com/Webiny/webiny-js/compare/@webiny/serverless-apollo-gateway@0.1.13...@webiny/serverless-apollo-gateway@0.1.14) (2019-10-24)
 
 **Note:** Version bump only for package @webiny/serverless-apollo-gateway

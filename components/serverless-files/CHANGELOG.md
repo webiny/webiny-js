@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.1.19](https://github.com/Webiny/webiny-js/compare/@webiny/serverless-files@0.1.18...@webiny/serverless-files@0.1.19) (2019-10-29)
+
+
+### Bug Fixes
+
+* improve resource naming and add binaryMediaTypes support. ([42f8da0](https://github.com/Webiny/webiny-js/commit/42f8da0))
+
+
+
+
+
 ## [0.1.18](https://github.com/Webiny/webiny-js/compare/@webiny/serverless-files@0.1.17...@webiny/serverless-files@0.1.18) (2019-10-24)
 
 **Note:** Version bump only for package @webiny/serverless-files

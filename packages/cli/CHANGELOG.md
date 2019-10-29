@@ -3,6 +3,43 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.8.0](https://github.com/webiny/webiny-js/compare/@webiny/cli@0.7.0...@webiny/cli@0.8.0) (2019-10-29)
+
+
+### Features
+
+* generate database name using api ID. ([e436663](https://github.com/webiny/webiny-js/commit/e436663))
+
+
+
+
+
+# [0.7.0](https://github.com/webiny/webiny-js/compare/@webiny/cli@0.6.0...@webiny/cli@0.7.0) (2019-10-29)
+
+
+### Bug Fixes
+
+* add ${files} ([f9c3e56](https://github.com/webiny/webiny-js/commit/f9c3e56))
+* add check for binary files. ([b201222](https://github.com/webiny/webiny-js/commit/b201222))
+* add missing font link. ([0a2c34b](https://github.com/webiny/webiny-js/commit/0a2c34b))
+* add proper network error handling to admin app. ([a691d4e](https://github.com/webiny/webiny-js/commit/a691d4e))
+* handle errors ([6b83857](https://github.com/webiny/webiny-js/commit/6b83857))
+* manage dependencies ([9a825b4](https://github.com/webiny/webiny-js/commit/9a825b4))
+* set Lambda timeout to 30secs ([831af62](https://github.com/webiny/webiny-js/commit/831af62))
+* update file loaders and publicPath config. ([4a6a25f](https://github.com/webiny/webiny-js/commit/4a6a25f))
+* update sls templates. ([1f8f1be](https://github.com/webiny/webiny-js/commit/1f8f1be))
+* use console.log instead of throw ([71b8312](https://github.com/webiny/webiny-js/commit/71b8312))
+* use graphqlUrl instead of url ([3f4f22c](https://github.com/webiny/webiny-js/commit/3f4f22c))
+
+
+### Features
+
+* add support for .env.json in project root. ([122a013](https://github.com/webiny/webiny-js/commit/122a013))
+
+
+
+
+
 # [0.6.0](https://github.com/webiny/webiny-js/compare/@webiny/cli@0.5.4...@webiny/cli@0.6.0) (2019-10-25)
 
 

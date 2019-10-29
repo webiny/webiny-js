@@ -3,6 +3,25 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.5.0](https://github.com/Webiny/webiny-js/compare/@webiny/serverless-apollo-service@0.4.1...@webiny/serverless-apollo-service@0.5.0) (2019-10-29)
+
+
+### Bug Fixes
+
+* improve resource naming and add binaryMediaTypes support. ([42f8da0](https://github.com/Webiny/webiny-js/commit/42f8da0))
+* key ([26fee95](https://github.com/Webiny/webiny-js/commit/26fee95))
+* make sure apollo flags are booleans. ([43456f1](https://github.com/Webiny/webiny-js/commit/43456f1))
+* remove getDatabase from context and remove "mongodb" key from config. ([191e419](https://github.com/Webiny/webiny-js/commit/191e419))
+
+
+### Features
+
+* add "graphqlPath" to output ([028f6b2](https://github.com/Webiny/webiny-js/commit/028f6b2))
+
+
+
+
+
 ## [0.4.1](https://github.com/Webiny/webiny-js/compare/@webiny/serverless-apollo-service@0.4.0...@webiny/serverless-apollo-service@0.4.1) (2019-10-24)
 
 

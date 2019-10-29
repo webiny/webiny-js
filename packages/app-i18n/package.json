@@ -1,6 +1,6 @@
 {
   "name": "@webiny/app-i18n",
-  "version": "0.2.3",
+  "version": "0.2.4",
   "main": "index.js",
   "repository": {
     "type": "git",
@@ -15,13 +15,13 @@
   "dependencies": {
     "@babel/runtime": "^7.5.5",
     "@emotion/styled": "^10.0.17",
-    "@webiny/app": "^0.1.8",
-    "@webiny/app-admin": "^0.3.3",
-    "@webiny/app-security": "^0.2.3",
+    "@webiny/app": "^0.1.9",
+    "@webiny/app-admin": "^0.4.0",
+    "@webiny/app-security": "^0.2.4",
     "@webiny/form": "^0.1.8",
     "@webiny/plugins": "^0.1.5",
-    "@webiny/ui": "^0.1.10",
-    "@webiny/validation": "^0.1.7",
+    "@webiny/ui": "^0.1.11",
+    "@webiny/validation": "^0.1.8",
     "classnames": "^2.2.6",
     "emotion": "10.0.17",
     "graphql-tag": "^2.10.1",

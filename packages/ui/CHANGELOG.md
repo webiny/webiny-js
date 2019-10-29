@@ -3,6 +3,19 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.1.11](https://github.com/webiny/webiny-js/compare/@webiny/ui@0.1.10...@webiny/ui@0.1.11) (2019-10-29)
+
+
+### Bug Fixes
+
+* add default loading overlay when onAccept is triggered. ([e6ae6f6](https://github.com/webiny/webiny-js/commit/e6ae6f6))
+* forward the correct props object to wrapped component. ([713e8b7](https://github.com/webiny/webiny-js/commit/713e8b7))
+* use React.forwardRef. ([34abb8d](https://github.com/webiny/webiny-js/commit/34abb8d))
+
+
+
+
+
 ## [0.1.10](https://github.com/webiny/webiny-js/compare/@webiny/ui@0.1.9...@webiny/ui@0.1.10) (2019-10-23)
 
 **Note:** Version bump only for package @webiny/ui

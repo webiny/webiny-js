@@ -3,6 +3,26 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.3.0](https://github.com/webiny/webiny-js/compare/@webiny/api-files@0.2.2...@webiny/api-files@0.3.0) (2019-10-29)
+
+
+### Bug Fixes
+
+* change key to file-manager ([c886fd1](https://github.com/webiny/webiny-js/commit/c886fd1))
+* check if there are existing entries before saving ([556520c](https://github.com/webiny/webiny-js/commit/556520c))
+* implement install API ([d30cb4e](https://github.com/webiny/webiny-js/commit/d30cb4e))
+* remove getDatabase from context and remove "mongodb" key from config. ([191e419](https://github.com/webiny/webiny-js/commit/191e419))
+
+
+### Features
+
+* files service installation ([875f8d5](https://github.com/webiny/webiny-js/commit/875f8d5))
+* remove src in database, add batch operations, fixes... ([d6651d9](https://github.com/webiny/webiny-js/commit/d6651d9))
+
+
+
+
+
 ## [0.2.2](https://github.com/webiny/webiny-js/compare/@webiny/api-files@0.2.1...@webiny/api-files@0.2.2) (2019-10-23)
 
 **Note:** Version bump only for package @webiny/api-files
