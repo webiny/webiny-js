@@ -26,7 +26,7 @@
 
 ## Installation
 
-Installation instructions can be found in the official [docs](https://docs.webiny.com/docs/developer-tutorials/local-setup) .
+Installation instructions can be found in the official [docs](https://docs.webiny.com/docs/get-started/) .
 
 ## About
 
