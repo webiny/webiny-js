@@ -2,6 +2,14 @@
 const yargs = require("yargs");
 const { blue, green, dim } = require("chalk");
 
+const trackingNotice = () => {
+    console.log(
+        `Webiny collects anonymous usage analytics to help improve the developer experience.`
+    );
+    console.log(`If you'd like to opt-out run ${green("webiny disable-tracking")}.`);
+    console.log(`To learn more, check out https://www.webiny.com/telemetry/.`);
+};
+
 yargs
     .usage("Usage: $0 <command>")
     .demandCommand(1)
@@ -26,6 +34,7 @@ yargs.command(
         });
     },
     argv => {
+        trackingNotice();
         require("./create")(argv);
     }
 );
@@ -45,6 +54,7 @@ yargs.command(
         });
     },
     async argv => {
+        trackingNotice();
         await require("./sls/deploy")({ ...argv, what: "api" });
         process.exit(0);
     }
@@ -64,6 +74,7 @@ yargs.command(
         });
     },
     async argv => {
+        trackingNotice();
         await require("./sls/deploy")({ ...argv, what: "apps" });
         process.exit(0);
     }
@@ -84,6 +95,7 @@ yargs.command(
         });
     },
     async argv => {
+        trackingNotice();
         await require("./sls/remove")({ ...argv, what: "api" });
         process.exit(0);
     }
@@ -104,6 +116,7 @@ yargs.command(
         });
     },
     async argv => {
+        trackingNotice();
         await require("./sls/remove")({ ...argv, what: "apps" });
         process.exit(0);
     }
