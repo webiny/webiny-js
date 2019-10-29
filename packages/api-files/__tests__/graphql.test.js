@@ -9,13 +9,8 @@ describe("GraphQL plugins", () => {
 
     beforeAll(async () => {
         // Setup database
-        client = await MongoClient.connect(global.__MONGO_URI__, {
-            useNewUrlParser: true,
-            useUnifiedTopology: true
-        });
-
+        client = await MongoClient.connect(global.__MONGO_URI__, { useUnifiedTopology: true });
         const database = await client.db(global.__MONGO_DB_NAME__);
-
         testing = await setupSchema([filesPlugins], { database });
     });
 
