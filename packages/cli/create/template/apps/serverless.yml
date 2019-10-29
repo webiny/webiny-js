@@ -32,6 +32,7 @@ api:
   component: "@webiny/serverless-api-gateway"
   inputs:
     name: Apps Gateway
+    binaryMediaTypes: ["*/*"]
     description: Serverless React Apps
     endpoints:
       - path: /admin/{key+}
