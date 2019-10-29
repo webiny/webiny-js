@@ -81,10 +81,11 @@ const PBInstaller = ({ onInstalled }) => {
                 }
             } catch (e) {
                 setError(e.message);
-            } finally {
                 setLoading(false);
+                return;
             }
 
+            setLoading(false);
             onInstalled();
         },
         [installationStep]
