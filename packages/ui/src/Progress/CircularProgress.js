@@ -47,9 +47,11 @@ const CircularProgress = ({ label, size, spinnerWidth, spinnerColor, visible }: 
                         spinnerWidth={spinnerWidth}
                         visible={visible}
                     />
-                    <Label>
-                        <Typography use={"overline"}>{label}</Typography>
-                    </Label>
+                    {label && (
+                        <Label>
+                            <Typography use={"overline"}>{label}</Typography>
+                        </Label>
+                    )}
                 </div>
             )}
         </SpinnerWrapper>
