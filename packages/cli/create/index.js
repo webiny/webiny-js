@@ -80,6 +80,7 @@ module.exports = async ({ name }) => {
     let envFile = getFileContents("api/.env.json");
     envFile = envFile.replace("[JWT_SECRET]", jwtSecret);
     envFile = envFile.replace("[BUCKET]", `webiny-files-${apiId}`);
+    envFile = envFile.replace("[DATABASE]", `webiny-${apiId}`);
     writeFileContents("api/.env.json", envFile);
 
     // Update apps serverless.yml
