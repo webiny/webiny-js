@@ -1,6 +1,7 @@
 const fs = require("fs");
 const path = require("path");
 const mime = require("mime-types");
+const isUtf8 = require("isutf8");
 
 module.exports.handler = async event => {
     let key = event.pathParameters ? event.pathParameters.key : "";
@@ -22,12 +23,19 @@ module.exports.handler = async event => {
             });
         });
 
+        isBase64Encoded = !isUtf8(buffer);
+        const headers = {
+            "Access-Control-Allow-Origin": "*",
+            "Content-Type": type
+        };
+
+        if (key.includes("static")) {
+            headers["Cache-Control"] = "public, max-age=2592000";
+        }
+
         return {
             statusCode: 200,
-            headers: {
-                "Access-Control-Allow-Origin": "*",
-                "Content-Type": type
-            },
+            headers,
             body: buffer.toString(isBase64Encoded ? "base64" : "utf8"),
             isBase64Encoded
         };
