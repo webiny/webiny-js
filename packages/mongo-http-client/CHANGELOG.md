@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.0.0](https://github.com/Webiny/webiny-js/compare/@webiny/mongo-http-client@0.1.4...@webiny/mongo-http-client@2.0.0) (2019-10-29)
+
+**Note:** Version bump only for package @webiny/mongo-http-client
+
+
+
+
+
 ## [0.1.4](https://github.com/Webiny/webiny-js/compare/@webiny/mongo-http-client@0.1.3...@webiny/mongo-http-client@0.1.4) (2019-10-23)
 
 **Note:** Version bump only for package @webiny/mongo-http-client

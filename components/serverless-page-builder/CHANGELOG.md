@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.0.0](https://github.com/Webiny/webiny-js/compare/@webiny/serverless-page-builder@0.1.22...@webiny/serverless-page-builder@2.0.0) (2019-10-29)
+
+**Note:** Version bump only for package @webiny/serverless-page-builder
+
+
+
+
+
 ## [0.1.22](https://github.com/Webiny/webiny-js/compare/@webiny/serverless-page-builder@0.1.21...@webiny/serverless-page-builder@0.1.22) (2019-10-29)
 
 **Note:** Version bump only for package @webiny/serverless-page-builder

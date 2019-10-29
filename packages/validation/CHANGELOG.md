@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.0.0](https://github.com/webiny/webiny-js/compare/@webiny/validation@0.1.8...@webiny/validation@2.0.0) (2019-10-29)
+
+**Note:** Version bump only for package @webiny/validation
+
+
+
+
+
 ## [0.1.8](https://github.com/webiny/webiny-js/compare/@webiny/validation@0.1.7...@webiny/validation@0.1.8) (2019-10-29)
 
 

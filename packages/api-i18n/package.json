@@ -1,6 +1,6 @@
 {
   "name": "@webiny/api-i18n",
-  "version": "0.1.11",
+  "version": "2.0.0",
   "main": "index.js",
   "repository": {
     "type": "git",
@@ -16,11 +16,11 @@
   "dependencies": {
     "@babel/runtime": "^7.5.5",
     "@commodo/fields-storage-mongodb": "^0.2.12",
-    "@webiny/api": "^0.3.0",
-    "@webiny/api-security": "^0.1.11",
-    "@webiny/commodo": "^0.1.9",
-    "@webiny/commodo-graphql": "^0.1.11",
-    "@webiny/validation": "^0.1.8",
+    "@webiny/api": "^2.0.0",
+    "@webiny/api-security": "^2.0.0",
+    "@webiny/commodo": "^2.0.0",
+    "@webiny/commodo-graphql": "^2.0.0",
+    "@webiny/validation": "^2.0.0",
     "accept-language-parser": "^1.5.0",
     "apollo-server-lambda": "^2.9.6",
     "i18n-locales": "^0.0.2",

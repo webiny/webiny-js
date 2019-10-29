@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.0.0](https://github.com/webiny/webiny-js/compare/@webiny/commodo-graphql@0.1.11...@webiny/commodo-graphql@2.0.0) (2019-10-29)
+
+**Note:** Version bump only for package @webiny/commodo-graphql
+
+
+
+
+
 ## [0.1.11](https://github.com/webiny/webiny-js/compare/@webiny/commodo-graphql@0.1.10...@webiny/commodo-graphql@0.1.11) (2019-10-29)
 
 **Note:** Version bump only for package @webiny/commodo-graphql

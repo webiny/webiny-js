@@ -1,11 +1,11 @@
 {
   "name": "@webiny/serverless-api-gateway",
-  "version": "0.1.11",
+  "version": "2.0.0",
   "main": "serverless.js",
   "license": "MIT",
   "dependencies": {
     "@serverless/core": "^1.1.1",
-    "@webiny/serverless-aws-api-gateway": "^0.1.6"
+    "@webiny/serverless-aws-api-gateway": "^2.0.0"
   },
   "scripts": {
     "build": "rm -rf dist && mkdir dist && cp serverless.js dist/",

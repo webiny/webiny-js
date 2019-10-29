@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.0.0](https://github.com/webiny/webiny-js/compare/@webiny/ui@0.1.12...@webiny/ui@2.0.0) (2019-10-29)
+
+**Note:** Version bump only for package @webiny/ui
+
+
+
+
+
 ## [0.1.12](https://github.com/webiny/webiny-js/compare/@webiny/ui@0.1.11...@webiny/ui@0.1.12) (2019-10-29)
 
 **Note:** Version bump only for package @webiny/ui

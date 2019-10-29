@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.0.0](https://github.com/webiny/webiny-js/compare/@webiny/cli@0.8.1...@webiny/cli@2.0.0) (2019-10-29)
+
+
+### Bug Fixes
+
+* add binaryMediaTypes to apps serverless config. ([6ff988d](https://github.com/webiny/webiny-js/commit/6ff988d))
+
+
+
+
+
 ## [0.8.1](https://github.com/webiny/webiny-js/compare/@webiny/cli@0.8.0...@webiny/cli@0.8.1) (2019-10-29)
 
 

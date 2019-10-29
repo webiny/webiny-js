@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.0.0](https://github.com/webiny/webiny-js/compare/@webiny/storybook-utils@0.1.4...@webiny/storybook-utils@2.0.0) (2019-10-29)
+
+**Note:** Version bump only for package @webiny/storybook-utils
+
+
+
+
+
 ## [0.1.4](https://github.com/webiny/webiny-js/compare/@webiny/storybook-utils@0.1.3...@webiny/storybook-utils@0.1.4) (2019-10-23)
 
 **Note:** Version bump only for package @webiny/storybook-utils
