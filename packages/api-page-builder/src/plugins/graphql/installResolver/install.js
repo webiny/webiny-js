@@ -36,7 +36,9 @@ export const install = async (root: any, args: Object, context: Object) => {
         if (step === 1) {
             // /tmp/installation-files/apiPageBuilder/data/categoriesData.json'","
             const INSTALL_EXTRACT_DIR = await downloadInstallationFiles();
-            const categoriesData = await loadJson(path.join(INSTALL_EXTRACT_DIR, "data/categoriesData.json"));
+            const categoriesData = await loadJson(
+                path.join(INSTALL_EXTRACT_DIR, "data/categoriesData.json")
+            );
             installation.getStep(1).markAsStarted();
             const staticPageCount = await PbCategory.count({ query: { slug: "static" } });
             if (staticPageCount === 0) {
@@ -76,6 +78,13 @@ export const install = async (root: any, args: Object, context: Object) => {
             const menusData = await loadJson(path.join(INSTALL_EXTRACT_DIR, "data/menusData.json"));
             installation.getStep(4).markAsStarted();
             for (let i = 0; i < menusData.length; i++) {
+                const existing = await PbMenu.count({
+                    query: { deleted: { $in: [true, false] }, id: menusData[i].id }
+                });
+
+                if (existing) {
+                    continue;
+                }
                 const instance = new PbMenu();
                 await instance.populate(menusData[i]).save();
             }

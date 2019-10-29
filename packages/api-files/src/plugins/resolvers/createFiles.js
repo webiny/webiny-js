@@ -30,7 +30,11 @@ export default async (root: any, args: Object, context) => {
     const data = [];
     for (let i = 0; i < files.length; i++) {
         let item = files[i];
-        const file = new File();
+        let file = await File.findById(item.id);
+        if (!file) {
+            file = new File();
+        }
+
         await file.populate(item).save();
         data.push(file);
     }

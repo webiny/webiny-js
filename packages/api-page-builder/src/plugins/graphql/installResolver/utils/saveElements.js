@@ -23,8 +23,30 @@ export default async ({ context, INSTALL_EXTRACT_DIR }) => {
         // 1. Save page elements.
         const savingInstancesProcess = [];
         for (let i = 0; i < elementsData.length; i++) {
-            const instance = new PbPageElement();
-            savingInstancesProcess.push(instance.populate(elementsData[i]).save());
+            savingInstancesProcess.push(
+                // eslint-disable-next-line
+                new Promise(async (resolve, reject) => {
+                    try {
+                        const existing = await PbPageElement.findOne({
+                            query: {
+                                id: elementsData.id,
+                                deleted: { $in: [true, false] }
+                            }
+                        });
+
+                        if (existing) {
+                            resolve();
+                            return;
+                        }
+
+                        const instance = new PbPageElement();
+                        await instance.populate(elementsData[i]).save();
+                        resolve();
+                    } catch (e) {
+                        reject(e);
+                    }
+                })
+            );
         }
 
         await Promise.all(savingInstancesProcess);

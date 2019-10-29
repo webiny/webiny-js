@@ -23,12 +23,33 @@ export default async ({ context, INSTALL_EXTRACT_DIR }) => {
         // 1. Save page pages.
         const savingInstancesProcess = [];
         for (let i = 0; i < pagesData.length; i++) {
-            const instance = new PbPage();
-            instance.populate(pagesData[i]);
             savingInstancesProcess.push(
-                instance.save().then(() => {
-                    instance.published = true;
-                    return instance.save();
+                // eslint-disable-next-line
+                new Promise(async (resolve, reject) => {
+                    try {
+                        const existing = await PbPage.findOne({
+                            query: {
+                                id: pagesData.id,
+                                deleted: { $in: [true, false] }
+                            }
+                        });
+
+                        if (existing) {
+                            resolve();
+                            return;
+                        }
+
+                        const instance = new PbPage();
+                        instance.populate(pagesData[i]);
+                        await instance.save();
+
+                        // "published" can only be changed after the initial entity is saved.
+                        instance.published = true;
+                        await instance.save();
+                        resolve();
+                    } catch (e) {
+                        reject(e);
+                    }
                 })
             );
         }
