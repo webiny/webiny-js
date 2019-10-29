@@ -5,7 +5,7 @@ const notifier = require("node-notifier");
 const execute = require("./execute");
 const { isApiEnvDeployed, isAppsEnvDeployed } = require("./utils");
 
-const perks = ["a 🍪", "☕️", "an 🍎", "a 🍺", "a 🥤"];
+const perks = ["🍪", "☕️", "🍎", "🍺", "🥤"];
 
 const notify = ({ message }) => {
     notifier.notify({
