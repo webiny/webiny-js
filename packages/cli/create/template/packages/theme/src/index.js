@@ -1,7 +1,6 @@
 // @flow
 import "./style/theme.scss";
 import StaticLayout from "./layouts/static";
-import BlogLayout from "./layouts/blog";
 import DefaultFormLayout from "./layouts/forms/DefaultFormLayout";
 
 export default {
@@ -10,11 +9,6 @@ export default {
             name: "static",
             title: "Static page",
             component: StaticLayout
-        },
-        {
-            name: "blog",
-            title: "Blog",
-            component: BlogLayout
         }
     ],
     forms: {
