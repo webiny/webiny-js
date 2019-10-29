@@ -11,7 +11,67 @@ export type CreateHandlerParamsType = {
     config: Object
 };
 
+/**
+ * Create Apollo handler
+ * @param config
+ * @param plugins
+ * @returns {Promise<{schema: void, handler(Object, Object): Promise<Object>}|Promise<*>>}
+ */
 export const createHandler = async ({ config, plugins }: CreateHandlerParamsType) => {
+    const schema = await createSchema({ config, plugins });
+
+    const apolloConfig = config.apollo || {};
+
+    const apollo = new ApolloServer({
+        ...(config.apollo || {}),
+        schema,
+        context: async ({ event }) => {
+            const reqContext = {
+                event,
+                config,
+                plugins
+            };
+
+            if (typeof apolloConfig.context === "function") {
+                return await apolloConfig.context({ event }, reqContext);
+            }
+
+            return reqContext;
+        }
+    });
+
+    const handler = apollo.createHandler({
+        cors: {
+            origin: "*",
+            methods: "GET,HEAD,POST",
+            ...(apolloConfig.cors || {})
+        }
+    });
+
+    return {
+        schema,
+        handler(event: Object, context: Object): Promise<Object> {
+            normalizeEvent(event);
+            return new Promise((resolve, reject) => {
+                handler(event, context, (error, data) => {
+                    if (error) {
+                        return reject(error);
+                    }
+
+                    resolve(data);
+                });
+            });
+        }
+    };
+};
+
+/**
+ * Create graphql schema only
+ * @param config
+ * @param plugins
+ * @returns {Promise<void>}
+ */
+export const createSchema = async ({ config, plugins }: CreateHandlerParamsType) => {
     let schema = await prepareSchema({ plugins, config });
 
     const registeredMiddleware: Array<GraphQLMiddlewarePluginType> = [];
@@ -62,47 +122,5 @@ export const createHandler = async ({ config, plugins }: CreateHandlerParamsType
         }
     });
 
-    const apolloConfig = config.apollo || {};
-
-    const apollo = new ApolloServer({
-        ...(config.apollo || {}),
-        schema,
-        context: async ({ event }) => {
-            const reqContext = {
-                event,
-                config,
-                plugins
-            };
-
-            if (typeof apolloConfig.context === "function") {
-                return await apolloConfig.context({ event }, reqContext);
-            }
-
-            return reqContext;
-        }
-    });
-
-    const handler = apollo.createHandler({
-        cors: {
-            origin: "*",
-            methods: "GET,HEAD,POST",
-            ...(apolloConfig.cors || {})
-        }
-    });
-
-    return {
-        schema,
-        handler(event: Object, context: Object): Promise<Object> {
-            normalizeEvent(event);
-            return new Promise((resolve, reject) => {
-                handler(event, context, (error, data) => {
-                    if (error) {
-                        return reject(error);
-                    }
-
-                    resolve(data);
-                });
-            });
-        }
-    };
+    return schema;
 };
