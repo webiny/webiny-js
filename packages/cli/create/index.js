@@ -9,7 +9,7 @@ const uuid = require("uuid/v4");
 const writeJsonFile = require("write-json-file");
 const { trackProject } = require("@webiny/tracking");
 const { version } = require(require.resolve("@webiny/cli/package.json"));
-const { getSuccessBanner } = require("./gists");
+const { getSuccessBanner } = require("./messages");
 
 const globFiles = util.promisify(glob);
 

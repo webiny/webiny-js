@@ -1,14 +1,14 @@
 const fetch = require("node-fetch");
 
-const bannerGist =
-    "https://gist.githubusercontent.com/Pavel910/182a07dc2725d3206a9cfc537a1e51c4/raw/banner.js";
+const bannerUrl =
+    "https://raw.githubusercontent.com/webiny/cli-resources/master/messages/project-created.txt";
 
 module.exports = {
     getSuccessBanner: () => {
-        return fetch(bannerGist)
+        return fetch(bannerUrl)
             .then(res => res.text())
             .catch(() => {
-                // Fallback message in case gist is unavailable.
+                // Fallback message in case repo is unavailable.
                 return [
                     `\n🏁 Your Webiny project is ready!!\n`,
                     `If this is your first Webiny project, or maybe you simply forgot what to do next, head over to 🔗 https://docs.webiny.com.`,
