@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.4.1](https://github.com/webiny/webiny-js/compare/@webiny/app-admin@0.4.0...@webiny/app-admin@0.4.1) (2019-10-29)
+
+
+### Bug Fixes
+
+* undo find-replace ([a38f3ef](https://github.com/webiny/webiny-js/commit/a38f3ef))
+
+
+
+
+
 # [0.4.0](https://github.com/webiny/webiny-js/compare/@webiny/app-admin@0.3.3...@webiny/app-admin@0.4.0) (2019-10-29)
 
 

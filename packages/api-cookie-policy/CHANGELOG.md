@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.1.14](https://github.com/webiny/webiny-js/compare/@webiny/api-cookie-policy@0.1.13...@webiny/api-cookie-policy@0.1.14) (2019-10-29)
+
+
+### Bug Fixes
+
+* remove list ([6738af4](https://github.com/webiny/webiny-js/commit/6738af4))
+
+
+
+
+
 ## [0.1.13](https://github.com/webiny/webiny-js/compare/@webiny/api-cookie-policy@0.1.12...@webiny/api-cookie-policy@0.1.13) (2019-10-29)
 
 **Note:** Version bump only for package @webiny/api-cookie-policy

@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.2.5](https://github.com/webiny/webiny-js/compare/@webiny/app-i18n@0.2.4...@webiny/app-i18n@0.2.5) (2019-10-29)
+
+**Note:** Version bump only for package @webiny/app-i18n
+
+
+
+
+
 ## [0.2.4](https://github.com/webiny/webiny-js/compare/@webiny/app-i18n@0.2.3...@webiny/app-i18n@0.2.4) (2019-10-29)
 
 

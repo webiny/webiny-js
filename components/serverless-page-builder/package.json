@@ -1,6 +1,6 @@
 {
   "name": "@webiny/serverless-page-builder",
-  "version": "0.1.21",
+  "version": "0.1.22",
   "main": "serverless.js",
   "license": "MIT",
   "dependencies": {

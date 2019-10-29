@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.1.11](https://github.com/webiny/webiny-js/compare/@webiny/app-plugin-security-cognito@0.1.10...@webiny/app-plugin-security-cognito@0.1.11) (2019-10-29)
+
+**Note:** Version bump only for package @webiny/app-plugin-security-cognito
+
+
+
+
+
 ## [0.1.10](https://github.com/webiny/webiny-js/compare/@webiny/app-plugin-security-cognito@0.1.9...@webiny/app-plugin-security-cognito@0.1.10) (2019-10-29)
 
 **Note:** Version bump only for package @webiny/app-plugin-security-cognito

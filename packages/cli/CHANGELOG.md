@@ -3,6 +3,19 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.8.1](https://github.com/webiny/webiny-js/compare/@webiny/cli@0.8.0...@webiny/cli@0.8.1) (2019-10-29)
+
+
+### Bug Fixes
+
+* remove blog layout. ([095631e](https://github.com/webiny/webiny-js/commit/095631e))
+* update admin handler to properly detect binary files. ([3709b73](https://github.com/webiny/webiny-js/commit/3709b73))
+* yml indentation and new URL for banner message. ([cc27f53](https://github.com/webiny/webiny-js/commit/cc27f53))
+
+
+
+
+
 # [0.8.0](https://github.com/webiny/webiny-js/compare/@webiny/cli@0.7.0...@webiny/cli@0.8.0) (2019-10-29)
 
 
