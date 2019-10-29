@@ -92,14 +92,18 @@ const PBInstaller = ({ onInstalled }) => {
     );
 
     return (
-        <Form onSubmit={onSubmit} data={{ domain: window.location.origin }}>
+        <Form onSubmit={onSubmit} data={{ domain: window.location.origin }} submitOnEnter>
             {({ Bind, submit }) => (
                 <SimpleForm>
                     {loading && <CircularProgress label={installationSteps[installationStep]} />}
                     {error && (
-                        <Alert title={"Something went wrong"} type={"danger"}>
-                            {error}
-                        </Alert>
+                        <Grid>
+                            <Cell span={12}>
+                                <Alert title={"Something went wrong"} type={"danger"}>
+                                    {error}
+                                </Alert>
+                            </Cell>
+                        </Grid>
                     )}
                     <SimpleFormHeader title={"Install Page Builder"} />
                     <SimpleFormContent>
