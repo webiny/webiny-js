@@ -6,7 +6,7 @@
 </p>
 <p align="center">
   <a href="https://www.webiny.com">Official Website</a> |
-  <a href="https://docs.webiny.com/docs/developer-tutorials/local-setup">Docs</a> 
+  <a href="https://docs.webiny.com">Docs</a> 
 </p>
 
 #
@@ -26,7 +26,7 @@
 
 ## Installation
 
-Installation instructions can be found in the official [docs](https://docs.webiny.com/docs/get-started/) .
+Installation instructions can be found in the official [docs](https://docs.webiny.com) .
 
 ## About
 
