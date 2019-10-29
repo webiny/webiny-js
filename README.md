@@ -40,7 +40,7 @@ API layer works as a collection of Lambda functions with Apollo Federation handl
 
 Our client (SPA) layer is based on `create-react-app` v2 and Apollo Client. If you ever developed using those tools - you already know Webiny 🙂
 As our UI library we are using Material Components, and a very promising project [RMWC](https://jamesmfriedman.github.io/rmwc/) to get going with Material faster.
-You can see all the currently available components in our [storybook](https://webiny-material-storybook.netlify.com/).
+You can see all the currently available components in our [storybook](https://storybook.webiny.com/).
 
 We also provide a server-side render setup out of the box. It is also powered by Lambda.
 
