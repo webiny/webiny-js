@@ -29,7 +29,6 @@ export default ({ createBase }) => {
         withFields({
             key: setOnce()(string({ value: SETTINGS_KEY })),
             data: fields({
-                list: true,
                 instanceOf: withFields({
                     enabled: boolean(),
                     position: string({
