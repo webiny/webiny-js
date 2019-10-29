@@ -173,23 +173,23 @@ function FileManagerView(props: Props) {
                 const { data } = gqlQuery.current.getQueryResult();
                 const nextPage = get(data, "files.listFiles.meta.nextPage");
                 nextPage &&
-                    fetchMore({
-                        variables: { page: nextPage },
-                        updateQuery: (prev, { fetchMoreResult }) => {
-                            if (!fetchMoreResult) {
-                                return prev;
-                            }
-
-                            const next = { ...fetchMoreResult };
-
-                            next.blockFiles.listFiles.data = [
-                                ...prev.blockFiles.listFiles.data,
-                                ...fetchMoreResult.blockFiles.listFiles.data
-                            ];
-
-                            return next;
+                fetchMore({
+                    variables: { page: nextPage },
+                    updateQuery: (prev, { fetchMoreResult }) => {
+                        if (!fetchMoreResult) {
+                            return prev;
                         }
-                    });
+
+                        const next = { ...fetchMoreResult };
+
+                        next.files.listFiles.data = [
+                            ...prev.files.listFiles.data,
+                            ...fetchMoreResult.files.listFiles.data
+                        ];
+
+                        return next;
+                    }
+                });
             }
         }, 500),
         []
@@ -199,7 +199,7 @@ function FileManagerView(props: Props) {
         const newFileData = get(newFile, "data.files.createFile.data");
 
         const data = cloneDeep(cache.readQuery({ query: LIST_FILES, variables: queryParams }));
-        data.blockFiles.listFiles.data.unshift(newFileData);
+        data.files.listFiles.data.unshift(newFileData);
 
         cache.writeQuery({
             query: LIST_FILES,
@@ -342,28 +342,28 @@ function FileManagerView(props: Props) {
                                 <FileList>
                                     {list.length
                                         ? list.map(file =>
-                                              renderFile({
-                                                  uploadFile,
-                                                  file,
-                                                  showFileDetails: () => showFileDetails(file.src),
-                                                  selected: selected.find(
-                                                      current => current.src === file.src
-                                                  ),
-                                                  onSelect: async () => {
-                                                      if (multiple) {
-                                                          toggleSelected(file);
-                                                          return;
-                                                      }
+                                            renderFile({
+                                                uploadFile,
+                                                file,
+                                                showFileDetails: () => showFileDetails(file.src),
+                                                selected: selected.find(
+                                                    current => current.src === file.src
+                                                ),
+                                                onSelect: async () => {
+                                                    if (multiple) {
+                                                        toggleSelected(file);
+                                                        return;
+                                                    }
 
-                                                      await onChange(file);
-                                                      onClose();
-                                                  }
-                                              })
-                                          )
+                                                    await onChange(file);
+                                                    onClose();
+                                                }
+                                            })
+                                        )
                                         : renderEmpty({
-                                              hasPreviouslyUploadedFiles,
-                                              browseFiles
-                                          })}
+                                            hasPreviouslyUploadedFiles,
+                                            browseFiles
+                                        })}
                                 </FileList>
                             </Scrollbar>
                             <BottomInfoBar accept={accept} uploading={uploading} />
