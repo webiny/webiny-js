@@ -1,6 +1,6 @@
 // @flow
 import { Response, ErrorResponse } from "@webiny/api";
-import getPreSignedPostPayload from "./utils/getPreSignedPostPayload";
+import getPreSignedPostPayload from "./utils/getPresignedPostPayload";
 import { BATCH_UPLOAD_MAX_FILES } from "./utils/constants";
 
 export default async (root: any, args: Object) => {
