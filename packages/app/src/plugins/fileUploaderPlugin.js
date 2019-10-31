@@ -1,5 +1,4 @@
 // @flow
-import type { FileUploaderPlugin } from "@webiny/app/types";
 import gql from "graphql-tag";
 import get from "lodash.get";
 
@@ -10,7 +9,6 @@ const UPLOAD_FILE = gql`
                 data {
                     data
                     file {
-                        src
                         type
                         name
                         size
@@ -25,7 +23,7 @@ const UPLOAD_FILE = gql`
     }
 `;
 
-export default (): FileUploaderPlugin => ({
+export default () => ({
     type: "file-uploader",
     name: "file-uploader",
     upload: async (file: File, { apolloClient }) => {
