@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.0.1](https://github.com/Webiny/webiny-js/compare/@webiny/serverless-files@2.0.0...@webiny/serverless-files@2.0.1) (2019-10-31)
+
+**Note:** Version bump only for package @webiny/serverless-files
+
+
+
+
+
 # [2.0.0](https://github.com/Webiny/webiny-js/compare/@webiny/serverless-files@0.1.19...@webiny/serverless-files@2.0.0) (2019-10-29)
 
 **Note:** Version bump only for package @webiny/serverless-files

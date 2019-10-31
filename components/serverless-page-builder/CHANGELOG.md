@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.0.1](https://github.com/Webiny/webiny-js/compare/@webiny/serverless-page-builder@2.0.0...@webiny/serverless-page-builder@2.0.1) (2019-10-31)
+
+
+### Bug Fixes
+
+* set all images that belong to blocks and pages to private ([#578](https://github.com/Webiny/webiny-js/issues/578)) ([7f59f66](https://github.com/Webiny/webiny-js/commit/7f59f66e8299961d2f45b871ecd774f4a6a130fb))
+
+
+
+
+
 # [2.0.0](https://github.com/Webiny/webiny-js/compare/@webiny/serverless-page-builder@0.1.22...@webiny/serverless-page-builder@2.0.0) (2019-10-29)
 
 **Note:** Version bump only for package @webiny/serverless-page-builder

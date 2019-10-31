@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.0.1](https://github.com/webiny/webiny-js/compare/@webiny/api-files@2.0.0...@webiny/api-files@2.0.1) (2019-10-31)
+
+
+### Bug Fixes
+
+* update import path and add eslint rule for unresolved imports ([#581](https://github.com/webiny/webiny-js/issues/581)) ([c3de7f8](https://github.com/webiny/webiny-js/commit/c3de7f8d254c2256b8ffcd573442c8287b4744b7))
+
+
+
+
+
 # [2.0.0](https://github.com/webiny/webiny-js/compare/@webiny/api-files@0.3.0...@webiny/api-files@2.0.0) (2019-10-29)
 
 **Note:** Version bump only for package @webiny/api-files
