@@ -43,7 +43,7 @@ export default data => {
             name: key,
             key,
             type: contentType,
-            size: payload.size,
+            size: data.size,
         }
     };
 };
