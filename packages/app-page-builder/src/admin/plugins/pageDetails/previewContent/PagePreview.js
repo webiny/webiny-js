@@ -60,7 +60,7 @@ const PagePreview = ({ pageDetails }: Props) => {
                     className={pageInnerWrapper}
                     style={{ "--webiny-pb-page-preview-scale": zoom }}
                 >
-                    <RenderElement element={pageDetails.page.content} />
+                    <RenderElement key={pageDetails.page.id} element={pageDetails.page.content} />
                     <PagePreviewToolbar>
                         <span>
                             <Typography use={"overline"}>Zoom:&nbsp;</Typography>
