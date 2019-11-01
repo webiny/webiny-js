@@ -50,7 +50,6 @@ export default ({ createBase, context, PbCategory, PbSettings }) => {
             version: number(),
             parent: id(),
             published: flow(
-                skipOnPopulate(),
                 onSet(value => {
                     // Deactivate previously published revision
                     if (value && value !== instance.published && instance.isExisting()) {
