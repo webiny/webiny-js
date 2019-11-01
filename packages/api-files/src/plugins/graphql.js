@@ -1,13 +1,11 @@
 // @flow
 import { gql } from "apollo-server-lambda";
 import { emptyResolver } from "@webiny/commodo-graphql";
-import { type PluginType } from "@webiny/api/types";
 import { hasScope } from "@webiny/api-security";
-import { resolveCreate, resolveGet } from "@webiny/commodo-graphql";
+import { resolveCreate, resolveGet, resolveUpdate } from "@webiny/commodo-graphql";
 
 import listFiles from "./resolvers/listFiles";
 import listTags from "./resolvers/listTags";
-import updateFileBySrc from "./resolvers/updateFileBySrc";
 import uploadFile from "./resolvers/uploadFile";
 import uploadFiles from "./resolvers/uploadFiles";
 import createFiles from "./resolvers/createFiles";
@@ -54,7 +52,7 @@ export default ([
                     error: FileError
                     data: UploadFileResponseData
                 }
-                
+
                 type UploadFilesResponse {
                     error: FileError
                     data: JSON!
@@ -138,7 +136,7 @@ export default ([
                     uploadFiles(data: [UploadFileInput]!): UploadFilesResponse
                     createFile(data: FileInput!): FileResponse
                     createFiles(data: [FileInput]!): CreateFilesResponse
-                    updateFileBySrc(src: String!, data: FileInput!): FileResponse
+                    updateFile(id: ID!, data: FileInput!): FileResponse
                     deleteFile(id: ID!): FilesDeleteResponse
 
                     # Install File manager
@@ -179,8 +177,8 @@ export default ([
                     uploadFile,
                     uploadFiles,
                     createFile: resolveCreate(getFile),
+                    updateFile: resolveUpdate(getFile),
                     createFiles,
-                    updateFileBySrc: updateFileBySrc,
                     deleteFile,
                     install
                 }
@@ -195,10 +193,10 @@ export default ([
                 FilesMutation: {
                     uploadFile: hasScope("files:file:crud"),
                     createFile: hasScope("files:file:crud"),
-                    updateFileBySrc: hasScope("files:file:crud"),
+                    updateFile: hasScope("files:file:crud"),
                     deleteFile: hasScope("files:file:crud")
                 }
             }
         }
     }
-]: Array<PluginType>);
+]: Array<Object>);

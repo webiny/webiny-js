@@ -5,6 +5,7 @@ const fileFields = /* GraphQL */ `
         __typename
         id
         name
+        key
         src
         size
         type
@@ -51,11 +52,12 @@ export const CREATE_FILE = gql`
     }
 `;
 
-export const UPDATE_FILE_BY_SRC = gql`
-    mutation UpdateFile($src: String!, $data: FileInput!) {
+export const UPDATE_FILE = gql`
+    mutation UpdateFile($id: ID!, $data: FileInput!) {
         files {
-            updateFileBySrc(src: $src, data: $data) {
+            updateFile(id: $id, data: $data) {
                 data {
+                    id
                     src
                     name
                     tags

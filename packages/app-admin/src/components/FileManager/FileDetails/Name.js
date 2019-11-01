@@ -8,7 +8,7 @@ import { ButtonSecondary, ButtonPrimary } from "@webiny/ui/Button";
 import { Input } from "@webiny/ui/Input";
 import { Form } from "@webiny/form";
 import { ReactComponent as EditIcon } from "./../icons/round-edit-24px.svg";
-import { UPDATE_FILE_BY_SRC, LIST_FILES } from "./../graphql";
+import { UPDATE_FILE, LIST_FILES } from "./../graphql";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { useFileManager } from "./../FileManagerContext";
 
@@ -37,13 +37,13 @@ function Name({ file }: *) {
                 onSubmit={async ({ name }) => {
                     setEdit(false);
                     await client.mutate({
-                        mutation: UPDATE_FILE_BY_SRC,
+                        mutation: UPDATE_FILE,
                         variables: {
-                            src: file.src,
+                            id: file.id,
                             data: { name }
                         },
                         update: (cache, updated) => {
-                            const newFileData = get(updated, "data.files.updateFileBySrc.data");
+                            const newFileData = get(updated, "data.files.updateFile.data");
                             const data = cloneDeep(
                                 cache.readQuery({
                                     query: LIST_FILES,
@@ -51,7 +51,7 @@ function Name({ file }: *) {
                                 })
                             );
 
-                            data.blockFiles.listFiles.data.forEach(item => {
+                            data.files.listFiles.data.forEach(item => {
                                 if (item.src === newFileData.src) {
                                     item.name = newFileData.name;
                                 }

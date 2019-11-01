@@ -6,7 +6,7 @@ import { useApolloClient } from "react-apollo";
 import { get, cloneDeep } from "lodash";
 import { Chips, Chip } from "@webiny/ui/Chips";
 import { Tags as TagsComponent } from "@webiny/ui/Tags";
-import { UPDATE_FILE_BY_SRC, LIST_FILES, LIST_TAGS } from "./../graphql";
+import { UPDATE_FILE, LIST_FILES, LIST_TAGS } from "./../graphql";
 import { ReactComponent as EditIcon } from "./../icons/round-edit-24px.svg";
 import { useFileManager } from "./../FileManagerContext";
 import { Hotkeys } from "react-hotkeyz";
@@ -41,16 +41,16 @@ function Tags({ file }) {
                             setSaving(true);
                             client
                                 .mutate({
-                                    mutation: UPDATE_FILE_BY_SRC,
+                                    mutation: UPDATE_FILE,
                                     variables: {
-                                        src: file.src,
+                                        id: file.id,
                                         data: { tags: currentTags }
                                     },
                                     refetchQueries: [{ query: LIST_TAGS }],
                                     update: (cache, updated) => {
                                         const newFileData = get(
                                             updated,
-                                            "data.files.updateFileBySrc.data"
+                                            "data.files.updateFile.data"
                                         );
 
                                         // 1. Update files list cache
@@ -61,8 +61,8 @@ function Tags({ file }) {
                                             })
                                         );
 
-                                        data.blockFiles.listFiles.data.forEach(item => {
-                                            if (item.src === newFileData.src) {
+                                        data.files.listFiles.data.forEach(item => {
+                                            if (item.key === newFileData.key) {
                                                 item.tags = newFileData.tags;
                                             }
                                         });
