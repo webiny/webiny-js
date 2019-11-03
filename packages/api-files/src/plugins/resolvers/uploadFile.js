@@ -1,6 +1,6 @@
 // @flow
 import { Response } from "@webiny/api";
-import getPreSignedPostPayload from "./utils/getPreSignedPostPayload";
+import getPreSignedPostPayload from "./utils/getPresignedPostPayload";
 
 export default async (root: any, args: Object) => {
     const { data } = args;
