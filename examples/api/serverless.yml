@@ -28,6 +28,8 @@ gateway:
         url: ${pageBuilder.api.graphqlUrl}
       - name: i18n
         url: ${i18n.api.graphqlUrl}
+      - name: forms
+        url: ${forms.api.graphqlUrl}
 
 cognito:
   component: "@webiny/serverless-aws-cognito-user-pool"
@@ -93,6 +95,18 @@ pageBuilder:
       - "@webiny/api-google-tag-manager"
       - "@webiny/api-mailchimp"
       - "@webiny/api-cookie-policy"
+
+forms:
+  component: "@webiny/serverless-forms"
+  inputs:
+    name: Forms
+    region: ${vars.region}
+    files: ${files}
+    memory: 512
+    timeout: 30
+    database: ${vars.database}
+    env: ${vars.env}
+    webpackConfig: ./webpack.config.js
 
 api:
   component: "@webiny/serverless-api-gateway"
