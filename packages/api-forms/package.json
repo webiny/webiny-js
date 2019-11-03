@@ -23,6 +23,7 @@
     "@webiny/validation": "^2.0.0",
     "form-data": "^2.5.0",
     "got": "^9.6.0",
+    "graphql-request": "^1.8.2",
     "graphql-tag": "^2.10.1",
     "json2csv": "^4.5.2",
     "lodash": "^4.17.11",
