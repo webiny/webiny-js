@@ -3,7 +3,7 @@ import got from "got";
 import FormData from "form-data";
 import { CREATE_FILE, UPLOAD_FILE } from "./graphql";
 import { GraphQLClient } from "graphql-request";
-import get from "lodash.get";
+import { get } from "lodash";
 
 const uploadToS3 = async (buffer, preSignedPostPayload) => {
     const formData = new FormData();
