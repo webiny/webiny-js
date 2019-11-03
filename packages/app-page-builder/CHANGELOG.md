@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.0.1](https://github.com/webiny/webiny-js/compare/@webiny/app-page-builder@2.0.0...@webiny/app-page-builder@2.0.1) (2019-11-03)
+
+
+### Bug Fixes
+
+* UI bugs in revisions list ([#588](https://github.com/webiny/webiny-js/issues/588)) ([ca19431](https://github.com/webiny/webiny-js/commit/ca194319e9614f302cc4c658919a9d7562817726))
+
+
+
+
+
 # [2.0.0](https://github.com/webiny/webiny-js/compare/@webiny/app-page-builder@0.1.15...@webiny/app-page-builder@2.0.0) (2019-10-29)
 
 **Note:** Version bump only for package @webiny/app-page-builder

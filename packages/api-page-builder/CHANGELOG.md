@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.0.1](https://github.com/webiny/webiny-js/compare/@webiny/api-page-builder@2.0.0...@webiny/api-page-builder@2.0.1) (2019-11-03)
+
+
+### Bug Fixes
+
+* remove skipOnPopulate from "published" field ([#589](https://github.com/webiny/webiny-js/issues/589)) ([154d2bc](https://github.com/webiny/webiny-js/commit/154d2bc7147c5c7ae01d2e137d784e240e79976e))
+
+
+
+
+
 # [2.0.0](https://github.com/webiny/webiny-js/compare/@webiny/api-page-builder@0.1.11...@webiny/api-page-builder@2.0.0) (2019-10-29)
 
 **Note:** Version bump only for package @webiny/api-page-builder

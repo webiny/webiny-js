@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.0.1](https://github.com/webiny/webiny-js/compare/@webiny/app@2.0.0...@webiny/app@2.0.1) (2019-11-03)
+
+
+### Bug Fixes
+
+* fix update of file data ([#587](https://github.com/webiny/webiny-js/issues/587)) ([b5b6212](https://github.com/webiny/webiny-js/commit/b5b62129d823f5aac3aa8c0051712d17986b4286))
+
+
+
+
+
 # [2.0.0](https://github.com/webiny/webiny-js/compare/@webiny/app@0.1.10...@webiny/app@2.0.0) (2019-10-29)
 
 **Note:** Version bump only for package @webiny/app
