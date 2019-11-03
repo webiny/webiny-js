@@ -35,8 +35,14 @@ export default {
             data: FormSubmission
         }
         
+        type ExportFormSubmissionsFile {
+            src: String
+            id: ID
+        }
+        
         type ExportFormSubmissionsResponse {
             error: FormError
+            data: ExportFormSubmissionsFile
         }
         
         extend type FormsQuery {
