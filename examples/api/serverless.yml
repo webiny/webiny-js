@@ -61,6 +61,8 @@ files:
     bucket: ${vars.bucket}
     memory: 512
     database: ${vars.database}
+    uploadMinFileSize: 0 # 0 MB
+    uploadMaxFileSize: 26214400 # 25 MB
     env: ${vars.env}
     webpackConfig: ./webpack.config.js
 

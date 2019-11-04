@@ -16,7 +16,14 @@ const prefix = "serverless-files";
 
 class FilesComponent extends Component {
     async default(inputs = {}) {
-        const { region = "us-east-1", bucket = "webiny-files", env, ...rest } = inputs;
+        const {
+            region = "us-east-1",
+            bucket = "webiny-files",
+            env,
+            uploadMinFileSize,
+            uploadMaxFileSize,
+            ...rest
+        } = inputs;
 
         const manageFilesLambda = await this.load("@webiny/serverless-function", "manage-files");
         const manageFilesLambdaOutput = await manageFilesLambda({
@@ -82,7 +89,12 @@ class FilesComponent extends Component {
             endpoints: [
                 { path: "/files/{path}", method: "ANY", function: downloadLambdaOutput.arn }
             ],
-            env: { ...env, S3_BUCKET: bucket },
+            env: {
+                ...env,
+                S3_BUCKET: bucket,
+                UPLOAD_MIN_FILE_SIZE: String(uploadMinFileSize),
+                UPLOAD_MAX_FILE_SIZE: String(uploadMaxFileSize)
+            },
             ...rest
         });
 
