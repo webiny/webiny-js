@@ -2,7 +2,15 @@ export const UPLOAD_FILES = /* GraphQL */ `
     mutation UploadFiles($data: [UploadFileInput]!) {
         files {
             uploadFiles(data: $data) {
-                data
+                data {
+                    data
+                    file {
+                        name
+                        key
+                        type
+                        size
+                    }
+                }
                 error {
                     message
                 }

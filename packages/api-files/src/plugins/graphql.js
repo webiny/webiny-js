@@ -44,6 +44,7 @@ export default ([
                 }
 
                 type UploadFileResponseData {
+                    # Contains data that is necessary for initiating a file upload. 
                     data: JSON
                     file: UploadFileResponseDataFile
                 }
@@ -55,7 +56,7 @@ export default ([
 
                 type UploadFilesResponse {
                     error: FileError
-                    data: JSON!
+                    data: [UploadFileResponseData]!
                 }
 
                 type FileListMeta {
@@ -87,7 +88,7 @@ export default ([
                 }
 
                 type CreateFilesResponse {
-                    data: JSON!
+                    data: [File]!
                     error: FileError
                 }
 

@@ -32,7 +32,5 @@ export default async (root: any, args: Object) => {
         promises.push(getPreSignedPostPayload(item));
     }
 
-    return new Response({
-        data: await Promise.all(promises)
-    });
+    return new Response(await Promise.all(promises));
 };

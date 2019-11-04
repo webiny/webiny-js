@@ -1,3 +1,4 @@
+/* eslint no-console: 0 */
 import get from "lodash.get";
 import pick from "lodash.pick";
 import { CREATE_FILES, UPLOAD_FILES } from "./graphql";
@@ -90,8 +91,7 @@ export default async ({ context, INSTALL_EXTRACT_DIR }) => {
                             data: filesChunk.map(item => pick(item, ["name", "size", "type"]))
                         });
 
-                        const preSignedPostPayloads =
-                            get(response, "files.uploadFiles.data.data") || [];
+                        const preSignedPostPayloads = get(response, "files.uploadFiles.data") || [];
                         await console.log(
                             `savePages: received pre-signed POST payloads for ${preSignedPostPayloads.length} files.`
                         );
