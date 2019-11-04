@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.1.0](https://github.com/webiny/webiny-js/compare/@webiny/cli@2.0.1...@webiny/cli@2.1.0) (2019-11-04)
+
+
+### Features
+
+* enable configuring min & max size for file uploads ([#593](https://github.com/webiny/webiny-js/issues/593)) ([5698ebf](https://github.com/webiny/webiny-js/commit/5698ebf4ff7a2d1a61b6b404a91e9b27c0940d84))
+
+
+
+
+
 ## [2.0.1](https://github.com/webiny/webiny-js/compare/@webiny/cli@2.0.0...@webiny/cli@2.0.1) (2019-10-31)
 
 

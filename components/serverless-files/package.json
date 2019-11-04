@@ -1,12 +1,12 @@
 {
   "name": "@webiny/serverless-files",
-  "version": "2.0.2",
+  "version": "2.1.0",
   "main": "serverless.js",
   "license": "MIT",
   "dependencies": {
     "@serverless/aws-s3": "^4.0.0",
     "@serverless/core": "^1.1.1",
-    "@webiny/api-files": "^2.0.2",
+    "@webiny/api-files": "^2.1.0",
     "@webiny/serverless-apollo-service": "^2.0.0",
     "@webiny/serverless-function": "^2.0.0",
     "aws-sdk": "^2.539.0",

@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.0.2](https://github.com/webiny/webiny-js/compare/@webiny/api-page-builder@2.0.1...@webiny/api-page-builder@2.0.2) (2019-11-04)
+
+
+### Bug Fixes
+
+* remove JSON response types for `createFiles` & `uploadFiles` fields ([#594](https://github.com/webiny/webiny-js/issues/594)) ([538fa85](https://github.com/webiny/webiny-js/commit/538fa851f9f4e195c4ef2366bd1ddb046bf98800))
+
+
+
+
+
 ## [2.0.1](https://github.com/webiny/webiny-js/compare/@webiny/api-page-builder@2.0.0...@webiny/api-page-builder@2.0.1) (2019-11-03)
 
 

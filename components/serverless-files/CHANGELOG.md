@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.1.0](https://github.com/Webiny/webiny-js/compare/@webiny/serverless-files@2.0.2...@webiny/serverless-files@2.1.0) (2019-11-04)
+
+
+### Features
+
+* enable configuring min & max size for file uploads ([#593](https://github.com/Webiny/webiny-js/issues/593)) ([5698ebf](https://github.com/Webiny/webiny-js/commit/5698ebf4ff7a2d1a61b6b404a91e9b27c0940d84))
+
+
+
+
+
 ## [2.0.2](https://github.com/Webiny/webiny-js/compare/@webiny/serverless-files@2.0.1...@webiny/serverless-files@2.0.2) (2019-11-03)
 
 **Note:** Version bump only for package @webiny/serverless-files

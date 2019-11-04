@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.1.0](https://github.com/webiny/webiny-js/compare/@webiny/api-files@2.0.2...@webiny/api-files@2.1.0) (2019-11-04)
+
+
+### Bug Fixes
+
+* remove JSON response types for `createFiles` & `uploadFiles` fields ([#594](https://github.com/webiny/webiny-js/issues/594)) ([538fa85](https://github.com/webiny/webiny-js/commit/538fa851f9f4e195c4ef2366bd1ddb046bf98800))
+
+
+### Features
+
+* enable configuring min & max size for file uploads ([#593](https://github.com/webiny/webiny-js/issues/593)) ([5698ebf](https://github.com/webiny/webiny-js/commit/5698ebf4ff7a2d1a61b6b404a91e9b27c0940d84))
+
+
+
+
+
 ## [2.0.2](https://github.com/webiny/webiny-js/compare/@webiny/api-files@2.0.1...@webiny/api-files@2.0.2) (2019-11-03)
 
 
