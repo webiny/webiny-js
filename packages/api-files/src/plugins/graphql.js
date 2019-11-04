@@ -44,6 +44,7 @@ export default ([
                 }
 
                 type UploadFileResponseData {
+                    # Contains data that is necessary for initiating a file upload. 
                     data: JSON
                     file: UploadFileResponseDataFile
                 }
