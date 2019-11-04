@@ -39,5 +39,5 @@ export default async (root: any, args: Object, context) => {
         data.push(file);
     }
 
-    return new Response({ data });
+    return new Response(data);
 };

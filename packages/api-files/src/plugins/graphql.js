@@ -55,7 +55,7 @@ export default ([
 
                 type UploadFilesResponse {
                     error: FileError
-                    data: JSON!
+                    data: [UploadFileResponseData]!
                 }
 
                 type FileListMeta {
@@ -87,7 +87,7 @@ export default ([
                 }
 
                 type CreateFilesResponse {
-                    data: JSON!
+                    data: [File]!
                     error: FileError
                 }
 
