@@ -43,7 +43,22 @@ const prepareII8NValues = ({ locales, values }) => {
     return output;
 };
 
-const I18NInput = ({ richText, value, onChange, ...inputProps }) => {
+type Props = {
+    value: any,
+    onChange: (value: any) => void,
+    richText?: boolean,
+    children?: ({ openDialog: () => void }) => React.Node,
+    showTranslateIcon?: boolean
+} & Object;
+
+const I18NInput = ({
+                       richText,
+                       value,
+                       onChange,
+                       children,
+                       showTranslateIcon,
+                       ...inputProps
+                   }: Props) => {
     const [values, setValues] = useState(null);
     const { getLocale, getLocales } = useI18N();
 
@@ -88,6 +103,10 @@ const I18NInput = ({ richText, value, onChange, ...inputProps }) => {
     };
 
     const translateMenuItem = useMemo(() => {
+        if (showTranslateIcon === false) {
+            return null;
+        }
+
         return {
             name: "i18NInputLocalesOverlay",
             menu: {
@@ -107,6 +126,25 @@ const I18NInput = ({ richText, value, onChange, ...inputProps }) => {
         };
     }, []);
 
+    const localesOverlay = (
+        <I18NInputLocalesOverlay
+            richText={richText}
+            values={values}
+            open={!!values}
+            onClose={closeDialog}
+            onSubmit={submitDialog}
+        />
+    );
+
+    if (typeof children === "function") {
+        return (
+            <>
+                {children({ openDialog })}
+                {localesOverlay}
+            </>
+        );
+    }
+
     return (
         <>
             {richText ? (
@@ -114,7 +152,7 @@ const I18NInput = ({ richText, value, onChange, ...inputProps }) => {
                     {...inputProps}
                     value={inputValue}
                     onChange={inputOnChange}
-                    plugins={[translateMenuItem]}
+                    plugins={showTranslateIcon !== false ? [translateMenuItem] : []}
                 />
             ) : (
                 <Input
@@ -123,20 +161,15 @@ const I18NInput = ({ richText, value, onChange, ...inputProps }) => {
                     onChange={inputOnChange}
                     className={classNames(inputProps.className, style.i18nDialogIconButton)}
                     trailingIcon={
-                        <Tooltip content={<span>Set locale values</span>} placement={"top"}>
-                            <Icon icon={<I18NIcon />} onClick={openDialog} />
-                        </Tooltip>
+                        showTranslateIcon !== false && (
+                            <Tooltip content={<span>Set locale values</span>} placement={"top"}>
+                                <Icon icon={<I18NIcon />} onClick={openDialog} />
+                            </Tooltip>
+                        )
                     }
                 />
             )}
-
-            <I18NInputLocalesOverlay
-                richText={richText}
-                values={values}
-                open={!!values}
-                onClose={closeDialog}
-                onSubmit={submitDialog}
-            />
+            {localesOverlay}
         </>
     );
 };
