@@ -23,6 +23,8 @@ import { css } from "emotion";
 import styled from "@emotion/styled";
 import { useHotkeys } from "react-hotkeyz";
 import { useFileManager } from "./FileManagerContext";
+import { i18n } from "@webiny/app/i18n";
+const t = i18n.ns("app-admin/file-manager/file-manager-view");
 
 import { ReactComponent as SearchIcon } from "./icons/round-search-24px.svg";
 import { ReactComponent as UploadIcon } from "./icons/round-cloud_upload-24px.svg";
@@ -262,14 +264,14 @@ function FileManagerView(props: Props) {
         if (errors.length > 0) {
             // We wait 750ms, just for everything to settle down a bit.
             setTimeout(
-                () => showSnackbar("One or more files were not uploaded successfully."),
+                () => showSnackbar(t`One or more files were not uploaded successfully.`),
                 750
             );
             return;
         }
 
         // We wait 750ms, just for everything to settle down a bit.
-        setTimeout(() => showSnackbar("File upload complete."), 750);
+        setTimeout(() => showSnackbar(t`File upload complete.`), 750);
     };
 
     return (
@@ -297,7 +299,7 @@ function FileManagerView(props: Props) {
                             <input
                                 ref={searchInput}
                                 onChange={e => searchOnChange(e.target.value)}
-                                placeholder={"Search by filename or tags"}
+                                placeholder={t`Search by filename or tags`}
                             />
                         </InputSearch>
                     }
@@ -311,12 +313,12 @@ function FileManagerView(props: Props) {
                                     onClose();
                                 }}
                             >
-                                Select {multiple && `(${selected.length})`}
+                                {t`Select`} {multiple && `(${selected.length})`}
                             </ButtonPrimary>
                         ) : (
                             <ButtonPrimary onClick={browseFiles} disabled={uploading}>
                                 <ButtonIcon icon={<UploadIcon />} />
-                                Upload...
+                                {t`Upload...`}
                             </ButtonPrimary>
                         )
                     }
