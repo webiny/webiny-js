@@ -197,6 +197,19 @@ function FileManagerView(props: Props) {
         []
     );
 
+    const getFileUploadErrorMessage = useCallback(e => {
+        if (typeof e === "string") {
+            const match = e.match(/Message>(.*?)<\/Message/);
+            if (match) {
+                const [, message] = match;
+                return message;
+            }
+
+            return e;
+        }
+        return e.message;
+    }, []);
+
     const updateCacheAfterCreateFile = (cache, newFile) => {
         const newFileData = get(newFile, "data.files.createFile.data");
 
@@ -250,7 +263,7 @@ function FileManagerView(props: Props) {
                     const response = await getFileUploader()(file, { apolloClient });
                     await createFile({ variables: { data: response } });
                 } catch (e) {
-                    errors.push(e);
+                    errors.push({ file, e });
                 }
             })
         );
@@ -263,11 +276,20 @@ function FileManagerView(props: Props) {
 
         if (errors.length > 0) {
             // We wait 750ms, just for everything to settle down a bit.
-            setTimeout(
-                () => showSnackbar(t`One or more files were not uploaded successfully.`),
-                750
-            );
-            return;
+            return setTimeout(() => {
+                showSnackbar(
+                    <>
+                        {t`One or more files were not uploaded successfully:`}
+                        <ol>
+                            {errors.map(({ file, e }) => (
+                                <li key={file.name}>
+                                    <strong>{file.name}</strong>: {getFileUploadErrorMessage(e)}
+                                </li>
+                            ))}
+                        </ol>
+                    </>
+                );
+            }, 750);
         }
 
         // We wait 750ms, just for everything to settle down a bit.
