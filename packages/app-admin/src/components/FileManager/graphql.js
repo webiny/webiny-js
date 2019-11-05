@@ -71,3 +71,13 @@ export const UPDATE_FILE = gql`
         }
     }
 `;
+
+export const DELETE_FILE = gql`
+    mutation deleteFile($id: ID!) {
+        files {
+            deleteFile(id: $id) {
+                data
+            }
+        }
+    }
+`;
