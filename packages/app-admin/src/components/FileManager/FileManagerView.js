@@ -23,6 +23,8 @@ import { css } from "emotion";
 import styled from "@emotion/styled";
 import { useHotkeys } from "react-hotkeyz";
 import { useFileManager } from "./FileManagerContext";
+import { i18n } from "@webiny/app/i18n";
+const t = i18n.ns("app-admin/file-manager/file-manager-view");
 
 import { ReactComponent as SearchIcon } from "./icons/round-search-24px.svg";
 import { ReactComponent as UploadIcon } from "./icons/round-cloud_upload-24px.svg";
@@ -173,27 +175,40 @@ function FileManagerView(props: Props) {
                 const { data } = gqlQuery.current.getQueryResult();
                 const nextPage = get(data, "files.listFiles.meta.nextPage");
                 nextPage &&
-                fetchMore({
-                    variables: { page: nextPage },
-                    updateQuery: (prev, { fetchMoreResult }) => {
-                        if (!fetchMoreResult) {
-                            return prev;
+                    fetchMore({
+                        variables: { page: nextPage },
+                        updateQuery: (prev, { fetchMoreResult }) => {
+                            if (!fetchMoreResult) {
+                                return prev;
+                            }
+
+                            const next = { ...fetchMoreResult };
+
+                            next.files.listFiles.data = [
+                                ...prev.files.listFiles.data,
+                                ...fetchMoreResult.files.listFiles.data
+                            ];
+
+                            return next;
                         }
-
-                        const next = { ...fetchMoreResult };
-
-                        next.files.listFiles.data = [
-                            ...prev.files.listFiles.data,
-                            ...fetchMoreResult.files.listFiles.data
-                        ];
-
-                        return next;
-                    }
-                });
+                    });
             }
         }, 500),
         []
     );
+
+    const getFileUploadErrorMessage = useCallback(e => {
+        if (typeof e === "string") {
+            const match = e.match(/Message>(.*?)<\/Message/);
+            if (match) {
+                const [, message] = match;
+                return message;
+            }
+
+            return e;
+        }
+        return e.message;
+    }, []);
 
     const updateCacheAfterCreateFile = (cache, newFile) => {
         const newFileData = get(newFile, "data.files.createFile.data");
@@ -241,10 +256,15 @@ function FileManagerView(props: Props) {
         setUploading(true);
         const list = Array.isArray(files) ? files : [files];
 
+        const errors = [];
         await Promise.all(
             list.map(async file => {
-                const response = await getFileUploader()(file, { apolloClient });
-                await createFile({ variables: { data: response } });
+                try {
+                    const response = await getFileUploader()(file, { apolloClient });
+                    await createFile({ variables: { data: response } });
+                } catch (e) {
+                    errors.push({ file, e });
+                }
             })
         );
 
@@ -254,10 +274,27 @@ function FileManagerView(props: Props) {
 
         setUploading(false);
 
-        // We wait 750ms, just for everything to settle down a bit.
-        setTimeout(() => showSnackbar("File upload complete."), 750);
-    };
+        if (errors.length > 0) {
+            // We wait 750ms, just for everything to settle down a bit.
+            return setTimeout(() => {
+                showSnackbar(
+                    <>
+                        {t`One or more files were not uploaded successfully:`}
+                        <ol>
+                            {errors.map(({ file, e }) => (
+                                <li key={file.name}>
+                                    <strong>{file.name}</strong>: {getFileUploadErrorMessage(e)}
+                                </li>
+                            ))}
+                        </ol>
+                    </>
+                );
+            }, 750);
+        }
 
+        // We wait 750ms, just for everything to settle down a bit.
+        setTimeout(() => showSnackbar(t`File upload complete.`), 750);
+    };
 
     return (
         <Files
@@ -284,25 +321,26 @@ function FileManagerView(props: Props) {
                             <input
                                 ref={searchInput}
                                 onChange={e => searchOnChange(e.target.value)}
-                                placeholder={"Search by filename or tags"}
+                                placeholder={t`Search by filename or tags`}
                             />
                         </InputSearch>
                     }
                     barRight={
                         selected.length > 0 ? (
                             <ButtonPrimary
+                                disabled={uploading}
                                 onClick={async () => {
                                     await onChange(multiple ? selected : selected[0]);
 
                                     onClose();
                                 }}
                             >
-                                Select {multiple && `(${selected.length})`}
+                                {t`Select`} {multiple && `(${selected.length})`}
                             </ButtonPrimary>
                         ) : (
-                            <ButtonPrimary onClick={browseFiles}>
+                            <ButtonPrimary onClick={browseFiles} disabled={uploading}>
                                 <ButtonIcon icon={<UploadIcon />} />
-                                Upload...
+                                {t`Upload...`}
                             </ButtonPrimary>
                         )
                     }
@@ -342,28 +380,28 @@ function FileManagerView(props: Props) {
                                 <FileList>
                                     {list.length
                                         ? list.map(file =>
-                                            renderFile({
-                                                uploadFile,
-                                                file,
-                                                showFileDetails: () => showFileDetails(file.src),
-                                                selected: selected.find(
-                                                    current => current.src === file.src
-                                                ),
-                                                onSelect: async () => {
-                                                    if (multiple) {
-                                                        toggleSelected(file);
-                                                        return;
-                                                    }
+                                              renderFile({
+                                                  uploadFile,
+                                                  file,
+                                                  showFileDetails: () => showFileDetails(file.src),
+                                                  selected: selected.find(
+                                                      current => current.src === file.src
+                                                  ),
+                                                  onSelect: async () => {
+                                                      if (multiple) {
+                                                          toggleSelected(file);
+                                                          return;
+                                                      }
 
-                                                    await onChange(file);
-                                                    onClose();
-                                                }
-                                            })
-                                        )
+                                                      await onChange(file);
+                                                      onClose();
+                                                  }
+                                              })
+                                          )
                                         : renderEmpty({
-                                            hasPreviouslyUploadedFiles,
-                                            browseFiles
-                                        })}
+                                              hasPreviouslyUploadedFiles,
+                                              browseFiles
+                                          })}
                                 </FileList>
                             </Scrollbar>
                             <BottomInfoBar accept={accept} uploading={uploading} />
