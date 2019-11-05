@@ -73,7 +73,7 @@ const LinkDialog = props => {
                                 <Cell span={12}>
                                     <Bind
                                         name={"href"}
-                                        validators={validation.create("required,url")}
+                                        validators={validation.create("required,url:allowRelative")}
                                     >
                                         <Input label="URL" />
                                     </Bind>
