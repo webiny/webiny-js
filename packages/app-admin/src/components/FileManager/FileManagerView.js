@@ -290,6 +290,7 @@ function FileManagerView(props: Props) {
                     barRight={
                         selected.length > 0 ? (
                             <ButtonPrimary
+                                disabled={uploading}
                                 onClick={async () => {
                                     await onChange(multiple ? selected : selected[0]);
 
@@ -299,7 +300,7 @@ function FileManagerView(props: Props) {
                                 Select {multiple && `(${selected.length})`}
                             </ButtonPrimary>
                         ) : (
-                            <ButtonPrimary onClick={browseFiles}>
+                            <ButtonPrimary onClick={browseFiles} disabled={uploading}>
                                 <ButtonIcon icon={<UploadIcon />} />
                                 Upload...
                             </ButtonPrimary>
