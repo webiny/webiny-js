@@ -241,10 +241,15 @@ function FileManagerView(props: Props) {
         setUploading(true);
         const list = Array.isArray(files) ? files : [files];
 
+        const errors = [];
         await Promise.all(
             list.map(async file => {
-                const response = await getFileUploader()(file, { apolloClient });
-                await createFile({ variables: { data: response } });
+                try {
+                    const response = await getFileUploader()(file, { apolloClient });
+                    await createFile({ variables: { data: response } });
+                } catch (e) {
+                    errors.push(e);
+                }
             })
         );
 
@@ -253,6 +258,15 @@ function FileManagerView(props: Props) {
         }
 
         setUploading(false);
+
+        if (errors.length > 0) {
+            // We wait 750ms, just for everything to settle down a bit.
+            setTimeout(
+                () => showSnackbar("One or more files were not uploaded successfully."),
+                750
+            );
+            return;
+        }
 
         // We wait 750ms, just for everything to settle down a bit.
         setTimeout(() => showSnackbar("File upload complete."), 750);
