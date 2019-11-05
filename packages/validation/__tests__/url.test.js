@@ -45,4 +45,9 @@ describe("url test", () => {
         await validation.validate("https://localhost:3000", "url").should.become(true);
         await validation.validate("https://localhost:3000/graphql", "url").should.become(true);
     });
+
+    it("should pass - allow relative URL", async () => {
+        await validation.validate("/relative/url?this=is", "url").should.be.rejected;
+        await validation.validate("/relative/url?this=is", "url:allowRelative").should.become(true);
+    });
 });
