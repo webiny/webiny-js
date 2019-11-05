@@ -17,6 +17,7 @@ class ServerlessForms extends Component {
         const { plugins = [], env, files, ...rest } = inputs;
 
         plugins.unshift("@webiny/api-forms/plugins");
+        plugins.unshift("@webiny/api-i18n/plugins/service");
 
         const apolloService = await this.load("@webiny/serverless-apollo-service");
         const output = await apolloService({
