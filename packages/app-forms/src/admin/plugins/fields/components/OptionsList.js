@@ -24,6 +24,9 @@ const OptionListItem = styled("li")({
     background: "var(--mdc-theme-surface)",
     "&:hover": {
         background: "var(--mdc-theme-background)"
+    },
+    '&:last-child':{
+        border: 'none'
     }
 });
 
