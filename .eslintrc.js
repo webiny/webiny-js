@@ -1,3 +1,5 @@
+const aliases = require("@webiny/project-utils/aliases");
+
 module.exports = {
     parser: "babel-eslint",
     extends: ["eslint:recommended", "plugin:jest/recommended", "plugin:react/recommended"],
@@ -21,6 +23,9 @@ module.exports = {
     settings: {
         flowtype: {
             onlyFilesWithFlowAnnotation: true
+        },
+        "import/resolver": {
+            "babel-module": { alias: aliases }
         }
     }
 };
