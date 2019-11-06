@@ -2,7 +2,7 @@
 import React from "react";
 import { Grid, Cell } from "@webiny/ui/Grid";
 import { ReactComponent as Icon } from "./icons/round-check_box-24px.svg";
-import OptionsSelectionDynamicFieldset from "./components/OptionsSelectionDynamicFieldset";
+import OptionsList from "./components/OptionsList";
 import type { FormEditorFieldPluginType } from "@webiny/app-forms/types";
 
 export default ({
@@ -29,7 +29,7 @@ export default ({
             return (
                 <Grid>
                     <Cell span={12}>
-                        <OptionsSelectionDynamicFieldset form={form} multiple />
+                        <OptionsList form={form} multiple />
                     </Cell>
                 </Grid>
             );

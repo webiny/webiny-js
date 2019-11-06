@@ -2,7 +2,7 @@
 import React from "react";
 import { Grid, Cell } from "@webiny/ui/Grid";
 import { ReactComponent as Icon } from "./icons/dropdown-icon.svg";
-import OptionsSelectionDynamicFieldset from "./components/OptionsSelectionDynamicFieldset";
+import OptionsList from "./components/OptionsList";
 import { I18NInput } from "@webiny/app-i18n/admin/components";
 import type { FormEditorFieldPluginType } from "@webiny/app-forms/types";
 
@@ -40,7 +40,7 @@ export default ({
                         </Bind>
                     </Cell>
                     <Cell span={12}>
-                        <OptionsSelectionDynamicFieldset form={form} />
+                        <OptionsList form={form} />
                     </Cell>
                 </Grid>
             );
