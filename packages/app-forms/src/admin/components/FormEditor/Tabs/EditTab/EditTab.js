@@ -5,12 +5,11 @@ import { Center, Vertical, Horizontal } from "../../DropZone";
 import Draggable from "../../Draggable";
 import EditFieldDialog from "./EditFieldDialog";
 import Field from "./Field";
-import { ReactComponent as HandleIcon } from "../../icons/round-drag_indicator-24px.svg";
+import { ReactComponent as HandleIcon } from "@webiny/app-forms/admin/icons/round-drag_indicator-24px.svg";
 import { rowHandle, EditContainer, fieldHandle, fieldContainer, Row, RowContainer } from "./Styled";
 import { useFormEditor } from "@webiny/app-forms/admin/components/FormEditor/Context";
 import type { FieldLayoutPositionType } from "@webiny/app-forms/types";
 import { useI18N } from "@webiny/app-i18n/hooks/useI18N";
-
 import { i18n } from "@webiny/app/i18n";
 const t = i18n.namespace("FormsApp.Editor.EditTab");
 
