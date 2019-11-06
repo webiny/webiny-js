@@ -3,6 +3,8 @@
 import React from "react";
 import { I18NValue } from "@webiny/app-i18n/components";
 import { I18NInput } from "@webiny/app-i18n/admin/components";
+import { Typography } from "@webiny/ui/Typography";
+import { Tooltip } from "@webiny/ui/Tooltip";
 import { css } from "emotion";
 import { IconButton } from "@webiny/ui/Button";
 
@@ -14,7 +16,16 @@ import { ReactComponent as TranslateIcon } from "@webiny/app-forms/admin/icons/r
 const optionsListItemLeft = css({
     display: "flex",
     justifyContent: "left",
-    alignItems: "center"
+    alignItems: "center",
+    ">div": {
+        display: "flex",
+        flexDirection: "column",
+        marginLeft: 10,
+        color: "var(--mdc-theme-on-surface)",
+        span: {
+            lineHeight: "125%"
+        }
+    }
 });
 
 const optionsListItemRight = css({
@@ -81,13 +92,15 @@ export default function OptionsListItem(props: *) {
     return (
         <>
             <div className={optionsListItemLeft}>
-                <span>{dragHandle}</span>
-                <span>
-                    <div>
+                <Tooltip placement={"bottom"} content={<span>Drag to rearrange the order</span>}>
+                    <span>{dragHandle}</span>
+                </Tooltip>
+                <div>
+                    <Typography use={"subtitle1"}>
                         <I18NValue value={option.label} />
-                    </div>
-                    <div>{option.value}</div>
-                </span>
+                    </Typography>
+                    <Typography use={"caption"}>{option.value}</Typography>
+                </div>
             </div>
             <div className={optionsListItemRight}>
                 <IconButton icon={<EditIcon />} onClick={editOption} />
@@ -98,15 +111,17 @@ export default function OptionsListItem(props: *) {
                 </I18NInput>
 
                 <IconButton icon={<DeleteIcon />} onClick={deleteOption} />
-                <span>|</span>
+
                 <Bind name={"settings.defaultValue"}>
                     {({ onChange, value }) => (
-                        <DefaultValueSwitch
-                            onChange={onChange}
-                            value={value}
-                            multiple={multiple}
-                            option={option}
-                        />
+                        <Tooltip placement={"bottom"} content={<span>Set as default value</span>}>
+                            <DefaultValueSwitch
+                                onChange={onChange}
+                                value={value}
+                                multiple={multiple}
+                                option={option}
+                            />
+                        </Tooltip>
                     )}
                 </Bind>
             </div>
