@@ -1,5 +1,6 @@
 // @flow
 import { object } from "@webiny/commodo";
+import cloneDeep from "lodash.clonedeep";
 
 const isValidElement = element => {
     return element && element.type;
@@ -38,7 +39,7 @@ export default ({ context, ...rest }) => {
         ...rest,
         async getStorageValue() {
             // Not using getValue method because it would load the model without need.
-            let element = this.current;
+            let element = cloneDeep(this.current);
             await asyncModifiers({
                 context,
                 element,
