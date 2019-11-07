@@ -12,7 +12,7 @@ const UPLOAD_MIN_FILE_SIZE = process.env.UPLOAD_MIN_FILE_SIZE;
 
 const sanitizeFileSizeValue = (value, defaultValue) => {
     try {
-        validation.validateSync(value, "numeric,gte:0");
+        validation.validateSync(value, "required,numeric,gte:0");
         return value;
     } catch (e) {
         return defaultValue;
