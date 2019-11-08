@@ -41,8 +41,14 @@ class Template extends Component {
         // Load .env.json from cwd (this will change depending on command you ran)
         await loadEnv(path.resolve(".env.json"), inputs.env, { debug: inputs.debug });
 
+        const template = findFile();
+
+        if (inputs.alias) {
+            return await this.deployAlias(inputs.alias, { ...inputs, template });
+        }
+
         // Run template
-        return await this.deploy({ ...inputs, template: findFile() });
+        return await this.deploy({ ...inputs, template });
     }
 
     async deploy(inputs = {}) {
@@ -67,7 +73,8 @@ class Template extends Component {
         const allComponentsWithOutputs = await executeGraph(
             allComponentsWithDependencies,
             graph,
-            this
+            this,
+            inputs
         );
 
         const outputs = getOutputs(allComponentsWithOutputs);
@@ -76,6 +83,38 @@ class Template extends Component {
         await this.save();
 
         return outputs;
+    }
+
+    async deployAlias(alias, inputs) {
+        alias = Array.isArray(alias) ? alias : [alias];
+
+        const template = await getTemplate(inputs);
+
+        Object.keys(this.state.outputs).forEach(key => {
+            if (!alias.includes(key)) {
+                template[key] = this.state.outputs[key];
+            }
+        });
+
+        const resolvedTemplate = resolveTemplate(inputs, template);
+
+        const allComponents = getAllComponents(resolvedTemplate);
+
+        const allComponentsWithDependencies = setDependencies(allComponents);
+
+        const graph = createGraph(allComponentsWithDependencies);
+
+        const allComponentsWithOutputs = await executeGraph(
+            allComponentsWithDependencies,
+            graph,
+            this,
+            inputs
+        );
+
+        Object.assign(this.state.outputs, getOutputs(allComponentsWithOutputs));
+        await this.save();
+
+        return this.state.outputs;
     }
 
     async remove(inputs = {}) {

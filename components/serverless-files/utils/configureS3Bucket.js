@@ -33,9 +33,7 @@ module.exports = async ({ bucket, region, component, s3Output, manageFilesLambda
         );
 
         await component.save();
-        component.context.debug(
-            `Saved state for serverless-files component: applied CORS configuration to the "${bucket}" S3 bucket.`
-        );
+        component.context.instance.debug(`Applied CORS configuration to the %o S3 bucket.`, bucket);
     }
 
     path = "state.lambda.manageS3Objects.permissions";
@@ -52,8 +50,10 @@ module.exports = async ({ bucket, region, component, s3Output, manageFilesLambda
         await pRetry(() => lambda.addPermission(get(component, path)).promise(), PRETRY_ARGS);
 
         await component.save();
-        component.context.debug(
-            `Saved state for serverless-files component: added "lambda:InvokeFunction" permission to the "manageS3Objects" Lambda.`
+        component.context.instance.debug(
+            `Added %o permission to the %o Lambda.`,
+            "lambda:InvokeFunction",
+            "manageS3Objects"
         );
     }
 
@@ -80,8 +80,9 @@ module.exports = async ({ bucket, region, component, s3Output, manageFilesLambda
         );
 
         await component.save();
-        component.context.debug(
-            `Saved state for serverless-files component: applied bucket notification configuration to the "${bucket}" S3 bucket.`
+        component.context.instance.debug(
+            `Applied bucket notification configuration to the %o S3 bucket.`,
+            bucket
         );
     }
 };

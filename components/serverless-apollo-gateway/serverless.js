@@ -2,6 +2,7 @@ const path = require("path");
 const fs = require("fs-extra");
 const prettier = require("prettier");
 const execa = require("execa");
+const isEqual = require("lodash.isequal");
 const webpack = require("webpack");
 const loadJson = require("load-json-file");
 const camelCase = require("lodash.camelcase");
@@ -21,6 +22,13 @@ const getDeps = async deps => {
 
 class ApolloGateway extends Component {
     async default(inputs = {}) {
+        if (isEqual(this.state.inputs, inputs)) {
+            this.context.instance.debug("Inputs were not changed, no action required.");
+            return this.state.output;
+        } else {
+            this.state.inputs = inputs;
+        }
+
         const {
             region,
             name = null,
@@ -41,7 +49,6 @@ class ApolloGateway extends Component {
         const componentRoot = path.join(boilerplateRoot, camelCase(name));
         fs.ensureDirSync(componentRoot);
 
-        this.state.inputs = inputs;
         await this.save();
 
         // Generate boilerplate code
@@ -70,7 +77,9 @@ class ApolloGateway extends Component {
         Object.assign(pkgJson.dependencies, await getDeps(defaultDependencies), dependencies);
         await writeJson(pkgJsonPath, pkgJson);
 
-        await execa("npm", ["install"], { cwd: componentRoot });
+        if (!fs.existsSync(path.join(componentRoot, "yarn.lock"))) {
+            await execa("yarn", ["--production"], { cwd: componentRoot });
+        }
 
         // Bundle code (switch CWD before running webpack)
         const cwd = process.cwd();
