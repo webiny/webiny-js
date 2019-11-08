@@ -18,6 +18,7 @@
     "@webiny/tracking": "^2.0.0",
     "ansi-escapes": "^4.2.1",
     "chalk": "^2.4.2",
+    "debug": "^4.1.1",
     "env-cmd": "^9.0.3",
     "execa": "^2.0.5",
     "fs-extra": "^8.1.0",
