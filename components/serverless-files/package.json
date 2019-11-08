@@ -11,6 +11,7 @@
     "@webiny/serverless-function": "^2.0.0",
     "aws-sdk": "^2.539.0",
     "lodash.get": "^4.4.2",
+    "lodash.merge": "^4.6.2",
     "lodash.set": "^4.3.2",
     "p-retry": "^4.1.0"
   },
@@ -29,7 +30,7 @@
     "build:image-transformer": "webpack --config scripts/webpack/webpack.config.imageTransformer.js",
     "build:manage-files": "webpack --config scripts/webpack/webpack.config.manageFiles.js",
     "build": "concurrently \"yarn build:image-transformer\" \"yarn build:download\" \"yarn build:manage-files\"",
-    "postbuild": "cp -r configureS3Bucket.js package.json serverless.js LICENSE README.md dist/",
+    "postbuild": "cp -r utils package.json serverless.js LICENSE README.md dist/",
     "deploy": "cd test && sls --debug",
     "prepublishOnly": "yarn build"
   },
