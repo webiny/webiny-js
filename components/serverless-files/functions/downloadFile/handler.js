@@ -14,7 +14,7 @@ const MAX_RETURN_CONTENT_LENGTH = 6000000; // almost 6MB
 const extractFilenameOptions = event => {
     const path = sanitizeFilename(event.pathParameters.path);
     return {
-        filename: path,
+        filename: decodeURI(path),
         options: event.queryStringParameters,
         extension: pathLib.extname(path)
     };
