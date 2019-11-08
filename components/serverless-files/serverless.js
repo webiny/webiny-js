@@ -92,7 +92,7 @@ class FilesComponent extends Component {
         const apolloServiceOutput = await apolloService({
             ...apolloServiceInputs,
             region,
-            name: "Files component - Apollo service",
+            name: "Files",
             plugins: ["@webiny/api-files/plugins"],
             binaryMediaTypes: ["*/*"],
             endpoints: [
