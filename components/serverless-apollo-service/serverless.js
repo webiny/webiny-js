@@ -80,6 +80,7 @@ class ApolloService extends Component {
         });
 
         // Generate boilerplate code
+        this.context.instance.debug("Generating boilerplate code at %o", componentRoot);
         const source = fs.readFileSync(__dirname + "/boilerplate/handler.js", "utf8");
         const { code } = await transform(source, {
             plugins: [[__dirname + "/transform/plugins", { plugins: injectPlugins }]]
@@ -108,12 +109,16 @@ class ApolloService extends Component {
         Object.assign(pkgJson.dependencies, await getDeps(defaultDependencies), dependencies);
         await writeJson(pkgJsonPath, pkgJson);
 
-        await execa("npm", ["install", "--production"], { cwd: componentRoot });
+        if (!fs.existsSync(join(componentRoot, "yarn.lock"))) {
+            this.context.instance.debug("Installing dependencies");
+            await execa("yarn", ["--production"], { cwd: componentRoot });
+        }
 
         // Bundle code (switch CWD before running webpack)
         const cwd = process.cwd();
         process.chdir(componentRoot);
 
+        this.context.instance.debug("Start bundling with webpack");
         await new Promise((res, reject) => {
             this.context.status("Building");
             let config = require(componentRoot + "/webpack.config.js");
@@ -122,16 +127,19 @@ class ApolloService extends Component {
                     // Resolve customizer path relative to serverless.yml file
                     const customizerPath = require.resolve(webpackConfig, { paths: [cwd] });
                     if (!fs.existsSync(customizerPath)) {
-                        this.context.debug(
-                            `Webpack customizer does not exist at "${customizerPath}"!`
+                        this.context.instance.debug(
+                            `Webpack customizer does not exist at %o!`,
+                            customizerPath
                         );
                     } else {
                         const customizer = require(customizerPath);
                         config = customizer({ config, instance: this, root: componentRoot });
                     }
                 } catch (err) {
-                    this.context.debug(
-                        `Error loading webpack customizer ${webpackConfig}: ${err.message}`
+                    this.context.instance.debug(
+                        `Error loading webpack customizer %o: %o`,
+                        webpackConfig,
+                        err.message
                     );
                 }
             }
@@ -151,6 +159,7 @@ class ApolloService extends Component {
                     return reject("Build failed!");
                 }
 
+                this.context.instance.debug("Finished bundling");
                 res();
             });
         });
@@ -162,6 +171,7 @@ class ApolloService extends Component {
         const lambda = await this.load("@webiny/serverless-function");
         const apiGw = await this.load("@webiny/serverless-api-gateway");
 
+        this.context.instance.debug("Deploy lambda");
         const lambdaOut = await lambda({
             region,
             description: `serverless-apollo-service: ${description || name}`,
@@ -173,7 +183,7 @@ class ApolloService extends Component {
             timeout
         });
 
-        this.context.debug(`Deploying API Gateway`);
+        this.context.instance.debug(`Deploying API Gateway`);
         const apiGwOut = await apiGw({
             region,
             name,
@@ -183,6 +193,8 @@ class ApolloService extends Component {
             endpointTypes,
             endpoints: [{ path: graphqlPath, method: "ANY", function: lambdaOut.arn }, ...endpoints]
         });
+
+        this.context.instance.debug("Finished API Gateway deployment: %o", apiGwOut.url);
 
         const output = {
             api: { ...apiGwOut, graphqlUrl: apiGwOut.url + graphqlPath },

@@ -5,6 +5,7 @@ const traverse = require("traverse");
 const { utils } = require("@serverless/core");
 const { trackComponent } = require("@webiny/tracking");
 const { red } = require("chalk");
+const debug = require("debug");
 
 const getOutputs = allComponents => {
     const outputs = {};
@@ -212,6 +213,7 @@ const createGraph = allComponents => {
 
 const executeGraph = async (allComponents, graph, instance) => {
     const leaves = graph.sinks();
+    const templateDebug = instance.context.instance.debug;
 
     if (isEmpty(leaves)) {
         return allComponents;
@@ -219,16 +221,17 @@ const executeGraph = async (allComponents, graph, instance) => {
 
     for (const alias of leaves) {
         const componentData = graph.node(alias);
-
         const component = await instance.load(componentData.path, alias);
+        component.context.instance.debug = debug(`webiny:${alias}`);
         const availableOutputs = getOutputs(allComponents);
         const inputs = resolveObject(allComponents[alias].inputs, availableOutputs);
         instance.context.status("Deploying", alias);
         try {
             allComponents[alias].outputs = (await component(inputs)) || {};
+            instance.context.instance.debug = templateDebug;
             await trackComponent({ context: instance.context, component: componentData.path });
         } catch (err) {
-            instance.context.debug(`An error occurred during deployment of ${red(alias)}`);
+            instance.context.log(`An error occurred during deployment of ${red(alias)}`);
             console.log();
             console.log(red(err));
             console.log();
@@ -242,30 +245,26 @@ const executeGraph = async (allComponents, graph, instance) => {
 };
 
 const syncState = async (allComponents, instance) => {
-    const promises = [];
+    const templateDebug = instance.context.instance.debug;
 
     for (const alias in instance.state.components || {}) {
         if (!allComponents[alias]) {
-            const fn = async () => {
-                try {
-                    const component = await instance.load(instance.state.components[alias], alias);
-                    instance.context.status("Removing", alias);
-                    await component.remove();
-                    trackComponent({
-                        context: instance.context,
-                        component: instance.state.components[alias],
-                        method: "remove"
-                    });
-                } catch (e) {
-                    instance.context.log(`An error occurred while removing ${alias}: ${e.stack}`);
-                }
-            };
-
-            promises.push(fn());
+            try {
+                const component = await instance.load(instance.state.components[alias], alias);
+                component.context.instance.debug = debug(`webiny:${alias}`);
+                instance.context.status("Removing", alias);
+                await component.remove();
+                instance.context.instance.debug = templateDebug;
+                trackComponent({
+                    context: instance.context,
+                    component: instance.state.components[alias],
+                    method: "remove"
+                });
+            } catch (e) {
+                instance.context.log(`An error occurred while removing ${alias}: ${e.stack}`);
+            }
         }
     }
-
-    await Promise.all(promises);
 
     instance.state.components = {};
 
