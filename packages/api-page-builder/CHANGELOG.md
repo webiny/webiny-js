@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.0.3](https://github.com/webiny/webiny-js/compare/@webiny/api-page-builder@2.0.2...@webiny/api-page-builder@2.0.3) (2019-11-08)
+
+
+### Bug Fixes
+
+* when creating storage value, do not modify current attribute value ([#606](https://github.com/webiny/webiny-js/issues/606)). ([9ec34e5](https://github.com/webiny/webiny-js/commit/9ec34e5))
+
+
+
+
+
 ## [2.0.2](https://github.com/webiny/webiny-js/compare/@webiny/api-page-builder@2.0.1...@webiny/api-page-builder@2.0.2) (2019-11-04)
 
 

@@ -1,6 +1,6 @@
 {
   "name": "@webiny/api-cookie-policy",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "main": "index.js",
   "repository": {
     "type": "git",
@@ -11,10 +11,10 @@
   "license": "MIT",
   "dependencies": {
     "@babel/runtime": "^7.5.5",
-    "@webiny/api-security": "^2.0.0",
+    "@webiny/api-security": "^2.0.1",
     "@webiny/commodo": "^2.0.0",
     "@webiny/commodo-graphql": "^2.0.0",
-    "@webiny/validation": "^2.0.0",
+    "@webiny/validation": "^2.1.0",
     "apollo-server-lambda": "^2.9.6",
     "lodash": "^4.17.4"
   },

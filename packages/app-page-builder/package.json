@@ -1,6 +1,6 @@
 {
   "name": "@webiny/app-page-builder",
-  "version": "2.0.1",
+  "version": "2.0.2",
   "main": "index.js",
   "repository": {
     "type": "git",
@@ -20,12 +20,12 @@
     "@rmwc/menu": "^5.6.0",
     "@svgr/webpack": "^4.3.2",
     "@webiny/app": "^2.0.1",
-    "@webiny/app-admin": "^2.0.1",
-    "@webiny/app-security": "^2.0.1",
+    "@webiny/app-admin": "^2.1.0",
+    "@webiny/app-security": "^2.0.2",
     "@webiny/form": "^2.0.0",
     "@webiny/plugins": "^2.0.0",
     "@webiny/ui": "^2.0.0",
-    "@webiny/validation": "^2.0.0",
+    "@webiny/validation": "^2.1.0",
     "aos": "^2.3.4",
     "classnames": "^2.2.6",
     "dataurl-to-blob": "^0.0.1",
