@@ -79,6 +79,16 @@
         "ideas",
         "userTesting"
       ]
+    },
+    {
+      "login": "JetUni",
+      "name": "Jarrett",
+      "avatar_url": "https://avatars0.githubusercontent.com/u/1317221?v=4",
+      "profile": "https://github.com/JetUni",
+      "contributions": [
+        "bug",
+        "code"
+      ]
     }
   ],
   "contributorsPerLine": 7,
