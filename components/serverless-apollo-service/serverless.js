@@ -9,13 +9,7 @@ const camelCase = require("lodash.camelcase");
 const { transform } = require("@babel/core");
 const { Component } = require("@serverless/core");
 
-const defaultDependencies = [
-    "date-fns",
-    "mongodb",
-    "@webiny/api",
-    "@webiny/api-security",
-    "babel-loader"
-];
+const defaultDependencies = ["babel-loader"];
 
 const getDeps = async deps => {
     const { dependencies } = await loadJson(join(__dirname, "package.json"));
@@ -25,6 +19,74 @@ const getDeps = async deps => {
     }, {});
 };
 
+const normalizePlugins = plugins => {
+    const normalized = [];
+    plugins.forEach(pl => {
+        let factory,
+            options = {};
+        if (typeof pl === "string") {
+            factory = pl;
+        } else {
+            factory = pl.factory;
+            options = pl.options || {};
+        }
+
+        normalized.push({ factory, options });
+    });
+
+    return normalized;
+};
+
+const addBackwardsCompatibility = (inputs, plugins) => {
+    if (inputs.database) {
+        // Means this is the old template structure
+        // add "@webiny/api-plugin-create-apollo-handler" with new options object from "env"
+        plugins.unshift({
+            factory: "@webiny/api-plugin-create-apollo-handler",
+            options: {
+                server: {
+                    introspection: inputs.env.GRAPHQL_INTROSPECTION,
+                    playground: inputs.env.GRAPHQL_PLAYGROUND
+                }
+            }
+        });
+
+        // add "@webiny/api-plugin-commodo-mongodb" with new options object from "database"
+        plugins.unshift({
+            factory: "@webiny/api-plugin-commodo-mongodb",
+            options: { database: inputs.database }
+        });
+
+        // add "@webiny/api-security/plugins/service" with new options object from "env"
+        const secOptions = { token: { expiresIn: 2592000, secret: inputs.env.JWT_SECRET } };
+        const secIndex = plugins.findIndex(pl => pl.factory === "@webiny/api-security/plugins");
+        if (secIndex === -1) {
+            plugins.unshift({
+                factory: "@webiny/api-security/plugins/service",
+                options: secOptions
+            });
+        } else {
+            if (!plugins[secIndex].options.token) {
+                plugins[secIndex].options = secOptions;
+            }
+        }
+    }
+
+    return plugins;
+};
+
+const dedupePlugins = plugins => {
+    return plugins
+        .reverse()
+        .reduce((acc, pl) => {
+            if (!acc.find(item => item.factory === pl.factory)) {
+                acc.push(pl);
+            }
+            return acc;
+        }, [])
+        .reverse();
+};
+
 class ApolloService extends Component {
     async default(inputs = {}) {
         const {
@@ -32,15 +94,12 @@ class ApolloService extends Component {
             endpoints = [],
             graphqlPath = "/graphql",
             name,
-            plugins = [],
             env = {},
-            database,
             memory = 512,
             timeout = 10,
             description,
             endpointTypes = ["REGIONAL"],
             binaryMediaTypes = [],
-            dependencies = {},
             webpackConfig = null
         } = inputs;
 
@@ -48,10 +107,11 @@ class ApolloService extends Component {
             throw Error(`"inputs.name" is a required parameter!`);
         }
 
-        if (database) {
-            env["MONGODB_SERVER"] = database.server;
-            env["MONGODB_NAME"] = database.name;
-        }
+        let plugins = normalizePlugins(inputs.plugins || []);
+
+        // TODO: remove in the next major release
+        plugins = addBackwardsCompatibility(inputs, plugins);
+        plugins = dedupePlugins(plugins);
 
         const injectPlugins = [];
         const boilerplateRoot = join(this.context.instance.root, ".webiny");
@@ -62,20 +122,10 @@ class ApolloService extends Component {
         await this.save();
 
         plugins.forEach((pl, index) => {
-            let factory,
-                options = null;
-
-            if (typeof pl === "string") {
-                factory = pl;
-            } else {
-                factory = pl.factory;
-                options = pl.options || null;
-            }
-
             injectPlugins.push({
                 name: `injectedPlugins${index + 1}`,
-                path: factory,
-                options
+                path: pl.factory,
+                options: pl.options
             });
         });
 
@@ -92,11 +142,6 @@ class ApolloService extends Component {
         );
 
         fs.copyFileSync(
-            join(__dirname, "boilerplate", "config.js"),
-            join(componentRoot, "config.js")
-        );
-
-        fs.copyFileSync(
             join(__dirname, "boilerplate", "webpack.config.js"),
             join(componentRoot, "webpack.config.js")
         );
@@ -106,7 +151,7 @@ class ApolloService extends Component {
 
         // Inject dependencies
         const pkgJson = await loadJson(pkgJsonPath);
-        Object.assign(pkgJson.dependencies, await getDeps(defaultDependencies), dependencies);
+        Object.assign(pkgJson.dependencies, await getDeps(defaultDependencies));
         await writeJson(pkgJsonPath, pkgJson);
 
         if (!fs.existsSync(join(componentRoot, "yarn.lock"))) {
@@ -132,6 +177,10 @@ class ApolloService extends Component {
                             customizerPath
                         );
                     } else {
+                        this.context.instance.debug(
+                            `Loading webpack customizer from %o`,
+                            customizerPath
+                        );
                         const customizer = require(customizerPath);
                         config = customizer({ config, instance: this, root: componentRoot });
                     }

@@ -1,12 +1,11 @@
-import { gql } from "apollo-server-lambda";
+import gql from "graphql-tag";
 import { withFields, string, fields } from "@webiny/commodo";
-import { id } from "@commodo/fields-storage-mongodb/fields";
 
 export default [
     {
         name: "pb-page-settings-social",
         type: "pb-page-settings-model",
-        apply(settingsFields) {
+        apply({ fields: settingsFields, context }) {
             settingsFields.social = fields({
                 value: {},
                 instanceOf: withFields({
@@ -20,7 +19,7 @@ export default [
                     }),
                     title: string(),
                     description: string(),
-                    image: id()
+                    image: context.commodo.fields.id()
                 })()
             });
         }

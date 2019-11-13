@@ -1,6 +1,5 @@
 // @flow
 import { flow } from "lodash";
-import { id, withAggregate } from "@commodo/fields-storage-mongodb";
 import { validation } from "@webiny/validation";
 import { withProps } from "@webiny/commodo";
 import mdbid from "mdbid";
@@ -22,13 +21,12 @@ import {
 export default ({ createBase, context, PbCategory, PbSettings }) => {
     const PbPageSettings = withFields(() => {
         const fields = {};
-        context.plugins.byType("pb-page-settings-model").forEach(plugin => plugin.apply(fields));
+        context.plugins.byType("pb-page-settings-model").forEach(plugin => plugin.apply({ fields, context }));
         return fields;
     })();
 
     const PbPage = flow(
         withName("PbPage"),
-        withAggregate(),
         withFields(instance => ({
             category: ref({ instanceOf: PbCategory, validation: validation.create("required") }),
             publishedOn: skipOnPopulate()(date()),
@@ -48,7 +46,7 @@ export default ({ createBase, context, PbCategory, PbSettings }) => {
                 })
             ),
             version: number(),
-            parent: id(),
+            parent: context.commodo.fields.id(),
             published: flow(
                 onSet(value => {
                     // Deactivate previously published revision

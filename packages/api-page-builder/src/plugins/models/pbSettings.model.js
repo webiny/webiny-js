@@ -38,7 +38,7 @@ const step = () =>
         )()
     });
 
-export default ({ createBase }) => {
+export default ({ createBase, context }) => {
     const InstallationFields = flow(
         withFields({
             steps: fields({
@@ -78,6 +78,8 @@ export default ({ createBase }) => {
             }
         })
     )();
+
+    const { id } = context.commodo.fields;
 
     return flow(
         withName("Settings"),

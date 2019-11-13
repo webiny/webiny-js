@@ -3,7 +3,7 @@ import type { PluginType } from "@webiny/api/types";
 import { shield } from "graphql-shield";
 import authenticate from "./authentication/authenticate";
 
-export default ([
+export default options => ([
     {
         type: "graphql-middleware",
         name: "graphql-middleware-shield",
@@ -34,6 +34,7 @@ export default ([
         type: "graphql-context",
         name: "graphql-context-security",
         preApply: async context => {
+            context.security = options;
             context.token = null;
             context.user = null;
             context.getUser = () => context.user;

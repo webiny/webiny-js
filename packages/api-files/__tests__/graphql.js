@@ -1,21 +1,13 @@
 import { graphql } from "graphql";
-import { MongoClient } from "mongodb";
 import { setupSchema } from "@webiny/api/testing";
 import filesPlugins from "@webiny/api-files/plugins";
 
-describe("GraphQL plugins", () => {
+export default ({ plugins }) => {
     let testing;
-    let client;
 
     beforeAll(async () => {
-        // Setup database
-        client = await MongoClient.connect(global.__MONGO_URI__, { useUnifiedTopology: true });
-        const database = await client.db(global.__MONGO_DB_NAME__);
-        testing = await setupSchema([filesPlugins], { database });
-    });
-
-    afterAll(async () => {
-        await client.close();
+        // Setup schema
+        testing = await setupSchema([plugins, filesPlugins()]);
     });
 
     test("create file", async () => {
@@ -154,4 +146,4 @@ describe("GraphQL plugins", () => {
             }
         });
     });
-});
+};

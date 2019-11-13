@@ -1,17 +1,11 @@
 import { createSchema, PluginsContainer } from "../index";
 
-export const setupSchema = async (plugins, config) => {
-    if (typeof plugins === "function") {
-        plugins = plugins(config);
-    } else {
-        plugins = plugins.map(pl => pl(config));
-    }
-
+export const setupSchema = async plugins => {
     const pluginsContainer = new PluginsContainer([plugins]);
 
-    const schema = await createSchema({ plugins: pluginsContainer, config });
+    const schema = await createSchema({ plugins: pluginsContainer });
 
-    const context = { config, plugins: pluginsContainer };
+    const context = { plugins: pluginsContainer };
 
     return {
         schema,

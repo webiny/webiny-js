@@ -1,18 +1,10 @@
 // @flow
-export default async (root: any, args: Object, context: Object) => {
-    const { PbPage } = context.models;
-    const { query } = args;
-    const pipeline = [
-        { $match: { deleted: false } },
-        { $project: { "settings.general.tags": 1 } },
-        { $unwind: "$settings.general.tags" },
-        { $match: { "settings.general.tags": { $regex: `.*${query}.*`, $options: "i" } } },
-        { $group: { _id: "$settings.general.tags" } }
-    ];
+export default async (root: any, args: Object, context: Object, info: Object) => {
+    const plugin = context.plugins.byName("pb-resolver-search-tags");
 
-    const results = await PbPage.aggregate(pipeline);
+    if (!plugin) {
+        throw Error(`Resolver plugin "pb-resolver-search-tags" is not configured!`);
+    }
 
-    return {
-        data: results.map(item => item._id)
-    };
+    return { data: await plugin.resolve({ root, args, context, info }) };
 };

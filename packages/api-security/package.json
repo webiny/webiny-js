@@ -20,9 +20,9 @@
     "@webiny/commodo": "^2.0.0",
     "@webiny/commodo-graphql": "^2.0.0",
     "@webiny/validation": "^2.1.0",
-    "apollo-server-lambda": "^2.9.6",
     "bcryptjs": "^2.4.3",
     "graphql-shield": "^6.1.0",
+    "graphql-tag": "^2.10.1",
     "jsonwebtoken": "^8.2.2",
     "lodash": "^4.17.4",
     "md5": "^2.2.1"

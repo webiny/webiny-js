@@ -1,18 +1,8 @@
-const { join } = require("path");
 const { Component } = require("@serverless/core");
-const loadJson = require("load-json-file");
 const get = require("lodash.get");
 const S3 = require("aws-sdk/clients/s3");
 const fs = require("fs");
 const path = require("path");
-
-const getDeps = async deps => {
-    const { dependencies } = await loadJson(join(__dirname, "package.json"));
-    return deps.reduce((acc, item) => {
-        acc[item] = dependencies[item];
-        return acc;
-    }, {});
-};
 
 const PAGE_BUILDER_INSTALLATION_FILES_ZIP_KEY = "page_builder_installation_files.zip";
 
@@ -20,7 +10,11 @@ class ServerlessPageBuilder extends Component {
     async default(inputs = {}) {
         const { plugins = [], env, files, ...rest } = inputs;
 
-        plugins.unshift("@webiny/api-page-builder/plugins");
+        // TODO: remove this in the next major release
+        if (rest.database) {
+            plugins.unshift("@webiny/api-page-builder/plugins");
+            plugins.unshift("@webiny/api-plugin-page-builder-resolvers-mongodb");
+        }
 
         // Create S3 bucket for storing installation ZIP file.
         const { region } = rest;
@@ -67,8 +61,7 @@ class ServerlessPageBuilder extends Component {
                 PAGE_BUILDER_S3_BUCKET: s3Output.name,
                 PAGE_BUILDER_INSTALLATION_FILES_ZIP_KEY
             },
-            ...rest,
-            dependencies: await getDeps(["@webiny/api-page-builder"])
+            ...rest
         });
 
         this.state.output = output;

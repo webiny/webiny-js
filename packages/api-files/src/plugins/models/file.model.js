@@ -11,12 +11,10 @@ import {
     withProps
 } from "@webiny/commodo";
 
-import { withAggregate } from "@commodo/fields-storage-mongodb";
 import { validation } from "@webiny/validation";
 
 export default ({ createBase, context }) => {
     const File = flow(
-        withAggregate(),
         withName("File"),
         withProps({
             get src() {
