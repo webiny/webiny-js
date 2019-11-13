@@ -1,5 +1,5 @@
 import pluralize from "pluralize";
-import { gql } from "apollo-server-lambda";
+import gql from "graphql-tag";
 import * as resolve from "@webiny/commodo-graphql";
 import { createTypeName, createManageTypeName, createReadTypeName } from "../utils/createTypeName";
 import { resolveGet } from "../utils/resolveGet";

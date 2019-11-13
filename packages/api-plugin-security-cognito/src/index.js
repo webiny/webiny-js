@@ -1,5 +1,5 @@
 import CognitoIdentityServiceProvider from "aws-sdk/clients/cognitoidentityserviceprovider";
-import { gql } from "apollo-server-lambda";
+import gql from "graphql-tag";
 import jwt from "jsonwebtoken";
 import jwkToPem from "jwk-to-pem";
 import request from "request-promise";

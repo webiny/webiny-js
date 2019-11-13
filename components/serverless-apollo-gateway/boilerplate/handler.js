@@ -1,51 +1,11 @@
-import { ApolloGateway, RemoteGraphQLDataSource } from "@apollo/gateway";
-import { ApolloServer } from "apollo-server-lambda";
-import buildHeaders from "./buildHeaders";
-
-const createHandler = async () => {
-    const gateway = new ApolloGateway({
-        serviceList: [],
-        buildService({ url }) {
-            return new RemoteGraphQLDataSource({
-                url,
-                willSendRequest({ request, context }) {
-                    if (context.headers) {
-                        Object.keys(context.headers).forEach(key => {
-                            if (context.headers[key]) {
-                                request.http.headers.set(key, context.headers[key]);
-                            }
-                        });
-                    }
-                }
-            });
-        }
-    });
-
-    const { schema, executor } = await gateway.load();
-
-    let apollo = new ApolloServer({
-        schema,
-        executor,
-        introspection: process.env.GRAPHQL_INTROSPECTION === "true",
-        playground: process.env.GRAPHQL_PLAYGROUND === "true",
-        context: async ({ event }) => {
-            return { headers: buildHeaders(event) };
-        }
-    });
-
-    return apollo.createHandler({
-        cors: {
-            origin: "*",
-            methods: "GET,HEAD,POST,OPTIONS"
-        }
-    });
-};
+import { PluginsContainer } from "@webiny/api";
 
 let apolloHandler;
-
 export const handler = async (event, context) => {
     if (!apolloHandler) {
-        apolloHandler = await createHandler();
+        const plugins = new PluginsContainer([]);
+        const plugin = plugins.byName("create-apollo-gateway");
+        apolloHandler = await plugin.createGateway({ plugins });
     }
 
     return new Promise((resolve, reject) => {

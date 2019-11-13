@@ -1,5 +1,5 @@
 // @flow
-import { gql } from "apollo-server-lambda";
+import gql from "graphql-tag";
 import { emptyResolver, resolveUpdateSettings, resolveGetSettings } from "@webiny/commodo-graphql";
 import { hasScope } from "@webiny/api-security";
 import googleTagManagerSettings from "./googleTagManagerSettings.model";
