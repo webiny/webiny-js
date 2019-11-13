@@ -11,6 +11,7 @@ const getDefaults = () => ({
             uploadMinFileSize: 0,
             uploadMaxFileSize: 26214400,
             env: {},
+            plugins: [],
             webpackConfig: null
         },
         downloadFile: {

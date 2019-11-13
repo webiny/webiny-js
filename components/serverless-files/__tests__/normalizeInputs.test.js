@@ -69,6 +69,7 @@ describe("normalizeInputs function test", () => {
                 apolloService: {
                     memory: 1,
                     timeout: 2,
+                    plugins: [],
                     database: {
                         one: 1,
                         two: 2,
@@ -145,6 +146,7 @@ describe("normalizeInputs function test", () => {
             functions: {
                 apolloService: {
                     memory: 1,
+                    plugins: [],
                     timeout: 2,
                     database: {
                         one: 1,
