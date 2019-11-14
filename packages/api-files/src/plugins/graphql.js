@@ -117,6 +117,7 @@ export default ([
                         perPage: Int
                         types: [String]
                         tags: [String]
+                        ids: [ID]
                         sort: JSON
                         search: String
                     ): FileListResponse
@@ -189,7 +190,6 @@ export default ([
             shield: {
                 FilesQuery: {
                     getFile: hasScope("files:file:crud"),
-                    listFiles: hasScope("files:file:crud")
                 },
                 FilesMutation: {
                     uploadFile: hasScope("files:file:crud"),
