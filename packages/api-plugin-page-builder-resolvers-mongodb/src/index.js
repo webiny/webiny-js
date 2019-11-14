@@ -111,7 +111,7 @@ export default () => [
                 })
             };
 
-            const ids = await collection.aggregate(pipelines.results).toArray() || [];
+            const ids = (await collection.aggregate(pipelines.results).toArray()) || [];
             const pages = await PbPage.findByIds(ids.map(item => item.id));
             const totalCount =
                 get(await collection.aggregate(pipelines.totalCount).toArray(), "0.count") || 0;
@@ -172,19 +172,23 @@ export default () => [
                 });
             }
 
-            const ids = await collection.aggregate([
-                ...pipeline,
-                { $project: { _id: -1, id: 1 } },
-                { $skip: (page - 1) * perPage },
-                { $limit: perPage }
-            ]).toArray();
+            const ids = await collection
+                .aggregate([
+                    ...pipeline,
+                    { $project: { _id: -1, id: 1 } },
+                    { $skip: (page - 1) * perPage },
+                    { $limit: perPage }
+                ])
+                .toArray();
 
-            const [totalCount] = await collection.aggregate([
-                ...pipeline,
-                {
-                    $count: "totalCount"
-                }
-            ]).toArray();
+            const [totalCount] = await collection
+                .aggregate([
+                    ...pipeline,
+                    {
+                        $count: "totalCount"
+                    }
+                ])
+                .toArray();
 
             const pages = await PbPage.find({
                 sort,
@@ -192,6 +196,39 @@ export default () => [
             });
 
             return { pages, totalCount };
+        }
+    },
+    {
+        name: "pb-resolver-get-page-content-file",
+        type: "pb-resolver",
+        async resolve({ id, context }) {
+            const database = context.commodo.driver.getDatabase();
+
+            try {
+                if (!context.files) {
+                    context.files = {
+                        settings: await database.collection("Settings").findOne({
+                            key: "file-manager",
+                            deleted: { $ne: true }
+                        })
+                    };
+                }
+
+                const result = await database
+                    .collection("File")
+                    .findOne({ id, deleted: { $ne: true } });
+
+                if (!result) {
+                    return null;
+                }
+
+                return {
+                    id: result.id,
+                    src: get(context, "files.settings.data.srcPrefix") + result.key
+                };
+            } catch (e) {
+                return null;
+            }
         }
     }
 ];
