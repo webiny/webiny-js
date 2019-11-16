@@ -24,7 +24,7 @@ export default [
                 render={() => (
                     <SecureRoute roles={["form-editors-editor"]}>
                         <Helmet>
-                            <title>Edit form</title>
+                            <title>Edit form builder</title>
                         </Helmet>
                         <Loader>
                             <FormEditor />
@@ -44,7 +44,7 @@ export default [
                 render={() => (
                     <SecureRoute roles={["form-editors"]}>
                         <AdminLayout>
-                            <Helmet title={"Forms"} />
+                            <Helmet title={"Form Builder"} />
                             <Loader>
                                 <Forms />
                             </Loader>
