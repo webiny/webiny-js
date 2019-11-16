@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.1.0](https://github.com/webiny/webiny-js/compare/@webiny/app-admin@2.0.1...@webiny/app-admin@2.1.0) (2019-11-08)
+
+
+### Features
+
+* improve File Manager UI ([#596](https://github.com/webiny/webiny-js/issues/596)) ([d67b114](https://github.com/webiny/webiny-js/commit/d67b114))
+
+
+
+
+
 ## [2.0.1](https://github.com/webiny/webiny-js/compare/@webiny/app-admin@2.0.0...@webiny/app-admin@2.0.1) (2019-11-03)
 
 

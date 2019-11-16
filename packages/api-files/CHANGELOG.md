@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.1.1](https://github.com/webiny/webiny-js/compare/@webiny/api-files@2.1.0...@webiny/api-files@2.1.1) (2019-11-08)
+
+
+### Bug Fixes
+
+* **files component:** upload must still work if upload file size limits are missing ([#601](https://github.com/webiny/webiny-js/issues/601)) ([5d1a2b1](https://github.com/webiny/webiny-js/commit/5d1a2b1))
+
+
+
+
+
 # [2.1.0](https://github.com/webiny/webiny-js/compare/@webiny/api-files@2.0.2...@webiny/api-files@2.1.0) (2019-11-04)
 
 

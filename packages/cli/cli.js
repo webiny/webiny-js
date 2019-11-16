@@ -49,6 +49,9 @@ yargs.command(
             describe: "Environment to deploy. Must match your environments in .env.json.",
             default: "local"
         });
+        yargs.option("alias", {
+            describe: "Alias to deploy."
+        });
         yargs.option("debug", {
             describe: "Show debug messages.",
             default: false,
@@ -146,3 +149,10 @@ yargs.command(
 
 // Run
 yargs.argv;
+
+// Checks for updates
+if (!process.env.CI) {
+    const updateNotifier = require("update-notifier");
+    const pkg = require("./package.json");
+    updateNotifier({ pkg }).notify();
+}

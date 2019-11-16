@@ -1,6 +1,7 @@
 const { join } = require("path");
 const { Component } = require("@serverless/core");
-const configureS3Bucket = require("./configureS3Bucket");
+const configureS3Bucket = require("./utils/configureS3Bucket");
+const normalizeInputs = require("./utils/normalizeInputs");
 
 /**
  * This component deploys:
@@ -15,14 +16,17 @@ const configureS3Bucket = require("./configureS3Bucket");
 const prefix = "serverless-files";
 
 class FilesComponent extends Component {
-    async default(inputs = {}) {
+    async default(rawInputs = {}) {
+        const inputs = normalizeInputs(rawInputs);
+
         const {
-            region = "us-east-1",
-            bucket = "webiny-files",
-            env,
-            uploadMinFileSize,
-            uploadMaxFileSize,
-            ...rest
+            region,
+            bucket,
+            functions: {
+                apolloService: apolloServiceInputs,
+                downloadFile: downloadFileInputs,
+                imageTransformer: imageTransformerInputs
+            }
         } = inputs;
 
         const manageFilesLambda = await this.load("@webiny/serverless-function", "manage-files");
@@ -53,14 +57,16 @@ class FilesComponent extends Component {
             "@webiny/serverless-function",
             "image-transformer"
         );
+
         const imageTransformerLambdaOutput = await imageTransformerLambda({
+            ...imageTransformerInputs,
             region,
             name: "Files component - image transformer",
-            timeout: 10,
+            description: `${prefix}: Performs image optimization, resizing, etc.`,
             code: join(__dirname, "functions/imageTransformer"),
             handler: "handler.handler",
-            description: `${prefix}: Performs image optimization, resizing, etc.`,
             env: {
+                ...imageTransformerInputs.env,
                 S3_BUCKET: bucket
             }
         });
@@ -68,13 +74,14 @@ class FilesComponent extends Component {
         // Deploy read/upload lambdas
         const downloadLambda = await this.load("@webiny/serverless-function", "download");
         const downloadLambdaOutput = await downloadLambda({
+            ...downloadFileInputs,
             region,
             name: "Files component - download files",
-            timeout: 10,
+            description: `${prefix}: Serves previously uploaded files.`,
             code: join(__dirname, "functions/downloadFile"),
             handler: "handler.handler",
-            description: `${prefix}: Serves previously uploaded files.`,
             env: {
+                ...downloadFileInputs.env,
                 S3_BUCKET: bucket,
                 IMAGE_TRANSFORMER_LAMBDA_NAME: imageTransformerLambdaOutput.name
             }
@@ -83,19 +90,20 @@ class FilesComponent extends Component {
         // Deploy graphql API
         const apolloService = await this.load("@webiny/serverless-apollo-service");
         const apolloServiceOutput = await apolloService({
+            ...apolloServiceInputs,
             region,
+            name: "Files",
             plugins: ["@webiny/api-files/plugins"],
             binaryMediaTypes: ["*/*"],
             endpoints: [
                 { path: "/files/{path}", method: "ANY", function: downloadLambdaOutput.arn }
             ],
             env: {
-                ...env,
+                ...apolloServiceInputs.env,
                 S3_BUCKET: bucket,
-                UPLOAD_MIN_FILE_SIZE: String(uploadMinFileSize),
-                UPLOAD_MAX_FILE_SIZE: String(uploadMaxFileSize)
-            },
-            ...rest
+                UPLOAD_MIN_FILE_SIZE: String(apolloServiceInputs.uploadMinFileSize),
+                UPLOAD_MAX_FILE_SIZE: String(apolloServiceInputs.uploadMaxFileSize)
+            }
         });
 
         const output = {

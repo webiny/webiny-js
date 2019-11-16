@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.1.0](https://github.com/Webiny/webiny-js/compare/@webiny/serverless-page-builder@2.0.3...@webiny/serverless-page-builder@2.1.0) (2019-11-08)
+
+
+### Features
+
+* add support for selective component deploy and improve debug output. ([#610](https://github.com/Webiny/webiny-js/issues/610)) ([5c3acb0](https://github.com/Webiny/webiny-js/commit/5c3acb0))
+
+
+
+
+
 ## [2.0.3](https://github.com/Webiny/webiny-js/compare/@webiny/serverless-page-builder@2.0.2...@webiny/serverless-page-builder@2.0.3) (2019-11-04)
 
 **Note:** Version bump only for package @webiny/serverless-page-builder

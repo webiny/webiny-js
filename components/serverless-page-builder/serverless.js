@@ -38,8 +38,9 @@ class ServerlessPageBuilder extends Component {
                 .getObject({ Bucket: s3Output.name, Key: PAGE_BUILDER_INSTALLATION_FILES_ZIP_KEY })
                 .promise();
         } catch (e) {
-            this.context.debug(
-                `Uploading Page Builder installation files to bucket ${s3Output.name}.`
+            this.context.instance.debug(
+                `Uploading Page Builder installation files to bucket %o`,
+                s3Output.name
             );
             await s3
                 .putObject({

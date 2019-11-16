@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.1.0](https://github.com/webiny/webiny-js/compare/@webiny/validation@2.0.0...@webiny/validation@2.1.0) (2019-11-08)
+
+
+### Features
+
+* add "allowRelative" option for the `url` validator ([#597](https://github.com/webiny/webiny-js/issues/597)) ([653d619](https://github.com/webiny/webiny-js/commit/653d619))
+
+
+
+
+
 # [2.0.0](https://github.com/webiny/webiny-js/compare/@webiny/validation@0.1.8...@webiny/validation@2.0.0) (2019-10-29)
 
 **Note:** Version bump only for package @webiny/validation

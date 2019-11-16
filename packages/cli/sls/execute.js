@@ -2,8 +2,9 @@ const { join, resolve } = require("path");
 const ansiEscapes = require("ansi-escapes");
 const Context = require("@serverless/cli/src/Context");
 const { loadEnv } = require("./utils");
+
 module.exports = async (inputs, method = "default") => {
-    const { what, env, debug = false } = inputs;
+    const { what, env, debug = false, alias = null } = inputs;
     const cwd = process.cwd();
     // Load .env.json from project root
     await loadEnv(resolve(".env.json"), env, { debug });
@@ -19,11 +20,15 @@ module.exports = async (inputs, method = "default") => {
     };
 
     const context = new Context(config);
+    if (debug) {
+        process.env.DEBUG = "webiny*";
+        context.debug = require("debug")("webiny");
+    }
     const Template = require("./template/serverless.js");
     const component = new Template(`Webiny.${env}`, context);
     await component.init();
 
-    const output = await component[method]({ env, debug });
+    const output = await component[method]({ env, debug, alias });
     if (debug) {
         // Add an empty line after debug output for nicer output
         console.log();

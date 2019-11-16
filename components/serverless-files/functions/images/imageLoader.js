@@ -28,6 +28,7 @@ module.exports = {
         return SUPPORTED_IMAGES.includes(file.extension);
     },
     async process({ s3, file, options }) {
+        // Loaders must return {object, params} object.
         let objectParams;
 
         const transformations = sanitizeImageTransformations(options);
@@ -35,7 +36,10 @@ module.exports = {
         if (transformations && SUPPORTED_TRANSFORMABLE_IMAGES.includes(file.extension)) {
             objectParams = getObjectParams(getImageKey({ key: file.name, transformations }));
             try {
-                return await s3.getObject(objectParams).promise();
+                return {
+                    object: await s3.getObject(objectParams).promise(),
+                    params: objectParams
+                };
             } catch (e) {
                 let imageTransformerLambdaResponse = await callImageTransformerLambda({
                     key: file.name,
@@ -46,13 +50,19 @@ module.exports = {
                     throw Error(imageTransformerLambdaResponse.message);
                 }
 
-                return await s3.getObject(objectParams).promise();
+                return {
+                    object: await s3.getObject(objectParams).promise(),
+                    params: objectParams
+                };
             }
         }
 
         objectParams = getObjectParams(getImageKey({ key: file.name }));
         try {
-            return await s3.getObject(objectParams).promise();
+            return {
+                object: await s3.getObject(objectParams).promise(),
+                params: objectParams
+            };
         } catch (e) {
             let imageTransformerLambdaResponse = await callImageTransformerLambda({
                 key: file.name
@@ -62,7 +72,10 @@ module.exports = {
                 throw Error(imageTransformerLambdaResponse.message);
             }
 
-            return await s3.getObject(objectParams).promise();
+            return {
+                object: await s3.getObject(objectParams).promise(),
+                params: objectParams
+            };
         }
     }
 };

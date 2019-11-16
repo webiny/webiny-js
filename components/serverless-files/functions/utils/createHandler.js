@@ -17,10 +17,7 @@ module.exports = handler => async event => {
     }
 
     try {
-        const { data, headers = {} } = await handler(event);
-        console.log("dobeo data", {
-            data
-        });
+        const { data, statusCode, headers = {} } = await handler(event);
         const isBuffer = Buffer.isBuffer(data);
         let body = isBuffer
             ? data.toString("base64")
@@ -32,13 +29,11 @@ module.exports = handler => async event => {
 
         return {
             isBase64Encoded: isBuffer,
-            statusCode: 200,
+            statusCode: statusCode || 200,
             headers: { ...baseHeaders, ...headers },
             body
         };
     } catch (e) {
-        console.log("Error thrown");
-        console.log(e);
         return {
             statusCode: 500,
             headers: baseHeaders,

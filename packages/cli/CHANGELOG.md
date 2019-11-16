@@ -3,6 +3,34 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.3.0](https://github.com/webiny/webiny-js/compare/@webiny/cli@2.2.0...@webiny/cli@2.3.0) (2019-11-09)
+
+
+### Features
+
+* add update-notifier to check for CLI updates. ([#611](https://github.com/webiny/webiny-js/issues/611)) ([b531fde](https://github.com/webiny/webiny-js/commit/b531fde))
+
+
+
+
+
+# [2.2.0](https://github.com/webiny/webiny-js/compare/@webiny/cli@2.1.0...@webiny/cli@2.2.0) (2019-11-08)
+
+
+### Bug Fixes
+
+* **file-manager:** improve file manager ([#609](https://github.com/webiny/webiny-js/issues/609)) ([cf884d2](https://github.com/webiny/webiny-js/commit/cf884d2))
+* add missing dependency. ([6d110a3](https://github.com/webiny/webiny-js/commit/6d110a3))
+
+
+### Features
+
+* add support for selective component deploy and improve debug output. ([#610](https://github.com/webiny/webiny-js/issues/610)) ([5c3acb0](https://github.com/webiny/webiny-js/commit/5c3acb0))
+
+
+
+
+
 # [2.1.0](https://github.com/webiny/webiny-js/compare/@webiny/cli@2.0.1...@webiny/cli@2.1.0) (2019-11-04)
 
 

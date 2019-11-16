@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.1.0](https://github.com/webiny/webiny-js/compare/@webiny/app-i18n@2.0.1...@webiny/app-i18n@2.1.0) (2019-11-08)
+
+
+### Features
+
+* I18NInput component - add ability to toggle visibility of the translate icon and define custom render ([#598](https://github.com/webiny/webiny-js/issues/598)) ([25ea0bb](https://github.com/webiny/webiny-js/commit/25ea0bb))
+
+
+
+
+
 ## [2.0.1](https://github.com/webiny/webiny-js/compare/@webiny/app-i18n@2.0.0...@webiny/app-i18n@2.0.1) (2019-11-03)
 
 **Note:** Version bump only for package @webiny/app-i18n

@@ -14,7 +14,7 @@ const defaultPasswordPolicy = {
 class ServerlessAwsCognito extends Component {
     async default(inputs = {}) {
         if (isEqual(this.state.inputs, inputs)) {
-            this.context.debug("Input was not changed, no action required.");
+            this.context.instance.debug("Input was not changed, no action required.");
             return this.state.output;
         }
 
@@ -44,8 +44,10 @@ class ServerlessAwsCognito extends Component {
                 const clientInInput = appClients[i];
 
                 if (clientInState && clientInInput) {
-                    this.context.debug(
-                        `Updating client ${clientInState.ClientName} (${clientInState.ClientId}).`
+                    this.context.instance.debug(
+                        `Updating client %o (%o).`,
+                        clientInState.ClientName,
+                        clientInState.ClientId
                     );
 
                     const clientParams = {
@@ -63,8 +65,10 @@ class ServerlessAwsCognito extends Component {
 
                 if (clientInState && !clientInInput) {
                     // Delete existing client
-                    this.context.debug(
-                        `Deleting client ${clientInState.ClientName} (${clientInState.ClientId}).`
+                    this.context.instance.debug(
+                        `Deleting client %o (%o).`,
+                        clientInState.ClientName,
+                        clientInState.ClientId
                     );
                     const clientParams = {
                         UserPoolId: this.state.output.userPool.Id,
@@ -76,7 +80,7 @@ class ServerlessAwsCognito extends Component {
                 }
 
                 // Create new client
-                this.context.debug(`Creating new user pool client ${name}.`);
+                this.context.instance.debug(`Creating new user pool client %o.`, name);
                 const clientParams = {
                     UserPoolId: this.state.output.userPool.Id,
                     ClientName: name,
@@ -92,7 +96,7 @@ class ServerlessAwsCognito extends Component {
             // Filter null values
             this.state.output.appClients = this.state.output.appClients.filter(Boolean);
         } else {
-            this.context.debug(`Creating new user pool.`);
+            this.context.instance.debug(`Creating new user pool.`);
 
             const params = {
                 PoolName: name,
@@ -152,11 +156,11 @@ class ServerlessAwsCognito extends Component {
             this.state.output.userPool.Region = region;
             await this.save();
 
-            this.context.debug(`Created user pool ${UserPool.Id}.`);
+            this.context.instance.debug(`Created user pool %o.`, UserPool.Id);
 
             // Create app clients
             for (let i = 0; i < appClients.length; i++) {
-                this.context.debug(`Creating new user pool client.`);
+                this.context.instance.debug(`Creating new user pool client.`);
                 const { name, refreshTokenValidity = 30, generateSecret = false } = appClients[i];
                 const clientParams = {
                     UserPoolId: this.state.output.userPool.Id,
@@ -186,7 +190,7 @@ class ServerlessAwsCognito extends Component {
         const cognito = new Cognito({ region });
         const UserPoolId = this.state.output.userPool.Id;
 
-        this.context.debug(`Removing Cognito User Pool ${UserPoolId}.`);
+        this.context.instance.debug(`Removing Cognito User Pool %o.`, UserPoolId);
 
         await cognito
             .deleteUserPool({

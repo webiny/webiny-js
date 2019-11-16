@@ -58,15 +58,23 @@ security:
 files:
   component: "@webiny/serverless-files/dist"
   inputs:
-    name: Files
     region: ${vars.region}
     bucket: ${vars.bucket}
-    memory: 512
-    database: ${vars.database}
-    uploadMinFileSize: 0 # 0 MB
-    uploadMaxFileSize: 26214400 # 25 MB
-    env: ${vars.env}
-    webpackConfig: ./webpack.config.js
+    functions:
+      apolloService:
+        memory: 512
+        timeout: 10
+        database: ${vars.database}
+        uploadMinFileSize: 0 # 0 MB
+        uploadMaxFileSize: 26214400 # 25 MB
+        env: ${vars.env}
+        webpackConfig: ./webpack.config.js
+      downloadFile:
+        memory: 512
+        timeout: 10
+      imageTransformer:
+        memory: 1024
+        timeout: 10
 
 i18n:
   component: "@webiny/serverless-apollo-service"

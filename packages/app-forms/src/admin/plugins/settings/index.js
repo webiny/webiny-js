@@ -14,7 +14,7 @@ export default ([
         settings: {
             show: () => hasRoles(["forms-settings"]),
             type: "app",
-            name: "Forms",
+            name: "Form Builder",
             route: (
                 <Route
                     path="/forms"
