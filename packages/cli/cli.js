@@ -34,6 +34,10 @@ yargs.command(
         yargs.positional("name", {
             describe: "Project name"
         });
+        yargs.option("tag", {
+            describe: `Dist tag of Webiny to use. Default: ${blue("latest")} `,
+            default: "latest"
+        });
     },
     argv => {
         trackingNotice();
