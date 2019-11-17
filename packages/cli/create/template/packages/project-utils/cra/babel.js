@@ -13,6 +13,7 @@ module.exports = (rules, packages, aliases) => {
         ...babelLoader.options,
         babelrc: true,
         babelrcRoots: packages,
+        ignore: [/node_modules/],
         plugins: [["babel-plugin-module-resolver", { alias: aliases }]]
     };
 };

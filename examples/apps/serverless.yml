@@ -21,12 +21,12 @@ ssr:
     memory: 2048
     timeout: 30
 
-admin:
-  component: "@webiny/serverless-app"
-  inputs:
-    description: Webiny Admin
-    hook: yarn build:${cli.env}
-    root: ./admin
+#admin:
+#  component: "@webiny/serverless-app"
+#  inputs:
+#    description: Webiny Admin
+#    hook: yarn build:${cli.env}
+#    root: ./admin
 
 api:
   component: "@webiny/serverless-api-gateway"
@@ -47,8 +47,8 @@ api:
         method: GET
         function: ${site}
 
-cdn:
-  component: "@webiny/serverless-aws-cloudfront"
-  inputs:
-    origins:
-      - url: ${api.url}
+#cdn:
+#  component: "@webiny/serverless-aws-cloudfront"
+#  inputs:
+#    origins:
+#      - url: ${api.url}

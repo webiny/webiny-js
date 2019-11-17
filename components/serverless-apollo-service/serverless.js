@@ -3,21 +3,9 @@ const fs = require("fs-extra");
 const prettier = require("prettier");
 const webpack = require("webpack");
 const execa = require("execa");
-const loadJson = require("load-json-file");
-const writeJson = require("write-json-file");
 const camelCase = require("lodash.camelcase");
 const { transform } = require("@babel/core");
 const { Component } = require("@serverless/core");
-
-const defaultDependencies = ["babel-loader"];
-
-const getDeps = async deps => {
-    const { dependencies } = await loadJson(join(__dirname, "package.json"));
-    return deps.reduce((acc, item) => {
-        acc[item] = dependencies[item];
-        return acc;
-    }, {});
-};
 
 const normalizePlugins = plugins => {
     const normalized = [];
@@ -148,11 +136,6 @@ class ApolloService extends Component {
 
         const pkgJsonPath = join(componentRoot, "package.json");
         fs.copyFileSync(join(__dirname, "boilerplate", "package.json"), pkgJsonPath);
-
-        // Inject dependencies
-        const pkgJson = await loadJson(pkgJsonPath);
-        Object.assign(pkgJson.dependencies, await getDeps(defaultDependencies));
-        await writeJson(pkgJsonPath, pkgJson);
 
         if (!fs.existsSync(join(componentRoot, "yarn.lock"))) {
             this.context.instance.debug("Installing dependencies");
