@@ -1,5 +1,6 @@
 const cloneDeep = require("lodash.clonedeep");
 const set = require("lodash.set");
+const WebpackBar = require("webpackbar");
 const packages = require("../packages");
 const aliases = require("../aliases");
 
@@ -7,12 +8,9 @@ const webinyConfig = {
     webpack(config) {
         const newConfig = {
             ...config,
+            plugins: [...config.plugins, new WebpackBar({ name: "Webiny" })],
             module: { ...config.module, rules: cloneDeep(config.module.rules) }
         };
-
-        // IMPORTANT: This is only required for this repo as we transpile each package during
-        // the webpack build and something is messing up the "react-sortable-tree" package.
-        newConfig.resolve.mainFields = ["browser", "main", "module"];
 
         // Enable .babelrc in each monorepo package
         require("./babel")(newConfig.module.rules, packages, aliases);

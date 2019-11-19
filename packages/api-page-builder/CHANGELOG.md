@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.1.0-next.0](https://github.com/webiny/webiny-js/compare/@webiny/api-page-builder@2.0.3...@webiny/api-page-builder@2.1.0-next.0) (2019-11-18)
+
+
+### Bug Fixes
+
+* **page-builder:** make file loading pluginable in content field ([48a02c1](https://github.com/webiny/webiny-js/commit/48a02c1))
+
+
+### Features
+
+* add support for DB drivers and improve components. ([3ce1908](https://github.com/webiny/webiny-js/commit/3ce1908))
+
+
+
+
+
 ## [2.0.3](https://github.com/webiny/webiny-js/compare/@webiny/api-page-builder@2.0.2...@webiny/api-page-builder@2.0.3) (2019-11-08)
 
 

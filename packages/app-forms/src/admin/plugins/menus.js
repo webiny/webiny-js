@@ -12,8 +12,8 @@ export default [
         render({ Section, Item }: Object) {
             return (
                 <SecureView roles={["forms-editors"]}>
-                    <Section label={t`Forms`}>
-                        <Item label={t`Forms`} path="/forms" />
+                    <Section label={t`Form Builder`}>
+                        <Item label={t`Form Builder`} path="/forms" />
                     </Section>
                 </SecureView>
             );

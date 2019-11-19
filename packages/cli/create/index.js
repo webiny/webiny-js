@@ -6,10 +6,13 @@ const util = require("util");
 const execa = require("execa");
 const { green } = require("chalk");
 const uuid = require("uuid/v4");
+const loadJsonFile = require("load-json-file");
+const ora = require("ora");
 const writeJsonFile = require("write-json-file");
 const { trackProject } = require("@webiny/tracking");
 const { version } = require(require.resolve("@webiny/cli/package.json"));
 const { getSuccessBanner } = require("./messages");
+const { getPackageVersion } = require("./utils");
 
 const globFiles = util.promisify(glob);
 
@@ -17,7 +20,7 @@ function copyFile(from, to) {
     fs.copySync(join(__dirname, from), resolve(to));
 }
 
-module.exports = async ({ name }) => {
+module.exports = async ({ name, tag }) => {
     const root = join(process.cwd(), name);
 
     if (fs.existsSync(root)) {
@@ -29,7 +32,7 @@ module.exports = async ({ name }) => {
         process.exit(1);
     }
 
-    console.log(`Creating a new Webiny project in ${green(root)}...`);
+    console.log(`📦 Creating a new Webiny project in ${green(root)}...`);
     fs.ensureDirSync(root);
     process.chdir(root);
 
@@ -90,8 +93,36 @@ module.exports = async ({ name }) => {
     writeFileContents("apps/serverless.yml", appsYaml);
     writeJsonFile.sync(resolve("apps/.serverless/_.json"), { id: appsId });
 
+    // Inject the exact package version numbers based on the tag
+    let spinner = ora(`Loading Webiny package versions...`).start();
+
+    const jsons = [
+        resolve("package.json"),
+        resolve("apps/admin/package.json"),
+        resolve("apps/site/package.json")
+    ];
+
+    await Promise.all(
+        jsons.map(async jsonPath => {
+            const json = await loadJsonFile(jsonPath);
+            const keys = Object.keys(json.dependencies);
+            await Promise.all(
+                keys.map(async name => {
+                    if (json.dependencies[name] === "latest") {
+                        json.dependencies[name] = `^` + (await getPackageVersion(name, tag));
+                    }
+                })
+            );
+            await writeJsonFile(jsonPath, json);
+        })
+    );
+
+    spinner.succeed(`Finished loading package versions`);
+
+    spinner = ora("Installing dependencies...").start();
     // Install all project deps
-    await execa("yarn", [], { cwd: root, stdio: "inherit" });
+    await execa("yarn", [], { cwd: root });
+    spinner.succeed(`All dependencies installed successfully!`);
 
     await trackProject({ cliVersion: version });
 

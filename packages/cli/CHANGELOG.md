@@ -3,6 +3,29 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.4.0-next.0](https://github.com/webiny/webiny-js/compare/@webiny/cli@2.3.0...@webiny/cli@2.4.0-next.0) (2019-11-18)
+
+
+### Features
+
+* handler --tag parameter and load appropriate package versions. ([771db88](https://github.com/webiny/webiny-js/commit/771db88))
+* move most of the boilerplate logic into plugins. ([8d856bb](https://github.com/webiny/webiny-js/commit/8d856bb))
+
+
+
+
+
+# [2.3.0](https://github.com/webiny/webiny-js/compare/@webiny/cli@2.2.0...@webiny/cli@2.3.0) (2019-11-09)
+
+
+### Features
+
+* add update-notifier to check for CLI updates. ([#611](https://github.com/webiny/webiny-js/issues/611)) ([b531fde](https://github.com/webiny/webiny-js/commit/b531fde))
+
+
+
+
+
 # [2.2.0](https://github.com/webiny/webiny-js/compare/@webiny/cli@2.1.0...@webiny/cli@2.2.0) (2019-11-08)
 
 

@@ -1,9 +1,13 @@
 name: webiny-cms
 
+vars:
+  region: ${env.AWS_REGION}
+
 site:
   component: "@webiny/serverless-app"
   inputs:
     description: Webiny Site
+    region: ${vars.region}
     memory: 128
     timeout: 30
     code: ./site/build
@@ -14,6 +18,7 @@ ssr:
   component: "@webiny/serverless-function"
   inputs:
     description: Site SSR
+    region: ${vars.region}
     hook: yarn build:${cli.env}
     root: ./site
     code: ./site/build-ssr
@@ -21,12 +26,13 @@ ssr:
     memory: 2048
     timeout: 30
 
-admin:
-  component: "@webiny/serverless-app"
-  inputs:
-    description: Webiny Admin
-    hook: yarn build:${cli.env}
-    root: ./admin
+#admin:
+#  component: "@webiny/serverless-app"
+#  inputs:
+#    region: ${vars.region}
+#    description: Webiny Admin
+#    hook: yarn build:${cli.env}
+#    root: ./admin
 
 api:
   component: "@webiny/serverless-api-gateway"
@@ -47,8 +53,8 @@ api:
         method: GET
         function: ${site}
 
-cdn:
-  component: "@webiny/serverless-aws-cloudfront"
-  inputs:
-    origins:
-      - url: ${api.url}
+#cdn:
+#  component: "@webiny/serverless-aws-cloudfront"
+#  inputs:
+#    origins:
+#      - url: ${api.url}

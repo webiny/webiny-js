@@ -11,6 +11,7 @@ module.exports = (rules, packages, aliases) => {
     babelLoader.include = [paths.appSrc, ...packages];
     babelLoader.options = {
         ...babelLoader.options,
+        ignore: [/node_modules/],
         babelrc: true,
         babelrcRoots: packages,
         plugins: [["babel-plugin-module-resolver", { alias: aliases }]]

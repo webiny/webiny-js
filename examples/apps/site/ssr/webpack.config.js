@@ -1,5 +1,6 @@
 const path = require("path");
 const webpack = require("webpack");
+const WebpackBar = require("webpackbar");
 
 module.exports = {
     entry: path.resolve("ssr", "ssr.js"),
@@ -21,6 +22,7 @@ module.exports = {
         __dirname: false
     },
     plugins: [
+        new WebpackBar({ name: "Site SSR handler" }),
         new webpack.DefinePlugin({
             "process.env.REACT_APP_GRAPHQL_API_URL": JSON.stringify(
                 process.env.REACT_APP_GRAPHQL_API_URL
