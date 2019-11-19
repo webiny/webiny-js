@@ -1,9 +1,13 @@
-name: webiny-cms
+name: webiny-apps-[PROJECT_ID]
+
+vars:
+  region: ${env.AWS_REGION}
 
 site:
   component: "@webiny/serverless-app"
   inputs:
     description: Webiny Site
+    region: ${vars.region}
     memory: 128
     timeout: 30
     code: ./site/build
@@ -14,6 +18,7 @@ ssr:
   component: "@webiny/serverless-function"
   inputs:
     description: Site SSR
+    region: ${vars.region}
     hook: yarn build:${cli.env}
     root: ./site
     code: ./site/build-ssr
@@ -24,6 +29,7 @@ ssr:
 admin:
   component: "@webiny/serverless-app"
   inputs:
+    region: ${vars.region}
     description: Webiny Admin
     hook: yarn build:${cli.env}
     root: ./admin
