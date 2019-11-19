@@ -1,74 +1,27 @@
 // @flow
-import type { ApiContext, PluginType } from "@webiny/api/types";
-import acceptLanguageParser from "accept-language-parser";
+import type { PluginType } from "@webiny/api/types";
+import i18n from "./i18n";
+import { GraphQLClient } from "graphql-request";
 
-export default ({ database }) =>
-    ([
-        {
-            type: "graphql-context",
-            name: "graphql-context-i18n",
-            apply: async (context: ApiContext & Object) => {
-                const { event } = context;
-                const self = {
-                    __i18n: {
-                        acceptLanguage: null,
-                        defaultLocale: null,
-                        locale: null,
-                        locales: await database
-                            .collection("I18NLocale")
-                            .find({ deleted: { $ne: true } })
-                            .project({ _id: 0, id: 1, default: 1, code: 1 })
-                            .toArray()
-                    },
-                    getDefaultLocale() {
-                        const allLocales = self.getLocales();
-                        return allLocales.find(item => item.default === true);
-                    },
-                    getLocale() {
-                        if (self.__i18n.locale) {
-                            return self.__i18n.locale;
-                        }
+let localesCache;
 
-                        let allLocales = self.getLocales();
-                        const acceptLanguage = acceptLanguageParser.pick(
-                            allLocales.map(item => item.code),
-                            event.headers["accept-language"]
-                        );
-
-                        let currentLocale;
-                        if (acceptLanguage) {
-                            currentLocale = allLocales.find(item => item.code === acceptLanguage);
-                        }
-
-                        if (!currentLocale) {
-                            currentLocale = self.getDefaultLocale();
-                        }
-
-                        // $FlowFixMe
-                        self.__i18n.locale = currentLocale;
-                        return self.__i18n.locale;
-                    },
-                    getLocales() {
-                        return self.__i18n.locales;
-                    },
-                    getValue(value) {
-                        if (!value) {
-                            return "";
-                        }
-
-                        if (Array.isArray(value.values)) {
-                            const locale = self.getLocale();
-                            const valuesValue = value.values.find(
-                                value => value.locale === locale.id
-                            );
-                            return valuesValue ? valuesValue.value : "";
-                        }
-
-                        return value.value || "";
-                    }
-                };
-
-                context.i18n = self;
+export default ([
+    i18n,
+    {
+        name: "graphql-context-i18n-get-locales",
+        type: "graphql-context-i18n-get-locales",
+        async resolve({ context }) {
+            if (Array.isArray(localesCache)) {
+                return localesCache;
             }
+
+            const client = new GraphQLClient(process.env.I18N_API_URL, {
+                headers: {
+                    Authorization: context.token
+                }
+            });
+
+            return await client.request();
         }
-    ]: Array<PluginType>);
+    }
+]: Array<PluginType>);
