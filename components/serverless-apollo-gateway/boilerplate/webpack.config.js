@@ -1,7 +1,7 @@
 const path = require("path");
 
 module.exports = {
-    entry: __dirname + "/handler.js",
+    entry: path.join(__dirname, "handler.js"),
     target: "node",
     output: {
         libraryTarget: "commonjs",
