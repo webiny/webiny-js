@@ -9,7 +9,7 @@ import {
     emptyResolver
 } from "@webiny/commodo-graphql";
 
-import { gql } from "apollo-server-lambda";
+import gql from "graphql-tag";
 import { hasScope } from "@webiny/api-security";
 import { get } from "lodash";
 import setupDynamicSchema from "./dynamicSchema";

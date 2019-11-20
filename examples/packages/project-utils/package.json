@@ -24,7 +24,8 @@
     "lodash.isobject": "^3.0.2",
     "lodash.set": "^4.3.2",
     "react-scripts": "^3.2.0",
-    "read-json-sync": "^2.0.1"
+    "read-json-sync": "^2.0.1",
+    "webpackbar": "^4.0.0"
   },
   "license": "MIT",
   "adio": {

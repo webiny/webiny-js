@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.1.0-next.0](https://github.com/webiny/webiny-js/compare/@webiny/api-security@2.0.1...@webiny/api-security@2.1.0-next.0) (2019-11-18)
+
+
+### Features
+
+* add support for DB drivers and improve components. ([3ce1908](https://github.com/webiny/webiny-js/commit/3ce1908))
+
+
+
+
+
 ## [2.0.1](https://github.com/webiny/webiny-js/compare/@webiny/api-security@2.0.0...@webiny/api-security@2.0.1) (2019-11-08)
 
 **Note:** Version bump only for package @webiny/api-security

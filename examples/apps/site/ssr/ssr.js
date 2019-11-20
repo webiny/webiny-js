@@ -38,7 +38,7 @@ export const renderer = async url => {
     const app = (
         <ApolloProvider client={apolloClient}>
             <StaticRouter
-                basename={process.env.PUBLIC_URL === "/" ? null : process.env.PUBLIC_URL}
+                basename={process.env.PUBLIC_URL === "/" ? "" : process.env.PUBLIC_URL}
                 location={url}
                 context={context}
             >

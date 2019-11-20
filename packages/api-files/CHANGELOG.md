@@ -3,6 +3,23 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.2.0-next.0](https://github.com/webiny/webiny-js/compare/@webiny/api-files@2.1.1...@webiny/api-files@2.2.0-next.0) (2019-11-18)
+
+
+### Bug Fixes
+
+* expose "ids" filter for listFiles field ([ce0de3b](https://github.com/webiny/webiny-js/commit/ce0de3b))
+* filtering by an array of IDs ([563c9b5](https://github.com/webiny/webiny-js/commit/563c9b5))
+
+
+### Features
+
+* add support for DB drivers and improve components. ([3ce1908](https://github.com/webiny/webiny-js/commit/3ce1908))
+
+
+
+
+
 ## [2.1.1](https://github.com/webiny/webiny-js/compare/@webiny/api-files@2.1.0...@webiny/api-files@2.1.1) (2019-11-08)
 
 

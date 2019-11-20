@@ -1,6 +1,6 @@
 {
   "name": "@webiny/api-plugin-security-cognito",
-  "version": "2.0.0",
+  "version": "2.1.0-next.0",
   "main": "index.js",
   "repository": {
     "type": "git",
@@ -12,7 +12,7 @@
   ],
   "license": "MIT",
   "dependencies": {
-    "apollo-server-lambda": "^2.9.6",
+    "graphql-tag": "^2.10.1",
     "jsonwebtoken": "^8.5.1",
     "jwk-to-pem": "^2.0.1",
     "request-promise": "^4.2.4"

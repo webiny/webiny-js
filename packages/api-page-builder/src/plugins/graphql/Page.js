@@ -279,7 +279,11 @@ export default {
             getNotFoundPage,
             getErrorPage,
             listElements: resolveList(elementFetcher),
-            searchTags: searchTags,
+            searchTags: async (root: any, args: Object, context: Object, info: Object) => {
+                const resolver = context.plugins.byName("pb-resolver-search-tags");
+
+                return await resolver.resolve(root, args, context, info);
+            },
             oembedData: oembed
         },
         PbMutation: {

@@ -3,6 +3,35 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.1.0-next.1](https://github.com/webiny/webiny-js/compare/@webiny/api-i18n@2.1.0-next.0...@webiny/api-i18n@2.1.0-next.1) (2019-11-20)
+
+
+### Bug Fixes
+
+* check if state is available before deploying single component ([508ef29](https://github.com/webiny/webiny-js/commit/508ef297c8f8f402760f9be036ecb5b9f8589906))
+* do not cache locales list, only do it on other services ([562211b](https://github.com/webiny/webiny-js/commit/562211b7a497f8d9d25665c5b1377aa1e2958dfb))
+* load locales via model on I18N service, use GQL on other ones ([479a40f](https://github.com/webiny/webiny-js/commit/479a40f4dbe38ceb1b49a4f5faa647e081878df9))
+
+
+### Features
+
+* add support for DB drivers and improve components. ([3e40c1a](https://github.com/webiny/webiny-js/commit/3e40c1a5fd6eed73e8553fdecc74c28ebf701975))
+
+
+
+
+
+# [2.1.0-next.0](https://github.com/webiny/webiny-js/compare/@webiny/api-i18n@2.0.1...@webiny/api-i18n@2.1.0-next.0) (2019-11-18)
+
+
+### Features
+
+* add support for DB drivers and improve components. ([3ce1908](https://github.com/webiny/webiny-js/commit/3ce1908))
+
+
+
+
+
 ## [2.0.1](https://github.com/webiny/webiny-js/compare/@webiny/api-i18n@2.0.0...@webiny/api-i18n@2.0.1) (2019-11-08)
 
 **Note:** Version bump only for package @webiny/api-i18n

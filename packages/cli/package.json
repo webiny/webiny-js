@@ -1,6 +1,6 @@
 {
   "name": "@webiny/cli",
-  "version": "2.3.0",
+  "version": "2.4.0-next.1",
   "main": "index.js",
   "bin": {
     "webiny": "./bin.js",
@@ -27,6 +27,8 @@
     "load-json-file": "^6.2.0",
     "node-fetch": "^2.6.0",
     "node-notifier": "^6.0.0",
+    "ora": "^4.0.3",
+    "p-retry": "^4.2.0",
     "ramda": "^0.26.1",
     "traverse": "^0.6.6",
     "update-notifier": "^3.0.1",
@@ -39,7 +41,7 @@
     "access": "public"
   },
   "scripts": {
-    "build": "rimraf ./dist && mkdir dist && cp -R cli.js bin.js config create sls dist/",
+    "build": "yarn rimraf ./dist && mkdir dist && cp -R cli.js bin.js config create sls dist/",
     "postbuild": "cp package.json LICENSE README.md dist/",
     "prepublishOnly": "yarn build"
   },

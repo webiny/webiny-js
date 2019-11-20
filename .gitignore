@@ -17,3 +17,4 @@ build/
 .files/
 .changelog
 .verdaccio
+.history

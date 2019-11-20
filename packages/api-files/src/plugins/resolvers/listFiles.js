@@ -38,7 +38,7 @@ export default async (root: any, args: Object, context: Object) => {
 
     if (Array.isArray(ids) && ids.length > 0) {
         $and.push({
-            id: { $in: tags }
+            id: { $in: ids }
         });
     }
 

@@ -4,7 +4,7 @@ const packages = require("@webiny/project-utils/packages");
 
 module.exports = ({ root }) => {
     return {
-        entry: root + "/handler.js",
+        entry: path.join(root, "handler.js"),
         target: "node",
         output: {
             libraryTarget: "commonjs",

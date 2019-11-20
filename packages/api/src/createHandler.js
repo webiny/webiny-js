@@ -1,78 +1,39 @@
 // @flow
-import { ApolloServer } from "apollo-server-lambda";
 import { applyMiddleware } from "graphql-middleware";
 import { addSchemaLevelResolveFunction } from "graphql-tools";
 import type { PluginsContainerType, GraphQLMiddlewarePluginType } from "@webiny/api/types";
 import { prepareSchema } from "./graphql/prepareSchema";
-import normalizeEvent from "./graphql/normalizeEvent";
 
 export type CreateHandlerParamsType = {
-    plugins: PluginsContainerType,
-    config: Object
+    plugins: PluginsContainerType
 };
 
 /**
  * Create Apollo handler
- * @param config
  * @param plugins
  * @returns {Promise<{schema: void, handler(Object, Object): Promise<Object>}|Promise<*>>}
  */
-export const createHandler = async ({ config, plugins }: CreateHandlerParamsType) => {
-    const schema = await createSchema({ config, plugins });
+export const createHandler = async ({ plugins }: CreateHandlerParamsType) => {
+    const schema = await createSchema({ plugins });
 
-    const apolloConfig = config.apollo || {};
+    const plugin = plugins.byName("create-apollo-handler");
 
-    const apollo = new ApolloServer({
-        ...(config.apollo || {}),
-        schema,
-        context: async ({ event }) => {
-            const reqContext = {
-                event,
-                config,
-                plugins
-            };
+    if (!plugin) {
+        throw Error(`"create-apollo-handler" plugin is not configured!`);
+    }
 
-            if (typeof apolloConfig.context === "function") {
-                return await apolloConfig.context({ event }, reqContext);
-            }
+    const handler = await plugin.create({ plugins, schema });
 
-            return reqContext;
-        }
-    });
-
-    const handler = apollo.createHandler({
-        cors: {
-            origin: "*",
-            methods: "GET,HEAD,POST",
-            ...(apolloConfig.cors || {})
-        }
-    });
-
-    return {
-        schema,
-        handler(event: Object, context: Object): Promise<Object> {
-            normalizeEvent(event);
-            return new Promise((resolve, reject) => {
-                handler(event, context, (error, data) => {
-                    if (error) {
-                        return reject(error);
-                    }
-
-                    resolve(data);
-                });
-            });
-        }
-    };
+    return { schema, handler };
 };
 
 /**
  * Create graphql schema only
- * @param config
  * @param plugins
  * @returns {Promise<void>}
  */
-export const createSchema = async ({ config, plugins }: CreateHandlerParamsType) => {
-    let schema = await prepareSchema({ plugins, config });
+export const createSchema = async ({ plugins }: CreateHandlerParamsType) => {
+    let schema = await prepareSchema({ plugins });
 
     const registeredMiddleware: Array<GraphQLMiddlewarePluginType> = [];
 
@@ -81,7 +42,7 @@ export const createSchema = async ({ config, plugins }: CreateHandlerParamsType)
         let plugin = middlewarePlugins[i];
         const middleware =
             typeof plugin.middleware === "function"
-                ? await plugin.middleware({ config, plugins })
+                ? await plugin.middleware({ plugins })
                 : plugin.middleware;
         if (Array.isArray(middleware)) {
             registeredMiddleware.push(...middleware);
@@ -89,8 +50,6 @@ export const createSchema = async ({ config, plugins }: CreateHandlerParamsType)
             registeredMiddleware.push(middleware);
         }
     }
-
-    config.middleware && registeredMiddleware.push(config.middleware);
 
     if (registeredMiddleware.length) {
         schema = applyMiddleware(schema, ...registeredMiddleware);

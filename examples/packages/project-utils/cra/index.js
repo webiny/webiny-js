@@ -1,5 +1,6 @@
 const cloneDeep = require("lodash.clonedeep");
 const set = require("lodash.set");
+const WebpackBar = require("webpackbar");
 const packages = require("../packages");
 const aliases = require("../aliases");
 
@@ -7,8 +8,10 @@ const webinyConfig = {
     webpack(config) {
         const newConfig = {
             ...config,
+            plugins: [...config.plugins, new WebpackBar({ name: "Webiny" })],
             module: { ...config.module, rules: cloneDeep(config.module.rules) }
         };
+
         // Enable .babelrc in each monorepo package
         require("./babel")(newConfig.module.rules, packages, aliases);
 

@@ -95,21 +95,15 @@ export default ({ context, createBase, FormSettings }) => {
         withProps({
             get overallStats() {
                 return new Promise(async resolve => {
-                    const [stats] = await Form.aggregate([
-                        { $match: { parent: this.parent } },
-                        { $project: { stats: 1 } },
-                        {
-                            $group: {
-                                _id: null,
-                                views: {
-                                    $sum: "$stats.views"
-                                },
-                                submissions: {
-                                    $sum: "$stats.submissions"
-                                }
-                            }
-                        }
-                    ]);
+                    const plugin = context.plugins.byName("forms-resolver-overall-stats");
+
+                    if (!plugin) {
+                        throw Error(
+                            `Resolver plugin "forms-resolver-overall-stats" is not configured!`
+                        );
+                    }
+
+                    const stats = await plugin.resolve({ form: this, context });
 
                     if (!stats) {
                         return resolve({

@@ -54,7 +54,7 @@ const prepareItems = async ({
     await applyCleanup(items);
 };
 
-export default async ({ menu, context: graphqlContext }: Object) => {
+export default async ({ menu, context }: Object) => {
     const items = cloneDeep(menu.items);
 
     // Each modifier is recursively applied to all items.
@@ -86,11 +86,9 @@ export default async ({ menu, context: graphqlContext }: Object) => {
                         if (!context.distinctParents.loaded) {
                             const ids = Object.keys(context.distinctParents.data);
 
-                            const { PbPage, PbCategory } = graphqlContext.models;
                             await listPublishedPages({
                                 args: { parent: ids },
-                                PbPage,
-                                PbCategory
+                                context
                             }).then(results => {
                                 for (let i = 0; i < results.length; i++) {
                                     let { title, url, parent: id } = results[i];
@@ -112,12 +110,9 @@ export default async ({ menu, context: graphqlContext }: Object) => {
                     case "page-list": {
                         const { category, sortBy, sortDir } = item;
 
-                        const { PbPage, PbCategory } = graphqlContext;
-
                         item.children = await listPublishedPages({
                             args: { category, sort: { [sortBy]: parseInt(sortDir) } },
-                            PbPage,
-                            PbCategory
+                            context
                         });
 
                         item.children = await item.children.toJSON("id,title,url");
@@ -126,7 +121,8 @@ export default async ({ menu, context: graphqlContext }: Object) => {
                     }
                 }
             }
-        ]
+        ],
+        context
     });
 
     return items;

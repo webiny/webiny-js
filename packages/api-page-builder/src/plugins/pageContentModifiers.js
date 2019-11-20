@@ -1,31 +1,11 @@
 import { set, get } from "lodash";
 
-// TODO: Do not read the database directly. Do it via GraphQL.
-const getFileById = async ({ id, context, database }) => {
-    // Rethink this part, get files via GraphQL directly, but via a single-gql-call-fetch-everything.
-    try {
-        if (!context.files) {
-            // eslint-disable-next-line
-            context.files = {
-                settings: await database
-                    .collection("Settings")
-                    .findOne({ key: "file-manager", deleted: { $ne: true } })
-            };
-        }
-
-        const result = await database.collection("File").findOne({ id, deleted: { $ne: true } });
-
-        if (!result) {
-            return null;
-        }
-
-        return {
-            id: result.id,
-            src: get(context, "files.settings.data.srcPrefix") + result.key
-        };
-    } catch (e) {
-        return null;
+const getGetFileResolverPlugin = context => {
+    const plugin = context.plugins.byName("pb-resolver-get-page-content-file");
+    if (!plugin) {
+        throw Error(`Resolver plugin "pb-resolver-get-page-content-file" is not configured!`);
     }
+    return plugin;
 };
 
 export default ({ database }) => {
@@ -43,7 +23,8 @@ export default ({ database }) => {
             async setStorageValue({ element, context }) {
                 const id = get(element, "data.settings.background.image.file");
                 if (id) {
-                    const file = await getFileById({ context, id, database });
+                    const plugin = getGetFileResolverPlugin(context);
+                    const file = await plugin.resolve({ context, id, database });
                     if (file) {
                         set(element, "data.settings.background.image.file", file);
                     }
@@ -63,7 +44,8 @@ export default ({ database }) => {
             async setStorageValue({ element, context }) {
                 const id = get(element, "data.image.file");
                 if (id) {
-                    const file = await getFileById({ context, id, database });
+                    const plugin = getGetFileResolverPlugin(context);
+                    const file = await plugin.resolve({ context, id, database });
                     if (file) {
                         set(element, "data.image.file", file);
                     }

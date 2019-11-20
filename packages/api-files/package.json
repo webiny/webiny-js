@@ -1,6 +1,6 @@
 {
   "name": "@webiny/api-files",
-  "version": "2.1.1",
+  "version": "2.2.0-next.0",
   "main": "index.js",
   "repository": {
     "type": "git",
@@ -15,13 +15,12 @@
   "license": "MIT",
   "dependencies": {
     "@babel/runtime": "^7.5.5",
-    "@commodo/fields-storage-mongodb": "^0.2.12",
-    "@webiny/api": "^2.0.0",
-    "@webiny/api-security": "^2.0.1",
+    "@webiny/api": "^2.1.0-next.0",
+    "@webiny/api-security": "^2.1.0-next.0",
     "@webiny/commodo": "^2.0.0",
-    "@webiny/commodo-graphql": "^2.0.0",
+    "@webiny/commodo-graphql": "^2.0.1-next.0",
     "@webiny/validation": "^2.1.0",
-    "apollo-server-lambda": "^2.9.6",
+    "graphql-tag": "^2.10.1",
     "lodash": "^4.17.4",
     "mime": "^2.4.4",
     "sanitize-filename": "^1.6.3",
