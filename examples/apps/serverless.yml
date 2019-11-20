@@ -42,10 +42,10 @@ api:
     endpoints:
       - path: /admin/{key+}
         method: GET
-        function: ${site}
+        function: ${admin}
       - path: /admin
         method: GET
-        function: ${site}
+        function: ${admin}
       - path: /{key+}
         method: GET
         function: ${site}
