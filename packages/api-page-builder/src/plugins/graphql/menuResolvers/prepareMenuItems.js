@@ -54,7 +54,7 @@ const prepareItems = async ({
     await applyCleanup(items);
 };
 
-export default async ({ menu, context: graphqlContext }: Object) => {
+export default async ({ menu, context }: Object) => {
     const items = cloneDeep(menu.items);
 
     // Each modifier is recursively applied to all items.
@@ -86,7 +86,6 @@ export default async ({ menu, context: graphqlContext }: Object) => {
                         if (!context.distinctParents.loaded) {
                             const ids = Object.keys(context.distinctParents.data);
 
-                            const { PbPage, PbCategory } = graphqlContext.models;
                             await listPublishedPages({
                                 args: { parent: ids },
                                 context
@@ -113,7 +112,7 @@ export default async ({ menu, context: graphqlContext }: Object) => {
 
                         item.children = await listPublishedPages({
                             args: { category, sort: { [sortBy]: parseInt(sortDir) } },
-                            context: graphqlContext
+                            context
                         });
 
                         item.children = await item.children.toJSON("id,title,url");
@@ -122,7 +121,8 @@ export default async ({ menu, context: graphqlContext }: Object) => {
                     }
                 }
             }
-        ]
+        ],
+        context
     });
 
     return items;
