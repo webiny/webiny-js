@@ -90,6 +90,10 @@ class Template extends Component {
 
         const template = await getTemplate(inputs);
 
+        if (!this.state.outputs) {
+            throw Error(`You must deploy the entire API before you can deploy single components.`);
+        }
+
         Object.keys(this.state.outputs).forEach(key => {
             if (!alias.includes(key)) {
                 template[key] = this.state.outputs[key];
