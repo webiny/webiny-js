@@ -195,7 +195,7 @@ export default () => [
                 query: { id: { $in: ids.map(item => item.id) } }
             });
 
-            return { pages, totalCount };
+            return { pages, totalCount: get(totalCount, "totalCount", 0) };
         }
     },
     {
