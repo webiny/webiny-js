@@ -1,6 +1,6 @@
 {
   "name": "@webiny/app-forms",
-  "version": "2.0.3-next.0",
+  "version": "2.1.0",
   "main": "index.js",
   "repository": {
     "type": "git",

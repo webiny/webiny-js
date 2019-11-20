@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.2.0](https://github.com/webiny/webiny-js/compare/@webiny/serverless-page-builder@2.1.0...@webiny/serverless-page-builder@2.2.0) (2019-11-20)
+
+
+### Bug Fixes
+
+* **page-builder:** grammar and spelling corrections for initial pages ([#613](https://github.com/webiny/webiny-js/issues/613)) ([a0c5807](https://github.com/webiny/webiny-js/commit/a0c5807996d11dcec96fb196480fd14853f18322))
+
+
+### Features
+
+* add support for DB drivers ([#623](https://github.com/webiny/webiny-js/issues/623)) ([82a6d66](https://github.com/webiny/webiny-js/commit/82a6d66d5ad96e4da13c035d2524c03bd50a7dff))
+
+
+
+
+
 # [2.2.0-next.1](https://github.com/Pavel910/webiny-js/compare/@webiny/serverless-page-builder@2.2.0-next.0...@webiny/serverless-page-builder@2.2.0-next.1) (2019-11-20)
 
 **Note:** Version bump only for package @webiny/serverless-page-builder

@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.1.0](https://github.com/webiny/webiny-js/compare/@webiny/app-forms@2.0.2...@webiny/app-forms@2.1.0) (2019-11-20)
+
+
+### Bug Fixes
+
+* rename "Forms" to "Form Builder" ([#616](https://github.com/webiny/webiny-js/issues/616)) ([1b5c205](https://github.com/webiny/webiny-js/commit/1b5c205be251d7449ad707e03051d640ea75d089)), closes [#615](https://github.com/webiny/webiny-js/issues/615)
+
+
+### Features
+
+* add support for DB drivers ([#623](https://github.com/webiny/webiny-js/issues/623)) ([82a6d66](https://github.com/webiny/webiny-js/commit/82a6d66d5ad96e4da13c035d2524c03bd50a7dff))
+
+
+
+
+
 ## [2.0.3-next.0](https://github.com/webiny/webiny-js/compare/@webiny/app-forms@2.0.2...@webiny/app-forms@2.0.3-next.0) (2019-11-18)
 
 
