@@ -3,8 +3,6 @@ import models from "./models";
 import graphql from "./graphql";
 import i18n from "./i18n";
 
-let localesCache;
-
 export default config => [
     models(config),
     graphql,
@@ -13,19 +11,13 @@ export default config => [
         name: "graphql-context-i18n-get-locales",
         type: "graphql-context-i18n-get-locales",
         async resolve({ context }) {
-            if (Array.isArray(localesCache)) {
-                return localesCache;
-            }
-
             const { I18NLocale } = context.models;
-
-            localesCache = (await I18NLocale.find()).map(locale => ({
+            const locales = await I18NLocale.find();
+            return locales.map(locale => ({
                 id: locale.id,
                 code: locale.code,
                 default: locale.default
             }));
-
-            return localesCache;
         }
     }
 ];
