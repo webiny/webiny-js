@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.2.0-next.1](https://github.com/Pavel910/webiny-js/compare/@webiny/serverless-apollo-service@2.2.0-next.0...@webiny/serverless-apollo-service@2.2.0-next.1) (2019-11-20)
+
+
+### Bug Fixes
+
+* add support for Windows project setup ([dc1a375](https://github.com/Pavel910/webiny-js/commit/dc1a375b95d671958337f9b064e07f64ab121b6d))
+
+
+
+
+
 # [2.2.0-next.0](https://github.com/Pavel910/webiny-js/compare/@webiny/serverless-apollo-service@2.1.0...@webiny/serverless-apollo-service@2.2.0-next.0) (2019-11-18)
 
 

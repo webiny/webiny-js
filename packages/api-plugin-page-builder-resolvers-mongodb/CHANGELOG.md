@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.1.0-next.1](https://github.com/webiny/webiny-js/compare/@webiny/api-plugin-page-builder-resolvers-mongodb@1.1.0-next.0...@webiny/api-plugin-page-builder-resolvers-mongodb@1.1.0-next.1) (2019-11-20)
+
+
+### Bug Fixes
+
+* return number, not { totalCount } object ([32a635a](https://github.com/webiny/webiny-js/commit/32a635a019171b398ede7a78901429cc2ccd89c7))
+
+
+
+
+
 # 1.1.0-next.0 (2019-11-18)
 
 

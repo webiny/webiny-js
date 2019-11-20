@@ -1,6 +1,6 @@
 {
   "name": "@webiny/api-i18n",
-  "version": "2.1.0-next.0",
+  "version": "2.1.0-next.1",
   "main": "index.js",
   "repository": {
     "type": "git",
@@ -22,8 +22,8 @@
     "@webiny/commodo-graphql": "^2.0.1-next.0",
     "@webiny/validation": "^2.1.0",
     "accept-language-parser": "^1.5.0",
-    "graphql-tag": "^2.10.1",
     "graphql-request": "1.8.2",
+    "graphql-tag": "^2.10.1",
     "i18n-locales": "^0.0.2",
     "lodash": "^4.17.4"
   },
