@@ -13,7 +13,6 @@ import getHomePage from "./pageResolvers/getHomePage";
 import setHomePage from "./pageResolvers/setHomePage";
 import getNotFoundPage from "./pageResolvers/getNotFoundPage";
 import getErrorPage from "./pageResolvers/getErrorPage";
-import searchTags from "./pageResolvers/searchTags";
 import oembed from "./pageResolvers/oembed";
 
 const pageFetcher = ctx => ctx.models.PbPage;
