@@ -5,7 +5,7 @@ const pathLib = require("path");
 const { createHandler, getEnvironment, getObjectParams } = require("../utils");
 const loaders = require("./../loaders");
 
-const MAX_RETURN_CONTENT_LENGTH = 6000000; // almost 6MB
+const MAX_RETURN_CONTENT_LENGTH = 5000000; // ~4.77MB
 
 /**
  * Based on given path, extracts file key and additional options sent via query params.
