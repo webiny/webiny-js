@@ -1,13 +1,17 @@
 {
-  "packages": [
-    "packages/*",
-    "components/*"
-  ],
+  "packages": ["packages/*", "components/*"],
   "version": "independent",
   "command": {
     "version": {
       "preid": "next",
-      "ignoreChanges": ["scripts/**", ",**/__fixtures__/**", "**/__tests__/**", "**/*.md", "*/lerna.json", "examples/**"],
+      "ignoreChanges": [
+        "scripts/**",
+        ",**/__fixtures__/**",
+        "**/__tests__/**",
+        "**/*.md",
+        "lerna.json",
+        "examples/**"
+      ],
       "allowBranch": ["master"],
       "conventionalCommits": true,
       "createRelease": "github",
@@ -17,6 +21,9 @@
     "publish": {
       "conventionalCommits": true,
       "contents": "dist"
+    },
+    "changed": {
+      "excludeDependents": true
     }
   }
 }
