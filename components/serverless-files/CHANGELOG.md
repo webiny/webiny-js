@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.3.1](https://github.com/webiny/webiny-js/compare/@webiny/serverless-files@2.3.0...@webiny/serverless-files@2.3.1) (2019-11-21)
+
+
+### Bug Fixes
+
+* adjusted the max file size that can be directly returned to the API Gateway ([eac74c8](https://github.com/webiny/webiny-js/commit/eac74c8ff202ed89c5de58ce223a8b35c79a5561))
+
+
+
+
+
 # [2.3.0](https://github.com/webiny/webiny-js/compare/@webiny/serverless-files@2.2.0...@webiny/serverless-files@2.3.0) (2019-11-20)
 
 
