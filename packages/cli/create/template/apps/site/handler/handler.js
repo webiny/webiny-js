@@ -2,7 +2,7 @@ const fs = require("fs");
 const path = require("path");
 const mime = require("mime-types");
 const isUtf8 = require("isutf8");
-const zlib = require('zlib');
+const zlib = require("zlib");
 
 const createResponse = ({ type, body, isBase64Encoded, headers }) => {
     return {
