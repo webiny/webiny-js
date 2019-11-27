@@ -7,7 +7,7 @@
     "@babel/core": "^7.6.2",
     "@babel/preset-env": "^7.6.0",
     "@serverless/core": "^1.1.1",
-    "@webiny/api": "^2.1.0",
+    "@webiny/plugins": "^2.0.0",
     "@webiny/serverless-function": "^2.0.0",
     "babel-loader": "^8.0.6",
     "execa": "^2.0.5",

@@ -1,5 +1,7 @@
 // @flow
-import type { PluginType } from "@webiny/plugins/types";
+import type { PluginType } from "./types";
+
+export { PluginsContainer } from "./PluginsContainer";
 
 const __plugins = {};
 

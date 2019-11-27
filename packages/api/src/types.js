@@ -1,5 +1,5 @@
 // @flow
-import type { PluginsContainer } from "./PluginsContainer";
+import type { PluginsContainer } from "@webiny/plugins";
 
 export type PluginType = Object & {
     name: string,
