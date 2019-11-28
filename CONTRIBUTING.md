@@ -46,6 +46,8 @@ Packages prefixed with `app-` are React apps. The ones with the `api-` prefix ar
 > The `MONGODB_SERVER` value should be in the format of a MongoDB connection string such as:
 > `mongodb+srv://{YOUR_USERNAME}:{YOUR_PASSWORD}@someclustername.mongodb.net`.
 
+> WINDOWS USERS: make sure you have installed [Visual C++ Redistributable for Visual Studio 2015](https://www.microsoft.com/en-in/download/details.aspx?id=48145). This is required to run tests using Jest [plugin for in-memory MongoDB server](https://github.com/shelfio/jest-mongodb).
+
 ## Local setup
 
 1. Fork and clone the repo
