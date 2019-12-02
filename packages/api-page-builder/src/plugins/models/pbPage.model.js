@@ -110,6 +110,10 @@ export default ({ createBase, context, PbCategory, PbSettings }) => {
                     });
                     resolve(revisions);
                 });
+            },
+            async fullUrl() {
+                const settings = await PbSettings.load();
+                return settings.data.domain + this.url;
             }
         }),
         withHooks({
