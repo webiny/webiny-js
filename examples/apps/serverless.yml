@@ -2,6 +2,7 @@ name: webiny-cms
 
 vars:
   region: ${env.AWS_REGION}
+  apiUrl: "https://d2ikmpagf0kr3x.cloudfront.net"
 
 site:
   component: "@webiny/serverless-app"
@@ -13,6 +14,7 @@ site:
     code: ./site/build
     env:
       SSR_FUNCTION: ${ssr.name}
+      API_URL: ${vars.apiUrl}
 
 ssr:
   component: "@webiny/serverless-function"
