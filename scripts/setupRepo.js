@@ -13,6 +13,22 @@ const execa = require("execa");
  */
 (async () => {
     console.log(`✍️  Writing environment config files...`);
+    // Create root .env.json
+    const rootEnvJsonPath = path.resolve("examples", ".env.json");
+    const rootExampleEnvJsonPath = path.resolve(
+        "packages",
+        "cli",
+        "create",
+        "template",
+        "example.env.json"
+    );
+    if (fs.existsSync(rootEnvJsonPath)) {
+        console.log(`⚠️  ${green("examples/.env.json")} already exists, skipping.`);
+    } else {
+        fs.copyFileSync(rootExampleEnvJsonPath, rootEnvJsonPath);
+        console.log(`✅️ ${green("examples/.env.json")} was created successfully!`);
+    }
+
     // Create API .env.json
     const envJsonPath = path.resolve("examples", "api", ".env.json");
     const exampleEnvJsonPath = path.resolve("examples", "api", "example.env.json");

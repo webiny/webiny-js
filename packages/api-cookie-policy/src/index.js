@@ -1,5 +1,5 @@
 // @flow
-import { gql } from "apollo-server-lambda";
+import gql from "graphql-tag";
 import { emptyResolver, resolveGetSettings, resolveUpdateSettings } from "@webiny/commodo-graphql";
 import { hasScope } from "@webiny/api-security";
 import cookiePolicySettings from "./cookiePolicySettings.model";

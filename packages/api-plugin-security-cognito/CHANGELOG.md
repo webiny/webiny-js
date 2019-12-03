@@ -3,6 +3,28 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.1.0](https://github.com/webiny/webiny-js/compare/@webiny/api-plugin-security-cognito@2.0.0...@webiny/api-plugin-security-cognito@2.1.0) (2019-11-20)
+
+
+### Features
+
+* add support for DB drivers ([#623](https://github.com/webiny/webiny-js/issues/623)) ([82a6d66](https://github.com/webiny/webiny-js/commit/82a6d66d5ad96e4da13c035d2524c03bd50a7dff))
+
+
+
+
+
+# [2.1.0-next.0](https://github.com/webiny/webiny-js/compare/@webiny/api-plugin-security-cognito@2.0.0...@webiny/api-plugin-security-cognito@2.1.0-next.0) (2019-11-18)
+
+
+### Features
+
+* add support for DB drivers and improve components. ([3ce1908](https://github.com/webiny/webiny-js/commit/3ce1908))
+
+
+
+
+
 # [2.0.0](https://github.com/webiny/webiny-js/compare/@webiny/api-plugin-security-cognito@0.1.6...@webiny/api-plugin-security-cognito@2.0.0) (2019-10-29)
 
 **Note:** Version bump only for package @webiny/api-plugin-security-cognito

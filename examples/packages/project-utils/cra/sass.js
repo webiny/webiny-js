@@ -2,13 +2,9 @@
 const isObject = require("lodash.isobject");
 const path = require("path");
 
-const materialNodeModules = require.resolve("@material/base/package.json").split("/@material")[0];
+const materialNodeModules = require.resolve("@material/base/package.json").split("@material")[0];
 
-const includePaths = [
-    path.resolve("./src"),
-    path.resolve("./node_modules"),
-    materialNodeModules
-];
+const includePaths = [path.resolve("./src"), path.resolve("./node_modules"), materialNodeModules];
 
 const overrideSass = function(rules) {
     let parent = rules;

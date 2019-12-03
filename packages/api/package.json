@@ -1,6 +1,6 @@
 {
   "name": "@webiny/api",
-  "version": "2.0.0",
+  "version": "2.1.0",
   "main": "index.js",
   "repository": {
     "type": "git",
@@ -15,10 +15,10 @@
   "license": "MIT",
   "dependencies": {
     "@apollo/federation": "^0.10.2",
-    "apollo-server-lambda": "^2.9.6",
     "graphql": "^14.4.2",
     "graphql-iso-date": "^3.6.1",
     "graphql-middleware": "^4.0.1",
+    "graphql-tag": "^2.10.1",
     "graphql-tools": "^4.0.5",
     "graphql-type-json": "^0.3.0",
     "graphql-type-long": "^0.1.1"

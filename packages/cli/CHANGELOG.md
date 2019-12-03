@@ -3,6 +3,42 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.4.0](https://github.com/webiny/webiny-js/compare/@webiny/cli@2.3.0...@webiny/cli@2.4.0) (2019-11-20)
+
+
+### Features
+
+* add support for DB drivers ([#623](https://github.com/webiny/webiny-js/issues/623)) ([82a6d66](https://github.com/webiny/webiny-js/commit/82a6d66d5ad96e4da13c035d2524c03bd50a7dff))
+
+
+
+
+
+# [2.4.0-next.1](https://github.com/webiny/webiny-js/compare/@webiny/cli@2.4.0-next.0...@webiny/cli@2.4.0-next.1) (2019-11-20)
+
+
+### Bug Fixes
+
+* add missing "region" input to apps serverless.yml. ([7c3b6bf](https://github.com/webiny/webiny-js/commit/7c3b6bf64e79ad093667d83c864f568ab3ecd84a))
+* check if state is available before deploying single component ([508ef29](https://github.com/webiny/webiny-js/commit/508ef297c8f8f402760f9be036ecb5b9f8589906))
+* improve PUBLIC_URL handling for SSR ([1667a02](https://github.com/webiny/webiny-js/commit/1667a02d700f025deba3367b435c6c0e3e38715f))
+
+
+
+
+
+# [2.4.0-next.0](https://github.com/webiny/webiny-js/compare/@webiny/cli@2.3.0...@webiny/cli@2.4.0-next.0) (2019-11-18)
+
+
+### Features
+
+* handler --tag parameter and load appropriate package versions. ([771db88](https://github.com/webiny/webiny-js/commit/771db88))
+* move most of the boilerplate logic into plugins. ([8d856bb](https://github.com/webiny/webiny-js/commit/8d856bb))
+
+
+
+
+
 # [2.3.0](https://github.com/webiny/webiny-js/compare/@webiny/cli@2.2.0...@webiny/cli@2.3.0) (2019-11-09)
 
 

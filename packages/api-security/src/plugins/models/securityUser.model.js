@@ -3,7 +3,6 @@ import { flow } from "lodash";
 import { validation } from "@webiny/validation";
 import md5 from "md5";
 import bcrypt from "bcryptjs";
-import { id } from "@commodo/fields-storage-mongodb";
 import { withHooks, withProps, withName, string, withFields, onSet, ref } from "@webiny/commodo";
 
 export default ({
@@ -11,7 +10,8 @@ export default ({
     SecurityRole,
     SecurityRoles2Models,
     SecurityGroup,
-    SecurityGroups2Models
+    SecurityGroups2Models,
+    context
 }) => {
     const SecurityUser = flow(
         withName("SecurityUser"),
@@ -62,7 +62,7 @@ export default ({
                 instanceOf: [SecurityGroup, "model"],
                 using: [SecurityGroups2Models, "group"]
             }),
-            avatar: id()
+            avatar: context.commodo.fields.id()
         })),
         withProps(instance => ({
             __access: null,

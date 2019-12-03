@@ -1,11 +1,11 @@
-const path = require("path");
+const { join } = require("path");
 const fs = require("fs-extra");
 const prettier = require("prettier");
 const execa = require("execa");
-const isEqual = require("lodash.isequal");
-const webpack = require("webpack");
 const loadJson = require("load-json-file");
 const camelCase = require("lodash.camelcase");
+const isEqual = require("lodash.isequal");
+const webpack = require("webpack");
 const writeJson = require("write-json-file");
 const { transform } = require("@babel/core");
 const { Component } = require("@serverless/core");
@@ -13,11 +13,29 @@ const { Component } = require("@serverless/core");
 const defaultDependencies = ["babel-loader"];
 
 const getDeps = async deps => {
-    const { dependencies } = await loadJson(path.join(__dirname, "package.json"));
+    const { dependencies } = await loadJson(join(__dirname, "package.json"));
     return deps.reduce((acc, item) => {
         acc[item] = dependencies[item];
         return acc;
     }, {});
+};
+
+const normalizePlugins = plugins => {
+    const normalized = [];
+    plugins.forEach(pl => {
+        let factory,
+            options = {};
+        if (typeof pl === "string") {
+            factory = pl;
+        } else {
+            factory = pl.factory;
+            options = pl.options || {};
+        }
+
+        normalized.push({ factory, options });
+    });
+
+    return normalized;
 };
 
 class ApolloGateway extends Component {
@@ -32,52 +50,73 @@ class ApolloGateway extends Component {
         const {
             region,
             name = null,
-            services = [],
-            buildHeaders = __dirname + "/boilerplate/buildHeaders.js",
             env = {},
             memory = 128,
             timeout = 10,
             description,
-            dependencies = {}
+            webpackConfig = null
         } = inputs;
 
         if (!name) {
             throw Error(`"inputs.name" is a required parameter!`);
         }
 
-        const boilerplateRoot = path.join(this.context.instance.root, ".webiny");
-        const componentRoot = path.join(boilerplateRoot, camelCase(name));
+        let plugins = normalizePlugins(inputs.plugins || []);
+
+        if (inputs.services) {
+            // Add backwards compatibility
+            plugins.unshift({
+                factory: "@webiny/api-plugin-create-apollo-gateway",
+                options: {
+                    server: {
+                        introspection: env.GRAPHQL_INTROSPECTION,
+                        playground: env.GRAPHQL_PLAYGROUND
+                    },
+                    services: inputs.services
+                }
+            });
+        }
+
+        const boilerplateRoot = join(this.context.instance.root, ".webiny");
+        const componentRoot = join(boilerplateRoot, camelCase(name));
         fs.ensureDirSync(componentRoot);
 
         await this.save();
 
         // Generate boilerplate code
+        const injectPlugins = [];
+        plugins.forEach((pl, index) => {
+            injectPlugins.push({
+                name: `injectedPlugins${index + 1}`,
+                path: pl.factory,
+                options: pl.options
+            });
+        });
+
         const source = fs.readFileSync(__dirname + "/boilerplate/handler.js", "utf8");
         const { code } = await transform(source, {
-            plugins: [[__dirname + "/transform/services", { services }]]
+            plugins: [[__dirname + "/transform/plugins", { plugins: injectPlugins }]]
         });
 
         fs.writeFileSync(
-            path.join(componentRoot, "handler.js"),
+            join(componentRoot, "handler.js"),
             prettier.format(code, { parser: "babel" })
         );
 
         fs.copyFileSync(
-            path.join(__dirname, "boilerplate", "webpack.config.js"),
-            path.join(componentRoot, "/webpack.config.js")
+            join(__dirname, "boilerplate", "webpack.config.js"),
+            join(componentRoot, "/webpack.config.js")
         );
 
-        fs.copyFileSync(path.resolve(buildHeaders), path.join(componentRoot, "/buildHeaders.js"));
-
-        const pkgJsonPath = path.join(componentRoot, "package.json");
-        fs.copyFileSync(path.join(__dirname, "boilerplate", "package.json"), pkgJsonPath);
+        const pkgJsonPath = join(componentRoot, "package.json");
+        fs.copyFileSync(join(__dirname, "boilerplate", "package.json"), pkgJsonPath);
 
         // Inject dependencies
         const pkgJson = await loadJson(pkgJsonPath);
-        Object.assign(pkgJson.dependencies, await getDeps(defaultDependencies), dependencies);
+        Object.assign(pkgJson.dependencies, await getDeps(defaultDependencies));
         await writeJson(pkgJsonPath, pkgJson);
 
-        if (!fs.existsSync(path.join(componentRoot, "yarn.lock"))) {
+        if (!fs.existsSync(join(componentRoot, "yarn.lock"))) {
             await execa("yarn", ["--production"], { cwd: componentRoot });
         }
 
@@ -85,24 +124,53 @@ class ApolloGateway extends Component {
         const cwd = process.cwd();
         process.chdir(componentRoot);
 
-        await new Promise((resolve, reject) => {
+        this.context.instance.debug("Start bundling with webpack");
+        await new Promise((res, reject) => {
             this.context.status("Building");
-            const config = require(componentRoot + "/webpack.config.js");
+            let config = require(componentRoot + "/webpack.config.js");
+            if (webpackConfig) {
+                try {
+                    // Resolve customizer path relative to serverless.yml file
+                    const customizerPath = require.resolve(webpackConfig, { paths: [cwd] });
+                    if (!fs.existsSync(customizerPath)) {
+                        this.context.instance.debug(
+                            `Webpack customizer does not exist at %o!`,
+                            customizerPath
+                        );
+                    } else {
+                        this.context.instance.debug(
+                            `Loading webpack customizer from %o`,
+                            customizerPath
+                        );
+                        const customizer = require(customizerPath);
+                        config = customizer({ config, instance: this, root: componentRoot });
+                    }
+                } catch (err) {
+                    this.context.instance.debug(
+                        `Error loading webpack customizer %o: %o`,
+                        webpackConfig,
+                        err.message
+                    );
+                }
+            }
+
             webpack(config).run((err, stats) => {
                 if (err) {
                     return reject(err);
                 }
 
                 if (stats.hasErrors()) {
-                    this.context.log(
-                        stats.toString({
-                            colors: true
-                        })
-                    );
+                    const info = stats.toJson();
+
+                    if (stats.hasErrors()) {
+                        console.error(info.errors);
+                    }
+
                     return reject("Build failed!");
                 }
 
-                resolve();
+                this.context.instance.debug("Finished bundling");
+                res();
             });
         });
 
@@ -115,7 +183,7 @@ class ApolloGateway extends Component {
         const output = await lambda({
             region,
             description: `serverless-apollo-gateway: ${description || name}`,
-            code: path.join(componentRoot, "build"),
+            code: join(componentRoot, "build"),
             root: componentRoot,
             handler: "handler.handler",
             env,

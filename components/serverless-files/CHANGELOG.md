@@ -3,6 +3,52 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.3.1](https://github.com/webiny/webiny-js/compare/@webiny/serverless-files@2.3.0...@webiny/serverless-files@2.3.1) (2019-11-21)
+
+
+### Bug Fixes
+
+* adjusted the max file size that can be directly returned to the API Gateway ([eac74c8](https://github.com/webiny/webiny-js/commit/eac74c8ff202ed89c5de58ce223a8b35c79a5561))
+
+
+
+
+
+# [2.3.0](https://github.com/webiny/webiny-js/compare/@webiny/serverless-files@2.2.0...@webiny/serverless-files@2.3.0) (2019-11-20)
+
+
+### Features
+
+* add support for DB drivers ([#623](https://github.com/webiny/webiny-js/issues/623)) ([82a6d66](https://github.com/webiny/webiny-js/commit/82a6d66d5ad96e4da13c035d2524c03bd50a7dff))
+
+
+
+
+
+# [2.3.0-next.1](https://github.com/Pavel910/webiny-js/compare/@webiny/serverless-files@2.3.0-next.0...@webiny/serverless-files@2.3.0-next.1) (2019-11-20)
+
+**Note:** Version bump only for package @webiny/serverless-files
+
+
+
+
+
+# [2.3.0-next.0](https://github.com/Pavel910/webiny-js/compare/@webiny/serverless-files@2.2.0...@webiny/serverless-files@2.3.0-next.0) (2019-11-18)
+
+
+### Bug Fixes
+
+* make plugins an empty array by default ([b2eaa1f](https://github.com/Pavel910/webiny-js/commit/b2eaa1f))
+
+
+### Features
+
+* add support for DB drivers and improve components. ([3ce1908](https://github.com/Pavel910/webiny-js/commit/3ce1908))
+
+
+
+
+
 # [2.2.0](https://github.com/Webiny/webiny-js/compare/@webiny/serverless-files@2.1.0...@webiny/serverless-files@2.2.0) (2019-11-08)
 
 

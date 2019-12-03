@@ -1,6 +1,6 @@
 {
   "name": "@webiny/commodo-graphql",
-  "version": "2.0.0",
+  "version": "2.1.1",
   "main": "index.js",
   "repository": {
     "type": "git",
@@ -14,9 +14,14 @@
   ],
   "license": "MIT",
   "dependencies": {
-    "@webiny/api": "^2.0.0",
+    "@webiny/api": "^2.1.0",
     "@webiny/commodo": "^2.0.0",
     "lodash": "^4.17.4"
+  },
+  "devDependencies": {
+    "@babel/cli": "^7.5.5",
+    "@babel/core": "^7.5.5",
+    "@babel/preset-flow": "^7.0.0"
   },
   "publishConfig": {
     "access": "public"

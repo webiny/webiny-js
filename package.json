@@ -88,7 +88,7 @@
     "fsevents": "^2.0.7"
   },
   "scripts": {
-    "clear-dist": "rimraf components/*/dist packages/*/dist",
+    "clear-dist": "yarn rimraf components/*/dist packages/*/dist",
     "contributors:add": "all-contributors add",
     "contributors:generate": "all-contributors generate",
     "commit": "node ./scripts/commitizen.js",

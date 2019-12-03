@@ -1,0 +1,157 @@
+name: webiny-cms-project
+
+vars:
+  region: ${env.AWS_REGION}
+  bucket: ${env.S3_BUCKET}
+  apollo:
+    server:
+      introspection: ${env.GRAPHQL_INTROSPECTION}
+      playground: ${env.GRAPHQL_PLAYGROUND}
+  commodo:
+    database:
+      server: ${env.MONGODB_SERVER}
+      name: ${env.MONGODB_NAME}
+  security:
+    token:
+      expiresIn: 2592000 # 30 days
+      secret: ${env.JWT_SECRET}
+
+gateway:
+  component: "@webiny/serverless-apollo-gateway"
+  inputs:
+    name: Apollo Gateway
+    region: ${vars.region}
+    memory: 512
+    timeout: 30
+    webpackConfig: ./webpack.config.js
+    plugins:
+      - factory: "@webiny/api-plugin-create-apollo-gateway"
+        options:
+          server: ${vars.apollo.server}
+          services:
+            - name: security
+              url: ${security.api.graphqlUrl}
+            - name: files
+              url: ${files.api.graphqlUrl}
+            - name: pageBuilder
+              url: ${pageBuilder.api.graphqlUrl}
+            - name: i18n
+              url: ${i18n.api.graphqlUrl}
+
+cognito:
+  component: "@webiny/serverless-aws-cognito-user-pool"
+  inputs:
+    name: WebinyPool
+    region: ${vars.region}
+    appClients:
+      - name: ReactApp
+
+security:
+  component: "@webiny/serverless-apollo-service"
+  inputs:
+    name: Security
+    region: ${vars.region}
+    memory: 512
+    webpackConfig: ./webpack.config.js
+    plugins:
+      - factory: "@webiny/api-plugin-create-apollo-handler"
+        options: ${vars.apollo}
+      - factory: "@webiny/api-plugin-commodo-mongodb"
+        options: ${vars.commodo}
+      - factory: "@webiny/api-security/plugins"
+        options: ${vars.security}
+      - factory: "@webiny/api-plugin-security-cognito"
+        options:
+          region: ${vars.region}
+          userPoolId: ${cognito.userPool.Id}
+
+files:
+  component: "@webiny/serverless-files/dist"
+  inputs:
+    region: ${vars.region}
+    bucket: ${vars.bucket}
+    functions:
+      apolloService:
+        memory: 512
+        timeout: 10
+        uploadMinFileSize: 0 # 0 MB
+        uploadMaxFileSize: 26214400 # 25 MB
+        webpackConfig: ./webpack.config.js
+        plugins:
+          - factory: "@webiny/api-plugin-create-apollo-handler"
+            options: ${vars.apollo}
+          - factory: "@webiny/api-plugin-commodo-mongodb"
+            options: ${vars.commodo}
+          - factory: "@webiny/api-security/plugins/service"
+            options: ${vars.security}
+          - "@webiny/api-files/plugins"
+          - "@webiny/api-plugin-files-resolvers-mongodb"
+      downloadFile:
+        memory: 512
+        timeout: 10
+      imageTransformer:
+        memory: 1024
+        timeout: 10
+
+i18n:
+  component: "@webiny/serverless-apollo-service"
+  inputs:
+    name: I18N
+    region: ${vars.region}
+    memory: 512
+    webpackConfig: ./webpack.config.js
+    plugins:
+      - factory: "@webiny/api-plugin-create-apollo-handler"
+        options: ${vars.apollo}
+      - factory: "@webiny/api-plugin-commodo-mongodb"
+        options: ${vars.commodo}
+      - factory: "@webiny/api-security/plugins/service"
+        options: ${vars.security}
+      - "@webiny/api-i18n/plugins"
+
+pageBuilder:
+  component: "@webiny/serverless-page-builder"
+  inputs:
+    name: Page Builder
+    region: ${vars.region}
+    files: ${files}
+    memory: 512
+    timeout: 30
+    webpackConfig: ./webpack.config.js
+    plugins:
+      - factory: "@webiny/api-plugin-create-apollo-handler"
+        options: ${vars.apollo}
+      - factory: "@webiny/api-plugin-commodo-mongodb"
+        options: ${vars.commodo}
+      - factory: "@webiny/api-security/plugins/service"
+        options: ${vars.security}
+      - "@webiny/api-page-builder/plugins"
+      - "@webiny/api-plugin-page-builder-resolvers-mongodb"
+      - "@webiny/api-google-tag-manager"
+      - "@webiny/api-mailchimp"
+      - "@webiny/api-cookie-policy"
+
+api:
+  component: "@webiny/serverless-api-gateway"
+  inputs:
+    name: "API Gateway"
+    region: ${vars.region}
+    description: "Main API Gateway"
+    endpoints:
+      - path: /graphql
+        method: ANY
+        function: ${gateway}
+
+cdn:
+  component: "@webiny/serverless-aws-cloudfront"
+  inputs:
+    comment: pavel910-webiny-js-api
+    origins:
+      - ${files.cdnOrigin}
+      - url: ${api.url}
+        pathPatterns:
+          "/graphql":
+            ttl: 0
+            forward:
+              headers: ["Accept", "Accept-Language"]
+            allowedHttpMethods: ["GET", "HEAD", "OPTIONS", "PUT", "POST", "PATCH", "DELETE"]

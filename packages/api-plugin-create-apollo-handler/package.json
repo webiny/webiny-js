@@ -1,0 +1,33 @@
+{
+  "name": "@webiny/api-plugin-create-apollo-handler",
+  "version": "1.1.0",
+  "main": "index.js",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/webiny/webiny-js.git"
+  },
+  "description": "Webiny API plugin that creates an Apollo handler.",
+  "contributors": [
+    "Pavel Denisjuk <pavel@webiny.com>",
+    "Sven Al Hamad <sven@webiny.com>",
+    "Adrian Smijulj <adrian@webiny.com>"
+  ],
+  "dependencies": {
+    "@babel/runtime": "^7.5.5",
+    "apollo-server-lambda": "^2.9.7"
+  },
+  "devDependencies": {
+    "@babel/cli": "^7.5.5",
+    "@babel/core": "^7.5.5",
+    "@babel/preset-env": "^7.5.5"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "build": "babel src -d dist --source-maps --copy-files",
+    "postbuild": "cp package.json LICENSE README.md dist/",
+    "prepublishOnly": "yarn build"
+  }
+}

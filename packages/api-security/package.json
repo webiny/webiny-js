@@ -1,6 +1,6 @@
 {
   "name": "@webiny/api-security",
-  "version": "2.0.1",
+  "version": "2.1.0",
   "main": "index.js",
   "repository": {
     "type": "git",
@@ -16,13 +16,13 @@
   "dependencies": {
     "@babel/runtime": "^7.5.5",
     "@commodo/fields-storage-mongodb": "^0.2.12",
-    "@webiny/api": "^2.0.0",
+    "@webiny/api": "^2.1.0",
     "@webiny/commodo": "^2.0.0",
-    "@webiny/commodo-graphql": "^2.0.0",
+    "@webiny/commodo-graphql": "^2.1.0",
     "@webiny/validation": "^2.1.0",
-    "apollo-server-lambda": "^2.9.6",
     "bcryptjs": "^2.4.3",
     "graphql-shield": "^6.1.0",
+    "graphql-tag": "^2.10.1",
     "jsonwebtoken": "^8.2.2",
     "lodash": "^4.17.4",
     "md5": "^2.2.1"

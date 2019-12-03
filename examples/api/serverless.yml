@@ -19,6 +19,7 @@ gateway:
     region: ${vars.region}
     memory: 512
     timeout: 30
+    webpackConfig: ./webpack.config.js
     services:
       - name: security
         url: ${security.api.graphqlUrl}

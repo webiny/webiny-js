@@ -1,5 +1,5 @@
 // @flow
-import { gql } from "apollo-server-lambda";
+import gql from "graphql-tag";
 import { buildFederatedSchema } from "@apollo/federation";
 import GraphQLJSON from "graphql-type-json";
 import { GraphQLDateTime } from "graphql-iso-date";
@@ -7,18 +7,18 @@ import GraphQLLong from "graphql-type-long";
 import { RefInput } from "./RefInputScalar";
 import type { PluginsContainerType } from "../types";
 
-type PrepareSchemaParamsType = { config: Object, plugins: PluginsContainerType };
+type PrepareSchemaParamsType = { plugins: PluginsContainerType };
 
 /**
  * @return {schema, context}
  */
-export async function prepareSchema({ config, plugins }: PrepareSchemaParamsType) {
+export async function prepareSchema({ plugins }: PrepareSchemaParamsType) {
     // This allows developers to register more plugins dynamically, before the graphql schema is instantiated.
     const gqlPlugins = plugins.byType("graphql-schema");
 
     for (let i = 0; i < gqlPlugins.length; i++) {
         if (typeof gqlPlugins[i].prepare === "function") {
-            await gqlPlugins[i].prepare({ plugins, config });
+            await gqlPlugins[i].prepare({ plugins });
         }
     }
 
@@ -52,7 +52,7 @@ export async function prepareSchema({ config, plugins }: PrepareSchemaParamsType
         }
 
         if (typeof schema === "function") {
-            schemaDefs.push(await schema({ config, plugins }));
+            schemaDefs.push(await schema({ plugins }));
         } else {
             schemaDefs.push(schema);
         }

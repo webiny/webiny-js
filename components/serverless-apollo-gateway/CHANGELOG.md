@@ -3,6 +3,39 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.2.0](https://github.com/webiny/webiny-js/compare/@webiny/serverless-apollo-gateway@2.1.0...@webiny/serverless-apollo-gateway@2.2.0) (2019-11-20)
+
+
+### Features
+
+* add support for DB drivers ([#623](https://github.com/webiny/webiny-js/issues/623)) ([82a6d66](https://github.com/webiny/webiny-js/commit/82a6d66d5ad96e4da13c035d2524c03bd50a7dff))
+
+
+
+
+
+# [2.2.0-next.1](https://github.com/Pavel910/webiny-js/compare/@webiny/serverless-apollo-gateway@2.2.0-next.0...@webiny/serverless-apollo-gateway@2.2.0-next.1) (2019-11-20)
+
+
+### Bug Fixes
+
+* add support for Windows project setup ([dc1a375](https://github.com/Pavel910/webiny-js/commit/dc1a375b95d671958337f9b064e07f64ab121b6d))
+
+
+
+
+
+# [2.2.0-next.0](https://github.com/Pavel910/webiny-js/compare/@webiny/serverless-apollo-gateway@2.1.0...@webiny/serverless-apollo-gateway@2.2.0-next.0) (2019-11-18)
+
+
+### Features
+
+* add support for DB drivers and improve components. ([3ce1908](https://github.com/Pavel910/webiny-js/commit/3ce1908))
+
+
+
+
+
 # [2.1.0](https://github.com/Webiny/webiny-js/compare/@webiny/serverless-apollo-gateway@2.0.0...@webiny/serverless-apollo-gateway@2.1.0) (2019-11-08)
 
 

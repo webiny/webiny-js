@@ -1,32 +1,37 @@
 {
-    "private": true,
-    "workspaces": {
-        "packages": [
-            "packages/*",
-            "apps/*"
-        ]
-    },
-    "dependencies": {
-        "@webiny/serverless-api-gateway": "^2",
-        "@webiny/serverless-app": "^2",
-        "@webiny/serverless-apollo-gateway": "^2",
-        "@webiny/serverless-apollo-service": "^2",
-        "@webiny/serverless-aws-cloudfront": "^2",
-        "@webiny/serverless-aws-cognito-user-pool": "^2",
-        "@webiny/serverless-files": "^2",
-        "@webiny/serverless-page-builder": "^2",
-        "@webiny/api-security": "^2",
-        "@webiny/api-plugin-security-cognito": "^2",
-        "@webiny/api-files": "^2",
-        "@webiny/api-forms": "^2",
-        "@webiny/api-i18n": "^2",
-        "@webiny/api-google-tag-manager": "^2",
-        "@webiny/api-mailchimp": "^2",
-        "@webiny/api-cookie-policy": "^2"
-    },
-    "devDependencies": {
-        "prettier": "^1.18.2",
-        "flow-bin": "^0.110.0",
-        "webpack-cli": "^3.3.9"
-    }
+  "private": true,
+  "workspaces": {
+    "packages": [
+      "packages/*",
+      "apps/*"
+    ]
+  },
+  "dependencies": {
+    "@webiny/api-cookie-policy": "latest",
+    "@webiny/api-files": "latest",
+    "@webiny/api-forms": "latest",
+    "@webiny/api-google-tag-manager": "latest",
+    "@webiny/api-i18n": "latest",
+    "@webiny/api-mailchimp": "latest",
+    "@webiny/api-plugin-commodo-mongodb": "latest",
+    "@webiny/api-plugin-create-apollo-gateway": "latest",
+    "@webiny/api-plugin-create-apollo-handler": "latest",
+    "@webiny/api-plugin-files-resolvers-mongodb": "latest",
+    "@webiny/api-plugin-page-builder-resolvers-mongodb": "latest",
+    "@webiny/api-plugin-security-cognito": "latest",
+    "@webiny/api-security": "latest",
+    "@webiny/serverless-api-gateway": "latest",
+    "@webiny/serverless-app": "latest",
+    "@webiny/serverless-apollo-gateway": "latest",
+    "@webiny/serverless-apollo-service": "latest",
+    "@webiny/serverless-aws-cloudfront": "latest",
+    "@webiny/serverless-aws-cognito-user-pool": "latest",
+    "@webiny/serverless-files": "latest",
+    "@webiny/serverless-page-builder": "latest"
+  },
+  "devDependencies": {
+    "prettier": "^1.18.2",
+    "flow-bin": "^0.110.0",
+    "webpack-cli": "^3.3.9"
+  }
 }
