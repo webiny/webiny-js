@@ -1,7 +1,7 @@
 // @flow
 import { ApolloLink, Observable } from "apollo-link";
 import localStorage from "store";
-import get from "lodash.get";
+import { get } from "lodash";
 
 export default ({ token = "webiny-token" }: { token: string } = {}) => {
     return new ApolloLink((operation, forward) => {
