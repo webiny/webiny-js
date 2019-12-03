@@ -147,10 +147,12 @@ const FormRender = (props: FormRenderComponentPropsType) => {
         return formSubmission;
     };
 
+    const layoutsFromTheme = get(theme, "forms.layouts") || [];
+    const layoutsFromPlugins = getPlugins("form-layout");
+    const layouts = [...layoutsFromTheme, ...layoutsFromPlugins];
+
     // Get form layout, defined in theme.
-    let LayoutRenderComponent = get(theme, "forms.layouts", []).find(
-        item => item.name === settings.layout.renderer
-    );
+    let LayoutRenderComponent = layouts.find(item => item.name === settings.layout.renderer);
 
     if (!LayoutRenderComponent) {
         return <span>Cannot render form, layout missing.</span>;
