@@ -9,7 +9,10 @@ type Props = {
     children?: React.Node,
 
     // Append a class name
-    className?: string
+    className?: string,
+
+    // Callback to execute when a tab is changed
+    onActivate?: (index: number) => void
 };
 
 type State = {
@@ -52,7 +55,10 @@ class Tabs extends React.Component<Props, State> {
             <TabBar
                 className="webiny-ui-tabs__tab-bar"
                 activeTabIndex={this.state.activeTabIndex}
-                onActivate={evt => this.setState({ activeTabIndex: evt.detail.index })}
+                onActivate={evt => {
+                    this.setState({ activeTabIndex: evt.detail.index });
+                    this.props.onActivate && this.props.onActivate(evt.detail.index);
+                }}
             >
                 {tabs.map(item => {
                     const style = item.style || {};
