@@ -10,7 +10,6 @@
     ],
     "plugins": [
         ["babel-plugin-emotion", { "autoLabel": true }],
-        ["babel-plugin-lodash", { "id": ["lodash"] }],
         ["babel-plugin-named-asset-import", {
             "loaderMap": {
                 "svg": {

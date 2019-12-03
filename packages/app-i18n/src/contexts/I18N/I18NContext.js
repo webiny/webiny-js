@@ -4,7 +4,7 @@ import React from "react";
 import { useQuery } from "react-apollo";
 import gql from "graphql-tag";
 import { CircularProgress } from "@webiny/ui/Progress";
-import { get } from "lodash";
+import get from "lodash.get";
 
 export const getI18NInformation = gql`
     query GetI18NInformation {
