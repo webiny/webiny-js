@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import { useI18N } from "@webiny/app-i18n/hooks/useI18N";
 import { css } from "emotion";
+import styled from "@emotion/styled";
 import { camelCase, cloneDeep } from "lodash";
 import { OptionsListItem, AddOptionInput, EditFieldOptionDialog } from "./OptionsListComponents";
 import { sortableContainer, sortableElement, sortableHandle } from "react-sortable-hoc";
@@ -10,12 +11,23 @@ import { Icon } from "@webiny/ui/Icon";
 import { ReactComponent as HandleIcon } from "@webiny/app-forms/admin/icons/round-drag_indicator-24px.svg";
 import { validation } from "@webiny/validation";
 
-const optionListItem = css({
+const OptionList = styled("ul")({
+    padding: 25,
+    border: "1px solid var(--mdc-theme-on-background)"
+});
+
+const OptionListItem = styled("li")({
     zIndex: 10,
     display: "flex",
     justifyContent: "space-between",
-    borderBottom: "1px solid gray",
-    background: "white"
+    borderBottom: "1px solid var(--mdc-theme-background)",
+    background: "var(--mdc-theme-surface)",
+    "&:hover": {
+        background: "var(--mdc-theme-background)"
+    },
+    '&:last-child':{
+        border: 'none'
+    }
 });
 
 const sortableList = css({
@@ -27,7 +39,7 @@ const DragHandle = sortableHandle(() => (
 ));
 
 const SortableContainer = sortableContainer(({ children }) => {
-    return <ul>{children}</ul>;
+    return <OptionList>{children}</OptionList>;
 });
 
 const SortableItem = sortableElement(
@@ -40,7 +52,7 @@ const SortableItem = sortableElement(
         multiple,
         optionIndex
     }) => (
-        <li className={optionListItem}>
+        <OptionListItem>
             <OptionsListItem
                 dragHandle={<DragHandle />}
                 key={option.value}
@@ -62,7 +74,7 @@ const SortableItem = sortableElement(
                     setOptionsValue(newValue);
                 }}
             />
-        </li>
+        </OptionListItem>
     )
 );
 
