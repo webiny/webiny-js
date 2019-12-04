@@ -9,6 +9,7 @@
     "@webiny/app-i18n": "latest",
     "@webiny/app-mailchimp": "latest",
     "@webiny/app-page-builder": "latest",
+    "@webiny/app-forms": "latest",
     "@webiny/app-typeform": "latest",
     "@webiny/plugins": "latest",
     "apollo-link-batch-http": "^1.2.3",
