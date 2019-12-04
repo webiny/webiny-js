@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.4.1-next.0](https://github.com/webiny/webiny-js/compare/@webiny/cli@2.4.0...@webiny/cli@2.4.1-next.0) (2019-12-04)
+
+
+### Bug Fixes
+
+* update form-builder section ([d136a22](https://github.com/webiny/webiny-js/commit/d136a2268c2511079340e409d3a45e35f15a6f3c))
+
+
+
+
+
 # [2.4.0](https://github.com/webiny/webiny-js/compare/@webiny/cli@2.3.0...@webiny/cli@2.4.0) (2019-11-20)
 
 
