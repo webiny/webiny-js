@@ -36,6 +36,8 @@ gateway:
               url: ${pageBuilder.api.graphqlUrl}
             - name: i18n
               url: ${i18n.api.graphqlUrl}
+            - name: formBuilder
+              url: ${formBuilder.api.graphqlUrl}
 
 cognito:
   component: "@webiny/serverless-aws-cognito-user-pool"
