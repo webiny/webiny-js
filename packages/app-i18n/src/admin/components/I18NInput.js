@@ -7,7 +7,7 @@ import { css } from "emotion";
 import { useI18N } from "@webiny/app-i18n/hooks/useI18N";
 import { Tooltip } from "@webiny/ui/Tooltip";
 import classNames from "classnames";
-import { cloneDeep } from "lodash";
+import cloneDeep from "lodash.clonedeep";
 import I18NRichTextEditor from "./I18NRichTextEditor";
 
 const style = {
@@ -52,13 +52,13 @@ type Props = {
 } & Object;
 
 const I18NInput = ({
-                       richText,
-                       value,
-                       onChange,
-                       children,
-                       showTranslateIcon,
-                       ...inputProps
-                   }: Props) => {
+    richText,
+    value,
+    onChange,
+    children,
+    showTranslateIcon,
+    ...inputProps
+}: Props) => {
     const [values, setValues] = useState(null);
     const { getLocale, getLocales } = useI18N();
 

@@ -1,6 +1,7 @@
 // @flow
 import { ApolloLink, Observable } from "apollo-link";
 import localStorage from "store";
+import { get } from "lodash";
 
 export default ({ token = "webiny-token" }: { token: string } = {}) => {
     return new ApolloLink((operation, forward) => {
@@ -22,7 +23,8 @@ export default ({ token = "webiny-token" }: { token: string } = {}) => {
                 next: data => {
                     if (data.errors) {
                         data.errors.forEach(error => {
-                            if (unsetTokenCodes.includes(error.code)) {
+                            let code = get(error, "extensions.exception.code", error.code);
+                            if (unsetTokenCodes.includes(code)) {
                                 localStorage.remove(token);
                             }
                         });
