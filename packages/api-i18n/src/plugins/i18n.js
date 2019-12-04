@@ -60,6 +60,10 @@ export default ([
 
                     if (Array.isArray(value.values)) {
                         const locale = self.getLocale();
+                        if (!locale) {
+                            return "";
+                        }
+
                         const valuesValue = value.values.find(value => value.locale === locale.id);
                         return valuesValue ? valuesValue.value : "";
                     }
