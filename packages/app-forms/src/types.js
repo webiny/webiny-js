@@ -83,8 +83,10 @@ export type FormSubmitResponseType = {
 
 export type FormLoadComponentPropsType = {
     preview?: boolean,
-    revision?: string,
-    parent?: string
+    revisionId?: string,
+    parentId?: string,
+    slug?: string,
+    version: number
 };
 
 export type UseFormEditorReducerStateType = {
