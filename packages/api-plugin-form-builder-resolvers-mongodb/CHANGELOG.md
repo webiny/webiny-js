@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.2.0](https://github.com/webiny/webiny-js/compare/@webiny/api-plugin-form-builder-resolvers-mongodb@1.2.0-next.1...@webiny/api-plugin-form-builder-resolvers-mongodb@1.2.0) (2019-12-04)
+
+**Note:** Version bump only for package @webiny/api-plugin-form-builder-resolvers-mongodb
+
+
+
+
+
 # [1.2.0-next.1](https://github.com/webiny/webiny-js/compare/@webiny/api-plugin-form-builder-resolvers-mongodb@1.2.0-next.0...@webiny/api-plugin-form-builder-resolvers-mongodb@1.2.0-next.1) (2019-12-04)
 
 **Note:** Version bump only for package @webiny/api-plugin-form-builder-resolvers-mongodb

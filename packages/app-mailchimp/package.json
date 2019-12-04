@@ -1,6 +1,6 @@
 {
   "name": "@webiny/app-mailchimp",
-  "version": "2.0.3-next.2",
+  "version": "2.0.3",
   "main": "index.js",
   "repository": {
     "type": "git",
@@ -12,13 +12,13 @@
   "dependencies": {
     "@babel/runtime": "^7.5.5",
     "@emotion/styled": "^10.0.17",
-    "@webiny/app": "^2.0.2-next.1",
-    "@webiny/app-admin": "^2.1.1-next.1",
-    "@webiny/app-page-builder": "^2.0.3-next.2",
-    "@webiny/app-security": "^2.0.3-next.2",
+    "@webiny/app": "^2.0.2",
+    "@webiny/app-admin": "^2.1.1",
+    "@webiny/app-page-builder": "^2.0.3",
+    "@webiny/app-security": "^2.0.3",
     "@webiny/form": "^2.0.0",
     "@webiny/plugins": "^2.0.0",
-    "@webiny/ui": "^2.0.1-next.1",
+    "@webiny/ui": "^2.0.1",
     "@webiny/validation": "^2.1.0",
     "emotion": "10.0.17",
     "lodash": "^4.17.11",

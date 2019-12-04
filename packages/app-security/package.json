@@ -1,6 +1,6 @@
 {
   "name": "@webiny/app-security",
-  "version": "2.0.3-next.2",
+  "version": "2.0.3",
   "main": "index.js",
   "repository": {
     "type": "git",
@@ -15,11 +15,11 @@
   "dependencies": {
     "@babel/runtime": "^7.5.5",
     "@emotion/styled": "^10.0.17",
-    "@webiny/app": "^2.0.2-next.1",
-    "@webiny/app-admin": "^2.1.1-next.1",
+    "@webiny/app": "^2.0.2",
+    "@webiny/app-admin": "^2.1.1",
     "@webiny/form": "^2.0.0",
     "@webiny/plugins": "^2.0.0",
-    "@webiny/ui": "^2.0.1-next.1",
+    "@webiny/ui": "^2.0.1",
     "@webiny/validation": "^2.1.0",
     "apollo-link": "^1.2.1",
     "dot-prop-immutable": "^1.4.0",
