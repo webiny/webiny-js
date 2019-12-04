@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.4.1-next.1](https://github.com/webiny/webiny-js/compare/@webiny/cli@2.4.1-next.0...@webiny/cli@2.4.1-next.1) (2019-12-04)
+
+
+### Bug Fixes
+
+* add serverless-form-builder to dependencies ([cf02e16](https://github.com/webiny/webiny-js/commit/cf02e1648329ccb445b85518f65d7425a9c09b3e))
+
+
+
+
+
 ## [2.4.1-next.0](https://github.com/webiny/webiny-js/compare/@webiny/cli@2.4.0...@webiny/cli@2.4.1-next.0) (2019-12-04)
 
 
