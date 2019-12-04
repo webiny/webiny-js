@@ -1,4 +1,4 @@
-export default prefix => /* GraphQL */ `
+export default (prefix = "") => /* GraphQL */ `
     input ${prefix}I18NStringLocaleValueInput {
         value: String
         locale: String!
