@@ -11,7 +11,7 @@
     "lodash.get": "^4.4.2"
   },
   "scripts": {
-    "build": "rm -rf dist && mkdir dist && cp -R serverless.js installation dist/",
+    "build": "rm -rf dist && mkdir dist && cp -R serverless.js dist/",
     "postbuild": "cp package.json README.md LICENSE dist/",
     "prepublishOnly": "yarn build"
   },
