@@ -11,10 +11,9 @@ const getDeps = async deps => {
     }, {});
 };
 
-
 class ServerlessForms extends Component {
     async default(inputs = {}) {
-        const { plugins = [], env, files, ...rest } = inputs;
+        const { plugins = [], env, files, i18n, ...rest } = inputs;
 
         plugins.unshift("@webiny/api-forms/plugins");
         plugins.unshift("@webiny/api-i18n/plugins/service");
@@ -25,6 +24,7 @@ class ServerlessForms extends Component {
             env: {
                 ...env,
                 FILES_API_URL: get(files, "api.graphqlUrl"),
+                I18N_API_URL: get(i18n, "api.graphqlUrl")
             },
             ...rest,
             dependencies: await getDeps(["@webiny/api-forms"])

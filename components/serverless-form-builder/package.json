@@ -1,5 +1,5 @@
 {
-  "name": "@webiny/serverless-forms",
+  "name": "@webiny/serverless-form-builder",
   "version": "2.0.2",
   "main": "serverless.js",
   "license": "MIT",
