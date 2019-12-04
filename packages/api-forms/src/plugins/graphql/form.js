@@ -201,7 +201,7 @@ export default {
                 sort: String
             ): FormResponse
             
-            getPublishedForm(id: ID, parent: ID): FormResponse
+            getPublishedForm(id: ID, parent: ID, slug: String, version: Int): FormResponse
             
             listForms(
                 page: Int
@@ -213,8 +213,10 @@ export default {
             
             listPublishedForms(
                 search: String
-                category: String
-                parent: ID!
+                id: ID
+                parent: ID
+                slug: String
+                version: Int
                 tags: [String]
                 sort: FormSortInput
                 page: Int

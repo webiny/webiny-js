@@ -40,9 +40,11 @@ const Content = ({ richText, onClose, values, onSubmit }: Props) => {
 
     return (
         <Form submitOnEnter data={values} onSubmit={onSubmit}>
+            {/* In case the i18n dialog is triggered from another dialog, like in the form editor, OverlayLayour has to be displayed in front of the settings dialog which has a z-index of 20 */}
             {({ Bind, submit }) => (
                 <OverlayLayout
                     onExited={onClose}
+                    style={{ zIndex: 21 }}
                     barRight={
                         <ButtonPrimary onClick={submit}>
                             <ButtonIcon icon={<DoneIcon />} />

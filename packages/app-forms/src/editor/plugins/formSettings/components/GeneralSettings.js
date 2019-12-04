@@ -5,10 +5,15 @@ import { Grid, Cell } from "@webiny/ui/Grid";
 import { Select } from "@webiny/ui/Select";
 import { get } from "lodash";
 import { I18NInput } from "@webiny/app-i18n/admin/components";
+import { getPlugins } from "@webiny/plugins";
 
 const GeneralSettings = ({ Bind }) => {
     const { theme } = usePageBuilder();
-    const layouts = get(theme, "forms.layouts") || [];
+    const layoutsFromTheme = get(theme, "forms.layouts") || [];
+    const layoutsFromPlugins = getPlugins("form-layout");
+
+    const layouts = [...layoutsFromTheme, ...layoutsFromPlugins];
+
     return (
         <React.Fragment>
             <Grid>

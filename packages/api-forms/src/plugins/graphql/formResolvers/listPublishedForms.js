@@ -1,83 +1,24 @@
 // @flow
-import { createPaginationMeta, Collection } from "@webiny/commodo";
+import { createPaginationMeta } from "@webiny/commodo";
 import { ListResponse } from "@webiny/api";
-import get from "lodash/get";
-
-export const listPublishedForms = async ({ args, Form }: Object) => {
-    const {
-        page = 1,
-        search,
-        perPage = 10,
-        parent = null,
-        id = null,
-        url = null,
-        sort = null
-    } = args;
-
-    const baseFilters = [{ published: true, deleted: false }];
-
-    if (parent) {
-        if (Array.isArray(parent)) {
-            baseFilters.push({ parent: { $in: parent } });
-        } else {
-            baseFilters.push({ parent });
-        }
-    }
-
-    if (id) {
-        if (Array.isArray(id)) {
-            baseFilters.push({ id: { $in: id } });
-        } else {
-            baseFilters.push({ id });
-        }
-    }
-
-    if (url) {
-        if (Array.isArray(url)) {
-            baseFilters.push({ url: { $in: url } });
-        } else {
-            baseFilters.push({ url });
-        }
-    }
-
-    if (search) {
-        baseFilters.push({ title: { $regex: `.*${search}.*`, $options: "i" } });
-    }
-
-    const pipeline = [{ $match: { $and: baseFilters } }];
-    if (sort) {
-        pipeline.push({
-            $sort: sort
-        });
-    }
-
-    const pipelines = {
-        results: pipeline.concat(
-            { $skip: (page - 1) * perPage },
-            { $limit: perPage },
-            { $project: { id: 1 } }
-        ),
-        totalCount: pipeline.concat({
-            $count: "count"
-        })
-    };
-
-    const ids = (await Form.aggregate(pipelines.results)) || [];
-    const results = await Form.findByIds(ids.map(item => item.id));
-
-    const totalCount = get(await Form.aggregate(pipelines.totalCount), "0.count") || 0;
-
-    const meta = createPaginationMeta({
-        totalCount,
-        page,
-        perPage
-    });
-
-    return new Collection(results).setMeta(meta);
-};
+import getListPublishedFormsResolver from "./utils/getListPublishedFormsResolver";
 
 export default async (root: any, args: Object, context: Object) => {
-    const { Form } = context.models;
-    const data = await listPublishedForms({ args, Form });
-    return new ListResponse(data, data.getMeta());
+    const plugin = getListPublishedFormsResolver(context);
+    const { forms, totalCount } = await plugin.resolve({ root, args, context });
+
+    if (!Array.isArray(forms) || !Number.isInteger(totalCount)) {
+        throw Error(
+            `Resolver plugin "forms-resolver-list-published-forms" must return { forms: [Form], totalCount: Int }!`
+        );
+    }
+
+    return new ListResponse(
+        forms,
+        createPaginationMeta({
+            page: args.page,
+            perPage: args.perPage,
+            totalCount: totalCount ? totalCount : 0
+        })
+    );
 };

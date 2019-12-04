@@ -3,32 +3,42 @@ name: webiny-cms-project
 vars:
   region: ${env.AWS_REGION}
   bucket: ${env.S3_BUCKET}
-  env:
-    JWT_SECRET: ${env.JWT_SECRET}
-    GRAPHQL_INTROSPECTION: ${env.GRAPHQL_INTROSPECTION}
-    GRAPHQL_PLAYGROUND: ${env.GRAPHQL_PLAYGROUND}
-  database:
-    server: ${env.MONGODB_SERVER}
-    name: ${env.MONGODB_NAME}
+  apollo:
+    server:
+      introspection: ${env.GRAPHQL_INTROSPECTION}
+      playground: ${env.GRAPHQL_PLAYGROUND}
+  commodo:
+    database:
+      server: ${env.MONGODB_SERVER}
+      name: ${env.MONGODB_NAME}
+  security:
+    token:
+      expiresIn: 2592000 # 30 days
+      secret: ${env.JWT_SECRET}
 
 gateway:
   component: "@webiny/serverless-apollo-gateway"
   inputs:
     name: Apollo Gateway
-    env: ${vars.env}
     region: ${vars.region}
     memory: 512
     timeout: 30
     webpackConfig: ./webpack.config.js
-    services:
-      - name: security
-        url: ${security.api.graphqlUrl}
-      - name: files
-        url: ${files.api.graphqlUrl}
-      - name: pageBuilder
-        url: ${pageBuilder.api.graphqlUrl}
-      - name: i18n
-        url: ${i18n.api.graphqlUrl}
+    plugins:
+      - factory: "@webiny/api-plugin-create-apollo-gateway"
+        options:
+          server: ${vars.apollo.server}
+          services:
+            - name: security
+              url: ${security.api.graphqlUrl}
+            - name: files
+              url: ${files.api.graphqlUrl}
+            - name: pageBuilder
+              url: ${pageBuilder.api.graphqlUrl}
+            - name: i18n
+              url: ${i18n.api.graphqlUrl}
+            - name: formBuilder
+              url: ${formBuilder.api.graphqlUrl}
 
 cognito:
   component: "@webiny/serverless-aws-cognito-user-pool"
@@ -44,11 +54,14 @@ security:
     name: Security
     region: ${vars.region}
     memory: 512
-    database: ${vars.database}
-    env: ${vars.env}
     webpackConfig: ./webpack.config.js
     plugins:
-      - "@webiny/api-security/plugins"
+      - factory: "@webiny/api-plugin-create-apollo-handler"
+        options: ${vars.apollo}
+      - factory: "@webiny/api-plugin-commodo-mongodb"
+        options: ${vars.commodo}
+      - factory: "@webiny/api-security/plugins"
+        options: ${vars.security}
       - factory: "@webiny/api-plugin-security-cognito"
         options:
           region: ${vars.region}
@@ -63,11 +76,18 @@ files:
       apolloService:
         memory: 512
         timeout: 10
-        database: ${vars.database}
         uploadMinFileSize: 0 # 0 MB
         uploadMaxFileSize: 26214400 # 25 MB
-        env: ${vars.env}
         webpackConfig: ./webpack.config.js
+        plugins:
+          - factory: "@webiny/api-plugin-create-apollo-handler"
+            options: ${vars.apollo}
+          - factory: "@webiny/api-plugin-commodo-mongodb"
+            options: ${vars.commodo}
+          - factory: "@webiny/api-security/plugins/service"
+            options: ${vars.security}
+          - "@webiny/api-files/plugins"
+          - "@webiny/api-plugin-files-resolvers-mongodb"
       downloadFile:
         memory: 512
         timeout: 10
@@ -81,10 +101,14 @@ i18n:
     name: I18N
     region: ${vars.region}
     memory: 512
-    database: ${vars.database}
-    env: ${vars.env}
     webpackConfig: ./webpack.config.js
     plugins:
+      - factory: "@webiny/api-plugin-create-apollo-handler"
+        options: ${vars.apollo}
+      - factory: "@webiny/api-plugin-commodo-mongodb"
+        options: ${vars.commodo}
+      - factory: "@webiny/api-security/plugins/service"
+        options: ${vars.security}
       - "@webiny/api-i18n/plugins"
 
 pageBuilder:
@@ -95,13 +119,38 @@ pageBuilder:
     files: ${files}
     memory: 512
     timeout: 30
-    database: ${vars.database}
-    env: ${vars.env}
     webpackConfig: ./webpack.config.js
     plugins:
+      - factory: "@webiny/api-plugin-create-apollo-handler"
+        options: ${vars.apollo}
+      - factory: "@webiny/api-plugin-commodo-mongodb"
+        options: ${vars.commodo}
+      - factory: "@webiny/api-security/plugins/service"
+        options: ${vars.security}
+      - "@webiny/api-page-builder/plugins"
+      - "@webiny/api-plugin-page-builder-resolvers-mongodb"
       - "@webiny/api-google-tag-manager"
       - "@webiny/api-mailchimp"
       - "@webiny/api-cookie-policy"
+
+formBuilder:
+  component: "@webiny/serverless-form-builder"
+  inputs:
+    name: Form Builder
+    region: ${vars.region}
+    files: ${files}
+    i18n: ${i18n}
+    memory: 512
+    timeout: 30
+    webpackConfig: ./webpack.config.js
+    plugins:
+      - factory: "@webiny/api-plugin-create-apollo-handler"
+        options: ${vars.apollo}
+      - factory: "@webiny/api-plugin-commodo-mongodb"
+        options: ${vars.commodo}
+      - factory: "@webiny/api-security/plugins/service"
+        options: ${vars.security}
+      - "@webiny/api-plugin-form-builder-resolvers-mongodb"
 
 api:
   component: "@webiny/serverless-api-gateway"
@@ -117,6 +166,7 @@ api:
 cdn:
   component: "@webiny/serverless-aws-cloudfront"
   inputs:
+    comment: pavel910-webiny-js-api
     origins:
       - ${files.cdnOrigin}
       - url: ${api.url}

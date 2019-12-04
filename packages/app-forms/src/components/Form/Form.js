@@ -10,7 +10,7 @@ const Form = (props: FormComponentPropsType) => {
         return <FormRender {...props} />;
     }
 
-    if (props.parent || props.id) {
+    if (props.parentId || props.revisionId || props.slug) {
         return <FormLoad {...props} />;
     }
 

@@ -1,0 +1,29 @@
+{
+  "name": "@webiny/serverless-form-builder",
+  "version": "2.0.2",
+  "main": "serverless.js",
+  "license": "MIT",
+  "dependencies": {
+    "@serverless/core": "^1.1.1",
+    "@webiny/api-forms": "^2.0.0",
+    "@webiny/serverless-apollo-service": "^2.0.0",
+    "load-json-file": "^6.2.0",
+    "lodash.get": "^4.4.2"
+  },
+  "scripts": {
+    "build": "rm -rf dist && mkdir dist && cp -R serverless.js installation dist/",
+    "postbuild": "cp package.json README.md LICENSE dist/",
+    "prepublishOnly": "yarn build"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "adio": {
+    "ignore": {
+      "dependencies": [
+        "@webiny/api-forms"
+      ]
+    }
+  },
+  "gitHead": "71cab7d5607b2e32a63034e324a663770507b32b"
+}

@@ -4107,41 +4107,6 @@
     "@webassemblyjs/wast-parser" "1.8.5"
     "@xtuc/long" "4.2.2"
 
-"@webiny/app-forms@^2":
-  version "2.0.2"
-  resolved "https://registry.yarnpkg.com/@webiny/app-forms/-/app-forms-2.0.2.tgz#843e9e415404635aa29bbd610b95ebe2b60c6380"
-  integrity sha512-NavSM/R4TB25I4tHBaM/vulWlA2zhI1KYRe9okNO0LMiXxV6cQBaF8if9OaAc2CjpLfDtNpo/9I5SS8wvb5Xbg==
-  dependencies:
-    "@babel/runtime" "^7.5.5"
-    "@emotion/core" "^10.0.17"
-    "@emotion/styled" "^10.0.17"
-    "@rmwc/menu" "^5.6.0"
-    "@svgr/webpack" "^4.3.2"
-    "@webiny/app" "^2.0.1"
-    "@webiny/app-admin" "^2.1.0"
-    "@webiny/app-i18n" "^2.1.0"
-    "@webiny/app-page-builder" "^2.0.2"
-    "@webiny/app-security" "^2.0.2"
-    "@webiny/form" "^2.0.0"
-    "@webiny/plugins" "^2.0.0"
-    "@webiny/ui" "^2.0.0"
-    "@webiny/validation" "^2.1.0"
-    emotion "^10.0.17"
-    graphql-tag "^2.10.1"
-    lodash "^4.17.10"
-    lodash.get "^4.4.2"
-    react-apollo "^3.1.0"
-    react-dnd "^9.3.4"
-    react-dnd-html5-backend "^9.3.4"
-    react-google-recaptcha "^1.1.0"
-    react-helmet "^5.2.0"
-    react-hotkeyz "^1.0.4"
-    react-redux "^7.1.1"
-    react-router-dom "^5.0.0"
-    shortid "^2.2.14"
-    timeago-react "^2.0.0"
-    use-react-router "^1.0.7"
-
 "@wry/context@^0.4.0":
   version "0.4.4"
   resolved "https://registry.npmjs.org/@wry/context/-/context-0.4.4.tgz#e50f5fa1d6cfaabf2977d1fda5ae91717f8815f8"
@@ -8100,11 +8065,6 @@ deep-object-diff@^1.1.0:
   resolved "https://registry.npmjs.org/deep-object-diff/-/deep-object-diff-1.1.0.tgz#d6fabf476c2ed1751fc94d5ca693d2ed8c18bc5a"
   integrity sha512-b+QLs5vHgS+IoSNcUE4n9HP2NwcHj7aqnJWsjPtuG75Rh5TOaGt0OjAYInh77d5T16V5cRDC+Pw/6ZZZiETBGw==
 
-deepmerge@^4.0.0:
-  version "4.2.2"
-  resolved "https://registry.yarnpkg.com/deepmerge/-/deepmerge-4.2.2.tgz#44d2ea3679b8f4d4ffba33f03d865fc1e7bf4955"
-  integrity sha512-FJ3UgI4gIl+PHZm53knsuSFpE+nESMr7M4v9QcgB7S63Kj/6WqMiFQJpBBYz1Pt+66bZpP3Q7Lye0Oo9MPKEdg==
-
 default-gateway@^4.2.0:
   version "4.2.0"
   resolved "https://registry.npmjs.org/default-gateway/-/default-gateway-4.2.0.tgz#167104c7500c2115f6dd69b0a536bb8ed720552b"
@@ -10193,7 +10153,7 @@ flow-copy-source@^1.3.0:
     kefir "^3.7.3"
     yargs "^11.0.0"
 
-flow-copy-source@^2.0.2, flow-copy-source@^2.0.8:
+flow-copy-source@^2.0.2:
   version "2.0.8"
   resolved "https://registry.npmjs.org/flow-copy-source/-/flow-copy-source-2.0.8.tgz#0281676590b28ad6a9bbc63a1e0d36bcea9e2db5"
   integrity sha512-BGOxGcUbNvEwLaoy7YsAMuIG6S0qOLAJiPzuRQI84WFv+V4oLBFj9Mt5HPH5BMCmS0eGncdKZidJu7VSJ57V5A==
@@ -11001,7 +10961,7 @@ graphql-middleware@^4.0.1:
   dependencies:
     graphql-tools "^4.0.5"
 
-graphql-request@^1.8.2:
+graphql-request@1.8.2, graphql-request@^1.8.2:
   version "1.8.2"
   resolved "https://registry.npmjs.org/graphql-request/-/graphql-request-1.8.2.tgz#398d10ae15c585676741bde3fc01d5ca948f8fbe"
   integrity sha512-dDX2M+VMsxXFCmUX0Vo0TopIZIX4ggzOtiCsThgtrKR4niiaagsGTDIHj3fsOMFETpa064vzovI+4YV4QnMbcg==
@@ -17729,7 +17689,7 @@ prompts@^2.0.1:
     kleur "^3.0.3"
     sisteransi "^1.0.3"
 
-prop-types@15.x, prop-types@^15.5.0, prop-types@^15.5.10, prop-types@^15.5.4, prop-types@^15.5.8, prop-types@^15.5.9, prop-types@^15.6.0, prop-types@^15.6.1, prop-types@^15.6.2, prop-types@^15.7.2:
+prop-types@15.x, prop-types@^15.5.0, prop-types@^15.5.10, prop-types@^15.5.4, prop-types@^15.5.7, prop-types@^15.5.8, prop-types@^15.5.9, prop-types@^15.6.0, prop-types@^15.6.1, prop-types@^15.6.2, prop-types@^15.7.2:
   version "15.7.2"
   resolved "https://registry.npmjs.org/prop-types/-/prop-types-15.7.2.tgz#52c41e75b8c87e72b9d9360e0206b99dcbffa6c5"
   integrity sha512-8QQikdH7//R2vurIJSutZ1smHYTcLpRWEOlHnzcWHmBYrOGUysKwSsrC89BCiFj3CbrfJ/nXFdJepOVrY1GCHQ==
@@ -18432,11 +18392,6 @@ react-lazy-load@^3.0.13:
     lodash.throttle "^4.0.0"
     prop-types "^15.5.8"
 
-react-lazyload@^2.6.2:
-  version "2.6.2"
-  resolved "https://registry.yarnpkg.com/react-lazyload/-/react-lazyload-2.6.2.tgz#6a1660de6e8653632797539189d19d64e924482c"
-  integrity sha512-zbFiwI3H7W0/Qvb6T/ew2NiGe2wj+soYNW7vv5Dte1eZuJDvvyUOHo8GpYfEeWoP5x4Rree2Hwop+lCISalBwg==
-
 react-lifecycles-compat@^3.0.4:
   version "3.0.4"
   resolved "https://registry.npmjs.org/react-lifecycles-compat/-/react-lifecycles-compat-3.0.4.tgz#4f1a273afdfc8f3488a8c516bfda78f872352362"
@@ -18456,15 +18411,6 @@ react-move@^5.0.0:
     kapellmeister "^3.0.1"
     prop-types "^15.7.2"
     react-lifecycles-compat "^3.0.4"
-
-react-player@^1.13.0:
-  version "1.14.0"
-  resolved "https://registry.yarnpkg.com/react-player/-/react-player-1.14.0.tgz#22ffce326bd2e88217579278b16cc62146e42d73"
-  integrity sha512-qqpMxFQgW1ZK9zhQawwRwXOEziiK2F+63dIC2cVOU5lghGN9anMlxHqij89twOITZK/Wl+5+LssQVBLeqfvlPg==
-  dependencies:
-    deepmerge "^4.0.0"
-    load-script "^1.0.0"
-    prop-types "^15.7.2"
 
 react-popper-tooltip@^2.8.3:
   version "2.10.0"
@@ -18639,6 +18585,15 @@ react-sizeme@^2.6.7:
     shallowequal "^1.1.0"
     throttle-debounce "^2.1.0"
 
+react-sortable-hoc@^1.9.1:
+  version "1.10.1"
+  resolved "https://registry.npmjs.org/react-sortable-hoc/-/react-sortable-hoc-1.10.1.tgz#c352f26263acbcff9cf266bc755653a56c983a38"
+  integrity sha512-eVyv5rrK6qY9bG60bboRY78In7OpdRRg+hxp4QMLIjC/UJaFSU7exTYd0764GtXvBqh+b+faYGzren5/ffRYKw==
+  dependencies:
+    "@babel/runtime" "^7.2.0"
+    invariant "^2.2.4"
+    prop-types "^15.5.7"
+
 react-sortable-tree@^2.6.0:
   version "2.6.2"
   resolved "https://registry.npmjs.org/react-sortable-tree/-/react-sortable-tree-2.6.2.tgz#e96e5ed26642fbd2b73c20e470ca2fc89b388e7c"
@@ -18725,13 +18680,6 @@ react-virtualized@^9.19.1, react-virtualized@^9.21.0:
     loose-envify "^1.3.0"
     prop-types "^15.6.0"
     react-lifecycles-compat "^3.0.4"
-
-react-visibility-sensor@^5.1.1:
-  version "5.1.1"
-  resolved "https://registry.yarnpkg.com/react-visibility-sensor/-/react-visibility-sensor-5.1.1.tgz#5238380960d3a0b2be0b7faddff38541e337f5a9"
-  integrity sha512-cTUHqIK+zDYpeK19rzW6zF9YfT4486TIgizZW53wEZ+/GPBbK7cNS0EHyJVyHYacwFEvvHLEKfgJndbemWhB/w==
-  dependencies:
-    prop-types "^15.7.2"
 
 react@16.x.x, react@^16.3.0, react@^16.6.0, react@^16.8.0, react@^16.8.3:
   version "16.11.0"
@@ -21165,16 +21113,6 @@ text-table@0.2.0, text-table@^0.2.0, text-table@~0.2.0:
   version "0.2.0"
   resolved "https://registry.npmjs.org/text-table/-/text-table-0.2.0.tgz#7f5ee823ae805207c00af2df4a84ec3fcfa570b4"
   integrity sha1-f17oI66AUgfACvLfSoTsP8+lcLQ=
-
-three-obj-mtl-loader@^1.0.3:
-  version "1.0.3"
-  resolved "https://registry.yarnpkg.com/three-obj-mtl-loader/-/three-obj-mtl-loader-1.0.3.tgz#2901efd5b77cce29b61733c63f196432ee653667"
-  integrity sha512-0z7BfyG6vYPY9RvxJvL4rq8PbNrF42Kn4zxeqTfeDzJN++2oKbtCQhxHs5vLULnDuCRTEyDFf5TYvO+1vnJ7KQ==
-
-three@^0.108.0:
-  version "0.108.0"
-  resolved "https://registry.yarnpkg.com/three/-/three-0.108.0.tgz#53d26597c7932f214bb43f4655e566d2058143b5"
-  integrity sha512-d1ysIXwi8qTlbmMwrTxi5pYiiYIflEr0e48krP0LAY8ndS8c6fkLHn6NvRT+o76/Fs9PBLxFViuI62iGVWwwlg==
 
 throat@^4.0.0:
   version "4.1.0"

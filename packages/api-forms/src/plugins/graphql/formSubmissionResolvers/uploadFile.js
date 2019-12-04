@@ -1,45 +1,53 @@
 // @flow
 import got from "got";
 import FormData from "form-data";
+import { CREATE_FILE, UPLOAD_FILE } from "./graphql";
+import { GraphQLClient } from "graphql-request";
+import { get } from "lodash";
 
-type FileType = { size: number, name: string, type: string, src: Buffer };
-
-export default async (file: FileType) => {
-    // $FlowFixMe
-    const FUNCTIONS_HOST: string = process.env.FUNCTIONS_HOST;
-
-    // Let's save the CSV file
-    const { body } = await got(FUNCTIONS_HOST + "/files", {
-        method: "post",
-        json: true,
-        body: {
-            size: file.size,
-            name: file.name,
-            type: file.type
-        }
-    });
-
-    if (body.code !== "FILE_UPLOAD_SUCCESS") {
-        throw new Error(body.data.message);
-    }
-
+const uploadToS3 = async (buffer, preSignedPostPayload) => {
     const formData = new FormData();
-    Object.keys(body.data.s3.fields).forEach(key => {
-        formData.append(key, body.data.s3.fields[key]);
+    Object.keys(preSignedPostPayload.fields).forEach(key => {
+        formData.append(key, preSignedPostPayload.fields[key]);
     });
 
-    formData.append("file", file.src);
+    formData.append("file", buffer);
 
+    return got(preSignedPostPayload.url, {
+        method: "post",
+        body: formData
+    });
+};
+
+export default async ({ context, buffer, file }) => {
     try {
-        await got(FUNCTIONS_HOST + body.data.s3.url, {
-            method: "post",
-            body: formData
+        const client = new GraphQLClient(process.env.FILES_API_URL, {
+            headers: {
+                Authorization: context.token
+            }
         });
 
-        return body.data.file;
+        let uploadFile = await client.request(UPLOAD_FILE, {
+            data: file
+        });
 
-        // TODO: Save file into file manager?
-        // TODO: what about files piling up? some kind of TTL policy would be nice here?
+        uploadFile = get(uploadFile, "files.uploadFile");
+        if (uploadFile.error) {
+            throw new Error(uploadFile.error.message);
+        }
+
+        await uploadToS3(buffer, uploadFile.data.data);
+
+        let createFile = await client.request(CREATE_FILE, {
+            data: { ...uploadFile.data.file, meta: { private: true } }
+        });
+
+        createFile = get(createFile, "files.createFile");
+        if (createFile.error) {
+            throw new Error(createFile.error.message);
+        }
+
+        return createFile.data;
     } catch (e) {
         throw new Error("File upload could not be completed: " + e.message);
     }

@@ -13,6 +13,7 @@ export default async (root: any, args: Object, context: Object) => {
     try {
         newRevision.populate({
             name: sourceRev.name,
+            slug: sourceRev.slug,
             settings: sourceRev.settings,
             layout: sourceRev.layout,
             fields: sourceRev.fields,

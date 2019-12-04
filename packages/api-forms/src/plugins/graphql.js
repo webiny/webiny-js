@@ -20,10 +20,10 @@ export default {
     namespace: "forms",
     schema: {
         typeDefs: gql`
-            ${I18NStringValueType("")}
-            ${I18NJSONValueType("")}
-            ${I18NStringValueInput("")}
-            ${I18NJSONValueInput("")}
+            ${I18NStringValueType()}
+            ${I18NJSONValueType()}
+            ${I18NStringValueInput()}
+            ${I18NJSONValueInput()}
 
             type FormsQuery {
                 _empty: String

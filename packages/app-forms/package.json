@@ -39,6 +39,7 @@
     "react-hotkeyz": "^1.0.4",
     "react-redux": "^7.1.1",
     "react-router-dom": "^5.0.0",
+    "react-sortable-hoc": "^1.9.1",
     "shortid": "^2.2.14",
     "timeago-react": "^2.0.0",
     "use-react-router": "^1.0.7"

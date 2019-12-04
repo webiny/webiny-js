@@ -17,9 +17,9 @@ export default [
                 const props = {};
 
                 if (form.revision === "latest") {
-                    props.parent = form.parent;
+                    props.parentId = form.parent;
                 } else {
-                    props.revision = form.revision;
+                    props.revisionId = form.revision;
                 }
 
                 render = <FormsForm {...props} />;

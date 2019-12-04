@@ -9,10 +9,15 @@ import type { FormLoadComponentPropsType } from "@webiny/app-forms/types";
 
 const FormLoad = (props: FormLoadComponentPropsType) => {
     const variables = {};
-    if (props.parent) {
-        variables.parent = props.parent;
+    if (props.slug) {
+        variables.slug = props.slug;
+        if (props.version) {
+            variables.version = props.version;
+        }
+    } else if (props.parentId) {
+        variables.parent = props.parentId;
     } else {
-        variables.id = props.revision;
+        variables.id = props.revisionId;
     }
 
     return (
