@@ -27,7 +27,8 @@
     "@webiny/serverless-aws-cloudfront": "latest",
     "@webiny/serverless-aws-cognito-user-pool": "latest",
     "@webiny/serverless-files": "latest",
-    "@webiny/serverless-page-builder": "latest"
+    "@webiny/serverless-page-builder": "latest",
+    "@webiny/serverless-form-builder": "latest"
   },
   "devDependencies": {
     "prettier": "^1.18.2",
