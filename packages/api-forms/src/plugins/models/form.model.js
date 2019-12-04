@@ -5,11 +5,14 @@ import { createFieldsModel, createSettingsModel, createFormStatsModel } from "./
 import got from "got";
 import { pick } from "lodash";
 import mdbid from "mdbid";
+import slugify from "slugify";
+import uniqueId from "uniqid";
 
 import {
     withProps,
     withFields,
     onSet,
+    setOnce,
     skipOnPopulate,
     string,
     fields,
@@ -20,7 +23,6 @@ import {
     object,
     date
 } from "@webiny/commodo";
-import { withAggregate } from "@commodo/fields-storage-mongodb";
 
 export default ({ context, createBase, FormSettings }) => {
     const FormStatsModel = createFormStatsModel();
@@ -29,11 +31,11 @@ export default ({ context, createBase, FormSettings }) => {
 
     const Form = flow(
         withName("Form"),
-        withAggregate(),
         withFields(instance => ({
             name: onSet(value => (instance.locked ? instance.name : value))(
                 string({ validation: validation.create("required") })
             ),
+            slug: setOnce()(string({ validation: validation.create("required") })),
             fields: onSet(value => (instance.locked ? instance.fields : value))(
                 fields({
                     list: true,
@@ -48,7 +50,7 @@ export default ({ context, createBase, FormSettings }) => {
             settings: onSet(value => (instance.locked ? instance.settings : value))(
                 fields({ instanceOf: FormSettingsModel, value: {} })
             ),
-            trigger: onSet(value => (instance.locked ? instance.trigger : value))(object()),
+            triggers: onSet(value => (instance.locked ? instance.triggers : value))(object()),
             version: number(),
             parent: string(),
             publishedOn: date(),
@@ -76,6 +78,10 @@ export default ({ context, createBase, FormSettings }) => {
 
                 if (!this.name) {
                     this.name = "Untitled";
+                }
+
+                if (!this.slug) {
+                    this.slug = [slugify(this.name), uniqueId()].join("-").toLowerCase();
                 }
 
                 this.version = await this.getNextVersion();

@@ -14,7 +14,6 @@
   "license": "MIT",
   "dependencies": {
     "@babel/runtime": "^7.5.5",
-    "@commodo/fields-storage-mongodb": "^0.2.12",
     "@webiny/api": "^2.1.0",
     "@webiny/api-i18n": "^2.1.0",
     "@webiny/api-security": "^2.1.0",
@@ -27,7 +26,9 @@
     "graphql-tag": "^2.10.1",
     "json2csv": "^4.5.2",
     "lodash": "^4.17.11",
-    "mdbid": "^1.0.0"
+    "mdbid": "^1.0.0",
+    "slugify": "^1.2.9",
+    "uniqid": "^5.0.3"
   },
   "devDependencies": {
     "@babel/cli": "^7.5.5",
