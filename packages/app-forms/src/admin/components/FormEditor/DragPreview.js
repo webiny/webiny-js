@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useDragLayer } from "react-dnd";
 
 const layerStyles = {
@@ -37,6 +37,13 @@ export default () => {
             isDragging: monitor.isDragging()
         };
     });
+
+    useEffect(() => {
+        return () => {
+            subscribedToOffsetChange = false;
+            dragPreviewRef = null;
+        };
+    }, []);
 
     if (!isDragging) {
         return null;
