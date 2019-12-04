@@ -3,6 +3,20 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.4.1-next.2](https://github.com/webiny/webiny-js/compare/@webiny/cli@2.4.1-next.1...@webiny/cli@2.4.1-next.2) (2019-12-04)
+
+
+### Bug Fixes
+
+* add formBuilder to the list of services ([222d8e2](https://github.com/webiny/webiny-js/commit/222d8e24658042af7ffe122d307f7cd7b838f982))
+* add missing dependencies ([3e7ac16](https://github.com/webiny/webiny-js/commit/3e7ac161ee24b4c7984c997f16253462f274516a))
+* add missing dependency ([1d253f4](https://github.com/webiny/webiny-js/commit/1d253f4063790c79c4277cd8d076693f9096269e))
+* register plugins ([6f8cf96](https://github.com/webiny/webiny-js/commit/6f8cf9682c32b055d85f813639f0358039594612))
+
+
+
+
+
 ## [2.4.1-next.1](https://github.com/webiny/webiny-js/compare/@webiny/cli@2.4.1-next.0...@webiny/cli@2.4.1-next.1) (2019-12-04)
 
 

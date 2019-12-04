@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.1.1-next.2](https://github.com/webiny/webiny-js/compare/@webiny/api-forms@2.1.1-next.1...@webiny/api-forms@2.1.1-next.2) (2019-12-04)
+
+
+### Bug Fixes
+
+* check if locale exists ([9f0eb95](https://github.com/webiny/webiny-js/commit/9f0eb9545cc68d6c3cee6ad65709a5c2a79c9d3c))
+
+
+
+
+
 ## [2.1.1-next.1](https://github.com/webiny/webiny-js/compare/@webiny/api-forms@2.1.1-next.0...@webiny/api-forms@2.1.1-next.1) (2019-12-04)
 
 **Note:** Version bump only for package @webiny/api-forms

@@ -1,6 +1,6 @@
 {
   "name": "@webiny/cli",
-  "version": "2.4.1-next.1",
+  "version": "2.4.1-next.2",
   "main": "index.js",
   "bin": {
     "webiny": "./bin.js",
