@@ -126,16 +126,23 @@ pageBuilder:
       - "@webiny/api-mailchimp"
       - "@webiny/api-cookie-policy"
 
-forms:
-  component: "@webiny/serverless-forms"
+formBuilder:
+  component: "@webiny/serverless-form-builder"
   inputs:
-    name: "Forms"
+    name: "Form Builder"
     region: ${vars.region}
     files: ${files}
+    i18n: ${i18n}
     memory: 512
     timeout: 30
-    database: ${vars.database}
-    env: ${vars.env}
+    plugins:
+      - factory: "@webiny/api-plugin-create-apollo-handler"
+        options: ${vars.apollo}
+      - factory: "@webiny/api-plugin-commodo-mongodb"
+        options: ${vars.commodo}
+      - factory: "@webiny/api-security/plugins/service"
+        options: ${vars.security}
+      - "@webiny/api-plugin-form-builder-resolvers-mongodb"
 
 api:
   component: "@webiny/serverless-api-gateway"
