@@ -98,6 +98,19 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "roman-vabishchevych",
+      "name": "Roman Vabishchevych",
+      "avatar_url": "https://avatars3.githubusercontent.com/u/4134474?v=4",
+      "profile": "https://github.com/roman-vabishchevych",
+      "contributions": [
+        "bug",
+        "code",
+        "ideas",
+        "plugin",
+        "userTesting"
+      ]
     }
   ],
   "contributorsPerLine": 7,
