@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.5.0](https://github.com/webiny/webiny-js/compare/@webiny/cli@2.4.1...@webiny/cli@2.5.0) (2019-12-05)
+
+
+### Bug Fixes
+
+* update sassOptions to work with v8 ([af08056](https://github.com/webiny/webiny-js/commit/af0805695bd0519df96a1ac43c73d67ec4295efb))
+
+
+### Features
+
+* enable gzip compression for new projects ([#627](https://github.com/webiny/webiny-js/issues/627)) ([b01987e](https://github.com/webiny/webiny-js/commit/b01987e9ac550615541543bfe05e352e8157f150))
+
+
+
+
+
 ## [2.4.1](https://github.com/webiny/webiny-js/compare/@webiny/cli@2.4.1-next.2...@webiny/cli@2.4.1) (2019-12-04)
 
 **Note:** Version bump only for package @webiny/cli
