@@ -111,6 +111,16 @@
         "plugin",
         "userTesting"
       ]
+    },
+    {
+      "login": "fodurrr",
+      "name": "fodurrr",
+      "avatar_url": "https://avatars1.githubusercontent.com/u/10008597?v=4",
+      "profile": "https://github.com/fodurrr",
+      "contributions": [
+        "bug",
+        "userTesting"
+      ]
     }
   ],
   "contributorsPerLine": 7,

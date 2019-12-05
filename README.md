@@ -77,6 +77,9 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
     <td align="center"><a href="https://github.com/enmesarru"><img src="https://avatars2.githubusercontent.com/u/40731570?v=4" width="100px;" alt="Furkan KURUTAŞ"/><br /><sub><b>Furkan KURUTAŞ</b></sub></a><br /><a href="https://github.com/Webiny/webiny-js/commits?author=enmesarru" title="Code">💻</a></td>
     <td align="center"><a href="https://github.com/roman-vabishchevych"><img src="https://avatars3.githubusercontent.com/u/4134474?v=4" width="100px;" alt="Roman Vabishchevych"/><br /><sub><b>Roman Vabishchevych</b></sub></a><br /><a href="https://github.com/Webiny/webiny-js/issues?q=author%3Aroman-vabishchevych" title="Bug reports">🐛</a> <a href="https://github.com/Webiny/webiny-js/commits?author=roman-vabishchevych" title="Code">💻</a> <a href="#ideas-roman-vabishchevych" title="Ideas, Planning, & Feedback">🤔</a> <a href="#plugin-roman-vabishchevych" title="Plugin/utility libraries">🔌</a> <a href="#userTesting-roman-vabishchevych" title="User Testing">📓</a></td>
   </tr>
+  <tr>
+    <td align="center"><a href="https://github.com/fodurrr"><img src="https://avatars1.githubusercontent.com/u/10008597?v=4" width="100px;" alt="fodurrr"/><br /><sub><b>fodurrr</b></sub></a><br /><a href="https://github.com/Webiny/webiny-js/issues?q=author%3Afodurrr" title="Bug reports">🐛</a> <a href="#userTesting-fodurrr" title="User Testing">📓</a></td>
+  </tr>
 </table>
 
 <!-- markdownlint-enable -->
