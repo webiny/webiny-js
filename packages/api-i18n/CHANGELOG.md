@@ -3,6 +3,49 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.2.0](https://github.com/webiny/webiny-js/compare/@webiny/api-i18n@2.2.0-next.2...@webiny/api-i18n@2.2.0) (2019-12-04)
+
+**Note:** Version bump only for package @webiny/api-i18n
+
+
+
+
+
+# [2.2.0-next.2](https://github.com/webiny/webiny-js/compare/@webiny/api-i18n@2.2.0-next.1...@webiny/api-i18n@2.2.0-next.2) (2019-12-04)
+
+
+### Bug Fixes
+
+* check if locale exists ([9f0eb95](https://github.com/webiny/webiny-js/commit/9f0eb9545cc68d6c3cee6ad65709a5c2a79c9d3c))
+
+
+
+
+
+# [2.2.0-next.1](https://github.com/webiny/webiny-js/compare/@webiny/api-i18n@2.2.0-next.0...@webiny/api-i18n@2.2.0-next.1) (2019-12-04)
+
+**Note:** Version bump only for package @webiny/api-i18n
+
+
+
+
+
+# [2.2.0-next.0](https://github.com/webiny/webiny-js/compare/@webiny/api-i18n@2.1.0...@webiny/api-i18n@2.2.0-next.0) (2019-12-04)
+
+
+### Bug Fixes
+
+* i18n service plugin must load locales via GQL ([891bcf7](https://github.com/webiny/webiny-js/commit/891bcf77f0e0212afeae448732d217a27fb9a747))
+
+
+### Features
+
+* allow empty prefix (use "" by default) ([4dbd2cf](https://github.com/webiny/webiny-js/commit/4dbd2cfa0b5bf2dd223a674778f0b6d4f7e128cb))
+
+
+
+
+
 # [2.1.0](https://github.com/webiny/webiny-js/compare/@webiny/api-i18n@2.0.1...@webiny/api-i18n@2.1.0) (2019-11-20)
 
 

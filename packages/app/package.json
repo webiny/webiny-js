@@ -1,6 +1,6 @@
 {
   "name": "@webiny/app",
-  "version": "2.0.1",
+  "version": "2.0.2",
   "main": "index.js",
   "repository": {
     "type": "git",
@@ -18,7 +18,7 @@
     "@webiny/i18n": "^2.0.0",
     "@webiny/i18n-react": "^2.0.0",
     "@webiny/plugins": "^2.0.0",
-    "@webiny/ui": "^2.0.0",
+    "@webiny/ui": "^2.0.1",
     "apollo-link": "^1.2.1",
     "graphql-tag": "^2.10.1",
     "invariant": "^2.2.4",
@@ -55,5 +55,5 @@
       ]
     }
   },
-  "gitHead": "71cab7d5607b2e32a63034e324a663770507b32b"
+  "gitHead": "1c3e8fd44a71306cb449c653725d5d34a9a90e36"
 }

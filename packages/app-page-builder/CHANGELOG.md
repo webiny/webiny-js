@@ -3,6 +3,43 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.0.3](https://github.com/webiny/webiny-js/compare/@webiny/app-page-builder@2.0.3-next.2...@webiny/app-page-builder@2.0.3) (2019-12-04)
+
+**Note:** Version bump only for package @webiny/app-page-builder
+
+
+
+
+
+## [2.0.3-next.2](https://github.com/webiny/webiny-js/compare/@webiny/app-page-builder@2.0.3-next.1...@webiny/app-page-builder@2.0.3-next.2) (2019-12-04)
+
+**Note:** Version bump only for package @webiny/app-page-builder
+
+
+
+
+
+## [2.0.3-next.1](https://github.com/webiny/webiny-js/compare/@webiny/app-page-builder@2.0.3-next.0...@webiny/app-page-builder@2.0.3-next.1) (2019-12-04)
+
+**Note:** Version bump only for package @webiny/app-page-builder
+
+
+
+
+
+## [2.0.3-next.0](https://github.com/webiny/webiny-js/compare/@webiny/app-page-builder@2.0.2...@webiny/app-page-builder@2.0.3-next.0) (2019-12-04)
+
+
+### Bug Fixes
+
+* page builder settings sliders ([#631](https://github.com/webiny/webiny-js/issues/631)) ([fb3b52d](https://github.com/webiny/webiny-js/commit/fb3b52d20105b1ae34dcdc7554057c75cc747cc4))
+* reset ref on unmount ([e9fcbb3](https://github.com/webiny/webiny-js/commit/e9fcbb313cec44cf8ea950f23b435bdfa100e311))
+* show drag helper with a short delay and fade-in effect ([c711ac5](https://github.com/webiny/webiny-js/commit/c711ac5b44fd55aa87a848d8bbacb9b8bc338b38))
+
+
+
+
+
 ## [2.0.2](https://github.com/webiny/webiny-js/compare/@webiny/app-page-builder@2.0.1...@webiny/app-page-builder@2.0.2) (2019-11-08)
 
 **Note:** Version bump only for package @webiny/app-page-builder

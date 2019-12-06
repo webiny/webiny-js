@@ -1,6 +1,6 @@
 {
   "name": "@webiny/api-files",
-  "version": "2.2.0",
+  "version": "2.2.1",
   "main": "index.js",
   "repository": {
     "type": "git",
@@ -16,7 +16,7 @@
   "dependencies": {
     "@babel/runtime": "^7.5.5",
     "@webiny/api": "^2.1.0",
-    "@webiny/api-security": "^2.1.0",
+    "@webiny/api-security": "^2.1.1",
     "@webiny/commodo": "^2.0.0",
     "@webiny/commodo-graphql": "^2.1.0",
     "@webiny/validation": "^2.1.0",

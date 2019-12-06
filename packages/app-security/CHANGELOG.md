@@ -3,6 +3,41 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.0.3](https://github.com/webiny/webiny-js/compare/@webiny/app-security@2.0.3-next.2...@webiny/app-security@2.0.3) (2019-12-04)
+
+**Note:** Version bump only for package @webiny/app-security
+
+
+
+
+
+## [2.0.3-next.2](https://github.com/webiny/webiny-js/compare/@webiny/app-security@2.0.3-next.1...@webiny/app-security@2.0.3-next.2) (2019-12-04)
+
+
+### Bug Fixes
+
+* log out users on "invalid signature" security error ([#630](https://github.com/webiny/webiny-js/issues/630)) ([66aaa50](https://github.com/webiny/webiny-js/commit/66aaa501b5ac8ae890bc11cc58d7d91ad60b45e5))
+
+
+
+
+
+## [2.0.3-next.1](https://github.com/webiny/webiny-js/compare/@webiny/app-security@2.0.3-next.0...@webiny/app-security@2.0.3-next.1) (2019-12-04)
+
+**Note:** Version bump only for package @webiny/app-security
+
+
+
+
+
+## [2.0.3-next.0](https://github.com/webiny/webiny-js/compare/@webiny/app-security@2.0.2...@webiny/app-security@2.0.3-next.0) (2019-12-04)
+
+**Note:** Version bump only for package @webiny/app-security
+
+
+
+
+
 ## [2.0.2](https://github.com/webiny/webiny-js/compare/@webiny/app-security@2.0.1...@webiny/app-security@2.0.2) (2019-11-08)
 
 **Note:** Version bump only for package @webiny/app-security

@@ -1,6 +1,6 @@
 {
   "name": "@webiny/app-typeform",
-  "version": "2.0.2",
+  "version": "2.0.3",
   "main": "index.js",
   "repository": {
     "type": "git",
@@ -12,8 +12,8 @@
   "dependencies": {
     "@babel/runtime": "^7.5.5",
     "@emotion/styled": "^10.0.17",
-    "@webiny/app-page-builder": "^2.0.2",
-    "@webiny/ui": "^2.0.0",
+    "@webiny/app-page-builder": "^2.0.3",
+    "@webiny/ui": "^2.0.1",
     "@webiny/validation": "^2.1.0",
     "lodash": "^4.17.4"
   },
@@ -39,5 +39,5 @@
     "postbuild": "yarn flow-copy-source && cp package.json LICENSE README.md dist/",
     "prepublishOnly": "yarn build"
   },
-  "gitHead": "71cab7d5607b2e32a63034e324a663770507b32b"
+  "gitHead": "1c3e8fd44a71306cb449c653725d5d34a9a90e36"
 }

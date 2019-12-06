@@ -36,6 +36,8 @@ gateway:
               url: ${pageBuilder.api.graphqlUrl}
             - name: i18n
               url: ${i18n.api.graphqlUrl}
+            - name: formBuilder
+              url: ${formBuilder.api.graphqlUrl}
 
 cognito:
   component: "@webiny/serverless-aws-cognito-user-pool"
@@ -125,6 +127,24 @@ pageBuilder:
       - "@webiny/api-google-tag-manager"
       - "@webiny/api-mailchimp"
       - "@webiny/api-cookie-policy"
+
+formBuilder:
+  component: "@webiny/serverless-form-builder"
+  inputs:
+    name: "Form Builder"
+    region: ${vars.region}
+    files: ${files}
+    i18n: ${i18n}
+    memory: 512
+    timeout: 30
+    plugins:
+      - factory: "@webiny/api-plugin-create-apollo-handler"
+        options: ${vars.apollo}
+      - factory: "@webiny/api-plugin-commodo-mongodb"
+        options: ${vars.commodo}
+      - factory: "@webiny/api-security/plugins/service"
+        options: ${vars.security}
+      - "@webiny/api-plugin-form-builder-resolvers-mongodb"
 
 api:
   component: "@webiny/serverless-api-gateway"

@@ -9,6 +9,7 @@
     "@webiny/app-i18n": "latest",
     "@webiny/app-mailchimp": "latest",
     "@webiny/app-page-builder": "latest",
+    "@webiny/app-forms": "latest",
     "@webiny/app-typeform": "latest",
     "@webiny/plugins": "latest",
     "apollo-link-batch-http": "^1.2.3",
@@ -35,7 +36,8 @@
     "null-loader": "^1.0.0",
     "raw-loader": "^2.0.0",
     "react-scripts": "^3.0.1",
-    "source-map-explorer": "^1.6.0"
+    "source-map-explorer": "^1.6.0",
+    "zlib": "^1.0.5"
   },
   "peerDependencies": {
     "apollo-cache-inmemory": "^1.4.2",
@@ -54,7 +56,7 @@
     "build:ssr": "webpack --progress --mode production --config ./ssr/webpack.config.js && cp ./ssr/handler.js build-ssr/",
     "build:handler": "webpack --config ./handler/webpack.config.js",
     "postbuild": "yarn build:handler",
-    "start": "env-cmd -r .env.json -e default,local rescripts start",
+    "start": "cross-env REACT_APP_ENV=browser env-cmd -r .env.json -e default,local rescripts start",
     "test": "rescripts test --env=jsdom",
     "eject": "react-scripts eject"
   },

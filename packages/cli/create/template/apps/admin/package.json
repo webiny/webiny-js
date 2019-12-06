@@ -10,6 +10,7 @@
     "@webiny/app-i18n": "latest",
     "@webiny/app-mailchimp": "latest",
     "@webiny/app-page-builder": "latest",
+    "@webiny/app-forms": "latest",
     "@webiny/app-plugin-security-cognito": "latest",
     "@webiny/app-security": "latest",
     "@webiny/app-typeform": "latest",

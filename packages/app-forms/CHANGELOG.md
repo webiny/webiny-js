@@ -3,6 +3,49 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.2.0](https://github.com/webiny/webiny-js/compare/@webiny/app-forms@2.2.0-next.2...@webiny/app-forms@2.2.0) (2019-12-04)
+
+**Note:** Version bump only for package @webiny/app-forms
+
+
+
+
+
+# [2.2.0-next.2](https://github.com/webiny/webiny-js/compare/@webiny/app-forms@2.2.0-next.1...@webiny/app-forms@2.2.0-next.2) (2019-12-04)
+
+**Note:** Version bump only for package @webiny/app-forms
+
+
+
+
+
+# [2.2.0-next.1](https://github.com/webiny/webiny-js/compare/@webiny/app-forms@2.2.0-next.0...@webiny/app-forms@2.2.0-next.1) (2019-12-04)
+
+**Note:** Version bump only for package @webiny/app-forms
+
+
+
+
+
+# [2.2.0-next.0](https://github.com/webiny/webiny-js/compare/@webiny/app-forms@2.1.0...@webiny/app-forms@2.2.0-next.0) (2019-12-04)
+
+
+### Bug Fixes
+
+* reset ref on unmount ([e9fcbb3](https://github.com/webiny/webiny-js/commit/e9fcbb313cec44cf8ea950f23b435bdfa100e311))
+* show drag helper with a short delay and fade-in effect ([c711ac5](https://github.com/webiny/webiny-js/commit/c711ac5b44fd55aa87a848d8bbacb9b8bc338b38))
+* use revisionId and parentId instead of revision and parent ([ea04a3b](https://github.com/webiny/webiny-js/commit/ea04a3b9b16dc37af25c82c911e713c865c8f83e))
+
+
+### Features
+
+* add querying published forms by slug and optionally version ([a36d0a5](https://github.com/webiny/webiny-js/commit/a36d0a5eb472eb613f57b40b1c6c1d0b8fb2cfd0))
+* allow registering forms via plugins too ([b18782d](https://github.com/webiny/webiny-js/commit/b18782d9f8ba209205e4a217a33035bfd1d1b797))
+
+
+
+
+
 # [2.1.0](https://github.com/webiny/webiny-js/compare/@webiny/app-forms@2.0.2...@webiny/app-forms@2.1.0) (2019-11-20)
 
 

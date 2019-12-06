@@ -1,6 +1,6 @@
 {
   "name": "@webiny/app-i18n",
-  "version": "2.1.0",
+  "version": "2.1.1",
   "main": "index.js",
   "repository": {
     "type": "git",
@@ -15,18 +15,19 @@
   "dependencies": {
     "@babel/runtime": "^7.5.5",
     "@emotion/styled": "^10.0.17",
-    "@webiny/app": "^2.0.1",
-    "@webiny/app-admin": "^2.1.0",
-    "@webiny/app-security": "^2.0.2",
+    "@webiny/app": "^2.0.2",
+    "@webiny/app-admin": "^2.1.1",
+    "@webiny/app-security": "^2.0.3",
     "@webiny/form": "^2.0.0",
     "@webiny/plugins": "^2.0.0",
-    "@webiny/ui": "^2.0.0",
+    "@webiny/ui": "^2.0.1",
     "@webiny/validation": "^2.1.0",
     "classnames": "^2.2.6",
     "emotion": "10.0.17",
     "graphql-tag": "^2.10.1",
     "is-hotkey": "^0.1.3",
-    "lodash": "^4.17.11",
+    "lodash.clonedeep": "^4.5.0",
+    "lodash.get": "^4.4.2",
     "react-apollo": "^3.1.0-beta.0",
     "react-helmet": "^5.2.0",
     "react-router-dom": "^5.0.0",
@@ -40,7 +41,6 @@
     "@babel/preset-flow": "^7.0.0",
     "@babel/preset-react": "^7.0.0",
     "babel-plugin-emotion": "^9.2.8",
-    "babel-plugin-lodash": "^3.3.4",
     "babel-plugin-named-asset-import": "^1.0.0-next.3e165448"
   },
   "peerDependencies": {
@@ -61,5 +61,5 @@
       "removeViewBox": false
     }
   },
-  "gitHead": "71cab7d5607b2e32a63034e324a663770507b32b"
+  "gitHead": "1c3e8fd44a71306cb449c653725d5d34a9a90e36"
 }

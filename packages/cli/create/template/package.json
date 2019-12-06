@@ -18,6 +18,7 @@
     "@webiny/api-plugin-create-apollo-handler": "latest",
     "@webiny/api-plugin-files-resolvers-mongodb": "latest",
     "@webiny/api-plugin-page-builder-resolvers-mongodb": "latest",
+    "@webiny/api-plugin-form-builder-resolvers-mongodb": "latest",
     "@webiny/api-plugin-security-cognito": "latest",
     "@webiny/api-security": "latest",
     "@webiny/serverless-api-gateway": "latest",
@@ -27,7 +28,8 @@
     "@webiny/serverless-aws-cloudfront": "latest",
     "@webiny/serverless-aws-cognito-user-pool": "latest",
     "@webiny/serverless-files": "latest",
-    "@webiny/serverless-page-builder": "latest"
+    "@webiny/serverless-page-builder": "latest",
+    "@webiny/serverless-form-builder": "latest"
   },
   "devDependencies": {
     "prettier": "^1.18.2",

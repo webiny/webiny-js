@@ -1,6 +1,6 @@
 {
   "name": "@webiny/ui",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "main": "index.js",
   "repository": {
     "type": "git",
@@ -122,5 +122,5 @@
       ]
     }
   },
-  "gitHead": "71cab7d5607b2e32a63034e324a663770507b32b"
+  "gitHead": "1c3e8fd44a71306cb449c653725d5d34a9a90e36"
 }

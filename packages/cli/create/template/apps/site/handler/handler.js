@@ -2,6 +2,7 @@ const fs = require("fs");
 const path = require("path");
 const mime = require("mime-types");
 const isUtf8 = require("isutf8");
+const zlib = require("zlib");
 
 const createResponse = ({ type, body, isBase64Encoded, headers }) => {
     return {
@@ -41,12 +42,16 @@ module.exports.handler = async event => {
         };
         const { Payload } = await Lambda.invoke(params).promise();
         const { html } = JSON.parse(Payload);
+        const buffer = zlib.gzipSync(html);
 
         return createResponse({
             type,
-            body: html,
-            isBase64Encoded,
-            headers: { "Cache-Control": "public, max-age=60" }
+            body: buffer.toString("base64"),
+            isBase64Encoded: true,
+            headers: {
+                "Cache-Control": "public, max-age=60",
+                "Content-Encoding": "gzip"
+            }
         });
     }
 
@@ -60,8 +65,11 @@ module.exports.handler = async event => {
             });
         });
 
-        isBase64Encoded = !isUtf8(buffer);
         const headers = {};
+        if (isUtf8(buffer)) {
+            buffer = zlib.gzipSync(buffer);
+            headers["Content-Encoding"] = "gzip";
+        }
 
         if (key.includes("static")) {
             headers["Cache-Control"] = "public, max-age=2592000";
@@ -69,8 +77,8 @@ module.exports.handler = async event => {
 
         return createResponse({
             type,
-            body: buffer.toString(isBase64Encoded ? "base64" : "utf8"),
-            isBase64Encoded,
+            body: buffer.toString("base64"),
+            isBase64Encoded: true,
             headers
         });
     } catch (e) {

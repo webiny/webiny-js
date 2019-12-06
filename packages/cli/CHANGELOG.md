@@ -3,6 +3,66 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.5.0](https://github.com/webiny/webiny-js/compare/@webiny/cli@2.4.1...@webiny/cli@2.5.0) (2019-12-05)
+
+
+### Bug Fixes
+
+* update sassOptions to work with v8 ([af08056](https://github.com/webiny/webiny-js/commit/af0805695bd0519df96a1ac43c73d67ec4295efb))
+
+
+### Features
+
+* enable gzip compression for new projects ([#627](https://github.com/webiny/webiny-js/issues/627)) ([b01987e](https://github.com/webiny/webiny-js/commit/b01987e9ac550615541543bfe05e352e8157f150))
+
+
+
+
+
+## [2.4.1](https://github.com/webiny/webiny-js/compare/@webiny/cli@2.4.1-next.2...@webiny/cli@2.4.1) (2019-12-04)
+
+**Note:** Version bump only for package @webiny/cli
+
+
+
+
+
+## [2.4.1-next.2](https://github.com/webiny/webiny-js/compare/@webiny/cli@2.4.1-next.1...@webiny/cli@2.4.1-next.2) (2019-12-04)
+
+
+### Bug Fixes
+
+* add formBuilder to the list of services ([222d8e2](https://github.com/webiny/webiny-js/commit/222d8e24658042af7ffe122d307f7cd7b838f982))
+* add missing dependencies ([3e7ac16](https://github.com/webiny/webiny-js/commit/3e7ac161ee24b4c7984c997f16253462f274516a))
+* add missing dependency ([1d253f4](https://github.com/webiny/webiny-js/commit/1d253f4063790c79c4277cd8d076693f9096269e))
+* register plugins ([6f8cf96](https://github.com/webiny/webiny-js/commit/6f8cf9682c32b055d85f813639f0358039594612))
+
+
+
+
+
+## [2.4.1-next.1](https://github.com/webiny/webiny-js/compare/@webiny/cli@2.4.1-next.0...@webiny/cli@2.4.1-next.1) (2019-12-04)
+
+
+### Bug Fixes
+
+* add serverless-form-builder to dependencies ([cf02e16](https://github.com/webiny/webiny-js/commit/cf02e1648329ccb445b85518f65d7425a9c09b3e))
+
+
+
+
+
+## [2.4.1-next.0](https://github.com/webiny/webiny-js/compare/@webiny/cli@2.4.0...@webiny/cli@2.4.1-next.0) (2019-12-04)
+
+
+### Bug Fixes
+
+* update form-builder section ([d136a22](https://github.com/webiny/webiny-js/commit/d136a2268c2511079340e409d3a45e35f15a6f3c))
+
+
+
+
+
 # [2.4.0](https://github.com/webiny/webiny-js/compare/@webiny/cli@2.3.0...@webiny/cli@2.4.0) (2019-11-20)
 
 

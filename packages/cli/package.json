@@ -1,6 +1,6 @@
 {
   "name": "@webiny/cli",
-  "version": "2.4.0",
+  "version": "2.5.0",
   "main": "index.js",
   "bin": {
     "webiny": "./bin.js",
@@ -51,5 +51,6 @@
       "/node_modules/",
       "/dist/"
     ]
-  }
+  },
+  "gitHead": "1c3e8fd44a71306cb449c653725d5d34a9a90e36"
 }

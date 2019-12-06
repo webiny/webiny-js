@@ -13,7 +13,7 @@ const overrideSass = function(rules) {
             if (parent) {
                 parent.splice(index, 1, {
                     loader: rule,
-                    options: { includePaths }
+                    options: { sassOptions: { includePaths } }
                 });
             }
             return;
@@ -28,7 +28,10 @@ const overrideSass = function(rules) {
             typeof rule.loader === "string" &&
             rule.loader.includes("sass-loader")
         ) {
-            rule.options.includePaths = includePaths;
+            if (!rule.options.sassOptions) {
+                rule.options.sassOptions = {};
+            }
+            rule.options.sassOptions.includePaths = includePaths;
             return;
         }
 

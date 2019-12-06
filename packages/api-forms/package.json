@@ -1,6 +1,6 @@
 {
   "name": "@webiny/api-forms",
-  "version": "2.1.0",
+  "version": "2.1.1",
   "main": "index.js",
   "repository": {
     "type": "git",
@@ -14,19 +14,21 @@
   "license": "MIT",
   "dependencies": {
     "@babel/runtime": "^7.5.5",
-    "@commodo/fields-storage-mongodb": "^0.2.12",
     "@webiny/api": "^2.1.0",
-    "@webiny/api-i18n": "^2.1.0",
-    "@webiny/api-security": "^2.1.0",
+    "@webiny/api-i18n": "^2.2.0",
+    "@webiny/api-security": "^2.1.1",
     "@webiny/commodo": "^2.0.0",
     "@webiny/commodo-graphql": "^2.1.0",
     "@webiny/validation": "^2.1.0",
     "form-data": "^2.5.0",
     "got": "^9.6.0",
+    "graphql-request": "^1.8.2",
     "graphql-tag": "^2.10.1",
     "json2csv": "^4.5.2",
     "lodash": "^4.17.11",
-    "mdbid": "^1.0.0"
+    "mdbid": "^1.0.0",
+    "slugify": "^1.2.9",
+    "uniqid": "^5.0.3"
   },
   "devDependencies": {
     "@babel/cli": "^7.5.5",
@@ -44,5 +46,5 @@
     "postbuild": "yarn flow-copy-source && cp package.json LICENSE README.md dist/",
     "prepublishOnly": "yarn build"
   },
-  "gitHead": "71cab7d5607b2e32a63034e324a663770507b32b"
+  "gitHead": "1c3e8fd44a71306cb449c653725d5d34a9a90e36"
 }

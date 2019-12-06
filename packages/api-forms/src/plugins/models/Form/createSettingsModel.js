@@ -3,8 +3,16 @@ import { i18nString, i18nObject } from "@webiny/api-i18n/fields";
 import { withFields, string, fields, boolean, withProps } from "@webiny/commodo";
 import { flow } from "lodash";
 
-export default ({ context, FormSettings }) =>
-    withFields({
+export default ({ context, FormSettings }) => {
+
+    // When installing the FormBuilder app on a blank system, defaultLocale will be blank, because I18N app wasn't
+    // installed yet, meaning no default locale was selected.
+    let defaultLocale = null;
+    if (context.i18n.getDefaultLocale()) {
+        defaultLocale = context.i18n.getDefaultLocale().id;
+    }
+
+    return withFields({
         layout: fields({
             value: {},
             instanceOf: withFields({
@@ -51,7 +59,7 @@ export default ({ context, FormSettings }) =>
                         value: {
                             values: [
                                 {
-                                    locale: context.i18n.getDefaultLocale().id,
+                                    locale: defaultLocale,
                                     value: "Please verify that you are not a robot."
                                 }
                             ]
@@ -62,3 +70,4 @@ export default ({ context, FormSettings }) =>
             value: {}
         })
     })();
+};

@@ -56,19 +56,15 @@ export default async (root: any, args: Object, context: Object) => {
 
     // Save CSV file and return its URL to the client.
     const csv = await parseAsync(rows, { fields: Object.values(fields) });
-    const src = new Buffer(csv);
-    try {
-        const result = await uploadFile({
-            size: src.length,
+    const buffer = Buffer.from(csv);
+    const result = await uploadFile({
+        context,
+        buffer,
+        file: {
+            size: buffer.length,
             name: "form_submissions_export.csv",
-            type: "text/csv",
-            src
-        });
-        return new Response(result);
-    } catch (e) {
-        return new ErrorResponse({
-            code: "FILE_UPLOAD_ERROR",
-            message: e.message
-        });
-    }
+            type: "text/csv"
+        }
+    });
+    return new Response(result);
 };

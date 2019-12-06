@@ -50,7 +50,6 @@ Packages prefixed with `app-` are React apps. The ones with the `api-` prefix ar
 
 > WINDOWS USERS: it's best to use `git-bash` as a terminal to work with Webiny as `cmd` won't work. If you have `Git` installed, most likely you already have the `git-bash` installed. If you're using VSCode IDE, you will be able to easily switch to the `bash` terminal. Alternatively you can install the [cmder](https://cmder.net/) terminal emulator.
 
-
 ## Local setup
 
 1. Fork and clone the repo
@@ -96,6 +95,9 @@ project advances and we add more tests for a reliable CI workflow.
 This is the safest approach as you get a chance to review packages before each step, and particularly before publishing to `npm`.
 
 ```
+// Make sure all dependencies are in order
+yarn adio
+
 // Validate package.json structure of each package
 yarn validate-packages
 
@@ -110,3 +112,33 @@ NPM_TOKEN=xyz lerna publish from-package
 ```
 
 If `lerna publish from-package` fails along the way, you can fix whatever the issue was and re-run the step, as it is publishing packages from local package folders, so published packages will not be re-published.
+
+#### Prerelease
+
+Here are the steps if you want to publish a prerelease to a temporary dist-tag:
+
+```
+// Previous steps are the same, don't skip those!!
+
+// Create github tags and release
+GH_TOKEN=xyz lerna version --conventional-prerelease
+
+// Publish to NPM using `next` tag
+NPM_TOKEN=xyz lerna publish from-package --dist-tag=next
+```
+
+Repeat the process during bug fixing.
+
+#### Promoting to actual realease
+
+Now that you're ready to publish your prerelease to the `latest` tag:
+
+```
+// Previous steps are the same, don't skip those!!
+
+// Create github tags and release
+GH_TOKEN=xyz lerna version --conventional-graduate
+
+// Publish to NPM (`latest` tag is default)
+NPM_TOKEN=xyz lerna publish from-package
+```
