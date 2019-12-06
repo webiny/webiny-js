@@ -1,7 +1,7 @@
-import i18n from "@webiny/i18n";
-import defaultProcessor from "@webiny/i18n/processors/default";
+import i18n, { defaultProcessor, defaultModifiers } from "@webiny/i18n";
 
 i18n.registerProcessor(defaultProcessor);
+i18n.registerModifiers(defaultModifiers);
 
 const t = i18n.namespace("Random.Namespace");
 
