@@ -5,12 +5,16 @@ import { Input } from "@webiny/ui/Input";
 import { validation } from "@webiny/validation";
 import { i18n } from "@webiny/app/i18n";
 import { Alert } from "@webiny/ui/Alert";
-import Authentication from "./components/Authentication";
+import Authentication from "./Authentication";
 
 const t1 = i18n.ns("app-plugin-security-cognito/users/form");
 const t2 = i18n.ns("app-plugin-security-cognito/users/account");
 
-export default config => {
+export default ({ views, ...config }) => {
+    if (!views || !Object.keys(views).length) {
+        throw Error(`Cognito authentication provider requires "views" to be configured!`);
+    }
+
     // Configure Amplify Auth
     Auth.configure(config);
 
@@ -19,7 +23,7 @@ export default config => {
         type: "security-authentication-provider",
         securityProviderHook({ onIdToken }) {
             const renderAuthentication = () => {
-                return <Authentication onIdToken={onIdToken} />;
+                return <Authentication onIdToken={onIdToken} views={views} />;
             };
 
             const logout = async () => {
@@ -121,7 +125,6 @@ export default config => {
                     </Cell>
                     <Cell span={12}>
                         Other resources that will be installed:
-                        {/* TODO: @sven <ul> ne prikazuje bullete*/}
                         <ul>
                             <li>- core security roles</li>
                             <li>- core security groups</li>

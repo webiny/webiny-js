@@ -63,12 +63,15 @@ class SignIn extends React.Component {
     };
 
     render() {
-        const { authState, children, changeState } = this.props;
+        const { children, ...authProps } = this.props;
+        const { authState, changeState } = authProps;
+
         if (!this.authStates.includes(authState)) {
             return null;
         }
 
-        return children({
+        return React.cloneElement(children, {
+            authProps,
             signIn: this.signIn,
             changeState,
             error: this.state.error,

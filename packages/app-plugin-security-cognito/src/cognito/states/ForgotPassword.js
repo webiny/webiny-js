@@ -37,12 +37,14 @@ class ForgotPassword extends React.Component {
     };
 
     render() {
-        const { authState, children } = this.props;
+        const { children, ...authProps } = this.props;
+        const { authState } = authProps;
         if (!this.authStates.includes(authState)) {
             return null;
         }
 
-        return children({
+        return React.cloneElement(children, {
+            authProps,
             requestCode: this.requestCode,
             setPassword: this.setPassword,
             codeSent: this.state.codeSent,

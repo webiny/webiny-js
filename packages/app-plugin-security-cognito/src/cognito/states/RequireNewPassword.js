@@ -37,12 +37,14 @@ class RequireNewPassword extends React.Component {
     };
 
     render() {
-        const { authData, authState, children, changeState } = this.props;
+        const { children, ...authProps } = this.props;
+        const { authData, authState, changeState } = authProps;
         if (!this.authStates.includes(authState)) {
             return null;
         }
 
-        return children({
+        return React.cloneElement(children, {
+            authProps,
             confirm: this.confirm,
             changeState,
             requiredAttributes: authData.challengeParam.requiredAttributes || []

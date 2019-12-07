@@ -30,12 +30,15 @@ class SetNewPassword extends React.Component {
     };
 
     render() {
-        const { authState, children } = this.props;
+        const { children, ...authProps } = this.props;
+        const { authState } = authProps;
+
         if (!this.authStates.includes(authState)) {
             return null;
         }
 
-        return children({
+        return React.cloneElement(children, {
+            authProps,
             setPassword: this.setPassword,
             error: this.state.error,
             loading: this.state.loading

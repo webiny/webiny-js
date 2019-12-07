@@ -16,6 +16,7 @@ localStorage.addPlugin(observe);
 export const DEFAULT_AUTH_TOKEN = "webiny-token";
 
 type Props = {
+    allowAnonymous?: Boolean,
     AUTH_TOKEN?: String,
     getUser?: () => Promise<Object>
 };
@@ -152,6 +153,7 @@ export const SecurityProvider = (props: Props) => {
         () => ({
             user: state.user,
             logout,
+            renderAuthentication,
             refreshUser: async () => {
                 const user = await getUser();
                 if (user) {
@@ -181,12 +183,16 @@ export const SecurityProvider = (props: Props) => {
     }, []);
 
     if (state.checkingUser) {
-        return <CircularProgress label={"Checking user..."}/>;
+        return <CircularProgress label={"Checking user..."} />;
     }
 
-    if (!state.user) {
+    if (!state.user && !props.allowAnonymous) {
         return renderAuthentication();
     }
 
     return <SecurityContext.Provider value={value}>{props.children}</SecurityContext.Provider>;
+};
+
+SecurityProvider.defaultProps = {
+    allowAnonymous: false
 };

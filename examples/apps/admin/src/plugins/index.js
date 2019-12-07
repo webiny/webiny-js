@@ -10,6 +10,8 @@ import cookiePolicyPlugins from "@webiny/app-cookie-policy/admin";
 import googleTagManagerPlugins from "@webiny/app-google-tag-manager/admin";
 import typeformPlugins from "@webiny/app-typeform/admin";
 import mailchimpPlugins from "@webiny/app-mailchimp/admin";
+import cognito from "@webiny/app-plugin-security-cognito";
+import cognitoViews from "@webiny/app-plugin-security-cognito/admin";
 
 const plugins = [
     fileUploadPlugin({}),
@@ -23,7 +25,13 @@ const plugins = [
     cookiePolicyPlugins,
     googleTagManagerPlugins,
     typeformPlugins,
-    mailchimpPlugins
+    mailchimpPlugins,
+    cognito({
+        region: process.env.REACT_APP_USER_POOL_REGION,
+        userPoolId: process.env.REACT_APP_USER_POOL_ID,
+        userPoolWebClientId: process.env.REACT_APP_USER_POOL_WEB_CLIENT_ID,
+        views: cognitoViews
+    })
 ];
 
 export default plugins;
