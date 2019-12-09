@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.5.1](https://github.com/webiny/webiny-js/compare/@webiny/cli@2.5.0...@webiny/cli@2.5.1) (2019-12-09)
+
+
+### Bug Fixes
+
+* increase memory and timeout in the template serverless.yml too ([4dceb11](https://github.com/webiny/webiny-js/commit/4dceb1135b08baa7a65a17735017a41e103ee0af))
+
+
+
+
+
 # [2.5.0](https://github.com/webiny/webiny-js/compare/@webiny/cli@2.4.1...@webiny/cli@2.5.0) (2019-12-05)
 
 

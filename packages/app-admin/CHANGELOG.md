@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.1.2](https://github.com/webiny/webiny-js/compare/@webiny/app-admin@2.1.1...@webiny/app-admin@2.1.2) (2019-12-09)
+
+
+### Bug Fixes
+
+* use component instead of hook (more modular) ([#643](https://github.com/webiny/webiny-js/issues/643)) ([4290adf](https://github.com/webiny/webiny-js/commit/4290adf22dea17ca33839d591195baa11ee5b89a))
+
+
+
+
+
 ## [2.1.1](https://github.com/webiny/webiny-js/compare/@webiny/app-admin@2.1.1-next.1...@webiny/app-admin@2.1.1) (2019-12-04)
 
 **Note:** Version bump only for package @webiny/app-admin
