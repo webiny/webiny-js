@@ -17,7 +17,7 @@ import TimeAgo from "timeago-react";
 import { useFileManager } from "./FileManagerContext";
 import { useMutation } from "react-apollo";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
-import { useConfirmationDialog } from "@webiny/app-admin/hooks/useConfirmationDialog";
+import { ConfirmationDialog } from "@webiny/ui/ConfirmationDialog";
 import { DELETE_FILE } from "./graphql";
 import { i18n } from "@webiny/app/i18n";
 const t = i18n.ns("app-admin/file-manager/file-details");
@@ -97,7 +97,7 @@ export default function FileDetails(props: *) {
     const [deleteFile] = useMutation(DELETE_FILE, { refetchQueries: ["ListFiles"] });
     const { showSnackbar } = useSnackbar();
 
-    const { showConfirmation: showDeleteConfirmation } = useConfirmationDialog({
+    const fileDeleteConfirmationProps = {
         title: t`Delete file`,
         message: file && (
             <span>
@@ -106,7 +106,7 @@ export default function FileDetails(props: *) {
                 })}
             </span>
         )
-    });
+    };
 
     return (
         <Drawer dir="rtl" modal open={file} onClose={hideFileDetails}>
@@ -129,21 +129,32 @@ export default function FileDetails(props: *) {
                                 <Component key={index} {...props} />
                             ))}
 
-                            <Tooltip content={<span>{t`Delete image`}</span>} placement={"bottom"}>
-                                <IconButton
-                                    icon={<DeleteIcon style={{ margin: "0 8px 0 0" }} />}
-                                    onClick={() =>
-                                        showDeleteConfirmation(async () => {
-                                            await deleteFile({
-                                                variables: {
-                                                    id: file.id
+                            <ConfirmationDialog {...fileDeleteConfirmationProps}>
+                                {({ showConfirmation }) => {
+                                    return (
+                                        <Tooltip
+                                            content={<span>{t`Delete image`}</span>}
+                                            placement={"bottom"}
+                                        >
+                                            <IconButton
+                                                icon={
+                                                    <DeleteIcon style={{ margin: "0 8px 0 0" }} />
                                                 }
-                                            });
-                                            showSnackbar(t`File deleted successfully.`);
-                                        })
-                                    }
-                                />
-                            </Tooltip>
+                                                onClick={() =>
+                                                    showConfirmation(async () => {
+                                                        await deleteFile({
+                                                            variables: {
+                                                                id: file.id
+                                                            }
+                                                        });
+                                                        showSnackbar(t`File deleted successfully.`);
+                                                    })
+                                                }
+                                            />
+                                        </Tooltip>
+                                    );
+                                }}
+                            </ConfirmationDialog>
                         </>
                     </div>
                     <DrawerContent dir="ltr">
