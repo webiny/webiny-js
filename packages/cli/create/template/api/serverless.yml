@@ -89,8 +89,8 @@ files:
         memory: 512
         timeout: 10
       imageTransformer:
-        memory: 1024
-        timeout: 10
+        memory: 1600
+        timeout: 30
 
 i18n:
   component: "@webiny/serverless-apollo-service"
