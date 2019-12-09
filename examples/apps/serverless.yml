@@ -2,7 +2,7 @@ name: webiny-cms
 
 vars:
   region: ${env.AWS_REGION}
-  apiUrl: "https://d2ikmpagf0kr3x.cloudfront.net"
+  apiUrl: "https://d3sofjdc7z3qe9.cloudfront.net/graphql"
 
 site:
   component: "@webiny/serverless-app"
