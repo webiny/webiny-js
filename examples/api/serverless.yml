@@ -39,6 +39,8 @@ gateway:
               url: ${i18n.api.graphqlUrl}
             - name: formBuilder
               url: ${formBuilder.api.graphqlUrl}
+            - name: cache
+              url: ${cache.api.graphqlUrl}
 
 cognito:
   component: "@webiny/serverless-aws-cognito-user-pool"
@@ -110,6 +112,22 @@ i18n:
       - factory: "@webiny/api-security/plugins/service"
         options: ${vars.security}
       - "@webiny/api-i18n/plugins"
+
+cache:
+  component: "@webiny/serverless-apollo-service"
+  inputs:
+    name: Cache
+    region: ${vars.region}
+    memory: 512
+    webpackConfig: ./webpack.config.js
+    plugins:
+      - factory: "@webiny/api-plugin-create-apollo-handler"
+        options: ${vars.apollo}
+      - factory: "@webiny/api-plugin-commodo-mongodb"
+        options: ${vars.commodo}
+      - factory: "@webiny/api-security/plugins/service"
+        options: ${vars.security}
+      - "@webiny/api-cache/plugins"
 
 pageBuilder:
   component: "@webiny/serverless-page-builder"
