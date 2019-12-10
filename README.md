@@ -21,7 +21,9 @@
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](http://makeapullrequest.com)
 [![Contributor Covenant](https://img.shields.io/badge/Contributor%20Covenant-v1.4%20adopted-ff69b4.svg)](code-of-conduct.md)
 [![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2FWebiny%2Fwebiny-js.svg?type=shield)](https://app.fossa.io/projects/git%2Bgithub.com%2FWebiny%2Fwebiny-js?ref=badge_shield)
-[![Join the community on Spectrum][spectrum-badge]][spectrum]
+[![Gitter](https://img.shields.io/gitter/room/webiny/webiny-js.svg?style=flat-square)](https://gitter.im/webiny/webiny-js)
+
+
 
 </p>
 
