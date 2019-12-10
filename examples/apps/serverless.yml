@@ -48,6 +48,12 @@ api:
       - path: /admin
         method: GET
         function: ${admin}
+      - path: /ssr/{key+}
+        method: GET
+        function: ${ssr}
+      - path: /ssr
+        method: GET
+        function: ${ssr}
       - path: /{key+}
         method: GET
         function: ${site}
@@ -60,3 +66,10 @@ cdn:
   inputs:
     origins:
       - url: ${api.url}
+        pathPatterns:
+          "/ssr":
+            ttl: 0
+            forward:
+              headers: 'all'
+              queryString: true
+            allowedHttpMethods: ["GET", "HEAD", "OPTIONS", "PUT", "POST", "PATCH", "DELETE"]
