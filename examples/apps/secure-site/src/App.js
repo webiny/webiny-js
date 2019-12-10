@@ -6,7 +6,6 @@ import { PageBuilderProvider } from "@webiny/app-page-builder/contexts/PageBuild
 import { UiProvider } from "@webiny/app/contexts/Ui";
 import { SecurityProvider } from "@webiny/app-security/contexts/Security";
 import { I18NProvider } from "@webiny/app-i18n/contexts/I18N";
-import myTheme from "theme";
 import { GenericNotFoundPage, GenericErrorPage } from "./pageBuilder";
 import plugins from "./plugins";
 import "./App.scss";
@@ -28,9 +27,9 @@ const App = () => {
     return (
         <I18NProvider>
             <UiProvider>
-                <SecurityProvider allowAnonymous>
+                <SecurityProvider>
                     <UserBar />
-                    <PageBuilderProvider theme={myTheme} defaults={defaults}>
+                    <PageBuilderProvider defaults={defaults}>
                         {getPlugins("route").map((pl: Object) =>
                             React.cloneElement(pl.route, { key: pl.name, exact: true })
                         )}

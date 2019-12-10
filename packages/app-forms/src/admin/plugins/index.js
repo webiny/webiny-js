@@ -9,11 +9,13 @@ import settings from "./settings";
 import formEditorPlugins from "@webiny/app-forms/editor/plugins";
 import formSitePlugins from "@webiny/app-forms/site/plugins";
 
+import formLayouts from "../../layouts";
 import previewContent from "./formDetails/previewContent";
 import formRevisions from "./formDetails/formRevisions";
 import formSubmissions from "./formDetails/formSubmissions";
 
 export default [
+    formLayouts,
     settings,
     routes,
     menus,

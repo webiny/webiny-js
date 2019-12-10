@@ -11,10 +11,6 @@ const t1 = i18n.ns("app-plugin-security-cognito/users/form");
 const t2 = i18n.ns("app-plugin-security-cognito/users/account");
 
 export default ({ views, ...config }) => {
-    if (!views || !Object.keys(views).length) {
-        throw Error(`Cognito authentication provider requires "views" to be configured!`);
-    }
-
     // Configure Amplify Auth
     Auth.configure(config);
 
@@ -37,6 +33,7 @@ export default ({ views, ...config }) => {
 
             return { getIdToken, renderAuthentication, logout };
         },
+        // TODO: move methods below this comment to admin theme
         renderUserAccountForm({ Bind, data, fields }) {
             return (
                 <Grid>

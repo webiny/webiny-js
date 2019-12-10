@@ -9,10 +9,20 @@ import { getPlugins } from "@webiny/plugins";
 
 const GeneralSettings = ({ Bind }) => {
     const { theme } = usePageBuilder();
-    const layoutsFromTheme = get(theme, "forms.layouts") || [];
-    const layoutsFromPlugins = getPlugins("form-layout");
-
-    const layouts = [...layoutsFromTheme, ...layoutsFromPlugins];
+    
+    const layouts = React.useMemo(
+        () =>
+            [
+                ...(get(theme, "forms.layouts") || []),
+                ...getPlugins("form-layout").map(pl => pl.layout)
+            ].reduce((acc, item) => {
+                if (!acc.find(l => l.name === item.name)) {
+                    acc.push(item);
+                }
+                return acc;
+            }, []),
+        []
+    );
 
     return (
         <React.Fragment>

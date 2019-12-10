@@ -2,6 +2,7 @@
 import React, { useCallback } from "react";
 import slugify from "slugify";
 import { usePageBuilder } from "@webiny/app-page-builder/hooks/usePageBuilder";
+import { getPlugins } from "@webiny/plugins";
 import { Grid, Cell } from "@webiny/ui/Grid";
 import { TagsMultiAutocomplete } from "@webiny/app-page-builder/admin/components/TagsMultiAutocomplete";
 import { Input } from "@webiny/ui/Input";
@@ -17,6 +18,8 @@ const toSlug = (value, cb) => {
 
 const GeneralSettings = ({ form, Bind }: Object) => {
     const { theme } = usePageBuilder();
+
+    const layouts = React.useMemo(() => getPlugins("pb-page-layout").map(pl => pl.layout), []);
 
     const hasOgImage = useCallback(() => {
         // const src = get(data, "settings.social.image.src"); // Doesn't work.
@@ -62,13 +65,13 @@ const GeneralSettings = ({ form, Bind }: Object) => {
                     </Bind>
                 </Cell>
                 <Cell span={12}>
-                    <Bind name={"settings.general.layout"} defaultValue={theme.layouts[0].name}>
+                    <Bind name={"settings.general.layout"} defaultValue={layouts[0].name}>
                         <Select
                             box={"true"}
                             label={"Layout"}
                             description={"Render this page using the selected layout"}
                         >
-                            {theme.layouts.map(({ name, title }) => (
+                            {layouts.map(({ name, title }) => (
                                 <option key={name} value={name}>
                                     {title}
                                 </option>

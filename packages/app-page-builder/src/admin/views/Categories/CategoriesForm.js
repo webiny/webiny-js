@@ -1,6 +1,7 @@
 // @flow
 import * as React from "react";
 import { i18n } from "@webiny/app/i18n";
+import { getPlugins } from "@webiny/plugins";
 import { Form } from "@webiny/form";
 import { Grid, Cell } from "@webiny/ui/Grid";
 import { Input } from "@webiny/ui/Input";
@@ -23,6 +24,8 @@ const t = i18n.ns("app-page-builder/admin/categories/form");
 const CategoriesForm = () => {
     const { theme } = usePageBuilder();
     const { form: crudForm } = useCrud();
+
+    const layouts = React.useMemo(() => getPlugins("pb-page-layout").map(pl => pl.layout), []);
 
     return (
         <Form {...crudForm}>
@@ -56,7 +59,7 @@ const CategoriesForm = () => {
                             <Cell span={6}>
                                 <Bind name="layout" defaultValue={theme.layouts[0].name}>
                                     <Select label={t`Layout`}>
-                                        {theme.layouts.map(({ name, title }) => (
+                                        {layouts.map(({ name, title }) => (
                                             <option key={name} value={name}>
                                                 {title}
                                             </option>

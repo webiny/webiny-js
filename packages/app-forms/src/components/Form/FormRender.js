@@ -1,19 +1,13 @@
 // @flow
 // $FlowFixMe
-import React, { useEffect, useRef } from "react";
-import { useApolloClient } from "react-apollo";
-import { get, cloneDeep } from "lodash";
+import { I18NValue } from "@webiny/app-i18n/components";
 import { usePageBuilder } from "@webiny/app-page-builder/hooks/usePageBuilder";
 import { getPlugins } from "@webiny/plugins";
-import { I18NValue } from "@webiny/app-i18n/components";
-import { createTermsOfServiceComponent, createReCaptchaComponent } from "./components";
-import {
-    onFormMounted,
-    createFormSubmission,
-    handleFormTriggers,
-    reCaptchaEnabled,
-    termsOfServiceEnabled
-} from "./functions";
+import { cloneDeep, get } from "lodash";
+import React, { useEffect, useRef } from "react";
+import { useApolloClient } from "react-apollo";
+import { createReCaptchaComponent, createTermsOfServiceComponent } from "./components";
+import { createFormSubmission, handleFormTriggers, onFormMounted, reCaptchaEnabled, termsOfServiceEnabled } from "./functions";
 
 import type {
     FormRenderPropsType,
@@ -147,9 +141,19 @@ const FormRender = (props: FormRenderComponentPropsType) => {
         return formSubmission;
     };
 
-    const layoutsFromTheme = get(theme, "forms.layouts") || [];
-    const layoutsFromPlugins = getPlugins("form-layout");
-    const layouts = [...layoutsFromTheme, ...layoutsFromPlugins];
+    const layouts = React.useMemo(
+        () =>
+            [
+                ...(get(theme, "forms.layouts") || []),
+                ...getPlugins("form-layout").map(pl => pl.layout)
+            ].reduce((acc, item) => {
+                if (!acc.find(l => l.name === item.name)) {
+                    acc.push(item);
+                }
+                return acc;
+            }, []),
+        []
+    );
 
     // Get form layout, defined in theme.
     let LayoutRenderComponent = layouts.find(item => item.name === settings.layout.renderer);

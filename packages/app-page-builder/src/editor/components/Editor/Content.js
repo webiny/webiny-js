@@ -38,7 +38,10 @@ const BaseContainer = styled("div")({
 const Content = ({ rootElement, renderLayout, layout }) => {
     const { theme } = usePageBuilder();
     const plugins = getPlugins("pb-editor-content");
-    const themeLayout = theme.layouts.find(l => l.name === layout);
+
+    const layouts = React.useMemo(() => getPlugins("pb-page-layout").map(pl => pl.layout), []);
+
+    const themeLayout = layouts.find(l => l.name === layout);
 
     if (renderLayout && !themeLayout) {
         return `Layout "${layout}" was not found in your theme!`;
