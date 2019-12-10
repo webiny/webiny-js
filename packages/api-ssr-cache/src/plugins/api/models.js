@@ -2,7 +2,7 @@
 import { flow } from "lodash";
 import { withStorage, withCrudLogs, withSoftDelete, withFields } from "@webiny/commodo";
 import { withUser } from "@webiny/api-security";
-import cache from "./models/cache.model";
+import ssrCache from "./models/ssrCache.model";
 
 export default () => ({
     name: "graphql-context-models",
@@ -27,10 +27,10 @@ export default () => ({
                 withCrudLogs()
             )();
 
-        const Cache = cache({ createBase, context });
+        const SsrCache = ssrCache({ createBase, context });
 
         context.models = {
-            Cache
+            SsrCache
         };
     }
 });
