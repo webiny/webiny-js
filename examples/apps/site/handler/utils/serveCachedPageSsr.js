@@ -2,17 +2,18 @@ import createResponse from "./createResponse";
 import { GraphQLClient } from "graphql-request";
 import get from "lodash.get";
 
-const GET_PAGE_CACHE = /* GraphQL */ `
-    query GetPageCache($path: String!) {
-        pageBuilder {
-            getPageCache(path: $path) {
+const GET_SRR_CACHE = /* GraphQL */ `
+    query getSsrCache($key: String!) {
+        ssrCache {
+            getSsrCache(key: $key) {
                 data {
                     content
+                    expiresOn
                     hasExpired
                     expiresIn
                 }
                 error {
-                    data
+                    code
                     message
                 }
             }
@@ -20,23 +21,22 @@ const GET_PAGE_CACHE = /* GraphQL */ `
     }
 `;
 
-const serveCachedPageSsr = async path => {
+const serveCachedPageSsr = async key => {
     const client = new GraphQLClient(process.env.API_URL);
-
-    const response = await client.request(GET_PAGE_CACHE, {
-        data: {
-            path
-        }
+    const response = await client.request(GET_SRR_CACHE, {
+        key
     });
 
-    const content = get(response, "pageBuilder.getPageCache.data");
-    await console.log(response);
+    const { data, error } = get(response, "ssrCache.getSsrCache") || {};
+
+    if (error) {
+        throw new Error(error.message || error.code);
+    }
 
     return createResponse({
         type: "text/html",
-        body: html,
-        isBase64Encoded: false,
-        headers: { "Cache-Control": "no-store" }
+        body: data.content,
+        headers: { "Cache-Control": "public, max-age=10" }
     });
 };
 
