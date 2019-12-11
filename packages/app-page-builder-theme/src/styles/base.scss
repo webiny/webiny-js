@@ -5,7 +5,7 @@
 }
 
 .webiny-pb-page-document{
-  background-color: var(--webiny-pb-theme-surface);
+  background-color: var(--webiny-theme-color-surface, #fff);
   min-height: calc(100vh + 150px);
   max-width: 100%;
 

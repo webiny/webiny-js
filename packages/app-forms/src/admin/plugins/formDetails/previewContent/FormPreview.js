@@ -1,11 +1,11 @@
 //@flow
-import * as React from "react";
-import { css } from "emotion";
-import { Form } from "@webiny/app-forms/components/Form";
-import { DATA_FIELDS } from "@webiny/app-forms/components/Form/graphql";
-import { Query } from "react-apollo";
-import gql from "graphql-tag";
-import { get } from "lodash";
+import * as React from 'react';
+import {css} from 'emotion';
+import {Form} from '@webiny/app-forms/components/Form';
+import {DATA_FIELDS} from '@webiny/app-forms/components/Form/graphql';
+import {Query} from 'react-apollo';
+import gql from 'graphql-tag';
+import {get} from 'lodash';
 
 const GET_FORM = gql`
     query GetForm($id: ID!) {
@@ -22,29 +22,30 @@ const GET_FORM = gql`
     }
 `;
 
-const pageInnerWrapper = css({
-    overflowY: "scroll",
-    overflowX: "hidden",
-    maxHeight: "calc(100vh - 290px)",
-    position: "relative",
-    padding: 25,
-    backgroundColor: "var(--webiny-pb-theme-surface) !important"
+const pageInnerWrapper = css ({
+  overflowY: 'scroll',
+  overflowX: 'hidden',
+  maxHeight: 'calc(100vh - 290px)',
+  position: 'relative',
+  padding: 25,
+  backgroundColor: 'var(--webiny-theme-color-surface, #fff) !important',
 });
 
 type Props = {
-    revision: Object
+  revision: Object,
 };
 
-const FormPreview = ({ revision }: Props) => {
-    return (
-        <Query query={GET_FORM} variables={{ id: revision.id }}>
-            {data => (
-                <div className={pageInnerWrapper}>
-                    {revision && <Form preview data={get(data, "data.forms.getForm.data")} />}
-                </div>
-            )}
-        </Query>
-    );
+const FormPreview = ({revision}: Props) => {
+  return (
+    <Query query={GET_FORM} variables={{id: revision.id}}>
+      {data => (
+        <div className={pageInnerWrapper}>
+          {revision &&
+            <Form preview data={get (data, 'data.forms.getForm.data')} />}
+        </div>
+      )}
+    </Query>
+  );
 };
 
 export default FormPreview;
