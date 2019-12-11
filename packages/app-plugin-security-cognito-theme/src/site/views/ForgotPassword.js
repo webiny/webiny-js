@@ -15,13 +15,11 @@ const ForgotPassword = ({ requestCode, setPassword, codeSent, error, loading, au
             submitOnEnter
         >
             {({ Bind, submit, data }) => (
-                <View>
                     <Content>
                         {loading && <Loading />}
                         <Header
                             title="Password recovery"
-                            subtitle={"request a password reset code"}
-                        />
+                        >To reset your password please provide your email address.</Header>
 
                         {error && (
                             <Row>
@@ -65,14 +63,13 @@ const ForgotPassword = ({ requestCode, setPassword, codeSent, error, loading, au
                                 </Row>
                             </>
                         )}
+                        <Row alignCenter>
+                            Want to sign in? {/* eslint-disable-next-line */}
+                            <a href={"#"} onClick={() => authProps.changeState("signIn")}>
+                                Sign in
+                            </a>
+                        </Row>
                     </Content>
-                    <Row alignCenter>
-                        Want to sign in? {/* eslint-disable-next-line */}
-                        <a href={"#"} onClick={() => authProps.changeState("signIn")}>
-                            Sign in
-                        </a>
-                    </Row>
-                </View>
             )}
         </Form>
     );
