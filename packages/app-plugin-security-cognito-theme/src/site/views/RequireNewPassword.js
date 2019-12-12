@@ -4,7 +4,7 @@ import {Form} from '@webiny/form';
 import {validation} from '@webiny/validation';
 import Input from '../components/Input';
 import ButtonPrimary from '../components/ButtonPrimary';
-import {Content, Header, View, Row} from '../components/Layout';
+import {Content, Header, Row} from '../components/Layout';
 
 const sentenceCase = str => {
   const lower = lowerCase (str);

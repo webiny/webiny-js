@@ -9,10 +9,11 @@
   "dependencies": {
     "@webiny/api-cookie-policy": "latest",
     "@webiny/api-files": "latest",
-    "@webiny/api-forms": "latest",
+    "@webiny/api-form-builder": "latest",
     "@webiny/api-google-tag-manager": "latest",
     "@webiny/api-i18n": "latest",
     "@webiny/api-mailchimp": "latest",
+    "@webiny/api-page-builder": "latest",
     "@webiny/api-plugin-commodo-mongodb": "latest",
     "@webiny/api-plugin-create-apollo-gateway": "latest",
     "@webiny/api-plugin-create-apollo-handler": "latest",

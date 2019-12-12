@@ -1,0 +1,12 @@
+{
+  "name": "@webiny/app-form-builder-theme",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "dependencies": {
+
+  },
+  "peerDependencies": {
+    "react": "^16.8.0"
+  }
+}

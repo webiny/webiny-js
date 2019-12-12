@@ -5,7 +5,7 @@ import { i18n } from "@webiny/app/i18n";
 import { getPlugins } from "@webiny/plugins";
 import { SecureView } from "@webiny/app-security/components";
 
-const t = i18n.ns("app-forms/admin/menus");
+const t = i18n.ns("app-form-builder/admin/menus");
 
 export default [
     {

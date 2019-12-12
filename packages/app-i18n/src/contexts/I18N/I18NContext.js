@@ -3,7 +3,6 @@
 import React from "react";
 import { useQuery } from "react-apollo";
 import gql from "graphql-tag";
-import { CircularProgress } from "@webiny/ui/Progress";
 import get from "lodash.get";
 
 export const getI18NInformation = gql`
@@ -27,11 +26,11 @@ export const getI18NInformation = gql`
 const I18NContext = React.createContext();
 const defState = { initializing: false, currentLocale: null, locales: [] };
 
-const I18NProvider = ({ children }: Object) => {
+const I18NProvider = ({ children, loader }: Object) => {
     const { loading, data, refetch } = useQuery(getI18NInformation);
 
-    if (loading) {
-        return <CircularProgress label={"Loading locales..."} />;
+    if (loading && loader) {
+        return loader;
     }
 
     const { currentLocale, locales } = get(data, "i18n.getI18NInformation", {});

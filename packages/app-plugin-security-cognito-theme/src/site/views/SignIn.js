@@ -5,7 +5,7 @@ import Input from '../components/Input';
 import ButtonPrimary from '../components/ButtonPrimary';
 import {Content, Header, Row, Loading, Alert} from '../components/Layout';
 
-const SignIn = ({signIn, error, loading, authProps}) => {
+const SignIn = ({signIn, error, authProps}) => {
   return (
     <Form onSubmit={signIn} submitOnEnter>
       {({Bind, submit}) => (

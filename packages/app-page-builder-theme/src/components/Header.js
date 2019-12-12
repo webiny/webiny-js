@@ -1,5 +1,5 @@
 import React, { useState, useCallback, useMemo } from "react";
-import { get } from "lodash";
+import get from "lodash.get";
 import { Query } from "react-apollo";
 import { getPlugins } from "@webiny/plugins";
 import { getHeaderData } from "./graphql";

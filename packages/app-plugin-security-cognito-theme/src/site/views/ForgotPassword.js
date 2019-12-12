@@ -4,7 +4,7 @@ import { validation } from "@webiny/validation";
 import Input from "../components/Input";
 import ButtonPrimary from "../components/ButtonPrimary";
 import ButtonDefault from "../components/ButtonDefault";
-import { Content, Header, View, Row, Loading, Alert } from "../components/Layout";
+import { Content, Header, Row, Loading, Alert } from "../components/Layout";
 
 const ForgotPassword = ({ requestCode, setPassword, codeSent, error, loading, authProps }) => {
     const { username = "" } = authProps.authData || {};

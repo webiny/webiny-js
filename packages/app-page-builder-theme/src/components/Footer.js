@@ -2,7 +2,7 @@
 import * as React from "react";
 import { Link } from "react-router-dom";
 import { Query } from "react-apollo";
-import { get } from "lodash";
+import get from "lodash.get";
 import { getFooterData } from "./graphql";
 
 import { ReactComponent as FacebookIcon } from "./assets/facebook-square-brands.svg";

@@ -3,7 +3,7 @@ import {Form} from '@webiny/form';
 import {validation} from '@webiny/validation';
 import Input from '../components/Input';
 import ButtonPrimary from '../components/ButtonPrimary';
-import {Content, Header, View, Row, Loading, Alert} from '../components/Layout';
+import {Content, Header, Row, Loading, Alert} from '../components/Layout';
 
 const SetNewPassword = ({setPassword, error, loading, authProps}) => {
   return (

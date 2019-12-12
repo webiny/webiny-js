@@ -5,7 +5,6 @@ import localStorage from "store";
 import observe from "store/plugins/observe";
 import { getPlugins } from "@webiny/plugins";
 import { useHandler } from "@webiny/app/hooks/useHandler";
-import { CircularProgress } from "@webiny/ui/Progress";
 import { GET_CURRENT_USER, ID_TOKEN_LOGIN } from "../../components/graphql";
 import { setIdentity } from "../../identity";
 
@@ -16,6 +15,7 @@ localStorage.addPlugin(observe);
 export const DEFAULT_AUTH_TOKEN = "webiny-token";
 
 type Props = {
+    loader?: null,
     allowAnonymous?: Boolean,
     AUTH_TOKEN?: String,
     getUser?: () => Promise<Object>
@@ -183,7 +183,7 @@ export const SecurityProvider = (props: Props) => {
     }, []);
 
     if (state.checkingUser) {
-        return <CircularProgress label={"Checking user..."} />;
+        return props.loader || null;
     }
 
     if (!state.user && !props.allowAnonymous) {

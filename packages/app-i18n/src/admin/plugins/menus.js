@@ -4,7 +4,7 @@ import { ReactComponent as I18NIcon } from "./../assets/icons/round-translate-24
 import { i18n } from "@webiny/app/i18n";
 import { SecureView } from "@webiny/app-security/components";
 
-const t = i18n.ns("app-forms/admin/menus");
+const t = i18n.ns("app-form-builder/admin/menus");
 
 export default [
     {
