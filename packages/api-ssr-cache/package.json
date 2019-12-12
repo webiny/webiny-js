@@ -19,6 +19,7 @@
         "@webiny/api-security": "^2.1.1",
         "@webiny/commodo": "^2.0.0",
         "@webiny/validation": "^2.1.0",
+        "got": "^9.6.0",
         "graphql-tag": "^2.10.1",
         "lodash": "^4.17.11"
     },
