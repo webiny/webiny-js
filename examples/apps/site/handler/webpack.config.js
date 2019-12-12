@@ -9,7 +9,7 @@ module.exports = {
     plugins: [
         new WebpackBar({ name: "Site handler" }),
         new webpack.DefinePlugin({
-            "process.env.REACT_APP_API_URL": JSON.stringify(process.env.REACT_APP_API_URL)
+            "process.env.GRAPHQL_API_URL": JSON.stringify(process.env.REACT_APP_GRAPHQL_API_URL)
         })
     ],
     output: {

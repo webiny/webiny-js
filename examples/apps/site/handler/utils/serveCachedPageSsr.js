@@ -2,7 +2,7 @@ import createResponse from "./createResponse";
 import { GraphQLClient } from "graphql-request";
 import get from "lodash.get";
 
-const API_URL = process.env.REACT_APP_API_URL;
+const API_URL = process.env.GRAPHQL_API_URL;
 const GET_SRR_CACHE = /* GraphQL */ `
     query getSsrCache($key: String!) {
         ssrCache {
