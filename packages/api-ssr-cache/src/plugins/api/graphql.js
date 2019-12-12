@@ -54,10 +54,6 @@ export default {
                 error: SsrCacheError
             }
 
-            input SsrCacheInstallInput {
-                ssrGenerationUrl: String!
-            }
-
             type SsrCacheQuery {
                 getSsrCache(path: String!): SsrCacheResponse
                 isInstalled: SsrCacheBooleanResponse
@@ -65,7 +61,7 @@ export default {
 
             type SsrCacheMutation {
                 refreshSsrCache(path: String!): SsrCacheResponse
-                install(step: Int!, data: SsrCacheInstallInput!): SsrCacheBooleanResponse
+                install(ssrGenerationUrl: String!): SsrCacheBooleanResponse
             }
             
             extend type Query {
