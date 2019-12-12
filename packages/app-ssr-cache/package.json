@@ -9,7 +9,12 @@
   "author": "Pavel Denisjuk",
   "license": "MIT",
   "dependencies": {
-
+    "graphql-tag": "^2.10.1",
+    "react-apollo": "^3.1.3",
+    "@webiny/app": "^2.0.2",
+    "@webiny/ui": "^2.0.1",
+    "@webiny/app-admin": "^2.0.2",
+    "@emotion/styled": "^10.0.17"
   },
   "devDependencies": {
     "@babel/cli": "^7.5.5",
@@ -23,8 +28,7 @@
     "babel-plugin-named-asset-import": "^1.0.0-next.3e165448"
   },
   "peerDependencies": {
-    "react": "^16.6.0",
-    "react-dom": "^16.6.0"
+    "react": "^16.6.0"
   },
   "publishConfig": {
     "access": "public"
