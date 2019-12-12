@@ -10,8 +10,9 @@ import { getDataFromTree } from "@apollo/react-ssr";
 import ApolloClient from "apollo-client";
 import { ApolloLink } from "apollo-link";
 import { InMemoryCache } from "apollo-cache-inmemory";
-import { createHttpLink } from "apollo-link-http";
 import { createOmitTypenameLink } from "@webiny/app/graphql";
+import { BatchHttpLink } from "apollo-link-batch-http";
+
 import injectContent from "./injectContent";
 import App from "../src/App";
 
@@ -20,9 +21,7 @@ const createClient = () => {
         ssrMode: true,
         link: ApolloLink.from([
             createOmitTypenameLink(),
-            createHttpLink({
-                uri: process.env.REACT_APP_GRAPHQL_API_URL
-            })
+            new BatchHttpLink({ uri: process.env.REACT_APP_GRAPHQL_API_URL })
         ]),
         cache: new InMemoryCache({
             addTypename: true,
