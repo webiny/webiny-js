@@ -4,9 +4,9 @@ import get from "lodash.get";
 
 const API_URL = process.env.GRAPHQL_API_URL;
 const GET_SRR_CACHE = /* GraphQL */ `
-    query getSsrCache($key: String!) {
+    query getSsrCache($path: String!) {
         ssrCache {
-            getSsrCache(key: $key) {
+            getSsrCache(path: $path) {
                 data {
                     content
                     expiresOn
@@ -24,9 +24,7 @@ const GET_SRR_CACHE = /* GraphQL */ `
 
 const serveCachedPageSsr = async ({ path }) => {
     const client = new GraphQLClient(API_URL);
-    const response = await client.request(GET_SRR_CACHE, {
-        key: path
-    });
+    const response = await client.request(GET_SRR_CACHE, { path });
 
     const { data, error } = get(response, "ssrCache.getSsrCache") || {};
 
