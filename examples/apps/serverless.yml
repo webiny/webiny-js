@@ -48,10 +48,10 @@ api:
       - path: /admin
         method: GET
         function: ${admin}
-      - path: /ssr/{key+}
+      - path: /_ssr/{key+}
         method: GET
         function: ${ssr}
-      - path: /ssr
+      - path: /_ssr
         method: GET
         function: ${ssr}
       - path: /{key+}
