@@ -1,14 +1,14 @@
 // @flow
 import gql from "graphql-tag";
 import { merge } from "lodash";
-import { NotFoundResponse, Response } from "@webiny/api";
+import { ErrorResponse, NotFoundResponse, Response } from "@webiny/api";
 import { emptyResolver } from "@webiny/api";
 import LambdaClient from "aws-sdk/clients/lambda";
 
 const REFRESH_SSR_CACHE_GQL = /* GraphQL */ `
-    mutation refreshSsrCache($key: String!) {
+    mutation refreshSsrCache($path: String!) {
         ssrCache {
-            refreshSsrCache(key: $key) {
+            refreshSsrCache(path: $path) {
                 error {
                     message
                 }
@@ -49,14 +49,25 @@ export default {
                 error: SsrCacheError
             }
 
+            type SsrCacheBooleanResponse {
+                data: Boolean
+                error: SsrCacheError
+            }
+
+            input SsrCacheInstallInput {
+                ssrGenerationUrl: String!
+            }
+
             type SsrCacheQuery {
-                getSsrCache(key: String!): SsrCacheResponse
+                getSsrCache(path: String!): SsrCacheResponse
+                isInstalled: SsrCacheBooleanResponse
             }
 
             type SsrCacheMutation {
-                refreshSsrCache(key: String!): SsrCacheResponse
+                refreshSsrCache(path: String!): SsrCacheResponse
+                install(step: Int!, data: SsrCacheInstallInput!): SsrCacheBooleanResponse
             }
-
+            
             extend type Query {
                 ssrCache: SsrCacheQuery
             }
@@ -73,12 +84,12 @@ export default {
                 ssrCache: emptyResolver
             },
             SsrCacheQuery: {
-                getSsrCache: async (_, { key }, context) => {
+                getSsrCache: async (_, { path }, context) => {
                     const { SsrCache } = context.models;
-                    let ssrCache = await SsrCache.findByKey(key);
+                    let ssrCache = await SsrCache.findByPath(path);
                     if (!ssrCache) {
                         ssrCache = new SsrCache();
-                        ssrCache.key = key;
+                        ssrCache.path = path;
                         await ssrCache.save();
                     }
 
@@ -93,7 +104,7 @@ export default {
                         const Lambda = new LambdaClient({ region: process.env.AWS_REGION });
                         const body = JSON.stringify({
                             operationName: "refreshSsrCache",
-                            variables: { key },
+                            variables: { path },
                             query: REFRESH_SSR_CACHE_GQL
                         });
 
@@ -108,12 +119,17 @@ export default {
                     }
 
                     return new Response(ssrCache);
+                },
+                isInstalled: async (root: any, args: Object, context: Object) => {
+                    const { SsrCacheSettings } = context.models;
+                    const settings = await SsrCacheSettings.load();
+                    return new Response(settings.data.installed);
                 }
             },
             SsrCacheMutation: {
-                refreshSsrCache: async (_, { key }, context) => {
+                refreshSsrCache: async (_, { path }, context) => {
                     const { SsrCache } = context.models;
-                    let ssrCache = await SsrCache.findByKey(key);
+                    let ssrCache = await SsrCache.findByPath(path);
                     if (!ssrCache) {
                         return new NotFoundResponse("SsrCache entry not found.");
                     }
@@ -121,6 +137,31 @@ export default {
                     await ssrCache.refresh();
 
                     return new Response(ssrCache);
+                },
+
+                install: async (root: any, args: Object, context: Object) => {
+                    // Start the download of initial Page Builder page / block images.
+                    const { SsrCacheSettings } = context.models;
+
+                    try {
+                        let settings = await SsrCacheSettings.load();
+                        if (await settings.data.installed) {
+                            return new ErrorResponse({
+                                code: "SSR_CACHE_INSTALL_ABORTED",
+                                message: "SSR Cache is already installed."
+                            });
+                        }
+
+                        settings.data.ssrGenerationUrl = args.ssrGenerationUrl;
+                        settings.data.installed = true;
+                        await settings.save();
+                        return new Response(true);
+                    } catch (e) {
+                        return new ErrorResponse({
+                            code: "SSR_CACHE_INSTALL_ERROR",
+                            message: e.message
+                        });
+                    }
                 }
             }
         })

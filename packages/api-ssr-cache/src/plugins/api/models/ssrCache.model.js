@@ -15,13 +15,12 @@ import {
 
 const DEFAULT_TTL_SECONDS = 60;
 const DEFAULT_REFRESH_TTL_SECONDS = 30;
-const BASE_URL = "https://d2ulm64isck60w.cloudfront.net/ssr";
 
-export default ({ createBase }) => {
+export default ({ createBase, SsrCacheSettings }) => {
     return flow(
         withName("SsrCache"),
         withFields({
-            key: string({
+            path: string({
                 validation(value) {
                     if (!value) {
                         throw new Error(`SsrCache entry's "path" field is required.`);
@@ -54,8 +53,8 @@ export default ({ createBase }) => {
             })
         }),
         withStaticProps({
-            findByKey(key) {
-                return this.findOne({ query: { key } });
+            findByPath(path) {
+                return this.findOne({ query: { path } });
             }
         }),
         withProps({
@@ -82,9 +81,10 @@ export default ({ createBase }) => {
                 return this;
             },
             async refresh() {
+                const settings = await SsrCacheSettings.load();
                 this.lastRefresh.start = new Date();
                 await this.save();
-                const response = await got(BASE_URL + this.key, {
+                const response = await got(settings.data.ssrGenerationUrl + this.path, {
                     method: "get"
                 });
                 this.content = response.body;
