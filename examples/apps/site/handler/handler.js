@@ -4,16 +4,12 @@ import serveFile from "./utils/serveFile";
 import serveCachedPageSsr from "./utils/serveCachedPageSsr";
 
 export const handler = async event => {
-    const { path } = event;
-
     try {
-        let type = mime.lookup(path);
-
-        if (type) {
-            return serveFile(path);
+        if (mime.lookup(event.path)) {
+            return serveFile(event);
         }
 
-        return serveCachedPageSsr(path);
+        return serveCachedPageSsr(event);
     } catch (e) {
         // An error occurred, serve the error.
         return serveError(e);
