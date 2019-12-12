@@ -2,6 +2,7 @@ import createResponse from "./createResponse";
 import { GraphQLClient } from "graphql-request";
 import get from "lodash.get";
 
+const API_URL = process.env.REACT_APP_API_URL;
 const GET_SRR_CACHE = /* GraphQL */ `
     query getSsrCache($key: String!) {
         ssrCache {
@@ -21,10 +22,10 @@ const GET_SRR_CACHE = /* GraphQL */ `
     }
 `;
 
-const serveCachedPageSsr = async key => {
-    const client = new GraphQLClient(process.env.API_URL);
+const serveCachedPageSsr = async ({ path }) => {
+    const client = new GraphQLClient(API_URL);
     const response = await client.request(GET_SRR_CACHE, {
-        key
+        key: path
     });
 
     const { data, error } = get(response, "ssrCache.getSsrCache") || {};
