@@ -29,7 +29,7 @@ const IS_INSTALLED = gql`
 `;
 
 const INSTALL = gql`
-    mutation InstallSsrCache($ssrGenerationUrl: String) {
+    mutation InstallSsrCache($ssrGenerationUrl: String!) {
         ssrCache {
             install(ssrGenerationUrl: $ssrGenerationUrl) {
                 data
