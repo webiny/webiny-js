@@ -14,7 +14,6 @@ import setHomePage from "./pageResolvers/setHomePage";
 import getNotFoundPage from "./pageResolvers/getNotFoundPage";
 import getErrorPage from "./pageResolvers/getErrorPage";
 import oembed from "./pageResolvers/oembed";
-import getPageCache from "./pageResolvers/getPageCache";
 
 const pageFetcher = ctx => ctx.models.PbPage;
 const elementFetcher = ctx => ctx.models.PbPageElement;
@@ -139,19 +138,6 @@ export default {
             error: PbError
         }
         
-        type PbPageCacheData {
-            content: String
-            refreshedOn: DateTime
-            expiresOn: DateTime
-            expiresIn: Int
-            hasExpired: Boolean
-        }
-        
-        type PbPageCacheResponse {
-            data: PbPageCacheData
-            error: PbError
-        }
-        
         input PbOEmbedInput {
             url: String!
             width: Int
@@ -205,9 +191,6 @@ export default {
                 perPage: Int
             ): PbPageListResponse
             
-            # Returns cached content for given page path, for example "/blogs/my-super-blog".
-            getPageCache(path: String!): PbPageCacheResponse
-                   
             listElements(perPage: Int): PbElementListResponse
             
             # Returns existing tags based on given search term.        
@@ -294,7 +277,6 @@ export default {
             getHomePage,
             getNotFoundPage,
             getErrorPage,
-            getPageCache,
             listElements: resolveList(elementFetcher),
             searchTags: async (root: any, args: Object, context: Object, info: Object) => {
                 const resolver = context.plugins.byName("pb-resolver-search-tags");

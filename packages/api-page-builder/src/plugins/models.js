@@ -6,7 +6,6 @@ import pbCategory from "./models/pbCategory.model";
 import pbPageElement from "./models/pbPageElement.model";
 import pbMenu from "./models/pbMenu.model";
 import pbPage from "./models/pbPage.model";
-import pbPageCache from "./models/pbPageCache.model";
 import pbSettings from "./models/pbSettings.model";
 
 export default () => ({
@@ -37,7 +36,6 @@ export default () => ({
         const PbPageElement = pbPageElement({ createBase, context });
         const PbSettings = pbSettings({ createBase, context });
         const PbPage = pbPage({ createBase, context, PbCategory, PbSettings });
-        const PbPageCache = pbPageCache({ createBase, context, PbPage, PbSettings });
 
         context.models = {
             PbCategory,
@@ -45,7 +43,6 @@ export default () => ({
             PbMenu,
             PbSettings,
             PbPage,
-            PbPageCache
         };
 
         context.plugins.byType("api-page-builder-model").forEach(plugin => {
