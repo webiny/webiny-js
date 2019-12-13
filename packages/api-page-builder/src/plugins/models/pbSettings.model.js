@@ -1,6 +1,5 @@
 // @flow
 import { flow } from "lodash";
-import { id } from "@commodo/fields-storage-mongodb/fields";
 import {
     withStaticProps,
     withProps,
