@@ -23,6 +23,7 @@
     "react-helmet": "^5.2.0",
     "react-hot-loader": "^4.3.5",
     "react-router-dom": "^5.0.0",
+    "querystringify": "^2.1.1",
     "regenerator-runtime": "^0.13.3",
     "theme": "^1.0.0"
   },
