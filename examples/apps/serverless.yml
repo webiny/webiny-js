@@ -67,7 +67,7 @@ cdn:
     origins:
       - url: ${api.url}
         pathPatterns:
-          "/ssr":
+          "/_ssr":
             ttl: 0
             forward:
               headers: 'all'
