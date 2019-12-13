@@ -58,7 +58,9 @@ const DefaultFormLayout: FormLayoutComponent = ({
         return (
             <div
                 key={field._id}
-                className={"webiny-pb-base-page-element-style webiny-pb-layout-column"}
+                className={
+                    "webiny-pb-base-page-element-style webiny-pb-layout-column webiny-fb-form-layout-column"
+                }
             >
                 <Bind name={field.fieldId} validators={field.validators}>
                     {bind => (
@@ -131,7 +133,7 @@ const DefaultFormLayout: FormLayoutComponent = ({
         return (
             <ReCaptcha>
                 {({ errorMessage }) => (
-                    <div className="webiny-pb-form-recaptcha">
+                    <div className="webiny-fb-form-recaptcha">
                         <Bind name={"reCaptcha"} validators={validation.create("required")}>
                             {({ onChange, validation }) => (
                                 <>
@@ -160,18 +162,18 @@ const DefaultFormLayout: FormLayoutComponent = ({
         return (
             <TermsOfService>
                 {({ message, errorMessage, onChange }) => (
-                    <div className="webiny-pb-form-tos">
+                    <div className="webiny-fb-form-tos">
                         <Bind
                             name={"tosAccepted"}
                             validators={validation.create("required")}
                             afterChange={onChange}
                         >
                             {({ onChange, value, validation }) => (
-                                <div className="webiny-pb-form-field webiny-pb-form-field--checkbox">
-                                    <div className="webiny-pb-form-field__checkbox-group">
-                                        <div className="webiny-pb-form-field__checkbox">
+                                <div className="webiny-fb-form-field webiny-fb-form-field--checkbox">
+                                    <div className="webiny-fb-form-field__checkbox-group">
+                                        <div className="webiny-fb-form-field__checkbox">
                                             <input
-                                                className="webiny-pb-form-field__checkbox-input"
+                                                className="webiny-fb-form-field__checkbox-input"
                                                 type={"checkbox"}
                                                 name="webiny-tos-checkbox"
                                                 id="webiny-tos-checkbox"
@@ -180,7 +182,7 @@ const DefaultFormLayout: FormLayoutComponent = ({
                                             />
                                             <label
                                                 htmlFor={"webiny-tos-checkbox"}
-                                                className="webiny-pb-form-field__checkbox-label"
+                                                className="webiny-fb-form-field__checkbox-label"
                                             >
                                                 <I18NValue value={message} />
                                             </label>
@@ -204,10 +206,18 @@ const DefaultFormLayout: FormLayoutComponent = ({
      */
     const renderSuccessMessage = () => {
         return (
-            <div className={"webiny-pb-base-page-element-style webiny-pb-layout-row"}>
-                <div className={"webiny-pb-base-page-element-style webiny-pb-layout-column"}>
-                    <div className="webiny-pb-form__success-message">
-                        <div className="webiny-pb-form-field__label webiny-pb-typography-h3">
+            <div
+                className={
+                    "webiny-pb-base-page-element-style webiny-pb-layout-row webiny-fb-form-layout-row"
+                }
+            >
+                <div
+                    className={
+                        "webiny-pb-base-page-element-style webiny-pb-layout-column webiny-fb-form-layout-column"
+                    }
+                >
+                    <div className="webiny-fb-form-form__success-message">
+                        <div className="webiny-fb-form-field__label webiny-pb-typography-h3">
                             <I18NValue value={formData.settings.successMessage} default="Thanks!" />
                         </div>
                     </div>
@@ -221,10 +231,10 @@ const DefaultFormLayout: FormLayoutComponent = ({
      */
     const renderSubmitButton = (submit, loading, tosAccepted, buttonLabel) => {
         return (
-            <div className="webiny-pb-form-submit-button">
+            <div className="webiny-fb-form-submit-button">
                 <button
                     className={
-                        "webiny-pb-page-element-button webiny-pb-page-element-button--primary" +
+                        "webiny-fb-form-page-element-button webiny-pb-page-element-button webiny-pb-page-element-button--primary" +
                         (loading ? " webiny-pb-element-button--loading" : "")
                     }
                     onClick={submit}
@@ -241,7 +251,7 @@ const DefaultFormLayout: FormLayoutComponent = ({
         /* We also pass the default values for all fields via the getDefaultValues callback. */
         <Form onSubmit={submitForm} data={getDefaultValues()}>
             {({ submit, Bind, data }) => (
-                <div className={"webiny-pb-form"}>
+                <div className={"webiny-fb-form"}>
                     {formSuccess ? (
                         renderSuccessMessage()
                     ) : (
@@ -252,7 +262,7 @@ const DefaultFormLayout: FormLayoutComponent = ({
                                     <div
                                         key={rowIndex}
                                         className={
-                                            "webiny-pb-base-page-element-style webiny-pb-layout-row"
+                                            "webiny-pb-base-page-element-style webiny-pb-layout-row webiny-fb-form-layout-row"
                                         }
                                     >
                                         {/* render form fields */}

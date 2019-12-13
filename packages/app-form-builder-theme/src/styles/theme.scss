@@ -1,15 +1,15 @@
-.webiny-pb-form{
+.webiny-fb-form{
     width: 100%;
     padding: 0 5px 5px 5px;
     box-sizing: border-box;
     background-color: var(--webiny-theme-color-surface, #ffffff);
 
-    .webiny-pb-layout-row, .webiny-pb-layout-column{
+    .webiny-fb-form-layout-row, .webiny-fb-form-layout-column{
         width: 100%;
         padding: 0;
     }
 
-    .webiny-pb-layout-column{
+    .webiny-fb-form-layout-column{
         padding: 15px;
 
         @include desktop{
@@ -125,12 +125,14 @@
         }
 
         &__label{
-            width: 100%;
-            display: inline-block;
-            line-height: 100%;
-            margin: 0 0 5px 1px;
-            @include mobile{
-                text-align: left !important;
+            &.webiny-pb-typography-body{
+                width: 100%;
+                display: inline-block;
+                line-height: 100%;
+                margin: 0 0 5px 1px;
+                @include mobile{
+                    text-align: left !important;
+                }
             }
         }
         &__helper-text{
@@ -147,7 +149,7 @@
         }
     }
 
-    .webiny-pb-page-element-button{
+    .webiny-fb-form-page-element-button{
         width: 100%;
     }
 

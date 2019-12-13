@@ -24,8 +24,8 @@ const Input = (props: Props) => {
     };
 
     return (
-        <div className="webiny-pb-form-field webiny-pb-form-field--input">
-            <label className="webiny-pb-form-field__label webiny-pb-typography-body">
+        <div className="webiny-fb-form-field webiny-fb-form-field--input">
+            <label className="webiny-pb-typography-body webiny-fb-form-field__label">
                 <I18NValue value={props.field.label} />
             </label>
             <input
@@ -36,7 +36,7 @@ const Input = (props: Props) => {
                 type={props.type}
                 name={props.field.fieldId}
                 id={props.field.fieldId}
-                className="webiny-pb-form-field__input"
+                className="webiny-fb-form-field__input"
             />
             <HelperMessage
                 isValid={validation.isValid}
