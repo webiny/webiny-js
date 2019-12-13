@@ -3,7 +3,7 @@ import "core-js/stable";
 import "regenerator-runtime/runtime";
 import React from "react";
 import { ApolloProvider } from "react-apollo";
-import { StaticRouter } from "react-router-dom";
+import { StaticRouter } from "@webiny/react-router";
 import ReactDOMServer from "react-dom/server";
 import Helmet from "react-helmet";
 import { getDataFromTree } from "@apollo/react-ssr";
