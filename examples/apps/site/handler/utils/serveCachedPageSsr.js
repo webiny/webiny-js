@@ -1,6 +1,7 @@
 import createResponse from "./createResponse";
 import { GraphQLClient } from "graphql-request";
 import get from "lodash.get";
+import qs from "querystringify";
 
 const API_URL = process.env.GRAPHQL_API_URL;
 const GET_SRR_CACHE = /* GraphQL */ `
@@ -22,9 +23,11 @@ const GET_SRR_CACHE = /* GraphQL */ `
     }
 `;
 
-const serveCachedPageSsr = async ({ path }) => {
+const serveCachedPageSsr = async ({ path, multiValueQueryStringParameters }) => {
     const client = new GraphQLClient(API_URL);
-    const response = await client.request(GET_SRR_CACHE, { path });
+    const response = await client.request(GET_SRR_CACHE, {
+        path: path + qs.stringify(multiValueQueryStringParameters, true)
+    });
 
     const { data, error } = get(response, "ssrCache.getSsrCache") || {};
 
