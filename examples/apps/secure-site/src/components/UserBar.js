@@ -13,21 +13,21 @@ const UserBar = () => {
                     <DialogTitle>Login</DialogTitle>
                     <DialogContent>{renderAuthentication()}</DialogContent>
                 </Dialog>
-                <div style={{ width: "100%", position: "fixed", zIndex: 1000 }}>
-                    <button style={{ float: "right" }} onClick={() => setShowLogin(true)}>
-                        Log in
-                    </button>
-                </div>{" "}
+                <div className={"webiny-user-bar-demo"}>
+                    <a href="#" onClick={() => setShowLogin(true)}>
+                        [ Log in ]
+                    </a>
+                </div>
             </React.Fragment>
         );
     }
 
     return (
-        <div style={{ width: "100%", position: "fixed", zIndex: 1000 }}>
-            <div style={{ float: "left", color: "black" }}>{user.fullName}</div>
-            <button style={{ float: "right" }} onClick={logout}>
-                Log out
-            </button>
+        <div className={"webiny-user-bar-demo"}>
+            <div>{user.fullName}</div>
+            <a href="#" onClick={logout}>
+                [ Log out ]
+            </a>
         </div>
     );
 };
