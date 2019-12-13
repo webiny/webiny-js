@@ -1,5 +1,5 @@
 .webiny-pb-section-footer {
-  background-color: $webiny-pb-theme-background;
+  background-color: var(--webiny-theme-color-background, #eaecec);
   height: 100px;
   position: absolute;
   bottom: 0;
@@ -49,7 +49,7 @@
         margin-left: 10px;
         opacity: .5;
         transition: opacity .3s;
-        color: $webiny-pb-theme-on-background;
+        color: var(--webiny-theme-color-on-background, #131313);
         &:hover{
           opacity: 1;
         }

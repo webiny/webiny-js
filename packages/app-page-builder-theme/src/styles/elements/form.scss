@@ -2,7 +2,7 @@
     width: 100%;
     padding: 0 5px 5px 5px;
     box-sizing: border-box;
-    background-color: $webiny-pb-theme-surface;
+    background-color: var(--webiny-theme-color-surface, #ffffff);
 
     .webiny-pb-layout-row, .webiny-pb-layout-column{
         width: 100%;
@@ -50,19 +50,19 @@
         width: 100%;
         box-sizing: border-box;
         font-size: 1rem;
-        background-color: $webiny-pb-theme-surface;
+        background-color: var(--webiny-theme-color-surface, #ffffff);
 
         &__input, &__select, &__textarea{
             font-size: 1rem;
-            border: 1px solid $webiny-pb-theme-background;
-            background-color: $webiny-pb-theme-background;
+            border: 1px solid var(--webiny-theme-color-background, #eaecec);
+            background-color: var(--webiny-theme-color-background, #eaecec);
             width: 100%;
             padding: 10px;
-            border-radius: $webiny-pb-theme-border-radius;
+            border-radius: var(--webiny-theme-border-radius, 2px);
             box-sizing: border-box;
             transition: border-color .15s ease-in-out,box-shadow .15s ease-in-out;
             &:focus{
-                border-color: $webiny-pb-theme-secondary;
+                border-color: var(--webiny-theme-color-secondary, #00ccb0);
                 box-shadow: 0 0 0 0.2rem rgba(0,123,255,.25);
                 outline: none;
             }
@@ -97,13 +97,13 @@
                 font-size: 1.5rem;
                 margin-left: 0;
                 line-height: 100%;
-                background-color: $webiny-pb-theme-background;
+                background-color: var(--webiny-theme-color-background, #eaecec);
                 width: 25px;
                 height: 25px;
                 border-radius: 50%;
                 -webkit-appearance: none;
                 &:focus{
-                    border-color: $webiny-pb-theme-secondary;
+                    border-color: var(--webiny-theme-color-secondary, #00ccb0);
                     box-shadow: 0 0 0 0.2rem rgba(0,123,255,.25);
                     outline: none;
                 }
@@ -117,7 +117,7 @@
 
         &__checkbox{
             &-input{
-                border-radius: $webiny-pb-theme-border-radius;
+                border-radius: var(--webiny-theme-border-radius, 2px);
                 &:checked{
                     background-image: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0Ij48cGF0aCBmaWxsPSJub25lIiBkPSJNMCAwaDI0djI0SDBWMHoiLz48cGF0aCBkPSJNMTkgM0g1Yy0xLjEgMC0yIC45LTIgMnYxNGMwIDEuMS45IDIgMiAyaDE0YzEuMSAwIDItLjkgMi0yVjVjMC0xLjEtLjktMi0yLTJ6bS04LjI5IDEzLjI5Yy0uMzkuMzktMS4wMi4zOS0xLjQxIDBMNS43MSAxMi43Yy0uMzktLjM5LS4zOS0xLjAyIDAtMS40MS4zOS0uMzkgMS4wMi0uMzkgMS40MSAwTDEwIDE0LjE3bDYuODgtNi44OGMuMzktLjM5IDEuMDItLjM5IDEuNDEgMCAuMzkuMzkuMzkgMS4wMiAwIDEuNDFsLTcuNTggNy41OXoiLz48L3N2Zz4=");
                 }
@@ -137,12 +137,12 @@
             font-size: 0.8rem;
             margin-left: 2px;
             margin-top: 5px;
-            color: $webiny-pb-theme-text-secondary;
+            color: var(--webiny-theme-color-text-secondary, #616161);
             @include mobile{
                 text-align: left !important;
             }
             &--error{
-                color: $webiny-pb-theme-primary;
+                color: var(--webiny-theme-color-primary, #ee896b);
             }
         }
     }

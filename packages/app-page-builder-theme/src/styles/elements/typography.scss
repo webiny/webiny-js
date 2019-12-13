@@ -11,7 +11,7 @@ $scale:1.414 !default;
 
 body, .webiny-pb-page-document{
   /* Change default typefaces here */
-  font-family: unquote($webiny-pb-theme-typography-secondary-font-family);
+  font-family: var(--webiny-theme-typography-secondary-font-family, "Lato, sans-serif");
   font-size: $baseFontSize / 16 * 100%;
   // Make everything look a little nicer in webkit
   -webkit-font-smoothing: antialiased;
@@ -26,7 +26,7 @@ em{
 }
 
 a{
-  color: $webiny-pb-theme-primary;
+  color: var(--webiny-theme-color-primary, #ee896b);
   text-decoration: none;
   &:hover{
     text-decoration: underline;
@@ -45,8 +45,8 @@ blockquote {
 .webiny-pb-typography-h4,
 .webiny-pb-typography-h5,
 .webiny-pb-typography-h6{
-  font-family: unquote($webiny-pb-theme-typography-secondary-font-family);
-  color: $webiny-pb-theme-text-primary;
+  font-family: var(--webiny-theme-typography-secondary-font-family, "Lato, sans-serif");
+  color: var(--webiny-theme-color-text-primary, rgb(10, 10, 10));
   -moz-osx-font-smoothing: grayscale;
   -webkit-font-smoothing: antialiased;
   text-decoration: inherit;
@@ -97,7 +97,7 @@ blockquote {
 .webiny-pb-typography-body{
   line-height: $leading;
   margin-top: $leading;
-  color: $webiny-pb-theme-text-primary;
+  color: var(--webiny-theme-color-text-primary, rgb(10, 10, 10));
   -moz-osx-font-smoothing: grayscale;
   -webkit-font-smoothing: antialiased;
   font-size: 1rem;
@@ -120,7 +120,7 @@ blockquote {
 .webiny-pb-typography-unordered-list{
   margin-top: $leading;
   margin-bottom: $leading;
-  color: $webiny-pb-theme-text-primary;
+  color: var(--webiny-theme-color-text-primary, rgb(10, 10, 10));
   -moz-osx-font-smoothing: grayscale;
   -webkit-font-smoothing: antialiased;
   font-size: 1rem;
@@ -144,7 +144,7 @@ blockquote {
 .webiny-pb-typography-ordered-list,
 .webiny-pb-typography-unordered-list{
   a{
-    color: $webiny-pb-theme-primary;
+    color: var(--webiny-theme-color-primary, #ee896b);
     &:hover{
       opacity: 0.8;
     }
@@ -155,14 +155,14 @@ blockquote {
   padding: 0.2em 0.4em;
   margin: 0;
   font-size: 90%;
-  background-color: $webiny-pb-theme-on-background;
-  color: $webiny-pb-theme-background;
+  background-color: var(--webiny-theme-color-on-background, #131313);
+  color: var(--webiny-theme-color-background, #fafbfb);
   border-radius: 3px;
 }
 
 .webiny-pb-typography-description{
-  font-family: unquote($webiny-pb-theme-typography-primary-font-family);
-  color: $webiny-pb-theme-text-secondary;
+  font-family: var(--webiny-theme-typography-primary-font-family, "IBM Plex Sans, sans-serif");
+  color: var(--webiny-theme-color-text-secondary, #616161);
   -moz-osx-font-smoothing: grayscale;
   -webkit-font-smoothing: antialiased;
   font-size: 0.8rem;
@@ -176,7 +176,7 @@ blockquote {
 }
 
 .webiny-pb-typography--primary{
-  color: $webiny-pb-theme-primary;
+  color: var(--webiny-theme-color-primary, #ee896b);
 }
 
 // force center align on mobile

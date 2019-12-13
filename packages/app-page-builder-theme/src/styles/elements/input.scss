@@ -4,10 +4,10 @@
         padding: 15px;
         box-sizing: border-box;
         font-size: 1rem;
-        border:2px solid $webiny-pb-theme-background;
-        background-color: $webiny-pb-theme-background;
+        border:2px solid var(--webiny-theme-color-border, #fafbfb);
+        background-color: var(--webiny-theme-color-background, #fafbfb);
         &:focus{
-            border-color: $webiny-pb-theme-primary;
+            border-color: var(--webiny-theme-color-primary, #ee896b);
             outline: none;
         }
     }

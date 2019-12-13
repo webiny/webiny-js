@@ -51,14 +51,14 @@
     }
 
     &__navigation {
-      color: $webiny-pb-theme-primary;
-      font-family: unquote($webiny-pb-theme-typography-primary-font-family);
+      color: var(--webiny-theme-color-primary, #ee896b);
+      font-family: var(--webiny-theme-typography-primary-font-family, "IBM Plex Sans, sans-serif");
       -moz-osx-font-smoothing: grayscale;
       -webkit-font-smoothing: antialiased;
       flex: 1;
 
       a {
-        color: $webiny-pb-theme-primary;
+        color: var(--webiny-theme-color-primary, #ee896b);
         text-decoration: none;
       }
 
@@ -80,15 +80,15 @@
             display: none;
           }
           &:hover{
-            background-color: $webiny-pb-theme-background;
-            border-radius: $webiny-pb-theme-border-radius;
+            background-color: var(--webiny-theme-color-background, #eaecec);
+            border-radius: var(--webiny-theme-border-radius, 2px);
             ul{
               display: block;
               position: absolute;
               top: 35px;
               left: 0;
               width: 150px;
-              background-color: $webiny-pb-theme-background;
+              background-color: var(--webiny-theme-color-background, #eaecec);
               li{
                 padding: 10px;
                 margin: 0;
@@ -121,7 +121,7 @@
       z-index: 12;
       a{
         font-size: 1.2rem;
-        color: $webiny-pb-theme-text-primary;
+        color: var(--webiny-theme-color-text-primary, rgb(10, 10, 10));
         text-transform: uppercase;
         font-weight: 700;
       }
@@ -130,7 +130,7 @@
     &__mobile-overlay{
       opacity: 0;
       transition: opacity .25s ease-in-out;
-      background-color: $webiny-pb-theme-on-background;
+      background-color: var(--webiny-theme-color-on-background, #131313);
       &--active{
         opacity: 0.5;
         position: fixed;
@@ -152,8 +152,8 @@
     }
 
     &__navigation {
-      color: $webiny-pb-theme-primary;
-      font-family: unquote($webiny-pb-theme-typography-primary-font-family);
+      color: var(--webiny-theme-color-primary, #ee896b);
+      font-family: var(--webiny-theme-typography-primary-font-family, "IBM Plex Sans, sans-serif");
       -moz-osx-font-smoothing: grayscale;
       -webkit-font-smoothing: antialiased;
       animation: slide-out 0.5s forwards;
@@ -162,7 +162,7 @@
       width: 250px;
       right: 0;
       height: 100%;
-      background: $webiny-pb-theme-background;
+      background: var(--webiny-theme-color-background, #fafbfb);
       top: 0;
       z-index: 11;
       transform: translateX(200%);
@@ -172,7 +172,7 @@
       }
 
       a {
-        color: $webiny-pb-theme-primary;
+        color: var(--webiny-theme-color-primary, #ee896b);
         text-decoration: none;
       }
 

@@ -22,9 +22,9 @@
   border: none;
   min-width: 100px;
   width: auto;
-  background-color: $webiny-pb-theme-background;
-  font-family: unquote($webiny-pb-theme-typography-primary-font-family);
-  color: $webiny-pb-theme-on-background;
+  background-color: var(--webiny-theme-color-background, #fafbfb);
+  font-family: var(--webiny-theme-typography-primary-font-family, "IBM Plex Sans, sans-serif");
+  color: var(--webiny-theme-color-on-background, #131313);
   >span{
     display: block;
     font-size: 1px;
@@ -44,7 +44,7 @@
     cursor: wait;
   }
   &--loading{
-    background-image: linear-gradient($webiny-pb-theme-primary 0%, $webiny-pb-theme-primary 100%) !important;
+    background-image: linear-gradient(var(--webiny-theme-color-primary, #ee896b) 0%, var(--webiny-theme-color-primary, #ee896b) 100%) !important;
     position: relative;
     text-transform: uppercase;
     color: transparent;
@@ -72,28 +72,28 @@
     }
   }
   &--primary{
-    background-color: $webiny-pb-theme-primary;
-    color: $webiny-pb-theme-on-primary;
+    background-color: var(--webiny-theme-color-primary, #ee896b);
+    color: var(--webiny-theme-color-on-primary, #ffffff);
   }
   &--secondary{
-    background-color: $webiny-pb-theme-secondary;
-    color: $webiny-pb-theme-on-secondary;
+    background-color: var(--webiny-theme-color-secondary, #00ccb0);
+    color: var(--webiny-theme-color-on-secondary, #ffffff);
   }
   &--outline-primary{
-    border: 2px solid $webiny-pb-theme-primary;
-    color: $webiny-pb-theme-primary;
+    border: 2px solid var(--webiny-theme-color-primary, #ee896b);
+    color: var(--webiny-theme-color-primary, #ee896b);
     padding: 10px 16px !important;
     background-color: transparent;
   }
   &--outline-secondary{
-    border: 2px solid $webiny-pb-theme-secondary;
-    color: $webiny-pb-theme-secondary;
+    border: 2px solid var(--webiny-theme-color-secondary, #00ccb0);
+    color: var(--webiny-theme-color-secondary, #00ccb0);
     padding: 10px 16px !important;
     background-color: transparent;
   }
   &--simple{
     background-color: transparent;
-    color: $webiny-pb-theme-primary;
+    color: var(--webiny-theme-color-primary, #ee896b);
     padding: 0 !important;
     min-width: 0;
     &:hover{
