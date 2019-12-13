@@ -134,6 +134,7 @@ pageBuilder:
     name: Page Builder
     region: ${vars.region}
     files: ${files}
+    ssrCache: ${ssrCache}
     memory: 512
     timeout: 30
     webpackConfig: ./webpack.config.js
