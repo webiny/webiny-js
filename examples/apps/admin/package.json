@@ -41,8 +41,9 @@
   "scripts": {
     "analyze": "source-map-explorer build/static/js/main.*",
     "start": "env-cmd -r .env.json -e default,local rescripts start",
-    "build:dev": "env-cmd -r .env.json -e default,dev rescripts build",
-    "build:prod": "env-cmd -r .env.json -e default,prod rescripts build",
+    "build": "rescripts build",
+    "build:dev": "env-cmd -r .env.json -e default,dev yarn build",
+    "build:prod": "env-cmd -r .env.json -e default,prod yarn build",
     "postbuild": "webpack --config ./handler/webpack.config.js",
     "test": "rescripts test --env=jsdom",
     "eject": "react-scripts eject"
