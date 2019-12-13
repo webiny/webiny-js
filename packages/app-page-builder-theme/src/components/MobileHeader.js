@@ -3,11 +3,9 @@ import { Link } from "react-router-dom";
 import HamburgerMenu from "react-hamburger-menu";
 import classNames from "classnames";
 import { Menu } from "@webiny/app-page-builder/render/components";
-import { getPlugin } from "@webiny/plugins";
+import Navigation from "./Navigation";
 
 const MobileHeader = ({ menuName, logo, name, active, toggleMenu }) => {
-    const { component: Navigation } = getPlugin("pb-layout-component-header-navigation");
-
     return (
         <div className="webiny-pb-section-header__wrapper hide-on-desktop-and-tablet">
             <div className={"webiny-pb-section-header__logo"}>

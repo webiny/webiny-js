@@ -1,11 +1,9 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { Menu } from "@webiny/app-page-builder/render/components";
-import { getPlugin } from "@webiny/plugins";
+import Navigation from "./Navigation";
 
 const DesktopHeader = ({ menuName, logo, name }: { logo: Object, name: string }) => {
-    const { component: Navigation } = getPlugin("pb-layout-component-header-navigation");
-
     return (
         <div className="webiny-pb-section-header__wrapper hide-on-mobile">
             <div className={"webiny-pb-section-header__logo"}>

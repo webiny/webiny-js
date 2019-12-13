@@ -1,20 +1,14 @@
-import React, { useState, useCallback, useMemo } from "react";
+import React, { useState, useCallback } from "react";
 import get from "lodash.get";
 import { Query } from "react-apollo";
-import { getPlugins } from "@webiny/plugins";
 import { getHeaderData } from "./graphql";
+import DesktopHeader from "./DesktopHeader";
+import MobileHeader from "./MobileHeader";
 
 const menuName = "main-menu";
 
 const Header = () => {
     const [mobileMenu, showMobileMenu] = useState(false);
-
-    const { desktopHeader: DesktopHeader, mobileHeader: MobileHeader } = useMemo(() => {
-        return getPlugins("pb-layout-component-header").reduce((acc, item) => {
-            acc[item.componentType] = item.component;
-            return acc;
-        }, {});
-    }, []);
 
     const toggleMobileMenu = useCallback(() => {
         showMobileMenu(!mobileMenu);

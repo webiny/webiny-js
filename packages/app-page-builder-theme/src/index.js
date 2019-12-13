@@ -1,10 +1,7 @@
 // @flow
 import StaticLayout from "./layouts/Static";
 import Header from "./components/Header";
-import DesktopHeader from "./components/DesktopHeader";
-import MobileHeader from "./components/MobileHeader";
 import Footer from "./components/Footer";
-import Navigation from "./components/Navigation";
 import CircularSpinner from "./components/CircularSpinner";
 
 export default () => [
@@ -134,24 +131,6 @@ export default () => [
         type: "pb-layout-component",
         componentType: "header",
         component: Header
-    },
-    {
-        name: "pb-layout-component-header-navigation",
-        type: "pb-layout-component-header",
-        componentType: "navigation",
-        component: Navigation
-    },
-    {
-        name: "pb-layout-component-header-desktop",
-        type: "pb-layout-component-header",
-        componentType: "desktopHeader",
-        component: DesktopHeader
-    },
-    {
-        name: "pb-layout-component-header-mobile",
-        type: "pb-layout-component-header",
-        componentType: "mobileHeader",
-        component: MobileHeader
     },
     {
         name: "pb-layout-component-footer",
