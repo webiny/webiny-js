@@ -47,11 +47,8 @@ api:
       - path: /admin
         method: GET
         function: ${admin}
-      - path: /_ssr/{key+}
-        method: GET
-        function: ${ssr}
       - path: /_ssr
-        method: GET
+        method: POST
         function: ${ssr}
       - path: /{key+}
         method: GET
@@ -70,8 +67,8 @@ cdn:
         queryString: true
     origins:
       - url: ${api.url}
+        allowedHttpMethods: ['HEAD', 'GET']
         pathPatterns:
           "/_ssr":
             ttl: 0
-            forward:
-              queryString: true
+            allowedHttpMethods: ["GET", "HEAD", "OPTIONS", "PUT", "POST", "PATCH", "DELETE"]
