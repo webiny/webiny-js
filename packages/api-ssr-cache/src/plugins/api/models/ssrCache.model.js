@@ -84,8 +84,12 @@ export default ({ createBase, SsrCacheSettings }) => {
                 const settings = await SsrCacheSettings.load();
                 this.lastRefresh.start = new Date();
                 await this.save();
-                const response = await got(settings.data.ssrGenerationUrl + this.path, {
-                    method: "get"
+                const response = await got(settings.data.ssrGenerationUrl, {
+                    headers: { "Content-Type": "application/json" },
+                    method: "post",
+                    body: JSON.stringify({
+                        path: this.path
+                    })
                 });
                 this.content = response.body;
 
