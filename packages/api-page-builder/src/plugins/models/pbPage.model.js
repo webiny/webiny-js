@@ -21,7 +21,9 @@ import {
 export default ({ createBase, context, PbCategory, PbSettings }) => {
     const PbPageSettings = withFields(() => {
         const fields = {};
-        context.plugins.byType("pb-page-settings-model").forEach(plugin => plugin.apply({ fields, context }));
+        context.plugins
+            .byType("pb-page-settings-model")
+            .forEach(plugin => plugin.apply({ fields, context }));
         return fields;
     })();
 
@@ -63,6 +65,14 @@ export default ({ createBase, context, PbCategory, PbSettings }) => {
                             if (publishedRev) {
                                 publishedRev.published = false;
                                 await publishedRev.save();
+                            }
+
+                            const plugins = context.plugins.byType("pb-page-publish");
+                            for (let i = 0; i < plugins.length; i++) {
+                                let plugin = plugins[i];
+                                if (typeof plugin.callback === "function") {
+                                    await plugin.callback({ page: instance });
+                                }
                             }
                         });
                     }
