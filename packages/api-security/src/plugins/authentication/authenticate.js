@@ -3,7 +3,7 @@ import { JwtToken } from "./jwtToken";
 
 export default async (context: Object) => {
     const { security, event } = context;
-    const { headers } = event;
+    const { headers = {} } = event;
     const authorization = headers["Authorization"] || headers["authorization"] || "";
     let token = authorization.replace(/[b|B]earer\s/, "");
     let user = null;
