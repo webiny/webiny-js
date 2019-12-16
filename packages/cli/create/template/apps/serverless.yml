@@ -37,6 +37,7 @@ admin:
 api:
   component: "@webiny/serverless-api-gateway"
   inputs:
+    region: ${vars.region}
     name: Apps Gateway
     binaryMediaTypes: ["*/*"]
     description: Serverless React Apps
