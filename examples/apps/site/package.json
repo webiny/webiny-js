@@ -23,6 +23,8 @@
     "react-app-env": "^1.2.3",
     "react-helmet": "^5.2.0",
     "react-hot-loader": "^4.3.5",
+    "react-router-dom": "^5.0.0",
+    "querystringify": "^2.1.1",
     "regenerator-runtime": "^0.13.3",
     "theme": "^1.0.0"
   },
@@ -35,7 +37,7 @@
     "node-sass": "^4.9.3",
     "null-loader": "^1.0.0",
     "raw-loader": "^2.0.0",
-    "react-scripts": "^3.3.0",
+    "react-scripts": "^3.0.1",
     "source-map-explorer": "^1.6.0",
     "webpackbar": "^4.0.0"
   },
