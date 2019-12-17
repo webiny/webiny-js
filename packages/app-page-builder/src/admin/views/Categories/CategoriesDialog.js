@@ -1,8 +1,8 @@
 // @flow
 import React from "react";
 import { css } from "emotion";
-import { withRouter } from "react-router-dom";
-import type { RouterHistory } from "react-router-dom";
+import { withRouter } from "@webiny/react-router";
+import type { RouterHistory } from "@webiny/react-router";
 import { Query } from "react-apollo";
 import { Dialog, DialogTitle, DialogContent, DialogActions } from "@webiny/ui/Dialog";
 import {

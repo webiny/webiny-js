@@ -4,6 +4,7 @@ import { get } from "dot-prop-immutable";
 import Slate from "@webiny/app-page-builder/render/components/Slate";
 import { ElementRoot } from "@webiny/app-page-builder/render/components/ElementRoot";
 import type { PbElementType } from "@webiny/app-page-builder/types";
+import { Link } from "@webiny/react-router";
 
 const Button = ({ element }: { element: PbElementType }) => {
     const { type = "default", icon = {}, link = {} } = element.data || {};
@@ -19,8 +20,8 @@ const Button = ({ element }: { element: PbElementType }) => {
                     style={{ ...elementStyle, display: "flex", justifyContent: alignItems }}
                     {...elementAttributes}
                 >
-                    <a
-                        href={link.href || null}
+                    <Link
+                        to={link.href || null}
                         target={link.newTab ? "_blank" : "_self"}
                         className={getAllClasses(
                             "webiny-pb-base-page-element-style",
@@ -31,7 +32,7 @@ const Button = ({ element }: { element: PbElementType }) => {
                     >
                         {svg && <span dangerouslySetInnerHTML={{ __html: svg }} />}
                         <Slate value={element.data.text} />
-                    </a>
+                    </Link>
                 </div>
             )}
         </ElementRoot>

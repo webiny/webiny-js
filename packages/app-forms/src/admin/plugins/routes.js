@@ -3,7 +3,7 @@ import React, { Suspense, lazy } from "react";
 import Helmet from "react-helmet";
 import { SecureRoute } from "@webiny/app-security/components";
 import { CircularProgress } from "@webiny/ui/Progress";
-import { Route } from "react-router-dom";
+import { Route } from "@webiny/react-router";
 import { AdminLayout } from "@webiny/app-admin/components/AdminLayout";
 
 const Loader = ({ children, ...props }) => (

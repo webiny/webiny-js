@@ -1,6 +1,6 @@
 // @flow
 import React from "react";
-import { Link } from "react-router-dom";
+import { Link } from "@webiny/react-router";
 
 function getLink({ url, title }) {
     if (url.startsWith("/")) {

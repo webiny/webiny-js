@@ -1,6 +1,6 @@
 // @flow
 import * as React from "react";
-import type { Location } from "react-router-dom";
+import type { Location } from "@webiny/react-router";
 import { useQuery } from "react-apollo";
 import { Content, buildQueryProps } from "./Page/index";
 import { usePageBuilder } from "@webiny/app-page-builder/hooks/usePageBuilder";

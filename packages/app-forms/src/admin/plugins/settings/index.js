@@ -1,6 +1,6 @@
 // @flow
 import * as React from "react";
-import { Route } from "react-router-dom";
+import { Route } from "@webiny/react-router";
 import { AdminLayout } from "@webiny/app-admin/components/AdminLayout";
 import FormsSettings from "./components/FormsSettings";
 import type { SettingsPluginType } from "@webiny/app-admin/types";

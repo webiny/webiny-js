@@ -1,6 +1,6 @@
 // @flow
 import React, { Suspense, lazy } from "react";
-import { Route } from "react-router-dom";
+import { Route } from "@webiny/react-router";
 import Helmet from "react-helmet";
 import { AdminLayout } from "@webiny/app-admin/components/AdminLayout";
 import { SecureRoute } from "@webiny/app-security/components";

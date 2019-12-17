@@ -1,4 +1,5 @@
 import React from "react";
+import { Link } from "@webiny/react-router";
 
 export default () => {
     return {
@@ -15,13 +16,14 @@ export default () => {
                     const newTab = data.get("newTab");
 
                     return (
-                        <a
+                        <Link
+                            to={href}
                             {...attributes}
-                            {...{ href, rel: noFollow ? "nofollow" : null }}
+                            rel={noFollow ? "nofollow" : null}
                             target={newTab ? "_blank" : "_self"}
                         >
                             {children}
-                        </a>
+                        </Link>
                     );
                 }
 

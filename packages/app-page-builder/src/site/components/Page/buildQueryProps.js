@@ -1,7 +1,7 @@
 // @flow
 import gql from "graphql-tag";
 import { getDataFields, getNotFoundPageFields, getErrorPageFields } from "./graphql";
-import type { Location } from "react-router-dom";
+import type { Location } from "@webiny/react-router";
 
 type Props = { location: Location, defaultPages: Object };
 
@@ -17,7 +17,7 @@ getSettings {
     }
 }`;
 
-export default ({ location, defaultPages }: Props) => {
+export default ({ location, defaultPages = {} }: Props) => {
     const query = new URLSearchParams(location.search);
     let defaultPagesFields = ``;
     if (!defaultPages.error) {

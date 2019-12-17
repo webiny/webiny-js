@@ -26,6 +26,7 @@ System.config({
         "@webiny/commodo/*": "./packages/commodo/src/*",
         "@webiny/commodo-graphql/*": "./packages/commodo-graphql/src/*",
         "@webiny/plugins/*": "./packages/plugins/src/*",
+        "@webiny/react-router/*": "./packages/react-router/src/*",
         "@webiny/ui/*": "./packages/ui/src/*"
     }
 });
