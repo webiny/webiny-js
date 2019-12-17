@@ -14,6 +14,7 @@
     "@webiny/app-mailchimp": "^2",
     "@webiny/app-security": "^2",
     "@webiny/app-typeform": "^2",
+    "@webiny/react-router": "^1",
     "@webiny/plugins": "^2",
     "apollo-cache-inmemory": "^1.1.12",
     "apollo-client": "^2.2.8",
@@ -22,7 +23,6 @@
     "core-js": "^3.2.1",
     "cross-fetch": "^3.0.2",
     "react-hot-loader": "^4.3.5",
-    "react-router-dom": "^5.0.0",
     "react-apollo": "^3.1.0",
     "regenerator-runtime": "^0.13.3",
     "theme": "^1.0.0"
@@ -41,8 +41,9 @@
   "scripts": {
     "analyze": "source-map-explorer build/static/js/main.*",
     "start": "env-cmd -r .env.json -e default,local rescripts start",
-    "build:dev": "env-cmd -r .env.json -e default,dev rescripts build",
-    "build:prod": "env-cmd -r .env.json -e default,prod rescripts build",
+    "build": "rescripts build",
+    "build:dev": "env-cmd -r .env.json -e default,dev yarn build",
+    "build:prod": "env-cmd -r .env.json -e default,prod yarn build",
     "postbuild": "webpack --config ./handler/webpack.config.js",
     "test": "rescripts test --env=jsdom",
     "eject": "react-scripts eject"

@@ -1,6 +1,6 @@
 //@flow
 import * as React from "react";
-import { Link } from "react-router-dom";
+import { Link } from "@webiny/react-router";
 import { getFooterData } from "./graphql";
 import { Query } from "react-apollo";
 import { get } from "lodash";
@@ -33,19 +33,19 @@ const Footer = () => {
                             {social && (
                                 <div className={"webiny-pb-section-footer__social"}>
                                     {social.facebook && (
-                                        <a href={social.facebook}>
+                                        <Link to={social.facebook}>
                                             <FacebookIcon />
-                                        </a>
+                                        </Link>
                                     )}
                                     {social.twitter && (
-                                        <a href={social.twitter}>
+                                        <Link to={social.twitter}>
                                             <TwitterIcon />
-                                        </a>
+                                        </Link>
                                     )}
                                     {social.instagram && (
-                                        <a href={social.instagram}>
+                                        <Link to={social.instagram}>
                                             <InstagramIcon />
-                                        </a>
+                                        </Link>
                                     )}
                                 </div>
                             )}
