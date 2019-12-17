@@ -2,7 +2,7 @@
 import React from "react";
 import styled from "@emotion/styled";
 import { Tab } from "@webiny/ui/Tabs";
-import { Route } from "react-router-dom";
+import { Route } from "@webiny/react-router";
 import Helmet from "react-helmet";
 import { AdminLayout } from "@webiny/app-admin/components/AdminLayout";
 import MailchimpSettings from "./components/MailchimpSettings";

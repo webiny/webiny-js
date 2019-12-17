@@ -4,7 +4,7 @@ import "regenerator-runtime/runtime";
 import React from "react";
 import ReactDOM from "react-dom";
 import { ApolloProvider } from "react-apollo";
-import { BrowserRouter, Route, Redirect } from "react-router-dom";
+import { BrowserRouter, Route, Redirect } from "@webiny/react-router";
 import App from "./App";
 import { NetworkError, apolloClient } from "./config";
 

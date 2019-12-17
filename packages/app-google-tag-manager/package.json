@@ -14,10 +14,10 @@
     "@webiny/app-admin": "^2.1.1",
     "@webiny/app-security": "^2.0.3",
     "@webiny/form": "^2.0.0",
+    "@webiny/react-router": "^1.0.0",
     "@webiny/ui": "^2.0.1",
     "lodash.get": "^4.4.2",
-    "react-helmet": "^5.2.0",
-    "react-router-dom": "^5.0.0"
+    "react-helmet": "^5.2.0"
   },
   "devDependencies": {
     "@babel/cli": "^7.5.5",

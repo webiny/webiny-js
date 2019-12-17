@@ -1,7 +1,7 @@
 //@flow
 import * as React from "react";
 import { set } from "dot-prop-immutable";
-import { withRouter } from "react-router-dom";
+import { withRouter } from "@webiny/react-router";
 import Downshift from "downshift";
 import { getPlugins } from "@webiny/plugins";
 import type { GlobalSearch } from "@webiny/app-admin/types";
