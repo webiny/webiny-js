@@ -112,7 +112,14 @@ export default () => [
             };
 
             const ids = (await collection.aggregate(pipelines.results).toArray()) || [];
-            const pages = await PbPage.findByIds(ids.map(item => item.id));
+            const unsortedPages = await PbPage.find({
+                meta: false,
+                query: { id: { $in: ids.map(item => item.id) } }
+            });
+            const pages = ids.map(item => {
+                return unsortedPages.find(page => page.id === item.id);
+            });
+
             const totalCount =
                 get(await collection.aggregate(pipelines.totalCount).toArray(), "0.count") || 0;
 
@@ -190,12 +197,18 @@ export default () => [
                 ])
                 .toArray();
 
-            const pages = await PbPage.find({
+            const unsortedPages = await PbPage.find({
                 sort,
+                meta: false,
                 query: { id: { $in: ids.map(item => item.id) } }
             });
 
-            return { pages, totalCount: get(totalCount, "totalCount", 0) };
+            const pages = ids.map(item => {
+                return unsortedPages.find(page => page.id === item.id);
+            });
+
+            return { pages, totalCount };
+
         }
     },
     {

@@ -60,6 +60,7 @@ export default {
             }
 
             type SsrCacheMutation {
+                generateSsrCache(path: String!): SsrCacheResponse
                 refreshSsrCache(path: String!): SsrCacheResponse
                 install(ssrGenerationUrl: String!): SsrCacheBooleanResponse
             }
@@ -128,6 +129,19 @@ export default {
                     let ssrCache = await SsrCache.findByPath(path);
                     if (!ssrCache) {
                         return new NotFoundResponse("SsrCache entry not found.");
+                    }
+
+                    await ssrCache.refresh();
+
+                    return new Response(ssrCache);
+                },
+                generateSsrCache: async (_, { path }, context) => {
+                    const { SsrCache } = context.models;
+                    let ssrCache = await SsrCache.findByPath(path);
+                    if (!ssrCache) {
+                        ssrCache = new SsrCache();
+                        ssrCache.path = path;
+                        await ssrCache.save();
                     }
 
                     await ssrCache.refresh();

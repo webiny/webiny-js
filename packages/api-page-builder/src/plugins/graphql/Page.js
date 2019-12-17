@@ -14,9 +14,25 @@ import setHomePage from "./pageResolvers/setHomePage";
 import getNotFoundPage from "./pageResolvers/getNotFoundPage";
 import getErrorPage from "./pageResolvers/getErrorPage";
 import oembed from "./pageResolvers/oembed";
+import { Response, ErrorResponse } from "@webiny/commodo-graphql";
+import { GraphQLClient } from "graphql-request";
+import get from "lodash.get";
 
 const pageFetcher = ctx => ctx.models.PbPage;
 const elementFetcher = ctx => ctx.models.PbPageElement;
+
+const GENERATE_SSR_CACHE_GQL = /* GraphQL */ `
+    mutation generateSsrCache($path: String!) {
+        ssrCache {
+            generateSsrCache(path: $path) {
+                error {
+                    code
+                    message
+                }
+            }
+        }
+    }
+`;
 
 export default {
     typeDefs: /* GraphQL*/ `
@@ -107,7 +123,7 @@ export default {
             data: Boolean
             error: PbError
         }
-            
+        
         type PbPageResponse {
             data: PbPage
             error: PbError
@@ -227,6 +243,11 @@ export default {
                 id: ID!
             ): PbPageResponse
             
+            # Triggers the generation of SSR cache for a specific URL. Usually called after a page has been published.
+            generateSsrCache(
+                url: String!
+            ): PbBooleanResponse
+            
             # Delete page and all of its revisions
             deletePage(
                 id: ID!
@@ -301,6 +322,34 @@ export default {
                 args.data = { published: true };
 
                 return resolveUpdate(pageFetcher)(_, args, ctx, info);
+            },
+            generateSsrCache: async (_: any, { url }: Object) => {
+                const SSR_CACHE_API_URL = process.env.SSR_CACHE_API_URL;
+                if (!SSR_CACHE_API_URL) {
+                    return new ErrorResponse({
+                        code: "SSR_CACHE_API_URL_MISSING",
+                        message: `Environment variable "SSR_CACHE_API_URL" is missing.`
+                    });
+                }
+
+                const client = new GraphQLClient(SSR_CACHE_API_URL);
+                try {
+                    const response = await client.request(GENERATE_SSR_CACHE_GQL, { path: url });
+                    const error = get(response, "ssrCache.refreshSsrCache.error");
+                    if (error) {
+                        return new ErrorResponse({
+                            code: "SSR_CACHE_GENERATION_FAILED",
+                            message: `REFRESH_SSR_CACHE_GQL failed, with code "${error.code}" and message "${error.message}".`
+                        });
+                    }
+
+                    return new Response({ data: true });
+                } catch (e) {
+                    return new ErrorResponse({
+                        code: "SSR_CACHE_GENERATION_FAILED",
+                        message: e.message
+                    });
+                }
             },
             // Delete a revision
             deleteRevision: resolveDelete(pageFetcher),

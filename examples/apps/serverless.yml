@@ -2,7 +2,6 @@ name: webiny-cms
 
 vars:
   region: ${env.AWS_REGION}
-  apiUrl: "https://d3sofjdc7z3qe9.cloudfront.net/graphql"
 
 site:
   component: "@webiny/serverless-app"
@@ -14,7 +13,6 @@ site:
     code: ./site/build
     env:
       SSR_FUNCTION: ${ssr.name}
-      API_URL: ${vars.apiUrl}
 
 ssr:
   component: "@webiny/serverless-function"
@@ -41,6 +39,7 @@ api:
   inputs:
     name: Apps Gateway
     description: Serverless React Apps
+    region: ${vars.region}
     endpoints:
       - path: /admin/{key+}
         method: GET
@@ -48,11 +47,8 @@ api:
       - path: /admin
         method: GET
         function: ${admin}
-      - path: /_ssr/{key+}
-        method: GET
-        function: ${ssr}
       - path: /_ssr
-        method: GET
+        method: POST
         function: ${ssr}
       - path: /{key+}
         method: GET
@@ -64,12 +60,15 @@ api:
 cdn:
   component: "@webiny/serverless-aws-cloudfront"
   inputs:
+    defaults: # optional
+      ttl: 15
+      allowedHttpMethods: ['HEAD', 'GET']
+      forward:
+        queryString: true
     origins:
       - url: ${api.url}
+        allowedHttpMethods: ['HEAD', 'GET']
         pathPatterns:
-          "/ssr":
+          "/_ssr":
             ttl: 0
-            forward:
-              headers: 'all'
-              queryString: true
             allowedHttpMethods: ["GET", "HEAD", "OPTIONS", "PUT", "POST", "PATCH", "DELETE"]
