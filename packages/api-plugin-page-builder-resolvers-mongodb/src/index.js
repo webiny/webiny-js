@@ -207,8 +207,7 @@ export default () => [
                 return unsortedPages.find(page => page.id === item.id);
             });
 
-            return { pages, totalCount };
-
+            return { pages, totalCount: get(totalCount, "totalCount", 0) };
         }
     },
     {
