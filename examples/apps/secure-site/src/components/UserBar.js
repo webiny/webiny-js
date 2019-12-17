@@ -1,5 +1,5 @@
 import React from "react";
-import { Dialog, DialogTitle, DialogContent } from "@webiny/ui/Dialog";
+import { Dialog, DialogContent } from "@webiny/ui/Dialog";
 import { useSecurity } from "@webiny/app-security/hooks/useSecurity";
 
 const UserBar = () => {
@@ -10,13 +10,12 @@ const UserBar = () => {
         return (
             <React.Fragment>
                 <Dialog open={showLogin} onClose={() => setShowLogin(false)}>
-                    <DialogTitle>Login</DialogTitle>
-                    <DialogContent>{renderAuthentication()}</DialogContent>
+                    <DialogContent>
+                        {renderAuthentication({ viewProps: { type: "compact" } })}
+                    </DialogContent>
                 </Dialog>
                 <div className={"webiny-user-bar-demo"}>
-                    <a href="#" onClick={() => setShowLogin(true)}>
-                        [ Log in ]
-                    </a>
+                    <span onClick={() => setShowLogin(true)}>[ Log in ]</span>
                 </div>
             </React.Fragment>
         );
@@ -25,9 +24,7 @@ const UserBar = () => {
     return (
         <div className={"webiny-user-bar-demo"}>
             <div>{user.fullName}</div>
-            <a href="#" onClick={logout}>
-                [ Log out ]
-            </a>
+            <span onClick={logout}>[ Log out ]</span>
         </div>
     );
 };

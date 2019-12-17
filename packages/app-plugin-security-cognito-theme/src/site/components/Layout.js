@@ -7,7 +7,7 @@ export function ViewContainer({ logo, children }) {
             <div className="webiny-cognito-view__logo-bar">
                 <img src={logo} alt="Logo" />
             </div>
-            {children}
+            <div className={"webiny-cognito-view__content-box"}>{children}</div>
         </div>
     );
 }
@@ -35,8 +35,17 @@ export function Row({ children, alignRight, alignCenter }) {
     return <div className={classNames(classes)}>{children}</div>;
 }
 
-export function Loading() {
-    return <div className="webiny-cognito-view__loading" />;
+export function Loading({ label }) {
+    return (
+        <div className="webiny-cognito-loading">
+            <div className="webiny-cognito-loading__container">
+                <div className="webiny-cognito-loading__loader">Loading...</div>
+                {label && (
+                    <div className="webiny-cognito-loading__label">{label}</div>
+                )}
+            </div>
+        </div>
+    );
 }
 
 export function Alert({ title, type = "danger", children }) {

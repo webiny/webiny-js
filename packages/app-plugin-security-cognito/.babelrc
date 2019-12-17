@@ -10,7 +10,8 @@
     ],
     "plugins": [
         "babel-plugin-lodash",
-        "@babel/plugin-proposal-class-properties"
+        "@babel/plugin-proposal-class-properties",
+        "@babel/plugin-proposal-throw-expressions"
     ]
 }
 

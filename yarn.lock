@@ -479,6 +479,14 @@
     "@babel/helper-plugin-utils" "^7.0.0"
     "@babel/plugin-syntax-optional-catch-binding" "^7.2.0"
 
+"@babel/plugin-proposal-throw-expressions@^7.7.4":
+  version "7.7.4"
+  resolved "https://registry.yarnpkg.com/@babel/plugin-proposal-throw-expressions/-/plugin-proposal-throw-expressions-7.7.4.tgz#0321bd4acb699abef3006f7cd3d1b2c00daf1b82"
+  integrity sha512-yMcK1dM9Rv+Y5n62rKaHfRoRD4eOWIqYn4uy/Xu7C47rJKaR5JpQR905Hc/OL8EEaGNcEyuvjOtYdNAVXZKDZQ==
+  dependencies:
+    "@babel/helper-plugin-utils" "^7.0.0"
+    "@babel/plugin-syntax-throw-expressions" "^7.7.4"
+
 "@babel/plugin-proposal-unicode-property-regex@^7.4.4", "@babel/plugin-proposal-unicode-property-regex@^7.6.2":
   version "7.6.2"
   resolved "https://registry.npmjs.org/@babel/plugin-proposal-unicode-property-regex/-/plugin-proposal-unicode-property-regex-7.6.2.tgz#05413762894f41bfe42b9a5e80919bd575dcc802"
@@ -548,6 +556,13 @@
   version "7.2.0"
   resolved "https://registry.npmjs.org/@babel/plugin-syntax-optional-catch-binding/-/plugin-syntax-optional-catch-binding-7.2.0.tgz#a94013d6eda8908dfe6a477e7f9eda85656ecf5c"
   integrity sha512-bDe4xKNhb0LI7IvZHiA13kff0KEfaGX/Hv4lMA9+7TEc63hMNvfKo6ZFpXhKuEp+II/q35Gc4NoMeDZyaUbj9w==
+  dependencies:
+    "@babel/helper-plugin-utils" "^7.0.0"
+
+"@babel/plugin-syntax-throw-expressions@^7.7.4":
+  version "7.7.4"
+  resolved "https://registry.yarnpkg.com/@babel/plugin-syntax-throw-expressions/-/plugin-syntax-throw-expressions-7.7.4.tgz#2e1e91485f9a35f1f71547717ccd8407a900092c"
+  integrity sha512-qtLTzzOJ1Co6tQ8pMqnsfRgeUfzExP90Tc6GISTC34O0lR6IDvymWLfVJFcJaQinz6reciQ4auALV3JM+b3D/Q==
   dependencies:
     "@babel/helper-plugin-utils" "^7.0.0"
 
@@ -4867,42 +4882,6 @@
     "@webassemblyjs/ast" "1.8.5"
     "@webassemblyjs/wast-parser" "1.8.5"
     "@xtuc/long" "4.2.2"
-
-"@webiny/app-forms@^2":
-  version "2.2.0"
-  resolved "https://registry.yarnpkg.com/@webiny/app-forms/-/app-forms-2.2.0.tgz#d6e7c95b88dfc13924c1c845eb28b985e752c9d6"
-  integrity sha512-Y0R6shg2PUEJHV7LUhA0rdDOT6tn0DN8Jkhy/FH/PfDa4oztdTxJeVP3YgOtOzpJtwPkbrwm11ELwNOVNimABg==
-  dependencies:
-    "@babel/runtime" "^7.5.5"
-    "@emotion/core" "^10.0.17"
-    "@emotion/styled" "^10.0.17"
-    "@rmwc/menu" "^5.6.0"
-    "@svgr/webpack" "^4.3.2"
-    "@webiny/app" "^2.0.2"
-    "@webiny/app-admin" "^2.1.1"
-    "@webiny/app-i18n" "^2.1.1"
-    "@webiny/app-page-builder" "^2.0.3"
-    "@webiny/app-security" "^2.0.3"
-    "@webiny/form" "^2.0.0"
-    "@webiny/plugins" "^2.0.0"
-    "@webiny/ui" "^2.0.1"
-    "@webiny/validation" "^2.1.0"
-    emotion "^10.0.17"
-    graphql-tag "^2.10.1"
-    lodash "^4.17.10"
-    lodash.get "^4.4.2"
-    react-apollo "^3.1.0"
-    react-dnd "^9.3.4"
-    react-dnd-html5-backend "^9.3.4"
-    react-google-recaptcha "^1.1.0"
-    react-helmet "^5.2.0"
-    react-hotkeyz "^1.0.4"
-    react-redux "^7.1.1"
-    react-router-dom "^5.0.0"
-    react-sortable-hoc "^1.9.1"
-    shortid "^2.2.14"
-    timeago-react "^2.0.0"
-    use-react-router "^1.0.7"
 
 "@wry/context@^0.4.0":
   version "0.4.4"

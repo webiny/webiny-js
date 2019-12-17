@@ -7,7 +7,7 @@ import { useApolloClient } from "react-apollo";
 import { useHandler } from "@webiny/app/hooks/useHandler";
 import { i18n } from "@webiny/app/i18n";
 import { Form } from "@webiny/form";
-import { getPlugins } from "@webiny/plugins";
+import { getPlugin } from "@webiny/plugins";
 import { Input } from "@webiny/ui/Input";
 import { ButtonPrimary } from "@webiny/ui/Button";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
@@ -65,18 +65,14 @@ const UPDATE_CURRENT_USER = gql`
     }
 `;
 
-const UsersForm = () => {
-    const auth = getPlugins("security-authentication-provider")
-        .filter(pl => pl.hasOwnProperty("renderUserAccountForm"))
-        .pop();
+const UserAccountForm = () => {
+    const auth = getPlugin("security-view-user-account-form");
 
     if (!auth) {
         throw Error(
-            `You must register a "security-authentication-provider" plugin to render Account form!`
+            `You must register a "security-view-user-account-form" plugin to render Account form!`
         );
     }
-
-    const { renderUserAccountForm } = auth;
 
     const [{ loading, user }, setState] = useReducer((prev, next) => ({ ...prev, ...next }), {
         loading: true,
@@ -118,7 +114,7 @@ const UsersForm = () => {
                     {loading && <CircularProgress />}
                     <SimpleFormHeader title={"Account"} />
                     <SimpleFormContent>
-                        {renderUserAccountForm({
+                        {React.createElement(auth.view, {
                             Bind,
                             data,
                             fields: {
@@ -162,4 +158,4 @@ const UsersForm = () => {
     );
 };
 
-export default UsersForm;
+export default UserAccountForm;

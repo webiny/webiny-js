@@ -10,7 +10,7 @@ import { Typography } from "@webiny/ui/Typography";
 import { Grid, Cell } from "@webiny/ui/Grid";
 import { CircularProgress } from "@webiny/ui/Progress";
 import { validation } from "@webiny/validation";
-import { getPlugins } from "@webiny/plugins";
+import { getPlugin } from "@webiny/plugins";
 import {
     SimpleForm,
     SimpleFormHeader,
@@ -52,15 +52,13 @@ const INSTALL = gql`
 `;
 
 const Install = ({ onInstalled }) => {
-    const auth = getPlugins("security-authentication-provider")
-        .filter(pl => pl.hasOwnProperty("renderInstallForm"))
-        .pop();
+    const auth = getPlugin("security-view-install-form");
 
     if (!auth) {
-        throw Error(`You must register a "security-authentication-provider" plugin!`);
+        throw Error(
+            `You must register a "security-view-install-form" plugin to render installation form!`
+        );
     }
-
-    const { renderInstallForm } = auth;
 
     const client = useApolloClient();
     const [loading, setLoading] = useState(false);
@@ -116,7 +114,7 @@ const Install = ({ onInstalled }) => {
                             </Grid>
                         )}
                         {!authUserMessage &&
-                            renderInstallForm({
+                            React.createElement(auth.view, {
                                 Bind,
                                 data,
                                 error,

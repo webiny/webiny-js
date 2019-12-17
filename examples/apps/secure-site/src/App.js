@@ -27,7 +27,7 @@ const App = () => {
     return (
         <I18NProvider>
             <UiProvider>
-                <SecurityProvider>
+                <SecurityProvider allowAnonymous={true}>
                     <UserBar />
                     <PageBuilderProvider defaults={defaults}>
                         {getPlugins("route").map((pl: Object) =>

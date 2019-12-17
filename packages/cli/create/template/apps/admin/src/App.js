@@ -8,19 +8,10 @@ import { AppInstaller } from "@webiny/app-admin/components/Install/AppInstaller"
 import { PageBuilderProvider } from "@webiny/app-page-builder/contexts/PageBuilder";
 import { SecurityProvider } from "@webiny/app-security/contexts/Security";
 import { I18NProvider } from "@webiny/app-i18n/contexts/I18N";
-import cognito from "@webiny/app-plugin-security-cognito";
-import myTheme from "theme";
 import "./App.scss";
 import plugins from "./plugins";
 
-registerPlugins(
-    plugins,
-    cognito({
-        region: process.env.REACT_APP_USER_POOL_REGION,
-        userPoolId: process.env.REACT_APP_USER_POOL_ID,
-        userPoolWebClientId: process.env.REACT_APP_USER_POOL_WEB_CLIENT_ID
-    })
-);
+registerPlugins(plugins);
 
 // Execute `init` plugins, they may register more plugins dynamically
 getPlugins("webiny-init").forEach(plugin => plugin.init());
@@ -30,7 +21,7 @@ const App = () => {
         <UiProvider>
             <I18NProvider>
                 <AppInstaller security={<SecurityProvider />}>
-                    <PageBuilderProvider theme={myTheme} isEditor>
+                    <PageBuilderProvider isEditor>
                         <ThemeProvider>
                             {getPlugins("route").map((pl: Object) =>
                                 React.cloneElement(pl.route, {

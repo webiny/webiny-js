@@ -1,6 +1,6 @@
 // @flow
 import * as React from "react";
-import { getPlugins } from "@webiny/plugins";
+import { getPlugin } from "@webiny/plugins";
 import { i18n } from "@webiny/app/i18n";
 import { Form } from "@webiny/form";
 import { Input } from "@webiny/ui/Input";
@@ -23,14 +23,10 @@ const t = i18n.ns("app-security/admin/users/form");
 const UsersForm = () => {
     const { form: crudForm } = useCrud();
 
-    const auth = getPlugins("security-authentication-provider")
-        .filter(pl => pl.hasOwnProperty("renderUserForm"))
-        .pop();
+    const auth = getPlugin("security-view-user-account-form");
 
     if (!auth) {
-        throw Error(
-            `You must register a "security-authentication-provider" plugin to render User form!`
-        );
+        throw Error(`You must register a "security-view-user-form" plugin to render User form!`);
     }
 
     return (
@@ -40,7 +36,7 @@ const UsersForm = () => {
                     {crudForm.loading && <CircularProgress />}
                     <SimpleFormHeader title={data.fullName || t`N/A`} />
                     <SimpleFormContent>
-                        {auth.renderUserForm({
+                        {React.createElement(auth.view, {
                             Bind,
                             data,
                             fields: {
