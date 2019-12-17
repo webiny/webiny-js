@@ -35,10 +35,12 @@ const serveCachedPageSsr = async ({ path, multiValueQueryStringParameters }) => 
         throw new Error(error.message || error.code);
     }
 
+    const maxAge = (data.expiresIn / 1000); // Seconds.
+
     return createResponse({
         type: "text/html",
         body: data.content,
-        headers: { "Cache-Control": "public, max-age=10" }
+        headers: { "Cache-Control": "public, max-age=" + maxAge }
     });
 };
 
