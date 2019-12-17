@@ -73,7 +73,7 @@ export default async ({ args, context }) => {
     const [totalCount] = await collection.aggregate(pipelines.totalCount).toArray();
 
     return {
-        forms: await Form.find({ sort, query: { id: { $in: ids.map(item => item.id) } } }),
+        forms: await Form.find({ meta: false, sort, query: { id: { $in: ids.map(item => item.id) } } }),
         totalCount: get(totalCount, "totalCount", 0)
     };
 };
