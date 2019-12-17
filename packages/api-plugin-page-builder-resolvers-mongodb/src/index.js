@@ -197,12 +197,18 @@ export default () => [
                 ])
                 .toArray();
 
-            const pages = await PbPage.find({
+            const unsortedPages = await PbPage.find({
                 sort,
+                meta: false,
                 query: { id: { $in: ids.map(item => item.id) } }
             });
 
-            return { pages, totalCount: get(totalCount, "totalCount", 0) };
+            const pages = ids.map(item => {
+                return unsortedPages.find(page => page.id === item.id);
+            });
+
+            return { pages, totalCount };
+
         }
     },
     {
