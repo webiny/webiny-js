@@ -5,7 +5,7 @@ import { withUser } from "@webiny/api-security";
 import ssrCache from "./models/ssrCache.model";
 import ssrCacheSettings from "./models/ssrCacheSettings.model";
 
-export default () => ({
+export default ({ options }) => ({
     name: "graphql-context-models",
     type: "graphql-context",
     apply(context) {
@@ -29,7 +29,7 @@ export default () => ({
             )();
 
         const SsrCacheSettings = ssrCacheSettings({ createBase, context });
-        const SsrCache = ssrCache({ createBase, context, SsrCacheSettings });
+        const SsrCache = ssrCache({ createBase, context, SsrCacheSettings, options });
 
         context.models = {
             SsrCacheSettings,

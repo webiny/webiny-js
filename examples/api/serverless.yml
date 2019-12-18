@@ -126,7 +126,10 @@ ssrCache:
         options: ${vars.apollo}
       - factory: "@webiny/api-plugin-commodo-mongodb"
         options: ${vars.commodo}
-      - "@webiny/api-ssr-cache/plugins/api"
+      - factory: "@webiny/api-ssr-cache/plugins/api"
+        options:
+          cacheTtl: 2592000 # Seconds (30 days).
+          staleCacheTtl: 20 # Seconds.
 
 pageBuilder:
   component: "@webiny/serverless-page-builder"

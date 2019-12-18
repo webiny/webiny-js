@@ -23323,7 +23323,7 @@ uid-number@0.0.6:
 
 ulocation@^0.8.0:
   version "0.8.0"
-  resolved "https://registry.yarnpkg.com/ulocation/-/ulocation-0.8.0.tgz#d9869974af4fd7e2b3b23d8f38c00bf51f1fc1fc"
+  resolved "https://registry.npmjs.org/ulocation/-/ulocation-0.8.0.tgz#d9869974af4fd7e2b3b23d8f38c00bf51f1fc1fc"
   integrity sha1-2YaZdK9P1+Kzsj2POMAL9R8fwfw=
 
 umask@^1.1.0:

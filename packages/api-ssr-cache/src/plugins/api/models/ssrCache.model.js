@@ -13,10 +13,13 @@ import {
     skipOnPopulate
 } from "@webiny/commodo";
 
-const DEFAULT_TTL_SECONDS = 60;
-const DEFAULT_REFRESH_TTL_SECONDS = 30;
+const DEFAULT_CACHE_TTL = 60;
+const DEFAULT_STALE_CACHE_TTL = 30;
 
-export default ({ createBase, SsrCacheSettings }) => {
+export default ({ createBase, SsrCacheSettings, options = {} }) => {
+    const TTL_CACHE = options.cacheTtl || DEFAULT_CACHE_TTL;
+    const TTL_STALE_CACHE = options.staleCacheTtl || DEFAULT_STALE_CACHE_TTL;
+
     return flow(
         withName("SsrCache"),
         withFields({
@@ -41,12 +44,12 @@ export default ({ createBase, SsrCacheSettings }) => {
                 instanceOf: flow(
                     withProps({
                         get duration() {
-                            return this.end - this.start;
+                            return this.endedOn - this.startedOn;
                         }
                     }),
                     withFields({
-                        start: date(),
-                        end: date(),
+                        startedOn: date(),
+                        endedOn: date(),
                         duration: number()
                     })
                 )()
@@ -75,14 +78,14 @@ export default ({ createBase, SsrCacheSettings }) => {
                 const expiresIn = this.expiresOn - new Date();
                 return expiresIn > 0 ? expiresIn : 0;
             },
-            incrementExpiresOn(seconds = DEFAULT_REFRESH_TTL_SECONDS) {
+            incrementExpiresOn(seconds = TTL_STALE_CACHE) {
                 this.expiresOn = new Date();
                 this.expiresOn.setSeconds(this.expiresOn.getSeconds() + seconds);
                 return this;
             },
             async refresh() {
                 const settings = await SsrCacheSettings.load();
-                this.lastRefresh.start = new Date();
+                this.lastRefresh.startedOn = new Date();
                 await this.save();
                 const response = await got(settings.data.ssrGenerationUrl, {
                     headers: { "Content-Type": "application/json" },
@@ -93,10 +96,10 @@ export default ({ createBase, SsrCacheSettings }) => {
                 });
                 this.content = response.body;
 
-                this.lastRefresh.end = new Date();
-                this.lastRefresh.duration = this.lastRefresh.end - this.lastRefresh.start;
+                this.lastRefresh.endedOn = new Date();
+                this.lastRefresh.duration = this.lastRefresh.endedOn - this.lastRefresh.startedOn;
                 this.refreshedOn = new Date();
-                this.incrementExpiresOn(DEFAULT_TTL_SECONDS);
+                this.incrementExpiresOn(TTL_CACHE);
 
                 await this.save();
             },

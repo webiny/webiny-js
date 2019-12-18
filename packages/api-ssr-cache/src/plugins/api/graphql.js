@@ -23,8 +23,8 @@ export default {
     schema: {
         typeDefs: gql`
             type SsrCacheLastRefresh {
-                start: DateTime
-                end: DateTime
+                startedOn: DateTime
+                endedOn: DateTime
                 duration: Int
             }
 
@@ -34,7 +34,7 @@ export default {
                 refreshedOn: DateTime
                 lastRefresh: SsrCacheLastRefresh
                 expiresOn: DateTime
-                expiresIn: Int
+                expiresIn: Long
                 hasExpired: Boolean
             }
 
