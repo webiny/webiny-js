@@ -1,0 +1,9 @@
+{
+  "viewportWidth": 1600,
+  "viewportHeight": 1200,
+  "baseUrl": "https://d3ocwkd4f9wdkd.cloudfront.net",
+  "env": {
+    "API_URL": "https://d20c3stv3fl253.cloudfront.net",
+    "GRAPHQL_API_URL": "https://d20c3stv3fl253.cloudfront.net/graphql"
+  }
+}
