@@ -1,30 +1,20 @@
 {
-  "private": true,
-  "workspaces": {
-    "packages": [
-      "packages/*",
-      "components/*",
-      "examples/apps/*",
-      "examples/packages/*"
-    ],
-    "nohoist": [
-      "**/inquirer/**",
-      "**/mime/**"
-    ]
+  "config": {
+    "commitizen": {
+      "cliPath": "node_modules/commitizen",
+      "path": "./scripts/cz-adapter"
+    }
   },
   "contributors": [
     "Pavel Denisjuk <pavel@webiny.com>",
     "Sven Al Hamad <sven@webiny.com>",
     "Adrian Smijulj <adrian@webiny.com>"
   ],
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/webiny/webiny-js.git"
-  },
   "devDependencies": {
     "@babel/cli": "^7.0.0",
     "@babel/core": "^7.0.0",
     "@shelf/jest-mongodb": "^1.1.0",
+    "@testing-library/cypress": "^5.0.2",
     "adio": "^1.0.0",
     "all-contributors-cli": "^6.2.0",
     "babel-core": "^7.0.0-bridge.0",
@@ -34,6 +24,7 @@
     "chalk": "^2.4.1",
     "commitizen": "^2.10.1",
     "cross-env": "^5.2.0",
+    "cypress": "^3.8.0",
     "cz-customizable": "^5.2.0",
     "dotenv": "^5.0.1",
     "empty": "^0.10.1",
@@ -64,8 +55,8 @@
     "inquirer-maxlength-input-prompt": "^1.0.0",
     "jest": "^23.1.0",
     "jest-extended": "^0.7.2",
-    "lint-staged": "^7.2.2",
     "lerna": "3.19.0",
+    "lint-staged": "^7.2.2",
     "load-json-file": "^6.2.0",
     "lodash": "^4.17.11",
     "longest": "^2.0.1",
@@ -85,31 +76,6 @@
     "write-json-file": "^4.2.0",
     "yargs": "^12.0.1"
   },
-  "optionalDependencies": {
-    "fsevents": "^2.0.7"
-  },
-  "scripts": {
-    "clear-dist": "yarn rimraf components/*/dist packages/*/dist",
-    "contributors:add": "all-contributors add",
-    "contributors:generate": "all-contributors generate",
-    "commit": "node ./scripts/commitizen.js",
-    "commit:no-verify": "yarn commit --no-verify",
-    "commit:verify": "yarn lint-staged",
-    "lint-staged": "lint-staged",
-    "prettier": "prettier --config .prettierrc.js --write",
-    "publish-to-verdaccio": " yarn build && cross-env REGISTRY=http://localhost:4800 node scripts/publish-to-verdaccio",
-    "setup-repo": "node scripts/setupRepo",
-    "start-verdaccio": "yarn verdaccio -c ./verdaccio.yaml",
-    "test": "jest --config ./scripts/jest/config.src.js",
-    "test:build": "jest --config ./scripts/jest/config.build.js",
-    "validate-packages": "node scripts/validatePackages.js",
-    "webiny-ui-build-storybook": "cd packages/ui && cross-env OUT=../../netlify-static yarn build-storybook",
-    "wby:fns": "cross-env NODE_ENV=development sls offline start --stage=local",
-    "wby:fns:inspect": "yarn wby:fns --inspect=9001"
-  },
-  "pre-commit": [
-    "lint-staged"
-  ],
   "lint-staged": {
     "**/*.js": [
       "adio",
@@ -119,13 +85,49 @@
       "jest --config ./scripts/jest/config.src.js --findRelatedTests"
     ]
   },
+  "optionalDependencies": {
+    "fsevents": "^2.0.7"
+  },
+  "pre-commit": [
+    "lint-staged"
+  ],
+  "private": true,
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/webiny/webiny-js.git"
+  },
+  "scripts": {
+    "clear-dist": "yarn rimraf components/*/dist packages/*/dist",
+    "commit": "node ./scripts/commitizen.js",
+    "commit:no-verify": "yarn commit --no-verify",
+    "commit:verify": "yarn lint-staged",
+    "contributors:add": "all-contributors add",
+    "contributors:generate": "all-contributors generate",
+    "lint-staged": "lint-staged",
+    "prettier": "prettier --config .prettierrc.js --write",
+    "publish-to-verdaccio": " yarn build && cross-env REGISTRY=http://localhost:4800 node scripts/publish-to-verdaccio",
+    "setup-repo": "node scripts/setupRepo",
+    "start-verdaccio": "yarn verdaccio -c ./verdaccio.yaml",
+    "test": "jest --config ./scripts/jest/config.src.js",
+    "test:build": "jest --config ./scripts/jest/config.build.js",
+    "validate-packages": "node scripts/validatePackages.js",
+    "wby:fns": "cross-env NODE_ENV=development sls offline start --stage=local",
+    "wby:fns:inspect": "yarn wby:fns --inspect=9001",
+    "webiny-ui-build-storybook": "cd packages/ui && cross-env OUT=../../netlify-static yarn build-storybook"
+  },
+  "workspaces": {
+    "packages": [
+      "packages/*",
+      "components/*",
+      "examples/apps/*",
+      "examples/packages/*"
+    ],
+    "nohoist": [
+      "**/inquirer/**",
+      "**/mime/**"
+    ]
+  },
   "yargs": {
     "populate--": true
-  },
-  "config": {
-    "commitizen": {
-      "cliPath": "node_modules/commitizen",
-      "path": "./scripts/cz-adapter"
-    }
   }
 }
