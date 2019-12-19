@@ -12,7 +12,7 @@ import DefaultMenu from "./DefaultMenu";
 type State = {
     mobileMenuOpen: boolean
 };
-const menuName = "main-menu";
+const MENU_NAME = "main-menu";
 
 class Header extends React.Component<{}, State> {
     state = { mobileMenuOpen: false };
@@ -31,16 +31,18 @@ class Header extends React.Component<{}, State> {
 
                     return (
                         <React.Fragment>
-                            <div className={"webiny-pb-section-header"}>
-                                <DesktopHeader name={name} logo={logo} />
-                                <MobileHeader
-                                    name={name}
-                                    logo={logo}
-                                    active={this.state.mobileMenuOpen}
-                                    toggleMenu={this.toggleMobileMenu}
-                                />
-                            </div>
-                            <div className={"webiny-pb-section-header-spacer"} />
+                            <ssr-cache data-tag="pb-menu" data-slug={MENU_NAME}>
+                                <div className={"webiny-pb-section-header"}>
+                                    <DesktopHeader name={name} logo={logo} />
+                                    <MobileHeader
+                                        name={name}
+                                        logo={logo}
+                                        active={this.state.mobileMenuOpen}
+                                        toggleMenu={this.toggleMobileMenu}
+                                    />
+                                </div>
+                                <div className={"webiny-pb-section-header-spacer"} />
+                            </ssr-cache>
                         </React.Fragment>
                     );
                 }}
@@ -61,7 +63,7 @@ const DesktopHeader = ({ logo, name }: { logo: Object, name: string }) => {
                 </Link>
             </div>
             <nav className={"webiny-pb-section-header__navigation"}>
-                <Menu slug={menuName} component={DefaultMenu} />
+                <Menu slug={MENU_NAME} component={DefaultMenu} />
             </nav>
         </div>
     );
@@ -93,7 +95,7 @@ const MobileHeader = ({
                     "webiny-pb-section-header__navigation--mobile-active": active
                 })}
             >
-                <Menu slug={menuName} component={DefaultMenu} />
+                <Menu slug={MENU_NAME} component={DefaultMenu} />
                 <div className={"webiny-pb-section-header__mobile-site-name"}>
                     <Link to="/">{name}</Link>
                 </div>
