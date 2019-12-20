@@ -1,5 +1,4 @@
 import DefaultFormLayout from "./DefaultFormLayout";
-import "./styles.scss";
 
 export default () => [
     {

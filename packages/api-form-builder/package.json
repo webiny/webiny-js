@@ -1,6 +1,6 @@
 {
   "name": "@webiny/api-form-builder",
-  "version": "2.1.1",
+  "version": "1.0.0",
   "main": "index.js",
   "repository": {
     "type": "git",
