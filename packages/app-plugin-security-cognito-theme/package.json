@@ -4,18 +4,15 @@
   "main": "index.js",
   "license": "MIT",
   "dependencies": {
-    "@webiny/app": "^2",
-    "@webiny/app-form-builder": "^2",
-    "@webiny/app-i18n": "^2",
-    "@webiny/app-page-builder": "^2",
-    "@webiny/form": "^2",
-    "@webiny/validation": "^2",
+    "@emotion/styled": "^10.0.17",
+    "@webiny/app": "^2.0.2",
+    "@webiny/app-i18n": "^2.1.1",
+    "@webiny/form": "^2.0.0",
+    "@webiny/validation": "^2.1.0",
+    "@webiny/ui": "^2.0.1",
     "classnames": "^2.2.6",
-    "graphql-tag": "2.10.1",
-    "lodash": "^4.17.11",
-    "react-apollo": "^3.1.0",
-    "react-hamburger-menu": "^1.1.1",
-    "react-router-dom": "^5.0.0"
+    "emotion": "^10.0.17",
+    "lodash": "^4.17.11"
   },
   "peerDependencies": {
     "react": "^16.8.0"

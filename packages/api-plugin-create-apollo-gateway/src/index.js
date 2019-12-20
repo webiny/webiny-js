@@ -22,6 +22,7 @@ export default ({ server = {}, handler = {}, services = [] } = {}) => ({
                     url,
 
                     willSendRequest({ request, context }) {
+                        // TODO: process plugins
                         if (context.headers) {
                             Object.keys(context.headers).forEach(key => {
                                 if (context.headers[key]) {

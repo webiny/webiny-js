@@ -6,7 +6,6 @@
   "dependencies": {
     "@serverless/core": "^1.1.1",
     "@webiny/serverless-apollo-service": "^2.0.0",
-    "load-json-file": "^6.2.0",
     "lodash.get": "^4.4.2"
   },
   "scripts": {

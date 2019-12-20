@@ -5,11 +5,8 @@
   "license": "MIT",
   "dependencies": {
     "@webiny/app": "^2",
-    "@webiny/app-form-builder": "^2",
-    "@webiny/app-i18n": "^2",
     "@webiny/app-page-builder": "^2",
-    "@webiny/form": "^2",
-    "@webiny/validation": "^2",
+    "@webiny/plugins": "^2.0.0",
     "classnames": "^2.2.6",
     "graphql-tag": "2.10.1",
     "lodash.get": "^4.4.2",
