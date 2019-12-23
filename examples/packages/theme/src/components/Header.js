@@ -31,18 +31,17 @@ class Header extends React.Component<{}, State> {
 
                     return (
                         <React.Fragment>
-                            <ssr-cache data-tag="pb-menu" data-slug={MENU_NAME}>
-                                <div className={"webiny-pb-section-header"}>
-                                    <DesktopHeader name={name} logo={logo} />
-                                    <MobileHeader
-                                        name={name}
-                                        logo={logo}
-                                        active={this.state.mobileMenuOpen}
-                                        toggleMenu={this.toggleMobileMenu}
-                                    />
-                                </div>
-                                <div className={"webiny-pb-section-header-spacer"} />
-                            </ssr-cache>
+                            <ssr-cache data-class="pb-menu" data-id={MENU_NAME} />
+                            <div className={"webiny-pb-section-header"}>
+                                <DesktopHeader name={name} logo={logo} />
+                                <MobileHeader
+                                    name={name}
+                                    logo={logo}
+                                    active={this.state.mobileMenuOpen}
+                                    toggleMenu={this.toggleMobileMenu}
+                                />
+                            </div>
+                            <div className={"webiny-pb-section-header-spacer"} />
                         </React.Fragment>
                     );
                 }}
