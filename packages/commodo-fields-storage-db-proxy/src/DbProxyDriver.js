@@ -4,18 +4,36 @@ import generateId from "./generateId";
 import { createPaginationMeta } from "@commodo/fields-storage";
 import { getName } from "@commodo/name";
 import LambdaClient from "aws-sdk/clients/lambda";
+import { EJSON } from "bson";
 
 class DbProxyClient {
     constructor({ dbProxyFunctionName }) {
         this.dbProxyFunctionName = dbProxyFunctionName;
     }
 
-    runOperation(payload) {
+    async runOperation(requestPayload) {
+        const ts = new Date();
         const Lambda = new LambdaClient({ region: process.env.AWS_REGION });
-        return Lambda.invoke({
+        const { Payload } = await Lambda.invoke({
             FunctionName: this.dbProxyFunctionName,
-            Payload: JSON.stringify(payload)
+            Payload: EJSON.stringify(requestPayload)
         }).promise();
+
+        let responsePayload;
+        try {
+            responsePayload = JSON.parse(Payload);
+            responsePayload = EJSON.parse(responsePayload);
+        } catch (e) {
+            throw new Error("Could not JSON.parse DB Proxy's response.");
+        }
+
+
+        if (!responsePayload.result) {
+            throw new Error(`Missing "result" key in received DB Proxy's response.`);
+        }
+
+        console.log(`Vracamo response.result u ${new Date() - ts}ms`);
+        return responsePayload.result;
     }
 }
 

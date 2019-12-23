@@ -1,6 +1,6 @@
 {
-  "name": "@commodo/fields-storage-mongodb",
-  "version": "0.3.0",
+  "name": "@webiny/commodo-fields-storage-db-proxy",
+  "version": "1.0.0",
   "main": "index.js",
   "repository": {
     "type": "git",
@@ -11,23 +11,11 @@
   ],
   "license": "MIT",
   "dependencies": {
-    "@commodo/name": "^0.2.8",
+    "@commodo/name": "^1.1.0",
     "@commodo/fields": "^0.2.8",
     "@commodo/fields-storage": "^0.4.0",
-    "mdbid": "^1.0.0"
-  },
-  "devDependencies": {
-    "@babel/cli": "^7.5.5",
-    "@babel/core": "^7.5.5",
-    "@babel/preset-env": "^7.5.5",
-    "@babel/preset-flow": "^7.0.0",
-    "@babel/register": "^7.5.5",
-    "@commodo/fields-storage-ref": "^0.4.0",
-    "@commodo/hooks": "^0.4.0",
-    "babel-plugin-lodash": "^3.3.4",
-    "glob": "^7.1.2",
-    "ramda": "^0.25.0",
-    "camelcase": "^5.2.0"
+    "mdbid": "^1.0.0",
+    "bson": "^4.0.2"
   },
   "publishConfig": {
     "access": "public"

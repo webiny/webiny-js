@@ -1,10 +1,10 @@
 import { string } from "@commodo/fields";
-import { isMongoDbId } from "@commodo/fields-storage-mongodb";
+import { isId } from "./../isId";
 
 export default () => {
     return string({
         validation: value => {
-            if (value && !isMongoDbId(value)) {
+            if (value && !isId(value)) {
                 throw new Error(
                     `A valid Mongo ID must be assigned to the "id" field (tried to assign ${value}).`
                 );
