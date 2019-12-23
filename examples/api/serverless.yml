@@ -7,6 +7,9 @@ vars:
     server:
       introspection: ${env.GRAPHQL_INTROSPECTION}
       playground: ${env.GRAPHQL_PLAYGROUND}
+  mongodb:
+    server: ${env.MONGODB_SERVER}
+    name: ${env.MONGODB_NAME}
   commodo:
     database:
       server: ${env.MONGODB_SERVER}
@@ -41,6 +44,13 @@ gateway:
               url: ${formBuilder.api.graphqlUrl}
             - name: ssrCache
               url: ${ssrCache.api.graphqlUrl}
+
+dbProxy:
+  component: "@webiny/serverless-db-proxy/dist"
+  inputs:
+    env:
+      MONGODB_SERVER: ${vars.mongodb.server}
+      MONGODB_NAME: ${vars.mongodb.name}
 
 cognito:
   component: "@webiny/serverless-aws-cognito-user-pool"
@@ -107,8 +117,9 @@ i18n:
     plugins:
       - factory: "@webiny/api-plugin-create-apollo-handler"
         options: ${vars.apollo}
-      - factory: "@webiny/api-plugin-commodo-mongodb"
-        options: ${vars.commodo}
+      - factory: "@webiny/api-plugin-commodo-db-proxy"
+        options:
+          functionArn: ${dbProxy.arn}
       - factory: "@webiny/api-security/plugins/service"
         options: ${vars.security}
       - "@webiny/api-i18n/plugins"
