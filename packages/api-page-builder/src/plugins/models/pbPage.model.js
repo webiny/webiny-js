@@ -66,14 +66,10 @@ export default ({ createBase, context, PbCategory, PbSettings }) => {
                                 publishedRev.published = false;
                                 await publishedRev.save();
                             }
+                        });
 
-                            const plugins = context.plugins.byType("pb-page-publish");
-                            for (let i = 0; i < plugins.length; i++) {
-                                let plugin = plugins[i];
-                                if (typeof plugin.callback === "function") {
-                                    await plugin.callback({ page: instance });
-                                }
-                            }
+                        instance.registerHookCallback("afterSave", async () => {
+                            await instance.hook("afterPublish");
                         });
                     }
                     return value;
