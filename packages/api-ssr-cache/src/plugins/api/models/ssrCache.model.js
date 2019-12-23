@@ -7,11 +7,14 @@ import {
     number,
     date,
     fields,
+    object,
     withProps,
     withName,
+    withHooks,
     withStaticProps,
     skipOnPopulate
 } from "@webiny/commodo";
+import getSsrCacheTags from "./ssrCache/getSsrCacheTags";
 
 const DEFAULT_CACHE_TTL = 60;
 const DEFAULT_STALE_CACHE_TTL = 30;
@@ -39,21 +42,30 @@ export default ({ createBase, SsrCacheSettings, options = {} }) => {
             content: string({ value: null }),
             refreshedOn: skipOnPopulate()(date()),
             expiresOn: skipOnPopulate()(date()),
-            lastRefresh: fields({
-                value: {},
-                instanceOf: flow(
-                    withProps({
-                        get duration() {
-                            return this.endedOn - this.startedOn;
-                        }
-                    }),
-                    withFields({
-                        startedOn: date(),
-                        endedOn: date(),
-                        duration: number()
-                    })
-                )()
-            })
+            cacheTags: skipOnPopulate()(object({ list: true })),
+            lastRefresh: skipOnPopulate()(
+                fields({
+                    value: {},
+                    instanceOf: flow(
+                        withProps({
+                            get duration() {
+                                return this.endedOn - this.startedOn;
+                            }
+                        }),
+                        withFields({
+                            startedOn: date(),
+                            endedOn: date(),
+                            duration: number()
+                        })
+                    )()
+                })
+            )
+        }),
+
+        withHooks({
+            beforeSave() {
+                this.cacheTags = getSsrCacheTags(this.content);
+            }
         }),
         withStaticProps({
             findByPath(path) {
@@ -62,7 +74,7 @@ export default ({ createBase, SsrCacheSettings, options = {} }) => {
         }),
         withProps({
             get hasExpired() {
-                return this.expiresIn === 0;
+                return !this.expiresIn;
             },
             get hasContent() {
                 return typeof this.content === "string" && this.content.length > 0;
@@ -78,6 +90,7 @@ export default ({ createBase, SsrCacheSettings, options = {} }) => {
                 const expiresIn = this.expiresOn - new Date();
                 return expiresIn > 0 ? expiresIn : 0;
             },
+
             incrementExpiresOn(seconds = TTL_STALE_CACHE) {
                 this.expiresOn = new Date();
                 this.expiresOn.setSeconds(this.expiresOn.getSeconds() + seconds);
@@ -103,9 +116,10 @@ export default ({ createBase, SsrCacheSettings, options = {} }) => {
 
                 await this.save();
             },
-            invalidate() {
+            async invalidate() {
                 this.expiresOn = null;
-                return this;
+                this.content = null;
+                return this.save();
             }
         })
     )(createBase());
