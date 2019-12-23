@@ -1,5 +1,5 @@
 // @flow
-import type { PluginType } from "@webiny/api/types";
+//import type { PluginType } from "@webiny/api/types";
 import i18n from "./i18n";
 import { GraphQLClient } from "graphql-request";
 import get from "lodash/get";
@@ -38,4 +38,4 @@ export default () =>
                 return localesCache;
             }
         }
-    ]: Array<PluginType>);
+    ]: Array<Object>);

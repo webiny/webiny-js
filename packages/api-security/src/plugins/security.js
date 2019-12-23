@@ -1,5 +1,5 @@
 // @flow
-import type { PluginType } from "@webiny/api/types";
+import { PluginType } from "@webiny/api/types";
 import { shield } from "graphql-shield";
 import authenticate from "./authentication/authenticate";
 

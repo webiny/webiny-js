@@ -1,6 +1,6 @@
 // @flow
-import type { PluginType } from "@webiny/api/types";
+// import { PluginType } from "@webiny/api/types";
 
-export type SecurityPluginType = PluginType & {
+export type SecurityPluginType = Object & {
     authenticate: Function
 };

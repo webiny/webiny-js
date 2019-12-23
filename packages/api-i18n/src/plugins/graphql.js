@@ -2,7 +2,7 @@
 import { merge } from "lodash";
 import gql from "graphql-tag";
 import { emptyResolver } from "@webiny/commodo-graphql";
-import { type PluginType } from "@webiny/api/types";
+// import { type PluginType } from "@webiny/api/types";
 import { hasScope } from "@webiny/api-security";
 import i18nLocale from "./graphql/I18NLocale";
 import install from "./graphql/Install";
@@ -86,4 +86,4 @@ export default ([
             }
         }
     }
-]: Array<PluginType>);
+]: Array<Object>);

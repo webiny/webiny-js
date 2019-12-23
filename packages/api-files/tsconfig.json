@@ -1,3 +1,7 @@
 {
-  "extends": "../../tsconfig.api"
+  "extends": "../../tsconfig.api",
+  "compilerOptions": {
+    "declarationDir": "dist"
+  },
+  "include": ["./src/**/*"]
 }

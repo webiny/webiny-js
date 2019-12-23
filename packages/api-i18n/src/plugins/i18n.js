@@ -1,12 +1,12 @@
 // @flow
-import type { ApiContext, PluginType } from "@webiny/api/types";
+// import type { ApiContext, PluginType } from "@webiny/api/types";
 import acceptLanguageParser from "accept-language-parser";
 
 export default ([
     {
         type: "graphql-context",
         name: "graphql-context-i18n",
-        apply: async (context: ApiContext & Object) => {
+        apply: async (context: Object) => {
             let locales = context.plugins.byName("graphql-context-i18n-get-locales");
             if (!locales) {
                 throw new Error(
@@ -75,4 +75,4 @@ export default ([
             context.i18n = self;
         }
     }
-]: Array<PluginType>);
+]: Array<Object>);
