@@ -16,7 +16,6 @@
   "dependencies": {
     "@commodo/fields": "^0.2.8",
     "@commodo/fields-storage": "^0.4.0",
-    "@commodo/fields-storage-mongodb": "^0.3.0",
     "@commodo/fields-storage-ref": "^0.3.4",
     "@commodo/fields-storage-soft-delete": "^0.2.2",
     "@commodo/hooks": "^0.1.1",
