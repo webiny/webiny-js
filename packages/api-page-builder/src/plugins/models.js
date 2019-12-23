@@ -42,11 +42,15 @@ export default () => ({
             PbPageElement,
             PbMenu,
             PbSettings,
-            PbPage,
+            PbPage
         };
 
         context.plugins.byType("api-page-builder-model").forEach(plugin => {
             plugin.model({ models: context.models, createBase });
+        });
+
+        context.plugins.byType("extend-models").forEach(plugin => {
+            plugin.extend(context.models);
         });
     }
 });
