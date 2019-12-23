@@ -1,0 +1,15 @@
+{
+  "compilerOptions": {
+    "target": "ES2016",
+    "allowJs": true,
+    "esModuleInterop": true,
+    "emitDeclarationOnly":true,
+    "baseUrl": ".",
+    "paths": {
+      "@webiny/api": ["./packages/api/src"],
+      "@webiny/api/*": ["./packages/api/src/*"],
+      "@webiny/api-files": ["./packages/api-files/src"],
+      "@webiny/api-files/*": ["./packages/api-files/src/*"]
+    }
+  }
+}

@@ -1,9 +1,8 @@
-// @flow
-import type { PluginType } from "./types";
+import { PluginType } from "./types";
 
-const assign = (plugins, target) => {
+const assign = (plugins: any, target: Record<string, any>): void => {
     for (let i = 0; i < plugins.length; i++) {
-        let plugin = plugins[i];
+        const plugin = plugins[i];
         if (Array.isArray(plugin)) {
             assign(plugin, target);
             continue;
@@ -20,7 +19,7 @@ const assign = (plugins, target) => {
 };
 
 export class PluginsContainer {
-    plugins = {};
+    plugins: Record<string, PluginType> = {};
 
     constructor(plugins: Array<PluginType> = []) {
         assign(plugins, this.plugins);
@@ -34,11 +33,11 @@ export class PluginsContainer {
         return Object.values(this.plugins).filter((pl: PluginType) => pl.type === type);
     }
 
-    register(...plugins: any) {
+    register(...plugins: any): void {
         assign(plugins, this.plugins);
     }
 
-    unregister(name: string) {
+    unregister(name: string): void {
         delete this.plugins[name];
     }
 }

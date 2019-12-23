@@ -1,45 +1,25 @@
-// @flow
 import { applyMiddleware } from "graphql-middleware";
 import { addSchemaLevelResolveFunction } from "graphql-tools";
-import type { PluginsContainerType, GraphQLMiddlewarePluginType } from "@webiny/api/types";
+import { PluginsContainer, GraphQLMiddlewarePlugin } from "./types";
 import { prepareSchema } from "./graphql/prepareSchema";
 
-export type CreateHandlerParamsType = {
-    plugins: PluginsContainerType
-};
-
-/**
- * Create Apollo handler
- * @param plugins
- * @returns {Promise<{schema: void, handler(Object, Object): Promise<Object>}|Promise<*>>}
- */
-export const createHandler = async ({ plugins }: CreateHandlerParamsType) => {
-    const schema = await createSchema({ plugins });
-
-    const plugin = plugins.byName("create-apollo-handler");
-
-    if (!plugin) {
-        throw Error(`"create-apollo-handler" plugin is not configured!`);
-    }
-
-    const handler = await plugin.create({ plugins, schema });
-
-    return { schema, handler };
-};
+interface CreateHandlerParams {
+    plugins: PluginsContainer;
+}
 
 /**
  * Create graphql schema only
  * @param plugins
  * @returns {Promise<void>}
  */
-export const createSchema = async ({ plugins }: CreateHandlerParamsType) => {
+export const createSchema = async ({ plugins }: CreateHandlerParams) => {
     let schema = await prepareSchema({ plugins });
 
-    const registeredMiddleware: Array<GraphQLMiddlewarePluginType> = [];
+    const registeredMiddleware: Array<GraphQLMiddlewarePlugin> = [];
 
     const middlewarePlugins = plugins.byType("graphql-middleware");
     for (let i = 0; i < middlewarePlugins.length; i++) {
-        let plugin = middlewarePlugins[i];
+        const plugin = middlewarePlugins[i];
         const middleware =
             typeof plugin.middleware === "function"
                 ? await plugin.middleware({ plugins })
@@ -82,4 +62,23 @@ export const createSchema = async ({ plugins }: CreateHandlerParamsType) => {
     });
 
     return schema;
+};
+
+/**
+ * Create Apollo handler
+ * @param plugins
+ * @returns {Promise<{schema: void, handler(Object, Object): Promise<Object>}|Promise<*>>}
+ */
+export const createHandler = async ({ plugins }: CreateHandlerParams) => {
+    const schema = await createSchema({ plugins });
+
+    const plugin = plugins.byName("create-apollo-handler");
+
+    if (!plugin) {
+        throw Error(`"create-apollo-handler" plugin is not configured!`);
+    }
+
+    const handler = await plugin.create({ plugins, schema });
+
+    return { schema, handler };
 };

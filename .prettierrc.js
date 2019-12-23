@@ -3,7 +3,7 @@ module.exports = {
     tabWidth: 2,
     overrides: [
         {
-            files: "*.js",
+            files: "*.[j|t]s",
             options: {
                 tabWidth: 4
             }

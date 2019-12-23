@@ -1,9 +1,7 @@
-// @flow
 import gql from "graphql-tag";
 import { emptyResolver } from "@webiny/commodo-graphql";
 import { hasScope } from "@webiny/api-security";
 import { resolveCreate, resolveGet, resolveUpdate } from "@webiny/commodo-graphql";
-
 import listFiles from "./resolvers/listFiles";
 import listTags from "./resolvers/listTags";
 import uploadFile from "./resolvers/uploadFile";
@@ -11,15 +9,13 @@ import uploadFiles from "./resolvers/uploadFiles";
 import createFiles from "./resolvers/createFiles";
 import deleteFile from "./resolvers/deleteFile";
 import { install, isInstalled } from "./resolvers/install";
-
 const getFile = ({ models }) => models.File;
-
-export default ([
+export default [
     {
         type: "graphql-schema",
         name: "graphql-schema-files",
         schema: {
-            typeDefs: gql`
+            typeDefs: gql `
                 input FileInput {
                     id: ID
                     key: String
@@ -44,7 +40,7 @@ export default ([
                 }
 
                 type UploadFileResponseData {
-                    # Contains data that is necessary for initiating a file upload. 
+                    # Contains data that is necessary for initiating a file upload.
                     data: JSON
                     file: UploadFileResponseDataFile
                 }
@@ -189,7 +185,7 @@ export default ([
         security: {
             shield: {
                 FilesQuery: {
-                    getFile: hasScope("files:file:crud"),
+                    getFile: hasScope("files:file:crud")
                 },
                 FilesMutation: {
                     uploadFile: hasScope("files:file:crud"),
@@ -200,4 +196,4 @@ export default ([
             }
         }
     }
-]: Array<Object>);
+];
