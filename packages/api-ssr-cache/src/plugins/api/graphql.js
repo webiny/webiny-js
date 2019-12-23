@@ -5,10 +5,22 @@ import { ErrorResponse, NotFoundResponse, Response } from "@webiny/api";
 import { emptyResolver } from "@webiny/api";
 import LambdaClient from "aws-sdk/clients/lambda";
 
-const REFRESH_SSR_CACHE_GQL = /* GraphQL */ `
-    mutation refreshSsrCache($path: String!) {
+const GENERATE_SSR_CACHE_GQL = /* GraphQL */ `
+    mutation generateSsrCache($path: String!) {
         ssrCache {
-            refreshSsrCache(path: $path) {
+            generateSsrCache(path: $path) {
+                error {
+                    message
+                }
+            }
+        }
+    }
+`;
+
+const INVALIDATE_SSR_CACHE_GQL = /* GraphQL */ `
+    mutation invalidateSsrCache($path: String!) {
+        ssrCache {
+            invalidateSsrCache(path: $path) {
                 error {
                     message
                 }
@@ -59,12 +71,17 @@ export default {
                 isInstalled: SsrCacheBooleanResponse
             }
 
+            input TagsInput {
+                class: String
+                id: String
+            }
+
             type SsrCacheMutation {
                 generateSsrCache(path: String!): SsrCacheResponse
-                refreshSsrCache(path: String!): SsrCacheResponse
+                invalidateSsrCache(path: String, tags: [TagsInput]): SsrCacheBooleanResponse
                 install(ssrGenerationUrl: String!): SsrCacheBooleanResponse
             }
-            
+
             extend type Query {
                 ssrCache: SsrCacheQuery
             }
@@ -100,9 +117,9 @@ export default {
 
                         const Lambda = new LambdaClient({ region: process.env.AWS_REGION });
                         const body = JSON.stringify({
-                            operationName: "refreshSsrCache",
+                            operationName: "generateSsrCache",
                             variables: { path },
-                            query: REFRESH_SSR_CACHE_GQL
+                            query: GENERATE_SSR_CACHE_GQL
                         });
 
                         await Lambda.invoke({
@@ -124,18 +141,25 @@ export default {
                 }
             },
             SsrCacheMutation: {
-                refreshSsrCache: async (_, { path }, context) => {
-                    const { SsrCache } = context.models;
-                    let ssrCache = await SsrCache.findByPath(path);
-                    if (!ssrCache) {
-                        return new NotFoundResponse("SsrCache entry not found.");
+                generateSsrCache: async (_, { path, async }, context) => {
+                    if (async === true) {
+                        const Lambda = new LambdaClient({ region: process.env.AWS_REGION });
+                        const body = JSON.stringify({
+                            operationName: "generateSsrCache",
+                            variables: { path },
+                            query: GENERATE_SSR_CACHE_GQL
+                        });
+
+                        return await Lambda.invoke({
+                            FunctionName: process.env.AWS_LAMBDA_FUNCTION_NAME,
+                            InvocationType: "Event",
+                            Payload: JSON.stringify({
+                                httpMethod: "POST",
+                                body
+                            })
+                        }).promise();
                     }
 
-                    await ssrCache.refresh();
-
-                    return new Response(ssrCache);
-                },
-                generateSsrCache: async (_, { path }, context) => {
                     const { SsrCache } = context.models;
                     let ssrCache = await SsrCache.findByPath(path);
                     if (!ssrCache) {
@@ -148,7 +172,74 @@ export default {
 
                     return new Response(ssrCache);
                 },
+                invalidateSsrCache: async (_, { path, tags, async }, context) => {
+                    if (async) {
+                        const Lambda = new LambdaClient({ region: process.env.AWS_REGION });
+                        const body = JSON.stringify({
+                            operationName: "invalidateSsrCache",
+                            variables: { path, tags, async },
+                            query: INVALIDATE_SSR_CACHE_GQL
+                        });
 
+                        return await Lambda.invoke({
+                            FunctionName: process.env.AWS_LAMBDA_FUNCTION_NAME,
+                            InvocationType: "Event",
+                            Payload: JSON.stringify({
+                                httpMethod: "POST",
+                                body
+                            })
+                        }).promise();
+                    }
+
+                    const { SsrCache } = context.models;
+                    if (path) {
+                        let ssrCache = await SsrCache.findByPath(path);
+                        if (!ssrCache) {
+                            return new NotFoundResponse("SsrCache entry not found.");
+                        }
+
+                        await ssrCache.invalidate();
+                        return new Response(true);
+                    }
+
+                    if (!tags) {
+                        return new ErrorResponse(
+                            `"path" nor "tags" were passed, please provide one.`
+                        );
+                    }
+
+                    const deletePromises = [];
+                    for (let i = 0; i < tags.length; i++) {
+                        deletePromises.push(new Promise(async (resolve) => {
+                            let tag = tags[i];
+                            let $elemMatch = {};
+                            if (tag.class) {
+                                $elemMatch.class = tag.class;
+                            }
+
+                            if (tag.id) {
+                                $elemMatch.id = tag.id;
+                            }
+
+                            let ssrCaches = await SsrCache.find({
+                                query: {
+                                    cacheTags: { $elemMatch }
+                                }
+                            });
+
+                            for (let i = 0; i < ssrCaches.length; i++) {
+                                let ssrCache = ssrCaches[i];
+                                await ssrCache.invalidate();
+                            }
+
+                            resolve();
+                        }))
+                    }
+
+                    await Promise.all(deletePromises);
+
+                    return new Response(true);
+                },
                 install: async (root: any, args: Object, context: Object) => {
                     // Start the download of initial Page Builder page / block images.
                     const { SsrCacheSettings } = context.models;
