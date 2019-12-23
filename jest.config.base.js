@@ -12,7 +12,7 @@ const packages = require("./scripts/utils/listPackages")([
 
 module.exports = merge.recursive(tsPreset, mongoDbPreset, {
     rootDir: process.cwd(),
-    testRegex: `packages/(${packages.join("|")})/.*test.ts$`,
+    testRegex: `packages/(${packages.join("|")})/.*test.(ts|js)$`,
     transform: {
         "^.+\\.(ts|tsx)$": "ts-jest"
     },
