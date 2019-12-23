@@ -14,9 +14,7 @@
     "@commodo/name": "^0.2.8",
     "@commodo/fields": "^0.2.8",
     "@commodo/fields-storage": "^0.4.0",
-    "mdbid": "^1.0.0",
-    "mongodb": "^3.1.13",
-    "repropose": "^1.0.2"
+    "mdbid": "^1.0.0"
   },
   "devDependencies": {
     "@babel/cli": "^7.5.5",
@@ -29,7 +27,6 @@
     "babel-plugin-lodash": "^3.3.4",
     "glob": "^7.1.2",
     "ramda": "^0.25.0",
-    "sinon": "^7.2.7",
     "camelcase": "^5.2.0"
   },
   "publishConfig": {
