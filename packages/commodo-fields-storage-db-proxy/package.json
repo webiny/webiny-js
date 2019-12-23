@@ -1,0 +1,33 @@
+{
+  "name": "@commodo/fields-storage-mongodb",
+  "version": "0.3.0",
+  "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/webiny/commodo.git"
+  },
+  "contributors": [
+    "Adrian Smijulj <adrian@webiny.com>"
+  ],
+  "license": "MIT",
+  "dependencies": {
+    "@commodo/fields": "^0.2.8",
+    "@commodo/fields-storage": "^0.4.0",
+    "mdbid": "^1.0.0",
+    "mongodb": "^3.1.13",
+    "repropose": "^1.0.2"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "keywords": [
+    "commodo",
+    "composeable",
+    "models",
+    "storage",
+    "mongodb"
+  ],
+  "scripts": {
+    "build": "babel src --ignore src/__tests__ --out-dir dist --source-maps"
+  }
+}
