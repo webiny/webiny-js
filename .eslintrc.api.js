@@ -1,19 +1,19 @@
 module.exports = {
+    extends: ["plugin:@typescript-eslint/recommended", "plugin:jest/recommended"],
     parser: "@typescript-eslint/parser",
     parserOptions: {
         ecmaVersion: 2018,
         sourceType: "module"
     },
-    plugins: ["@typescript-eslint"],
+    plugins: ["@typescript-eslint", "jest", "import"],
     env: {
-        node: true
+        jest: true,
+        commonjs: true,
+        node: true,
+        es6: true
     },
-    extends: ["eslint:recommended", "plugin:@typescript-eslint/recommended"],
-    settings: {
-        "import/resolver": {
-            node: {
-                extensions: [".js", ".ts"]
-            }
-        }
+    rules: {
+        "import/no-unresolved": [2, { commonjs: true, amd: true }],
+        "@typescript-eslint/explicit-function-return-type": "off"
     }
 };
