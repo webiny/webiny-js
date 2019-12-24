@@ -10,10 +10,6 @@ vars:
   mongodb:
     server: ${env.MONGODB_SERVER}
     name: ${env.MONGODB_NAME}
-  commodo:
-    database:
-      server: ${env.MONGODB_SERVER}
-      name: ${env.MONGODB_NAME}
   security:
     token:
       expiresIn: 2592000 # 30 days
@@ -70,8 +66,9 @@ security:
     plugins:
       - factory: "@webiny/api-plugin-create-apollo-handler"
         options: ${vars.apollo}
-      - factory: "@webiny/api-plugin-commodo-mongodb"
-        options: ${vars.commodo}
+      - factory: "@webiny/api-plugin-commodo-db-proxy"
+        options:
+          functionArn: ${dbProxy.arn}
       - factory: "@webiny/api-security/plugins"
         options: ${vars.security}
       - factory: "@webiny/api-plugin-security-cognito"
@@ -94,8 +91,9 @@ files:
         plugins:
           - factory: "@webiny/api-plugin-create-apollo-handler"
             options: ${vars.apollo}
-          - factory: "@webiny/api-plugin-commodo-mongodb"
-            options: ${vars.commodo}
+          - factory: "@webiny/api-plugin-commodo-db-proxy"
+            options:
+              functionArn: ${dbProxy.arn}
           - factory: "@webiny/api-security/plugins/service"
             options: ${vars.security}
           - "@webiny/api-files/plugins"
@@ -135,8 +133,9 @@ ssrCache:
     plugins:
       - factory: "@webiny/api-plugin-create-apollo-handler"
         options: ${vars.apollo}
-      - factory: "@webiny/api-plugin-commodo-mongodb"
-        options: ${vars.commodo}
+      - factory: "@webiny/api-plugin-commodo-db-proxy"
+        options:
+          functionArn: ${dbProxy.arn}
       - factory: "@webiny/api-ssr-cache/plugins/api"
         options:
           cacheTtl: 2592000 # Seconds (30 days).
@@ -155,8 +154,9 @@ pageBuilder:
     plugins:
       - factory: "@webiny/api-plugin-create-apollo-handler"
         options: ${vars.apollo}
-      - factory: "@webiny/api-plugin-commodo-mongodb"
-        options: ${vars.commodo}
+      - factory: "@webiny/api-plugin-commodo-db-proxy"
+        options:
+          functionArn: ${dbProxy.arn}
       - factory: "@webiny/api-security/plugins/service"
         options: ${vars.security}
       - "@webiny/api-page-builder/plugins"
@@ -178,8 +178,9 @@ formBuilder:
     plugins:
       - factory: "@webiny/api-plugin-create-apollo-handler"
         options: ${vars.apollo}
-      - factory: "@webiny/api-plugin-commodo-mongodb"
-        options: ${vars.commodo}
+      - factory: "@webiny/api-plugin-commodo-db-proxy"
+        options:
+          functionArn: ${dbProxy.arn}
       - factory: "@webiny/api-security/plugins/service"
         options: ${vars.security}
       - "@webiny/api-plugin-form-builder-resolvers-mongodb"
