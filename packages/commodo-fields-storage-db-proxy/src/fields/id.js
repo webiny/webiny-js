@@ -1,5 +1,5 @@
 import { string } from "@commodo/fields";
-import { isId } from "./../isId";
+import isId from "./../isId";
 
 export default () => {
     return string({
