@@ -14,8 +14,8 @@ export default async (root: any, args: Object, context: Object) => {
     return new ListResponse(
         pages,
         createPaginationMeta({
-            page: args.page,
-            perPage: args.perPage,
+            page: args.page || 1,
+            perPage: args.perPage || 10,
             totalCount: totalCount ? totalCount : 0
         })
     );
