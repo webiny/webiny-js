@@ -1,0 +1,15 @@
+{
+  "compilerOptions": {
+    "target": "ES2016",
+    "moduleResolution": "node",
+    "esModuleInterop": true,
+    "declaration": true,
+    "baseUrl": ".",
+    "paths": {
+      "@webiny/api": ["./packages/api/src"],
+      "@webiny/api/*": ["./packages/api/src/*"],
+      "@webiny/api-files": ["./packages/api-files/src"],
+      "@webiny/api-files/*": ["./packages/api-files/src/*"]
+    }
+  }
+}
