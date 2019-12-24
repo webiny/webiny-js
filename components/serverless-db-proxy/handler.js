@@ -16,40 +16,42 @@ async function getDatabase() {
 }
 
 const executeOperation = async (collection, operation, args) => {
-    switch (operation) {
-        case "find": {
-            const [findFilters, findOtherParams] = args;
-            const results = database.collection(collection).find(findFilters);
-            if (findOtherParams.limit) {
-                results.limit(findOtherParams.limit);
-            }
-            if (findOtherParams.offset) {
-                results.skip(findOtherParams.offset);
-            }
-            if (findOtherParams.sort) {
-                results.sort(findOtherParams.sort);
-            }
+    const collectionInstance = database.collection(collection);
 
-            return results.toArray();
+    if (operation === "find") {
+        const [findFilters, findRestArgs] = args;
+        const results = collectionInstance.find(findFilters);
+        if (findRestArgs.limit) {
+            results.limit(findRestArgs.limit);
         }
-        case "count": {
-            return database.collection(collection).countDocuments(...args);
+        if (findRestArgs.offset) {
+            results.skip(findRestArgs.offset);
+        }
+        if (findRestArgs.sort) {
+            results.sort(findRestArgs.sort);
         }
 
-        case "insertOne": {
-            return database.collection(collection).countDocuments(...args);
-        }
+        return results.toArray();
     }
+
+    if (operation === "aggregate") {
+        return collectionInstance.aggregate(...args).toArray();
+    }
+
+    return collectionInstance[operation](...args);
 };
 
 module.exports.handler = async event => {
+    let { body } = event;
+    body = EJSON.parse(body);
+
     if (!client) {
         const refs = await getDatabase();
         client = refs.client;
         database = refs.database;
     }
 
-    const { collection, operation } = event;
+    const { collection, operation } = body;
     if (!collection) {
         throw new Error("Collection on which the operation needs to be executed wasn't set.");
     }
@@ -60,5 +62,5 @@ module.exports.handler = async event => {
     }
 
     const result = await executeOperation(collection, operationName, operationArgs);
-    return EJSON.stringify({ result });
+    return { response: EJSON.stringify({ result }) };
 };
