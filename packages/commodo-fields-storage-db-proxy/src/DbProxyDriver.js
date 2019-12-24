@@ -12,33 +12,29 @@ class DbProxyClient {
     }
 
     async runOperation(requestPayload) {
-        const ts = new Date();
         const Lambda = new LambdaClient({ region: process.env.AWS_REGION });
-        const { Payload } = await Lambda.invoke({
+        let { Payload } = await Lambda.invoke({
             FunctionName: this.dbProxyFunctionName,
-            Payload: EJSON.stringify(requestPayload)
+            Payload: JSON.stringify({ body: EJSON.stringify(requestPayload) })
         }).promise();
 
-        let responsePayload;
         try {
-            responsePayload = JSON.parse(Payload);
-            responsePayload = EJSON.parse(responsePayload);
+            console.log("dobeooo", Payload);
+            Payload = JSON.parse(Payload);
         } catch (e) {
             throw new Error("Could not JSON.parse DB Proxy's response.");
         }
 
-
-        if (!responsePayload.result) {
-            throw new Error(`Missing "result" key in received DB Proxy's response.`);
+        if (!Payload.response) {
+            throw new Error(`Missing "response" key in received DB Proxy's response.`);
         }
 
-        console.log(`Vracamo response.result u ${new Date() - ts}ms`);
-        return responsePayload.result;
+        const { result } = EJSON.parse(Payload.response);
+        return result;
     }
 }
 
 class DbProxyDriver {
-    collections: Object;
     client: DbProxyClient;
     constructor({ dbProxyFunctionName = process.env.DB_PROXY_FUNCTION_NAME } = {}) {
         this.client = new DbProxyClient({ dbProxyFunctionName });
@@ -94,36 +90,46 @@ class DbProxyDriver {
         DbProxyDriver.__preparePageOption(clonedOptions);
         DbProxyDriver.__prepareSearchOption(clonedOptions);
 
-        // Get first documents from cursor using each
-        const results = await this.client.runOperation({
-            collection: this.getCollectionName(model),
-            operation: [
-                "find",
-                clonedOptions.query,
-                {
-                    limit: clonedOptions.limit,
-                    offset: clonedOptions.offset,
-                    sort: clonedOptions.sort
-                }
-            ]
-        });
+        const $facet = {
+            results: [{ $skip: clonedOptions.offset }, { $limit: clonedOptions.limit }]
+        };
 
-        if (options.meta === false) {
-            return [results, {}];
+        if (clonedOptions.sort) {
+            $facet.results.unshift({ $sort: clonedOptions.sort });
         }
 
-        const totalCount = await this.client.runOperation({
+        if (options.meta !== false) {
+            $facet.totalCount = [{ $count: "value" }];
+        }
+
+        const pipeline = [
+            { $match: clonedOptions.query },
+            {
+                $facet
+            }
+        ];
+
+        const [results = {}] = await this.client.runOperation({
             collection: this.getCollectionName(model),
-            operation: ["count", clonedOptions.query]
+            operation: ["aggregate", pipeline]
         });
 
-        const meta = createPaginationMeta({
-            totalCount,
-            page: options.page,
-            perPage: options.perPage
-        });
+        if (!Array.isArray(results.results)) {
+            results.results = [];
+        }
 
-        return [results, meta];
+        if (!Array.isArray(results.totalCount)) {
+            results.totalCount = [];
+        }
+
+        return [
+            results.results,
+            createPaginationMeta({
+                totalCount: results.totalCount[0] ? results.totalCount[0].value : 0,
+                page: options.page,
+                perPage: options.perPage
+            })
+        ];
     }
 
     async findOne({ model, options }) {
@@ -165,6 +171,10 @@ class DbProxyDriver {
 
     getCollectionName(model) {
         return getName(model);
+    }
+
+    getClient() {
+        return this.client;
     }
 
     static __preparePerPageOption(options: Object) {
