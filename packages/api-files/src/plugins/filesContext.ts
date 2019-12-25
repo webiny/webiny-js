@@ -4,7 +4,7 @@ const plugins: PluginType[] = [
     {
         type: "graphql-context",
         name: "graphql-context-files",
-        apply: async (context: Object): Promise<any> => {
+        apply: async (context: {[key: string]: any}): Promise<any> => {
             const { FilesSettings } = context.models;
 
             const self = {

@@ -2,7 +2,7 @@ import { Response, ErrorResponse } from "@webiny/api";
 import getPreSignedPostPayload from "./utils/getPresignedPostPayload";
 import { BATCH_UPLOAD_MAX_FILES } from "./utils/constants";
 
-export default async (root: any, args: Object) => {
+export default async (root: any, args: {[key: string]: any}) => {
     const { data: files } = args;
     if (!Array.isArray(files)) {
         return new ErrorResponse({

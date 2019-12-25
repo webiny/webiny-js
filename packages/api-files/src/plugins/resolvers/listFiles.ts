@@ -1,6 +1,6 @@
 import { ListResponse } from "@webiny/api";
 
-export default async (root: any, args: Object, context: Object) => {
+export default async (root: any, args: {[key: string]: any}, context: {[key: string]: any}) => {
     const { File } = context.models;
     const {
         page = 1,

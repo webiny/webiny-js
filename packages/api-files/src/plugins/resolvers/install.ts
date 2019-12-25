@@ -2,8 +2,8 @@ import { ErrorResponse, Response } from "@webiny/api";
 
 export const install = async (
     root: any,
-    args: Object,
-    context: Object
+    args: {[key: string]: any},
+    context: {[key: string]: any}
 ) => {
     // Start the download of initial Page Builder page / block images.
     const { FilesSettings } = context.models;
@@ -33,8 +33,8 @@ export const install = async (
 
 export const isInstalled = async (
     root: any,
-    args: Object,
-    context: Object
+    args: {[key: string]: any},
+    context: {[key: string]: any}
 ) => {
     const { FilesSettings } = context.models;
     const settings = await FilesSettings.load();
