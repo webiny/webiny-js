@@ -65,10 +65,10 @@ export class Response {
 }
 
 export class ListResponse {
-    data: Array<Record<string, any>>;
-    meta: Record<string, any>;
+    data: Array<Object>;
+    meta: Object;
     error: null;
-    constructor(data: Array<Record<string, any>>, meta: Record<string, any>) {
+    constructor(data: Array<Object>, meta: Object = {}) {
         this.data = Array.isArray(data) ? data : [];
         this.meta = meta;
         this.error = null;

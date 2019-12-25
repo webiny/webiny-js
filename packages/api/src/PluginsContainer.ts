@@ -1,6 +1,6 @@
 import { PluginType } from "./types";
 
-const assign = (plugins: any, target: Record<string, any>): void => {
+const assign = (plugins: any, target: Object): void => {
     for (let i = 0; i < plugins.length; i++) {
         const plugin = plugins[i];
         if (Array.isArray(plugin)) {

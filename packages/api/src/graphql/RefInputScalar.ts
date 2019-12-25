@@ -12,14 +12,14 @@ export const RefInput = new GraphQLScalarType({
     name: "RefInput",
     description:
         "A custom input type to be used with references. Supports plain ID and `{ id: ID }` Object literal.",
-    serialize: (value: any): string => {
+    serialize: value => {
         if (!value || value.id === null) {
             return null;
         }
 
         return typeof value === "string" ? value : value.id;
     },
-    parseValue: (value: any): string | null => {
+    parseValue: value => {
         if (!value || value.id === null) {
             return null;
         }
@@ -34,7 +34,7 @@ export const RefInput = new GraphQLScalarType({
 
         throw new Error("Invalid RefInput value!");
     },
-    parseLiteral: (ast: Record<string, any>): string => {
+    parseLiteral: ast => {
         if (ast.kind === "StringValue") {
             return isMongoId(ast.value);
         }
@@ -43,6 +43,7 @@ export const RefInput = new GraphQLScalarType({
             for (let i = 0; i < ast.fields.length; i++) {
                 const { name, value } = ast.fields[i];
                 if (name.value === "id") {
+                    // @ts-ignore
                     return isMongoId(value.value);
                 }
             }

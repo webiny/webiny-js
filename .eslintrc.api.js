@@ -14,6 +14,8 @@ module.exports = {
     },
     rules: {
         "import/no-unresolved": [2, { commonjs: true, amd: true }],
-        "@typescript-eslint/explicit-function-return-type": "off"
+        "@typescript-eslint/explicit-function-return-type": "off",
+        "@typescript-eslint/ban-ts-ignore": "off",
+        "@typescript-eslint/ban-types": "off"
     }
 };

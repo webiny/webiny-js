@@ -3,7 +3,7 @@ import S3 from "aws-sdk/clients/s3";
 
 const S3_BUCKET = process.env.S3_BUCKET;
 
-export default async (root: any, args: Record<string, any>, context: Record<string, any>) => {
+export default async (root: any, args: Object, context: Object) => {
     const { File } = context.models;
     const { id } = args;
 

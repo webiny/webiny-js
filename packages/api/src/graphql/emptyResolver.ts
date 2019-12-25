@@ -1,1 +1,1 @@
-export default (): Record<string, any> => ({});
+export default () => ({});

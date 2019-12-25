@@ -1,4 +1,4 @@
-export default async (root: any, args: Record<string, any>, context: Record<string, any>) => {
+export default async (root: any, args: Object, context: Object) => {
     const plugin = context.plugins.byName("files-resolver-list-tags");
 
     if (!plugin) {
