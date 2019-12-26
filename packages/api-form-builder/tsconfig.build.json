@@ -1,0 +1,11 @@
+{
+  "extends": "../../tsconfig.build.json",
+  "include": ["./src"],
+  "compilerOptions": {
+    "rootDir": "./src",
+    "outDir": "./dist",
+    "declarationDir": "./dist",
+    "emitDeclarationOnly": true
+  },
+  "references": [{ "path": "../api" }, { "path": "../api-i18n" }]
+}

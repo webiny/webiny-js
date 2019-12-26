@@ -1,4 +1,4 @@
-import { FormTriggerHandlerPluginType } from "@webiny/api-form-builder/types";
+import { FormTriggerHandlerPluginType } from "../types";
 import got from "got";
 
 const plugin: FormTriggerHandlerPluginType = {

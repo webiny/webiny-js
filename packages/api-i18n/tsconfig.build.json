@@ -1,0 +1,10 @@
+{
+  "extends": "../../tsconfig.build.json",
+  "include": ["src"],
+  "compilerOptions": {
+    "outDir": "dist",
+    "rootDir": "src",
+    "declarationDir": "dist"
+  },
+  "references": [{ "path": "../api" }]
+}

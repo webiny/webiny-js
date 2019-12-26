@@ -1,0 +1,28 @@
+{
+  "compilerOptions": {
+    "target": "es6",
+    "allowJs": true,
+    "moduleResolution": "node",
+    "esModuleInterop": true,
+    "declaration": true,
+    "composite": true,
+    "noEmit": false,
+    "emitDeclarationOnly": true,
+    "baseUrl": ".",
+    "paths": {
+      "@webiny/api-cookie-policy/*": ["./packages/api-cookie-policy/dist/*"],
+      "@webiny/api-cookie-policy": ["./packages/api-cookie-policy/dist"],
+      "@webiny/api-files/*": ["./packages/api-files/dist/*"],
+      "@webiny/api-files": ["./packages/api-files/dist"],
+      "@webiny/api-form-builder/*": ["./packages/api-form-builder/dist/*"],
+      "@webiny/api-form-builder": ["./packages/api-form-builder/dist"],
+      "@webiny/api-page-builder/*": ["./packages/api-page-builder/dist/*"],
+      "@webiny/api-page-builder": ["./packages/api-page-builder/dist"],
+      "@webiny/api-i18n/*": ["./packages/api-i18n/dist/*"],
+      "@webiny/api-i18n": ["./packages/api-i18n/dist"],
+      "@webiny/api/*": ["./packages/api/dist/*"],
+      "@webiny/api": ["./packages/api/dist"]
+    }
+  },
+  "exclude": ["node_modules", "**/__tests__/**", "**/dist/**"]
+}

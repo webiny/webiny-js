@@ -1,8 +1,4 @@
 {
-  "extends": "../../tsconfig.api",
-  "compilerOptions": {
-    "declarationDir": "./dist",
-    "emitDeclarationOnly": true
-  },
-  "include": ["./src/**/*"]
+  "extends": "../../tsconfig.check",
+  "references": [{ "path": "../api" }]
 }

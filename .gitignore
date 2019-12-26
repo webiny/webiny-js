@@ -18,3 +18,4 @@ build/
 .changelog
 .verdaccio
 .history
+tsconfig.tsbuildinfo

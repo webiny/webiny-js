@@ -1,4 +1,4 @@
-import { I18NContext } from "@webiny/api-i18n/types";
+import { I18NContext } from "../../../types";
 
 export default async (_: {[key: string]: any}, args: {[key: string]: any}, context: I18NContext) => {
     const { i18n } = context;

@@ -27,8 +27,8 @@
     "access": "public"
   },
   "scripts": {
-    "build": "rimraf ./dist && babel src -d dist --source-maps --copy-files --extensions \".ts\"",
-    "postbuild": "cp package.json LICENSE README.md dist/ && tsc --emitDeclarationOnly",
+    "build": "rimraf ./dist *.tsbuildinfo && babel src -d dist --source-maps --copy-files --extensions \".ts\"",
+    "postbuild": "cp package.json LICENSE README.md dist/ && tsc -p tsconfig.build.json",
     "prepublishOnly": "yarn build"
   }
 }

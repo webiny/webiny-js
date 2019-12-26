@@ -1,7 +1,7 @@
 import cloneDeep from "lodash/cloneDeep";
 import { isMongoDbId } from "@commodo/fields-storage-mongodb";
 
-import { listPublishedPages } from "@webiny/api-page-builder/plugins/graphql/pageResolvers/listPublishedPages";
+import { listPublishedPages } from "../pageResolvers/listPublishedPages";
 
 const applyCleanup = async items => {
     if (!Array.isArray(items)) {
