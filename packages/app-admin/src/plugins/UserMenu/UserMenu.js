@@ -21,7 +21,7 @@ const UserMenu = () => {
                     anchor={"topEnd"}
                     handle={<menu-handle>{renderPlugin("user-menu-handle")}</menu-handle>}
                 >
-                    <List>
+                    <List data-testid="logged-in-user-menu-list">
                         {renderPlugin("header-user-menu-user-info")}
                         {renderPlugins("header-user-menu")}
                     </List>

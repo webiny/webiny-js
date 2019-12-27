@@ -1,6 +1,6 @@
 context("Login Page", () => {
     it("must log in user successfully", () => {
-        cy.visit("/admin")
+        cy.visit("/")
             .findByText(/sign in/i)
             .should("exist")
             .findByText(/forgot password?/i)
@@ -16,5 +16,13 @@ context("Login Page", () => {
             .should("exist")
             .findByText(/pages/i)
             .should("exist");
+
+        // Make sure we can open user menu and that the e-mail is printed.
+        cy.findByTestId("logged-in-user-menu-avatar")
+            .click()
+            .findByTestId("logged-in-user-menu-list")
+            .within(() => {
+                cy.findByText(Cypress.env("DEFAULT_ADMIN_USER_USERNAME")).should("exist");
+            });
     });
 });

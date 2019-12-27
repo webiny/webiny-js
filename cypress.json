@@ -1,7 +1,7 @@
 {
   "viewportWidth": 1600,
   "viewportHeight": 1200,
-  "baseUrl": "https://dgas0kyonaad1.cloudfront.net",
+  "baseUrl": "http://localhost:3001",
   "env": {
     "AWS_COGNITO_USER_POOL_ID": "eu-central-1_86oEwTrQ6",
     "AWS_COGNITO_CLIENT_ID": "1ajcsnt55dgqou7a4jhf6keoop",
