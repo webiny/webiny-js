@@ -3,7 +3,11 @@
   "viewportHeight": 1200,
   "baseUrl": "https://dgas0kyonaad1.cloudfront.net",
   "env": {
+    "AWS_COGNITO_USER_POOL_ID": "eu-central-1_86oEwTrQ6",
+    "AWS_COGNITO_CLIENT_ID": "1ajcsnt55dgqou7a4jhf6keoop",
     "API_URL": "https://d23wzps5l3odir.cloudfront.net",
+    "DEFAULT_ADMIN_USER_USERNAME": "admin@webiny.com",
+    "DEFAULT_ADMIN_USER_PASSWORD": "12345678",
     "GRAPHQL_API_URL": "https://d23wzps5l3odir.cloudfront.net/graphql"
   }
 }

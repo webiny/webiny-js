@@ -2,11 +2,11 @@ const { GraphQLClient } = require("graphql-request");
 const AmazonCognitoIdentity = require("amazon-cognito-identity-js");
 global.fetch = require("node-fetch");
 
-const GRAPHQL_API_URL = "https://d23wzps5l3odir.cloudfront.net/graphql";
+const GRAPHQL_API_URL = Cypress.env('GRAPHQL_API_URL');
 
 const AWS_COGNITO = {
-    USER_POOL_ID: "eu-central-1_86oEwTrQ6",
-    CLIENT_ID: "1ajcsnt55dgqou7a4jhf6keoop"
+    USER_POOL_ID: Cypress.env('AWS_COGNITO_USER_POOL_ID'),
+    CLIENT_ID: Cypress.env('AWS_COGNITO_CLIENT_ID'),
 };
 
 const userPool = new AmazonCognitoIdentity.CognitoUserPool({

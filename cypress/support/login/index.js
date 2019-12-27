@@ -1,7 +1,7 @@
 import authenticateWithCognito from "./authenticateWithCognito";
 
-const DEFAULT_USERNAME = "admin@webiny.com";
-const DEFAULT_PASSWORD = "12345678";
+const DEFAULT_USERNAME = Cypress.env('DEFAULT_ADMIN_USER_USERNAME');
+const DEFAULT_PASSWORD = Cypress.env('DEFAULT_ADMIN_USER_PASSWORD');
 
 Cypress.Commands.add(
     "login",
