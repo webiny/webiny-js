@@ -74,11 +74,12 @@ export default [
             withHooks({
                 async beforeSave() {
                     // If menus structure has changed, we need to invalidate SSR caches that contain this menu.
-                    if (!this.getField('items').isDirty()) {
+                    if (!this.getField("items").isDirty()) {
                         return;
                     }
 
                     this.registerHookCallback("afterSave", async () => {
+                        // TODO: set once
                         try {
                             checkSsrCacheApiUrl();
                             const client = new GraphQLClient(SSR_CACHE_API_URL);
