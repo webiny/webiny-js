@@ -117,9 +117,11 @@ export default ({ createBase, SsrCacheSettings, options = {} }) => {
                 await this.save();
             },
             async invalidate() {
+                await this.hook("beforeInvalidate");
                 this.expiresOn = null;
                 this.content = null;
-                return this.save();
+                this.save();
+                await this.hook("afterInvalidate");
             }
         })
     )(createBase());
