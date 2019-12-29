@@ -19,7 +19,6 @@ class DbProxyClient {
         }).promise();
 
         try {
-            console.log("dobeooo", Payload);
             Payload = JSON.parse(Payload);
         } catch (e) {
             throw new Error("Could not JSON.parse DB Proxy's response.");
@@ -35,7 +34,6 @@ class DbProxyClient {
 }
 
 class DbProxyDriver {
-    client: DbProxyClient;
     constructor({ dbProxyFunctionName = process.env.DB_PROXY_FUNCTION_NAME } = {}) {
         this.client = new DbProxyClient({ dbProxyFunctionName });
     }
@@ -45,7 +43,7 @@ class DbProxyDriver {
         return isCreate ? this.create({ model }) : this.update({ model });
     }
 
-    async create({ model }: Object) {
+    async create({ model }) {
         if (!model.id) {
             model.id = generateId();
         }
@@ -64,7 +62,7 @@ class DbProxyDriver {
         }
     }
 
-    async update({ model }: Object) {
+    async update({ model }) {
         const data = await model.toStorage();
         await this.client.runOperation({
             collection: this.getCollectionName(model),
@@ -165,7 +163,7 @@ class DbProxyDriver {
         });
     }
 
-    isId(value: any): boolean {
+    isId(value) {
         return isId(value);
     }
 
@@ -177,21 +175,21 @@ class DbProxyDriver {
         return this.client;
     }
 
-    static __preparePerPageOption(options: Object) {
+    static __preparePerPageOption(options) {
         if ("perPage" in options) {
             options.limit = options.perPage;
             delete options.perPage;
         }
     }
 
-    static __preparePageOption(options: Object) {
+    static __preparePageOption(options) {
         if ("page" in options) {
             options.offset = options.limit * (options.page - 1);
             delete options.page;
         }
     }
 
-    static __prepareSearchOption(options: Object) {
+    static __prepareSearchOption(options) {
         // Here we handle search (if passed) - we transform received arguments into linked LIKE statements.
         if (options.search && options.search.query) {
             const { query, operator, fields } = options.search;
