@@ -1,19 +1,20 @@
 // @flow
 import { flow } from "lodash";
-import { withStorage, withCrudLogs, withSoftDelete, withFields } from "@webiny/commodo";
-import { withId } from "@commodo/fields-storage-mongodb";
+import { withStorage, withCrudLogs } from "@webiny/commodo";
 import ssrCache from "./ssrCache.model";
-import { DbProxyDriver } from "@webiny/commodo-fields-storage-db-proxy";
+import { withId, DbProxyDriver } from "@webiny/commodo-fields-storage-db-proxy";
 
-export default ({ options }) => {
-    const createBase = flow(
-        withId(),
-        withStorage({ driver: new DbProxyDriver() }),
-        withSoftDelete(),
-        withCrudLogs()
-    )();
+export default () => {
+    const createBase = () =>
+        flow(
+            withId(),
+            withStorage({
+                driver: new DbProxyDriver({ dbProxyFunctionName: process.env.DB_PROXY_FUNCTION })
+            }),
+            withCrudLogs()
+        )();
 
-    const SsrCache = ssrCache({ createBase, context, options });
+    const SsrCache = ssrCache({ createBase });
 
     return {
         SsrCache

@@ -1,6 +1,6 @@
-// @flow
 import { flow } from "lodash";
-import got from "got";
+import LambdaClient from "aws-sdk/clients/lambda";
+import getSsrCacheTags from "./ssrCache/getSsrCacheTags";
 import {
     withFields,
     string,
@@ -14,14 +14,13 @@ import {
     withStaticProps,
     skipOnPopulate
 } from "@webiny/commodo";
-import getSsrCacheTags from "./ssrCache/getSsrCacheTags";
 
 const DEFAULT_CACHE_TTL = 60;
 const DEFAULT_STALE_CACHE_TTL = 30;
 
-export default ({ createBase, options = {} }) => {
-    const TTL_CACHE = options.cacheTtl || DEFAULT_CACHE_TTL;
-    const TTL_STALE_CACHE = options.staleCacheTtl || DEFAULT_STALE_CACHE_TTL;
+export default ({ createBase }) => {
+    const TTL_CACHE = process.env.CACHE_TTL || DEFAULT_CACHE_TTL;
+    const TTL_STALE_CACHE = process.env.STALE_CACHE_TTL || DEFAULT_STALE_CACHE_TTL;
 
     return flow(
         withName("SsrCache"),
@@ -97,17 +96,19 @@ export default ({ createBase, options = {} }) => {
                 return this;
             },
             async refresh() {
-                const settings = await SsrCacheSettings.load();
                 this.lastRefresh.startedOn = new Date();
                 await this.save();
-                const response = await got(settings.data.ssrGenerationUrl, {
-                    headers: { "Content-Type": "application/json" },
-                    method: "post",
-                    body: JSON.stringify({
-                        path: this.path
-                    })
-                });
-                this.content = response.body;
+
+                const Lambda = new LambdaClient({ region: process.env.AWS_REGION });
+
+                const response = await Lambda.invoke({
+                    FunctionName: process.env.SSR_FUNCTION,
+                    Payload: JSON.stringify({ path: this.path })
+                }).promise();
+
+                console.log('resppose', typeof response, response)
+                const Payload = JSON.parse(response.Payload);
+                this.content = Payload.body;
 
                 this.lastRefresh.endedOn = new Date();
                 this.lastRefresh.duration = this.lastRefresh.endedOn - this.lastRefresh.startedOn;

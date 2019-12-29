@@ -22,7 +22,7 @@ site:
     timeout: 30
     code: ./site/build
     env:
-      SSR_FUNCTION: ${ssr.name}
+      SSR_FUNCTION: ${ssr.arn}
       DB_PROXY_FUNCTION: ${dbProxy.arn}
 
 ssr:
