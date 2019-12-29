@@ -2,7 +2,7 @@ import createResponse from "./createResponse";
 import { GraphQLClient } from "graphql-request";
 import get from "lodash.get";
 import qs from "querystringify";
-
+import S
 const API_URL = process.env.GRAPHQL_API_URL;
 const GET_SRR_CACHE = /* GraphQL */ `
     query getSsrCache($path: String!) {
@@ -24,6 +24,8 @@ const GET_SRR_CACHE = /* GraphQL */ `
 `;
 
 const serveCachedPageSsr = async ({ path, multiValueQueryStringParameters }) => {
+    const fullPath = path + qs.stringify(multiValueQueryStringParameters, true);
+
     const client = new GraphQLClient(API_URL);
     const response = await client.request(GET_SRR_CACHE, {
         path: path + qs.stringify(multiValueQueryStringParameters, true)

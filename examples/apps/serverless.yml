@@ -2,6 +2,16 @@ name: webiny-cms
 
 vars:
   region: ${env.AWS_REGION}
+  mongodb:
+    server: mongodb+srv://adrian:YDzr8E1bWDAHC7aF@adriantest-kvgdz.mongodb.net/test?retryWrites=true&w=majority
+    name: webiny
+
+dbProxy:
+  component: "@webiny/serverless-db-proxy/dist"
+  inputs:
+    env:
+      MONGODB_SERVER: ${vars.mongodb.server}
+      MONGODB_NAME: ${vars.mongodb.name}
 
 site:
   component: "@webiny/serverless-app"
@@ -13,6 +23,7 @@ site:
     code: ./site/build
     env:
       SSR_FUNCTION: ${ssr.name}
+      DB_PROXY_FUNCTION: ${dbProxy.arn}
 
 ssr:
   component: "@webiny/serverless-function"
