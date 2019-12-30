@@ -59,14 +59,11 @@ api:
       - path: /admin
         method: GET
         function: ${admin}
-      - path: /_ssr
-        method: POST
-        function: ${ssr}
       - path: /{key+}
-        method: GET
+        method: ANY
         function: ${site}
       - path: /
-        method: GET
+        method: ANY
         function: ${site}
 
 cdn:
@@ -74,13 +71,9 @@ cdn:
   inputs:
     defaults: # optional
       ttl: 15
-      allowedHttpMethods: ['HEAD', 'GET']
+      allowedHttpMethods: ["GET", "HEAD", "OPTIONS", "PUT", "POST", "PATCH", "DELETE"]
       forward:
         queryString: true
     origins:
       - url: ${api.url}
-        allowedHttpMethods: ['HEAD', 'GET']
-        pathPatterns:
-          "/_ssr":
-            ttl: 0
-            allowedHttpMethods: ["GET", "HEAD", "OPTIONS", "PUT", "POST", "PATCH", "DELETE"]
+        allowedHttpMethods: ["HEAD", "GET"]
