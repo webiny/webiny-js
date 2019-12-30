@@ -3,7 +3,6 @@ import { fileUploadPlugin, imagePlugin } from "@webiny/app/plugins";
 import adminPlugins from "@webiny/app-admin/plugins";
 import i18nPlugins from "@webiny/app-i18n/admin/plugins";
 import securityPlugins from "@webiny/app-security/admin/plugins";
-import ssrCachePlugins from "@webiny/app-ssr-cache/admin/plugins";
 import pageBuilderPlugins from "@webiny/app-page-builder/admin/plugins";
 import formBuilderPlugins from "@webiny/app-forms/admin/plugins";
 import formBuilderPageBuilderPlugins from "@webiny/app-forms/page-builder/admin/plugins";
@@ -18,7 +17,6 @@ const plugins = [
     adminPlugins,
     i18nPlugins,
     securityPlugins,
-    ssrCachePlugins,
     pageBuilderPlugins,
     formBuilderPlugins,
     formBuilderPageBuilderPlugins,

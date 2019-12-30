@@ -8,7 +8,7 @@ const PAGE_BUILDER_INSTALLATION_FILES_ZIP_KEY = "page_builder_installation_files
 
 class ServerlessPageBuilder extends Component {
     async default(inputs = {}) {
-        const { plugins = [], env, files, ssrCache, ...rest } = inputs;
+        const { plugins = [], env, files, ...rest } = inputs;
 
         // TODO: remove this in the next major release
         if (rest.database) {
@@ -58,7 +58,6 @@ class ServerlessPageBuilder extends Component {
             env: {
                 ...env,
                 FILES_API_URL: get(files, "api.graphqlUrl"),
-                SSR_CACHE_API_URL: get(ssrCache, "api.graphqlUrl"),
                 PAGE_BUILDER_S3_BUCKET: s3Output.name,
                 PAGE_BUILDER_INSTALLATION_FILES_ZIP_KEY
             },

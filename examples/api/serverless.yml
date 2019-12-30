@@ -38,8 +38,6 @@ gateway:
               url: ${i18n.api.graphqlUrl}
             - name: formBuilder
               url: ${formBuilder.api.graphqlUrl}
-            - name: ssrCache
-              url: ${ssrCache.api.graphqlUrl}
 
 dbProxy:
   component: "@webiny/serverless-db-proxy/dist"
@@ -122,32 +120,12 @@ i18n:
         options: ${vars.security}
       - "@webiny/api-i18n/plugins"
 
-ssrCache:
-  component: "@webiny/serverless-apollo-service"
-  inputs:
-    name: SSR Cache
-    region: ${vars.region}
-    memory: 512
-    timeout: 30
-    webpackConfig: ./webpack.config.js
-    plugins:
-      - factory: "@webiny/api-plugin-create-apollo-handler"
-        options: ${vars.apollo}
-      - factory: "@webiny/api-plugin-commodo-db-proxy"
-        options:
-          functionArn: ${dbProxy.arn}
-      - factory: "@webiny/api-ssr-cache/plugins/api"
-        options:
-          cacheTtl: 2592000 # Seconds (30 days).
-          staleCacheTtl: 20 # Seconds.
-
 pageBuilder:
   component: "@webiny/serverless-page-builder"
   inputs:
     name: Page Builder
     region: ${vars.region}
     files: ${files}
-    ssrCache: ${ssrCache}
     memory: 512
     timeout: 30
     webpackConfig: ./webpack.config.js
