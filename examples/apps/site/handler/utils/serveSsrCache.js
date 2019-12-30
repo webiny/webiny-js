@@ -5,7 +5,8 @@ import createModels from "./models";
 
 let models = null;
 
-const serveCachedPageSsr = async ({ path, multiValueQueryStringParameters }) => {
+const serveSsrCache = async event => {
+    const { path, multiValueQueryStringParameters, asyncSsrCacheRefresh } = event;
     const fullPath = path + qs.stringify(multiValueQueryStringParameters, true);
     if (!models) {
         models = createModels();
@@ -19,6 +20,11 @@ const serveCachedPageSsr = async ({ path, multiValueQueryStringParameters }) => 
         await ssrCache.save();
     }
 
+    if (asyncSsrCacheRefresh) {
+        await ssrCache.refresh();
+        return createResponse(); // Response is irrelevant.
+    }
+
     if (ssrCache.isEmpty) {
         await ssrCache.refresh();
         return createResponse({
@@ -28,54 +34,21 @@ const serveCachedPageSsr = async ({ path, multiValueQueryStringParameters }) => 
         });
     }
 
-    return createResponse({
-        type: "text/html",
-        body: `ne mere bajo moj`,
-        headers: {}
-    });
-
     if (ssrCache.hasExpired) {
         await ssrCache.incrementExpiresOn().save();
-
         const Lambda = new LambdaClient({ region: process.env.AWS_REGION });
-        const body = JSON.stringify({
-            operationName: "generateSsrCache",
-            variables: { path },
-            query: GENERATE_SSR_CACHE_GQL
-        });
-
         await Lambda.invoke({
             FunctionName: process.env.AWS_LAMBDA_FUNCTION_NAME,
             InvocationType: "Event",
-            Payload: JSON.stringify({
-                httpMethod: "POST",
-                body
-            })
+            Payload: JSON.stringify({ ...event, asyncSsrCacheRefresh: true })
         }).promise();
     }
 
-    return new Response(ssrCache);
-    /*
-    const fullPath = path + qs.stringify(multiValueQueryStringParameters, true);
-
-    const client = new GraphQLClient(API_URL);
-    const response = await client.request(GET_SRR_CACHE, {
-        path: path + qs.stringify(multiValueQueryStringParameters, true)
-    });
-
-    const { data, error } = get(response, "ssrCache.getSsrCache") || {};
-
-    if (error) {
-        throw new Error(error.message || error.code);
-    }
-
-    const maxAge = (data.expiresIn / 1000); // Seconds.
-
     return createResponse({
         type: "text/html",
-        body: data.content,
-        headers: { "Cache-Control": "public, max-age=" + maxAge }
-    });*/
+        body: ssrCache.content,
+        headers: { "Cache-Control": "public, max-age=" + ssrCache.expiresIn / 1000 }
+    });
 };
 
-export default serveCachedPageSsr;
+export default serveSsrCache;

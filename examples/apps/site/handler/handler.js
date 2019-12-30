@@ -1,7 +1,7 @@
-import mime from "mime-types";
 import serveError from "./utils/serveError";
 import serveFile from "./utils/serveFile";
-import serveCachedPageSsr from "./utils/serveCachedPageSsr";
+import serveSsrCache from "./utils/serveSsrCache";
+import mime from "mime-types";
 
 export const handler = async event => {
     try {
@@ -9,7 +9,7 @@ export const handler = async event => {
             return serveFile(event);
         }
 
-        return serveCachedPageSsr(event);
+        return serveSsrCache(event);
     } catch (e) {
         // An error occurred, serve the error.
         return serveError(e);

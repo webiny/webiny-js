@@ -22,6 +22,7 @@ site:
     timeout: 30
     code: ./site/build
     env:
+      CLOUDFNS_NAME: "site-fn"
       SSR_FUNCTION: ${ssr.arn}
       DB_PROXY_FUNCTION: ${dbProxy.arn}
 

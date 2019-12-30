@@ -4,7 +4,7 @@ const createResponse = ({
     body = "",
     isBase64Encoded = false,
     headers = {}
-}) => {
+} = {}) => {
     return {
         statusCode,
         body,

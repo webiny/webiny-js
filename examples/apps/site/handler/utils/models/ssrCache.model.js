@@ -15,8 +15,8 @@ import {
     skipOnPopulate
 } from "@webiny/commodo";
 
-const DEFAULT_CACHE_TTL = 60;
-const DEFAULT_STALE_CACHE_TTL = 30;
+const DEFAULT_CACHE_TTL = 80;
+const DEFAULT_STALE_CACHE_TTL = 20;
 
 export default ({ createBase }) => {
     const TTL_CACHE = process.env.CACHE_TTL || DEFAULT_CACHE_TTL;
