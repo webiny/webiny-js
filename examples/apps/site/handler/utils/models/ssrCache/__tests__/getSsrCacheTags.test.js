@@ -1,4 +1,4 @@
-import parseSsrCacheTags from "@webiny/api-ssr-cache/src/plugins/api/models/ssrCache/getSsrCacheTags";
+import parseSsrCacheTags from "./../getSsrCacheTags";
 
 describe("parse ssr-cache tags", () => {
     it("must detect all ssr-cache tags in given HTML", async () => {

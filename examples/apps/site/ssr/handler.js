@@ -1,10 +1,7 @@
 /**
  * It is absolutely mandatory to clear module cache for Apollo to generate the correct state!
  */
-module.exports.handler = async event => {
-    const body = event.body ? JSON.parse(event.body) : {};
-
-    const { path } = body;
+module.exports.handler = async ({ path }) => {
     delete require.cache[require.resolve("./ssr")];
     const { renderer } = require("./ssr");
     const { html } = await renderer(path);

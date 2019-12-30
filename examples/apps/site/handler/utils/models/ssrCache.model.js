@@ -106,7 +106,6 @@ export default ({ createBase }) => {
                     Payload: JSON.stringify({ path: this.path })
                 }).promise();
 
-                console.log('resppose', typeof response, response)
                 const Payload = JSON.parse(response.Payload);
                 this.content = Payload.body;
 
@@ -121,7 +120,7 @@ export default ({ createBase }) => {
                 await this.hook("beforeInvalidate");
                 this.expiresOn = null;
                 this.content = null;
-                this.save();
+                await this.save();
                 await this.hook("afterInvalidate");
             }
         })
