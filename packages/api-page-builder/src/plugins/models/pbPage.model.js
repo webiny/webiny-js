@@ -117,9 +117,15 @@ export default ({ createBase, context, PbCategory, PbSettings }) => {
                     resolve(revisions);
                 });
             },
-            async fullUrl() {
-                const settings = await PbSettings.load();
-                return settings.data.domain + this.url;
+            get fullUrl() {
+                return new Promise(async (resolve, reject) => {
+                    try {
+                        const settings = await PbSettings.load();
+                        resolve(settings.data.domain + this.url);
+                    } catch (e) {
+                        reject(e);
+                    }
+                });
             }
         }),
         withHooks({

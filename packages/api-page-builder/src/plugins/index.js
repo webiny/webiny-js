@@ -3,11 +3,11 @@ import models from "./models";
 import graphql from "./graphql";
 import pageContentModifiers from "./pageContentModifiers";
 import pageSettings from "./pageSettings";
-import extendModels from "./extendModels";
+import ssr from "./ssr";
 
 export default config => [
     models(config),
-    extendModels,
+    ssr,
     graphql,
     pageContentModifiers(config),
     pageSettings,
