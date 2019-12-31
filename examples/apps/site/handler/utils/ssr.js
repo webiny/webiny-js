@@ -6,53 +6,49 @@ import createModels from "./models";
 let models;
 
 const ssr = async event => {
+    const path = event.path + qs.stringify(event.multiValueQueryStringParameters, true);
+    const httpMethod = event.httpMethod.toUpperCase();
+
     if (!models) {
         models = createModels();
     }
-
-    const { multiValueQueryStringParameters, httpMethod } = event;
-    const path = event.path + qs.stringify(multiValueQueryStringParameters, true);
 
     let body = {};
     if (typeof event.body === "string") {
         try {
             body = JSON.parse(event.body);
-        } catch (e) {
+        } catch {
             // Do nothing.
         }
     }
 
-    if (httpMethod === "DELETE" && path === "/" && Array.isArray(body.tags)) {
+    const { tags } = body;
+    if (httpMethod === "DELETE" && path === "/" && Array.isArray(tags)) {
         const { SsrCache } = models;
-        const deletePromises = [];
         for (let i = 0; i < tags.length; i++) {
-            deletePromises.push(new Promise(async (resolve) => {
-                let tag = tags[i];
-                let $elemMatch = {};
-                if (tag.class) {
-                    $elemMatch.class = tag.class;
-                }
+            let tag = tags[i];
+            let $elemMatch = {};
+            if (tag.class) {
+                $elemMatch.class = tag.class;
+            }
 
-                if (tag.id) {
-                    $elemMatch.id = tag.id;
-                }
+            if (tag.id) {
+                $elemMatch.id = tag.id;
+            }
 
-                let ssrCaches = await SsrCache.find({
-                    query: {
+            const driver = SsrCache.getStorageDriver();
+            await driver.getClient().runOperation({
+                collection: driver.getCollectionName(SsrCache),
+                operation: [
+                    "update",
+                    {
                         cacheTags: { $elemMatch }
-                    }
-                });
-
-                for (let i = 0; i < ssrCaches.length; i++) {
-                    let ssrCache = ssrCaches[i];
-                    await ssrCache.invalidate();
-                }
-
-                resolve();
-            }))
+                    },
+                    { $set: { expiresOn: null } },
+                    { multi: true }
+                ]
+            });
         }
-
-        await Promise.all(deletePromises);
 
         return createResponse();
     }

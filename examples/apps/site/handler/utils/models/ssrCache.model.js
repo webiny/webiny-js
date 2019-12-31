@@ -60,7 +60,6 @@ export default ({ createBase }) => {
                 })
             )
         }),
-
         withHooks({
             beforeSave() {
                 this.cacheTags = getSsrCacheTags(this.content);
