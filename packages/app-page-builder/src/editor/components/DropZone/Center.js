@@ -38,7 +38,7 @@ const isVisible = () => true;
 type Props = {
     type: string,
     onDrop: Function,
-    children: React.Node,
+    children: React.ReactNode,
     active: boolean,
     highlight: boolean
 };

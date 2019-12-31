@@ -3,7 +3,7 @@ import * as React from "react";
 import type { PluginType } from "@webiny/plugins/types";
 import Helmet from "react-helmet";
 
-type SecureRouteErrorPluginType = PluginType & { render: () => React.Node };
+type SecureRouteErrorPluginType = PluginType & { render: () => React.ReactNode };
 
 export default ({
     type: "secure-route-error",

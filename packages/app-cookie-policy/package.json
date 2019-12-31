@@ -18,7 +18,7 @@
     "@webiny/validation": "^2.1.0",
     "load-src": "^1.0.0",
     "lodash.get": "^4.4.2",
-    "react": "^16.8.0",
+    "react": "^16.8.6",
     "react-helmet": "^5.2.0",
     "react-router-dom": "^5.0.0"
   },
@@ -34,7 +34,7 @@
   },
   "peerDependencies": {
     "graphql-tag": "^2.10.1",
-    "react": "^16.8.0",
+    "react": "^16.8.6",
     "react-apollo": "^3.1.0-beta.0"
   },
   "publishConfig": {

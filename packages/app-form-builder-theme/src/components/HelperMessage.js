@@ -2,8 +2,8 @@
 import * as React from "react";
 
 type Props = {
-    helperMessage?: React.Node,
-    errorMessage: React.Node,
+    helperMessage?: React.ReactNode,
+    errorMessage: React.ReactNode,
     isValid: boolean
 };
 

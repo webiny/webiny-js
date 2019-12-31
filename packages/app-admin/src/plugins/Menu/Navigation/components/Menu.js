@@ -42,7 +42,7 @@ const menuTitleActive = css({
     backgroundColor: "var(--mdc-theme-background)"
 });
 
-type Props = { name: string, label: React.Node, icon: string, children: React.Node };
+type Props = { name: string, label: React.ReactNode, icon: string, children: React.ReactNode };
 
 export default function Menu(props: Props) {
     const { name } = props;

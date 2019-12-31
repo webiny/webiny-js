@@ -47,7 +47,7 @@ type Props = {
     value: any,
     onChange: (value: any) => void,
     richText?: boolean,
-    children?: ({ openDialog: () => void }) => React.Node,
+    children?: ({ openDialog: () => void }) => React.ReactNode,
     showTranslateIcon?: boolean
 } & Object;
 

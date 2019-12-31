@@ -28,7 +28,7 @@ type Props = {
     images?: boolean,
     multiple?: boolean,
     accept?: Array<string>,
-    children: ({ showI18nInputDialogg: Function }) => React.Node,
+    children: ({ showI18nInputDialogg: Function }) => React.ReactNode,
     maxSize?: string,
     multipleMaxCount?: number,
     multipleMaxSize?: string

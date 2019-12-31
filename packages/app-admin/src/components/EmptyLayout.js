@@ -2,6 +2,6 @@
 import * as React from "react";
 import { renderPlugins } from "@webiny/app/plugins";
 
-export const EmptyLayout = ({ children }: { children: React.Node }) => {
+export const EmptyLayout = ({ children }: { children: React.ReactNode }) => {
     return <React.Fragment>{renderPlugins("empty-layout", { content: children })}</React.Fragment>;
 };

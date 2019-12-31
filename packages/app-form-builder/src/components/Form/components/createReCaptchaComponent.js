@@ -10,16 +10,16 @@ type Args = {
     setResponseToken: (value: string) => void
 };
 
-type ChildrenFunction = ({ errorMessage: ?I18NStringValueType }) => React.Node;
+type ChildrenFunction = ({ errorMessage: ?I18NStringValueType }) => React.ReactNode;
 
 export type ReCaptchaProps = {
-    children?: React.Node | ChildrenFunction,
+    children?: React.ReactNode | ChildrenFunction,
     onChange?: (value: string) => void,
     onErrored?: Function,
     onExpired?: Function
 };
 
-export type ReCaptchaComponentType = ReCaptchaProps => ?React.Node;
+export type ReCaptchaComponentType = ReCaptchaProps => ?React.ReactNode;
 
 const createReCaptchaComponent = ({ formData, setResponseToken }: Args): ReCaptchaComponentType =>
     function ReCaptcha(props: ReCaptchaProps) {

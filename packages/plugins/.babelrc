@@ -6,10 +6,7 @@
             }
         }],
         "@babel/preset-react",
-        "@babel/preset-flow"
-    ],
-    "plugins": [
-        ["babel-plugin-lodash"]
+        "@babel/preset-typescript"
     ]
 }
 

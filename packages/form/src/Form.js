@@ -21,7 +21,7 @@ type Props = {
         form: Form,
         submit: ({ event?: SyntheticEvent<*> }) => Promise<void>,
         Bind: React.ComponentType<BindProps>
-    }) => React.Node
+    }) => React.ReactNode
 };
 
 type State = {

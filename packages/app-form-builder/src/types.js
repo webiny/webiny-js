@@ -58,7 +58,7 @@ export type FormRenderPropsType = {
     formData: FormDataType
 };
 
-export type FormLayoutComponent = (props: FormRenderPropsType) => React.Node;
+export type FormLayoutComponent = (props: FormRenderPropsType) => React.ReactNode;
 
 export type FormComponentPropsType = {
     preview?: boolean,
@@ -102,7 +102,7 @@ export type FormEditorFieldPluginType = PluginType & {
         label: string,
         validators?: Array<string>,
         description: string,
-        icon: React.Node,
+        icon: React.ReactNode,
         createField: () => {
             type: string,
             name: string,
@@ -114,14 +114,14 @@ export type FormEditorFieldPluginType = PluginType & {
             Bind: BindComponentType,
             afterLabelChange: () => void,
             uniqueFieldIdValidator: () => void
-        }) => React.Node
+        }) => React.ReactNode
     }
 };
 
 export type FormSettingsPluginType = PluginType & {
     title: string,
     description: string,
-    icon: React.Node,
+    icon: React.ReactNode,
     render: FormSettingsPluginRenderFunctionType
 };
 
@@ -129,7 +129,7 @@ export type FormSettingsPluginRenderFunctionType = (props: {
     Bind: BindComponentType,
     formData: Object, // Form settings.
     form: Object
-}) => React.Node;
+}) => React.ReactNode;
 
 export type FormTriggerHandlerPluginType = PluginType & {
     trigger: {
@@ -139,5 +139,5 @@ export type FormTriggerHandlerPluginType = PluginType & {
 };
 
 export type FormDetailsPluginType = PluginType & {
-    render: (props: Object) => React.Node
+    render: (props: Object) => React.ReactNode
 };

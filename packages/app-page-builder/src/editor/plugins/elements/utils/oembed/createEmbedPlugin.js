@@ -8,14 +8,14 @@ type EmbedPluginConfig = {
     toolbar?: {
         title?: string,
         group?: string,
-        preview?: () => React.Node
+        preview?: () => React.ReactNode
     },
-    render?: ({ element: Object }) => React.Node,
+    render?: ({ element: Object }) => React.ReactNode,
     oembed?: {
         global?: string,
         sdk?: string,
         onData?: Function,
-        renderEmbed?: () => React.Node
+        renderEmbed?: () => React.ReactNode
     },
     settings?: Array<string>,
     target?: Array<string>,
@@ -59,7 +59,7 @@ export const createEmbedPlugin = (config: EmbedPluginConfig): PbElementPluginTyp
 
 type EmbedPluginSidebarConfig = {
     type: string,
-    render?: ({ Bind: React.ComponentType<*> }) => React.Node
+    render?: ({ Bind: React.ComponentType<*> }) => React.ReactNode
 };
 export const createEmbedSettingsPlugin = ({ type, render }: EmbedPluginSidebarConfig) => {
     return {

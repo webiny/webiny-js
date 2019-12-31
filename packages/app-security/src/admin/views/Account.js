@@ -93,7 +93,7 @@ const UserAccountForm = () => {
         setState({ loading: false });
         if (error) {
             return showSnackbar(error.message, {
-                actionText: "Close"
+                action: "Close"
             });
         }
 

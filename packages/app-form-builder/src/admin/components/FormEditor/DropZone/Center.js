@@ -28,7 +28,7 @@ const Add = styled("div")(({ isOver }) => ({
 
 type Props = {
     onDrop: Function,
-    children: React.Node
+    children: React.ReactNode
 };
 
 export default function Center({ onDrop, children }: Props) {

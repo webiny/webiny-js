@@ -13,7 +13,7 @@ type ChildrenFunction = ({
     onChange: (value: boolean) => void,
     errorMessage: ?I18NStringValueType,
     message: ?I18NObjectValueType
-}) => React.Node;
+}) => React.ReactNode;
 
 export type TermsOfServiceProps = {
     children: ChildrenFunction,
@@ -22,7 +22,7 @@ export type TermsOfServiceProps = {
     onExpired?: Function
 };
 
-export type TermsOfServiceComponentType = TermsOfServiceProps => ?React.Node;
+export type TermsOfServiceComponentType = TermsOfServiceProps => ?React.ReactNode;
 
 const createTermsOfServiceComponent = ({
     formData,

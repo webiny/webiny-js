@@ -3,10 +3,12 @@
     "target": "es6",
     "allowJs": true,
     "moduleResolution": "node",
+    "lib": ["dom", "dom.iterable"],
     "esModuleInterop": true,
     "declaration": true,
     "composite": true,
     "noEmit": false,
+    "jsx": "preserve",
     "emitDeclarationOnly": true,
     "baseUrl": ".",
     "paths": {

@@ -45,8 +45,8 @@
     "apollo-cache-inmemory": "^1.4.2",
     "apollo-client": "^2.2.8",
     "apollo-link": "^1.2.1",
-    "react": "^16.4.0",
-    "react-dom": "^16.6.0"
+    "react": "^16.8.6",
+    "react-dom": "^16.8.6"
   },
   "scripts": {
     "analyze": "source-map-explorer build/static/js/main.*",

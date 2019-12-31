@@ -3,7 +3,7 @@ import * as React from "react";
 import { hasScopes, hasRoles } from "@webiny/app-security";
 import { getPlugin } from "@webiny/plugins";
 
-export default ({ children, scopes, roles }: Object): React.Node => {
+export default ({ children, scopes, roles }: Object): React.ReactNode => {
     const checks = {
         scopes: scopes ? hasScopes(scopes, { forceBoolean: true }) : true,
         roles: roles ? hasRoles(roles, { forceBoolean: true }) : true

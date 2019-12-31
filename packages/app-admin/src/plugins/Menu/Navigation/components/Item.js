@@ -29,7 +29,7 @@ const submenuList = css({
     }
 });
 
-type Props = { label: React.Node, path: string };
+type Props = { label: React.ReactNode, path: string };
 
 export default function Item(props: Props) {
     const { path, label } = props;

@@ -78,12 +78,12 @@ const LearnMore = styled("div")({
 });
 
 type Props = {
-    icon: React.Node,
+    icon: React.ReactNode,
     title: string,
     description: string,
     learnMoreText: string,
     learnMoreLink: string,
-    editorContent: React.Node
+    editorContent: React.ReactNode
 };
 
 const SlideOutline = (props: Props) => {

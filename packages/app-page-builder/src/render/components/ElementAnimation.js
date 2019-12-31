@@ -9,7 +9,7 @@ const refresh = throttle(aos.refreshHard, 250);
 
 type RenderPropParams = { init: Function, refresh: Function };
 type Props = {
-    children: React.Node | (RenderPropParams => React.Node)
+    children: React.ReactNode | (RenderPropParams => React.ReactNode)
 };
 
 class ElementAnimation extends React.Component<Props> {

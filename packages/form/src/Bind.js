@@ -10,7 +10,7 @@ export type BindComponentPropsType = {
     afterChange?: Function,
     defaultValue?: any,
     validators: Function | Array<Function>,
-    children: React.Node | BindComponentRenderPropType,
+    children: React.ReactNode | BindComponentRenderPropType,
     validate: Function
 };
 
@@ -26,7 +26,7 @@ export type BindComponentRenderPropType = {
     }
 };
 
-export type BindComponentType = BindComponentPropsType => React.Node;
+export type BindComponentType = BindComponentPropsType => React.ReactNode;
 
 const createBind = (form: Form) => {
     const Bind: BindComponentType = props => {

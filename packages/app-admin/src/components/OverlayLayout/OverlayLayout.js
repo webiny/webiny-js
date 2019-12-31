@@ -39,10 +39,10 @@ const transitionStyles = {
 };
 
 type Props = {
-    barMiddle?: React.Node,
-    barLeft?: React.Node,
-    barRight?: React.Node,
-    children: React.Node,
+    barMiddle?: React.ReactNode,
+    barLeft?: React.ReactNode,
+    barRight?: React.ReactNode,
+    children: React.ReactNode,
     onExited?: Function
 };
 

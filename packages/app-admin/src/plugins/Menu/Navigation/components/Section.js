@@ -9,7 +9,7 @@ const menuSubtitle = css({
     color: "var(--mdc-theme-on-surface)"
 });
 
-type Props = { label: React.Node, children: React.Node };
+type Props = { label: React.ReactNode, children: React.ReactNode };
 
 export default function Section(props: Props) {
     const { children, label } = props;

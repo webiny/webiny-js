@@ -10,7 +10,7 @@ type Props = {
     images?: boolean,
     multiple?: boolean,
     accept?: Array<string>,
-    children: ({ showFileManager: Function }) => React.Node,
+    children: ({ showFileManager: Function }) => React.ReactNode,
     maxSize?: string,
     multipleMaxCount?: number,
     multipleMaxSize?: string

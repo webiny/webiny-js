@@ -42,7 +42,7 @@ const footer = css({
     }
 });
 
-const SimpleForm = (props: { children: React.Node, noElevation?: boolean }) => {
+const SimpleForm = (props: { children: React.ReactNode, noElevation?: boolean }) => {
     return (
         <SimpleFormContainer className={"webiny-data-list"}>
             {props.noElevation ? props.children : <Elevation z={1}>{props.children}</Elevation>}
@@ -53,7 +53,7 @@ const SimpleForm = (props: { children: React.Node, noElevation?: boolean }) => {
 const SimpleFormHeader = (props: {
     title: string,
     icon?: React.Element<any>,
-    children?: React.Node
+    children?: React.ReactNode
 }) => {
     return (
         <Grid className={header}>
@@ -70,7 +70,7 @@ const SimpleFormHeader = (props: {
     );
 };
 
-const SimpleFormFooter = (props: { children: React.Node }) => {
+const SimpleFormFooter = (props: { children: React.ReactNode }) => {
     return (
         <Grid className={footer}>
             <Cell span={12}>{props.children}</Cell>
@@ -78,7 +78,7 @@ const SimpleFormFooter = (props: { children: React.Node }) => {
     );
 };
 
-const SimpleFormContent = (props: { children: React.Node }) => {
+const SimpleFormContent = (props: { children: React.ReactNode }) => {
     return props.children;
 };
 
