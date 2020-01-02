@@ -1,5 +1,4 @@
 const path = require("path");
-const webpack = require("webpack");
 const WebpackBar = require("webpackbar");
 
 module.exports = {
@@ -7,10 +6,7 @@ module.exports = {
     mode: "development",
     devtool: false,
     plugins: [
-        new WebpackBar({ name: "Site handler" }),
-        new webpack.DefinePlugin({
-            "process.env.GRAPHQL_API_URL": JSON.stringify(process.env.REACT_APP_GRAPHQL_API_URL)
-        })
+        new WebpackBar({ name: "Site handler" })
     ],
     output: {
         filename: "handler.js",
