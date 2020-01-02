@@ -1,17 +1,8 @@
-import serveError from "./utils/serveError";
-import serveFile from "./utils/serveFile";
-import ssr from "./utils/ssr";
-import mime from "mime-types";
+import { createHandler } from "@webiny/api-web-server";
+import { files, ssr } from "@webiny/api-web-server/plugins/handlers";
+import { fs } from "@webiny/api-web-server/plugins/loaders";
 
-export const handler = async event => {
-    try {
-        if (mime.lookup(event.path)) {
-            return serveFile(event);
-        }
-
-        return ssr(event);
-    } catch (e) {
-        // An error occurred, serve the error.
-        return serveError(e);
-    }
-};
+export const handler = createHandler(
+    files({ fileLoader: fs }),
+    ssr({ ssrFunction: process.env.SSR_FUNCTION, ssrCacheTtl: 80, ssrCacheTtlState: 20 })
+);
