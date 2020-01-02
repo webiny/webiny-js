@@ -2,14 +2,20 @@ import * as React from "react";
 import { css } from "emotion";
 import classNames from "classnames";
 
-type Props = {
-    // SvgComponent containing the svg icon
+export type IconProps = {
+    /**
+     * SvgComponent containing the svg icon
+     */
     icon: React.ReactElement<any>;
 
-    // Optional onclick handler
+    /**
+     * Optional onclick handler
+     */
     onClick?: Function;
 
-    // CSS class to be added to the icon.
+    /**
+     * CSS class to be added to the icon
+     */
     className?: string;
 };
 
@@ -30,7 +36,7 @@ const webinyIcon = css(
  * @returns {*}
  * @constructor
  */
-const Icon = (props: Props) => {
+const Icon = (props: IconProps) => {
     return React.cloneElement(props.icon, {
         className: classNames("mdc-button__icon webiny-ui-icon", webinyIcon, props.className),
         onClick: props.onClick

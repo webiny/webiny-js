@@ -3,7 +3,6 @@ import { storiesOf } from "@storybook/react";
 import { Story, StoryReadme, StorySandbox } from "@webiny/storybook-utils/Story";
 import readme from "./../TopAppBar/README.md";
 import { withKnobs, text } from "@storybook/addon-knobs";
-import { Icon } from "./../Icon";
 
 import { ReactComponent as AutoRenewIcon } from "./icons/baseline-autorenew-24px.svg";
 import { ReactComponent as CloudDoneIcon } from "./icons/baseline-cloud_done-24px.svg";
@@ -16,7 +15,7 @@ import {
     TopAppBarNavigationIcon,
     TopAppBarTitle,
     TopAppBarActionItem
-} from "./TopAppBar";
+} from "./index";
 
 const story = storiesOf("Components/TopAppBar", module);
 story.addDecorator(withKnobs);
@@ -43,36 +42,42 @@ const appendCssOverrides = () => {
     head.appendChild(style);
 };
 
-story.add("usage", () => {
-    appendCssOverrides();
+story.add(
+    "usage",
+    () => {
+        appendCssOverrides();
 
-    const title = text("title", "Webiny");
-    return (
-        <Story>
-            <StoryReadme>{readme}</StoryReadme>
-            <StorySandbox>
-                <div className="top-app-bar-storybook">
-                    <TopAppBar>
-                        <TopAppBarSection alignStart>
-                            <TopAppBarNavigationIcon>
-                                <Icon icon={<MenuIcon />} />
-                            </TopAppBarNavigationIcon>
-                            <TopAppBarTitle>{title}</TopAppBarTitle>
-                        </TopAppBarSection>
-                        <TopAppBarSection alignEnd>
-                            <TopAppBarActionItem>
-                                <Icon icon={<CloudDoneIcon />} />
-                            </TopAppBarActionItem>
-                            <TopAppBarActionItem>
-                                <Icon icon={<AutoRenewIcon />} />
-                            </TopAppBarActionItem>
-                            <TopAppBarActionItem>
-                                <Icon icon={<EnvelopeIcon />} />
-                            </TopAppBarActionItem>
-                        </TopAppBarSection>
-                    </TopAppBar>
-                </div>
-            </StorySandbox>
-        </Story>
-    );
-});
+        const title = text("title", "Webiny");
+        return (
+            <Story>
+                <StoryReadme>{readme}</StoryReadme>
+                <StorySandbox>
+                    <div className="top-app-bar-storybook">
+                        <TopAppBar>
+                            <TopAppBarSection alignStart>
+                                <TopAppBarNavigationIcon icon={<MenuIcon />} />
+                                <TopAppBarTitle>{title}</TopAppBarTitle>
+                            </TopAppBarSection>
+                            <TopAppBarSection alignEnd>
+                                <TopAppBarActionItem icon={<CloudDoneIcon />} />
+                                <TopAppBarActionItem icon={<AutoRenewIcon />} />
+                                <TopAppBarActionItem icon={<EnvelopeIcon />} />
+                            </TopAppBarSection>
+                        </TopAppBar>
+                    </div>
+                </StorySandbox>
+            </Story>
+        );
+    },
+    {
+        info: {
+            propTables: [
+                TopAppBar,
+                TopAppBarSection,
+                TopAppBarNavigationIcon,
+                TopAppBarTitle,
+                TopAppBarActionItem
+            ]
+        }
+    }
+);

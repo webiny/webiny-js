@@ -3,7 +3,6 @@ import { storiesOf } from "@storybook/react";
 import {
     Story,
     StoryReadme,
-    StoryProps,
     StorySandboxCode,
     StorySandbox,
     StorySandboxExample
@@ -11,9 +10,7 @@ import {
 import { withKnobs, boolean } from "@storybook/addon-knobs";
 import readme from "./README.md";
 import { Form } from "@webiny/form";
-
-// @ts-ignore
-import { SingleImageUpload, PropsType } from "./SingleImageUpload";
+import { SingleImageUpload } from "./SingleImageUpload";
 
 const story = storiesOf("Components/ImageUpload", module);
 story.addDecorator(withKnobs);
@@ -26,31 +23,32 @@ const image = {
     size: 901611
 };
 
-story.add("Single Image Upload", () => {
-    const disabled = boolean("Disabled", false);
+story.add(
+    "Single Image Upload",
+    () => {
+        const disabled = boolean("Disabled", false);
 
-    return (
-        <Story>
-            <StoryReadme>{readme}</StoryReadme>
-            <StoryProps>{PropsType}</StoryProps>
-            <StorySandbox>
-                <StorySandboxExample>
-                    <div style={{ maxWidth: 200 }}>
-                        <Form data={{ image }}>
-                            {({ Bind }) => (
-                                <Bind name="image">
-                                    <SingleImageUpload
-                                        label="Your previously uploaded image:"
-                                        disabled={disabled}
-                                        description="Image will be publicly visible."
-                                    />
-                                </Bind>
-                            )}
-                        </Form>
-                    </div>
-                </StorySandboxExample>
-                <StorySandboxCode>
-                    {`
+        return (
+            <Story>
+                <StoryReadme>{readme}</StoryReadme>
+                <StorySandbox>
+                    <StorySandboxExample>
+                        <div style={{ maxWidth: 200 }}>
+                            <Form data={{ image }}>
+                                {({ Bind }) => (
+                                    <Bind name="image">
+                                        <SingleImageUpload
+                                            label="Your previously uploaded image:"
+                                            disabled={disabled}
+                                            description="Image will be publicly visible."
+                                        />
+                                    </Bind>
+                                )}
+                            </Form>
+                        </div>
+                    </StorySandboxExample>
+                    <StorySandboxCode>
+                        {`
                         <Form data={${JSON.stringify({ image: image })}}>
                             {({ Bind }) => (
                                 <Bind name="image">
@@ -63,8 +61,10 @@ story.add("Single Image Upload", () => {
                             )}
                         </Form>
                     `}
-                </StorySandboxCode>
-            </StorySandbox>
-        </Story>
-    );
-});
+                    </StorySandboxCode>
+                </StorySandbox>
+            </Story>
+        );
+    },
+    { info: { propTables: [SingleImageUpload] } }
+);

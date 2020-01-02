@@ -3,7 +3,6 @@ import { storiesOf } from "@storybook/react";
 import {
     Story,
     StoryReadme,
-    StoryProps,
     StorySandboxCode,
     StorySandbox,
     StorySandboxExample
@@ -12,9 +11,7 @@ import { withKnobs, boolean } from "@storybook/addon-knobs";
 import readme from "./README.md";
 
 import { Form } from "@webiny/form";
-
-// @ts-ignore
-import { MultiImageUpload, PropsType } from "./MultiImageUpload";
+import { MultiImageUpload } from "./MultiImageUpload";
 
 const story = storiesOf("Components/ImageUpload", module);
 story.addDecorator(withKnobs);
@@ -57,32 +54,33 @@ const images = [
     }
 ];
 
-story.add("Multi Image Upload", () => {
-    const disabled = boolean("Disabled", false);
+story.add(
+    "Multi Image Upload",
+    () => {
+        const disabled = boolean("Disabled", false);
 
-    return (
-        <Story>
-            <StoryReadme>{readme}</StoryReadme>
-            <StoryProps>{PropsType}</StoryProps>
-            <StorySandbox>
-                <StorySandboxExample>
-                    <Form data={{ images }}>
-                        {({ Bind }) => (
-                            <Bind name="images">
-                                <MultiImageUpload
-                                    label="Your previously uploaded images:"
-                                    disabled={disabled}
-                                    description="This list will not be shown to other users."
-                                    cropper={{
-                                        aspectRatio: 1
-                                    }}
-                                />
-                            </Bind>
-                        )}
-                    </Form>
-                </StorySandboxExample>
-                <StorySandboxCode>
-                    {`
+        return (
+            <Story>
+                <StoryReadme>{readme}</StoryReadme>
+                <StorySandbox>
+                    <StorySandboxExample>
+                        <Form data={{ images }}>
+                            {({ Bind }) => (
+                                <Bind name="images">
+                                    <MultiImageUpload
+                                        label="Your previously uploaded images:"
+                                        disabled={disabled}
+                                        description="This list will not be shown to other users."
+                                        cropper={{
+                                            aspectRatio: 1
+                                        }}
+                                    />
+                                </Bind>
+                            )}
+                        </Form>
+                    </StorySandboxExample>
+                    <StorySandboxCode>
+                        {`
                         <Form data={${JSON.stringify({ images: images })}}>
                             {({ Bind }) => (
                                 <Bind name="images">
@@ -95,8 +93,10 @@ story.add("Multi Image Upload", () => {
                             )}
                         </Form>
                     `}
-                </StorySandboxCode>
-            </StorySandbox>
-        </Story>
-    );
-});
+                    </StorySandboxCode>
+                </StorySandbox>
+            </Story>
+        );
+    },
+    { info: { propTables: [MultiImageUpload] } }
+);

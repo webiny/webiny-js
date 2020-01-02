@@ -3,14 +3,17 @@ import ReactDOM from "react-dom";
 import {
     Dialog as RmwcDialog,
     DialogContent as RmwcDialogContent,
+    DialogContentProps as RmwcDialogContentProps,
     DialogTitle as RmwcDialogTitle,
+    DialogTitleProps as RmwcDialogTitleProps,
     DialogActions as RmwcDialogActions,
+    DialogActionsProps as RmwcDialogActionsProps,
     DialogButton as RmwcDialogButton,
     DialogButtonProps as RmwcDialogButtonProps
 } from "@rmwc/dialog";
 import { getClasses } from "@webiny/ui/Helpers";
 
-type Props = {
+export type DialogProps = {
     children: any;
 
     className?: string;
@@ -23,13 +26,7 @@ type Props = {
     onClose?: (e: React.MouseEvent) => void;
 };
 
-/**
- * Use Dialog component to display an informative or alert message and allow users to act upon it.
- * @param props
- * @returns {*}
- * @constructor
- */
-export class Dialog extends React.Component<Props> {
+export class Dialog extends React.Component<DialogProps> {
     container?: Element;
 
     constructor(props) {
@@ -57,60 +54,76 @@ export class Dialog extends React.Component<Props> {
     }
 }
 
+export type DialogTitleProps = RmwcDialogTitleProps & {
+    /**
+     * Title text.
+     */
+    children: React.ReactNode[] | React.ReactNode;
+};
+
 /**
  * Dialog's header, which can accept DialogHeaderTitle component or any other set of components.
- * @param props
- * @returns {*}
- * @constructor
  */
-export const DialogTitle = (props: Object) => (
+export const DialogTitle = (props: DialogTitleProps) => (
     <RmwcDialogTitle {...getClasses(props, "webiny-ui-dialog__title")} />
 );
 
+export type DialogContentProps = RmwcDialogContentProps & {
+    /**
+     * Dialog content.
+     */
+    children: React.ReactNode[] | React.ReactNode;
+};
+
 /**
  * A simple component for showing dialog's body.
- * @param props
- * @returns {*}
- * @constructor
  */
-export const DialogContent = (props: Object) => (
+export const DialogContent = (props: DialogContentProps) => (
     <RmwcDialogContent {...getClasses(props, "webiny-ui-dialog__content")} />
 );
 
+export type DialogActionsProps = RmwcDialogActionsProps & {
+    /**
+     * Action buttons.
+     */
+    children: React.ReactNode[] | React.ReactNode;
+};
+
 /**
  * Can be used to show accept and cancel buttons.
- * @param props
- * @returns {*}
- * @constructor
  */
-export const DialogActions = (props: Object) => (
+export const DialogActions = (props: DialogActionsProps) => (
     <RmwcDialogActions {...getClasses(props, "webiny-ui-dialog__actions")} />
 );
 
 type DialogButtonProps = RmwcDialogButtonProps & {
+    /**
+     * Callback to execute then button is clicked.
+     */
     onClick?: (e: React.MouseEvent) => void;
 };
 
 /**
  * Use this to show a simple button.
- * @param props
- * @returns {*}
- * @constructor
  */
 export const DialogButton = (props: DialogButtonProps) => (
     <RmwcDialogButton {...getClasses(props, "webiny-ui-dialog__button")} />
 );
 
 type DialogCancelProps = RmwcDialogButtonProps & {
+    /**
+     * Children elements.
+     */
     children: React.ReactNode;
+
+    /**
+     * Callback to execute then button is clicked.
+     */
     onClick?: (e: React.MouseEvent) => void;
 };
 
 /**
  * Use this to close the dialog without taking any additional action.
- * @param props
- * @returns {*}
- * @constructor
  */
 export const DialogCancel = (props: DialogCancelProps) => {
     return (
@@ -124,15 +137,19 @@ export const DialogCancel = (props: DialogCancelProps) => {
 };
 
 type DialogAcceptProps = RmwcDialogButtonProps & {
+    /**
+     * Children elements.
+     */
     children: React.ReactNode;
+
+    /**
+     * Callback to execute then button is clicked.
+     */
     onClick?: (e: React.MouseEvent) => void;
 };
 
 /**
  * Use this to close the dialog without taking any additional action.
- * @param props
- * @returns {*}
- * @constructor
  */
 export const DialogAccept = (props: DialogAcceptProps) => {
     return (

@@ -1,4 +1,3 @@
-// @ts-nocheck
 import * as React from "react";
 import Downshift from "downshift";
 import { Input } from "@webiny/ui/Input";
@@ -11,12 +10,13 @@ import { AutoCompleteBaseProps } from "./types";
 import { getOptionValue, getOptionText } from "./utils";
 import { isEqual } from "lodash";
 
-type Props = AutoCompleteBaseProps;
+export type AutoCompleteProps = AutoCompleteBaseProps;
+
 type State = {
     inputValue: string;
 };
 
-export class AutoComplete extends React.Component<Props, State> {
+class AutoComplete extends React.Component<AutoCompleteProps, State> {
     static defaultProps = {
         valueProp: "id",
         textProp: "name",
@@ -60,13 +60,6 @@ export class AutoComplete extends React.Component<Props, State> {
 
     /**
      * Renders options - based on user's input. It will try to match input text with available options.
-     * @param options
-     * @param isOpen
-     * @param highlightedIndex
-     * @param selectedItem
-     * @param getMenuProps
-     * @param getItemProps
-     * @returns {*}
      */
     renderOptions({
         options,
@@ -166,19 +159,19 @@ export class AutoComplete extends React.Component<Props, State> {
                 if (!selection || !onChange) {
                     return;
                 }
-                onChange(getOptionValue(selection, this.props), selection);
+                onChange(getOptionValue(selection, this.props));
             }
         };
 
         return (
             <div className={autoCompleteStyle}>
                 <Downshift {...downshiftProps} ref={this.downshift}>
-                    {/* "getInputProps" and "openMenu" are not needed in renderOptions method. */}
                     {({ getInputProps, openMenu, ...rest }) => (
                         <div>
                             <Input
                                 {...getInputProps({
                                     ...otherInputProps,
+                                    // @ts-ignore
                                     validation,
                                     rawOnChange: true,
                                     onChange: e => e,
@@ -198,7 +191,7 @@ export class AutoComplete extends React.Component<Props, State> {
                                     onKeyUp: (e: React.KeyboardEvent<HTMLElement>) => {
                                         // @ts-ignore
                                         const keyCode = keycode(e);
-                                        const target = e.target as HTMLTextAreaElement;
+                                        const target: any = e.target;
                                         const inputValue = target.value || "";
 
                                         // If user pressed 'esc', 'enter' or similar...
@@ -232,4 +225,4 @@ export class AutoComplete extends React.Component<Props, State> {
     }
 }
 
-export default AutoComplete;
+export { AutoComplete };

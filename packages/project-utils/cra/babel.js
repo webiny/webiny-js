@@ -14,6 +14,11 @@ module.exports = (rules, packages, aliases) => {
         ignore: [/node_modules/],
         babelrc: true,
         babelrcRoots: packages,
-        plugins: [["babel-plugin-module-resolver", { alias: aliases }]]
+        plugins: [
+            [
+                "babel-plugin-module-resolver",
+                { alias: aliases, extensions: [".js", ".jsx", ".ts", ".tsx"] }
+            ]
+        ]
     };
 };

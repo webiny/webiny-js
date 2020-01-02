@@ -27,7 +27,7 @@ type Props = FormComponentProps & {
  * In that case, each Checkbox component must receive value and onChange callback via props.
  */
 class Checkbox extends React.Component<Props> {
-    defaultProps = {
+    static defaultProps = {
         validation: { isValid: null }
     };
 

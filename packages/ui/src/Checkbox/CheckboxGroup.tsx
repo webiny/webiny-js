@@ -17,15 +17,11 @@ type Props = FormComponentProps & {
 
     // An array of Checkbox components.
     children: (props: ChildrenRenderProp) => React.ReactNode;
-}
+};
 
 class CheckboxGroup extends React.Component<Props> {
-    static defaultProps = {
-        validation: { isValid: null }
-    };
-
     render() {
-        const { description, label, validation } = this.props;
+        const { description, label, validation = { isValid: null, message: null } } = this.props;
 
         return (
             <React.Fragment>

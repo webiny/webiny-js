@@ -3,16 +3,13 @@ import { storiesOf } from "@storybook/react";
 import {
     Story,
     StoryReadme,
-    StoryProps,
     StorySandbox,
     StorySandboxExample,
     StorySandboxCode
 } from "@webiny/storybook-utils/Story";
 import { ButtonPrimary } from "./../Button";
 import readme from "./../Menu/README.md";
-
-// @ts-ignore
-import { Menu, MenuItem, PropsType } from "./Menu";
+import { Menu, MenuItem, MenuDivider } from "./Menu";
 
 const story = storiesOf("Components/Menu", module);
 
@@ -22,29 +19,30 @@ const style: React.CSSProperties = {
     margin: "0 auto"
 };
 
-story.add("usage", () => {
-    return (
-        <Story>
-            <StoryReadme>{readme}</StoryReadme>
-            <StoryProps>{PropsType}</StoryProps>
-            <StorySandbox>
-                <StorySandboxExample title={"A simple menu, triggered with a button"}>
-                    <div style={style}>
-                        <Menu handle={<ButtonPrimary>Open menu</ButtonPrimary>}>
-                            <MenuItem
-                                onClick={() => {
-                                    console.log("Apple selected!");
-                                }}
-                            >
-                                Apple
-                            </MenuItem>
-                            <MenuItem>Banana</MenuItem>
-                            <MenuItem>Watermelon</MenuItem>
-                        </Menu>
-                    </div>
-                </StorySandboxExample>
-                <StorySandboxCode>
-                    {`
+story.add(
+    "usage",
+    () => {
+        return (
+            <Story>
+                <StoryReadme>{readme}</StoryReadme>
+                <StorySandbox>
+                    <StorySandboxExample title={"A simple menu, triggered with a button"}>
+                        <div style={style}>
+                            <Menu handle={<ButtonPrimary>Open menu</ButtonPrimary>}>
+                                <MenuItem
+                                    onClick={() => {
+                                        console.log("Apple selected!");
+                                    }}
+                                >
+                                    Apple
+                                </MenuItem>
+                                <MenuItem>Banana</MenuItem>
+                                <MenuItem>Watermelon</MenuItem>
+                            </Menu>
+                        </div>
+                    </StorySandboxExample>
+                    <StorySandboxCode>
+                        {`
                    <Menu handle={<ButtonPrimary>Open menu</ButtonPrimary>}>
                         <MenuItem
                             onClick={() => {
@@ -57,8 +55,10 @@ story.add("usage", () => {
                         <MenuItem>Watermelon</MenuItem>
                     </Menu>
                     `}
-                </StorySandboxCode>
-            </StorySandbox>
-        </Story>
-    );
-});
+                    </StorySandboxCode>
+                </StorySandbox>
+            </Story>
+        );
+    },
+    { info: { propTables: [Menu, MenuItem, MenuDivider] } }
+);

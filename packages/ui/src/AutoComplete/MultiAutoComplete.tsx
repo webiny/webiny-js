@@ -1,4 +1,3 @@
-// @ts-nocheck
 import * as React from "react";
 import Downshift from "downshift";
 import { Input } from "@webiny/ui/Input";
@@ -13,11 +12,15 @@ import { autoCompleteStyle, suggestionList } from "./styles";
 
 import { AutoCompleteBaseProps } from "./types";
 
-type Props = AutoCompleteBaseProps & {
-    // Prevents adding the same item to the list twice.
+export type MultiAutoCompleteProps = AutoCompleteBaseProps & {
+    /**
+     * Prevents adding the same item to the list twice.
+     */
     unique: boolean;
 
-    // Set if custom values (not from list of suggestions) are allowed.
+    /**
+     * Set if custom values (not from list of suggestions) are allowed.
+     */
     allowFreeInput?: boolean;
 };
 
@@ -25,7 +28,7 @@ type State = {
     inputValue: string;
 };
 
-export class MultiAutoComplete extends React.Component<Props, State> {
+export class MultiAutoComplete extends React.Component<MultiAutoCompleteProps, State> {
     static defaultProps = {
         valueProp: "id",
         textProp: "name",
@@ -217,12 +220,11 @@ export class MultiAutoComplete extends React.Component<Props, State> {
 
         const options = this.getOptions();
 
-        let defaultSelectedItem = null;
-
         return (
             <div className={autoCompleteStyle}>
                 <Downshift
-                    defaultSelectedItem={defaultSelectedItem}
+                    defaultSelectedItem={null}
+                    // @ts-ignore
                     className={autoCompleteStyle}
                     itemToString={item => item && getOptionText(item, props)}
                     ref={this.downshift}
@@ -253,6 +255,7 @@ export class MultiAutoComplete extends React.Component<Props, State> {
                             <Input
                                 {...getInputProps({
                                     ...otherInputProps,
+                                    // @ts-ignore
                                     validation,
                                     rawOnChange: true,
                                     onChange: e => e,
@@ -282,5 +285,3 @@ export class MultiAutoComplete extends React.Component<Props, State> {
         );
     }
 }
-
-export default MultiAutoComplete;

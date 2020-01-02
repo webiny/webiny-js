@@ -1,35 +1,27 @@
 import * as React from "react";
-import { css } from "emotion";
 import classNames from "classnames";
-import { Chip, ChipSet, ChipIcon as RwmcChipIcon, ChipIconProps } from "@rmwc/chip";
+import { ChipSet } from "@rmwc/chip";
+import { Chip } from "./Chip";
+import { chipIconWrapper, disabledChips } from "./styles";
 
-type Props = {
+export type ChipsProps = {
+    /**
+     * Chips to show
+     */
     children?: React.ReactElement<typeof Chip>[];
 
+    /**
+     * Is chip disabled?
+     */
     disabled?: boolean;
 
+    /**
+     * CSS class name
+     */
     className?: string;
 };
 
-const disabledChips = css({
-    opacity: 0.75,
-    pointerEvents: "none"
-});
-
-const chipIconWrapper = css({
-    ".mdc-chip__icon": {
-        svg: {
-            width: 18,
-            height: 18,
-            "&.mdc-chip__icon--trailing": {
-                boxSizing: "border-box",
-                display: "flex"
-            }
-        }
-    }
-});
-
-export const Chips = (props: Props) => {
+export const Chips = (props: ChipsProps) => {
     const { children, className, disabled, ...rest } = props;
 
     return (
@@ -45,9 +37,3 @@ export const Chips = (props: Props) => {
         </React.Fragment>
     );
 };
-
-const ChipIcon = (props: ChipIconProps) => {
-    return <RwmcChipIcon className={chipIconWrapper} {...props} />;
-};
-
-export { Chip, ChipIcon, ChipSet };

@@ -1,7 +1,7 @@
 import * as React from "react";
 import { Elevation as RmwcElevation } from "@rmwc/elevation";
 
-type Props = {
+export type ElevationProps = {
     // Any element that needs to be highlighted.
     children?: React.ReactNode;
 
@@ -10,12 +10,15 @@ type Props = {
 
     // Adds smooth transitions when the z value changes.
     transition?: boolean;
+
+    // CSS class name
+    className?: string;
 };
 
 /**
  * Elevation component visually raises any content by applying shadow.
  */
-const Elevation = React.forwardRef((props: Props, ref: React.Ref<any>) => {
+const Elevation = React.forwardRef((props: ElevationProps, ref: React.Ref<any>) => {
     return (
         <RmwcElevation ref={ref} {...props}>
             {props.children}

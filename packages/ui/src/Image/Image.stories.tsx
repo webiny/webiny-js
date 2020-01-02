@@ -16,18 +16,22 @@ import { Image } from "./Image";
 const story = storiesOf("Components/Image", module);
 story.addDecorator(withKnobs);
 
-story.add("usage", () => {
-    return (
-        <Story>
-            <StoryReadme>{readme}</StoryReadme>
-            <StorySandbox>
-                <StorySandboxExample>
-                    <Image src="http://i.pravatar.cc/150?img=49" alt="Nice image." />
-                </StorySandboxExample>
-                <StorySandboxCode>
-                    <Image src="http://i.pravatar.cc/150?img=49" alt="Nice image." />
-                </StorySandboxCode>
-            </StorySandbox>
-        </Story>
-    );
-});
+story.add(
+    "usage",
+    () => {
+        return (
+            <Story>
+                <StoryReadme>{readme}</StoryReadme>
+                <StorySandbox>
+                    <StorySandboxExample>
+                        <Image src="http://i.pravatar.cc/150?img=49" alt="Nice image." />
+                    </StorySandboxExample>
+                    <StorySandboxCode>
+                        <Image src="http://i.pravatar.cc/150?img=49" alt="Nice image." />
+                    </StorySandboxCode>
+                </StorySandbox>
+            </Story>
+        );
+    },
+    { info: { propTables: [Image] } }
+);

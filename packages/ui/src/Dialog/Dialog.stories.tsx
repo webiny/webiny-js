@@ -3,7 +3,6 @@ import { storiesOf } from "@storybook/react";
 import {
     Story,
     StoryReadme,
-    StoryProps,
     StorySandboxCode,
     StorySandbox,
     StorySandboxExample
@@ -13,46 +12,49 @@ import { withKnobs, boolean } from "@storybook/addon-knobs";
 
 import {
     Dialog,
+    DialogButton,
     DialogAccept,
     DialogCancel,
     DialogActions,
     DialogTitle,
-    DialogContent,
-    // @ts-ignore
-    PropsType
+    DialogContent
 } from ".";
 
 const story = storiesOf("Components/Dialog", module);
 story.addDecorator(withKnobs);
 
-story.add("usage", () => {
-    const open = boolean("Open", false);
+story.add(
+    "usage",
+    () => {
+        const open = boolean("Open", false);
 
-    return (
-        <Story>
-            <StoryReadme>{readme}</StoryReadme>
-            <StoryProps>{PropsType}</StoryProps>
-            <StorySandbox title={"dialog"}>
-                <StorySandboxExample title={"A list with all possible options"}>
-                    Toggle <code>open</code> prop via the bottom knobs.
-                    <br />
-                    <br />
-                    Note that instead of using <code>DialogFooter.Button</code> with{" "}
-                    <code>accept</code> or <code>cancel</code> prop, you can use a shorter{" "}
-                    <code>DialogAccept</code> and <code>DialogCancel</code> components respectively.
-                    <Dialog open={open}>
-                        <DialogTitle>Delete confirmation</DialogTitle>
-                        <DialogContent>Are you sure you want to delete?</DialogContent>
-                        <DialogActions>
-                            <DialogCancel onClick={() => console.log("Cancel")}>
-                                Cancel
-                            </DialogCancel>
-                            <DialogAccept onClick={() => console.log("Accept")}>OK</DialogAccept>
-                        </DialogActions>
-                    </Dialog>
-                </StorySandboxExample>
-                <StorySandboxCode>
-                    {`
+        return (
+            <Story>
+                <StoryReadme>{readme}</StoryReadme>
+                <StorySandbox title={"dialog"}>
+                    <StorySandboxExample title={"A list with all possible options"}>
+                        Toggle <code>open</code> prop via the bottom knobs.
+                        <br />
+                        <br />
+                        Note that instead of using <code>DialogFooter.Button</code> with{" "}
+                        <code>accept</code> or <code>cancel</code> prop, you can use a shorter{" "}
+                        <code>DialogAccept</code> and <code>DialogCancel</code> components
+                        respectively.
+                        <Dialog open={open}>
+                            <DialogTitle>Delete confirmation</DialogTitle>
+                            <DialogContent>Are you sure you want to delete?</DialogContent>
+                            <DialogActions>
+                                <DialogCancel onClick={() => console.log("Cancel")}>
+                                    Cancel
+                                </DialogCancel>
+                                <DialogAccept onClick={() => console.log("Accept")}>
+                                    OK
+                                </DialogAccept>
+                            </DialogActions>
+                        </Dialog>
+                    </StorySandboxExample>
+                    <StorySandboxCode>
+                        {`
                     <Dialog open={${open}}>
                         <DialogTitle>
                             Delete confirmation
@@ -64,8 +66,22 @@ story.add("usage", () => {
                         </DialogFooter>
                     </Dialog>
                     `}
-                </StorySandboxCode>
-            </StorySandbox>
-        </Story>
-    );
-});
+                    </StorySandboxCode>
+                </StorySandbox>
+            </Story>
+        );
+    },
+    {
+        info: {
+            propTables: [
+                Dialog,
+                DialogButton,
+                DialogAccept,
+                DialogCancel,
+                DialogActions,
+                DialogTitle,
+                DialogContent
+            ]
+        }
+    }
+);

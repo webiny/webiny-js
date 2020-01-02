@@ -1,6 +1,5 @@
 import * as React from "react";
 import { IconButton, IconButtonProps as BaseIconProps } from "@webiny/ui/Button";
-
 import { ReactComponent as AutoRenew } from "./baseline-autorenew-24px.svg";
 import { ReactComponent as Pen } from "./baseline-edit-24px.svg";
 import { ReactComponent as Delete } from "./baseline-delete-24px.svg";

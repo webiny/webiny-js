@@ -3,7 +3,6 @@ import { storiesOf } from "@storybook/react";
 import {
     Story,
     StoryReadme,
-    StoryProps,
     StorySandboxCode,
     StorySandbox,
     StorySandboxExample
@@ -11,9 +10,7 @@ import {
 import readme from "./../Snackbar/README.md";
 import { withKnobs, boolean } from "@storybook/addon-knobs";
 import { ButtonPrimary } from "./../Button";
-
-// @ts-ignore
-import { Snackbar, PropsType } from "./Snackbar";
+import { Snackbar } from "./Snackbar";
 
 const story = storiesOf("Components/Snackbar", module);
 story.addDecorator(withKnobs);
@@ -41,19 +38,20 @@ class SnackbarContainer extends React.Component<{ leading: boolean }, { show: bo
     }
 }
 
-story.add("usage", () => {
-    const leading = boolean("leading", false);
+story.add(
+    "usage",
+    () => {
+        const leading = boolean("leading", false);
 
-    return (
-        <Story>
-            <StoryReadme>{readme}</StoryReadme>
-            <StoryProps>{PropsType}</StoryProps>
-            <StorySandbox>
-                <StorySandboxExample>
-                    <SnackbarContainer leading/>
-                </StorySandboxExample>
-                <StorySandboxCode>
-                    {`
+        return (
+            <Story>
+                <StoryReadme>{readme}</StoryReadme>
+                <StorySandbox>
+                    <StorySandboxExample>
+                        <SnackbarContainer leading />
+                    </StorySandboxExample>
+                    <StorySandboxCode>
+                        {`
                         <div>
                              <Snackbar
                                 open={this.state.show}
@@ -66,8 +64,10 @@ story.add("usage", () => {
                             </ButtonPrimary>
                         </div>
                     `}
-                </StorySandboxCode>
-            </StorySandbox>
-        </Story>
-    );
-});
+                    </StorySandboxCode>
+                </StorySandbox>
+            </Story>
+        );
+    },
+    { info: { propTables: [Snackbar] } }
+);

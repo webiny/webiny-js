@@ -33,37 +33,53 @@ const avatar = css({
     }
 });
 
-type Props = {
+export type AvatarProps = {
+    /**
+     * CSS class name.
+     */
     className?: string;
 
-    style?: { [key: string]: any };
+    /**
+     * Style object.
+     */
+    style?: React.CSSProperties;
 
-    // Avatar image source.
+    /**
+     * Avatar image source.
+     */
     src: string;
 
-    // "alt" text.
+    /**
+     * "alt" text.
+     */
     alt?: string;
 
-    // Width.
+    /**
+     * Width.
+     */
     width?: number;
 
-    // Height.
+    /**
+     * Height.
+     */
     height?: number;
 
-    // Pass a custom image component to be rendered instead of a simple <img> element.
+    /**
+     * Pass a custom image component to be rendered instead of a simple <img> element.
+     * @param props
+     */
     renderImage?: (props: Object) => React.ReactElement<any>;
 
-    // Text that will be shown when there is no image (usually user's initials).
+    /**
+     * Text that will be shown when there is no image (usually user's initials).
+     */
     fallbackText: string;
-} & Object;
+};
 
 /**
  * Use Avatar component to display user's avatar.
- * @param props
- * @returns {*}
- * @constructor
  */
-const Avatar = (props: Props) => {
+export const Avatar = (props: AvatarProps) => {
     const { className, width, height, src, alt, fallbackText, renderImage, ...rest } = props;
 
     let renderedImage = null;
@@ -101,5 +117,3 @@ Avatar.defaultProps = {
     width: 38,
     height: 38
 };
-
-export { Avatar };

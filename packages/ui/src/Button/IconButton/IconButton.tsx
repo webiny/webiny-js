@@ -6,22 +6,29 @@ import {
 
 import { FormComponentProps } from "../../types";
 
-type Props = FormComponentProps &
+export type IconButtonProps = FormComponentProps &
     RmwcIconButtonProps & {
-        // Icon you wish to have. Icon should be provided as an SvgComponent
-        icon: React.ReactElement<any>;
+        /**
+         * Icon should be provided as an SvgComponent.
+         */
+        icon: React.ReactNode;
 
-        // Button label.
+        /**
+         * Button label
+         */
         label?: string;
 
-        // onClick handler.
+        /**
+         * onClick handler
+         * @param event
+         */
         onClick?: (event: React.MouseEvent) => void;
 
-        // Custom CSS class.
+        /**
+         * Custom CSS class
+         */
         className?: string;
     };
-
-export type IconButtonProps = Props;
 
 /**
  * Shows the icon button.

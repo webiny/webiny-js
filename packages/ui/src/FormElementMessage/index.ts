@@ -1,1 +1,1 @@
-export { FormElementMessage } from "./FormElementMessage.js";
+export { FormElementMessage } from "./FormElementMessage";

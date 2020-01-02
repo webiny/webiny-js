@@ -10,7 +10,7 @@ import { Typography } from "@webiny/ui/Typography";
 import classNames from "classnames";
 import styled from "@emotion/styled";
 
-type ListItemProps = {
+export type ListItemProps = {
     children: React.ReactNode;
     className?: string;
     onClick?: (e: React.MouseEvent) => void;
@@ -22,11 +22,11 @@ type ListItemProps = {
  * @returns {*}
  * @constructor
  */
-const ListItem = (props: ListItemProps) => {
+export const ListItem = (props: ListItemProps) => {
     return <RmwcListItem {...props} />;
 };
 
-type Props = {
+export type Props = {
     // One or more ListItem components, which can then consist of the following components:
     // - ListItemText
     // - ListItemTextSecondary
@@ -45,17 +45,14 @@ type Props = {
 
 /**
  * Use List component to display data and offer additional actions if needed.
- * @param props
- * @returns {*}
- * @constructor
  */
-class List extends React.Component<Props> {
+export class List extends React.Component<Props> {
     render() {
         return <RmwcList {...this.props}>{this.props.children}</RmwcList>;
     }
 }
 
-type ListItemTextProps = { children: React.ReactNode; className?: string };
+export type ListItemTextProps = { children: React.ReactNode; className?: string };
 
 /**
  * Used to show regular text in list items.
@@ -63,17 +60,27 @@ type ListItemTextProps = { children: React.ReactNode; className?: string };
  * @returns {*}
  * @constructor
  */
-const ListItemText = (props: ListItemTextProps) => {
+export const ListItemText = (props: ListItemTextProps) => {
     return <RmwcListItemText {...props}>{props.children}</RmwcListItemText>;
 };
 
-type ListItemTextPrimaryProps = { children: React.ReactNode };
+export type ListItemTextPrimaryProps = {
+    /**
+     * Text content
+     */
+    children: React.ReactNode;
+};
 
-const ListItemTextPrimary = (props: ListItemTextPrimaryProps) => {
+export const ListItemTextPrimary = (props: ListItemTextPrimaryProps) => {
     return <RmwcListItemPrimaryText>{props.children}</RmwcListItemPrimaryText>;
 };
 
-type ListItemTextSecondaryProps = { children: React.ReactNode };
+export type ListItemTextSecondaryProps = {
+    /**
+     * Text content
+     */
+    children: React.ReactNode;
+};
 
 /**
  * Used to show secondary text in list items.
@@ -81,11 +88,11 @@ type ListItemTextSecondaryProps = { children: React.ReactNode };
  * @returns {*}
  * @constructor
  */
-const ListItemTextSecondary = (props: ListItemTextSecondaryProps) => {
+export const ListItemTextSecondary = (props: ListItemTextSecondaryProps) => {
     return <RmwcListItemSecondaryText>{props.children}</RmwcListItemSecondaryText>;
 };
 
-type ListItemGraphicProps = { children: React.ReactNode; className?: string };
+export type ListItemGraphicProps = { children: React.ReactNode; className?: string };
 
 /**
  * Can be used to show an icon or any other custom element. Rendered on the left side.
@@ -93,7 +100,7 @@ type ListItemGraphicProps = { children: React.ReactNode; className?: string };
  * @returns {*}
  * @constructor
  */
-const ListItemGraphic = (props: ListItemGraphicProps) => {
+export const ListItemGraphic = (props: ListItemGraphicProps) => {
     return (
         <div {...props} className={classNames("mdc-list-item__graphic", props.className)}>
             {props.children}
@@ -101,7 +108,7 @@ const ListItemGraphic = (props: ListItemGraphicProps) => {
     );
 };
 
-type ListItemMetaProps = { children: React.ReactNode; className?: string };
+export type ListItemMetaProps = { children: React.ReactNode; className?: string };
 
 /**
  * Can be used to show an icon or any other custom element. Rendered on the right side.
@@ -109,7 +116,7 @@ type ListItemMetaProps = { children: React.ReactNode; className?: string };
  * @returns {*}
  * @constructor
  */
-const ListItemMeta = (props: ListItemMetaProps) => {
+export const ListItemMeta = (props: ListItemMetaProps) => {
     return (
         <span {...props} className={classNames("mdc-list-item__meta", props.className)}>
             {props.children}
@@ -117,7 +124,7 @@ const ListItemMeta = (props: ListItemMetaProps) => {
     );
 };
 
-type ListTopCaptionProps = {
+export type ListTopCaptionProps = {
     children: React.ReactNode;
 };
 
@@ -127,7 +134,7 @@ type ListTopCaptionProps = {
  * @returns {*}
  * @constructor
  */
-const ListTopCaption = (props: ListTopCaptionProps) => {
+export const ListTopCaption = (props: ListTopCaptionProps) => {
     return (
         <span {...props} className={"webiny-list-top-caption"}>
             <Typography use="overline">{props.children}</Typography>
@@ -135,7 +142,7 @@ const ListTopCaption = (props: ListTopCaptionProps) => {
     );
 };
 
-type ListBottomCaptionProps = {
+export type ListBottomCaptionProps = {
     children: React.ReactNode;
 };
 
@@ -145,7 +152,7 @@ type ListBottomCaptionProps = {
  * @returns {*}
  * @constructor
  */
-const ListBottomCaption = (props: ListBottomCaptionProps) => {
+export const ListBottomCaption = (props: ListBottomCaptionProps) => {
     return (
         <span {...props} className={"webiny-list-bottom-caption"}>
             <Typography use="overline">{props.children}</Typography>
@@ -153,7 +160,7 @@ const ListBottomCaption = (props: ListBottomCaptionProps) => {
     );
 };
 
-type ListTextOverlineProps = {
+export type ListTextOverlineProps = {
     children: React.ReactNode;
 };
 
@@ -163,7 +170,7 @@ type ListTextOverlineProps = {
  * @returns {*}
  * @constructor
  */
-const ListTextOverline = (props: ListTextOverlineProps) => {
+export const ListTextOverline = (props: ListTextOverlineProps) => {
     return (
         <span {...props} className={"webiny-list-text-overline"}>
             <Typography use="overline">{props.children}</Typography>
@@ -171,7 +178,7 @@ const ListTextOverline = (props: ListTextOverlineProps) => {
     );
 };
 
-type ListActionsProps = {
+export type ListActionsProps = {
     children: React.ReactNode;
 };
 
@@ -181,7 +188,7 @@ type ListActionsProps = {
  * @returns {*}
  * @constructor
  */
-const ListActions = (props: ListActionsProps) => {
+export const ListActions = (props: ListActionsProps) => {
     return (
         <span {...props} className={"webiny-list-actions"}>
             {props.children}
@@ -199,7 +206,7 @@ const SelectBoxWrapper = styled("div")({
     justifyContent: "center"
 });
 
-type ListSelectBoxProps = {
+export type ListSelectBoxProps = {
     children: React.ReactNode;
 };
 
@@ -207,25 +214,10 @@ type ListSelectBoxProps = {
  * Used to hold the Checkbox element for multi-select options.
  * @param {*} props
  */
-const ListSelectBox = (props: ListSelectBoxProps) => {
+export const ListSelectBox = (props: ListSelectBoxProps) => {
     return (
         <ListItemGraphic>
             <SelectBoxWrapper>{props.children}</SelectBoxWrapper>
         </ListItemGraphic>
     );
-};
-
-export {
-    List,
-    ListItem,
-    ListItemText,
-    ListItemTextPrimary,
-    ListItemTextSecondary,
-    ListItemGraphic,
-    ListItemMeta,
-    ListTopCaption,
-    ListActions,
-    ListBottomCaption,
-    ListTextOverline,
-    ListSelectBox
 };

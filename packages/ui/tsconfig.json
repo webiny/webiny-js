@@ -1,4 +1,13 @@
 {
   "extends": "../../tsconfig.check",
-  "references": [{ "path": "../storybook-utils" }]
+  "compilerOptions": {
+    "jsx": "preserve"
+  },
+  "include": "src",
+  "references": [
+    { "path": "../storybook-utils" },
+    { "path": "../validation" },
+    { "path": "../form" },
+    { "path": "../ui" }
+  ]
 }

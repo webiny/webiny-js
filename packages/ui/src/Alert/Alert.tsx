@@ -31,24 +31,27 @@ const alertStyles = css({
     }
 });
 
-type Props = {
+type AlertProps = {
     // Alert title.
-    title: string,
+    title: string;
 
     // Alert type.
-    type: "success" | "info" | "warning" | "danger",
+    type: "success" | "info" | "warning" | "danger";
 
     // Alert message.
-    children?: React.ReactNode
-} & Object;
+    children?: React.ReactNode;
+
+    // CSS class name
+    className?: string;
+
+    // Style object
+    style?: React.CSSProperties;
+};
 
 /**
  * Use Alert component to display user's avatar.
- * @param props
- * @returns {*}
- * @constructor
  */
-const Alert = (props: Props) => {
+const Alert = (props: AlertProps) => {
     const { title, type, children, ...rest } = props;
 
     return (

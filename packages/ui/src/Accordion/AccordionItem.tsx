@@ -57,27 +57,37 @@ const transitionStyles = {
 };
 
 type State = {
-    closed: boolean
+    closed: boolean;
 };
 
-type Props = {
-    // Left side icon.
-    icon: React.ReactElement<any>,
+export type AccordionItemProps = {
+    /**
+     * Left side icon
+     */
+    icon: React.ReactElement;
 
-    // Accordion title.
-    title?: React.ReactNode,
+    /**
+     * Accordion title
+     */
+    title?: React.ReactNode;
 
-    // Optional description
-    description?: string,
+    /**
+     * Optional description
+     */
+    description?: string;
 
-    // Element displayed when accordion is expanded.
-    children?: React.ReactNode,
+    /**
+     * Element displayed when accordion is expanded
+     */
+    children?: React.ReactNode;
 
-    // Append a class name
-    className?: string
+    /**
+     * Append a class name
+     */
+    className?: string;
 };
 
-class AccordionItem extends React.Component<Props, State> {
+class AccordionItem extends React.Component<AccordionItemProps, State> {
     state = { closed: true };
 
     render() {

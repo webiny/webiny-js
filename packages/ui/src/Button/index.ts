@@ -5,4 +5,5 @@ export {
     ButtonFloating,
     ButtonIcon,
 } from "./Button";
-export { IconButton, IconButtonProps } from "./IconButton/IconButton";
+
+export * from "./IconButton/IconButton";

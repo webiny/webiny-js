@@ -8,31 +8,49 @@ import { ReactComponent as BaselineCloseIcon } from "./icons/baseline-close-24px
 import { FormElementMessage } from "@webiny/ui/FormElementMessage";
 
 type Props = FormComponentProps & {
-    // Component label.
+    /**
+     * Component label.
+     */
     label?: string;
 
-    // Are input and chosen tags disabled?
+    /**
+     * Are input and chosen tags disabled?
+     */
     disabled?: boolean;
 
-    // Placeholder text for the form control. Set to a blank string to create a non-floating placeholder label.
+    /**
+     * Placeholder text for the form control. Set to a blank string to create a non-floating placeholder label.
+     */
     placeholder?: string;
 
-    // Description beneath the input.
+    /**
+     * Description beneath the input.
+     */
     description?: string;
 
-    // A className for the root element.
+    /**
+     * A className for the root element.
+     */
     className?: string;
 
-    // Default structure of value, an object consisting of "id" and "name" keys. Different keys can be set using "valueProp" and "textProp" props.
+    /**
+     * Default structure of value, an object consisting of "id" and "name" keys. Different keys can be set using "valueProp" and "textProp" props.
+     */
     value?: { id: string; name: string };
 
-    // Callback that gets executed on change of input value.
+    /**
+     * Callback that gets executed on change of input value.
+     */
     onInput?: Function;
 
-    // Callback that gets executed when the input is focused.
+    /**
+     * Callback that gets executed when the input is focused.
+     */
     onFocus?: Function;
 
-    // Automatically focus on the tags input.
+    /**
+     * Automatically focus on the tags input.
+     */
     autoFocus?: boolean;
 };
 
@@ -131,7 +149,6 @@ export class Tags extends React.Component<Props, State> {
                                 <Chip
                                     label={item}
                                     trailingIcon={<BaselineCloseIcon />}
-                                    disabled
                                     key={`${item}-${index}`}
                                     onRemove={() => {
                                         // On removal, let's update the value and call "onChange" callback.

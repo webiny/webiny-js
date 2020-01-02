@@ -1,31 +1,28 @@
 import * as React from "react";
 import classNames from "classnames";
-import { TabBar, Tab as RmwcTab } from "@rmwc/tabs";
+import { TabBar } from "@rmwc/tabs";
+import { Tab, TabProps } from "./Tab";
 
-type Props = {
-    // Any element that needs to be highlighted.
+export type TabsProps = {
+    /**
+     * Any element that needs to be highlighted.
+     */
     children?: React.ReactNode;
 
-    // Append a class name
+    /**
+     * Append a class name.
+     */
     className?: string;
 
-    // Callback to execute when a tab is changed
+    /**
+     * Callback to execute when a tab is changed.
+     */
     onActivate?: (index: number) => void;
 };
 
 type State = {
     activeTabIndex: number;
 };
-
-type TabProps = {
-    label?: string;
-    children: React.ReactNode;
-    icon?: React.ReactNode;
-    disabled?: boolean;
-    style?: React.CSSProperties;
-};
-
-const Tab: React.FunctionComponent<TabProps> = () => null;
 
 const disabledStyles = {
     opacity: 0.5,
@@ -35,7 +32,7 @@ const disabledStyles = {
 /**
  * Use Tabs component to display a list of choices, once the handler is triggered.
  */
-class Tabs extends React.Component<Props, State> {
+export class Tabs extends React.Component<TabsProps, State> {
     state = {
         activeTabIndex: 0
     };
@@ -73,7 +70,7 @@ class Tabs extends React.Component<Props, State> {
                     }
 
                     return (
-                        <RmwcTab
+                        <Tab
                             tag={"div"}
                             style={style}
                             key={item.label}
@@ -107,5 +104,3 @@ class Tabs extends React.Component<Props, State> {
         );
     }
 }
-
-export { Tabs, Tab };

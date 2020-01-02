@@ -3,7 +3,6 @@ import { storiesOf } from "@storybook/react";
 import {
     Story,
     StoryReadme,
-    StoryProps,
     StorySandboxCode,
     StorySandbox,
     StorySandboxExample
@@ -12,40 +11,39 @@ import readme from "./README.md";
 
 import { ReactComponent as BaselineDoneIcon } from "./icons/baseline-done-24px.svg";
 import { ReactComponent as BaselineEmailIcon } from "./icons/baseline-email-24px.svg";
-
-// @ts-ignore
-import { Chip, ChipIcon, Chips, PropsType } from "./Chips";
+import { Chip, ChipIcon, Chips } from "./index";
 
 const story = storiesOf("Components/Chips", module);
 
-story.add("usage", () => {
-    return (
-        <Story>
-            <StoryReadme>{readme}</StoryReadme>
-            <StoryProps>{PropsType}</StoryProps>
-            <StorySandbox>
-                <StorySandboxExample title={"Simple chips with a label and description"}>
-                    <div>
-                        <Chips>
-                            <Chip selected>Cookies</Chip>
-                            <Chip>Pizza</Chip>
-                            <Chip>Icecream</Chip>
-                        </Chips>
+story.add(
+    "usage",
+    () => {
+        return (
+            <Story>
+                <StoryReadme>{readme}</StoryReadme>
+                <StorySandbox>
+                    <StorySandboxExample title={"Simple chips with a label and description"}>
+                        <div>
+                            <Chips>
+                                <Chip selected>Cookies</Chip>
+                                <Chip>Pizza</Chip>
+                                <Chip>Icecream</Chip>
+                            </Chips>
 
-                        <Chips>
-                            <Chip>
-                                <ChipIcon leading icon={<BaselineEmailIcon />} />
-                                Cookies
-                            </Chip>
-                            <Chip>
-                                Cookies
-                                <ChipIcon trailing icon={<BaselineDoneIcon />} />
-                            </Chip>
-                        </Chips>
-                    </div>
-                </StorySandboxExample>
-                <StorySandboxCode>
-                    {`
+                            <Chips>
+                                <Chip>
+                                    <ChipIcon leading icon={<BaselineEmailIcon />} />
+                                    Cookies
+                                </Chip>
+                                <Chip>
+                                    Cookies
+                                    <ChipIcon trailing icon={<BaselineDoneIcon />} />
+                                </Chip>
+                            </Chips>
+                        </div>
+                    </StorySandboxExample>
+                    <StorySandboxCode>
+                        {`
                          <div>
                             <Chips>
                                 <Chip selected>
@@ -67,8 +65,10 @@ story.add("usage", () => {
                             </Chips>
                         </div>
                     `}
-                </StorySandboxCode>
-            </StorySandbox>
-        </Story>
-    );
-});
+                    </StorySandboxCode>
+                </StorySandbox>
+            </Story>
+        );
+    },
+    { info: { propTables: [Chip, ChipIcon, Chips] } }
+);

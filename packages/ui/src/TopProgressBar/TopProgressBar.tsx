@@ -2,21 +2,20 @@ import * as React from "react";
 import nprogress from "nprogress";
 import "./style.scss";
 
-interface TopProgressBarRender {
+export type TopProgressBarRender = {
     start: () => void;
     finish: () => void;
     nprogress: nprogress;
-}
+};
 
-type Props = {
-    // Elements that require top loading bar to be shown.
+export type TopProgressBarProps = {
+    /**
+     * Elements that require top loading bar to be shown.
+     */
     children: (params: TopProgressBarRender) => React.ReactElement;
 };
 
-/**
- * Use `TopProgressBar` to let users know their actions are being processed.
- */
-export const TopProgressBar = (props: Props) => {
+export const TopProgressBar = (props: TopProgressBarProps) => {
     return props.children({
         start: nprogress.start,
         finish: nprogress.done,

@@ -3,21 +3,16 @@ import { storiesOf } from "@storybook/react";
 import {
     Story,
     StoryReadme,
-    StoryProps,
     StorySandboxCode,
     StorySandbox,
     StorySandboxExample
 } from "@webiny/storybook-utils/Story";
-import { withKnobs, boolean } from "@storybook/addon-knobs";
 import readme from "./AutoCompleteReadme.md";
 
 import { Form } from "@webiny/form";
-
-// @ts-ignore
-import { AutoComplete, PropsType } from "./AutoComplete";
+import { AutoComplete } from "./AutoComplete";
 
 const story = storiesOf("Components/AutoComplete", module);
-story.addDecorator(withKnobs);
 
 const options = [
     { name: "France", id: "france" },
@@ -31,48 +26,60 @@ const options = [
     { name: "Czech Republic", id: "czech-republic" }
 ];
 
-story.add("AutoComplete", () => {
-    const disabled = boolean("Disabled", false);
-
-    return (
-        <Story>
-            <StoryReadme>{readme}</StoryReadme>
-            <StoryProps>{PropsType}</StoryProps>
-            <StorySandbox>
-                <StorySandboxExample title={"Single value"}>
-                    <Form data={{ country: { id: "italy", name: "Italy" } }}>
-                        {({ Bind }) => (
-                            <Bind name="country">
-                                <AutoComplete
-                                    options={options}
-                                    label="Country"
-                                    disabled={disabled}
-                                    description="Choose your country"
-                                />
-                            </Bind>
-                        )}
-                    </Form>
-                </StorySandboxExample>
-                <StorySandboxCode>
-                    {`
+story.add(
+    "AutoComplete",
+    () => {
+        return (
+            <Story>
+                <StoryReadme>{readme}</StoryReadme>
+                <StorySandbox>
+                    <StorySandboxExample title={"Single value"}>
+                        <Form data={{ country: { id: "italy", name: "Italy" } }}>
+                            {({ Bind }) => (
+                                <Bind name="country">
+                                    <AutoComplete
+                                        options={options}
+                                        label="Country"
+                                        description="Choose your country"
+                                    />
+                                </Bind>
+                            )}
+                        </Form>
+                    </StorySandboxExample>
+                    <StorySandboxCode>
+                        {`
                     <Form>
                         {({ Bind }) => (
                              <Bind name="country">
                                 <AutoComplete
                                     options={${JSON.stringify(options)}}
                                     label="Country"
-                                    disabled={${disabled}}
                                     description="Choose your country."
                                 />
                             </Bind>
                         )}
                     </Form>
                     `}
-                </StorySandboxCode>
-            </StorySandbox>
+                    </StorySandboxCode>
+                </StorySandbox>
 
-            <StorySandbox>
-                <StorySandboxExample title={"Single value - use simple strings"}>
+                <StorySandbox>
+                    <StorySandboxExample title={"Single value - use simple strings"}>
+                        <Form data={{ country: "Germany" }}>
+                            {({ Bind }) => (
+                                <Bind name="country">
+                                    <AutoComplete
+                                        useSimpleValues
+                                        options={["France", "Germany", "Italy", "Spain"]}
+                                        label="Country"
+                                        description="Choose your country"
+                                    />
+                                </Bind>
+                            )}
+                        </Form>
+                    </StorySandboxExample>
+                    <StorySandboxCode>
+                        {`
                     <Form data={{ country: "Germany" }}>
                         {({ Bind }) => (
                             <Bind name="country">
@@ -80,31 +87,16 @@ story.add("AutoComplete", () => {
                                     useSimpleValues
                                     options={["France", "Germany", "Italy", "Spain"]}
                                     label="Country"
-                                    disabled={disabled}
-                                    description="Choose your country"
-                                />
-                            </Bind>
-                        )}
-                    </Form>
-                </StorySandboxExample>
-                <StorySandboxCode>
-                    {`
-                    <Form data={{ country: "Germany" }}>
-                        {({ Bind }) => (
-                            <Bind name="country">
-                                <AutoComplete
-                                    useSimpleValues
-                                    options={["France", "Germany", "Italy", "Spain"]}
-                                    label="Country"
-                                    disabled={disabled}
                                     description="Choose your country"
                                 />
                             </Bind>
                         )}
                     </Form>
                     `}
-                </StorySandboxCode>
-            </StorySandbox>
-        </Story>
-    );
-});
+                    </StorySandboxCode>
+                </StorySandbox>
+            </Story>
+        );
+    },
+    { info: { propTables: [AutoComplete] } }
+);
