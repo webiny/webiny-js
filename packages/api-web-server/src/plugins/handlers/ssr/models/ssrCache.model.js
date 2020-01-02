@@ -18,9 +18,9 @@ import {
 const DEFAULT_CACHE_TTL = 80;
 const DEFAULT_STALE_CACHE_TTL = 20;
 
-export default ({ createBase }) => {
-    const TTL_CACHE = process.env.CACHE_TTL || DEFAULT_CACHE_TTL;
-    const TTL_STALE_CACHE = process.env.STALE_CACHE_TTL || DEFAULT_STALE_CACHE_TTL;
+export default ({ createBase, options = {} } = {}) => {
+    const CACHE_TTL = options.ssrCacheTtl || DEFAULT_CACHE_TTL;
+    const CACHE_STALE_TTL = options.ssrCacheStaleTtl || DEFAULT_STALE_CACHE_TTL;
 
     return flow(
         withName("SsrCache"),
@@ -89,7 +89,7 @@ export default ({ createBase }) => {
                 return expiresIn > 0 ? expiresIn : 0;
             },
 
-            incrementExpiresOn(seconds = TTL_STALE_CACHE) {
+            incrementExpiresOn(seconds = CACHE_STALE_TTL) {
                 this.expiresOn = new Date();
                 this.expiresOn.setSeconds(this.expiresOn.getSeconds() + seconds);
                 return this;
@@ -101,7 +101,7 @@ export default ({ createBase }) => {
                 const Lambda = new LambdaClient({ region: process.env.AWS_REGION });
 
                 const response = await Lambda.invoke({
-                    FunctionName: process.env.SSR_FUNCTION,
+                    FunctionName: options.ssrFunction,
                     Payload: JSON.stringify({ path: this.path })
                 }).promise();
 
@@ -111,7 +111,7 @@ export default ({ createBase }) => {
                 this.lastRefresh.endedOn = new Date();
                 this.lastRefresh.duration = this.lastRefresh.endedOn - this.lastRefresh.startedOn;
                 this.refreshedOn = new Date();
-                this.incrementExpiresOn(TTL_CACHE);
+                this.incrementExpiresOn(CACHE_TTL);
 
                 await this.save();
             },

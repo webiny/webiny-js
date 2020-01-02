@@ -1,4 +1,4 @@
-const createResponse = ({
+export default ({
     statusCode = 200,
     type = "text/html",
     body = "",
@@ -16,5 +16,3 @@ const createResponse = ({
         isBase64Encoded
     };
 };
-
-export default createResponse;
