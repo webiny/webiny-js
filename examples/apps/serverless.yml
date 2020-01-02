@@ -25,6 +25,8 @@ site:
       CLOUDFNS_NAME: "site-fn"
       SSR_FUNCTION: ${ssr.arn}
       DB_PROXY_FUNCTION: ${dbProxy.arn}
+      SSR_CACHE_TTL: 2592000 # Seconds (30 days).
+      SSR_CACHE_STALE_TTL: 20 # Seconds.
 
 ssr:
   component: "@webiny/serverless-function"
@@ -70,7 +72,7 @@ cdn:
   component: "@webiny/serverless-aws-cloudfront"
   inputs:
     defaults: # optional
-      ttl: 15
+      ttl: 300
       allowedHttpMethods: ["GET", "HEAD", "OPTIONS", "PUT", "POST", "PATCH", "DELETE"]
       forward:
         queryString: true

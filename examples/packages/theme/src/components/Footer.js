@@ -17,6 +17,7 @@ const Footer = () => {
 
                 return (
                     <div className={"webiny-pb-section-footer"}>
+                        <ssr-cache data-class="pb-settings" />
                         <div className="webiny-pb-section-footer__wrapper">
                             <div className={"webiny-pb-section-footer__logo"}>
                                 <Link to="/">

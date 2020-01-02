@@ -54,6 +54,8 @@ const DesktopHeader = ({ logo, name }: { logo: Object, name: string }) => {
     return (
         <div className="webiny-pb-section-header__wrapper hide-on-mobile">
             <div className={"webiny-pb-section-header__logo"}>
+                <ssr-cache data-class="pb-settings" />
+
                 <Link to="/">
                     {logo && logo.src && <img src={logo.src} alt={name} />}{" "}
                     {(!logo || !logo.src) && (
