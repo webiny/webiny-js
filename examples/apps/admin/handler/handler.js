@@ -1,3 +1,5 @@
-const { createHandler } = require("@webiny/api-web-server");
-const { files, indexHtml } = require("@webiny/api-web-server");
-module.exports.handler = createHandler(files({ fileLoader: fs }), indexHtml({ fileLoader: fs }));
+import { create } from "@webiny/cloud-function";
+import { files } from "@webiny/cloud-function-files";
+import { index } from "@webiny/cloud-function-index";
+
+export const handler = create(files(), index());
