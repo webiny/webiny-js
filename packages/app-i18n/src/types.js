@@ -1,8 +1,8 @@
 // @flow
-import { type PluginType } from "@webiny/plugins/types";
+import { type Plugin } from "@webiny/plugins/types";
 import type { EditorPluginType, MenuPluginType } from "@webiny/ui/RichTextEditor";
 
-export type I18NInputRichTextEditorPluginType = PluginType & {
+export type I18NInputRichTextEditorPluginType = Plugin & {
     plugin: {
         name: string,
         editor?: EditorPluginType,

@@ -1,8 +1,8 @@
 //@flow
-import type { GlobalSearch } from "@webiny/app-admin/types";
+import type { GlobalSearchPlugin } from "@webiny/app-admin/types";
 
 // Additional sections in global search.
-export const globalSearchUsers: GlobalSearch = {
+export const globalSearchUsers: GlobalSearchPlugin = {
     type: "global-search",
     name: "global-search-users",
     route: "/users",

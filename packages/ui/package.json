@@ -98,7 +98,7 @@
     "access": "public"
   },
   "scripts": {
-    "build": "rimraf ./dist *.tsbuildinfo && babel src -d dist --source-maps --copy-files --extensions \".ts\"",
+    "build": "rimraf ./dist *.tsbuildinfo && babel src -d dist --source-maps --copy-files --extensions \".ts,.tsx\"",
     "postbuild": "cp package.json LICENSE README.md dist/ && tsc -p tsconfig.build.json",
     "storybook": "start-storybook -p 6006",
     "build-storybook": "build-storybook -c .storybook -o ${OUT:-.out}",

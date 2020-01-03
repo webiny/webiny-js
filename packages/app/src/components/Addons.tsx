@@ -1,7 +1,7 @@
 import React from "react";
 import { getPlugins } from "@webiny/plugins";
 
-export default function Addons() {
+export const Addons = () => {
     return (
         <>
             {getPlugins("addon-render").map((plugin: any) => {
@@ -11,4 +11,4 @@ export default function Addons() {
             })}
         </>
     );
-}
+};

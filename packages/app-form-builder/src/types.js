@@ -1,6 +1,6 @@
 // @flow
 import * as React from "react";
-import type { PluginType } from "@webiny/plugins/types";
+import type { Plugin } from "@webiny/plugins/types";
 import type { ReCaptchaComponentType } from "@webiny/app-form-builder/components/Form/components/createReCaptchaComponent";
 import type { TermsOfServiceComponentType } from "@webiny/app-form-builder/components/Form/components/createTermsOfServiceComponent";
 import type { I18NStringValueType } from "@webiny/app-i18n/types";
@@ -95,7 +95,7 @@ export type UseFormEditorReducerStateType = {
     defaultLayoutRenderer: string
 };
 
-export type FormEditorFieldPluginType = PluginType & {
+export type FormEditorFieldPluginType = Plugin & {
     field: {
         type: string,
         name: string,
@@ -118,7 +118,7 @@ export type FormEditorFieldPluginType = PluginType & {
     }
 };
 
-export type FormSettingsPluginType = PluginType & {
+export type FormSettingsPluginType = Plugin & {
     title: string,
     description: string,
     icon: React.ReactNode,
@@ -131,13 +131,13 @@ export type FormSettingsPluginRenderFunctionType = (props: {
     form: Object
 }) => React.ReactNode;
 
-export type FormTriggerHandlerPluginType = PluginType & {
+export type FormTriggerHandlerPluginType = Plugin & {
     trigger: {
         id: string,
         handle: ({ trigger: Object, data: Object, form: FormDataType }) => void
     }
 };
 
-export type FormDetailsPluginType = PluginType & {
+export type FormDetailsPluginType = Plugin & {
     render: (props: Object) => React.ReactNode
 };

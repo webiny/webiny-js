@@ -6,7 +6,7 @@ import styled from "@emotion/styled";
 import FormSubmissionsOverview from "./FormSubmissionsOverview";
 import FormSubmissionsList from "./FormSubmissionsList";
 import { CircularProgress } from "@webiny/ui/Progress";
-import type { PluginType } from "@webiny/plugins/types";
+import type { Plugin } from "@webiny/plugins/types";
 
 import { i18n } from "@webiny/app/i18n";
 const t = i18n.namespace("FormsApp.FormDetails.PreviewContent");
@@ -55,4 +55,4 @@ export default ([
             return <FormSubmissionsList form={form} />;
         }
     }
-]: Array<PluginType & Object>);
+]: Array<Plugin & Object>);

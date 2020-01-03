@@ -31,6 +31,11 @@ export const Cell = (props: CellProps) => {
 export type GridInnerProps = {
     // One or more Cell components.
     children: React.ReactElement<typeof Cell>[];
+
+    /**
+     * CSS class name
+     */
+    className?: string;
 };
 
 export const GridInner = (props: GridInnerProps) => {

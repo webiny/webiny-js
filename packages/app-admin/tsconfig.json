@@ -1,3 +1,10 @@
 {
-  "extends": "../../tsconfig.check"
+  "extends": "../../tsconfig.check",
+  "include": ["src", "../../typings/custom.ts"],
+  "references": [
+    { "path": "../ui" },
+    { "path": "../app" },
+    { "path": "../plugins" },
+    { "path": "../form" }
+  ]
 }

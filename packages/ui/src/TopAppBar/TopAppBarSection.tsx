@@ -9,6 +9,16 @@ export type TopAppBarSectionProps = RmwcTopAppBarSectionProps & {
      * Element children
      */
     children: React.ReactNode[] | React.ReactNode;
+
+    /**
+     * Style object.
+     */
+    style?: React.CSSProperties;
+
+    /**
+     * CSS class name.
+     */
+    className?: string;
 };
 
 const TopAppBarSection = (props: TopAppBarSectionProps) => {

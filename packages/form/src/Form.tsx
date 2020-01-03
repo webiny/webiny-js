@@ -6,13 +6,11 @@ import { linkState } from "./linkState";
 import { BindComponent } from "./Bind";
 import ValidationError from "./ValidationError";
 
-export type FormSubmitParams = { event?: React.SyntheticEvent<any> };
-
 export type FormRenderProps = {
     data: Object;
     // eslint-disable-next-line @typescript-eslint/no-use-before-define
     form: Form;
-    submit: (params: FormSubmitParams) => Promise<void>;
+    submit: (event?: React.SyntheticEvent<any, any>) => Promise<void>;
     Bind: BindComponent;
     setValue: Function;
 };
@@ -24,7 +22,7 @@ export type FormProps = {
     validateOnFirstSubmit?: boolean;
     submitOnEnter?: boolean;
     // eslint-disable-next-line @typescript-eslint/no-use-before-define
-    onSubmit?: (data: Object, form: Form) => void;
+    onSubmit?: (data: { [key: string]: any }, form: Form) => void;
     onInvalid?: () => void;
     // eslint-disable-next-line @typescript-eslint/no-use-before-define
     onChange?: (data: Object, form: Form) => void;
@@ -135,7 +133,7 @@ export class Form extends React.Component<FormProps, State> {
     /**
      * MAIN FORM ACTION METHODS
      */
-    submit = ({ event }: { event?: React.KeyboardEvent<any> } = {}): Promise<void> => {
+    submit = (event?: React.SyntheticEvent<any, any>): Promise<void> => {
         // If event is present - prevent default behaviour
         if (event && event.preventDefault) {
             event.preventDefault();

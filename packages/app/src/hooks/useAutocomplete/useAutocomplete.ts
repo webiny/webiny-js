@@ -1,8 +1,12 @@
-import * as React from "react";
 import { useDataList } from "@webiny/app/hooks/useDataList";
 import { debounce } from "lodash";
 
-export const useAutocomplete = (props): Function => {
+interface UseAutocompleteHook {
+    options: any[];
+    onInput(value: string): void;
+}
+
+export const useAutocomplete = (props): UseAutocompleteHook => {
     const useDataListProps = props.query ? props : { query: props };
 
     const dataList = useDataList({ useRouter: false, ...useDataListProps });

@@ -2,6 +2,7 @@ import * as React from "react";
 import {
     List as RmwcList,
     ListItem as RmwcListItem,
+    ListItemProps as RmwcListItemProps,
     ListItemText as RmwcListItemText,
     ListItemPrimaryText as RmwcListItemPrimaryText,
     ListItemSecondaryText as RmwcListItemSecondaryText
@@ -10,7 +11,7 @@ import { Typography } from "@webiny/ui/Typography";
 import classNames from "classnames";
 import styled from "@emotion/styled";
 
-export type ListItemProps = {
+export type ListItemProps = RmwcListItemProps & {
     children: React.ReactNode;
     className?: string;
     onClick?: (e: React.MouseEvent) => void;
@@ -26,13 +27,8 @@ export const ListItem = (props: ListItemProps) => {
     return <RmwcListItem {...props} />;
 };
 
-export type Props = {
-    // One or more ListItem components, which can then consist of the following components:
-    // - ListItemText
-    // - ListItemTextSecondary
-    // - ListItemText.Graphic
-    // - ListItemText.Meta
-    children?: React.ReactElement<typeof ListItem>[] | React.ReactElement<any>[];
+export type ListProps = {
+    children?: any;
 
     // Sets the list as non-interactive
     nonInteractive?: boolean;
@@ -46,7 +42,7 @@ export type Props = {
 /**
  * Use List component to display data and offer additional actions if needed.
  */
-export class List extends React.Component<Props> {
+export class List extends React.Component<ListProps> {
     render() {
         return <RmwcList {...this.props}>{this.props.children}</RmwcList>;
     }

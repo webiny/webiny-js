@@ -25,7 +25,11 @@
       "@webiny/app-i18n/*": ["./packages/app-i18n/src/*"],
       "@webiny/plugins": ["./packages/plugins/src"],
       "@webiny/plugins/*": ["./packages/plugins/src/*"],
+      "@webiny/storybook-utils": ["./packages/storybook-utils/src"],
       "@webiny/storybook-utils/*": ["./packages/storybook-utils/src/*"],
+      "@webiny/form": ["./packages/form/src"],
+      "@webiny/form/*": ["./packages/form/src/*"],
+      "@webiny/validation/*": ["./packages/validation/src/*"],
       "@webiny/ui/*": ["./packages/ui/src/*"]
     }
   }

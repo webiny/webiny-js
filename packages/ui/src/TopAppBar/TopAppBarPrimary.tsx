@@ -1,12 +1,7 @@
 import * as React from "react";
-import { TopAppBar } from "./TopAppBar";
+import { TopAppBar, TopAppBarProps } from "./TopAppBar";
 
-export type TopAppBarPrimaryProps = {
-    /**
-     * Element children
-     */
-    children: React.ReactNode;
-};
+export type TopAppBarPrimaryProps = TopAppBarProps;
 
 const TopAppBarPrimary = (props: TopAppBarPrimaryProps) => {
     const { children, ...other } = props;

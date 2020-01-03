@@ -3,7 +3,7 @@ import * as React from "react";
 import { Route } from "react-router-dom";
 import { AdminLayout } from "@webiny/app-admin/components/AdminLayout";
 import FormsSettings from "./components/FormsSettings";
-import type { SettingsPluginType } from "@webiny/app-admin/types";
+import type { SettingsPlugin } from "@webiny/app-admin/types";
 import { hasRoles } from "@webiny/app-security";
 import { SecureRoute } from "@webiny/app-security/components";
 
@@ -29,4 +29,4 @@ export default ([
             )
         }
     }
-]: Array<SettingsPluginType>);
+]: Array<SettingsPlugin>);

@@ -4,14 +4,35 @@ import {
     DrawerContent as RmwcDrawerContent,
     DrawerHeader as RmwcDrawerHeader,
     DrawerProps as RmwcDrawerProps,
-    DrawerHeaderProps,
-    DrawerContentProps
+    DrawerHeaderProps as RmwcDrawerHeaderProps,
+    DrawerContentProps as RmwcDrawerContentProps
 } from "@rmwc/drawer";
+
+type DrawerHeaderProps = RmwcDrawerHeaderProps & {
+    children: any;
+    className?: string;
+};
 
 /**
  * Shows header of the drawer.
  */
 const DrawerHeader = (props: DrawerHeaderProps) => <RmwcDrawerHeader {...props} />;
+
+export type DrawerContentProps = RmwcDrawerContentProps & {
+    /**
+     * Drawer direction.
+     */
+    dir?: string;
+    /**
+     * Drawer content.
+     */
+    children: React.ReactNode;
+
+    /**
+     * CSS class name
+     */
+    className?: string;
+};
 
 /**
  * Shows drawer content. It can be anything, but commonly a List component would suffice here.
@@ -19,6 +40,13 @@ const DrawerHeader = (props: DrawerHeaderProps) => <RmwcDrawerHeader {...props} 
 const DrawerContent = (props: DrawerContentProps) => <RmwcDrawerContent {...props} />;
 
 type DrawerProps = RmwcDrawerProps & {
+    /**
+     * Drawer direction.
+     */
+    dir?: string;
+    /**
+     * Drawer content.
+     */
     children: React.ReactNode;
 };
 /**

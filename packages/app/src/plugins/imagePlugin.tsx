@@ -1,6 +1,6 @@
 import React from "react";
 import { Image } from "@webiny/ui/Image";
-import { ImageComponentPluginType } from "../types";
+import { ImageComponentPlugin } from "../types";
 
 const SUPPORTED_IMAGE_RESIZE_WIDTHS = [100, 300, 500, 750, 1000, 1500, 2500];
 
@@ -73,7 +73,7 @@ const convertTransformToQueryParams = (transform: Object): string => {
         .join("&");
 };
 
-const imagePlugin: ImageComponentPluginType = {
+const imagePlugin: ImageComponentPlugin = {
     name: "image-component",
     type: "image-component",
     presets: {

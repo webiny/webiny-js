@@ -1,2 +1,2 @@
 export { Image } from "./Image";
-export { default as Addons } from "./Addons";
+export { Addons } from "./Addons";

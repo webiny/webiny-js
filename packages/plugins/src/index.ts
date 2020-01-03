@@ -1,10 +1,10 @@
-import { PluginType } from "./types";
+import { Plugin } from "./types";
 
 const __plugins = {};
 
 const _register = plugins => {
     for (let i = 0; i < plugins.length; i++) {
-        let plugin = plugins[i];
+        const plugin = plugins[i];
         if (Array.isArray(plugin)) {
             _register(plugin);
             continue;
@@ -22,12 +22,12 @@ const _register = plugins => {
 
 export const registerPlugins = (...args: any): void => _register(args);
 
-export const getPlugins = (type: string): Array<PluginType> => {
-    const values: PluginType[] = Object.values(__plugins);
-    return values.filter((plugin: PluginType) => (type ? plugin.type === type : true));
+export const getPlugins = (type?: string): Array<Plugin> => {
+    const values: Plugin[] = Object.values(__plugins);
+    return values.filter((plugin: Plugin) => (type ? plugin.type === type : true));
 };
 
-export const getPlugin = (name: string): PluginType | null => {
+export const getPlugin = (name: string): Plugin | null => {
     return __plugins[name];
 };
 

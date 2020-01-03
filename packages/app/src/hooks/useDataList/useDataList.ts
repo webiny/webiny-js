@@ -35,7 +35,7 @@ const useDataList = params => {
     const queryData = useQuery(query, getQueryOptions());
     const prevLoadParamsRef = useRef({});
 
-    const dataListProps: Object = {
+    const dataListProps = {
         data: get(queryData, "list.getData", getData)(queryData.data),
         meta: get(queryData, "list.getMeta", getMeta)(queryData.data),
         error: get(queryData, "list.getError", getError)(queryData.data),
@@ -44,7 +44,7 @@ const useDataList = params => {
         init(): void {
             this.refresh();
         },
-        refresh(params): void {
+        refresh(params = null): void {
             // Refresh multi select first.
             multiSelect([]);
 
@@ -91,7 +91,7 @@ const useDataList = params => {
                 items = [items];
             }
 
-            let returnItems = [...multiSelectedItems];
+            const returnItems = [...multiSelectedItems];
 
             items.forEach(item => {
                 if (value === undefined) {

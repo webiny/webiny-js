@@ -6,6 +6,8 @@ type Props = {
     children?: React.ReactNode;
 
     style?: React.CSSProperties;
+
+    [key: string]: any;
 };
 
 /**

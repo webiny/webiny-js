@@ -4,7 +4,7 @@ import { Route } from "react-router-dom";
 import { Helmet } from "react-helmet";
 import { AdminLayout } from "@webiny/app-admin/components/AdminLayout";
 import CookiePolicySettings from "./components/CookiePolicySettings";
-import type { SettingsPluginType } from "@webiny/app-admin/types";
+import type { SettingsPlugin } from "@webiny/app-admin/types";
 import { hasRoles } from "@webiny/app-security";
 import { SecureRoute } from "@webiny/app-security/components";
 
@@ -33,4 +33,4 @@ export default ([
             )
         }
     }
-]: Array<SettingsPluginType>);
+]: Array<SettingsPlugin>);

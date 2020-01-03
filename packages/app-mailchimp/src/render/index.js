@@ -1,6 +1,6 @@
 // @flow
 import React from "react";
-import type { PluginType } from "@webiny/plugins/types";
+import type { Plugin } from "@webiny/plugins/types";
 import RenderMailchimpForm from "./components/RenderMailchimpForm";
 import MailchimpDefaultForm from "./components/MailchimpDefaultForm";
 
@@ -20,4 +20,4 @@ export default ([
         componentName: "default",
         component: MailchimpDefaultForm
     }
-]: Array<PluginType>);
+]: Array<Plugin>);

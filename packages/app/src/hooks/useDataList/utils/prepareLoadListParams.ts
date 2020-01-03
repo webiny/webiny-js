@@ -1,5 +1,6 @@
 export default location => {
-    const params = {};
+    const params: { [key: string]: any } = {};
+
     if (location) {
         const query = new URLSearchParams(location.search);
 

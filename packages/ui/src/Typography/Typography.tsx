@@ -1,31 +1,18 @@
 import * as React from "react";
-import { Typography as RwmcTypography } from "@rmwc/typography";
+import {
+    Typography as RwmcTypography,
+    TypographyProps as RmwcTypographyProps
+} from "@rmwc/typography";
 
-type Props = {
-    // Text style.
-    use:
-        | "headline1"
-        | "headline2"
-        | "headline3"
-        | "headline4"
-        | "headline5"
-        | "headline6"
-        | "subtitle1"
-        | "subtitle2"
-        | "body1"
-        | "body2"
-        | "caption"
-        | "button"
-        | "overline",
-
-    // Any element that needs to be highlighted.
-    children?: React.ReactNode
+type TypographyProps = RmwcTypographyProps & {
+    children?: React.ReactNode;
+    className?: string;
 };
 
 /**
  * Use Ripple component to display a list of choices, once the handler is triggered.
  */
-const Typography = (props: Props) => {
+const Typography = (props: TypographyProps) => {
     return <RwmcTypography {...props}>{props.children}</RwmcTypography>;
 };
 

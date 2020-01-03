@@ -1,7 +1,6 @@
-// @flow
 import { useContext } from "react";
-import { UiContext } from "./../contexts/Ui";
+import { UiContext, UiContextValue } from "./../contexts/Ui";
 
 export const useUi = () => {
-    return useContext(UiContext);
+    return useContext(UiContext) as UiContextValue;
 };

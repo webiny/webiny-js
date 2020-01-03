@@ -131,7 +131,6 @@ class RenderForm extends React.Component<Props, State> {
                     {sliders.map(props => (
                         <li key={props.key}>
                             <Slider
-                                name={props.key}
                                 value={this.state.values[props.key]}
                                 min={0}
                                 max={100}

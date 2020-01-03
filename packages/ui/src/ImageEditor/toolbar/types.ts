@@ -10,8 +10,7 @@ export interface ImageEditorTool {
     name: string;
     apply?: Function;
     cancel?: Function;
-    // @ts-ignore
-    onActivate?: ({ options: any, canvas: any }) => void;
+    onActivate?: ({ options, canvas }) => void;
     icon: ({ activateTool: Function }) => React.ReactElement<any>;
     renderForm?: (params: RenderFormParams) => React.ReactNode;
 }

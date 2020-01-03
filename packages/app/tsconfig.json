@@ -1,4 +1,10 @@
 {
   "extends": "../../tsconfig.check",
+  "compilerOptions": {
+    "rootDir": "./src",
+    "outDir": "./dist",
+    "declarationDir": "./dist"
+  },
+  "include": ["src"],
   "references": [{ "path": "../plugins" }, { "path": "../ui" }]
 }

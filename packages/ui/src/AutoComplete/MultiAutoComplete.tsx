@@ -181,7 +181,6 @@ export class MultiAutoComplete extends React.Component<MultiAutoCompleteProps, S
                         {value.map((item, index) => (
                             <Chip
                                 label={getOptionText(item, this.props)}
-                                disabled
                                 key={`${getOptionValue(item, this.props)}-${index}`}
                                 trailingIcon={<BaselineCloseIcon />}
                                 onRemove={() => {

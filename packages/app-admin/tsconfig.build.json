@@ -1,10 +1,24 @@
 {
   "extends": "../../tsconfig.build.json",
-  "include": ["./src"],
+  "include": ["src"],
+  "exclude": [
+    "node_modules",
+    "**/__tests__/**",
+    "./dist",
+    "../app",
+    "../form",
+    "../ui",
+    "../plugins"
+  ],
   "compilerOptions": {
     "rootDir": "./src",
     "outDir": "./dist",
     "declarationDir": "./dist"
   },
-  "references": [{ "path": "../api" }]
+  "references": [
+    { "path": "../ui/tsconfig.build.json" },
+    { "path": "../app/tsconfig.build.json" },
+    { "path": "../plugins/tsconfig.build.json" },
+    { "path": "../form/tsconfig.build.json" }
+  ]
 }
