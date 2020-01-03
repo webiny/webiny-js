@@ -1,5 +1,5 @@
 {
-  "name": "@webiny/api-web-server",
+  "name": "@webiny/cloud-function-ssr",
   "version": "1.0.0",
   "main": "index.js",
   "license": "MIT",
@@ -7,7 +7,7 @@
     "type": "git",
     "url": "https://github.com/webiny/webiny-js.git"
   },
-  "description": "A simple web server as a function.",
+  "description": "A pluginable function for the cloud.",
   "contributors": [
     "Pavel Denisjuk <pavel@webiny.com>",
     "Sven Al Hamad <sven@webiny.com>",

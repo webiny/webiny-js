@@ -1,12 +1,18 @@
 import qs from "querystringify";
 import LambdaClient from "aws-sdk/clients/lambda";
 import createModels from "./models";
-import { createResponse } from "@webiny/api-web-server";
+import { createResponse } from "@webiny/cloud-function";
 import mime from "mime-types";
 
 let models;
 
-export default options => ({
+const defaultOptions = {
+    ssrFunction: process.env.SSR_FUNCTION,
+    ssrCacheTtl: 80,
+    ssrCacheTtlState: 20
+};
+
+export const ssr = rawOptions => ({
     type: "handler",
     name: "handler-index",
     async handle({ event }) {
@@ -14,6 +20,7 @@ export default options => ({
             return;
         }
 
+        const options = { ...defaultOptions, ...rawOptions };
         const path = event.path + qs.stringify(event.multiValueQueryStringParameters, true);
         const httpMethod = event.httpMethod.toUpperCase();
 
