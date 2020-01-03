@@ -44,7 +44,7 @@ const CategoriesDataList = () => {
             ]}
         >
             {({ data, isSelected, select }) => (
-                <List>
+                <List data-testid="default-data-list">
                     {data.map(item => (
                         <ListItem key={item.id} selected={isSelected(item)}>
                             <ListItemText onClick={() => select(item)}>
