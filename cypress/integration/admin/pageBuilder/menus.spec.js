@@ -1,4 +1,5 @@
 import uniqid from "uniqid";
+
 context("Menus Module", () => {
     beforeEach(() => cy.login());
 
