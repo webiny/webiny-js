@@ -3,8 +3,8 @@
  */
 module.exports.handler = async ({ path }) => {
     delete require.cache[require.resolve("./ssr")];
-    const { renderer } = require("./ssr");
-    const { html } = await renderer(path);
+    const ssr = require("./ssr");
+    const { html } = await ssr(path);
 
     try {
         return {

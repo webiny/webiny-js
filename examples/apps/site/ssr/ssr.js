@@ -30,7 +30,7 @@ const createClient = () => {
     });
 };
 
-export const renderer = async url => {
+export default async url => {
     const apolloClient = createClient();
     const context = {};
 
