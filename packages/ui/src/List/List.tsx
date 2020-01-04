@@ -4,6 +4,7 @@ import {
     ListItem as RmwcListItem,
     ListItemProps as RmwcListItemProps,
     ListItemText as RmwcListItemText,
+    ListItemTextProps as RmwcListItemTextProps,
     ListItemPrimaryText as RmwcListItemPrimaryText,
     ListItemSecondaryText as RmwcListItemSecondaryText
 } from "@rmwc/list";
@@ -48,7 +49,11 @@ export class List extends React.Component<ListProps> {
     }
 }
 
-export type ListItemTextProps = { children: React.ReactNode; className?: string };
+export type ListItemTextProps = RmwcListItemTextProps & {
+    children: React.ReactNode;
+    className?: string;
+    onClick?: (e: React.SyntheticEvent<MouseEvent>) => void;
+};
 
 /**
  * Used to show regular text in list items.

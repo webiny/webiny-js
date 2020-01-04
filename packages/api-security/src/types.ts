@@ -1,5 +1,5 @@
-import { PluginType } from "@webiny/api/types";
+import { Plugin } from "@webiny/api/types";
 
-export interface SecurityPlugin extends PluginType {
+export type SecurityPlugin = Plugin & {
     authenticate: Function;
-}
+};

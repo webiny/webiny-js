@@ -4,7 +4,7 @@ import { FormElementMessage } from "@webiny/ui/FormElementMessage";
 import pick from "lodash/pick";
 import { FormComponentProps } from "./../types";
 
-type Props = FormComponentProps &
+export type InputProps = FormComponentProps &
     TextFieldProps & {
         // If true, will pass native `event` to the `onChange` callback
         rawOnChange: boolean;
@@ -16,7 +16,7 @@ type Props = FormComponentProps &
         placeholder?: string;
 
         // Description beneath the input.
-        description?: React.ReactNode;
+        description?: string;
 
         // Converts input into a text area with given number of rows.
         rows?: number;
@@ -24,27 +24,19 @@ type Props = FormComponentProps &
         // Creates a box around the input.
         box?: string;
 
-        // A leading icon. Use `<InputIcon/>` component.
-        icon?: React.ReactNode;
-
         // A trailing icon. Use `<InputIcon/>` component.
         leadingIcon?: React.ReactNode;
-
-        // A trailing icon. Use `<InputIcon/>` component.
-        trailingIcon?: React.ReactNode;
 
         // A callback that is executed when input focus is lost.
         onBlur?: (e: React.SyntheticEvent<HTMLInputElement>) => any;
     };
-
-export type InputProps = Props;
 
 /**
  * Use Input component to store short string values, like first name, last name, e-mail etc.
  * Additionally, with rows prop, it can also be turned into a text area, to store longer strings.
  */
 
-class Input extends React.Component<Props> {
+export class Input extends React.Component<InputProps> {
     static defaultProps = {
         rawOnChange: false,
         validation: { isValid: null }
@@ -133,5 +125,3 @@ class Input extends React.Component<Props> {
         );
     }
 }
-
-export { Input };

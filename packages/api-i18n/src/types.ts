@@ -1,4 +1,4 @@
-export type I18NContext = Object & {
+export type I18NContext = {
     i18n: {
         defaultLocale: string;
         acceptLanguage?: string;

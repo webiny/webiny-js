@@ -4,7 +4,12 @@ import GraphQLJSON from "graphql-type-json";
 import { GraphQLDateTime } from "graphql-iso-date";
 import GraphQLLong from "graphql-type-long";
 import { RefInput } from "./RefInputScalar";
-import { PluginsContainer } from "../types";
+import {
+    PluginsContainer,
+    GraphQLSchemaPlugin,
+    GraphqlScalarPlugin,
+    SchemaDefinition
+} from "../types";
 
 type PrepareSchemaParams = { plugins: PluginsContainer };
 
@@ -13,7 +18,7 @@ type PrepareSchemaParams = { plugins: PluginsContainer };
  */
 export async function prepareSchema({ plugins }: PrepareSchemaParams) {
     // This allows developers to register more plugins dynamically, before the graphql schema is instantiated.
-    const gqlPlugins = plugins.byType("graphql-schema");
+    const gqlPlugins = plugins.byType("graphql-schema") as GraphQLSchemaPlugin[];
 
     for (let i = 0; i < gqlPlugins.length; i++) {
         if (typeof gqlPlugins[i].prepare === "function") {
@@ -21,9 +26,11 @@ export async function prepareSchema({ plugins }: PrepareSchemaParams) {
         }
     }
 
-    const scalars = plugins.byType("graphql-scalar").map(item => item.scalar);
+    const scalars = plugins
+        .byType("graphql-scalar")
+        .map((item: GraphqlScalarPlugin) => item.scalar);
 
-    const schemaDefs = [
+    const schemaDefs: SchemaDefinition[] = [
         {
             typeDefs: gql`
                 ${scalars.map(scalar => `scalar ${scalar.name}`).join(" ")}
@@ -43,7 +50,7 @@ export async function prepareSchema({ plugins }: PrepareSchemaParams) {
     ];
 
     // Fetch schema plugins again, in case there were new plugins registered in the meantime.
-    const schemaPlugins = plugins.byType("graphql-schema");
+    const schemaPlugins = plugins.byType("graphql-schema") as GraphQLSchemaPlugin[];
     for (let i = 0; i < schemaPlugins.length; i++) {
         const { schema } = schemaPlugins[i];
         if (!schema) {

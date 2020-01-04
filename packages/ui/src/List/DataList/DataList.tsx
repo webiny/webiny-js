@@ -13,7 +13,7 @@ import { Menu, MenuItem } from "@webiny/ui/Menu";
 import { Grid, Cell } from "@webiny/ui/Grid";
 
 import { RefreshIcon, SortIcon, PreviousPageIcon, NextPageIcon, OptionsIcon } from "./icons";
-import { List, ListItem } from "@webiny/ui/List";
+import { List, ListItem, ListProps } from "@webiny/ui/List";
 
 import { MetaProp, SortersProp } from "./types";
 
@@ -388,7 +388,9 @@ DataList.defaultProps = {
     }
 };
 
-export const ScrollList = (props: { children: React.ReactElement<typeof ListItem>[] }) => {
+export const ScrollList = (
+    props: ListProps & { children: React.ReactElement<typeof ListItem>[] }
+) => {
     return (
         <List {...props} className={scrollList}>
             {props.children}

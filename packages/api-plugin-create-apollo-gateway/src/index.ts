@@ -1,6 +1,8 @@
 import { ApolloGateway, RemoteGraphQLDataSource, ServiceEndpointDefinition } from "@apollo/gateway";
 import { GraphQLRequestContext } from "apollo-server-types";
 import { ApolloServer } from "apollo-server-lambda";
+import { CreateApolloGatewayPlugin } from "@webiny/api/types";
+import { ApolloGatewayHeaders } from "./types";
 import buildHeaders from "./buildHeaders";
 
 function toBool(value) {
@@ -22,7 +24,7 @@ type ApolloGatewayPluginParams = {
     };
 };
 
-export default (params: ApolloGatewayPluginParams) => ({
+export default (params: ApolloGatewayPluginParams): CreateApolloGatewayPlugin => ({
     name: "create-apollo-gateway",
     type: "create-apollo-gateway",
     async createGateway({ plugins }) {
@@ -58,7 +60,7 @@ export default (params: ApolloGatewayPluginParams) => ({
             context: async ({ event }) => {
                 const headers = buildHeaders(event);
 
-                const headerPlugins = plugins.byType("apollo-gateway-headers");
+                const headerPlugins = plugins.byType("apollo-gateway-headers") as ApolloGatewayHeaders[];
                 headerPlugins.forEach(pl => pl.buildHeaders({ headers, plugins }));
 
                 return { headers };

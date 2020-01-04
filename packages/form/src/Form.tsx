@@ -6,8 +6,8 @@ import { linkState } from "./linkState";
 import { BindComponent } from "./Bind";
 import ValidationError from "./ValidationError";
 
-export type FormRenderProps = {
-    data: Object;
+export type FormChildrenRender = {
+    data: { [key: string]: any };
     // eslint-disable-next-line @typescript-eslint/no-use-before-define
     form: Form;
     submit: (event?: React.SyntheticEvent<any, any>) => Promise<void>;
@@ -15,9 +15,12 @@ export type FormRenderProps = {
     setValue: Function;
 };
 
+export type Data = { [key: string]: any };
+export type Validation = { [key: string]: any };
+
 export type FormProps = {
-    invalidFields?: Object;
-    data?: Object;
+    invalidFields?: { [key: string]: any };
+    data?: Data;
     disabled?: boolean | Function;
     validateOnFirstSubmit?: boolean;
     submitOnEnter?: boolean;
@@ -25,15 +28,15 @@ export type FormProps = {
     onSubmit?: (data: { [key: string]: any }, form: Form) => void;
     onInvalid?: () => void;
     // eslint-disable-next-line @typescript-eslint/no-use-before-define
-    onChange?: (data: Object, form: Form) => void;
-    children: (params: FormRenderProps) => React.ReactElement;
+    onChange?: (data: Data, form: Form) => void;
+    children: (params: FormChildrenRender) => React.ReactElement;
 };
 
 type State = {
-    data: Object;
-    originalData: Object;
+    data: Data;
+    originalData: Data;
     wasSubmitted: boolean;
-    validation: Object;
+    validation: Validation;
 };
 
 export class Form extends React.Component<FormProps, State> {

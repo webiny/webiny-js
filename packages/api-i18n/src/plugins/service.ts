@@ -1,4 +1,4 @@
-import { PluginType } from "@webiny/api/types";
+import { Plugin } from "@webiny/api/types";
 import i18n from "./i18n";
 import { GraphQLClient } from "graphql-request";
 import get from "lodash/get";
@@ -19,7 +19,7 @@ const GET_I18N_INFORMATION = /* GraphQL */ `
     }
 `;
 
-export default (): PluginType[] => [
+export default (): Plugin[] => [
     i18n,
     {
         name: "graphql-context-i18n-get-locales",

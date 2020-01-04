@@ -1,6 +1,6 @@
-import { PluginType } from "@webiny/api/types";
+import { Plugin } from "@webiny/api/types";
 
-const plugins: PluginType[] = [
+const plugins: Plugin[] = [
     {
         type: "graphql-context",
         name: "graphql-context-files",

@@ -1,6 +1,6 @@
 {
   "extends": "../../tsconfig.build.json",
-  "include": ["src"],
+  "include": ["src", "./custom.d.ts"],
   "exclude": [
     "node_modules",
     "**/__tests__/**",

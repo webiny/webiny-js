@@ -1,25 +1,43 @@
+import { GraphQLScalarType, GraphQLSchema } from "graphql";
 import { PluginsContainer } from "./PluginsContainer";
 
 export { PluginsContainer };
 
-export type PluginType = { [key: string]: any } & {
+export type Plugin = {
     name: string;
     type: string;
 };
 
-export interface GraphQLSchemaPlugin extends PluginType {
-    schema: {
-        typeDefs: any;
-        resolvers: { [type: string]: { [field: string]: Function } };
-    };
-}
+export type SchemaDefinition = {
+    typeDefs: any;
+    resolvers: any;
+};
 
-export type GraphQLContextPlugin = PluginType & {
+export type GraphQLSchemaPlugin = Plugin & {
+    prepare?: (params: { plugins: PluginsContainer }) => void;
+    schema:
+        | ((params: { plugins: PluginsContainer }) => Promise<SchemaDefinition>)
+        | SchemaDefinition;
+};
+
+export type GraphQLContextPlugin = Plugin & {
     preApply?: (context: { [key: string]: any }) => Promise<void>;
     apply?: (context: { [key: string]: any }) => Promise<void>;
     postApply?: (context: { [key: string]: any }) => Promise<void>;
 };
 
-export type GraphQLMiddlewarePlugin = PluginType & {
+export type GraphQLMiddlewarePlugin = Plugin & {
     middleware: ({ plugins: PluginsContainer }) => Function[];
+};
+
+export type GraphqlScalarPlugin = Plugin & {
+    scalar: GraphQLScalarType;
+};
+
+export type CreateApolloHandlerPlugin = Plugin & {
+    create(params: { plugins: PluginsContainer; schema: GraphQLSchema }): Function;
+};
+
+export type CreateApolloGatewayPlugin = Plugin & {
+    createGateway(params: { plugins: PluginsContainer }): Promise<Function>;
 };

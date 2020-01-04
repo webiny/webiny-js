@@ -1,4 +1,4 @@
-export interface Plugin {
+export type Plugin = {
     name: string;
     type: string;
 }

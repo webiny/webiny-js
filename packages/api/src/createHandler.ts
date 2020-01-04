@@ -1,23 +1,29 @@
 import { applyMiddleware } from "graphql-middleware";
 import { addSchemaLevelResolveFunction } from "graphql-tools";
-import { PluginsContainer, GraphQLMiddlewarePlugin } from "./types";
+import { GraphQLSchema } from "graphql";
+import {
+    PluginsContainer,
+    GraphQLMiddlewarePlugin,
+    GraphQLContextPlugin,
+    CreateApolloHandlerPlugin
+} from "./types";
 import { prepareSchema } from "./graphql/prepareSchema";
 
-interface CreateHandlerParams {
+type CreateHandlerParams = {
     plugins: PluginsContainer;
-}
+};
 
 /**
  * Create graphql schema only
  * @param plugins
  * @returns {Promise<void>}
  */
-export const createSchema = async ({ plugins }: CreateHandlerParams) => {
+export const createSchema = async ({ plugins }: CreateHandlerParams): Promise<GraphQLSchema> => {
     let schema = await prepareSchema({ plugins });
 
-    const registeredMiddleware: Array<GraphQLMiddlewarePlugin> = [];
+    const registeredMiddleware = [];
 
-    const middlewarePlugins = plugins.byType("graphql-middleware");
+    const middlewarePlugins = plugins.byType("graphql-middleware") as GraphQLMiddlewarePlugin[];
     for (let i = 0; i < middlewarePlugins.length; i++) {
         const plugin = middlewarePlugins[i];
         const middleware =
@@ -41,7 +47,7 @@ export const createSchema = async ({ plugins }: CreateHandlerParams) => {
         delete info.operation["__runAtMostOnce"];
 
         // Process `graphql-context` plugins
-        const ctxPlugins = plugins.byType("graphql-context");
+        const ctxPlugins = plugins.byType("graphql-context") as GraphQLContextPlugin[];
         for (let i = 0; i < ctxPlugins.length; i++) {
             if (typeof ctxPlugins[i].preApply === "function") {
                 await ctxPlugins[i].preApply(context);
@@ -66,13 +72,11 @@ export const createSchema = async ({ plugins }: CreateHandlerParams) => {
 
 /**
  * Create Apollo handler
- * @param plugins
- * @returns {Promise<{schema: void, handler(Object, Object): Promise<Object>}|Promise<*>>}
  */
 export const createHandler = async ({ plugins }: CreateHandlerParams) => {
     const schema = await createSchema({ plugins });
 
-    const plugin = plugins.byName("create-apollo-handler");
+    const plugin = plugins.byName("create-apollo-handler") as CreateApolloHandlerPlugin;
 
     if (!plugin) {
         throw Error(`"create-apollo-handler" plugin is not configured!`);

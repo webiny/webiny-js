@@ -1,4 +1,4 @@
-import { PluginType } from "@webiny/api/types";
+import { Plugin } from "@webiny/api/types";
 
 export type FormTriggerHandlerParams = {
     formSubmission: {[key: string]: any};
@@ -7,7 +7,7 @@ export type FormTriggerHandlerParams = {
     form: {[key: string]: any};
 };
 
-export type FormTriggerHandlerPluginType = PluginType & {
+export type FormTriggerHandlerPluginType = Plugin & {
     trigger: string;
     handle: (args: FormTriggerHandlerParams) => Promise<void>;
 };

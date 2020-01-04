@@ -1,7 +1,7 @@
-import { PluginType } from "@webiny/api/types";
+import { Plugin } from "@webiny/api/types";
 import acceptLanguageParser from "accept-language-parser";
 
-const plugin: PluginType = {
+const plugin: Plugin = {
     type: "graphql-context",
     name: "graphql-context-i18n",
     apply: async (context: {[key: string]: any}) => {

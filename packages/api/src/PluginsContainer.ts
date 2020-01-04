@@ -1,4 +1,4 @@
-import { PluginType } from "./types";
+import { Plugin } from "./types";
 
 const assign = (plugins: any, target: Object): void => {
     for (let i = 0; i < plugins.length; i++) {
@@ -19,18 +19,18 @@ const assign = (plugins: any, target: Object): void => {
 };
 
 export class PluginsContainer {
-    plugins: Record<string, PluginType> = {};
+    plugins: Record<string, Plugin> = {};
 
-    constructor(plugins: Array<PluginType> = []) {
+    constructor(plugins: Array<Plugin> = []) {
         assign(plugins, this.plugins);
     }
 
-    byName(name: string): PluginType {
+    byName(name: string): Plugin {
         return this.plugins[name];
     }
 
-    byType(type: string): Array<PluginType> {
-        return Object.values(this.plugins).filter((pl: PluginType) => pl.type === type);
+    byType(type: string): Array<Plugin> {
+        return Object.values(this.plugins).filter((pl: Plugin) => pl.type === type);
     }
 
     register(...plugins: any): void {

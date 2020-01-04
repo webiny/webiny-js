@@ -1,12 +1,12 @@
 import { merge } from "lodash";
 import gql from "graphql-tag";
 import { emptyResolver } from "@webiny/commodo-graphql";
-import { PluginType } from "@webiny/api/types";
+import { Plugin } from "@webiny/api/types";
 import { hasScope } from "@webiny/api-security";
 import i18nLocale from "./graphql/I18NLocale";
 import install from "./graphql/Install";
 
-const plugin: PluginType = {
+const plugin: Plugin = {
     type: "graphql-schema",
     name: "graphql-schema-i18n",
     schema: {

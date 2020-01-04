@@ -1,4 +1,5 @@
 import { ApolloServer } from "apollo-server-lambda";
+import { CreateApolloHandlerPlugin } from "@webiny/api/types";
 
 function toBool(value) {
     if (typeof value === "string") {
@@ -27,11 +28,11 @@ interface ApolloHandlerPluginOptions {
     };
 }
 
-export default (options: ApolloHandlerPluginOptions) => {
+export default (options: ApolloHandlerPluginOptions): CreateApolloHandlerPlugin => {
     return {
         name: "create-apollo-handler",
         type: "create-apollo-handler",
-        async create({ plugins, schema }) {
+        create({ plugins, schema }) {
             const { server, handler } = options || {};
 
             const apollo = new ApolloServer({

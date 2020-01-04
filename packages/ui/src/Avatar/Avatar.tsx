@@ -68,7 +68,7 @@ export type AvatarProps = {
      * Pass a custom image component to be rendered instead of a simple <img> element.
      * @param props
      */
-    renderImage?: (props: Object) => React.ReactElement<any>;
+    renderImage?: (props: { src: string; alt?: string }) => React.ReactElement;
 
     /**
      * Text that will be shown when there is no image (usually user's initials).
