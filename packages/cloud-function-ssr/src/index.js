@@ -13,9 +13,10 @@ const defaultOptions = {
 };
 
 export const ssr = rawOptions => ({
-    type: "handler",
-    name: "handler-index",
-    async handle({ event }) {
+    type: "run",
+    name: "run-ssr",
+    async handle({ args }) {
+        const [event] = args;
         if (mime.lookup(event.path)) {
             return;
         }

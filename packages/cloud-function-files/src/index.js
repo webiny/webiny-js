@@ -17,9 +17,10 @@ const load = pathToResolve => {
 };
 
 export const files = ({ cacheMaxAge = DEFAULT_CACHE_MAX_AGE } = {}) => ({
-    type: "handler",
-    name: "handler-files",
-    async handle({ event }) {
+    type: "run",
+    name: "run-files",
+    async handle({ args }) {
+        const [event] = args;
         const type = mime.lookup(event.path);
         if (!type) {
             return;

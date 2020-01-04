@@ -16,9 +16,10 @@ const load = pathToResolve => {
 };
 
 export const index = ({ cacheMaxAge = DEFAULT_CACHE_MAX_AGE } = {}) => ({
-    type: "handler",
-    name: "handler-index",
-    async handle({ event }) {
+    type: "run",
+    name: "run-index",
+    async handle({ args }) {
+        const [event] = args;
         if (mime.lookup(event.path)) {
             return;
         }
