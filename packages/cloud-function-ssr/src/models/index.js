@@ -3,24 +3,23 @@ import { withStorage } from "@webiny/commodo";
 import ssrCache from "./ssrCache.model";
 import { withId, DbProxyDriver } from "@webiny/commodo-fields-storage-db-proxy";
 
-export default ({ options, context }) => {
-    const createBase = () =>
-        flow(
-            withId(),
-            withStorage({
-                driver: new DbProxyDriver({ dbProxyFunctionName: process.env.DB_PROXY_FUNCTION })
-            })
-        )();
+export default options => ({
+    type: "context",
+    name: "context-models",
+    apply(context) {
+        const createBase = () =>
+            flow(
+                withId(),
+                withStorage({
+                    driver: new DbProxyDriver({
+                        dbProxyFunctionName: process.env.DB_PROXY_FUNCTION
+                    })
+                })
+            )();
 
-    const SsrCache = ssrCache({ createBase, options });
-    const models = {
-        SsrCache
-    };
-
-    context.plugins.byType("extend-models").forEach(plugin => {
-        plugin.extend(models);
-    });
-
-    return models;
-
-};
+        const SsrCache = ssrCache({ createBase, options });
+        context.models = {
+            SsrCache
+        };
+    }
+});

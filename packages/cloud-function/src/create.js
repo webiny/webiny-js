@@ -5,26 +5,28 @@ export default (...plugins) => async (...args) => {
         plugins: new PluginsContainer(plugins)
     };
 
-    let handlers = context.plugins.byType("before-run");
+    let contextPlugins = context.plugins.byType("context");
+    for (let i = 0; i < contextPlugins.length; i++) {
+        contextPlugins[i].apply(context);
+    }
+
+    let handlers = context.plugins.byType("before-handle");
     for (let i = 0; i < handlers.length; i++) {
-        let handler = handlers[i];
-        await handler.handle({ context, args });
+        await handlers[i].handle({ context, args });
     }
 
     let result;
-    handlers = context.plugins.byType("run");
+    handlers = context.plugins.byType("handler");
     for (let i = 0; i < handlers.length; i++) {
         let handler = handlers[i];
-        result = await handler.handle({ context, args });
-        if (result !== undefined) {
-            break;
+        if (handler.canHandle({ context, args })) {
+            result = await handler.handle({ context, args });
         }
     }
 
-    handlers = context.plugins.byType("after-run");
+    handlers = context.plugins.byType("after-handle");
     for (let i = 0; i < handlers.length; i++) {
-        let handler = handlers[i];
-        await handler.handle({ context, args, result });
+        await handlers[i].handle({ context, args, result });
     }
 
     return result;

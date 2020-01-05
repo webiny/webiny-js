@@ -16,15 +16,15 @@ const load = pathToResolve => {
     });
 };
 
-export const files = ({ cacheMaxAge = DEFAULT_CACHE_MAX_AGE } = {}) => ({
-    type: "run",
-    name: "run-files",
+export default ({ cacheMaxAge = DEFAULT_CACHE_MAX_AGE } = {}) => ({
+    type: "handler",
+    name: "handler-files",
+    canHandle({ args }) {
+        const [event] = args;
+        return event.httpMethod === "GET" && mime.lookup(event.path);
+    },
     async handle({ args }) {
         const [event] = args;
-        const type = mime.lookup(event.path);
-        if (!type) {
-            return;
-        }
 
         try {
             let { key } = event.pathParameters;
@@ -32,7 +32,7 @@ export const files = ({ cacheMaxAge = DEFAULT_CACHE_MAX_AGE } = {}) => ({
             if (buffer) {
                 const isBase64Encoded = !isUtf8(buffer);
                 return createResponse({
-                    type,
+                    type: mime.lookup(event.path),
                     body: buffer.toString(isBase64Encoded ? "base64" : "utf8"),
                     isBase64Encoded,
                     headers: { "Cache-Control": "public, max-age=" + cacheMaxAge }

@@ -95,6 +95,7 @@ export default ({ createBase, options = {} } = {}) => {
                 return this;
             },
             async refresh() {
+
                 this.lastRefresh.startedOn = new Date();
                 await this.save();
 

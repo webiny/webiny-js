@@ -15,15 +15,14 @@ const load = pathToResolve => {
     });
 };
 
-export const index = ({ cacheMaxAge = DEFAULT_CACHE_MAX_AGE } = {}) => ({
-    type: "run",
-    name: "run-index",
-    async handle({ args }) {
+export default ({ cacheMaxAge = DEFAULT_CACHE_MAX_AGE } = {}) => ({
+    type: "handler",
+    name: "handler-index",
+    canHandle({ args }) {
         const [event] = args;
-        if (mime.lookup(event.path)) {
-            return;
-        }
-
+        return event.httpMethod === "GET" && !mime.lookup(event.path);
+    },
+    async handle() {
         const type = "text/html";
         const key = "index.html";
 
