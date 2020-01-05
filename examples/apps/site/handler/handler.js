@@ -1,5 +1,6 @@
 import { create } from "@webiny/cloud-function";
-import { files } from "@webiny/cloud-function-files";
-import { ssr } from "@webiny/cloud-function-ssr";
+import filesPlugins from "@webiny/cloud-function-files";
+import ssrPlugins from "@webiny/cloud-function-ssr";
+import cdnInvalidationPlugins from "@webiny/cloud-function-ssr/cdnInvalidation";
 
-export const handler = create(files(), ssr());
+export const handler = create(filesPlugins(), ssrPlugins(), cdnInvalidationPlugins());
