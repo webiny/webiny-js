@@ -1,17 +1,29 @@
 import CloudFront from "aws-sdk/clients/cloudfront";
 import { withHooks } from "@webiny/commodo";
 
-export default () => ({
+export default rawOptions => ({
     type: "context",
     name: "invalidate-cdn-ssr-cache",
     extend({ models: { SsrCache } }) {
+        const options = {
+            cloudFrontDistributionId: process.env.CDN_ID,
+            ...rawOptions
+        };
+
         withHooks({
             async afterInvalidate() {
                 const cloudfront = new CloudFront();
                 try {
+                    if (!options.cloudFrontDistributionId) {
+                        throw new Error(
+                            `Missing "cloudFrontDistributionId". Ether set it via "CDN_ID" env variable or passing the 
+                                "cloudFrontDistributionId" value when creating "cdnInvalidation" plugins.`
+                        );
+                    }
+
                     await cloudfront
                         .createInvalidation({
-                            DistributionId: process.env.CLOUDFRONT_DISTRIBUTION_ID,
+                            DistributionId: options.cloudFrontDistributionId,
                             InvalidationBatch: {
                                 CallerReference: `${new Date().getTime()}-invalidate-cdn-ssr-cache`,
                                 Paths: {
@@ -22,6 +34,7 @@ export default () => ({
                         })
                         .promise();
                 } catch (e) {
+                    // eslint-disable-next-line
                     console.log(
                         `Failed to execute "afterInvalidate" callback in the "extend-models-invalidate-cdn-cache" plugin: `,
                         e.stack

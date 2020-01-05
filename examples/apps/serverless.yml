@@ -25,6 +25,7 @@ site:
       CLOUDFNS_NAME: "site-fn"
       SSR_FUNCTION: ${ssr.arn}
       DB_PROXY_FUNCTION: ${dbProxy.arn}
+      CDN_ID: EGH86C61O237F
 
 ssr:
   component: "@webiny/serverless-function"
@@ -36,7 +37,7 @@ ssr:
     code: ./site/build-ssr
     handler: handler.handler
     memory: 2048
-    timeout: 30
+    timeout: 60
 
 admin:
   component: "@webiny/serverless-app"
