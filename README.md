@@ -1,12 +1,12 @@
-<br/>
+<br>
 <p align="center">
-  <img src="./static/webiny-logo.svg" width="250" />
-  <br/><br/>
+  <img src="./static/webiny-logo.svg" width="250">
+  <br><br>
   <strong>Developer-friendly Serverless CMS powered by GraphQL and React</strong>
 </p>
 <p align="center">
   <a href="https://www.webiny.com">Official Website</a> |
-  <a href="https://docs.webiny.com">Docs</a> 
+  <a href="https://docs.webiny.com">Docs</a>
 </p>
 
 #
@@ -19,17 +19,15 @@
 ![](https://img.shields.io/npm/types/react-butterfiles.svg)
 [![All Contributors](https://img.shields.io/badge/all_contributors-6-orange.svg?style=flat-square)](#contributors)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](http://makeapullrequest.com)
-[![Contributor Covenant](https://img.shields.io/badge/Contributor%20Covenant-v1.4%20adopted-ff69b4.svg)](code-of-conduct.md)
+[![Contributor Covenant](https://img.shields.io/badge/Contributor%20Covenant-v1.4%20adopted-ff69b4.svg)](CODE_OF_CONDUCT.md)
 [![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2FWebiny%2Fwebiny-js.svg?type=shield)](https://app.fossa.io/projects/git%2Bgithub.com%2FWebiny%2Fwebiny-js?ref=badge_shield)
 [![Gitter](https://img.shields.io/gitter/room/webiny/webiny-js.svg?style=flat-square)](https://gitter.im/webiny/webiny-js)
-
-
 
 </p>
 
 ## Installation
 
-Installation instructions can be found in the official [docs](https://docs.webiny.com) .
+Installation instructions can be found in the official [docs](https://docs.webiny.com).
 
 ## About
 
