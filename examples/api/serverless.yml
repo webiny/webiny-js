@@ -138,6 +138,7 @@ pageBuilder:
       - factory: "@webiny/api-security/plugins/service"
         options: ${vars.security}
       - "@webiny/api-page-builder/plugins"
+      - "@webiny/api-page-builder/plugins/useSsrCacheTags"
       - "@webiny/api-plugin-page-builder-resolvers-mongodb"
       - "@webiny/api-google-tag-manager"
       - "@webiny/api-mailchimp"
