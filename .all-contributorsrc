@@ -121,6 +121,16 @@
         "bug",
         "userTesting"
       ]
+    },
+    {
+     "login": "jbampton",
+     "name": "John Bampton",
+     "avatar_url": "https://avatars0.githubusercontent.com/u/418747?v=4",
+     "profile": "https://github.com/jbampton",
+     "contributions": [
+       "bug",
+       "code"
+     ]
     }
   ],
   "contributorsPerLine": 7,
