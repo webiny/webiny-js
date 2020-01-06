@@ -4,6 +4,7 @@ import adminPlugins from "@webiny/app-admin/plugins";
 import i18nPlugins from "@webiny/app-i18n/admin/plugins";
 import securityPlugins from "@webiny/app-security/admin/plugins";
 import pageBuilderPlugins from "@webiny/app-page-builder/admin/plugins";
+import pageBuilderUseSsrCachePlugins from "@webiny/app-page-builder/admin/plugins/useSsrCacheTags";
 import formBuilderPlugins from "@webiny/app-forms/admin/plugins";
 import formBuilderPageBuilderPlugins from "@webiny/app-forms/page-builder/admin/plugins";
 import cookiePolicyPlugins from "@webiny/app-cookie-policy/admin";
@@ -18,6 +19,7 @@ const plugins = [
     i18nPlugins,
     securityPlugins,
     pageBuilderPlugins,
+    pageBuilderUseSsrCachePlugins,
     formBuilderPlugins,
     formBuilderPageBuilderPlugins,
     cookiePolicyPlugins,
