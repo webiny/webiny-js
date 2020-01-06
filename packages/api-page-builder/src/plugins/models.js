@@ -62,14 +62,14 @@ export default () => [
         // chances are very high that it will be enabled.
         type: "graphql-context",
         name: "graphql-context-pb-page-refresh-ssr-cache-on-initial-publish",
-        extend({ models: { PbPage } }) {
+        apply({ models: { PbPage } }) {
             withHooks({
                 async afterPublish() {
                     if (this.version === 1) {
                         try {
                             await got(await this.fullUrl, {
                                 method: "GET",
-                                timeout: 100,
+                                timeout: 200,
                                 retry: 0
                             });
                         } catch {
