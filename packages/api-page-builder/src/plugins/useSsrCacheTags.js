@@ -1,5 +1,8 @@
 import { withHooks } from "@webiny/commodo";
 import SsrApiClient from "@webiny/cloud-function-ssr/Client";
+import gql from "graphql-tag";
+import { hasScope } from "@webiny/api-security";
+import { Response, ErrorResponse, NotFoundResponse } from "@webiny/api";
 
 export default () => [
     {
@@ -103,6 +106,50 @@ export default () => [
                     }
                 }
             })(PbMenu);
+        }
+    },
+    {
+        name: "graphql-schema-page-builder-use-ssr-cache-tags",
+        type: "graphql-schema",
+        schema: {
+            typeDefs: gql`
+                extend type PbMutation {
+                    # Refreshes SSR cache for current page. The page must be published.
+                    invalidateSsrCache(revision: ID!, refresh: Boolean): PbPageResponse
+                }
+            `,
+            resolvers: {
+                PbMutation: {
+                    invalidateSsrCache: async (_, args, { models, ssrApiClient }) => {
+                        const { PbPage } = models;
+                        const page = await PbPage.findById(args.revision);
+                        if (!page) {
+                            return new NotFoundResponse(args.revision);
+                        }
+
+                        if (!page.published) {
+                            return new ErrorResponse({
+                                code: "PB_SSR_CACHE_INVALIDATION_ABORTED",
+                                message: "Cannot refresh SSR cache, revision is not published."
+                            });
+                        }
+
+                        await ssrApiClient.invalidateSsrCacheByPath({
+                            path: page.url,
+                            refresh: args.refresh
+                        });
+
+                        return new Response(page);
+                    }
+                }
+            }
+        },
+        security: {
+            shield: {
+                PbMutation: {
+                    invalidateSsrCache: hasScope("pb:page:crud")
+                }
+            }
         }
     }
 ];

@@ -21,7 +21,10 @@ const InvalidateSsrCache = (props: Object) => {
         message: (
             <span>
                 You&#39;re about to invalidate the cache for <strong>{page.title}</strong> page, are
-                you sure you want to continue?{" "}
+                you sure you want to continue?
+<br/><br/>
+                Note that sometimes the cache invalidation process
+                may take up to 10 minutes.
             </span>
         )
     });
@@ -35,7 +38,8 @@ const InvalidateSsrCache = (props: Object) => {
                         showConfirmation(async () => {
                             const response = await update({
                                 variables: {
-                                    id: page.id
+                                    revision: page.id,
+                                    refresh: true
                                 }
                             });
 

@@ -2,9 +2,9 @@
 import gql from "graphql-tag";
 
 export const INVALIDATE_SSR_CACHE = gql`
-    mutation SetHomePage($id: ID!) {
+    mutation SetHomePage($revision: ID!, $refresh: Boolean) {
         pageBuilder {
-            invalidateSsrCache(id: $id) {
+            invalidateSsrCache(revision: $revision, refresh: $refresh) {
                 error {
                     message
                 }
