@@ -1,6 +1,12 @@
 import { useRef, useEffect } from "react";
 
-export function useHandlers(props, factories) {
+type HandlerProps = { [key: string]: any };
+type HandlerFactories = { [key: string]: (props: HandlerProps) => (...params: any[]) => any };
+type Handlers = {
+    [K in keyof HandlerFactories]: (...params: any[]) => any;
+};
+
+export function useHandlers(props: HandlerProps, factories: HandlerFactories) {
     const propsRef = useRef(props);
 
     const handlersRef = useRef(
@@ -20,5 +26,5 @@ export function useHandlers(props, factories) {
         propsRef.current = props;
     });
 
-    return handlersRef.current;
+    return handlersRef.current as Handlers;
 }

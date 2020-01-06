@@ -18,10 +18,12 @@ module.exports = {
     },
     rules: {
         "react/prop-types": 0,
+
         "import/no-unresolved": 0, // [2, { commonjs: true, amd: true }],
         "@typescript-eslint/explicit-function-return-type": "off",
         "@typescript-eslint/ban-ts-ignore": "off",
-        "@typescript-eslint/ban-types": "off"
+        "@typescript-eslint/ban-types": "off",
+        "@typescript-eslint/no-use-before-define": 0
     },
     settings: {
         react: {

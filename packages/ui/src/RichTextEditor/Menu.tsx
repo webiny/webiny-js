@@ -25,7 +25,15 @@ const MenuContainer = styled("div")({
     }
 });
 
-const MenuButton = ({
+export type MenuButtonProps = {
+    className?: string;
+    onClick?: (e: React.SyntheticEvent) => void;
+    active?: boolean;
+    children: React.ReactNode;
+    onMouseDown?: (e: React.SyntheticEvent) => void;
+};
+
+export const MenuButton: React.FC<MenuButtonProps> = ({
     className,
     onClick,
     active,
@@ -53,7 +61,7 @@ const MenuButton = ({
     );
 };
 
-type Props = FormComponentProps & {
+export type MenuProps = FormComponentProps & {
     editor: any;
     activePlugin?: { [key: string]: any };
     activatePlugin: Function;
@@ -61,7 +69,7 @@ type Props = FormComponentProps & {
     plugins: { [key: string]: any }[];
 };
 
-class Menu extends React.Component<Props> {
+export class Menu extends React.Component<MenuProps> {
     menu = React.createRef();
 
     render() {
@@ -119,5 +127,3 @@ class Menu extends React.Component<Props> {
         );
     }
 }
-
-export default Menu;

@@ -124,7 +124,7 @@ type Props = {
     // A title of paginated list.
     title?: React.ReactNode;
 
-    // Data that needs to be shown in the list.
+    // FormData that needs to be shown in the list.
     data?: Object[];
 
     // A callback that must refresh current view by repeating the previous query.

@@ -5,5 +5,6 @@
     "rootDir": "./src",
     "outDir": "./dist",
     "declarationDir": "./dist"
-  }
+  },
+  "references": [{ "path": "../app/tsconfig.build.json" }],
 }

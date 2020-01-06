@@ -1,6 +1,6 @@
 // @flow
 import React from "react";
-import type { PbRenderElementPluginType } from "@webiny/app-page-builder/types";
+import type { PbRenderElementPlugin } from "@webiny/app-page-builder/types";
 import { get } from "lodash";
 
 export default ([
@@ -26,4 +26,4 @@ export default ([
             );
         }
     }
-]: Array<PbRenderElementPluginType>);
+]: Array<PbRenderElementPlugin>);

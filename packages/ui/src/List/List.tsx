@@ -15,6 +15,7 @@ import styled from "@emotion/styled";
 export type ListItemProps = RmwcListItemProps & {
     children: React.ReactNode;
     className?: string;
+    style?: React.CSSProperties;
     onClick?: (e: React.MouseEvent) => void;
 };
 

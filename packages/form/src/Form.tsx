@@ -6,35 +6,35 @@ import { linkState } from "./linkState";
 import { BindComponent } from "./Bind";
 import ValidationError from "./ValidationError";
 
-export type FormChildrenRender = {
+export type FormChildrenFunction = (params: {
     data: { [key: string]: any };
     // eslint-disable-next-line @typescript-eslint/no-use-before-define
     form: Form;
     submit: (event?: React.SyntheticEvent<any, any>) => Promise<void>;
     Bind: BindComponent;
     setValue: Function;
-};
+}) => React.ReactElement;
 
-export type Data = { [key: string]: any };
+export type FormData = { [key: string]: any };
 export type Validation = { [key: string]: any };
+// eslint-disable-next-line @typescript-eslint/no-use-before-define
+export type FormOnSubmit = (data: FormData, form: Form) => void;
 
 export type FormProps = {
     invalidFields?: { [key: string]: any };
-    data?: Data;
+    data?: FormData;
     disabled?: boolean | Function;
     validateOnFirstSubmit?: boolean;
     submitOnEnter?: boolean;
-    // eslint-disable-next-line @typescript-eslint/no-use-before-define
-    onSubmit?: (data: { [key: string]: any }, form: Form) => void;
+    onSubmit?: FormOnSubmit;
     onInvalid?: () => void;
-    // eslint-disable-next-line @typescript-eslint/no-use-before-define
-    onChange?: (data: Data, form: Form) => void;
-    children: (params: FormChildrenRender) => React.ReactElement;
+    onChange?: FormOnSubmit;
+    children: FormChildrenFunction;
 };
 
 type State = {
-    data: Data;
-    originalData: Data;
+    data: FormData;
+    originalData: FormData;
     wasSubmitted: boolean;
     validation: Validation;
 };

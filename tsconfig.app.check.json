@@ -7,18 +7,26 @@
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
     "forceConsistentCasingInFileNames": true,
-    "module": "esnext",
     "moduleResolution": "node",
     "resolveJsonModule": true,
     "noEmit": true,
-    "jsx": "react"
-  },
-  "references": [
-    { "path": "./packages/app" },
-    { "path": "./packages/app-admin" },
-    { "path": "./packages/app-page-builder" },
-    { "path": "./packages/app-security" },
-    { "path": "./packages/app-i18n" },
-    { "path": "./packages/ui" }
-  ]
+    "jsx": "preserve",
+    "baseUrl": ".",
+    "paths": {
+      "@webiny/app/*": ["./packages/app/src/*"],
+      "@webiny/app": ["./packages/app/src"],
+      "@webiny/app-admin/*": ["./packages/app-admin/src/*"],
+      "@webiny/app-admin": ["./packages/app-admin/src"],
+      "@webiny/app-page-builder/*": ["./packages/app-page-builder/src/*"],
+      "@webiny/app-security/*": ["./packages/app-security/src/*"],
+      "@webiny/app-i18n/*": ["./packages/app-i18n/src/*"],
+      "@webiny/form": ["./packages/form/src"],
+      "@webiny/form/*": ["./packages/form/src/*"],
+      "@webiny/plugins": ["./packages/plugins/src"],
+      "@webiny/plugins/*": ["./packages/plugins/src/*"],
+      "@webiny/validation/*": ["./packages/validation/src/*"],
+      "@webiny/ui/*": ["./packages/ui/src/*"]
+    },
+    "typeRoots": ["node_modules/@types", "./typings"]
+  }
 }

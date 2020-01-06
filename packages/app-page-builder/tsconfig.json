@@ -3,6 +3,8 @@
   "references": [
     { "path": "../ui" },
     { "path": "../app" },
+    { "path": "../app-admin" },
+    { "path": "../app-security" },
     { "path": "../plugins" },
     { "path": "../form" }
   ]

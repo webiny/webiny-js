@@ -2,6 +2,7 @@ import * as React from "react";
 import ReactDOM from "react-dom";
 import {
     Dialog as RmwcDialog,
+    DialogOnCloseEventT,
     DialogContent as RmwcDialogContent,
     DialogContentProps as RmwcDialogContentProps,
     DialogTitle as RmwcDialogTitle,
@@ -13,6 +14,8 @@ import {
 } from "@rmwc/dialog";
 import { getClasses } from "@webiny/ui/Helpers";
 
+export type DialogOnClose = (event: DialogOnCloseEventT) => void;
+
 export type DialogProps = {
     children: any;
 
@@ -23,7 +26,7 @@ export type DialogProps = {
     // If true, dialog will be permanently fixed inside of a view (works for temporary and persistent modes).
     open?: boolean;
 
-    onClose?: (e: React.MouseEvent) => void;
+    onClose?: (evt: DialogOnCloseEventT) => void;
 };
 
 export class Dialog extends React.Component<DialogProps> {

@@ -1,3 +1,12 @@
 {
-  "extends": "../../tsconfig.check"
+  "extends": "../../tsconfig.check",
+  "references": [
+    { "path": "../app" },
+    { "path": "../app-admin" },
+    { "path": "../app-security" },
+    { "path": "../ui" },
+    { "path": "../plugins" },
+    { "path": "../form" },
+    { "path": "../validation" }
+  ]
 }

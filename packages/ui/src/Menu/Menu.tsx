@@ -2,6 +2,7 @@ import * as React from "react";
 import ReactDOM from "react-dom";
 import {
     Menu as BaseMenu,
+    MenuProps as RmwcMenuProps,
     MenuItem as BaseMenuItem,
     MenuItemProps as BaseMenuItemProps,
     MenuSurface,
@@ -17,14 +18,12 @@ const style = {
     })
 };
 
-type Props = {
+type MenuProps = RmwcMenuProps & {
     // One or more MenuItem components.
     children: React.ReactNode;
 
     // A handler which triggers the menu, eg. button or link.
     handle?: React.ReactElement;
-
-    onSelect?: (evt: any) => any;
 
     // Position the menu to one of anchor corners.
     // 'bottomEnd' | 'bottomLeft' | 'bottomRight' | 'bottomStart' | 'topEnd' | 'topLeft' | 'topRight' | 'topStart'
@@ -63,7 +62,7 @@ const getElement = () => {
 /**
  * Use Menu component to display a list of choices, once the handler is triggered.
  */
-class Menu extends React.Component<Props, State> {
+class Menu extends React.Component<MenuProps, State> {
     static defaultProps = {
         handle: null,
         anchor: "topStart"

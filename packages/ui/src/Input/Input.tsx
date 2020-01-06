@@ -29,6 +29,9 @@ export type InputProps = FormComponentProps &
 
         // A callback that is executed when input focus is lost.
         onBlur?: (e: React.SyntheticEvent<HTMLInputElement>) => any;
+
+        // CSS class name
+        className?: string;
     };
 
 /**

@@ -1,13 +1,14 @@
 import * as React from "react";
 import { get } from "lodash";
-import { Editor } from "slate-react";
-import { Value } from "slate";
+import { Editor as SlateEditor } from "slate-react";
+import { Value, Editor } from "slate";
 import Plain from "slate-plain-serializer";
 import styled from "@emotion/styled";
 import { css } from "emotion";
 import classNames from "classnames";
-import Menu from "./Menu";
 import { FormElementMessage } from "@webiny/ui/FormElementMessage";
+import { MenuButton } from "@webiny/ui/RichTextEditor";
+import { Menu } from "./Menu";
 import shortid from "shortid"; // TODO: remove this one
 import { FormComponentProps } from "./../types";
 
@@ -39,31 +40,32 @@ const classes = {
     })
 };
 
-export type EditorPluginType = { [key: string]: any };
+export type EditorPlugin = { [key: string]: any };
 
 interface MenuPluginRender {
-    MenuButton: React.ReactNode;
-    editor: Object;
+    MenuButton: typeof MenuButton;
+    editor: Editor;
     onChange: () => void;
+    activatePlugin(name: string): void;
 }
 
-export type MenuPluginType = {
+export type MenuPlugin = {
     render: (params: MenuPluginRender) => React.ReactNode;
     renderDialog?: (params: any) => React.ReactNode;
 };
 
-export type RichTextEditorPluginType = {
+export type RichTextEditorPlugin = {
     name: string;
-    editor: EditorPluginType;
-    menu: MenuPluginType;
+    editor?: EditorPlugin;
+    menu?: MenuPlugin;
 };
 
-export type RichTextEditorPropsType = FormComponentProps & {
+export type RichTextEditorProps = FormComponentProps & {
     disabled?: boolean;
     readOnly?: boolean;
     description?: string;
     label?: string;
-    plugins: RichTextEditorPluginType[];
+    plugins?: RichTextEditorPlugin[];
 };
 
 type State = {
@@ -75,7 +77,7 @@ type State = {
     activePlugin?: { [key: string]: any };
 };
 
-export class RichTextEditor extends React.Component<RichTextEditorPropsType, State> {
+export class RichTextEditor extends React.Component<RichTextEditorProps, State> {
     static defaultProps = {
         validation: { isValid: null }
     };
@@ -85,7 +87,7 @@ export class RichTextEditor extends React.Component<RichTextEditorPropsType, Sta
     nextElement?: EventTarget;
     editor?: Editor;
 
-    constructor(props: RichTextEditorPropsType) {
+    constructor(props: RichTextEditorProps) {
         super(props);
         this.id = shortid.generate();
         this.nextElement = null;
@@ -103,7 +105,7 @@ export class RichTextEditor extends React.Component<RichTextEditorPropsType, Sta
         };
     }
 
-    static getDerivedStateFromProps(props: RichTextEditorPropsType, state: State) {
+    static getDerivedStateFromProps(props: RichTextEditorProps, state: State) {
         if (!state.modified && !props.readOnly) {
             // Got new editor value through props.
             return {
@@ -211,7 +213,7 @@ export class RichTextEditor extends React.Component<RichTextEditorPropsType, Sta
                         deactivatePlugin={this.deactivatePlugin}
                     />
                     <EditorContent>
-                        <Editor
+                        <SlateEditor
                             onBlur={this.onBlur}
                             ref={this.setEditorRef}
                             autoCorrect={false}

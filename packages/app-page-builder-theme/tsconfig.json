@@ -1,3 +1,4 @@
 {
-  "extends": "../../tsconfig.check"
+  "extends": "../../tsconfig.check.json",
+  "references": [{ "path": "../app" }, { "path": "../app-page-builder" }]
 }

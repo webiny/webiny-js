@@ -7,6 +7,8 @@ import {
 type TypographyProps = RmwcTypographyProps & {
     children?: React.ReactNode;
     className?: string;
+    style?: React.CSSProperties;
+    tag?: string;
 };
 
 /**

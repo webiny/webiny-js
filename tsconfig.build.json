@@ -2,7 +2,9 @@
   "compilerOptions": {
     "target": "es6",
     "allowJs": true,
+    "forceConsistentCasingInFileNames": true,
     "moduleResolution": "node",
+    "module": "esnext",
     "lib": ["dom", "dom.iterable"],
     "esModuleInterop": true,
     "declaration": true,
@@ -39,7 +41,8 @@
       "@webiny/plugins/*": ["./packages/plugins/src/*"],
       "@webiny/validation/*": ["./packages/validation/src/*"],
       "@webiny/ui/*": ["./packages/ui/src/*"]
-    }
+    },
+    "typeRoots": ["node_modules/@types", "./typings"]
   },
   "exclude": ["node_modules", "**/__tests__/**"]
 }
