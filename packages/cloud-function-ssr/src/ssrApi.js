@@ -66,8 +66,7 @@ export default () => ({
             return createResponse();
         }
 
-        const { models } = models;
-        const { SsrCache } = models;
+        const { SsrCache } = context.models;
         let ssrCache = await SsrCache.findByPath(actionArgs.path);
         if (!ssrCache) {
             ssrCache = new SsrCache();

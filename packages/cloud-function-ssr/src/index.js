@@ -4,7 +4,7 @@ import models from "./models";
 
 const defaultOptions = {
     ssrFunction: process.env.SSR_FUNCTION,
-    ssrCacheTtl: 8000,
+    ssrCacheTtl: 2592000, // 30 days in seconds.
     ssrCacheTtlState: 20
 };
 
