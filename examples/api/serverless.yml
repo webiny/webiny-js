@@ -42,6 +42,7 @@ gateway:
 dbProxy:
   component: "@webiny/serverless-db-proxy/dist"
   inputs:
+    concurrencyLimit: 10
     env:
       MONGODB_SERVER: ${vars.mongodb.server}
       MONGODB_NAME: ${vars.mongodb.name}
