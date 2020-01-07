@@ -2,8 +2,7 @@ import got from "got";
 
 const API_ACTION = {
     INVALIDATE_SSR_CACHE_BY_PATH: "invalidateSsrCacheByPath",
-    INVALIDATE_SSR_CACHE_BY_TAGS: "invalidateSsrCacheByTags",
-    REFRESH_SSR_CACHE_BY_PATH: "refreshSsrCacheByPath"
+    INVALIDATE_SSR_CACHE_BY_TAGS: "invalidateSsrCacheByTags"
 };
 
 const ssrApiCall = async ({ url, action, actionPayload, async }) => {
@@ -32,11 +31,11 @@ export default class Client {
         this.url = url;
     }
 
-    async invalidateSsrCacheByPath({ path = null, refresh, async } = {}) {
+    async invalidateSsrCacheByPath({ path = null, refresh, expired, async } = {}) {
         await ssrApiCall({
             url: this.url,
             action: API_ACTION.INVALIDATE_SSR_CACHE_BY_PATH,
-            actionPayload: { path, refresh },
+            actionPayload: { path, refresh, expired },
             async
         });
     }
@@ -46,15 +45,6 @@ export default class Client {
             url: this.url,
             action: API_ACTION.INVALIDATE_SSR_CACHE_BY_TAGS,
             actionPayload: { tags },
-            async
-        });
-    }
-
-    async refreshSsrCacheByPath({ path = null, async } = {}) {
-        await ssrApiCall({
-            url: this.url,
-            action: API_ACTION.REFRESH_SSR_CACHE_BY_PATH,
-            actionPayload: { path },
             async
         });
     }

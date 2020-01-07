@@ -3,7 +3,7 @@ import { withHooks } from "@webiny/commodo";
 
 export default rawOptions => ({
     type: "context",
-    name: "invalidate-cdn-ssr-cache",
+    name: "context-cdn-ssr-cache-invalidation",
     apply({ models: { SsrCache } }) {
         const options = {
             cloudFrontDistributionId: process.env.CDN_ID,

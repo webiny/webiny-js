@@ -5,8 +5,7 @@ import parseBody from "./parseBody";
 
 const API_ACTION = {
     INVALIDATE_SSR_CACHE_BY_PATH: "invalidateSsrCacheByPath",
-    INVALIDATE_SSR_CACHE_BY_TAGS: "invalidateSsrCacheByTags",
-    REFRESH_SSR_CACHE_BY_PATH: "refreshSsrCacheByPath"
+    INVALIDATE_SSR_CACHE_BY_TAGS: "invalidateSsrCacheByTags"
 };
 
 export default () => ({
@@ -74,15 +73,17 @@ export default () => ({
             await ssrCache.save();
         }
 
-        if (action === API_ACTION.INVALIDATE_SSR_CACHE_BY_PATH) {
+        breakIf: if (action === API_ACTION.INVALIDATE_SSR_CACHE_BY_PATH) {
+            if (actionArgs.expired === true) {
+                if (!ssrCache.hasExpired) {
+                    break breakIf;
+                }
+            }
+
             await ssrCache.invalidate();
             if (actionArgs.refresh) {
                 await ssrCache.refresh();
             }
-        }
-
-        if (action === API_ACTION.REFRESH_SSR_CACHE_BY_PATH) {
-            await ssrCache.refresh();
         }
 
         return createResponse();

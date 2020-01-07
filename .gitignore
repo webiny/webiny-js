@@ -19,3 +19,4 @@ build/
 .verdaccio
 .history
 .cloudfnsrc.js
+.cloudfns/
