@@ -3,8 +3,8 @@ name: webiny-cms
 vars:
   region: ${env.AWS_REGION}
   mongodb:
-    server: mongodb+srv://adrian:YDzr8E1bWDAHC7aF@adriantest-kvgdz.mongodb.net/test?retryWrites=true&w=majority
-    name: webiny
+    server: ${env.MONGODB_SERVER}
+    name: ${env.MONGODB_NAME}
 
 dbProxy:
   component: "@webiny/serverless-db-proxy/dist"
