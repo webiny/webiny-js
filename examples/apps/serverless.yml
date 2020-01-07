@@ -70,6 +70,7 @@ api:
 cdn:
   component: "@webiny/serverless-aws-cloudfront"
   inputs:
+    invalidateOnDeploy: true
     defaults: # optional
       ttl: 300
       allowedHttpMethods: ["GET", "HEAD", "OPTIONS", "PUT", "POST", "PATCH", "DELETE"]

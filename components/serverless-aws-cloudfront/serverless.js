@@ -1,4 +1,5 @@
 const { Component } = require("@serverless/core");
+const CloudFront = require("aws-sdk/clients/cloudfront");
 
 class ServerlessAwsCloudfront extends Component {
     async default(inputs = {}) {
@@ -7,6 +8,25 @@ class ServerlessAwsCloudfront extends Component {
 
         this.state.output = output;
         await this.save();
+
+        if (inputs.invalidateOnDeploy === true) {
+            this.context.instance.debug(`Creating a CDN cache invalidation request.`);
+            const cloudfront = new CloudFront();
+            await cloudfront
+                .createInvalidation({
+                    DistributionId: output.id,
+                    InvalidationBatch: {
+                        CallerReference: `${new Date().getTime()}-serverless-aws-cloudfront-on-deploy`,
+                        Paths: {
+                            Quantity: "1",
+                            Items: ["/*"]
+                        }
+                    }
+                })
+                .promise();
+        } else {
+            this.context.instance.debug(`Skipping creation of CDN cache invalidation request.`);
+        }
 
         return output;
     }
