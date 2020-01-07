@@ -1,5 +1,5 @@
 {
-  "extends": "../../tsconfig.check",
+  "extends": "../../tsconfig",
   "references": [
     { "path": "../app" },
     { "path": "../app-admin" },

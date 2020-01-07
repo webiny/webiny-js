@@ -10,7 +10,7 @@ import RolesAutocomplete from "./../Components/RolesAutocomplete";
 import AvatarImage from "./../Components/AvatarImage";
 import { useCrud } from "@webiny/app-admin/hooks/useCrud";
 import { validation } from "@webiny/validation";
-import { SecurityViewUserAccountFormPlugin } from "@webiny/app-security/admin/types";
+import { SecurityViewUserFormPlugin } from "@webiny/app-security/admin/types";
 import {
     SimpleForm,
     SimpleFormHeader,
@@ -23,7 +23,7 @@ const t = i18n.ns("app-security/admin/users/form");
 const UsersForm = () => {
     const { form: crudForm } = useCrud();
 
-    const auth = getPlugin("security-view-user-account-form") as SecurityViewUserAccountFormPlugin;
+    const auth = getPlugin("security-view-user-form") as SecurityViewUserFormPlugin;
 
     if (!auth) {
         throw Error(`You must register a "security-view-user-form" plugin to render User form!`);

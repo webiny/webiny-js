@@ -13,6 +13,10 @@ export type SecurityViewInstallationFormPlugin = Plugin & {
     view: React.ComponentType<SecurityViewProps>;
 };
 
+export type SecurityViewUserFormPlugin = Plugin & {
+    view: React.ComponentType<SecurityViewProps>;
+};
+
 export type SecurityViewUserAccountFormPlugin = Plugin & {
     view: React.ComponentType<SecurityViewProps>;
 };

@@ -1,4 +1,3 @@
 {
-  "extends": "../../tsconfig.check",
-  "references": [{ "path": "../storybook-utils" }]
+  "extends": "../../tsconfig"
 }

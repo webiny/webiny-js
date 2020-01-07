@@ -1,8 +1,23 @@
 import React from "react";
 import Auth from "@aws-amplify/auth";
 import debug from "../debug";
+import { AuthChangeState, AuthProps } from "../Authenticator";
 
-class RequireNewPassword extends React.Component {
+export type RequireNewPasswordChildrenProps = {
+    authProps: AuthProps;
+    confirm(params: {
+        password: string;
+        requiredAttributes: { [key: string]: string };
+    }): Promise<void>;
+    changeState: AuthChangeState;
+    requiredAttributes: string[];
+};
+
+export type RequireNewPasswordProps = Omit<AuthProps, "checkingUser"> & {
+    children: React.ReactElement;
+};
+
+class RequireNewPassword extends React.Component<RequireNewPasswordProps> {
     // States when this view should be visible
     authStates = ["requireNewPassword"];
 
@@ -48,7 +63,7 @@ class RequireNewPassword extends React.Component {
             confirm: this.confirm,
             changeState,
             requiredAttributes: authData.challengeParam.requiredAttributes || []
-        });
+        } as RequireNewPasswordChildrenProps);
     }
 }
 

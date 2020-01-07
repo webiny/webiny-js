@@ -1,10 +1,23 @@
 import React from "react";
 import Auth from "@aws-amplify/auth";
 import debug from "../debug";
+import { AuthChangeState, AuthProps, AuthState } from "../Authenticator";
 
-class SignIn extends React.Component {
+export type SignInChildrenProps = {
+    authProps: AuthProps;
+    signIn(params: { username: string; password: string }): void;
+    changeState: AuthChangeState;
+    error: Error;
+    loading: boolean;
+};
+
+export type SignInProps = Omit<AuthProps, "checkingUser"> & {
+    children: React.ReactElement;
+};
+
+class SignIn extends React.Component<SignInProps> {
     // States when this view should be visible
-    authStates = ["signIn", "signedOut", "signedUp"];
+    authStates: AuthState[] = ["signIn", "signedOut", "signedUp"];
 
     state = {
         error: null,
@@ -76,7 +89,7 @@ class SignIn extends React.Component {
             changeState,
             error: this.state.error,
             loading: this.state.loading
-        });
+        } as SignInChildrenProps);
     }
 }
 

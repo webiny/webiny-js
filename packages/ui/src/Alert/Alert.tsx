@@ -30,12 +30,14 @@ const alertStyles = css({
     }
 });
 
+export type AlertType = "success" | "info" | "warning" | "danger";
+
 type AlertProps = {
     // Alert title.
     title: string;
 
     // Alert type.
-    type: "success" | "info" | "warning" | "danger";
+    type: AlertType;
 
     // Alert message.
     children?: React.ReactNode;

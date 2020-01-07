@@ -1,5 +1,5 @@
 {
-  "extends": "../../tsconfig.check.json",
+  "extends": "../../tsconfig.json",
   "references": [
     { "path": "../app" },
     { "path": "../app-admin" },

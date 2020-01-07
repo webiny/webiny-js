@@ -1,5 +1,5 @@
 {
-  "extends": "../../tsconfig.check",
+  "extends": "../../tsconfig",
   "include": ["src", "./custom.d.ts"],
   "references": [
     { "path": "../ui" },

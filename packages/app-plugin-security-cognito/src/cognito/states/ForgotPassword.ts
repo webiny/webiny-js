@@ -1,9 +1,23 @@
 import React from "react";
 import Auth from "@aws-amplify/auth";
 import debug from "./../debug";
+import { AuthProps, AuthState } from "../Authenticator";
 
-class ForgotPassword extends React.Component {
-    authStates = ["forgotPassword"];
+export type ForgotPasswordChildrenProps = {
+    authProps: AuthProps;
+    requestCode(params: { username: string }): Promise<void>;
+    setPassword(params: { username: string }): Promise<void>;
+    codeSent: boolean;
+    error: Error;
+    loading: boolean;
+};
+
+export type ForgotPasswordProps = Omit<AuthProps, "checkingUser"> & {
+    children: React.ReactElement;
+};
+
+class ForgotPassword extends React.Component<ForgotPasswordProps> {
+    authStates: AuthState[] = ["forgotPassword"];
 
     state = {
         codeSent: null,
@@ -50,7 +64,7 @@ class ForgotPassword extends React.Component {
             codeSent: this.state.codeSent,
             error: this.state.error,
             loading: this.state.loading
-        });
+        } as ForgotPasswordChildrenProps);
     }
 }
 

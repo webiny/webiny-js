@@ -1,4 +1,3 @@
-// @flow
 export * from "repropose";
 export * from "@commodo/name";
 export * from "@commodo/fields";

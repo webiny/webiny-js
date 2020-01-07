@@ -32,6 +32,7 @@
       "@webiny/app-admin": ["./packages/app-admin/src"],
       "@webiny/app-page-builder/*": ["./packages/app-page-builder/src/*"],
       "@webiny/app-security/*": ["./packages/app-security/src/*"],
+      "@webiny/app-plugin-security-cognito/*": ["./packages/app-plugin-security-cognito/src/*"],
       "@webiny/app-i18n/*": ["./packages/app-i18n/src/*"],
       "@webiny/storybook-utils": ["./packages/storybook-utils/src"],
       "@webiny/storybook-utils/*": ["./packages/storybook-utils/src/*"],

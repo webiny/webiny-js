@@ -6,8 +6,11 @@ import { FormComponentProps } from "./../types";
 
 export type InputProps = FormComponentProps &
     TextFieldProps & {
+        // Should this input be filled with browser values
+        autoComplete?: string;
+
         // If true, will pass native `event` to the `onChange` callback
-        rawOnChange: boolean;
+        rawOnChange?: boolean;
 
         // Auto-focus input
         autoFocus?: boolean;
@@ -20,9 +23,6 @@ export type InputProps = FormComponentProps &
 
         // Converts input into a text area with given number of rows.
         rows?: number;
-
-        // Creates a box around the input.
-        box?: string;
 
         // A trailing icon. Use `<InputIcon/>` component.
         leadingIcon?: React.ReactNode;
@@ -102,10 +102,13 @@ export class Input extends React.Component<InputProps> {
             inputValue = "";
         }
 
+
+
         return (
             <React.Fragment>
                 <TextField
                     {...pick(props, Input.rmwcProps)}
+                    autoComplete={}
                     autoFocus={autoFocus}
                     textarea={Boolean(rows)}
                     value={inputValue}

@@ -1,8 +1,20 @@
 import React from "react";
 import Auth from "@aws-amplify/auth";
 import debug from "./../debug";
+import { AuthProps } from "../Authenticator";
 
-class SetNewPassword extends React.Component {
+export type SetNewPasswordChildrenProps = {
+    authProps: AuthProps;
+    setPassword(params: { code: string; password: string }): Promise<void>;
+    error: Error;
+    loading: boolean;
+};
+
+export type SetNewPasswordProps = Omit<AuthProps, "checkingUser"> & {
+    children: React.ReactElement;
+};
+
+class SetNewPassword extends React.Component<SetNewPasswordProps> {
     authStates = ["setNewPassword"];
 
     state = {
@@ -42,7 +54,7 @@ class SetNewPassword extends React.Component {
             setPassword: this.setPassword,
             error: this.state.error,
             loading: this.state.loading
-        });
+        } as SetNewPasswordChildrenProps);
     }
 }
 
