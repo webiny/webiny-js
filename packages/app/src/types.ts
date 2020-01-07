@@ -1,6 +1,7 @@
 import * as React from "react";
 import { Plugin } from "@webiny/plugins/types";
 import { ApolloClient } from "apollo-client";
+import { CSSProperties } from "react";
 
 export type WebinyInitPlugin = Plugin & {
     init(): void;
@@ -24,7 +25,9 @@ export type ImageProps = {
     // "auto" is a special keyword - if present, plugins insert their own srcSet.
     srcSet?: { [key: string]: any } | "auto";
     className?: string;
+    title?: string;
     alt?: string;
+    style?: CSSProperties;
 };
 
 /**

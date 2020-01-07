@@ -1,4 +1,3 @@
-// @flow
 import { isEqual } from "lodash";
 import { connect } from "@webiny/app-page-builder/editor/redux";
 import { getElement } from "@webiny/app-page-builder/editor/selectors";

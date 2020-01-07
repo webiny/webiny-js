@@ -1,15 +1,25 @@
-import React from "react";
+import React, { ReactElement, SyntheticEvent } from "react";
 
-class Resizer extends React.Component {
+type ResizerProps = {
+    axis: "x" | "y";
+    onResizeStart?: () => void;
+    onResizeStop?: () => void;
+    onResize(position: number): void;
+    children(params: { isResizing: boolean; onMouseDown(e: SyntheticEvent): void }): ReactElement;
+};
+
+class Resizer extends React.Component<ResizerProps> {
     state = {
         dragging: false
     };
+
+    startPosition: number;
 
     getMousePosition = e => {
         return this.props.axis === "x" ? e.pageX : e.pageY;
     };
 
-    onMouseDown = e => {
+    onMouseDown = (e: SyntheticEvent) => {
         e.preventDefault();
         e.stopPropagation();
         this.startPosition = this.getMousePosition(e);

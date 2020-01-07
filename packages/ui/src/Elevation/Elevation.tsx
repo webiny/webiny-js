@@ -13,6 +13,9 @@ export type ElevationProps = {
 
     // CSS class name
     className?: string;
+
+    // Style object
+    style?: React.CSSProperties;
 };
 
 /**

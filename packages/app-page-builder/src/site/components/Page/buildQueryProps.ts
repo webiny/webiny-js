@@ -1,9 +1,8 @@
-// @flow
 import gql from "graphql-tag";
 import { getDataFields, getNotFoundPageFields, getErrorPageFields } from "./graphql";
-import type { Location } from "react-router-dom";
+import { Location } from "react-router-dom";
 
-type Props = { location: Location, defaultPages: Object };
+type Props = { location: Location; defaultPages: any };
 
 const settingsFields = `
 getSettings {

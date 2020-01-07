@@ -1,4 +1,3 @@
-// @flow
 import gql from "graphql-tag";
 
 export const loadPages = gql`

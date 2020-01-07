@@ -48,6 +48,11 @@ type DrawerProps = RmwcDrawerProps & {
      * Drawer content.
      */
     children: React.ReactNode;
+
+    /**
+     * CSS class name
+     */
+    className?: string;
 };
 /**
  * Use Drawer component to display navigation for the whole app or just a small section of it.

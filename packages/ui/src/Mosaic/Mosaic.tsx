@@ -1,7 +1,7 @@
 import React from "react";
 import Columned from "react-columned";
 
-type Props = {
+export type MosaicProps = {
     // An array of elements that need to be shown, for example images.
     children: React.ReactNode;
 
@@ -12,7 +12,7 @@ type Props = {
     className?: string;
 };
 
-export function Mosaic({ children }: Props) {
+export function Mosaic({ children }: MosaicProps) {
     return <Columned>{children}</Columned>;
 }
 

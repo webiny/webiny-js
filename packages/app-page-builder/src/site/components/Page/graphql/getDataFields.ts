@@ -1,4 +1,3 @@
-// @flow
 import getPageSettingsFields from "./getPageSettingsFields";
 
 const getDataFields = () => {

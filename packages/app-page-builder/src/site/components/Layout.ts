@@ -1,12 +1,12 @@
-// @flow
 import * as React from "react";
-import { usePageBuilder } from "@webiny/app-page-builder/hooks/usePageBuilder";
 import { getPlugins } from "@webiny/plugins";
+import { PbPageLayoutPlugin } from "@webiny/app-page-builder/types";
 
 const Layout = ({ layout, children }) => {
-    const { theme } = usePageBuilder();
-
-    const layouts = React.useMemo(() => getPlugins("pb-page-layout").map(pl => pl.layout), []);
+    const layouts = React.useMemo(() => {
+        const plugins = getPlugins("pb-page-layout") as PbPageLayoutPlugin[];
+        return plugins.map(pl => pl.layout);
+    }, []);
 
     const themeLayout = layouts.find(l => l.name === layout);
 

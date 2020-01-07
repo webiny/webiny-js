@@ -1,47 +1,7 @@
 import * as React from "react";
 import { Plugin } from "@webiny/app/types";
-
-// ================= Redux types =================== //
-export { Redux } from "@webiny/app-page-builder/editor/redux";
-
-export type Action = {
-    type: string;
-    payload: Object;
-    meta: Object;
-};
-
-export type ActionOptions = {
-    log?: boolean;
-};
-
-export type StatePath = null | string | ((action: Action) => string);
-
-export type Reducer = Function;
-
-export type ReducerFactory = () => Reducer;
-
-export type Store = {
-    dispatch: Function;
-    getState: Function;
-};
-
-export type State = Object & {
-    elements: Object;
-    page: Object;
-    revisions: Array<Object>;
-    ui: Object;
-};
-
-export type MiddlewareParams = {
-    store: Store;
-    next: Function;
-    action: Action;
-};
-
-export type MiddlewareFunction = (params: MiddlewareParams) => any;
-export type ActionCreator = (payload?: any, meta?: Object) => Action;
-
-// ================= PB types =================== //
+import { ComponentType, ReactElement } from "react";
+import { Plugin as SlatePlugin } from "slate-react";
 
 export type PbElement = {
     id: string;
@@ -68,12 +28,14 @@ export type PbThemePlugin = Plugin & {
     theme: PbTheme;
 };
 
+export type PbPageLayout = {
+    name: string;
+    title: string;
+    component: React.ComponentType<any>;
+};
+
 export type PbPageLayoutPlugin = Plugin & {
-    layout: {
-        name: string;
-        title: string;
-        component: React.ComponentType<any>;
-    };
+    layout: PbPageLayout;
 };
 
 export type PbPageLayoutComponentPlugin = Plugin & {
@@ -93,14 +55,36 @@ export type PbPageSettingsFieldsPlugin = Plugin & {
 
 export type PbRenderElementStylePlugin = Plugin & {
     renderStyle: (params: {
-        element: PbElement;
+        element: { id: string; type: string; data: { [key: string]: any } };
         style: { [key: string]: any };
     }) => { [key: string]: any };
 };
 
 export type PbRenderElementAttributesPlugin = Plugin & {
     renderAttributes: (params: {
-        element: PbElement;
+        element: { id: string; type: string; data: { [key: string]: any } };
         attributes: { [key: string]: string };
     }) => { [key: string]: string };
+};
+
+export type PbPageElementImagesListComponentPlugin = Plugin & {
+    type: "pb-page-element-images-list-component";
+    componentName: string;
+    component: ComponentType<any>;
+};
+
+export type PbPageElementPagesListComponentPlugin = Plugin & {
+    type: "pb-page-element-pages-list-component";
+    componentName: string;
+    component: ComponentType<any>;
+};
+
+export type PbRenderSlateEditorPlugin = Plugin & {
+    type: "pb-render-slate-editor";
+    slate: SlatePlugin;
+};
+
+export type PbAddonRenderPlugin = Plugin & {
+    type: "addon-render";
+    component: ReactElement;
 };

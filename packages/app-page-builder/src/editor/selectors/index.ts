@@ -1,7 +1,7 @@
 import _ from "lodash";
 import invariant from "invariant";
 import { getPlugin } from "@webiny/plugins";
-import { State, PbElement, PbDocumentElementPlugin } from "@webiny/app-page-builder/admin/types";
+import {State, PbElement, PbDocumentElementPlugin, PbShallowElement} from "@webiny/app-page-builder/admin/types";
 
 const getPluginType = (name: string) => {
     const plugin = getPlugin(name);
@@ -58,13 +58,12 @@ export const getElementWithChildren = (state: State, id: string): PbElement | nu
  * @param state
  * @param id ID or path of the element
  */
-export const getElement = (state: State, id: string): PbElement => {
+export const getElement = (state: State, id: string): PbShallowElement => {
     if (state.elements.hasOwnProperty(id)) {
         return state.elements[id];
     }
 
     // Find by path
-    // $FlowFixMe
     return Object.values(state.elements).find(el => el.path === id);
 };
 

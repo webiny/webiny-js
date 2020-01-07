@@ -1,6 +1,5 @@
-// @flow
 import * as React from "react";
-import { useDrop } from "react-dnd";
+import { ConnectDropTarget, DragObjectWithType, useDrop } from "react-dnd";
 import { connect } from "@webiny/app-page-builder/editor/redux";
 import { getIsDragging } from "@webiny/app-page-builder/editor/selectors";
 
@@ -14,8 +13,25 @@ const defaultVisibility = ({ type, isDragging, item }) => {
     return isDragging;
 };
 
-const Droppable = React.memo(props => {
-    let { type, children, isDragging, isDroppable = () => true, isVisible, onDrop } = props;
+export type DroppableChildrenFunction = (params: {
+    isDragging: boolean;
+    isOver: boolean;
+    isDroppable: boolean;
+    drop: ConnectDropTarget;
+}) => React.ReactElement;
+
+export type DroppableProps = {
+    type: string;
+    children: DroppableChildrenFunction;
+    isDragging: boolean;
+    isDroppable(item: any): boolean;
+    isVisible(params: { type: string; item: any; isDragging: boolean }): boolean;
+    onDrop(item: DragObjectWithType);
+};
+
+const Droppable = React.memo((props: DroppableProps) => {
+    const { type, children, isDragging, isDroppable = () => true, onDrop } = props;
+    let { isVisible } = props;
 
     const [{ item, isOver }, drop] = useDrop({
         accept: "element",
@@ -38,7 +54,6 @@ const Droppable = React.memo(props => {
         return null;
     }
 
-    // $FlowFixMe
     return children({ isDragging, isOver, isDroppable: isDroppable(item), drop });
 });
 

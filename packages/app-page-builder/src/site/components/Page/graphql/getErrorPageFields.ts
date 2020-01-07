@@ -1,4 +1,3 @@
-// @flow
 import getDataFields from "./getDataFields";
 
 export default () => /* GraphQL */ `

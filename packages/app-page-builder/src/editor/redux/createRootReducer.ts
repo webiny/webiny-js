@@ -1,9 +1,8 @@
-// @flow
 import { clone } from "lodash";
 import { get, set } from "dot-prop-immutable";
-import type { Redux, Reducer, State, Action, StatePath } from "@webiny/app-page-builder/admin/types";
+import { Redux, Reducer, State, Action, StatePath } from "@webiny/app-page-builder/admin/types";
 
-type ReducerCollection = Array<{ statePath: StatePath, reducer: Reducer, actions: Array<string> }>;
+type ReducerCollection = Array<{ statePath: StatePath; reducer: Reducer; actions: Array<string> }>;
 
 const findHigherOrderReducer = (
     reducers: ReducerCollection,
@@ -24,6 +23,7 @@ const findHigherOrderReducer = (
             if (
                 statePath &&
                 horStatePath &&
+                typeof statePath === "string" &&
                 (statePath.startsWith(horStatePath + ".") || statePath === horStatePath)
             ) {
                 return { statePath: horStatePath, reducer: hor.reducer };
@@ -51,7 +51,7 @@ const resolveStatePath = (statePath: StatePath, action: Action): null | string =
     return statePath;
 };
 
-export default (INIT_STATE: Object = {}, redux: Redux): Reducer => {
+export default (INIT_STATE: State = {}, redux: Redux): Reducer => {
     return (state: State = INIT_STATE, action: Action) => {
         let newState = clone(state);
         redux.reducers.forEach(({ statePath, reducer, actions }) => {

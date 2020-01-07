@@ -1,5 +1,4 @@
-// @flow
-import React from "react";
+import React, { SyntheticEvent } from "react";
 import shortid from "shortid";
 import isHotkey from "is-hotkey";
 const keyStack = {};
@@ -9,13 +8,14 @@ const filter = ["TEXTAREA", "INPUT"];
 
 const setupListener = () => {
     if (!listener && document.body) {
-        document.body.addEventListener("keydown", e => {
+        document.body.addEventListener("keydown", (e: KeyboardEvent) => {
             // We ignore all keyboard events coming from within `slateEditor` element and inputs.
+            // @ts-ignore
             if (e.srcElement.dataset.slateEditor || filter.includes(e.srcElement.nodeName)) {
                 return;
             }
 
-            let matchedKey = Object.keys(keyStack).find(key => isHotkey(key, e));
+            const matchedKey = Object.keys(keyStack).find(key => isHotkey(key, e));
 
             if (matchedKey && keyStack[matchedKey].length > 0) {
                 const item = keyStack[matchedKey][0];
@@ -31,7 +31,7 @@ const setupListener = () => {
 const addKeyHandler = (
     id: string,
     key: string,
-    handler: (e: SyntheticKeyboardEvent<HTMLElement>) => void
+    handler: (e: SyntheticEvent<HTMLElement>) => void
 ) => {
     setupListener();
     keyStack[key] = keyStack[key] || [];
@@ -51,16 +51,13 @@ const removeKeyHandler = (id, key) => {
     }
 };
 
-type AddKeyHandlerType = (
-    key: String,
-    handler: (e: SyntheticKeyboardEvent<HTMLElement>) => void
-) => void;
+type AddKeyHandlerType = (key: string, handler: (e: SyntheticEvent<HTMLElement>) => void) => void;
 
-type RemoveKeyHandlerType = (key: String) => void;
+type RemoveKeyHandlerType = (key: string) => void;
 
 export function useKeyHandler(): {
-    addKeyHandler: AddKeyHandlerType,
-    removeKeyHandler: RemoveKeyHandlerType
+    addKeyHandler: AddKeyHandlerType;
+    removeKeyHandler: RemoveKeyHandlerType;
 } {
     const [id] = React.useState(shortid.generate());
 

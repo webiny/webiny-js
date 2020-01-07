@@ -43,7 +43,7 @@ type Props = {
     highlight: boolean;
 };
 
-const Center = React.memo(({ type, onDrop, children, active, highlight }: Props) => {
+const Center = ({ type, onDrop, children, active, highlight }: Props) => {
     return (
         <Droppable onDrop={onDrop} type={type} isVisible={isVisible}>
             {({ isOver, isDroppable, drop }) => (
@@ -55,8 +55,8 @@ const Center = React.memo(({ type, onDrop, children, active, highlight }: Props)
             )}
         </Droppable>
     );
-});
+};
 
 export default connect((state, props) => {
     return getElementProps(state, props);
-})(Center);
+})(React.memo(Center));

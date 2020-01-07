@@ -1,11 +1,10 @@
-// @flow
-import { applyMiddleware, createStore, compose } from "redux";
+import { applyMiddleware, createStore, compose, Middleware } from "redux";
 import _ from "lodash";
 import invariant from "invariant";
 import { getPlugins } from "@webiny/plugins";
 import createRootReducer from "./createRootReducer";
 import createMiddleware, { wrapMiddleware } from "./createMiddleware";
-import type {
+import {
     MiddlewareFunction,
     ReducerFactory,
     Reducer,
@@ -13,20 +12,22 @@ import type {
     ActionCreator,
     ActionOptions,
     StatePath,
-    Store
+    Store,
+    State,
+    PbEditorReduxMiddlewarePlugin
 } from "@webiny/app-page-builder/admin/types";
 
 export { default as connect } from "./connect";
 
 export class Redux {
-    actionMeta: Object;
+    actionMeta: { [key: string]: any };
     store: Store;
-    middleware: Array<{ actions: Array<string>, middleware: MiddlewareFunction }>;
-    reducers: Array<{ statePath: StatePath, reducer: Reducer, actions: Array<string> }>;
+    middleware: Array<{ actions: Array<string>; middleware: MiddlewareFunction }>;
+    reducers: Array<{ statePath: StatePath; reducer: Reducer; actions: Array<string> }>;
     higherOrderReducers: Array<{
-        statePath: StatePath,
-        reducer: Reducer,
-        actions: Array<string>
+        statePath: StatePath;
+        reducer: Reducer;
+        actions: Array<string>;
     }>;
 
     constructor() {
@@ -36,8 +37,8 @@ export class Redux {
         this.actionMeta = {};
     }
 
-    createAction(type: string, options?: ActionOptions = {}): ActionCreator {
-        return (payload?: Object = {}, meta?: Object = {}) => {
+    createAction(type: string, options: ActionOptions = {}): ActionCreator {
+        return (payload = {}, meta = {}) => {
             return {
                 type,
                 payload,
@@ -64,9 +65,10 @@ export class Redux {
         this.middleware.push({ actions, middleware });
     }
 
-    initStore(INIT_STATE: Object = {}, actionMeta: Object = {}) {
+    initStore(INIT_STATE: State = {}, actionMeta = {}) {
         this.actionMeta = actionMeta;
         // dev tool
+        // @ts-ignore
         const reduxDevTools = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__;
         const composeEnhancers =
             (reduxDevTools &&
@@ -75,7 +77,9 @@ export class Redux {
                 })) ||
             compose;
 
-        const middlewareFromPlugins = getPlugins("pb-editor-redux-middleware")
+        const middlewareFromPlugins: Middleware[] = (getPlugins(
+            "pb-editor-redux-middleware"
+        ) as PbEditorReduxMiddlewarePlugin[])
             .map(pl => wrapMiddleware(pl.middleware, Array.isArray(pl.actions) ? pl.actions : null))
             .reverse();
 

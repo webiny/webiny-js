@@ -1,4 +1,3 @@
-// @flow
 import contentBackground from "./../plugins/background";
 import blockEditing from "./../plugins/blockEditing";
 import elements from "./../plugins/elements";

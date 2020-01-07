@@ -1,4 +1,3 @@
-// @flow
 import codepen from "./codepen";
 import codesandbox from "./codesandbox";
 import instagram from "./instagram";

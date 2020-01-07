@@ -1,7 +1,6 @@
 import * as React from "react";
 import { registerPlugins, getPlugins } from "@webiny/plugins";
-import { PbThemePlugin } from "@webiny/app-page-builder/types";
-import { PbTheme } from "../../types";
+import { PbThemePlugin, PbTheme, PbPageLayoutPlugin } from "@webiny/app-page-builder/types";
 
 export const PageBuilderContext = React.createContext(null);
 
@@ -26,13 +25,11 @@ export const PageBuilderProvider = ({ theme: bcTheme, children, ...rest }) => {
 
         // For backwards compatibility, grab any page layouts defined in the theme and convert them to plugins
         if (theme.layouts) {
-            registerPlugins(
-                theme.layouts.map(l => ({
-                    name: `pb-page-layout-${l.name}`,
-                    type: `pb-page-layout`,
-                    layout: l
-                }))
-            );
+            registerPlugins(theme.layouts.map(l => ({
+                name: `pb-page-layout-${l.name}`,
+                type: `pb-page-layout`,
+                layout: l
+            })) as PbPageLayoutPlugin[]);
         }
 
         return {
