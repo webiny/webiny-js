@@ -178,7 +178,6 @@ api:
 cdn:
   component: "@webiny/serverless-aws-cloudfront"
   inputs:
-    comment: pavel910-webiny-js-api
     origins:
       - ${files.cdnOrigin}
       - url: ${api.url}
