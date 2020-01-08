@@ -16,6 +16,7 @@ yargs
     .usage("Usage: $0 <command>")
     .demandCommand(1)
     .strict()
+    .recommendCommands()
     .example("$0 deploy-api --env=dev --debug")
     .example("$0 remove-api --env=dev --debug")
     .epilogue(
