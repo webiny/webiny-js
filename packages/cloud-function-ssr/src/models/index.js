@@ -6,7 +6,7 @@ import { withId, DbProxyDriver } from "@webiny/commodo-fields-storage-db-proxy";
 export default options => ({
     type: "context",
     name: "context-models",
-    apply(context) {
+    apply({ context }) {
         const createBase = () =>
             flow(
                 withId(),

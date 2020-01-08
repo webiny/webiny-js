@@ -7,7 +7,7 @@ export default (...plugins) => async (...args) => {
 
     let contextPlugins = context.plugins.byType("context");
     for (let i = 0; i < contextPlugins.length; i++) {
-        contextPlugins[i].apply(context);
+        contextPlugins[i].apply({ context, args });
     }
 
     let handlers = context.plugins.byType("before-handle");

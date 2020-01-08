@@ -1,29 +1,30 @@
 import CloudFront from "aws-sdk/clients/cloudfront";
 import { withHooks } from "@webiny/commodo";
 
-export default rawOptions => ({
+export default () => ({
     type: "context",
     name: "context-cdn-ssr-cache-invalidation",
-    apply({ models: { SsrCache } }) {
-        const options = {
-            cloudFrontDistributionId: process.env.CDN_ID,
-            ...rawOptions
-        };
-
+    apply({
+        context: {
+            models: { SsrCache }
+        },
+        args
+    }) {
         withHooks({
             async afterInvalidate() {
                 const cloudfront = new CloudFront();
                 try {
-                    if (!options.cloudFrontDistributionId) {
+                    const [event] = args;
+                    const DistributionId = event.headers["X-Cdn-Id"];
+                    if (!DistributionId) {
                         throw new Error(
-                            `Missing "cloudFrontDistributionId". Ether set it via "CDN_ID" env variable or passing the 
-                                "cloudFrontDistributionId" value when creating "cdnInvalidation" plugins.`
+                            `Missing "X-Cdn-Id" header. Make sure to set "forwardIdViaHeaders" option on the CDN component to true`
                         );
                     }
 
                     await cloudfront
                         .createInvalidation({
-                            DistributionId: options.cloudFrontDistributionId,
+                            DistributionId,
                             InvalidationBatch: {
                                 CallerReference: `${new Date().getTime()}-invalidate-cdn-ssr-cache`,
                                 Paths: {
