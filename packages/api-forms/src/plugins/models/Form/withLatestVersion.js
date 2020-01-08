@@ -36,11 +36,13 @@ export default () =>
                     const removeCallback = this.hook("afterDelete", async () => {
                         const previousLatestForm = await this.constructor.findOne({
                             query: {
-                                parent: this.parent,
-                                version: this.version - 1
+                                parent: this.parent
+                            },
+                            sort: {
+                                version: -1
                             }
                         });
-                        previousLatestForm.latestVersion = true;
+                        previousLatestForm.latestVersion = false;
                         await previousLatestForm.save();
 
                         removeCallback();

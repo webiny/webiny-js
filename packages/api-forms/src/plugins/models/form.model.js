@@ -106,8 +106,13 @@ export default ({ context, createBase, FormSettings }) => {
         withLatestVersion(),
         withProps({
             // This field can be optimized by implementing an aggregation collection.
+            __overallStats: null,
             get overallStats() {
                 return new Promise(async resolve => {
+                    if (this.__overallStats) {
+                        return resolve(this.__overallStats);
+                    }
+
                     const allForms = await Form.find({ parent: this.parent });
                     const stats = {
                         submissions: 0,
@@ -126,10 +131,12 @@ export default ({ context, createBase, FormSettings }) => {
                         conversionRate = ((stats.submissions / stats.views) * 100).toFixed(2);
                     }
 
-                    resolve({
+                    this.__overallStats = {
                         ...stats,
                         conversionRate
-                    });
+                    };
+
+                    resolve(this.__overallStats);
                 });
             },
             get revisions() {
