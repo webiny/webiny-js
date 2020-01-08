@@ -44,7 +44,7 @@ export default () => [
         apply({ ssrApiClient, models: { PbPage } }) {
             withHooks({
                 async afterPublish() {
-                    const removeCallback = this.registerHookCallback("afterSave", async () => {
+                    const removeCallback = this.hook("afterSave", async () => {
                         try {
                             await ssrApiClient.invalidateSsrCacheByTags({
                                 tags: [{ class: "pb-pages-list" }]
@@ -69,7 +69,7 @@ export default () => [
                         return;
                     }
 
-                    const removeCallback = this.registerHookCallback("afterSave", async () => {
+                    const removeCallback = this.hook("afterSave", async () => {
                         try {
                             await ssrApiClient.invalidateSsrCacheByTags({
                                 tags: [{ class: "pb-settings" }]
@@ -93,7 +93,7 @@ export default () => [
                 async beforeSave() {
                     // If menus structure has changed, we need to invalidate SSR caches that contain this menu.
                     if (this.isDirty()) {
-                        const removeCallback = this.registerHookCallback("afterSave", async () => {
+                        const removeCallback = this.hook("afterSave", async () => {
                             try {
                                 await ssrApiClient.invalidateSsrCacheByTags({
                                     tags: [{ class: "pb-menu" }]
