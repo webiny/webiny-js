@@ -1,7 +1,12 @@
 // @flow
 import { flow } from "lodash";
 import { validation } from "@webiny/validation";
-import { createFieldsModel, createSettingsModel, createFormStatsModel } from "./Form";
+import {
+    createFieldsModel,
+    createSettingsModel,
+    createFormStatsModel,
+    withLatestVersion
+} from "./Form";
 import got from "got";
 import { pick } from "lodash";
 import mdbid from "mdbid";
@@ -98,25 +103,22 @@ export default ({ context, createBase, FormSettings }) => {
                 }
             }
         }),
+        withLatestVersion(),
         withProps({
+            // This field can be optimized by implementing an aggregation collection.
             get overallStats() {
                 return new Promise(async resolve => {
-                    const plugin = context.plugins.byName("forms-resolver-overall-stats");
+                    const allForms = await Form.find({ parent: this.parent });
+                    const stats = {
+                        submissions: 0,
+                        views: 0,
+                        conversionRate: 0
+                    };
 
-                    if (!plugin) {
-                        throw Error(
-                            `Resolver plugin "forms-resolver-overall-stats" is not configured!`
-                        );
-                    }
-
-                    const stats = await plugin.resolve({ form: this, context });
-
-                    if (!stats) {
-                        return resolve({
-                            submissions: 0,
-                            views: 0,
-                            conversionRate: 0
-                        });
+                    for (let i = 0; i < allForms.length; i++) {
+                        let form = allForms[i];
+                        stats.views += form.stats.views;
+                        stats.submissions += form.stats.submissions;
                     }
 
                     let conversionRate = 0;
@@ -192,7 +194,10 @@ export default ({ context, createBase, FormSettings }) => {
                 // Validate data.
                 const validatorPlugins = context.plugins.byType("form-field-validator");
                 const fields = this.fields;
-                const data = pick(rawData, fields.map(field => field.fieldId));
+                const data = pick(
+                    rawData,
+                    fields.map(field => field.fieldId)
+                );
                 if (Object.keys(data).length === 0) {
                     throw new Error("Form data cannot be empty.");
                 }

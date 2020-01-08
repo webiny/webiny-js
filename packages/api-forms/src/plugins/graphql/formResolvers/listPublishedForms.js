@@ -1,24 +1,59 @@
 // @flow
-import { createPaginationMeta } from "@webiny/commodo";
 import { ListResponse } from "@webiny/api";
-import getListPublishedFormsResolver from "./utils/getListPublishedFormsResolver";
 
-export default async (root: any, args: Object, context: Object) => {
-    const plugin = getListPublishedFormsResolver(context);
-    const { forms, totalCount } = await plugin.resolve({ root, args, context });
+export const listPublishedForms = async (root: any, args: Object, context: Object) => {
+    const { Form } = context.models;
 
-    if (!Array.isArray(forms) || !Number.isInteger(totalCount)) {
-        throw Error(
-            `Resolver plugin "forms-resolver-list-published-forms" must return { forms: [Form], totalCount: Int }!`
-        );
+    const {
+        page = 1,
+        search,
+        perPage = 10,
+        parent = null,
+        id = null,
+        slug = null,
+        version = null,
+        latestVersion = null,
+        sort = null
+    } = args;
+
+    const $and = [{ published: true }];
+
+    if (version) {
+        $and.push({ version });
     }
 
-    return new ListResponse(
-        forms,
-        createPaginationMeta({
-            page: args.page,
-            perPage: args.perPage,
-            totalCount: totalCount ? totalCount : 0
-        })
-    );
+    if (latestVersion !== null) {
+        $and.push({ latestVersion });
+    }
+
+    if (parent) {
+        if (Array.isArray(parent)) {
+            $and.push({ parent: { $in: parent } });
+        } else {
+            $and.push({ parent });
+        }
+    }
+
+    if (id) {
+        if (Array.isArray(id)) {
+            $and.push({ id: { $in: id } });
+        } else {
+            $and.push({ id });
+        }
+    }
+
+    if (slug) {
+        if (Array.isArray(slug)) {
+            $and.push({ slug: { $in: slug } });
+        } else {
+            $and.push({ slug });
+        }
+    }
+
+    return await Form.find({ page, perPage, search, sort, query: { $and } });
+};
+
+export default (...args) => {
+    const forms = listPublishedForms(...args);
+    return new ListResponse(forms, forms.getMeta());
 };

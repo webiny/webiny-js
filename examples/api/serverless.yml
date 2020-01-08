@@ -163,7 +163,6 @@ formBuilder:
           functionArn: ${dbProxy.arn}
       - factory: "@webiny/api-security/plugins/service"
         options: ${vars.security}
-      - "@webiny/api-plugin-form-builder-resolvers-mongodb"
 
 api:
   component: "@webiny/serverless-api-gateway"
