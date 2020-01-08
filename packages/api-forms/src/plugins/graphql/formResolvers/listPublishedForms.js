@@ -16,41 +16,41 @@ export const listPublishedForms = async (root: any, args: Object, context: Objec
         sort = null
     } = args;
 
-    const $and = [{ published: true }];
+    const query = { published: true };
 
     if (version) {
-        $and.push({ version });
+        query.version = version;
     }
 
     if (latestVersion !== null) {
-        $and.push({ latestVersion });
+        query.latestVersion = latestVersion;
     }
 
     if (parent) {
         if (Array.isArray(parent)) {
-            $and.push({ parent: { $in: parent } });
+            query.parent = { $in: parent };
         } else {
-            $and.push({ parent });
+            query.parent = parent;
         }
     }
 
     if (id) {
         if (Array.isArray(id)) {
-            $and.push({ id: { $in: id } });
+            query.id = { $in: id };
         } else {
-            $and.push({ id });
+            query.id = id;
         }
     }
 
     if (slug) {
         if (Array.isArray(slug)) {
-            $and.push({ slug: { $in: slug } });
+            query.slug = { $in: slug };
         } else {
-            $and.push({ slug });
+            query.slug = slug;
         }
     }
 
-    return await Form.find({ page, perPage, search, sort, query: { $and } });
+    return await Form.find({ page, perPage, search, sort, query });
 };
 
 export default (...args) => {

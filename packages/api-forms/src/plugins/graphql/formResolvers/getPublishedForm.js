@@ -17,7 +17,7 @@ export default async (root: any, args: Object, context: Object) => {
     // We utilize the same query used for listing published forms (single source of truth = less maintenance).
     const listArgs = { ...args, perPage: 1 };
     if (!listArgs.version) {
-        listArgs.latestVersion = true;
+        listArgs.sort = { version: -1 };
     }
 
     const [form] = await listPublishedForms(root, listArgs, context);
