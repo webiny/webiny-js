@@ -45,6 +45,7 @@ export const FIELDS_FIELDS = `
 
 export const DATA_FIELDS = `
     id
+    parent
     fields {
         ${FIELDS_FIELDS}
     }

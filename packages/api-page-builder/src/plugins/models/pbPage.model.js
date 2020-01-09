@@ -55,7 +55,8 @@ export default ({ createBase, context, PbCategory, PbSettings }) => {
                     if (value && value !== instance.published && instance.isExisting()) {
                         instance.locked = true;
                         instance.publishedOn = new Date();
-                        const removeCallback = instance.hook("beforeSave", async () => {
+                        const removeBeforeSave = instance.hook("beforeSave", async () => {
+                            removeBeforeSave();
                             // Deactivate previously published revision
                             const publishedRev: PbPage = (await PbPage.findOne({
                                 query: { published: true, parent: instance.parent }
@@ -65,10 +66,10 @@ export default ({ createBase, context, PbCategory, PbSettings }) => {
                                 publishedRev.published = false;
                                 await publishedRev.save();
                             }
-                            removeCallback();
                         });
 
-                        instance.hook("afterSave", async () => {
+                        const removeAfterSave = instance.hook("afterSave", async () => {
+                            removeAfterSave();
                             await instance.hook("afterPublish");
                         });
                     }

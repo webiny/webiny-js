@@ -12,8 +12,10 @@ import formSitePlugins from "@webiny/app-forms/site/plugins";
 import previewContent from "./formDetails/previewContent";
 import formRevisions from "./formDetails/formRevisions";
 import formSubmissions from "./formDetails/formSubmissions";
+import install from "./install";
 
 export default [
+    install,
     settings,
     routes,
     menus,

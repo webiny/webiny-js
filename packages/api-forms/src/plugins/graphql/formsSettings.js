@@ -18,6 +18,7 @@ export default {
         }
     
         type FormsSettings {
+            domain: String
             reCaptcha: ReCaptchaSettings
         }
     
@@ -27,8 +28,10 @@ export default {
         }
     
         input FormsSettingsInput {
+            domain: String
             reCaptcha: ReCaptchaSettingsInput
         }
+    
     
         extend type FormsQuery {
             getSettings: FormsSettingsResponse

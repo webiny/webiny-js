@@ -44,15 +44,8 @@ export default () => [
         apply({ ssrApiClient, models: { PbPage } }) {
             withHooks({
                 async afterPublish() {
-                    const removeCallback = this.hook("afterSave", async () => {
-                        try {
-                            await ssrApiClient.invalidateSsrCacheByTags({
-                                tags: [{ class: "pb-pages-list" }]
-                            });
-                        } catch {
-                            // Do nothing.
-                        }
-                        removeCallback();
+                    await ssrApiClient.invalidateSsrCacheByTags({
+                        tags: [{ class: "pb-pages-list" }]
                     });
                 }
             })(PbPage);
@@ -96,7 +89,7 @@ export default () => [
                         const removeCallback = this.hook("afterSave", async () => {
                             try {
                                 await ssrApiClient.invalidateSsrCacheByTags({
-                                    tags: [{ class: "pb-menu" }]
+                                    tags: [{ class: "pb-menu", id: this.id }]
                                 });
                             } catch {
                                 // Do nothing.

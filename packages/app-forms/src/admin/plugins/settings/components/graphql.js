@@ -9,6 +9,7 @@ const fields = /* GraphQL */ `
                 siteKey
                 secretKey
             }
+            domain
         }
         error {
             message

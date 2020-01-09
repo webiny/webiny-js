@@ -60,11 +60,35 @@ export default ({ context, createBase, FormSettings }) => {
             parent: string(),
             publishedOn: date(),
             published: onSet(value => {
-                if (value) {
-                    instance.publishedOn = new Date();
-                    if (!instance.locked) {
-                        instance.locked = true;
+                if (instance.published !== value) {
+                    if (value) {
+                        instance.publishedOn = new Date();
+                        if (!instance.locked) {
+                            instance.locked = true;
+                        }
+
+                        const removeBeforeSave = instance.hook("beforeSave", async () => {
+                            removeBeforeSave();
+                            await instance.hook("beforePublish");
+                        });
+
+                        const removeAfterSave = instance.hook("afterSave", async () => {
+                            removeAfterSave();
+                            await instance.hook("afterPublish");
+                        });
+                    } else {
+                        instance.publishedOn = null;
+                        const removeBeforeSave = instance.hook("beforeSave", async () => {
+                            removeBeforeSave();
+                            await instance.hook("beforeUnpublish");
+                        });
+
+                        const removeAfterSave = instance.hook("afterSave", async () => {
+                            removeAfterSave();
+                            await instance.hook("afterUnpublish");
+                        });
                     }
+
                 }
 
                 return value;

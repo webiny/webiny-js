@@ -13,6 +13,7 @@ import {
 import form from "./graphql/form";
 import formSubmission from "./graphql/formSubmission";
 import formsSettings from "./graphql/formsSettings";
+import { install, isInstalled } from "./graphql/install";
 
 export default {
     type: "graphql-schema",
@@ -25,12 +26,19 @@ export default {
             ${I18NStringValueInput()}
             ${I18NJSONValueInput()}
 
+            type FormsBooleanResponse {
+                data: Boolean
+                error: FormError
+            }
+
             type FormsQuery {
-                _empty: String
+                # Is Form Builder installed?
+                isInstalled: FormsBooleanResponse
             }
 
             type FormsMutation {
-                _empty: String
+                # Install Form Builder
+                install(domain: String): FormsBooleanResponse
             }
 
             extend type Query {
@@ -74,7 +82,9 @@ export default {
                 },
                 Mutation: {
                     forms: emptyResolver
-                }
+                },
+                FormsQuery: { isInstalled },
+                FormsMutation: { install }
             },
             form.resolvers,
             formSubmission.resolvers,

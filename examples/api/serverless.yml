@@ -163,6 +163,8 @@ formBuilder:
           functionArn: ${dbProxy.arn}
       - factory: "@webiny/api-security/plugins/service"
         options: ${vars.security}
+      - "@webiny/api-forms/plugins/useSsrCacheTags"
+
 
 api:
   component: "@webiny/serverless-api-gateway"

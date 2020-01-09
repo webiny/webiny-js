@@ -18,14 +18,23 @@ export default ({ createBase }) => {
         withName("Settings"),
         withStaticProps({
             async load() {
-                return await this.findOne({ query: { key: SETTINGS_KEY } });
+                let settings = await this.findOne({ query: { key: SETTINGS_KEY } });
+                if (!settings) {
+                    settings = new this();
+                    await settings.save();
+                }
+                return settings;
             }
         }),
         withFields({
             key: setOnce()(string({ value: SETTINGS_KEY })),
             data: fields({
+                value: {},
                 instanceOf: withFields({
+                    installed: boolean(),
+                    domain: string(),
                     reCaptcha: fields({
+                        value: {},
                         instanceOf: withFields({
                             enabled: boolean(),
                             siteKey: string({ validation: validation.create("maxLength:100") }),
