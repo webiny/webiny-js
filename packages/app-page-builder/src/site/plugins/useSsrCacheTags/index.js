@@ -29,7 +29,7 @@ const InvalidateExpiredSsrCache = () => {
                     ]
                 })
             });
-        }, 3000);
+        }, 1000);
     }, []);
 
     return null;
