@@ -1,7 +1,7 @@
 {
   "extends": "../../tsconfig.build.json",
   "include": ["./src", "./custom.d.ts"],
-  "exclude": ["node_modules", "../i18n"],
+  "exclude": ["node_modules", "./dist", "./dist", "../i18n"],
   "compilerOptions": {
     "rootDir": "./src",
     "outDir": "./dist",

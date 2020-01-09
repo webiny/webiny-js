@@ -1,6 +1,7 @@
 import { GraphQLContextPlugin, GraphQLMiddlewarePlugin, Plugin } from "@webiny/api/types";
 import { shield } from "graphql-shield";
 import authenticate from "./authentication/authenticate";
+import { SecurityPlugin } from "@webiny/api-security/types";
 
 const shieldMiddleware: GraphQLMiddlewarePlugin = {
     type: "graphql-middleware",
@@ -38,7 +39,7 @@ const middlewarePlugin = (options): GraphQLContextPlugin => ({
         context.user = null;
         context.getUser = () => context.user;
 
-        const securityPlugins: Plugin[] = context.plugins.byType("graphql-security");
+        const securityPlugins: SecurityPlugin[] = context.plugins.byType("graphql-security");
         for (let i = 0; i < securityPlugins.length; i++) {
             await securityPlugins[i].authenticate(context);
         }

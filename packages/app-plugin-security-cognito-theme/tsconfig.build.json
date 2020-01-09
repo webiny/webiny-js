@@ -1,7 +1,7 @@
 {
   "extends": "../../tsconfig.build.json",
   "include": ["./src"],
-  "exclude": ["node_modules", "../app", "../app-i18n", "../form", "../ui", "../validation"],
+  "exclude": ["node_modules", "./dist", "../app", "../app-i18n", "../form", "../ui", "../validation"],
   "compilerOptions": {
     "rootDir": "./src",
     "outDir": "./dist",

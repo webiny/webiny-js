@@ -1,5 +1,6 @@
 import { Plugin } from "@webiny/api/types";
 
 export type SecurityPlugin = Plugin & {
-    authenticate: Function;
+    type: "graphql-security";
+    authenticate(context: any): Promise<void>;
 };

@@ -15,9 +15,8 @@ export type SchemaDefinition = {
 
 export type GraphQLSchemaPlugin = Plugin & {
     prepare?: (params: { plugins: PluginsContainer }) => void;
-    schema:
-        | ((params: { plugins: PluginsContainer }) => Promise<SchemaDefinition>)
-        | SchemaDefinition;
+    schema: (params: { plugins: PluginsContainer }) => Promise<SchemaDefinition> | SchemaDefinition;
+    [key: string]: any;
 };
 
 export type GraphQLContextPlugin = Plugin & {

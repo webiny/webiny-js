@@ -1,7 +1,7 @@
 {
   "extends": "../../tsconfig.build.json",
   "include": ["./src"],
-  "exclude": ["node_modules", "../api"],
+  "exclude": ["node_modules", "./dist", "../api"],
   "compilerOptions": {
     "rootDir": "./src",
     "outDir": "./dist",
