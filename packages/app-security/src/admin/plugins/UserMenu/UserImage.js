@@ -15,6 +15,7 @@ const UserImage = () => {
 
     return (
         <Avatar
+            data-testid="logged-in-user-menu-avatar"
             src={avatar && avatar.src}
             alt={fullName}
             fallbackText={fullName}
