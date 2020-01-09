@@ -1,5 +1,6 @@
 import _ from "lodash";
 import React from "react";
+import { Processor } from "@webiny/i18n/types";
 
 const processTextPart = (part: string, values: any, modifiers): any => {
     if (!_.startsWith(part, "{")) {
@@ -31,8 +32,8 @@ const processTextPart = (part: string, values: any, modifiers): any => {
 
 export default {
     name: "react",
-    canExecute(data: { values: any }) {
-        for (let key in data.values) {
+    canExecute(data) {
+        for (const key in data.values) {
             const value = data.values[key];
             if (React.isValidElement(value)) {
                 return true;
@@ -41,7 +42,7 @@ export default {
 
         return false;
     },
-    execute(data: { values: any; translation: string; i18n: any }) {
+    execute(data) {
         const parts = data.translation.split(/({.*?})/);
         return (
             <i18n-text>
@@ -53,4 +54,4 @@ export default {
             </i18n-text>
         );
     }
-};
+} as Processor;

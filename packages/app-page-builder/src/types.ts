@@ -44,9 +44,10 @@ export type PbPageLayoutComponentPlugin = Plugin & {
 };
 
 export type PbRenderElementPlugin = Plugin & {
+    type: "pb-render-page-element";
     // Name of the pb-element plugin this render plugin is handling.
     elementType: string;
-    render: (params: { theme: PbTheme; element: PbElement }) => React.ReactElement;
+    render: (params: { theme: PbTheme; element: PbElement }) => React.ReactNode;
 };
 
 export type PbPageSettingsFieldsPlugin = Plugin & {

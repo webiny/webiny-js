@@ -1,11 +1,11 @@
 {
   "extends": "../../tsconfig.build.json",
   "include": ["./src"],
+  "exclude": ["node_modules", "../api"],
   "compilerOptions": {
     "rootDir": "./src",
     "outDir": "./dist",
-    "declarationDir": "./dist",
-    "emitDeclarationOnly": true
+    "declarationDir": "./dist"
   },
-  "references": [{ "path": "../api" }]
+  "references": [{ "path": "../api/tsconfig.build.json" }]
 }

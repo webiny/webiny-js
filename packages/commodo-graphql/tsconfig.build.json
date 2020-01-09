@@ -5,12 +5,8 @@
     "node_modules",
     "**/__tests__/**",
     "./dist",
-    "../app",
-    "../app-admin",
-    "../form",
-    "../plugins",
-    "../ui",
-    "../validation"
+    "../api",
+    "../commodo"
   ],
   "compilerOptions": {
     "rootDir": "./src",

@@ -4,8 +4,6 @@
   "compilerOptions": {
     "rootDir": "./src",
     "outDir": "./dist",
-    "declarationDir": "./dist",
-    "emitDeclarationOnly": true
-  },
-  "references": [{ "path": "../api" }]
+    "declarationDir": "./dist"
+  }
 }

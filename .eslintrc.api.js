@@ -13,9 +13,10 @@ module.exports = {
         es6: true
     },
     rules: {
-        "import/no-unresolved": [2, { commonjs: true, amd: true }],
+        "import/no-unresolved": 0, // [2, { commonjs: true, amd: true }],
         "@typescript-eslint/explicit-function-return-type": "off",
         "@typescript-eslint/ban-ts-ignore": "off",
-        "@typescript-eslint/ban-types": "off"
+        "@typescript-eslint/ban-types": "off",
+        "@typescript-eslint/no-use-before-define": 0
     }
 };

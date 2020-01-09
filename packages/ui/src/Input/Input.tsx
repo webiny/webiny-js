@@ -3,6 +3,7 @@ import { TextField, TextFieldProps } from "@rmwc/textfield";
 import { FormElementMessage } from "@webiny/ui/FormElementMessage";
 import pick from "lodash/pick";
 import { FormComponentProps } from "./../types";
+import { ReactElement } from "react";
 
 export type InputProps = FormComponentProps &
     TextFieldProps & {
@@ -19,7 +20,7 @@ export type InputProps = FormComponentProps &
         placeholder?: string;
 
         // Description beneath the input.
-        description?: string;
+        description?: string | ReactElement;
 
         // Converts input into a text area with given number of rows.
         rows?: number;
@@ -104,13 +105,10 @@ export class Input extends React.Component<InputProps> {
             inputValue = "";
         }
 
-
-
         return (
             <React.Fragment>
                 <TextField
                     {...pick(props, Input.rmwcProps)}
-                    autoComplete={}
                     autoFocus={autoFocus}
                     textarea={Boolean(rows)}
                     value={inputValue}

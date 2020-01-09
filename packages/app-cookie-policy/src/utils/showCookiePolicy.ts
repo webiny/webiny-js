@@ -19,7 +19,7 @@ const prepareParams = params => {
 };
 
 let initialized = false;
-const showCookiePolicy = async (params: Object, previewMode: boolean = false) => {
+const showCookiePolicy = async (params: any, previewMode = false) => {
     if (!previewMode) {
         if (initialized) {
             return;

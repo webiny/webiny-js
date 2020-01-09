@@ -22,6 +22,8 @@
       "@webiny/app-i18n/*": ["./packages/app-i18n/src/*"],
       "@webiny/form": ["./packages/form/src"],
       "@webiny/form/*": ["./packages/form/src/*"],
+      "@webiny/i18n": ["./packages/i18n/src"],
+      "@webiny/i18n/*": ["./packages/i18n/src/*"],
       "@webiny/plugins": ["./packages/plugins/src"],
       "@webiny/plugins/*": ["./packages/plugins/src/*"],
       "@webiny/validation/*": ["./packages/validation/src/*"],

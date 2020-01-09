@@ -1,7 +1,7 @@
 {
   "extends": "../../tsconfig.build.json",
   "include": ["./src"],
-  "exclude": ["node_modules", "**/__tests__/**", "../plugins", "../ui"],
+  "exclude": ["node_modules", "../plugins", "../i18n", "../i18n-react", "../ui"],
   "compilerOptions": {
     "rootDir": "./src",
     "outDir": "./dist",
@@ -9,6 +9,8 @@
   },
   "references": [
     { "path": "../plugins/tsconfig.build.json" },
-    { "path": "../ui/tsconfig.build.json" }
+    { "path": "../ui/tsconfig.build.json" },
+    { "path": "../i18n/tsconfig.build.json" },
+    { "path": "../i18n-react/tsconfig.build.json" }
   ]
 }
