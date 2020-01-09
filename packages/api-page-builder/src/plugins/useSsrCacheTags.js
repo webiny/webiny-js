@@ -89,7 +89,7 @@ export default () => [
                         const removeCallback = this.hook("afterSave", async () => {
                             try {
                                 await ssrApiClient.invalidateSsrCacheByTags({
-                                    tags: [{ class: "pb-menu", id: this.id }]
+                                    tags: [{ class: "pb-menu", id: this.slug }]
                                 });
                             } catch {
                                 // Do nothing.
