@@ -1,7 +1,6 @@
 import { ErrorResponse, Response } from "@webiny/api";
 
 export const install = async (root: any, args: Object, context: Object) => {
-    // Start the download of initial Page Builder page / block images.
     const { FilesSettings } = context.models;
 
     try {
