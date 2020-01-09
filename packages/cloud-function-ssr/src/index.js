@@ -1,14 +1,25 @@
-import ssrApi from "./ssrApi";
+import ssrCacheApi from "./ssrCacheApi";
 import ssrServe from "./ssrServe";
 import models from "./models";
+import { withFields, boolean, number, string, fields } from "@webiny/commodo/fields";
 
-const defaultOptions = {
-    ssrFunction: process.env.SSR_FUNCTION,
-    ssrCacheTtl: 80,
-    ssrCacheTtlState: 20
-};
+const OptionsModel = withFields({
+    ssrFunction: string({ value: process.env.SSR_FUNCTION }),
+    cache: fields({
+        value: {},
+        instanceOf: withFields({
+            enabled: boolean({ value: false }),
+            ttl: number({ value: 80 }),
+            staleTtl: number({ value: 20 })
+        })()
+    })
+})();
 
 export default rawOptions => {
-    const options = { ...defaultOptions, ...rawOptions };
-    return [models(options), ssrServe(options), ssrApi(options)];
+    const options = new OptionsModel().populate(rawOptions);
+    const plugins = [models(options), ssrServe(options)];
+    if (options.cache.enabled) {
+        plugins.push(ssrCacheApi(options));
+    }
+    return plugins;
 };

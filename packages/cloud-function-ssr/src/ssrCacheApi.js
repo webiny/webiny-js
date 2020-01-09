@@ -1,7 +1,7 @@
 import qs from "querystringify";
 import { createResponse } from "@webiny/cloud-function";
 import mime from "mime-types";
-import parseBody from "./parseBody";
+import { parseBody } from "./functions";
 
 const API_ACTION = {
     INVALIDATE_SSR_CACHE_BY_PATH: "invalidateSsrCacheByPath",
@@ -10,7 +10,7 @@ const API_ACTION = {
 
 export default () => ({
     type: "handler",
-    name: "handler-ssr-api",
+    name: "handler-ssr-cache-api",
     canHandle({ args }) {
         const [event] = args;
         if (mime.lookup(event.path)) {

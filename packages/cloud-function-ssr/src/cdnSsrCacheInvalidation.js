@@ -1,5 +1,5 @@
 import CloudFront from "aws-sdk/clients/cloudfront";
-import { withHooks } from "@webiny/commodo";
+import { withHooks } from "@webiny/commodo/hooks";
 
 export default () => ({
     type: "context",

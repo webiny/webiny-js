@@ -6,8 +6,11 @@ import cdnSsrCacheInvalidationPlugins from "@webiny/cloud-function-ssr/cdnSsrCac
 export const handler = create(
     filesPlugins(),
     ssrPlugins({
-        ssrCacheTtl: 2592000, // 30 days in seconds.
-        ssrCacheTtlState: 20
+        cache: {
+            enabled: true,
+            ttl: 2592000, // 30 days in seconds.
+            ttlStale: 20
+        }
     }),
     cdnSsrCacheInvalidationPlugins()
 );

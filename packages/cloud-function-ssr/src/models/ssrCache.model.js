@@ -1,28 +1,15 @@
 import { flow } from "lodash";
-import LambdaClient from "aws-sdk/clients/lambda";
 import getSsrCacheTags from "./ssrCache/getSsrCacheTags";
-import {
-    withFields,
-    string,
-    number,
-    date,
-    fields,
-    object,
-    withProps,
-    withName,
-    withHooks,
-    withStaticProps,
-    skipOnPopulate
-} from "@webiny/commodo";
+import { withFields, string, number, fields, skipOnPopulate } from "@webiny/commodo/fields";
+import { withProps, withStaticProps } from "@webiny/commodo/repropose";
+import { date } from "@webiny/commodo/fields-date";
+import { object } from "@webiny/commodo/fields-object";
+import { withName } from "@webiny/commodo/name";
+import { withHooks } from "@webiny/commodo/hooks";
+import { getSsrHtml } from "@webiny/cloud-function-ssr/functions";
 
-const DEFAULT_CACHE_TTL = 80;
-const DEFAULT_STALE_CACHE_TTL = 20;
-
-export default ({ createBase, options = {} } = {}) => {
-    const CACHE_TTL = options.ssrCacheTtl || DEFAULT_CACHE_TTL;
-    const CACHE_STALE_TTL = options.ssrCacheStaleTtl || DEFAULT_STALE_CACHE_TTL;
-
-    return flow(
+export default ({ createBase, options = {} } = {}) =>
+    flow(
         withName("SsrCache"),
         withFields({
             path: string({
@@ -89,30 +76,21 @@ export default ({ createBase, options = {} } = {}) => {
                 return expiresIn > 0 ? expiresIn : 0;
             },
 
-            incrementExpiresOn(seconds = CACHE_STALE_TTL) {
+            incrementExpiresOn(seconds = options.cache.staleTtl) {
                 this.expiresOn = new Date();
                 this.expiresOn.setSeconds(this.expiresOn.getSeconds() + seconds);
                 return this;
             },
             async refresh() {
-
                 this.lastRefresh.startedOn = new Date();
                 await this.save();
 
-                const Lambda = new LambdaClient({ region: process.env.AWS_REGION });
-
-                const response = await Lambda.invoke({
-                    FunctionName: options.ssrFunction,
-                    Payload: JSON.stringify({ path: this.path })
-                }).promise();
-
-                const Payload = JSON.parse(response.Payload);
-                this.content = Payload.body;
+                this.content = await getSsrHtml(options.ssrFunction, { path: this.path });
 
                 this.lastRefresh.endedOn = new Date();
                 this.lastRefresh.duration = this.lastRefresh.endedOn - this.lastRefresh.startedOn;
                 this.refreshedOn = new Date();
-                this.incrementExpiresOn(CACHE_TTL);
+                this.incrementExpiresOn(options.cache.ttl);
 
                 await this.save();
             },
@@ -125,4 +103,3 @@ export default ({ createBase, options = {} } = {}) => {
             }
         })
     )(createBase());
-};
