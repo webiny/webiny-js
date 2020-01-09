@@ -6,6 +6,7 @@ import {
     GridCellProps as RmwcGridCellProps,
     GridProps as RmwcGridProps
 } from "@rmwc/grid";
+import { CSSProperties } from "react";
 
 export type CellProps = RmwcGridCellProps & {
     // One or more Cell components.
@@ -19,6 +20,7 @@ export type CellProps = RmwcGridCellProps & {
 
 export type GridProps = RmwcGridProps & {
     className?: string;
+    style?: CSSProperties;
 };
 
 /**

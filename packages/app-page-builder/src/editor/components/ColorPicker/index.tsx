@@ -109,7 +109,7 @@ const styles = {
     })
 };
 
-const ColorPicker = ({ value, onChange, onChangeComplete, compact }) => {
+const ColorPicker = ({ value, onChange, onChangeComplete, compact = false }) => {
     const [showPicker, setShowPicker] = useState(false);
 
     const getColorValue = useCallback(rgb => {

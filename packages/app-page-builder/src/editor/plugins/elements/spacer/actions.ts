@@ -1,4 +1,3 @@
-// @flow
 import { createAction, addReducer } from "@webiny/app-page-builder/editor/redux";
 
 const PREFIX = "[Spacer]";

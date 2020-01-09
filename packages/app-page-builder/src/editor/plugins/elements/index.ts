@@ -1,4 +1,3 @@
-// @flow
 import document from "./document";
 import row from "./row";
 import block from "./block";

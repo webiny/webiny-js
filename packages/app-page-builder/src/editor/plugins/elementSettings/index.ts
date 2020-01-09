@@ -1,4 +1,3 @@
-// @flow
 import advanced from "./advanced";
 import animation from "./animation";
 import bar from "./bar";

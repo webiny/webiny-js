@@ -1,4 +1,3 @@
-//@flow
 import styled from "@emotion/styled";
 
 export const Footer = styled("div")({
@@ -13,7 +12,12 @@ export const Footer = styled("div")({
     }
 });
 
-export const InputContainer = styled("div")(props => ({
+type InputContainerProps = {
+    width?: number | string;
+    margin?: number | string;
+};
+
+export const InputContainer: React.FC<InputContainerProps> = styled("div")(props => ({
     "> .mdc-text-field.mdc-text-field--upgraded": {
         height: "30px !important",
         width: props.width || 50,

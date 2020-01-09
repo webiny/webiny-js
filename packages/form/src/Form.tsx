@@ -18,7 +18,7 @@ export type FormChildrenFunction = (params: {
 export type FormData = { [key: string]: any };
 export type Validation = { [key: string]: any };
 // eslint-disable-next-line @typescript-eslint/no-use-before-define
-export type FormOnSubmit = (data: FormData, form: Form) => void;
+export type FormOnSubmit = (data: FormData, form?: Form) => void;
 
 export type FormProps = {
     invalidFields?: { [key: string]: any };

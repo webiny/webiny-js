@@ -1,4 +1,3 @@
-// @flow
 import bold from "./bold";
 import italic from "./italic";
 import underline from "./underline";

@@ -3,10 +3,11 @@ import { connect } from "@webiny/app-page-builder/editor/redux";
 import { getPlugins } from "@webiny/plugins";
 import { getUi } from "@webiny/app-page-builder/editor/selectors";
 import DefaultEditorBar from "./DefaultEditorBar";
-import {PbEditorBarPlugin} from "@webiny/app-page-builder/admin/types";
+import { PbEditorBarPlugin } from "@webiny/app-page-builder/admin/types";
 
 export type EditorBarProps = {
-    // TODO: define Bar props
+    plugins: { [group: string]: { [name: string]: any } };
+    activeElement: any;
 };
 
 const Bar: React.FC<EditorBarProps> = props => {

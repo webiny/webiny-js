@@ -1,6 +1,4 @@
-// @flow
 import isHotkey from "is-hotkey";
-import type { Change } from "slate";
 
 export default () => {
     return {
@@ -9,7 +7,7 @@ export default () => {
                 name: "pb-editor-slate-editor-break",
                 type: "pb-editor-slate-editor",
                 slate: {
-                    onKeyDown(e: SyntheticKeyboardEvent<*>, change: Change, next: Function) {
+                    onKeyDown(e, change, next) {
                         if (isHotkey("shift+enter", e)) {
                             return change.splitBlock().setBlocks("paragraph");
                         }

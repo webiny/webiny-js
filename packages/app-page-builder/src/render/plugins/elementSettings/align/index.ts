@@ -1,6 +1,5 @@
-// @flow
 import { get } from "lodash";
-import type { PbRenderElementStylePlugin } from "@webiny/app-page-builder/types";
+import { PbRenderElementStylePlugin } from "@webiny/app-page-builder/types";
 
 const vertical = {
     start: "flex-start",
@@ -8,11 +7,11 @@ const vertical = {
     end: "flex-end"
 };
 
-export default ([
+const plugins: PbRenderElementStylePlugin[] = [
     {
         name: "pb-render-page-element-style-horizontal-align",
         type: "pb-render-page-element-style",
-        renderStyle({ element, style }: Object) {
+        renderStyle({ element, style }) {
             const { horizontalAlign } = get(element, "data.settings", {});
             if (!horizontalAlign) {
                 return style;
@@ -23,7 +22,7 @@ export default ([
     {
         name: "pb-render-page-element-style-horizontal-align-flex",
         type: "pb-render-page-element-style",
-        renderStyle({ element, style }: Object) {
+        renderStyle({ element, style }) {
             const { horizontalAlignFlex } = get(element, "data.settings", {});
             if (!horizontalAlignFlex) {
                 return style;
@@ -34,7 +33,7 @@ export default ([
     {
         name: "pb-render-page-element-style-vertical-align",
         type: "pb-render-page-element-style",
-        renderStyle({ element, style }: Object) {
+        renderStyle({ element, style }) {
             const { verticalAlign } = get(element, "data.settings", {});
             if (!verticalAlign) {
                 return style;
@@ -42,4 +41,6 @@ export default ([
             return { ...style, justifyContent: vertical[verticalAlign] };
         }
     }
-]: Array<PbRenderElementStylePlugin>);
+];
+
+export default plugins;

@@ -1,4 +1,4 @@
-import { applyMiddleware, createStore, compose, Middleware } from "redux";
+import { applyMiddleware, createStore, compose, Middleware, Action as ReduxAction } from "redux";
 import _ from "lodash";
 import invariant from "invariant";
 import { getPlugins } from "@webiny/plugins";
@@ -17,7 +17,7 @@ import {
     PbEditorReduxMiddlewarePlugin
 } from "@webiny/app-page-builder/admin/types";
 
-export { default as connect } from "./connect";
+export { connect } from "./connect";
 
 export class Redux {
     actionMeta: { [key: string]: any };
@@ -116,6 +116,6 @@ export const addMiddleware = (actions: Array<string>, middleware: MiddlewareFunc
     redux.addMiddleware(actions, middleware);
 };
 
-export const dispatch = (action: Action) => {
+export const dispatch = (action: Action | ReduxAction) => {
     return redux.store.dispatch(action);
 };

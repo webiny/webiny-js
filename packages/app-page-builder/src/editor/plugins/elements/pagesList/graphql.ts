@@ -1,4 +1,3 @@
-// @flow
 import gql from "graphql-tag";
 /*, $sortBy: String, $sortDirection: String*/
 export const loadPages = gql`

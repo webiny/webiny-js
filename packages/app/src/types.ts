@@ -13,7 +13,7 @@ export type UploadOptions = {
 
 export type FileUploaderPlugin = Plugin & {
     // TODO: @adrian define type for the returned object
-    upload(file: File, options: UploadOptions): Promise<object>;
+    upload(file: File, options: UploadOptions): Promise<any>;
 };
 
 export { Plugin };

@@ -1,7 +1,6 @@
-// @flow
-import type { PbPageSettingsFieldsPlugin } from "@webiny/app-page-builder/types";
+import { PbPageSettingsFieldsPlugin } from "@webiny/app-page-builder/types";
 
-export default ([
+export default [
     {
         name: "pb-page-settings-fields-general",
         type: "pb-page-settings-fields",
@@ -46,4 +45,4 @@ export default ([
             }
     `
     }
-]: Array<PbPageSettingsFieldsPlugin>);
+] as PbPageSettingsFieldsPlugin[];

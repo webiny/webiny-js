@@ -1,4 +1,3 @@
-// @flow
 import align from "./align";
 import animation from "./animation";
 import background from "./background";

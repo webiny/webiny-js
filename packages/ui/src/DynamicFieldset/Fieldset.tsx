@@ -9,15 +9,15 @@ interface ChildrenRenderProp {
     empty: Function;
 }
 
-type Props = {
+type FieldsetProps = {
     value: Array<Object>;
-    description: null | string;
-    validation: null | { isValid: null | boolean; message?: string };
+    description?: string;
+    validation?: { isValid: null | boolean; message?: string };
     onChange: Function;
     children: (props: ChildrenRenderProp) => React.ReactNode;
 };
 
-class Fieldset extends React.Component<Props> {
+class Fieldset extends React.Component<FieldsetProps> {
     static defaultProps = {
         value: [],
         description: null

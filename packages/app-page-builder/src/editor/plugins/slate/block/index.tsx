@@ -5,7 +5,10 @@ import { ReactComponent as AlignJustifyIcon } from "@webiny/app-page-builder/edi
 import { ReactComponent as AlignRightIcon } from "@webiny/app-page-builder/editor/assets/icons/format_align_right.svg";
 import TypographySelector from "./TypographySelector";
 import { Editor } from "slate";
-import { PbEditorSlateMenuItemPlugin } from "@webiny/app-page-builder/admin/types";
+import {
+    PbEditorSlateEditorPlugin,
+    PbEditorSlateMenuItemPlugin
+} from "@webiny/app-page-builder/admin/types";
 
 // Icons map for dynamic render
 const icons = {
@@ -72,16 +75,19 @@ export default () => {
                 slate: {
                     renderNode(props, next) {
                         const { attributes, children, node, editor } = props;
+                        // @ts-ignore
                         const { type } = node;
 
+                        // @ts-ignore
                         const { typography } = editor.props.theme;
 
                         if (typography.hasOwnProperty(type) && typography[type].component) {
-                            const { component: Node, className = null } = typography[type];
+                            const { component: Component, className = null } = typography[type];
 
-                            let nodeProps = {
+                            let nodeProps: any = {
                                 ...attributes,
                                 className,
+                                // @ts-ignore
                                 style: { textAlign: `${node.data.get("align")}` }
                             };
 
@@ -89,13 +95,13 @@ export default () => {
                                 nodeProps = props;
                             }
 
-                            return <Node {...nodeProps}>{children}</Node>;
+                            return <Component {...nodeProps}>{children}</Component>;
                         }
 
                         return next();
                     }
                 }
-            }
+            } as PbEditorSlateEditorPlugin
         ]
     };
 };

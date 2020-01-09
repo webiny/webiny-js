@@ -1,3 +1,5 @@
+import { BindComponent } from "@webiny/form/Bind";
+
 export * from "../types";
 
 import { ComponentType, ReactElement, ReactNode } from "react";
@@ -13,6 +15,7 @@ import {
 import { IconPrefix, IconName } from "@fortawesome/fontawesome-svg-core";
 import { MenuButtonProps } from "@webiny/app-page-builder/editor/components/Slate/Menu";
 import { EditorBarProps } from "@webiny/app-page-builder/editor/components/Editor/Bar";
+import { Form } from "@webiny/form/Form";
 
 export type PbShallowElement = Omit<PbElement, "elements"> & { elements: string[] };
 
@@ -55,7 +58,7 @@ export type MiddlewareParams = {
 };
 
 export type MiddlewareFunction = (params: MiddlewareParams) => any;
-export type ActionCreator = (payload?: any, meta?: Object) => Action;
+export type ActionCreator = (payload?: any, meta?: { [key: string]: any }) => Action;
 
 export type PbEditorReduxMiddlewarePlugin = Plugin & {
     type: "pb-editor-redux-middleware";
@@ -106,20 +109,22 @@ export type PbElementGroupPlugin = Plugin & {
         // Title rendered in the toolbar.
         title: string;
         // Icon rendered in the toolbar.
-        icon: ReactNode;
+        icon: ReactElement;
     };
 };
+
+export type ElementTitle = (params: { refresh: () => void }) => ReactNode;
 
 export type PbElementPlugin = Plugin & {
     type: "pb-page-element";
     elementType: string;
     toolbar?: {
         // Element title in the toolbar.
-        title?: string;
+        title?: string | ElementTitle;
         // Element group this element belongs to.
         group?: string;
         // A function to render an element preview in the toolbar.
-        preview?: () => ReactNode;
+        preview?: ({ theme: PbTheme }) => ReactNode;
     };
     // Help link
     help?: string;
@@ -128,7 +133,7 @@ export type PbElementPlugin = Plugin & {
     // Array of element settings plugin names.
     settings?: Array<string>;
     // A function to create an element data structure.
-    create: (options: { [key: string]: any }, parent?: PbElement) => PbElement;
+    create: (options: { [key: string]: any }, parent?: PbElement) => Omit<PbElement, "id" | "path">;
     // A function to render an element in the editor.
     render: (params: { theme?: PbTheme; element: PbElement }) => ReactNode;
     // A function to check if an element can be deleted.
@@ -136,15 +141,22 @@ export type PbElementPlugin = Plugin & {
     // Executed when another element is dropped on the drop zones of current element.
     onReceived?: (params: {
         store?: Store;
-        source: PbElement | { type: string };
+        source: PbElement | { type: string; path?: string };
         target: PbElement;
         position: number | null;
     }) => void;
     // Executed when an immediate child element is deleted
     onChildDeleted?: (params: { element: PbElement; child: PbElement }) => void;
+    // Executed after element was created
+    onCreate?: string;
+    // Render element preview (used when creating element screenshots; not all elements have a simple DOM representation
+    // so this callback is used to customize the look of the element in a PNG image)
+    renderElementPreview?: (params: {
+        element: PbElement;
+        width: number;
+        height: number;
+    }) => ReactElement;
 };
-
-export type PbBlockPlugin = PbElementPlugin;
 
 export type PbElementActionPlugin = Plugin & {
     render: (params: { plugin: PbElementPlugin }) => ReactNode;
@@ -164,7 +176,7 @@ export type PbPageSettingsPlugin = Plugin & {
     /* GraphQL query fields to include in the `settings` subselect */
     fields: string;
     /* Render function that handles the specified `fields` */
-    render: (params: { Bind: React.ComponentType }) => ReactNode;
+    render: (params: { form: Form; Bind: BindComponent }) => ReactNode;
 };
 
 export type PbBlockCategoryPlugin = Plugin & {
@@ -184,7 +196,7 @@ export type PbIcon = {
     /**
      * SVG element
      */
-    svg: React.ElementType<React.SVGProps<SVGSVGElement>>;
+    svg: ReactElement;
 };
 
 export type PbIconsPlugin = Plugin & {
@@ -240,6 +252,11 @@ export type PbEditorDefaultBarRightPlugin = Plugin & {
     render(): ReactElement;
 };
 
+export type PbEditorDefaultBarRightPageOptionsPlugin = Plugin & {
+    type: "pb-editor-default-bar-right-page-options";
+    render(): ReactElement;
+};
+
 export type PbEditorToolbarTopPlugin = Plugin & {
     type: "pb-editor-toolbar-top";
     renderAction(): ReactElement;
@@ -251,4 +268,52 @@ export type PbEditorToolbarBottomPlugin = Plugin & {
     type: "pb-editor-toolbar-bottom";
     renderAction(): ReactElement;
     renderDialog?: () => ReactElement;
+};
+
+export type PbEditorBlockPlugin = Plugin & {
+    type: "pb-editor-block";
+    title: string;
+    category: string;
+    tags: string[];
+    image: {
+        src?: string;
+        meta: {
+            width: number;
+            height: number;
+            aspectRatio: number;
+        };
+    };
+    create(): PbElement;
+    preview(): ReactElement;
+};
+
+export type PbEditorBlockCategoryPlugin = Plugin & {
+    type: "pb-editor-block-category";
+    title: string;
+    categoryName: string;
+    description: string;
+    icon: ReactElement;
+};
+
+export type PbEditorPageSettingsPlugin = Plugin & {
+    type: "pb-editor-page-settings";
+    title: string;
+    description: string;
+    icon: ReactElement;
+    // GQL query string fields
+    fields: string;
+    render(props): ReactElement;
+};
+
+export type PbPageElementSettingsPlugin = Plugin & {
+    type: "pb-page-element-settings";
+    renderAction(params: { options?: any }): ReactElement;
+    renderMenu?: (params: { options?: any }) => ReactElement;
+};
+
+export type PbPageElementAdvancedSettingsPlugin = Plugin & {
+    type: "pb-page-element-advanced-settings";
+    elementType: string;
+    render(params?: { Bind: BindComponent; data: any }): ReactElement;
+    onSave?: (data: FormData) => FormData;
 };

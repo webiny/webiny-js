@@ -3,7 +3,7 @@ import { default as RcTooltip } from "rc-tooltip";
 import "rc-tooltip/assets/bootstrap_white.css";
 import "./style.scss";
 
-type Props = {
+type TooltipProps = {
     // A component (eg. button) which will trigger the tooltip.
     children: React.ReactNode;
 
@@ -15,6 +15,9 @@ type Props = {
 
     // Can be "left","right","top","bottom", "topLeft", "topRight", "bottomLeft" or "bottomRight".
     placement?: string;
+
+    // CSS class name
+    className?: string;
 };
 
 type State = {
@@ -24,7 +27,7 @@ type State = {
 /**
  * Use Tooltip component to display a list of choices, once the handler is triggered.
  */
-class Tooltip extends React.Component<Props, State> {
+class Tooltip extends React.Component<TooltipProps, State> {
     state = { tooltipIsOpen: false };
 
     onVisibleChange = (visible: boolean) => {

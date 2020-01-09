@@ -1,35 +1,36 @@
 import * as React from "react";
-import { Select as RmwcSelect } from "@rmwc/select";
+import { Select as RmwcSelect, SelectProps as RmwcSelectProps } from "@rmwc/select";
 import { FormElementMessage } from "@webiny/ui/FormElementMessage";
 import { FormComponentProps } from "./../types";
 import { css } from "emotion";
 import classNames from "classnames";
 
-type Props = FormComponentProps & {
-    // Component label.
-    label?: string;
+type SelectProps = FormComponentProps &
+    RmwcSelectProps & {
+        // Component label.
+        label?: string;
 
-    // Is checkbox disabled?
-    disabled?: boolean;
+        // Is checkbox disabled?
+        disabled?: boolean;
 
-    // Description beneath the select.
-    description?: string;
+        // Description beneath the select.
+        description?: string;
 
-    // Placeholder text for the form control. Set to a blank string to create a non-floating placeholder label.
-    placeholder?: string;
+        // Placeholder text for the form control. Set to a blank string to create a non-floating placeholder label.
+        placeholder?: string;
 
-    // Makes the Select have a visual box.
-    box?: string;
+        // Makes the Select have a visual box.
+        box?: string;
 
-    // One or more <option> or <optgroup> elements.
-    children?: React.ReactElement<"option"> | React.ReactElement<"optgroup">[];
+        // One or more <option> or <optgroup> elements.
+        children?: Array<React.ReactElement<"option"> | React.ReactElement<"optgroup">>;
 
-    // IconProps for the root element. By default, additional props spread to the native select element.
-    rootProps?: Object;
+        // IconProps for the root element. By default, additional props spread to the native select element.
+        rootProps?: Object;
 
-    // A className for the root element.
-    className?: string;
-};
+        // A className for the root element.
+        className?: string;
+    };
 
 const noLabel = css({
     "&.mdc-select": {
@@ -60,7 +61,7 @@ const getRmwcProps = props => {
     return newProps;
 };
 
-export const Select = (props: Props) => {
+export const Select = (props: SelectProps) => {
     const { value, description, validation, ...other } = props;
 
     return (

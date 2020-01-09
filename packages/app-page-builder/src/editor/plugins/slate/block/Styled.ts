@@ -1,7 +1,7 @@
 import styled from "@emotion/styled";
 import { css } from "emotion";
 
-export const Item = styled("div")(({ isActive, isSelected }) => ({
+export const Item = styled("div")(({ isActive, isSelected }: any) => ({
     cursor: "pointer",
     display: "block",
     border: "none",
@@ -38,7 +38,7 @@ export const List = styled("div")({
 
 export const dropDownDialog = css({
     position: "absolute",
-    zIndex: "2",
+    zIndex: 2,
     top: 27,
     left: -5,
     width: 200

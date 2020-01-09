@@ -3,7 +3,7 @@ import invariant from "invariant";
 import { set } from "dot-prop-immutable";
 import { isPlainObject, omit } from "lodash";
 import { getPlugin, getPlugins } from "@webiny/plugins";
-import { PbElement, PbBlockPlugin, PbElementPlugin } from "@webiny/app-page-builder/admin/types";
+import {PbElement, PbElementPlugin, PbEditorBlockPlugin} from "@webiny/app-page-builder/admin/types";
 
 export const updateChildPaths = (element: PbElement) => {
     if (!element.id) {
@@ -82,8 +82,8 @@ export const createColumn = (options: Object = {}, parent?: PbElement) => {
     return createElement("column", options, parent);
 };
 
-export const createBlockElements = (name: string, options: Object = {}, parent?: PbElement) => {
-    const plugin = getPlugin(name) as PbBlockPlugin;
+export const createBlockElements = (name: string) => {
+    const plugin = getPlugin(name) as PbEditorBlockPlugin;
 
     invariant(plugin, `Missing block plugin "${name}"!`);
 
@@ -92,7 +92,7 @@ export const createBlockElements = (name: string, options: Object = {}, parent?:
         data: {},
         elements: [],
         path: "",
-        ...plugin.create(options, parent)
+        ...plugin.create()
     };
 };
 

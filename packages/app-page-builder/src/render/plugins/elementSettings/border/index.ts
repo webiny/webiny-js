@@ -1,8 +1,7 @@
-// @flow
 import { get, startCase } from "lodash";
-import type { PbRenderElementStylePlugin } from "@webiny/app-page-builder/types";
+import { PbRenderElementStylePlugin } from "@webiny/app-page-builder/types";
 
-export default ({
+export default {
     name: "pb-render-page-element-style-border",
     type: "pb-render-page-element-style",
     renderStyle({ element, style }) {
@@ -31,4 +30,4 @@ export default ({
 
         return style;
     }
-}: PbRenderElementStylePlugin);
+} as PbRenderElementStylePlugin;

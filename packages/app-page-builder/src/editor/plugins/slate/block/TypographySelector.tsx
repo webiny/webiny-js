@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useCallback } from "react";
+import React, { useState, useEffect, useRef, useCallback, RefObject } from "react";
 import Downshift from "downshift";
 import { Elevation } from "@webiny/ui/Elevation";
 import { usePageBuilder } from "@webiny/app-page-builder/hooks/usePageBuilder";
@@ -7,7 +7,7 @@ import { Item, Button, List, dropDownDialog } from "./Styled";
 
 const TypographySelector = props => {
     const [showMenu, setShowMenu] = useState(false);
-    const dropdown = useRef();
+    const dropdown: RefObject<any> = useRef();
     const { theme } = usePageBuilder();
 
     useEffect(() => {
@@ -46,14 +46,14 @@ const TypographySelector = props => {
                                             <Item
                                                 {...getItemProps({
                                                     item: name,
-                                                    isActive: highlightedIndex === index,
+                                                    // TODO: check this; TS is complaining: isActive: highlightedIndex === index,
                                                     isSelected: selectedItem === name
                                                 })}
                                                 key={name}
                                             >
                                                 {React.createElement(
                                                     style.component || "span",
-                                                    { style: style.style },
+                                                    { className: style.className },
                                                     style.label
                                                 )}
                                             </Item>

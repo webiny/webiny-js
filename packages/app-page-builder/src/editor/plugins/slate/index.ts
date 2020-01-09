@@ -1,4 +1,3 @@
-// @flow
 import boldFactory from "./bold";
 import italicFactory from "./italic";
 import underlineFactory from "./underline";

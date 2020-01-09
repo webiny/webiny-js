@@ -13,7 +13,7 @@ export default async ({ form, value }) => {
         return;
     }
 
-    const image = await new Promise(function(resolve, reject) {
+    const image: any = await new Promise(function(resolve, reject) {
         let image = new window.Image();
         image.onload = function() {
             resolve(image);

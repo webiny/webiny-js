@@ -4,7 +4,7 @@ export const isLink = i => i.type === TYPE;
 
 export const getLinkRange = (change, selection) => {
     change.select(selection);
-    let link = change.value.inlines.find(isLink);
+    const link = change.value.inlines.find(isLink);
     if (!link) {
         return selection;
     }

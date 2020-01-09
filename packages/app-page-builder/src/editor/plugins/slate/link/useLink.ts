@@ -33,7 +33,7 @@ export default function useLink({ editor, onChange, activatePlugin }) {
         // Calculate position
         if (menu) {
             const editorRect = menu.parentNode.getBoundingClientRect();
-            let { top, left, height } = getSelectionRect();
+            const { top, left, height } = getSelectionRect();
 
             // Cursor position is calculated in relation to `window`
             const cursorLeft = left - editorRect.left;
@@ -65,7 +65,7 @@ export default function useLink({ editor, onChange, activatePlugin }) {
             onChange(change);
             menu.style.display = "none";
         });
-    });
+    }, []);
 
     const href = link ? link.data.get("href") : "";
 

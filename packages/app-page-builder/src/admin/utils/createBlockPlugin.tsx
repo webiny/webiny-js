@@ -2,21 +2,25 @@ import React from "react";
 import cloneDeep from "lodash/cloneDeep";
 import { registerPlugins } from "@webiny/plugins";
 import { Image } from "@webiny/ui/Image";
+import { PbEditorBlockPlugin } from "@webiny/app-page-builder/admin/types";
 
-type Element = {
-    id: string,
-    name: string,
-    type: string,
-    category: string,
-    content: Object,
+type BlockElement = {
+    id: string;
+    name: string;
+    type: string;
+    category: string;
+    content: any;
     preview: {
-        src: string,
-        width: number,
-        height: number
-    }
+        src: string;
+        meta: {
+            width: number;
+            height: number;
+            aspectRatio: number;
+        };
+    };
 };
 
-export default (el: Element) => {
+export default (el: BlockElement) => {
     registerPlugins({
         id: el.id,
         name: "pb-saved-block-" + el.id,
@@ -37,5 +41,5 @@ export default (el: Element) => {
                 />
             );
         }
-    });
+    } as PbEditorBlockPlugin);
 };

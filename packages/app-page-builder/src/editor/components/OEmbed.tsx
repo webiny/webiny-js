@@ -66,6 +66,7 @@ export type OEmbedProps = {
     updateElement: PbUpdateElement;
     onData?: (data: { [key: string]: any }) => { [key: string]: any };
     renderEmbed?: (props: OEmbedProps) => ReactElement;
+    data: any;
 };
 
 const OEmbed = React.memo((props: OEmbedProps) => {

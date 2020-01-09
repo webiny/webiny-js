@@ -1,4 +1,3 @@
-// @flow
 import basicGroup from "./basic";
 import layoutGroup from "./layout";
 import mediaGroup from "./media";

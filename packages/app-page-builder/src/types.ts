@@ -69,12 +69,14 @@ export type PbRenderElementAttributesPlugin = Plugin & {
 
 export type PbPageElementImagesListComponentPlugin = Plugin & {
     type: "pb-page-element-images-list-component";
+    title: string;
     componentName: string;
     component: ComponentType<any>;
 };
 
 export type PbPageElementPagesListComponentPlugin = Plugin & {
     type: "pb-page-element-pages-list-component";
+    title: string;
     componentName: string;
     component: ComponentType<any>;
 };

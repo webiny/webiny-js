@@ -1,4 +1,4 @@
-//@flowIgnore
+// @ts-nocheck
 /* eslint-disable */
 
 const util = newUtil();
@@ -25,7 +25,7 @@ const domtoimage = {
     }
 };
 
-module.exports = domtoimage;
+export default domtoimage;
 
 function toSvg(node, options) {
     options = options || {};

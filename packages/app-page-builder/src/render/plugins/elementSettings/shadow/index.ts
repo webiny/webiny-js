@@ -1,11 +1,10 @@
-// @flow
 import { get } from "lodash";
-import type { PbRenderElementStylePlugin } from "@webiny/app-page-builder/types";
+import { PbRenderElementStylePlugin } from "@webiny/app-page-builder/types";
 
-export default ({
+export default {
     name: "pb-render-page-element-style-shadow",
     type: "pb-render-page-element-style",
-    renderStyle({ element, style }: Object) {
+    renderStyle({ element, style }) {
         const { shadow } = get(element, "data.settings", {});
         if (!shadow) {
             return style;
@@ -22,4 +21,4 @@ export default ({
             ].join(" ")
         };
     }
-}: PbRenderElementStylePlugin);
+} as PbRenderElementStylePlugin;

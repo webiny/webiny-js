@@ -1,4 +1,3 @@
-// @flow
 import React from "react";
 import { useHandler } from "@webiny/app/hooks/useHandler";
 import { connect } from "@webiny/app-page-builder/editor/redux";
@@ -12,8 +11,9 @@ import {
     getElementWithChildren,
     getParentElementWithChildren
 } from "@webiny/app-page-builder/editor/selectors";
+import { PbElementPlugin } from "@webiny/app-page-builder/admin/types";
 
-const CloneAction = (props: Object) => {
+const CloneAction = props => {
     const { element, children } = props;
 
     const onClick = useHandler(props, ({ element, updateElement }) => {
@@ -30,7 +30,9 @@ const CloneAction = (props: Object) => {
         updateElement({ element: newElement });
     });
 
-    const plugin = getPlugins("pb-page-element").find(pl => pl.elementType === element.type);
+    const plugin = getPlugins<PbElementPlugin>("pb-page-element").find(
+        pl => pl.elementType === element.type
+    );
 
     if (!plugin) {
         return null;

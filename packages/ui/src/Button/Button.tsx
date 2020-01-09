@@ -1,8 +1,9 @@
 import * as React from "react";
 import * as R from "@rmwc/button";
-import { Fab } from "@rmwc/fab";
+import { Fab, FabProps } from "@rmwc/fab";
 import { Icon } from "../Icon/Icon";
 import classNames from "classnames";
+import { SyntheticEvent } from "react";
 
 type Props = {
     // Make button flat (only applicable to Primary button).
@@ -114,10 +115,13 @@ export const ButtonSecondary = (props: Props) => {
     );
 };
 
-type ButtonFloatingProps = Props & {
-    label?: React.ReactNode;
-    icon?: React.ReactNode;
-};
+type ButtonFloatingProps = Props &
+    FabProps & {
+        label?: React.ReactNode;
+        icon?: React.ReactNode;
+        onMouseDown?: (e: SyntheticEvent) => void;
+        onMouseUp?: (e: SyntheticEvent) => void;
+    };
 
 /**
  * A floating button, shown on the side of the screen, typically used for creating new content or accessing settings.

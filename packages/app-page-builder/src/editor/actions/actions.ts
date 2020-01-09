@@ -16,7 +16,7 @@ import {
 } from "@webiny/app-page-builder/editor/selectors";
 import { updateChildPaths } from "@webiny/app-page-builder/editor/utils";
 import undoable from "./history";
-import {PbElement, PbElementPlugin, PbPageRevision} from "@webiny/app-page-builder/admin/types";
+import {Action, PbElement, PbElementPlugin, PbPageRevision} from "@webiny/app-page-builder/admin/types";
 
 export const DRAG_START = `Drag start`;
 export const DRAG_END = `Drag end`;
@@ -164,7 +164,7 @@ addReducer([DRAG_END], "ui.dragging", () => false);
 
 export const elementCreated = createAction(ELEMENT_CREATED);
 
-export type PbUpdateElement = (params: { element: PbElement}) => void;
+export type PbUpdateElement = (params: { element: PbElement}) => Action;
 
 export const updateElement = createAction(UPDATE_ELEMENT) as PbUpdateElement;
 

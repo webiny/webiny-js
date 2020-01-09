@@ -1,6 +1,3 @@
-// @flow
-import type { Change } from "slate";
-
 export default () => {
     return {
         editor: [
@@ -8,7 +5,7 @@ export default () => {
                 name: "pb-editor-slate-editor-scroll",
                 type: "pb-editor-slate-editor",
                 slate: {
-                    onKeyDown(event: SyntheticKeyboardEvent<*>, change: Change, next: Function) {
+                    onKeyDown() {
                         const native = window.getSelection();
                         if (native.type === "None") {
                             return { top: 0, left: 0, width: 0, height: 0 };
@@ -18,7 +15,6 @@ export default () => {
                         const pos = range.getBoundingClientRect();
 
                         const cursorY = pos.top;
-                        // $FlowFixMe
                         const { clientHeight } = document.documentElement;
                         const height = clientHeight - 50;
 
@@ -26,8 +22,6 @@ export default () => {
                             const scrollDiff = cursorY - height;
                             window.scrollTo(0, window.scrollY + scrollDiff + 20);
                         }
-
-                        return next();
                     }
                 }
             }

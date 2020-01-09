@@ -1,3 +1,1 @@
-import { connect } from "react-redux";
-
-export default connect;
+export { connect } from "react-redux";

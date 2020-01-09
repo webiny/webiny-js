@@ -22,12 +22,12 @@ const _register = plugins => {
 
 export const registerPlugins = (...args: any): void => _register(args);
 
-export const getPlugins = (type?: string): Array<Plugin> => {
-    const values: Plugin[] = Object.values(__plugins);
-    return values.filter((plugin: Plugin) => (type ? plugin.type === type : true));
+export const getPlugins = <T extends Plugin>(type?: string): Array<T> => {
+    const values: T[] = Object.values(__plugins);
+    return values.filter((plugin: T) => (type ? plugin.type === type : true));
 };
 
-export const getPlugin = (name: string): Plugin | null => {
+export const getPlugin =  <T extends Plugin>(name: string): T | null => {
     return __plugins[name];
 };
 

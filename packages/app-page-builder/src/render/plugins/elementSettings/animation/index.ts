@@ -1,8 +1,7 @@
-// @flow
 import { get } from "lodash";
-import type { PbRenderElementAttributesPlugin } from "@webiny/app-page-builder/types";
+import { PbRenderElementAttributesPlugin } from "@webiny/app-page-builder/types";
 
-export default ({
+export default {
     name: "pb-render-page-element-attributes-animation",
     type: "pb-render-page-element-attributes",
     renderAttributes({ element, attributes }) {
@@ -11,7 +10,7 @@ export default ({
             return attributes;
         }
 
-        const attrs: Object = { "data-aos": animation.name };
+        const attrs = { "data-aos": animation.name };
 
         if (animation.advanced) {
             attrs["data-aos-duration"] = animation.duration;
@@ -22,4 +21,4 @@ export default ({
 
         return { ...attributes, ...attrs };
     }
-}: PbRenderElementAttributesPlugin);
+} as PbRenderElementAttributesPlugin;

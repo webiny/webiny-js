@@ -5,7 +5,7 @@ import { fas } from "@fortawesome/free-solid-svg-icons";
 import { far } from "@fortawesome/free-regular-svg-icons";
 import { PbIconsPlugin } from "@webiny/app-page-builder/admin/types";
 
-const createSvg = (icon: Object) => {
+const createSvg = (icon) => {
     return (
         <svg width={24} viewBox={`0 0 ${icon[0]} ${icon[1]}`}>
             <path d={icon[4]} fill="currentColor" />
