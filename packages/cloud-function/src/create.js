@@ -1,4 +1,5 @@
 import { PluginsContainer } from "./PluginsContainer";
+import createResponse from "./createResponse";
 
 export default (...plugins) => async (...args) => {
     const context = {
@@ -27,6 +28,12 @@ export default (...plugins) => async (...args) => {
     handlers = context.plugins.byType("after-handle");
     for (let i = 0; i < handlers.length; i++) {
         await handlers[i].handle({ context, args, result });
+    }
+
+    if (!result) {
+        return createResponse({
+            body: "Request not handled. Please check registered handlers."
+        });
     }
 
     return result;
