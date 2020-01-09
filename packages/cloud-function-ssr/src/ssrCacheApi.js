@@ -34,58 +34,115 @@ export default () => ({
 
         const [action, actionArgs = {}] = body.ssr;
 
-        if (action === API_ACTION.INVALIDATE_SSR_CACHE_BY_TAGS) {
-            const { tags } = actionArgs;
-            const { SsrCache } = context.models;
-            for (let i = 0; i < tags.length; i++) {
-                let tag = tags[i];
-                let $elemMatch = {};
-                if (tag.class) {
-                    $elemMatch.class = tag.class;
+        try {
+            if (action === API_ACTION.INVALIDATE_SSR_CACHE_BY_TAGS) {
+                const { tags } = actionArgs;
+                const { SsrCache } = context.models;
+                for (let i = 0; i < tags.length; i++) {
+                    let tag = tags[i];
+                    let $elemMatch = {};
+                    if (tag.class) {
+                        $elemMatch.class = tag.class;
+                    }
+
+                    if (tag.id) {
+                        $elemMatch.id = tag.id;
+                    }
+
+                    const driver = SsrCache.getStorageDriver();
+                    await driver.getClient().runOperation({
+                        collection: driver.getCollectionName(SsrCache),
+                        operation: [
+                            "update",
+                            {
+                                cacheTags: { $elemMatch }
+                            },
+                            { $set: { expiresOn: null } },
+                            { multi: true }
+                        ]
+                    });
                 }
 
-                if (tag.id) {
-                    $elemMatch.id = tag.id;
-                }
-
-                const driver = SsrCache.getStorageDriver();
-                await driver.getClient().runOperation({
-                    collection: driver.getCollectionName(SsrCache),
-                    operation: [
-                        "update",
-                        {
-                            cacheTags: { $elemMatch }
-                        },
-                        { $set: { expiresOn: null } },
-                        { multi: true }
-                    ]
+                return createResponse({
+                    type: "text/json",
+                    body: JSON.stringify({
+                        error: false,
+                        data: null
+                    })
                 });
             }
 
-            return createResponse();
-        }
+            const { SsrCache } = context.models;
+            let ssrCache = await SsrCache.findByPath(actionArgs.path);
+            if (!ssrCache) {
+                ssrCache = new SsrCache();
+                ssrCache.path = path;
+                await ssrCache.save();
+            }
 
-        const { SsrCache } = context.models;
-        let ssrCache = await SsrCache.findByPath(actionArgs.path);
-        if (!ssrCache) {
-            ssrCache = new SsrCache();
-            ssrCache.path = path;
-            await ssrCache.save();
-        }
+            if (action === API_ACTION.INVALIDATE_SSR_CACHE_BY_PATH) {
+                const data = {
+                    path: ssrCache.path,
+                    invalidated: false,
+                    refreshed: false,
+                    ssrCache: {
+                        hasExpired: ssrCache.hasExpired,
+                        expiresIn: ssrCache.expiresIn,
+                        expiresOn: ssrCache.expiresOn
+                    }
+                };
 
-        breakIf: if (action === API_ACTION.INVALIDATE_SSR_CACHE_BY_PATH) {
-            if (actionArgs.expired === true) {
-                if (!ssrCache.hasExpired) {
-                    break breakIf;
+                if (actionArgs.expired === true && !ssrCache.hasExpired) {
+                    return createResponse({
+                        type: "text/json",
+                        body: JSON.stringify({
+                            error: false,
+                            data
+                        })
+                    });
                 }
+
+                await ssrCache.invalidate();
+                data.invalidated = true;
+                if (actionArgs.refresh) {
+                    await ssrCache.refresh();
+                    data.refreshed = true;
+                }
+
+                data.ssrCache = {
+                    hasExpired: ssrCache.hasExpired,
+                    expiresIn: ssrCache.expiresIn,
+                    expiresOn: ssrCache.expiresOn
+                };
+
+                return createResponse({
+                    type: "text/json",
+                    body: JSON.stringify({
+                        error: false,
+                        data
+                    })
+                });
             }
 
-            await ssrCache.invalidate();
-            if (actionArgs.refresh) {
-                await ssrCache.refresh();
-            }
+            return createResponse({
+                type: "text/json",
+                body: JSON.stringify({
+                    error: true,
+                    data: {
+                        message: `Supplied action "${action}" is invalid.`
+                    }
+                })
+            });
+        } catch (e) {
+            return createResponse({
+                type: "text/json",
+                body: JSON.stringify({
+                    error: true,
+                    data: {
+                        message: e.message
+                    }
+                })
+            });
         }
-
-        return createResponse();
     }
 });
