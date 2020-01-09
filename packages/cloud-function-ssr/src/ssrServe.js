@@ -29,6 +29,9 @@ export default options => {
                     await ssrCache.refresh();
                 } else if (ssrCache.hasExpired) {
                     // On expiration, asynchronously trigger SSR cache refreshing.
+                    // This will only increment expiresOn for the "options.cache.staleTtl" seconds, which
+                    // is a short duration, enough for the actual refresh to complete, which will again update the
+                    // expiration. Default value of "options.cache.staleTtl" is 20 seconds.
                     await ssrCache.incrementExpiresOn().save();
                     const Lambda = new LambdaClient({ region: process.env.AWS_REGION });
                     await Lambda.invoke({
