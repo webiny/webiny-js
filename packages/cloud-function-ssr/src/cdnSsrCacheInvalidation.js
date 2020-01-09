@@ -4,12 +4,21 @@ import { withHooks } from "@webiny/commodo/hooks";
 export default () => ({
     type: "context",
     name: "context-cdn-ssr-cache-invalidation",
-    apply({
-        context: {
-            models: { SsrCache }
-        },
-        args
-    }) {
+    apply(options) {
+        if (!options.context.models || !options.context.models.SsrCache) {
+            throw new Error(
+                `Missing "SsrCache" model in context. 
+                 Did you apply default "@webiny/cloud-function-ssr" plugins?`
+            );
+        }
+
+        const {
+            context: {
+                models: { SsrCache }
+            },
+            args
+        } = options;
+
         withHooks({
             async afterInvalidate() {
                 const cloudfront = new CloudFront();
