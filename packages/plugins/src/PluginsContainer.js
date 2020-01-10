@@ -1,8 +1,5 @@
 // @flow
-type PluginType = Object & {
-    name: string,
-    type: string
-};
+import type { PluginType } from "./types";
 
 const assign = (plugins, target) => {
     for (let i = 0; i < plugins.length; i++) {
@@ -22,7 +19,7 @@ const assign = (plugins, target) => {
     }
 };
 
-export class PluginsContainer {
+export default class PluginsContainer {
     plugins = {};
 
     constructor(plugins: Array<PluginType> = []) {

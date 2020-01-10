@@ -1,37 +1,23 @@
 // @flow
 import type { PluginType } from "@webiny/plugins/types";
+import PluginsContainer from "./PluginsContainer";
 
-const __plugins = {};
+const __plugins = new PluginsContainer();
 
-const _register = plugins => {
-    for (let i = 0; i < plugins.length; i++) {
-        let plugin = plugins[i];
-        if (Array.isArray(plugin)) {
-            _register(plugin);
-            continue;
-        }
-
-        const name = plugin._name || plugin.name;
-        if (!name) {
-            throw Error(`Plugin must have a "name" or "_name" key.`);
-        }
-
-        __plugins[name] = plugin;
-        plugin.init && plugin.init();
-    }
+const registerPlugins = (...args: any): void => {
+    return __plugins.register(...args);
 };
 
-export const registerPlugins = (...args: any): void => _register(args);
-
-export const getPlugins = (type: string): Array<PluginType> => {
-    const values: Array<PluginType> = (Object.values(__plugins): any);
-    return values.filter((plugin: PluginType) => (type ? plugin.type === type : true));
+const getPlugins = (type: string): Array<PluginType> => {
+    return __plugins.byType(type);
 };
 
-export const getPlugin = (name: string): ?PluginType => {
-    return __plugins[name];
+const getPlugin = (name: string): ?PluginType => {
+    return __plugins.byName(name);
 };
 
-export const unregisterPlugin = (name: string): void => {
-    delete __plugins[name];
+const unregisterPlugin = (name: string): void => {
+    return __plugins.unregister(name);
 };
+
+export { PluginsContainer, registerPlugins, getPlugins, getPlugin, unregisterPlugin };
