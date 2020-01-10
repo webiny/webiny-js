@@ -1,7 +1,7 @@
 // @flow
 import React from "react";
 import { createValue } from "@webiny/app-page-builder/editor/components/Slate";
-import type { PluginType } from "@webiny/app-page-builder/types";
+import type { PluginType } from "@webiny/plugins/types";
 import { ReactComponent as ButtonIcon } from "./round-toggle_on-24px.svg";
 import ButtonSettings from "./ButtonSettings";
 import Button from "./Button";

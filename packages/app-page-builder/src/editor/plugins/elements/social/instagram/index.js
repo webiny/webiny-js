@@ -5,7 +5,7 @@ import { Tab } from "@webiny/ui/Tabs";
 import { Input } from "@webiny/ui/Input";
 import { Grid, Cell } from "@webiny/ui/Grid";
 import { ReactComponent as SocialIcon } from "./../../../elementGroups/social/round-people-24px.svg";
-import type { PluginType } from "@webiny/app-page-builder/types";
+import type { PluginType } from "@webiny/plugins/types";
 import placeholder from "./placeholder.jpg";
 import {
     createEmbedPlugin,

@@ -1,6 +1,6 @@
 // @flow
 import React from "react";
-import type { PluginType } from "@webiny/app-page-builder/types";
+import type { PluginType } from "@webiny/plugins/types";
 import { ReactComponent as LinkIcon } from "./round-link-24px.svg";
 import LinkSettings from "./LinkSettings";
 import Action from "../components/Action";

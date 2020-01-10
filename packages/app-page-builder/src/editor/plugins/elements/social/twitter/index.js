@@ -1,7 +1,7 @@
 // @flow
 import React from "react";
 import styled from "@emotion/styled";
-import type { PluginType } from "@webiny/app-page-builder/types";
+import type { PluginType } from "@webiny/plugins/types";
 import { Tab } from "@webiny/ui/Tabs";
 import { Input } from "@webiny/ui/Input";
 import { Grid, Cell } from "@webiny/ui/Grid";

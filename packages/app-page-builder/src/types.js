@@ -1,7 +1,6 @@
 // @flow
 import type { Node, ComponentType } from "react";
 import type { PluginType } from "@webiny/plugins/types";
-export type { PluginType };
 
 export type PbElementType = {
     id: string,
