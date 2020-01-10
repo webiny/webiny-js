@@ -49,7 +49,7 @@ const PagesDataList = props => {
             ]}
         >
             {({ data = [] }) => (
-                <List>
+                <List data-testid="default-data-list">
                     {data.map(page => (
                         <ListItem key={page.id}>
                             <ListItemText

@@ -36,7 +36,12 @@ const CategoriesDialog = ({
     children: any
 }) => {
     return (
-        <Dialog open={open} onClose={onClose} className={narrowDialog}>
+        <Dialog
+            open={open}
+            onClose={onClose}
+            className={narrowDialog}
+            data-testid="pb-new-page-category-modal"
+        >
             {children}
             <DialogTitle>Select a category</DialogTitle>
             <DialogContent>

@@ -65,34 +65,4 @@ context("Categories Module", () => {
             cy.findByText(`Cool Category ${id}`).should("not.exist");
         });
     });
-
-   /* it("categories with the same slug should not be allowed - an error message must be shown", () => {
-        const id = uniqid();
-        cy.visit("/page-builder/categories")
-            .findByLabelText("Name")
-            .type(`Cool Category ${id}`)
-            .findByText("Save category")
-            .findByLabelText("Slug")
-            .type(`cool-category-${id}`)
-            .findByText("Save category")
-            .click();
-
-        cy.wait(500);
-
-        cy.findByTestId("new-record-button")
-            .click()
-            .findByLabelText("Name")
-            .type(`Cool Category ${id}`)
-            .findByText("Save category")
-            .findByLabelText("Slug")
-            .type(`cool-category-${id}`)
-            .findByText("Save category")
-            .click();
-
-        cy.wait(500)
-            .get('[role="alertdialog"] :visible')
-            .within(() => {
-                cy.findByText(`Category with slug "cool-category-${id}" already exists.`).should("exist");
-            });
-    });*/
 });

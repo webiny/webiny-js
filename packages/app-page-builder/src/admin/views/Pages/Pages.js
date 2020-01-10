@@ -64,7 +64,7 @@ const Pages = props => {
                     <PageDetails refreshPages={dataList.refresh} />
                 </RightPanel>
             </SplitView>
-            <FloatingActionButton onClick={openDialog} />
+            <FloatingActionButton data-testid="new-record-button" onClick={openDialog} />
         </React.Fragment>
     );
 };

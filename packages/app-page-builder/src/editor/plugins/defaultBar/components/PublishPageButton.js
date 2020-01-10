@@ -13,6 +13,7 @@ const PublishPageButton = ({ page, history }) => {
     const { showSnackbar } = useSnackbar();
     return (
         <ConfirmationDialog
+            data-testid={"pb-editor-publish-confirmation-dialog"}
             title="Publish page"
             message="You are about to publish this page, are you sure want to continue?"
         >
@@ -51,9 +52,6 @@ const PublishPageButton = ({ page, history }) => {
     );
 };
 
-export default connect(
-    state => ({ page: omit(getPage(state), ["content"]) }),
-    null,
-    null,
-    { areStatePropsEqual: isEqual }
-)(withRouter(PublishPageButton));
+export default connect(state => ({ page: omit(getPage(state), ["content"]) }), null, null, {
+    areStatePropsEqual: isEqual
+})(withRouter(PublishPageButton));
