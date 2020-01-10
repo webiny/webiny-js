@@ -1,5 +1,5 @@
 import { withHooks } from "@webiny/commodo";
-import SsrApiClient from "@webiny/cloud-function-ssr/Client";
+import SsrApiClient from "@webiny/http-handler-ssr/Client";
 
 export default () => [
     {
