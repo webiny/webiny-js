@@ -1,12 +1,5 @@
 // @flow
-import type { PluginsContainer } from "./PluginsContainer";
-
-export type PluginType = Object & {
-    name: string,
-    type: string
-};
-
-export type PluginsContainerType = PluginsContainer;
+import type { PluginType } from "@webiny/plugins/types";
 
 export type GraphQLMiddlewarePluginType = PluginType & {
     middleware: () => Object

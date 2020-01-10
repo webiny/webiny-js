@@ -5,7 +5,7 @@ import GraphQLJSON from "graphql-type-json";
 import { GraphQLDateTime } from "graphql-iso-date";
 import GraphQLLong from "graphql-type-long";
 import { RefInput } from "./RefInputScalar";
-import type { PluginsContainerType } from "../types";
+import type PluginsContainerType from "@webiny/plugins/PluginsContainer";
 
 type PrepareSchemaParamsType = { plugins: PluginsContainerType };
 
