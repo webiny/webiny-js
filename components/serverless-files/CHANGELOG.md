@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.3.3](https://github.com/Webiny/webiny-js/compare/@webiny/serverless-files@2.3.2...@webiny/serverless-files@2.3.3) (2019-12-29)
+
+
+### Bug Fixes
+
+* do not delete the S3 bucket, let users delete it on their own ([#648](https://github.com/Webiny/webiny-js/issues/648)) ([8d5d990](https://github.com/Webiny/webiny-js/commit/8d5d990fe7f4b50b97b65c326b43301b5135d4ba))
+
+
+
+
+
 ## [2.3.2](https://github.com/Webiny/webiny-js/compare/@webiny/serverless-files@2.3.2-next.0...@webiny/serverless-files@2.3.2) (2019-12-04)
 
 **Note:** Version bump only for package @webiny/serverless-files

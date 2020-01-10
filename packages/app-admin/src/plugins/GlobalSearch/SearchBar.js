@@ -156,8 +156,7 @@ class SearchBar extends React.Component<*, State> {
                                 zIndex={10}
                                 keys={{
                                     esc: () => document.activeElement.blur(),
-                                    "/": this.handleOpenHotkey,
-                                    NumpadDivide: this.handleOpenHotkey
+                                    "/": this.handleOpenHotkey
                                 }}
                             />
 

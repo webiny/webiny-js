@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.1.3](https://github.com/webiny/webiny-js/compare/@webiny/app-admin@2.1.2...@webiny/app-admin@2.1.3) (2019-12-29)
+
+
+### Bug Fixes
+
+* removed "NumpadDivide" shortcut - doesn't work ([#649](https://github.com/webiny/webiny-js/issues/649)) ([447cd9b](https://github.com/webiny/webiny-js/commit/447cd9b9d13c101c37fead1ae8f544205638e1f7))
+
+
+
+
+
 ## [2.1.2](https://github.com/webiny/webiny-js/compare/@webiny/app-admin@2.1.1...@webiny/app-admin@2.1.2) (2019-12-09)
 
 

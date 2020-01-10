@@ -147,9 +147,8 @@ class FilesComponent extends Component {
         lambda = await this.load("@webiny/serverless-function", "download");
         await lambda.remove();
 
-        const s3 = await this.load("@serverless/aws-s3");
-        await s3.remove();
-
+        // We do not remove S3 bucket, we just want to avoid users accidentally deleting all of their files.
+        this.context.instance.debug(`Skipping S3 bucket deletion, you must do this manually.`);
         this.state = {};
         await this.save();
     }
