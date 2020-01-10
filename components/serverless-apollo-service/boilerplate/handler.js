@@ -1,4 +1,5 @@
-import { createHandler, PluginsContainer } from "@webiny/api";
+import { createHandler } from "@webiny/api";
+import { PluginsContainer } from "@webiny/plugins";
 
 let apolloHandler;
 

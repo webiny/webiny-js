@@ -1,4 +1,4 @@
-import { PluginsContainer } from "@webiny/api";
+import { PluginsContainer } from "@webiny/plugins";
 
 let apolloHandler;
 export const handler = async (event, context) => {
