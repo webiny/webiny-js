@@ -1,11 +1,12 @@
 // @flow
-import type { ApiContext, PluginType } from "@webiny/api/types";
+import type { Object } from "@webiny/api/types";
+import {PluginType} from "@webiny/plugins/types"
 
 export default ([
     {
         type: "graphql-context",
         name: "graphql-context-files",
-        apply: async (context: ApiContext & Object) => {
+        apply: async (context: Object) => {
             const { FilesSettings } = context.models;
 
             const self = {
