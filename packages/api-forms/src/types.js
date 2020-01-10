@@ -1,5 +1,5 @@
 // @flow
-import type { PluginType } from "@webiny/api/types";
+import type { PluginType } from "@webiny/plugins/types";
 
 export type FormTriggerHandlerPluginType = PluginType & {
     trigger: string,
