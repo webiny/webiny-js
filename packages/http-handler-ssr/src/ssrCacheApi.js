@@ -1,5 +1,5 @@
 import qs from "querystringify";
-import { createResponse } from "@webiny/cloud-function";
+import { createResponse } from "@webiny/http-handler";
 import mime from "mime-types";
 import { parseBody } from "./functions";
 

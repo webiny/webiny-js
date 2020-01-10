@@ -1,6 +1,6 @@
 import qs from "querystringify";
 import LambdaClient from "aws-sdk/clients/lambda";
-import { createResponse } from "@webiny/cloud-function";
+import { createResponse } from "@webiny/http-handler";
 import mime from "mime-types";
 import { getSsrHtml } from "./functions";
 

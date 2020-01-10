@@ -1,5 +1,5 @@
 {
-  "name": "@webiny/cloud-function-index",
+  "name": "@webiny/http-handler-index",
   "version": "1.0.0",
   "main": "index.js",
   "license": "MIT",

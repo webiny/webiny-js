@@ -1,4 +1,4 @@
-import { PluginsContainer } from "./PluginsContainer";
+import { PluginsContainer } from "@webiny/plugins";
 import createResponse from "./createResponse";
 
 export default (...plugins) => async (...args) => {

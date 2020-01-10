@@ -1,5 +1,5 @@
-import { create } from "@webiny/cloud-function";
-import filesPlugins from "@webiny/cloud-function-files";
-import indexPlugins from "@webiny/cloud-function-index";
+import { createHandler } from "@webiny/http-handler";
+import filesPlugins from "@webiny/http-handler-files";
+import indexPlugins from "@webiny/http-handler-index";
 
-export const handler = create(filesPlugins(), indexPlugins());
+export const handler = createHandler(filesPlugins(), indexPlugins());

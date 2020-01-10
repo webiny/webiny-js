@@ -6,7 +6,7 @@ import { date } from "@webiny/commodo/fields-date";
 import { object } from "@webiny/commodo/fields-object";
 import { withName } from "@webiny/commodo/name";
 import { withHooks } from "@webiny/commodo/hooks";
-import { getSsrHtml } from "@webiny/cloud-function-ssr/functions";
+import { getSsrHtml } from "@webiny/http-handler-ssr/functions";
 
 export default ({ createBase, options = {} } = {}) =>
     flow(

@@ -1,4 +1,4 @@
-import { createResponse } from "@webiny/cloud-function";
+import { createResponse } from "@webiny/http-handler";
 import mime from "mime-types";
 import isUtf8 from "isutf8";
 import path from "path";

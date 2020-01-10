@@ -8,7 +8,7 @@ export default () => ({
         if (!options.context.models || !options.context.models.SsrCache) {
             throw new Error(
                 `Missing "SsrCache" model in context. 
-                 Did you apply default "@webiny/cloud-function-ssr" plugins?`
+                 Did you apply default "@webiny/http-handler-ssr" plugins?`
             );
         }
 

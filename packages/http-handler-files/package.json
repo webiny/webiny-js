@@ -1,5 +1,5 @@
 {
-  "name": "@webiny/cloud-function-ssr",
+  "name": "@webiny/http-handler-files",
   "version": "1.0.0",
   "main": "index.js",
   "license": "MIT",
