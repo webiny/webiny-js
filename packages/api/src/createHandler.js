@@ -1,7 +1,8 @@
 // @flow
 import { applyMiddleware } from "graphql-middleware";
 import { addSchemaLevelResolveFunction } from "graphql-tools";
-import type { PluginsContainerType, GraphQLMiddlewarePluginType } from "@webiny/api/types";
+import type { GraphQLMiddlewarePluginType } from "@webiny/api/types";
+import type PluginsContainerType from "@webiny/plugins/PluginsContainer";
 import { prepareSchema } from "./graphql/prepareSchema";
 
 export type CreateHandlerParamsType = {
