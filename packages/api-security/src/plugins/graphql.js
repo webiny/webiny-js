@@ -2,7 +2,7 @@
 import { merge } from "lodash";
 import gql from "graphql-tag";
 import { emptyResolver } from "@webiny/commodo-graphql";
-import { type PluginType } from "@webiny/api/types";
+import { type PluginType } from "@webiny/plugins/types";
 import { getRegisteredScopes, hasScope } from "@webiny/api-security";
 
 import role from "./graphql/Role";
