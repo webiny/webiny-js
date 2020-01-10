@@ -18,7 +18,10 @@ type Props = FormComponentProps & {
     className?: string,
 
     // Should icon be disabled?
-    disabled?: boolean
+    disabled?: boolean,
+
+    // For testing purposes.
+    "data-testid"?: string,
 };
 
 /**
@@ -28,10 +31,11 @@ type Props = FormComponentProps & {
  * @constructor
  */
 const IconButton = (props: Props) => {
-    const { icon, label, onClick, className, disabled, ripple = true } = props;
+    const { icon, label, onClick, className, disabled, ripple = true} = props;
 
     return (
         <RIconButton
+            data-testid={props['data-testid']}
             onClick={onClick}
             disabled={disabled}
             className={className}
