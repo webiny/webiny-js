@@ -21,16 +21,16 @@ const assign = (plugins: any, target: Object): void => {
 export class PluginsContainer {
     plugins: Record<string, Plugin> = {};
 
-    constructor(plugins: Array<Plugin> = []) {
+    constructor(plugins: Plugin[] = []) {
         assign(plugins, this.plugins);
     }
 
-    byName(name: string): Plugin {
-        return this.plugins[name];
+    byName<T extends Plugin>(name: string): T {
+        return this.plugins[name] as T;
     }
 
-    byType(type: string): Array<Plugin> {
-        return Object.values(this.plugins).filter((pl: Plugin) => pl.type === type);
+    byType<T extends Plugin>(type: string): T[] {
+        return Object.values(this.plugins).filter((pl: Plugin) => pl.type === type) as T[];
     }
 
     register(...plugins: any): void {

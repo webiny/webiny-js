@@ -3,6 +3,11 @@ import { PluginsContainer } from "./PluginsContainer";
 
 export { PluginsContainer };
 
+export type GraphQLContext = {
+    plugins: PluginsContainer;
+    [key: string]: any;
+};
+
 export type Plugin = {
     name: string;
     type: string;
