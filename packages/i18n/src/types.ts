@@ -50,6 +50,6 @@ export type Formats = {
     number: NumberFormat;
 };
 
-export type Translator = (base: string) => string;
+export type Translator = (base: any) => any;
 
 export type Translations = { [key: string]: string };

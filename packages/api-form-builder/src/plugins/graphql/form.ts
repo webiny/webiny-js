@@ -1,3 +1,4 @@
+import { GraphQLFieldResolver } from "graphql";
 import { resolveCreate, resolveUpdate, resolveDelete, resolveGet } from "@webiny/commodo-graphql";
 import createRevisionFrom from "./formResolvers/createRevisionFrom";
 import listForms from "./formResolvers/listForms";
@@ -6,6 +7,12 @@ import getPublishedForm from "./formResolvers/getPublishedForm";
 import saveFormView from "./formResolvers/saveFormView";
 
 const getForm = ctx => ctx.models.Form;
+
+const publishRevision: GraphQLFieldResolver<any, any> = (_, args, ctx, info) => {
+    args.data = { published: true };
+
+    return resolveUpdate(getForm)(_, args, ctx, info);
+};
 
 export default {
     typeDefs: /* GraphQL*/ `
@@ -279,16 +286,8 @@ export default {
             // Updates revision
             updateRevision: resolveUpdate(getForm),
             // Publish revision (must be given an exact revision ID to publish)
-            publishRevision: (_: any, args: {[key: string]: any}, ctx: {[key: string]: any}) => {
-                args.data = { published: true };
-
-                return resolveUpdate(getForm)(_, args, ctx);
-            },
-            unpublishRevision: (_: any, args: {[key: string]: any}, ctx: {[key: string]: any}) => {
-                args.data = { published: false };
-
-                return resolveUpdate(getForm)(_, args, ctx);
-            },
+            publishRevision,
+            unpublishRevision: publishRevision,
             // Delete a revision
             deleteRevision: resolveDelete(getForm),
             saveFormView

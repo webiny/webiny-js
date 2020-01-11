@@ -15,14 +15,14 @@ type RenderPluginOptions = {
 
 type RenderPlugin = (
     name: string,
-    params: any,
-    options: RenderPluginOptions
+    params?: any,
+    options?: RenderPluginOptions
 ) => ReactNode | ReactNode[];
 
 type RenderPlugins = (
     type: string,
-    params: any,
-    options: RenderPluginOptions
+    params?: any,
+    options?: RenderPluginOptions
 ) => ReactNode | ReactNode[];
 
 const PluginComponent = (props: { [key: string]: any }): FunctionComponentElement<{}> => props.children;

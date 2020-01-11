@@ -13,6 +13,7 @@ import {
     Translations,
     Translator
 } from "./types";
+import { ReactElement } from "react";
 
 /**
  * Main class used for all I18n needs.
@@ -72,7 +73,8 @@ class I18N {
 
         const hasVariables = base.includes("{") && base.includes("}");
         if (hasVariables) {
-            return (values: { [key: string]: any }) => {
+            // @ts-ignore
+            return values => {
                 const data = { translation, base, namespace, values, i18n: this };
                 for (const key in this.processors) {
                     if (this.processors[key].canExecute(data)) {
@@ -93,8 +95,8 @@ class I18N {
     }
 
     namespace(namespace: string): Translator {
-        return (base: string) => {
-            return this.translate(base, namespace);
+        return base => {
+            return this.translate(base as string, namespace);
         };
     }
 
