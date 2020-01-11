@@ -102,7 +102,7 @@ const RowContainer = ({ element, updateElement, resizeStart, resizeStop }) => {
     );
 };
 
-export default connect(
+export default connect<any, any, any>(
     (state, props) => {
         const element = getElement(state, props.elementId);
         return {

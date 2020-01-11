@@ -96,7 +96,7 @@ const redux = new Redux();
 
 export { redux };
 
-export const createAction = (type: string, options?: ActionOptions) => {
+export const createAction = (type: string, options?: ActionOptions): ActionCreator => {
     return redux.createAction(type, options);
 };
 

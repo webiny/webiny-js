@@ -57,7 +57,7 @@ const Breadcrumbs = ({ elements, activateElement, highlightElement }) => {
     );
 };
 
-export default connect(
+export default connect<any, any, any>(
     state => {
         const element = getActiveElement(state);
         if (!element) {

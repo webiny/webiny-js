@@ -33,7 +33,7 @@ const SliderWithInput = ({ value, icon, placeholder, updateValue, updatePreview,
     );
 };
 
-export default connect((state, { valueKey }: any) => {
+export default connect<any, any, any>((state, { valueKey }: any) => {
     return {
         value: get(getActiveElement(state), valueKey, 0)
     };

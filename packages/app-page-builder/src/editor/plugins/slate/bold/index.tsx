@@ -1,9 +1,7 @@
 import * as React from "react";
 import { css } from "emotion";
 import { ReactComponent as FormatBoldIcon } from "@webiny/app-page-builder/editor/assets/icons/format_bold.svg";
-import { Change } from "slate";
 import { isKeyHotkey } from "is-hotkey";
-import { SyntheticEvent } from "react";
 const isBoldHotkey = isKeyHotkey("mod+b");
 
 const hasMark = (value, type) => {

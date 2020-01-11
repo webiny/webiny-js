@@ -57,6 +57,6 @@ const Center = ({ type, onDrop, children, active, highlight }: Props) => {
     );
 };
 
-export default connect((state, props) => {
+export default connect<any, any, any>((state, props) => {
     return getElementProps(state, props);
 })(React.memo(Center));

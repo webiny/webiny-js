@@ -104,7 +104,7 @@ const ElementSettingsBarContent = React.memo(
 
 ElementSettingsBarContent.displayName = "ElementSettingsBarContent";
 
-export default connect(
+export default connect<any, any, any>(
     state => {
         const element = getActiveElement(state);
         return {

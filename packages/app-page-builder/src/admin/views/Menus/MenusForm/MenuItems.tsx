@@ -13,6 +13,7 @@ import MenuItemForm from "./MenuItems/MenuItemForm";
 import findObject from "./MenuItems/findObject";
 import { PbMenuItemPlugin } from "@webiny/app-page-builder/admin/types";
 import { Typography } from "@webiny/ui/Typography";
+import { Form } from "@webiny/form";
 
 const leftPanel = css({
     padding: 25,
@@ -35,6 +36,7 @@ const AddMenu = styled("div")({
 });
 
 type Props = {
+    menuForm: Form;
     onChange: Function;
     value: any;
 };

@@ -175,7 +175,7 @@ const PMSettings = (props: PMSettingsProps) => {
     );
 };
 
-export default connect(
+export default connect<any, any, any>(
     (state, { styleAttribute }: any) => {
         const valueKey = "data.settings." + styleAttribute;
         const element = getActiveElement(state);

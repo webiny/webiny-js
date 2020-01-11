@@ -34,4 +34,4 @@ const stateToProps = state => {
     return { ...getUi(state) };
 };
 
-export default connect(stateToProps)(React.memo(Bar));
+export default connect<any, any, any>(stateToProps)(React.memo(Bar));

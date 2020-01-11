@@ -78,7 +78,7 @@ const Selector = React.memo(({ label, value, updateValue }: SelectorProps) => {
 
 Selector.displayName = "Selector";
 
-export default connect(
+export default connect<any, any, any>(
     (state, { valueKey }: { valueKey: string }) => {
         return {
             value: get(getActiveElement(state), valueKey, 0)

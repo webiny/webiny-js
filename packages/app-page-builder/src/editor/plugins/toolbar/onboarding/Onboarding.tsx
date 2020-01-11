@@ -140,7 +140,7 @@ const Onboarding = ({ deactivatePlugin, showOnboarding }) => {
     );
 };
 
-export default connect(
+export default connect<any, any, any>(
     state => ({
         showOnboarding: isPluginActive("pb-editor-toolbar-onboarding")(state)
     }),

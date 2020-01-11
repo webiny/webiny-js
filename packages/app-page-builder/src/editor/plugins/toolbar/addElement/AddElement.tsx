@@ -196,7 +196,7 @@ const AddElement = ({ params, dropElement, dragStart, deactivatePlugin, dragEnd 
     );
 };
 
-export default connect(
+export default connect<any, any, any>(
     state => {
         const getParams = getActivePluginParams("pb-editor-toolbar-add-element");
         return {

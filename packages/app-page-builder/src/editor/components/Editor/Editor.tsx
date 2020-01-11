@@ -25,7 +25,7 @@ export type EditorProps = {
     slateFocused: boolean;
 };
 
-export const Editor = ({ isDragging, isResizing, undo, redo, slateFocused }: EditorProps) => {
+const EditorComponent = ({ isDragging, isResizing, undo, redo, slateFocused }: EditorProps) => {
     const { addKeyHandler, removeKeyHandler } = useKeyHandler();
 
     useEffect(() => {
@@ -66,7 +66,7 @@ export const Editor = ({ isDragging, isResizing, undo, redo, slateFocused }: Edi
     );
 };
 
-export default connect(
+export const Editor = connect<any, any, any>(
     state => {
         const ui = getUi(state);
 
@@ -80,4 +80,4 @@ export default connect(
         undo: ActionCreators.undo,
         redo: ActionCreators.redo
     }
-)(Editor);
+)(EditorComponent);

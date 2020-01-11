@@ -90,7 +90,7 @@ const Column = props => {
     );
 };
 
-export default connect(
+export default connect<any, any, any>(
     (state, props) => {
         const element = getElement(state, props.element.id);
         return {

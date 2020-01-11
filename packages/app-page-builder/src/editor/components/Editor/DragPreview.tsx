@@ -30,6 +30,7 @@ export default () => {
     const [dragHelperOpacity, setDragHelperOpacity] = useState(0);
     const { isDragging } = useDragLayer((monitor: DragLayerMonitor) => {
         if (!subscribedToOffsetChange) {
+            // @ts-ignore
             monitor.subscribeToOffsetChange(onOffsetChange(monitor));
             subscribedToOffsetChange = true;
         }

@@ -126,7 +126,7 @@ const getSvg = (id: string[], props) => {
     return renderToStaticMarkup(React.cloneElement(icon.svg, props));
 };
 
-export default connect(
+export default connect<any, any, any>(
     state => ({ element: getActiveElement(state) }),
     { updateElement }
 )(React.memo(ButtonSettings));

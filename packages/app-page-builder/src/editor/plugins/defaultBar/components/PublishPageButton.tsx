@@ -51,7 +51,7 @@ const PublishPageButton = ({ page, history }) => {
     );
 };
 
-export default connect(
+export default connect<any, any, any>(
     state => ({ page: omit(getPage(state), ["content"]) }),
     null,
     null,

@@ -46,7 +46,7 @@ const Slider = ({
     );
 };
 
-export default connect((state, { valueKey }: { valueKey: string }) => {
+export default connect<any, any, any>((state, { valueKey }: { valueKey: string }) => {
     return {
         value: get(getActiveElement(state), valueKey, 0)
     };

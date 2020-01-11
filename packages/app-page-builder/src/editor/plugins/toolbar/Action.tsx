@@ -44,7 +44,7 @@ const Action = ({ icon, onClick, active, tooltip, togglePlugin, plugin }) => {
     return iconButton;
 };
 
-export default connect(
+export default connect<any, any, any>(
     (state, props: any) => ({
         active: isPluginActive(props.plugin)(state)
     }),

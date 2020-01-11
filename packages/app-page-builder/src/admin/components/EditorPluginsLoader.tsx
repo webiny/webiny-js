@@ -24,7 +24,7 @@ export function EditorPluginsLoader({ children, location }) {
         if (location.pathname.startsWith("/page-builder/editor") && !loaded.editor) {
             const plugins = await Promise.all(
                 [
-                    import("@webiny/app-page-builder/editor/presets/default"),
+                    import("../../editor/presets/default") as Promise<any>,
                     !loaded.render
                         ? import("@webiny/app-page-builder/render/presets/default")
                         : null

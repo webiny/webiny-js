@@ -42,7 +42,7 @@ export default () => {
                 name: "pb-editor-slate-editor-code",
                 type: "pb-editor-slate-editor",
                 slate: {
-                    renderMark(props, next) {
+                    renderMark(props, editor, next) {
                         if (props.mark.type === MARK) {
                             return (
                                 <code className={"webiny-pb-typography-code"} {...props.attributes}>

@@ -23,4 +23,4 @@ const Saving = ({ saving }: { saving: boolean }) => {
     );
 };
 
-export default connect(state => ({ saving: getUi(state).saving || false }))(Saving);
+export default connect<any, any, any>(state => ({ saving: getUi(state).saving || false }))(Saving);

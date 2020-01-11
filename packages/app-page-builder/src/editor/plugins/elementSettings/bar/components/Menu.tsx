@@ -133,7 +133,7 @@ class Menu extends React.Component<any> {
     }
 }
 
-export default connect(
+export default connect<any, any, any>(
     (state, props) => ({
         active: isPluginActive(props.plugin.name)(state)
     }),

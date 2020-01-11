@@ -81,15 +81,8 @@ export default () => {
         {
             name: "pb-page-element-settings-icon",
             type: "pb-page-element-settings",
-            renderAction({ active }) {
-                return (
-                    <Action
-                        plugin={this.name}
-                        tooltip={"Icon"}
-                        active={active}
-                        icon={<IconSvg />}
-                    />
-                );
+            renderAction() {
+                return <Action plugin={this.name} tooltip={"Icon"} icon={<IconSvg />} />;
             },
             renderMenu() {
                 return <IconSettings />;

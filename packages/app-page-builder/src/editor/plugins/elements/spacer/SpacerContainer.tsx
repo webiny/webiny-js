@@ -79,7 +79,7 @@ const SpacerContainer = props => {
     );
 };
 
-export default connect(
+export default connect<any, any, any>(
     (state, props) => ({ element: getElement(state, props.elementId) }),
     { updateElement, resizeStart, resizeStop }
 )(SpacerContainer);

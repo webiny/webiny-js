@@ -217,24 +217,23 @@ class SlateEditor extends React.Component<SlateEditorProps, SlateEditorState> {
             <div id={this.id}>
                 {!this.state.readOnly && this.renderFloatingMenu()}
                 <WithPageBuilderTheme>
-                    {({ theme }) => (
-                        <Editor
-                            ref={this.editor}
-                            onBlur={this.onBlur}
-                            readOnly={this.state.readOnly}
-                            autoCorrect={false}
-                            spellCheck={false}
-                            plugins={this.plugins}
-                            placeholder="Enter some text..."
-                            // @ts-ignore TS is complaining for some reason
-                            value={this.state.value}
-                            onChange={this.onChange}
-                            theme={theme}
-                            activatePlugin={name => this.activatePlugin(name)}
-                            activePlugin={this.state.activePlugin}
-                            deactivatePlugin={this.deactivatePlugin}
-                        />
-                    )}
+                    {({ theme }) =>
+                        React.createElement<any>(Editor, {
+                            ref: this.editor,
+                            onBlur: this.onBlur,
+                            readOnly: this.state.readOnly,
+                            autoCorrect: false,
+                            spellCheck: false,
+                            plugins: this.plugins,
+                            placeholder: "Enter some text...",
+                            value: this.state.value,
+                            onChange: this.onChange,
+                            theme: theme,
+                            activatePlugin: name => this.activatePlugin(name),
+                            activePlugin: this.state.activePlugin,
+                            deactivatePlugin: this.deactivatePlugin
+                        })
+                    }
                 </WithPageBuilderTheme>
                 {(getPlugins("pb-editor-slate-menu-item") as PbEditorSlateMenuItemPlugin[])
                     .filter(pl => typeof pl.renderDialog === "function")

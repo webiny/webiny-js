@@ -37,7 +37,7 @@ const ColumnChild = (props: ColumnChildProps) => {
     );
 };
 
-export default connect(
+export default connect<any, any, any>(
     (state, props) => ({
         element: getElement(state, props.id)
     }),

@@ -23,7 +23,7 @@ const AddBlock = ({ togglePlugin }) => {
     );
 };
 
-export default connect(
+export default connect<any, any, any>(
     null,
     { togglePlugin }
 )(AddBlock);

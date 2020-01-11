@@ -301,7 +301,7 @@ const SearchBar = props => {
     );
 };
 
-export default connect(
+export default connect<any, any, any>(
     state => ({ content: getContent(state) }),
     {
         deactivatePlugin,

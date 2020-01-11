@@ -1,15 +1,15 @@
-// @flow
 import * as React from "react";
 import { ElementRoot } from "@webiny/app-page-builder/render/components/ElementRoot";
 import { Form } from "@webiny/form";
 import { get } from "lodash";
 import { getPlugins } from "@webiny/plugins";
+import { PbPageElementMailchimpComponentPlugin } from "../../types";
 
-const MailchimpElement = React.memo(({ element }: *) => {
+const MailchimpElement = React.memo(({ element }: any) => {
     let selected = get(element, "data.settings.component", get(element, "settings.component"));
-    const component = getPlugins("pb-page-element-mailchimp-component").find(
-        cmp => cmp.componentName === selected
-    );
+    const component = getPlugins<PbPageElementMailchimpComponentPlugin>(
+        "pb-page-element-mailchimp-component"
+    ).find(cmp => cmp.componentName === selected);
 
     let render = <span>You must configure your embed in the settings!</span>;
 

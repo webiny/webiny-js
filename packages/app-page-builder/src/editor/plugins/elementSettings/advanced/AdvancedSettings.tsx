@@ -75,7 +75,7 @@ const AdvancedSettings = props => {
                     <React.Fragment>
                         <DialogContent>
                             <Tabs>
-                                {renderPlugins(
+                                {renderPlugins<PbPageElementAdvancedSettingsPlugin>(
                                     "pb-page-element-advanced-settings",
                                     { Bind, data, form },
                                     { wrapper: false, filter: pl => pl.elementType === type }
@@ -93,7 +93,7 @@ const AdvancedSettings = props => {
     );
 };
 
-const withConnect = connect(
+const withConnect = connect<any, any, any>(
     state => ({
         open: isPluginActive("pb-page-element-settings-advanced")(state)
     }),

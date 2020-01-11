@@ -153,6 +153,6 @@ function getDataURLImageDimensions(dataURL: string) {
     });
 }
 
-export default connect(state => ({
+export default connect<any, any, any>(state => ({
     element: getElementWithChildren(state, getActiveElementId(state))
 }))(SaveAction);

@@ -76,7 +76,7 @@ const AddContent = ({ count, togglePlugin }) => {
     );
 };
 
-export default connect(
+export default connect<any, any, any>(
     state => ({ count: getContent(state).elements.length }),
     { togglePlugin }
 )(React.memo(AddContent));

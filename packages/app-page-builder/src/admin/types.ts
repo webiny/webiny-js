@@ -3,9 +3,9 @@ import { BindComponent } from "@webiny/form/Bind";
 export * from "../types";
 
 import { ComponentType, ReactElement, ReactNode } from "react";
-import { Change, Value } from "slate";
+import { Value } from "slate";
 import { Plugin as SlatePlugin, Editor } from "slate-react";
-import { Reducer as ReduxReducer } from "redux";
+import { Reducer as ReduxReducer, Store as ReduxStore } from "redux";
 import { Plugin } from "@webiny/app/types";
 import { PbElement, PbTheme } from "../types";
 import {
@@ -39,10 +39,7 @@ export type Reducer = ReduxReducer;
 
 export type ReducerFactory = () => Reducer;
 
-export type Store = {
-    dispatch: Function;
-    getState: Function;
-};
+export type Store = ReduxStore;
 
 export type State = {
     elements?: { [key: string]: PbShallowElement };
@@ -215,11 +212,11 @@ export type PbEditorSlateMenuItemPlugin = Plugin & {
         MenuButton: ComponentType<MenuButtonProps>;
         value: Value;
         onChange;
-        editor;
+        editor: Editor;
         activatePlugin;
     }): ReactElement;
     renderDialog?: (params: {
-        onChange(change: Change): void;
+        onChange(change: Editor): void;
         editor: Editor;
         open: boolean;
         closeDialog(): void;

@@ -3,6 +3,12 @@ import { css } from "emotion";
 import { get } from "lodash";
 import { useHandler } from "@webiny/app/hooks/useHandler";
 
+declare global {
+    interface Window {
+        PinUtils: any;
+    }
+}
+
 function appendSDK(props) {
     const { element } = props;
     const { url } = get(element, "data.source") || {};

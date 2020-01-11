@@ -80,7 +80,7 @@ const Action = (props: ActionProps) => {
     );
 };
 
-export default connect(
+export default connect<any, any, any>(
     (state, props: { plugin?: string }) => ({
         active: isPluginActive(props.plugin)(state),
         slateFocused: getUi(state).slateFocused,

@@ -13,7 +13,7 @@ const PageSettingsButton = ({ togglePlugin }) => {
     );
 };
 
-export default connect(
+export default connect<any, any, any>(
     null,
     { togglePlugin }
 )(PageSettingsButton);

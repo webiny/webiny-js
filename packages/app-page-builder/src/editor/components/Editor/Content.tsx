@@ -48,7 +48,7 @@ const Content = ({ rootElement, renderLayout, layout }) => {
     const themeLayout = layouts.find(l => l.name === layout);
 
     if (renderLayout && !themeLayout) {
-        return `Layout "${layout}" was not found in your theme!`;
+        return <div>Layout &quot;{layout}&quot; was not found in your theme!</div>;
     }
 
     let content = <Element id={rootElement.id} />;
@@ -73,4 +73,4 @@ const stateToProps = state => ({
     renderLayout: isPluginActive("pb-editor-toolbar-preview")(state)
 });
 
-export default connect(stateToProps)(Content);
+export default connect<any, any, any>(stateToProps)(Content);

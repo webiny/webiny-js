@@ -98,7 +98,7 @@ const RowChild = React.memo((props: Props) => {
     );
 });
 
-export default connect(
+export default connect<any, any, any>(
     state => ({
         isDragging: getIsDragging(state)
     }),

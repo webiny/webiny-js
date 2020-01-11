@@ -68,7 +68,7 @@ class LinkSettings extends React.Component<any> {
     }
 }
 
-export default connect(
+export default connect<any, any, any>(
     null,
     { updateElement }
 )(withActiveElement()(LinkSettings));

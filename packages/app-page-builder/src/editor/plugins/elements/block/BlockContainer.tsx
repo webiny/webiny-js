@@ -69,7 +69,7 @@ const BlockContainer = ({
     );
 };
 
-export default connect(
+export default connect<any, any, any>(
     (state, props) => ({ element: getElement(state, props.elementId) }),
     { dropElement },
     null,

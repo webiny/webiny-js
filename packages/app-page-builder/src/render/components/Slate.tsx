@@ -8,21 +8,18 @@ import { PbRenderSlateEditorPlugin } from "@webiny/app-page-builder/types";
 const SlateEditor = props => {
     const { theme } = usePageBuilder();
     const plugins = useRef(
-        (getPlugins("pb-render-slate-editor") as PbRenderSlateEditorPlugin[]).map(pl => pl.slate)
+        getPlugins<PbRenderSlateEditorPlugin>("pb-render-slate-editor").map(pl => pl.slate)
     );
     const [value] = useState(Value.fromJSON(props.value || {}));
 
-    return (
-        <Editor
-            readOnly={true}
-            autoCorrect={false}
-            spellCheck={false}
-            plugins={plugins.current}
-            // @ts-ignore TS is complaining for some reason
-            value={value}
-            theme={theme}
-        />
-    );
+    return React.createElement<any>(Editor, {
+        readOnly: true,
+        autoCorrect: false,
+        spellCheck: false,
+        plugins: plugins.current,
+        value,
+        theme
+    });
 };
 
 export default SlateEditor;

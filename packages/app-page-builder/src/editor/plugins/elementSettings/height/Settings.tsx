@@ -84,7 +84,7 @@ const Settings = props => {
     );
 };
 
-export default connect(
+export default connect<any, any, any>(
     state => ({ element: getActiveElement(state) }),
     { updateElement }
 )(Settings);

@@ -30,7 +30,7 @@ const Checkbox = ({ label, value, updateValue, children }: CheckboxProps) => {
     );
 };
 
-export default connect((state, { value, valueKey, defaultValue }: any) => {
+export default connect<any, any, any>((state, { value, valueKey, defaultValue }: any) => {
     return {
         value: valueKey ? get(getActiveElement(state), valueKey, defaultValue) : value
     };

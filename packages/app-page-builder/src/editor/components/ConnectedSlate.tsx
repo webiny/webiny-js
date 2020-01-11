@@ -9,7 +9,7 @@ const ConnectedSlate = props => {
     return <Slate {...props} />;
 };
 
-export default connect(
+export default connect<any, any, any>(
     (state, props) => ({
         value: get(getElement(state, props.elementId), "data.text")
     }),

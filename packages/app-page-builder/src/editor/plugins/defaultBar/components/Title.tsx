@@ -53,7 +53,8 @@ const Title = ({
     }, [title]);
 
     const onKeyDown = useCallback(
-        (e: KeyboardEvent<any>) => {
+        (e: SyntheticEvent) => {
+            // @ts-ignore
             switch (e.key) {
                 case "Escape":
                     e.preventDefault();
@@ -125,7 +126,7 @@ const getRevData = ({ title, pageTitle, pageCategoryUrl }) => {
     return newData;
 };
 
-export default connect(
+export default connect<any, any, any>(
     state => {
         const { title, version, locked, category } = getPage(state);
         return {

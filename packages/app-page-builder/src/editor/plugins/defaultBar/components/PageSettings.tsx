@@ -119,7 +119,7 @@ const PageSettingsContent = ({
     );
 };
 
-export default connect(
+export default connect<any, any, any>(
     state => ({ page: omit(getPage(state), ["content"]) }),
     { deactivatePlugin, updateRevision }
 )(PageSettings);

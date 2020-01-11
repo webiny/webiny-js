@@ -1,4 +1,3 @@
-// @flow
 import React, { useState } from "react";
 import { useApolloClient } from "react-apollo";
 import { Query } from "react-apollo";

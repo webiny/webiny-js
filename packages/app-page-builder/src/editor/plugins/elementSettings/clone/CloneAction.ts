@@ -41,7 +41,7 @@ const CloneAction = props => {
     return React.cloneElement(children, { onClick });
 };
 
-export default connect(
+export default connect<any, any, any>(
     state => ({ element: getActiveElement(state) }),
     { updateElement }
 )(CloneAction);

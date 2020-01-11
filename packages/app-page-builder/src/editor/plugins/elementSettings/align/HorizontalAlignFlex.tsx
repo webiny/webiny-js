@@ -44,7 +44,7 @@ const HorizontalAlignActionFlex = props => {
     return React.cloneElement(children, { onClick, icon: icons[align] });
 };
 
-export default connect(
+export default connect<any, any, any>(
     state => ({ element: getActiveElement(state) }),
     { updateElement }
 )(HorizontalAlignActionFlex);

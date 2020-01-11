@@ -4,7 +4,6 @@ import { ReactComponent as AlignLeftIcon } from "@webiny/app-page-builder/editor
 import { ReactComponent as AlignJustifyIcon } from "@webiny/app-page-builder/editor/assets/icons/format_align_justify.svg";
 import { ReactComponent as AlignRightIcon } from "@webiny/app-page-builder/editor/assets/icons/format_align_right.svg";
 import TypographySelector from "./TypographySelector";
-import { Editor } from "slate";
 import {
     PbEditorSlateEditorPlugin,
     PbEditorSlateMenuItemPlugin
@@ -21,7 +20,7 @@ const icons = {
 // Alignment types for faster access
 const alignments = Object.keys(icons);
 
-const setAlign = (align, blockType, onChange, editor: Editor) => {
+const setAlign = (align, blockType, onChange, editor) => {
     editor.change(change => {
         change
             .setBlocks({

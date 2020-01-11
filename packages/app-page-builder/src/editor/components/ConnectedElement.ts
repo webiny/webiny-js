@@ -2,7 +2,7 @@ import { isEqual } from "lodash";
 import { connect } from "@webiny/app-page-builder/editor/redux";
 import { getElement } from "@webiny/app-page-builder/editor/selectors";
 
-export default connect(
+export default connect<any, any, any>(
     (state, props) => {
         const element = getElement(state, props.elementId);
         if (props.withChildElements) {
@@ -15,7 +15,7 @@ export default connect(
     null,
     null,
     { areStatePropsEqual: isEqual }
-)(({ children, element }) => {
+)(({ children, element }: any) => {
     if (typeof children === "function") {
         return children(element);
     }

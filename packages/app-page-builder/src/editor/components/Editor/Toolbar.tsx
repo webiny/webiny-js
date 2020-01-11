@@ -64,10 +64,10 @@ const drawerStyle = css({
     }
 });
 
-const ToolbarDrawer = connect(
+const ToolbarDrawer = connect<any, any, any>(
     null,
     { deactivatePlugin }
-)(({ name, active, children, deactivatePlugin }) => {
+)(({ name, active, children, deactivatePlugin }: any) => {
     const { removeKeyHandler, addKeyHandler } = useKeyHandler();
     const last = useRef({ active: null });
     useEffect(() => {
@@ -129,7 +129,7 @@ const Toolbar = ({ activePluginsTop }) => {
     );
 };
 
-export default connect(
+export default connect<any, any, any>(
     state => ({
         activePluginsTop: getActivePlugins("pb-editor-toolbar-top")(state).map(pl => pl.name),
         activePluginsBottom: getActivePlugins("pb-editor-toolbar-bottom")(state).map(pl => pl.name)

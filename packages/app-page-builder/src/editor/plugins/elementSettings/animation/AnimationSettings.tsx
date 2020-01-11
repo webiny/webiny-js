@@ -119,7 +119,7 @@ const Settings = ({ element, updateElement, title, advanced }) => {
     );
 };
 
-const ConnectedSettings = connect(
+const ConnectedSettings = connect<any, any, any>(
     state => {
         const element = getActiveElement(state);
         return {

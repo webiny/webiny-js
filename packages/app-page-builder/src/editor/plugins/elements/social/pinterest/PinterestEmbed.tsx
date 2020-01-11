@@ -2,6 +2,13 @@ import React, { useCallback, useEffect } from "react";
 import { css } from "emotion";
 import { isEqual } from "lodash";
 import { get } from "lodash";
+import { PbShallowElement } from "@webiny/app-page-builder/admin/types";
+
+declare global {
+    interface Window {
+        PinUtils: any;
+    }
+}
 
 function appendSDK(props) {
     const { element } = props;
@@ -43,7 +50,7 @@ const getHTML = data => {
 };
 
 export default React.memo(
-    props => {
+    (props: { element: PbShallowElement }) => {
         const { element } = props;
 
         useEffect(() => {

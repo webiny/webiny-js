@@ -1,6 +1,4 @@
 import * as React from "react";
-import { Change } from "slate";
-import { Editor } from "slate-react";
 import { ReactComponent as UnderlineIcon } from "@webiny/app-page-builder/editor/assets/icons/format_underlined.svg";
 import { isKeyHotkey } from "is-hotkey";
 import {

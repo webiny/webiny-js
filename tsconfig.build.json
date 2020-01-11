@@ -53,7 +53,7 @@
       "@webiny/validation/*": ["./packages/validation/src/*"],
       "@webiny/ui/*": ["./packages/ui/src/*"]
     },
-    "typeRoots": ["node_modules/@types", "./typings"]
+    "typeRoots": ["./typings", "node_modules/@types"]
   },
-  "exclude": ["node_modules", "**/__tests__/**"]
+  "exclude": ["node_modules", "**/__tests__/**", "dist"]
 }

@@ -59,7 +59,7 @@ const Settings = ({ element, updateElement }: any) => {
     );
 };
 
-export default connect(
+export default connect<any, any, any>(
     state => {
         const { id, type, path } = getActiveElement(state);
         return { element: { id, type, path } };

@@ -127,7 +127,7 @@ const Element = (props: ElementProps) => {
     );
 };
 
-export default connect(
+export default connect<any, any, any>(
     (state, props) => {
         return {
             ...getElementProps(state, props),

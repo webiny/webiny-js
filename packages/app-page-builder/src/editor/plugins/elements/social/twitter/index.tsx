@@ -10,8 +10,13 @@ import {
     createEmbedSettingsPlugin
 } from "./../../utils/oembed/createEmbedPlugin";
 import { validation } from "@webiny/validation";
-
 import { ReactComponent as LogoIcon } from "./twitter-brands.svg";
+
+declare global {
+    interface Window {
+        twttr: any;
+    }
+}
 
 const PreviewBox = styled("div")({
     textAlign: "center",

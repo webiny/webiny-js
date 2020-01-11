@@ -53,6 +53,6 @@ const Revisions = ({ revisions, history }) => {
     );
 };
 
-export default connect(state => ({ revisions: getRevisions(state) }))(
+export default connect<any, any, any>(state => ({ revisions: getRevisions(state) }))(
     withRouter(React.memo(Revisions))
 );

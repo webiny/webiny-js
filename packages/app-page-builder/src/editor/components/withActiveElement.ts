@@ -8,7 +8,7 @@ import {
 
 export function withActiveElement({ propName = "element", shallow = false, keys = [] } = {}) {
     return function decorator(Component: React.ComponentType<any>) {
-        return connect(state => {
+        return connect<any, any, any>(state => {
             const elementId = getActiveElementId(state);
             if (!elementId) {
                 return { [propName]: null };

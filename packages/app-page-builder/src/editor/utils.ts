@@ -55,7 +55,7 @@ type CreateElement = (
 ) => PbElement;
 
 export const createElement: CreateElement = (type, options = {}, parent) => {
-    const plugin = (getPlugins("pb-page-element") as PbElementPlugin[]).find(
+    const plugin = getPlugins<PbElementPlugin>("pb-page-element").find(
         pl => pl.elementType === type
     );
 
@@ -66,6 +66,7 @@ export const createElement: CreateElement = (type, options = {}, parent) => {
         data: {},
         elements: [],
         path: "",
+        type,
         ...plugin.create(options, parent)
     };
 };

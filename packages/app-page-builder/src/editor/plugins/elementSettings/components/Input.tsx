@@ -31,7 +31,7 @@ const Input = ({ label, value, placeholder, updateValue, inputWidth }: InputProp
     );
 };
 
-export default connect((state, { value, valueKey, defaultValue }: any) => {
+export default connect<any, any, any>((state, { value, valueKey, defaultValue }: any) => {
     return {
         value: valueKey ? get(getActiveElement(state), valueKey, defaultValue) : value
     };

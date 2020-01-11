@@ -76,7 +76,7 @@ const Settings = ({ element, updateElement }: SettingsProps) => {
     );
 };
 
-export default connect(
+export default connect<any, any, any>(
     state => {
         const { id, type, path } = getActiveElement(state);
         return { element: { id, type, path } };

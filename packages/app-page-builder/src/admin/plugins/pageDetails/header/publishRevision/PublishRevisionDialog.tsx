@@ -6,7 +6,8 @@ import {
     DialogContent,
     DialogActions,
     DialogAccept,
-    DialogCancel
+    DialogCancel,
+    DialogOnClose
 } from "@webiny/ui/Dialog";
 import { Select } from "@webiny/ui/Select";
 import { Form } from "@webiny/form";
@@ -21,7 +22,7 @@ const narrowDialog = css({
 
 type Props = {
     open: boolean;
-    onClose: (e: React.MouseEvent) => void;
+    onClose: DialogOnClose;
     onSubmit: Function;
     revisions: Array<{ id: string; title: string; version: number; published: boolean }>;
     selected: string;

@@ -59,4 +59,4 @@ const Droppable = React.memo((props: DroppableProps) => {
 
 const mapStateToProps = state => ({ isDragging: getIsDragging(state) });
 
-export default connect(mapStateToProps)(Droppable);
+export default connect<any, any, any>(mapStateToProps)(Droppable);

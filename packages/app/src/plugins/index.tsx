@@ -7,26 +7,28 @@ import imagePlugin from "./imagePlugin";
 
 export { fileUploadPlugin, imagePlugin };
 
-type RenderPluginOptions = {
+type RenderPluginOptions<T> = {
     wrapper?: boolean;
     fn?: string;
-    filter?: (value: Plugin, index: number, array: Plugin[]) => Plugin[];
+    filter?: (value: T, index: number, array: T[]) => boolean;
 };
 
-type RenderPlugin = (
-    name: string,
-    params?: any,
-    options?: RenderPluginOptions
-) => ReactNode | ReactNode[];
+interface RenderPlugin {
+    <T extends Plugin = Plugin>(name: string, params?: any, options?: RenderPluginOptions<T>):
+        | ReactNode
+        | ReactNode[];
+}
 
-type RenderPlugins = (
-    type: string,
-    params?: any,
-    options?: RenderPluginOptions
-) => ReactNode | ReactNode[];
+interface RenderPlugins {
+    <T extends Plugin = Plugin>(type: string, params?: any, options?: RenderPluginOptions<T>):
+        | ReactNode
+        | ReactNode[];
+}
 
-const PluginComponent = (props: { [key: string]: any }): FunctionComponentElement<{}> => props.children;
-const PluginsComponent = (props: { [key: string]: any }): FunctionComponentElement<{}> => props.children;
+const PluginComponent = (props: { [key: string]: any }): FunctionComponentElement<{}> =>
+    props.children;
+const PluginsComponent = (props: { [key: string]: any }): FunctionComponentElement<{}> =>
+    props.children;
 
 export const renderPlugin: RenderPlugin = (name, params = {}, options = {}) => {
     const { wrapper = true, fn = "render" } = options;
@@ -52,7 +54,7 @@ export const renderPlugin: RenderPlugin = (name, params = {}, options = {}) => {
 };
 
 export const renderPlugins: RenderPlugins = (type, params = {}, options = {}) => {
-    const { wrapper = true, fn = "render", filter = (v: Plugin) => v } = options;
+    const { wrapper = true, fn = "render", filter = v => v } = options;
 
     const content = getPlugins(type)
         .filter(filter)

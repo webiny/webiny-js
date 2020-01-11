@@ -47,7 +47,7 @@ const ImageContainer = props => {
     );
 };
 
-export default connect(
+export default connect<any, any, any>(
     (state, { elementId }) => {
         const element = getElement(state, elementId);
         const { image = {}, settings = {} } = element.data;

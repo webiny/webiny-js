@@ -37,7 +37,7 @@ type ColorPickerConnectProps = {
     defaultValue?: string;
 };
 
-export default connect((state, { value, valueKey, defaultValue }: ColorPickerConnectProps) => {
+export default connect<any, any, any>((state, { value, valueKey, defaultValue }: ColorPickerConnectProps) => {
     return {
         value: valueKey ? get(getActiveElement(state), valueKey, defaultValue) : value
     };

@@ -1,4 +1,4 @@
 {
   "extends": "../../tsconfig.json",
-  "references": [{ "path": "../app" }, { "path": "../app-page-builder" }]
+  "references": [{ "path": "../app" }, { "path": "../app-page-builder" }, { "path": "../plugins" }]
 }
