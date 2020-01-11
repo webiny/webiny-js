@@ -5,9 +5,9 @@ export declare type SecurityProviderHook = {
     renderAuthentication(params?: {
         viewProps: {};
     }): React.ReactElement;
-    logout(): Promise<string>;
+    logout(): Promise<void>;
 };
-export declare type SecurityAuthenticationProvider = Plugin & {
+export declare type SecurityAuthenticationProviderPlugin = Plugin & {
     securityProviderHook(params: {
         onIdToken: (idToken: string) => void;
     }): SecurityProviderHook;

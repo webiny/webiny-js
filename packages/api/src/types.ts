@@ -18,16 +18,20 @@ export type SchemaDefinition = {
     resolvers: any;
 };
 
+export type SchemaDefinitionFactory = (params: {
+    plugins: PluginsContainer;
+}) => Promise<SchemaDefinition>;
+
 export type GraphQLSchemaPlugin = Plugin & {
     prepare?: (params: { plugins: PluginsContainer }) => void;
-    schema: (params: { plugins: PluginsContainer }) => Promise<SchemaDefinition> | SchemaDefinition;
+    schema: SchemaDefinition | SchemaDefinitionFactory;
     [key: string]: any;
 };
 
 export type GraphQLContextPlugin = Plugin & {
-    preApply?: (context: { [key: string]: any }) => Promise<void>;
-    apply?: (context: { [key: string]: any }) => Promise<void>;
-    postApply?: (context: { [key: string]: any }) => Promise<void>;
+    preApply?: (context: GraphQLContext) => Promise<void>;
+    apply?: (context: GraphQLContext) => Promise<void>;
+    postApply?: (context: GraphQLContext) => Promise<void>;
 };
 
 export type GraphQLMiddlewarePlugin = Plugin & {

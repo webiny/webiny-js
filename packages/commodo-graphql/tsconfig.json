@@ -1,7 +1,6 @@
 {
   "extends": "../../tsconfig.json",
   "references": [
-    { "path": "../api" },
-    { "path": "../commodo" }
+    { "path": "../api" }
   ]
 }

@@ -1,10 +1,10 @@
-import { Plugin } from "@webiny/api/types";
+import { GraphQLContextPlugin } from "@webiny/api/types";
 import acceptLanguageParser from "accept-language-parser";
 
-const plugin: Plugin = {
+const plugin: GraphQLContextPlugin = {
     type: "graphql-context",
     name: "graphql-context-i18n",
-    apply: async (context: {[key: string]: any}) => {
+    apply: async context => {
         const locales = context.plugins.byName("graphql-context-i18n-get-locales");
         if (!locales) {
             throw new Error(
