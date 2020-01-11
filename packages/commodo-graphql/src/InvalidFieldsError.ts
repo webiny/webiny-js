@@ -36,7 +36,7 @@ function formatInvalidFields(invalidFields, prefix = "") {
 }
 
 class InvalidFieldsError extends WithFieldsError {
-    static from(error: WithFieldsError) {
+    static from(error: typeof WithFieldsError) {
         const { message, code } = error;
 
         const data = error.data;

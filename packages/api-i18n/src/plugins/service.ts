@@ -1,7 +1,7 @@
-import { Plugin } from "@webiny/api/types";
 import i18n from "./i18n";
 import { GraphQLClient } from "graphql-request";
 import get from "lodash/get";
+import { GraphQLContextI18NGetLocales } from "@webiny/api-i18n/types";
 
 let localesCache;
 
@@ -19,7 +19,7 @@ const GET_I18N_INFORMATION = /* GraphQL */ `
     }
 `;
 
-export default (): Plugin[] => [
+export default () => [
     i18n,
     {
         name: "graphql-context-i18n-get-locales",
@@ -35,5 +35,5 @@ export default (): Plugin[] => [
             localesCache = get(response, "i18n.getI18NInformation.locales", []);
             return localesCache;
         }
-    }
+    } as GraphQLContextI18NGetLocales
 ];

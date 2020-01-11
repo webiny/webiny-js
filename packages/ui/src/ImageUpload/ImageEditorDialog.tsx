@@ -7,12 +7,13 @@ import {
     DialogAccept,
     DialogCancel,
     DialogActions,
-    DialogContent
+    DialogContent,
+    DialogOnClose
 } from "@webiny/ui/Dialog";
 
 type Props = {
     dialogZIndex?: number;
-    onClose?: (e: React.MouseEvent) => void;
+    onClose?: DialogOnClose;
     open?: boolean;
     options?: Object;
     src?: string;

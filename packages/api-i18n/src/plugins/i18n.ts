@@ -1,11 +1,15 @@
-import { Plugin } from "@webiny/api/types";
+import { GraphQLContextPlugin } from "@webiny/api/types";
 import acceptLanguageParser from "accept-language-parser";
+import { GraphQLContextI18NGetLocales } from "@webiny/api-i18n/types";
 
-const plugin: Plugin = {
+const plugin: GraphQLContextPlugin = {
     type: "graphql-context",
     name: "graphql-context-i18n",
-    apply: async (context: {[key: string]: any}) => {
-        const locales = context.plugins.byName("graphql-context-i18n-get-locales");
+    apply: async context => {
+        const locales = context.plugins.byName<GraphQLContextI18NGetLocales>(
+            "graphql-context-i18n-get-locales"
+        );
+
         if (!locales) {
             throw new Error(
                 'Cannot load locales - missing "graphql-context-i18n-get-locales" plugin.'

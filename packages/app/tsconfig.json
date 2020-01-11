@@ -1,11 +1,5 @@
 {
   "extends": "../../tsconfig",
-  "compilerOptions": {
-    "rootDir": "./src",
-    "outDir": "./dist",
-    "declarationDir": "./dist"
-  },
-  "include": ["src"],
   "references": [
     { "path": "../plugins" },
     { "path": "../ui" },

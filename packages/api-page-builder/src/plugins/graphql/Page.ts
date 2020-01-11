@@ -1,3 +1,4 @@
+import { GraphQLFieldResolver } from "graphql";
 import {
     resolveCreate,
     resolveUpdate,
@@ -17,6 +18,12 @@ import oembed from "./pageResolvers/oembed";
 
 const pageFetcher = ctx => ctx.models.PbPage;
 const elementFetcher = ctx => ctx.models.PbPageElement;
+
+const publishRevision: GraphQLFieldResolver<any, any> = (_, args, ctx, info) => {
+    args.data = { published: true };
+
+    return resolveUpdate(pageFetcher)(_, args, ctx, info);
+};
 
 export default {
     typeDefs: /* GraphQL*/ `
@@ -280,9 +287,9 @@ export default {
             listElements: resolveList(elementFetcher),
             searchTags: async (
                 root: any,
-                args: {[key: string]: any},
-                context: {[key: string]: any},
-                info: {[key: string]: any}
+                args: { [key: string]: any },
+                context: { [key: string]: any },
+                info: { [key: string]: any }
             ) => {
                 const resolver = context.plugins.byName("pb-resolver-search-tags");
 
@@ -302,16 +309,7 @@ export default {
             // Updates revision
             updateRevision: resolveUpdate(pageFetcher),
             // Publish revision (must be given an exact revision ID to publish)
-            publishRevision: (
-                _: any,
-                args: {[key: string]: any},
-                ctx: {[key: string]: any},
-                info: {[key: string]: any}
-            ) => {
-                args.data = { published: true };
-
-                return resolveUpdate(pageFetcher)(_, args, ctx, info);
-            },
+            publishRevision,
             // Delete a revision
             deleteRevision: resolveDelete(pageFetcher),
             // Creates a new element

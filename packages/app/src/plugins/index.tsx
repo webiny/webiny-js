@@ -1,25 +1,36 @@
 import React, { ReactNode, FunctionComponentElement } from "react";
 import warning from "warning";
 import { getPlugin, getPlugins } from "@webiny/plugins";
+import { Plugin } from "@webiny/plugins/types";
 import fileUploadPlugin from "./fileUploaderPlugin";
 import imagePlugin from "./imagePlugin";
 
-interface RenderPluginOptions {
-    wrapper?: boolean;
-    fn?: string;
-    filter?: Function;
-}
-
-const Plugin = (props: { [key: string]: any }): FunctionComponentElement<{}> => props.children;
-const Plugins = (props: { [key: string]: any }): FunctionComponentElement<{}> => props.children;
-
 export { fileUploadPlugin, imagePlugin };
 
-export const renderPlugin = (
+type RenderPluginOptions = {
+    wrapper?: boolean;
+    fn?: string;
+    filter?: (value: Plugin, index: number, array: Plugin[]) => Plugin[];
+};
+
+type RenderPlugin = (
     name: string,
-    params: Object = {},
-    { wrapper = true, fn = "render" }: RenderPluginOptions = {}
-): ReactNode | ReactNode[] => {
+    params: any,
+    options: RenderPluginOptions
+) => ReactNode | ReactNode[];
+
+type RenderPlugins = (
+    type: string,
+    params: any,
+    options: RenderPluginOptions
+) => ReactNode | ReactNode[];
+
+const PluginComponent = (props: { [key: string]: any }): FunctionComponentElement<{}> => props.children;
+const PluginsComponent = (props: { [key: string]: any }): FunctionComponentElement<{}> => props.children;
+
+export const renderPlugin: RenderPlugin = (name, params = {}, options = {}) => {
+    const { wrapper = true, fn = "render" } = options;
+
     const plugin = getPlugin(name);
     warning(plugin, `No such plugin "${name}"`);
 
@@ -30,9 +41,9 @@ export const renderPlugin = (
     const content = plugin[fn](params);
     if (content) {
         return wrapper ? (
-            <Plugin key={plugin.name} name={name} params={params} fn={fn}>
+            <PluginComponent key={plugin.name} name={name} params={params} fn={fn}>
                 {content}
-            </Plugin>
+            </PluginComponent>
         ) : (
             React.cloneElement(content, { key: plugin.name })
         );
@@ -40,20 +51,17 @@ export const renderPlugin = (
     return null;
 };
 
-export const renderPlugins = (
-    type: string,
-    params: Object = {},
-    { wrapper = true, fn = "render", filter = v => v }: RenderPluginOptions = {}
-): ReactNode | ReactNode[] => {
+export const renderPlugins: RenderPlugins = (type, params = {}, options = {}) => {
+    const { wrapper = true, fn = "render", filter = (v: Plugin) => v } = options;
+
     const content = getPlugins(type)
-        // @ts-ignore
         .filter(filter)
         .map(plugin => renderPlugin(plugin.name, params, { wrapper, fn }));
 
     return wrapper ? (
-        <Plugins type={type} params={params} fn={fn}>
+        <PluginsComponent type={type} params={params} fn={fn}>
             {content}
-        </Plugins>
+        </PluginsComponent>
     ) : (
         content
     );

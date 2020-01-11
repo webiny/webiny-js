@@ -213,19 +213,19 @@ export class RichTextEditor extends React.Component<RichTextEditorProps, State> 
                         deactivatePlugin={this.deactivatePlugin}
                     />
                     <EditorContent>
-                        <SlateEditor
-                            onBlur={this.onBlur}
-                            ref={this.setEditorRef}
-                            autoCorrect={false}
-                            spellCheck={false}
-                            plugins={this.plugins.editor}
-                            placeholder="Enter some text..."
-                            value={this.state.value}
-                            onChange={this.onChange}
-                            activatePlugin={this.activatePlugin}
-                            activePlugin={this.state.activePlugin}
-                            deactivatePlugin={this.deactivatePlugin}
-                        />
+                        {React.createElement<any>(SlateEditor, {
+                            onBlur: this.onBlur,
+                            ref: this.setEditorRef,
+                            autoCorrect: false,
+                            spellCheck: false,
+                            plugins: this.plugins.editor,
+                            placeholder: "Enter some text...",
+                            value: this.state.value,
+                            onChange: this.onChange,
+                            activatePlugin: this.activatePlugin,
+                            activePlugin: this.state.activePlugin,
+                            deactivatePlugin: this.deactivatePlugin
+                        })}
                     </EditorContent>
                 </EditorWrapper>
                 {validation.isValid === false && (

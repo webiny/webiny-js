@@ -1,5 +1,5 @@
 import I18N from "./I18n";
-import {ReactElement} from "react";
+import { ReactElement } from "react";
 
 export type I18NData = {
     translation: string;
