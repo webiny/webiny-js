@@ -6,7 +6,7 @@ type ConfirmationProps = {
     message?: React.ReactNode;
 };
 
-type WithConfirmationParams = (props: Object) => ConfirmationProps;
+type WithConfirmationParams = (props) => ConfirmationProps;
 
 export type WithConfirmationProps = {
     showConfirmation: (confirm: Function, cancel: Function) => void;
