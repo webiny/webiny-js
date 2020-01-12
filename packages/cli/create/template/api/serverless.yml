@@ -144,9 +144,6 @@ formBuilder:
         options: ${vars.commodo}
       - factory: "@webiny/api-security/plugins/service"
         options: ${vars.security}
-      - "@webiny/api-i18n/plugins/service"
-      - "@webiny/api-form-builder/plugins"
-      - "@webiny/api-plugin-form-builder-resolvers-mongodb"
 
 api:
   component: "@webiny/serverless-api-gateway"

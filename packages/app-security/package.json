@@ -19,6 +19,7 @@
     "@webiny/app-admin": "^2.1.1",
     "@webiny/form": "^2.0.0",
     "@webiny/plugins": "^2.0.0",
+    "@webiny/react-router": "^1.0.0",
     "@webiny/ui": "^2.0.1",
     "@webiny/validation": "^2.1.0",
     "apollo-link": "^1.2.1",
@@ -28,7 +29,6 @@
     "lodash": "^4.17.11",
     "react-apollo": "^3.1.0-beta.0",
     "react-helmet": "^5.2.0",
-    "react-router-dom": "^5.0.0",
     "store": "^2.0.12"
   },
   "devDependencies": {

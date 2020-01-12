@@ -1,5 +1,6 @@
 import pageBuilderPlugins from "@webiny/app-page-builder/site/plugins";
 import pageBuilderTheme from "@webiny/app-page-builder-theme";
+import pageBuilderUseSsrCacheTagsPlugins from "@webiny/app-page-builder/site/plugins/useSsrCacheTags";
 import { fileUploadPlugin, imagePlugin } from "@webiny/app/plugins";
 import cookiePolicyPlugins from "@webiny/app-cookie-policy/render";
 import typeformPlugins from "@webiny/app-typeform/render";
@@ -14,6 +15,7 @@ const plugins = [
     fileUploadPlugin(),
     imagePlugin,
     pageBuilderPlugins,
+    pageBuilderUseSsrCacheTagsPlugins,
     pageBuilderTheme(),
     cookiePolicyPlugins,
     typeformPlugins,

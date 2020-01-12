@@ -89,6 +89,24 @@ const execa = require("execa");
         );
     }
 
+    // Run build in `serverless-db-proxy`
+    console.log(`🏗  Building ${green("@webiny/serverless-db-proxy")}...`);
+    try {
+        await execa("yarn", ["build"], {
+            cwd: path.resolve("components", "serverless-db-proxy")
+        });
+        console.log(`✅️ ${green("@webiny/serverless-db-proxy")} was built successfully!`);
+    } catch (err) {
+        console.log(
+            `🚨 Failed to build ${green("@webiny/serverless-db-proxy")} package: ${err.message}`
+        );
+        console.log(
+            `📖 Try building manually by running ${green("yarn build")} in the ${green(
+                "components/serverless-db-proxy"
+            )} folder`
+        );
+    }
+
     // Link `@webiny/cli`
     try {
         console.log(`🔗 Linking ${green("@webiny/cli")}...`);

@@ -1,8 +1,9 @@
 import { flow } from "lodash";
-import { id } from "@commodo/fields-storage-mongodb";
 import { withFields, skipOnPopulate, withHooks, withProps } from "@webiny/commodo";
 
 export default context => baseFn => {
+    const { id } = context.commodo.fields;
+
     return flow(
         withProps({
             getUser() {

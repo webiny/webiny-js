@@ -49,7 +49,8 @@ module.exports = ({ root }) => {
                         ],
                         plugins: [
                             "@babel/plugin-proposal-class-properties",
-                            ["babel-plugin-module-resolver", { alias: aliases }]
+                            ["babel-plugin-module-resolver", { alias: aliases }],
+                            ["babel-plugin-lodash", { id: ["lodash"] }]
                         ]
                     }
                 }

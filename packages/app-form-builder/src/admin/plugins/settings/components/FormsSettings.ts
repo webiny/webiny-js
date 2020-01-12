@@ -51,6 +51,17 @@ const FormsSettings = () => {
                                             <SimpleFormContent>
                                                 <Grid>
                                                     <Cell span={12}>
+                                                        <Bind name={"domain"}>
+                                                            <Input
+                                                                label="Domain"
+                                                                description={
+                                                                    "E.g. https://www.mysite.com"
+                                                                }
+                                                            />
+                                                        </Bind>
+                                                    </Cell>
+
+                                                    <Cell span={12}>
                                                         <Bind name={"reCaptcha.enabled"}>
                                                             <Switch
                                                                 label={"Enable Google reCAPTCHA"}

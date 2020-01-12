@@ -30,11 +30,10 @@ export default ({ createBase }) => {
                     enabled: boolean(),
                     apiKey: onSet(value => {
                         if (value && value !== instance.apiKey) {
-                            instance.registerHookCallback("beforeSave", async () => {
-                                console.log("TODO: setOnce");
-
+                            const removeCallback = instance.hook("beforeSave", async () => {
                                 const mailchimp = new MailchimpApi({ apiKey: value });
                                 const valid = await mailchimp.isValidApiKey();
+                                removeCallback();
                                 if (!valid) {
                                     throw Error("API key invalid.");
                                 }

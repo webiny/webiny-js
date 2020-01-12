@@ -19,3 +19,5 @@ build/
 .verdaccio
 .history
 *.tsbuildinfo
+.cloudfnsrc.js
+.cloudfns/

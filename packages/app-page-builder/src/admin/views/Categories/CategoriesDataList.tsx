@@ -1,5 +1,5 @@
 import React from "react";
-import { withRouter } from "react-router-dom";
+import { withRouter } from "@webiny/react-router";
 import { i18n } from "@webiny/app/i18n";
 import { ConfirmationDialog } from "@webiny/ui/ConfirmationDialog";
 import { DeleteIcon } from "@webiny/ui/List/DataList/icons";
@@ -44,7 +44,7 @@ const CategoriesDataList = () => {
             ]}
         >
             {({ data, isSelected, select }) => (
-                <List>
+                <List data-testid="default-data-list">
                     {data.map(item => (
                         <ListItem key={item.id} selected={isSelected(item)}>
                             <ListItemText onClick={() => select(item)}>

@@ -80,11 +80,13 @@ const PageDetails = ({ refreshPages }) => {
                                     <PageDetailsConsumer>
                                         {pageDetails => (
                                             <React.Fragment>
-                                                {renderPlugins("pb-page-details", {
-                                                    refreshPages,
-                                                    pageDetails,
-                                                    loading
-                                                })}
+                                                <test-id data-testid="pb-page-details">
+                                                    {renderPlugins("pb-page-details", {
+                                                        refreshPages,
+                                                        pageDetails,
+                                                        loading
+                                                    })}
+                                                </test-id>
                                             </React.Fragment>
                                         )}
                                     </PageDetailsConsumer>
