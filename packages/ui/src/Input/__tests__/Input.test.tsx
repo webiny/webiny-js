@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React from "react";
 import { Input } from "../index";
 import "jest-dom/extend-expect";

@@ -33,6 +33,7 @@
       "@webiny/app-admin/*": ["./packages/app-admin/src/*"],
       "@webiny/app-admin": ["./packages/app-admin/src"],
       "@webiny/app-page-builder/*": ["./packages/app-page-builder/src/*"],
+      "@webiny/app-security": ["./packages/app-security/src"],
       "@webiny/app-security/*": ["./packages/app-security/src/*"],
       "@webiny/app-plugin-security-cognito/*": ["./packages/app-plugin-security-cognito/src/*"],
       "@webiny/app-i18n/*": ["./packages/app-i18n/src/*"],
@@ -50,6 +51,7 @@
       "@webiny/i18n-react/*": ["./packages/i18n-react/src/*"],
       "@webiny/plugins": ["./packages/plugins/src"],
       "@webiny/plugins/*": ["./packages/plugins/src/*"],
+      "@webiny/validation": ["./packages/validation/src"],
       "@webiny/validation/*": ["./packages/validation/src/*"],
       "@webiny/ui/*": ["./packages/ui/src/*"]
     },
