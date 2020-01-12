@@ -1,0 +1,10 @@
+{
+  "extends": "../../tsconfig",
+  "references": [
+    { "path": "../app" },
+    { "path": "../app-i18n" },
+    { "path": "../form" },
+    { "path": "../ui" },
+    { "path": "../validation" }
+  ]
+}

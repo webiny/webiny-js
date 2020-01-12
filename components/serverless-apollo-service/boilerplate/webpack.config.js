@@ -25,7 +25,7 @@ module.exports = {
         exprContextCritical: false,
         rules: [
             {
-                test: /\.js$/,
+                test: /\.(js|ts)$/,
                 loader: "babel-loader",
                 exclude: /node_modules/,
                 include: [__dirname],
@@ -38,7 +38,9 @@ module.exports = {
                                     node: "10.16"
                                 }
                             }
-                        ]
+                        ],
+                        "@babel/preset-flow",
+                        "@babel/preset-typescript"
                     ],
                     plugins: ["@babel/plugin-proposal-class-properties"]
                 }
@@ -46,6 +48,7 @@ module.exports = {
         ]
     },
     resolve: {
+        extensions: [".mjs", ".ts", ".js"],
         modules: [path.resolve(__dirname, "node_modules"), "node_modules"]
     }
 };

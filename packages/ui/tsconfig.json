@@ -1,0 +1,9 @@
+{
+  "extends": "../../tsconfig",
+  "exclude": ["node_modules", "./dist", "**/__tests__/**", "../storybook-utils", "../form", "../validation"],
+  "references": [
+    { "path": "../storybook-utils" },
+    { "path": "../validation" },
+    { "path": "../form" }
+  ]
+}

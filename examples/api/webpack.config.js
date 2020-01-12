@@ -28,7 +28,7 @@ module.exports = ({ root }) => {
             exprContextCritical: false,
             rules: [
                 {
-                    test: /\.js$/,
+                    test: /\.(ts|js)$/,
                     loader: "babel-loader",
                     exclude: /node_modules/,
                     include: [root, ...packages],
@@ -43,7 +43,9 @@ module.exports = ({ root }) => {
                                         node: "10.16"
                                     }
                                 }
-                            ]
+                            ],
+                            "@babel/preset-flow",
+                            "@babel/preset-typescript"
                         ],
                         plugins: [
                             "@babel/plugin-proposal-class-properties",
@@ -54,6 +56,7 @@ module.exports = ({ root }) => {
             ]
         },
         resolve: {
+            extensions: [".mjs", ".ts", ".js"],
             modules: [path.resolve(root, "node_modules"), "node_modules"]
         }
     };

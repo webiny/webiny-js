@@ -19,7 +19,9 @@ describe("MongoDB Files API", () => {
         plugins: [
             mongoDb({
                 database: {
+                    // @ts-ignore
                     server: global.__MONGO_URI__,
+                    // @ts-ignore
                     name: global.__MONGO_DB_NAME__
                 },
                 test: testCallbacks

@@ -1,0 +1,9 @@
+{
+  "extends": "../../tsconfig.json",
+  "references": [
+    { "path": "../app" },
+    { "path": "../app-security" },
+    { "path": "../plugins" },
+    { "path": "../ui" }
+  ]
+}

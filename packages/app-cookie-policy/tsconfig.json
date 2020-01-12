@@ -1,0 +1,11 @@
+{
+  "extends": "../../tsconfig",
+  "references": [
+    { "path": "../app-admin" },
+    { "path": "../app-security" },
+    { "path": "../app-page-builder" },
+    { "path": "../form" },
+    { "path": "../validation" },
+    { "path": "../ui" }
+  ]
+}

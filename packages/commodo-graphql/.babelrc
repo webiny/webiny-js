@@ -5,6 +5,6 @@
                 "node": "8.10"
             }
         }],
-        "@babel/preset-flow"
+        "@babel/preset-typescript"
     ]
 }

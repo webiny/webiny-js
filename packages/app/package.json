@@ -24,7 +24,7 @@
     "invariant": "^2.2.4",
     "lodash": "^4.17.4",
     "lodash.get": "^4.4.2",
-    "react": "^16.6.0",
+    "react": "^16.8.6",
     "react-apollo": "^3.1.0-beta.0",
     "react-dom": "^16.6.0",
     "use-react-router": "^1.0.7",
@@ -43,9 +43,8 @@
     "access": "public"
   },
   "scripts": {
-    "build": "babel src -d dist --source-maps --copy-files",
-    "flow-copy-source": "flow-copy-source src dist",
-    "postbuild": "yarn flow-copy-source && cp package.json LICENSE README.md dist/",
+    "build": "rimraf ./dist *.tsbuildinfo && babel src -d dist --source-maps --copy-files --extensions \".ts,.tsx\"",
+    "postbuild": "cp package.json LICENSE README.md dist/ && tsc -p tsconfig.build.json",
     "prepublishOnly": "yarn build"
   },
   "adio": {

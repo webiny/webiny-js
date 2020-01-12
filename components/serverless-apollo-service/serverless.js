@@ -185,7 +185,7 @@ class ApolloService extends Component {
                     const info = stats.toJson();
 
                     if (stats.hasErrors()) {
-                        console.error(info.errors);
+                        console.error(info.errors[0]);
                     }
 
                     return reject("Build failed!");
