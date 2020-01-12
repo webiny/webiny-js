@@ -1,6 +1,6 @@
 import React from "react";
 import { css } from "emotion";
-import { withRouter } from "react-router-dom";
+import { withRouter } from "@webiny/react-router";
 import { ButtonDefault } from "@webiny/ui/Button";
 import { Icon } from "@webiny/ui/Icon";
 import { ReactComponent as DownButton } from "@webiny/app-page-builder/admin/assets/round-arrow_drop_down-24px.svg";

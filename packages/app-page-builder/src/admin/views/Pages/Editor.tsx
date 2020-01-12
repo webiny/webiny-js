@@ -35,7 +35,7 @@ let pageSet = null;
 
 const Editor = () => {
     const client = useApolloClient();
-    const { match, history } = useReactRouter();
+    const { match, history } = useReactRouter<any>();
     const { showSnackbar } = useSnackbar();
     const ready = useSavedElements();
 

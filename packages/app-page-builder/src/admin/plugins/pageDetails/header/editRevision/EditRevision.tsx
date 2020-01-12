@@ -44,14 +44,22 @@ const EditRevision = () => {
     if (unpublishedRevision) {
         return (
             <Tooltip content={"Edit"} placement={"top"}>
-                <IconButton icon={<EditIcon />} onClick={editRevision} />
+                <IconButton
+                    icon={<EditIcon />}
+                    onClick={editRevision}
+                    data-testid={"pb-page-details-header-edit-revision"}
+                />
             </Tooltip>
         );
     }
 
     return (
         <Tooltip content={"Edit"} placement={"top"}>
-            <IconButton icon={<EditIcon />} onClick={copyAndEdit} />
+            <IconButton
+                icon={<EditIcon />}
+                onClick={copyAndEdit}
+                data-testid={"pb-page-details-header-edit-revision"}
+            />
         </Tooltip>
     );
 };

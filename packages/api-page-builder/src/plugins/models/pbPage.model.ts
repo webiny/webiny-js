@@ -54,10 +54,10 @@ export default ({ createBase, context, PbCategory, PbSettings }) => {
                     if (value && value !== instance.published && instance.isExisting()) {
                         instance.locked = true;
                         instance.publishedOn = new Date();
-                        instance.registerHookCallback("beforeSave", async () => {
-                            // TODO: setOnce
+                        const removeBeforeSave = instance.hook("beforeSave", async () => {
+                            removeBeforeSave();
                             // Deactivate previously published revision
-                            const publishedRev: typeof PbPage = await PbPage.findOne({
+                            const publishedRev = await PbPage.findOne({
                                 query: { published: true, parent: instance.parent }
                             });
 
@@ -65,6 +65,11 @@ export default ({ createBase, context, PbCategory, PbSettings }) => {
                                 publishedRev.published = false;
                                 await publishedRev.save();
                             }
+                        });
+
+                        const removeAfterSave = instance.hook("afterSave", async () => {
+                            removeAfterSave();
+                            await instance.hook("afterPublish");
                         });
                     }
                     return value;
@@ -114,6 +119,16 @@ export default ({ createBase, context, PbCategory, PbSettings }) => {
                         sort: { version: -1 }
                     });
                     resolve(revisions);
+                });
+            },
+            get fullUrl() {
+                return new Promise(async (resolve, reject) => {
+                    try {
+                        const settings = await PbSettings.load();
+                        resolve(settings.data.domain + this.url);
+                    } catch (e) {
+                        reject(e);
+                    }
                 });
             }
         }),

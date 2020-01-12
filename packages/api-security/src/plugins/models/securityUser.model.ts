@@ -22,9 +22,8 @@ export default ({
                 }
 
                 value = value.toLowerCase().trim();
-                instance.registerHookCallback("beforeSave", async () => {
-                    console.log("TODO: setOnce"); // eslint-disable-line
-
+                const removeCallback = instance.hook("beforeSave", async () => {
+                    removeCallback();
                     const existingUser = await SecurityUser.findOne({
                         query: { email: value }
                     });

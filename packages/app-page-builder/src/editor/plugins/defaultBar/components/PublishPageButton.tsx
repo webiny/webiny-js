@@ -6,13 +6,14 @@ import { getPage } from "@webiny/app-page-builder/editor/selectors";
 import { omit, isEqual } from "lodash";
 import { Mutation } from "react-apollo";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
-import { withRouter } from "react-router-dom";
+import { withRouter } from "@webiny/react-router";
 import { publishRevision } from "./PublishPageButton/graphql";
 
 const PublishPageButton = ({ page, history }) => {
     const { showSnackbar } = useSnackbar();
     return (
         <ConfirmationDialog
+            data-testid={"pb-editor-publish-confirmation-dialog"}
             title="Publish page"
             message="You are about to publish this page, are you sure want to continue?"
         >

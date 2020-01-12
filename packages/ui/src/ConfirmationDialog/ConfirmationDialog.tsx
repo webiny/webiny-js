@@ -30,13 +30,16 @@ type Props = {
     // This element will be rendered during loading
     loading?: React.ReactNode;
 
+    // For testing purposes.
+    "data-testid"?: string;
+
     // An element that will trigger the confirmation dialog.
     children: (props: ChildrenRenderProp) => React.ReactNode;
 };
 
 type State = {
     show: boolean;
-    loading: boolean
+    loading: boolean;
 };
 
 /**
@@ -99,7 +102,11 @@ class ConfirmationDialog extends React.Component<Props, State> {
     render() {
         return (
             <React.Fragment>
-                <Dialog open={this.state.show} onClose={this.hideConfirmation}>
+                <Dialog
+                    open={this.state.show}
+                    onClose={this.hideConfirmation}
+                    data-testid={this.props["data-testid"]}
+                >
                     {this.state.loading ? this.props.loading : null}
                     <DialogTitle>{this.props.title}</DialogTitle>
                     <DialogContent>{this.props.message}</DialogContent>

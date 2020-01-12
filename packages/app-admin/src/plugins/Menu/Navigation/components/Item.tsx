@@ -1,6 +1,6 @@
 import * as React from "react";
 import { List, ListItem } from "@webiny/ui/List";
-import { Link } from "react-router-dom";
+import { Link } from "@webiny/react-router";
 import useNavigation from "./useNavigation";
 import { css } from "emotion";
 

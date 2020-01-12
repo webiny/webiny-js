@@ -3,7 +3,9 @@
   "include": ["./src", "./custom.d.ts"],
   "exclude": ["node_modules", "../i18n"],
   "compilerOptions": {
-    "outDir": "./dist"
+    "rootDir": "./src",
+    "outDir": "./dist",
+    "declarationDir": "./dist"
   },
   "references": [{ "path": "../i18n/tsconfig.build.json" }]
 }

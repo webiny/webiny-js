@@ -22,7 +22,7 @@ const Page = ({ location }) => {
     const pageBuilder = usePageBuilder();
 
     const Loader = useMemo(() => {
-        const plugins = getPlugins("pb-layout-component") as PbPageLayoutComponentPlugin[];
+        const plugins = getPlugins<PbPageLayoutComponentPlugin>("pb-layout-component");
         const pl = plugins.find(pl => pl.componentType === "loader");
         return pl ? pl.component : null;
     }, []);

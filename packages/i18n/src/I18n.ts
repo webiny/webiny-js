@@ -13,7 +13,6 @@ import {
     Translations,
     Translator
 } from "./types";
-import { ReactElement } from "react";
 
 /**
  * Main class used for all I18n needs.

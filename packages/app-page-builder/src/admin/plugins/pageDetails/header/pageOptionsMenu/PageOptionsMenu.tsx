@@ -13,6 +13,8 @@ import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import classNames from "classnames";
 import { setHomePage } from "./graphql";
 import { useConfirmationDialog } from "@webiny/app-admin/hooks/useConfirmationDialog";
+import { getPlugins } from "@webiny/plugins";
+import { PbPageDetailsHeaderRightOptionsMenuItemPlugin } from "@webiny/app-page-builder/admin/types";
 
 const menuStyles = css({
     width: 250,
@@ -82,6 +84,12 @@ const PageOptionsMenu = props => {
                     </MenuItem>
                 )}
             </Mutation>
+
+            {getPlugins<PbPageDetailsHeaderRightOptionsMenuItemPlugin>(
+                "pb-page-details-header-right-options-menu-item"
+            ).map(plugin => (
+                <menu-item key={plugin.name}>{plugin.render(props)}</menu-item>
+            ))}
         </Menu>
     );
 };

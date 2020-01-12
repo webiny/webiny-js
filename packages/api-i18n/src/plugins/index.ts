@@ -15,7 +15,8 @@ export default () => [
             return locales.map(locale => ({
                 id: locale.id,
                 code: locale.code,
-                default: locale.default
+                default: locale.default,
+                createdOn: locale.createdOn
             }));
         }
     }

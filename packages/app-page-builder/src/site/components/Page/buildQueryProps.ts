@@ -1,8 +1,9 @@
 import gql from "graphql-tag";
 import { getDataFields, getNotFoundPageFields, getErrorPageFields } from "./graphql";
-import { Location } from "react-router-dom";
+import { Location } from "history";
+import { QueryOptions } from "apollo-client";
 
-type Props = { location: Location; defaultPages: any };
+type Props = { location: Location; defaultPages?: any };
 
 const settingsFields = `
 getSettings {
@@ -16,7 +17,7 @@ getSettings {
     }
 }`;
 
-export default ({ location, defaultPages }: Props) => {
+export default ({ location, defaultPages = {} }: Props): QueryOptions => {
     const query = new URLSearchParams(location.search);
     let defaultPagesFields = ``;
     if (!defaultPages.error) {

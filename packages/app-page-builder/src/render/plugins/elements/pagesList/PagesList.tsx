@@ -68,7 +68,12 @@ const PagesList = props => {
         }
     }
 
-    return <ListComponent {...pages} nextPage={nextPage} prevPage={prevPage} theme={theme} />;
+    return (
+        <>
+            <ssr-cache data-class="pb-pages-list" />
+            <ListComponent {...pages} nextPage={nextPage} prevPage={prevPage} theme={theme} />
+        </>
+    );
 };
 
 export default React.memo(PagesList);

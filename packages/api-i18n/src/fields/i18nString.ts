@@ -1,10 +1,11 @@
-import { flow } from "lodash";
-import { id } from "@commodo/fields-storage-mongodb";
+import onGetI18NValues from "./onGetI18NValues";
 import { onGet, string, fields, withFields, withProps } from "@webiny/commodo";
 import { validation } from "@webiny/validation";
-import onGetI18NValues from "./onGetI18NValues";
+import { flow } from "lodash";
 
-export default ({ context: { i18n }, ...rest }) => {
+export default ({ context: { i18n, commodo }, ...rest }) => {
+    const { id } = commodo.fields;
+
     return fields({
         ...rest,
         value: {},

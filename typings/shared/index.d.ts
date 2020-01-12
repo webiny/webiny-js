@@ -1,23 +1,23 @@
+// @ts-nocheck
 declare module "*.md" {
-    const content: string;
-    export default content;
+    const md: string;
+    export default md;
 }
 
-declare module "*.png"{
-    const content: string;
-    export default content;
+declare module "*.png" {
+    const png: string;
+    export default png;
 }
 
-declare module "*.jpg"{
-    const content: string;
-    export default content;
+declare module "*.jpg" {
+    const jpg: string;
+    export default jpg;
 }
-
 
 declare module "*.svg" {
-    import * as React from "react";
+    import { FunctionComponent, SVGProps } from "react";
 
-    export const ReactComponent: React.FunctionComponent<React.SVGProps<SVGSVGElement> & {
+    export const ReactComponent: FunctionComponent<SVGProps<SVGSVGElement> & {
         alt?: string;
     }>;
 

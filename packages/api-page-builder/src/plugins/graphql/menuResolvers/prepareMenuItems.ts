@@ -1,5 +1,4 @@
 import cloneDeep from "lodash/cloneDeep";
-import { isMongoDbId } from "@commodo/fields-storage-mongodb";
 
 import { listPublishedPages } from "../pageResolvers/listPublishedPages";
 
@@ -28,7 +27,7 @@ const applyModifier = async ({ items, modifier, context }) => {
     }
 
     for (let i = 0; i < items.length; i++) {
-        let item = items[i];
+        const item = items[i];
         await modifier({ item, context });
 
         await applyModifier({ items: item.children, modifier, context });
@@ -72,7 +71,10 @@ export default async ({ menu, context }: {[key: string]: any}) => {
 
                         // "item.page" actually represents "parent" value. This is because once we have parent, we can
                         // more easily load the right child page (we just need to search published pages in this case).
-                        if (isMongoDbId(item.page) && !context.distinctParents.data[item.page]) {
+                        if (
+                            context.commodo.isId(item.page) &&
+                            !context.distinctParents.data[item.page]
+                        ) {
                             context.distinctParents.data[item.page] = null;
                         }
                         break;

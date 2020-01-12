@@ -5,7 +5,7 @@
         "node": "8.10"
       }
     }],
-    "@babel/preset-flow"
+    "@babel/preset-typescript"
   ],
   "plugins": [
     ["@babel/plugin-proposal-object-rest-spread", {"useBuiltIns": true}],

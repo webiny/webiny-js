@@ -1,10 +1,7 @@
 import { ErrorResponse, Response } from "@webiny/api";
+import { GraphQLFieldResolver } from "@webiny/api/types";
 
-export const install = async (
-    root: any,
-    args: {[key: string]: any},
-    context: {[key: string]: any}
-) => {
+export const install: GraphQLFieldResolver = async (root, args, context) => {
     // Start the download of initial Page Builder page / block images.
     const { FilesSettings } = context.models;
 
@@ -31,11 +28,7 @@ export const install = async (
     }
 };
 
-export const isInstalled = async (
-    root: any,
-    args: {[key: string]: any},
-    context: {[key: string]: any}
-) => {
+export const isInstalled: GraphQLFieldResolver = async (root, args, context) => {
     const { FilesSettings } = context.models;
     const settings = await FilesSettings.load();
     return new Response(settings.data.installed);

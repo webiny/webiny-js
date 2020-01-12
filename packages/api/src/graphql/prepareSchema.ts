@@ -18,7 +18,7 @@ type PrepareSchemaParams = { plugins: PluginsContainer };
  */
 export async function prepareSchema({ plugins }: PrepareSchemaParams) {
     // This allows developers to register more plugins dynamically, before the graphql schema is instantiated.
-    const gqlPlugins = plugins.byType("graphql-schema") as GraphQLSchemaPlugin[];
+    const gqlPlugins = plugins.byType<GraphQLSchemaPlugin>("graphql-schema");
 
     for (let i = 0; i < gqlPlugins.length; i++) {
         if (typeof gqlPlugins[i].prepare === "function") {
@@ -27,8 +27,8 @@ export async function prepareSchema({ plugins }: PrepareSchemaParams) {
     }
 
     const scalars = plugins
-        .byType("graphql-scalar")
-        .map((item: GraphqlScalarPlugin) => item.scalar);
+        .byType<GraphqlScalarPlugin>("graphql-scalar")
+        .map(item => item.scalar);
 
     const schemaDefs: SchemaDefinition[] = [
         {
@@ -50,7 +50,7 @@ export async function prepareSchema({ plugins }: PrepareSchemaParams) {
     ];
 
     // Fetch schema plugins again, in case there were new plugins registered in the meantime.
-    const schemaPlugins = plugins.byType("graphql-schema") as GraphQLSchemaPlugin[];
+    const schemaPlugins = plugins.byType<GraphQLSchemaPlugin>("graphql-schema");
     for (let i = 0; i < schemaPlugins.length; i++) {
         const { schema } = schemaPlugins[i];
         if (!schema) {

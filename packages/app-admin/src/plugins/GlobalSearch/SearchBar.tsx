@@ -1,6 +1,6 @@
 import * as React from "react";
 import { set } from "dot-prop-immutable";
-import { withRouter } from "react-router-dom";
+import { withRouter } from "@webiny/react-router";
 import { History } from "history";
 import Downshift from "downshift";
 import { getPlugins } from "@webiny/plugins";
@@ -49,8 +49,8 @@ class SearchBar extends React.Component<SearchBarProps, SearchBarState> {
         },
         plugins: {
             // List of all registered "global-search" plugins.
-            list: getPlugins("global-search") as GlobalSearchPlugin[],
-            hotKeys: getPlugins("global-search-prevent-hotkey") as GlobalSearchPreventHotkeyPlugin[],
+            list: getPlugins<GlobalSearchPlugin>("global-search"),
+            hotKeys: getPlugins<GlobalSearchPreventHotkeyPlugin>("global-search-prevent-hotkey"),
             // Current plugin - set by examining current route and its query params (on construct).
             current: undefined
         }
@@ -162,8 +162,7 @@ class SearchBar extends React.Component<SearchBarProps, SearchBarState> {
                                 keys={{
                                     // @ts-ignore
                                     esc: () => document.activeElement.blur(),
-                                    "/": this.handleOpenHotkey,
-                                    NumpadDivide: this.handleOpenHotkey
+                                    "/": this.handleOpenHotkey
                                 }}
                             />
 

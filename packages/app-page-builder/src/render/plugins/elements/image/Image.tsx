@@ -2,13 +2,14 @@ import React from "react";
 import { get } from "lodash";
 import { ElementRoot } from "@webiny/app-page-builder/render/components/ElementRoot";
 import { Image as WebinyImage } from "@webiny/app/components";
+import { Link as RouterLink } from "@webiny/react-router";
 
 const Link = ({ link, children }) => {
     if (link && link.href) {
         return (
-            <a href={link.href} target={link.newTab ? "_blank" : "_self"}>
+            <RouterLink to={link.href} target={link.newTab ? "_blank" : "_self"}>
                 {children}
-            </a>
+            </RouterLink>
         );
     }
     return children;

@@ -1,5 +1,6 @@
 import { Response, NotFoundResponse } from "@webiny/api";
-import getListPublishedFormsResolver from "./utils/getListPublishedFormsResolver";
+import { listPublishedForms } from "./listPublishedForms";
+import { GraphQLFieldResolver } from "@webiny/api/types";
 
 /**
  * Returns published forms by given ID or parent. If parent is set, latest published revision with it will be returned.
@@ -8,32 +9,23 @@ import getListPublishedFormsResolver from "./utils/getListPublishedFormsResolver
  * @param context
  * @returns {Promise<NotFoundResponse|Response>}
  */
-export default async (root: any, args: {[key: string]: any}, context: {[key: string]: any}) => {
+const resolver: GraphQLFieldResolver = async (root, args, context, info) => {
     if (!args.id && !args.parent && !args.slug) {
         return new NotFoundResponse("Form ID or slug missing.");
     }
 
     // We utilize the same query used for listing published forms (single source of truth = less maintenance).
-    const listArgs: {[key: string]: any} = { ...args, perPage: 1 };
+    const listArgs = { ...args, perPage: 1 };
     if (!listArgs.version) {
         listArgs.sort = { version: -1 };
     }
 
-    const plugin = getListPublishedFormsResolver(context);
-
-    const { forms, totalCount } = await plugin.resolve({ root, args: listArgs, context });
-
-    if (!Array.isArray(forms) || !Number.isInteger(totalCount)) {
-        throw Error(
-            `Resolver plugin "forms-resolver-list-published-forms" must return { forms: [Form], totalCount: Int }!`
-        );
-    }
-
-    const [form] = forms;
-
+    const [form] = await listPublishedForms(root, listArgs, context, info);
     if (!form) {
         return new NotFoundResponse("The requested form was not found.");
     }
 
     return new Response(form);
 };
+
+export default resolver;

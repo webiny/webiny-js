@@ -13,6 +13,7 @@
     "declarationDir": "./dist"
   },
   "references": [
-    { "path": "../api/tsconfig.build.json" }
+    { "path": "../api/tsconfig.build.json" },
+    { "path": "../commodo/tsconfig.build.json" }
   ]
 }

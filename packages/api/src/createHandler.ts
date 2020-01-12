@@ -23,7 +23,7 @@ export const createSchema = async ({ plugins }: CreateHandlerParams): Promise<Gr
 
     const registeredMiddleware = [];
 
-    const middlewarePlugins = plugins.byType("graphql-middleware") as GraphQLMiddlewarePlugin[];
+    const middlewarePlugins = plugins.byType<GraphQLMiddlewarePlugin>("graphql-middleware");
     for (let i = 0; i < middlewarePlugins.length; i++) {
         const plugin = middlewarePlugins[i];
         const middleware =
@@ -47,7 +47,7 @@ export const createSchema = async ({ plugins }: CreateHandlerParams): Promise<Gr
         delete info.operation["__runAtMostOnce"];
 
         // Process `graphql-context` plugins
-        const ctxPlugins = plugins.byType("graphql-context") as GraphQLContextPlugin[];
+        const ctxPlugins = plugins.byType<GraphQLContextPlugin>("graphql-context");
         for (let i = 0; i < ctxPlugins.length; i++) {
             if (typeof ctxPlugins[i].preApply === "function") {
                 await ctxPlugins[i].preApply(context);

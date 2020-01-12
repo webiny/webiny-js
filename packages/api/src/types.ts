@@ -1,16 +1,16 @@
-import { GraphQLScalarType, GraphQLSchema } from "graphql";
-import { PluginsContainer } from "./PluginsContainer";
+import {
+    GraphQLScalarType,
+    GraphQLSchema,
+    GraphQLFieldResolver as BaseGraphQLFieldResolver
+} from "graphql";
 
-export { PluginsContainer };
+import { Plugin, PluginsContainer } from "@webiny/plugins/types";
 
-export type GraphQLContext = {
+export { Plugin, PluginsContainer };
+
+export interface GraphQLContext {
     plugins: PluginsContainer;
     [key: string]: any;
-};
-
-export type Plugin = {
-    name: string;
-    type: string;
 };
 
 export type SchemaDefinition = {
@@ -29,13 +29,13 @@ export type GraphQLSchemaPlugin = Plugin & {
 };
 
 export type GraphQLContextPlugin = Plugin & {
-    preApply?: (context: GraphQLContext) => Promise<void>;
-    apply?: (context: GraphQLContext) => Promise<void>;
-    postApply?: (context: GraphQLContext) => Promise<void>;
+    preApply?: (context: GraphQLContext) => void | Promise<void>;
+    apply?: (context: GraphQLContext) => void | Promise<void>;
+    postApply?: (context: GraphQLContext) => void | Promise<void>;
 };
 
 export type GraphQLMiddlewarePlugin = Plugin & {
-    middleware: ({ plugins: PluginsContainer }) => Function[];
+    middleware: (params: { plugins: PluginsContainer }) => Function[];
 };
 
 export type GraphqlScalarPlugin = Plugin & {
@@ -49,3 +49,9 @@ export type CreateApolloHandlerPlugin = Plugin & {
 export type CreateApolloGatewayPlugin = Plugin & {
     createGateway(params: { plugins: PluginsContainer }): Promise<Function>;
 };
+
+export type GraphQLFieldResolver<
+    TSource = any,
+    TArgs = any,
+    TContext = GraphQLContext
+> = BaseGraphQLFieldResolver<TSource, TContext, TArgs>;

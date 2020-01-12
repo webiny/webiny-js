@@ -1,6 +1,6 @@
 import * as React from "react";
 import TimeAgo from "timeago-react";
-import { withRouter } from "react-router-dom";
+import { withRouter } from "@webiny/react-router";
 import { i18n } from "@webiny/app/i18n";
 import { css } from "emotion";
 import { Typography } from "@webiny/ui/Typography";
@@ -48,7 +48,7 @@ const PagesDataList = props => {
             ]}
         >
             {({ data = [] }) => (
-                <List>
+                <List data-testid="default-data-list">
                     {data.map(page => (
                         <ListItem key={page.id}>
                             <ListItemText

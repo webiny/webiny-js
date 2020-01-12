@@ -9,7 +9,7 @@ const backStyles = css({
 });
 
 const BackButton = () => {
-    const { match, history } = useReactRouter();
+    const { match, history } = useReactRouter<any>();
     return (
         <IconButton
             className={backStyles}

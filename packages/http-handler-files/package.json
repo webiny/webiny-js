@@ -14,7 +14,8 @@
     "Adrian Smijulj <adrian@webiny.com>"
   ],
   "dependencies": {
-    "@babel/runtime": "^7.5.5"
+    "@babel/runtime": "^7.5.5",
+    "@webiny/http-handler": "^1.0.0"
   },
   "devDependencies": {
     "@babel/cli": "^7.5.5",

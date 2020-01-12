@@ -15,6 +15,12 @@ import {
     TitleWrapper
 } from "./Styled";
 
+declare global {
+    interface Window {
+        Cypress: any;
+    }
+}
+
 type Props = {
     title: string;
     pageTitle: string;
@@ -79,10 +85,14 @@ const Title = ({
         [title, pageTitle]
     );
 
+    // Disable autoFocus because for some reason, blur event would automatically be triggered when clicking
+    // on the page title when doing Cypress testing. Not sure if this is RMWC or Cypress related issue.
+    const autoFocus = !window.Cypress;
+
     return editTitle ? (
         <TitleInputWrapper>
             <Input
-                autoFocus
+                autoFocus={autoFocus}
                 fullwidth
                 value={title}
                 onChange={setTitle}
@@ -103,7 +113,9 @@ const Title = ({
                     placement={"bottom"}
                     content={<span>Rename</span>}
                 >
-                    <PageTitle onClick={enableEdit}>{title}</PageTitle>
+                    <PageTitle data-testid="pb-editor-page-title" onClick={enableEdit}>
+                        {title}
+                    </PageTitle>
                 </Tooltip>
                 <PageVersion>{`(v${pageVersion})`}</PageVersion>
             </div>

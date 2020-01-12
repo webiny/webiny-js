@@ -2,6 +2,7 @@
   "name": "@webiny/commodo",
   "version": "2.0.0",
   "main": "index.js",
+  "types": "types.d.ts",
   "repository": {
     "type": "git",
     "url": "https://github.com/webiny/webiny-js.git"
@@ -29,8 +30,8 @@
     "access": "public"
   },
   "scripts": {
-    "build": "babel src -d dist --source-maps --copy-files",
-    "postbuild": "cp package.json LICENSE README.md dist/",
+    "build": "rimraf ./dist *.tsbuildinfo && babel src -d dist --source-maps --copy-files --extensions \".ts\"",
+    "postbuild": "cp package.json LICENSE README.md dist/ && tsc -p tsconfig.build.json",
     "prepublishOnly": "yarn build"
   },
   "gitHead": "71cab7d5607b2e32a63034e324a663770507b32b"

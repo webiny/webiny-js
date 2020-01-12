@@ -5,6 +5,7 @@ import { hasScope } from "@webiny/api-security";
 import mailchimpSettings from "./mailchimpSettings.model";
 import MailchimpApi from "./MailchimpApi";
 import { get } from "lodash";
+import { GraphQLContext } from "@webiny/api/types";
 
 export default () => [
     {
@@ -88,8 +89,8 @@ export default () => [
                 MailchimpQuery: {
                     listLists: async (
                         _: any,
-                        args: {[key: string]: any},
-                        context: {[key: string]: any}
+                        args: { [key: string]: any },
+                        context: { [key: string]: any }
                     ) => {
                         const { MailchimpSettings } = context.models;
                         const settings = await MailchimpSettings.load();
@@ -119,8 +120,8 @@ export default () => [
                 MailchimpMutation: {
                     addToList: async (
                         _: any,
-                        { list: listId, email }: {[key: string]: any},
-                        context: {[key: string]: any}
+                        { list: listId, email }: { [key: string]: any },
+                        context: GraphQLContext
                     ) => {
                         const { MailchimpSettings } = context.models;
 

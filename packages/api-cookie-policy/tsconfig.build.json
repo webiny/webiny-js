@@ -11,8 +11,7 @@
   "compilerOptions": {
     "rootDir": "./src",
     "outDir": "./dist",
-    "declarationDir": "./dist",
-    "emitDeclarationOnly": true
+    "declarationDir": "./dist"
   },
   "references": [
     { "path": "../api-security/tsconfig.build.json" },

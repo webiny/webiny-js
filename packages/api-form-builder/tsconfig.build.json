@@ -8,6 +8,7 @@
     "../api-security",
     "../commodo",
     "../commodo-graphql",
+    "../http-handler-ssr",
     "../validation"
   ],
   "compilerOptions": {
@@ -20,6 +21,7 @@
     { "path": "../api-i18n/tsconfig.build.json" },
     { "path": "../api-security/tsconfig.build.json" },
     { "path": "../commodo-graphql/tsconfig.build.json" },
+    { "path": "../http-handler-ssr/tsconfig.build.json" },
     { "path": "../validation/tsconfig.build.json" }
   ]
 }

@@ -1,7 +1,7 @@
 import React from "react";
 import { connect } from "@webiny/app-page-builder/editor/redux";
 import { css } from "emotion";
-import { withRouter } from "react-router-dom";
+import { withRouter } from "@webiny/react-router";
 import { Menu, MenuItem } from "@webiny/ui/Menu";
 import { getRevisions } from "@webiny/app-page-builder/editor/selectors";
 import { ButtonDefault } from "@webiny/ui/Button";

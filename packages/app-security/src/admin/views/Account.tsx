@@ -66,7 +66,7 @@ const UPDATE_CURRENT_USER = gql`
 `;
 
 const UserAccountForm = () => {
-    const auth = getPlugin("security-view-user-account-form") as SecurityViewUserAccountFormPlugin;
+    const auth = getPlugin<SecurityViewUserAccountFormPlugin>("security-view-user-account-form");
 
     if (!auth) {
         throw Error(
@@ -131,7 +131,7 @@ const UserAccountForm = () => {
                                         name="lastName"
                                         validators={validation.create("required")}
                                     >
-                                        <Input label={t`Last name`} />
+                                        <Input label={t`Last Name`} />
                                     </Bind>
                                 ),
                                 avatar: (
@@ -148,9 +148,7 @@ const UserAccountForm = () => {
                         })}
                     </SimpleFormContent>
                     <SimpleFormFooter>
-                        <ButtonPrimary onClick={form.submit}>
-                            {t`Update account`}
-                        </ButtonPrimary>
+                        <ButtonPrimary onClick={form.submit}>{t`Update account`}</ButtonPrimary>
                     </SimpleFormFooter>
                 </SimpleForm>
             )}

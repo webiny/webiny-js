@@ -1,13 +1,14 @@
 import * as React from "react";
-import { Route } from "react-router-dom";
+import { Route } from "@webiny/react-router";
 import renderPlugins from "@webiny/app-page-builder/render/presets/default";
-import Page from "./../components/Page";
+import { RoutePlugin } from "@webiny/app/types";
+import { PbAddonRenderPlugin } from "@webiny/app-page-builder/types";
 import Helmet from "react-helmet";
 import { Query } from "react-apollo";
 import gql from "graphql-tag";
 import { get } from "lodash";
-import { RoutePlugin } from "@webiny/app/types";
-import { PbAddonRenderPlugin } from "@webiny/app-page-builder/types";
+import linkPreloadPlugin from "./linkPreload";
+import Page from "./../components/Page";
 
 export default [
     {
@@ -15,6 +16,7 @@ export default [
         type: "route",
         route: <Route component={Page} />
     } as RoutePlugin,
+    linkPreloadPlugin(),
     {
         type: "addon-render",
         name: "addon-render-favicon",

@@ -1,6 +1,11 @@
 import { flow } from "lodash";
 import { validation } from "@webiny/validation";
-import { createFieldsModel, createSettingsModel, createFormStatsModel } from "./Form";
+import {
+    createFieldsModel,
+    createSettingsModel,
+    createFormStatsModel,
+    withLatestVersion
+} from "./Form";
 import got from "got";
 import { pick } from "lodash";
 import mdbid from "mdbid";
@@ -55,10 +60,33 @@ export default ({ context, createBase, FormSettings }) => {
             parent: string(),
             publishedOn: date(),
             published: onSet(value => {
-                if (value) {
-                    instance.publishedOn = new Date();
-                    if (!instance.locked) {
-                        instance.locked = true;
+                if (instance.published !== value) {
+                    if (value) {
+                        instance.publishedOn = new Date();
+                        if (!instance.locked) {
+                            instance.locked = true;
+                        }
+
+                        const removeBeforeSave = instance.hook("beforeSave", async () => {
+                            removeBeforeSave();
+                            await instance.hook("beforePublish");
+                        });
+
+                        const removeAfterSave = instance.hook("afterSave", async () => {
+                            removeAfterSave();
+                            await instance.hook("afterPublish");
+                        });
+                    } else {
+                        instance.publishedOn = null;
+                        const removeBeforeSave = instance.hook("beforeSave", async () => {
+                            removeBeforeSave();
+                            await instance.hook("beforeUnpublish");
+                        });
+
+                        const removeAfterSave = instance.hook("afterSave", async () => {
+                            removeAfterSave();
+                            await instance.hook("afterUnpublish");
+                        });
                     }
                 }
 
@@ -98,39 +126,40 @@ export default ({ context, createBase, FormSettings }) => {
                 }
             }
         }),
+        withLatestVersion(),
         withProps({
+            // This field can be optimized by implementing an aggregation collection.
+            __overallStats: null,
             get overallStats() {
-                // eslint-disable-next-line no-async-promise-executor
                 return new Promise(async resolve => {
-                    const plugin = context.plugins.byName("forms-resolver-overall-stats");
-
-                    if (!plugin) {
-                        throw Error(
-                            `Resolver plugin "forms-resolver-overall-stats" is not configured!`
-                        );
+                    if (this.__overallStats) {
+                        return resolve(this.__overallStats);
                     }
 
-                    const stats = await plugin.resolve({ form: this, context });
+                    const allForms = await Form.find({ parent: this.parent });
+                    const stats = {
+                        submissions: 0,
+                        views: 0,
+                        conversionRate: 0
+                    };
 
-                    if (!stats) {
-                        return resolve({
-                            submissions: 0,
-                            views: 0,
-                            conversionRate: 0
-                        });
+                    for (let i = 0; i < allForms.length; i++) {
+                        const form = allForms[i];
+                        stats.views += form.stats.views;
+                        stats.submissions += form.stats.submissions;
                     }
 
                     let conversionRate = 0;
                     if (stats.views > 0) {
-                        conversionRate = parseFloat(
-                            ((stats.submissions / stats.views) * 100).toFixed(2)
-                        );
+                        conversionRate = parseFloat(((stats.submissions / stats.views) * 100).toFixed(2));
                     }
 
-                    resolve({
+                    this.__overallStats = {
                         ...stats,
                         conversionRate
-                    });
+                    };
+
+                    resolve(this.__overallStats);
                 });
             },
             get revisions() {
@@ -158,8 +187,8 @@ export default ({ context, createBase, FormSettings }) => {
                 meta
             }: {
                 reCaptchaResponseToken?: string;
-                data: {[key: string]: any};
-                meta: {[key: string]: any};
+                data: { [key: string]: any };
+                meta: { [key: string]: any };
             }) {
                 if (this.settings.reCaptcha.enabled) {
                     if (!reCaptchaResponseToken) {
@@ -195,17 +224,20 @@ export default ({ context, createBase, FormSettings }) => {
                 // Validate data.
                 const validatorPlugins = context.plugins.byType("form-field-validator");
                 const fields = this.fields;
-                const data = pick(rawData, fields.map(field => field.fieldId));
+                const data = pick(
+                    rawData,
+                    fields.map(field => field.fieldId)
+                );
                 if (Object.keys(data).length === 0) {
                     throw new Error("Form data cannot be empty.");
                 }
 
                 const invalidFields = {};
                 for (let i = 0; i < fields.length; i++) {
-                    let field = fields[i];
+                    const field = fields[i];
                     if (Array.isArray(field.validation)) {
                         for (let j = 0; j < field.validation.length; j++) {
-                            let validator = field.validation[j];
+                            const validator = field.validation[j];
                             const validatorPlugin = validatorPlugins.find(
                                 item => item.validator.name === validator.name
                             );
@@ -261,7 +293,7 @@ export default ({ context, createBase, FormSettings }) => {
                     if (this.triggers) {
                         const plugins = context.plugins.byType("form-trigger-handler");
                         for (let i = 0; i < plugins.length; i++) {
-                            let plugin = plugins[i];
+                            const plugin = plugins[i];
                             this.triggers[plugin.trigger] &&
                                 (await plugin.handle({
                                     form: this,

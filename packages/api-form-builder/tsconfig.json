@@ -6,6 +6,7 @@
     { "path": "../api-security" },
     { "path": "../commodo" },
     { "path": "../commodo-graphql" },
+    { "path": "../http-handler-ssr" },
     { "path": "../validation" }
   ]
 }

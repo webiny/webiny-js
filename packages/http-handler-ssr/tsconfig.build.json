@@ -1,0 +1,21 @@
+{
+  "extends": "../../tsconfig.build.json",
+  "include": ["./src"],
+  "exclude": [
+    "node_modules",
+    "./dist",
+    "../http-handler",
+    "../commodo",
+    "../commodo-fields-storage-db-proxy"
+  ],
+  "compilerOptions": {
+    "rootDir": "./src",
+    "outDir": "./dist",
+    "declarationDir": "./dist"
+  },
+  "references": [
+    { "path": "../http-handler/tsconfig.build.json" },
+    { "path": "../commodo/tsconfig.build.json" },
+    { "path": "../commodo-fields-storage-db-proxy/tsconfig.build.json" }
+  ]
+}

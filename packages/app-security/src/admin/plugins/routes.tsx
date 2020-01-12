@@ -1,6 +1,6 @@
 import React from "react";
 import Helmet from "react-helmet";
-import { Route } from "react-router-dom";
+import { Route } from "@webiny/react-router";
 import { AdminLayout } from "@webiny/app-admin/components/AdminLayout";
 import { Roles } from "@webiny/app-security/admin/views/Roles";
 import { Users } from "@webiny/app-security/admin/views/Users";

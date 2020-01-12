@@ -7,9 +7,6 @@ export default () => [
         async resolve({ args, context }) {
             const { PbPage } = context.models;
             const { driver } = context.commodo;
-
-            const collection = driver.getDatabase().collection(driver.getCollectionName(PbPage));
-
             const { query } = args;
 
             const pipeline = [
@@ -20,7 +17,10 @@ export default () => [
                 { $group: { _id: "$settings.general.tags" } }
             ];
 
-            const results = await collection.aggregate(pipeline).toArray();
+            const results = await driver.getClient().runOperation({
+                collection: driver.getCollectionName(PbPage),
+                operation: ["aggregate", pipeline]
+            });
 
             return results.map(item => item._id);
         }
@@ -125,8 +125,6 @@ export default () => [
         async resolve({ args, context }) {
             const { PbPage } = context.models;
             const { driver } = context.commodo;
-            const collection = driver.getDatabase().collection(driver.getCollectionName(PbPage));
-
             const { page = 1, perPage = 10, sort = null, search = null, parent = null } = args;
 
             const pipeline: any = [
@@ -161,38 +159,49 @@ export default () => [
             if (parent) {
                 pipeline[0].$match.parent = parent;
             }
-
             if (search) {
                 pipeline[0].$match.title = { $regex: `.*${search}.*`, $options: "i" };
             }
-
             if (sort) {
                 pipeline.push({
                     $sort: sort
                 });
             }
 
-            const ids = await collection
-                .aggregate([
-                    ...pipeline,
-                    { $project: { _id: -1, id: 1 } },
-                    { $skip: (page - 1) * perPage },
-                    { $limit: perPage }
-                ])
-                .toArray();
+            const ids = await driver.getClient().runOperation({
+                collection: driver.getCollectionName(PbPage),
+                operation: [
+                    "aggregate",
+                    [
+                        ...pipeline,
+                        { $project: { _id: -1, id: 1 } },
+                        { $skip: (page - 1) * perPage },
+                        { $limit: perPage }
+                    ]
+                ]
+            });
 
-            const [totalCount] = await collection
-                .aggregate([
-                    ...pipeline,
-                    {
-                        $count: "totalCount"
-                    }
-                ])
-                .toArray();
+            const [totalCount] = await driver.getClient().runOperation({
+                collection: driver.getCollectionName(PbPage),
+                operation: [
+                    "aggregate",
+                    [
+                        ...pipeline,
+                        {
+                            $count: "totalCount"
+                        }
+                    ]
+                ]
+            });
 
-            const pages = await PbPage.find({
+            const unsortedPages = await PbPage.find({
                 sort,
+                meta: false,
                 query: { id: { $in: ids.map(item => item.id) } }
+            });
+
+            const pages = ids.map(item => {
+                return unsortedPages.find(page => page.id === item.id);
             });
 
             return { pages, totalCount: get(totalCount, "totalCount", 0) };
@@ -202,21 +211,31 @@ export default () => [
         name: "pb-resolver-get-page-content-file",
         type: "pb-resolver",
         async resolve({ id, context }) {
-            const database = context.commodo.driver.getDatabase();
+            const { driver } = context.commodo;
 
+            // TODO: this whole thing needs to be deleted. Because we will refactor how files are stored
+            // TODO: in "content" field. We will only store an immutable file "key", which is enough for us to
+            // TODO: construct the whole path to the file (we'll only load URL prefix via GRAPHQL)
             try {
                 if (!context.files) {
                     context.files = {
-                        settings: await database.collection("Settings").findOne({
-                            key: "file-manager",
-                            deleted: { $ne: true }
+                        settings: await driver.getClient().runOperation({
+                            collection: "Settings",
+                            operation: [
+                                "findOne",
+                                {
+                                    key: "file-manager",
+                                    deleted: { $ne: true }
+                                }
+                            ]
                         })
                     };
                 }
 
-                const result = await database
-                    .collection("File")
-                    .findOne({ id, deleted: { $ne: true } });
+                const result = await driver.getClient().runOperation({
+                    collection: "File",
+                    operation: ["findOne", { id, deleted: { $ne: true } }]
+                });
 
                 if (!result) {
                     return null;

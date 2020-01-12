@@ -79,6 +79,11 @@ export type PbPageDetailsRevisionContentPlugin = Plugin & {
     }): ReactElement;
 };
 
+export type PbPageDetailsHeaderRightOptionsMenuItemPlugin = Plugin & {
+    type: "pb-page-details-header-right-options-menu-item";
+    render(props: any): ReactElement;
+};
+
 export type PbPageDetailsRevisionContentPreviewPlugin = PbPageDetailsRevisionContentPlugin;
 
 export type PbMenuItemPlugin = Plugin & {

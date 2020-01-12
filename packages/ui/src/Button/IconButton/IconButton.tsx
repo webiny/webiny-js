@@ -28,6 +28,16 @@ export type IconButtonProps = FormComponentProps &
          * Custom CSS class
          */
         className?: string;
+        /**
+         * For testing purposes.
+         */
+
+        "data-testid"?: string;
+
+        /**
+         * Should icon be disabled?
+         */
+        disabled?: boolean;
     };
 
 /**
@@ -41,6 +51,7 @@ const IconButton = (props: IconButtonProps) => {
 
     return (
         <RIconButton
+            data-testid={props["data-testid"]}
             onClick={onClick}
             disabled={disabled}
             className={className}

@@ -1,5 +1,5 @@
 import { createSchema } from "../index";
-import { PluginsContainer } from "@webiny/plugins";
+import { PluginsContainer } from "@webiny/plugins/PluginsContainer";
 
 export const setupSchema = async plugins => {
     const pluginsContainer = new PluginsContainer([plugins]);

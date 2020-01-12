@@ -28,6 +28,8 @@
     "mongodb"
   ],
   "scripts": {
-    "build": "babel src --ignore src/__tests__ --out-dir dist --source-maps"
+    "build": "rimraf ./dist *.tsbuildinfo && babel src -d dist --source-maps --copy-files --extensions \".ts,.tsx\"",
+    "postbuild": "cp package.json LICENSE README.md dist/ && tsc -p tsconfig.build.json",
+    "prepublishOnly": "yarn build"
   }
 }

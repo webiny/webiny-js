@@ -1,8 +1,11 @@
 import { createPaginationMeta } from "@webiny/commodo";
 import { ListResponse } from "@webiny/api";
+import { GraphQLFieldResolver } from "@webiny/api/types";
+import { PbResolverListPagesPlugin } from "@webiny/api-page-builder/types";
 
-export default async (root: any, args: {[key: string]: any}, context: {[key: string]: any}) => {
-    const plugin = context.plugins.byName("pb-resolver-list-pages");
+const resolver: GraphQLFieldResolver = async (root, args, context) => {
+    // TODO: @adrian create plugin type
+    const plugin = context.plugins.byName<PbResolverListPagesPlugin>("pb-resolver-list-pages");
 
     if (!plugin) {
         throw Error(`Resolver plugin "pb-resolver-list-pages" is not configured!`);
@@ -13,9 +16,11 @@ export default async (root: any, args: {[key: string]: any}, context: {[key: str
     return new ListResponse(
         pages,
         createPaginationMeta({
-            page: args.page,
-            perPage: args.perPage,
+            page: args.page || 1,
+            perPage: args.perPage || 10,
             totalCount: totalCount ? totalCount : 0
         })
     );
 };
+
+export default resolver;

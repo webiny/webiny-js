@@ -1,6 +1,6 @@
 import React from "react";
 import { css } from "emotion";
-import { withRouter } from "react-router-dom";
+import { withRouter } from "@webiny/react-router";
 import { History } from "history";
 import { Query } from "react-apollo";
 import {
@@ -43,7 +43,12 @@ const CategoriesDialog: React.FC<CategoriesDialogProps> = ({
     children
 }) => {
     return (
-        <Dialog open={open} onClose={onClose} className={narrowDialog}>
+        <Dialog
+            open={open}
+            onClose={onClose}
+            className={narrowDialog}
+            data-testid="pb-new-page-category-modal"
+        >
             {children}
             <DialogTitle>Select a category</DialogTitle>
             <DialogContent>

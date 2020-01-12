@@ -1,6 +1,6 @@
 import * as React from "react";
-import { Link } from "react-router-dom";
 import { get } from "lodash";
+import { Link } from "@webiny/react-router";
 
 import { ReactComponent as PrevIcon } from "./icons/round-navigate_before-24px.svg";
 import { ReactComponent as NextIcon } from "./icons/round-navigate_next-24px.svg";

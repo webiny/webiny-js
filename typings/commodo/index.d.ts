@@ -22,3 +22,37 @@ declare module "@webiny/commodo" {
     export const createPaginationMeta: any;
     export const Collection: any;
 }
+
+declare module "@webiny/commodo/fields" {
+    export const withFields: any;
+    export const boolean: any;
+    export const number: any;
+    export const string: any;
+    export const fields: any;
+    export const skipOnPopulate: any;
+}
+
+declare module "@webiny/commodo/fields-storage" {
+    export const withStorage: any;
+}
+
+declare module "@webiny/commodo/hooks" {
+    export const withHooks: any;
+}
+
+declare module "@webiny/commodo/repropose" {
+    export const withProps: any;
+    export const withStaticProps: any;
+}
+
+declare module "@webiny/commodo/fields-date" {
+    export const date: any;
+}
+
+declare module "@webiny/commodo/fields-object" {
+    export const object: any;
+}
+
+declare module "@webiny/commodo/name" {
+    export const withName: any;
+}

@@ -5,6 +5,7 @@
     { "path": "../ui" },
     { "path": "../app" },
     { "path": "../plugins" },
+    { "path": "../react-router" },
     { "path": "../form" }
   ]
 }

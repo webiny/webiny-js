@@ -187,7 +187,11 @@ const FormRender = (props: FormRenderComponentPropsType) => {
         TermsOfService
     };
 
-    return <LayoutRenderComponent {...layoutProps} />;
+    return (
+        <ssr-cache data-class="fb-form" data-id={data.parent}>
+            <LayoutRenderComponent {...layoutProps} />
+        </ssr-cache>
+    );
 };
 
 export default FormRender;

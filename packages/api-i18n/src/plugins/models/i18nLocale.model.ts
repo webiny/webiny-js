@@ -9,9 +9,8 @@ export default ({ createBase }) => {
         withFields(instance => ({
             default: onSet(value => {
                 if (value !== instance.code && value === true) {
-                    instance.registerHookCallback("afterSave", async () => {
-                        console.log("TODO: setOnce");
-
+                    const removeCallback = instance.hook("afterSave", async () => {
+                        removeCallback();
                         const defaultLocales = await I18NLocale.find({
                             query: { default: true, id: { $ne: instance.id } }
                         });

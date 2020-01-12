@@ -1,115 +1,54 @@
-import get from "lodash.get";
-import listPublishedForms from "./listPublishedForms";
+import { createResponse } from "@webiny/http-handler";
+import mime from "mime-types";
+import isUtf8 from "isutf8";
+import path from "path";
+import fs from "fs";
 
-export default () => [
-    {
-        name: "forms-resolver-list-forms",
-        type: "forms-resolver",
-        async resolve({ args, context }) {
-            const { Form } = context.models;
-            const { driver } = context.commodo;
-            const collection = driver.getDatabase().collection(driver.getCollectionName(Form));
+const DEFAULT_CACHE_MAX_AGE = 2592000; // 30 days.
 
-            const { page = 1, perPage = 10, sort = null, search = null, parent = null } = args;
+const load = (pathToResolve): Promise<Buffer> => {
+    const pathToRead = path.resolve(pathToResolve);
+    return new Promise((resolve, reject) => {
+        fs.readFile(pathToRead, (err, data) => {
+            if (err) return reject(err);
+            resolve(data);
+        });
+    });
+};
 
-            const pipeline: any[] = [
-                { $match: { deleted: false } },
-                {
-                    $sort: {
-                        version: -1
-                    }
-                },
-                {
-                    $group: {
-                        _id: "$parent",
-                        parent: {
-                            $first: "$parent"
-                        },
-                        createdOn: {
-                            $first: "$createdOn"
-                        },
-                        savedOn: {
-                            $first: "$savedOn"
-                        },
-                        id: {
-                            $first: "$id"
-                        },
-                        title: {
-                            $first: "$title"
-                        }
-                    }
-                }
-            ];
+export default ({ cacheMaxAge = DEFAULT_CACHE_MAX_AGE } = {}) => ({
+    type: "handler",
+    name: "handler-files",
+    canHandle({ args }) {
+        const [event] = args;
+        return event.httpMethod === "GET" && mime.lookup(event.path);
+    },
+    async handle({ args }) {
+        const [event] = args;
 
-            if (parent) {
-                pipeline[0].$match.parent = parent;
-            }
-
-            if (search) {
-                pipeline[0].$match.title = { $regex: `.*${search}.*`, $options: "i" };
-            }
-
-            if (sort) {
-                pipeline.push({
-                    $sort: sort
+        try {
+            const { key } = event.pathParameters;
+            const buffer = await load(key);
+            if (buffer) {
+                const isBase64Encoded = !isUtf8(buffer);
+                return createResponse({
+                    type: mime.lookup(event.path),
+                    body: buffer.toString(isBase64Encoded ? "base64" : "utf8"),
+                    isBase64Encoded,
+                    headers: { "Cache-Control": "public, max-age=" + cacheMaxAge }
                 });
             }
-
-            const ids = await collection
-                .aggregate([
-                    ...pipeline,
-                    { $project: { _id: -1, id: 1 } },
-                    { $skip: (page - 1) * perPage },
-                    { $limit: perPage }
-                ])
-                .toArray();
-
-            const [totalCount] = await collection
-                .aggregate([
-                    ...pipeline,
-                    {
-                        $count: "totalCount"
-                    }
-                ])
-                .toArray();
-
-            return {
-                forms: await Form.find({ sort, query: { id: { $in: ids.map(item => item.id) } } }),
-                totalCount: get(totalCount, "totalCount", 0)
-            };
+        } catch {
+            // Do nothing.
         }
-    },
-    {
-        name: "forms-resolver-list-published-forms",
-        type: "forms-resolver",
-        resolve: listPublishedForms
-    },
-    {
-        name: "forms-resolver-overall-stats",
-        type: "forms-resolver",
-        async resolve({ form, context }) {
-            const { driver } = context.commodo;
-            const collection = driver.getDatabase().collection(driver.getCollectionName(form));
 
-            const [stats] = await collection
-                .aggregate([
-                    { $match: { parent: form.parent } },
-                    { $project: { stats: 1 } },
-                    {
-                        $group: {
-                            _id: null,
-                            views: {
-                                $sum: "$stats.views"
-                            },
-                            submissions: {
-                                $sum: "$stats.submissions"
-                            }
-                        }
-                    }
-                ])
-                .toArray();
-
-            return stats;
-        }
+        return createResponse({
+            statusCode: 404,
+            type: "text/plain",
+            body: "Not found.",
+            headers: {
+                "Cache-Control": "public, max-age=" + cacheMaxAge
+            }
+        });
     }
-];
+});
