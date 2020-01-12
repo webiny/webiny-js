@@ -1,0 +1,18 @@
+.webiny-pb-page-element-input{
+    &__field{
+        width: 100%;
+        padding: 15px;
+        box-sizing: border-box;
+        font-size: 1rem;
+        border:2px solid var(--webiny-theme-color-border, #fafbfb);
+        background-color: var(--webiny-theme-color-background, #fafbfb);
+        &:focus{
+            border-color: var(--webiny-theme-color-primary, #ee896b);
+            outline: none;
+        }
+    }
+    &__helper-text{
+        font-size: 0.8rem;
+        margin-left: 2px;
+    }
+}

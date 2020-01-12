@@ -1,0 +1,24 @@
+declare module "@webiny/commodo" {
+    export const withStorage: any;
+    export const withCrudLogs: any;
+    export const withSoftDelete: any;
+    export const withFields: any;
+    export const withHooks: any;
+    export const withName: any;
+    export const boolean: any;
+    export const string: any;
+    export const onSet: any;
+    export const onGet: any;
+    export const object: any;
+    export const number: any;
+    export const date: any;
+    export const ref: any;
+    export const skipOnPopulate: any;
+    export const withProps: any;
+    export const WithFieldsError: any;
+    export const setOnce: any;
+    export const fields: any;
+    export const withStaticProps: any;
+    export const createPaginationMeta: any;
+    export const Collection: any;
+}

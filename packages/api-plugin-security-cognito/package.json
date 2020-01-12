@@ -25,8 +25,8 @@
     "access": "public"
   },
   "scripts": {
-    "build": "babel src -d dist --source-maps --copy-files",
-    "postbuild": "cp package.json LICENSE README.md dist/",
+    "build": "rimraf ./dist *.tsbuildinfo && babel src -d dist --source-maps --copy-files --extensions \".ts\"",
+    "postbuild": "cp package.json LICENSE README.md dist/ && tsc -p tsconfig.build.json",
     "prepublishOnly": "yarn build"
   },
   "adio": {

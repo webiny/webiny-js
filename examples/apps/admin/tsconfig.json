@@ -1,0 +1,11 @@
+{
+  "extends": "../../../tsconfig.app.check",
+  "include": [
+    "src"
+  ],
+  "compilerOptions": {
+    "strict": true,
+    "module": "esnext",
+    "isolatedModules": true
+  }
+}
