@@ -2,7 +2,7 @@ import { ApolloLink, Observable } from "apollo-link";
 import localStorage from "store";
 import { get } from "lodash";
 
-export default ({ token = "webiny-token" }) => {
+export default ({ token } = { token: "webiny-token" }) => {
     return new ApolloLink((operation, forward) => {
         const tokenValue = localStorage.get(token);
         if (tokenValue) {

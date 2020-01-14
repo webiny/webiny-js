@@ -1,12 +1,12 @@
 import React from "react";
 import { Form } from "@webiny/form";
 import { validation } from "@webiny/validation";
-import { ButtonPrimary } from "@webiny/ui/src/Button";
-import { Input } from "@webiny/ui/src/Input";
-import { Grid, Cell } from "@webiny/ui/src/Grid";
-import { Typography } from "@webiny/ui/src/Typography";
-import { Elevation } from "@webiny/ui/src/Elevation";
-import { CircularProgress } from "@webiny/ui/src/Progress";
+import { ButtonPrimary } from "@webiny/ui/Button";
+import { Input } from "@webiny/ui/Input";
+import { Grid, Cell } from "@webiny/ui/Grid";
+import { Typography } from "@webiny/ui/Typography";
+import { Elevation } from "@webiny/ui/Elevation";
+import { CircularProgress } from "@webiny/ui/Progress";
 import StateContainer from "./StateContainer";
 import { alignRight, InnerContent, Title, errorMessage } from "./StyledComponents";
 import { SetNewPasswordChildrenProps } from "@webiny/app-plugin-security-cognito/types";

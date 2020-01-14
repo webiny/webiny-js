@@ -1,15 +1,15 @@
 import * as React from "react";
 import { Form } from "@webiny/form";
 import { validation } from "@webiny/validation";
-import { ButtonPrimary, ButtonDefault } from "@webiny/ui/src/Button";
-import { Input } from "@webiny/ui/src/Input";
-import { Grid, Cell } from "@webiny/ui/src/Grid";
-import { Typography } from "@webiny/ui/src/Typography";
-import { Alert } from "@webiny/ui/src/Alert";
-import { Elevation } from "@webiny/ui/src/Elevation";
+import { ButtonPrimary, ButtonDefault } from "@webiny/ui/Button";
+import { Input } from "@webiny/ui/Input";
+import { Grid, Cell } from "@webiny/ui/Grid";
+import { Typography } from "@webiny/ui/Typography";
+import { Alert } from "@webiny/ui/Alert";
+import { Elevation } from "@webiny/ui/Elevation";
 import StateContainer from "./StateContainer";
 import { alignRight, InnerContent, Title } from "./StyledComponents";
-import { CircularProgress } from "@webiny/ui/src/Progress";
+import { CircularProgress } from "@webiny/ui/Progress";
 import { ForgotPasswordChildrenProps } from "@webiny/app-plugin-security-cognito/types";
 
 const ForgotPassword: React.FC<ForgotPasswordChildrenProps> = ({

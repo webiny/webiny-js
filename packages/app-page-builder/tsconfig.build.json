@@ -7,6 +7,7 @@
     "../app-admin",
     "../app-security",
     "../plugins",
+    "../react-router",
     "../form",
     "../ui"
   ],
@@ -20,6 +21,7 @@
     { "path": "../app-admin/tsconfig.build.json" },
     { "path": "../app-security/tsconfig.build.json" },
     { "path": "../plugins/tsconfig.build.json" },
+    { "path": "../react-router/tsconfig.build.json" },
     { "path": "../form/tsconfig.build.json" },
     { "path": "../ui/tsconfig.build.json" }
   ]

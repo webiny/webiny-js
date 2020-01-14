@@ -17,7 +17,7 @@ import {
 /**
  * Main class used for all I18n needs.
  */
-class I18N {
+export default class I18N {
     locale?: string;
     defaultFormats: Formats;
     translations: Translations;
@@ -419,5 +419,3 @@ class I18N {
         return _.assign({}, this.defaultFormats.number, _.get(this.locale, "formats.number", {}));
     }
 }
-
-export default I18N;

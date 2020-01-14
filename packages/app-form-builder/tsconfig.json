@@ -1,9 +1,0 @@
-{
-  "extends": "../../tsconfig",
-  "references": [
-    { "path": "../app" },
-    { "path": "../app-admin" },
-    { "path": "../app-i18n" },
-    { "path": "../app-page-builder" }
-  ]
-}

@@ -5,11 +5,16 @@
   "license": "MIT",
   "dependencies": {
     "@webiny/form": "^2.0.0",
-    "@webiny/app-i18n":"^2.1.1",
+    "@webiny/app-i18n": "^2.1.1",
     "@webiny/app-form-builder": "^1.0.0",
-    "@webiny/validation":"^2.1.0"
+    "@webiny/validation": "^2.1.0"
   },
   "peerDependencies": {
     "react": "^16.8.6"
+  },
+  "scripts": {
+    "build": "rimraf ./dist && babel src -d dist --source-maps --copy-files",
+    "postbuild": "cp package.json LICENSE README.md dist/",
+    "prepublishOnly": "yarn build"
   }
 }

@@ -1,7 +1,16 @@
 {
   "extends": "../../tsconfig.build.json",
   "include": ["./src"],
-  "exclude": ["node_modules", "./dist", "../app", "../app-i18n", "../form", "../ui", "../validation"],
+  "exclude": [
+    "node_modules",
+    "./dist",
+    "../app",
+    "../app-i18n",
+    "../app-plugin-security-cognito",
+    "../form",
+    "../ui",
+    "../validation"
+  ],
   "compilerOptions": {
     "rootDir": "./src",
     "outDir": "./dist",
@@ -10,6 +19,7 @@
   "references": [
     { "path": "../app/tsconfig.build.json" },
     { "path": "../app-i18n/tsconfig.build.json" },
+    { "path": "../app-plugin-security-cognito/tsconfig.build.json" },
     { "path": "../form/tsconfig.build.json" },
     { "path": "../ui/tsconfig.build.json" },
     { "path": "../validation/tsconfig.build.json" }

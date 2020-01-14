@@ -1,5 +1,5 @@
 import React from "react";
-import { Cell, Grid } from "@webiny/ui/src/Grid";
+import { Cell, Grid } from "@webiny/ui/Grid";
 import { validation } from "@webiny/validation";
 import { Input } from "@webiny/ui/Input";
 import { i18n } from "@webiny/app/i18n";

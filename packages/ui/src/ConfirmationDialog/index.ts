@@ -1,3 +1,2 @@
-export { ConfirmationDialog } from "./ConfirmationDialog";
-export { withConfirmation } from "./withConfirmation";
-export { WithConfirmationProps } from "./withConfirmation";
+export * from "./ConfirmationDialog";
+export * from "./withConfirmation";

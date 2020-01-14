@@ -5,7 +5,8 @@
     { "path": "../app-security" },
     { "path": "../app-page-builder" },
     { "path": "../form" },
-    { "path": "../validation" },
-    { "path": "../ui" }
+    { "path": "../react-router" },
+    { "path": "../ui" },
+    { "path": "../validation" }
   ]
 }

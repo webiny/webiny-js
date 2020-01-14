@@ -20,7 +20,7 @@ type Props = {
     AUTH_TOKEN?: String;
     getUser?: () => Promise<{ [key: string]: any }>;
     onUser?: (user: { [key: string]: any }) => void;
-    children: React.ReactNode;
+    children?: React.ReactNode;
 };
 
 export const SecurityConsumer = ({ children }) => (

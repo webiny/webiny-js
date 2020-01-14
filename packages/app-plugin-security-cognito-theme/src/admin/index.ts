@@ -12,7 +12,7 @@ import {
     SecurityCognitoViewRequireNewPasswordPlugin,
     SecurityCognitoViewSetNewPasswordPlugin,
     SecurityCognitoViewSignInPlugin
-} from "@webiny/app-plugin-security-cognito/src/types";
+} from "@webiny/app-plugin-security-cognito/types";
 import {
     SecurityViewInstallationFormPlugin,
     SecurityViewUserAccountFormPlugin,

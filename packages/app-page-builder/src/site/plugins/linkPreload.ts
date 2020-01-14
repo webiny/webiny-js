@@ -1,6 +1,6 @@
 import Location from "ulocation";
 import buildQueryProps from "../components/Page/buildQueryProps";
-import {ReactRouterOnLinkPlugin} from "@webiny/react-router/src/types";
+import {ReactRouterOnLinkPlugin} from "@webiny/react-router/types";
 
 export default (): ReactRouterOnLinkPlugin => {
     const preloadedLinks = [];

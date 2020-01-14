@@ -6,8 +6,8 @@ const packages = require("../packages");
 module.exports = packages.reduce((aliases, dir) => {
     try {
         const json = readJson(path.join(dir, "package.json"));
-        if (fs.existsSync(path.join(dir, "src"))) {
-            aliases[`^${json.name}/(?!src)(.+)$`] = `${json.name}/src/\\1`;
+        if (fs.existsSync(path.join(dir, "dist"))) {
+            aliases[`^${json.name}/(?!dist)(.+)$`] = `${json.name}/dist/\\1`;
         } else {
             aliases[`^${json.name}/(.+)$`] = `${json.name}/\\1`;
         }

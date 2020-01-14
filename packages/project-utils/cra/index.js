@@ -2,7 +2,7 @@ const cloneDeep = require("lodash.clonedeep");
 const set = require("lodash.set");
 const WebpackBar = require("webpackbar");
 const packages = require("../packages");
-const aliases = require("../aliases");
+const aliases = require("../aliases/webpack");
 
 const webinyConfig = {
     webpack(config) {
@@ -19,6 +19,10 @@ const webinyConfig = {
         require("./sass")(newConfig);
 
         set(newConfig, "resolve.alias.react-dom", "@hot-loader/react-dom");
+
+        Object.keys(aliases).forEach(key => {
+            set(newConfig, `resolve.alias.${key}`, aliases[key]);
+        });
 
         return newConfig;
     },

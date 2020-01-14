@@ -4,9 +4,10 @@
     { "path": "../app" },
     { "path": "../app-admin" },
     { "path": "../app-security" },
-    { "path": "../ui" },
-    { "path": "../plugins" },
     { "path": "../form" },
+    { "path": "../plugins" },
+    { "path": "../react-router" },
+    { "path": "../ui" },
     { "path": "../validation" }
   ]
 }

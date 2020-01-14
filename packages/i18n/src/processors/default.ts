@@ -28,7 +28,7 @@ const processTextPart = (part: string, values: Object, modifiers): string => {
     return output.value;
 };
 
-export default {
+const processor: Processor = {
     name: "default",
     canExecute(data: { values }) {
         for (const key in data.values) {
@@ -53,4 +53,6 @@ export default {
             ""
         );
     }
-} as Processor;
+};
+
+export default processor;

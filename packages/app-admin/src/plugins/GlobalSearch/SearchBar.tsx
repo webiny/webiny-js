@@ -1,7 +1,6 @@
 import * as React from "react";
 import { set } from "dot-prop-immutable";
-import { withRouter } from "@webiny/react-router";
-import { History } from "history";
+import { withRouter, WithRouterProps } from "@webiny/react-router";
 import Downshift from "downshift";
 import { getPlugins } from "@webiny/plugins";
 import { GlobalSearchPlugin, GlobalSearchPreventHotkeyPlugin } from "@webiny/app-admin/types";
@@ -26,9 +25,7 @@ import {
     searchWrapper
 } from "./styled";
 
-type SearchBarProps = {
-    history: History;
-};
+type SearchBarProps = WithRouterProps<{}>;
 
 type SearchBarState = {
     active: boolean;
@@ -93,7 +90,7 @@ class SearchBar extends React.Component<SearchBarProps, SearchBarState> {
 
     handleOpenHotkey = e => {
         for (let i = 0; i < this.state.plugins.hotKeys.length; i++) {
-            let hotKey = this.state.plugins.hotKeys[i];
+            const hotKey = this.state.plugins.hotKeys[i];
             if (hotKey.preventOpen(e)) {
                 return;
             }
@@ -237,4 +234,4 @@ class SearchBar extends React.Component<SearchBarProps, SearchBarState> {
     }
 }
 
-export default withRouter(SearchBar);
+export default withRouter<SearchBarProps>(SearchBar);

@@ -3,7 +3,7 @@ import Auth from "@aws-amplify/auth";
 import Authentication from "./Authentication";
 import { SecurityAuthenticationProviderPlugin } from "@webiny/app-security/types";
 
-export default (config): SecurityAuthenticationProviderPlugin => {
+const factory = (config): SecurityAuthenticationProviderPlugin => {
     // Configure Amplify Auth
     Auth.configure(config);
 
@@ -29,3 +29,5 @@ export default (config): SecurityAuthenticationProviderPlugin => {
         }
     };
 };
+
+export default factory;

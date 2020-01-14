@@ -1,12 +1,9 @@
-const aliases = require("../aliases");
-
 const appBabel = api => {
     const isDevelopment = api.env("development");
 
     return {
         presets: ["babel-preset-react-app"],
         plugins: [
-            ["babel-plugin-module-resolver", { alias: aliases, extensions: [".ts", ".tsx"] }],
             isDevelopment && ["react-hot-loader/babel"],
             ["babel-plugin-emotion", { autoLabel: true }],
             ["babel-plugin-lodash", { id: ["lodash"] }]
