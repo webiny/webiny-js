@@ -11,7 +11,8 @@ export default ({
     SecurityGroup,
     SecurityGroups2Models,
     context
-}) => {
+}): any => {
+    // TODO: figure out how to create typings for a `model`
     const SecurityUser: any = flow(
         withName("SecurityUser"),
         withHooks(),

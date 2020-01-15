@@ -1,4 +1,4 @@
-import React, { useReducer, useEffect, useCallback, useMemo } from "react";
+import React, {useReducer, useEffect, useCallback, useMemo, ReactElement} from "react";
 import { useApolloClient } from "react-apollo";
 import localStorage from "store";
 import observe from "store/plugins/observe";
@@ -15,7 +15,7 @@ localStorage.addPlugin(observe);
 export const DEFAULT_AUTH_TOKEN = "webiny-token";
 
 type Props = {
-    loader?: null;
+    loader?: ReactElement;
     allowAnonymous?: Boolean;
     AUTH_TOKEN?: String;
     getUser?: () => Promise<{ [key: string]: any }>;

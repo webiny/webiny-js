@@ -18,8 +18,3 @@ module.exports = (customizer = null) => {
 
     return appBabel;
 };
-
-/*
-const customizer = api => appBabel => {
-  return appBabel;
-};*/

@@ -1,8 +1,14 @@
 const cloneDeep = require("lodash.clonedeep");
 const set = require("lodash.set");
 const WebpackBar = require("webpackbar");
-const packages = require("../packages");
 const aliases = require("../aliases/webpack");
+
+const removeModuleScopePlugin = config => {
+    config.resolve.plugins = config.resolve.plugins.filter(
+        p => p.constructor.name !== "ModuleScopePlugin"
+    );
+    return config;
+};
 
 const webinyConfig = {
     webpack(config) {
@@ -12,8 +18,8 @@ const webinyConfig = {
             module: { ...config.module, rules: cloneDeep(config.module.rules) }
         };
 
-        // Enable .babelrc in each monorepo package
-        require("./babel")(newConfig.module.rules, packages, aliases);
+        // Enable .babelrc in the app
+        require("./babel")(newConfig.module.rules);
 
         // Add proper includePaths
         require("./sass")(newConfig);
@@ -24,7 +30,7 @@ const webinyConfig = {
             set(newConfig, `resolve.alias.${key}`, aliases[key]);
         });
 
-        return newConfig;
+        return removeModuleScopePlugin(newConfig);
     },
     jest: config => {
         config["moduleNameMapper"] = config["moduleNameMapper"] || {};

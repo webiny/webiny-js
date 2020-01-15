@@ -1,5 +1,8 @@
 import { Response, ErrorResponse } from "@webiny/commodo-graphql";
-import generateJWT from "../generateJWT";
+import { GraphQLContext, GraphQLFieldResolver } from "@webiny/api/types";
+import { JWTPayload, SecurityAuthenticationProviderPlugin } from "@webiny/api-security/types";
+import { JwtToken } from "../../authentication/jwtToken";
+
 type GetModelType = (context: { [key: string]: any }) => Function;
 
 const invalidCredentials = new ErrorResponse({
@@ -7,22 +10,48 @@ const invalidCredentials = new ErrorResponse({
     message: "Invalid credentials."
 });
 
-export default (getModel: GetModelType) => async (
-    root: any,
-    args: { [key: string]: any },
-    context: { [key: string]: any }
-) => {
+const generateJWT = async (user, context: GraphQLContext) => {
+    const expiresOn = new Date();
+    expiresOn.setSeconds(expiresOn.getSeconds() + context.security.token.expiresIn);
+
+    // Convert to seconds to represent "number of seconds since the epoch"
+    const seconds = Math.floor(expiresOn.getTime() / 1000);
+
+    const jwt = new JwtToken({ secret: context.security.token.secret });
+    const access = await user.access;
+
+    let payload: JWTPayload = {
+        id: user.id,
+        type: "user",
+        access
+    };
+
+    const authPlugin = context.plugins
+        .byType<SecurityAuthenticationProviderPlugin>("security-authentication-provider")
+        .filter(pl => pl.hasOwnProperty("createJWTPayload"))
+        .pop();
+
+    if (authPlugin) {
+        payload = await authPlugin.createJWTPayload({ defaultPayload: payload }, context);
+    }
+
+    return {
+        token: await jwt.encode(payload, seconds),
+        expiresOn: seconds
+    };
+};
+
+export default (getModel: GetModelType): GraphQLFieldResolver => async (root, args, context) => {
     const SecurityUser = getModel(context);
 
     // Decode the login token
     let user;
-    try {
-        const authPlugin = context.plugins
-            .byType("security-authentication-provider")
-            // eslint-disable-next-line no-prototype-builtins
-            .filter(pl => pl.hasOwnProperty("userFromToken"))
-            .pop();
+    const authPlugin = context.plugins
+        .byType<SecurityAuthenticationProviderPlugin>("security-authentication-provider")
+        .filter(pl => pl.hasOwnProperty("userFromToken"))
+        .pop();
 
+    try {
         user = await authPlugin.userFromToken({ idToken: args.idToken, SecurityUser }, context);
     } catch (err) {
         return new ErrorResponse({

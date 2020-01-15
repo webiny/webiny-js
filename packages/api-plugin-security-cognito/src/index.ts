@@ -4,6 +4,8 @@ import jwt from "jsonwebtoken";
 import jwkToPem from "jwk-to-pem";
 import request from "request-promise";
 import util from "util";
+import { GraphQLSchemaPlugin } from "@webiny/api/types";
+import { SecurityAuthenticationProviderPlugin } from "@webiny/api-security/types";
 
 const verify = util.promisify(jwt.verify);
 let jwksCache = null;
@@ -47,7 +49,7 @@ export default ({ region, userPoolId }) => {
                     }
                 `
             }
-        },
+        } as GraphQLSchemaPlugin,
         {
             name: "security-authentication-provider-cognito",
             type: "security-authentication-provider",
@@ -166,6 +168,6 @@ export default ({ region, userPoolId }) => {
 
                 return UserPool.EstimatedNumberOfUsers;
             }
-        }
+        } as SecurityAuthenticationProviderPlugin
     ];
 };

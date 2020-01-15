@@ -8,7 +8,6 @@ import { PageBuilderProvider } from "@webiny/app-page-builder/contexts/PageBuild
 import { SecurityProvider } from "@webiny/app-security/contexts/Security";
 import { I18NProvider } from "@webiny/app-i18n/contexts/I18N";
 import { CircularProgress } from "@webiny/ui/Progress";
-
 import "./App.scss";
 import plugins from "./plugins";
 

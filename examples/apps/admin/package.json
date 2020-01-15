@@ -5,7 +5,6 @@
   "dependencies": {
     "@webiny/app": "^2",
     "@webiny/app-admin": "^2",
-    "@webiny/app-cookie-policy": "^2",
     "@webiny/app-forms": "^2",
     "@webiny/app-cookie-policy": "^2",
     "@webiny/app-google-tag-manager": "^2",
