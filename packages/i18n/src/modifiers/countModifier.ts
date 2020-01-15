@@ -1,4 +1,4 @@
-import {Modifier} from "../types";
+import { Modifier } from "../types";
 
 export default {
     name: "count",

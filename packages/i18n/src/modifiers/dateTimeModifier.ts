@@ -1,9 +1,8 @@
-// import i18n from "./..";
 import { Modifier } from "../types";
 
-export default {
+export default ({ i18n }): Modifier => ({
     name: "dateTime",
     execute(value: string) {
-        return value // i18n.dateTime(value);
+        return i18n.dateTime(value);
     }
-} as Modifier;
+});

@@ -15,7 +15,7 @@ export type I18NData = {
  */
 export type Modifier = {
     name: string;
-    execute: () => string;
+    execute: (...args: any[]) => string;
 };
 
 /**

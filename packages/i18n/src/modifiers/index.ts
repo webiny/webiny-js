@@ -9,14 +9,14 @@ import timeModifier from "./timeModifier";
 import numberModifier from "./numberModifier";
 import priceModifier from "./priceModifier";
 
-export default [
+export default options => [
     countModifiers,
     genderModifier,
     ifModifier,
     pluralModifier,
-    dateModifier,
-    dateTimeModifier,
-    timeModifier,
-    numberModifier,
-    priceModifier
+    dateModifier(options),
+    dateTimeModifier(options),
+    timeModifier(options),
+    numberModifier(options),
+    priceModifier(options)
 ];

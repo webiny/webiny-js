@@ -1,9 +1,8 @@
-//
 import { Modifier } from "../types";
 
-export default {
+export default ({ i18n }): Modifier => ({
     name: "time",
     execute(value: string) {
-        return value; // i18n.time(value);
+        return i18n.time(value);
     }
-} as Modifier;
+});
