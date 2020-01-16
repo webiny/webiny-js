@@ -1,5 +1,5 @@
-import forOwn from "lodash/forOwn";
-import isObject from "lodash/isObject";
+import forOwn from "lodash.forown";
+import isObject from "lodash.isobject";
 
 const traverse = obj => {
     forOwn(obj, (val, key) => {
