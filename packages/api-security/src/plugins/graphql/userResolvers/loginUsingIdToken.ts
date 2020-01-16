@@ -1,6 +1,6 @@
 import { Response, ErrorResponse } from "@webiny/commodo-graphql";
 import { GraphQLContext, GraphQLFieldResolver } from "@webiny/api/types";
-import { JWTPayload, SecurityAuthenticationProviderPlugin } from "@webiny/api-security/types";
+import { JWTPayload, SecurityAuthenticationProviderPlugin } from "../../../types";
 import { JwtToken } from "../../authentication/jwtToken";
 
 type GetModelType = (context: { [key: string]: any }) => Function;
