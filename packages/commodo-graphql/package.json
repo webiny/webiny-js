@@ -16,7 +16,11 @@
   "dependencies": {
     "@webiny/api": "^2.1.0",
     "@webiny/commodo": "^2.0.0",
-    "lodash": "^4.17.4"
+    "lodash.forown": "^4.4.0",
+    "lodash.isobject": "^3.0.2",
+    "lodash.foreach": "^4.5.0",
+    "lodash.get": "^4.4.2",
+    "graphql": "^14.4.2"
   },
   "devDependencies": {
     "@babel/cli": "^7.5.5",

@@ -1,5 +1,5 @@
-import each from "lodash/each";
-import get from "lodash/get";
+import each from "lodash.foreach";
+import get from "lodash.get";
 import { WithFieldsError } from "@webiny/commodo";
 
 function formatInvalidFields(invalidFields, prefix = "") {

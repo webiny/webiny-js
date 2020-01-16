@@ -1,4 +1,4 @@
-import { flow } from "lodash";
+import flow from "lodash.flow";
 import getSsrCacheTags from "./ssrCache/getSsrCacheTags";
 import { withFields, string, number, fields, skipOnPopulate } from "@webiny/commodo/fields";
 import { withProps, withStaticProps } from "@webiny/commodo/repropose";

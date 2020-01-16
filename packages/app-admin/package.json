@@ -19,6 +19,7 @@
     "@webiny/plugins": "^2.0.0",
     "@webiny/react-router": "^1.0.0",
     "@webiny/ui": "^2.0.1",
+    "apollo-client": "^2.6.8",
     "bytes": "^3.1.0",
     "classnames": "^2.2.6",
     "dataurl-to-blob": "^0.0.1",

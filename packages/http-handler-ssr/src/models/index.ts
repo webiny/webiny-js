@@ -1,4 +1,4 @@
-import { flow } from "lodash";
+import flow from "lodash.flow";
 import { withStorage } from "@webiny/commodo/fields-storage";
 import ssrCache from "./ssrCache.model";
 import { withId, DbProxyDriver } from "@webiny/commodo-fields-storage-db-proxy";

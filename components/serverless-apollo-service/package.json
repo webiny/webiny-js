@@ -31,6 +31,9 @@
   },
   "adio": {
     "ignore": {
+      "src": [
+        "@webiny/plugins"
+      ],
       "dependencies": [
         "@babel/plugin-proposal-class-properties",
         "@babel/preset-env",

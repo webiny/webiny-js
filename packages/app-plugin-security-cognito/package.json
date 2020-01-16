@@ -18,6 +18,7 @@
     "@webiny/plugins": "^2.0.0",
     "@webiny/ui": "^2.0.1",
     "graphql-tag": "^2.10.1",
+    "invariant": "^2.2.4",
     "react-apollo": "^3.1.0",
     "store": "^2.0.12"
   },
