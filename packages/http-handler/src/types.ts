@@ -24,6 +24,6 @@ export type HttpHandlerPlugin = Plugin & {
 };
 
 export type HttpAfterHandlePlugin = Plugin & {
-    type: "before-handle";
-    handle(params: { context: HttpContext; args: HttpArgs, result: any }): Promise<void>;
+    type: "after-handle";
+    handle(params: { context: HttpContext; args: HttpArgs; result: any }): Promise<void>;
 };
