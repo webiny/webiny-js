@@ -24,6 +24,6 @@ module.exports = {
         dependencies: ["@babel/runtime"],
         devDependencies: true
     },
-    ignoreDirs: ["node_modules", "dist", "app-form-builder", "api-form-builder", "app-form-builder-theme"],
+    ignoreDirs: ["node_modules", "dist", "app-form-builder", "app-form-builder-theme"],
     packages: ["packages/*", "components/*"]
 };
