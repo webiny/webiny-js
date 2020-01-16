@@ -3,7 +3,7 @@ const LOAD_COMPONENTS_PREFIX = ["@webiny/", "@serverless/"];
 
 module.exports = {
     parser: {
-        plugins: ["jsx", "classProperties", "dynamicImport", "flow", "throwExpressions"]
+        plugins: ["jsx", "classProperties", "dynamicImport", "throwExpressions", "typescript"]
     },
     traverse: ({ path, push }) => {
         // We try to detect "this.load("...")" calls inside of Serverless components.
@@ -24,6 +24,6 @@ module.exports = {
         dependencies: ["@babel/runtime"],
         devDependencies: true
     },
-    ignoreDirs: ["node_modules", "dist"],
+    ignoreDirs: ["node_modules", "dist", "app-form-builder", "api-form-builder"],
     packages: ["packages/*", "components/*"]
 };
