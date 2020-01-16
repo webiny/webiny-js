@@ -1,4 +1,3 @@
-// @flow
 const path = require("path");
 const getPackages = require("get-yarn-workspaces");
 const minimatch = require("minimatch");

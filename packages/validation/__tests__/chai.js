@@ -1,7 +1,5 @@
 import chai from "chai";
 import chaiAsPromised from "chai-as-promised";
 
-chai.use(chaiAsPromised);
 chai.should();
-
-export default chai;
+chai.use(chaiAsPromised);

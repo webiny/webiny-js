@@ -4,10 +4,10 @@ import { PluginsContainer } from "./PluginsContainer";
 const __plugins = new PluginsContainer();
 
 const registerPlugins = (...args: any): void => {
-    return __plugins.register(...args);
+    __plugins.register(...args);
 };
 
-const getPlugins = <T extends Plugin = Plugin>(type: string) => {
+const getPlugins = <T extends Plugin = Plugin>(type?: string) => {
     return __plugins.byType<T>(type);
 };
 

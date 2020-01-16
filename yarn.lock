@@ -9241,7 +9241,7 @@ cyclist@^1.0.1:
   resolved "https://registry.yarnpkg.com/cyclist/-/cyclist-1.0.1.tgz#596e9698fd0c80e12038c2b82d6eb1b35b6224d9"
   integrity sha1-WW6WmP0MgOEgOMK4LW6xs1tiJNk=
 
-cypress@^3.5.0:
+cypress@^3.5.0, cypress@^3.8.0:
   version "3.8.2"
   resolved "https://registry.yarnpkg.com/cypress/-/cypress-3.8.2.tgz#58fa96e1e7dae712403b0f4e8af1efe35442ff7a"
   integrity sha512-aTs0u3+dfEuLe0Ct0FVO5jD1ULqxbuqWUZwzBm0rxdLgLxIAOI/A9f/WkgY5Cfy1TEXe8pKC6Wal0ZpnkdGRSw==
