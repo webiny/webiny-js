@@ -1,4 +1,4 @@
-import { validation, ValidationError } from "@webiny/validation";
+import { validation, ValidationError } from "../src";
 
 validation.setValidator("gender", value => {
     if (!value) return;

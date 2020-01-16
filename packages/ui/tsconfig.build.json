@@ -5,6 +5,7 @@
     "node_modules",
     "./dist",
     "**/__tests__/**",
+    "**.stories.**",
     "../form",
     "../storybook-utils",
     "../validation"

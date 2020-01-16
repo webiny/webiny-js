@@ -1,4 +1,4 @@
-import { validation, ValidationError } from "@webiny/validation";
+import { validation, ValidationError } from "../src";
 
 describe("disabling error throwing test", () => {
     it("by default it must throw errors on invalid data", async () => {
