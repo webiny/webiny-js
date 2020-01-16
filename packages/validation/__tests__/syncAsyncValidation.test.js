@@ -1,4 +1,4 @@
-import { validation, ValidationError } from "@webiny/validation";
+import { validation, ValidationError } from "../src";
 
 describe("async/sync validation test", () => {
     it("must validate asynchronously", async () => {

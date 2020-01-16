@@ -1,4 +1,4 @@
-import { validation } from "@webiny/validation";
+import { validation } from "../src";
 import "./chai";
 
 describe("multiple validators test", () => {
