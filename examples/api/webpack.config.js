@@ -1,6 +1,5 @@
 const path = require("path");
-const aliases = require("@webiny/project-utils/aliases");
-const packages = require("@webiny/project-utils/packages");
+const aliases = require("@webiny/project-utils/aliases/webpack");
 
 module.exports = ({ root }) => {
     return {
@@ -31,10 +30,9 @@ module.exports = ({ root }) => {
                     test: /\.(ts|js)$/,
                     loader: "babel-loader",
                     exclude: /node_modules/,
-                    include: [root, ...packages],
+                    include: [root],
                     options: {
                         babelrc: true,
-                        babelrcRoots: packages,
                         presets: [
                             [
                                 "@babel/preset-env",
@@ -44,12 +42,10 @@ module.exports = ({ root }) => {
                                     }
                                 }
                             ],
-                            "@babel/preset-flow",
                             "@babel/preset-typescript"
                         ],
                         plugins: [
                             "@babel/plugin-proposal-class-properties",
-                            ["babel-plugin-module-resolver", { alias: aliases }],
                             ["babel-plugin-lodash", { id: ["lodash"] }]
                         ]
                     }
@@ -57,6 +53,7 @@ module.exports = ({ root }) => {
             ]
         },
         resolve: {
+            alias: aliases,
             extensions: [".mjs", ".ts", ".js"],
             modules: [path.resolve(root, "node_modules"), "node_modules"]
         }

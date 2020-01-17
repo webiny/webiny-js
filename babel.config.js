@@ -1,3 +1,4 @@
+// This file is require for running tests only!!
 const aliases = require("@webiny/project-utils/aliases/jest");
 const packages = require("@webiny/project-utils/packages");
 

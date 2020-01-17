@@ -2,6 +2,7 @@ name: webiny-cms-project
 
 vars:
   region: ${env.AWS_REGION}
+  errorReporting: ${env.ERROR_REPORTING}
   bucket: ${env.S3_BUCKET}
   apollo:
     server:
@@ -21,7 +22,8 @@ gateway:
     name: Apollo Gateway
     region: ${vars.region}
     memory: 512
-    timeout: 30
+    timeout: 29
+    errorReporting: ${vars.errorReporting}
     webpackConfig: ./webpack.config.js
     plugins:
       - factory: "@webiny/api-plugin-create-apollo-gateway"
@@ -30,18 +32,19 @@ gateway:
           services:
             - name: security
               url: ${security.api.graphqlUrl}
-            - name: files
-              url: ${files.api.graphqlUrl}
-            - name: pageBuilder
-              url: ${pageBuilder.api.graphqlUrl}
-            - name: i18n
-              url: ${i18n.api.graphqlUrl}
-            - name: formBuilder
-              url: ${formBuilder.api.graphqlUrl}
+#            - name: files
+#              url: ${files.api.graphqlUrl}
+#            - name: pageBuilder
+#              url: ${pageBuilder.api.graphqlUrl}
+#            - name: i18n
+#              url: ${i18n.api.graphqlUrl}
+#            - name: formBuilder
+#              url: ${formBuilder.api.graphqlUrl}
 
 dbProxy:
   component: "@webiny/serverless-db-proxy/dist"
   inputs:
+    region: ${vars.region}
     concurrencyLimit: 10
     env:
       MONGODB_SERVER: ${vars.mongodb.server}
@@ -62,6 +65,7 @@ security:
     region: ${vars.region}
     memory: 512
     webpackConfig: ./webpack.config.js
+    errorReporting: ${vars.errorReporting}
     plugins:
       - factory: "@webiny/api-plugin-create-apollo-handler"
         options: ${vars.apollo}
@@ -74,97 +78,96 @@ security:
         options:
           region: ${vars.region}
           userPoolId: ${cognito.userPool.Id}
-
-files:
-  component: "@webiny/serverless-files/dist"
-  inputs:
-    region: ${vars.region}
-    bucket: ${vars.bucket}
-    functions:
-      apolloService:
-        memory: 512
-        timeout: 10
-        uploadMinFileSize: 0 # 0 MB
-        uploadMaxFileSize: 26214400 # 25 MB
-        webpackConfig: ./webpack.config.js
-        plugins:
-          - factory: "@webiny/api-plugin-create-apollo-handler"
-            options: ${vars.apollo}
-          - factory: "@webiny/api-plugin-commodo-db-proxy"
-            options:
-              functionArn: ${dbProxy.arn}
-          - factory: "@webiny/api-security/plugins/service"
-            options: ${vars.security}
-          - "@webiny/api-files/plugins"
-          - "@webiny/api-plugin-files-resolvers-mongodb"
-      downloadFile:
-        memory: 512
-        timeout: 10
-      imageTransformer:
-        memory: 1600
-        timeout: 30
-
-i18n:
-  component: "@webiny/serverless-apollo-service"
-  inputs:
-    name: I18N
-    region: ${vars.region}
-    memory: 512
-    webpackConfig: ./webpack.config.js
-    plugins:
-      - factory: "@webiny/api-plugin-create-apollo-handler"
-        options: ${vars.apollo}
-      - factory: "@webiny/api-plugin-commodo-db-proxy"
-        options:
-          functionArn: ${dbProxy.arn}
-      - factory: "@webiny/api-security/plugins/service"
-        options: ${vars.security}
-      - "@webiny/api-i18n/plugins"
-
-pageBuilder:
-  component: "@webiny/serverless-page-builder"
-  inputs:
-    name: Page Builder
-    region: ${vars.region}
-    files: ${files}
-    memory: 512
-    timeout: 30
-    webpackConfig: ./webpack.config.js
-    plugins:
-      - factory: "@webiny/api-plugin-create-apollo-handler"
-        options: ${vars.apollo}
-      - factory: "@webiny/api-plugin-commodo-db-proxy"
-        options:
-          functionArn: ${dbProxy.arn}
-      - factory: "@webiny/api-security/plugins/service"
-        options: ${vars.security}
-      - "@webiny/api-page-builder/plugins"
-      - "@webiny/api-page-builder/plugins/useSsrCacheTags"
-      - "@webiny/api-plugin-page-builder-resolvers-mongodb"
-      - "@webiny/api-google-tag-manager"
-      - "@webiny/api-mailchimp"
-      - "@webiny/api-cookie-policy"
-
-formBuilder:
-  component: "@webiny/serverless-form-builder"
-  inputs:
-    name: Form Builder
-    region: ${vars.region}
-    files: ${files}
-    i18n: ${i18n}
-    memory: 512
-    timeout: 30
-    webpackConfig: ./webpack.config.js
-    plugins:
-      - factory: "@webiny/api-plugin-create-apollo-handler"
-        options: ${vars.apollo}
-      - factory: "@webiny/api-plugin-commodo-db-proxy"
-        options:
-          functionArn: ${dbProxy.arn}
-      - factory: "@webiny/api-security/plugins/service"
-        options: ${vars.security}
-      - "@webiny/api-forms/plugins/useSsrCacheTags"
-
+#
+#files:
+#  component: "@webiny/serverless-files/dist"
+#  inputs:
+#    region: ${vars.region}
+#    bucket: ${vars.bucket}
+#    functions:
+#      apolloService:
+#        memory: 512
+#        timeout: 10
+#        uploadMinFileSize: 0 # 0 MB
+#        uploadMaxFileSize: 26214400 # 25 MB
+#        webpackConfig: ./webpack.config.js
+#        plugins:
+#          - factory: "@webiny/api-plugin-create-apollo-handler"
+#            options: ${vars.apollo}
+#          - factory: "@webiny/api-plugin-commodo-db-proxy"
+#            options:
+#              functionArn: ${dbProxy.arn}
+#          - factory: "@webiny/api-security/plugins/service"
+#            options: ${vars.security}
+#          - "@webiny/api-files/plugins"
+#          - "@webiny/api-plugin-files-resolvers-mongodb"
+#      downloadFile:
+#        memory: 512
+#        timeout: 10
+#      imageTransformer:
+#        memory: 1600
+#        timeout: 30
+#
+#i18n:
+#  component: "@webiny/serverless-apollo-service"
+#  inputs:
+#    name: I18N
+#    region: ${vars.region}
+#    memory: 512
+#    webpackConfig: ./webpack.config.js
+#    plugins:
+#      - factory: "@webiny/api-plugin-create-apollo-handler"
+#        options: ${vars.apollo}
+#      - factory: "@webiny/api-plugin-commodo-db-proxy"
+#        options:
+#          functionArn: ${dbProxy.arn}
+#      - factory: "@webiny/api-security/plugins/service"
+#        options: ${vars.security}
+#      - "@webiny/api-i18n/plugins"
+#
+#pageBuilder:
+#  component: "@webiny/serverless-page-builder"
+#  inputs:
+#    name: Page Builder
+#    region: ${vars.region}
+#    files: ${files}
+#    memory: 512
+#    timeout: 30
+#    webpackConfig: ./webpack.config.js
+#    plugins:
+#      - factory: "@webiny/api-plugin-create-apollo-handler"
+#        options: ${vars.apollo}
+#      - factory: "@webiny/api-plugin-commodo-db-proxy"
+#        options:
+#          functionArn: ${dbProxy.arn}
+#      - factory: "@webiny/api-security/plugins/service"
+#        options: ${vars.security}
+#      - "@webiny/api-page-builder/plugins"
+#      - "@webiny/api-page-builder/plugins/useSsrCacheTags"
+#      - "@webiny/api-plugin-page-builder-resolvers-mongodb"
+#      - "@webiny/api-google-tag-manager"
+#      - "@webiny/api-mailchimp"
+#      - "@webiny/api-cookie-policy"
+#
+#formBuilder:
+#  component: "@webiny/serverless-form-builder"
+#  inputs:
+#    name: Form Builder
+#    region: ${vars.region}
+#    files: ${files}
+#    i18n: ${i18n}
+#    memory: 512
+#    timeout: 30
+#    webpackConfig: ./webpack.config.js
+#    plugins:
+#      - factory: "@webiny/api-plugin-create-apollo-handler"
+#        options: ${vars.apollo}
+#      - factory: "@webiny/api-plugin-commodo-db-proxy"
+#        options:
+#          functionArn: ${dbProxy.arn}
+#      - factory: "@webiny/api-security/plugins/service"
+#        options: ${vars.security}
+#      - "@webiny/api-forms/plugins/useSsrCacheTags"
 
 api:
   component: "@webiny/serverless-api-gateway"
@@ -177,15 +180,15 @@ api:
         method: ANY
         function: ${gateway}
 
-cdn:
-  component: "@webiny/serverless-aws-cloudfront"
-  inputs:
-    origins:
-      - ${files.cdnOrigin}
-      - url: ${api.url}
-        pathPatterns:
-          "/graphql":
-            ttl: 0
-            forward:
-              headers: ["Accept", "Accept-Language"]
-            allowedHttpMethods: ["GET", "HEAD", "OPTIONS", "PUT", "POST", "PATCH", "DELETE"]
+#cdn:
+#  component: "@webiny/serverless-aws-cloudfront"
+#  inputs:
+#    origins:
+#      - ${files.cdnOrigin}
+#      - url: ${api.url}
+#        pathPatterns:
+#          "/graphql":
+#            ttl: 0
+#            forward:
+#              headers: ["Accept", "Accept-Language"]
+#            allowedHttpMethods: ["GET", "HEAD", "OPTIONS", "PUT", "POST", "PATCH", "DELETE"]

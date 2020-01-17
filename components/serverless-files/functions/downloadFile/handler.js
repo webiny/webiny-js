@@ -1,4 +1,3 @@
-// @flow
 const S3 = require("aws-sdk/clients/s3");
 const sanitizeFilename = require("sanitize-filename");
 const pathLib = require("path");

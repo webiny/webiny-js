@@ -1,4 +1,3 @@
-// @flow
 const { getObjectParams, getEnvironment } = require("./../utils");
 const {
     SUPPORTED_IMAGES,

@@ -86,6 +86,7 @@ class ApolloService extends Component {
             memory = 512,
             timeout = 10,
             description,
+            errorReporting = true,
             endpointTypes = ["REGIONAL"],
             binaryMediaTypes = [],
             webpackConfig = null
@@ -94,6 +95,8 @@ class ApolloService extends Component {
         if (!name) {
             throw Error(`"inputs.name" is a required parameter!`);
         }
+
+        env["ERROR_REPORTING"] = errorReporting;
 
         let plugins = normalizePlugins(inputs.plugins || []);
 
