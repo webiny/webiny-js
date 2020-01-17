@@ -3,6 +3,8 @@ import { WithFieldsError } from "@webiny/commodo";
 import { InvalidFieldsError } from "@webiny/commodo-graphql";
 import { omit } from "lodash";
 import * as data from "./data";
+import { GraphQLContext, GraphQLFieldResolver } from "@webiny/api/types";
+import { SecurityAuthenticationProviderPlugin } from "@webiny/api-security/types";
 
 const ensureFullAccessRole = async context => {
     const { SecurityRole } = context.models;
@@ -27,7 +29,7 @@ const ensureFullAccessGroup = async context => {
  * We consider security to be installed if there are users in both Webiny DB
  * and 3rd party authentication provider.
  */
-const isSecurityInstalled = async context => {
+const isSecurityInstalled = async (context: GraphQLContext) => {
     const { SecurityUser } = context.models;
 
     // Check if at least 1 user exists in the system
@@ -36,7 +38,7 @@ const isSecurityInstalled = async context => {
     if (userCount > 0) {
         // Make sure the authentication provider also has at least 1 user
         const authPlugin = context.plugins
-            .byType("security-authentication-provider")
+            .byType<SecurityAuthenticationProviderPlugin>("security-authentication-provider")
             // eslint-disable-next-line no-prototype-builtins
             .filter(pl => pl.hasOwnProperty("countUsers"))
             .pop();
@@ -50,11 +52,7 @@ const isSecurityInstalled = async context => {
     return false;
 };
 
-export const install = async (
-    root: any,
-    args: Record<string, any>,
-    context: Record<string, any>
-) => {
+export const install: GraphQLFieldResolver = async (root, args, context) => {
     const { SecurityUser } = context.models;
     const { data } = args;
 
@@ -72,8 +70,7 @@ export const install = async (
 
     try {
         const authPlugin = context.plugins
-            .byType("security-authentication-provider")
-            // eslint-disable-next-line no-prototype-builtins
+            .byType<SecurityAuthenticationProviderPlugin>("security-authentication-provider")
             .filter(pl => pl.hasOwnProperty("createUser"))
             .pop();
 
@@ -120,10 +117,6 @@ export const install = async (
     return new Response(result);
 };
 
-export const isInstalled = async (
-    root: any,
-    args: Record<string, any>,
-    context: Record<string, any>
-) => {
+export const isInstalled: GraphQLFieldResolver = async (root, args, context) => {
     return new Response(await isSecurityInstalled(context));
 };

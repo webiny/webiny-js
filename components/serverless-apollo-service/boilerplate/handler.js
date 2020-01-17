@@ -19,7 +19,7 @@ export const handler = async (event, context) => {
             requestContext,
             context,
             error: {
-                code: e.code,
+                name: e.constructor.name,
                 message: e.message,
                 stack: e.stack
             }

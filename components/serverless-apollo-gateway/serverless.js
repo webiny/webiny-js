@@ -54,7 +54,7 @@ class ApolloGateway extends Component {
             memory = 128,
             timeout = 10,
             description,
-            errorReporting = true,
+            errorReporting = "true",
             webpackConfig = null
         } = inputs;
 

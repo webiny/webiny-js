@@ -15,13 +15,16 @@ export type SecurityAuthenticationProviderPlugin = Plugin & {
         context: GraphQLContext
     ) => Promise<any>;
     // Get authentication provider user data (eg: Cognito user data)
-    getUser?: ({ email: string }) => Promise<any>;
+    getUser?: (params: { email: string }) => Promise<any>;
     // Create user in a 3rd party authentication provider service
-    createUser?: ({ data, user, permanent: boolean }) => Promise<any>;
+    createUser?: (
+        params: { data; user; permanent?: boolean },
+        context: GraphQLContext
+    ) => Promise<any>;
     // Update user in a 3rd party authentication provider service
-    updateUser?: ({ data, user }) => Promise<any>;
+    updateUser?: (params: { data; user }, context: GraphQLContext) => Promise<any>;
     // Delete user from a 3rd party authentication provider service
-    deleteUser?: ({ user }) => Promise<any>;
+    deleteUser?: (params: { user }) => Promise<any>;
     // Count users in a 3rd party authentication provider service
     countUsers?: () => Promise<number>;
     // Create a payload that will be encoded in the JWT token

@@ -47,7 +47,7 @@ export default (params: ApolloGatewayPluginParams): CreateApolloGatewayPlugin =>
     name: "create-apollo-gateway",
     type: "create-apollo-gateway",
     async createGateway({ plugins }) {
-        const { server, services, handler } = params;
+        const { server = {}, services, handler = {} } = params;
         const compositionErrors = [];
         const gateway = new ApolloGateway({
             debug: true,
@@ -76,7 +76,7 @@ export default (params: ApolloGatewayPluginParams): CreateApolloGatewayPlugin =>
         const { schema, executor } = await gateway.load();
 
         if (compositionErrors.length > 0) {
-            console.log("compositionErrors", compositionErrors);
+            console.log("COMPOSITION ERRORS", compositionErrors);
             throw new Error(JSON.stringify({ errors: compositionErrors }, null, 2));
         }
 

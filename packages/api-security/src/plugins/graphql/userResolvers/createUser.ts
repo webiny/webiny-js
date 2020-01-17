@@ -1,12 +1,10 @@
 import { ErrorResponse, Response } from "@webiny/api";
 import { WithFieldsError } from "@webiny/commodo";
 import { InvalidFieldsError } from "@webiny/commodo-graphql";
+import { SecurityAuthenticationProviderPlugin } from "@webiny/api-security/types";
+import { GraphQLFieldResolver } from "@webiny/api/types";
 
-export default userFetcher => async (
-    root: any,
-    args: Record<string, any>,
-    context: Record<string, any>
-) => {
+export default (userFetcher): GraphQLFieldResolver => async (root, args, context) => {
     const User = userFetcher(context);
     const user = new User();
 
@@ -14,8 +12,7 @@ export default userFetcher => async (
         await user.populate(args.data).save();
 
         const authPlugin = context.plugins
-            .byType("security-authentication-provider")
-            // eslint-disable-next-line no-prototype-builtins
+            .byType<SecurityAuthenticationProviderPlugin>("security-authentication-provider")
             .filter(pl => pl.hasOwnProperty("createUser"))
             .pop();
 

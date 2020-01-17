@@ -86,7 +86,7 @@ class ApolloService extends Component {
             memory = 512,
             timeout = 10,
             description,
-            errorReporting = true,
+            errorReporting = "true",
             endpointTypes = ["REGIONAL"],
             binaryMediaTypes = [],
             webpackConfig = null

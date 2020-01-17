@@ -32,8 +32,8 @@ gateway:
           services:
             - name: security
               url: ${security.api.graphqlUrl}
-#            - name: files
-#              url: ${files.api.graphqlUrl}
+            - name: files
+              url: ${files.api.graphqlUrl}
 #            - name: pageBuilder
 #              url: ${pageBuilder.api.graphqlUrl}
 #            - name: i18n
@@ -78,36 +78,37 @@ security:
         options:
           region: ${vars.region}
           userPoolId: ${cognito.userPool.Id}
-#
-#files:
-#  component: "@webiny/serverless-files/dist"
-#  inputs:
-#    region: ${vars.region}
-#    bucket: ${vars.bucket}
-#    functions:
-#      apolloService:
-#        memory: 512
-#        timeout: 10
-#        uploadMinFileSize: 0 # 0 MB
-#        uploadMaxFileSize: 26214400 # 25 MB
-#        webpackConfig: ./webpack.config.js
-#        plugins:
-#          - factory: "@webiny/api-plugin-create-apollo-handler"
-#            options: ${vars.apollo}
-#          - factory: "@webiny/api-plugin-commodo-db-proxy"
-#            options:
-#              functionArn: ${dbProxy.arn}
-#          - factory: "@webiny/api-security/plugins/service"
-#            options: ${vars.security}
-#          - "@webiny/api-files/plugins"
-#          - "@webiny/api-plugin-files-resolvers-mongodb"
-#      downloadFile:
-#        memory: 512
-#        timeout: 10
-#      imageTransformer:
-#        memory: 1600
-#        timeout: 30
-#
+
+files:
+  component: "@webiny/serverless-files/dist"
+  inputs:
+    region: ${vars.region}
+    bucket: ${vars.bucket}
+    functions:
+      apolloService:
+        memory: 512
+        timeout: 10
+        errorReporting: ${vars.errorReporting}
+        uploadMinFileSize: 0 # 0 MB
+        uploadMaxFileSize: 26214400 # 25 MB
+        webpackConfig: ./webpack.config.js
+        plugins:
+          - factory: "@webiny/api-plugin-create-apollo-handler"
+            options: ${vars.apollo}
+          - factory: "@webiny/api-plugin-commodo-db-proxy"
+            options:
+              functionArn: ${dbProxy.arn}
+          - factory: "@webiny/api-security/plugins/service"
+            options: ${vars.security}
+          - "@webiny/api-files/plugins"
+          - "@webiny/api-plugin-files-resolvers-mongodb"
+      downloadFile:
+        memory: 512
+        timeout: 10
+      imageTransformer:
+        memory: 1600
+        timeout: 30
+
 #i18n:
 #  component: "@webiny/serverless-apollo-service"
 #  inputs:
@@ -179,7 +180,6 @@ api:
       - path: /graphql
         method: ANY
         function: ${gateway}
-
 #cdn:
 #  component: "@webiny/serverless-aws-cloudfront"
 #  inputs:

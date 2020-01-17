@@ -22,11 +22,26 @@ export const handler = async (event, context) => {
             });
         });
     } catch (e) {
-        console.log("APOLLO GW ERROR", e);
+        const { identity, ...requestContext } = event.requestContext;
+
+        const report = {
+            requestContext,
+            context,
+            error: {
+                name: e.constructor.name,
+                message: e.message,
+                stack: e.stack
+            }
+        };
+
+        console.log("ERROR", report);
+
+        console.log("ERROR", report);
+
         if (process.env.ERROR_REPORTING === "true") {
             return {
                 statusCode: 500,
-                body: e.message
+                body: JSON.stringify(report, null, 2)
             };
         }
 
