@@ -32,14 +32,31 @@ class WebinyDataSource extends RemoteGraphQLDataSource {
 
     onServiceError?(error): void;
 
-    process<TContext>({
+    async process<TContext>({
         request,
         context
     }: Pick<GraphQLRequestContext<TContext>, "request" | "context">): Promise<GraphQLResponse> {
-        return super.process({ request, context }).catch(error => {
+        try {
+            return await super.process({ request, context }).then(res => {
+                console.log("res", { request, res });
+                if (res.errors) {
+                    res.errors.map(error => this.onServiceError(error));
+                }
+                return res;
+            });
+        } catch (error) {
             this.onServiceError(error);
             throw error;
-        });
+        }
+    }
+}
+
+class ApolloGatewayError extends Error {
+    errors: any[];
+
+    constructor(errors) {
+        super("");
+        this.errors = errors;
     }
 }
 
@@ -48,11 +65,11 @@ export default (params: ApolloGatewayPluginParams): CreateApolloGatewayPlugin =>
     type: "create-apollo-gateway",
     async createGateway({ plugins }) {
         const { server = {}, services, handler = {} } = params;
-        const compositionErrors = [];
+        const dataSourceErrors = [];
         const gateway = new ApolloGateway({
             debug: true,
             serviceList: services,
-            buildService({ url }) {
+            buildService({ name, url }) {
                 return new WebinyDataSource({
                     url,
                     willSendRequest(params: Pick<GraphQLRequestContext, "request" | "context">) {
@@ -67,42 +84,49 @@ export default (params: ApolloGatewayPluginParams): CreateApolloGatewayPlugin =>
                         }
                     },
                     onServiceError(error) {
-                        compositionErrors.push(error);
+                        dataSourceErrors.push({ service: name, url, error: error.message });
                     }
                 });
             }
         });
 
-        const { schema, executor } = await gateway.load();
+        try {
+            const { schema, executor } = await gateway.load();
 
-        if (compositionErrors.length > 0) {
-            console.log("COMPOSITION ERRORS", compositionErrors);
-            throw new Error(JSON.stringify({ errors: compositionErrors }, null, 2));
+            if (dataSourceErrors.length > 0) {
+                throw new ApolloGatewayError(dataSourceErrors);
+            }
+
+            const apollo = new ApolloServer({
+                schema,
+                executor,
+                introspection: toBool(server.introspection),
+                playground: toBool(server.playground),
+                context: async ({ event }) => {
+                    const headers = buildHeaders(event);
+
+                    const headerPlugins = plugins.byType(
+                        "apollo-gateway-headers"
+                    ) as ApolloGatewayHeaders[];
+                    headerPlugins.forEach(pl => pl.buildHeaders({ headers, plugins }));
+
+                    return { headers };
+                }
+            });
+
+            return apollo.createHandler({
+                cors: {
+                    origin: "*",
+                    methods: "GET,HEAD,POST,OPTIONS",
+                    ...handler.cors
+                }
+            });
+        } catch (e) {
+            if (dataSourceErrors.length > 0) {
+                throw new ApolloGatewayError(dataSourceErrors);
+            }
+
+            throw e;
         }
-
-        const apollo = new ApolloServer({
-            schema,
-            executor,
-            introspection: toBool(server.introspection),
-            playground: toBool(server.playground),
-            context: async ({ event }) => {
-                const headers = buildHeaders(event);
-
-                const headerPlugins = plugins.byType(
-                    "apollo-gateway-headers"
-                ) as ApolloGatewayHeaders[];
-                headerPlugins.forEach(pl => pl.buildHeaders({ headers, plugins }));
-
-                return { headers };
-            }
-        });
-
-        return apollo.createHandler({
-            cors: {
-                origin: "*",
-                methods: "GET,HEAD,POST,OPTIONS",
-                ...handler.cors
-            }
-        });
     }
 });

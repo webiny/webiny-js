@@ -27,16 +27,14 @@ export const handler = async (event, context) => {
         const report = {
             requestContext,
             context,
-            error: {
-                name: e.constructor.name,
-                message: e.message,
-                stack: e.stack
-            }
+            errors: []
         };
 
-        console.log("ERROR", report);
-
-        console.log("ERROR", report);
+        if (e.constructor.name === "ApolloGatewayError") {
+            e.errors.forEach(error => report.errors.push(error));
+        } else {
+            report.errors.push({ name: e.constructor.name, message: e.message });
+        }
 
         if (process.env.ERROR_REPORTING === "true") {
             return {

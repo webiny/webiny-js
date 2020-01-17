@@ -11,7 +11,8 @@ async function getDatabase() {
         useNewUrlParser: true,
         useUnifiedTopology: true,
         connectTimeoutMS: 10000,
-        socketTimeoutMS: 10000
+        socketTimeoutMS: 10000,
+        serverSelectionTimeoutMS: 10000
     });
 
     return { database: client.db(MONGODB_NAME), client };
@@ -67,11 +68,15 @@ module.exports.handler = async event => {
         const result = await executeOperation(collection, operationName, operationArgs);
         return { response: EJSON.stringify({ result }) };
     } catch (e) {
-        return {
+        const report = {
             error: {
                 name: e.constructor.name,
                 message: e.message
             }
         };
+
+        console.log("ERROR", report);
+
+        return report;
     }
 };
