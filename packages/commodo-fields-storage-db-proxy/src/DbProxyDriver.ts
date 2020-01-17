@@ -27,6 +27,10 @@ class DbProxyClient {
             throw new Error("Could not JSON.parse DB Proxy's response.");
         }
 
+        if (parsedPayload.error) {
+            throw new Error(`${parsedPayload.error.name}: ${parsedPayload.error.message}`);
+        }
+
         if (!parsedPayload.response) {
             throw new Error(`Missing "response" key in received DB Proxy's response.`);
         }
