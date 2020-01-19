@@ -1,6 +1,6 @@
 {
     "name": "@webiny/api-page-builder",
-    "version": "2.1.1",
+    "version": "2.1.2",
     "main": "index.js",
     "repository": {
         "type": "git",
@@ -17,8 +17,8 @@
         "@babel/runtime": "^7.5.5",
         "@commodo/fields-storage-mongodb": "^1.0.0",
         "@webiny/api": "^2.1.0",
-        "@webiny/api-security": "^2.1.1",
-        "@webiny/commodo": "^2.0.0",
+        "@webiny/api-security": "^2.1.2",
+        "@webiny/commodo": "^2.0.1",
         "@webiny/commodo-graphql": "^2.1.0",
         "@webiny/validation": "^2.1.0",
         "download": "^5.0.3",
