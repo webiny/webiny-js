@@ -10,8 +10,8 @@ import TypeFormEmbed from "./TypeFormEmbed";
 import render from "./../render";
 import { validation } from "@webiny/validation";
 import {
-    PbElementPlugin,
-    PbPageElementAdvancedSettingsPlugin
+    PbEditorPageElementPlugin,
+    PbEditorPageElementAdvancedSettingsPlugin
 } from "@webiny/app-page-builder/admin/types";
 
 const PreviewBox = styled("div")({
@@ -27,7 +27,7 @@ export default [
     render,
     {
         name: "pb-page-element-typeform",
-        type: "pb-page-element",
+        type: "pb-editor-page-element",
         elementType: "typeform",
         toolbar: {
             title: "Typeform",
@@ -40,7 +40,7 @@ export default [
                 );
             }
         },
-        settings: ["pb-page-element-settings-delete", "", "pb-page-element-settings-height"],
+        settings: ["pb-editor-page-element-settings-delete", "", "pb-editor-page-element-settings-height"],
         target: ["column", "row", "list-item"],
         onCreate: "open-settings",
         render({ element }) {
@@ -62,10 +62,10 @@ export default [
                 }
             };
         }
-    } as PbElementPlugin,
+    } as PbEditorPageElementPlugin,
     {
-        name: "pb-page-element-advanced-settings-typeform",
-        type: "pb-page-element-advanced-settings",
+        name: "pb-editor-page-element-advanced-settings-typeform",
+        type: "pb-editor-page-element-advanced-settings",
         elementType: "typeform",
         render({ Bind }) {
             return (
@@ -86,5 +86,5 @@ export default [
                 </Tab>
             );
         }
-    } as PbPageElementAdvancedSettingsPlugin
+    } as PbEditorPageElementAdvancedSettingsPlugin
 ];

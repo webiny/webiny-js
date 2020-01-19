@@ -13,7 +13,7 @@ import {
 } from "@webiny/app-page-builder/editor/actions";
 import { getElementProps, getElement } from "@webiny/app-page-builder/editor/selectors";
 import Draggable from "./Draggable";
-import { PbElement, PbElementPlugin } from "@webiny/app-page-builder/admin/types";
+import { PbElement, PbEditorPageElementPlugin } from "@webiny/app-page-builder/admin/types";
 import {
     defaultStyle,
     ElementContainer,
@@ -36,12 +36,12 @@ export type ElementProps = {
     dragging: boolean;
 };
 
-const getElementPlugin = (element): PbElementPlugin => {
+const getElementPlugin = (element): PbEditorPageElementPlugin => {
     if (!element) {
         return null;
     }
 
-    const plugins = getPlugins("pb-page-element") as PbElementPlugin[];
+    const plugins = getPlugins("pb-page-element") as PbEditorPageElementPlugin[];
     return plugins.find(pl => pl.elementType === element.type);
 };
 

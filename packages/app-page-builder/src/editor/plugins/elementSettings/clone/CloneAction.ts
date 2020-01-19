@@ -11,7 +11,7 @@ import {
     getElementWithChildren,
     getParentElementWithChildren
 } from "@webiny/app-page-builder/editor/selectors";
-import { PbElementPlugin } from "@webiny/app-page-builder/admin/types";
+import { PbEditorPageElementPlugin } from "@webiny/app-page-builder/admin/types";
 
 const CloneAction = props => {
     const { element, children } = props;
@@ -30,7 +30,7 @@ const CloneAction = props => {
         updateElement({ element: newElement });
     });
 
-    const plugin = getPlugins<PbElementPlugin>("pb-page-element").find(
+    const plugin = getPlugins<PbEditorPageElementPlugin>("pb-page-element").find(
         pl => pl.elementType === element.type
     );
 

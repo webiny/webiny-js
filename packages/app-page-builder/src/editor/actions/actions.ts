@@ -16,7 +16,7 @@ import {
 } from "@webiny/app-page-builder/editor/selectors";
 import { updateChildPaths } from "@webiny/app-page-builder/editor/utils";
 import undoable from "./history";
-import {Action, PbElement, PbElementPlugin, PbPageRevision} from "@webiny/app-page-builder/admin/types";
+import {Action, PbElement, PbEditorPageElementPlugin, PbPageRevision} from "@webiny/app-page-builder/admin/types";
 
 export const DRAG_START = `Drag start`;
 export const DRAG_END = `Drag end`;
@@ -212,7 +212,7 @@ addMiddleware([DELETE_ELEMENT], ({ store, next, action }) => {
     store.dispatch(updateElement({ element: parent }));
 
     // Execute `onChildDeleted` if defined
-    const plugins = getPlugins("pb-page-element") as PbElementPlugin[];
+    const plugins = getPlugins("pb-page-element") as PbEditorPageElementPlugin[];
     const plugin = plugins.find(pl => pl.elementType === parent.type);
     if (!plugin) {
         return;
@@ -234,7 +234,7 @@ addMiddleware([ELEMENT_DROPPED], ({ store, next, action }) => {
         return;
     }
 
-    const plugins = getPlugins("pb-page-element") as PbElementPlugin[];
+    const plugins = getPlugins("pb-page-element") as PbEditorPageElementPlugin[];
     const plugin = plugins.find(pl => pl.elementType === target.type);
 
     if (!plugin) {

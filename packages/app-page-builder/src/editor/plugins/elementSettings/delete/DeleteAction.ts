@@ -4,7 +4,7 @@ import { connect } from "@webiny/app-page-builder/editor/redux";
 import { getPlugins } from "@webiny/plugins";
 import { deleteElement } from "@webiny/app-page-builder/editor/actions";
 import { getActiveElement } from "@webiny/app-page-builder/editor/selectors";
-import { PbElementPlugin } from "@webiny/app-page-builder/admin/types";
+import { PbEditorPageElementPlugin } from "@webiny/app-page-builder/admin/types";
 
 const DeleteAction = props => {
     const { element, children } = props;
@@ -13,7 +13,7 @@ const DeleteAction = props => {
         deleteElement({ element });
     });
 
-    const plugin = getPlugins<PbElementPlugin>("pb-page-element").find(
+    const plugin = getPlugins<PbEditorPageElementPlugin>("pb-page-element").find(
         pl => pl.elementType === element.type
     );
     if (!plugin) {

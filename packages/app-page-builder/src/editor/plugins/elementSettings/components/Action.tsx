@@ -84,7 +84,7 @@ export default connect<any, any, any>(
     (state, props: { plugin?: string }) => ({
         active: isPluginActive(props.plugin)(state),
         slateFocused: getUi(state).slateFocused,
-        settingsActive: getActivePlugins("pb-page-element-settings")(state).length > 0
+        settingsActive: getActivePlugins("pb-editor-page-element-settings")(state).length > 0
     }),
     { togglePlugin }
 )(Action);

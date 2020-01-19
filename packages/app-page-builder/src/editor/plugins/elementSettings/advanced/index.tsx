@@ -12,8 +12,8 @@ import AdvancedAction from "./AdvancedAction";
 import {
     PbEditorContentPlugin,
     PbEditorReduxMiddlewarePlugin,
-    PbElementPlugin,
-    PbPageElementSettingsPlugin
+    PbEditorPageElementPlugin,
+    PbEditorPageElementSettingsPlugin
 } from "@webiny/app-page-builder/admin/types";
 
 export default [
@@ -34,7 +34,7 @@ export default [
             next(action);
 
             // Check the source of the element (could be `saved` element which behaves differently from other elements)
-            const sourcePlugin = getPlugins<PbElementPlugin>("pb-page-element").find(
+            const sourcePlugin = getPlugins<PbEditorPageElementPlugin>("pb-page-element").find(
                 pl => pl.elementType === source.type
             );
             if (!sourcePlugin) {
@@ -43,7 +43,7 @@ export default [
             const { onCreate } = sourcePlugin;
             if (!onCreate || onCreate !== "skip") {
                 // If source element does not define a specific `onCreate` behavior - continue with the actual element plugin
-                const plugin = getPlugins<PbElementPlugin>("pb-page-element").find(
+                const plugin = getPlugins<PbEditorPageElementPlugin>("pb-page-element").find(
                     pl => pl.elementType === element.type
                 );
                 if (!plugin) {
@@ -52,14 +52,14 @@ export default [
                 const { onCreate } = plugin;
                 if (onCreate && onCreate === "open-settings") {
                     store.dispatch(activateElement({ element: element.id }));
-                    store.dispatch(togglePlugin({ name: "pb-page-element-settings-advanced" }));
+                    store.dispatch(togglePlugin({ name: "pb-editor-page-element-settings-advanced" }));
                 }
             }
         }
     } as PbEditorReduxMiddlewarePlugin,
     {
-        name: "pb-page-element-settings-advanced",
-        type: "pb-page-element-settings",
+        name: "pb-editor-page-element-settings-advanced",
+        type: "pb-editor-page-element-settings",
         renderAction() {
             return (
                 <AdvancedAction>
@@ -71,5 +71,5 @@ export default [
                 </AdvancedAction>
             );
         }
-    } as PbPageElementSettingsPlugin
+    } as PbEditorPageElementSettingsPlugin
 ];

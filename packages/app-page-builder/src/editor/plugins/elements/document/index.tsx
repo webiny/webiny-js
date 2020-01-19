@@ -1,11 +1,11 @@
 import React from "react";
 import Document from "./Document";
-import { PbElementPlugin } from "@webiny/app-page-builder/admin/types";
+import { PbEditorPageElementPlugin } from "@webiny/app-page-builder/admin/types";
 
-export default (): PbElementPlugin => {
+export default (): PbEditorPageElementPlugin => {
     return {
         name: "pb-page-element-document",
-        type: "pb-page-element",
+        type: "pb-editor-page-element",
         elementType: "document",
         create(options = {}) {
             return {

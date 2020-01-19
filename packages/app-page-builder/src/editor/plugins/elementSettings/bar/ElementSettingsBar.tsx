@@ -8,9 +8,9 @@ import { getActiveElement } from "@webiny/app-page-builder/editor/selectors";
 import { useKeyHandler } from "@webiny/app-page-builder/editor/hooks/useKeyHandler";
 import Menu from "./components/Menu";
 import { ReactComponent as NavigateBeforeIcon } from "@webiny/app-page-builder/editor/assets/icons/navigate_before.svg";
-import { PbElementPlugin } from "@webiny/app-page-builder/admin/types";
+import { PbEditorPageElementPlugin } from "@webiny/app-page-builder/admin/types";
 
-const divider = "pb-page-element-settings-divider";
+const divider = "pb-editor-page-element-settings-divider";
 
 const getElementActions = plugin => {
     if (!plugin.settings) {
@@ -31,8 +31,8 @@ const getElementActions = plugin => {
 
     return [
         ...actions,
-        { plugin: getPlugin("pb-page-element-settings-advanced") },
-        { plugin: getPlugin("pb-page-element-settings-save") }
+        { plugin: getPlugin("pb-editor-page-element-settings-advanced") },
+        { plugin: getPlugin("pb-editor-page-element-settings-save") }
     ].filter(pl => pl);
 };
 
@@ -41,7 +41,7 @@ const ElementSettingsBar = ({ elementType, deactivateElement }) => {
         return null;
     }
 
-    const plugin = getPlugins<PbElementPlugin>("pb-page-element").find(
+    const plugin = getPlugins<PbEditorPageElementPlugin>("pb-page-element").find(
         pl => pl.elementType === elementType
     );
 
@@ -52,7 +52,7 @@ const ElementSettingsBar = ({ elementType, deactivateElement }) => {
     return <ElementSettingsBarContent plugin={plugin} deactivateElement={deactivateElement} />;
 };
 
-type ElementSettingsBarProps = { plugin: PbElementPlugin; deactivateElement: () => void };
+type ElementSettingsBarProps = { plugin: PbEditorPageElementPlugin; deactivateElement: () => void };
 
 const ElementSettingsBarContent = React.memo(
     ({ plugin, deactivateElement }: ElementSettingsBarProps) => {

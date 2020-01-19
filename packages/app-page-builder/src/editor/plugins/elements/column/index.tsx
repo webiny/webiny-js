@@ -16,9 +16,9 @@ import {
 } from "@webiny/app-page-builder/editor/actions";
 import { getParentElementWithChildren } from "@webiny/app-page-builder/editor/selectors";
 import { ReactComponent as ColumnIcon } from "@webiny/app-page-builder/editor/assets/icons/column-icon.svg";
-import { PbElementPlugin } from "@webiny/app-page-builder/admin/types";
+import { PbEditorPageElementPlugin } from "@webiny/app-page-builder/admin/types";
 
-export default (): PbElementPlugin => {
+export default (): PbEditorPageElementPlugin => {
     const PreviewBox = styled("div")({
         textAlign: "center",
         height: 50,
@@ -30,7 +30,7 @@ export default (): PbElementPlugin => {
 
     return {
         name: "pb-page-element-column",
-        type: "pb-page-element",
+        type: "pb-editor-page-element",
         elementType: "column",
         toolbar: {
             title: "Column",
@@ -44,19 +44,19 @@ export default (): PbElementPlugin => {
             }
         },
         settings: [
-            "pb-page-element-settings-background",
-            "pb-page-element-settings-animation",
+            "pb-editor-page-element-settings-background",
+            "pb-editor-page-element-settings-animation",
             "",
-            "pb-page-element-settings-border",
-            "pb-page-element-settings-shadow",
+            "pb-editor-page-element-settings-border",
+            "pb-editor-page-element-settings-shadow",
             "",
-            "pb-page-element-settings-padding",
-            "pb-page-element-settings-margin",
-            "pb-page-element-settings-horizontal-align",
-            "pb-page-element-settings-vertical-align",
+            "pb-editor-page-element-settings-padding",
+            "pb-editor-page-element-settings-margin",
+            "pb-editor-page-element-settings-horizontal-align",
+            "pb-editor-page-element-settings-vertical-align",
             "",
-            "pb-page-element-settings-clone",
-            "pb-page-element-settings-delete",
+            "pb-editor-page-element-settings-clone",
+            "pb-editor-page-element-settings-delete",
             ""
         ],
         target: ["row"],

@@ -17,7 +17,7 @@ import { Icon } from "@webiny/ui/Icon";
 import { Typography } from "@webiny/ui/Typography";
 import { ButtonFloating } from "@webiny/ui/Button";
 import { ReactComponent as AddIcon } from "@webiny/app-page-builder/editor/assets/icons/add.svg";
-import { PbElementGroupPlugin, PbElementPlugin } from "@webiny/app-page-builder/admin/types";
+import { PbEditorPageElementGroupPlugin, PbEditorPageElementPlugin } from "@webiny/app-page-builder/admin/types";
 
 const ADD_ELEMENT = "pb-editor-toolbar-add-element";
 
@@ -42,11 +42,11 @@ const categoriesList = css({
 
 const AddElement = ({ params, dropElement, dragStart, deactivatePlugin, dragEnd }) => {
     const getGroups = useCallback(() => {
-        return getPlugins<PbElementGroupPlugin>("pb-editor-page-element-group");
+        return getPlugins<PbEditorPageElementGroupPlugin>("pb-editor-page-element-group");
     }, []);
 
     const getGroupElements = useCallback(group => {
-        return getPlugins<PbElementPlugin>("pb-page-element").filter(
+        return getPlugins<PbEditorPageElementPlugin>("pb-page-element").filter(
             el => el.toolbar && el.toolbar.group === group
         );
     }, []);

@@ -3,8 +3,8 @@ import { BindComponent } from "@webiny/form";
 import OEmbed, { OEmbedProps } from "@webiny/app-page-builder/editor/components/OEmbed";
 import {
     PbElement,
-    PbElementPlugin,
-    PbPageElementAdvancedSettingsPlugin
+    PbEditorPageElementPlugin,
+    PbEditorPageElementAdvancedSettingsPlugin
 } from "@webiny/app-page-builder/admin/types";
 
 type EmbedPluginConfig = {
@@ -32,13 +32,13 @@ type EmbedPluginConfig = {
     }) => React.ReactElement;
 };
 
-export const createEmbedPlugin = (config: EmbedPluginConfig): PbElementPlugin => {
+export const createEmbedPlugin = (config: EmbedPluginConfig): PbEditorPageElementPlugin => {
     return {
         name: "pb-page-element-" + config.type,
-        type: "pb-page-element",
+        type: "pb-editor-page-element",
         elementType: config.type,
         toolbar: config.toolbar,
-        settings: config.settings || ["pb-page-element-settings-delete", ""],
+        settings: config.settings || ["pb-editor-page-element-settings-delete", ""],
         target: config.target || ["column", "row", "list-item"],
         // eslint-disable-next-line
         create({ content = {}, ...options }) {
@@ -74,10 +74,10 @@ type EmbedPluginSidebarConfig = {
 export const createEmbedSettingsPlugin = ({
     type,
     render
-}: EmbedPluginSidebarConfig): PbPageElementAdvancedSettingsPlugin => {
+}: EmbedPluginSidebarConfig): PbEditorPageElementAdvancedSettingsPlugin => {
     return {
-        name: "pb-page-element-advanced-settings-" + type,
-        type: "pb-page-element-advanced-settings",
+        name: "pb-editor-page-element-advanced-settings-" + type,
+        type: "pb-editor-page-element-advanced-settings",
         elementType: type,
         render
     };

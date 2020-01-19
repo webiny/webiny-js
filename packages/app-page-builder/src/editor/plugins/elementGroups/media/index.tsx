@@ -1,6 +1,6 @@
 import React from "react";
 import { ReactComponent as MediaIcon } from "./round-music_video-24px.svg";
-import { PbElementGroupPlugin } from "@webiny/app-page-builder/admin/types";
+import { PbEditorPageElementGroupPlugin } from "@webiny/app-page-builder/admin/types";
 
 export default {
     name: "pb-editor-element-group-media",
@@ -9,4 +9,4 @@ export default {
         title: "Media",
         icon: <MediaIcon />
     }
-} as PbElementGroupPlugin;
+} as PbEditorPageElementGroupPlugin;

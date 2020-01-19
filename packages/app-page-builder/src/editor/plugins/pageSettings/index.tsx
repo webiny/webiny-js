@@ -2,12 +2,12 @@ import * as React from "react";
 import GeneralSettings from "./components/GeneralSettings";
 import SeoSettings from "./components/SeoSettings";
 import SocialSettings from "./components/SocialSettings";
-import { PbPageSettingsPlugin } from "@webiny/app-page-builder/admin/types";
+import { PbEditorPageSettingsPlugin } from "@webiny/app-page-builder/admin/types";
 import { ReactComponent as SettingsIcon } from "./icons/round-settings-24px.svg";
 import { ReactComponent as SocialIcon } from "./icons/round-thumb_up-24px.svg";
 import { ReactComponent as SeoIcon } from "./icons/round-search-24px.svg";
 
-const plugins: PbPageSettingsPlugin[] = [
+const plugins: PbEditorPageSettingsPlugin[] = [
     {
         name: "pb-editor-page-settings-general",
         type: "pb-editor-page-settings",

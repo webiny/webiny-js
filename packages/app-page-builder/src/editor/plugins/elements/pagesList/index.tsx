@@ -1,7 +1,7 @@
 import React from "react";
 import {
-    PbElementPlugin,
-    PbPageElementAdvancedSettingsPlugin
+    PbEditorPageElementPlugin,
+    PbEditorPageElementAdvancedSettingsPlugin
 } from "@webiny/app-page-builder/admin/types";
 import { Tab } from "@webiny/ui/Tabs";
 import { ReactComponent as DesignIcon } from "./icons/round-style-24px.svg";
@@ -25,7 +25,7 @@ export default () => {
     return [
         {
             name: "pb-page-element-pages-list",
-            type: "pb-page-element",
+            type: "pb-editor-page-element",
             elementType: "pages-list",
             toolbar: {
                 title: "List of pages",
@@ -38,7 +38,7 @@ export default () => {
                     );
                 }
             },
-            settings: ["pb-page-element-settings-delete"],
+            settings: ["pb-editor-page-element-settings-delete"],
             target: ["row", "column"],
             onCreate: "open-settings",
             create(options = {}) {
@@ -64,10 +64,10 @@ export default () => {
             render({ element }) {
                 return <PagesList data={element.data} />;
             }
-        } as PbElementPlugin,
+        } as PbEditorPageElementPlugin,
         {
-            name: "pb-page-element-advanced-settings-pages-list-filter",
-            type: "pb-page-element-advanced-settings",
+            name: "pb-editor-page-element-advanced-settings-pages-list-filter",
+            type: "pb-editor-page-element-advanced-settings",
             elementType: "pages-list",
             render(props) {
                 return (
@@ -76,10 +76,10 @@ export default () => {
                     </Tab>
                 );
             }
-        } as PbPageElementAdvancedSettingsPlugin,
+        } as PbEditorPageElementAdvancedSettingsPlugin,
         {
-            name: "pb-page-element-advanced-settings-pages-list-design",
-            type: "pb-page-element-advanced-settings",
+            name: "pb-editor-page-element-advanced-settings-pages-list-design",
+            type: "pb-editor-page-element-advanced-settings",
             elementType: "pages-list",
             render(props) {
                 return (
@@ -88,6 +88,6 @@ export default () => {
                     </Tab>
                 );
             }
-        } as PbPageElementAdvancedSettingsPlugin
+        } as PbEditorPageElementAdvancedSettingsPlugin
     ];
 };

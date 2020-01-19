@@ -1,6 +1,6 @@
 import React from "react";
 import styled from "@emotion/styled";
-import { PbPageElementSettingsPlugin } from "@webiny/app-page-builder/admin/types";
+import { PbEditorPageElementSettingsPlugin } from "@webiny/app-page-builder/admin/types";
 
 const Divider: React.FC<any> = React.memo(
     styled("div")({
@@ -13,9 +13,9 @@ const Divider: React.FC<any> = React.memo(
 );
 
 export default {
-    name: "pb-page-element-settings-divider",
-    type: "pb-page-element-settings",
+    name: "pb-editor-page-element-settings-divider",
+    type: "pb-editor-page-element-settings",
     renderAction() {
         return <Divider />;
     }
-} as PbPageElementSettingsPlugin;
+} as PbEditorPageElementSettingsPlugin;

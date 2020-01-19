@@ -13,8 +13,8 @@ import { ReactComponent as MailchimpLogo } from "./mailchimp-logo.svg";
 
 import render from "./../render";
 import {
-    PbElementPlugin,
-    PbPageElementAdvancedSettingsPlugin
+    PbEditorPageElementPlugin,
+    PbEditorPageElementAdvancedSettingsPlugin
 } from "@webiny/app-page-builder/admin/types";
 import { SettingsPlugin } from "@webiny/app-admin/types";
 
@@ -33,7 +33,7 @@ export default [
     ...render,
     {
         name: "pb-page-element-mailchimp",
-        type: "pb-page-element",
+        type: "pb-editor-page-element",
         elementType: "mailchimp",
         toolbar: {
             title: "Mailchimp",
@@ -46,7 +46,7 @@ export default [
                 );
             }
         },
-        settings: ["pb-page-element-settings-delete", "", "pb-page-element-settings-height"],
+        settings: ["pb-editor-page-element-settings-delete", "", "pb-editor-page-element-settings-height"],
         target: ["column", "row", "list-item"],
         onCreate: "open-settings",
         render({ element }) {
@@ -60,10 +60,10 @@ export default [
                 settings: {}
             };
         }
-    } as PbElementPlugin,
+    } as PbEditorPageElementPlugin,
     {
         name: "pb-element-advanced-settings-mailchimp",
-        type: "pb-page-element-advanced-settings",
+        type: "pb-editor-page-element-advanced-settings",
         elementType: "mailchimp",
         render(props) {
             return (
@@ -72,7 +72,7 @@ export default [
                 </Tab>
             );
         }
-    } as PbPageElementAdvancedSettingsPlugin,
+    } as PbEditorPageElementAdvancedSettingsPlugin,
     {
         type: "settings",
         name: "settings-mailchimp",
