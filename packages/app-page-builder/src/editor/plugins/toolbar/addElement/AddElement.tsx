@@ -46,7 +46,7 @@ const AddElement = ({ params, dropElement, dragStart, deactivatePlugin, dragEnd 
     }, []);
 
     const getGroupElements = useCallback(group => {
-        return getPlugins<PbEditorPageElementPlugin>("pb-page-element").filter(
+        return getPlugins<PbEditorPageElementPlugin>("pb-editor-page-element").filter(
             el => el.toolbar && el.toolbar.group === group
         );
     }, []);

@@ -7,7 +7,7 @@ import { PbPageElementImagesListComponentPlugin } from "@webiny/app-page-builder
 
 const ImagesListDesignSettings = ({ Bind, data }) => {
     const components = getPlugins<PbPageElementImagesListComponentPlugin>(
-        "pb-page-element-images-list-component"
+        "pb-editor-page-element-images-list-component"
     );
 
     return (

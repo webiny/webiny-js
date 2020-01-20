@@ -25,7 +25,7 @@ export default () => {
 
     return [
         {
-            name: "pb-page-element-images-list",
+            name: "pb-editor-page-element-images-list",
             type: "pb-editor-page-element",
             elementType: "images-list",
             toolbar: {

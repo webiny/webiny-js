@@ -1,7 +1,7 @@
 /* eslint-disable */
 import React from "react";
 import bytes from "bytes";
-import { css } from "@emotion/core";
+import { css } from "emotion";
 import { Drawer, DrawerContent } from "@webiny/ui/Drawer";
 import { IconButton } from "@webiny/ui/Button";
 import getFileTypePlugin from "./getFileTypePlugin";

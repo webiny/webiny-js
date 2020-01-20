@@ -27,19 +27,19 @@ const TypographySelector = props => {
 
     const { editor } = props;
 
-    let blockType = editor.value.blocks.first().type;
+    const blockType = editor.value.blocks.first().type;
     const style = theme.typography[blockType] || theme.typography.paragraph;
 
     return (
         <Downshift selectedItem={blockType} onChange={setBlock} onStateChange={onStateChange}>
-            {({ isOpen, getToggleButtonProps, getItemProps, highlightedIndex, selectedItem }) => (
+            {({ isOpen, getToggleButtonProps, getItemProps, selectedItem }) => (
                 <div>
                     <Button {...getToggleButtonProps()}>{style.label}</Button>
                     {isOpen && (
                         <Elevation z={2} className={dropDownDialog}>
                             <div ref={dropdown}>
                                 <List>
-                                    {Object.keys(theme.typography).map((name, index) => {
+                                    {Object.keys(theme.typography).map(name => {
                                         const style = theme.typography[name];
 
                                         return (

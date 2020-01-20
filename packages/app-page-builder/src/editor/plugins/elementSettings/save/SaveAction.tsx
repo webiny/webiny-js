@@ -43,7 +43,7 @@ const SaveAction = (props: Props) => {
 
         const meta = await getDataURLImageDimensions(formData.preview);
         const blob = dataURLtoBlob(formData.preview);
-        blob.name = "pb-page-element-" + element.id + ".png";
+        blob.name = "pb-editor-page-element-" + element.id + ".png";
 
         const fileUploaderPlugin = getPlugin<FileUploaderPlugin>("file-uploader");
         const previewImage = await fileUploaderPlugin.upload(blob, { apolloClient: client });
@@ -103,7 +103,7 @@ const SaveAction = (props: Props) => {
         return null;
     }
 
-    const plugin = getPlugins<PbEditorPageElementPlugin>("pb-page-element").find(
+    const plugin = getPlugins<PbEditorPageElementPlugin>("pb-editor-page-element").find(
         pl => pl.elementType === element.type
     );
 

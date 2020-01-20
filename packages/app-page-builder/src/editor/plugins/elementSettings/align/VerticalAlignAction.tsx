@@ -19,7 +19,7 @@ const icons = {
 
 const VerticalAlignAction = ({ element, updateElement, children }) => {
     const align = get(element, "data.settings.verticalAlign") || "start";
-    const plugin = getPlugins<PbEditorPageElementPlugin>("pb-page-element").find(
+    const plugin = getPlugins<PbEditorPageElementPlugin>("pb-editor-page-element").find(
         pl => pl.elementType === element.type
     );
 

@@ -16,7 +16,7 @@ export default (): PbEditorPageElementPlugin => {
     });
 
     return {
-        name: "pb-page-element-spacer",
+        name: "pb-editor-page-element-spacer",
         type: "pb-editor-page-element",
         elementType: "spacer",
         toolbar: {

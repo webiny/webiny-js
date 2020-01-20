@@ -41,7 +41,7 @@ const getElementPlugin = (element): PbEditorPageElementPlugin => {
         return null;
     }
 
-    const plugins = getPlugins("pb-page-element") as PbEditorPageElementPlugin[];
+    const plugins = getPlugins("pb-editor-page-element") as PbEditorPageElementPlugin[];
     return plugins.find(pl => pl.elementType === element.type);
 };
 
@@ -89,8 +89,8 @@ const Element = (props: ElementProps) => {
             <div ref={drag} className={"type " + typeStyle}>
                 <div className="background" onClick={onClick} />
                 <div className={"element-holder"} onClick={onClick}>
-                    {renderPlugins("pb-page-element-action", { element, plugin })}
-                    <span>{plugin.name.replace("pb-page-element-", "")}</span>
+                    {renderPlugins("pb-editor-page-element-action", { element, plugin })}
+                    <span>{plugin.name.replace("pb-editor-page-element-", "")}</span>
                 </div>
             </div>
         );

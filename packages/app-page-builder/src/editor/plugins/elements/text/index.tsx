@@ -13,7 +13,7 @@ export default (): PbEditorPageElementPlugin => {
     };
 
     return {
-        name: "pb-page-element-text",
+        name: "pb-editor-page-element-text",
         type: "pb-editor-page-element",
         elementType: "text",
         toolbar: {

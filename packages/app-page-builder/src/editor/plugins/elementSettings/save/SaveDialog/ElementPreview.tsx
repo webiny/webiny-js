@@ -15,7 +15,7 @@ export default class ElementPreview extends React.Component<any> {
     }
 
     replaceContent(element: PbElement, doc: Document) {
-        const pl = getPlugins<PbEditorPageElementPlugin>("pb-page-element").find(
+        const pl = getPlugins<PbEditorPageElementPlugin>("pb-editor-page-element").find(
             pl => pl.elementType === element.type
         );
 
