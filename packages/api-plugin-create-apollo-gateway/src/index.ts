@@ -2,6 +2,7 @@ import { ApolloGateway, RemoteGraphQLDataSource, ServiceEndpointDefinition } fro
 import { GraphQLRequestContext, GraphQLResponse } from "apollo-server-types";
 import { ApolloServer } from "apollo-server-lambda";
 import { CreateApolloGatewayPlugin } from "@webiny/api/types";
+import get from "lodash.get";
 import { ApolloGatewayHeaders } from "./types";
 import buildHeaders from "./buildHeaders";
 
@@ -24,6 +25,26 @@ type ApolloGatewayPluginParams = {
     };
 };
 
+function getError(error) {
+    let err = get(error, "extensions.response.body.error");
+    if (err) {
+        return {
+            error: err.message,
+            stack: err.stack
+        };
+    }
+
+    err = get(error, "extensions.exception");
+    if (err) {
+        return {
+            error: error.message,
+            stack: err.stacktrace
+        };
+    }
+
+    return { error: error.message };
+}
+
 class WebinyDataSource extends RemoteGraphQLDataSource {
     constructor({ onServiceError, ...config }: Partial<WebinyDataSource>) {
         super(config);
@@ -38,15 +59,16 @@ class WebinyDataSource extends RemoteGraphQLDataSource {
     }: Pick<GraphQLRequestContext<TContext>, "request" | "context">): Promise<GraphQLResponse> {
         try {
             return await super.process({ request, context }).then(res => {
-                console.log("res", { request, res });
+                console.log("PROCESS THEN", JSON.stringify(res, null, 2));
                 if (res.errors) {
                     res.errors.map(error => this.onServiceError(error));
                 }
                 return res;
             });
         } catch (error) {
+            console.log("PROCESS CATCH", JSON.stringify(error, null, 2));
             this.onServiceError(error);
-            throw error;
+            return Promise.reject(error);
         }
     }
 }
@@ -84,7 +106,11 @@ export default (params: ApolloGatewayPluginParams): CreateApolloGatewayPlugin =>
                         }
                     },
                     onServiceError(error) {
-                        dataSourceErrors.push({ service: name, url, error: error.message });
+                        dataSourceErrors.push({
+                            ...getError(error),
+                            service: name,
+                            url
+                        });
                     }
                 });
             }
@@ -105,9 +131,9 @@ export default (params: ApolloGatewayPluginParams): CreateApolloGatewayPlugin =>
                 context: async ({ event }) => {
                     const headers = buildHeaders(event);
 
-                    const headerPlugins = plugins.byType(
+                    const headerPlugins = plugins.byType<ApolloGatewayHeaders>(
                         "apollo-gateway-headers"
-                    ) as ApolloGatewayHeaders[];
+                    );
                     headerPlugins.forEach(pl => pl.buildHeaders({ headers, plugins }));
 
                     return { headers };
@@ -122,10 +148,11 @@ export default (params: ApolloGatewayPluginParams): CreateApolloGatewayPlugin =>
                 }
             });
         } catch (e) {
+            console.log("CREATE GW ERROR", JSON.stringify(e, null, 2));
             if (dataSourceErrors.length > 0) {
+                console.log("dataSourceErrors", JSON.stringify({ dataSourceErrors }, null, 2));
                 throw new ApolloGatewayError(dataSourceErrors);
             }
-
             throw e;
         }
     }

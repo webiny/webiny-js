@@ -7,14 +7,13 @@ export default () => [
         type: "graphql-context",
         name: "graphql-context-ssr-cache-client",
         async apply(context) {
-            const { FormSettings } = context.models;
-            if (!FormSettings) {
+            if (!context.models || !context.models.FormSettings) {
                 throw new Error(
-                    `Cannot apply useSsrCacheTags set of plugins, make sure they are registered after the base api-form-builder plugins.`
+                    `Cannot apply "useSsrCacheTags" set of plugins, make sure they are registered after the base "api-form-builder" plugins.`
                 );
             }
 
-            const settings = await FormSettings.load();
+            const settings = await context.models.FormSettings.load();
             // TODO: @pavel figure out how to add property to type declaration
             context.ssrApiClient = new SsrApiClient({ url: settings.data.domain });
         }

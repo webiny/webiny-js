@@ -1,5 +1,6 @@
 const { Component } = require("@serverless/core");
 const CloudFront = require("aws-sdk/clients/cloudfront");
+const get = require("lodash.get");
 
 class ServerlessAwsCloudfront extends Component {
     async default(inputs = {}) {
@@ -9,7 +10,7 @@ class ServerlessAwsCloudfront extends Component {
         const cloudfrontClient = new CloudFront();
 
         const forwardIdViaHeadersChanged =
-            this.state.output.forwardIdViaHeaders !== inputs.forwardIdViaHeaders;
+            get(this.state, "output.forwardIdViaHeaders") !== inputs.forwardIdViaHeaders;
 
         if (forwardIdViaHeadersChanged) {
             output.forwardIdViaHeaders = inputs.forwardIdViaHeaders;

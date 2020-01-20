@@ -1,5 +1,6 @@
 import { createHandler } from "@webiny/api";
 import { PluginsContainer } from "@webiny/plugins";
+import "source-map-support/register";
 
 let apolloHandler;
 
@@ -11,8 +12,9 @@ export const handler = async (event, context) => {
             apolloHandler = handler;
         }
 
-        return apolloHandler(event, context);
+        return await apolloHandler(event, context);
     } catch (e) {
+        console.log("APOLLO_SERVICE HANDLER", JSON.stringify(e, null, 2));
         const { identity, ...requestContext } = event.requestContext;
 
         const report = {
@@ -24,8 +26,6 @@ export const handler = async (event, context) => {
                 stack: e.stack
             }
         };
-
-        console.log("ERROR", report);
 
         if (process.env.ERROR_REPORTING === "true") {
             return {

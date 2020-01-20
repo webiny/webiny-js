@@ -1,14 +1,19 @@
 const { Component } = require("@serverless/core");
+const get = require("lodash.get");
 
 class DbProxyComponent extends Component {
     async default(inputs = {}) {
         const { env, region, concurrencyLimit, timeout } = inputs;
 
+        const name =
+            get(this.state, "output.name") ||
+            this.context.instance.getResourceName(inputs.name || "db-proxy");
+
         const proxyLambda = await this.load("@webiny/serverless-function", "db-proxy");
         const proxyLambdaOutput = await proxyLambda({
             region,
             concurrencyLimit,
-            name: "Database Proxy",
+            name,
             timeout,
             code: __dirname,
             handler: "handler.handler",

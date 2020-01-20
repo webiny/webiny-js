@@ -11,7 +11,7 @@ module.exports = ({ root }) => {
             filename: "handler.js"
         },
         // Generate sourcemaps for proper error messages
-        devtool: false,
+        devtool: "source-map",
         externals: ["aws-sdk"],
         mode: "production",
         optimization: {
@@ -54,7 +54,6 @@ module.exports = ({ root }) => {
         },
         resolve: {
             alias: aliases,
-            extensions: [".mjs", ".ts", ".js"],
             modules: [path.resolve(root, "node_modules"), "node_modules"]
         }
     };

@@ -48,7 +48,6 @@ module.exports = {
         ]
     },
     resolve: {
-        extensions: [".mjs", ".ts", ".js"],
         modules: [path.resolve(__dirname, "node_modules"), "node_modules"]
     }
 };

@@ -10,6 +10,7 @@ export const handler = async (event, context) => {
         }
 
         return await new Promise(resolve => {
+            console.log("Execute apolloHandler");
             apolloHandler(event, context, (error, data) => {
                 if (error) {
                     return resolve({
@@ -22,6 +23,7 @@ export const handler = async (event, context) => {
             });
         });
     } catch (e) {
+        console.log("APOLLO_GW HANDLER", JSON.stringify(e, null, 2));
         const { identity, ...requestContext } = event.requestContext;
 
         const report = {

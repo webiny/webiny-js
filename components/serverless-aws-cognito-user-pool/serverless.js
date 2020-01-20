@@ -99,7 +99,7 @@ class ServerlessAwsCognito extends Component {
             this.context.instance.debug(`Creating new user pool.`);
 
             const params = {
-                PoolName: name,
+                PoolName: this.context.instance.getResourceName(name),
                 AdminCreateUserConfig: {
                     AllowAdminCreateUserOnly: !allowSignup
                 },
