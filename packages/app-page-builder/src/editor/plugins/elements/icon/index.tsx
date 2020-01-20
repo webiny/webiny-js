@@ -5,7 +5,7 @@ import styled from "@emotion/styled";
 import Icon from "./Icon";
 import { getSvg } from "./utils";
 import Action from "./../../elementSettings/components/Action";
-import { PbElementPlugin, PbPageElementSettingsPlugin } from "@webiny/app-page-builder/admin/types";
+import { PbEditorPageElementPlugin, PbEditorPageElementSettingsPlugin } from "@webiny/app-page-builder/admin/types";
 
 export default () => {
     const PreviewBox = styled("div")({
@@ -21,7 +21,7 @@ export default () => {
     return [
         {
             name: "pb-page-element-icon",
-            type: "pb-page-element",
+            type: "pb-editor-page-element",
             elementType: "icon",
             toolbar: {
                 title: "Icon",
@@ -35,17 +35,17 @@ export default () => {
                 }
             },
             settings: [
-                "pb-page-element-settings-icon",
+                "pb-editor-page-element-settings-icon",
                 "",
-                "pb-page-element-settings-padding",
-                "pb-page-element-settings-margin",
+                "pb-editor-page-element-settings-padding",
+                "pb-editor-page-element-settings-margin",
                 [
-                    "pb-page-element-settings-horizontal-align",
+                    "pb-editor-page-element-settings-horizontal-align",
                     { alignments: ["left", "center", "right"] }
                 ],
                 "",
-                "pb-page-element-settings-clone",
-                "pb-page-element-settings-delete",
+                "pb-editor-page-element-settings-clone",
+                "pb-editor-page-element-settings-delete",
                 ""
             ],
             target: ["column", "row"],
@@ -77,16 +77,16 @@ export default () => {
             render(props) {
                 return <Icon {...props} />;
             }
-        } as PbElementPlugin,
+        } as PbEditorPageElementPlugin,
         {
-            name: "pb-page-element-settings-icon",
-            type: "pb-page-element-settings",
+            name: "pb-editor-page-element-settings-icon",
+            type: "pb-editor-page-element-settings",
             renderAction() {
                 return <Action plugin={this.name} tooltip={"Icon"} icon={<IconSvg />} />;
             },
             renderMenu() {
                 return <IconSettings />;
             }
-        } as PbPageElementSettingsPlugin
+        } as PbEditorPageElementSettingsPlugin
     ];
 };

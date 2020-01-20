@@ -2,14 +2,14 @@ const { Component } = require("@serverless/core");
 
 class DbProxyComponent extends Component {
     async default(inputs = {}) {
-        const { env, region, concurrencyLimit } = inputs;
+        const { env, region, concurrencyLimit, timeout } = inputs;
 
         const proxyLambda = await this.load("@webiny/serverless-function", "db-proxy");
         const proxyLambdaOutput = await proxyLambda({
             region,
             concurrencyLimit,
             name: "Database Proxy",
-            timeout: 15,
+            timeout,
             code: __dirname,
             handler: "handler.handler",
             description: `Proxies DB commands.`,

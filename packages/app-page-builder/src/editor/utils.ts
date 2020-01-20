@@ -3,7 +3,7 @@ import invariant from "invariant";
 import { set } from "dot-prop-immutable";
 import { isPlainObject, omit } from "lodash";
 import { getPlugin, getPlugins } from "@webiny/plugins";
-import {PbElement, PbElementPlugin, PbEditorBlockPlugin} from "@webiny/app-page-builder/admin/types";
+import {PbElement, PbEditorPageElementPlugin, PbEditorBlockPlugin} from "@webiny/app-page-builder/admin/types";
 
 export const updateChildPaths = (element: PbElement) => {
     if (!element.id) {
@@ -55,7 +55,7 @@ type CreateElement = (
 ) => PbElement;
 
 export const createElement: CreateElement = (type, options = {}, parent) => {
-    const plugin = getPlugins<PbElementPlugin>("pb-page-element").find(
+    const plugin = getPlugins<PbEditorPageElementPlugin>("pb-page-element").find(
         pl => pl.elementType === type
     );
 

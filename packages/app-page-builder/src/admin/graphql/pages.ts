@@ -1,6 +1,6 @@
 import gql from "graphql-tag";
 import { getPlugins } from "@webiny/plugins";
-import { PbPageSettingsPlugin } from "@webiny/app-page-builder/admin/types";
+import { PbEditorPageSettingsPlugin } from "@webiny/app-page-builder/admin/types";
 
 const error = `
 error {
@@ -73,7 +73,7 @@ export const GET_PAGE = () => gql`
                     settings {
                         _empty
                         ${getPlugins("pb-editor-page-settings")
-                            .map((pl: PbPageSettingsPlugin) => pl.fields)
+                            .map((pl: PbEditorPageSettingsPlugin) => pl.fields)
                             .join("\n")}
                     }
                     category {

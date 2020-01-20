@@ -41,8 +41,8 @@ const normalizePlugins = plugins => {
 class ApolloGateway extends Component {
     async default(inputs = {}) {
         if (isEqual(this.state.inputs, inputs)) {
-            this.context.instance.debug("Inputs were not changed, no action required.");
-            return this.state.output;
+            // this.context.instance.debug("Inputs were not changed, no action required.");
+            // return this.state.output;
         } else {
             this.state.inputs = inputs;
         }
@@ -54,6 +54,7 @@ class ApolloGateway extends Component {
             memory = 128,
             timeout = 10,
             description,
+            errorReporting = "true",
             webpackConfig = null
         } = inputs;
 
@@ -61,7 +62,8 @@ class ApolloGateway extends Component {
             throw Error(`"inputs.name" is a required parameter!`);
         }
 
-        let plugins = normalizePlugins(inputs.plugins || []);
+        const plugins = normalizePlugins(inputs.plugins || []);
+        env["ERROR_REPORTING"] = errorReporting;
 
         if (inputs.services) {
             // Add backwards compatibility

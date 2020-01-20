@@ -1,7 +1,7 @@
 import React from "react";
 import { css } from "emotion";
 import { createValue } from "@webiny/app-page-builder/editor/components/Slate";
-import { PbElementPlugin, PbPageElementSettingsPlugin } from "@webiny/app-page-builder/admin/types";
+import { PbEditorPageElementPlugin, PbEditorPageElementSettingsPlugin } from "@webiny/app-page-builder/admin/types";
 import { ReactComponent as ButtonIcon } from "./round-toggle_on-24px.svg";
 import ButtonSettings from "./ButtonSettings";
 import Button from "./Button";
@@ -16,7 +16,7 @@ export default () => {
     return [
         {
             name: "pb-page-element-button",
-            type: "pb-page-element",
+            type: "pb-editor-page-element",
             elementType: "button",
             toolbar: {
                 title: "Button",
@@ -30,13 +30,13 @@ export default () => {
                 }
             },
             settings: [
-                "pb-page-element-settings-button",
-                "pb-page-element-settings-link",
+                "pb-editor-page-element-settings-button",
+                "pb-editor-page-element-settings-link",
                 "",
-                "pb-page-element-settings-horizontal-align-flex",
+                "pb-editor-page-element-settings-horizontal-align-flex",
                 "",
-                "pb-page-element-settings-clone",
-                "pb-page-element-settings-delete",
+                "pb-editor-page-element-settings-clone",
+                "pb-editor-page-element-settings-delete",
                 ""
             ],
             target: ["column", "row"],
@@ -63,16 +63,16 @@ export default () => {
             render({ element }) {
                 return <Button element={element} />;
             }
-        } as PbElementPlugin,
+        } as PbEditorPageElementPlugin,
         {
-            name: "pb-page-element-settings-button",
-            type: "pb-page-element-settings",
+            name: "pb-editor-page-element-settings-button",
+            type: "pb-editor-page-element-settings",
             renderAction() {
                 return <Action plugin={this.name} tooltip={"Button"} icon={<ButtonIcon />} />;
             },
             renderMenu() {
                 return <ButtonSettings />;
             }
-        } as PbPageElementSettingsPlugin
+        } as PbEditorPageElementSettingsPlugin
     ];
 };

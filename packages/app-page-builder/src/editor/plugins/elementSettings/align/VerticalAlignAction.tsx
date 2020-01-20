@@ -8,7 +8,7 @@ import { get } from "dot-prop-immutable";
 import { ReactComponent as AlignCenterIcon } from "./icons/round-border_horizontal-24px.svg";
 import { ReactComponent as AlignTopIcon } from "./icons/round-border_top-24px.svg";
 import { ReactComponent as AlignBottomIcon } from "./icons/round-border_bottom-24px.svg";
-import { PbElementPlugin } from "@webiny/app-page-builder/admin/types";
+import { PbEditorPageElementPlugin } from "@webiny/app-page-builder/admin/types";
 
 // Icons map for dynamic render
 const icons = {
@@ -19,7 +19,7 @@ const icons = {
 
 const VerticalAlignAction = ({ element, updateElement, children }) => {
     const align = get(element, "data.settings.verticalAlign") || "start";
-    const plugin = getPlugins<PbElementPlugin>("pb-page-element").find(
+    const plugin = getPlugins<PbEditorPageElementPlugin>("pb-page-element").find(
         pl => pl.elementType === element.type
     );
 

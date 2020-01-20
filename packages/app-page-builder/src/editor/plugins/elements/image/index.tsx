@@ -8,8 +8,8 @@ import Image from "./Image";
 import Action from "../../elementSettings/components/Action";
 import {
     PbEditorReduxMiddlewarePlugin,
-    PbElementPlugin,
-    PbPageElementSettingsPlugin
+    PbEditorPageElementPlugin,
+    PbEditorPageElementSettingsPlugin
 } from "@webiny/app-page-builder/admin/types";
 
 export default () => {
@@ -25,7 +25,7 @@ export default () => {
     return [
         {
             name: "pb-page-element-image",
-            type: "pb-page-element",
+            type: "pb-editor-page-element",
             elementType: "image",
             toolbar: {
                 title: "Image",
@@ -39,22 +39,22 @@ export default () => {
                 }
             },
             settings: [
-                "pb-page-element-settings-image",
-                ["pb-page-element-settings-background", { image: false }],
-                "pb-page-element-settings-link",
+                "pb-editor-page-element-settings-image",
+                ["pb-editor-page-element-settings-background", { image: false }],
+                "pb-editor-page-element-settings-link",
                 "",
-                "pb-page-element-settings-border",
-                "pb-page-element-settings-shadow",
+                "pb-editor-page-element-settings-border",
+                "pb-editor-page-element-settings-shadow",
                 "",
                 [
-                    "pb-page-element-settings-horizontal-align",
+                    "pb-editor-page-element-settings-horizontal-align",
                     { alignments: ["left", "center", "right"] }
                 ],
-                "pb-page-element-settings-padding",
-                "pb-page-element-settings-margin",
+                "pb-editor-page-element-settings-padding",
+                "pb-editor-page-element-settings-margin",
                 "",
-                "pb-page-element-settings-clone",
-                "pb-page-element-settings-delete",
+                "pb-editor-page-element-settings-clone",
+                "pb-editor-page-element-settings-delete",
                 ""
             ],
             target: ["column", "row"],
@@ -82,17 +82,17 @@ export default () => {
             render({ element }) {
                 return <Image element={element} />;
             }
-        } as PbElementPlugin,
+        } as PbEditorPageElementPlugin,
         {
-            name: "pb-page-element-settings-image",
-            type: "pb-page-element-settings",
+            name: "pb-editor-page-element-settings-image",
+            type: "pb-editor-page-element-settings",
             renderAction() {
                 return <Action plugin={this.name} tooltip={"Image"} icon={<ImageIcon />} />;
             },
             renderMenu() {
                 return <ImageSettings />;
             }
-        } as PbPageElementSettingsPlugin,
+        } as PbEditorPageElementSettingsPlugin,
         {
             type: "pb-editor-redux-middleware",
             name: "pb-editor-redux-middleware-image-created",
@@ -107,7 +107,7 @@ export default () => {
                 }
 
                 // Check the source of the element (could be `saved` element which behaves differently from other elements)
-                const imagePlugin = getPlugins<PbElementPlugin>("pb-page-element").find(
+                const imagePlugin = getPlugins<PbEditorPageElementPlugin>("pb-page-element").find(
                     pl => pl.elementType === source.type
                 );
 

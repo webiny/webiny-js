@@ -29,7 +29,11 @@ export class PluginsContainer {
         return this.plugins[name] as T;
     }
 
-    byType<T extends Plugin = Plugin>(type: string): T[] {
+    byType<T extends Plugin>(type?: string): T[] {
+        if (!type) {
+            return Object.values(this.plugins) as T[];
+        }
+
         return Object.values(this.plugins).filter((pl: Plugin) => pl.type === type) as T[];
     }
 

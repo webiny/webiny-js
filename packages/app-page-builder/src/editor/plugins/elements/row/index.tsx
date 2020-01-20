@@ -16,9 +16,9 @@ import {
 import "./actions";
 import Row from "./Row";
 import { ReactComponent as RowIcon } from "@webiny/app-page-builder/editor/assets/icons/row-icon.svg";
-import {PbElement, PbElementPlugin} from "@webiny/app-page-builder/admin/types";
+import {PbElement, PbEditorPageElementPlugin} from "@webiny/app-page-builder/admin/types";
 
-export default (): PbElementPlugin => {
+export default (): PbEditorPageElementPlugin => {
     const PreviewBox = styled("div")({
         textAlign: "center",
         height: 50,
@@ -30,7 +30,7 @@ export default (): PbElementPlugin => {
 
     return {
         name: "pb-page-element-row",
-        type: "pb-page-element",
+        type: "pb-editor-page-element",
         elementType: "row",
         toolbar: {
             title: "Row",
@@ -45,18 +45,18 @@ export default (): PbElementPlugin => {
             }
         },
         settings: [
-            "pb-page-element-settings-background",
-            "pb-page-element-settings-animation",
+            "pb-editor-page-element-settings-background",
+            "pb-editor-page-element-settings-animation",
             "",
-            "pb-page-element-settings-border",
-            "pb-page-element-settings-shadow",
+            "pb-editor-page-element-settings-border",
+            "pb-editor-page-element-settings-shadow",
             "",
-            "pb-page-element-settings-padding",
-            "pb-page-element-settings-margin",
-            "pb-page-element-settings-width",
+            "pb-editor-page-element-settings-padding",
+            "pb-editor-page-element-settings-margin",
+            "pb-editor-page-element-settings-width",
             "",
-            "pb-page-element-settings-clone",
-            "pb-page-element-settings-delete",
+            "pb-editor-page-element-settings-clone",
+            "pb-editor-page-element-settings-delete",
             ""
         ],
         // Target drop zones that will accept this type

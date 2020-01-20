@@ -2,11 +2,11 @@ import React from "react";
 import { ReactComponent as FavoriteIcon } from "@webiny/app-page-builder/editor/assets/icons/round-favorite-24px.svg";
 import Action from "../components/Action";
 import SaveAction from "./SaveAction";
-import { PbPageElementSettingsPlugin } from "@webiny/app-page-builder/admin/types";
+import { PbEditorPageElementSettingsPlugin } from "@webiny/app-page-builder/admin/types";
 
 export default {
-    name: "pb-page-element-settings-save",
-    type: "pb-page-element-settings",
+    name: "pb-editor-page-element-settings-save",
+    type: "pb-editor-page-element-settings",
     renderAction() {
         return (
             <SaveAction>
@@ -14,4 +14,4 @@ export default {
             </SaveAction>
         );
     }
-} as PbPageElementSettingsPlugin;
+} as PbEditorPageElementSettingsPlugin;

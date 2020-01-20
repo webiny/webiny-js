@@ -72,6 +72,7 @@ export type PbDocumentElementPlugin = Plugin & {
 };
 
 export type PbPageDetailsRevisionContentPlugin = Plugin & {
+    type: "pb-page-details-revision-content";
     render(params: {
         pageDetails: PbPageDetailsContextValue;
         loading: boolean;
@@ -84,9 +85,17 @@ export type PbPageDetailsHeaderRightOptionsMenuItemPlugin = Plugin & {
     render(props: any): ReactElement;
 };
 
-export type PbPageDetailsRevisionContentPreviewPlugin = PbPageDetailsRevisionContentPlugin;
+export type PbPageDetailsRevisionContentPreviewPlugin = Plugin & {
+    type: "pb-page-details-revision-content-preview";
+    render(params: {
+        pageDetails: PbPageDetailsContextValue;
+        loading: boolean;
+        refreshPages: () => void;
+    }): ReactElement;
+};;
 
 export type PbMenuItemPlugin = Plugin & {
+    type: "pb-menu-item";
     menuItem: {
         /* Item type (this will be stored to DB when menu is saved) */
         type: string;
@@ -105,7 +114,7 @@ export type PbMenuItemPlugin = Plugin & {
     };
 };
 
-export type PbElementGroupPlugin = Plugin & {
+export type PbEditorPageElementGroupPlugin = Plugin & {
     type: "pb-editor-page-element-group";
     group: {
         // Title rendered in the toolbar.
@@ -115,14 +124,14 @@ export type PbElementGroupPlugin = Plugin & {
     };
 };
 
-export type ElementTitle = (params: { refresh: () => void }) => ReactNode;
+export type PbEditorPageElementTitle = (params: { refresh: () => void }) => ReactNode;
 
-export type PbElementPlugin = Plugin & {
-    type: "pb-page-element";
+export type PbEditorPageElementPlugin = Plugin & {
+    type: "pb-editor-page-element";
     elementType: string;
     toolbar?: {
         // Element title in the toolbar.
-        title?: string | ElementTitle;
+        title?: string | PbEditorPageElementTitle;
         // Element group this element belongs to.
         group?: string;
         // A function to render an element preview in the toolbar.
@@ -160,15 +169,17 @@ export type PbElementPlugin = Plugin & {
     }) => ReactElement;
 };
 
-export type PbElementActionPlugin = Plugin & {
-    render: (params: { plugin: PbElementPlugin }) => ReactNode;
+export type PbEditorPageElementActionPlugin = Plugin & {
+    type: "pb-editor-page-element-action";
+    render: (params: { plugin: PbEditorPageElementPlugin }) => ReactNode;
 };
 
 export type PbPageDetailsPlugin = Plugin & {
     render: (params: { [key: string]: any }) => ReactNode;
 };
 
-export type PbPageSettingsPlugin = Plugin & {
+export type PbEditorPageSettingsPlugin = Plugin & {
+    type: "pb-editor-page-settings";
     /* Settings group title */
     title: string;
     /* Settings group description */
@@ -181,7 +192,7 @@ export type PbPageSettingsPlugin = Plugin & {
     render: (params: { form: Form; Bind: BindComponent }) => ReactNode;
 };
 
-export type PbBlockCategoryPlugin = Plugin & {
+export type PbPageBlockCategoryPlugin = Plugin & {
     title: string;
     description?: string;
 };
@@ -297,24 +308,14 @@ export type PbEditorBlockCategoryPlugin = Plugin & {
     icon: ReactElement;
 };
 
-export type PbEditorPageSettingsPlugin = Plugin & {
-    type: "pb-editor-page-settings";
-    title: string;
-    description: string;
-    icon: ReactElement;
-    // GQL query string fields
-    fields: string;
-    render(props): ReactElement;
-};
-
-export type PbPageElementSettingsPlugin = Plugin & {
-    type: "pb-page-element-settings";
+export type PbEditorPageElementSettingsPlugin = Plugin & {
+    type: "pb-editor-page-element-settings";
     renderAction(params: { options?: any }): ReactElement;
     renderMenu?: (params: { options?: any }) => ReactElement;
 };
 
-export type PbPageElementAdvancedSettingsPlugin = Plugin & {
-    type: "pb-page-element-advanced-settings";
+export type PbEditorPageElementAdvancedSettingsPlugin = Plugin & {
+    type: "pb-editor-page-element-advanced-settings";
     elementType: string;
     render(params?: { Bind: BindComponent; data: any }): ReactElement;
     onSave?: (data: FormData) => FormData;

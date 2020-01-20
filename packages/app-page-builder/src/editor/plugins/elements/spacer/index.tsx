@@ -3,9 +3,9 @@ import styled from "@emotion/styled";
 import Spacer, { INIT_HEIGHT } from "./Spacer";
 import { ReactComponent as SpacerIcon } from "@webiny/app-page-builder/editor/assets/icons/spacer-icon.svg";
 import "./actions";
-import { PbElementPlugin } from "@webiny/app-page-builder/admin/types";
+import { PbEditorPageElementPlugin } from "@webiny/app-page-builder/admin/types";
 
-export default (): PbElementPlugin => {
+export default (): PbEditorPageElementPlugin => {
     const PreviewBox = styled("div")({
         textAlign: "center",
         height: 50,
@@ -17,7 +17,7 @@ export default (): PbElementPlugin => {
 
     return {
         name: "pb-page-element-spacer",
-        type: "pb-page-element",
+        type: "pb-editor-page-element",
         elementType: "spacer",
         toolbar: {
             title: "Spacer",
@@ -30,7 +30,7 @@ export default (): PbElementPlugin => {
                 );
             }
         },
-        settings: ["pb-page-element-settings-delete"],
+        settings: ["pb-editor-page-element-settings-delete"],
         target: ["block", "column"],
         create(options = {}) {
             return {

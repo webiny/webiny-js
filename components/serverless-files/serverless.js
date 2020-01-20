@@ -110,6 +110,7 @@ class FilesComponent extends Component {
             env: {
                 ...apolloServiceInputs.env,
                 S3_BUCKET: bucket,
+                ERROR_REPORTING: apolloServiceInputs.errorReporting || "true",
                 UPLOAD_MIN_FILE_SIZE: String(apolloServiceInputs.uploadMinFileSize),
                 UPLOAD_MAX_FILE_SIZE: String(apolloServiceInputs.uploadMaxFileSize)
             }

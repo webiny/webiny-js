@@ -1,8 +1,8 @@
 // @flow
 import * as React from "react";
 import { termsOfServiceEnabled } from "./../functions";
-import type { FormDataType } from "@webiny/app-form-builder/types";
-import type { I18NStringValue, I18NObjectValue } from "@webiny/app-i18n/types";
+import  { FormDataType } from "@webiny/app-form-builder/types";
+import  { I18NStringValue, I18NObjectValue } from "@webiny/app-i18n/types";
 
 type Args = {
     formData: FormDataType,

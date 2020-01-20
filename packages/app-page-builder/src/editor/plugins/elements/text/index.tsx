@@ -2,9 +2,9 @@ import React from "react";
 import loremIpsum from "lorem-ipsum";
 import Text, { className } from "./Text";
 import { createValue } from "@webiny/app-page-builder/editor/components/Slate";
-import { PbElementPlugin } from "@webiny/app-page-builder/admin/types";
+import { PbEditorPageElementPlugin } from "@webiny/app-page-builder/admin/types";
 
-export default (): PbElementPlugin => {
+export default (): PbEditorPageElementPlugin => {
     const defaultLipsum = {
         count: 3,
         units: "sentences",
@@ -14,7 +14,7 @@ export default (): PbElementPlugin => {
 
     return {
         name: "pb-page-element-text",
-        type: "pb-page-element",
+        type: "pb-editor-page-element",
         elementType: "text",
         toolbar: {
             title: "Text",
@@ -26,16 +26,16 @@ export default (): PbElementPlugin => {
             }
         },
         settings: [
-            "pb-page-element-settings-background",
+            "pb-editor-page-element-settings-background",
             "",
-            "pb-page-element-settings-border",
-            "pb-page-element-settings-shadow",
+            "pb-editor-page-element-settings-border",
+            "pb-editor-page-element-settings-shadow",
             "",
-            "pb-page-element-settings-padding",
-            "pb-page-element-settings-margin",
+            "pb-editor-page-element-settings-padding",
+            "pb-editor-page-element-settings-margin",
             "",
-            "pb-page-element-settings-clone",
-            "pb-page-element-settings-delete",
+            "pb-editor-page-element-settings-clone",
+            "pb-editor-page-element-settings-delete",
             ""
         ],
         target: ["column", "row", "list-item"],

@@ -1,6 +1,6 @@
 import React from "react";
 import { ReactComponent as SocialIcon } from "./round-people-24px.svg";
-import { PbElementGroupPlugin } from "@webiny/app-page-builder/admin/types";
+import { PbEditorPageElementGroupPlugin } from "@webiny/app-page-builder/admin/types";
 
 export default {
     name: "pb-editor-element-group-social",
@@ -9,4 +9,4 @@ export default {
         title: "Social",
         icon: <SocialIcon />
     }
-} as PbElementGroupPlugin;
+} as PbEditorPageElementGroupPlugin;

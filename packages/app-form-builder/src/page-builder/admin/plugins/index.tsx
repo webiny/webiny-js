@@ -20,7 +20,7 @@ export default [
     formsSitePlugins,
     {
         name: "pb-page-element-form",
-        type: "pb-page-element",
+        type: "pb-editor-page-element",
         elementType: "form",
         toolbar: {
             title: "Form",
@@ -33,7 +33,7 @@ export default [
                 );
             }
         },
-        settings: ["pb-page-element-settings-delete", "", "pb-page-element-settings-height"],
+        settings: ["pb-editor-page-element-settings-delete", "", "pb-editor-page-element-settings-height"],
         target: ["column", "row", "list-item"],
         onCreate: "open-settings",
         render({ element }: Object) {
@@ -50,7 +50,7 @@ export default [
     },
     {
         name: "pb-element-advanced-settings-form",
-        type: "pb-page-element-advanced-settings",
+        type: "pb-editor-page-element-advanced-settings",
         elementType: "form",
         render(props: Object) {
             return (

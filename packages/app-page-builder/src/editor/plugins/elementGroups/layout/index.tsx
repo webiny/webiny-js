@@ -1,8 +1,8 @@
 import React from "react";
 import { ReactComponent as LayoutIcon } from "@webiny/app-page-builder/editor/assets/icons/round-view_quilt-24px.svg";
-import { PbElementGroupPlugin } from "@webiny/app-page-builder/admin/types";
+import { PbEditorPageElementGroupPlugin } from "@webiny/app-page-builder/admin/types";
 
-const layoutGroup: PbElementGroupPlugin = {
+const layoutGroup: PbEditorPageElementGroupPlugin = {
     name: "pb-editor-element-group-layout",
     type: "pb-editor-page-element-group",
     group: {

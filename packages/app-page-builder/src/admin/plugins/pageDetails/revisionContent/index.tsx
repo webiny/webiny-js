@@ -1,9 +1,9 @@
 import * as React from "react";
 import { renderPlugins } from "@webiny/app/plugins";
-import { PbPageDetailsRevisionContentPlugin } from "@webiny/app-page-builder/admin/types";
+import { PbPageDetailsPlugin } from "@webiny/app-page-builder/admin/types";
 import { Tabs } from "@webiny/ui/Tabs";
 
-const plugin: PbPageDetailsRevisionContentPlugin = {
+const plugin: PbPageDetailsPlugin = {
     name: "pb-page-details-revision-content",
     type: "pb-page-details",
     render({ pageDetails, ...rest }) {

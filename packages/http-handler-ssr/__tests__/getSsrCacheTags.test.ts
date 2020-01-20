@@ -1,4 +1,4 @@
-import parseSsrCacheTags from "./../getSsrCacheTags";
+import parseSsrCacheTags from "../src/models/ssrCache/getSsrCacheTags";
 
 describe("parse ssr-cache tags", () => {
     it("must detect all ssr-cache tags in given HTML", async () => {

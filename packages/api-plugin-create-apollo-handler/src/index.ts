@@ -20,8 +20,8 @@ function normalizeEvent(event) {
 
 interface ApolloHandlerPluginOptions {
     server?: {
-        introspection: boolean;
-        playground: boolean;
+        introspection?: boolean;
+        playground?: boolean;
     };
     handler?: {
         cors?: { [key: string]: any };
@@ -33,7 +33,7 @@ export default (options: ApolloHandlerPluginOptions): CreateApolloHandlerPlugin 
         name: "create-apollo-handler",
         type: "create-apollo-handler",
         create({ plugins, schema }) {
-            const { server, handler } = options || {};
+            const { server = {}, handler = {} } = options || {};
 
             const apollo = new ApolloServer({
                 introspection: toBool(server.introspection),

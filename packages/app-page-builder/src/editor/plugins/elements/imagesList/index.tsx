@@ -1,7 +1,7 @@
 import React from "react";
 import {
-    PbElementPlugin,
-    PbPageElementAdvancedSettingsPlugin
+    PbEditorPageElementPlugin,
+    PbEditorPageElementAdvancedSettingsPlugin
 } from "@webiny/app-page-builder/admin/types";
 import { Tab } from "@webiny/ui/Tabs";
 import ImagesList from "./ImagesList";
@@ -26,7 +26,7 @@ export default () => {
     return [
         {
             name: "pb-page-element-images-list",
-            type: "pb-page-element",
+            type: "pb-editor-page-element",
             elementType: "images-list",
             toolbar: {
                 title: "Image Gallery",
@@ -39,7 +39,7 @@ export default () => {
                     );
                 }
             },
-            settings: ["pb-page-element-settings-delete"],
+            settings: ["pb-editor-page-element-settings-delete"],
             target: ["row", "column"],
             onCreate: "open-settings",
             create(options = {}) {
@@ -64,10 +64,10 @@ export default () => {
             render({ element }) {
                 return <ImagesList data={element.data} />;
             }
-        } as PbElementPlugin,
+        } as PbEditorPageElementPlugin,
         {
-            name: "pb-page-element-advanced-settings-images-list-filter",
-            type: "pb-page-element-advanced-settings",
+            name: "pb-editor-page-element-advanced-settings-images-list-filter",
+            type: "pb-editor-page-element-advanced-settings",
             elementType: "images-list",
             render(props) {
                 return (
@@ -76,10 +76,10 @@ export default () => {
                     </Tab>
                 );
             }
-        } as PbPageElementAdvancedSettingsPlugin,
+        } as PbEditorPageElementAdvancedSettingsPlugin,
         {
-            name: "pb-page-element-advanced-settings-images-list-design",
-            type: "pb-page-element-advanced-settings",
+            name: "pb-editor-page-element-advanced-settings-images-list-design",
+            type: "pb-editor-page-element-advanced-settings",
             elementType: "images-list",
             render(props) {
                 return (
@@ -88,6 +88,6 @@ export default () => {
                     </Tab>
                 );
             }
-        } as PbPageElementAdvancedSettingsPlugin
+        } as PbEditorPageElementAdvancedSettingsPlugin
     ];
 };

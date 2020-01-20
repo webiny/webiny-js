@@ -42,7 +42,7 @@ const plugins = [
         }
     } as PbPageDetailsRevisionContentPlugin,
     {
-        name: "pb-page-details-revision-render",
+        name: "pb-page-details-revision-preview",
         type: "pb-page-details-revision-content-preview",
         render({ pageDetails }) {
             return <PagePreview pageDetails={pageDetails} />;

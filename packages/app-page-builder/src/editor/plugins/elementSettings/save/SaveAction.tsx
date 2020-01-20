@@ -20,7 +20,7 @@ import get from "lodash.get";
 import pick from "lodash.pick";
 import { PbElement } from "@webiny/app-page-builder/types";
 import { FileUploaderPlugin } from "@webiny/app/types";
-import { PbElementPlugin } from "@webiny/app-page-builder/admin/types";
+import { PbEditorPageElementPlugin } from "@webiny/app-page-builder/admin/types";
 
 type Props = {
     isDialogOpened: boolean;
@@ -103,7 +103,7 @@ const SaveAction = (props: Props) => {
         return null;
     }
 
-    const plugin = getPlugins<PbElementPlugin>("pb-page-element").find(
+    const plugin = getPlugins<PbEditorPageElementPlugin>("pb-page-element").find(
         pl => pl.elementType === element.type
     );
 

@@ -3,7 +3,7 @@ import { renderToStaticMarkup } from "react-dom/server";
 import { getPlugins } from "@webiny/plugins";
 import domToImage from "./domToImage";
 import { PbElement } from "@webiny/app-page-builder/types";
-import { PbElementPlugin } from "@webiny/app-page-builder/admin/types";
+import { PbEditorPageElementPlugin } from "@webiny/app-page-builder/admin/types";
 
 export default class ElementPreview extends React.Component<any> {
     componentDidMount() {
@@ -15,7 +15,7 @@ export default class ElementPreview extends React.Component<any> {
     }
 
     replaceContent(element: PbElement, doc: Document) {
-        const pl = getPlugins<PbElementPlugin>("pb-page-element").find(
+        const pl = getPlugins<PbEditorPageElementPlugin>("pb-page-element").find(
             pl => pl.elementType === element.type
         );
 

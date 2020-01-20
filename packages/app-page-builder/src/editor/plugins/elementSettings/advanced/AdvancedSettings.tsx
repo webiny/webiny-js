@@ -20,7 +20,7 @@ import {
 import { Form } from "@webiny/form";
 import { Tabs } from "@webiny/ui/Tabs";
 import { updateElement, deactivatePlugin } from "@webiny/app-page-builder/editor/actions";
-import { PbPageElementAdvancedSettingsPlugin } from "@webiny/app-page-builder/admin/types";
+import { PbEditorPageElementAdvancedSettingsPlugin } from "@webiny/app-page-builder/admin/types";
 
 const emptyElement = { data: {}, type: null };
 
@@ -41,13 +41,13 @@ const AdvancedSettings = props => {
     const { addKeyHandler, removeKeyHandler } = useKeyHandler();
 
     const closeDialog = useCallback(() => {
-        deactivatePlugin({ name: "pb-page-element-settings-advanced" });
+        deactivatePlugin({ name: "pb-editor-page-element-settings-advanced" });
     }, []);
 
     const onSubmit = useHandler(props, ({ element, updateElement }) => (formData: FormData) => {
         // Get element settings plugins
-        const plugins = getPlugins<PbPageElementAdvancedSettingsPlugin>(
-            "pb-page-element-advanced-settings"
+        const plugins = getPlugins<PbEditorPageElementAdvancedSettingsPlugin>(
+            "pb-editor-page-element-advanced-settings"
         ).filter(pl => pl.elementType === element.type);
 
         formData = plugins.reduce((formData, pl) => {
@@ -75,8 +75,8 @@ const AdvancedSettings = props => {
                     <React.Fragment>
                         <DialogContent>
                             <Tabs>
-                                {renderPlugins<PbPageElementAdvancedSettingsPlugin>(
-                                    "pb-page-element-advanced-settings",
+                                {renderPlugins<PbEditorPageElementAdvancedSettingsPlugin>(
+                                    "pb-editor-page-element-advanced-settings",
                                     { Bind, data, form },
                                     { wrapper: false, filter: pl => pl.elementType === type }
                                 )}
@@ -95,7 +95,7 @@ const AdvancedSettings = props => {
 
 const withConnect = connect<any, any, any>(
     state => ({
-        open: isPluginActive("pb-page-element-settings-advanced")(state)
+        open: isPluginActive("pb-editor-page-element-settings-advanced")(state)
     }),
     { updateElement, deactivatePlugin }
 );

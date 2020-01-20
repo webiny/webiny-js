@@ -3,12 +3,12 @@ import Action from "../components/Action";
 import HorizontalAlignAction from "./HorizontalAlignAction";
 import HorizontalAlignFlexAction from "./HorizontalAlignFlex";
 import VerticalAlignAction from "./VerticalAlignAction";
-import { PbPageElementSettingsPlugin } from "@webiny/app-page-builder/admin/types";
+import { PbEditorPageElementSettingsPlugin } from "@webiny/app-page-builder/admin/types";
 
 export default [
     {
-        name: "pb-page-element-settings-horizontal-align",
-        type: "pb-page-element-settings",
+        name: "pb-editor-page-element-settings-horizontal-align",
+        type: "pb-editor-page-element-settings",
         renderAction({ options }) {
             return (
                 <HorizontalAlignAction options={options}>
@@ -16,10 +16,10 @@ export default [
                 </HorizontalAlignAction>
             );
         }
-    } as PbPageElementSettingsPlugin,
+    } as PbEditorPageElementSettingsPlugin,
     {
-        name: "pb-page-element-settings-horizontal-align-flex",
-        type: "pb-page-element-settings",
+        name: "pb-editor-page-element-settings-horizontal-align-flex",
+        type: "pb-editor-page-element-settings",
         renderAction() {
             return (
                 <HorizontalAlignFlexAction>
@@ -27,10 +27,10 @@ export default [
                 </HorizontalAlignFlexAction>
             );
         }
-    } as PbPageElementSettingsPlugin,
+    } as PbEditorPageElementSettingsPlugin,
     {
-        name: "pb-page-element-settings-vertical-align",
-        type: "pb-page-element-settings",
+        name: "pb-editor-page-element-settings-vertical-align",
+        type: "pb-editor-page-element-settings",
         renderAction() {
             return (
                 <VerticalAlignAction>
@@ -38,5 +38,5 @@ export default [
                 </VerticalAlignAction>
             );
         }
-    } as PbPageElementSettingsPlugin
+    } as PbEditorPageElementSettingsPlugin
 ];

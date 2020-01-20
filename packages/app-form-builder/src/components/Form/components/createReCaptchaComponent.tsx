@@ -2,8 +2,8 @@
 import * as React from "react";
 import ReCAPTCHA from "react-google-recaptcha";
 import { reCaptchaEnabled } from "./../functions";
-import type { FormDataType } from "@webiny/app-form-builder/types";
-import type { I18NStringValue } from "@webiny/app-i18n/types";
+import { FormDataType } from "@webiny/app-form-builder/types";
+import { I18NStringValue } from "@webiny/app-i18n/types";
 
 type Args = {
     formData: FormDataType,

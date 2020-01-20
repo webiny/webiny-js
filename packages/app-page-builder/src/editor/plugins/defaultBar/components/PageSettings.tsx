@@ -21,14 +21,13 @@ import {
 } from "@webiny/app-admin/components/SimpleForm";
 import { Title, listItem, ListItemTitle, listStyle, TitleContent } from "./PageSettingsStyled";
 import {
-    PbEditorPageSettingsPlugin,
-    PbPageSettingsPlugin
+    PbEditorPageSettingsPlugin
 } from "@webiny/app-page-builder/admin/types";
 
 const PageSettings = props => {
-    const plugins = getPlugins("pb-editor-page-settings") as PbEditorPageSettingsPlugin[];
+    const plugins = getPlugins<PbEditorPageSettingsPlugin>("pb-editor-page-settings");
     const [active, setActive] = useState("pb-editor-page-settings-general");
-    const activePlugin: PbPageSettingsPlugin = plugins.find(pl => pl.name === active);
+    const activePlugin = plugins.find(pl => pl.name === active);
     if (!activePlugin) {
         return null;
     }

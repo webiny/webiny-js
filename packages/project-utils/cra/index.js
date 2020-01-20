@@ -21,15 +21,14 @@ const webinyConfig = {
         // Enable .babelrc in the app
         require("./babel")(newConfig.module.rules);
 
-        // Add proper includePaths
+        // Add proper includePaths to sass-loader
         require("./sass")(newConfig);
 
-        set(newConfig, "resolve.alias.react-dom", "@hot-loader/react-dom");
+        // Setup aliases
+        aliases["react-dom"] = "@hot-loader/react-dom";
+        Object.assign(newConfig.resolve.alias, aliases);
 
-        Object.keys(aliases).forEach(key => {
-            set(newConfig, `resolve.alias.${key}`, aliases[key]);
-        });
-
+        // Remove ModuleScope plugin to allow importing other packages from monorepo
         return removeModuleScopePlugin(newConfig);
     },
     jest: config => {
