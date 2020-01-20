@@ -2,7 +2,7 @@ import { withHooks } from "@webiny/commodo";
 import SsrApiClient from "@webiny/http-handler-ssr/Client";
 import { GraphQLContextPlugin } from "@webiny/api/types";
 
-export default () => [
+export default (): GraphQLContextPlugin[] => [
     {
         type: "graphql-context",
         name: "graphql-context-ssr-cache-client",
@@ -18,7 +18,7 @@ export default () => [
             // TODO: @pavel figure out how to add property to type declaration
             context.ssrApiClient = new SsrApiClient({ url: settings.data.domain });
         }
-    } as GraphQLContextPlugin,
+    },
     {
         // After settings were changed, invalidate all pages that contain pb-settings tag.
         type: "graphql-context",
@@ -37,5 +37,5 @@ export default () => [
                 }
             })(Form);
         }
-    } as GraphQLContextPlugin
+    }
 ];

@@ -13,11 +13,11 @@ import form from "./graphql/form";
 import formSubmission from "./graphql/formSubmission";
 import formsSettings from "./graphql/formsSettings";
 import { install, isInstalled } from "./graphql/install";
+import { GraphQLSchemaPlugin } from "@webiny/api/types";
 
-export default {
+const plugin: GraphQLSchemaPlugin = {
     type: "graphql-schema",
     name: "graphql-schema-forms",
-    namespace: "forms",
     schema: {
         typeDefs: gql`
             ${I18NStringValueType()}
@@ -116,3 +116,5 @@ export default {
         }
     }
 };
+
+export default plugin;

@@ -1,4 +1,5 @@
 import { validation } from "@webiny/validation";
+import { FbFormFieldValidatorPlugin } from "@webiny/api-form-builder/types";
 
 export default {
     type: "form-field-validator",
@@ -12,4 +13,4 @@ export default {
             }
         }
     }
-};
+} as FbFormFieldValidatorPlugin;

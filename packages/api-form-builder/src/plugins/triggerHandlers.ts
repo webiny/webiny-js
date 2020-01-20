@@ -1,7 +1,7 @@
-import { FormTriggerHandlerPluginType } from "../types";
+import { FbFormTriggerHandlerPlugin } from "../types";
 import got from "got";
 
-const plugin: FormTriggerHandlerPluginType = {
+const plugin: FbFormTriggerHandlerPlugin = {
     type: "form-trigger-handler",
     name: "form-trigger-handler-webhook",
     trigger: "webhook",
