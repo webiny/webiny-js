@@ -1,5 +1,5 @@
 // @flow
-import type { FormRenderComponentPropsType, FormSubmitResponseType } from "@webiny/app-form-builder/types";
+import { FormRenderComponentPropsType, FormSubmitResponseType } from "@webiny/app-form-builder/types";
 import { CREATE_FORM_SUBMISSION } from "./graphql";
 import getClientIp from "./getClientIp";
 import { get } from "lodash";

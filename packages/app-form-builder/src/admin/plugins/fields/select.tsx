@@ -4,7 +4,7 @@ import { Grid, Cell } from "@webiny/ui/Grid";
 import { ReactComponent as Icon } from "./icons/dropdown-icon.svg";
 import OptionsList from "./components/OptionsList";
 import { I18NInput } from "@webiny/app-i18n/admin/components";
-import type { FormEditorFieldPluginType } from "@webiny/app-form-builder/types";
+import { FormEditorFieldPluginType } from "@webiny/app-form-builder/types";
 
 export default ({
     type: "form-editor-field-type",

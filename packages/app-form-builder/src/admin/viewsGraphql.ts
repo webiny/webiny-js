@@ -21,35 +21,6 @@ const BASE_FORM_FIELDS = `
     }
 `;
 
-export const FIELDS_FIELDS = `
-        _id
-        fieldId
-        type
-        label {
-            value
-        }
-        placeholderText {
-            value
-        }
-        helpText {
-            value
-        }
-        options {
-            label {
-                value
-            }
-            value
-        }
-        validation {
-            name
-            settings
-            message {
-                value
-            }
-        }
-        settings
-`;
-
 export const LIST_FORMS = gql`
     query FormsListForms($sort: JSON, $page: Int, $perPage: Int, $search: String) {
         forms {

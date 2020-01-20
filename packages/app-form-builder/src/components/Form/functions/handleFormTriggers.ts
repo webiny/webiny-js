@@ -1,5 +1,5 @@
 // @flow
-import type { FormRenderComponentPropsType } from "@webiny/app-form-builder/types";
+import  { FormRenderComponentPropsType } from "@webiny/app-form-builder/types";
 import { getPlugins } from "@webiny/plugins";
 import { get } from "lodash";
 

@@ -1,5 +1,5 @@
 // @flow
-import type { FormEditorFieldPluginType } from "@webiny/app-form-builder/types";
+import { FormEditorFieldPluginType } from "@webiny/app-form-builder/types";
 import hidden from "./hidden";
 import select from "./select";
 import text from "./text";

@@ -1,3 +1,5 @@
+import { FbFormFieldValidatorPlugin } from "@webiny/app-form-builder/types";
+
 export default {
     type: "form-editor-field-validator",
     name: "form-editor-field-validator-required",
@@ -7,4 +9,4 @@ export default {
         description: "You won't be able to submit the form if this field is empty",
         defaultMessage: "Value is required."
     }
-};
+} as FbFormFieldValidatorPlugin;

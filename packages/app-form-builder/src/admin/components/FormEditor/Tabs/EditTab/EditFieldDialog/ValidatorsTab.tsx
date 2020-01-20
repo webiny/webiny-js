@@ -1,4 +1,4 @@
-import React, { useMemo, useRef } from "react";
+import React, { useMemo } from "react";
 import { getPlugins } from "@webiny/plugins";
 import { Switch } from "@webiny/ui/Switch";
 import {
@@ -13,6 +13,7 @@ import { Grid, Cell } from "@webiny/ui/Grid";
 import { I18NInput } from "@webiny/app-i18n/admin/components";
 import { useI18N } from "@webiny/app-i18n/hooks/useI18N";
 import { validation } from "@webiny/validation";
+import {FbFormFieldValidatorPlugin} from "@webiny/app-form-builder/types";
 
 const onEnabledChange = ({ i18n, data, validationValue, onChangeValidation, validator }) => {
     if (data) {
@@ -60,7 +61,7 @@ const ValidatorsTab = props => {
     const fieldType = getFieldPlugin({ name: field.name });
 
     const validators = useMemo(() => {
-        return getPlugins("form-editor-field-validator")
+        return getPlugins<FbFormFieldValidatorPlugin>("form-editor-field-validator")
             .map(plugin => plugin.validator)
             .map(validator => {
                 if (fieldType.field.validators.includes(validator.name)) {

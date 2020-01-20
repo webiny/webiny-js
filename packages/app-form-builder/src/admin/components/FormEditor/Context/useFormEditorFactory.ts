@@ -5,7 +5,7 @@ import { GET_FORM, UPDATE_REVISION } from "./graphql";
 import { getFieldPosition, moveField, moveRow, deleteField } from "./functions";
 import { getPlugins } from "@webiny/plugins";
 
-import type {
+import {
     FieldsLayoutType,
     FieldType,
     FieldIdType,

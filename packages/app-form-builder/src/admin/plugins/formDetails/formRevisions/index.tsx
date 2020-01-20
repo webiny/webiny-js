@@ -1,6 +1,6 @@
 // @flow
 import * as React from "react";
-import type { FormDetailsPluginType } from "@webiny/app-form-builder/types";
+import { FormDetailsPluginType } from "@webiny/app-form-builder/types";
 import { Tab } from "@webiny/ui/Tabs";
 import RevisionsList from "./RevisionsList";
 

@@ -3,7 +3,7 @@ import React from "react";
 import { Input } from "@webiny/ui/Input";
 import { Grid, Cell } from "@webiny/ui/Grid";
 import { ReactComponent as HiddenIcon } from "./icons/round-visibility_off-24px.svg";
-import type { FormEditorFieldPluginType } from "@webiny/app-form-builder/types";
+import { FormEditorFieldPluginType } from "@webiny/app-form-builder/types";
 
 export default ({
     type: "form-editor-field-type",

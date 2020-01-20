@@ -4,6 +4,7 @@ import { Input } from "@webiny/ui/Input";
 import { Select } from "@webiny/ui/Select";
 import { getPlugins } from "@webiny/plugins";
 import { validation } from "@webiny/validation";
+import { FbFormFieldValidatorPlugin } from "@webiny/app-form-builder/types";
 
 export default {
     type: "form-editor-field-validator",
@@ -74,4 +75,4 @@ export default {
             );
         }
     }
-};
+} as FbFormFieldValidatorPlugin;

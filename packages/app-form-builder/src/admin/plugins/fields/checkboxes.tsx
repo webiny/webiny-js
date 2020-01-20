@@ -3,7 +3,7 @@ import React from "react";
 import { Grid, Cell } from "@webiny/ui/Grid";
 import { ReactComponent as Icon } from "./icons/round-check_box-24px.svg";
 import OptionsList from "./components/OptionsList";
-import type { FormEditorFieldPluginType } from "@webiny/app-form-builder/types";
+import { FormEditorFieldPluginType } from "@webiny/app-form-builder/types";
 
 export default ({
     type: "form-editor-field-type",

@@ -3,7 +3,7 @@ import React from "react";
 import { ReactComponent as NumberIcon } from "./icons/round-looks_3-24px.svg";
 import { Grid, Cell } from "@webiny/ui/Grid";
 import { I18NInput } from "@webiny/app-i18n/admin/components";
-import type { FormEditorFieldPluginType } from "@webiny/app-form-builder/types";
+import { FormEditorFieldPluginType } from "@webiny/app-form-builder/types";
 
 export default ({
     type: "form-editor-field-type",

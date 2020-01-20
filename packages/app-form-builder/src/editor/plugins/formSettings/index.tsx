@@ -1,6 +1,6 @@
 // @flow
 import * as React from "react";
-import type { FormSettingsPluginType } from "@webiny/app-form-builder/types";
+import { FormSettingsPluginType } from "@webiny/app-form-builder/types";
 import GeneralSettings from "./components/GeneralSettings";
 import TermsOfServiceSettings from "./components/TermsOfServiceSettings";
 import ReCaptchaSettings from "./components/ReCaptchaSettings";

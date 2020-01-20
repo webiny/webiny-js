@@ -9,7 +9,7 @@ import { useApolloClient } from "react-apollo";
 import { createReCaptchaComponent, createTermsOfServiceComponent } from "./components";
 import { createFormSubmission, handleFormTriggers, onFormMounted, reCaptchaEnabled, termsOfServiceEnabled } from "./functions";
 
-import type {
+import  {
     FormRenderPropsType,
     FormRenderComponentPropsType,
     FormSubmitResponseType,

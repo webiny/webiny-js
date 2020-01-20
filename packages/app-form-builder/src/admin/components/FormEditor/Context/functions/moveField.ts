@@ -1,5 +1,5 @@
 // @flow
-import type { FieldType, FieldIdType, FieldLayoutPositionType } from "@webiny/app-form-builder/types";
+import { FieldType, FieldIdType, FieldLayoutPositionType } from "@webiny/app-form-builder/types";
 import getFieldPosition from "./getFieldPosition";
 
 /**

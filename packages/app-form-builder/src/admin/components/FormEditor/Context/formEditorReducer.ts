@@ -1,5 +1,5 @@
 // @flow
-import type { UseFormEditorReducerStateType } from "@webiny/app-form-builder/types";
+import { UseFormEditorReducerStateType } from "@webiny/app-form-builder/types";
 
 export function init(props: UseFormEditorReducerStateType) {
     return {

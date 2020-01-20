@@ -5,7 +5,7 @@ import { get } from "lodash";
 import { GET_PUBLISHED_FORM } from "./graphql";
 import { Query } from "react-apollo";
 import FormRender from "./FormRender";
-import type { FormLoadComponentPropsType } from "@webiny/app-form-builder/types";
+import  { FormLoadComponentPropsType } from "@webiny/app-form-builder/types";
 
 const FormLoad = (props: FormLoadComponentPropsType) => {
     const variables = {};

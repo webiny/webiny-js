@@ -1,5 +1,5 @@
 // @flow
-import type { FieldType, FieldIdType } from "@webiny/app-form-builder/types";
+import  { FieldType, FieldIdType } from "@webiny/app-form-builder/types";
 
 export default ({ field, data }: { field: FieldIdType | FieldType, data: Object }) => {
     // Remove the field from fields list...
