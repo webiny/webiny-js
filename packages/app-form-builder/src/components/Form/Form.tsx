@@ -1,11 +1,9 @@
-// @flow
-// $FlowFixMe
 import React from "react";
 import FormLoad from "./FormLoad";
 import FormRender from "./FormRender";
-import type { FormComponentPropsType } from "@webiny/app-form-builder/types";
+import { FormComponentPropsType } from "@webiny/app-form-builder/types";
 
-const Form = (props: FormComponentPropsType) => {
+const Form: React.FC<FormComponentPropsType> = props => {
     if (props.data) {
         return <FormRender {...props} />;
     }
