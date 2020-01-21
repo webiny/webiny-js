@@ -1,11 +1,11 @@
 const path = require("path");
 
-module.exports = {
-    entry: path.join(__dirname, "handler.js"),
+module.exports = ({ debug, root }) => ({
+    entry: path.join(root, "handler.js"),
     target: "node",
     output: {
         libraryTarget: "commonjs",
-        path: path.join(__dirname, "build"),
+        path: path.join(root, "build"),
         filename: "handler.js"
     },
     // Generate sourcemaps for proper error messages
@@ -28,7 +28,7 @@ module.exports = {
                 test: /\.(js|ts)$/,
                 loader: "babel-loader",
                 exclude: /node_modules/,
-                include: [__dirname],
+                include: [root],
                 options: {
                     presets: [
                         [
@@ -39,7 +39,6 @@ module.exports = {
                                 }
                             }
                         ],
-                        "@babel/preset-flow",
                         "@babel/preset-typescript"
                     ],
                     plugins: ["@babel/plugin-proposal-class-properties"]
@@ -48,6 +47,6 @@ module.exports = {
         ]
     },
     resolve: {
-        modules: [path.resolve(__dirname, "node_modules"), "node_modules"]
+        modules: [path.resolve(root, "node_modules"), "node_modules"]
     }
-};
+});

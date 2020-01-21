@@ -1,7 +1,7 @@
 const path = require("path");
 const aliases = require("@webiny/project-utils/aliases/webpack");
 
-module.exports = ({ root }) => {
+module.exports = ({ root, debug }) => {
     return {
         entry: path.join(root, "handler.js"),
         target: "node",
@@ -11,7 +11,7 @@ module.exports = ({ root }) => {
             filename: "handler.js"
         },
         // Generate sourcemaps for proper error messages
-        devtool: "source-map",
+        devtool: debug ? "source-map" : false,
         externals: ["aws-sdk"],
         mode: "production",
         optimization: {

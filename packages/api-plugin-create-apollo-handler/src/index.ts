@@ -38,7 +38,7 @@ export default (options: ApolloHandlerPluginOptions = {}): CreateApolloHandlerPl
             const apollo = new ApolloServer({
                 introspection: toBool(server.introspection),
                 playground: toBool(server.playground),
-                debug: true,
+                debug: toBool(process.env.DEBUG),
                 ...server,
                 schema,
                 context: async ({ event }) => ({

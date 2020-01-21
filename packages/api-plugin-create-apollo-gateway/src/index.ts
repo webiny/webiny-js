@@ -59,14 +59,12 @@ class WebinyDataSource extends RemoteGraphQLDataSource {
     }: Pick<GraphQLRequestContext<TContext>, "request" | "context">): Promise<GraphQLResponse> {
         try {
             return await super.process({ request, context }).then(res => {
-                console.log("PROCESS THEN", JSON.stringify(res, null, 2));
                 if (res.errors) {
                     res.errors.map(error => this.onServiceError(error));
                 }
                 return res;
             });
         } catch (error) {
-            console.log("PROCESS CATCH", JSON.stringify(error, null, 2));
             this.onServiceError(error);
             return Promise.reject(error);
         }
@@ -89,7 +87,7 @@ export default (params: ApolloGatewayPluginParams): CreateApolloGatewayPlugin =>
         const { server = {}, services, handler = {} } = params;
         const dataSourceErrors = [];
         const gateway = new ApolloGateway({
-            debug: true,
+            debug: toBool(process.env.DEBUG),
             serviceList: services,
             buildService({ name, url }) {
                 return new WebinyDataSource({
@@ -148,7 +146,6 @@ export default (params: ApolloGatewayPluginParams): CreateApolloGatewayPlugin =>
                 }
             });
         } catch (e) {
-            console.log("CREATE GW ERROR", JSON.stringify(e, null, 2));
             if (dataSourceErrors.length > 0) {
                 console.log("dataSourceErrors", JSON.stringify({ dataSourceErrors }, null, 2));
                 throw new ApolloGatewayError(dataSourceErrors);

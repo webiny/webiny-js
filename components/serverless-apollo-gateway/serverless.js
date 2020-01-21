@@ -54,12 +54,12 @@ class ApolloGateway extends Component {
             memory = 128,
             timeout = 10,
             description,
-            errorReporting = "true",
+            debug = true,
             webpackConfig = null
         } = inputs;
 
         const plugins = normalizePlugins(inputs.plugins || []);
-        env["ERROR_REPORTING"] = errorReporting;
+        env["DEBUG"] = "" + debug;
 
         if (inputs.services) {
             // Add backwards compatibility
@@ -97,7 +97,10 @@ class ApolloGateway extends Component {
 
         const source = fs.readFileSync(__dirname + "/boilerplate/handler.js", "utf8");
         const { code } = await transform(source, {
-            plugins: [[__dirname + "/transform/plugins", { plugins: injectPlugins }]]
+            plugins: [
+                Boolean(debug) ? [__dirname + "/transform/sourcemaps"] : null,
+                [__dirname + "/transform/plugins", { plugins: injectPlugins }]
+            ].filter(Boolean)
         });
 
         fs.writeFileSync(
@@ -129,7 +132,15 @@ class ApolloGateway extends Component {
         this.context.instance.debug("Start bundling with webpack");
         await new Promise((res, reject) => {
             this.context.status("Building");
-            let config = require(componentRoot + "/webpack.config.js");
+
+            // Create default webpack config
+            let config = require(componentRoot + "/webpack.config.js")({
+                instance: this,
+                root: componentRoot,
+                debug: Boolean(debug)
+            });
+
+            // Try loading webpack customizer
             if (webpackConfig) {
                 try {
                     // Resolve customizer path relative to serverless.yml file
@@ -145,7 +156,12 @@ class ApolloGateway extends Component {
                             customizerPath
                         );
                         const customizer = require(customizerPath);
-                        config = customizer({ config, instance: this, root: componentRoot });
+                        config = customizer({
+                            config,
+                            instance: this,
+                            root: componentRoot,
+                            debug: Boolean(debug)
+                        });
                     }
                 } catch (err) {
                     this.context.instance.debug(

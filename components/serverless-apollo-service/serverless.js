@@ -85,14 +85,13 @@ class ApolloService extends Component {
             env = {},
             memory = 512,
             timeout = 10,
-            description,
-            errorReporting = "true",
+            debug = true,
             endpointTypes = ["REGIONAL"],
             binaryMediaTypes = [],
             webpackConfig = null
         } = inputs;
 
-        env["ERROR_REPORTING"] = errorReporting;
+        env["DEBUG"] = "" + debug;
 
         let plugins = normalizePlugins(inputs.plugins || []);
 
@@ -124,7 +123,10 @@ class ApolloService extends Component {
         this.context.instance.debug("Generating boilerplate code at %o", componentRoot);
         const source = fs.readFileSync(__dirname + "/boilerplate/handler.js", "utf8");
         const { code } = await transform(source, {
-            plugins: [[__dirname + "/transform/plugins", { plugins: injectPlugins }]]
+            plugins: [
+                Boolean(debug) ? [__dirname + "/transform/sourcemaps"] : null,
+                [__dirname + "/transform/plugins", { plugins: injectPlugins }]
+            ].filter(Boolean)
         });
 
         fs.writeFileSync(
@@ -152,7 +154,15 @@ class ApolloService extends Component {
         this.context.instance.debug("Start bundling with webpack");
         await new Promise((res, reject) => {
             this.context.status("Building");
-            let config = require(componentRoot + "/webpack.config.js");
+
+            // Create default webpack config
+            let config = require(componentRoot + "/webpack.config.js")({
+                instance: this,
+                root: componentRoot,
+                debug: Boolean(debug)
+            });
+
+            // Try loading webpack customizer
             if (webpackConfig) {
                 try {
                     // Resolve customizer path relative to serverless.yml file
@@ -168,7 +178,12 @@ class ApolloService extends Component {
                             customizerPath
                         );
                         const customizer = require(customizerPath);
-                        config = customizer({ config, instance: this, root: componentRoot });
+                        config = customizer({
+                            config,
+                            instance: this,
+                            root: componentRoot,
+                            debug: Boolean(debug)
+                        });
                     }
                 } catch (err) {
                     this.context.instance.debug(
