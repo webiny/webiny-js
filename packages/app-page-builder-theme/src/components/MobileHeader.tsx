@@ -1,5 +1,5 @@
 import React from "react";
-import { Link } from " @webiny/react-router";
+import { Link } from "@webiny/react-router";
 import HamburgerMenu from "react-hamburger-menu";
 import classNames from "classnames";
 import { Menu } from "@webiny/app-page-builder/render/components";
