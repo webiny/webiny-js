@@ -12,6 +12,7 @@
     "@webiny/app-page-builder": "^2",
     "@webiny/app-page-builder-theme": "^1.0.0",
     "@webiny/app-typeform": "^2",
+    "@webiny/react-router": "^1",
     "@webiny/plugins": "^2",
     "apollo-link-batch-http": "^1.2.3",
     "apollo-link-http": "^1.5.9",
@@ -23,7 +24,6 @@
     "react-app-env": "^1.2.3",
     "react-helmet": "^5.2.0",
     "react-hot-loader": "^4.3.5",
-    "react-router-dom": "^5.0.0",
     "regenerator-runtime": "^0.13.3"
   },
   "devDependencies": {
