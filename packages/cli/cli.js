@@ -58,6 +58,9 @@ yargs.command(
         yargs.option("alias", {
             describe: "Alias to deploy."
         });
+        yargs.option("force", {
+            describe: "Deploy even if component inputs were not changed."
+        });
         yargs.option("debug", {
             describe: "Show debug messages.",
             default: false,

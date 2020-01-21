@@ -40,10 +40,10 @@ const normalizePlugins = plugins => {
 };
 
 class ApolloGateway extends Component {
-    async default(inputs = {}) {
-        if (isEqual(this.state.inputs, inputs)) {
-            // this.context.instance.debug("Inputs were not changed, no action required.");
-            // return this.state.output;
+    async default({ force = false, ...inputs } = {}) {
+        if (isEqual(this.state.inputs, inputs) && !force) {
+            this.context.instance.debug("Inputs were not changed, no action required.");
+            return this.state.output;
         } else {
             this.state.inputs = inputs;
         }

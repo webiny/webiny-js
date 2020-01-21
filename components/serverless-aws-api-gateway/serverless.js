@@ -28,9 +28,9 @@ const defaults = {
 };
 
 class AwsApiGateway extends Component {
-    async default(inputs = {}) {
+    async default({ force = false, ...inputs } = {}) {
         try {
-            if (isEqual(this.state.inputs, inputs)) {
+            if (isEqual(this.state.inputs, inputs) && !force) {
                 this.context.instance.debug("Input was not changed, no action required.");
                 return this.state;
             } else {

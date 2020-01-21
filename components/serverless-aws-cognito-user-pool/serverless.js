@@ -12,8 +12,8 @@ const defaultPasswordPolicy = {
 };
 
 class ServerlessAwsCognito extends Component {
-    async default(inputs = {}) {
-        if (isEqual(this.state.inputs, inputs)) {
+    async default({ force = false, ...inputs } = {}) {
+        if (isEqual(this.state.inputs, inputs) && !force) {
             this.context.instance.debug("Input was not changed, no action required.");
             return this.state.output;
         }
