@@ -2,7 +2,7 @@ import React from "react";
 import useFormEditorFactory from "./useFormEditorFactory";
 import { init, formEditorReducer } from "./formEditorReducer";
 
-const FormEditorContext = React.createContext();
+const FormEditorContext = React.createContext({});
 
 export function FormEditorProvider(props) {
     const [state, dispatch] = React.useReducer(formEditorReducer, props, init);

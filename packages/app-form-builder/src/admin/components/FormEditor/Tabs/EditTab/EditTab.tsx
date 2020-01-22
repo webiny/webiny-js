@@ -29,7 +29,7 @@ export const EditTab = () => {
 
     const editField = useCallback(field => {
         setEditingField(cloneDeep(field));
-    });
+    }, undefined);
 
     const i18n = useI18N();
 
@@ -57,9 +57,9 @@ export const EditTab = () => {
         // Find field plugin which handles the dropped field type "name".
         const plugin = getFieldPlugin({ name });
         insertField(plugin.field.createField({ i18n }), dropTarget);
-    });
+    }, undefined);
 
-    const fields = getFields(true);
+    const fields: Array<any> = getFields(true);
 
     return (
         <EditContainer>

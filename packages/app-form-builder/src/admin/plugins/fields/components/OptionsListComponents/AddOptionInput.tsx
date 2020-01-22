@@ -1,12 +1,20 @@
-// @flow
-// $FlowFixMe
 import React from "react";
 import { Input } from "@webiny/ui/Input";
 import { trim } from "lodash";
-import { Form } from "@webiny/form";
+import { BindComponentRenderPropValidation, Form } from "@webiny/form";
 import { Hotkeys } from "react-hotkeyz";
 
-export default function AddOptionInput({ options, onAdd, validation: optionsValidation }: *) {
+type AddOptionInputProps = {
+    onAdd: (value: string) => void;
+    options: any;
+    validation: BindComponentRenderPropValidation;
+};
+
+export default function AddOptionInput({
+    options,
+    onAdd,
+    validation: optionsValidation
+}: AddOptionInputProps) {
     return (
         <Form>
             {({ Bind }) => (

@@ -1,15 +1,15 @@
-// @flow
-// $FlowFixMe
 import React, { useState } from "react";
 import { useI18N } from "@webiny/app-i18n/hooks/useI18N";
 import { css } from "emotion";
 import styled from "@emotion/styled";
 import { camelCase, cloneDeep } from "lodash";
 import { OptionsListItem, AddOptionInput, EditFieldOptionDialog } from "./OptionsListComponents";
+// @ts-ignore
 import { sortableContainer, sortableElement, sortableHandle } from "react-sortable-hoc";
 import { Icon } from "@webiny/ui/Icon";
 import { ReactComponent as HandleIcon } from "@webiny/app-form-builder/admin/icons/round-drag_indicator-24px.svg";
 import { validation } from "@webiny/validation";
+import { FormChildrenFunctionParams } from "@webiny/form/Form";
 
 const OptionList = styled("ul")({
     padding: 25,
@@ -25,8 +25,8 @@ const OptionListItem = styled("li")({
     "&:hover": {
         background: "var(--mdc-theme-background)"
     },
-    '&:last-child':{
-        border: 'none'
+    "&:last-child": {
+        border: "none"
     }
 });
 
@@ -78,7 +78,12 @@ const SortableItem = sortableElement(
     )
 );
 
-const OptionsList = ({ form, multiple }: Object) => {
+type OptionsListProps = {
+    form: FormChildrenFunctionParams;
+    multiple?: boolean;
+};
+
+const OptionsList = ({ form, multiple }: OptionsListProps) => {
     const { Bind } = form;
 
     const { getDefaultLocale } = useI18N();

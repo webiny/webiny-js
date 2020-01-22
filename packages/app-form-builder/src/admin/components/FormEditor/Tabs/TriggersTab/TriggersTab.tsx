@@ -8,6 +8,7 @@ import { getPlugins } from "@webiny/plugins";
 import { get, set } from "lodash";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { i18n } from "@webiny/app/i18n";
+import {FbEditorTrigger} from "@webiny/app-form-builder/types";
 const t = i18n.namespace("FormsApp.Editor.TriggersTab");
 
 const Container = styled("div")({
@@ -17,7 +18,7 @@ const Container = styled("div")({
 
 export const TriggersTab = () => {
     const { setData, data: formData } = useFormEditor();
-    const plugins = getPlugins("form-editor-trigger");
+    const plugins = getPlugins<FbEditorTrigger>("form-editor-trigger");
     const { showSnackbar } = useSnackbar();
 
     return (

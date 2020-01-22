@@ -1,4 +1,3 @@
-// @flow
 import { UseFormEditorReducerStateType } from "@webiny/app-form-builder/types";
 
 export function init(props: UseFormEditorReducerStateType) {
@@ -7,7 +6,7 @@ export function init(props: UseFormEditorReducerStateType) {
     };
 }
 
-export function formEditorReducer(state: Object, action: Object) {
+export function formEditorReducer(state: any, action: { data: any; type: string }) {
     const next = { ...state };
     switch (action.type) {
         case "data": {

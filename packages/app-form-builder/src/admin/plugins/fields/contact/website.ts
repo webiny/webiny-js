@@ -13,7 +13,7 @@ export default {
         createField(props) {
             const { i18n } = props;
             return {
-                ...textFieldPlugin.field.createField(),
+                ...textFieldPlugin.field.createField(props),
                 name: this.name,
                 fieldId: "website",
                 label: {

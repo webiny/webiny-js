@@ -1,5 +1,4 @@
-// @flow
-import { FieldType, FieldIdType, FieldLayoutPositionType } from "@webiny/app-form-builder/types";
+import { FbFormModelField, FieldIdType, FieldLayoutPositionType } from "@webiny/app-form-builder/types";
 import getFieldPosition from "./getFieldPosition";
 
 /**
@@ -36,9 +35,9 @@ const moveField = ({ field, position, data }) => {
 };
 
 export default (params: {
-    field: FieldIdType | FieldType,
-    position: FieldLayoutPositionType,
-    data: Object
+    field: FieldIdType | FbFormModelField;
+    position: FieldLayoutPositionType;
+    data: object;
 }) => {
     moveField(params);
     cleanupEmptyRows(params.data);

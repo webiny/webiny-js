@@ -1,4 +1,3 @@
-// @flow
 import React from "react";
 import { List } from "@webiny/ui/List";
 import Revision from "./Revision";
@@ -20,7 +19,7 @@ const listWrapper = css({
     }
 });
 
-const RevisionsList = ({ form, loading }: *) => {
+const RevisionsList = ({ form, loading }) => {
     return (
         form && (
             <Elevation className={listWrapper} z={2}>

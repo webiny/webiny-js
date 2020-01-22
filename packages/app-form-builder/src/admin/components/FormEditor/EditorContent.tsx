@@ -55,7 +55,14 @@ export default function EditorContent() {
                         <Typography use={"headline6"}>Form Elements</Typography>
                     </LeftBarTitle>
                     <LeftBarFieldList>
-                        <Fields onFieldDragStart={() => tabsRef.current.switchTab(0)} />
+                        <Fields
+                            onFieldDragStart={() => {
+                                if (tabsRef.current) {
+                                    // @ts-ignore
+                                    tabsRef.current.switchTab(0);
+                                }
+                            }}
+                        />
                     </LeftBarFieldList>
                 </LeftPanel>
                 <RightPanel span={8}>

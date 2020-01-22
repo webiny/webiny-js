@@ -1,22 +1,24 @@
-// @flow
 import * as React from "react";
 import { Plugin } from "@webiny/plugins/types";
 import { ReCaptchaComponentType } from "@webiny/app-form-builder/components/Form/components/createReCaptchaComponent";
 import { TermsOfServiceComponentType } from "@webiny/app-form-builder/components/Form/components/createTermsOfServiceComponent";
 import { I18NStringValue } from "@webiny/app-i18n/types";
-import { BindComponent } from "@webiny/form";
+import {
+    BindComponent,
+    FormChildrenFunctionParams,
+    Form,
+    FormChildrenFunctionParamsSubmit
+} from "@webiny/form";
 import { ApolloClient } from "apollo-client";
 
-type FbFormTriggerData = { [key: string]: any };
-type FbFormSubmissionData = { [key: string]: any };
-
-type FbFormFieldValidator = {
+export type FbBuilderFieldValidator = {
     name: string;
-    message: any;
+    message: I18NStringValue;
     settings: any;
 };
 
-export type FbFormFieldValidatorPlugin = Plugin & {
+export type FbBuilderFormFieldValidatorPlugin = Plugin & {
+    type: "form-editor-field-validator";
     validator: {
         name: string;
         label: string;
@@ -24,122 +26,204 @@ export type FbFormFieldValidatorPlugin = Plugin & {
         defaultMessage: string;
         renderSettings?: (props: {
             Bind: BindComponent;
-            setValue: string;
-            setMessage: string;
-            data: string;
+            setValue: (name: string, value: any) => void;
+            setMessage: (message: string) => void;
+            data: FbBuilderFieldValidator;
         }) => React.ReactElement;
     };
 };
 
-/*
-export default {
-    type: "form-editor-field-validator",
-    name: "form-editor-field-validator-gte",
-    validator: {
-        name: "gte",
-        label: "Greater or equal",
-        description: "Entered value must be equal or greater than the provided max value.",
-        defaultMessage: "Value is too small.",
-        renderSettings({ Bind }) {
-            return (
-                <Grid>
-                    <Cell span={12}>
-                <Bind
-                    name={"settings.value"}
-            validators={validation.create("required,numeric")}
-            >
-            <Input
-                type={"number"}
-            label={"Value"}
-            description={"This is the greatest value that will be allowed"}
-            />
-            </Bind>
-            </Cell>
-            </Grid>
-        );
-        }
-    }
-};
-*/
-
 export type FbFormFieldPatternValidatorPlugin = Plugin & {
+    type: "form-editor-field-validator-pattern";
     pattern: {
         name: string;
-        regex: string;
-        flags: string;
+        message: string;
+        label: string;
     };
 };
 
-// ---------------------------
+export type FbFormFieldValidator = {
+    name: string;
+    message: any;
+    settings: any;
+};
+
+export type FbFormFieldValidatorPlugin = Plugin & {
+    type: "form-field-validator";
+    validator: {
+        name: string;
+        validate: (value: any, validator: FbFormFieldValidator) => Promise<any>;
+    };
+};
 
 export type FieldIdType = string;
-export type FieldsLayoutType = [[FieldIdType]];
+export type FbFormModelFieldsLayout = FieldIdType[][];
 
 export type FieldLayoutPositionType = {
     row: number;
     index: number;
 };
 
-export type FieldValidatorType = {
-    name: string;
-    message: I18NStringValue;
-    settings: Object;
+export type FbBuilderFieldPlugin = Plugin & {
+    type: "form-editor-field-type";
+    field: {
+        group?: string;
+        unique?: boolean;
+        type: string;
+        name: string;
+        label: string;
+        validators?: string[];
+        description: string;
+        icon: React.ReactNode;
+        createField: ({ i18n: any }) => FbFormModelField;
+        renderSettings?: (params: {
+            form: FormChildrenFunctionParams;
+            afterChangeLabel: (value: string) => void;
+            uniqueFieldIdValidator: (fieldId: string) => void;
+        }) => React.ReactNode;
+    };
 };
 
-export type FieldType = {
-    _id: string;
+export type FbFormDetailsPluginRenderParams = {
+    refreshForms: () => Promise<void>;
+    form: FbFormModel;
+    loading: boolean;
+};
+
+export type FbFormDetailsPluginType = Plugin & {
+    type: "forms-form-details-revision-content";
+    render: (props: FbFormDetailsPluginRenderParams) => React.ReactNode;
+};
+
+export type FbFormDetailsSubmissionsPlugin = Plugin & {
+    type: "forms-form-details-submissions";
+    render: (props: { form: FbFormModel }) => React.ReactNode;
+};
+
+export type FbFormModel = {
+    id: FieldIdType;
+    version: number;
+    parent: string;
+    layout: FbFormModelFieldsLayout;
+    fields: FbFormModelField[];
+    name: string;
+    settings: any;
+    status: string;
+    savedOn: string;
+    revisions: any[];
+    overallStats: {
+        submissions: number;
+        views: number;
+        conversionRate: number;
+    };
+};
+
+export type FbFormModelField = {
+    _id?: string;
     type: string;
     name: string;
-    fieldId: FieldIdType;
-    label: I18NStringValue;
-    helpText: I18NStringValue;
-    placeholderText: I18NStringValue;
-    validation: Array<FieldValidatorType>;
-    options: Array<{ value: string; label: I18NStringValue }>;
-    settings: Object;
+    fieldId?: FieldIdType;
+    label?: I18NStringValue;
+    helpText?: I18NStringValue;
+    placeholderText?: I18NStringValue;
+    validation?: FbBuilderFieldValidator[];
+    options?: Array<{ value: string; label: I18NStringValue }>;
+    settings: {[key: string]: any};
 };
 
-export type FormRenderFieldType = FieldType & {
+export type FbFormSubmissionData = {
+    data: any;
+    form: {
+        revision: FbFormModel;
+    };
+};
+
+export type FbFormTriggerHandlerPlugin = Plugin & {
+    type: "form-trigger-handler";
+    trigger: {
+        id: string;
+        handle: (params: { trigger: any; data: any; form: FbFormModel }) => void;
+    };
+};
+
+export type FbEditorFormSettingsPlugin = Plugin & {
+    type: "form-editor-form-settings";
+    title: string;
+    description: string;
+    icon: React.ReactElement<any>;
+    render(props: { Bind: BindComponent; form: Form; formData: any }): React.ReactNode;
+    renderHeaderActions?(props: {
+        Bind: BindComponent;
+        form: Form;
+        formData: any;
+    }): React.ReactNode;
+};
+
+export type FbEditorFieldGroup = Plugin & {
+    type: "form-editor-field-group";
+    group: {
+        title: string;
+    };
+};
+
+export type FbFormLayoutPlugin = Plugin & {
+    type: "form-layout";
+    layout: {
+        name: string;
+        title: string;
+        component: React.ComponentType<any>;
+    };
+};
+
+export type FbEditorTrigger = Plugin & {
+    type: "form-editor-trigger";
+    trigger: {
+        id: string;
+        title: string;
+        description: string;
+        icon: React.ReactElement<any>;
+        renderSettings(params: {
+            Bind: BindComponent;
+            submit: FormChildrenFunctionParamsSubmit;
+            form: FbFormModel;
+        }): React.ReactElement<any>;
+    };
+};
+
+// ------------------------------------------------------------------------------------------------------------
+
+export type FormRenderFbFormModelField = FbFormModelField & {
     validators: Array<(value: any) => boolean>;
 };
-
-export type FormDataType = {
-    id: FieldIdType;
-    layout: FieldsLayoutType;
-    fields: FieldType[];
-    name: string;
-    settings: Object;
-};
-
-export type FormSubmissionData = Object;
 
 export type FormRenderPropsType = {
     getFieldById: Function;
     getFieldByFieldId: Function;
-    getFields: () => Array<Array<FormRenderFieldType>>;
+    getFields: () => Array<Array<FormRenderFbFormModelField>>;
     getDefaultValues: () => { [key: string]: any };
     ReCaptcha: ReCaptchaComponentType;
     TermsOfService: TermsOfServiceComponentType;
     submit: (data: Object) => Promise<FormSubmitResponseType>;
-    formData: FormDataType;
+    formData: FbFormModel;
 };
 
 export type FormLayoutComponent = (props: FormRenderPropsType) => React.ReactNode;
 
 export type FormComponentPropsType = {
     preview?: boolean;
-    data?: Object;
-    revision?: string;
-    parent?: string;
+    data?: any;
+    revisionId?: string;
+    parentId?: string;
+    slug?: string;
 };
 
-export type FormRenderComponentPropsType = {
+export type FbFormRenderComponentProps = {
     preview?: boolean;
-    data?: FormDataType;
+    data?: FbFormModel;
 };
 
 export type FormSubmitResponseType = {
-    data: Object;
+    data: any;
     preview: boolean;
     error: {
         message: string;
@@ -152,36 +236,13 @@ export type FormLoadComponentPropsType = {
     revisionId?: string;
     parentId?: string;
     slug?: string;
-    version: number;
+    version?: number;
 };
 
 export type UseFormEditorReducerStateType = {
     apolloClient: ApolloClient<any>;
     id: string;
     defaultLayoutRenderer: string;
-};
-
-export type FormEditorFieldPluginType = Plugin & {
-    field: {
-        type: string;
-        name: string;
-        label: string;
-        validators?: Array<string>;
-        description: string;
-        icon: React.ReactNode;
-        createField: () => {
-            type: string;
-            name: string;
-            validation: Array<FieldValidatorType>;
-            settings: Object;
-        };
-        renderSettings?: (params: {
-            form: Object;
-            Bind: BindComponent;
-            afterLabelChange: () => void;
-            uniqueFieldIdValidator: () => void;
-        }) => React.ReactNode;
-    };
 };
 
 export type FormSettingsPluginType = Plugin & {
@@ -193,17 +254,6 @@ export type FormSettingsPluginType = Plugin & {
 
 export type FormSettingsPluginRenderFunctionType = (props: {
     Bind: BindComponent;
-    formData: Object; // Form settings.
-    form: Object;
-}) => React.ReactNode;
-
-export type FormTriggerHandlerPluginType = Plugin & {
-    trigger: {
-        id: string;
-        handle: (params: { trigger: Object; data: Object; form: FormDataType }) => void;
-    };
-};
-
-export type FormDetailsPluginType = Plugin & {
-    render: (props: Object) => React.ReactNode;
-};
+    formData: any; // Form settings.
+    form: any;
+}) => React.ReactElement<any>;

@@ -5,6 +5,7 @@ import styled from "@emotion/styled";
 import { Typography } from "@webiny/ui/Typography";
 import { ButtonSecondary, ButtonDefault } from "@webiny/ui/Button";
 import { validation } from "@webiny/validation";
+import { BindComponent } from "@webiny/form/Bind";
 
 const Fieldset = styled("div")({
     position: "relative",
@@ -24,15 +25,16 @@ const Header = styled("div")({
     marginBottom: 15
 });
 
-type Props = {
-    value: Array<Object>,
-    onChange: Function,
-    title: string,
-    inputLabel: String,
-    addButtonLabel: String
+type WebhooksRequestsDynamicFieldsetProps = {
+    value?: any[];
+    onChange?: (value: any) => void;
+    title: string;
+    inputLabel: string;
+    addButtonLabel: string;
+    Bind: BindComponent;
 };
 
-const WebhooksRequestsDynamicFieldset = (props: Props) => {
+const WebhooksRequestsDynamicFieldset = (props: WebhooksRequestsDynamicFieldsetProps) => {
     const { onChange, value, Bind } = props;
 
     const addUrl = () => {

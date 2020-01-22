@@ -1,3 +1,5 @@
+import { FbEditorFieldGroup } from "@webiny/app-form-builder/types";
+
 export default [
     {
         name: "form-editor-field-group-contact",
@@ -6,4 +8,4 @@ export default [
             title: "Contact information"
         }
     }
-];
+] as FbEditorFieldGroup[];

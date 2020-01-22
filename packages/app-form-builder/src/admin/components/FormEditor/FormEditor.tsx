@@ -1,4 +1,3 @@
-// @flow
 import * as React from "react";
 import useReactRouter from "use-react-router";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";

@@ -7,6 +7,7 @@ import { Icon } from "@webiny/ui/Icon";
 import { Accordion, AccordionItem } from "@webiny/ui/Accordion";
 import { ReactComponent as HandleIcon } from "./icons/round-drag_indicator-24px.svg";
 import Draggable from "./Draggable";
+import { FbBuilderFieldPlugin, FbEditorFieldGroup } from "@webiny/app-form-builder/types";
 
 const FieldContainer = styled("div")({
     padding: "10px 15px",
@@ -88,7 +89,7 @@ export const Fields = ({ onFieldDragStart }) => {
     const { getField } = useFormEditor();
 
     function getGroups() {
-        const presetFieldPlugins = getPlugins("form-editor-field-type")
+        const presetFieldPlugins = getPlugins<FbBuilderFieldPlugin>("form-editor-field-type")
             .filter(pl => pl.field.group)
             .filter(pl => {
                 if (pl.field.unique) {
@@ -97,7 +98,7 @@ export const Fields = ({ onFieldDragStart }) => {
                 return true;
             });
 
-        return getPlugins("form-editor-field-group").map(pl => ({
+        return getPlugins<FbEditorFieldGroup>("form-editor-field-group").map(pl => ({
             ...pl.group,
             name: pl.name,
             fields: presetFieldPlugins.filter(f => f.field.group === pl.name).map(pl => pl.field)

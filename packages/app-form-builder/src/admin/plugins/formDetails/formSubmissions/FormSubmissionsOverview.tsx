@@ -3,9 +3,10 @@ import * as React from "react";
 import Block from "./Block";
 import { Typography } from "@webiny/ui/Typography";
 import styled from "@emotion/styled";
+import { FbFormModel } from "@webiny/app-form-builder/types";
 
 type Props = {
-    form: Object
+    form: FbFormModel;
 };
 
 const StatBox = styled("div")({

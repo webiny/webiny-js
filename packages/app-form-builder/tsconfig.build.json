@@ -1,7 +1,14 @@
 {
   "extends": "../../tsconfig.build.json",
   "include": ["./src"],
-  "exclude": ["node_modules", "dist", "../app-form-builder", "../app-i18n", "../form"],
+  "exclude": [
+    "node_modules",
+    "dist",
+    "../form",
+    "../app-form-builder",
+    "../app-i18n",
+    "../app-page-builder"
+  ],
   "compilerOptions": {
     "rootDir": "./src",
     "outDir": "./dist",

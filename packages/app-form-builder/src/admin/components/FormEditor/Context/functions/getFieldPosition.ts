@@ -1,6 +1,6 @@
 import  { FieldLayoutPositionType } from "@webiny/app-form-builder/types";
 
-export default ({ field, data }): ?FieldLayoutPositionType => {
+export default ({ field, data }): FieldLayoutPositionType => {
     const id = typeof field === "string" ? field : field._id;
     for (let i = 0; i < data.layout.length; i++) {
         const row = data.layout[i];

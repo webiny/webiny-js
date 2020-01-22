@@ -45,7 +45,11 @@ const EmptyFormDetails = () => {
     );
 };
 
-const FormDetails = ({ refreshForms }) => {
+export type FormDetailsProps = {
+    refreshForms: () => Promise<void>;
+};
+
+const FormDetails = ({ refreshForms }: FormDetailsProps) => {
     const { location, history } = useReactRouter();
     const { showSnackbar } = useSnackbar();
     const query = new URLSearchParams(location.search);

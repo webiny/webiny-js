@@ -1,4 +1,3 @@
-// @flow
 import React from "react";
 import styled from "@emotion/styled";
 import { Tab } from "@webiny/ui/Tabs";
@@ -6,6 +5,10 @@ import FormElementAdvancedSettings from "./components/FormElementAdvancedSetting
 import formsSitePlugins from "@webiny/app-form-builder/page-builder/site/plugins";
 import FormElement from "./components/FormElement";
 import { ReactComponent as FormLogo } from "./components/icons/round-description-24px.svg";
+import {
+    PbEditorPageElementAdvancedSettingsPlugin,
+    PbEditorPageElementPlugin
+} from "@webiny/app-page-builder/admin/types";
 
 const PreviewBox = styled("div")({
     textAlign: "center",
@@ -33,10 +36,14 @@ export default [
                 );
             }
         },
-        settings: ["pb-editor-page-element-settings-delete", "", "pb-editor-page-element-settings-height"],
+        settings: [
+            "pb-editor-page-element-settings-delete",
+            "",
+            "pb-editor-page-element-settings-height"
+        ],
         target: ["column", "row", "list-item"],
         onCreate: "open-settings",
-        render({ element }: Object) {
+        render({ element }) {
             return <FormElement element={element} />;
         },
         create() {
@@ -47,17 +54,17 @@ export default [
                 settings: {}
             };
         }
-    },
+    } as PbEditorPageElementPlugin,
     {
         name: "pb-element-advanced-settings-form",
         type: "pb-editor-page-element-advanced-settings",
         elementType: "form",
-        render(props: Object) {
+        render(props) {
             return (
                 <Tab label="Form">
                     <FormElementAdvancedSettings {...props} />
                 </Tab>
             );
         }
-    }
+    } as PbEditorPageElementAdvancedSettingsPlugin
 ];

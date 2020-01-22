@@ -1,4 +1,3 @@
-// @flow
 import React from "react";
 import { css } from "emotion";
 import { ButtonDefault } from "@webiny/ui/Button";
@@ -9,6 +8,7 @@ import { MenuItem } from "@rmwc/menu";
 import { Typography } from "@webiny/ui/Typography";
 import { Menu } from "@webiny/ui/Menu";
 import { get } from "lodash";
+import { FbFormModel } from "@webiny/app-form-builder/types";
 const buttonStyle = css({
     "&.mdc-button": {
         color: "var(--mdc-theme-text-primary-on-background) !important"
@@ -24,7 +24,7 @@ const menuList = css({
     }
 });
 
-const RevisionSelector = ({ revision, form, selectRevision }: *) => {
+const RevisionSelector = ({ revision, form, selectRevision }) => {
     return (
         <Menu
             className={menuList}

@@ -1,16 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useDragLayer } from "react-dnd";
 
-const layerStyles = {
-    position: "fixed",
-    pointerEvents: "none",
-    zIndex: 100,
-    left: 0,
-    top: 0,
-    width: "100%",
-    height: "100%"
-};
-
 let subscribedToOffsetChange = false;
 
 let dragPreviewRef = null;
@@ -30,6 +20,7 @@ export default () => {
     const [dragHelperOpacity, setDragHelperOpacity] = useState(0);
     const { isDragging } = useDragLayer(monitor => {
         if (!subscribedToOffsetChange) {
+            // @ts-ignore
             monitor.subscribeToOffsetChange(onOffsetChange(monitor));
             subscribedToOffsetChange = true;
         }
@@ -68,7 +59,17 @@ export default () => {
     }
 
     return (
-        <div style={layerStyles}>
+        <div
+            style={{
+                position: "fixed",
+                pointerEvents: "none",
+                zIndex: 100,
+                left: 0,
+                top: 0,
+                width: "100%",
+                height: "100%"
+            }}
+        >
             <div
                 ref={el => (dragPreviewRef = el)}
                 style={{

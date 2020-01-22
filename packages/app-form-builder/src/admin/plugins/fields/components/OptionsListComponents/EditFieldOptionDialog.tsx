@@ -1,4 +1,3 @@
-// @flow
 import React from "react";
 import { css } from "emotion";
 import { Form } from "@webiny/form";
@@ -19,14 +18,16 @@ const narrowDialog = css({
     }
 });
 
-const EditFieldOptionDialog = (props: {
-    option: Object,
-    optionIndex: number,
-    open: boolean,
-    onClose: Function,
-    onSubmit: Function,
-    options: Array<Object>
-}) => {
+type EditFieldOptionDialogProps = {
+    option: any;
+    optionIndex: number;
+    open: boolean;
+    onClose: () => void;
+    onSubmit: (data: any) => void;
+    options: any[];
+};
+
+const EditFieldOptionDialog = (props: EditFieldOptionDialogProps) => {
     const { onClose, options, open, onSubmit, option, optionIndex } = props;
 
     return (

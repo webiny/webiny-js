@@ -6,16 +6,18 @@ import { getFieldPosition, moveField, moveRow, deleteField } from "./functions";
 import { getPlugins } from "@webiny/plugins";
 
 import {
-    FieldsLayoutType,
-    FieldType,
+    FbFormModelFieldsLayout,
+    FbFormModelField,
     FieldIdType,
-    FieldLayoutPositionType
+    FieldLayoutPositionType,
+    FbBuilderFieldPlugin
 } from "@webiny/app-form-builder/types";
 
 export default FormEditorContext => {
     return () => {
         // $FlowFixMe
-        const context = React.useContext(FormEditorContext);
+        // TODO: @ts-adrian add proper type
+        const context = React.useContext<any>(FormEditorContext);
         if (!context) {
             throw new Error("useFormEditor must be used within a FormEditorProvider");
         }
@@ -45,7 +47,7 @@ export default FormEditorContext => {
             },
             saveForm: async data => {
                 data = data || state.data;
-                let response = await self.apollo.mutate({
+                const response = await self.apollo.mutate({
                     mutation: UPDATE_REVISION,
                     variables: {
                         id: data.id,
@@ -72,7 +74,7 @@ export default FormEditorContext => {
              * @param layout
              * @returns {*}
              */
-            getFields(layout: boolean = false): Array<FieldType> | FieldsLayoutType {
+            getFields(layout = false): FbFormModelField[] | FbFormModelFieldsLayout {
                 if (!layout) {
                     return state.data.fields;
                 }
@@ -90,22 +92,24 @@ export default FormEditorContext => {
             /**
              * Return field plugin.
              * @param query
-             * @returns {void|?FieldType}
+             * @returns {void|?FbFormModelField}
              */
-            getFieldPlugin(query: Object): ?Object {
-                return getPlugins("form-editor-field-type").find(({ field }) => {
-                    for (let key in query) {
-                        if (!(key in field)) {
-                            return null;
+            getFieldPlugin(query: object): FbBuilderFieldPlugin {
+                return getPlugins<FbBuilderFieldPlugin>("form-editor-field-type").find(
+                    ({ field }) => {
+                        for (const key in query) {
+                            if (!(key in field)) {
+                                return null;
+                            }
+
+                            if (field[key] !== query[key]) {
+                                return null;
+                            }
                         }
 
-                        if (field[key] !== query[key]) {
-                            return null;
-                        }
+                        return true;
                     }
-
-                    return true;
-                });
+                );
             },
 
             /**
@@ -113,9 +117,9 @@ export default FormEditorContext => {
              * @param query
              * @returns {boolean}
              */
-            getField(query: Object): ?FieldType {
+            getField(query: object): FbFormModelField {
                 return state.data.fields.find(field => {
-                    for (let key in query) {
+                    for (const key in query) {
                         if (!(key in field)) {
                             return null;
                         }
@@ -134,7 +138,7 @@ export default FormEditorContext => {
              * @param data
              * @param position
              */
-            insertField(data: FieldType, position: FieldLayoutPositionType) {
+            insertField(data: FbFormModelField, position: FieldLayoutPositionType) {
                 const field = cloneDeep(data);
                 if (!field._id) {
                     field._id = shortid.generate();
@@ -174,9 +178,8 @@ export default FormEditorContext => {
                 field,
                 position
             }: {
-                field: FieldIdType | FieldType,
-                position: Object,
-                data: ?Object
+                field: FieldIdType | FbFormModelField;
+                position: FieldLayoutPositionType;
             }) {
                 self.setData(data => {
                     moveField({ field, position, data });
@@ -217,7 +220,7 @@ export default FormEditorContext => {
              * Deletes a field (both from the list of field and the layout).
              * @param field
              */
-            deleteField(field: FieldType) {
+            deleteField(field: FbFormModelField) {
                 self.setData(data => {
                     deleteField({ field, data });
                     return data;
@@ -229,7 +232,7 @@ export default FormEditorContext => {
              * @param field
              * @returns {{index: number, row: number}|{index: null, row: null}}
              */
-            getFieldPosition(field: FieldIdType | FieldType) {
+            getFieldPosition(field: FieldIdType | FbFormModelField) {
                 return getFieldPosition({ field, data: self.data });
             }
         };

@@ -1,5 +1,3 @@
-// @flow
-// $FlowFixMe
 import React, { useState, useCallback } from "react";
 import { IconButton } from "@webiny/ui/Button";
 import FormSettings from "./FormSettings";

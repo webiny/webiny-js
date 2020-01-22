@@ -3,6 +3,7 @@ import { Grid, Cell } from "@webiny/ui/Grid";
 import { ReactComponent as LinkIcon } from "./icons/round-link-24px.svg";
 import WebhooksRequestsDynamicFieldset from "./components/WebhooksRequestsDynamicFieldset";
 import { ButtonPrimary } from "@webiny/ui/Button";
+import {FbEditorTrigger} from "@webiny/app-form-builder/types";
 
 export default {
     type: "form-editor-trigger",
@@ -32,4 +33,4 @@ export default {
             );
         }
     }
-};
+} as FbEditorTrigger;

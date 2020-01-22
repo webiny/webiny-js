@@ -1,5 +1,4 @@
-// @flow
-import { FormEditorFieldPluginType } from "@webiny/app-form-builder/types";
+import { FbBuilderFieldPlugin } from "@webiny/app-form-builder/types";
 import hidden from "./hidden";
 import select from "./select";
 import text from "./text";
@@ -18,4 +17,4 @@ export default ([
     radioButtons,
     checkboxes,
     contact
-]: Array<FormEditorFieldPluginType>);
+] as Array<FbBuilderFieldPlugin>);

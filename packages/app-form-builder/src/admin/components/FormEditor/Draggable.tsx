@@ -1,20 +1,42 @@
-import React from "react";
-import { useDrag, DragPreviewImage } from "react-dnd";
+import React, { ReactElement } from "react";
+import {
+    useDrag,
+    DragPreviewImage,
+    ConnectDragSource,
+    DragObjectWithType
+} from "react-dnd";
 
 const emptyImage = "data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==";
 
-const Draggable = React.memo(props => {
+export type DraggableChildrenFunction = (params: {
+    isDragging: boolean;
+    drag: ConnectDragSource;
+}) => ReactElement;
+
+export type DraggableProps = {
+    children: DraggableChildrenFunction;
+    beginDrag?: any;
+    endDrag?: any;
+    target?: string[];
+};
+
+export type DraggableItem = DragObjectWithType & {
+    target: string[];
+};
+
+const Draggable = React.memo((props: DraggableProps) => {
     const { children, beginDrag, endDrag, target } = props;
 
     const [{ isDragging }, drag, preview] = useDrag({
-        item: { type: "element", target },
+        item: { type: "element", target } as DraggableItem,
         collect: monitor => ({
             isDragging: monitor.isDragging()
         }),
-        begin() {
-            if (beginDrag) {
-                return beginDrag;
+        begin(monitor) {
+            if (typeof beginDrag === "function") {
+                return beginDrag(props, monitor);
             }
+            return { ...props };
         },
         end(item, monitor) {
             if (typeof endDrag === "function") {

@@ -1,4 +1,3 @@
-// @flow
 import React from "react";
 import useReactRouter from "use-react-router";
 import { IconButton } from "@webiny/ui/Button";
@@ -6,8 +5,8 @@ import { Tooltip } from "@webiny/ui/Tooltip";
 import { ReactComponent as EditIcon } from "@webiny/app-form-builder/admin/icons/edit.svg";
 import { useRevision } from "../../formRevisions/useRevision";
 
-const EditRevision = ({ revision }) => {
-    const { createRevision } = useRevision({ revision });
+const EditRevision = ({ revision, form }) => {
+    const { createRevision } = useRevision({ revision, form });
     const { history } = useReactRouter();
 
     if (revision.status === "draft") {

@@ -1,9 +1,9 @@
-// @flow
 import React from "react";
 import { css } from "emotion";
 import { Typography } from "@webiny/ui/Typography";
 import { Grid, Cell } from "@webiny/ui/Grid";
 import { PublishRevision, DeleteForm, EditRevision, RevisionSelector } from "./HeaderComponents";
+import { FbFormDetailsPluginRenderParams, FbFormModel } from "@webiny/app-form-builder/types";
 
 const headerTitle = css({
     "&.mdc-layout-grid": {
@@ -31,7 +31,12 @@ const headerActions = css({
     alignItems: "center"
 });
 
-const Header = (props: *) => {
+type HeaderProps = FbFormDetailsPluginRenderParams & {
+    revision: FbFormModel;
+    selectRevision: (revision: FbFormModel) => void;
+};
+
+const Header = (props: HeaderProps) => {
     const { revision } = props;
     return (
         <React.Fragment>

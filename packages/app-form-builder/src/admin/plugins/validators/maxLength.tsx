@@ -2,7 +2,7 @@ import React from "react";
 import { Grid, Cell } from "@webiny/ui/Grid";
 import { Input } from "@webiny/ui/Input";
 import { validation } from "@webiny/validation";
-import { FbFormFieldValidatorPlugin } from "@webiny/app-form-builder/types";
+import { FbBuilderFormFieldValidatorPlugin } from "@webiny/app-form-builder/types";
 
 export default {
     type: "form-editor-field-validator",
@@ -31,4 +31,4 @@ export default {
             );
         }
     }
-} as FbFormFieldValidatorPlugin;
+} as FbBuilderFormFieldValidatorPlugin;

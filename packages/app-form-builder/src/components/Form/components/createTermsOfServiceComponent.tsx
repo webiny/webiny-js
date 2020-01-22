@@ -1,33 +1,33 @@
-// @flow
 import * as React from "react";
 import { termsOfServiceEnabled } from "./../functions";
-import  { FormDataType } from "@webiny/app-form-builder/types";
-import  { I18NStringValue, I18NObjectValue } from "@webiny/app-i18n/types";
+import { FbFormModel, FbFormRenderComponentProps } from "@webiny/app-form-builder/types";
+import { I18NStringValue, I18NObjectValue } from "@webiny/app-i18n/types";
 
-type Args = {
-    formData: FormDataType,
-    setTermsOfServiceAccepted: (value: boolean) => void
+type CreateTermsOfServiceComponentArgs = {
+    props: FbFormRenderComponentProps;
+    formData: FbFormModel;
+    setTermsOfServiceAccepted: (value: boolean) => void;
 };
 
-type ChildrenFunction = ({
-    onChange: (value: boolean) => void,
-    errorMessage: ?I18NStringValue,
-    message: ?I18NObjectValue
+type ChildrenFunction = (params: {
+    onChange: (value: boolean) => void;
+    errorMessage: I18NStringValue;
+    message: I18NObjectValue;
 }) => React.ReactNode;
 
 export type TermsOfServiceProps = {
-    children: ChildrenFunction,
-    onChange?: (value: string) => void,
-    onErrored?: Function,
-    onExpired?: Function
+    children: ChildrenFunction;
+    onChange?: (value: string) => void;
+    onErrored?: Function;
+    onExpired?: Function;
 };
 
-export type TermsOfServiceComponentType = TermsOfServiceProps => ?React.ReactNode;
+export type TermsOfServiceComponentType = (props: TermsOfServiceProps) => React.ReactNode;
 
 const createTermsOfServiceComponent = ({
     formData,
     setTermsOfServiceAccepted
-}: Args): TermsOfServiceComponentType =>
+}: CreateTermsOfServiceComponentArgs): TermsOfServiceComponentType =>
     function TermsOfService(props: TermsOfServiceProps) {
         if (!termsOfServiceEnabled(formData)) {
             return null;

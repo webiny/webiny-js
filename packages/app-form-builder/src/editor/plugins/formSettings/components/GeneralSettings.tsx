@@ -1,4 +1,3 @@
-// @flow
 import * as React from "react";
 import { usePageBuilder } from "@webiny/app-page-builder/hooks/usePageBuilder";
 import { Grid, Cell } from "@webiny/ui/Grid";
@@ -6,15 +5,16 @@ import { Select } from "@webiny/ui/Select";
 import { get } from "lodash";
 import { I18NInput } from "@webiny/app-i18n/admin/components";
 import { getPlugins } from "@webiny/plugins";
+import { FbFormLayoutPlugin } from "@webiny/app-form-builder/types";
 
 const GeneralSettings = ({ Bind }) => {
     const { theme } = usePageBuilder();
-    
+
     const layouts = React.useMemo(
         () =>
             [
                 ...(get(theme, "forms.layouts") || []),
-                ...getPlugins("form-layout").map(pl => pl.layout)
+                ...getPlugins<FbFormLayoutPlugin>("form-layout").map(pl => pl.layout)
             ].reduce((acc, item) => {
                 if (!acc.find(l => l.name === item.name)) {
                     acc.push(item);

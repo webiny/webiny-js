@@ -1,11 +1,10 @@
-// @flow
 import React from "react";
 import { ReactComponent as NumberIcon } from "./icons/round-looks_3-24px.svg";
 import { Grid, Cell } from "@webiny/ui/Grid";
 import { I18NInput } from "@webiny/app-i18n/admin/components";
-import { FormEditorFieldPluginType } from "@webiny/app-form-builder/types";
+import { FbBuilderFieldPlugin } from "@webiny/app-form-builder/types";
 
-export default ({
+export default {
     type: "form-editor-field-type",
     name: "form-editor-field-type-number",
     field: {
@@ -25,8 +24,8 @@ export default ({
                 }
             };
         },
-        renderSettings({ form }) {
-            const { Bind } = form;
+        renderSettings({ form: { Bind } }) {
+            // TODO: @ts-adrian: spread Bind komponente na donju komponentu
             return (
                 <Grid>
                     <Cell span={12}>
@@ -41,4 +40,4 @@ export default ({
             );
         }
     }
-}: FormEditorFieldPluginType);
+} as FbBuilderFieldPlugin;

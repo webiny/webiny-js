@@ -1,27 +1,30 @@
-// @flow
 import * as React from "react";
 import ReCAPTCHA from "react-google-recaptcha";
 import { reCaptchaEnabled } from "./../functions";
-import { FormDataType } from "@webiny/app-form-builder/types";
+import { FbFormModel, FbFormRenderComponentProps } from "@webiny/app-form-builder/types";
 import { I18NStringValue } from "@webiny/app-i18n/types";
 
-type Args = {
-    formData: FormDataType,
-    setResponseToken: (value: string) => void
+type CreateReCaptchaComponentArgs = {
+    props: FbFormRenderComponentProps;
+    formData: FbFormModel;
+    setResponseToken: (value: string) => void;
 };
 
-type ChildrenFunction = ({ errorMessage: ?I18NStringValue }) => React.ReactNode;
+type ChildrenFunction = ({ errorMessage: I18NStringValue }) => React.ReactNode;
 
 export type ReCaptchaProps = {
-    children?: React.ReactNode | ChildrenFunction,
-    onChange?: (value: string) => void,
-    onErrored?: Function,
-    onExpired?: Function
+    children?: React.ReactNode | ChildrenFunction;
+    onChange?: (value: string) => void;
+    onErrored?: Function;
+    onExpired?: Function;
 };
 
-export type ReCaptchaComponentType = ReCaptchaProps => ?React.ReactNode;
+export type ReCaptchaComponentType = (props: ReCaptchaProps) => React.ReactNode;
 
-const createReCaptchaComponent = ({ formData, setResponseToken }: Args): ReCaptchaComponentType =>
+const createReCaptchaComponent = ({
+    formData,
+    setResponseToken
+}: CreateReCaptchaComponentArgs): ReCaptchaComponentType =>
     function ReCaptcha(props: ReCaptchaProps) {
         if (!reCaptchaEnabled(formData)) {
             return null;

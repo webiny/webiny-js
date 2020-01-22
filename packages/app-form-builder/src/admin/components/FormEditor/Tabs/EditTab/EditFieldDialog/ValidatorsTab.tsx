@@ -13,7 +13,7 @@ import { Grid, Cell } from "@webiny/ui/Grid";
 import { I18NInput } from "@webiny/app-i18n/admin/components";
 import { useI18N } from "@webiny/app-i18n/hooks/useI18N";
 import { validation } from "@webiny/validation";
-import {FbFormFieldValidatorPlugin} from "@webiny/app-form-builder/types";
+import { FbBuilderFormFieldValidatorPlugin } from "@webiny/app-form-builder/types";
 
 const onEnabledChange = ({ i18n, data, validationValue, onChangeValidation, validator }) => {
     if (data) {
@@ -58,16 +58,16 @@ const ValidatorsTab = props => {
         form: { Bind }
     } = props;
 
-    const fieldType = getFieldPlugin({ name: field.name });
+    const fieldPlugin = getFieldPlugin({ name: field.name });
 
     const validators = useMemo(() => {
-        return getPlugins<FbFormFieldValidatorPlugin>("form-editor-field-validator")
+        return getPlugins<FbBuilderFormFieldValidatorPlugin>("form-editor-field-validator")
             .map(plugin => plugin.validator)
             .map(validator => {
-                if (fieldType.field.validators.includes(validator.name)) {
-                    return { optional: true, validator: validator };
-                } else if (fieldType.field.validators.includes(`!${validator.name}`)) {
-                    return { optional: false, validator: validator };
+                if (fieldPlugin.field.validators.includes(validator.name)) {
+                    return { optional: true, validator };
+                } else if (fieldPlugin.field.validators.includes(`!${validator.name}`)) {
+                    return { optional: false, validator };
                 }
                 return null;
             })
@@ -96,10 +96,8 @@ const ValidatorsTab = props => {
 
                     return (
                         <SimpleForm key={validator.name}>
-                            <SimpleFormHeader
-                                title={validator.label}
-                                description={validator.description}
-                            >
+                            {/*TODO: @ts-adrian nema descriptiona?*/}
+                            <SimpleFormHeader title={validator.label}>
                                 {optional && (
                                     <Switch
                                         label="Enabled"
@@ -132,6 +130,7 @@ const ValidatorsTab = props => {
                                         <SimpleFormContent>
                                             <Grid>
                                                 <Cell span={12}>
+                                                    {/*TODO: @ts-adrian kako ovo?*/}
                                                     <Bind
                                                         name={"message"}
                                                         validators={validation.create("required")}

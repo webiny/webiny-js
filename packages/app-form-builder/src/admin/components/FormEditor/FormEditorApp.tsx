@@ -3,17 +3,22 @@ import { useApolloClient } from "react-apollo";
 import useReactRouter from "use-react-router";
 import { FormEditorProvider } from "./Context";
 import FormEditor from "./FormEditor";
+import { match } from "react-router";
 
 const FormEditorApp = () => {
-    const { match } = useReactRouter();
+    const router = useReactRouter();
     const client = useApolloClient();
-    const formId = match.params.id;
+
+    const matched: match<{
+        id?: string;
+    }> = router.match;
+    const { id } = matched.params;
 
     return (
         <FormEditorProvider
-            key={formId}
+            key={id}
             apollo={client}
-            id={formId}
+            id={id}
             defaultLayoutRenderer={"forms-form-layout-default"}
         >
             <FormEditor />

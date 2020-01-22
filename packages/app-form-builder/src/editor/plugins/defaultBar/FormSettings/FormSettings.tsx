@@ -22,13 +22,14 @@ import {
     SimpleFormHeader
 } from "@webiny/app-admin/components/SimpleForm";
 import { Title, listItem, ListItemTitle, listStyle, TitleContent } from "./FormSettingsStyled";
+import { FbEditorFormSettingsPlugin } from "@webiny/app-form-builder/types";
 
-type Props = {
-    onExited: Function
+type FormSettingsProps = {
+    onExited: () => void;
 };
 
-const FormSettings = ({ onExited }: Props) => {
-    const plugins: Array<Object> = getPlugins("form-editor-form-settings");
+const FormSettings = ({ onExited }: FormSettingsProps) => {
+    const plugins = getPlugins<FbEditorFormSettingsPlugin>("form-editor-form-settings");
     const { data, setData } = useFormEditor();
     const { showSnackbar } = useSnackbar();
 
@@ -80,7 +81,7 @@ const FormSettings = ({ onExited }: Props) => {
                                         : null}
                                 </SimpleFormContent>
                                 <SimpleFormFooter>
-                                    <ButtonPrimary type="primary" onClick={submit} align="right">
+                                    <ButtonPrimary onClick={submit}>
                                         {t`Save settings`}
                                     </ButtonPrimary>
                                 </SimpleFormFooter>

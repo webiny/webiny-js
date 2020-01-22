@@ -4,7 +4,10 @@ import { Input } from "@webiny/ui/Input";
 import { Select } from "@webiny/ui/Select";
 import { getPlugins } from "@webiny/plugins";
 import { validation } from "@webiny/validation";
-import { FbFormFieldValidatorPlugin } from "@webiny/app-form-builder/types";
+import {
+    FbFormFieldPatternValidatorPlugin,
+    FbBuilderFormFieldValidatorPlugin
+} from "@webiny/app-form-builder/types";
 
 export default {
     type: "form-editor-field-validator",
@@ -19,7 +22,16 @@ export default {
         },
         renderSettings({ Bind, setValue, setMessage, data }) {
             const inputsDisabled = data.settings.preset !== "custom";
-            const presetPlugins = getPlugins("form-editor-field-validator-pattern");
+            const presetPlugins = getPlugins<FbFormFieldPatternValidatorPlugin>(
+                "form-editor-field-validator-pattern"
+            );
+
+            // TODO: @ts-adrian neda mi da dolje posaljem
+            const selectOptions: any = presetPlugins.map(item => (
+                <option key={item.pattern.name} value={item.pattern.name}>
+                    {item.pattern.label}
+                </option>
+            ));
 
             return (
                 <Grid>
@@ -45,11 +57,7 @@ export default {
                         >
                             <Select label={"Preset"}>
                                 <option value={"custom"}>Custom</option>
-                                {presetPlugins.map(item => (
-                                    <option key={item.pattern.name} value={item.pattern.name}>
-                                        {item.pattern.label}
-                                    </option>
-                                ))}
+                                {selectOptions}
                             </Select>
                         </Bind>
                     </Cell>
@@ -75,4 +83,4 @@ export default {
             );
         }
     }
-} as FbFormFieldValidatorPlugin;
+} as FbBuilderFormFieldValidatorPlugin;

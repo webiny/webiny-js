@@ -1,5 +1,4 @@
-// @flow
-import { FormTriggerHandlerPluginType } from "@webiny/app-form-builder/types";
+import { FbFormTriggerHandlerPlugin } from "@webiny/app-form-builder/types";
 
 export default ({
     type: "form-trigger-handler",
@@ -12,4 +11,4 @@ export default ({
             }
         }
     }
-} as FormTriggerHandlerPluginType);
+} as FbFormTriggerHandlerPlugin);

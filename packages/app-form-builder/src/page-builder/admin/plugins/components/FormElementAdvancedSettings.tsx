@@ -1,4 +1,3 @@
-// @flow
 import * as React from "react";
 import { Query } from "react-apollo";
 import gql from "graphql-tag";
@@ -13,8 +12,8 @@ const FormOptionsWrapper = styled("div")({
     minHeight: 250
 });
 
-const getOptions = ({ gqlResponse, data }): Object => {
-    const output: Object = {
+const getOptions = ({ gqlResponse, data }) => {
+    const output = {
         parents: {
             options: [],
             value: null
@@ -55,7 +54,7 @@ const getOptions = ({ gqlResponse, data }): Object => {
     return output;
 };
 
-const FormElementAdvancedSettings = ({ Bind, data }: Object) => {
+const FormElementAdvancedSettings = ({ Bind, data }) => {
     return (
         <FormOptionsWrapper>
             <Query
@@ -109,7 +108,7 @@ const FormElementAdvancedSettings = ({ Bind, data }: Object) => {
                                         const noPublished =
                                             options.publishedRevisions.options.length === 0;
 
-                                        let description = "Choose a published revision.";
+                                        const description = "Choose a published revision.";
                                         if (parentSelected && noPublished) {
                                             return (
                                                 <Alert type="danger" title="Form not published">

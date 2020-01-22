@@ -1,4 +1,3 @@
-// @flow
 import React, { useRef, useCallback } from "react";
 import TimeAgo from "timeago-react";
 import useReactRouter from "use-react-router";
@@ -30,15 +29,20 @@ const rightAlign = css({
     alignItems: "flex-end !important"
 });
 
-const FormsDataList = props => {
+export type FormsDataListProps = {
+    dataList: any;
+}
+
+const FormsDataList = (props: FormsDataListProps) => {
     const editHandlers = useRef({});
 
     const { dataList } = props;
+
     const { location, history } = useReactRouter();
     const client = useApolloClient();
     const { showSnackbar } = useSnackbar();
 
-    const deleteRecord = useHandler(props, ({ id }: Object) => async (item: Object) => {
+    const deleteRecord = useHandler(props, ({ id }) => async (item) => {
         const res = await client.mutate({ mutation: DELETE_FORM, variables: { id: item.id } });
         const { data, error } = get(res, "data.forms.deleteForm");
 

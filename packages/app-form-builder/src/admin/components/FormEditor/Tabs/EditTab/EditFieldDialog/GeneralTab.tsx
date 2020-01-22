@@ -6,8 +6,15 @@ import { useFormEditor } from "@webiny/app-form-builder/admin/components/FormEdi
 import { I18NInput } from "@webiny/app-i18n/admin/components";
 import { useI18N } from "@webiny/app-i18n/hooks/useI18N";
 import { validation } from "@webiny/validation";
+import { FbFormModelField } from "@webiny/app-form-builder/types";
+import {FormChildrenFunctionParams} from "@webiny/form/Form";
 
-const GeneralTab = ({ field, form }) => {
+type GeneralTabProps = {
+    field: FbFormModelField;
+    form: FormChildrenFunctionParams;
+};
+
+const GeneralTab = ({ field, form }: GeneralTabProps) => {
     const { Bind, setValue } = form;
     const inputRef = useRef(null);
     const { getField, getFieldPlugin } = useFormEditor();
@@ -33,14 +40,13 @@ const GeneralTab = ({ field, form }) => {
             return true;
         }
         throw new Error("Please enter a unique Field ID");
-    });
+    }, undefined);
 
     const fieldPlugin = getFieldPlugin({ name: field.name });
 
     let additionalSettings = null;
     if (typeof fieldPlugin.field.renderSettings === "function") {
         additionalSettings = fieldPlugin.field.renderSettings({
-            Bind,
             form,
             afterChangeLabel,
             uniqueFieldIdValidator

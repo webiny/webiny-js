@@ -1,5 +1,3 @@
-// @flow
-// $FlowFixMe
 import React, { useEffect, useState } from "react";
 import { Tab } from "@webiny/ui/Tabs";
 import styled from "@emotion/styled";
@@ -8,7 +6,10 @@ import FormPreview from "./FormPreview";
 import Header from "./Header";
 import { CircularProgress } from "@webiny/ui/Progress";
 import { i18n } from "@webiny/app/i18n";
-import { FormDetailsPluginType } from "@webiny/app-form-builder/types";
+import {
+    FbFormDetailsPluginRenderParams,
+    FbFormDetailsPluginType
+} from "@webiny/app-form-builder/types";
 
 const t = i18n.namespace("FormsApp.FormDetails.PreviewContent");
 
@@ -21,7 +22,7 @@ const RenderBlock = styled("div")({
     padding: 25
 });
 
-const PreviewContentTab = props => {
+const PreviewContentTab = (props: FbFormDetailsPluginRenderParams) => {
     const [revisionId, setRevisionId] = useState();
     useEffect(() => {
         setRevisionId(props.form.revisions[0].id);
@@ -42,14 +43,14 @@ const PreviewContentTab = props => {
                         revision={revision}
                         selectRevision={revision => setRevisionId(revision.id)}
                     />
-                    <FormPreview revision={revision} />
+                    <FormPreview revision={revision} form={props.form} />
                 </div>
             </Elevation>
         </RenderBlock>
     );
 };
 
-export default ([
+export default [
     {
         name: "forms-form-details-revision-content-preview",
         type: "forms-form-details-revision-content",
@@ -61,4 +62,4 @@ export default ([
             );
         }
     }
-]: Array<FormDetailsPluginType>);
+] as FbFormDetailsPluginType[];

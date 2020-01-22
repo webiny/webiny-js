@@ -1,4 +1,3 @@
-// @flow
 import React from "react";
 import { css } from "emotion";
 import { Typography } from "@webiny/ui/Typography";
@@ -6,6 +5,7 @@ import { I18NValue } from "@webiny/app-i18n/components";
 import { Dialog, DialogContent, DialogTitle, DialogCancel, DialogActions } from "@webiny/ui/Dialog";
 
 import { i18n } from "@webiny/app/i18n";
+import { FbFormSubmissionData } from "@webiny/app-form-builder/types";
 const t = i18n.namespace("FormEditor.FormSubmissionDialog");
 
 const dialogBody = css({
@@ -19,8 +19,8 @@ const dialogBody = css({
 });
 
 type Props = {
-    formSubmission: Object,
-    onClose: Function
+    formSubmission: FbFormSubmissionData;
+    onClose: () => void;
 };
 
 const getFieldValueLabel = (field, value) => {

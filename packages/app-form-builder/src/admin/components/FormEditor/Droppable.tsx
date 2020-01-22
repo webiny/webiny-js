@@ -1,9 +1,24 @@
-// @flow
 import * as React from "react";
-import { useDrop } from "react-dnd";
+import { ConnectDropTarget, DragObjectWithType, useDrop } from "react-dnd";
 
-const Droppable = React.memo(props => {
-    let { children, onDrop, isVisible = () => true } = props;
+export type DroppableChildrenFunction = (params: {
+    isDragging: boolean;
+    isOver: boolean;
+    item: any;
+    drop: ConnectDropTarget;
+}) => React.ReactElement;
+
+export type DroppableProps = {
+    type?: string;
+    children: DroppableChildrenFunction;
+    isDragging?: boolean;
+    isDroppable?(item: any): boolean;
+    isVisible?(params: { type: string; item: any; isDragging: boolean }): boolean;
+    onDrop?(item: DragObjectWithType);
+};
+
+const Droppable = React.memo((props: DroppableProps) => {
+    const { children, onDrop, isVisible = () => true } = props;
 
     const [{ item, isOver }, drop] = useDrop({
         accept: "element",
@@ -22,7 +37,6 @@ const Droppable = React.memo(props => {
         return null;
     }
 
-    // $FlowFixMe
     return children({ isDragging: Boolean(item), isOver, item, drop });
 });
 

@@ -1,4 +1,3 @@
-// @flow
 import React, { useState, useEffect, useCallback } from "react";
 import { cloneDeep } from "lodash";
 import { css } from "emotion";
@@ -21,6 +20,7 @@ import { i18n } from "@webiny/app/i18n";
 const t = i18n.namespace("FormEditor.EditFieldDialog");
 import { useFormEditor } from "@webiny/app-form-builder/admin/components/FormEditor/Context";
 import { useI18N } from "@webiny/app-i18n/hooks/useI18N";
+import { FbBuilderFieldPlugin, FbFormModelField } from "@webiny/app-form-builder/types";
 
 const dialogBody = css({
     "&.webiny-ui-dialog__content": {
@@ -29,7 +29,7 @@ const dialogBody = css({
     }
 });
 
-const FieldTypeList = styled("div")({
+const FbFormModelFieldList = styled("div")({
     display: "flex",
     justifyContent: "center",
     alignItems: "center",
@@ -38,13 +38,13 @@ const FieldTypeList = styled("div")({
     backgroundColor: "var(--mdc-theme-background) !important"
 });
 
-type Props = {
-    field: ?Object,
-    onClose: Function,
-    onSubmit: Function
+type EditFieldDialogProps = {
+    field: FbFormModelField;
+    onClose: Function;
+    onSubmit: (data: any) => void;
 };
 
-const EditFieldDialog = ({ field, onSubmit, ...props }: Props) => {
+const EditFieldDialog = ({ field, onSubmit, ...props }: EditFieldDialogProps) => {
     const [current, setCurrent] = useState(null);
     const [isNewField, setIsNewField] = useState(false);
     const [screen, setScreen] = useState();
@@ -63,7 +63,7 @@ const EditFieldDialog = ({ field, onSubmit, ...props }: Props) => {
     const onClose = useCallback(() => {
         setCurrent(null);
         props.onClose();
-    });
+    }, undefined);
 
     let render = null;
     let headerTitle = t`Field Settings`;
@@ -85,20 +85,12 @@ const EditFieldDialog = ({ field, onSubmit, ...props }: Props) => {
                                 <DialogContent className={dialogBody}>
                                     <Tabs>
                                         <Tab label={t`General`}>
-                                            <GeneralTab
-                                                form={form}
-                                                field={current}
-                                                setScreen={setScreen}
-                                            />
+                                            <GeneralTab form={form} field={current} />
                                         </Tab>
                                         {Array.isArray(fieldPlugin.field.validators) &&
                                             fieldPlugin.field.validators.length > 0 && (
                                                 <Tab label={"Validators"}>
-                                                    <ValidatorsTab
-                                                        form={form}
-                                                        field={current}
-                                                        setScreen={setScreen}
-                                                    />
+                                                    <ValidatorsTab form={form} field={current} />
                                                 </Tab>
                                             )}
                                     </Tabs>
@@ -128,15 +120,15 @@ const EditFieldDialog = ({ field, onSubmit, ...props }: Props) => {
                 render = (
                     <>
                         <DialogContent className={dialogBody}>
-                            <FieldTypeList>
-                                {getPlugins("form-editor-field-type")
+                            <FbFormModelFieldList>
+                                {getPlugins<FbBuilderFieldPlugin>("form-editor-field-type")
                                     .filter(pl => !pl.field.group)
                                     .map(pl => (
                                         <FieldTypeSelector
                                             key={pl.name}
                                             fieldType={pl.field}
                                             onClick={() => {
-                                                const newCurrent = pl.field.createField({
+                                                const newCurrent: any = pl.field.createField({
                                                     i18n
                                                 });
                                                 if (current) {
@@ -158,7 +150,7 @@ const EditFieldDialog = ({ field, onSubmit, ...props }: Props) => {
                                             }}
                                         />
                                     ))}
-                            </FieldTypeList>
+                            </FbFormModelFieldList>
                         </DialogContent>
                         <DialogActions>
                             <DialogCancel onClick={onClose}>{t`Cancel`}</DialogCancel>

@@ -1,7 +1,6 @@
-// @flow
-import  { FieldType, FieldIdType } from "@webiny/app-form-builder/types";
+import { FbFormModelField, FieldIdType, FbFormModel } from "@webiny/app-form-builder/types";
 
-export default ({ field, data }: { field: FieldIdType | FieldType, data: Object }) => {
+export default ({ field, data }: { field: FbFormModelField; data: FbFormModel }) => {
     // Remove the field from fields list...
     const fieldIndex = data.fields.findIndex(item => item._id === field._id);
     data.fields.splice(fieldIndex, 1);

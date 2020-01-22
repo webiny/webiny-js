@@ -1,11 +1,10 @@
-// @flow
 import React from "react";
 import { Input } from "@webiny/ui/Input";
 import { Grid, Cell } from "@webiny/ui/Grid";
 import { ReactComponent as HiddenIcon } from "./icons/round-visibility_off-24px.svg";
-import { FormEditorFieldPluginType } from "@webiny/app-form-builder/types";
+import { FbBuilderFieldPlugin } from "@webiny/app-form-builder/types";
 
-export default ({
+export default {
     type: "form-editor-field-type",
     name: "form-editor-field-type-hidden",
     field: {
@@ -24,8 +23,7 @@ export default ({
                 }
             };
         },
-        renderSettings({ form }) {
-            const { Bind } = form;
+        renderSettings({ form: { Bind } }) {
             return (
                 <Grid>
                     <Cell span={12}>
@@ -40,4 +38,4 @@ export default ({
             );
         }
     }
-}: FormEditorFieldPluginType);
+} as FbBuilderFieldPlugin;

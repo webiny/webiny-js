@@ -3,10 +3,10 @@ import * as React from "react";
 import FormSubmissionsListComponent from "./FormSubmissionsList/FormSubmissionsList";
 import { LIST_FORM_SUBMISSIONS } from "@webiny/app-form-builder/admin/viewsGraphql";
 import { useDataList } from "@webiny/app/hooks/useDataList";
+import { FbFormModel } from "@webiny/app-form-builder/types";
 
 type Props = {
-    form: Object,
-    dataList: Object
+    form: FbFormModel;
 };
 
 const FormSubmissionsList = (props: Props) => {

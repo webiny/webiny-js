@@ -1,11 +1,14 @@
-// @flow
 import { get, set } from "lodash";
-import  { FormRenderComponentPropsType } from "@webiny/app-form-builder/types";
+import { FbFormRenderComponentProps } from "@webiny/app-form-builder/types";
 import { SAVE_FORM_VIEW } from "./graphql";
+import { ApolloClient } from "apollo-client";
 
-// TODO: `client` is not part of FormRenderComponentPropsType but is injected by `FormRender`
+// TODO: `client` is not part of FbFormRenderComponentProps but is injected by `FormRender`
 
-const saveFormView = ({ data, client }: FormRenderComponentPropsType) => {
+const saveFormView = ({
+    data,
+    client
+}: FbFormRenderComponentProps & { client: ApolloClient<any> }) => {
     // SSR?
     if (!window || !data) {
         return;
@@ -24,7 +27,7 @@ const saveFormView = ({ data, client }: FormRenderComponentPropsType) => {
     });
 };
 
-export default (props: FormRenderComponentPropsType) => {
+export default (props: FbFormRenderComponentProps & { client: ApolloClient<any> }) => {
     const { data, preview } = props;
     if (!data || preview) {
         return;

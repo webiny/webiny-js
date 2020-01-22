@@ -1,4 +1,3 @@
-// @flow
 import React from "react";
 import useReactRouter from "use-react-router";
 import { useApolloClient } from "react-apollo";
@@ -12,8 +11,14 @@ import {
     UNPUBLISH_REVISION
 } from "@webiny/app-form-builder/admin/viewsGraphql";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
+import {FbFormModel} from "@webiny/app-form-builder/types";
 
-export const useRevision = ({ revision, form }) => {
+export type UseRevisionProps = {
+    revision: FbFormModel;
+    form: FbFormModel;
+}
+
+export const useRevision = ({ revision, form }: UseRevisionProps) => {
     const { history } = useReactRouter();
     const { showSnackbar } = useSnackbar();
     const client = useApolloClient();
@@ -60,7 +65,7 @@ export const useRevision = ({ revision, form }) => {
                     }
 
                     const gqlParams = { query: GET_FORM, variables: { id: form.id } };
-                    const data = cloneDeep(cache.readQuery(gqlParams));
+                    const data: any = cloneDeep(cache.readQuery(gqlParams));
                     const indexOfDeleted = data.forms.form.data.revisions.findIndex(
                         item => item.id === revision.id
                     );

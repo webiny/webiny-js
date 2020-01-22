@@ -1,4 +1,3 @@
-// @flow
 import React, { useState } from "react";
 import TimeAgo from "timeago-react";
 import { css } from "emotion";
@@ -34,11 +33,11 @@ const FullName = ({ submission }) => {
     } = submission;
 
     const output = [firstName, lastName, email && `<${email}>`].filter(Boolean).join(" ");
-    return output || "N/A";
+    return <span>{output || "N/A"}</span>;
 };
 
 const FormVersion = ({ submission }) => {
-    return `Form revision #${submission.form.revision.version}`;
+    return <span>Form revision #${submission.form.revision.version}</span>;
 };
 
 const renderExportFormSubmissionsTooltip = dataList => {
@@ -52,7 +51,7 @@ const renderExportFormSubmissionsTooltip = dataList => {
     return t`Export all form submissions`;
 };
 
-const FormSubmissionsList = (props: Object) => {
+const FormSubmissionsList = props => {
     const { dataList, form } = props;
     const [selectedFormSubmission, selectFormSubmission] = useState(null);
     const [exportInProgress, setExportInProgress] = useState(false);
@@ -81,7 +80,12 @@ const FormSubmissionsList = (props: Object) => {
                                         icon={<ImportExport />}
                                         onClick={async () => {
                                             setExportInProgress(true);
-                                            const args = { variables: {} };
+                                            const args = {
+                                                variables: {
+                                                    parent: null,
+                                                    ids: null
+                                                }
+                                            };
                                             if (dataList.isNoneMultiSelected()) {
                                                 args.variables.parent = form.parent;
                                             } else {
@@ -156,7 +160,9 @@ const FormSubmissionsList = (props: Object) => {
                 </DataList>
             </Block>
             <FormSubmissionDialog
-                onClose={() => selectFormSubmission(null)}
+                onClose={() => {
+                    selectFormSubmission(null);
+                }}
                 formSubmission={selectedFormSubmission}
             />
         </>

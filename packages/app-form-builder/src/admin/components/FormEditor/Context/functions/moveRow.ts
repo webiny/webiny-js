@@ -1,13 +1,13 @@
-// @flow
+import { FbFormModel } from "@webiny/app-form-builder/types";
 
 export default ({
     data,
     source,
     destination
 }: {
-    source: number,
-    destination: number,
-    data: Object
+    source: number;
+    destination: number;
+    data: FbFormModel;
 }) => {
     data.layout =
         source < destination

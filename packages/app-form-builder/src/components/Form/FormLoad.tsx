@@ -1,14 +1,18 @@
-// @flow
-// $FlowFixMe
 import React from "react";
 import { get } from "lodash";
 import { GET_PUBLISHED_FORM } from "./graphql";
 import { Query } from "react-apollo";
 import FormRender from "./FormRender";
-import  { FormLoadComponentPropsType } from "@webiny/app-form-builder/types";
+import { FormLoadComponentPropsType } from "@webiny/app-form-builder/types";
 
 const FormLoad = (props: FormLoadComponentPropsType) => {
-    const variables = {};
+    const variables = {
+        slug: null,
+        version: null,
+        parent: null,
+        id: null
+    };
+
     if (props.slug) {
         variables.slug = props.slug;
         if (props.version) {

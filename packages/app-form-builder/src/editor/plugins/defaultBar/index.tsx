@@ -6,7 +6,6 @@ import PublishFormButton from "./PublishFormButton";
 import { Name } from "./Name";
 import { FormSettingsButton } from "./FormSettings";
 import Revisions from "./Revisions";
-import FormOptionsMenu from "./FormOptionsMenu";
 
 export default [
     {
@@ -30,15 +29,6 @@ export default [
             return <FormSettingsButton />;
         }
     },
-    [
-        {
-            name: "form-editor-default-bar-right-form-options",
-            type: "form-editor-default-bar-right",
-            render() {
-                return <FormOptionsMenu />;
-            }
-        }
-    ],
     {
         name: "form-editor-default-bar-right-publish-button",
         type: "form-editor-default-bar-right",

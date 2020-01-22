@@ -1,5 +1,3 @@
-// @flow
-// $FlowFixMe
 import React from "react";
 import { I18NValue } from "@webiny/app-i18n/components";
 import { I18NInput } from "@webiny/app-i18n/admin/components";
@@ -12,6 +10,7 @@ import { Switch } from "@webiny/ui/Switch";
 import { ReactComponent as EditIcon } from "@webiny/app-form-builder/admin/icons/edit.svg";
 import { ReactComponent as DeleteIcon } from "@webiny/app-form-builder/admin/icons/delete.svg";
 import { ReactComponent as TranslateIcon } from "@webiny/app-form-builder/admin/icons/round-translate-24px.svg";
+import { BindComponent } from "@webiny/form/Bind";
 
 const optionsListItemLeft = css({
     display: "flex",
@@ -34,12 +33,19 @@ const optionsListItemRight = css({
     alignItems: "center"
 });
 
+type DefaultValueSwitchProps = {
+    multiple: boolean;
+    option: any;
+    value: any;
+    onChange: any;
+};
+
 const DefaultValueSwitch = ({
     multiple,
     option,
     value: currentDefaultValue,
     onChange: setDefaultValue
-}: *) => {
+}: DefaultValueSwitchProps) => {
     if (multiple) {
         const selected =
             Array.isArray(currentDefaultValue) && currentDefaultValue.includes(option.value);
@@ -79,7 +85,17 @@ const DefaultValueSwitch = ({
     );
 };
 
-export default function OptionsListItem(props: *) {
+type OptionsListItemProps = {
+    multiple: boolean;
+    dragHandle: React.ReactNode;
+    Bind: BindComponent;
+    option: { label: string; value: string };
+    deleteOption: () => void;
+    editOption: () => void;
+    setOptionTranslations: (label: string) => void;
+};
+
+export default function OptionsListItem(props: OptionsListItemProps) {
     const {
         option,
         multiple,
@@ -89,6 +105,7 @@ export default function OptionsListItem(props: *) {
         editOption,
         setOptionTranslations
     } = props;
+
     return (
         <>
             <div className={optionsListItemLeft}>

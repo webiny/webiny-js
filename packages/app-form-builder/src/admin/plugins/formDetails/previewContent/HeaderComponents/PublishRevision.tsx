@@ -1,4 +1,3 @@
-// @flow
 import React from "react";
 import { IconButton } from "@webiny/ui/Button";
 import { Tooltip } from "@webiny/ui/Tooltip";
@@ -8,8 +7,13 @@ import { PUBLISH_REVISION, UNPUBLISH_REVISION } from "@webiny/app-form-builder/a
 import { ConfirmationDialog } from "@webiny/ui/ConfirmationDialog";
 import { useApolloClient } from "react-apollo";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
+import { FbFormModel } from "@webiny/app-form-builder/types";
 
-const PublishRevision = ({ revision }: *) => {
+type PublishRevisionProps = {
+    revision: FbFormModel;
+};
+
+const PublishRevision = ({ revision }: PublishRevisionProps) => {
     const { showSnackbar } = useSnackbar();
     const client = useApolloClient();
 

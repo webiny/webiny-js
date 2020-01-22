@@ -1,5 +1,3 @@
-// @flow
-// $FlowFixMe
 import React, { useState, useCallback } from "react";
 import { Grid, Cell } from "@webiny/ui/Grid";
 import { Switch } from "@webiny/ui/Switch";

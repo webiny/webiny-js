@@ -1,4 +1,3 @@
-// @flow
 import triggers from "./triggers";
 import validators from "./validators";
 

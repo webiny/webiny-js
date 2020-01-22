@@ -1,4 +1,3 @@
-// @flow
 import React from "react";
 import { Mutation } from "react-apollo";
 import { Form } from "@webiny/form";
@@ -17,10 +16,10 @@ import { Dialog, DialogTitle, DialogContent, DialogActions } from "@webiny/ui/Di
 import { ButtonDefault } from "@webiny/ui/Button";
 
 type Props = {
-    open: boolean,
-    onClose: Function,
-    onSubmit: Function,
-    reCaptchaSettings: Object
+    open: boolean;
+    onClose: () => void;
+    onSubmit: () => void;
+    reCaptchaSettings: any;
 };
 
 const ReCaptchaSettingsDialog = ({ open, onClose, reCaptchaSettings, onSubmit }: Props) => {

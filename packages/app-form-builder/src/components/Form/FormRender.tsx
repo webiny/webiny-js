@@ -1,5 +1,3 @@
-// @flow
-// $FlowFixMe
 import { I18NValue } from "@webiny/app-i18n/components";
 import { usePageBuilder } from "@webiny/app-page-builder/hooks/usePageBuilder";
 import { getPlugins } from "@webiny/plugins";
@@ -7,20 +5,40 @@ import { cloneDeep, get } from "lodash";
 import React, { useEffect, useRef } from "react";
 import { useApolloClient } from "react-apollo";
 import { createReCaptchaComponent, createTermsOfServiceComponent } from "./components";
-import { createFormSubmission, handleFormTriggers, onFormMounted, reCaptchaEnabled, termsOfServiceEnabled } from "./functions";
+import {
+    createFormSubmission,
+    handleFormTriggers,
+    onFormMounted,
+    reCaptchaEnabled,
+    termsOfServiceEnabled
+} from "./functions";
 
-import  {
+import {
     FormRenderPropsType,
-    FormRenderComponentPropsType,
+    FbFormRenderComponentProps,
     FormSubmitResponseType,
-    FormDataType,
-    FormSubmissionData
+    FbFormModel,
+    FbFormSubmissionData,
+    FbFormFieldValidatorPlugin,
+    FbFormLayoutPlugin
 } from "@webiny/app-form-builder/types";
 
-const FormRender = (props: FormRenderComponentPropsType) => {
+declare global {
+    // eslint-disable-next-line
+    namespace JSX {
+        interface IntrinsicElements {
+            "ssr-cache": {
+                class?: string;
+                id?: string;
+            };
+        }
+    }
+}
+
+const FormRender = (props: FbFormRenderComponentProps) => {
     const { theme } = usePageBuilder();
     const client = useApolloClient();
-    const data = props.data || {};
+    const data = props.data || ({} as FbFormModel);
 
     useEffect(() => {
         if (data.id) {
@@ -35,7 +53,7 @@ const FormRender = (props: FormRenderComponentPropsType) => {
         return null;
     }
 
-    const formData: FormDataType = cloneDeep(data);
+    const formData: FbFormModel = cloneDeep(data);
     const { layout, fields, settings } = formData;
 
     const getFieldById = id => {
@@ -47,8 +65,8 @@ const FormRender = (props: FormRenderComponentPropsType) => {
     };
 
     const getFields = () => {
-        const fields = cloneDeep(layout);
-        const validatorPlugins = getPlugins("form-field-validator");
+        const fields: any = cloneDeep(layout);
+        const validatorPlugins = getPlugins<FbFormFieldValidatorPlugin>("form-field-validator");
 
         fields.forEach(row => {
             row.forEach((id, idIndex) => {
@@ -107,7 +125,7 @@ const FormRender = (props: FormRenderComponentPropsType) => {
         return { ...values, ...overrides };
     };
 
-    const submit = async (data: FormSubmissionData): Promise<FormSubmitResponseType> => {
+    const submit = async (data: FbFormSubmissionData): Promise<FormSubmitResponseType> => {
         if (reCaptchaEnabled(formData) && !reCaptchaResponseToken.current) {
             return {
                 data: null,
@@ -145,7 +163,7 @@ const FormRender = (props: FormRenderComponentPropsType) => {
         () =>
             [
                 ...(get(theme, "forms.layouts") || []),
-                ...getPlugins("form-layout").map(pl => pl.layout)
+                ...getPlugins<FbFormLayoutPlugin>("form-layout").map(pl => pl.layout)
             ].reduce((acc, item) => {
                 if (!acc.find(l => l.name === item.name)) {
                     acc.push(item);
@@ -188,9 +206,10 @@ const FormRender = (props: FormRenderComponentPropsType) => {
     };
 
     return (
-        <ssr-cache data-class="fb-form" data-id={data.parent}>
+        <>
+            <ssr-cache data-class="fb-form" data-id={data.parent} />
             <LayoutRenderComponent {...layoutProps} />
-        </ssr-cache>
+        </>
     );
 };
 

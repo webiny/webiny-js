@@ -1,4 +1,3 @@
-// @flow
 import React from "react";
 import { css } from "emotion";
 import TimeAgo from "timeago-react";
@@ -25,6 +24,7 @@ import { ReactComponent as MoreVerticalIcon } from "@webiny/app-form-builder/adm
 import { ReactComponent as PublishIcon } from "@webiny/app-form-builder/admin/icons/publish.svg";
 import { ReactComponent as UnpublishIcon } from "@webiny/app-form-builder/admin/icons/unpublish.svg";
 import { useRevision } from "./useRevision";
+import { FbFormModel } from "@webiny/app-form-builder/types";
 
 const primaryColor = css({ color: "var(--mdc-theme-primary)" });
 
@@ -34,7 +34,7 @@ const revisionsMenu = css({
     left: "auto !important"
 });
 
-const getIcon = (rev: Object) => {
+const getIcon = rev => {
     switch (rev.status) {
         case "locked":
             return {
@@ -54,7 +54,12 @@ const getIcon = (rev: Object) => {
     }
 };
 
-const Revision = (props: Object) => {
+type RevisionProps = {
+    form: FbFormModel;
+    revision: FbFormModel;
+};
+
+const Revision = (props: RevisionProps) => {
     const { revision: rev, form } = props;
     const { icon, text: tooltipText } = getIcon(rev);
     const {
@@ -83,7 +88,6 @@ const Revision = (props: Object) => {
                 <Menu
                     handle={<IconButton icon={<MoreVerticalIcon />} />}
                     className={revisionsMenu}
-                    openSide={"left"}
                 >
                     <MenuItem onClick={createRevision}>
                         <ListItemGraphic>

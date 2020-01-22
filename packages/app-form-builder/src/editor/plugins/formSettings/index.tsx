@@ -1,4 +1,3 @@
-// @flow
 import * as React from "react";
 import { FormSettingsPluginType } from "@webiny/app-form-builder/types";
 import GeneralSettings from "./components/GeneralSettings";
@@ -39,4 +38,4 @@ export default ([
             return <ReCaptchaSettings {...props} />;
         }
     }
-]: Array<FormSettingsPluginType>);
+] as Array<FormSettingsPluginType>);

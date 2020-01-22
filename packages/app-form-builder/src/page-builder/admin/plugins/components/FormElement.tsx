@@ -1,4 +1,3 @@
-// @flow
 import * as React from "react";
 import { ElementRoot } from "@webiny/app-page-builder/render/components/ElementRoot";
 import { get } from "lodash";
@@ -6,6 +5,7 @@ import { Form as FormsForm } from "@webiny/app-form-builder/components/Form";
 import styled from "@emotion/styled";
 import { connect } from "react-redux";
 import { getActiveElementId } from "@webiny/app-page-builder/editor/selectors";
+import { PbElement } from "@webiny/app-page-builder/types";
 
 const Overlay = styled("div")({
     background: "black",
@@ -16,11 +16,16 @@ const Overlay = styled("div")({
     opacity: 0.25
 });
 
-const FormElement = (props: Object) => {
-    const { element, isActive } = props;
-    let render = "Form not selected.";
+export type FormElementProps = {
+    isActive: boolean;
+    element: PbElement;
+};
 
-    let form = get(element, "data.settings.form") || {};
+const FormElement = (props: FormElementProps) => {
+    const { element, isActive } = props;
+    let render = <span>Form not selected.</span>;
+
+    const form = get(element, "data.settings.form") || {};
 
     if (form.revision) {
         const props = {
@@ -52,7 +57,7 @@ const FormElement = (props: Object) => {
     );
 };
 
-export default connect((state, props) => {
+export default connect((state, props: any) => {
     return {
         isActive: getActiveElementId(state) === props.element.id
     };

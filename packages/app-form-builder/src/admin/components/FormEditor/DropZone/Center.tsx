@@ -2,8 +2,10 @@
 import * as React from "react";
 import styled from "@emotion/styled";
 import Droppable from "./../Droppable";
+import { DragObjectWithType } from "react-dnd";
 
-const Container = styled("div")(({ isOver }) => ({
+// @ts-ignore
+const Container = styled("div")(({ isOver }: { isOver: boolean }) => ({
     backgroundColor: "transparent",
     boxSizing: "border-box",
     height: "100%",
@@ -17,7 +19,8 @@ const Container = styled("div")(({ isOver }) => ({
     opacity: isOver ? 1 : 0.6
 }));
 
-const Add = styled("div")(({ isOver }) => ({
+// @ts-ignore
+const Add = styled("div")(({ isOver }: { isOver: boolean }) => ({
     position: "absolute",
     top: "50%",
     left: "50%",
@@ -27,8 +30,11 @@ const Add = styled("div")(({ isOver }) => ({
 }));
 
 type Props = {
-    onDrop: Function,
-    children: React.ReactNode
+    type?: string;
+    onDrop(item: DragObjectWithType);
+    children: React.ReactNode;
+    active?: boolean;
+    highlight?: boolean;
 };
 
 export default function Center({ onDrop, children }: Props) {

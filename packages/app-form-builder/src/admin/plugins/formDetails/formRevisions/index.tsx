@@ -1,6 +1,5 @@
-// @flow
 import * as React from "react";
-import { FormDetailsPluginType } from "@webiny/app-form-builder/types";
+import { FbFormDetailsPluginType } from "@webiny/app-form-builder/types";
 import { Tab } from "@webiny/ui/Tabs";
 import RevisionsList from "./RevisionsList";
 
@@ -14,4 +13,4 @@ export default ({
             </Tab>
         );
     }
-}: FormDetailsPluginType);
+} as FbFormDetailsPluginType);

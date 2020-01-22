@@ -1,4 +1,3 @@
-// @flow
 import * as React from "react";
 import { Grid, Cell } from "@webiny/ui/Grid";
 import { I18NInput } from "@webiny/app-i18n/admin/components";

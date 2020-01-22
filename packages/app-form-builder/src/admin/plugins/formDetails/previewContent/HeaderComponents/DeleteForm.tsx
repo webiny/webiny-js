@@ -1,4 +1,3 @@
-// @flow
 import React from "react";
 import { useApolloClient } from "react-apollo";
 import useReactRouter from "use-react-router";
@@ -10,9 +9,7 @@ import { GET_FORM, DELETE_FORM } from "@webiny/app-form-builder/admin/viewsGraph
 import { ConfirmationDialog } from "@webiny/ui/ConfirmationDialog";
 import { cloneDeep, get } from "lodash";
 
-type Props = Object;
-
-const DeleteForm = ({ form, revision, selectRevision }: Props) => {
+const DeleteForm = ({ form, revision, selectRevision }) => {
     const { showSnackbar } = useSnackbar();
     const client = useApolloClient();
     const { history } = useReactRouter();
@@ -57,7 +54,7 @@ const DeleteForm = ({ form, revision, selectRevision }: Props) => {
                                             query: GET_FORM,
                                             variables: { id: form.id }
                                         };
-                                        const data = cloneDeep(cache.readQuery(gqlParams));
+                                        const data: any = cloneDeep(cache.readQuery(gqlParams));
                                         const indexOfDeleted = data.forms.form.data.revisions.findIndex(
                                             item => item.id === revision.id
                                         );

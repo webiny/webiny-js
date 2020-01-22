@@ -29,15 +29,17 @@ const fieldTypeBox = css({
     }
 });
 
-const FieldTypeSelector = ({ fieldType, onClick }) => {
+const FbFormModelFieldSelector = ({ fieldType, onClick }) => {
     return (
-        <Elevation z={2} onClick={onClick} className={fieldTypeBox}>
-            <Icon icon={fieldType.icon} />
-            <Typography use={"headline5"}>{fieldType.label}</Typography>
-            <br />
-            <Typography use={"caption"}>{fieldType.description}</Typography>
-        </Elevation>
+        <span onClick={onClick} style={{ display: "inline-block" }}>
+            <Elevation z={2} className={fieldTypeBox}>
+                <Icon icon={fieldType.icon} />
+                <Typography use={"headline5"}>{fieldType.label}</Typography>
+                <br />
+                <Typography use={"caption"}>{fieldType.description}</Typography>
+            </Elevation>
+        </span>
     );
 };
 
-export default FieldTypeSelector;
+export default FbFormModelFieldSelector;
