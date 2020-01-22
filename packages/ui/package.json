@@ -79,7 +79,6 @@
     "@webiny/form": "^2.0.0",
     "@webiny/validation": "^2.1.0",
     "@webiny/storybook-utils": "^2.0.0",
-    "@webiny/validation": "^2.1.0",
     "awesome-typescript-loader": "^5.2.1",
     "babel-loader": "^8.0.0-beta.6",
     "babel-plugin-emotion": "^9.2.8",
