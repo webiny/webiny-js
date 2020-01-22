@@ -71,39 +71,17 @@ const execa = require("execa");
         console.log(`✅️ ${green("examples/apps/site/.env.json")} was created successfully!`);
     }
 
-    // Run build in `serverless-files`
-    console.log(`🏗  Building ${green("@webiny/serverless-files")}...`);
+    // Build all repo packages
+    console.log(`🏗  Building packages...`);
     try {
-        await execa("yarn", ["build"], {
-            cwd: path.resolve("components", "serverless-files")
+        await execa("lerna", ["run", "build", "--stream"], {
+            cwd: path.resolve("components", "serverless-files"),
+            stdio: "inherit"
         });
-        console.log(`✅️ ${green("@webiny/serverless-files")} was built successfully!`);
+        console.log(`✅️ Packages were built successfully!`);
     } catch (err) {
         console.log(
-            `🚨 Failed to build ${green("@webiny/serverless-files")} package: ${err.message}`
-        );
-        console.log(
-            `📖 Try building manually by running ${green("yarn build")} in the ${green(
-                "components/serverless-files"
-            )} folder`
-        );
-    }
-
-    // Run build in `serverless-db-proxy`
-    console.log(`🏗  Building ${green("@webiny/serverless-db-proxy")}...`);
-    try {
-        await execa("yarn", ["build"], {
-            cwd: path.resolve("components", "serverless-db-proxy")
-        });
-        console.log(`✅️ ${green("@webiny/serverless-db-proxy")} was built successfully!`);
-    } catch (err) {
-        console.log(
-            `🚨 Failed to build ${green("@webiny/serverless-db-proxy")} package: ${err.message}`
-        );
-        console.log(
-            `📖 Try building manually by running ${green("yarn build")} in the ${green(
-                "components/serverless-db-proxy"
-            )} folder`
+            `🚨 Failed to build packages: ${err.message}`
         );
     }
 
