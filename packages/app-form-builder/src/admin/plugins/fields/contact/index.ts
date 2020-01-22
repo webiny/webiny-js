@@ -10,7 +10,7 @@ import stateRegion from "./stateRegion";
 import companyName from "./companyName";
 import jobTitle from "./jobTitle";
 import postCode from "./postCode";
-import {FbBuilderFieldPlugin} from "@webiny/app-form-builder/types";
+import { FbBuilderFieldPlugin } from "@webiny/app-form-builder/types";
 
 const plugins: FbBuilderFieldPlugin[] = [
     firstName,

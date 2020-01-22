@@ -1,6 +1,7 @@
 import textFieldPlugin from "./../text";
+import { FbBuilderFieldPlugin } from "@webiny/app-form-builder/types";
 
-export default {
+const plugin: FbBuilderFieldPlugin = {
     type: "form-editor-field-type",
     name: "form-editor-field-type-website",
     field: {
@@ -46,3 +47,5 @@ export default {
         }
     }
 };
+
+export default plugin;
