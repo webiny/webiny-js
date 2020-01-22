@@ -19,12 +19,12 @@ export type ReCaptchaProps = {
     onExpired?: Function;
 };
 
-export type ReCaptchaComponentType = React.FC<ReCaptchaProps>;
+export type ReCaptchaComponent = React.FC<ReCaptchaProps>;
 
 const createReCaptchaComponent = ({
     formData,
     setResponseToken
-}: CreateReCaptchaComponentArgs): ReCaptchaComponentType =>
+}: CreateReCaptchaComponentArgs): ReCaptchaComponent =>
     function ReCaptcha(props: ReCaptchaProps) {
         if (!reCaptchaEnabled(formData)) {
             return null;

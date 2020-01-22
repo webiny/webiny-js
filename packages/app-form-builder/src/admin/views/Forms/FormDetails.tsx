@@ -46,7 +46,7 @@ const EmptyFormDetails = () => {
 };
 
 export type FormDetailsProps = {
-    refreshForms: () => Promise<void>;
+    refreshForms: () => void;
 };
 
 const FormDetails = ({ refreshForms }: FormDetailsProps) => {
