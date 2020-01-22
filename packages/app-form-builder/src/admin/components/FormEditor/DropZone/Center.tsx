@@ -1,4 +1,3 @@
-//@flow
 import * as React from "react";
 import styled from "@emotion/styled";
 import Droppable from "./../Droppable";
@@ -31,7 +30,7 @@ const Add = styled("div")(({ isOver }: { isOver: boolean }) => ({
 
 type Props = {
     type?: string;
-    onDrop(item: DragObjectWithType);
+    onDrop(item: DragObjectWithType): void;
     children: React.ReactNode;
     active?: boolean;
     highlight?: boolean;

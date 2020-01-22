@@ -51,7 +51,7 @@ const OuterDiv = styled("div")(
 );
 
 type HorizontalProps = {
-    onDrop(item: DragObjectWithType);
+    onDrop(item: DragObjectWithType): void;
     last?: boolean;
     isVisible?: any;
 };

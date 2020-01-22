@@ -12,9 +12,9 @@ export type DroppableProps = {
     type?: string;
     children: DroppableChildrenFunction;
     isDragging?: boolean;
-    isDroppable?(item: any): boolean;
-    isVisible?(params: { type: string; item: any; isDragging: boolean }): boolean;
-    onDrop?(item: DragObjectWithType);
+    isDroppable?: (item: any) => boolean;
+    isVisible?: (params: { type: string; item: any; isDragging: boolean }) => boolean;
+    onDrop?: (item: DragObjectWithType) => void;
 };
 
 const Droppable = React.memo((props: DroppableProps) => {

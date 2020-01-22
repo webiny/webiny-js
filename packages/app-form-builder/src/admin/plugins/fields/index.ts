@@ -8,7 +8,7 @@ import radioButtons from "./radioButtons";
 import checkboxes from "./checkboxes";
 import contact from "./contact";
 
-export default ([
+const plugins: FbBuilderFieldPlugin[] = [
     hidden,
     select,
     text,
@@ -16,5 +16,7 @@ export default ([
     number,
     radioButtons,
     checkboxes,
-    contact
-] as Array<FbBuilderFieldPlugin>);
+    ...contact
+];
+
+export default plugins;

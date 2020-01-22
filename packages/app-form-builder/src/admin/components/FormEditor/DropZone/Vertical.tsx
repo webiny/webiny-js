@@ -57,7 +57,7 @@ const OuterDivVertical = styled("div")(
 );
 
 type VerticalProps = {
-    onDrop(item: DragObjectWithType);
+    onDrop(item: DragObjectWithType): void;
     last?: boolean;
     isVisible?: any;
 };

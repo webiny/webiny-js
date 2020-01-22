@@ -4,7 +4,7 @@ import { ReactComponent as Icon } from "./icons/round-radio_button_checked-24px.
 import OptionsList from "./components/OptionsList";
 import { FbBuilderFieldPlugin } from "@webiny/app-form-builder/types";
 
-export default {
+const plugin: FbBuilderFieldPlugin = {
     type: "form-editor-field-type",
     name: "form-editor-field-type-radio",
     field: {
@@ -34,4 +34,6 @@ export default {
             );
         }
     }
-} as FbBuilderFieldPlugin;
+};
+
+export default plugin;

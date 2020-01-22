@@ -5,7 +5,7 @@ import { Input } from "@webiny/ui/Input";
 import { I18NInput } from "@webiny/app-i18n/admin/components";
 import { FbBuilderFieldPlugin } from "@webiny/app-form-builder/types";
 
-export default {
+const plugin: FbBuilderFieldPlugin = {
     type: "form-editor-field-type",
     name: "form-editor-field-type-text",
     field: {
@@ -48,4 +48,6 @@ export default {
             );
         }
     }
-} as FbBuilderFieldPlugin;
+};
+
+export default plugin;

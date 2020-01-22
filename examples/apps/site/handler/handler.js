@@ -7,7 +7,7 @@ export const handler = createHandler(
     filesPlugins(),
     ssrPlugins({
         cache: {
-            enabled: false,
+            enabled: true,
             ttl: 2592000, // 30 days in seconds.
             ttlStale: 20
         }

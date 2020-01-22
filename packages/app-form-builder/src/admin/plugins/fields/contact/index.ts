@@ -10,8 +10,9 @@ import stateRegion from "./stateRegion";
 import companyName from "./companyName";
 import jobTitle from "./jobTitle";
 import postCode from "./postCode";
+import {FbBuilderFieldPlugin} from "@webiny/app-form-builder/types";
 
-export default [
+const plugins: FbBuilderFieldPlugin[] = [
     firstName,
     lastName,
     email,
@@ -25,3 +26,5 @@ export default [
     jobTitle,
     postCode
 ];
+
+export default plugins;

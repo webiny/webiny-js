@@ -1,10 +1,5 @@
 import React, { ReactElement } from "react";
-import {
-    useDrag,
-    DragPreviewImage,
-    ConnectDragSource,
-    DragObjectWithType
-} from "react-dnd";
+import { useDrag, DragPreviewImage, ConnectDragSource } from "react-dnd";
 
 const emptyImage = "data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==";
 
@@ -20,15 +15,11 @@ export type DraggableProps = {
     target?: string[];
 };
 
-export type DraggableItem = DragObjectWithType & {
-    target: string[];
-};
-
 const Draggable = React.memo((props: DraggableProps) => {
     const { children, beginDrag, endDrag, target } = props;
 
     const [{ isDragging }, drag, preview] = useDrag({
-        item: { type: "element", target } as DraggableItem,
+        item: { type: "element", target },
         collect: monitor => ({
             isDragging: monitor.isDragging()
         }),

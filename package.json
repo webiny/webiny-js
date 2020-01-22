@@ -103,6 +103,8 @@
   "scripts": {
     "build:components": "lerna run build --scope=@webiny/serverless-* --stream",
     "build:apps": "lerna run build --scope=@webiny/app* --stream",
+    "build:api": "lerna run build --scope=@webiny/api* --stream",
+    "build:@webiny": "lerna run build --scope=@webiny/* --stream",
     "clear-dist": "yarn rimraf components/*/dist packages/*/dist",
     "contributors:add": "all-contributors add",
     "contributors:generate": "all-contributors generate",
