@@ -75,7 +75,6 @@ const createBind = (form: Form) => {
         form.inputs[name].props = newProps;
 
         if (React.isValidElement(children)) {
-            // $FlowFixMe
             return React.cloneElement(children, newProps);
         }
 

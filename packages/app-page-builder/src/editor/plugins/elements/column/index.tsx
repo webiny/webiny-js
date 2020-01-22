@@ -104,7 +104,6 @@ const handleDroppedElement = (source, target, position) => {
     let element;
 
     if (source.path) {
-        // $FlowFixMe
         element = cloneElement(source);
     } else {
         dispatchNew = true;
@@ -126,24 +125,20 @@ const handleDroppedElement = (source, target, position) => {
 const splitColumn = (source, target) => {
     let dispatchNew = false;
     let row = getParentElementWithChildren(redux.store.getState(), target.id);
-    // $FlowFixMe
     const targetIndex = row.elements.findIndex(el => el.id === target.id);
 
     // Split target column in half
-    // $FlowFixMe
     row.elements[targetIndex].data.width /= 2;
 
     // Create a new column with half of the original target width
     let newColumn;
     if (source.path) {
-        // $FlowFixMe
         newColumn = cloneElement(source);
     } else {
         dispatchNew = true;
         newColumn = createColumn();
     }
 
-    // $FlowFixMe
     newColumn = set(newColumn, "data.width", row.elements[targetIndex].data.width);
 
     row = addElementToParent(newColumn, row, targetIndex + 1);

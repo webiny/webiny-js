@@ -23,7 +23,6 @@ type Props = {
 };
 
 const ReCaptchaSettingsDialog = ({ open, onClose, reCaptchaSettings, onSubmit }: Props) => {
-    // $FlowFixMe
     const [loading, setLoading] = React.useState(false);
     const { setData } = useFormEditor();
     const { showSnackbar } = useSnackbar();

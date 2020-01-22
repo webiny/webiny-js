@@ -1,4 +1,3 @@
-// @flowIgnore
 module.exports = {
     feat: {
         emoji: "✨",

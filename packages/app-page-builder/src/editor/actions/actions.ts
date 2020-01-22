@@ -202,7 +202,6 @@ addMiddleware([DELETE_ELEMENT], ({ store, next, action }) => {
     let parent = getParentElementWithChildren(state, element.id);
 
     // Remove child from parent
-    // $FlowFixMe
     if (!parent) {
         return;
     }

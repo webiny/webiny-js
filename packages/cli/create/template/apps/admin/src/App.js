@@ -1,4 +1,3 @@
-// @flow
 import { hot } from "react-hot-loader";
 import React from "react";
 import { UiProvider } from "@webiny/app/contexts/Ui";

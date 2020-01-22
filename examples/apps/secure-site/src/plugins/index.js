@@ -1,4 +1,3 @@
-// @flow
 import pageBuilderPlugins from "@webiny/app-page-builder/site/plugins";
 import pageBuilderThemePlugins from "@webiny/app-page-builder-theme";
 import { fileUploadPlugin, imagePlugin } from "@webiny/app/plugins";

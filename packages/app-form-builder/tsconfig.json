@@ -2,7 +2,6 @@
   "extends": "../../tsconfig",
   "references": [
     { "path": "../form" },
-    { "path": "../app-form-builder" },
     { "path": "../app-i18n" },
     { "path": "../app-page-builder" }
   ]
