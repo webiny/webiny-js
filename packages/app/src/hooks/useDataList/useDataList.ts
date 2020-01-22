@@ -5,7 +5,41 @@ import { get, isEqual } from "lodash";
 import { prepareLoadListParams, redirectToRouteWithQueryParams } from "./utils";
 import { getData, getError, getMeta } from "./functions";
 
-const useDataList = params => {
+import { DocumentNode } from "graphql";
+
+export type UseDataListParams = {
+    useRouter?: boolean;
+    variables?: ((params: UseDataListParams) => any) | object;
+    query: DocumentNode;
+    getData?: (data: any) => any;
+    getMeta?: (data: any) => any;
+    getError?: (data: any) => any;
+};
+
+export type ReturnProps = {
+    __loadParams: any;
+    refresh: (params?: any) => void;
+    data: any[];
+    meta: any;
+    error: any;
+    loading: boolean;
+    isSelected: (item: any) => boolean;
+    select: (item: any) => void;
+    isMultiSelected: (item: any) => boolean;
+    isNoneMultiSelected: () => boolean;
+    isAllMultiSelected: () => boolean;
+    multiSelectAll: (value: boolean) => void;
+    getMultiSelected: () => any[];
+    setSearch: (search: any) => void;
+    setWhere: (where: any) => void;
+    setSorters: (sort: any) => void;
+    setPerPage: (perPage: number) => void;
+    setPage: (page: number) => void;
+    multiSelect: (items: string | string[], value?: boolean) => void;
+    init: () => void;
+};
+
+const useDataList = (params: UseDataListParams) => {
     const [multiSelectedItems, multiSelect] = useState([]);
 
     let history = null;
@@ -31,17 +65,16 @@ const useDataList = params => {
         };
     }, []);
 
-    const query = get(params, "query", params);
-    const queryData = useQuery(query, getQueryOptions());
+    const queryData = useQuery(params.query, getQueryOptions());
     const prevLoadParamsRef = useRef({});
 
-    const dataListProps = {
+    const dataListProps: ReturnProps = {
         data: get(queryData, "list.getData", getData)(queryData.data),
         meta: get(queryData, "list.getMeta", getMeta)(queryData.data),
         error: get(queryData, "list.getError", getError)(queryData.data),
 
         loading: queryData.loading,
-        init(): void {
+        init() {
             this.refresh();
         },
         refresh(params = null): void {
@@ -55,7 +88,7 @@ const useDataList = params => {
 
             if (history) {
                 redirectToRouteWithQueryParams(params, { history, location });
-                return
+                return;
             }
 
             queryData.refetch(params);
@@ -78,11 +111,11 @@ const useDataList = params => {
             const preparedParams = { ...dataListProps.__loadParams, search };
             this.refresh(preparedParams);
         },
-        setWhere(where: Object): void {
+        setWhere(where): void {
             const preparedParams = { ...dataListProps.__loadParams, where };
             this.refresh(preparedParams);
         },
-        setSorters(sort: Object): void {
+        setSorters(sort): void {
             const preparedParams = { ...dataListProps.__loadParams, sort };
             this.refresh(preparedParams);
         },
@@ -119,17 +152,17 @@ const useDataList = params => {
             query.set("id", item.id);
             history.push({ search: query.toString() });
         },
-        isMultiSelected(item): boolean {
+        isMultiSelected(item) {
             if (!Array.isArray(multiSelectedItems)) {
                 return false;
             }
 
             return multiSelectedItems.includes(item);
         },
-        isNoneMultiSelected(): boolean {
+        isNoneMultiSelected() {
             return multiSelectedItems.length === 0;
         },
-        getMultiSelected(): Array<Object> {
+        getMultiSelected() {
             return multiSelectedItems;
         },
         multiSelectAll(value: boolean): void {

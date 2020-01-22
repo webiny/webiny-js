@@ -45,7 +45,7 @@ export type InputProps = FormComponentProps &
 export class Input extends React.Component<InputProps> {
     static defaultProps = {
         rawOnChange: false,
-        validation: { isValid: null }
+        validation: { isValid: null, message: null }
     };
 
     // IconProps directly passed to RMWC

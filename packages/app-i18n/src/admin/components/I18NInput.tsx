@@ -44,8 +44,10 @@ const prepareII8NValues = ({ locales, values }) => {
 };
 
 type I18NInputProps = {
-    value: any;
-    onChange: (value: any) => void;
+    label?: string;
+    description?: string;
+    value?: any;
+    onChange?: (value: any) => void;
     richText?: boolean;
     children?: (params: { openDialog: () => void }) => React.ReactNode;
     showTranslateIcon?: boolean;
@@ -77,7 +79,8 @@ export const I18NInput = ({
 
     const submitDialog = useCallback(async values => {
         // Filter out redundant empty values.
-        await onChange({ ...value, values: values.filter(item => !!item.value) });
+        typeof onChange === "function" &&
+            (await onChange({ ...value, values: values.filter(item => !!item.value) }));
         closeDialog();
     }, []);
 
@@ -100,7 +103,7 @@ export const I18NInput = ({
 
         // Filter out redundant empty values.
         newValue.values = newValue.values.filter(item => !!item.value);
-        onChange(newValue);
+        typeof onChange === 'function' &&  onChange(newValue);
     };
 
     const translateMenuItem = useMemo(() => {

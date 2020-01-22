@@ -34,7 +34,6 @@ export const CrudProvider = ({ children, ...props }: CrudProviderProps) => {
     const { location, history } = useReactRouter();
 
     const list = useDataList({
-        name: "dataList", // TODO: ???
         query: get(props, "list.query", props.list),
         variables: get(props, "list.variables"),
         // "useDataList" will know how to handle no-handler-provided situations.

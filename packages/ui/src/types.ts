@@ -1,15 +1,15 @@
 export type FormComponentProps = {
     validation?: {
-        /* Is checkbox value valid? */
-        isValid: null | boolean;
-        /* Error message if checkbox is not valid. */
-        message: null | string;
+        /* Is form element's value valid? */
+        isValid: boolean;
+        /* Error message if value is not valid. */
+        message: string;
         /* Any validation result returned by the validator. */
-        results: any;
+        results?: { [key: string]: any };
     };
 
     /* Provided by <Form> component to perform validation when value has changed. */
-    validate?: () => Promise<any>;
+    validate?: () => Promise<boolean | any>;
 
     /* Form component's value. */
     value?: any;
