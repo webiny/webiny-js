@@ -34,7 +34,7 @@ export default [
             next(action);
 
             // Check the source of the element (could be `saved` element which behaves differently from other elements)
-            const sourcePlugin = getPlugins<PbEditorPageElementPlugin>("pb-page-element").find(
+            const sourcePlugin = getPlugins<PbEditorPageElementPlugin>("pb-editor-page-element").find(
                 pl => pl.elementType === source.type
             );
             if (!sourcePlugin) {
@@ -43,7 +43,7 @@ export default [
             const { onCreate } = sourcePlugin;
             if (!onCreate || onCreate !== "skip") {
                 // If source element does not define a specific `onCreate` behavior - continue with the actual element plugin
-                const plugin = getPlugins<PbEditorPageElementPlugin>("pb-page-element").find(
+                const plugin = getPlugins<PbEditorPageElementPlugin>("pb-editor-page-element").find(
                     pl => pl.elementType === element.type
                 );
                 if (!plugin) {

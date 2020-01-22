@@ -34,7 +34,7 @@ type EmbedPluginConfig = {
 
 export const createEmbedPlugin = (config: EmbedPluginConfig): PbEditorPageElementPlugin => {
     return {
-        name: "pb-page-element-" + config.type,
+        name: "pb-editor-page-element-" + config.type,
         type: "pb-editor-page-element",
         elementType: config.type,
         toolbar: config.toolbar,

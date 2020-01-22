@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Link } from "react-router-dom";
+import { Link } from "@webiny/react-router";
 import { Query } from "react-apollo";
 import get from "lodash.get";
 import { getFooterData } from "./graphql";

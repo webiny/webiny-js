@@ -49,8 +49,8 @@ const App = () => {
     <I18NProvider>
       <UiProvider>
         <SecurityProvider>
-          <PageBuilderProvider theme={myTheme} defaults={defaults}>
-            {getPlugins("route").map((pl: Object) =>
+          <PageBuilderProvider defaults={defaults}>
+            {getPlugins("route").map(pl =>
               React.cloneElement(pl.route, { key: pl.name, exact: true })
             )}
           </PageBuilderProvider>

@@ -90,7 +90,7 @@ export default () => {
                                 style: { textAlign: `${node.data.get("align")}` }
                             };
 
-                            if (typeof Node !== "string") {
+                            if (typeof Component !== "string") {
                                 nodeProps = props;
                             }
 

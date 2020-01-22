@@ -15,7 +15,7 @@ const buttonWrapper = css({
 export default () => {
     return [
         {
-            name: "pb-page-element-button",
+            name: "pb-editor-page-element-button",
             type: "pb-editor-page-element",
             elementType: "button",
             toolbar: {

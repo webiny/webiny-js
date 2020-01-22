@@ -36,12 +36,7 @@ const INSTALL_DIR = "/tmp";
 const INSTALL_ZIP_PATH = path.join(INSTALL_DIR, "apiPageBuilder.zip");
 const INSTALL_EXTRACT_DIR = path.join(INSTALL_DIR, "page_builder_installation_files");
 
-let downloaded = false;
 export default async () => {
-    if (downloaded) {
-        return INSTALL_EXTRACT_DIR;
-    }
-
     const s3 = new S3({ region: process.env.AWS_REGION });
     const installationFilesUrl = await s3.getSignedUrlPromise("getObject", {
         Bucket: PAGE_BUILDER_S3_BUCKET,

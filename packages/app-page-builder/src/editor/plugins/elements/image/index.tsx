@@ -24,7 +24,7 @@ export default () => {
 
     return [
         {
-            name: "pb-page-element-image",
+            name: "pb-editor-page-element-image",
             type: "pb-editor-page-element",
             elementType: "image",
             toolbar: {
@@ -107,7 +107,7 @@ export default () => {
                 }
 
                 // Check the source of the element (could be `saved` element which behaves differently from other elements)
-                const imagePlugin = getPlugins<PbEditorPageElementPlugin>("pb-page-element").find(
+                const imagePlugin = getPlugins<PbEditorPageElementPlugin>("pb-editor-page-element").find(
                     pl => pl.elementType === source.type
                 );
 

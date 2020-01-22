@@ -7,7 +7,7 @@ const ImagesList = ({ data }) => {
     const { theme } = usePageBuilder();
     const { component, images } = data;
     const components = getPlugins<PbPageElementImagesListComponentPlugin>(
-        "pb-page-element-images-list-component"
+        "pb-editor-page-element-images-list-component"
     );
     const imageList = components.find(cmp => cmp.componentName === component);
 

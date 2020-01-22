@@ -41,7 +41,7 @@ const ElementSettingsBar = ({ elementType, deactivateElement }) => {
         return null;
     }
 
-    const plugin = getPlugins<PbEditorPageElementPlugin>("pb-page-element").find(
+    const plugin = getPlugins<PbEditorPageElementPlugin>("pb-editor-page-element").find(
         pl => pl.elementType === elementType
     );
 

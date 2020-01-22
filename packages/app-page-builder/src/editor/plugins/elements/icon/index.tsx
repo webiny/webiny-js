@@ -20,7 +20,7 @@ export default () => {
 
     return [
         {
-            name: "pb-page-element-icon",
+            name: "pb-editor-page-element-icon",
             type: "pb-editor-page-element",
             elementType: "icon",
             toolbar: {

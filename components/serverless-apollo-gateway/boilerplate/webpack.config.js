@@ -1,15 +1,15 @@
 const path = require("path");
 
-module.exports = {
-    entry: path.join(__dirname, "handler.js"),
+module.exports = ({ debug, root }) => ({
+    entry: path.join(root, "handler.js"),
     target: "node",
     output: {
         libraryTarget: "commonjs",
-        path: path.join(__dirname, "build"),
+        path: path.join(root, "build"),
         filename: "handler.js"
     },
     // Generate sourcemaps for proper error messages
-    devtool: false,
+    devtool: debug ? "source-map" : false,
     externals: ["aws-sdk"],
     mode: "production",
     optimization: {
@@ -44,6 +44,6 @@ module.exports = {
         ]
     },
     resolve: {
-        modules: [path.resolve(__dirname, "node_modules"), "node_modules"]
+        modules: [path.resolve(root, "node_modules"), "node_modules"]
     }
-};
+});

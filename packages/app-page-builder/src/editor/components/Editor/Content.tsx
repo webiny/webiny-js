@@ -38,10 +38,10 @@ const BaseContainer = styled("div")({
 
 const Content = ({ rootElement, renderLayout, layout }) => {
     const { theme } = usePageBuilder();
-    const plugins = getPlugins("pb-editor-content") as PbEditorContentPlugin[];
+    const plugins = getPlugins<PbEditorContentPlugin>("pb-editor-content");
 
     const layouts = React.useMemo(() => {
-        const plugins = getPlugins("pb-page-layout") as PbPageLayoutPlugin[];
+        const plugins = getPlugins<PbPageLayoutPlugin>("pb-page-layout");
         return plugins.map(pl => pl.layout);
     }, []);
 

@@ -10,6 +10,7 @@ export const handler = async (event, context) => {
         }
 
         return await new Promise(resolve => {
+            console.log("Execute apolloHandler");
             apolloHandler(event, context, (error, data) => {
                 if (error) {
                     return resolve({
@@ -22,6 +23,7 @@ export const handler = async (event, context) => {
             });
         });
     } catch (e) {
+        console.log("CAUGHT ERROR", JSON.stringify(e, null, 2));
         const { identity, ...requestContext } = event.requestContext;
 
         const report = {
@@ -36,7 +38,7 @@ export const handler = async (event, context) => {
             report.errors.push({ name: e.constructor.name, message: e.message });
         }
 
-        if (process.env.ERROR_REPORTING === "true") {
+        if (process.env.DEBUG === "true") {
             return {
                 statusCode: 500,
                 body: JSON.stringify(report, null, 2)

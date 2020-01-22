@@ -29,7 +29,7 @@ export default (): PbEditorPageElementPlugin => {
     });
 
     return {
-        name: "pb-page-element-column",
+        name: "pb-editor-page-element-column",
         type: "pb-editor-page-element",
         elementType: "column",
         toolbar: {

@@ -11,10 +11,9 @@ export const handler = async (event, context) => {
             apolloHandler = handler;
         }
 
-        return apolloHandler(event, context);
+        return await apolloHandler(event, context);
     } catch (e) {
         const { identity, ...requestContext } = event.requestContext;
-
         const report = {
             requestContext,
             context,
@@ -25,15 +24,15 @@ export const handler = async (event, context) => {
             }
         };
 
-        console.log("ERROR", report);
+        console.log("CAUGHT ERROR", JSON.stringify(report, null, 2));
 
-        if (process.env.ERROR_REPORTING === "true") {
+        if (process.env.DEBUG === "true") {
             return {
                 statusCode: 500,
                 body: JSON.stringify(report, null, 2)
             };
         }
-
         throw e;
+
     }
 };

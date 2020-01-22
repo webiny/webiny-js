@@ -4,7 +4,7 @@ import { PbEditorPageElementPlugin } from "@webiny/app-page-builder/admin/types"
 
 export default (): PbEditorPageElementPlugin => {
     return {
-        name: "pb-page-element-document",
+        name: "pb-editor-page-element-document",
         type: "pb-editor-page-element",
         elementType: "document",
         create(options = {}) {

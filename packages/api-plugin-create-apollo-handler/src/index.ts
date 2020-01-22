@@ -28,16 +28,17 @@ interface ApolloHandlerPluginOptions {
     };
 }
 
-export default (options: ApolloHandlerPluginOptions): CreateApolloHandlerPlugin => {
+export default (options: ApolloHandlerPluginOptions = {}): CreateApolloHandlerPlugin => {
     return {
         name: "create-apollo-handler",
         type: "create-apollo-handler",
         create({ plugins, schema }) {
-            const { server = {}, handler = {} } = options || {};
+            const { server = {}, handler = {} } = options;
 
             const apollo = new ApolloServer({
                 introspection: toBool(server.introspection),
                 playground: toBool(server.playground),
+                debug: toBool(process.env.DEBUG),
                 ...server,
                 schema,
                 context: async ({ event }) => ({

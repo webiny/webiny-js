@@ -1,0 +1,39 @@
+{
+  "name": "@webiny/serverless-aws-lambda",
+  "version": "1.2.0",
+  "main": "./serverless.js",
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "lint": "eslint . --fix --cache"
+  },
+  "author": "Serverless, Inc.",
+  "contributors": [
+    "Pavel Denisjuk <pavel@webiny.com>",
+    "Sven Al Hamad <sven@webiny.com>",
+    "Adrian Smijulj <adrian@webiny.com>"
+  ],
+  "license": "Apache",
+  "dependencies": {
+    "@serverless/aws-iam-role": "^1.0.0",
+    "@serverless/aws-lambda-layer": "^1.0.0",
+    "@serverless/aws-s3": "^2.0.0",
+    "@serverless/core": "^1.0.0",
+    "archiver": "^3.0.0",
+    "aws-sdk": "^2.474.0",
+    "fs-extra": "^7.0.0",
+    "globby": "^9.2.0",
+    "lodash.kebabcase": "^4.1.1",
+    "ramda": "^0.26.0"
+  },
+  "devDependencies": {
+    "babel-eslint": "9.0.0",
+    "eslint": "5.6.0",
+    "eslint-config-prettier": "^3.6.0",
+    "eslint-plugin-import": "^2.18.0",
+    "eslint-plugin-prettier": "^3.1.0",
+    "prettier": "^1.18.2"
+  }
+}

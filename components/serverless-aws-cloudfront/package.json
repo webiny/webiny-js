@@ -5,7 +5,8 @@
   "license": "MIT",
   "dependencies": {
     "@serverless/aws-cloudfront": "^6.0.0",
-    "@serverless/core": "^1.1.1"
+    "@serverless/core": "^1.1.1",
+    "lodash.get": "^4.4.2"
   },
   "scripts": {
     "build": "rm -rf dist && mkdir dist && cp serverless.js dist/",

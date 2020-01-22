@@ -24,7 +24,7 @@ export default () => {
 
     return [
         {
-            name: "pb-page-element-pages-list",
+            name: "pb-editor-page-element-pages-list",
             type: "pb-editor-page-element",
             elementType: "pages-list",
             toolbar: {
@@ -46,7 +46,7 @@ export default () => {
                     type: "pages-list",
                     data: {
                         resultsPerPage: 10,
-                        component: "pb-page-element-pages-list-component-default",
+                        component: "pb-editor-page-element-pages-list-component-default",
                         settings: {
                             margin: {
                                 desktop: { all: 0 },

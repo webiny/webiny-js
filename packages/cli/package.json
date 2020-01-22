@@ -25,6 +25,7 @@
     "glob": "^7.1.4",
     "graphlib": "^2.1.7",
     "load-json-file": "^6.2.0",
+    "lodash.kebabcase": "^4.1.1",
     "node-fetch": "^2.6.0",
     "node-notifier": "^6.0.0",
     "ora": "^4.0.3",

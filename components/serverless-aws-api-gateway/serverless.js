@@ -28,9 +28,9 @@ const defaults = {
 };
 
 class AwsApiGateway extends Component {
-    async default(inputs = {}) {
+    async default({ force = false, ...inputs } = {}) {
         try {
-            if (isEqual(this.state.inputs, inputs)) {
+            if (isEqual(this.state.inputs, inputs) && !force) {
                 this.context.instance.debug("Input was not changed, no action required.");
                 return this.state;
             } else {
@@ -41,12 +41,10 @@ class AwsApiGateway extends Component {
 
             const config = { ...defaults, ...inputs };
 
-            config.name = this.state.name;
-
-            if (!config.name) {
-                config.name = inputs.name
-                    ? `${this.context.instance.id} - ${inputs.name}`
-                    : this.context.resourceId();
+            if (this.state.name) {
+                config.name = this.state.name;
+            } else {
+                config.name = this.context.instance.getResourceName(config.name);
             }
 
             const { name, description, region, stage, endpointTypes, binaryMediaTypes } = config;

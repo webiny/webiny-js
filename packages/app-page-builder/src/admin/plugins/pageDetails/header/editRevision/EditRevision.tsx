@@ -39,7 +39,7 @@ const EditRevision = () => {
         }
 
         history.push(`/page-builder/editor/${data.id}`);
-    }, []);
+    }, [page]);
 
     if (unpublishedRevision) {
         return (

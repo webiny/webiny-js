@@ -1,10 +1,12 @@
+const getLastImport = path =>
+    path
+        .get("body")
+        .filter(p => p.isImportDeclaration())
+        .pop();
+
 module.exports = function({ types, template }, { plugins }) {
     const importPlugin = template(`import PLUGIN_NAME from "PLUGIN_PATH";`);
-    const {
-        identifier,
-        variableDeclaration,
-        variableDeclarator
-    } = types;
+    const { identifier, variableDeclaration, variableDeclarator } = types;
 
     return {
         visitor: {
@@ -14,10 +16,7 @@ module.exports = function({ types, template }, { plugins }) {
                         PLUGIN_NAME: pl.name,
                         PLUGIN_PATH: pl.path
                     });
-                    const lastImport = path
-                        .get("body")
-                        .filter(p => p.isImportDeclaration())
-                        .pop();
+                    const lastImport = getLastImport(path);
 
                     if (lastImport) {
                         lastImport.insertAfter(newImport);

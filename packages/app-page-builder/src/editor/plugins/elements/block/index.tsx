@@ -18,7 +18,7 @@ import { PbEditorPageElementPlugin } from "@webiny/app-page-builder/admin/types"
 
 export default (): PbEditorPageElementPlugin => {
     return {
-        name: "pb-page-element-block",
+        name: "pb-editor-page-element-block",
         type: "pb-editor-page-element",
         elementType: "block",
         settings: [
