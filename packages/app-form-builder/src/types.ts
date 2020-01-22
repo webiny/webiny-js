@@ -1,7 +1,7 @@
 import * as React from "react";
 import { Plugin } from "@webiny/plugins/types";
-import { ReCaptchaComponentType } from "@webiny/app-form-builder/components/Form/components/createReCaptchaComponent";
-import { TermsOfServiceComponentType } from "@webiny/app-form-builder/components/Form/components/createTermsOfServiceComponent";
+import { ReCaptchaComponent } from "@webiny/app-form-builder/components/Form/components/createReCaptchaComponent";
+import { TermsOfServiceComponent } from "@webiny/app-form-builder/components/Form/components/createTermsOfServiceComponent";
 import { I18NStringValue } from "@webiny/app-i18n/types";
 import {
     BindComponent,
@@ -201,8 +201,8 @@ export type FormRenderPropsType = {
     getFieldByFieldId: Function;
     getFields: () => Array<Array<FormRenderFbFormModelField>>;
     getDefaultValues: () => { [key: string]: any };
-    ReCaptcha: ReCaptchaComponentType;
-    TermsOfService: TermsOfServiceComponentType;
+    ReCaptcha: ReCaptchaComponent;
+    TermsOfService: TermsOfServiceComponent;
     submit: (data: Object) => Promise<FormSubmitResponseType>;
     formData: FbFormModel;
 };
