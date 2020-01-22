@@ -22,13 +22,13 @@ export type TermsOfServiceProps = {
     onExpired?: Function;
 };
 
-export type TermsOfServiceComponentType = (props: TermsOfServiceProps) => React.ReactNode;
+export type TermsOfServiceComponentType = React.FC<TermsOfServiceProps>;
 
 const createTermsOfServiceComponent = ({
     formData,
     setTermsOfServiceAccepted
-}: CreateTermsOfServiceComponentArgs): TermsOfServiceComponentType =>
-    function TermsOfService(props: TermsOfServiceProps) {
+}: CreateTermsOfServiceComponentArgs) => {
+    return function TermsOfService(props: TermsOfServiceProps) {
         if (!termsOfServiceEnabled(formData)) {
             return null;
         }
@@ -44,5 +44,6 @@ const createTermsOfServiceComponent = ({
 
         throw new Error("Please use a function for children prop of TermsOfService component.");
     };
+};
 
 export default createTermsOfServiceComponent;

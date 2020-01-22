@@ -1,13 +1,12 @@
-// @flow
 import * as React from "react";
-import type { FieldType } from "@webiny/app-form-builder/types";
+import { FbFormModelField } from "@webiny/app-form-builder/types";
 import { I18NValue } from "@webiny/app-i18n/components";
 import HelperMessage from "../components/HelperMessage";
-import type { BindComponentRenderPropType } from "@webiny/form";
+import { BindComponentRenderProp } from "@webiny/form";
 
 type Props = {
-    bind: BindComponentRenderPropType,
-    field: FieldType
+    bind: BindComponentRenderProp;
+    field: FbFormModelField;
 };
 
 const Select = (props: Props) => {

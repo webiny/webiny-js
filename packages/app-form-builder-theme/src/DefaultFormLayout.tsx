@@ -1,16 +1,13 @@
-// @flow
-// $FlowFixMe
 import React, { useState } from "react";
 import Input from "./fields/Input";
 import Select from "./fields/Select";
 import Radio from "./fields/Radio";
 import Checkbox from "./fields/Checkbox";
 import Textarea from "./fields/Textarea";
-import { Form } from "@webiny/form";
+import { BindComponentRenderProp, Form } from "@webiny/form";
 import { I18NValue } from "@webiny/app-i18n/components";
 import HelperMessage from "./components/HelperMessage";
-import type { FieldType, FormLayoutComponent } from "@webiny/app-form-builder/types";
-import type { BindComponentRenderPropType } from "@webiny/form";
+import { FbFormModelField, FormLayoutComponent } from "@webiny/app-form-builder/types";
 import { validation } from "@webiny/validation";
 
 /**
@@ -100,7 +97,10 @@ const DefaultFormLayout: FormLayoutComponent = ({
      * Renders a single form field. You can add additional handling of other field types if needed.
      * All of these components are located in the "./fields" folder.
      */
-    const renderFieldElement = (props: { field: FieldType, bind: BindComponentRenderPropType }) => {
+    const renderFieldElement = (props: {
+        field: FbFormModelField;
+        bind: BindComponentRenderProp;
+    }) => {
         switch (props.field.type) {
             case "text":
                 return <Input {...props} />;
