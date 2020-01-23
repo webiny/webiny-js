@@ -136,7 +136,8 @@ export default ({ context, createBase, FormSettings }) => {
                         return resolve(this.__overallStats);
                     }
 
-                    const allForms = await Form.find({ parent: this.parent });
+                    const allForms = await Form.find({ query: { parent: this.parent } });
+                    console.log('alee forme', { query: { parent: this.parent } })
                     const stats = {
                         submissions: 0,
                         views: 0,
@@ -151,7 +152,9 @@ export default ({ context, createBase, FormSettings }) => {
 
                     let conversionRate = 0;
                     if (stats.views > 0) {
-                        conversionRate = parseFloat(((stats.submissions / stats.views) * 100).toFixed(2));
+                        conversionRate = parseFloat(
+                            ((stats.submissions / stats.views) * 100).toFixed(2)
+                        );
                     }
 
                     this.__overallStats = {

@@ -29,7 +29,8 @@ export default () => ({
         const I18NLocale = i18NLocale({ createBase });
 
         context.models = {
-            I18NLocale
+            I18NLocale,
+            createBase
         };
     }
 });

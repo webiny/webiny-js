@@ -111,10 +111,10 @@ export default () => [
         }
     },
     {
-        type: "api-page-builder-model",
-        name: "api-page-builder-model-cookie-policy-settings",
-        model({ models, createBase }) {
-            models.CookiePolicySettings = cookiePolicySettings({ createBase });
+        type: "graphql-context",
+        name: "graphql-context-models",
+        model({ models }) {
+            models.CookiePolicySettings = cookiePolicySettings({ createBase: models.createBase });
         }
     }
 ];

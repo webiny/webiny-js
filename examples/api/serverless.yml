@@ -21,7 +21,7 @@ gateway:
   inputs:
     region: ${vars.region}
     memory: 512
-    timeout: 29
+    timeout: 30
     debug: ${vars.debug}
     webpackConfig: ./webpack.config.js
     plugins:

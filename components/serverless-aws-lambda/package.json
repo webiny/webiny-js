@@ -25,7 +25,6 @@
     "aws-sdk": "^2.474.0",
     "fs-extra": "^7.0.0",
     "globby": "^9.2.0",
-    "lodash.kebabcase": "^4.1.1",
     "ramda": "^0.26.0"
   },
   "devDependencies": {

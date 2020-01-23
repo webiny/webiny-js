@@ -32,7 +32,8 @@ export default () => ({
 
         context.models = {
             File,
-            FilesSettings
+            FilesSettings,
+            createBase
         };
     }
 });

@@ -4,7 +4,7 @@ import Footer from "./components/Footer";
 import CircularSpinner from "./components/CircularSpinner";
 import {PbPageLayoutComponentPlugin, PbPageLayoutPlugin, PbThemePlugin} from "@webiny/app-page-builder/types";
 
-export default [
+export default () => [
     {
         name: "pb-theme-default",
         type: "pb-theme",

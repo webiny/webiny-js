@@ -13,6 +13,7 @@
     "fs-extra": "^8.1.0",
     "load-json-file": "^6.2.0",
     "lodash.camelcase": "^4.3.0",
+    "lodash.get": "^4.4.2",
     "lodash.isequal": "^4.5.0",
     "prettier": "^1.18.2",
     "source-map-support": "^0.5.16",
@@ -34,7 +35,8 @@
       ],
       "dependencies": [
         "@babel/preset-env",
-        "babel-loader"
+        "babel-loader",
+        "source-map-support"
       ]
     }
   },
