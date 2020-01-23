@@ -1,6 +1,7 @@
 const path = require("path");
 const webpack = require("webpack");
 const WebpackBar = require("webpackbar");
+const aliases = require("@webiny/project-utils/aliases/webpack");
 
 module.exports = {
     entry: path.resolve("ssr", "ssr.js"),
@@ -12,6 +13,7 @@ module.exports = {
     },
     resolve: {
         alias: {
+            ...aliases,
             webfontloader: "null-loader",
             "react-spinner-material": "null-loader"
         },
