@@ -17,6 +17,7 @@
     "execa": "^2.0.5",
     "fs-extra": "^8.1.0",
     "lodash.camelcase": "^4.3.0",
+    "lodash.get": "^4.4.2",
     "prettier": "^1.18.2",
     "source-map-support": "^0.5.16",
     "webpack": "^4.39.2"
@@ -39,7 +40,8 @@
         "@babel/preset-env",
         "@babel/preset-typescript",
         "babel-loader",
-        "babel-plugin-module-resolver"
+        "babel-plugin-module-resolver",
+        "source-map-support"
       ]
     }
   },

@@ -17,7 +17,8 @@
     "@apollo/gateway": "^0.10.9",
     "@babel/runtime": "^7.5.5",
     "apollo-server-lambda": "^2.9.8",
-    "apollo-server-types": "^0.2.10"
+    "apollo-server-types": "^0.2.10",
+    "lodash.get": "^4.4.2"
   },
   "devDependencies": {
     "@babel/cli": "^7.5.5",

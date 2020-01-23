@@ -21,6 +21,7 @@
     "@webiny/ui": "^2.0.1",
     "apollo-client": "^2.6.8",
     "apollo-link": "^1.2.1",
+    "graphql": "^14.5.8",
     "graphql-tag": "^2.10.1",
     "invariant": "^2.2.4",
     "lodash": "^4.17.4",
