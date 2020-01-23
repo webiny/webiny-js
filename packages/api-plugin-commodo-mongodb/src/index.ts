@@ -1,5 +1,6 @@
 import { MongoClient } from "mongodb";
 import { MongoDbDriver, id } from "@commodo/fields-storage-mongodb";
+import { GraphQLContextPlugin } from "@webiny/api/types";
 
 let database = null;
 let client = null;
@@ -13,7 +14,17 @@ async function getDatabase({ server, name }) {
     return { database: client.db(name), client };
 }
 
-export default (options = {}) => ({
+export type CommodoMongoDBFactoryOptions = {
+    test?: {
+        afterAll(cb: Function): void;
+    };
+    database: {
+        server: string;
+        name: string;
+    };
+};
+
+export default (options: CommodoMongoDBFactoryOptions): GraphQLContextPlugin => ({
     name: "graphql-context-commodo",
     type: "graphql-context",
     async preApply(context) {

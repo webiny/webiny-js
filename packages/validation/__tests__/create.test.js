@@ -1,5 +1,4 @@
 import { validation } from "../src";
-import "./chai";
 
 describe("create test", () => {
     it("should create async validator function", async () => {

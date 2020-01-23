@@ -1,6 +1,6 @@
 import { graphql } from "graphql";
 import { setupSchema } from "@webiny/api/testing";
-import filesPlugins from "@webiny/api-files/plugins";
+import filesPlugins from "../dist/plugins";
 
 export default ({ plugins }) => {
     let testing;
