@@ -1,19 +1,5 @@
 import gql from "graphql-tag";
 
-export const FORMS_SETTINGS = /* GraphQL */ `
-    {
-        settings {
-            forms {
-                reCaptcha {
-                    enabled
-                    siteKey
-                    secretKey
-                }
-            }
-        }
-    }
-`;
-
 export const FIELDS_FIELDS = `
         _id
         fieldId
