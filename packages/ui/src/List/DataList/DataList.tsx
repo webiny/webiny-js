@@ -388,9 +388,7 @@ DataList.defaultProps = {
     }
 };
 
-export const ScrollList = (
-    props: ListProps & { children: React.ReactElement<typeof ListItem>[] }
-) => {
+export const ScrollList = (props: ListProps) => {
     return (
         <List {...props} className={scrollList}>
             {props.children}

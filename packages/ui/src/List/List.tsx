@@ -1,6 +1,7 @@
 import * as React from "react";
 import {
     List as RmwcList,
+    ListProps as RmwcListProps,
     ListItem as RmwcListItem,
     ListItemProps as RmwcListItemProps,
     ListItemText as RmwcListItemText,
@@ -29,14 +30,8 @@ export const ListItem = (props: ListItemProps) => {
     return <RmwcListItem {...props} />;
 };
 
-export type ListProps = {
-    children?: any;
-
-    // Sets the list as non-interactive
-    nonInteractive?: boolean;
-
-    // In case you are using a 2-line list, set this param to true
-    twoLine?: boolean;
+export type ListProps = RmwcListProps & {
+    children: React.ReactElement<typeof ListItem>[];
 
     className?: string;
 };
