@@ -27,12 +27,13 @@ const Draggable = React.memo((props: DraggableProps) => {
             if (typeof beginDrag === "function") {
                 return beginDrag(props, monitor);
             }
-            return { ...props };
+            return beginDrag;
         },
         end(item, monitor) {
             if (typeof endDrag === "function") {
                 return endDrag(item, monitor);
             }
+            return endDrag;
         }
     });
 
