@@ -49,7 +49,7 @@ const UsersDataList = () => {
             ]}
         >
             {({ data, isSelected, select }) => (
-                <ScrollList twoLine /* TODO: @adrian // avatarList*/>
+                <ScrollList twoLine avatarList>
                     {data.map(item => (
                         <ListItem key={item.id} selected={isSelected(item)}>
                             <ListItemGraphic>
