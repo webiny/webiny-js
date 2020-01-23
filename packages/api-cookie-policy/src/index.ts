@@ -111,8 +111,8 @@ export default () => [
         }
     },
     {
-        type: "api-page-builder-model",
-        name: "api-page-builder-model-cookie-policy-settings",
+        type: "pb-model",
+        name: "pb-model-cookie-policy-settings",
         model({ models, createBase }) {
             models.CookiePolicySettings = cookiePolicySettings({ createBase });
         }

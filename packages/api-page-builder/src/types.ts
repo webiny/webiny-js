@@ -12,8 +12,3 @@ export type PbModelPlugin = Plugin & {
     type: "pb-model";
     model(params: { models: any; createBase: Function }): void;
 };
-
-export type PbExtendModelsPlugin = Plugin & {
-    type: "pb-extend-models";
-    extend(params: { models: any }): void;
-};

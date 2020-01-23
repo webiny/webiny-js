@@ -8,7 +8,7 @@ import pbPage from "./models/pbPage.model";
 import pbSettings from "./models/pbSettings.model";
 import got from "got";
 import { GraphQLContextPlugin } from "@webiny/api/types";
-import { PbExtendModelsPlugin, PbModelPlugin } from "@webiny/api-page-builder/types";
+import { PbModelPlugin } from "@webiny/api-page-builder/types";
 
 export default (): GraphQLContextPlugin[] => [
     {
@@ -48,13 +48,8 @@ export default (): GraphQLContextPlugin[] => [
                 PbPage
             };
 
-            // TODO: @adrian unify plugins
             context.plugins.byType<PbModelPlugin>("pb-model").forEach(plugin => {
                 plugin.model({ models: context.models, createBase });
-            });
-
-            context.plugins.byType<PbExtendModelsPlugin>("pb-extend-models").forEach(plugin => {
-                plugin.extend({ models: context.models });
             });
         }
     },

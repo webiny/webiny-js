@@ -179,8 +179,8 @@ export default () => [
         }
     },
     {
-        type: "api-page-builder-model",
-        name: "api-page-builder-model-mailchimp-settings",
+        type: "pb-model",
+        name: "pb-model-mailchimp-settings",
         model({ models, createBase }) {
             models.MailchimpSettings = mailchimpSettings({ createBase });
         }
