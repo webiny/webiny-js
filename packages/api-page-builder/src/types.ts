@@ -7,8 +7,3 @@ export type PbResolverListPagesPlugin = Plugin & {
         context: GraphQLContext;
     }): Promise<{ pages: any[]; totalCount: number }>;
 };
-
-export type PbModelPlugin = Plugin & {
-    type: "pb-model";
-    model(params: { models: any; createBase: Function }): void;
-};
