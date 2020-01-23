@@ -1,3 +1,5 @@
+import { FbFormFieldPatternValidatorPlugin } from "@webiny/app-form-builder/types";
+
 export default {
     type: "form-editor-field-validator-pattern",
     name: "form-editor-field-validator-pattern-upper-case",
@@ -6,4 +8,4 @@ export default {
         name: "upperCase",
         label: "Upper case"
     }
-};
+} as FbFormFieldPatternValidatorPlugin;

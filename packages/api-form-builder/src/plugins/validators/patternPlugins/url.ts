@@ -1,3 +1,5 @@
+import { FbFormFieldPatternValidatorPlugin } from "@webiny/api-form-builder/types";
+
 export default {
     type: "form-field-validator-pattern",
     name: "form-field-validator-pattern-url",
@@ -7,4 +9,4 @@ export default {
             "^(ftp|http|https):\\/\\/(\\w+:{0,1}\\w*@)?(\\S+)(:[0-9]+)?(\\/|\\/([\\w#!:.?+=&%@!\\-\\/]))?$",
         flags: "i"
     }
-};
+} as FbFormFieldPatternValidatorPlugin;

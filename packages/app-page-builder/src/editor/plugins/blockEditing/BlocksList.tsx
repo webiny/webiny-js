@@ -23,11 +23,9 @@ const BlocksList = props => {
         // Scroll only if the active block category has changed
         if (rightPanelElement && prevProps.current.category !== props.category) {
             if (rightPanelElement.current.scrollTop === 0) {
-                // $FlowFixMe
                 rightPanelElement.current.scroll(0, 1);
                 return;
             }
-            // $FlowFixMe
             rightPanelElement.current.scroll(0, 0);
         }
     });

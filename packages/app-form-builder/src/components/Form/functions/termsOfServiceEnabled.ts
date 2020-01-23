@@ -1,7 +1,6 @@
-// @flow
 import { get } from "lodash";
-import type { FormDataType } from "@webiny/app-form-builder/types";
+import  { FbFormModel } from "@webiny/app-form-builder/types";
 
-export default (formData: FormDataType) => {
+export default (formData: FbFormModel) => {
     return get(formData, "settings.termsOfServiceMessage.enabled");
 };

@@ -1,4 +1,3 @@
-// @flow
 import RevisionSelector from "./RevisionSelector";
 import PublishRevision from "./PublishRevision";
 import EditRevision from "./EditRevision";

@@ -43,7 +43,6 @@ export default class ElementPreview extends React.Component<any> {
 
             const newContentDoc: any = wrapper.firstChild;
 
-            // $FlowFixMe
             doc.querySelector("#" + element.id).replaceWith(newContentDoc);
         }
 
@@ -65,7 +64,6 @@ export default class ElementPreview extends React.Component<any> {
 
         const editor = document.querySelector(".pb-editor");
         // Hide element highlight while creating the image
-        // $FlowFixMe
         editor.classList.add("pb-editor-no-highlight");
 
         const dataUrl = await domToImage.toPng(node, {
@@ -73,7 +71,6 @@ export default class ElementPreview extends React.Component<any> {
             width: 1000
         });
 
-        // $FlowFixMe
         editor.classList.remove("pb-editor-no-highlight");
 
         this.props.onChange(dataUrl);

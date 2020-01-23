@@ -1,13 +1,18 @@
-// @flow
-import type { FormRenderComponentPropsType, FormSubmitResponseType } from "@webiny/app-form-builder/types";
+import {
+    FbFormRenderComponentProps,
+    FormSubmitResponseType
+} from "@webiny/app-form-builder/types";
+
 import { CREATE_FORM_SUBMISSION } from "./graphql";
 import getClientIp from "./getClientIp";
 import { get } from "lodash";
+import { ApolloClient } from "apollo-client";
 
 type Args = {
-    props: FormRenderComponentPropsType,
-    data: Object,
-    reCaptchaResponseToken: string
+    client: ApolloClient<any>;
+    props: FbFormRenderComponentProps;
+    data: any;
+    reCaptchaResponseToken: string;
 };
 
 export default async ({
@@ -35,7 +40,7 @@ export default async ({
         }
     });
 
-    let response = await client.mutate({
+    let response: any = await client.mutate({
         mutation: CREATE_FORM_SUBMISSION,
         variables: {
             id: form.id,

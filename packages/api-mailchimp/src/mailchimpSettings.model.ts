@@ -1,4 +1,3 @@
-// @flow
 import { flow } from "lodash";
 import MailchimpApi from "./MailchimpApi";
 

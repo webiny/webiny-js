@@ -4,9 +4,9 @@ import i18nPlugins from "@webiny/app-i18n/admin/plugins";
 import securityPlugins from "@webiny/app-security/admin/plugins";
 import pageBuilderPlugins from "@webiny/app-page-builder/admin/plugins";
 import pageBuilderTheme from "@webiny/app-page-builder-theme";
-// import formBuilderPlugins from "@webiny/app-form-builder/admin/plugins";
-// import formBuilderPageBuilderPlugins from "@webiny/app-form-builder/page-builder/admin/plugins";
-// import formBuilderTheme from "@webiny/app-form-builder-theme";
+import formBuilderPlugins from "@webiny/app-form-builder/admin/plugins";
+import formBuilderPageBuilderPlugins from "@webiny/app-form-builder/page-builder/admin/plugins";
+import formBuilderTheme from "@webiny/app-form-builder-theme";
 import cookiePolicyPlugins from "@webiny/app-cookie-policy/admin";
 import googleTagManagerPlugins from "@webiny/app-google-tag-manager/admin";
 import typeformPlugins from "@webiny/app-typeform/admin";
@@ -23,9 +23,9 @@ const plugins = [
     securityPlugins,
     pageBuilderPlugins,
     pageBuilderTheme,
-    // formBuilderPlugins,
-    // formBuilderPageBuilderPlugins,
-    // formBuilderTheme(),
+    formBuilderPlugins,
+    formBuilderPageBuilderPlugins,
+    formBuilderTheme(),
     cookiePolicyPlugins,
     googleTagManagerPlugins,
     typeformPlugins,

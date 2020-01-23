@@ -1,4 +1,3 @@
-// @flow
 import routes from "./routes";
 import menus from "./menus";
 import fields from "./fields";

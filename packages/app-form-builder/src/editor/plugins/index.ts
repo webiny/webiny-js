@@ -1,4 +1,3 @@
-// @flow
 import defaultBar from "./defaultBar";
 import formSettings from "./formSettings";
 import triggers from "./triggers";

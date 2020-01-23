@@ -1,0 +1,22 @@
+{
+  "extends": "../../tsconfig.build.json",
+  "include": ["./src", "./custom.d.ts"],
+  "exclude": [
+    "node_modules",
+    "../app-form-builder",
+    "../app-i18n",
+    "../form",
+    "../validation"
+  ],
+  "compilerOptions": {
+    "rootDir": "./src",
+    "outDir": "./dist",
+    "declarationDir": "./dist"
+  },
+  "references": [
+    { "path": "../app-form-builder/tsconfig.build.json" },
+    { "path": "../app-i18n/tsconfig.build.json" },
+    { "path": "../form/tsconfig.build.json" },
+    { "path": "../validation/tsconfig.build.json" }
+  ]
+}

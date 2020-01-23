@@ -1,4 +1,3 @@
-// @flow
 import gql from "graphql-tag";
 
 const I18N_FIELDS = `

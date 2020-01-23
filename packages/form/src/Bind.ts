@@ -3,16 +3,20 @@ import { get } from "lodash";
 import { Form } from "./Form";
 import invariant from "invariant";
 
+export type BindComponentRenderPropValidation = {
+    isValid: boolean;
+    message: string;
+    results?: { [key: string]: any };
+};
+
+export type BindComponentRenderPropOnChange = (value: any) => Promise<void>;
+
 export type BindComponentRenderProp = {
     form: Object;
-    onChange: (value: any) => Promise<void>;
+    onChange: BindComponentRenderPropOnChange;
     value: any;
-    validate: () => Promise<void>;
-    validation: {
-        isValid: boolean;
-        message: string;
-        results?: { [key: string]: any };
-    };
+    validate: () => Promise<boolean | any>;
+    validation: BindComponentRenderPropValidation;
 };
 
 export type BindComponentProps = {
@@ -71,7 +75,6 @@ const createBind = (form: Form) => {
         form.inputs[name].props = newProps;
 
         if (React.isValidElement(children)) {
-            // $FlowFixMe
             return React.cloneElement(children, newProps);
         }
 

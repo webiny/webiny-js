@@ -1,6 +1,7 @@
 import textFieldPlugin from "./../text";
+import { FbBuilderFieldPlugin } from "@webiny/app-form-builder/types";
 
-export default {
+const plugin: FbBuilderFieldPlugin = {
     type: "form-editor-field-type",
     name: "form-editor-field-type-last-name",
     field: {
@@ -12,7 +13,7 @@ export default {
         createField(props) {
             const { i18n } = props;
             return {
-                ...textFieldPlugin.field.createField(),
+                ...textFieldPlugin.field.createField(props),
                 name: this.name,
                 fieldId: "lastName",
                 label: {
@@ -27,3 +28,5 @@ export default {
         }
     }
 };
+
+export default plugin;

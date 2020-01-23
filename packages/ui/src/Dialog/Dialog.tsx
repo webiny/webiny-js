@@ -27,6 +27,8 @@ export type DialogProps = {
     open?: boolean;
 
     onClose?: (evt: DialogOnCloseEventT) => void;
+
+    preventOutsideDismiss?: boolean;
 };
 
 export class Dialog extends React.Component<DialogProps> {
@@ -76,6 +78,8 @@ export type DialogContentProps = RmwcDialogContentProps & {
      * Dialog content.
      */
     children: React.ReactNode[] | React.ReactNode;
+
+    className?: string;
 };
 
 /**
@@ -90,6 +94,8 @@ export type DialogActionsProps = RmwcDialogActionsProps & {
      * Action buttons.
      */
     children: React.ReactNode[] | React.ReactNode;
+
+    style?: object;
 };
 
 /**

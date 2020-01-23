@@ -1,4 +1,3 @@
-// @flow
 import gql from "graphql-tag";
 
 const ERROR_FIELDS = `
@@ -19,35 +18,6 @@ const BASE_FORM_FIELDS = `
         firstName
         lastName
     }
-`;
-
-export const FIELDS_FIELDS = `
-        _id
-        fieldId
-        type
-        label {
-            value
-        }
-        placeholderText {
-            value
-        }
-        helpText {
-            value
-        }
-        options {
-            label {
-                value
-            }
-            value
-        }
-        validation {
-            name
-            settings
-            message {
-                value
-            }
-        }
-        settings
 `;
 
 export const LIST_FORMS = gql`

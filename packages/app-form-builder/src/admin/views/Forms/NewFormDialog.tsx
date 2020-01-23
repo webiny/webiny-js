@@ -28,14 +28,16 @@ const narrowDialog = css({
     }
 });
 
-const NewFormDialog = ({
-    open,
-    onClose,
-    formsDataList
-}: {
+export type NewFormDialogProps = {
     open: boolean;
     onClose: DialogOnClose;
     formsDataList: any;
+};
+
+const NewFormDialog: React.FC<NewFormDialogProps> = ({
+    open,
+    onClose,
+    formsDataList
 }) => {
     const [loading, setLoading] = React.useState(false);
     const { showSnackbar } = useSnackbar();

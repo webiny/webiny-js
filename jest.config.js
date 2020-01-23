@@ -2,5 +2,11 @@
 // Until then, specify the packages manually
 
 module.exports = {
-    projects: ["packages/plugins", "packages/validation", "packages/http-handler-ssr"]
+    projects: [
+        "packages/api-files",
+        "packages/plugins",
+        "packages/validation",
+        "packages/http-handler-ssr"
+    ],
+    modulePathIgnorePatterns: ["dist"]
 };

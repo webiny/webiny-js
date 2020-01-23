@@ -73,7 +73,6 @@ class Identity {
             }
 
             for (let i = 0; i < resources.length; i++) {
-                // $FlowFixMe
                 if (!this[hasResourceMethod](resources[i])) {
                     return false;
                 }
@@ -88,7 +87,7 @@ class Identity {
                 return false;
             }
 
-            for (let key in resources) {
+            for (const key in resources) {
                 result[key] = false;
             }
             return result;
@@ -99,18 +98,17 @@ class Identity {
                 return true;
             }
 
-            for (let key in resources) {
+            for (const key in resources) {
                 result[key] = true;
             }
             return result;
         }
 
-        for (let key in resources) {
+        for (const key in resources) {
             result[key] = true;
             const resourcesToCheck: Array<string> = resources[key];
             for (let i = 0; i < resourcesToCheck.length; i++) {
-                let resourceToCheck = resourcesToCheck[i];
-                // $FlowFixMe
+                const resourceToCheck = resourcesToCheck[i];
                 if (!this[hasResourceMethod](resourceToCheck)) {
                     if (options.forceBoolean) {
                         return false;

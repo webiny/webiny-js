@@ -16,10 +16,6 @@ export default location => {
         }
 
         ["sort", "where", "search"].forEach(key => {
-            if (!location) {
-                return;
-            }
-
             if (typeof query.get(key) === "string") {
                 try {
                     params[key] = JSON.parse(query.get(key));
