@@ -22,7 +22,7 @@ const plugins = [
     i18nPlugins,
     securityPlugins,
     pageBuilderPlugins,
-    pageBuilderTheme,
+    pageBuilderTheme(),
     formBuilderPlugins,
     formBuilderPageBuilderPlugins,
     formBuilderTheme(),
