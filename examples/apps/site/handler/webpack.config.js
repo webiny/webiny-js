@@ -49,6 +49,7 @@ module.exports = {
         ]
     },
     resolve: {
+        alias: aliases,
         modules: [path.resolve("node_modules"), "node_modules"]
     }
 };
