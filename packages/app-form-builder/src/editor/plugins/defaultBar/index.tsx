@@ -1,4 +1,3 @@
-//@flow
 import React from "react";
 import BackButton from "./BackButton";
 import Divider from "./Divider";

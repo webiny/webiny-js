@@ -1,4 +1,3 @@
-//@flow
 import React from "react";
 import styled from "@emotion/styled";
 import Droppable from "../Droppable";

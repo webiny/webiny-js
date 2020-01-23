@@ -1,4 +1,3 @@
-//@flow
 import * as React from "react";
 import FormSubmissionsListComponent from "./FormSubmissionsList/FormSubmissionsList";
 import { LIST_FORM_SUBMISSIONS } from "@webiny/app-form-builder/admin/viewsGraphql";

@@ -48,7 +48,6 @@ const plugin: GraphQLContextPlugin = {
                     currentLocale = self.getDefaultLocale();
                 }
 
-                // $FlowFixMe
                 self.__i18n.locale = currentLocale;
                 return self.__i18n.locale;
             },

@@ -1,4 +1,3 @@
-//@flow
 import * as React from "react";
 import { css } from "emotion";
 import { get } from "dot-prop-immutable";

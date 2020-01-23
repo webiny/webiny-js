@@ -1,5 +1,3 @@
-//@flow
-// $FlowFixMe
 import React, { useState } from "react";
 import { getPlugins } from "@webiny/plugins";
 import { OverlayLayout } from "@webiny/app-admin/components/OverlayLayout";

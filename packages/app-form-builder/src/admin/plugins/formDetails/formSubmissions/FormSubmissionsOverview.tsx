@@ -1,4 +1,3 @@
-//@flow
 import * as React from "react";
 import Block from "./Block";
 import { Typography } from "@webiny/ui/Typography";

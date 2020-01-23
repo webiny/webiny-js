@@ -15,7 +15,6 @@ import {
 
 export default FormEditorContext => {
     return () => {
-        // $FlowFixMe
         // TODO: @ts-adrian add proper type
         const context = React.useContext<any>(FormEditorContext);
         if (!context) {

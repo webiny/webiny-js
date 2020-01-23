@@ -55,7 +55,7 @@
     "build:prod": "cross-env REACT_APP_ENV=browser env-cmd -r .env.json -e default,prod yarn build && yarn build:prod:ssr",
     "build:prod:ssr": "cross-env NODE_ENV=production REACT_APP_ENV=ssr env-cmd -r .env.json -e default,prod yarn build:ssr",
     "build:ssr": "webpack --progress --mode production --config ./ssr/webpack.config.js && cp ./ssr/handler.js build-ssr/",
-    "build:handler": "webpack --config ./handler/webpack.config.js",
+    "build:handler": "cross-env NODE_ENV=production webpack --config ./handler/webpack.config.js",
     "postbuild": "yarn build:handler",
     "start": "cross-env REACT_APP_ENV=browser env-cmd -r .env.json -e default,local rescripts start",
     "test": "rescripts test --env=jsdom",

@@ -1,4 +1,3 @@
-// @flow
 import { fileUploadPlugin, imagePlugin } from "@webiny/app/plugins";
 import adminPlugins from "@webiny/app-admin/plugins";
 import i18nPlugins from "@webiny/app-i18n/admin/plugins";
