@@ -179,10 +179,10 @@ export default () => [
         }
     },
     {
-        type: "pb-model",
-        name: "pb-model-mailchimp-settings",
-        model({ models, createBase }) {
-            models.MailchimpSettings = mailchimpSettings({ createBase });
+        type: "graphql-context",
+        name: "graphql-context-models",
+        apply({ models }) {
+            models.MailchimpSettings = mailchimpSettings({ createBase: models.createBase });
         }
     }
 ];

@@ -72,10 +72,10 @@ export default () => [
         }
     },
     {
-        type: "pb-model",
-        name: "pb-model-google-tag-manager-settings",
-        model({ models, createBase }) {
-            models.GoogleTagManagerSettings = googleTagManagerSettings({ createBase });
+        type: "graphql-context",
+        name: "graphql-context-models",
+        model({ models }) {
+            models.GoogleTagManagerSettings = googleTagManagerSettings({ createBase: models.createBase });
         }
     }
 ];
