@@ -37,7 +37,8 @@ export default (): GraphQLContextPlugin => ({
         context.models = {
             Form,
             FormSettings,
-            FormSubmission
+            FormSubmission,
+            createBase
         };
     }
 });

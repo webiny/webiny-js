@@ -45,7 +45,8 @@ export default (): GraphQLContextPlugin[] => [
                 PbPageElement,
                 PbMenu,
                 PbSettings,
-                PbPage
+                PbPage,
+                createBase
             };
 
             context.plugins.byType<PbModelPlugin>("pb-model").forEach(plugin => {

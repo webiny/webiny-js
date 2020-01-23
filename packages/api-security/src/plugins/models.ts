@@ -52,7 +52,8 @@ export default () => ({
             SecurityRoles2Models,
             SecurityGroup,
             SecurityGroups2Models,
-            SecurityUser
+            SecurityUser,
+            createBase
         };
     }
 });
