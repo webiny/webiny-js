@@ -25,6 +25,8 @@
       "@webiny/api-page-builder": ["./packages/api-page-builder/src"],
       "@webiny/api-i18n/*": ["./packages/api-i18n/src/*"],
       "@webiny/api-i18n": ["./packages/api-i18n/src"],
+      "@webiny/api-plugin-commodo-mongodb/*": ["./packages/api-plugin-commodo-mongodb/src/*"],
+      "@webiny/api-plugin-commodo-mongodb": ["./packages/api-plugin-commodo-mongodb/src"],
       "@webiny/api-security/*": ["./packages/api-security/src/*"],
       "@webiny/api-security": ["./packages/api-security/src"],
       "@webiny/api/*": ["./packages/api/src/*"],

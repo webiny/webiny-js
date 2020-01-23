@@ -14,14 +14,15 @@
     "Adrian Smijulj <adrian@webiny.com>"
   ],
   "dependencies": {
-    "mongodb": "^3.1.13",
     "@babel/runtime": "^7.5.5",
-    "@commodo/fields-storage-mongodb": "^1.0.3"
+    "@commodo/fields-storage-mongodb": "^1.0.3",
+    "mongodb": "^3.5.2"
   },
   "devDependencies": {
     "@babel/cli": "^7.5.5",
     "@babel/core": "^7.5.5",
-    "@babel/preset-env": "^7.5.5"
+    "@babel/preset-env": "^7.5.5",
+    "@webiny/api": "^2.1.0"
   },
   "publishConfig": {
     "access": "public"
