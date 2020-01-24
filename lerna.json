@@ -12,7 +12,7 @@
         "lerna.json",
         "examples/**"
       ],
-      "allowBranch": ["master"],
+      "allowBranch": ["master", "next"],
       "conventionalCommits": true,
       "createRelease": "github",
       "commitHooks": false,
