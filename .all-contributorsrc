@@ -64,6 +64,6 @@
       "contributions": ["bug", "userTesting"]
     }
   ],
-  "contributorsPerLine": 6,
+  "contributorsPerLine": 5,
   "commitConvention": "none"
 }
