@@ -1,6 +1,6 @@
 {
   "name": "@webiny/app-google-tag-manager",
-  "version": "2.0.3",
+  "version": "2.0.4-next.0",
   "main": "index.js",
   "repository": {
     "type": "git",
@@ -11,12 +11,12 @@
   "license": "MIT",
   "dependencies": {
     "@babel/runtime": "^7.5.5",
-    "@webiny/app-admin": "^2.1.1",
-    "@webiny/app-security": "^2.0.3",
-    "@webiny/app-page-builder": "^2.0.3",
-    "@webiny/form": "^2.0.0",
-    "@webiny/react-router": "^1.0.0",
-    "@webiny/ui": "^2.0.1",
+    "@webiny/app-admin": "^2.1.4-next.0",
+    "@webiny/app-page-builder": "^2.0.4-next.0",
+    "@webiny/app-security": "^2.0.4-next.0",
+    "@webiny/form": "^2.0.1-next.0",
+    "@webiny/react-router": "^1.0.1-next.0",
+    "@webiny/ui": "^2.0.2-next.0",
     "lodash.get": "^4.4.2",
     "react-helmet": "^5.2.0"
   },
@@ -24,8 +24,8 @@
     "@babel/cli": "^7.5.5",
     "@babel/core": "^7.5.5",
     "@babel/preset-env": "^7.5.5",
-    "@babel/preset-typescript": "^7.8.3",
     "@babel/preset-react": "^7.0.0",
+    "@babel/preset-typescript": "^7.8.3",
     "@svgr/webpack": "^4.3.2",
     "babel-plugin-named-asset-import": "^1.0.0-next.3e165448"
   },

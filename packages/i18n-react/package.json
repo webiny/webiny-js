@@ -1,6 +1,6 @@
 {
   "name": "@webiny/i18n-react",
-  "version": "2.0.0",
+  "version": "2.0.1-next.0",
   "main": "index.js",
   "repository": {
     "type": "git",
@@ -15,15 +15,15 @@
   "license": "MIT",
   "dependencies": {
     "@babel/runtime": "^7.5.5",
-    "@webiny/i18n": "^2.0.0",
+    "@webiny/i18n": "^2.0.1-next.0",
     "lodash": "^4.17.4"
   },
   "devDependencies": {
     "@babel/cli": "^7.5.5",
     "@babel/core": "^7.5.5",
     "@babel/preset-env": "^7.5.5",
-    "@babel/preset-typescript": "^7.8.3",
     "@babel/preset-react": "^7.0.0",
+    "@babel/preset-typescript": "^7.8.3",
     "babel-plugin-lodash": "^3.3.4"
   },
   "peerDependencies": {

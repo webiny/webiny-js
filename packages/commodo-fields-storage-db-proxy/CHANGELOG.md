@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## 1.0.1-next.0 (2020-01-24)
+
+
+### Bug Fixes
+
+* update [@commodo](https://github.com/commodo) package versions ([adc2fc3](https://github.com/webiny/commodo/commit/adc2fc39010a7c1575316c43f461b346d74ea4b8))
+
+
+
+
+
 # [0.3.0](https://github.com/webiny/commodo/compare/@commodo/fields-storage-mongodb@0.2.15...@commodo/fields-storage-mongodb@0.3.0) (2019-12-17)
 
 
