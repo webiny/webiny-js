@@ -18,7 +18,6 @@
     "@webiny/app-security": "latest",
     "@webiny/app-typeform": "latest",
     "@webiny/plugins": "latest",
-    "@webiny/react-router": "^1.0.0",
     "@webiny/project-utils": "latest",
     "@webiny/react-router": "latest",
     "@webiny/ui": "latest",

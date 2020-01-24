@@ -41,7 +41,7 @@ gateway:
               url: ${formBuilder.api.graphqlUrl}
 
 dbProxy:
-  component: "@webiny/serverless-db-proxy/dist"
+  component: "@webiny/serverless-db-proxy"
   inputs:
     region: ${vars.region}
     concurrencyLimit: 10

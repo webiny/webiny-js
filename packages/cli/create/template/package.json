@@ -2,7 +2,6 @@
   "private": true,
   "workspaces": {
     "packages": [
-      "packages/*",
       "apps/*"
     ]
   },
@@ -27,13 +26,14 @@
     "@webiny/serverless-apollo-service": "latest",
     "@webiny/serverless-aws-cloudfront": "latest",
     "@webiny/serverless-aws-cognito-user-pool": "latest",
+    "@webiny/serverless-aws-lambda": "latest",
+    "@webiny/serverless-db-proxy": "latest",
     "@webiny/serverless-files": "latest",
     "@webiny/serverless-page-builder": "latest",
     "@webiny/serverless-form-builder": "latest"
   },
   "devDependencies": {
     "prettier": "^1.18.2",
-    "flow-bin": "^0.110.0",
     "webpack-cli": "^3.3.9"
   }
 }
