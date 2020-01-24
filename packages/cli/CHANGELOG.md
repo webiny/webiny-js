@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.6.1-next.2](https://github.com/webiny/webiny-js/compare/@webiny/cli@2.6.1-next.1...@webiny/cli@2.6.1-next.2) (2020-01-24)
+
+
+### Bug Fixes
+
+* remove type annotation. ([9da3660](https://github.com/webiny/webiny-js/commit/9da36601372b343c51a35614fe449f558c646871))
+
+
+
+
+
 ## [2.6.1-next.1](https://github.com/webiny/webiny-js/compare/@webiny/cli@2.6.1-next.0...@webiny/cli@2.6.1-next.1) (2020-01-24)
 
 
