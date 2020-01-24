@@ -31,7 +31,7 @@ export const ListItem = (props: ListItemProps) => {
 };
 
 export type ListProps = RmwcListProps & {
-    children: React.ReactElement<typeof ListItem>[];
+    children?: any;
 
     className?: string;
 };

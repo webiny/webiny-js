@@ -1,8 +1,8 @@
 const merge = require("merge");
 const tsPreset = require("ts-jest/presets/js-with-babel/jest-preset");
 
-module.exports = ({ name, path }) =>
-    merge.recursive(tsPreset, {
+module.exports = ({ name, path }, presets = []) => {
+    return merge.recursive(tsPreset, ...presets, {
         name: name,
         displayName: name,
         modulePaths: [`${path}/src`],
@@ -10,7 +10,7 @@ module.exports = ({ name, path }) =>
         transform: {
             "^.+\\.(ts|tsx)$": "ts-jest"
         },
-        moduleDirectories: ["node_modules", "src"],
+        moduleDirectories: ["node_modules"],
         moduleFileExtensions: ["ts", "js", "tsx"],
         modulePathIgnorePatterns: [],
         globals: {
@@ -20,3 +20,4 @@ module.exports = ({ name, path }) =>
             }
         }
     });
+};

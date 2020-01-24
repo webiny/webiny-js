@@ -16,8 +16,6 @@ export default ({ createBase, context }) => {
     const File = flow(
         withName("File"),
         withProps({
-            // TODO: fix TS
-            // @ts-ignore
             get src() {
                 const settings = context.files.getSettings();
                 return settings.data.srcPrefix + this.key;

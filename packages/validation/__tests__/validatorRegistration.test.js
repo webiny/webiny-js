@@ -12,7 +12,7 @@ validation.setValidator("gender", value => {
 
 describe("gt test", () => {
     test("should not get triggered if an empty value was set", async () => {
-        await expect(validation.validate("", "gender")).resolves;
+        await expect(validation.validate("", "gender")).resolves.toBe(true);
     });
 
     test('should return newly registered "gender" validator', () => {

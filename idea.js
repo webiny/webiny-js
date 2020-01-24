@@ -11,7 +11,10 @@ System.config({
         "@webiny/api-mailchimp/*": "./packages/api-mailchimp/src/*",
         "@webiny/api-page-builder/*": "./packages/api-page-builder/src/*",
         "@webiny/api-page-builder-theme/*": "./packages/api-page-builder-theme/src/*",
+        "@webiny/api-plugin-commodo-mongodb": "./packages/api-plugin-commodo-mongodb/src",
         "@webiny/api-plugin-security-cognito/*": "./packages/api-plugin-security-cognito/src/*",
+        "@webiny/api-plugin-files-resolvers-mongodb":
+            "./packages/api-plugin-files-resolvers-mongodb/src",
         "@webiny/api-security/*": "./packages/api-security/src/*",
         "@webiny/app/*": "./packages/app/src/*",
         "@webiny/app-admin/*": "./packages/app-admin/src/*",
@@ -22,7 +25,8 @@ System.config({
         "@webiny/app-mailchimp/*": "./packages/app-mailchimp/src/*",
         "@webiny/app-page-builder/*": "./packages/app-page-builder/src/*",
         "@webiny/app-plugin-security-cognito/*": "./packages/app-plugin-security-cognito/src/*",
-        "@webiny/app-plugin-security-cognito-theme/*": "./packages/app-plugin-security-cognito-theme/src/*",
+        "@webiny/app-plugin-security-cognito-theme/*":
+            "./packages/app-plugin-security-cognito-theme/src/*",
         "@webiny/app-security/*": "./packages/app-security/src/*",
         "@webiny/app-typeform/*": "./packages/app-typeform/src/*",
         "@webiny/commodo/*": "./packages/commodo/src/*",

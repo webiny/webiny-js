@@ -82,7 +82,7 @@ test("plugins - registerPlugins, unregisterPlugin, getPlugin, getPlugins", async
     expect(getPlugin("test-3")).toEqual(undefined);
 });
 
-test("plugins - registerPlugins, unregisterPlugin, getPlugin, getPlugins", async () => {
+test("plugins - throw error if plugin name is missing", async () => {
     try {
         registerPlugins({
             type: "test",
