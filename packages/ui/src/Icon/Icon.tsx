@@ -17,6 +17,9 @@ export type IconProps = {
      * CSS class to be added to the icon
      */
     className?: string;
+
+    // For testing purposes.
+    "data-testid"?: string;
 };
 
 const webinyIcon = css(
@@ -38,6 +41,7 @@ const webinyIcon = css(
  */
 const Icon = (props: IconProps) => {
     return React.cloneElement(props.icon, {
+        "data-testid": props["data-testid"],
         className: classNames("mdc-button__icon webiny-ui-icon", webinyIcon, props.className),
         onClick: props.onClick
     });
