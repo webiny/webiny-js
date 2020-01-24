@@ -56,7 +56,7 @@ const SignIn: React.FC<SignInChildrenProps> = ({ signIn, error, loading, authPro
                                         validators={validation.create("required,email")}
                                         beforeChange={(val, cb) => cb(val.toLowerCase())}
                                     >
-                                        <Input label={"Your e-mail"} outlined={true} />
+                                        <Input label={"Your e-mail"} />
                                     </Bind>
                                 </Cell>
                                 <Cell span={12}>
@@ -64,17 +64,11 @@ const SignIn: React.FC<SignInChildrenProps> = ({ signIn, error, loading, authPro
                                         name="password"
                                         validators={validation.create("required,password")}
                                     >
-                                        <Input
-                                            type={"password"}
-                                            label={"Your password"}
-                                            outlined={true}
-                                        />
+                                        <Input type={"password"} label={"Your password"} />
                                     </Bind>
                                 </Cell>
                                 <Cell span={12} className={alignRight}>
-                                    <ButtonPrimary onClick={submit}>
-                                        {"Submit"}
-                                    </ButtonPrimary>
+                                    <ButtonPrimary onClick={submit}>{"Submit"}</ButtonPrimary>
                                 </Cell>
                                 <Cell span={12} className={alignCenter}>
                                     <a

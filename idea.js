@@ -24,6 +24,7 @@ System.config({
         "@webiny/app-i18n/*": "./packages/app-i18n/src/*",
         "@webiny/app-mailchimp/*": "./packages/app-mailchimp/src/*",
         "@webiny/app-page-builder/*": "./packages/app-page-builder/src/*",
+        "@webiny/app-page-builder-theme/*": "./packages/app-page-builder-theme/src/*",
         "@webiny/app-plugin-security-cognito/*": "./packages/app-plugin-security-cognito/src/*",
         "@webiny/app-plugin-security-cognito-theme/*":
             "./packages/app-plugin-security-cognito-theme/src/*",
