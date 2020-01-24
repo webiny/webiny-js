@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.6.1-next.3](https://github.com/webiny/webiny-js/compare/@webiny/cli@2.6.1-next.2...@webiny/cli@2.6.1-next.3) (2020-01-24)
+
+
+### Bug Fixes
+
+* remove packages folder from template. ([3fed811](https://github.com/webiny/webiny-js/commit/3fed81164f30773812b975fe4cb5281845e9fc29))
+
+
+
+
+
 ## [2.6.1-next.2](https://github.com/webiny/webiny-js/compare/@webiny/cli@2.6.1-next.1...@webiny/cli@2.6.1-next.2) (2020-01-24)
 
 
