@@ -1,7 +1,7 @@
-export default event => {
-    if (typeof event.body === "string") {
+export default body => {
+    if (typeof body === "string") {
         try {
-            return JSON.parse(event.body);
+            return JSON.parse(body);
         } catch {
             // Do nothing.
         }
