@@ -5,6 +5,9 @@
   <strong>Developer-friendly Serverless CMS powered by GraphQL and React</strong>
 </p>
 <p align="center">
+  <img src="./static/page-builder-video.gif" width="700">
+  </p>
+<p align="center">
   <a href="https://www.webiny.com">Official Website</a> |
   <a href="https://docs.webiny.com">Docs</a>
 </p>
