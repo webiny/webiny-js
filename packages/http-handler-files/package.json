@@ -17,8 +17,7 @@
     "@babel/runtime": "^7.5.5",
     "@webiny/http-handler": "^1.0.0",
     "mime-types": "^2.1.26",
-    "isutf8": "^2.1.0",
-    "lodash.get": "^4.4.2"
+    "isutf8": "^2.1.0"
   },
   "devDependencies": {
     "@babel/cli": "^7.5.5",
