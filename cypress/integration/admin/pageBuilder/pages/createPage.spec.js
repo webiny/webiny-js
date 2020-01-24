@@ -33,12 +33,32 @@ context("Pages Creation", () => {
                     cy.findByText(newPageTitle)
                         .should("exist")
                         .findByText(/Static/i)
+                        .should("exist")
+                        .findByText(/Published/i)
+                        .should("exist")
+                        .findByText(/(v1)/i)
                         .should("exist");
                 });
         });
 
         cy.findByTestId("pb-page-details").within(() => {
             cy.findByTestId("pb-page-details-header-edit-revision").click();
+        });
+
+        cy.findByTestId("pb-editor-back-button").click();
+        cy.findByTestId("default-data-list").within(() => {
+            cy.get("div")
+                .first()
+                .within(() => {
+                    cy.findByText(newPageTitle)
+                        .should("exist")
+                        .findByText(/Static/i)
+                        .should("exist")
+                        .findByText(/Draft/i)
+                        .should("exist")
+                        .findByText(/(v2)/i)
+                        .should("exist");
+                });
         });
     });
 });
