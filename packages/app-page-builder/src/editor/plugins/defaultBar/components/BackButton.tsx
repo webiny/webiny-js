@@ -12,6 +12,7 @@ const BackButton = () => {
     const { match, history } = useReactRouter<any>();
     return (
         <IconButton
+            data-testid="pb-editor-back-button"
             className={backStyles}
             onClick={() => history.push(`/page-builder/pages?id=${match.params.id}`)}
             icon={<BackIcon />}
