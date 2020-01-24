@@ -1,10 +1,9 @@
 const appBabel = api => {
-    const isDevelopment = api.env("development");
+    api.cache(true);
 
     return {
         presets: ["babel-preset-react-app"],
         plugins: [
-            isDevelopment && ["react-hot-loader/babel"],
             ["babel-plugin-emotion", { autoLabel: true }],
             ["babel-plugin-lodash", { id: ["lodash"] }]
         ].filter(Boolean)

@@ -23,6 +23,10 @@ module.exports = {
     node: {
         __dirname: false
     },
+    optimization: {
+        // We no not want to minimize our code.
+        minimize: false
+    },
     plugins: [
         new WebpackBar({ name: "Site SSR handler" }),
         new webpack.DefinePlugin({
@@ -40,7 +44,8 @@ module.exports = {
                     {
                         test: [/\.mjs$/, /\.js$/, /\.jsx$/],
                         exclude: /node_modules/,
-                        use: "babel-loader"
+                        loader: "babel-loader",
+                        options: require("./babel.config")
                     },
                     {
                         test: [/\.bmp$/, /\.gif$/, /\.jpe?g$/, /\.png$/],
