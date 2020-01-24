@@ -33,5 +33,13 @@
         "babel-plugin-lodash"
       ]
     }
+  },
+  "scripts": {
+    "build": "rimraf ./dist && babel src -d dist --source-maps --copy-files",
+    "postbuild": "cp package.json LICENSE README.md dist/ && tsc -p tsconfig.build.json",
+    "prepublishOnly": "yarn build"
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }
