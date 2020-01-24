@@ -23,10 +23,7 @@
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](http://makeapullrequest.com)
 [![Contributor Covenant](https://img.shields.io/badge/Contributor%20Covenant-v1.4%20adopted-ff69b4.svg)](CODE_OF_CONDUCT.md)
 [![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2FWebiny%2Fwebiny-js.svg?type=shield)](https://app.fossa.io/projects/git%2Bgithub.com%2FWebiny%2Fwebiny-js?ref=badge_shield)
-[![Join the chat at https://gitter.im/Webiny/webiny-js](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/Webiny/webiny-js)
-<!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-[![All Contributors](https://img.shields.io/badge/all_contributors-10-orange.svg?style=flat-square)](#contributors-)
-<!-- ALL-CONTRIBUTORS-BADGE:END -->
+[![Join the chat at https://gitter.im/Webiny/webiny-js](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/Webiny/webiny-js) <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->[![All Contributors](https://img.shields.io/badge/all_contributors-10-orange.svg)](#contributors-)<!-- ALL-CONTRIBUTORS-BADGE:END -->
 
 </p>
 
