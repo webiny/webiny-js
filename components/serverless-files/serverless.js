@@ -31,12 +31,6 @@ class FilesComponent extends Component {
             apolloServiceInputs.plugins = [];
         }
 
-        // TODO: remove this in the next major release
-        if (apolloServiceInputs.database) {
-            apolloServiceInputs.plugins.unshift("@webiny/api-files/plugins");
-            apolloServiceInputs.plugins.unshift("@webiny/api-plugin-files-resolvers-mongodb");
-        }
-
         const manageFilesLambda = await this.load("@webiny/serverless-function", "manage-files");
         const manageFilesLambdaOutput = await manageFilesLambda({
             region,

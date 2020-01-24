@@ -10,12 +10,6 @@ class ServerlessPageBuilder extends Component {
     async default(inputs = {}) {
         const { plugins = [], env, files, ...rest } = inputs;
 
-        // TODO: remove this in the next major release
-        if (rest.database) {
-            plugins.unshift("@webiny/api-page-builder/plugins");
-            plugins.unshift("@webiny/api-plugin-page-builder-resolvers-mongodb");
-        }
-
         // Create S3 bucket for storing installation ZIP file.
         const { region } = rest;
         const s3Component = await this.load("@serverless/aws-s3");
