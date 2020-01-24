@@ -35,8 +35,8 @@
     }
   },
   "scripts": {
-    "build": "rimraf ./dist && babel src -d dist --source-maps --copy-files",
-    "postbuild": "cp package.json LICENSE README.md dist/ && tsc -p tsconfig.build.json",
+    "build": "rimraf ./dist && mkdir dist && cp -R aliases cra packages serverless dist/",
+    "postbuild": "cp package.json LICENSE README.md dist/",
     "prepublishOnly": "yarn build"
   },
   "publishConfig": {
