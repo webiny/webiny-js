@@ -24,7 +24,7 @@ const EditRevision = () => {
         if (unpublishedRevision) {
             history.push(`/page-builder/editor/${unpublishedRevision.id}`);
         }
-    }, []);
+    }, [unpublishedRevision]);
 
     const copyAndEdit = useCallback(async () => {
         const [latestRevision] = page.revisions;
