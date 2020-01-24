@@ -70,21 +70,6 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
 <!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
 <!-- prettier-ignore-start -->
 <!-- markdownlint-disable -->
-<table>
-  <tr>
-    <td align="center"><a href="https://www.webiny.com"><img src="https://avatars0.githubusercontent.com/u/5121148?v=4" width="100px;" alt="Adrian Smijulj"/><br /><sub><b>Adrian Smijulj</b></sub></a><br /><a href="#question-doitadrian" title="Answering Questions">💬</a> <a href="https://github.com/Webiny/webiny-js/commits?author=doitadrian" title="Code">💻</a> <a href="https://github.com/Webiny/webiny-js/commits?author=doitadrian" title="Documentation">📖</a> <a href="#ideas-doitadrian" title="Ideas, Planning, & Feedback">🤔</a></td>
-    <td align="center"><a href="http://webiny.com/"><img src="https://avatars1.githubusercontent.com/u/3920893?v=4" width="100px;" alt="Pavel Denisjuk"/><br /><sub><b>Pavel Denisjuk</b></sub></a><br /><a href="#question-Pavel910" title="Answering Questions">💬</a> <a href="https://github.com/Webiny/webiny-js/commits?author=Pavel910" title="Code">💻</a> <a href="https://github.com/Webiny/webiny-js/commits?author=Pavel910" title="Documentation">📖</a> <a href="#ideas-Pavel910" title="Ideas, Planning, & Feedback">🤔</a></td>
-    <td align="center"><a href="http://www.webiny.com/"><img src="https://avatars3.githubusercontent.com/u/3808420?v=4" width="100px;" alt="Sven"/><br /><sub><b>Sven</b></sub></a><br /><a href="#question-SvenAlHamad" title="Answering Questions">💬</a> <a href="https://github.com/Webiny/webiny-js/commits?author=SvenAlHamad" title="Code">💻</a> <a href="https://github.com/Webiny/webiny-js/commits?author=SvenAlHamad" title="Documentation">📖</a><a href="#ideas-SvenAlHamad" title="Ideas, Planning, & Feedback">🤔</a><a href="#business-SvenAlHamad" title="Business development">💼</a></td>
-    <td align="center"><a href="https://github.com/ndcollins"><img src="https://avatars0.githubusercontent.com/u/501726?v=4" width="100px;" alt="Nick Collins"/><br /><sub><b>Nick Collins</b></sub></a><br /><a href="https://github.com/Webiny/webiny-js/issues?q=author%3Andcollins" title="Bug reports">🐛</a> <a href="#ideas-ndcollins" title="Ideas, Planning, & Feedback">🤔</a> <a href="#userTesting-ndcollins" title="User Testing">📓</a></td>
-    <td align="center"><a href="https://github.com/JetUni"><img src="https://avatars0.githubusercontent.com/u/1317221?v=4" width="100px;" alt="Jarrett"/><br /><sub><b>Jarrett</b></sub></a><br /><a href="https://github.com/Webiny/webiny-js/issues?q=author%3AJetUni" title="Bug reports">🐛</a> <a href="https://github.com/Webiny/webiny-js/commits?author=JetUni" title="Code">💻</a></td>
-    <td align="center"><a href="https://github.com/enmesarru"><img src="https://avatars2.githubusercontent.com/u/40731570?v=4" width="100px;" alt="Furkan KURUTAŞ"/><br /><sub><b>Furkan KURUTAŞ</b></sub></a><br /><a href="https://github.com/Webiny/webiny-js/commits?author=enmesarru" title="Code">💻</a></td>
-    <td align="center"><a href="https://github.com/roman-vabishchevych"><img src="https://avatars3.githubusercontent.com/u/4134474?v=4" width="100px;" alt="Roman Vabishchevych"/><br /><sub><b>Roman Vabishchevych</b></sub></a><br /><a href="https://github.com/Webiny/webiny-js/issues?q=author%3Aroman-vabishchevych" title="Bug reports">🐛</a> <a href="https://github.com/Webiny/webiny-js/commits?author=roman-vabishchevych" title="Code">💻</a> <a href="#plugin-roman-vabishchevych" title="Plugin/utility libraries">🔌</a> <a href="#userTesting-roman-vabishchevych" title="User Testing">📓</a></td>
-  </tr>
-  <tr>
-    <td align="center"><a href="https://github.com/fodurrr"><img src="https://avatars1.githubusercontent.com/u/10008597?v=4" width="100px;" alt="fodurrr"/><br /><sub><b>fodurrr</b></sub></a><br /><a href="https://github.com/Webiny/webiny-js/issues?q=author%3Afodurrr" title="Bug reports">🐛</a> <a href="#userTesting-fodurrr" title="User Testing">📓</a></td>
-  </tr>
-</table>
-
 <!-- markdownlint-enable -->
 <!-- prettier-ignore-end -->
 <!-- ALL-CONTRIBUTORS-LIST:END -->

@@ -18,13 +18,7 @@
         "question",
         "code",
         "doc",
-        "example",
-        "ideas",
-        "infra",
-        "maintenance",
-        "platform",
-        "plugin",
-        "tool"
+        "ideas"
       ]
     },
     {
@@ -36,14 +30,7 @@
         "question",
         "code",
         "doc",
-        "example",
-        "ideas",
-        "infra",
-        "maintenance",
-        "platform",
-        "plugin",
-        "projectManagement",
-        "tool"
+        "ideas"
       ]
     },
     {
@@ -52,21 +39,11 @@
       "avatar_url": "https://avatars3.githubusercontent.com/u/3808420?v=4",
       "profile": "http://www.webiny.com/",
       "contributions": [
-        "question",
-        "blog",
-        "bug",
-        "business",
-        "code",
-        "design",
-        "doc",
-        "financial",
-        "fundingFinding",
-        "ideas",
-        "infra",
-        "maintenance",
-        "projectManagement",
-        "tutorial",
-        "video"
+          "question",
+          "code",
+          "doc",
+          "ideas"
+          "business"
       ]
     },
     {
@@ -123,6 +100,6 @@
       ]
     }
   ],
-  "contributorsPerLine": 7,
+  "contributorsPerLine": 5,
   "commitConvention": "none"
 }
