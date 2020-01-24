@@ -5,6 +5,15 @@ import cookiePolicySettings from "./cookiePolicySettings.model";
 
 export default () => [
     {
+        type: "graphql-context",
+        name: "graphql-context-models-cookie-policy",
+        apply({ models }) {
+            models.CookiePolicySettings = cookiePolicySettings({
+                createBase: models.createBase
+            });
+        }
+    },
+    {
         name: "graphql-schema-settings-cookie-policy",
         type: "graphql-schema",
         schema: {
@@ -108,13 +117,6 @@ export default () => [
                     updateSettings: hasScope("pb:settings")
                 }
             }
-        }
-    },
-    {
-        type: "graphql-context",
-        name: "graphql-context-models",
-        model({ models }) {
-            models.CookiePolicySettings = cookiePolicySettings({ createBase: models.createBase });
         }
     }
 ];

@@ -5,6 +5,15 @@ import googleTagManagerSettings from "./googleTagManagerSettings.model";
 
 export default () => [
     {
+        type: "graphql-context",
+        name: "graphql-context-models-google-tag-manager",
+        apply({ models }) {
+            models.GoogleTagManagerSettings = googleTagManagerSettings({
+                createBase: models.createBase
+            });
+        }
+    },
+    {
         name: "graphql-schema-google-tag-manager",
         type: "graphql-schema",
         schema: {
@@ -69,13 +78,6 @@ export default () => [
                     updateSettings: hasScope("pb:settings")
                 }
             }
-        }
-    },
-    {
-        type: "graphql-context",
-        name: "graphql-context-models",
-        model({ models }) {
-            models.GoogleTagManagerSettings = googleTagManagerSettings({ createBase: models.createBase });
         }
     }
 ];

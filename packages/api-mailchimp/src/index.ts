@@ -9,6 +9,13 @@ import { GraphQLContext } from "@webiny/api/types";
 
 export default () => [
     {
+        type: "graphql-context",
+        name: "graphql-context-models-mailchimp",
+        apply({ models }) {
+            models.MailchimpSettings = mailchimpSettings({ createBase: models.createBase });
+        }
+    },
+    {
         name: "graphql-schema-mailchimp",
         type: "graphql-schema",
         schema: {
@@ -178,11 +185,4 @@ export default () => [
             }
         }
     },
-    {
-        type: "graphql-context",
-        name: "graphql-context-models",
-        apply({ models }) {
-            models.MailchimpSettings = mailchimpSettings({ createBase: models.createBase });
-        }
-    }
 ];
