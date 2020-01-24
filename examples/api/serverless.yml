@@ -44,8 +44,8 @@ dbProxy:
   component: "@webiny/serverless-db-proxy/dist"
   inputs:
     region: ${vars.region}
-    concurrencyLimit: 10
-    timeout: 29
+    concurrencyLimit: 15
+    timeout: 30
     env:
       MONGODB_SERVER: ${vars.mongodb.server}
       MONGODB_NAME: ${vars.mongodb.name}
