@@ -1,0 +1,23 @@
+{
+  "extends": "../../tsconfig.build.json",
+  "include": ["./src", "./custom.d.ts"],
+  "exclude": [
+    "node_modules",
+    "./dist",
+    "**/__tests__/**",
+    "**.stories.**",
+    "../form",
+    "../storybook-utils",
+    "../validation"
+  ],
+  "compilerOptions": {
+    "rootDir": "./src",
+    "outDir": "./dist",
+    "declarationDir": "./dist"
+  },
+  "references": [
+    { "path": "../form/tsconfig.build.json" },
+    { "path": "../storybook-utils/tsconfig.build.json" },
+    { "path": "../validation/tsconfig.build.json" }
+  ]
+}

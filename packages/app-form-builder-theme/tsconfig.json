@@ -1,0 +1,9 @@
+{
+  "extends": "../../tsconfig",
+  "references": [
+    { "path": "../app-form-builder" },
+    { "path": "../app-i18n" },
+    { "path": "../form" },
+    { "path": "../validation" }
+  ]
+}

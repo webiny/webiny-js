@@ -7,6 +7,7 @@
     "@babel/core": "^7.6.2",
     "@babel/plugin-proposal-class-properties": "^7.5.5",
     "@babel/preset-env": "^7.6.0",
+    "@babel/preset-typescript": "^7.7.7",
     "@serverless/core": "^1.1.1",
     "@webiny/api": "^2.1.0",
     "@webiny/serverless-api-gateway": "^2.0.1",
@@ -16,7 +17,9 @@
     "execa": "^2.0.5",
     "fs-extra": "^8.1.0",
     "lodash.camelcase": "^4.3.0",
+    "lodash.get": "^4.4.2",
     "prettier": "^1.18.2",
+    "source-map-support": "^0.5.16",
     "webpack": "^4.39.2"
   },
   "scripts": {
@@ -29,11 +32,16 @@
   },
   "adio": {
     "ignore": {
+      "src": [
+        "@webiny/plugins"
+      ],
       "dependencies": [
         "@babel/plugin-proposal-class-properties",
         "@babel/preset-env",
+        "@babel/preset-typescript",
         "babel-loader",
-        "babel-plugin-module-resolver"
+        "babel-plugin-module-resolver",
+        "source-map-support"
       ]
     }
   },

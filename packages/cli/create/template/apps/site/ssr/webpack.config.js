@@ -1,5 +1,7 @@
 const path = require("path");
 const webpack = require("webpack");
+const WebpackBar = require("webpackbar");
+const aliases = require("@webiny/project-utils/aliases/webpack");
 
 module.exports = {
     entry: path.resolve("ssr", "ssr.js"),
@@ -11,6 +13,7 @@ module.exports = {
     },
     resolve: {
         alias: {
+            ...aliases,
             webfontloader: "null-loader",
             "react-spinner-material": "null-loader"
         },
@@ -20,7 +23,12 @@ module.exports = {
     node: {
         __dirname: false
     },
+    optimization: {
+        // We no not want to minimize our code.
+        minimize: false
+    },
     plugins: [
+        new WebpackBar({ name: "Site SSR handler" }),
         new webpack.DefinePlugin({
             "process.env.REACT_APP_GRAPHQL_API_URL": JSON.stringify(
                 process.env.REACT_APP_GRAPHQL_API_URL
@@ -36,7 +44,8 @@ module.exports = {
                     {
                         test: [/\.mjs$/, /\.js$/, /\.jsx$/],
                         exclude: /node_modules/,
-                        use: "babel-loader"
+                        loader: "babel-loader",
+                        options: require("./babel.config")
                     },
                     {
                         test: [/\.bmp$/, /\.gif$/, /\.jpe?g$/, /\.png$/],

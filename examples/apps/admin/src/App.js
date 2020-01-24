@@ -1,4 +1,3 @@
-// @flow
 import { hot } from "react-hot-loader";
 import React from "react";
 import { UiProvider } from "@webiny/app/contexts/Ui";
@@ -8,31 +7,27 @@ import { AppInstaller } from "@webiny/app-admin/components/Install/AppInstaller"
 import { PageBuilderProvider } from "@webiny/app-page-builder/contexts/PageBuilder";
 import { SecurityProvider } from "@webiny/app-security/contexts/Security";
 import { I18NProvider } from "@webiny/app-i18n/contexts/I18N";
-import cognito from "@webiny/app-plugin-security-cognito";
-import myTheme from "theme";
+import { CircularProgress } from "@webiny/ui/Progress";
 import "./App.scss";
 import plugins from "./plugins";
 
-registerPlugins(
-    plugins,
-    cognito({
-        region: process.env.REACT_APP_USER_POOL_REGION,
-        userPoolId: process.env.REACT_APP_USER_POOL_ID,
-        userPoolWebClientId: process.env.REACT_APP_USER_POOL_WEB_CLIENT_ID
-    })
-);
+registerPlugins(plugins);
 
 // Execute `init` plugins, they may register more plugins dynamically
 getPlugins("webiny-init").forEach(plugin => plugin.init());
 
+const securityProvider = (
+    <SecurityProvider loader={<CircularProgress label={"Checking user..."} />} />
+);
+
 const App = () => {
     return (
         <UiProvider>
-            <I18NProvider>
-                <AppInstaller security={<SecurityProvider />}>
-                    <PageBuilderProvider theme={myTheme} isEditor>
+            <I18NProvider loader={<CircularProgress label={"Loading locales..."} />}>
+                <AppInstaller security={securityProvider}>
+                    <PageBuilderProvider isEditor>
                         <ThemeProvider>
-                            {getPlugins("route").map((pl: Object) =>
+                            {getPlugins("route").map(pl =>
                                 React.cloneElement(pl.route, {
                                     key: pl.name,
                                     exact: true

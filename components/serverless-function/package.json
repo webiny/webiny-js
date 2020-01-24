@@ -5,7 +5,7 @@
   "license": "MIT",
   "dependencies": {
     "@serverless/core": "^1.1.1",
-    "@serverless/function": "^3.0.0",
+    "@webiny/serverless-aws-lambda": "^1.0.0",
     "execa": "^2.0.3"
   },
   "scripts": {

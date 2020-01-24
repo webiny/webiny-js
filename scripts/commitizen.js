@@ -1,4 +1,3 @@
-// @flowIgnore
 const path = require("path");
 const { bootstrap } = require("commitizen/dist/cli/git-cz");
 

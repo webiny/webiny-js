@@ -1,0 +1,28 @@
+{
+  "extends": "../../tsconfig.build.json",
+  "include": ["./src", "./custom.d.ts"],
+  "exclude": [
+    "node_modules",
+    "../app",
+    "../app-admin",
+    "../app-security",
+    "../plugins",
+    "../react-router",
+    "../form",
+    "../ui"
+  ],
+  "compilerOptions": {
+    "rootDir": "./src",
+    "outDir": "./dist",
+    "declarationDir": "./dist"
+  },
+  "references": [
+    { "path": "../app/tsconfig.build.json" },
+    { "path": "../app-admin/tsconfig.build.json" },
+    { "path": "../app-security/tsconfig.build.json" },
+    { "path": "../plugins/tsconfig.build.json" },
+    { "path": "../react-router/tsconfig.build.json" },
+    { "path": "../form/tsconfig.build.json" },
+    { "path": "../ui/tsconfig.build.json" }
+  ]
+}

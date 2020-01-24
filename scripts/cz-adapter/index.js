@@ -1,4 +1,3 @@
-// @flowIgnore
 /* eslint-disable */
 const execa = require("execa");
 const buildCommit = require("cz-customizable/buildCommit");

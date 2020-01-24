@@ -1,5 +1,4 @@
-import { validation } from "@webiny/validation";
-import "./chai";
+import { validation } from "../src";
 
 describe("create test", () => {
     it("should create async validator function", async () => {

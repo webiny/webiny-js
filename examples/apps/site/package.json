@@ -5,13 +5,15 @@
   "dependencies": {
     "@webiny/app": "^2",
     "@webiny/app-cookie-policy": "^2",
-    "@webiny/app-forms": "^2",
+    "@webiny/app-form-builder": "^1",
     "@webiny/app-google-tag-manager": "^2",
     "@webiny/app-i18n": "^2",
     "@webiny/app-mailchimp": "^2",
     "@webiny/app-page-builder": "^2",
+    "@webiny/app-page-builder-theme": "^1.0.0",
     "@webiny/app-typeform": "^2",
     "@webiny/plugins": "^2",
+    "@webiny/react-router": "^1",
     "apollo-link-batch-http": "^1.2.3",
     "apollo-link-http": "^1.5.9",
     "core-js": "^3.2.1",
@@ -23,8 +25,7 @@
     "react-helmet": "^5.2.0",
     "react-hot-loader": "^4.3.5",
     "react-router-dom": "^5.0.0",
-    "regenerator-runtime": "^0.13.3",
-    "theme": "^1.0.0"
+    "regenerator-runtime": "^0.13.3"
   },
   "devDependencies": {
     "@apollo/react-ssr": "^3.0.1",
@@ -54,9 +55,9 @@
     "build:prod": "cross-env REACT_APP_ENV=browser env-cmd -r .env.json -e default,prod yarn build && yarn build:prod:ssr",
     "build:prod:ssr": "cross-env NODE_ENV=production REACT_APP_ENV=ssr env-cmd -r .env.json -e default,prod yarn build:ssr",
     "build:ssr": "webpack --progress --mode production --config ./ssr/webpack.config.js && cp ./ssr/handler.js build-ssr/",
-    "build:handler": "webpack --config ./handler/webpack.config.js",
+    "build:handler": "cross-env NODE_ENV=production webpack --config ./handler/webpack.config.js",
     "postbuild": "yarn build:handler",
-    "start": "env-cmd -r .env.json -e default,local rescripts start",
+    "start": "cross-env REACT_APP_ENV=browser env-cmd -r .env.json -e default,local rescripts start",
     "test": "rescripts test --env=jsdom",
     "eject": "react-scripts eject"
   },

@@ -1,0 +1,9 @@
+{
+  "extends": "../../tsconfig",
+  "references": [
+    { "path": "../plugins" },
+    { "path": "../ui" },
+    { "path": "../i18n" },
+    { "path": "../i18n-react" }
+  ]
+}

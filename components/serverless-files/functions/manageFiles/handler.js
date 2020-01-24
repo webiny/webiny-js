@@ -1,4 +1,3 @@
-// @flow
 const S3 = require("aws-sdk/clients/s3");
 const { getEnvironment } = require("../utils");
 const path = require("path");

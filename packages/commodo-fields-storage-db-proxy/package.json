@@ -1,0 +1,36 @@
+{
+  "name": "@webiny/commodo-fields-storage-db-proxy",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/webiny/commodo.git"
+  },
+  "contributors": [
+    "Adrian Smijulj <adrian@webiny.com>"
+  ],
+  "license": "MIT",
+  "dependencies": {
+    "@commodo/name": "^1.1.0",
+    "@commodo/fields": "^0.2.8",
+    "@commodo/fields-storage": "^0.4.0",
+    "mdbid": "^1.0.0",
+    "bson": "^4.0.2"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "keywords": [
+    "commodo",
+    "composeable",
+    "models",
+    "storage",
+    "mongodb"
+  ],
+  "scripts": {
+    "build": "rimraf ./dist *.tsbuildinfo && babel src -d dist --source-maps --copy-files --extensions \".ts,.tsx\"",
+    "watch": "babel src -d dist --source-maps --copy-files --extensions \".ts\" --watch",
+    "postbuild": "cp package.json LICENSE README.md dist/ && tsc -p tsconfig.build.json",
+    "prepublishOnly": "yarn build"
+  }
+}

@@ -14,115 +14,72 @@
       "name": "Adrian Smijulj",
       "avatar_url": "https://avatars0.githubusercontent.com/u/5121148?v=4",
       "profile": "https://www.webiny.com",
-      "contributions": [
-        "question",
-        "code",
-        "doc",
-        "example",
-        "ideas",
-        "infra",
-        "maintenance",
-        "platform",
-        "plugin",
-        "tool"
-      ]
+      "contributions": []
     },
     {
       "login": "Pavel910",
       "name": "Pavel Denisjuk",
       "avatar_url": "https://avatars1.githubusercontent.com/u/3920893?v=4",
       "profile": "http://webiny.com/",
-      "contributions": [
-        "question",
-        "code",
-        "doc",
-        "example",
-        "ideas",
-        "infra",
-        "maintenance",
-        "platform",
-        "plugin",
-        "projectManagement",
-        "tool"
-      ]
+      "contributions": []
     },
     {
       "login": "SvenAlHamad",
       "name": "Sven",
       "avatar_url": "https://avatars3.githubusercontent.com/u/3808420?v=4",
       "profile": "http://www.webiny.com/",
-      "contributions": [
-        "question",
-        "blog",
-        "bug",
-        "business",
-        "code",
-        "design",
-        "doc",
-        "financial",
-        "fundingFinding",
-        "ideas",
-        "infra",
-        "maintenance",
-        "projectManagement",
-        "tutorial",
-        "video"
-      ]
+      "contributions": []
     },
     {
       "login": "ndcollins",
       "name": "Nick Collins",
       "avatar_url": "https://avatars0.githubusercontent.com/u/501726?v=4",
       "profile": "https://github.com/ndcollins",
-      "contributions": [
-        "bug",
-        "ideas",
-        "userTesting"
-      ]
+      "contributions": []
     },
     {
       "login": "JetUni",
       "name": "Jarrett",
       "avatar_url": "https://avatars0.githubusercontent.com/u/1317221?v=4",
       "profile": "https://github.com/JetUni",
-      "contributions": [
-        "bug",
-        "code"
-      ]
+      "contributions": []
     },
     {
       "login": "enmesarru",
       "name": "Furkan KURUTAŞ",
       "avatar_url": "https://avatars2.githubusercontent.com/u/40731570?v=4",
       "profile": "https://github.com/enmesarru",
-      "contributions": [
-        "code"
-      ]
+      "contributions": []
     },
     {
       "login": "roman-vabishchevych",
       "name": "Roman Vabishchevych",
       "avatar_url": "https://avatars3.githubusercontent.com/u/4134474?v=4",
       "profile": "https://github.com/roman-vabishchevych",
-      "contributions": [
-        "bug",
-        "code",
-        "ideas",
-        "plugin",
-        "userTesting"
-      ]
+      "contributions": []
     },
     {
       "login": "fodurrr",
       "name": "fodurrr",
       "avatar_url": "https://avatars1.githubusercontent.com/u/10008597?v=4",
       "profile": "https://github.com/fodurrr",
-      "contributions": [
-        "bug",
-        "userTesting"
-      ]
+      "contributions": []
+    },
+    {
+      "login": "jbampton",
+      "name": "John Bampton",
+      "avatar_url": "https://avatars3.githubusercontent.com/u/418747?v=4",
+      "profile": "https://thebeast.me/about/",
+      "contributions": []
+    },
+    {
+      "login": "jamesgeorge007",
+      "name": "James George",
+      "avatar_url": "https://avatars2.githubusercontent.com/u/25279263?v=4",
+      "profile": "https://ghuser.io/jamesgeorge007",
+      "contributions": []
     }
   ],
-  "contributorsPerLine": 7,
+  "contributorsPerLine": 6,
   "commitConvention": "none"
 }

@@ -7,23 +7,25 @@ const includePaths = [
 ];
 
 module.exports = ({ config }) => {
-    config.module.rules[0].include = [__dirname + "/../src", /webiny-/];
-    config.module.rules[0].exclude = /node_modules/;
-    config.module.rules[1].use = [{ loader: "raw-loader" }];
-    config.module.rules[1].include = [__dirname + "/../src", /webiny-/];
-    config.module.rules.unshift({
-        test: /\.svg$/,
-        issuer: {
-            test: /.jsx?$/
-        },
-        use: ["@svgr/webpack"]
+    config.resolve.extensions.push(".ts", ".tsx");
+
+    config.module.rules.push({
+        test: /\.tsx?$/,
+        use: [
+            {
+                loader: require.resolve("babel-loader"),
+                options: {
+                    babelrc: true,
+                    ...require("../.babelrc.js")
+                }
+            },
+            require.resolve("react-docgen-typescript-loader")
+        ]
     });
 
-    // Add our own scss rule
-    config.module.rules.push({
+    config.module.rules.unshift({
         test: /\.scss$/,
-        include: [__dirname + "/../src", /webiny-/],
-        loaders: [
+        use: [
             "style-loader",
             "css-loader",
             {

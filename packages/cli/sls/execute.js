@@ -21,8 +21,10 @@ module.exports = async (inputs, method = "default") => {
 
     const context = new Context(config);
     if (debug) {
+        const debugValue = process.env.DEBUG;
         process.env.DEBUG = "webiny*";
         context.debug = require("debug")("webiny");
+        process.env.DEBUG = debugValue;
     }
     const Template = require("./template/serverless.js");
     const component = new Template(`Webiny.${env}`, context);

@@ -1,20 +1,17 @@
-import { validation } from "@webiny/validation";
-import "./chai";
+import { validation, ValidationError } from "../src";
 
 describe("integer test", () => {
     it("should not get triggered if an empty value was set", () => {
-        return validation.validate(null, "integer").should.be.fulfilled;
+        expect(validation.validate(null, "integer")).resolves.toBe(true);
     });
 
     it("should fail - values are not integers", () => {
-        return Promise.all([
-            validation.validate(12.2, "integer").should.be.rejected,
-            validation.validate("123.32", "integer").should.be.rejected,
-            validation.validate("11", "integer").should.be.rejected
-        ]);
+        expect(validation.validate(12.2, "integer")).rejects.toThrow(ValidationError);
+        expect(validation.validate("123.32", "integer")).rejects.toThrow(ValidationError);
+        expect(validation.validate("11", "integer")).rejects.toThrow(ValidationError);
     });
 
     it("should pass - valid integers given", () => {
-        return validation.validate(11, "integer").should.become(true);
+        expect(validation.validate(11, "integer")).resolves.toBe(true);
     });
 });

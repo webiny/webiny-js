@@ -12,6 +12,8 @@
   ],
   "license": "MIT",
   "dependencies": {
+    "@webiny/api": "^2.1.0",
+    "@webiny/api-security": "^2.1.1",
     "graphql-tag": "^2.10.1",
     "jsonwebtoken": "^8.5.1",
     "jwk-to-pem": "^2.0.1",
@@ -25,8 +27,9 @@
     "access": "public"
   },
   "scripts": {
-    "build": "babel src -d dist --source-maps --copy-files",
-    "postbuild": "cp package.json LICENSE README.md dist/",
+    "build": "rimraf ./dist *.tsbuildinfo && babel src -d dist --source-maps --copy-files --extensions \".ts\"",
+    "watch": "babel src -d dist --source-maps --copy-files --extensions \".ts\" --watch",
+    "postbuild": "cp package.json LICENSE README.md dist/ && tsc -p tsconfig.build.json",
     "prepublishOnly": "yarn build"
   },
   "adio": {

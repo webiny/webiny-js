@@ -1,4 +1,4 @@
-import { validation, ValidationError } from "@webiny/validation";
+import { validation, ValidationError } from "../src";
 
 validation.setValidator("gender", value => {
     if (!value) return;
@@ -12,7 +12,7 @@ validation.setValidator("gender", value => {
 
 describe("gt test", () => {
     test("should not get triggered if an empty value was set", async () => {
-        await expect(validation.validate("", "gender")).resolves;
+        await expect(validation.validate("", "gender")).resolves.toBe(true);
     });
 
     test('should return newly registered "gender" validator', () => {

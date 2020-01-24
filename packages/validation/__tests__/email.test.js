@@ -1,27 +1,24 @@
-import { validation } from "@webiny/validation";
-import "./chai";
+import { validation, ValidationError } from "../src";
 
 describe("email test", () => {
     it("should not get triggered if an empty value was set", () => {
-        return validation.validate(null, "email").should.be.fulfilled;
+        expect(validation.validate(null, "email")).resolves.toBe(true);
     });
 
     it("should fail - a number was sent", () => {
-        return validation.validate(12, "email").should.be.rejected;
+        expect(validation.validate(12, "email")).rejects.toThrow(ValidationError);
     });
 
     it("should fail - TLD missing", () => {
-        return validation.validate("asd@google", "email").should.be.rejected;
+        expect(validation.validate("asd@google", "email")).rejects.toThrow(ValidationError);
     });
 
     it("should fail - contains a space", () => {
-        return validation.validate("asd asd@google", "email").should.be.rejected;
+        expect(validation.validate("asd asd@google", "email")).rejects.toThrow(ValidationError);
     });
 
     it("should pass", () => {
-        return Promise.all([
-            validation.validate("webiny@webiny.com", "email").should.be.fulfilled,
-            validation.validate("webiny@webiny.io", "email").should.be.fulfilled
-        ]);
+        expect(validation.validate("webiny@webiny.com", "email")).resolves.toBe(true);
+        expect(validation.validate("webiny@webiny.io", "email")).resolves.toBe(true);
     });
 });

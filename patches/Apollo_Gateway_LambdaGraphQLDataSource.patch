@@ -1,0 +1,165 @@
+Index: package.json
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- package.json	(revision Local Version)
++++ package.json	(revision Shelved Version)
+@@ -126,5 +126,8 @@
+       "cliPath": "node_modules/commitizen",
+       "path": "./scripts/cz-adapter"
+     }
++  },
++  "dependencies": {
++    "apollo-gateway-aws-lambda": "^0.1.2"
+   }
+ }
+Index: examples/api/new.serverless.yml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- examples/api/new.serverless.yml	(revision Local Version)
++++ examples/api/serverless.yml	(revision Shelved Version)
+@@ -3,6 +3,9 @@
+ vars:
+   region: ${env.AWS_REGION}
+   bucket: ${env.S3_BUCKET}
++  lumigo:
++    token: t_2ca9bcacb45a4482ada38
++    enabled: true
+   apollo:
+     server:
+       introspection: ${env.GRAPHQL_INTROSPECTION}
+@@ -25,18 +28,27 @@
+     timeout: 30
+     webpackConfig: ../webpack.config.js
+     plugins:
++      - factory: "@webiny/api-plugin-lumigo-tracer"
++        options: ${vars.lumigo}
+       - factory: "@webiny/api-plugin-create-apollo-gateway"
+         options:
+           server: ${vars.apollo.server}
+           services:
+             - name: security
+-              url: ${security.api.graphqlUrl}
++              function: ${security.graphql.name}
++              dataSource: "@webiny/apollo-gateway-aws-lambda"
+             - name: files
+-              url: ${files.api.graphqlUrl}
++              function: ${files.graphql.name}
++              dataSource: "@webiny/apollo-gateway-aws-lambda"
+             - name: pageBuilder
+-              url: ${pageBuilder.api.graphqlUrl}
++              function: ${pageBuilder.graphql.name}
++              dataSource: "@webiny/apollo-gateway-aws-lambda"
+             - name: i18n
+-              url: ${i18n.api.graphqlUrl}
++              function: ${i18n.graphql.name}
++              dataSource: "@webiny/apollo-gateway-aws-lambda"
++            - name: github
++              url: https://....
++              dataSource: "@webiny/apollo-gateway-http-url"
+ 
+ cognito:
+   component: "@webiny/serverless-aws-cognito-user-pool"
+@@ -54,6 +66,8 @@
+     memory: 512
+     webpackConfig: ../webpack.config.js
+     plugins:
++      - factory: "@webiny/api-plugin-lumigo-tracer"
++        options: ${vars.lumigo}
+       - factory: "@webiny/api-plugin-create-apollo-handler"
+         options: ${vars.apollo}
+       - factory: "@webiny/api-plugin-commodo-mongodb"
+@@ -78,6 +92,8 @@
+         uploadMaxFileSize: 26214400 # 25 MB
+         webpackConfig: ../webpack.config.js
+         plugins:
++          - factory: "@webiny/api-plugin-lumigo-tracer"
++            options: ${vars.lumigo}
+           - factory: "@webiny/api-plugin-create-apollo-handler"
+             options: ${vars.apollo}
+           - factory: "@webiny/api-plugin-commodo-mongodb"
+@@ -101,6 +117,8 @@
+     memory: 512
+     webpackConfig: ../webpack.config.js
+     plugins:
++      - factory: "@webiny/api-plugin-lumigo-tracer"
++        options: ${vars.lumigo}
+       - factory: "@webiny/api-plugin-create-apollo-handler"
+         options: ${vars.apollo}
+       - factory: "@webiny/api-plugin-commodo-mongodb"
+@@ -119,6 +137,8 @@
+     timeout: 30
+     webpackConfig: ../webpack.config.js
+     plugins:
++      - factory: "@webiny/api-plugin-lumigo-tracer"
++        options: ${vars.lumigo}
+       - factory: "@webiny/api-plugin-create-apollo-handler"
+         options: ${vars.apollo}
+       - factory: "@webiny/api-plugin-commodo-mongodb"
+Index: examples/api/gateway.handler.js
+===================================================================
+--- examples/api/gateway.handler.js	(revision Shelved Version)
++++ examples/api/gateway.handler.js	(revision Shelved Version)
+@@ -0,0 +1,10 @@
++import { baseGateway } from "@webiny/serverless-apollo-gateway";
++
++export const handler = async (event, context) => {
++    return baseGateway();
++};
++
++
++export default (options = {}) => {
++
++};
+Index: components/serverless-files/serverless.js
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- components/serverless-files/serverless.js	(revision Local Version)
++++ components/serverless-files/serverless.js	(revision Shelved Version)
+@@ -117,6 +117,7 @@
+ 
+         const output = {
+             api: apolloServiceOutput.api,
++            graphql: apolloServiceOutput.graphql,
+             s3: s3Output,
+             cdnOrigin: {
+                 url: apolloServiceOutput.api.url,
+Index: packages/api-plugin-create-apollo-gateway/src/index.js
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- packages/api-plugin-create-apollo-gateway/src/index.js	(revision Local Version)
++++ packages/api-plugin-create-apollo-gateway/src/index.js	(revision Shelved Version)
+@@ -1,4 +1,5 @@
+-import { ApolloGateway, RemoteGraphQLDataSource } from "@apollo/gateway";
++import { ApolloGateway } from "@apollo/gateway";
++import { LambdaGraphQLDataSource } from "apollo-gateway-aws-lambda";
+ import { ApolloServer } from "apollo-server-lambda";
+ import buildHeaders from "./buildHeaders";
+ 
+@@ -15,12 +16,14 @@
+     type: "create-apollo-gateway",
+     async createGateway({ plugins }) {
+         const gateway = new ApolloGateway({
+-            serviceList: services,
++            serviceList: services.map(s => {
++                s.url = "https://www.webiny.com";
++                return s;
++            }),
+ 
+-            buildService({ url }) {
+-                return new RemoteGraphQLDataSource({
+-                    url,
+-
++            buildService({ name }) {
++                return new LambdaGraphQLDataSource({
++                    functionName: services.find(s => s.name === name).function,
+                     willSendRequest({ request, context }) {
+                         if (context.headers) {
+                             Object.keys(context.headers).forEach(key => {

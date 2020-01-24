@@ -1,22 +1,17 @@
-import { validation } from "@webiny/validation";
-import "./chai";
+import { validation, ValidationError } from "../src";
 
 describe("lt test", () => {
     it("should not get triggered if an empty value was set", () => {
-        return validation.validate(null, "lt").should.be.fulfilled;
+        expect(validation.validate(null, "lt")).resolves.toBe(true);
     });
 
     it("should fail - numbers are not lower", () => {
-        return Promise.all([
-            validation.validate(12, "lt:12").should.be.rejected,
-            validation.validate(123, "lt:100").should.be.rejected
-        ]);
+        expect(validation.validate(12, "lt:12")).rejects.toThrow(ValidationError);
+        expect(validation.validate(123, "lt:100")).rejects.toThrow(ValidationError);
     });
 
     it("should pass - numbers are lower", () => {
-        return Promise.all([
-            validation.validate(10, "lt:11").should.become(true),
-            validation.validate(11, "lt:11.99").should.become(true)
-        ]);
+        expect(validation.validate(10, "lt:11")).resolves.toBe(true);
+        expect(validation.validate(11, "lt:11.99")).resolves.toBe(true);
     });
 });

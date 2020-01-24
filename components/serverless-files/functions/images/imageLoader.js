@@ -1,4 +1,3 @@
-// @flow
 const sanitizeImageTransformations = require("./imageLoader/sanitizeImageTransformations");
 const Lambda = require("aws-sdk/clients/lambda");
 const { getObjectParams, getEnvironment } = require("./../utils");

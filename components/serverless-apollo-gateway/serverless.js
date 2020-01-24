@@ -5,6 +5,7 @@ const execa = require("execa");
 const loadJson = require("load-json-file");
 const camelCase = require("lodash.camelcase");
 const isEqual = require("lodash.isequal");
+const get = require("lodash.get");
 const webpack = require("webpack");
 const writeJson = require("write-json-file");
 const { transform } = require("@babel/core");
@@ -39,8 +40,8 @@ const normalizePlugins = plugins => {
 };
 
 class ApolloGateway extends Component {
-    async default(inputs = {}) {
-        if (isEqual(this.state.inputs, inputs)) {
+    async default({ force = false, ...inputs } = {}) {
+        if (isEqual(this.state.inputs, inputs) && !force) {
             this.context.instance.debug("Inputs were not changed, no action required.");
             return this.state.output;
         } else {
@@ -49,19 +50,16 @@ class ApolloGateway extends Component {
 
         const {
             region,
-            name = null,
             env = {},
             memory = 128,
             timeout = 10,
             description,
+            debug = true,
             webpackConfig = null
         } = inputs;
 
-        if (!name) {
-            throw Error(`"inputs.name" is a required parameter!`);
-        }
-
-        let plugins = normalizePlugins(inputs.plugins || []);
+        const plugins = normalizePlugins(inputs.plugins || []);
+        env["DEBUG"] = "" + debug;
 
         if (inputs.services) {
             // Add backwards compatibility
@@ -77,8 +75,12 @@ class ApolloGateway extends Component {
             });
         }
 
+        const name =
+            get(this.state, "output.name") ||
+            this.context.instance.getResourceName(inputs.name || "apollo-gateway");
+
         const boilerplateRoot = join(this.context.instance.root, ".webiny");
-        const componentRoot = join(boilerplateRoot, camelCase(name));
+        const componentRoot = join(boilerplateRoot, camelCase(this.context.instance.alias));
         fs.ensureDirSync(componentRoot);
 
         await this.save();
@@ -95,7 +97,10 @@ class ApolloGateway extends Component {
 
         const source = fs.readFileSync(__dirname + "/boilerplate/handler.js", "utf8");
         const { code } = await transform(source, {
-            plugins: [[__dirname + "/transform/plugins", { plugins: injectPlugins }]]
+            plugins: [
+                Boolean(debug) ? [__dirname + "/transform/sourcemaps"] : null,
+                [__dirname + "/transform/plugins", { plugins: injectPlugins }]
+            ].filter(Boolean)
         });
 
         fs.writeFileSync(
@@ -127,7 +132,15 @@ class ApolloGateway extends Component {
         this.context.instance.debug("Start bundling with webpack");
         await new Promise((res, reject) => {
             this.context.status("Building");
-            let config = require(componentRoot + "/webpack.config.js");
+
+            // Create default webpack config
+            let config = require(componentRoot + "/webpack.config.js")({
+                instance: this,
+                root: componentRoot,
+                debug: Boolean(debug)
+            });
+
+            // Try loading webpack customizer
             if (webpackConfig) {
                 try {
                     // Resolve customizer path relative to serverless.yml file
@@ -143,7 +156,12 @@ class ApolloGateway extends Component {
                             customizerPath
                         );
                         const customizer = require(customizerPath);
-                        config = customizer({ config, instance: this, root: componentRoot });
+                        config = customizer({
+                            config,
+                            instance: this,
+                            root: componentRoot,
+                            debug: Boolean(debug)
+                        });
                     }
                 } catch (err) {
                     this.context.instance.debug(
@@ -181,8 +199,9 @@ class ApolloGateway extends Component {
         const lambda = await this.load("@webiny/serverless-function");
 
         const output = await lambda({
+            name,
             region,
-            description: `serverless-apollo-gateway: ${description || name}`,
+            description: description || "Apollo GraphQL Gateway (API entry point).",
             code: join(componentRoot, "build"),
             root: componentRoot,
             handler: "handler.handler",

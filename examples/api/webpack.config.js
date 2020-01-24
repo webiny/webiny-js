@@ -1,8 +1,7 @@
 const path = require("path");
-const aliases = require("@webiny/project-utils/aliases");
-const packages = require("@webiny/project-utils/packages");
+const aliases = require("@webiny/project-utils/aliases/webpack");
 
-module.exports = ({ root }) => {
+module.exports = ({ root, debug }) => {
     return {
         entry: path.join(root, "handler.js"),
         target: "node",
@@ -12,7 +11,7 @@ module.exports = ({ root }) => {
             filename: "handler.js"
         },
         // Generate sourcemaps for proper error messages
-        devtool: false,
+        devtool: debug ? "source-map" : false,
         externals: ["aws-sdk"],
         mode: "production",
         optimization: {
@@ -28,13 +27,12 @@ module.exports = ({ root }) => {
             exprContextCritical: false,
             rules: [
                 {
-                    test: /\.js$/,
+                    test: /\.(ts|js)$/,
                     loader: "babel-loader",
                     exclude: /node_modules/,
-                    include: [root, ...packages],
+                    include: [root],
                     options: {
                         babelrc: true,
-                        babelrcRoots: packages,
                         presets: [
                             [
                                 "@babel/preset-env",
@@ -43,17 +41,19 @@ module.exports = ({ root }) => {
                                         node: "10.16"
                                     }
                                 }
-                            ]
+                            ],
+                            "@babel/preset-typescript"
                         ],
                         plugins: [
                             "@babel/plugin-proposal-class-properties",
-                            ["babel-plugin-module-resolver", { alias: aliases }]
+                            ["babel-plugin-lodash", { id: ["lodash"] }]
                         ]
                     }
                 }
             ]
         },
         resolve: {
+            alias: aliases,
             modules: [path.resolve(root, "node_modules"), "node_modules"]
         }
     };
