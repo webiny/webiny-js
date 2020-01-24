@@ -15,16 +15,16 @@
   ],
   "license": "MIT",
   "dependencies": {
-    "@commodo/fields": "^0.2.8",
-    "@commodo/fields-storage": "^0.4.1",
-    "@commodo/fields-storage-ref": "^0.3.5",
-    "@commodo/fields-storage-soft-delete": "^0.2.2",
-    "@commodo/hooks": "^0.2.0",
-    "@commodo/name": "^1.1.0",
-    "commodo-fields-date": "^1.0.2",
-    "commodo-fields-object": "^1.0.2",
-    "commodo-fields-storage-crud-logs": "^1.0.1",
-    "repropose": "^1.0.2"
+    "@commodo/fields": "^1.0.0",
+    "@commodo/fields-storage": "^1.0.0",
+    "@commodo/fields-storage-mongodb": "^1.0.0",
+    "@commodo/fields-storage-ref": "^1.0.0",
+    "@commodo/fields-storage-soft-delete": "^1.0.0",
+    "@commodo/hooks": "^1.0.0",
+    "@commodo/name": "^1.0.2",
+    "commodo-fields-date": "^1.0.3",
+    "commodo-fields-object": "^1.0.3",
+    "commodo-fields-storage-crud-logs": "^1.0.2"
   },
   "publishConfig": {
     "access": "public"
