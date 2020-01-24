@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.2.1](https://github.com/webiny/webiny-js/compare/@webiny/api-i18n@2.2.0...@webiny/api-i18n@2.2.1) (2020-01-19)
+
+
+### Bug Fixes
+
+* update [@commodo](https://github.com/commodo) package version ([5bc9f06](https://github.com/webiny/webiny-js/commit/5bc9f061c77964ce878f038747b4c974409c5759))
+
+
+
+
+
 # [2.2.0](https://github.com/webiny/webiny-js/compare/@webiny/api-i18n@2.2.0-next.2...@webiny/api-i18n@2.2.0) (2019-12-04)
 
 **Note:** Version bump only for package @webiny/api-i18n

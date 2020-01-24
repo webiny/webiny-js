@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.6.0](https://github.com/webiny/webiny-js/compare/@webiny/cli@2.5.2...@webiny/cli@2.6.0) (2020-01-19)
+
+
+### Bug Fixes
+
+* handle unknown CLI commands ([#660](https://github.com/webiny/webiny-js/issues/660)) ([191660c](https://github.com/webiny/webiny-js/commit/191660ca2044e74a09b816071f1ac5f85fa331b1))
+
+
+### Features
+
+* recommend matching commands ([#661](https://github.com/webiny/webiny-js/issues/661)) ([34fea6d](https://github.com/webiny/webiny-js/commit/34fea6d37ee459f5e45beee5c5620e648070cfac))
+
+
+
+
+
 ## [2.5.2](https://github.com/webiny/webiny-js/compare/@webiny/cli@2.5.1...@webiny/cli@2.5.2) (2019-12-29)
 
 **Note:** Version bump only for package @webiny/cli

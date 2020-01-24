@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.1.1](https://github.com/webiny/webiny-js/compare/@webiny/api-plugin-commodo-mongodb@1.1.0...@webiny/api-plugin-commodo-mongodb@1.1.1) (2020-01-19)
+
+
+### Bug Fixes
+
+* update [@commodo](https://github.com/commodo) package version ([5bc9f06](https://github.com/webiny/webiny-js/commit/5bc9f061c77964ce878f038747b4c974409c5759))
+
+
+
+
+
 # 1.1.0 (2019-11-20)
 
 
