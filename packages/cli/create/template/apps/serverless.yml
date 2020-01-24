@@ -7,7 +7,7 @@ vars:
     name: ${env.MONGODB_NAME}
 
 dbProxy:
-  component: "@webiny/serverless-db-proxy/dist"
+  component: "@webiny/serverless-db-proxy"
   inputs:
     concurrencyLimit: 10
     env:

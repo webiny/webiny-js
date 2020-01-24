@@ -22,7 +22,7 @@ const App = () => {
                 <AppInstaller security={<SecurityProvider />}>
                     <PageBuilderProvider isEditor>
                         <ThemeProvider>
-                            {getPlugins("route").map((pl: Object) =>
+                            {getPlugins("route").map(pl =>
                                 React.cloneElement(pl.route, {
                                     key: pl.name,
                                     exact: true
