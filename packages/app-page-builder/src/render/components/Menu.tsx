@@ -32,7 +32,7 @@ const Menu = ({ slug, component: Component }) => {
 
                 return (
                     <>
-                        <ssr-cache data-class="pb-menu" data-id={MENU_NAME} />
+                        <ssr-cache data-class="pb-menu" data-id={slug} />
                         <Component {...props} data={data} />
                     </>
                 );
