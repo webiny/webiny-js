@@ -3,7 +3,9 @@
   "projectOwner": "Webiny",
   "repoType": "github",
   "repoHost": "https://github.com",
-  "files": ["README.md"],
+  "files": [
+    "README.md"
+  ],
   "imageSize": 100,
   "commit": true,
   "contributors": [
@@ -12,56 +14,99 @@
       "name": "Adrian Smijulj",
       "avatar_url": "https://avatars0.githubusercontent.com/u/5121148?v=4",
       "profile": "https://www.webiny.com",
-      "contributions": ["question", "code", "doc", "ideas"]
+      "contributions": [
+        "question",
+        "code",
+        "doc",
+        "ideas"
+      ]
     },
     {
       "login": "Pavel910",
       "name": "Pavel Denisjuk",
       "avatar_url": "https://avatars1.githubusercontent.com/u/3920893?v=4",
       "profile": "http://webiny.com/",
-      "contributions": ["question", "code", "doc", "ideas"]
+      "contributions": [
+        "question",
+        "code",
+        "doc",
+        "ideas"
+      ]
     },
     {
       "login": "SvenAlHamad",
       "name": "Sven",
       "avatar_url": "https://avatars3.githubusercontent.com/u/3808420?v=4",
       "profile": "http://www.webiny.com/",
-      "contributions": ["question", "code", "doc", "ideas", "business"]
+      "contributions": [
+        "question",
+        "code",
+        "doc",
+        "ideas",
+        "business"
+      ]
     },
     {
       "login": "ndcollins",
       "name": "Nick Collins",
       "avatar_url": "https://avatars0.githubusercontent.com/u/501726?v=4",
       "profile": "https://github.com/ndcollins",
-      "contributions": ["bug", "ideas", "userTesting"]
+      "contributions": [
+        "bug",
+        "ideas",
+        "userTesting"
+      ]
     },
     {
       "login": "JetUni",
       "name": "Jarrett",
       "avatar_url": "https://avatars0.githubusercontent.com/u/1317221?v=4",
       "profile": "https://github.com/JetUni",
-      "contributions": ["bug", "code"]
+      "contributions": [
+        "bug",
+        "code"
+      ]
     },
     {
       "login": "enmesarru",
       "name": "Furkan KURUTAŞ",
       "avatar_url": "https://avatars2.githubusercontent.com/u/40731570?v=4",
       "profile": "https://github.com/enmesarru",
-      "contributions": ["code"]
+      "contributions": [
+        "code"
+      ]
     },
     {
       "login": "roman-vabishchevych",
       "name": "Roman Vabishchevych",
       "avatar_url": "https://avatars3.githubusercontent.com/u/4134474?v=4",
       "profile": "https://github.com/roman-vabishchevych",
-      "contributions": ["bug", "code", "ideas", "plugin", "userTesting"]
+      "contributions": [
+        "bug",
+        "code",
+        "ideas",
+        "plugin",
+        "userTesting"
+      ]
     },
     {
       "login": "fodurrr",
       "name": "fodurrr",
       "avatar_url": "https://avatars1.githubusercontent.com/u/10008597?v=4",
       "profile": "https://github.com/fodurrr",
-      "contributions": ["bug", "userTesting"]
+      "contributions": [
+        "bug",
+        "userTesting"
+      ]
+    },
+    {
+      "login": "jbampton",
+      "name": "John Bampton",
+      "avatar_url": "https://avatars3.githubusercontent.com/u/418747?v=4",
+      "profile": "https://thebeast.me/about/",
+      "contributions": [
+        "doc"
+      ]
     }
   ],
   "contributorsPerLine": 5,
