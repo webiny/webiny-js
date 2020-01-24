@@ -10,6 +10,5 @@ When running a build of your React app, we run `rescripts` (see `package.json` s
 A quick overview of tools included in this package:
 
 - `aliases` - loads monorepo packages and creates aliases for babel, eg: `theme` => `theme/src`, so you can develop in your `src` folder but wherever you import the `theme` it will point to `theme/src`. This greatly increases development speed as no extra watching/building/copying is required. Your `webpack-dev-server` will pick up all the changes, transpile on-fly and you're good to go.
-- `app-babel` - contains a babel config for React apps. It is opinionated, so you're welcome to change it as you see fit, just make sure your changes don't break your project :)
 - `cra` - this is our [rescript](https://github.com/harrysolovay/rescripts#rescript-structure) to get a CRA app to work as we want it to. Again, tweak it to your heart's content :)
 - `packages` - simply loads monorepo packages using `get-yarn-workspaces` package.
