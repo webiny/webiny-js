@@ -7,7 +7,7 @@ import { omit, isEqual } from "lodash";
 import { Mutation } from "react-apollo";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { withRouter } from "@webiny/react-router";
-import { publishRevision } from "./PublishPageButton/graphql";
+import { PUBLISH_REVISION } from "./PublishPageButton/graphql";
 
 const PublishPageButton = ({ page, history }) => {
     const { showSnackbar } = useSnackbar();
@@ -18,7 +18,7 @@ const PublishPageButton = ({ page, history }) => {
             message="You are about to publish this page, are you sure want to continue?"
         >
             {({ showConfirmation }) => (
-                <Mutation mutation={publishRevision} refetchQueries={["PbListPages"]}>
+                <Mutation mutation={PUBLISH_REVISION} refetchQueries={["PbListPages"]}>
                     {update => (
                         <ButtonPrimary
                             onClick={async () => {
