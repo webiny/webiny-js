@@ -31,7 +31,7 @@ const PageOptionsMenu = props => {
         pageDetails: { page }
     } = props;
 
-    const { getPagePreviewUrl } = usePageBuilderSettings();
+    const { getPageUrl, getPagePreviewUrl } = usePageBuilderSettings();
     const { showSnackbar } = useSnackbar();
     const { showConfirmation } = useConfirmationDialog({
         title: "Delete page",
@@ -44,14 +44,40 @@ const PageOptionsMenu = props => {
         )
     });
 
+    // We must prevent opening in new tab - Cypress doesn't work with new tabs.
+    const target = window.Cypress ? "_self" : "_blank";
+
     return (
-        <Menu className={menuStyles} handle={<IconButton icon={<MoreVerticalIcon />} />}>
-            <MenuItem onClick={() => window.open(getPagePreviewUrl(page), "_blank")}>
-                <ListItemGraphic>
-                    <Icon icon={<PreviewIcon />} />
-                </ListItemGraphic>
-                Preview
-            </MenuItem>
+        <Menu
+            className={menuStyles}
+            handle={
+                <IconButton
+                    data-testid="pb-page-details-header-page-options-menu"
+                    icon={<MoreVerticalIcon />}
+                />
+            }
+        >
+            {page.locked ? (
+                <MenuItem onClick={() => window.open(getPageUrl(page), target)}>
+                    <ListItemGraphic>
+                        <Icon
+                            data-testid="pb-page-details-header-page-options-menu-preview"
+                            icon={<PreviewIcon />}
+                        />
+                    </ListItemGraphic>
+                    View
+                </MenuItem>
+            ) : (
+                <MenuItem onClick={() => window.open(getPagePreviewUrl(page), target)}>
+                    <ListItemGraphic>
+                        <Icon
+                            data-testid="pb-page-details-header-page-options-menu-preview"
+                            icon={<PreviewIcon />}
+                        />
+                    </ListItemGraphic>
+                    Preview
+                </MenuItem>
+            )}
 
             <Mutation mutation={setHomePage}>
                 {update => (
