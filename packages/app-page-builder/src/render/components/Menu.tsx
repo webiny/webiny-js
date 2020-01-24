@@ -30,7 +30,12 @@ const Menu = ({ slug, component: Component }) => {
                     slug: null
                 });
 
-                return <Component {...props} data={data} />;
+                return (
+                    <>
+                        <ssr-cache data-class="pb-menu" data-id={slug} />
+                        <Component {...props} data={data} />
+                    </>
+                );
             }}
         </Query>
     );

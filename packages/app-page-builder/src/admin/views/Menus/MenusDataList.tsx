@@ -23,7 +23,6 @@ const MenusDataList = () => {
         <DataList
             {...list}
             title={t`Menus`}
-            showOptions={{}}
             sorters={[
                 {
                     label: t`Newest to oldest`,
