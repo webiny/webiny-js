@@ -13,6 +13,7 @@
     "@webiny/api-i18n": "latest",
     "@webiny/api-mailchimp": "latest",
     "@webiny/api-page-builder": "latest",
+    "@webiny/api-plugin-commodo-db-proxy": "latest",
     "@webiny/api-plugin-commodo-mongodb": "latest",
     "@webiny/api-plugin-create-apollo-gateway": "latest",
     "@webiny/api-plugin-create-apollo-handler": "latest",
