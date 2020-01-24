@@ -2,15 +2,15 @@ name: webiny-api-[PROJECT_ID]
 
 vars:
   region: ${env.AWS_REGION}
+  debug: ${env.DEBUG}
   bucket: ${env.S3_BUCKET}
   apollo:
     server:
       introspection: ${env.GRAPHQL_INTROSPECTION}
       playground: ${env.GRAPHQL_PLAYGROUND}
-  commodo:
-    database:
-      server: ${env.MONGODB_SERVER}
-      name: ${env.MONGODB_NAME}
+  mongodb:
+    server: ${env.MONGODB_SERVER}
+    name: ${env.MONGODB_NAME}
   security:
     token:
       expiresIn: 2592000 # 30 days
@@ -23,6 +23,7 @@ gateway:
     region: ${vars.region}
     memory: 512
     timeout: 30
+    debug: ${vars.debug}
     plugins:
       - factory: "@webiny/api-plugin-create-apollo-gateway"
         options:
@@ -39,6 +40,16 @@ gateway:
             - name: formBuilder
               url: ${formBuilder.api.graphqlUrl}
 
+dbProxy:
+  component: "@webiny/serverless-db-proxy/dist"
+  inputs:
+    region: ${vars.region}
+    concurrencyLimit: 10
+    timeout: 29
+    env:
+      MONGODB_SERVER: ${vars.mongodb.server}
+      MONGODB_NAME: ${vars.mongodb.name}
+
 cognito:
   component: "@webiny/serverless-aws-cognito-user-pool"
   inputs:
@@ -53,11 +64,13 @@ security:
     name: "Security"
     region: ${vars.region}
     memory: 512
+    debug: ${vars.debug}
     plugins:
       - factory: "@webiny/api-plugin-create-apollo-handler"
         options: ${vars.apollo}
-      - factory: "@webiny/api-plugin-commodo-mongodb"
-        options: ${vars.commodo}
+      - factory: "@webiny/api-plugin-commodo-db-proxy"
+        options:
+          functionArn: ${dbProxy.arn}
       - factory: "@webiny/api-security/plugins"
         options: ${vars.security}
       - factory: "@webiny/api-plugin-security-cognito"
@@ -73,21 +86,23 @@ files:
     functions:
       apolloService:
         memory: 512
-        timeout: 10
+        timeout: 30
+        debug: ${vars.debug}
         uploadMinFileSize: 0 # 0 MB
         uploadMaxFileSize: 26214400 # 25 MB
         plugins:
           - factory: "@webiny/api-plugin-create-apollo-handler"
             options: ${vars.apollo}
-          - factory: "@webiny/api-plugin-commodo-mongodb"
-            options: ${vars.commodo}
+          - factory: "@webiny/api-plugin-commodo-db-proxy"
+            options:
+              functionArn: ${dbProxy.arn}
           - factory: "@webiny/api-security/plugins/service"
             options: ${vars.security}
           - "@webiny/api-files/plugins"
           - "@webiny/api-plugin-files-resolvers-mongodb"
       downloadFile:
         memory: 512
-        timeout: 10
+        timeout: 30
       imageTransformer:
         memory: 1600
         timeout: 30
@@ -98,11 +113,13 @@ i18n:
     name: "I18N"
     region: ${vars.region}
     memory: 512
+    debug: ${vars.debug}
     plugins:
       - factory: "@webiny/api-plugin-create-apollo-handler"
         options: ${vars.apollo}
-      - factory: "@webiny/api-plugin-commodo-mongodb"
-        options: ${vars.commodo}
+      - factory: "@webiny/api-plugin-commodo-db-proxy"
+        options:
+          functionArn: ${dbProxy.arn}
       - factory: "@webiny/api-security/plugins/service"
         options: ${vars.security}
       - "@webiny/api-i18n/plugins"
@@ -115,14 +132,17 @@ pageBuilder:
     files: ${files}
     memory: 512
     timeout: 30
+    debug: ${vars.debug}
     plugins:
       - factory: "@webiny/api-plugin-create-apollo-handler"
         options: ${vars.apollo}
-      - factory: "@webiny/api-plugin-commodo-mongodb"
-        options: ${vars.commodo}
+      - factory: "@webiny/api-plugin-commodo-db-proxy"
+        options:
+          functionArn: ${dbProxy.arn}
       - factory: "@webiny/api-security/plugins/service"
         options: ${vars.security}
       - "@webiny/api-page-builder/plugins"
+      - "@webiny/api-page-builder/plugins/useSsrCacheTags"
       - "@webiny/api-plugin-page-builder-resolvers-mongodb"
       - "@webiny/api-google-tag-manager"
       - "@webiny/api-mailchimp"
@@ -137,13 +157,18 @@ formBuilder:
     i18n: ${i18n}
     memory: 512
     timeout: 30
+    debug: ${vars.debug}
     plugins:
       - factory: "@webiny/api-plugin-create-apollo-handler"
         options: ${vars.apollo}
-      - factory: "@webiny/api-plugin-commodo-mongodb"
-        options: ${vars.commodo}
+      - factory: "@webiny/api-plugin-commodo-db-proxy"
+        options:
+          functionArn: ${dbProxy.arn}
       - factory: "@webiny/api-security/plugins/service"
         options: ${vars.security}
+      - "@webiny/api-i18n/plugins/service"
+      - "@webiny/api-form-builder/plugins"
+      - "@webiny/api-form-builder/plugins/useSsrCacheTags"
 
 api:
   component: "@webiny/serverless-api-gateway"

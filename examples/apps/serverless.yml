@@ -23,10 +23,8 @@ site:
     timeout: 30
     code: ./site/build
     env:
-      CLOUDFNS_NAME: "site-fn"
       SSR_FUNCTION: ${ssr.arn}
       DB_PROXY_FUNCTION: ${dbProxy.arn}
-      CDN_ID: EGH86C61O237F
 
 ssr:
   component: "@webiny/serverless-function"
@@ -52,8 +50,9 @@ api:
   component: "@webiny/serverless-api-gateway"
   inputs:
     name: Apps Gateway
-    description: Serverless React Apps
     region: ${vars.region}
+    description: Serverless React Apps
+    binaryMediaTypes: ["*/*"]
     endpoints:
       - path: /admin/{key+}
         method: GET
