@@ -2,7 +2,7 @@ import qs from "querystringify";
 import { createResponse } from "@webiny/http-handler";
 import mime from "mime-types";
 import { parseBody } from "./functions";
-import {HttpHandlerPlugin} from "@webiny/http-handler/types";
+import { HttpHandlerPlugin } from "@webiny/http-handler/types";
 
 const API_ACTION = {
     INVALIDATE_SSR_CACHE_BY_PATH: "invalidateSsrCacheByPath",
@@ -22,7 +22,13 @@ export default (): HttpHandlerPlugin => ({
             return false;
         }
 
-        const body = parseBody(event);
+        let body = event.body;
+        if (event.isBase64Encoded) {
+            body = Buffer.from(event.body, "base64").toString("utf-8");
+        }
+
+        body = parseBody(body);
+
         return (
             body.ssr && Array.isArray(body.ssr) && Object.values(API_ACTION).includes(body.ssr[0])
         );
@@ -31,7 +37,13 @@ export default (): HttpHandlerPlugin => ({
         const [event] = args;
         const path = event.path + qs.stringify(event.multiValueQueryStringParameters, true);
 
-        const body = parseBody(event);
+
+        let body = event.body;
+        if (event.isBase64Encoded) {
+            body = Buffer.from(event.body, "base64").toString("utf-8");
+        }
+
+        body = parseBody(body);
 
         const [action, actionArgs = {}] = body.ssr;
 

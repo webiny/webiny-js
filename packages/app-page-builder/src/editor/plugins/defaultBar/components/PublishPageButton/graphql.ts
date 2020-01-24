@@ -7,6 +7,7 @@ export const PUBLISH_REVISION = gql`
                 data {
                     id
                     published
+                    url
                     locked
                 }
                 error {
