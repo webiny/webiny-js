@@ -1,4 +1,4 @@
-import React, { useCallback } from "react";
+import React, { useCallback, useState } from "react";
 import { IconButton } from "@webiny/ui/Button";
 import useReactRouter from "use-react-router";
 import { useApolloClient } from "react-apollo";
@@ -14,6 +14,7 @@ const EditRevision = () => {
     const client = useApolloClient();
     const { history } = useReactRouter();
     const { page } = usePageDetails();
+    const [inProgress, setInProgress] = useState();
 
     const unpublishedRevision = (get(page, "revisions") || []).find(
         item => !item.published && !item.locked
@@ -27,11 +28,14 @@ const EditRevision = () => {
 
     const copyAndEdit = useCallback(async () => {
         const [latestRevision] = page.revisions;
+        setInProgress(true);
         const { data: res } = await client.mutate({
             mutation: CREATE_REVISION_FORM,
             variables: { revision: latestRevision.id },
-            refetchQueries: ["PbListPages"]
+            refetchQueries: ["PbListPages"],
+            awaitRefetchQueries: true
         });
+        setInProgress(false);
         const { data, error } = res.pageBuilder.revision;
 
         if (error) {
@@ -45,6 +49,7 @@ const EditRevision = () => {
         return (
             <Tooltip content={"Edit"} placement={"top"}>
                 <IconButton
+                    disabled={inProgress}
                     icon={<EditIcon />}
                     onClick={editRevision}
                     data-testid={"pb-page-details-header-edit-revision"}
@@ -56,6 +61,7 @@ const EditRevision = () => {
     return (
         <Tooltip content={"Edit"} placement={"top"}>
             <IconButton
+                disabled={inProgress}
                 icon={<EditIcon />}
                 onClick={copyAndEdit}
                 data-testid={"pb-page-details-header-edit-revision"}
