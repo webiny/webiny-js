@@ -1,6 +1,6 @@
 {
   "name": "@webiny/serverless-api-gateway",
-  "version": "2.0.1",
+  "version": "2.0.2-next.0",
   "main": "serverless.js",
   "license": "MIT",
   "dependencies": {

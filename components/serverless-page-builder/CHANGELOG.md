@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.2.2-next.1](https://github.com/webiny/webiny-js/compare/@webiny/serverless-page-builder@2.2.2-next.0...@webiny/serverless-page-builder@2.2.2-next.1) (2020-01-26)
+
+
+### Bug Fixes
+
+* update deps versions. ([01fb628](https://github.com/webiny/webiny-js/commit/01fb628cb710220485ce8df94b687eb3bcd4f66f))
+
+
+
+
+
 ## [2.2.2-next.0](https://github.com/webiny/webiny-js/compare/@webiny/serverless-page-builder@2.2.1...@webiny/serverless-page-builder@2.2.2-next.0) (2020-01-24)
 
 
