@@ -19,7 +19,6 @@ vars:
 gateway:
   component: "@webiny/serverless-apollo-gateway"
   inputs:
-    name: Apollo Gateway
     region: ${vars.region}
     memory: 512
     timeout: 30
@@ -61,7 +60,6 @@ cognito:
 security:
   component: "@webiny/serverless-apollo-service"
   inputs:
-    name: "Security"
     region: ${vars.region}
     memory: 512
     debug: ${vars.debug}
@@ -110,7 +108,6 @@ files:
 i18n:
   component: "@webiny/serverless-apollo-service"
   inputs:
-    name: "I18N"
     region: ${vars.region}
     memory: 512
     debug: ${vars.debug}
@@ -127,7 +124,6 @@ i18n:
 pageBuilder:
   component: "@webiny/serverless-page-builder"
   inputs:
-    name: "Page Builder"
     region: ${vars.region}
     files: ${files}
     memory: 512
@@ -151,7 +147,6 @@ pageBuilder:
 formBuilder:
   component: "@webiny/serverless-form-builder"
   inputs:
-    name: "Form Builder"
     region: ${vars.region}
     files: ${files}
     i18n: ${i18n}
@@ -173,7 +168,6 @@ formBuilder:
 api:
   component: "@webiny/serverless-api-gateway"
   inputs:
-    name: "API Gateway"
     region: ${vars.region}
     description: "Main API Gateway"
     endpoints:

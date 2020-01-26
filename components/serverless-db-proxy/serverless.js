@@ -7,9 +7,9 @@ class DbProxyComponent extends Component {
 
         const name =
             get(this.state, "output.name") ||
-            this.context.instance.getResourceName(inputs.name || "db-proxy");
+            this.context.instance.getResourceName(inputs.name);
 
-        const proxyLambda = await this.load("@webiny/serverless-function", "db-proxy");
+        const proxyLambda = await this.load("@webiny/serverless-function");
         const proxyLambdaOutput = await proxyLambda({
             region,
             concurrencyLimit,
@@ -27,7 +27,7 @@ class DbProxyComponent extends Component {
     }
 
     async remove() {
-        const lambda = await this.load("@webiny/serverless-function", "db-proxy");
+        const lambda = await this.load("@webiny/serverless-function");
         await lambda.remove();
 
         this.state = {};
