@@ -10,7 +10,7 @@ const { green, blue, red } = require("chalk");
         const package = packages[i];
         try {
             const json = await readJson(path.join(package, "package.json"));
-            console.log(`${json.name}@${json.version}`);
+            console.log(`${json.name}@${blue(json.version)}`);
             Object.keys(json.dependencies).forEach(key => {
                 if (!key.startsWith("@webiny")) {
                     return;
