@@ -1,5 +1,5 @@
 {
-  "packages": ["packages/*", "components/*", "examples/apps/*", "examples/packages/*"],
+  "packages": ["packages/*", "components/*"],
   "version": "independent",
   "command": {
     "version": {
