@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.6.1-next.4](https://github.com/webiny/webiny-js/compare/@webiny/cli@2.6.1-next.3...@webiny/cli@2.6.1-next.4) (2020-01-26)
+
+
+### Bug Fixes
+
+* update SSR handler template files ([21dfc17](https://github.com/webiny/webiny-js/commit/21dfc17892efcb94a54a8df42bed87c541391224))
+
+
+
+
+
 ## [2.6.1-next.3](https://github.com/webiny/webiny-js/compare/@webiny/cli@2.6.1-next.2...@webiny/cli@2.6.1-next.3) (2020-01-24)
 
 
