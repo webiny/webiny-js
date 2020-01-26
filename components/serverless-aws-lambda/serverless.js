@@ -48,9 +48,7 @@ class AwsLambda extends Component {
 
         const config = mergeDeepRight(defaults, inputs);
 
-        if (!config.name) {
-            config.name = this.state.name || this.context.resourceId();
-        }
+        config.name = this.state.name || this.context.instance.getResourceName(config.name);
 
         this.context.instance.debug(
             `Starting deployment of lambda %o to the %o region.`,
