@@ -3812,6 +3812,21 @@
     globby "^9.2.0"
     ramda "^0.26.1"
 
+"@serverless/aws-lambda@^1.0.0":
+  version "1.2.0"
+  resolved "https://registry.npmjs.org/@serverless/aws-lambda/-/aws-lambda-1.2.0.tgz#58cf345d10d040f50fe11259667abe86610c341c"
+  integrity sha512-wu/Zu4igGekQ8t5GnDo8ow6HF2uScekGSdlTa/qN8Md4ECQS2nUPeFYLPhc5LveZDqfybkVA8JCvz/1et/qWYA==
+  dependencies:
+    "@serverless/aws-iam-role" "^1.0.0"
+    "@serverless/aws-lambda-layer" "^1.0.0"
+    "@serverless/aws-s3" "^2.0.0"
+    "@serverless/core" "^1.0.0"
+    archiver "^3.0.0"
+    aws-sdk "^2.474.0"
+    fs-extra "^7.0.0"
+    globby "^9.2.0"
+    ramda "^0.26.0"
+
 "@serverless/aws-s3@^1.0.0":
   version "1.0.1"
   resolved "https://registry.npmjs.org/@serverless/aws-s3/-/aws-s3-1.0.1.tgz#79befe9d92a083e22c99af7d33f7d1215561e6fd"
@@ -3924,6 +3939,14 @@
   dependencies:
     "@types/lodash" "^4.14.123"
     lodash "^4.17.11"
+
+"@serverless/function@^3.0.0":
+  version "3.0.0"
+  resolved "https://registry.npmjs.org/@serverless/function/-/function-3.0.0.tgz#509b274f4dca33a5e9c067b4de58016368a0cc62"
+  integrity sha512-SM8J6TOu4MfopGjjZJIuMpVSVrnPrqoo2uwNbXCfO61sgPf3FwgJbV6rLfnF87K+VL4TKtEteOCJp7YbYZB9iQ==
+  dependencies:
+    "@serverless/aws-lambda" "^1.0.0"
+    "@serverless/core" "^1.0.0"
 
 "@serverless/platform-sdk@^2.3.0":
   version "2.3.0"
@@ -5174,6 +5197,109 @@
     "@webassemblyjs/wast-parser" "1.8.5"
     "@xtuc/long" "4.2.2"
 
+"@webiny/api@^2.1.0":
+  version "2.1.0"
+  resolved "https://registry.npmjs.org/@webiny/api/-/api-2.1.0.tgz#b193d5ac5404d2b35ec4c08d15f9658105310d9c"
+  integrity sha512-yw6KM3evRkN//OKY1osXh0WGyWY9TI9mASZjOpr1GeBWR/ewdbAmM9Dvq9UgpmwxKQU871PXc4xImqi1srEimA==
+  dependencies:
+    "@apollo/federation" "^0.10.2"
+    graphql "^14.4.2"
+    graphql-iso-date "^3.6.1"
+    graphql-middleware "^4.0.1"
+    graphql-tag "^2.10.1"
+    graphql-tools "^4.0.5"
+    graphql-type-json "^0.3.0"
+    graphql-type-long "^0.1.1"
+
+"@webiny/app-admin@^2", "@webiny/app-admin@^2.1.1":
+  version "2.1.3"
+  resolved "https://registry.npmjs.org/@webiny/app-admin/-/app-admin-2.1.3.tgz#2d97cbb85451a207d6feaa7b9f61b005783e08ec"
+  integrity sha512-LKBTkYqRSf1gANpv6DJRH1y5j1VPzz7duasdNiMZmKmhs5C/iJQ0xpQzhTFmmmx+cIatkBEXMqwkWx7RmB2n3g==
+  dependencies:
+    "@babel/runtime" "^7.5.5"
+    "@emotion/core" "^10.0.17"
+    "@emotion/styled" "^10.0.17"
+    "@svgr/webpack" "^4.3.2"
+    "@webiny/app" "^2.0.2"
+    "@webiny/form" "^2.0.0"
+    "@webiny/plugins" "^2.0.0"
+    "@webiny/ui" "^2.0.1"
+    bytes "^3.1.0"
+    classnames "^2.2.6"
+    dataurl-to-blob "^0.0.1"
+    dot-prop-immutable "^1.4.0"
+    downshift "^3.1.2"
+    emotion "^10.0.17"
+    graphlib "^2.1.7"
+    graphql-tag "^2.10.1"
+    invariant "^2.2.4"
+    lodash "^4.17.11"
+    lodash.get "^4.4.2"
+    mime "^2.4.2"
+    react-apollo "^3.1.0-beta.0"
+    react-butterfiles "^1.3.1"
+    react-hotkeyz "^1.0.4"
+    react-lazy-load "^3.0.13"
+    react-router-dom "^5.0.0"
+    react-transition-group "^4.3.0"
+    shortid "^2.2.12"
+    store "^2.0.12"
+    timeago-react "^2.0.0"
+    use-react-router "^1.0.7"
+
+"@webiny/app-cookie-policy@^2":
+  version "2.0.3"
+  resolved "https://registry.npmjs.org/@webiny/app-cookie-policy/-/app-cookie-policy-2.0.3.tgz#da2309752060c39e68a3e87fe1762e2cb8244aad"
+  integrity sha512-pMJ+OHJ72lydeReSZ0RuE9icxAFZaulV6NDCcTYM/a6Sd2PqE9VA0yLHhXzFMzzdVIpTsjcrcsgVqEeb69Oh8w==
+  dependencies:
+    "@babel/runtime" "^7.5.5"
+    "@webiny/app-admin" "^2.1.1"
+    "@webiny/app-security" "^2.0.3"
+    "@webiny/form" "^2.0.0"
+    "@webiny/ui" "^2.0.1"
+    "@webiny/validation" "^2.1.0"
+    load-src "^1.0.0"
+    lodash.get "^4.4.2"
+    react "^16.8.0"
+    react-helmet "^5.2.0"
+    react-router-dom "^5.0.0"
+
+"@webiny/app-form-builder@^1":
+  version "1.0.1-next.0"
+  dependencies:
+    "@babel/runtime" "^7.5.5"
+    "@emotion/core" "^10.0.17"
+    "@emotion/styled" "^10.0.17"
+    "@rmwc/menu" "^5.6.0"
+    "@svgr/webpack" "^4.3.2"
+    "@webiny/app" "^2.0.3-next.0"
+    "@webiny/app-admin" "^2.1.4-next.0"
+    "@webiny/app-i18n" "^2.1.2-next.0"
+    "@webiny/app-page-builder" "^2.0.4-next.0"
+    "@webiny/app-security" "^2.0.4-next.0"
+    "@webiny/form" "^2.0.1-next.0"
+    "@webiny/plugins" "^2.0.1-next.0"
+    "@webiny/react-router" "^1.0.1-next.0"
+    "@webiny/ui" "^2.0.2-next.0"
+    "@webiny/validation" "^2.1.1-next.0"
+    apollo-client "^2.2.8"
+    emotion "^10.0.17"
+    graphql-tag "^2.10.1"
+    lodash "^4.17.10"
+    lodash.get "^4.4.2"
+    react-apollo "^3.1.0"
+    react-dnd "^9.3.4"
+    react-dnd-html5-backend "^9.3.4"
+    react-google-recaptcha "^1.1.0"
+    react-helmet "^5.2.0"
+    react-hotkeyz "^1.0.4"
+    react-redux "^7.1.1"
+    react-router "^5.1.2"
+    react-sortable-hoc "^1.9.1"
+    shortid "^2.2.14"
+    timeago-react "^2.0.0"
+    use-react-router "^1.0.7"
+
 "@webiny/app-forms@^2":
   version "2.2.0"
   resolved "https://registry.npmjs.org/@webiny/app-forms/-/app-forms-2.2.0.tgz#d6e7c95b88dfc13924c1c845eb28b985e752c9d6"
@@ -5209,6 +5335,365 @@
     shortid "^2.2.14"
     timeago-react "^2.0.0"
     use-react-router "^1.0.7"
+
+"@webiny/app-google-tag-manager@^2":
+  version "2.0.3"
+  resolved "https://registry.npmjs.org/@webiny/app-google-tag-manager/-/app-google-tag-manager-2.0.3.tgz#ac5f791d6a9a2edc30b9cfb4f06c1046947442ed"
+  integrity sha512-vN0cAGiUDjefoICLs27Blrjfc+kUmWARHketGK3xM7+kxc1R0IgaBPQTmWfLk3lw4DNGP/RvJFT3zY86wk+pVg==
+  dependencies:
+    "@babel/runtime" "^7.5.5"
+    "@webiny/app-admin" "^2.1.1"
+    "@webiny/app-security" "^2.0.3"
+    "@webiny/form" "^2.0.0"
+    "@webiny/ui" "^2.0.1"
+    lodash.get "^4.4.2"
+    react-helmet "^5.2.0"
+    react-router-dom "^5.0.0"
+
+"@webiny/app-i18n@^2", "@webiny/app-i18n@^2.1.1":
+  version "2.1.1"
+  resolved "https://registry.npmjs.org/@webiny/app-i18n/-/app-i18n-2.1.1.tgz#e74e5381c2fc094ae5e3ff746980a1cfeab47400"
+  integrity sha512-I/ycPf9Gx6VqrdzZjM/y/V3I/JQ9K6GOOpL4TxZ9XSg5VRKKay9YDUpf82g5gLt8W2doM0iCWHU0vc0dG2x6Vg==
+  dependencies:
+    "@babel/runtime" "^7.5.5"
+    "@emotion/styled" "^10.0.17"
+    "@webiny/app" "^2.0.2"
+    "@webiny/app-admin" "^2.1.1"
+    "@webiny/app-security" "^2.0.3"
+    "@webiny/form" "^2.0.0"
+    "@webiny/plugins" "^2.0.0"
+    "@webiny/ui" "^2.0.1"
+    "@webiny/validation" "^2.1.0"
+    classnames "^2.2.6"
+    emotion "10.0.17"
+    graphql-tag "^2.10.1"
+    is-hotkey "^0.1.3"
+    lodash.clonedeep "^4.5.0"
+    lodash.get "^4.4.2"
+    react-apollo "^3.1.0-beta.0"
+    react-helmet "^5.2.0"
+    react-router-dom "^5.0.0"
+    slate "^0.42.2"
+    slate-react "^0.19.3"
+
+"@webiny/app-mailchimp@^2":
+  version "2.0.3"
+  resolved "https://registry.npmjs.org/@webiny/app-mailchimp/-/app-mailchimp-2.0.3.tgz#ff78572c33176d7697687bf7e1defed21fe292d4"
+  integrity sha512-FCYRxLEQPwO2JyxRhsc23bpSojtUz27aJM0umwAuEB+2H+wE9EBWvBz6025FRW5p7WF+SJ1gXJh5sVABurHo0A==
+  dependencies:
+    "@babel/runtime" "^7.5.5"
+    "@emotion/styled" "^10.0.17"
+    "@webiny/app" "^2.0.2"
+    "@webiny/app-admin" "^2.1.1"
+    "@webiny/app-page-builder" "^2.0.3"
+    "@webiny/app-security" "^2.0.3"
+    "@webiny/form" "^2.0.0"
+    "@webiny/plugins" "^2.0.0"
+    "@webiny/ui" "^2.0.1"
+    "@webiny/validation" "^2.1.0"
+    emotion "10.0.17"
+    lodash "^4.17.11"
+    react-helmet "^5.2.0"
+    react-router-dom "^5.0.0"
+
+"@webiny/app-page-builder-theme@^1.0.0":
+  version "1.0.1-next.0"
+  dependencies:
+    "@webiny/app" "^2.0.3-next.0"
+    "@webiny/app-page-builder" "^2.0.4-next.0"
+    "@webiny/plugins" "^2.0.1-next.0"
+    "@webiny/react-router" "^1.0.1-next.0"
+    classnames "^2.2.6"
+    graphql-tag "2.10.1"
+    lodash.get "^4.4.2"
+    react-apollo "^3.1.0"
+    react-hamburger-menu "^1.1.1"
+
+"@webiny/app-page-builder@^2", "@webiny/app-page-builder@^2.0.3":
+  version "2.0.3"
+  resolved "https://registry.npmjs.org/@webiny/app-page-builder/-/app-page-builder-2.0.3.tgz#6c4504395c08247bea99a2f3cb0f62397a55962b"
+  integrity sha512-EF8cwIN1UTpgKBsw13urrly7x9WBg6qrFWUZLPQ9xalKcX1cfddWT2lQXUKkZGTqW6Onj2G5zo7FEyIFfydVrA==
+  dependencies:
+    "@babel/runtime" "^7.5.5"
+    "@emotion/core" "^10.0.17"
+    "@emotion/styled" "^10.0.17"
+    "@fortawesome/fontawesome-svg-core" "^1.2.8"
+    "@fortawesome/free-brands-svg-icons" "^5.5.0"
+    "@fortawesome/free-regular-svg-icons" "^5.6.0"
+    "@fortawesome/free-solid-svg-icons" "^5.5.0"
+    "@fortawesome/react-fontawesome" "^0.1.3"
+    "@rmwc/menu" "^5.6.0"
+    "@svgr/webpack" "^4.3.2"
+    "@webiny/app" "^2.0.2"
+    "@webiny/app-admin" "^2.1.1"
+    "@webiny/app-security" "^2.0.3"
+    "@webiny/form" "^2.0.0"
+    "@webiny/plugins" "^2.0.0"
+    "@webiny/ui" "^2.0.1"
+    "@webiny/validation" "^2.1.0"
+    aos "^2.3.4"
+    classnames "^2.2.6"
+    dataurl-to-blob "^0.0.1"
+    dot-prop-immutable "^1.4.0"
+    downshift "^2.1.1"
+    emotion "^10.0.17"
+    graphql-tag "^2.10.1"
+    immutable "^3.8.2"
+    invariant "^2.2.4"
+    is-hotkey "^0.1.3"
+    isnumeric "^0.3.3"
+    lodash "^4.17.10"
+    lodash.get "^4.4.2"
+    lodash.pick "^4.4.0"
+    lorem-ipsum "^1.0.5"
+    platform "^1.3.5"
+    react-apollo "^3.1.0-beta.0"
+    react-color "^2.14.1"
+    react-dnd "^9.3.4"
+    react-dnd-html5-backend "^9.3.4"
+    react-helmet "^5.2.0"
+    react-images "^0.5.19"
+    react-redux "^7.1.1"
+    react-router-dom "^5.0.0"
+    react-sortable "^2.0.0"
+    react-sortable-tree "^2.6.0"
+    react-transition-group "^4.3.0"
+    react-virtualized "^9.21.0"
+    redux "^4.0.0"
+    redux-undo "^1.0.0-beta9-9-7"
+    shortid "^2.2.8"
+    slate "^0.42.2"
+    slate-react "^0.19.3"
+    slugify "^1.2.9"
+    store "^2.0.12"
+    timeago-react "^2.0.0"
+    uniqid "^5.0.3"
+    use-react-router "^1.0.7"
+    warning "^4.0.2"
+
+"@webiny/app-security@^2", "@webiny/app-security@^2.0.3":
+  version "2.0.3"
+  resolved "https://registry.npmjs.org/@webiny/app-security/-/app-security-2.0.3.tgz#81a8a4e3792618d4ec814803a8c4651a75a90d3a"
+  integrity sha512-HGS0UqZadS4wZfecF/EP8dlAdLKqjLsd+gPHDIBUe7cUNiXO0jK9y7Q9xN7Slo0arSuPLXkdOiWvjYB/+hVWSw==
+  dependencies:
+    "@babel/runtime" "^7.5.5"
+    "@emotion/styled" "^10.0.17"
+    "@webiny/app" "^2.0.2"
+    "@webiny/app-admin" "^2.1.1"
+    "@webiny/form" "^2.0.0"
+    "@webiny/plugins" "^2.0.0"
+    "@webiny/ui" "^2.0.1"
+    "@webiny/validation" "^2.1.0"
+    apollo-link "^1.2.1"
+    dot-prop-immutable "^1.4.0"
+    emotion "10.0.17"
+    graphql-tag "^2.10.1"
+    lodash "^4.17.11"
+    react-apollo "^3.1.0-beta.0"
+    react-helmet "^5.2.0"
+    react-router-dom "^5.0.0"
+    store "^2.0.12"
+
+"@webiny/app-typeform@^2":
+  version "2.0.3"
+  resolved "https://registry.npmjs.org/@webiny/app-typeform/-/app-typeform-2.0.3.tgz#a543ffd1b94ab865da49ba1c498b2d511248f693"
+  integrity sha512-sYnJP1wfhlT5weCPFiki/DVNkMm916aRim3+exj4zzCODVlxn+CICf/uxYSsNOCCvFbfYRSLaT+bW3UCuBt7mg==
+  dependencies:
+    "@babel/runtime" "^7.5.5"
+    "@emotion/styled" "^10.0.17"
+    "@webiny/app-page-builder" "^2.0.3"
+    "@webiny/ui" "^2.0.1"
+    "@webiny/validation" "^2.1.0"
+    lodash "^4.17.4"
+
+"@webiny/app@^2", "@webiny/app@^2.0.2":
+  version "2.0.2"
+  resolved "https://registry.npmjs.org/@webiny/app/-/app-2.0.2.tgz#21714ac9d643c06b6f395266cb2ca3d3d16a24b6"
+  integrity sha512-QwzZbmkJIl469yBfBDyvNw2iVcDnrNTMGfxFiigIfrlBuDCDijTbsfrAoWjE92YV1Yl7z80GyUEudxjcNPL3Hw==
+  dependencies:
+    "@babel/runtime" "^7.5.5"
+    "@webiny/i18n" "^2.0.0"
+    "@webiny/i18n-react" "^2.0.0"
+    "@webiny/plugins" "^2.0.0"
+    "@webiny/ui" "^2.0.1"
+    apollo-link "^1.2.1"
+    graphql-tag "^2.10.1"
+    invariant "^2.2.4"
+    lodash "^4.17.4"
+    lodash.get "^4.4.2"
+    react "^16.6.0"
+    react-apollo "^3.1.0-beta.0"
+    react-dom "^16.6.0"
+    use-react-router "^1.0.7"
+    warning "^4.0.2"
+
+"@webiny/commodo@^2.0.1-next.0":
+  version "2.0.1"
+  resolved "https://registry.npmjs.org/@webiny/commodo/-/commodo-2.0.1.tgz#e8818605c4d1ad9234d083996009ae28500b3d0d"
+  integrity sha512-EWT1GXvcyIUdXu/6KeUM484wzxRwTZCA5mKO8cTgONqnQ1yqt0i55nC0SHr67hDoy5e+O+bEHqTqsOcEDrX+fg==
+  dependencies:
+    "@commodo/fields" "^1.0.0"
+    "@commodo/fields-storage" "^1.0.0"
+    "@commodo/fields-storage-mongodb" "^1.0.0"
+    "@commodo/fields-storage-ref" "^1.0.0"
+    "@commodo/fields-storage-soft-delete" "^1.0.0"
+    "@commodo/hooks" "^1.0.0"
+    "@commodo/name" "^1.0.2"
+    commodo-fields-date "^1.0.3"
+    commodo-fields-object "^1.0.3"
+    commodo-fields-storage-crud-logs "^1.0.2"
+    repropose "^1.0.2"
+
+"@webiny/form@^2.0.0":
+  version "2.0.0"
+  resolved "https://registry.npmjs.org/@webiny/form/-/form-2.0.0.tgz#3f8e363f4aecaf6e2bdcfa5e157bd13d1ab423a0"
+  integrity sha512-yvh2kTHLk91AeiyZkQtzN8+KpC8j3fo8/ku/DIGAKR8VJok+K1mD460S9BWAwR73hRrOZ1R5iuwjU4+8Vp6m6A==
+  dependencies:
+    "@babel/runtime" "^7.5.5"
+    invariant "^2.2.4"
+    lodash "^4.17.5"
+
+"@webiny/i18n-react@^2.0.0":
+  version "2.0.0"
+  resolved "https://registry.npmjs.org/@webiny/i18n-react/-/i18n-react-2.0.0.tgz#d1cee2fc9af1eea3adf6fba9d082f719dc81718f"
+  integrity sha512-j479SKoVZrRqjFFvIMhnAdTxbom5WC9JGj2na8I22mgPPq4ODVFLeKd56Y8+SwY6HJSRWpIKafJxVnQpdJHlww==
+  dependencies:
+    "@babel/runtime" "^7.5.5"
+    lodash "^4.17.4"
+
+"@webiny/i18n@^2.0.0":
+  version "2.0.0"
+  resolved "https://registry.npmjs.org/@webiny/i18n/-/i18n-2.0.0.tgz#2e3b4c7466561f322495bfb50002a8af40663a96"
+  integrity sha512-PPKLkgaKgVy3ng/5xcHmwB/im3lVy7nOTCMlSgnaclMUq6Gz4C5XJoDeAeYrVOEGkJlL39HgM0GU+xO4U5m7OQ==
+  dependencies:
+    "@babel/runtime" "^7.5.5"
+    accounting "^0.4.1"
+    fecha "^2.3.3"
+    lodash "^4.17.4"
+    short-hash "^1.0.0"
+    yargs "12.0.5"
+
+"@webiny/plugins@^2", "@webiny/plugins@^2.0.0":
+  version "2.0.0"
+  resolved "https://registry.npmjs.org/@webiny/plugins/-/plugins-2.0.0.tgz#8272d071c45460b5ef13f483a14c589ceb08bbc5"
+  integrity sha512-hcIp5/72/DQoUy8ICHFYEnC0jcSxK15WFSEdwll45pckoSWS0Yke05qO7aC/Sf0JHGTDn/upDS3gIFeS9/iaug==
+  dependencies:
+    "@babel/runtime" "^7.5.5"
+
+"@webiny/react-router@^1":
+  version "1.0.1-next.0"
+  dependencies:
+    "@babel/runtime" "^7.5.5"
+    "@webiny/plugins" "^2.0.1-next.0"
+    apollo-client "^2.6.8"
+    react-apollo "^3.1.3"
+    react-router "^5.1.2"
+    react-router-dom "^5.0.0"
+
+"@webiny/serverless-apollo-service@^2.2.0":
+  version "2.2.0"
+  resolved "https://registry.npmjs.org/@webiny/serverless-apollo-service/-/serverless-apollo-service-2.2.0.tgz#ee550ddb9f31604940437a619edade76562fcdef"
+  integrity sha512-VfiDD/zn4ELbhsuRC6sim9E9eN/QRt1xG2Z+iMm4pdkBC3JppjBtyRZp3jDlYm7uDKNM3N5GfBdGTwhgd60BAQ==
+  dependencies:
+    "@babel/core" "^7.6.2"
+    "@babel/plugin-proposal-class-properties" "^7.5.5"
+    "@babel/preset-env" "^7.6.0"
+    "@serverless/core" "^1.1.1"
+    "@webiny/api" "^2.1.0"
+    "@webiny/serverless-api-gateway" "^2.0.1"
+    "@webiny/serverless-function" "^2.0.0"
+    babel-loader "^8.0.6"
+    babel-plugin-module-resolver "^3.2.0"
+    execa "^2.0.5"
+    fs-extra "^8.1.0"
+    lodash.camelcase "^4.3.0"
+    prettier "^1.18.2"
+    webpack "^4.39.2"
+
+"@webiny/serverless-aws-api-gateway@^2.1.0":
+  version "2.1.0"
+  resolved "https://registry.npmjs.org/@webiny/serverless-aws-api-gateway/-/serverless-aws-api-gateway-2.1.0.tgz#9dbf44d0df21ebde9f25688aab06bd9b03941109"
+  integrity sha512-3tCySkO3T5GzeVtdFG4Y9ez+wIufobksNPGu8A/gqPh9Hxm9/ONSMMbEoV1GGf8zZZl92OY8hgYJAQKnSrcaOw==
+  dependencies:
+    "@serverless/core" "^1.0.0"
+    aws-sdk "^2.0.0"
+    lodash.isequal "^4.5.0"
+    p-retry "^4.1.0"
+
+"@webiny/serverless-function@^2.0.0":
+  version "2.0.0"
+  resolved "https://registry.npmjs.org/@webiny/serverless-function/-/serverless-function-2.0.0.tgz#138edafabb4a2bb87b7b988bb6bee1104ab99685"
+  integrity sha512-nxGjTkx8iQbaqG9np0dSbG/Xh8KK1pzoHaAUcz7MxgoAd6Y7KPeR0TWjTPPgqGEDyU9wViIz1bpd3pJMFMw5Sg==
+  dependencies:
+    "@serverless/core" "^1.1.1"
+    "@serverless/function" "^3.0.0"
+    execa "^2.0.3"
+
+"@webiny/ui@^2", "@webiny/ui@^2.0.1":
+  version "2.0.1"
+  resolved "https://registry.npmjs.org/@webiny/ui/-/ui-2.0.1.tgz#7f9f9ebdafe38dc8784fa334b04417ef610d0204"
+  integrity sha512-8FiR8f7lqD5W8c64mcaRkiON0KYfsq4ocBjo/zRqzVF7Ul4YHr3vVqtS6dl0EcuJHAl08uHCqOf+DT+Vo0ec2Q==
+  dependencies:
+    "@babel/runtime" "^7.5.5"
+    "@emotion/core" "^10.0.17"
+    "@emotion/styled" "^10.0.17"
+    "@rmwc/base" "^5.6.0"
+    "@rmwc/button" "^5.6.0"
+    "@rmwc/checkbox" "^5.6.0"
+    "@rmwc/chip" "^5.6.0"
+    "@rmwc/dialog" "^5.6.0"
+    "@rmwc/drawer" "^5.6.0"
+    "@rmwc/elevation" "^5.6.0"
+    "@rmwc/fab" "^5.6.0"
+    "@rmwc/grid" "^5.6.0"
+    "@rmwc/icon-button" "^5.6.0"
+    "@rmwc/list" "^5.6.0"
+    "@rmwc/menu" "^5.6.0"
+    "@rmwc/radio" "^5.6.0"
+    "@rmwc/ripple" "^5.6.0"
+    "@rmwc/select" "^5.6.0"
+    "@rmwc/slider" "^5.6.0"
+    "@rmwc/snackbar" "^5.6.0"
+    "@rmwc/switch" "^5.6.0"
+    "@rmwc/tabs" "^5.6.0"
+    "@rmwc/textfield" "^5.6.0"
+    "@rmwc/top-app-bar" "^5.6.0"
+    "@rmwc/typography" "^5.6.0"
+    "@svgr/webpack" "^4.3.2"
+    brace "^0.11.1"
+    classnames "^2.2.6"
+    cropperjs "^1.4.3"
+    dot-prop-immutable "^1.4.0"
+    downshift "^2.1.5"
+    emotion "10.0.17"
+    keycode "^2.2.0"
+    load-script "^1.0.0"
+    lodash "^4.17.11"
+    material-components-web "^3.1.1"
+    nprogress "^0.2.0"
+    nuka-carousel "^4.3.9"
+    rc-tooltip "^3.7.2"
+    react-ace "^6.1.4"
+    react-butterfiles "^1.3.0"
+    react-color "^2.14.1"
+    react-columned "^1.0.0"
+    react-custom-scrollbars "^4.2.1"
+    react-loading-skeleton "^0.5.0"
+    react-spinner-material "^1.0.19"
+    react-transition-group "^4.3.0"
+    shortid "^2.2.12"
+    slate "^0.42.2"
+    slate-plain-serializer "^0.6.15"
+    slate-react "^0.19.3"
+
+"@webiny/validation@^2.1.0":
+  version "2.1.0"
+  resolved "https://registry.npmjs.org/@webiny/validation/-/validation-2.1.0.tgz#bc91e50d584e0c48fa34e023cc3593bea7ea4b30"
+  integrity sha512-lPySxTkGH3LHuyprP9hdzxzXXj/RXyDYDBqynB5XmGmZTr34fCQ/0CGYMDmWYYXyKWGF/G5FnolHDyorRJ9oxA==
+  dependencies:
+    "@babel/runtime" "^7.5.5"
+    isnumeric "^0.3.3"
+    lodash "^4.17.4"
 
 "@webpack-contrib/schema-utils@^1.0.0-beta.0":
   version "1.0.0-beta.0"
@@ -9384,7 +9869,7 @@ debug@3.1.0:
   dependencies:
     ms "2.0.0"
 
-debug@3.2.6, debug@^3.0.0, debug@^3.1.0, debug@^3.1.1, debug@^3.2.5, debug@^3.2.6:
+debug@3.2.6, debug@^3.0.0, debug@^3.1.0, debug@^3.1.1, debug@^3.2.5:
   version "3.2.6"
   resolved "https://registry.npmjs.org/debug/-/debug-3.2.6.tgz#e83d17de16d8a7efb7717edbe5fb10135eee629b"
   integrity sha512-mel+jf7nrtEl5Pn1Qx46zARXKDpBbvzezse7p7LqINmdoIk8PYP5SySaxEmYv6TZ0JyEKA1hsCId6DIhgITtWQ==
@@ -9679,11 +10164,6 @@ detect-indent@^6.0.0:
   version "6.0.0"
   resolved "https://registry.npmjs.org/detect-indent/-/detect-indent-6.0.0.tgz#0abd0f549f69fc6659a254fe96786186b6f528fd"
   integrity sha512-oSyFlqaTHCItVRGK5RmrmjB+CmaMOW7IaNA/kdxqhoa6d17j/5ce9O9eWXmV/KEdRwqpQA+Vqe8a8Bsybu4YnA==
-
-detect-libc@^1.0.2:
-  version "1.0.3"
-  resolved "https://registry.npmjs.org/detect-libc/-/detect-libc-1.0.3.tgz#fa137c4bd698edf55cd5cd02ac559f91a4c4ba9b"
-  integrity sha1-+hN8S9aY7fVc1c0CrFWfkaTEups=
 
 detect-newline@^2.1.0:
   version "2.1.0"
@@ -13241,7 +13721,7 @@ iconv-lite@0.4.23:
   dependencies:
     safer-buffer ">= 2.1.2 < 3"
 
-iconv-lite@0.4.24, iconv-lite@^0.4.17, iconv-lite@^0.4.24, iconv-lite@^0.4.4, iconv-lite@^0.4.5, iconv-lite@~0.4.13:
+iconv-lite@0.4.24, iconv-lite@^0.4.17, iconv-lite@^0.4.24, iconv-lite@^0.4.5, iconv-lite@~0.4.13:
   version "0.4.24"
   resolved "https://registry.npmjs.org/iconv-lite/-/iconv-lite-0.4.24.tgz#2022b4b25fbddc21d2f524974a474aafe733908b"
   integrity sha512-v3MXnZAcvnywkTUEZomIActle7RXXeedOR31wwl7VlyoXO4Qi9arvSenNQWne1TcRwhCL1HwLI21bEqdpj8/rA==
@@ -17236,15 +17716,6 @@ ncp@~2.0.0:
   resolved "https://registry.npmjs.org/ncp/-/ncp-2.0.0.tgz#195a21d6c46e361d2fb1281ba38b91e9df7bdbb3"
   integrity sha1-GVoh1sRuNh0vsSgbo4uR6d9727M=
 
-needle@^2.2.1:
-  version "2.4.0"
-  resolved "https://registry.npmjs.org/needle/-/needle-2.4.0.tgz#6833e74975c444642590e15a750288c5f939b57c"
-  integrity sha512-4Hnwzr3mi5L97hMYeNl8wRW/Onhy4nUKR/lVemJ8gJedxxUyBLm9kkrDColJvoSfwi0jCNhD+xCdOtiGDQiRZg==
-  dependencies:
-    debug "^3.2.6"
-    iconv-lite "^0.4.4"
-    sax "^1.2.4"
-
 negotiator@0.6.2:
   version "0.6.2"
   resolved "https://registry.npmjs.org/negotiator/-/negotiator-0.6.2.tgz#feacf7ccf525a77ae9634436a64883ffeca346fb"
@@ -17425,22 +17896,6 @@ node-notifier@^6.0.0:
     shellwords "^0.1.1"
     which "^1.3.1"
 
-node-pre-gyp@*:
-  version "0.14.0"
-  resolved "https://registry.npmjs.org/node-pre-gyp/-/node-pre-gyp-0.14.0.tgz#9a0596533b877289bcad4e143982ca3d904ddc83"
-  integrity sha512-+CvDC7ZttU/sSt9rFjix/P05iS43qHCOOGzcr3Ry99bXG7VX953+vFyEuph/tfqoYu8dttBkE86JSKBO2OzcxA==
-  dependencies:
-    detect-libc "^1.0.2"
-    mkdirp "^0.5.1"
-    needle "^2.2.1"
-    nopt "^4.0.1"
-    npm-packlist "^1.1.6"
-    npmlog "^4.0.2"
-    rc "^1.2.7"
-    rimraf "^2.6.1"
-    semver "^5.3.0"
-    tar "^4.4.2"
-
 node-releases@^1.1.29, node-releases@^1.1.3, node-releases@^1.1.40, node-releases@^1.1.46:
   version "1.1.47"
   resolved "https://registry.npmjs.org/node-releases/-/node-releases-1.1.47.tgz#c59ef739a1fd7ecbd9f0b7cf5b7871e8a8b591e4"
@@ -17598,7 +18053,7 @@ npm-normalize-package-bin@^1.0.0, npm-normalize-package-bin@^1.0.1:
     semver "^5.6.0"
     validate-npm-package-name "^3.0.0"
 
-npm-packlist@^1.1.6, npm-packlist@^1.4.4:
+npm-packlist@^1.4.4:
   version "1.4.8"
   resolved "https://registry.npmjs.org/npm-packlist/-/npm-packlist-1.4.8.tgz#56ee6cc135b9f98ad3d51c1c95da22bbb9b2ef3e"
   integrity sha512-5+AZgwru5IevF5ZdnFglB5wNlHG1AOOuw28WhUq8/8emhBmLv6jX5by4WJCh7lW0uSYZYS6DXqIsyZVIXRZU9A==
@@ -17646,7 +18101,7 @@ npm-which@^3.0.1:
     npm-path "^2.0.2"
     which "^1.2.10"
 
-"npmlog@0 || 1 || 2 || 3 || 4", npmlog@^4.0.0, npmlog@^4.0.2, npmlog@^4.1.2:
+"npmlog@0 || 1 || 2 || 3 || 4", npmlog@^4.0.0, npmlog@^4.1.2:
   version "4.1.2"
   resolved "https://registry.npmjs.org/npmlog/-/npmlog-4.1.2.tgz#08a7f2a8bf734604779a9efa4ad5cc717abb954b"
   integrity sha512-2uUqazuKlTaSI/dC8AzicUck7+IrEaOnN/e0jd3Xtt1KcGpwx30v50mL7oPyr/h9bL3E4aZccVwpwP+5W9Vjkg==
@@ -19836,7 +20291,7 @@ rc-util@^4.0.4, rc-util@^4.15.3, rc-util@^4.4.0:
     react-lifecycles-compat "^3.0.4"
     shallowequal "^1.1.0"
 
-rc@^1.0.1, rc@^1.1.6, rc@^1.2.7, rc@^1.2.8:
+rc@^1.0.1, rc@^1.1.6, rc@^1.2.8:
   version "1.2.8"
   resolved "https://registry.npmjs.org/rc/-/rc-1.2.8.tgz#cd924bf5200a075b83c188cd6b9e211b7fc0d3ed"
   integrity sha512-y3bGgqKj3QBdxLbLkomlohkvsA8gdAiUQlSBJnBhfn+BPxg4bc62d8TcBW15wavDfgexCgccckhcZvywyQYPOw==
@@ -19867,7 +20322,7 @@ react-addons-create-fragment@^15.6.2:
     loose-envify "^1.3.1"
     object-assign "^4.1.0"
 
-react-apollo@^3.1.0, react-apollo@^3.1.3:
+react-apollo@^3.1.0, react-apollo@^3.1.0-beta.0, react-apollo@^3.1.3:
   version "3.1.3"
   resolved "https://registry.npmjs.org/react-apollo/-/react-apollo-3.1.3.tgz#5d8540b401bba36173b63e6c5e75fa561960c63e"
   integrity sha512-orCZNoAkgveaK5b75y7fw1MSqSHOU/Wuu9rRFOGmRQBSQVZjvV4DI+hj604rHmuN9+WDABxb5W48wTa0F/xNZQ==
@@ -20542,7 +20997,7 @@ react-virtualized@^9.19.1, react-virtualized@^9.21.0:
     prop-types "^15.6.0"
     react-lifecycles-compat "^3.0.4"
 
-react@16.x.x, react@^16.3.0, react@^16.8.3, react@^16.8.6:
+react@16.x.x, react@^16.3.0, react@^16.6.0, react@^16.8.0, react@^16.8.3, react@^16.8.6:
   version "16.12.0"
   resolved "https://registry.npmjs.org/react/-/react-16.12.0.tgz#0c0a9c6a142429e3614834d5a778e18aa78a0b83"
   integrity sha512-fglqy3k5E+81pA8s+7K0/T3DBCF0ZDOher1elBFzF7O6arXJgzyu/FW+COxFvAWXJoJN9KIZbT2LXlukwphYTA==
@@ -23035,7 +23490,7 @@ tar@^2.0.0:
     fstream "^1.0.12"
     inherits "2"
 
-tar@^4.4.10, tar@^4.4.12, tar@^4.4.2, tar@^4.4.8:
+tar@^4.4.10, tar@^4.4.12, tar@^4.4.8:
   version "4.4.13"
   resolved "https://registry.npmjs.org/tar/-/tar-4.4.13.tgz#43b364bc52888d555298637b10d60790254ab525"
   integrity sha512-w2VwSrBoHa5BsSyH+KxEqeQBAllHhccyMFVHtGtdMpF4W7IRWfZjFiQceJPChOeTsSDVUpER2T8FA93pr0L+QA==
