@@ -227,7 +227,7 @@ const executeGraph = async (allComponents, graph, instance, inputs) => {
         component.context.instance.alias = alias;
         component.context.instance.env = inputs.env;
         component.context.instance.getResourceName = (name = null) => {
-            if (name.startsWith(component.context.instance.id)) {
+            if (name && name.startsWith(component.context.instance.id)) {
                 return name;
             }
 
