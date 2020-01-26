@@ -5,7 +5,7 @@
   "license": "MIT",
   "dependencies": {
     "@serverless/core": "^1.1.1",
-    "@webiny/serverless-function": "^2.0.0"
+    "@webiny/serverless-function": "^2.0.1-next.0"
   },
   "scripts": {
     "build": "rm -rf dist && mkdir dist && cp serverless.js dist/",
