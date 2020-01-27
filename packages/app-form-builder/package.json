@@ -1,6 +1,6 @@
 {
   "name": "@webiny/app-form-builder",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "main": "index.js",
   "repository": {
     "type": "git",
@@ -21,8 +21,8 @@
     "@webiny/app": "^3.0.0",
     "@webiny/app-admin": "^3.0.0",
     "@webiny/app-i18n": "^3.0.0",
-    "@webiny/app-page-builder": "^3.0.0",
-    "@webiny/app-security": "^3.0.0",
+    "@webiny/app-page-builder": "^3.0.1",
+    "@webiny/app-security": "^3.0.1",
     "@webiny/form": "^3.0.0",
     "@webiny/plugins": "^3.0.0",
     "@webiny/react-router": "^2.0.0",
