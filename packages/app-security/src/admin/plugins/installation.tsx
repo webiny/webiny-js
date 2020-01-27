@@ -139,7 +139,7 @@ const Install = ({ onInstalled }) => {
                                     email: (
                                         <Bind
                                             name="email"
-                                            validators={validation.create("required")}
+                                            validators={validation.create("required,email")}
                                         >
                                             <Input label={t`E-mail`} />
                                         </Bind>
