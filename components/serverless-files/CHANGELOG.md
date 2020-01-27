@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.3.4-next.3](https://github.com/Webiny/webiny-js/compare/@webiny/serverless-files@2.3.4-next.2...@webiny/serverless-files@2.3.4-next.3) (2020-01-27)
+
+
+### Bug Fixes
+
+* add cache-control response header ([d989b91](https://github.com/Webiny/webiny-js/commit/d989b911477d829acf326fd05cb5517e32f10347))
+
+
+
+
+
 ## [2.3.4-next.2](https://github.com/Webiny/webiny-js/compare/@webiny/serverless-files@2.3.4-next.1...@webiny/serverless-files@2.3.4-next.2) (2020-01-27)
 
 **Note:** Version bump only for package @webiny/serverless-files

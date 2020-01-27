@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.2.2-next.4](https://github.com/webiny/webiny-js/compare/@webiny/api-i18n@2.2.2-next.3...@webiny/api-i18n@2.2.2-next.4) (2020-01-27)
+
+**Note:** Version bump only for package @webiny/api-i18n
+
+
+
+
+
 ## [2.2.2-next.3](https://github.com/webiny/webiny-js/compare/@webiny/api-i18n@2.2.2-next.2...@webiny/api-i18n@2.2.2-next.3) (2020-01-27)
 
 

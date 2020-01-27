@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.1.2-next.3](https://github.com/webiny/webiny-js/compare/@webiny/api-security@2.1.2-next.2...@webiny/api-security@2.1.2-next.3) (2020-01-27)
+
+**Note:** Version bump only for package @webiny/api-security
+
+
+
+
+
 ## [2.1.2-next.2](https://github.com/webiny/webiny-js/compare/@webiny/api-security@2.1.2-next.1...@webiny/api-security@2.1.2-next.2) (2020-01-27)
 
 

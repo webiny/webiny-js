@@ -1,6 +1,6 @@
 {
   "name": "@webiny/serverless-aws-lambda",
-  "version": "1.2.1-next.2",
+  "version": "1.2.1-next.3",
   "main": "./serverless.js",
   "publishConfig": {
     "access": "public"
