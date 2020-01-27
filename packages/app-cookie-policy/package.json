@@ -1,6 +1,6 @@
 {
   "name": "@webiny/app-cookie-policy",
-  "version": "2.0.4-next.0",
+  "version": "2.0.4-next.1",
   "main": "index.js",
   "repository": {
     "type": "git",
@@ -11,13 +11,13 @@
   "license": "MIT",
   "dependencies": {
     "@babel/runtime": "^7.5.5",
-    "@webiny/app-admin": "^2.1.4-next.0",
-    "@webiny/app-page-builder": "^2.0.4-next.0",
-    "@webiny/app-security": "^2.0.4-next.0",
-    "@webiny/form": "^2.0.1-next.0",
-    "@webiny/react-router": "^1.0.1-next.0",
-    "@webiny/ui": "^2.0.2-next.0",
-    "@webiny/validation": "^2.1.1-next.0",
+    "@webiny/app-admin": "^2.1.4-next.1",
+    "@webiny/app-page-builder": "^2.0.4-next.2",
+    "@webiny/app-security": "^2.0.4-next.1",
+    "@webiny/form": "^2.0.1-next.1",
+    "@webiny/react-router": "^1.0.1-next.1",
+    "@webiny/ui": "^2.0.2-next.1",
+    "@webiny/validation": "^2.1.1-next.1",
     "load-src": "^1.0.0",
     "lodash.get": "^4.4.2",
     "react-helmet": "^5.2.0"
