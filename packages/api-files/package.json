@@ -18,7 +18,7 @@
     "@shelf/jest-mongodb": "^1.1.3",
     "@webiny/api": "^2.1.1-next.1",
     "@webiny/api-security": "^2.1.2-next.1",
-    "@webiny/commodo": "^2.0.1-next.0",
+    "@webiny/commodo": "^2.0.2-next.1",
     "@webiny/commodo-graphql": "^2.1.2-next.1",
     "@webiny/validation": "^2.1.1-next.1",
     "graphql": "^14.4.2",
