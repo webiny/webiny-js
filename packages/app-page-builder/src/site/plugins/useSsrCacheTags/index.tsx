@@ -38,7 +38,7 @@ const InvalidateExpiredSsrCache = () => {
 export default [
     {
         type: "addon-render",
-        name: "addon-render-favicon",
+        name: "addon-render-ssr-cache-invalidation",
         component: <InvalidateExpiredSsrCache />
     } as PbAddonRenderPlugin
 ];
