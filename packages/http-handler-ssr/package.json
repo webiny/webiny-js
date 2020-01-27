@@ -21,7 +21,8 @@
     "got": "^9.6.0",
     "lodash.flow": "^3.5.0",
     "mime-types": "^2.1.26",
-    "querystringify": "^2.1.1"
+    "querystringify": "^2.1.1",
+    "zlib": "^1.0.5"
   },
   "devDependencies": {
     "@babel/cli": "^7.5.5",
