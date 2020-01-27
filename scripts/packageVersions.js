@@ -3,6 +3,9 @@ const readJson = require("load-json-file");
 const getPackages = require("get-yarn-workspaces");
 const { green, blue, red } = require("chalk");
 
+/**
+ * This script prints all @webiny packages and shows its @webiny dependencies.
+ */
 (async () => {
     const packages = getPackages().filter(p => !p.includes("examples/"));
 

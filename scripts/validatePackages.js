@@ -3,6 +3,9 @@ const readJson = require("load-json-file");
 const getPackages = require("get-yarn-workspaces");
 const { blue, red } = require("chalk");
 
+/**
+ * This script checks every package of the monorepo to see if it is configured correctly for publishing.
+ */
 (async () => {
     console.log("Validating packages...");
     const packages = getPackages().filter(p => !p.includes("examples/"));
