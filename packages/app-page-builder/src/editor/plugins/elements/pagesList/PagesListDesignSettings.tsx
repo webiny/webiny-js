@@ -9,7 +9,7 @@ import { PbPageElementPagesListComponentPlugin } from "@webiny/app-page-builder/
 
 const PagesListDesignSettings = ({ Bind, data }) => {
     const components = getPlugins<PbPageElementPagesListComponentPlugin>(
-        "pb-editor-page-element-pages-list-component"
+        "pb-page-element-pages-list-component"
     );
 
     return (

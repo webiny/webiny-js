@@ -12,7 +12,7 @@ import Menu from "./Menu";
 import {
     PbEditorSlateEditorPlugin,
     PbEditorSlateMenuItemPlugin
-} from "@webiny/app-page-builder/admin/types";
+} from "@webiny/app-page-builder/types";
 
 const valueToJSON = value => {
     return {

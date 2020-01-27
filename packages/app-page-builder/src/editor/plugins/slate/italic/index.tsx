@@ -4,7 +4,7 @@ import { isKeyHotkey } from "is-hotkey";
 import {
     PbEditorSlateEditorPlugin,
     PbEditorSlateMenuItemPlugin
-} from "@webiny/app-page-builder/admin/types";
+} from "@webiny/app-page-builder/types";
 const isItalicHotkey = isKeyHotkey("mod+i");
 
 const hasMark = (value, type) => {

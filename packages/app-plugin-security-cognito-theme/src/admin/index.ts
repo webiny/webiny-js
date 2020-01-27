@@ -17,7 +17,7 @@ import {
     SecurityViewInstallationFormPlugin,
     SecurityViewUserAccountFormPlugin,
     SecurityViewUserFormPlugin
-} from "@webiny/app-security/admin/types";
+} from "@webiny/app-security/types";
 
 export default () => [
     // The following `cognito-view` plugins are used by `app-plugin-security-cognito`.

@@ -4,7 +4,7 @@ import { connect } from "@webiny/app-page-builder/editor/redux";
 import { getPlugins } from "@webiny/plugins";
 import { deleteElement } from "@webiny/app-page-builder/editor/actions";
 import { getActiveElement } from "@webiny/app-page-builder/editor/selectors";
-import { PbEditorPageElementPlugin } from "@webiny/app-page-builder/admin/types";
+import { PbEditorPageElementPlugin } from "@webiny/app-page-builder/types";
 
 const DeleteAction = props => {
     const { element, children } = props;

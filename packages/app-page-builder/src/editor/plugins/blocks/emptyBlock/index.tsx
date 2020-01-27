@@ -1,7 +1,7 @@
 import * as React from "react";
 import { createBlock, createRow, createColumn } from "@webiny/app-page-builder/editor/utils";
 import preview from "./preview.png";
-import { PbEditorBlockPlugin } from "@webiny/app-page-builder/admin/types";
+import { PbEditorBlockPlugin } from "@webiny/app-page-builder/types";
 
 export default {
     name: "pb-editor-block-empty",

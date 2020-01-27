@@ -3,7 +3,7 @@ import { css } from "emotion";
 import { List } from "@webiny/ui/List";
 import { Elevation } from "@webiny/ui/Elevation";
 import { CircularProgress } from "@webiny/ui/Progress";
-import { PbPageDetailsContextValue } from "@webiny/app-page-builder/admin/types";
+import { PbPageDetailsContextValue } from "@webiny/app-page-builder/types";
 import Revision from "./Revision";
 
 const listWrapper = css({

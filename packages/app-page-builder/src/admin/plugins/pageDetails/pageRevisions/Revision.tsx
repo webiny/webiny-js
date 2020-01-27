@@ -25,7 +25,7 @@ import { ReactComponent as EditIcon } from "@webiny/app-page-builder/admin/asset
 import { ReactComponent as PublishIcon } from "@webiny/app-page-builder/admin/assets/round-publish-24px.svg";
 import { ReactComponent as DeleteIcon } from "@webiny/app-page-builder/admin/assets/delete.svg";
 import { ReactComponent as PreviewIcon } from "@webiny/app-page-builder/admin/assets/visibility.svg";
-import { PbPageRevision } from "@webiny/app-page-builder/admin/types";
+import { PbPageRevision } from "@webiny/app-page-builder/types";
 
 type RevisionProps = {
     rev: PbPageRevision;

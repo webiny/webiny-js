@@ -4,7 +4,7 @@ import { ELEMENT_DROPPED } from "@webiny/app-page-builder/editor/actions";
 import { ReactComponent as AddIcon } from "@webiny/app-page-builder/editor/assets/icons/add_circle_outline.svg";
 import AddElement from "./AddElement";
 import Action from "../Action";
-import { PbEditorToolbarTopPlugin } from "@webiny/app-page-builder/admin/types";
+import { PbEditorToolbarTopPlugin } from "@webiny/app-page-builder/types";
 
 addReducer([ELEMENT_DROPPED], "ui.activeElement", () => null);
 

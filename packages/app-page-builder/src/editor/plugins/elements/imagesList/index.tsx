@@ -2,7 +2,7 @@ import React from "react";
 import {
     PbEditorPageElementPlugin,
     PbEditorPageElementAdvancedSettingsPlugin
-} from "@webiny/app-page-builder/admin/types";
+} from "@webiny/app-page-builder/types";
 import { Tab } from "@webiny/ui/Tabs";
 import ImagesList from "./ImagesList";
 import ImagesListImagesSettings from "./ImagesListImagesSettings";

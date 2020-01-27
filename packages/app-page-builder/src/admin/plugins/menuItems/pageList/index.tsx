@@ -1,7 +1,7 @@
 import * as React from "react";
 import { ReactComponent as PageListIcon } from "./round-format_list_bulleted-24px.svg";
 import PageListForm from "./PageListForm";
-import { PbMenuItemPlugin } from "@webiny/app-page-builder/admin/types";
+import { PbMenuItemPlugin } from "@webiny/app-page-builder/types";
 
 const plugin: PbMenuItemPlugin = {
     name: "pb-menu-item-page-list",

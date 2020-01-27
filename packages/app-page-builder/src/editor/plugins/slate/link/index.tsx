@@ -5,7 +5,7 @@ import LinkTooltip from "./LinkTooltip";
 import {
     PbEditorSlateEditorPlugin,
     PbEditorSlateMenuItemPlugin
-} from "@webiny/app-page-builder/admin/types";
+} from "@webiny/app-page-builder/types";
 
 export default () => {
     return {

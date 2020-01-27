@@ -15,7 +15,7 @@ import {
     Store,
     State,
     PbEditorReduxMiddlewarePlugin
-} from "@webiny/app-page-builder/admin/types";
+} from "@webiny/app-page-builder/types";
 
 export { connect } from "./connect";
 

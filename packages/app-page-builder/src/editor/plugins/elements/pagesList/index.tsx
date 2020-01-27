@@ -2,7 +2,7 @@ import React from "react";
 import {
     PbEditorPageElementPlugin,
     PbEditorPageElementAdvancedSettingsPlugin
-} from "@webiny/app-page-builder/admin/types";
+} from "@webiny/app-page-builder/types";
 import { Tab } from "@webiny/ui/Tabs";
 import { ReactComponent as DesignIcon } from "./icons/round-style-24px.svg";
 import { ReactComponent as FilterIcon } from "./icons/round-filter_list-24px.svg";

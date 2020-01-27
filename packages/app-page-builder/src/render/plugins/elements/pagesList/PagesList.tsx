@@ -3,7 +3,7 @@ import warning from "warning";
 import { useQuery } from "react-apollo";
 import { loadPages } from "./graphql";
 import { getPlugins } from "@webiny/plugins";
-import { PbPageElementPagesListComponentPlugin } from "@webiny/app-page-builder/admin/types";
+import { PbPageElementPagesListComponentPlugin } from "@webiny/app-page-builder/types";
 
 const PagesList = props => {
     const {
@@ -11,9 +11,9 @@ const PagesList = props => {
         theme
     } = props;
 
-    const plugins = getPlugins(
+    const plugins = getPlugins<PbPageElementPagesListComponentPlugin>(
         "pb-page-element-pages-list-component"
-    ) as PbPageElementPagesListComponentPlugin[];
+    );
 
     const pageList = plugins.find(cmp => cmp.componentName === component);
 

@@ -22,7 +22,7 @@ import {
 import { Title, listItem, ListItemTitle, listStyle, TitleContent } from "./PageSettingsStyled";
 import {
     PbEditorPageSettingsPlugin
-} from "@webiny/app-page-builder/admin/types";
+} from "@webiny/app-page-builder/types";
 
 const PageSettings = props => {
     const plugins = getPlugins<PbEditorPageSettingsPlugin>("pb-editor-page-settings");

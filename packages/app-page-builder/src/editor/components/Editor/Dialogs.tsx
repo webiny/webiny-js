@@ -4,7 +4,7 @@ import { getPlugins } from "@webiny/plugins";
 import {
     PbEditorToolbarBottomPlugin,
     PbEditorToolbarTopPlugin
-} from "@webiny/app-page-builder/admin/types";
+} from "@webiny/app-page-builder/types";
 
 const DialogsContainer = styled("div")({
     position: "fixed",

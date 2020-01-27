@@ -1,6 +1,6 @@
 import React from "react";
 import Document from "./Document";
-import { PbEditorPageElementPlugin } from "@webiny/app-page-builder/admin/types";
+import { PbEditorPageElementPlugin } from "@webiny/app-page-builder/types";
 
 export default (): PbEditorPageElementPlugin => {
     return {

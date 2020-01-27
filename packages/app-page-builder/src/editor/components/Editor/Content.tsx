@@ -9,7 +9,7 @@ import { getContent, isPluginActive, getPage } from "@webiny/app-page-builder/ed
 import Element from "@webiny/app-page-builder/editor/components/Element";
 import { Elevation } from "@webiny/ui/Elevation";
 import { PbPageLayoutPlugin } from "@webiny/app-page-builder/types";
-import { PbEditorContentPlugin } from "@webiny/app-page-builder/admin/types";
+import { PbEditorContentPlugin } from "@webiny/app-page-builder/types";
 
 const ContentContainer = styled("div")(({ theme }) => ({
     backgroundColor: get(theme, "colors.background"),

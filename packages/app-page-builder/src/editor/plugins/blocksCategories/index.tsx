@@ -1,5 +1,5 @@
 import React from "react";
-import { PbEditorBlockCategoryPlugin } from "@webiny/app-page-builder/admin/types";
+import { PbEditorBlockCategoryPlugin } from "@webiny/app-page-builder/types";
 import { ReactComponent as GeneralIcon } from "./icons/round-gesture-24px.svg";
 import { ReactComponent as CtaIcon } from "./icons/round-notifications_active-24px.svg";
 import { ReactComponent as ContentIcon } from "./icons/round-view_quilt-24px.svg";

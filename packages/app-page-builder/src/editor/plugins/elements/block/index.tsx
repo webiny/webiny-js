@@ -14,7 +14,7 @@ import {
     deleteElement,
     elementCreated
 } from "@webiny/app-page-builder/editor/actions";
-import { PbEditorPageElementPlugin } from "@webiny/app-page-builder/admin/types";
+import { PbEditorPageElementPlugin } from "@webiny/app-page-builder/types";
 
 export default (): PbEditorPageElementPlugin => {
     return {

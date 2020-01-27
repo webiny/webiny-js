@@ -20,7 +20,7 @@ import { Grid, Cell } from "@webiny/ui/Grid";
 import { Form, FormOnSubmit } from "@webiny/form";
 import styled from "@emotion/styled";
 import { validation } from "@webiny/validation";
-import { PbEditorBlockCategoryPlugin, PbElement } from "@webiny/app-page-builder/admin/types";
+import { PbEditorBlockCategoryPlugin, PbElement } from "@webiny/app-page-builder/types";
 
 const narrowDialog = css({
     ".mdc-dialog__surface": {

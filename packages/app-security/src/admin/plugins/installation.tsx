@@ -11,13 +11,13 @@ import { Grid, Cell } from "@webiny/ui/Grid";
 import { CircularProgress } from "@webiny/ui/Progress";
 import { validation } from "@webiny/validation";
 import { getPlugin } from "@webiny/plugins";
-import { SecurityViewInstallationFormPlugin } from "../types";
 import {
     SimpleForm,
     SimpleFormHeader,
     SimpleFormFooter,
     SimpleFormContent
 } from "@webiny/app-admin/components/SimpleForm";
+import { SecurityViewInstallationFormPlugin } from "@webiny/app-security/types";
 
 const t = i18n.ns("app-security/admin/installation");
 
@@ -53,7 +53,7 @@ const INSTALL = gql`
 `;
 
 const Install = ({ onInstalled }) => {
-    const auth = getPlugin("security-view-install-form") as SecurityViewInstallationFormPlugin;
+    const auth = getPlugin<SecurityViewInstallationFormPlugin>("security-view-install-form");
 
     if (!auth) {
         throw Error(

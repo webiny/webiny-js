@@ -16,7 +16,7 @@ import {
 } from "@webiny/app-page-builder/editor/selectors";
 import { updateChildPaths } from "@webiny/app-page-builder/editor/utils";
 import undoable from "./history";
-import {Action, PbElement, PbEditorPageElementPlugin, PbPageRevision} from "@webiny/app-page-builder/admin/types";
+import {Action, PbElement, PbEditorPageElementPlugin, PbPageRevision} from "@webiny/app-page-builder/types";
 
 export const DRAG_START = `Drag start`;
 export const DRAG_END = `Drag end`;

@@ -1,6 +1,6 @@
 import React from "react";
 import styled from "@emotion/styled";
-import { PbEditorPageElementSettingsPlugin } from "@webiny/app-page-builder/admin/types";
+import { PbEditorPageElementSettingsPlugin } from "@webiny/app-page-builder/types";
 
 const Divider: React.FC<any> = React.memo(
     styled("div")({

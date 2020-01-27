@@ -5,7 +5,7 @@ import { ReactComponent as UnorderedListIcon } from "@webiny/app-page-builder/ed
 import {
     PbEditorSlateEditorPlugin,
     PbEditorSlateMenuItemPlugin
-} from "@webiny/app-page-builder/admin/types";
+} from "@webiny/app-page-builder/types";
 
 const hasBlock = (value, type) => {
     return value.blocks.some(node => node.type === type);

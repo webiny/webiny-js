@@ -1,7 +1,7 @@
 import React from "react";
 import cloneDeep from "lodash/cloneDeep";
 import { registerPlugins, getPlugins } from "@webiny/plugins";
-import { PbElement, PbEditorPageElementPlugin } from "@webiny/app-page-builder/admin/types";
+import { PbElement, PbEditorPageElementPlugin } from "@webiny/app-page-builder/types";
 import Title from "./components/Title";
 
 export default (el: PbElement) => {

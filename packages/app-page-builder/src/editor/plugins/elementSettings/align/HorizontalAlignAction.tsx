@@ -10,7 +10,7 @@ import { ReactComponent as AlignCenterIcon } from "@webiny/app-page-builder/edit
 import { ReactComponent as AlignLeftIcon } from "@webiny/app-page-builder/editor/assets/icons/format_align_left.svg";
 import { ReactComponent as AlignJustifyIcon } from "@webiny/app-page-builder/editor/assets/icons/format_align_justify.svg";
 import { ReactComponent as AlignRightIcon } from "@webiny/app-page-builder/editor/assets/icons/format_align_right.svg";
-import { PbEditorPageElementPlugin } from "@webiny/app-page-builder/admin/types";
+import { PbEditorPageElementPlugin } from "@webiny/app-page-builder/types";
 
 // Icons map for dynamic render
 const icons = {

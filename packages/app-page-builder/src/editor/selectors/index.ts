@@ -1,7 +1,7 @@
 import _ from "lodash";
 import invariant from "invariant";
 import { getPlugin } from "@webiny/plugins";
-import {State, PbElement, PbDocumentElementPlugin, PbShallowElement} from "@webiny/app-page-builder/admin/types";
+import {State, PbElement, PbDocumentElementPlugin, PbShallowElement} from "@webiny/app-page-builder/types";
 
 const getPluginType = (name: string) => {
     const plugin = getPlugin(name);

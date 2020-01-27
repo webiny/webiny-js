@@ -13,7 +13,7 @@ import {
 } from "@webiny/app-page-builder/editor/actions";
 import { getElementProps, getElement } from "@webiny/app-page-builder/editor/selectors";
 import Draggable from "./Draggable";
-import { PbElement, PbEditorPageElementPlugin } from "@webiny/app-page-builder/admin/types";
+import { PbElement, PbEditorPageElementPlugin } from "@webiny/app-page-builder/types";
 import {
     defaultStyle,
     ElementContainer,
@@ -90,7 +90,7 @@ const Element = (props: ElementProps) => {
                 <div className="background" onClick={onClick} />
                 <div className={"element-holder"} onClick={onClick}>
                     {renderPlugins("pb-editor-page-element-action", { element, plugin })}
-                    <span>{plugin.name.replace("pb-editor-page-element-", "")}</span>
+                    <span>{plugin.elementType}</span>
                 </div>
             </div>
         );

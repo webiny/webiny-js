@@ -7,7 +7,7 @@ import TypographySelector from "./TypographySelector";
 import {
     PbEditorSlateEditorPlugin,
     PbEditorSlateMenuItemPlugin
-} from "@webiny/app-page-builder/admin/types";
+} from "@webiny/app-page-builder/types";
 
 // Icons map for dynamic render
 const icons = {

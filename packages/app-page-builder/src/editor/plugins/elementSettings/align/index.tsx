@@ -3,7 +3,7 @@ import Action from "../components/Action";
 import HorizontalAlignAction from "./HorizontalAlignAction";
 import HorizontalAlignFlexAction from "./HorizontalAlignFlex";
 import VerticalAlignAction from "./VerticalAlignAction";
-import { PbEditorPageElementSettingsPlugin } from "@webiny/app-page-builder/admin/types";
+import { PbEditorPageElementSettingsPlugin } from "@webiny/app-page-builder/types";
 
 export default [
     {

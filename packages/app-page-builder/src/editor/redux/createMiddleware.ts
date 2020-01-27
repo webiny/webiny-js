@@ -1,4 +1,4 @@
-import { Redux, MiddlewareFunction, Store, Action } from "@webiny/app-page-builder/admin/types";
+import { Redux, MiddlewareFunction, Store, Action } from "@webiny/app-page-builder/types";
 import { Middleware } from "redux";
 
 export const wrapMiddleware = (

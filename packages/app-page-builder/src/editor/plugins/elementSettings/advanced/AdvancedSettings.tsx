@@ -20,7 +20,7 @@ import {
 import { Form } from "@webiny/form";
 import { Tabs } from "@webiny/ui/Tabs";
 import { updateElement, deactivatePlugin } from "@webiny/app-page-builder/editor/actions";
-import { PbEditorPageElementAdvancedSettingsPlugin } from "@webiny/app-page-builder/admin/types";
+import { PbEditorPageElementAdvancedSettingsPlugin } from "@webiny/app-page-builder/types";
 
 const emptyElement = { data: {}, type: null };
 

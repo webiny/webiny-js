@@ -3,7 +3,7 @@ import invariant from "invariant";
 import { set } from "dot-prop-immutable";
 import { isPlainObject, omit } from "lodash";
 import { getPlugin, getPlugins } from "@webiny/plugins";
-import {PbElement, PbEditorPageElementPlugin, PbEditorBlockPlugin} from "@webiny/app-page-builder/admin/types";
+import {PbElement, PbEditorPageElementPlugin, PbEditorBlockPlugin} from "@webiny/app-page-builder/types";
 
 export const updateChildPaths = (element: PbElement) => {
     if (!element.id) {

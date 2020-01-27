@@ -15,7 +15,7 @@ import render from "./../render";
 import {
     PbEditorPageElementPlugin,
     PbEditorPageElementAdvancedSettingsPlugin
-} from "@webiny/app-page-builder/admin/types";
+} from "@webiny/app-page-builder/types";
 import { SettingsPlugin } from "@webiny/app-admin/types";
 
 const PreviewBox = styled("div")({

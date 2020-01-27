@@ -8,7 +8,7 @@ import { get } from "dot-prop-immutable";
 import { ReactComponent as AlignCenterIcon } from "./icons/round-border_horizontal-24px.svg";
 import { ReactComponent as AlignTopIcon } from "./icons/round-border_top-24px.svg";
 import { ReactComponent as AlignBottomIcon } from "./icons/round-border_bottom-24px.svg";
-import { PbEditorPageElementPlugin } from "@webiny/app-page-builder/admin/types";
+import { PbEditorPageElementPlugin } from "@webiny/app-page-builder/types";
 
 // Icons map for dynamic render
 const icons = {

@@ -4,7 +4,7 @@ import { isKeyHotkey } from "is-hotkey";
 import {
     PbEditorSlateEditorPlugin,
     PbEditorSlateMenuItemPlugin
-} from "@webiny/app-page-builder/admin/types";
+} from "@webiny/app-page-builder/types";
 const isUnderlineHotkey = isKeyHotkey("mod+u");
 
 const hasMark = (value, type) => {

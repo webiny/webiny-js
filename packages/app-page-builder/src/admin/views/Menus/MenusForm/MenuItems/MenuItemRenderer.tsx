@@ -11,7 +11,7 @@ import { rowHandle, fieldContainer, Row, RowContainer } from "./Styled";
 import { ReactComponent as EditIcon } from "./icons/round-edit-24px.svg";
 import { ReactComponent as DeleteIcon } from "./icons/round-delete-24px.svg";
 import { ReactComponent as HandleIcon } from "./icons/round-drag_indicator-24px.svg";
-import { PbMenuItemPlugin } from "@webiny/app-page-builder/admin/types";
+import { PbMenuItemPlugin } from "@webiny/app-page-builder/types";
 
 class NodeRendererDefault extends React.Component<any> {
     static defaultProps = {

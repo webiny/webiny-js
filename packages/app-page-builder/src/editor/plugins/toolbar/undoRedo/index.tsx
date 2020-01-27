@@ -5,7 +5,7 @@ import { ActionCreators } from "redux-undo";
 import { ReactComponent as UndoIcon } from "@webiny/app-page-builder/editor/assets/icons/undo-icon.svg";
 import { ReactComponent as RedoIcon } from "@webiny/app-page-builder/editor/assets/icons/redo-icon.svg";
 import Action from "../Action";
-import { PbEditorToolbarBottomPlugin } from "@webiny/app-page-builder/admin/types";
+import { PbEditorToolbarBottomPlugin } from "@webiny/app-page-builder/types";
 
 const metaKey = platform.os.family === "OS X" ? "CMD" : "CTRL";
 

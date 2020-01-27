@@ -8,7 +8,7 @@ import { ReactComponent as FormLogo } from "./components/icons/round-description
 import {
     PbEditorPageElementAdvancedSettingsPlugin,
     PbEditorPageElementPlugin
-} from "@webiny/app-page-builder/admin/types";
+} from "@webiny/app-page-builder/types";
 
 const PreviewBox = styled("div")({
     textAlign: "center",

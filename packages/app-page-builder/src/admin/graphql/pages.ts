@@ -1,6 +1,6 @@
 import gql from "graphql-tag";
 import { getPlugins } from "@webiny/plugins";
-import { PbEditorPageSettingsPlugin } from "@webiny/app-page-builder/admin/types";
+import { PbEditorPageSettingsPlugin } from "@webiny/app-page-builder/types";
 
 const error = `
 error {

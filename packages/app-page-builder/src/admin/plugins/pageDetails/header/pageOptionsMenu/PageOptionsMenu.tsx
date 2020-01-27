@@ -14,7 +14,7 @@ import classNames from "classnames";
 import { setHomePage } from "./graphql";
 import { useConfirmationDialog } from "@webiny/app-admin/hooks/useConfirmationDialog";
 import { getPlugins } from "@webiny/plugins";
-import { PbPageDetailsHeaderRightOptionsMenuItemPlugin } from "@webiny/app-page-builder/admin/types";
+import { PbPageDetailsHeaderRightOptionsMenuItemPlugin } from "@webiny/app-page-builder/types";
 
 const menuStyles = css({
     width: 250,

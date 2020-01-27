@@ -2,7 +2,7 @@ import React from "react";
 import loremIpsum from "lorem-ipsum";
 import Text, { className } from "./Text";
 import { createValue } from "@webiny/app-page-builder/editor/components/Slate";
-import { PbEditorPageElementPlugin } from "@webiny/app-page-builder/admin/types";
+import { PbEditorPageElementPlugin } from "@webiny/app-page-builder/types";
 
 export default (): PbEditorPageElementPlugin => {
     const defaultLipsum = {

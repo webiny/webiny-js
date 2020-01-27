@@ -3,7 +3,7 @@ import uniqid from "uniqid";
 import { useHandlers } from "@webiny/app/hooks/useHandlers";
 import { getPlugins } from "@webiny/plugins";
 import findObject from "./findObject";
-import { PbMenuItemPlugin } from "@webiny/app-page-builder/admin/types";
+import { PbMenuItemPlugin } from "@webiny/app-page-builder/types";
 
 const MenuItemForm = props => {
     const { onCancel, onSubmit } = useHandlers(props, {

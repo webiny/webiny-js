@@ -11,7 +11,7 @@ import { ButtonPrimary } from "@webiny/ui/Button";
 import MenuItemsList from "./MenuItems/MenuItemsList";
 import MenuItemForm from "./MenuItems/MenuItemForm";
 import findObject from "./MenuItems/findObject";
-import { PbMenuItemPlugin } from "@webiny/app-page-builder/admin/types";
+import { PbMenuItemPlugin } from "@webiny/app-page-builder/types";
 import { Typography } from "@webiny/ui/Typography";
 import { Form } from "@webiny/form";
 

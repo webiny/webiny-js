@@ -8,7 +8,7 @@ import { getActiveElement } from "@webiny/app-page-builder/editor/selectors";
 import { useKeyHandler } from "@webiny/app-page-builder/editor/hooks/useKeyHandler";
 import Menu from "./components/Menu";
 import { ReactComponent as NavigateBeforeIcon } from "@webiny/app-page-builder/editor/assets/icons/navigate_before.svg";
-import { PbEditorPageElementPlugin } from "@webiny/app-page-builder/admin/types";
+import { PbEditorPageElementPlugin } from "@webiny/app-page-builder/types";
 
 const divider = "pb-editor-page-element-settings-divider";
 

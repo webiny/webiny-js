@@ -5,7 +5,7 @@ import { Typography } from "@webiny/ui/Typography";
 import { Select } from "@webiny/ui/Select";
 import RenderElement from "@webiny/app-page-builder/render/components/Element";
 import Zoom from "./Zoom";
-import { PbPageDetailsContextValue } from "@webiny/app-page-builder/admin/types";
+import { PbPageDetailsContextValue } from "@webiny/app-page-builder/types";
 
 const pageInnerWrapper = css({
     overflowY: "scroll",

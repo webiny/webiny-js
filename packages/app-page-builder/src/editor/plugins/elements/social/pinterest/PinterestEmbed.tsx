@@ -2,7 +2,7 @@ import React, { useCallback, useEffect } from "react";
 import { css } from "emotion";
 import { isEqual } from "lodash";
 import { get } from "lodash";
-import { PbShallowElement } from "@webiny/app-page-builder/admin/types";
+import { PbShallowElement } from "@webiny/app-page-builder/types";
 
 declare global {
     interface Window {

@@ -3,7 +3,7 @@ import { connect } from "@webiny/app-page-builder/editor/redux";
 import { getPlugins } from "@webiny/plugins";
 import { getUi } from "@webiny/app-page-builder/editor/selectors";
 import DefaultEditorBar from "./DefaultEditorBar";
-import { PbEditorBarPlugin } from "@webiny/app-page-builder/admin/types";
+import { PbEditorBarPlugin } from "@webiny/app-page-builder/types";
 
 export type EditorBarProps = {
     plugins: { [group: string]: { [name: string]: any } };

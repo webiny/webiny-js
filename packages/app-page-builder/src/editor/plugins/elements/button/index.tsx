@@ -1,7 +1,7 @@
 import React from "react";
 import { css } from "emotion";
 import { createValue } from "@webiny/app-page-builder/editor/components/Slate";
-import { PbEditorPageElementPlugin, PbEditorPageElementSettingsPlugin } from "@webiny/app-page-builder/admin/types";
+import { PbEditorPageElementPlugin, PbEditorPageElementSettingsPlugin } from "@webiny/app-page-builder/types";
 import { ReactComponent as ButtonIcon } from "./round-toggle_on-24px.svg";
 import ButtonSettings from "./ButtonSettings";
 import Button from "./Button";

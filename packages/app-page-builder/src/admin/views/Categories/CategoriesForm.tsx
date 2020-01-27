@@ -17,7 +17,7 @@ import { categoryUrlValidator } from "./validators";
 import { CircularProgress } from "@webiny/ui/Progress";
 import { validation } from "@webiny/validation";
 import { useCrud } from "@webiny/app-admin/hooks/useCrud";
-import { PbPageLayoutPlugin } from "@webiny/app-page-builder/admin/types";
+import { PbPageLayoutPlugin } from "@webiny/app-page-builder/types";
 
 const t = i18n.ns("app-page-builder/admin/categories/form");
 

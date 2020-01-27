@@ -2,7 +2,7 @@ import React from "react";
 import PagesList from "./PagesList";
 import GridPageList from "./components/GridPageList";
 import { PbRenderElementPlugin } from "@webiny/app-page-builder/types";
-import { PbPageElementPagesListComponentPlugin } from "@webiny/app-page-builder/admin/types";
+import { PbPageElementPagesListComponentPlugin } from "@webiny/app-page-builder/types";
 
 export default [
     {

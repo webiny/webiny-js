@@ -3,7 +3,7 @@ import { renderPlugins } from "@webiny/app/plugins";
 import {
     PbPageDetailsRevisionContentPlugin,
     PbPageDetailsRevisionContentPreviewPlugin
-} from "@webiny/app-page-builder/admin/types";
+} from "@webiny/app-page-builder/types";
 import { Tab } from "@webiny/ui/Tabs";
 import styled from "@emotion/styled";
 import { Elevation } from "@webiny/ui/Elevation";

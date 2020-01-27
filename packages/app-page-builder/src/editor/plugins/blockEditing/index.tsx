@@ -3,7 +3,7 @@ import { get } from "lodash";
 import AddBlock from "./AddBlock";
 import AddContent from "./AddContent";
 import SearchBlocks from "./SearchBlocks";
-import { PbEditorBarPlugin, PbEditorContentPlugin } from "@webiny/app-page-builder/admin/types";
+import { PbEditorBarPlugin, PbEditorContentPlugin } from "@webiny/app-page-builder/types";
 
 export default [
     {

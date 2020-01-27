@@ -12,7 +12,7 @@ import { Form } from "@webiny/form";
 
 import { updateElement } from "@webiny/app-page-builder/editor/actions";
 import { getActiveElement } from "@webiny/app-page-builder/editor/selectors";
-import {PbShallowElement} from "@webiny/app-page-builder/admin/types";
+import {PbShallowElement} from "@webiny/app-page-builder/types";
 
 const validateWidth = value => {
     if (!value) {

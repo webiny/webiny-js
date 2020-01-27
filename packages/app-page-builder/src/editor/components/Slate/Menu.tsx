@@ -4,7 +4,7 @@ import { getPlugins } from "@webiny/plugins";
 import { css } from "emotion";
 import { Elevation } from "@webiny/ui/Elevation";
 import { hoverMenuStyle, defaultStyle, transitionStyles } from "./styled";
-import { PbEditorSlateMenuItemPlugin } from "@webiny/app-page-builder/admin/types";
+import { PbEditorSlateMenuItemPlugin } from "@webiny/app-page-builder/types";
 
 export type MenuButtonProps = {
     onClick?: (e: SyntheticEvent) => void;

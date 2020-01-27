@@ -1,6 +1,6 @@
 import React from "react";
 import { ReactComponent as FormIcon } from "./round-developer_board-24px.svg";
-import { PbEditorPageElementGroupPlugin } from "@webiny/app-page-builder/admin/types";
+import { PbEditorPageElementGroupPlugin } from "@webiny/app-page-builder/types";
 
 export default {
     type: "pb-editor-page-element-group",

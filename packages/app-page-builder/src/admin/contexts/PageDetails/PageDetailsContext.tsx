@@ -1,5 +1,5 @@
 import React from "react";
-import { PbElement } from "@webiny/app-page-builder/admin/types";
+import { PbElement } from "@webiny/app-page-builder/types";
 
 export const PageDetailsContext = React.createContext(null);
 

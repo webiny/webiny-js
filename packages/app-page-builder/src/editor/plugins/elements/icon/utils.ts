@@ -2,7 +2,7 @@ import * as React from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { getPlugins } from "@webiny/plugins";
 import { isEqual } from "lodash";
-import { PbIcon, PbIconsPlugin } from "@webiny/app-page-builder/admin/types";
+import { PbIcon, PbIconsPlugin } from "@webiny/app-page-builder/types";
 
 let icons: PbIcon[];
 export const getIcons = () => {

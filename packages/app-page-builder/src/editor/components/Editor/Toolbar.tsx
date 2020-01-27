@@ -11,7 +11,7 @@ import { getActivePlugins } from "@webiny/app-page-builder/editor/selectors";
 import {
     PbEditorToolbarBottomPlugin,
     PbEditorToolbarTopPlugin
-} from "@webiny/app-page-builder/admin/types";
+} from "@webiny/app-page-builder/types";
 
 const ToolbarDrawerContainer = styled("div")({
     top: 64,

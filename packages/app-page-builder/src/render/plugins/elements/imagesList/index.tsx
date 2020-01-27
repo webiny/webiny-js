@@ -2,7 +2,7 @@ import React from "react";
 import ImagesList from "./ImagesList";
 import Mosaic from "./components/Mosaic";
 import { PbRenderElementPlugin } from "@webiny/app-page-builder/types";
-import { PbPageElementImagesListComponentPlugin } from "@webiny/app-page-builder/admin/types";
+import { PbPageElementImagesListComponentPlugin } from "@webiny/app-page-builder/types";
 // import Slider from "./components/Slider";
 
 const plugins = [

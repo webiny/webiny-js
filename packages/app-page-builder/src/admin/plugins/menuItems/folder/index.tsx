@@ -1,7 +1,7 @@
 import * as React from "react";
 import { ReactComponent as LinkIcon } from "./round-folder-24px.svg";
 import FolderForm from "./FolderForm";
-import { PbMenuItemPlugin } from "@webiny/app-page-builder/admin/types";
+import { PbMenuItemPlugin } from "@webiny/app-page-builder/types";
 
 const plugin: PbMenuItemPlugin = {
     name: "pb-menu-item-folder",

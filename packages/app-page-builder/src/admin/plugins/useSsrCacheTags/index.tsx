@@ -1,6 +1,6 @@
 import * as React from "react";
 import InvalidateSsrCache from "./InvalidateSsrCache";
-import { PbPageDetailsHeaderRightOptionsMenuItemPlugin } from "@webiny/app-page-builder/admin/types";
+import { PbPageDetailsHeaderRightOptionsMenuItemPlugin } from "@webiny/app-page-builder/types";
 
 export default [
     {

@@ -1,6 +1,6 @@
 import { clone } from "lodash";
 import { get, set } from "dot-prop-immutable";
-import { Redux, Reducer, State, Action, StatePath } from "@webiny/app-page-builder/admin/types";
+import { Redux, Reducer, State, Action, StatePath } from "@webiny/app-page-builder/types";
 
 type ReducerCollection = Array<{ statePath: StatePath; reducer: Reducer; actions: Array<string> }>;
 

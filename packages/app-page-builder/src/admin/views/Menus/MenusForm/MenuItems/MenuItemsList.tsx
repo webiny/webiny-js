@@ -4,7 +4,7 @@ import { getPlugins } from "@webiny/plugins";
 import MenuItemRenderer from "./MenuItemRenderer";
 import { Typography } from "@webiny/ui/Typography";
 import styled from "@emotion/styled";
-import { PbMenuItemPlugin } from "@webiny/app-page-builder/admin/types";
+import { PbMenuItemPlugin } from "@webiny/app-page-builder/types";
 
 const TreeWrapper = styled("div")({
     width: "100%",

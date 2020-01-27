@@ -7,7 +7,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { DelayedOnChange } from "@webiny/app-page-builder/editor/components/DelayedOnChange";
 import { Menu } from "@webiny/ui/Menu";
 import { Input } from "@webiny/ui/Input";
-import { PbIcon, PbIconsPlugin } from "@webiny/app-page-builder/admin/types";
+import { PbIcon, PbIconsPlugin } from "@webiny/app-page-builder/types";
 
 const COLUMN_COUNT = 6;
 

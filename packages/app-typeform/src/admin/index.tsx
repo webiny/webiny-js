@@ -12,7 +12,7 @@ import { validation } from "@webiny/validation";
 import {
     PbEditorPageElementPlugin,
     PbEditorPageElementAdvancedSettingsPlugin
-} from "@webiny/app-page-builder/admin/types";
+} from "@webiny/app-page-builder/types";
 
 const PreviewBox = styled("div")({
     textAlign: "center",

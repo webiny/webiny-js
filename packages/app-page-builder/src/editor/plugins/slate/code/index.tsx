@@ -4,7 +4,7 @@ import { ReactComponent as CodeIcon } from "@webiny/app-page-builder/editor/asse
 import {
     PbEditorSlateEditorPlugin,
     PbEditorSlateMenuItemPlugin
-} from "@webiny/app-page-builder/admin/types";
+} from "@webiny/app-page-builder/types";
 
 const MARK = "code";
 

@@ -11,7 +11,7 @@ import {
     getElementWithChildren,
     getParentElementWithChildren
 } from "@webiny/app-page-builder/editor/selectors";
-import { PbEditorPageElementPlugin } from "@webiny/app-page-builder/admin/types";
+import { PbEditorPageElementPlugin } from "@webiny/app-page-builder/types";
 
 const CloneAction = props => {
     const { element, children } = props;

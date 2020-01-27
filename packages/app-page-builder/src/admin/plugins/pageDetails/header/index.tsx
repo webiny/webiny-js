@@ -1,5 +1,5 @@
 import * as React from "react";
-import { PbPageDetailsPlugin } from "@webiny/app-page-builder/admin/types";
+import { PbPageDetailsPlugin } from "@webiny/app-page-builder/types";
 import Header from "./Header";
 import RevisionSelector from "./revisionSelector/RevisionSelector";
 import PublishRevision from "./publishRevision/PublishRevision";

@@ -1,6 +1,6 @@
 import React from "react";
 import { ReactComponent as CodeIcon } from "./code.svg";
-import { PbEditorPageElementGroupPlugin } from "@webiny/app-page-builder/admin/types";
+import { PbEditorPageElementGroupPlugin } from "@webiny/app-page-builder/types";
 
 export default {
     name: "pb-editor-element-group-code",

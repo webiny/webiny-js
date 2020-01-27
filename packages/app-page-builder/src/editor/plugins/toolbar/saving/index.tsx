@@ -1,6 +1,6 @@
 import React from "react";
 import Saving from "./Saving";
-import { PbEditorToolbarBottomPlugin } from "@webiny/app-page-builder/admin/types";
+import { PbEditorToolbarBottomPlugin } from "@webiny/app-page-builder/types";
 
 export default {
     name: "pb-editor-toolbar-save",

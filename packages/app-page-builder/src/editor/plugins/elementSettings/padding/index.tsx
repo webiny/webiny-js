@@ -2,7 +2,7 @@ import React from "react";
 import { ReactComponent as PaddingIcon } from "@webiny/app-page-builder/editor/assets/icons/fullscreen_exit.svg";
 import Settings from "../components/PMSettings";
 import Action from "../components/Action";
-import { PbEditorPageElementSettingsPlugin } from "@webiny/app-page-builder/admin/types";
+import { PbEditorPageElementSettingsPlugin } from "@webiny/app-page-builder/types";
 
 export default {
     name: "pb-editor-page-element-settings-padding",

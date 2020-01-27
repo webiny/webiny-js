@@ -14,7 +14,6 @@ import { CircularProgress } from "@webiny/ui/Progress";
 import AvatarImage from "./Components/AvatarImage";
 import { validation } from "@webiny/validation";
 import { useSecurity } from "@webiny/app-security/hooks/useSecurity";
-import { SecurityViewUserAccountFormPlugin } from "../types";
 
 import {
     SimpleForm,
@@ -22,6 +21,8 @@ import {
     SimpleFormFooter,
     SimpleFormContent
 } from "@webiny/app-admin/components/SimpleForm";
+
+import { SecurityViewUserAccountFormPlugin } from "@webiny/app-security/types";
 
 const t = i18n.ns("app-security/admin/account-form");
 

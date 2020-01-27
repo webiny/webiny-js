@@ -16,7 +16,7 @@ import {
 } from "@webiny/app-page-builder/editor/actions";
 import { getParentElementWithChildren } from "@webiny/app-page-builder/editor/selectors";
 import { ReactComponent as ColumnIcon } from "@webiny/app-page-builder/editor/assets/icons/column-icon.svg";
-import { PbEditorPageElementPlugin } from "@webiny/app-page-builder/admin/types";
+import { PbEditorPageElementPlugin } from "@webiny/app-page-builder/types";
 
 export default (): PbEditorPageElementPlugin => {
     const PreviewBox = styled("div")({

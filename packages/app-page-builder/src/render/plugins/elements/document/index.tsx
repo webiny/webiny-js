@@ -1,6 +1,6 @@
 import React from "react";
 import Document from "./Document";
-import { PbRenderElementPlugin } from "@webiny/app-page-builder/admin/types";
+import { PbRenderElementPlugin } from "@webiny/app-page-builder/types";
 
 export default (): PbRenderElementPlugin => {
     return {

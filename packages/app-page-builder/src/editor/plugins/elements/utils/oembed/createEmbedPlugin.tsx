@@ -5,7 +5,7 @@ import {
     PbElement,
     PbEditorPageElementPlugin,
     PbEditorPageElementAdvancedSettingsPlugin
-} from "@webiny/app-page-builder/admin/types";
+} from "@webiny/app-page-builder/types";
 
 type EmbedPluginConfig = {
     type: string;

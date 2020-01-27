@@ -20,7 +20,7 @@ import get from "lodash.get";
 import pick from "lodash.pick";
 import { PbElement } from "@webiny/app-page-builder/types";
 import { FileUploaderPlugin } from "@webiny/app/types";
-import { PbEditorPageElementPlugin } from "@webiny/app-page-builder/admin/types";
+import { PbEditorPageElementPlugin } from "@webiny/app-page-builder/types";
 
 type Props = {
     isDialogOpened: boolean;

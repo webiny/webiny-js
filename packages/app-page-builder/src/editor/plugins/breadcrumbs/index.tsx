@@ -1,6 +1,6 @@
 import * as React from "react";
 import Breadcrumbs from "./Breadcrumbs";
-import { PbEditorContentPlugin } from "@webiny/app-page-builder/admin/types";
+import { PbEditorContentPlugin } from "@webiny/app-page-builder/types";
 
 export default {
     name: "pb-editor-breadcrumbs",

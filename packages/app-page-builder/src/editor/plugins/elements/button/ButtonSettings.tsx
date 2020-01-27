@@ -14,7 +14,7 @@ import { getActiveElement } from "@webiny/app-page-builder/editor/selectors";
 import Input from "@webiny/app-page-builder/editor/plugins/elementSettings/components/Input";
 import ColorPicker from "@webiny/app-page-builder/editor/plugins/elementSettings/components/ColorPicker";
 import IconPicker from "@webiny/app-page-builder/editor/plugins/elementSettings/components/IconPicker";
-import { PbIcon, PbIconsPlugin } from "@webiny/app-page-builder/admin/types";
+import { PbIcon, PbIconsPlugin } from "@webiny/app-page-builder/types";
 
 const ButtonSettings = ({ element, updateElement }) => {
     const { theme } = usePageBuilder();

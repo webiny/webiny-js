@@ -10,7 +10,7 @@ import {
     PbEditorReduxMiddlewarePlugin,
     PbEditorPageElementPlugin,
     PbEditorPageElementSettingsPlugin
-} from "@webiny/app-page-builder/admin/types";
+} from "@webiny/app-page-builder/types";
 
 export default () => {
     const PreviewBox = styled("div")({

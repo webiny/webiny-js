@@ -10,7 +10,7 @@ import RolesAutocomplete from "./../Components/RolesAutocomplete";
 import AvatarImage from "./../Components/AvatarImage";
 import { useCrud } from "@webiny/app-admin/hooks/useCrud";
 import { validation } from "@webiny/validation";
-import { SecurityViewUserFormPlugin } from "@webiny/app-security/admin/types";
+import { SecurityViewUserFormPlugin } from "@webiny/app-security/types";
 import {
     SimpleForm,
     SimpleFormHeader,

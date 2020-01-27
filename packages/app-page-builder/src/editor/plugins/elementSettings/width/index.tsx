@@ -1,5 +1,5 @@
 import React from "react";
-import { PbEditorPageElementSettingsPlugin } from "@webiny/app-page-builder/admin/types";
+import { PbEditorPageElementSettingsPlugin } from "@webiny/app-page-builder/types";
 import { ReactComponent as WidthIcon } from "./arrows-alt-h-solid.svg";
 import Settings from "./Settings";
 import Action from "../components/Action";

@@ -31,7 +31,7 @@ import * as Styled from "./StyledComponents";
 import {
     PbEditorBlockCategoryPlugin,
     PbEditorBlockPlugin
-} from "@webiny/app-page-builder/admin/types";
+} from "@webiny/app-page-builder/types";
 
 const allBlockCategory: PbEditorBlockCategoryPlugin = {
     type: "pb-editor-block-category",

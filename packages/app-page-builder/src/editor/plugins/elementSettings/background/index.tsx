@@ -2,7 +2,7 @@ import React from "react";
 import { ReactComponent as InvertColorsIcon } from "@webiny/app-page-builder/editor/assets/icons/invert_colors.svg";
 import Settings from "./Settings";
 import Action from "../components/Action";
-import { PbEditorPageElementSettingsPlugin } from "@webiny/app-page-builder/admin/types";
+import { PbEditorPageElementSettingsPlugin } from "@webiny/app-page-builder/types";
 
 export default {
     name: "pb-editor-page-element-settings-background",

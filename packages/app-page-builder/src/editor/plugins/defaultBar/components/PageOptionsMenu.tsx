@@ -4,7 +4,7 @@ import { IconButton } from "@webiny/ui/Button";
 import { ReactComponent as MoreVerticalIcon } from "@webiny/app-page-builder/editor/assets/icons/more_vert.svg";
 import { getPlugins } from "@webiny/plugins";
 import { css } from "emotion";
-import { PbEditorDefaultBarRightPageOptionsPlugin } from "@webiny/app-page-builder/admin/types";
+import { PbEditorDefaultBarRightPageOptionsPlugin } from "@webiny/app-page-builder/types";
 
 const menuStyles = css({
     width: 220,
