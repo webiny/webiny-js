@@ -1,6 +1,6 @@
 {
   "name": "@webiny/http-handler-ssr",
-  "version": "1.0.1-next.4",
+  "version": "1.0.1-next.5",
   "main": "index.js",
   "license": "MIT",
   "repository": {
@@ -15,7 +15,7 @@
   ],
   "dependencies": {
     "@babel/runtime": "^7.5.5",
-    "@webiny/commodo": "^2.0.2-next.1",
+    "@webiny/commodo": "^2.0.2-next.2",
     "@webiny/commodo-fields-storage-db-proxy": "^1.0.1-next.1",
     "@webiny/http-handler": "^1.0.1-next.1",
     "got": "^9.6.0",

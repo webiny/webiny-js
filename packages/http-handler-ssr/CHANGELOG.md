@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.0.1-next.5](https://github.com/webiny/webiny-js/compare/@webiny/http-handler-ssr@1.0.1-next.4...@webiny/http-handler-ssr@1.0.1-next.5) (2020-01-27)
+
+
+### Bug Fixes
+
+* bump package version ([15e41f5](https://github.com/webiny/webiny-js/commit/15e41f5eb47bfc9b7e1113b861ed42b6802fd0b4))
+
+
+
+
+
 ## [1.0.1-next.4](https://github.com/webiny/webiny-js/compare/@webiny/http-handler-ssr@1.0.1-next.3...@webiny/http-handler-ssr@1.0.1-next.4) (2020-01-27)
 
 **Note:** Version bump only for package @webiny/http-handler-ssr
