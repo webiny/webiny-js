@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.6.1-next.9](https://github.com/webiny/webiny-js/compare/@webiny/cli@2.6.1-next.8...@webiny/cli@2.6.1-next.9) (2020-01-27)
+
+
+### Bug Fixes
+
+* add missing ssrCache related plugins ([408adca](https://github.com/webiny/webiny-js/commit/408adca6c2363bc763c34d55a895f80f89e41bfe))
+
+
+
+
+
 ## [2.6.1-next.8](https://github.com/webiny/webiny-js/compare/@webiny/cli@2.6.1-next.7...@webiny/cli@2.6.1-next.8) (2020-01-26)
 
 

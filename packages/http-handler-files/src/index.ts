@@ -3,6 +3,7 @@ import mime from "mime-types";
 import isUtf8 from "isutf8";
 import path from "path";
 import fs from "fs";
+import zlib from "zlib";
 
 const DEFAULT_CACHE_MAX_AGE = 2592000; // 30 days.
 
@@ -28,14 +29,19 @@ export default ({ cacheMaxAge = DEFAULT_CACHE_MAX_AGE } = {}) => ({
 
         try {
             const { key } = event.pathParameters;
-            const buffer = await load(key);
+            let buffer = await load(key);
             if (buffer) {
-                const isBase64Encoded = !isUtf8(buffer);
+                const headers = { "Cache-Control": "public, max-age=" + cacheMaxAge };
+                if (isUtf8(buffer)) {
+                    buffer = zlib.gzipSync(buffer);
+                    headers["Content-Encoding"] = "gzip";
+                }
+
                 return createResponse({
                     type: mime.lookup(event.path),
-                    body: buffer.toString(isBase64Encoded ? "base64" : "utf8"),
-                    isBase64Encoded,
-                    headers: { "Cache-Control": "public, max-age=" + cacheMaxAge }
+                    body: buffer.toString("base64"),
+                    isBase64Encoded: true,
+                    headers
                 });
             }
         } catch {

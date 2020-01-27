@@ -4,6 +4,7 @@ import { createResponse } from "@webiny/http-handler";
 import mime from "mime-types";
 import { getSsrHtml } from "./functions";
 import { HttpHandlerPlugin } from "@webiny/http-handler/types";
+import zlib from "zlib";
 
 export default (options): HttpHandlerPlugin => {
     if (options.cache.enabled) {
@@ -46,10 +47,17 @@ export default (options): HttpHandlerPlugin => {
                     }).promise();
                 }
 
+                let buffer = Buffer.from(ssrCache.content);
+                buffer = zlib.gzipSync(buffer);
+
                 return createResponse({
                     type: "text/html",
-                    body: ssrCache.content,
-                    headers: { "Cache-Control": "public, max-age=" + ssrCache.expiresIn / 1000 }
+                    body: buffer.toString("base64"),
+                    isBase64Encoded: true,
+                    headers: {
+                        "Cache-Control": "public, max-age=" + ssrCache.expiresIn / 1000,
+                        "Content-Encoding": "gzip"
+                    }
                 });
             }
         };
@@ -66,10 +74,15 @@ export default (options): HttpHandlerPlugin => {
             const [event] = args;
             const path = event.path + qs.stringify(event.multiValueQueryStringParameters, true);
             const body = await getSsrHtml(options.ssrFunction, { path });
+
+            let buffer = Buffer.from(body);
+            buffer = zlib.gzipSync(buffer);
+
             return createResponse({
                 type: "text/html",
-                body,
-                headers: { "Cache-Control": "no-store" }
+                body: buffer.toString("base64"),
+                isBase64Encoded: true,
+                headers: { "Cache-Control": "no-store", "Content-Encoding": "gzip" }
             });
         }
     };

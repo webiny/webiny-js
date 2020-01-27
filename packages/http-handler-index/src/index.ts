@@ -3,6 +3,7 @@ import mime from "mime-types";
 import path from "path";
 import fs from "fs";
 import { HttpHandlerPlugin } from "@webiny/http-handler/types";
+import zlib from "zlib";
 
 const DEFAULT_CACHE_MAX_AGE = 300; // 5 minutes.
 
@@ -28,12 +29,17 @@ export default ({ cacheMaxAge = DEFAULT_CACHE_MAX_AGE } = {}): HttpHandlerPlugin
         const key = "index.html";
 
         try {
-            const buffer = await load(key);
+            let buffer = await load(key);
             if (buffer) {
+                buffer = zlib.gzipSync(buffer);
                 return createResponse({
                     type,
-                    body: buffer.toString("utf8"),
-                    headers: { "Cache-Control": "public, max-age=" + cacheMaxAge }
+                    isBase64Encoded: true,
+                    body: buffer.toString("base64"),
+                    headers: {
+                        "Cache-Control": "public, max-age=" + cacheMaxAge,
+                        "Content-Encoding": "gzip"
+                    }
                 });
             }
         } catch {
