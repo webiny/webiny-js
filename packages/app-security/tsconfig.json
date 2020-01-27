@@ -1,0 +1,12 @@
+{
+  "extends": "../../tsconfig.json",
+  "references": [
+    { "path": "../app" },
+    { "path": "../app-admin" },
+    { "path": "../form" },
+    { "path": "../plugins" },
+    { "path": "../react-router" },
+    { "path": "../ui" },
+    { "path": "../validation" }
+  ]
+}

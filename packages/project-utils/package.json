@@ -1,0 +1,45 @@
+{
+  "name": "@webiny/project-utils",
+  "version": "0.1.9-next.3",
+  "main": "index.js",
+  "description": "A collection of utilities for Webiny project.",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/webiny/webiny-js.git"
+  },
+  "author": "Pavel Denisjuk <pavel@webiny.com>",
+  "contributors": [
+    "Sven Al Hamad <sven@webiny.com>",
+    "Adrian Smijulj <adrian@webiny.com>"
+  ],
+  "dependencies": {
+    "@hot-loader/react-dom": "^16.9.0",
+    "@rescripts/utilities": "^0.0.5",
+    "babel-plugin-lodash": "^3.3.4",
+    "chalk": "^2.4.2",
+    "get-yarn-workspaces": "^1.0.2",
+    "lodash.clonedeep": "^4.5.0",
+    "lodash.get": "^4.4.2",
+    "lodash.isobject": "^3.0.2",
+    "lodash.set": "^4.3.2",
+    "read-json-sync": "^2.0.1",
+    "webpackbar": "^4.0.0"
+  },
+  "license": "MIT",
+  "adio": {
+    "ignore": {
+      "dependencies": [
+        "@hot-loader/react-dom",
+        "babel-plugin-lodash"
+      ]
+    }
+  },
+  "scripts": {
+    "build": "rimraf ./dist && mkdir dist && cp -R aliases cra packages serverless dist/",
+    "postbuild": "cp package.json LICENSE README.md dist/",
+    "prepublishOnly": "yarn build"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}

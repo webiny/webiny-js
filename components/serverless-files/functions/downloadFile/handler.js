@@ -1,4 +1,3 @@
-// @flow
 const S3 = require("aws-sdk/clients/s3");
 const sanitizeFilename = require("sanitize-filename");
 const pathLib = require("path");
@@ -6,6 +5,7 @@ const { createHandler, getEnvironment, getObjectParams } = require("../utils");
 const loaders = require("./../loaders");
 
 const MAX_RETURN_CONTENT_LENGTH = 5000000; // ~4.77MB
+const DEFAULT_CACHE_MAX_AGE = 30758400; // 1 year
 
 /**
  * Based on given path, extracts file key and additional options sent via query params.
@@ -24,7 +24,7 @@ const getS3Object = async (event, s3) => {
     const { options, filename, extension } = extractFilenameOptions(event);
 
     for (let i = 0; i < loaders.length; i++) {
-        let loader = loaders[i];
+        const loader = loaders[i];
         const canProcess = loader.canProcess({
             s3,
             options,
@@ -64,7 +64,8 @@ module.exports.handler = createHandler(async event => {
         return {
             data: object.Body,
             headers: {
-                "Content-Type": object.ContentType
+                "Content-Type": object.ContentType,
+                "Cache-Control": "public, max-age=" + DEFAULT_CACHE_MAX_AGE
             }
         };
     }

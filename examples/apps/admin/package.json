@@ -5,14 +5,15 @@
   "dependencies": {
     "@webiny/app": "^2",
     "@webiny/app-admin": "^2",
-    "@webiny/app-cookie-policy": "^2",
     "@webiny/app-forms": "^2",
+    "@webiny/app-cookie-policy": "^2",
     "@webiny/app-google-tag-manager": "^2",
     "@webiny/app-i18n": "^2",
     "@webiny/app-mailchimp": "^2",
     "@webiny/app-page-builder": "^2",
     "@webiny/app-security": "^2",
     "@webiny/app-typeform": "^2",
+    "@webiny/react-router": "^1",
     "@webiny/plugins": "^2",
     "@webiny/ui": "^2",
     "apollo-cache-inmemory": "^1.1.12",
@@ -24,8 +25,7 @@
     "react-apollo": "^3.1.0",
     "react-hot-loader": "^4.3.5",
     "react-router-dom": "^5.0.0",
-    "regenerator-runtime": "^0.13.3",
-    "theme": "^1.0.0"
+    "regenerator-runtime": "^0.13.3"
   },
   "devDependencies": {
     "@rescripts/cli": "^0.0.7",
@@ -41,8 +41,9 @@
   "scripts": {
     "analyze": "source-map-explorer build/static/js/main.*",
     "start": "env-cmd -r .env.json -e default,local rescripts start",
-    "build:dev": "env-cmd -r .env.json -e default,dev rescripts build",
-    "build:prod": "env-cmd -r .env.json -e default,prod rescripts build",
+    "build": "rescripts build",
+    "build:dev": "env-cmd -r .env.json -e default,dev yarn build",
+    "build:prod": "env-cmd -r .env.json -e default,prod yarn build",
     "postbuild": "webpack --config ./handler/webpack.config.js",
     "test": "rescripts test --env=jsdom",
     "eject": "react-scripts eject"

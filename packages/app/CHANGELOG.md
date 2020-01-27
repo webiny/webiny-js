@@ -3,6 +3,30 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.0.3-next.2](https://github.com/webiny/webiny-js/compare/@webiny/app@2.0.3-next.1...@webiny/app@2.0.3-next.2) (2020-01-27)
+
+**Note:** Version bump only for package @webiny/app
+
+
+
+
+
+## [2.0.3-next.1](https://github.com/webiny/webiny-js/compare/@webiny/app@2.0.3-next.0...@webiny/app@2.0.3-next.1) (2020-01-27)
+
+**Note:** Version bump only for package @webiny/app
+
+
+
+
+
+## [2.0.3-next.0](https://github.com/webiny/webiny-js/compare/@webiny/app@2.0.2...@webiny/app@2.0.3-next.0) (2020-01-24)
+
+**Note:** Version bump only for package @webiny/app
+
+
+
+
+
 ## [2.0.2](https://github.com/webiny/webiny-js/compare/@webiny/app@2.0.2-next.1...@webiny/app@2.0.2) (2019-12-04)
 
 **Note:** Version bump only for package @webiny/app

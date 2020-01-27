@@ -1,0 +1,41 @@
+// typography
+$webiny-pb-theme-typography-primary-font-family: "IBM Plex Sans, sans-serif" !default;
+$webiny-pb-theme-typography-secondary-font-family: "Lato, sans-serif" !default;
+
+// colors
+$webiny-pb-theme-primary: #ee896b !default;
+$webiny-pb-theme-secondary: #00ccb0 !default;
+$webiny-pb-theme-background: #eaecec !default;
+$webiny-pb-theme-surface: #ffffff !default;
+$webiny-pb-theme-on-primary: #ffffff !default;
+$webiny-pb-theme-on-secondary: #ffffff !default;
+$webiny-pb-theme-on-surface: #000000 !default;
+$webiny-pb-theme-on-background: #131313 !default;
+$webiny-pb-theme-text-primary: rgb(10, 10, 10) !default;
+$webiny-pb-theme-text-secondary: #616161 !default;
+$webiny-pb-theme-color-border: #e8ebee !default;
+
+// media queries
+$webiny-pb-theme-mobile-width: 480px;
+$webiny-pb-theme-tablet-width: 768px;
+$webiny-pb-theme-desktop-width: 1200px;
+
+// elements
+$webiny-pb-theme-border-radius: 2px;
+
+body{
+  --webiny-theme-typography-primary-font-family: #{$webiny-pb-theme-typography-primary-font-family};
+  --webiny-theme-typography-secondary-font-family: #{$webiny-pb-theme-typography-secondary-font-family};
+  --webiny-theme-color-primary: #{$webiny-pb-theme-primary};
+  --webiny-theme-color-secondary: #{$webiny-pb-theme-secondary};
+  --webiny-theme-color-background: #{$webiny-pb-theme-background};
+  --webiny-theme-color-surface: #{$webiny-pb-theme-surface};
+  --webiny-theme-color-on-primary: #{$webiny-pb-theme-on-primary};
+  --webiny-theme-color-on-secondary: #{$webiny-pb-theme-on-secondary};
+  --webiny-theme-color-on-surface: #{$webiny-pb-theme-on-surface};
+  --webiny-theme-color-on-background: #{$webiny-pb-theme-on-background};
+  --webiny-theme-color-text-primary: #{$webiny-pb-theme-text-primary};
+  --webiny-theme-color-text-secondary: #{$webiny-pb-theme-text-secondary};
+  --webiny-theme-color-border: #{$webiny-pb-theme-color-border};
+  --webiny-theme-border-radius: #{$webiny-pb-theme-border-radius};
+}

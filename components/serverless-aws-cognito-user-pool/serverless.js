@@ -12,8 +12,8 @@ const defaultPasswordPolicy = {
 };
 
 class ServerlessAwsCognito extends Component {
-    async default(inputs = {}) {
-        if (isEqual(this.state.inputs, inputs)) {
+    async default({ force = false, ...inputs } = {}) {
+        if (isEqual(this.state.inputs, inputs) && !force) {
             this.context.instance.debug("Input was not changed, no action required.");
             return this.state.output;
         }
@@ -99,7 +99,7 @@ class ServerlessAwsCognito extends Component {
             this.context.instance.debug(`Creating new user pool.`);
 
             const params = {
-                PoolName: name,
+                PoolName: this.context.instance.getResourceName(name),
                 AdminCreateUserConfig: {
                     AllowAdminCreateUserOnly: !allowSignup
                 },

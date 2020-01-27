@@ -1,7 +1,7 @@
 {
   "private": true,
   "name": "@webiny/storybook-utils",
-  "version": "2.0.0",
+  "version": "2.0.1-next.2",
   "repository": {
     "type": "git",
     "url": "https://github.com/webiny/webiny-js.git"
@@ -28,15 +28,14 @@
     "@babel/plugin-proposal-object-rest-spread": "^7.5.5",
     "@babel/plugin-transform-runtime": "^7.5.5",
     "@babel/preset-env": "^7.5.5",
-    "@babel/preset-flow": "^7.0.0",
+    "@babel/preset-typescript": "^7.8.3",
     "@emotion/styled": "^10.0.17"
   },
   "peerDependencies": {
-    "react": "^16.8.0"
+    "react": "^16.8.6"
   },
   "scripts": {
-    "build": "babel src -d dist --source-maps --copy-files",
-    "flow-copy-source": "flow-copy-source src dist",
-    "postbuild": "yarn flow-copy-source"
+    "build": "rimraf ./dist *.tsbuildinfo && babel src -d dist --source-maps --copy-files --extensions \".ts,.tsx\"",
+    "postbuild": "tsc -p tsconfig.build.json"
   }
 }

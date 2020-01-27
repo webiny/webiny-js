@@ -1,6 +1,6 @@
 {
   "name": "@webiny/api-security",
-  "version": "2.1.2",
+  "version": "2.1.2-next.3",
   "main": "index.js",
   "repository": {
     "type": "git",
@@ -15,11 +15,10 @@
   "license": "MIT",
   "dependencies": {
     "@babel/runtime": "^7.5.5",
-    "@commodo/fields-storage-mongodb": "^1.0.0",
-    "@webiny/api": "^2.1.0",
-    "@webiny/commodo": "^2.0.1",
-    "@webiny/commodo-graphql": "^2.1.0",
-    "@webiny/validation": "^2.1.0",
+    "@webiny/api": "^2.1.1-next.2",
+    "@webiny/commodo": "^2.0.2-next.3",
+    "@webiny/commodo-graphql": "^2.1.2-next.3",
+    "@webiny/validation": "^2.1.1-next.2",
     "bcryptjs": "^2.4.3",
     "graphql-shield": "^6.1.0",
     "graphql-tag": "^2.10.1",
@@ -31,7 +30,7 @@
     "@babel/cli": "^7.5.5",
     "@babel/core": "^7.5.5",
     "@babel/preset-env": "^7.5.5",
-    "@babel/preset-flow": "^7.0.0",
+    "@babel/preset-typescript": "^7.8.3",
     "eslint-plugin-jest": "^22.17.0"
   },
   "optionalDependencies": {
@@ -41,9 +40,9 @@
     "access": "public"
   },
   "scripts": {
-    "build": "babel src -d dist --source-maps --copy-files",
-    "flow-copy-source": "flow-copy-source src dist",
-    "postbuild": "yarn flow-copy-source && cp package.json LICENSE README.md dist/",
+    "build": "rimraf ./dist *.tsbuildinfo && babel src -d dist --source-maps --copy-files --extensions \".ts\"",
+    "watch": "babel src -d dist --source-maps --copy-files --extensions \".ts\" --watch",
+    "postbuild": "cp package.json LICENSE README.md dist/ && tsc -p tsconfig.build.json",
     "prepublishOnly": "yarn build"
   },
   "svgo": {

@@ -1,24 +1,23 @@
-import { validation } from "@webiny/validation";
-import "./chai";
+import { validation, ValidationError } from "../src";
 
 describe("required test", () => {
     it("should fail - empty string sent", () => {
-        return validation.validate("", "required").should.be.rejected;
+        expect(validation.validate("", "required")).rejects.toThrow(ValidationError);
     });
 
     it("should fail - null sent", () => {
-        return validation.validate(null, "required").should.be.rejected;
+        expect(validation.validate(null, "required")).rejects.toThrow(ValidationError);
     });
 
     it("should pass - non-empty string given", () => {
-        return validation.validate("0911231232", "required").should.become(true);
+        expect(validation.validate("0911231232", "required")).resolves.toBe(true);
     });
 
     it("should pass - number given", () => {
-        return validation.validate(1, "required").should.become(true);
+        expect(validation.validate(1, "required")).resolves.toBe(true);
     });
 
     it('should pass - number "0" given (it is still a valid value)', () => {
-        return validation.validate(0, "required").should.become(true);
+        expect(validation.validate(0, "required")).resolves.toBe(true);
     });
 });

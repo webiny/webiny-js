@@ -3,6 +3,44 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.2.2-next.3](https://github.com/Webiny/webiny-js/compare/@webiny/serverless-page-builder@2.2.2-next.2...@webiny/serverless-page-builder@2.2.2-next.3) (2020-01-27)
+
+**Note:** Version bump only for package @webiny/serverless-page-builder
+
+
+
+
+
+## [2.2.2-next.2](https://github.com/Webiny/webiny-js/compare/@webiny/serverless-page-builder@2.2.2-next.1...@webiny/serverless-page-builder@2.2.2-next.2) (2020-01-27)
+
+**Note:** Version bump only for package @webiny/serverless-page-builder
+
+
+
+
+
+## [2.2.2-next.1](https://github.com/webiny/webiny-js/compare/@webiny/serverless-page-builder@2.2.2-next.0...@webiny/serverless-page-builder@2.2.2-next.1) (2020-01-26)
+
+
+### Bug Fixes
+
+* update deps versions. ([01fb628](https://github.com/webiny/webiny-js/commit/01fb628cb710220485ce8df94b687eb3bcd4f66f))
+
+
+
+
+
+## [2.2.2-next.0](https://github.com/webiny/webiny-js/compare/@webiny/serverless-page-builder@2.2.1...@webiny/serverless-page-builder@2.2.2-next.0) (2020-01-24)
+
+
+### Bug Fixes
+
+* remove automatic injection of plugins. ([345eb75](https://github.com/webiny/webiny-js/commit/345eb7562fecf4ee7dfdc716c0a89b62a15d77b9))
+
+
+
+
+
 ## [2.2.1](https://github.com/Webiny/webiny-js/compare/@webiny/serverless-page-builder@2.2.1-next.0...@webiny/serverless-page-builder@2.2.1) (2019-12-04)
 
 **Note:** Version bump only for package @webiny/serverless-page-builder

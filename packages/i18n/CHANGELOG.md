@@ -3,6 +3,33 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.0.1-next.2](https://github.com/webiny/webiny-js/compare/@webiny/i18n@2.0.1-next.1...@webiny/i18n@2.0.1-next.2) (2020-01-27)
+
+**Note:** Version bump only for package @webiny/i18n
+
+
+
+
+
+## [2.0.1-next.1](https://github.com/webiny/webiny-js/compare/@webiny/i18n@2.0.1-next.0...@webiny/i18n@2.0.1-next.1) (2020-01-27)
+
+**Note:** Version bump only for package @webiny/i18n
+
+
+
+
+
+## [2.0.1-next.0](https://github.com/webiny/webiny-js/compare/@webiny/i18n@2.0.0...@webiny/i18n@2.0.1-next.0) (2020-01-24)
+
+
+### Bug Fixes
+
+* I18N broken tests ([#636](https://github.com/webiny/webiny-js/issues/636)) ([861028a](https://github.com/webiny/webiny-js/commit/861028aac2ff1b58e3b2bd9a479f4dcaa4ff463a))
+
+
+
+
+
 # [2.0.0](https://github.com/webiny/webiny-js/compare/@webiny/i18n@0.1.6...@webiny/i18n@2.0.0) (2019-10-29)
 
 **Note:** Version bump only for package @webiny/i18n

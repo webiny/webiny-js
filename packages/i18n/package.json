@@ -1,6 +1,6 @@
 {
   "name": "@webiny/i18n",
-  "version": "2.0.0",
+  "version": "2.0.1-next.2",
   "main": "index.js",
   "repository": {
     "type": "git",
@@ -20,11 +20,14 @@
     "short-hash": "^1.0.0",
     "yargs": "12.0.5"
   },
+  "peerDependencies": {
+    "react": "^16.8.6"
+  },
   "devDependencies": {
     "@babel/cli": "^7.5.5",
     "@babel/core": "^7.5.5",
     "@babel/preset-env": "^7.5.5",
-    "@babel/preset-flow": "^7.0.0",
+    "@babel/preset-typescript": "^7.8.3",
     "@babel/register": "^7.5.5",
     "babel-plugin-lodash": "^3.3.4",
     "glob": "^7.1.2"
@@ -33,9 +36,9 @@
     "access": "public"
   },
   "scripts": {
-    "build": "babel src -d dist --source-maps --copy-files",
-    "flow-copy-source": "flow-copy-source src dist",
-    "postbuild": "yarn flow-copy-source && cp package.json LICENSE README.md dist/",
+    "build": "rimraf ./dist *.tsbuildinfo && babel src -d dist --source-maps --copy-files --extensions \".ts,.tsx\"",
+    "watch": "babel src -d dist --source-maps --copy-files --extensions \".ts\" --watch",
+    "postbuild": "cp package.json LICENSE README.md dist/ && tsc -p tsconfig.build.json",
     "prepublishOnly": "yarn build"
   },
   "gitHead": "71cab7d5607b2e32a63034e324a663770507b32b"

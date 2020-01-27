@@ -1,6 +1,6 @@
 {
   "name": "@webiny/ui",
-  "version": "2.0.1",
+  "version": "2.0.2-next.2",
   "main": "index.js",
   "repository": {
     "type": "git",
@@ -71,32 +71,37 @@
     "@babel/core": "^7.5.5",
     "@babel/plugin-proposal-class-properties": "^7.5.5",
     "@babel/preset-env": "^7.5.5",
-    "@babel/preset-flow": "^7.0.0",
+    "@babel/preset-typescript": "^7.8.3",
+    "@storybook/addon-info": "^5.2.8",
     "@storybook/addon-knobs": "^5.0.5",
     "@storybook/addon-links": "^5.0.5",
-    "@storybook/react": "^5.0.5",
-    "@webiny/form": "^2.0.0",
-    "@webiny/storybook-utils": "^2.0.0",
+    "@storybook/react": "^5.2.8",
+    "@webiny/form": "^2.0.1-next.2",
+    "@webiny/storybook-utils": "^2.0.1-next.2",
+    "@webiny/validation": "^2.1.1-next.2",
+    "awesome-typescript-loader": "^5.2.1",
     "babel-loader": "^8.0.0-beta.6",
     "babel-plugin-emotion": "^9.2.8",
     "babel-plugin-named-asset-import": "^1.0.0-next.3e165448",
     "jest-dom": "^3.0.0",
     "node-sass": "^4.9.3",
     "raw-loader": "^0.5.1",
+    "react-docgen": "^5.0.0",
+    "react-docgen-typescript-loader": "^3.6.0",
     "react-testing-library": "^5.2.0",
     "sass-loader": "^7.1.0"
   },
   "peerDependencies": {
-    "react": "^16.8.0",
-    "react-dom": "^16.8.0"
+    "react": "^16.8.6",
+    "react-dom": "^16.8.6"
   },
   "publishConfig": {
     "access": "public"
   },
   "scripts": {
-    "build": "babel src -d dist --source-maps --copy-files",
-    "flow-copy-source": "flow-copy-source src dist",
-    "postbuild": "yarn flow-copy-source && cp package.json LICENSE README.md dist/",
+    "build": "rimraf ./dist *.tsbuildinfo && babel src -d dist --source-maps --copy-files --extensions \".ts,.tsx\"",
+    "watch": "babel src -d dist --source-maps --copy-files --extensions \".ts,.tsx\" --watch",
+    "postbuild": "cp package.json LICENSE README.md dist/ && tsc -p tsconfig.build.json",
     "storybook": "start-storybook -p 6006",
     "build-storybook": "build-storybook -c .storybook -o ${OUT:-.out}",
     "prepublishOnly": "yarn build"

@@ -3,6 +3,33 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.0.4-next.2](https://github.com/webiny/webiny-js/compare/@webiny/app-security@2.0.4-next.1...@webiny/app-security@2.0.4-next.2) (2020-01-27)
+
+
+### Bug Fixes
+
+* add missing email validator. ([ec9e114](https://github.com/webiny/webiny-js/commit/ec9e114a52525c5f9698046ca8d3e51b7c2c6b6c))
+
+
+
+
+
+## [2.0.4-next.1](https://github.com/webiny/webiny-js/compare/@webiny/app-security@2.0.4-next.0...@webiny/app-security@2.0.4-next.1) (2020-01-27)
+
+**Note:** Version bump only for package @webiny/app-security
+
+
+
+
+
+## [2.0.4-next.0](https://github.com/webiny/webiny-js/compare/@webiny/app-security@2.0.3...@webiny/app-security@2.0.4-next.0) (2020-01-24)
+
+**Note:** Version bump only for package @webiny/app-security
+
+
+
+
+
 ## [2.0.3](https://github.com/webiny/webiny-js/compare/@webiny/app-security@2.0.3-next.2...@webiny/app-security@2.0.3) (2019-12-04)
 
 **Note:** Version bump only for package @webiny/app-security

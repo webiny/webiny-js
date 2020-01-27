@@ -60,13 +60,17 @@ Packages prefixed with `app-` are React apps. The ones with the `api-` prefix ar
    yarn
    ```
 
-3. Run `yarn setup-repo`. This will setup all the necessary environment config files and build the necessary packages. You need to manually update the DB connection string, edit your `examples/api/.env.json` file.
+3. Run `yarn setup-repo`. This will setup all the necessary environment config files and build all packages to generate `dist` folders and TS declarations. You need to manually update the DB connection string, edit your `examples/.env.json` file.
 
 4. Deploy you API to use with local React apps by running `webiny deploy-api` from the `examples` folder. Once deployed, it will automatically update you React apps' `.env.json` files with the necessary variables.
 
 > NOTE: `webiny` should be run from the root of the Webiny project, and since `examples` folder is a `sandbox`, this is the place to run your `webiny` commands from.
 
 5. Begin working on React apps by navigating to `examples/apps/{admin|site}` and run `yarn start`. React apps are regular `create-react-app` apps, slightly modified, but all the CRA rules apply.
+
+6. Run `watch` on packages you are working on so that your changes are automatically built into the corresponding `dist` folder. React app build will automatically rebuild and hot-reload changes that happen in the `dist` folder of all related packages.
+
+The easiest way to run a watch is by running `lerna run watch --scope=your-scope --stream --parallel`. For more details visit the [official lerna filtering docs](https://github.com/lerna/lerna/tree/master/core/filter-options). 
 
 ## Tests
 
@@ -75,6 +79,8 @@ You can find examples of tests in some of the utility packages (`validation`, `i
 `api-files` contains an example of testing your GraphQL API.
 
 We'll be strongly focusing on tests in the near future, and of course contributions of tests are most welcome :)
+
+To add a package to Jest projects, edit the `jest.config.js` file.
 
 ## Release notes
 
@@ -87,8 +93,7 @@ Each package MUST have a `prepublishOnly` script which creates a build ready to 
 
 Since we use `@webiny` scope, each package that is intended for `npm` MUST have a `"publishConfig": {"access": "public"}` in its `package.json`.
 
-At this point CI is not integrated, as we want to manually review and publish each release. This will also be automated as the
-project advances and we add more tests for a reliable CI workflow.
+At this point CI is not integrated, as we want to manually review and publish each release. This will also be automated as the project advances and we add more tests for a reliable CI workflow.
 
 ### Release process
 
@@ -129,7 +134,7 @@ NPM_TOKEN=xyz lerna publish from-package --dist-tag=next
 
 Repeat the process during bug fixing.
 
-#### Promoting to actual realease
+#### Promoting to actual release
 
 Now that you're ready to publish your prerelease to the `latest` tag:
 

@@ -1,0 +1,35 @@
+{
+  "name": "@webiny/api-plugin-commodo-db-proxy",
+  "version": "1.1.1-next.2",
+  "main": "index.js",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/webiny/webiny-js.git"
+  },
+  "description": "Webiny API plugin that provides a Commodo driver for DB Proxy.",
+  "contributors": [
+    "Pavel Denisjuk <pavel@webiny.com>",
+    "Sven Al Hamad <sven@webiny.com>",
+    "Adrian Smijulj <adrian@webiny.com>"
+  ],
+  "dependencies": {
+    "@babel/runtime": "^7.5.5",
+    "@webiny/commodo-fields-storage-db-proxy": "^1.0.1-next.2"
+  },
+  "devDependencies": {
+    "@babel/cli": "^7.5.5",
+    "@babel/core": "^7.5.5",
+    "@babel/preset-env": "^7.5.5",
+    "@webiny/api": "^2.1.1-next.2"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "build": "rimraf ./dist *.tsbuildinfo && babel src -d dist --source-maps --copy-files --extensions \".ts\"",
+    "watch": "babel src -d dist --source-maps --copy-files --extensions \".ts\" --watch",
+    "postbuild": "cp package.json LICENSE README.md dist/ && tsc -p tsconfig.build.json",
+    "prepublishOnly": "yarn build"
+  }
+}

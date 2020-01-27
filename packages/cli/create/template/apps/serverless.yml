@@ -2,6 +2,19 @@ name: webiny-apps-[PROJECT_ID]
 
 vars:
   region: ${env.AWS_REGION}
+  mongodb:
+    server: ${env.MONGODB_SERVER}
+    name: ${env.MONGODB_NAME}
+
+dbProxy:
+  component: "@webiny/serverless-db-proxy"
+  inputs:
+    region: ${vars.region}
+    concurrencyLimit: 15
+    timeout: 30
+    env:
+      MONGODB_SERVER: ${vars.mongodb.server}
+      MONGODB_NAME: ${vars.mongodb.name}
 
 site:
   component: "@webiny/serverless-app"
@@ -13,6 +26,7 @@ site:
     code: ./site/build
     env:
       SSR_FUNCTION: ${ssr.name}
+      DB_PROXY_FUNCTION: ${dbProxy.arn}
 
 ssr:
   component: "@webiny/serverless-function"
@@ -24,7 +38,7 @@ ssr:
     code: ./site/build-ssr
     handler: handler.handler
     memory: 2048
-    timeout: 30
+    timeout: 60
 
 admin:
   component: "@webiny/serverless-app"
@@ -37,9 +51,9 @@ admin:
 api:
   component: "@webiny/serverless-api-gateway"
   inputs:
-    name: Apps Gateway
-    binaryMediaTypes: ["*/*"]
     description: Serverless React Apps
+    region: ${vars.region}
+    binaryMediaTypes: ["*/*"]
     endpoints:
       - path: /admin/{key+}
         method: GET
@@ -48,14 +62,22 @@ api:
         method: GET
         function: ${admin}
       - path: /{key+}
-        method: GET
+        method: ANY
         function: ${site}
       - path: /
-        method: GET
+        method: ANY
         function: ${site}
 
 cdn:
   component: "@webiny/serverless-aws-cloudfront"
   inputs:
+    invalidateOnDeploy: true
+    forwardIdViaHeaders: true
+    defaults: # optional
+      ttl: 300
+      allowedHttpMethods: ["GET", "HEAD", "OPTIONS", "PUT", "POST", "PATCH", "DELETE"]
+      forward:
+        queryString: true
     origins:
       - url: ${api.url}
+        allowedHttpMethods: ["HEAD", "GET"]

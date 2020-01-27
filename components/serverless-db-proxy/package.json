@@ -1,0 +1,23 @@
+{
+  "name": "@webiny/serverless-db-proxy",
+  "version": "2.3.3-next.3",
+  "main": "serverless.js",
+  "license": "MIT",
+  "dependencies": {
+    "@serverless/core": "^1.1.1",
+    "@webiny/serverless-function": "^2.0.1-next.2",
+    "bson": "^4.0.2",
+    "lodash.get": "^4.4.2",
+    "mongodb": "^3.3.3"
+  },
+  "scripts": {
+    "build": "webpack --config scripts/webpack/webpack.config.js",
+    "postbuild": "cp -r package.json serverless.js LICENSE README.md dist/",
+    "deploy": "cd test && sls --debug",
+    "prepublishOnly": "yarn build"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "gitHead": "71cab7d5607b2e32a63034e324a663770507b32b"
+}

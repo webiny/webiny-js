@@ -1,0 +1,4 @@
+{
+  "extends": "../../tsconfig",
+  "references": [{ "path": "../api" }, { "path": "../commodo-fields-storage-db-proxy" }]
+}

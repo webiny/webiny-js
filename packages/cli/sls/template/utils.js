@@ -6,6 +6,7 @@ const { utils } = require("@serverless/core");
 const { trackComponent } = require("@webiny/tracking");
 const { red } = require("chalk");
 const debug = require("debug");
+const kebabCase = require("lodash.kebabcase");
 
 const getOutputs = allComponents => {
     const outputs = {};
@@ -211,7 +212,7 @@ const createGraph = allComponents => {
     return graph;
 };
 
-const executeGraph = async (allComponents, graph, instance) => {
+const executeGraph = async (allComponents, graph, instance, inputs) => {
     const leaves = graph.sinks();
     const templateDebug = instance.context.instance.debug;
 
@@ -223,17 +224,33 @@ const executeGraph = async (allComponents, graph, instance) => {
         const componentData = graph.node(alias);
         const component = await instance.load(componentData.path, alias);
         component.context.instance.debug = debug(`webiny:${alias}`);
+        component.context.instance.alias = alias;
+        component.context.instance.env = inputs.env;
+        component.context.instance.getResourceName = (name = null) => {
+            if (name && name.startsWith(component.context.instance.id)) {
+                return name;
+            }
+
+            return [
+                component.context.instance.id,
+                component.context.instance.env,
+                component.context.instance.alias,
+                name ? kebabCase(name) : null
+            ]
+                .filter(Boolean)
+                .join("_");
+        };
         const availableOutputs = getOutputs(allComponents);
-        const inputs = resolveObject(allComponents[alias].inputs, availableOutputs);
+        const componentInputs = resolveObject(allComponents[alias].inputs, availableOutputs);
         instance.context.status("Deploying", alias);
         try {
-            allComponents[alias].outputs = (await component(inputs)) || {};
+            allComponents[alias].outputs = (await component(componentInputs)) || {};
             instance.context.instance.debug = templateDebug;
             await trackComponent({ context: instance.context, component: componentData.path });
         } catch (err) {
             instance.context.log(`An error occurred during deployment of ${red(alias)}`);
             console.log();
-            console.log(red(err));
+            console.log(err);
             console.log();
             process.exit(1);
         }
@@ -241,7 +258,7 @@ const executeGraph = async (allComponents, graph, instance) => {
         graph.removeNode(alias);
     }
 
-    return executeGraph(allComponents, graph, instance);
+    return executeGraph(allComponents, graph, instance, inputs);
 };
 
 const syncState = async (allComponents, instance) => {
@@ -255,7 +272,7 @@ const syncState = async (allComponents, instance) => {
                 instance.context.status("Removing", alias);
                 await component.remove();
                 instance.context.instance.debug = templateDebug;
-                trackComponent({
+                await trackComponent({
                     context: instance.context,
                     component: instance.state.components[alias],
                     method: "remove"

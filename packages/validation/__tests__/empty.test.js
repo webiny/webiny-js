@@ -1,14 +1,13 @@
-import { validation } from "@webiny/validation";
-import "./chai";
+import { validation } from "../src";
 
 describe("empty validators test", () => {
     it("should pass - no validators sent", async () => {
-        validation.validate("", "").should.be.fulfilled;
-        validation.validateSync("", "").should.be.true;
+        expect(validation.validate("", "")).resolves.toBe(true);
+        expect(validation.validateSync("", "")).toBe(true);
     });
 
     it("should fail - invalid parameter sent", () => {
-        validation.validate("", {}).should.be.rejected;
+        expect(validation.validate("", {})).rejects.toThrow(Error);
 
         try {
             validation.validateSync("", {});

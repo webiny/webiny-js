@@ -1,24 +1,21 @@
-import { validation } from "@webiny/validation";
-import "./chai";
+import { validation, ValidationError } from "../src";
 
 describe("in test", () => {
     it("should not get triggered if an empty value was set", () => {
-        return validation.validate(null, "in").should.be.fulfilled;
+        expect(validation.validate(null, "in")).resolves.toBe(true);
     });
 
     it("should fail - value not in the list", () => {
-        return validation.validate("ab", "in:abc:123").should.be.rejected;
+        expect(validation.validate("ab", "in:abc:123")).rejects.toThrow(ValidationError);
     });
 
     it("should fail - value not in the list", () => {
-        return validation.validate(12, "in:abc:123").should.be.rejected;
+        expect(validation.validate(12, "in:abc:123")).rejects.toThrow(ValidationError);
     });
 
     it("should pass", () => {
-        return Promise.all([
-            validation.validate("abc", "in:abc:123").should.become(true),
-            validation.validate("123", "in:abc:123").should.become(true),
-            validation.validate(123, "in:abc:123").should.become(true)
-        ]);
+        expect(validation.validate("abc", "in:abc:123")).resolves.toBe(true);
+        expect(validation.validate("123", "in:abc:123")).resolves.toBe(true);
+        expect(validation.validate(123, "in:abc:123")).resolves.toBe(true);
     });
 });

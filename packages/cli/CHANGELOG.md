@@ -3,6 +3,126 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.6.1-next.11](https://github.com/webiny/webiny-js/compare/@webiny/cli@2.6.1-next.10...@webiny/cli@2.6.1-next.11) (2020-01-27)
+
+**Note:** Version bump only for package @webiny/cli
+
+
+
+
+
+## [2.6.1-next.10](https://github.com/webiny/webiny-js/compare/@webiny/cli@2.6.1-next.9...@webiny/cli@2.6.1-next.10) (2020-01-27)
+
+**Note:** Version bump only for package @webiny/cli
+
+
+
+
+
+## [2.6.1-next.9](https://github.com/webiny/webiny-js/compare/@webiny/cli@2.6.1-next.8...@webiny/cli@2.6.1-next.9) (2020-01-27)
+
+
+### Bug Fixes
+
+* add missing ssrCache related plugins ([408adca](https://github.com/webiny/webiny-js/commit/408adca6c2363bc763c34d55a895f80f89e41bfe))
+
+
+
+
+
+## [2.6.1-next.8](https://github.com/webiny/webiny-js/compare/@webiny/cli@2.6.1-next.7...@webiny/cli@2.6.1-next.8) (2020-01-26)
+
+
+### Bug Fixes
+
+* handle null value. ([598d723](https://github.com/webiny/webiny-js/commit/598d723344725e06e454ed0b443bf932e0c9ae4b))
+
+
+
+
+
+## [2.6.1-next.7](https://github.com/webiny/webiny-js/compare/@webiny/cli@2.6.1-next.6...@webiny/cli@2.6.1-next.7) (2020-01-26)
+
+
+### Bug Fixes
+
+* improve resource naming. ([8cc0da8](https://github.com/webiny/webiny-js/commit/8cc0da84b0ef72a60e93375c7ba650dd06394e29))
+
+
+
+
+
+## [2.6.1-next.6](https://github.com/webiny/webiny-js/compare/@webiny/cli@2.6.1-next.5...@webiny/cli@2.6.1-next.6) (2020-01-26)
+
+**Note:** Version bump only for package @webiny/cli
+
+
+
+
+
+## [2.6.1-next.5](https://github.com/webiny/webiny-js/compare/@webiny/cli@2.6.1-next.4...@webiny/cli@2.6.1-next.5) (2020-01-26)
+
+
+### Bug Fixes
+
+* update default inputs ([4978d53](https://github.com/webiny/webiny-js/commit/4978d535aa43e9d98c09aab24161627934b1bd20))
+
+
+
+
+
+## [2.6.1-next.4](https://github.com/webiny/webiny-js/compare/@webiny/cli@2.6.1-next.3...@webiny/cli@2.6.1-next.4) (2020-01-26)
+
+
+### Bug Fixes
+
+* update SSR handler template files ([21dfc17](https://github.com/webiny/webiny-js/commit/21dfc17892efcb94a54a8df42bed87c541391224))
+
+
+
+
+
+## [2.6.1-next.3](https://github.com/webiny/webiny-js/compare/@webiny/cli@2.6.1-next.2...@webiny/cli@2.6.1-next.3) (2020-01-24)
+
+
+### Bug Fixes
+
+* remove packages folder from template. ([3fed811](https://github.com/webiny/webiny-js/commit/3fed81164f30773812b975fe4cb5281845e9fc29))
+
+
+
+
+
+## [2.6.1-next.2](https://github.com/webiny/webiny-js/compare/@webiny/cli@2.6.1-next.1...@webiny/cli@2.6.1-next.2) (2020-01-24)
+
+
+### Bug Fixes
+
+* remove type annotation. ([9da3660](https://github.com/webiny/webiny-js/commit/9da36601372b343c51a35614fe449f558c646871))
+
+
+
+
+
+## [2.6.1-next.1](https://github.com/webiny/webiny-js/compare/@webiny/cli@2.6.1-next.0...@webiny/cli@2.6.1-next.1) (2020-01-24)
+
+
+### Bug Fixes
+
+* add missing dependency. ([179db31](https://github.com/webiny/webiny-js/commit/179db31d0a8edb8aeed305c0c925b8b3bfcef7ad))
+
+
+
+
+
+## [2.6.1-next.0](https://github.com/webiny/webiny-js/compare/@webiny/cli@2.6.0...@webiny/cli@2.6.1-next.0) (2020-01-24)
+
+**Note:** Version bump only for package @webiny/cli
+
+
+
+
+
 # [2.6.0](https://github.com/webiny/webiny-js/compare/@webiny/cli@2.5.2...@webiny/cli@2.6.0) (2020-01-19)
 
 

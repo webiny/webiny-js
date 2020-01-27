@@ -1,0 +1,11 @@
+{
+  "extends": "../../tsconfig",
+  "references": [
+    { "path": "../app" },
+    { "path": "../app-i18n" },
+    { "path": "../app-plugin-security-cognito" },
+    { "path": "../form" },
+    { "path": "../ui" },
+    { "path": "../validation" }
+  ]
+}

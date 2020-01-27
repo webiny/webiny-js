@@ -3,6 +3,50 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.0.2-next.3](https://github.com/webiny/webiny-js/compare/@webiny/commodo@2.0.2-next.2...@webiny/commodo@2.0.2-next.3) (2020-01-27)
+
+**Note:** Version bump only for package @webiny/commodo
+
+
+
+
+
+## [2.0.2-next.2](https://github.com/webiny/webiny-js/compare/@webiny/commodo@2.0.2-next.2...@webiny/commodo@2.0.2-next.2) (2020-01-27)
+
+**Note:** Version bump only for package @webiny/commodo
+
+
+
+
+
+## [2.0.2-next.2](https://github.com/webiny/webiny-js/compare/@webiny/commodo@2.0.2-next.1...@webiny/commodo@2.0.2-next.2) (2020-01-27)
+
+**Note:** Version bump only for package @webiny/commodo
+
+
+
+
+
+## [2.0.2-next.1](https://github.com/webiny/webiny-js/compare/@webiny/commodo@2.0.1-next.0...@webiny/commodo@2.0.2-next.1) (2020-01-24)
+
+**Note:** Version bump only for package @webiny/commodo
+
+
+
+
+
+## [2.0.1-next.0](https://github.com/webiny/webiny-js/compare/@webiny/commodo@2.0.1...@webiny/commodo@2.0.1-next.0) (2020-01-24)
+
+
+### Bug Fixes
+
+* update [@commodo](https://github.com/commodo) package versions ([15ca334](https://github.com/webiny/webiny-js/commit/15ca33420652b20500367298303c775ff9088dc0))
+* update [@commodo](https://github.com/commodo) package versions ([adc2fc3](https://github.com/webiny/webiny-js/commit/adc2fc39010a7c1575316c43f461b346d74ea4b8))
+
+
+
+
+
 ## [2.0.1](https://github.com/webiny/webiny-js/compare/@webiny/commodo@2.0.0...@webiny/commodo@2.0.1) (2020-01-19)
 
 

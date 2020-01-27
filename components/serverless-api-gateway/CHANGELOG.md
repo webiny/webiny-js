@@ -3,6 +3,33 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.0.2-next.2](https://github.com/Webiny/webiny-js/compare/@webiny/serverless-api-gateway@2.0.2-next.1...@webiny/serverless-api-gateway@2.0.2-next.2) (2020-01-27)
+
+**Note:** Version bump only for package @webiny/serverless-api-gateway
+
+
+
+
+
+## [2.0.2-next.1](https://github.com/Webiny/webiny-js/compare/@webiny/serverless-api-gateway@2.0.2-next.0...@webiny/serverless-api-gateway@2.0.2-next.1) (2020-01-27)
+
+**Note:** Version bump only for package @webiny/serverless-api-gateway
+
+
+
+
+
+## [2.0.2-next.0](https://github.com/webiny/webiny-js/compare/@webiny/serverless-api-gateway@2.0.1...@webiny/serverless-api-gateway@2.0.2-next.0) (2020-01-26)
+
+
+### Bug Fixes
+
+* update deps versions. ([01fb628](https://github.com/webiny/webiny-js/commit/01fb628cb710220485ce8df94b687eb3bcd4f66f))
+
+
+
+
+
 ## [2.0.1](https://github.com/Webiny/webiny-js/compare/@webiny/serverless-api-gateway@2.0.0...@webiny/serverless-api-gateway@2.0.1) (2019-11-08)
 
 **Note:** Version bump only for package @webiny/serverless-api-gateway

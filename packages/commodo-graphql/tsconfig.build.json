@@ -1,0 +1,19 @@
+{
+  "extends": "../../tsconfig.build.json",
+  "include": ["src"],
+  "exclude": [
+    "node_modules",
+    "./dist",
+    "../api",
+    "../commodo"
+  ],
+  "compilerOptions": {
+    "rootDir": "./src",
+    "outDir": "./dist",
+    "declarationDir": "./dist"
+  },
+  "references": [
+    { "path": "../api/tsconfig.build.json" },
+    { "path": "../commodo/tsconfig.build.json" }
+  ]
+}

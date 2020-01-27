@@ -1,6 +1,6 @@
 {
   "name": "@webiny/api-plugin-page-builder-resolvers-mongodb",
-  "version": "1.1.0",
+  "version": "1.1.1-next.2",
   "main": "index.js",
   "license": "MIT",
   "repository": {
@@ -26,8 +26,9 @@
     "access": "public"
   },
   "scripts": {
-    "build": "babel src -d dist --source-maps --copy-files",
-    "postbuild": "cp package.json LICENSE README.md dist/",
+    "build": "rimraf ./dist *.tsbuildinfo && babel src -d dist --source-maps --copy-files --extensions \".ts\"",
+    "watch": "babel src -d dist --source-maps --copy-files --extensions \".ts\" --watch",
+    "postbuild": "cp package.json LICENSE README.md dist/ && tsc -p tsconfig.build.json",
     "prepublishOnly": "yarn build"
   }
 }

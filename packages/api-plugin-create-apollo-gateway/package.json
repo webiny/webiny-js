@@ -1,6 +1,6 @@
 {
   "name": "@webiny/api-plugin-create-apollo-gateway",
-  "version": "1.1.0",
+  "version": "1.1.1-next.2",
   "main": "index.js",
   "license": "MIT",
   "repository": {
@@ -16,19 +16,23 @@
   "dependencies": {
     "@apollo/gateway": "^0.10.9",
     "@babel/runtime": "^7.5.5",
-    "apollo-server-lambda": "^2.9.8"
+    "apollo-server-lambda": "^2.9.8",
+    "apollo-server-types": "^0.2.10",
+    "lodash.get": "^4.4.2"
   },
   "devDependencies": {
     "@babel/cli": "^7.5.5",
     "@babel/core": "^7.5.5",
-    "@babel/preset-env": "^7.5.5"
+    "@babel/preset-env": "^7.5.5",
+    "@webiny/api": "^2.1.1-next.2"
   },
   "publishConfig": {
     "access": "public"
   },
   "scripts": {
-    "build": "babel src -d dist --source-maps --copy-files",
-    "postbuild": "cp package.json LICENSE README.md dist/",
+    "build": "rimraf ./dist *.tsbuildinfo && babel src -d dist --source-maps --copy-files --extensions \".ts\"",
+    "watch": "babel src -d dist --source-maps --copy-files --extensions \".ts\" --watch",
+    "postbuild": "cp package.json LICENSE README.md dist/ && tsc -p tsconfig.build.json",
     "prepublishOnly": "yarn build"
   }
 }

@@ -1,7 +1,8 @@
 {
   "name": "@webiny/commodo",
-  "version": "2.0.1",
+  "version": "2.0.2-next.3",
   "main": "index.js",
+  "types": "types.d.ts",
   "repository": {
     "type": "git",
     "url": "https://github.com/webiny/webiny-js.git"
@@ -16,7 +17,6 @@
   "dependencies": {
     "@commodo/fields": "^1.0.0",
     "@commodo/fields-storage": "^1.0.0",
-    "@commodo/fields-storage-mongodb": "^1.0.0",
     "@commodo/fields-storage-ref": "^1.0.0",
     "@commodo/fields-storage-soft-delete": "^1.0.0",
     "@commodo/hooks": "^1.0.0",
@@ -30,9 +30,9 @@
     "access": "public"
   },
   "scripts": {
-    "build": "babel src -d dist --source-maps --copy-files",
-    "flow-copy-source": "flow-copy-source src dist",
-    "postbuild": "yarn flow-copy-source && cp package.json LICENSE README.md dist/",
+    "build": "rimraf ./dist *.tsbuildinfo && babel src -d dist --source-maps --copy-files --extensions \".ts\"",
+    "watch": "babel src -d dist --source-maps --copy-files --extensions \".ts\" --watch",
+    "postbuild": "cp package.json LICENSE README.md dist/ && tsc -p tsconfig.build.json",
     "prepublishOnly": "yarn build"
   },
   "gitHead": "71cab7d5607b2e32a63034e324a663770507b32b"

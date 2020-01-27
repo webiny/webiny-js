@@ -9,9 +9,13 @@
     "@webiny/app-i18n": "latest",
     "@webiny/app-mailchimp": "latest",
     "@webiny/app-page-builder": "latest",
-    "@webiny/app-forms": "latest",
+    "@webiny/app-page-builder-theme": "latest",
+    "@webiny/app-form-builder": "latest",
+    "@webiny/app-form-builder-theme": "latest",
     "@webiny/app-typeform": "latest",
     "@webiny/plugins": "latest",
+    "@webiny/project-utils": "latest",
+    "@webiny/react-router": "latest",
     "apollo-link-batch-http": "^1.2.3",
     "apollo-link-http": "^1.5.9",
     "core-js": "^3.2.1",
@@ -22,9 +26,7 @@
     "react-app-env": "^1.2.3",
     "react-helmet": "^5.2.0",
     "react-hot-loader": "^4.3.5",
-    "react-router-dom": "^5.0.0",
-    "regenerator-runtime": "^0.13.3",
-    "theme": "^1.0.0"
+    "regenerator-runtime": "^0.13.3"
   },
   "devDependencies": {
     "@apollo/react-ssr": "^3.0.1",
@@ -43,8 +45,8 @@
     "apollo-cache-inmemory": "^1.4.2",
     "apollo-client": "^2.2.8",
     "apollo-link": "^1.2.1",
-    "react": "^16.4.0",
-    "react-dom": "^16.6.0"
+    "react": "^16.8.6",
+    "react-dom": "^16.8.6"
   },
   "scripts": {
     "analyze": "source-map-explorer build/static/js/main.*",

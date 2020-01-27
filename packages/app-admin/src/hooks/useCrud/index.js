@@ -1,1 +1,0 @@
-export { useCrud } from "./useCrud";

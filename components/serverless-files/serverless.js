@@ -8,12 +8,10 @@ const normalizeInputs = require("./utils/normalizeInputs");
  * - S3 bucket for file storage
  * - API GW with "/files/{key}" route
  * - Three functions:
- *  - manage files - when a file is deleted, this makes sure all other related files are deleted too
- *  - download files - handles file download and calls image transformer if needed
- *  - image transformer - performs various image transformations
+ * - manage files - when a file is deleted, this makes sure all other related files are deleted too
+ * - download files - handles file download and calls image transformer if needed
+ * - image transformer - performs various image transformations
  */
-
-const prefix = "serverless-files";
 
 class FilesComponent extends Component {
     async default(rawInputs = {}) {
@@ -33,20 +31,14 @@ class FilesComponent extends Component {
             apolloServiceInputs.plugins = [];
         }
 
-        // TODO: remove this in the next major release
-        if (apolloServiceInputs.database) {
-            apolloServiceInputs.plugins.unshift("@webiny/api-files/plugins");
-            apolloServiceInputs.plugins.unshift("@webiny/api-plugin-files-resolvers-mongodb");
-        }
-
         const manageFilesLambda = await this.load("@webiny/serverless-function", "manage-files");
         const manageFilesLambdaOutput = await manageFilesLambda({
             region,
-            name: "Files component - manage files",
+            name: this.context.instance.getResourceName("manage-files"),
             timeout: 10,
             code: join(__dirname, "functions/manageFiles"),
             handler: "handler.handler",
-            description: `${prefix}: Triggered once a file was deleted.`,
+            description: `Triggered once a file was deleted.`,
             env: {
                 S3_BUCKET: bucket
             }
@@ -71,8 +63,8 @@ class FilesComponent extends Component {
         const imageTransformerLambdaOutput = await imageTransformerLambda({
             ...imageTransformerInputs,
             region,
-            name: "Files component - image transformer",
-            description: `${prefix}: Performs image optimization, resizing, etc.`,
+            name: this.context.instance.getResourceName("image-transformer"),
+            description: `Performs image optimization, resizing, etc.`,
             code: join(__dirname, "functions/imageTransformer"),
             handler: "handler.handler",
             env: {
@@ -86,8 +78,8 @@ class FilesComponent extends Component {
         const downloadLambdaOutput = await downloadLambda({
             ...downloadFileInputs,
             region,
-            name: "Files component - download files",
-            description: `${prefix}: Serves previously uploaded files.`,
+            name: this.context.instance.getResourceName("download-files"),
+            description: `Serves previously uploaded files.`,
             code: join(__dirname, "functions/downloadFile"),
             handler: "handler.handler",
             env: {
@@ -102,7 +94,6 @@ class FilesComponent extends Component {
         const apolloServiceOutput = await apolloService({
             ...apolloServiceInputs,
             region,
-            name: "Files",
             binaryMediaTypes: ["*/*"],
             endpoints: [
                 { path: "/files/{path}", method: "ANY", function: downloadLambdaOutput.arn }
@@ -110,6 +101,7 @@ class FilesComponent extends Component {
             env: {
                 ...apolloServiceInputs.env,
                 S3_BUCKET: bucket,
+                DEBUG: apolloServiceInputs.debug || "true",
                 UPLOAD_MIN_FILE_SIZE: String(apolloServiceInputs.uploadMinFileSize),
                 UPLOAD_MAX_FILE_SIZE: String(apolloServiceInputs.uploadMaxFileSize)
             }
@@ -147,7 +139,7 @@ class FilesComponent extends Component {
         lambda = await this.load("@webiny/serverless-function", "download");
         await lambda.remove();
 
-        // We do not remove S3 bucket, we just want to avoid users accidentally deleting all of their files.
+        // We do not remove S3 bucket; we want to avoid users accidentally deleting all of their files.
         this.context.instance.debug(`Skipping S3 bucket deletion, you must do this manually.`);
         this.state = {};
         await this.save();

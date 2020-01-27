@@ -1,11 +1,12 @@
 const path = require("path");
 const WebpackBar = require("webpackbar");
+const aliases = require("@webiny/project-utils/aliases/webpack");
 
 module.exports = {
-    entry: path.resolve("handler", "handler.js"),
+    entry: path.resolve(__dirname, "./handler.js"),
     mode: "development",
     devtool: false,
-    plugins: [new WebpackBar({ name: "Admin handler" })],
+    plugins: [new WebpackBar({ name: "Site handler" })],
     output: {
         filename: "handler.js",
         path: path.resolve("build"),
@@ -14,5 +15,9 @@ module.exports = {
     target: "node",
     node: {
         __dirname: false
+    },
+    resolve: {
+        alias: aliases,
+        modules: [path.resolve("node_modules"), "node_modules"]
     }
 };

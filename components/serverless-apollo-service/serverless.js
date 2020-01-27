@@ -4,6 +4,7 @@ const prettier = require("prettier");
 const webpack = require("webpack");
 const execa = require("execa");
 const camelCase = require("lodash.camelcase");
+const get = require("lodash.get");
 const { transform } = require("@babel/core");
 const { Component } = require("@serverless/core");
 
@@ -81,19 +82,16 @@ class ApolloService extends Component {
             region,
             endpoints = [],
             graphqlPath = "/graphql",
-            name,
             env = {},
             memory = 512,
             timeout = 10,
-            description,
+            debug = true,
             endpointTypes = ["REGIONAL"],
             binaryMediaTypes = [],
             webpackConfig = null
         } = inputs;
 
-        if (!name) {
-            throw Error(`"inputs.name" is a required parameter!`);
-        }
+        env["DEBUG"] = "" + debug;
 
         let plugins = normalizePlugins(inputs.plugins || []);
 
@@ -101,9 +99,13 @@ class ApolloService extends Component {
         plugins = addBackwardsCompatibility(inputs, plugins);
         plugins = dedupePlugins(plugins);
 
+        const name =
+            get(this.state, "output.graphql.name") ||
+            this.context.instance.getResourceName(inputs.name || "graphql");
+
         const injectPlugins = [];
         const boilerplateRoot = join(this.context.instance.root, ".webiny");
-        const componentRoot = join(boilerplateRoot, camelCase(name));
+        const componentRoot = join(boilerplateRoot, camelCase(this.context.instance.alias));
         fs.ensureDirSync(componentRoot);
 
         this.state.inputs = inputs;
@@ -121,7 +123,10 @@ class ApolloService extends Component {
         this.context.instance.debug("Generating boilerplate code at %o", componentRoot);
         const source = fs.readFileSync(__dirname + "/boilerplate/handler.js", "utf8");
         const { code } = await transform(source, {
-            plugins: [[__dirname + "/transform/plugins", { plugins: injectPlugins }]]
+            plugins: [
+                Boolean(debug) ? [__dirname + "/transform/sourcemaps"] : null,
+                [__dirname + "/transform/plugins", { plugins: injectPlugins }]
+            ].filter(Boolean)
         });
 
         fs.writeFileSync(
@@ -149,7 +154,15 @@ class ApolloService extends Component {
         this.context.instance.debug("Start bundling with webpack");
         await new Promise((res, reject) => {
             this.context.status("Building");
-            let config = require(componentRoot + "/webpack.config.js");
+
+            // Create default webpack config
+            let config = require(componentRoot + "/webpack.config.js")({
+                instance: this,
+                root: componentRoot,
+                debug: Boolean(debug)
+            });
+
+            // Try loading webpack customizer
             if (webpackConfig) {
                 try {
                     // Resolve customizer path relative to serverless.yml file
@@ -165,7 +178,12 @@ class ApolloService extends Component {
                             customizerPath
                         );
                         const customizer = require(customizerPath);
-                        config = customizer({ config, instance: this, root: componentRoot });
+                        config = customizer({
+                            config,
+                            instance: this,
+                            root: componentRoot,
+                            debug: Boolean(debug)
+                        });
                     }
                 } catch (err) {
                     this.context.instance.debug(
@@ -185,7 +203,7 @@ class ApolloService extends Component {
                     const info = stats.toJson();
 
                     if (stats.hasErrors()) {
-                        console.error(info.errors);
+                        console.error(info.errors[0]);
                     }
 
                     return reject("Build failed!");
@@ -205,8 +223,9 @@ class ApolloService extends Component {
 
         this.context.instance.debug("Deploy lambda");
         const lambdaOut = await lambda({
+            name,
             region,
-            description: `serverless-apollo-service: ${description || name}`,
+            description: `GraphQL server for ${this.context.instance.alias}.`,
             code: join(componentRoot, "build"),
             root: componentRoot,
             handler: "handler.handler",
@@ -218,8 +237,7 @@ class ApolloService extends Component {
         this.context.instance.debug(`Deploying API Gateway`);
         const apiGwOut = await apiGw({
             region,
-            name,
-            description: `API for ${name}`,
+            description: `API for ${this.context.instance.alias}`,
             stage: "prod",
             binaryMediaTypes,
             endpointTypes,

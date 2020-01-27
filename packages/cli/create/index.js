@@ -37,7 +37,6 @@ module.exports = async ({ name, tag }) => {
     process.chdir(root);
 
     fs.ensureDirSync("apps");
-    fs.ensureDirSync("packages");
 
     // Copy project files
     const files = [
@@ -55,7 +54,6 @@ module.exports = async ({ name, tag }) => {
     // Setup monorepo packages
     await setupFolder("apps");
     await setupFolder("api");
-    await setupFolder("packages");
     fs.renameSync("apps/admin/example.gitignore", "apps/admin/.gitignore");
     fs.renameSync("apps/admin/example.env.json", "apps/admin/.env.json");
     fs.renameSync("apps/site/example.gitignore", "apps/site/.gitignore");

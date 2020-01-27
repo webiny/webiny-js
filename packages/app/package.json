@@ -1,6 +1,6 @@
 {
   "name": "@webiny/app",
-  "version": "2.0.2",
+  "version": "2.0.3-next.2",
   "main": "index.js",
   "repository": {
     "type": "git",
@@ -15,17 +15,19 @@
   "license": "MIT",
   "dependencies": {
     "@babel/runtime": "^7.5.5",
-    "@webiny/i18n": "^2.0.0",
-    "@webiny/i18n-react": "^2.0.0",
-    "@webiny/plugins": "^2.0.0",
-    "@webiny/ui": "^2.0.1",
+    "@webiny/i18n": "^2.0.1-next.2",
+    "@webiny/i18n-react": "^2.0.1-next.2",
+    "@webiny/plugins": "^2.0.1-next.2",
+    "@webiny/ui": "^2.0.2-next.2",
+    "apollo-client": "^2.6.8",
     "apollo-link": "^1.2.1",
+    "graphql": "^14.5.8",
     "graphql-tag": "^2.10.1",
     "invariant": "^2.2.4",
     "lodash": "^4.17.4",
     "lodash.get": "^4.4.2",
-    "react": "^16.6.0",
-    "react-apollo": "^3.1.0-beta.0",
+    "react": "^16.8.6",
+    "react-apollo": "^3.1.3",
     "react-dom": "^16.6.0",
     "use-react-router": "^1.0.7",
     "warning": "^4.0.2"
@@ -35,17 +37,17 @@
     "@babel/core": "^7.5.5",
     "@babel/plugin-proposal-class-properties": "^7.5.5",
     "@babel/preset-env": "^7.5.5",
-    "@babel/preset-flow": "^7.0.0",
     "@babel/preset-react": "^7.0.0",
+    "@babel/preset-typescript": "^7.8.3",
     "babel-plugin-lodash": "^3.3.4"
   },
   "publishConfig": {
     "access": "public"
   },
   "scripts": {
-    "build": "babel src -d dist --source-maps --copy-files",
-    "flow-copy-source": "flow-copy-source src dist",
-    "postbuild": "yarn flow-copy-source && cp package.json LICENSE README.md dist/",
+    "build": "rimraf ./dist *.tsbuildinfo && babel src -d dist --source-maps --copy-files --extensions \".ts,.tsx\"",
+    "watch": "babel src -d dist --source-maps --copy-files --extensions \".ts,.tsx\" --watch",
+    "postbuild": "cp package.json LICENSE README.md dist/ && tsc -p tsconfig.build.json",
     "prepublishOnly": "yarn build"
   },
   "adio": {

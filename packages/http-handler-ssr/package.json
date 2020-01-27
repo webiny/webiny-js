@@ -1,0 +1,42 @@
+{
+  "name": "@webiny/http-handler-ssr",
+  "version": "1.0.1-next.6",
+  "main": "index.js",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/webiny/webiny-js.git"
+  },
+  "description": "A pluginable function for the cloud.",
+  "contributors": [
+    "Pavel Denisjuk <pavel@webiny.com>",
+    "Sven Al Hamad <sven@webiny.com>",
+    "Adrian Smijulj <adrian@webiny.com>"
+  ],
+  "dependencies": {
+    "@babel/runtime": "^7.5.5",
+    "@webiny/commodo": "^2.0.2-next.3",
+    "@webiny/commodo-fields-storage-db-proxy": "^1.0.1-next.2",
+    "@webiny/http-handler": "^1.0.1-next.2",
+    "got": "^9.6.0",
+    "lodash.flow": "^3.5.0",
+    "mime-types": "^2.1.26",
+    "querystringify": "^2.1.1",
+    "zlib": "^1.0.5"
+  },
+  "devDependencies": {
+    "@babel/cli": "^7.5.5",
+    "@babel/core": "^7.5.5",
+    "@babel/preset-env": "^7.5.5"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "build": "rimraf ./dist *.tsbuildinfo && babel src -d dist --source-maps --copy-files --extensions \".ts\"",
+    "watch": "babel src -d dist --source-maps --copy-files --extensions \".ts\" --watch",
+    "postbuild": "cp package.json LICENSE README.md dist/ && tsc -p tsconfig.build.json",
+    "prepublishOnly": "yarn build"
+  },
+  "gitHead": "2cd812f1b150c10df088a5b2f75a62c9e376c1a4"
+}

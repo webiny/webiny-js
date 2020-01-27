@@ -3,6 +3,30 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.1.1-next.2](https://github.com/webiny/webiny-js/compare/@webiny/validation@2.1.1-next.1...@webiny/validation@2.1.1-next.2) (2020-01-27)
+
+**Note:** Version bump only for package @webiny/validation
+
+
+
+
+
+## [2.1.1-next.1](https://github.com/webiny/webiny-js/compare/@webiny/validation@2.1.1-next.0...@webiny/validation@2.1.1-next.1) (2020-01-27)
+
+**Note:** Version bump only for package @webiny/validation
+
+
+
+
+
+## [2.1.1-next.0](https://github.com/webiny/webiny-js/compare/@webiny/validation@2.1.0...@webiny/validation@2.1.1-next.0) (2020-01-24)
+
+**Note:** Version bump only for package @webiny/validation
+
+
+
+
+
 # [2.1.0](https://github.com/webiny/webiny-js/compare/@webiny/validation@2.0.0...@webiny/validation@2.1.0) (2019-11-08)
 
 

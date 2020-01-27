@@ -1,0 +1,29 @@
+{
+  "name": "@webiny/app-page-builder-theme",
+  "version": "1.0.1-next.2",
+  "main": "index.js",
+  "license": "MIT",
+  "dependencies": {
+    "@webiny/app": "^2.0.3-next.2",
+    "@webiny/app-page-builder": "^2.0.4-next.3",
+    "@webiny/plugins": "^2.0.1-next.2",
+    "@webiny/react-router": "^1.0.1-next.2",
+    "classnames": "^2.2.6",
+    "graphql-tag": "2.10.1",
+    "lodash.get": "^4.4.2",
+    "react-apollo": "^3.1.0",
+    "react-hamburger-menu": "^1.1.1"
+  },
+  "peerDependencies": {
+    "react": "^16.8.6"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "build": "rimraf ./dist *.tsbuildinfo && babel src -d dist --source-maps --copy-files --extensions \".ts,.tsx\"",
+    "watch": "babel src -d dist --source-maps --copy-files --extensions \".ts,.tsx\" --watch",
+    "postbuild": "cp package.json LICENSE README.md dist/ && tsc -p tsconfig.build.json",
+    "prepublishOnly": "yarn build"
+  }
+}

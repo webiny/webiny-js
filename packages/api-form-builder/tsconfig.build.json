@@ -1,0 +1,27 @@
+{
+  "extends": "../../tsconfig.build.json",
+  "include": ["./src"],
+  "exclude": [
+    "node_modules",
+    "../api",
+    "../api-i18n",
+    "../api-security",
+    "../commodo",
+    "../commodo-graphql",
+    "../http-handler-ssr",
+    "../validation"
+  ],
+  "compilerOptions": {
+    "rootDir": "./src",
+    "outDir": "./dist",
+    "declarationDir": "./dist"
+  },
+  "references": [
+    { "path": "../api/tsconfig.build.json" },
+    { "path": "../api-i18n/tsconfig.build.json" },
+    { "path": "../api-security/tsconfig.build.json" },
+    { "path": "../commodo-graphql/tsconfig.build.json" },
+    { "path": "../http-handler-ssr/tsconfig.build.json" },
+    { "path": "../validation/tsconfig.build.json" }
+  ]
+}

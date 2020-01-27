@@ -1,0 +1,11 @@
+{
+  "extends": "../../tsconfig.build.json",
+  "include": ["./src"],
+  "exclude": ["node_modules", "dist", "../api", "../api-security"],
+  "compilerOptions": {
+    "rootDir": "./src",
+    "outDir": "./dist",
+    "declarationDir": "./dist"
+  },
+  "references": [{ "path": "../api-security/tsconfig.build.json" }]
+}

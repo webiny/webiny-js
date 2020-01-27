@@ -1,23 +1,20 @@
-import { validation } from "@webiny/validation";
-import "./chai";
+import { validation, ValidationError } from "../src";
 
 describe("JSON test", () => {
     it("should not get triggered if an empty value was set", () => {
-        return validation.validate(null, "json").should.be.fulfilled;
+        expect(validation.validate(null, "json")).resolves.toBe(true);
     });
 
     it("should fail - invalid json", () => {
-        return validation.validate("ab", "json").should.be.rejected;
+        expect(validation.validate("ab", "json")).rejects.toThrow(ValidationError);
     });
 
     it("should fail - must be string, plain objects cannot be passed", () => {
-        return validation.validate({ abc: 123 }, "json").should.be.rejected;
+        expect(validation.validate({ abc: 123 }, "json")).rejects.toThrow(ValidationError);
     });
 
     it("should pass", () => {
-        return Promise.all([
-            validation.validate(`{"abc": 123}`, "json").should.become(true),
-            validation.validate(`{"abc": "123"}`, "json").should.become(true)
-        ]);
+        expect(validation.validate(`{"abc": 123}`, "json")).resolves.toBe(true);
+        expect(validation.validate(`{"abc": "123"}`, "json")).resolves.toBe(true);
     });
 });

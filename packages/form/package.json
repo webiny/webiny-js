@@ -1,6 +1,6 @@
 {
   "name": "@webiny/form",
-  "version": "2.0.0",
+  "version": "2.0.1-next.2",
   "main": "index.js",
   "repository": {
     "type": "git",
@@ -23,19 +23,19 @@
     "@babel/core": "^7.5.5",
     "@babel/plugin-proposal-class-properties": "^7.5.5",
     "@babel/preset-env": "^7.5.5",
-    "@babel/preset-flow": "^7.0.0",
+    "@babel/preset-typescript": "^7.8.3",
     "babel-plugin-lodash": "^3.3.4"
   },
   "peerDependencies": {
-    "react": "^16.8.0"
+    "react": "^16.8.6"
   },
   "publishConfig": {
     "access": "public"
   },
   "scripts": {
-    "build": "babel src -d dist --source-maps --copy-files",
-    "flow-copy-source": "flow-copy-source src dist",
-    "postbuild": "yarn flow-copy-source && cp package.json LICENSE README.md dist/",
+    "build": "rimraf ./dist *.tsbuildinfo && babel src -d dist --source-maps --copy-files --extensions \".ts,.tsx\"",
+    "watch": "babel src -d dist --source-maps --copy-files --extensions \".ts,.tsx\" --watch",
+    "postbuild": "cp package.json LICENSE README.md dist/ && tsc -p tsconfig.build.json",
     "prepublishOnly": "yarn build"
   },
   "gitHead": "71cab7d5607b2e32a63034e324a663770507b32b"
