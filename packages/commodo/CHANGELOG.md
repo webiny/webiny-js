@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.0.2-next.2](https://github.com/webiny/webiny-js/compare/@webiny/commodo@2.0.2-next.1...@webiny/commodo@2.0.2-next.2) (2020-01-27)
+
+**Note:** Version bump only for package @webiny/commodo
+
+
+
+
+
 ## [2.0.2-next.1](https://github.com/webiny/webiny-js/compare/@webiny/commodo@2.0.1-next.0...@webiny/commodo@2.0.2-next.1) (2020-01-24)
 
 **Note:** Version bump only for package @webiny/commodo
