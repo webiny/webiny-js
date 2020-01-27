@@ -1,6 +1,6 @@
 {
   "name": "@webiny/api-plugin-create-apollo-handler",
-  "version": "1.1.1-next.2",
+  "version": "2.0.0",
   "main": "index.js",
   "license": "MIT",
   "repository": {
@@ -21,7 +21,7 @@
     "@babel/cli": "^7.5.5",
     "@babel/core": "^7.5.5",
     "@babel/preset-env": "^7.5.5",
-    "@webiny/api": "^2.1.1-next.2"
+    "@webiny/api": "^3.0.0"
   },
   "publishConfig": {
     "access": "public"

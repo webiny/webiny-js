@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.0.0](https://github.com/webiny/webiny-js/compare/@webiny/cli@2.6.0...@webiny/cli@3.0.0) (2020-01-27)
+
+
+### Features
+
+* TypeScript && improved SSR mechanisms ([#677](https://github.com/webiny/webiny-js/issues/677)) ([3da0566](https://github.com/webiny/webiny-js/commit/3da0566f29e1d46df0e7c357be0b42bdaa4c7d2b))
+
+
+
+
+
 ## [2.6.1-next.11](https://github.com/webiny/webiny-js/compare/@webiny/cli@2.6.1-next.10...@webiny/cli@2.6.1-next.11) (2020-01-27)
 
 **Note:** Version bump only for package @webiny/cli

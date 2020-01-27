@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.0.0](https://github.com/webiny/webiny-js/compare/@webiny/i18n@2.0.0...@webiny/i18n@3.0.0) (2020-01-27)
+
+
+### Bug Fixes
+
+* I18N broken tests ([#636](https://github.com/webiny/webiny-js/issues/636)) ([861028a](https://github.com/webiny/webiny-js/commit/861028aac2ff1b58e3b2bd9a479f4dcaa4ff463a))
+
+
+### Features
+
+* TypeScript && improved SSR mechanisms ([#677](https://github.com/webiny/webiny-js/issues/677)) ([3da0566](https://github.com/webiny/webiny-js/commit/3da0566f29e1d46df0e7c357be0b42bdaa4c7d2b))
+
+
+
+
+
 ## [2.0.1-next.2](https://github.com/webiny/webiny-js/compare/@webiny/i18n@2.0.1-next.1...@webiny/i18n@2.0.1-next.2) (2020-01-27)
 
 **Note:** Version bump only for package @webiny/i18n

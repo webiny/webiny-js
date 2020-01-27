@@ -1,6 +1,6 @@
 {
   "name": "@webiny/api-i18n",
-  "version": "2.2.2-next.4",
+  "version": "3.0.0",
   "main": "index.js",
   "repository": {
     "type": "git",
@@ -15,11 +15,11 @@
   "license": "MIT",
   "dependencies": {
     "@babel/runtime": "^7.5.5",
-    "@webiny/api": "^2.1.1-next.2",
-    "@webiny/api-security": "^2.1.2-next.3",
-    "@webiny/commodo": "^2.0.2-next.3",
-    "@webiny/commodo-graphql": "^2.1.2-next.3",
-    "@webiny/validation": "^2.1.1-next.2",
+    "@webiny/api": "^3.0.0",
+    "@webiny/api-security": "^3.0.0",
+    "@webiny/commodo": "^3.0.0",
+    "@webiny/commodo-graphql": "^3.0.0",
+    "@webiny/validation": "^3.0.0",
     "accept-language-parser": "^1.5.0",
     "graphql-request": "1.8.2",
     "graphql-tag": "^2.10.1",

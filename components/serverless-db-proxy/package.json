@@ -1,11 +1,11 @@
 {
   "name": "@webiny/serverless-db-proxy",
-  "version": "2.3.3-next.3",
+  "version": "3.0.0",
   "main": "serverless.js",
   "license": "MIT",
   "dependencies": {
     "@serverless/core": "^1.1.1",
-    "@webiny/serverless-function": "^2.0.1-next.2",
+    "@webiny/serverless-function": "^3.0.0",
     "bson": "^4.0.2",
     "lodash.get": "^4.4.2",
     "mongodb": "^3.3.3"
