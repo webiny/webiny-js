@@ -19,6 +19,8 @@
       "@webiny/api-cookie-policy": ["./packages/api-cookie-policy/src"],
       "@webiny/api-files/*": ["./packages/api-files/src/*"],
       "@webiny/api-files": ["./packages/api-files/src"],
+      "@webiny/api-headless-cms": ["./packages/api-headless-cms/src"],
+      "@webiny/api-headless-cms/*": ["./packages/api-headless-cms/src/*"],
       "@webiny/api-form-builder/*": ["./packages/api-form-builder/src/*"],
       "@webiny/api-form-builder": ["./packages/api-form-builder/src"],
       "@webiny/api-page-builder/*": ["./packages/api-page-builder/src/*"],
