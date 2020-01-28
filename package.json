@@ -3,9 +3,7 @@
   "workspaces": {
     "packages": [
       "packages/*",
-      "components/*",
-      "examples/apps/*",
-      "examples/packages/*"
+      "components/*"
     ],
     "nohoist": [
       "**/inquirer/**",
