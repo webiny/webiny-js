@@ -1,3 +1,7 @@
+<hr/><p align="center" style="border: 1px solid red; background: red">
+<a href="https://remote.com/jobs/senior-javascript-engineer-full-stack--bf463b8d-87a9-4bad-8c62-14ddb45a1b94">📢 We are hiring a Senior JavaScript Engineer - Click to Apply!</a>
+  <p>
+<hr/>
 <br>
 <p align="center">
   <img src="./static/webiny-logo.svg" width="250">
