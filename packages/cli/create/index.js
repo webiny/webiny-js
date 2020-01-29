@@ -77,12 +77,16 @@ module.exports = async ({ name, tag }) => {
     writeFileContents("api/serverless.yml", apiYaml);
     writeJsonFile.sync(resolve("api/.serverless/_.json"), { id: apiId });
 
+    // Update api/.env.json
+    let apiEnvFile = getFileContents("api/.env.json");
+    apiEnvFile = apiEnvFile.replace("[JWT_SECRET]", jwtSecret);
+    apiEnvFile = apiEnvFile.replace("[BUCKET]", `webiny-files-${apiId}`);
+    writeFileContents("api/.env.json", apiEnvFile);
+
     // Update .env.json
-    let envFile = getFileContents("api/.env.json");
-    envFile = envFile.replace("[JWT_SECRET]", jwtSecret);
-    envFile = envFile.replace("[BUCKET]", `webiny-files-${apiId}`);
+    let envFile = getFileContents(".env.json");
     envFile = envFile.replace("[DATABASE]", `webiny-${apiId}`);
-    writeFileContents("api/.env.json", envFile);
+    writeFileContents(".env.json", envFile);
 
     // Update apps serverless.yml
     let appsYaml = getFileContents("apps/serverless.yml");
