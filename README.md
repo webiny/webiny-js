@@ -1,5 +1,5 @@
 <hr/><p align="center" style="border: 1px solid red; background: red">
-<a href="https://careers.webiny.com/senior-javascript-engineer/en">📢 We are hiring a Senior JavaScript Engineer - Click to Apply!</a>
+<a target="_blank" href="https://careers.webiny.com/senior-javascript-engineer/en">📢 We are hiring a Senior JavaScript Engineer - Click to Apply!</a>
   <p>
 <hr/>
 <br>
