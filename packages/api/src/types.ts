@@ -9,6 +9,7 @@ import { Plugin, PluginsContainer } from "@webiny/plugins/types";
 export { Plugin, PluginsContainer };
 
 export interface GraphQLContext {
+    event?: any;
     plugins: PluginsContainer;
     [key: string]: any;
 }
@@ -28,10 +29,22 @@ export type GraphQLSchemaPlugin = Plugin & {
     [key: string]: any;
 };
 
-export type GraphQLContextPlugin = Plugin & {
-    preApply?: (context: GraphQLContext) => void | Promise<void>;
-    apply?: (context: GraphQLContext) => void | Promise<void>;
-    postApply?: (context: GraphQLContext) => void | Promise<void>;
+export type GraphQLContextPlugin<T = GraphQLContext> = Plugin & {
+    preApply?: (context: T) => void | Promise<void>;
+    apply?: (context: T) => void | Promise<void>;
+    postApply?: (context: T) => void | Promise<void>;
+};
+
+/**
+ * These plugins are processed before Schema construction begins.
+ * It allows you to generate dynamic schema plugins and prepare the system for Schema generation.
+ */
+export type GraphQLBeforeSchemaPlugin = Plugin & {
+    type: "before-schema";
+    /**
+     * Modify context before schema construction begins.
+     */
+    apply(context: GraphQLContext): void | Promise<void>;
 };
 
 export type GraphQLMiddlewarePlugin = Plugin & {
