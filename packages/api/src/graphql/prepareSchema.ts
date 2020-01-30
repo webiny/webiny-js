@@ -8,7 +8,8 @@ import {
     PluginsContainer,
     GraphQLSchemaPlugin,
     GraphqlScalarPlugin,
-    SchemaDefinition
+    SchemaDefinition,
+    GraphQLBeforeSchemaPlugin, GraphQLContext
 } from "../types";
 
 type PrepareSchemaParams = { plugins: PluginsContainer };
@@ -17,6 +18,12 @@ type PrepareSchemaParams = { plugins: PluginsContainer };
  * @return {schema, context}
  */
 export async function prepareSchema({ plugins }: PrepareSchemaParams) {
+    const context: GraphQLContext = { plugins };
+    const beforeSchemaPlugins = plugins.byType<GraphQLBeforeSchemaPlugin>("before-schema");
+    for (let i = 0; i < beforeSchemaPlugins.length; i++) {
+        await beforeSchemaPlugins[i].apply(context);
+    }
+
     // This allows developers to register more plugins dynamically, before the graphql schema is instantiated.
     const gqlPlugins = plugins.byType<GraphQLSchemaPlugin>("graphql-schema");
 
@@ -26,9 +33,7 @@ export async function prepareSchema({ plugins }: PrepareSchemaParams) {
         }
     }
 
-    const scalars = plugins
-        .byType<GraphqlScalarPlugin>("graphql-scalar")
-        .map(item => item.scalar);
+    const scalars = plugins.byType<GraphqlScalarPlugin>("graphql-scalar").map(item => item.scalar);
 
     const schemaDefs: SchemaDefinition[] = [
         {
