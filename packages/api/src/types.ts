@@ -11,7 +11,7 @@ export { Plugin, PluginsContainer };
 export interface GraphQLContext {
     plugins: PluginsContainer;
     [key: string]: any;
-};
+}
 
 export type SchemaDefinition = {
     typeDefs: any;
