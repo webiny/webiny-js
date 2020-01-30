@@ -30,7 +30,8 @@
     "@babel/core": "^7.5.5",
     "@babel/plugin-proposal-class-properties": "^7.5.5",
     "@babel/preset-env": "^7.5.5",
-    "@babel/preset-typescript": "^7.7.7"
+    "@babel/preset-typescript": "^7.7.7",
+    "@types/aws-lambda": "^8.10.40"
   },
   "publishConfig": {
     "access": "public"

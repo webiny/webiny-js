@@ -76,7 +76,7 @@ export const createSchema = async ({ plugins }: CreateHandlerParams): Promise<Gr
 export const createHandler = async ({ plugins }: CreateHandlerParams) => {
     const schema = await createSchema({ plugins });
 
-    const plugin = plugins.byName("create-apollo-handler") as CreateApolloHandlerPlugin;
+    const plugin = plugins.byName<CreateApolloHandlerPlugin>("create-apollo-handler");
 
     if (!plugin) {
         throw Error(`"create-apollo-handler" plugin is not configured!`);
