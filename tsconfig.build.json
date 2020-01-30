@@ -27,6 +27,8 @@
       "@webiny/api-page-builder": ["./packages/api-page-builder/src"],
       "@webiny/api-i18n/*": ["./packages/api-i18n/src/*"],
       "@webiny/api-i18n": ["./packages/api-i18n/src"],
+      "@webiny/api-plugin-commodo-db-proxy/*": ["./packages/api-plugin-commodo-db-proxy/src/*"],
+      "@webiny/api-plugin-commodo-db-proxy": ["./packages/api-plugin-commodo-db-proxy/src"],
       "@webiny/api-plugin-commodo-mongodb/*": ["./packages/api-plugin-commodo-mongodb/src/*"],
       "@webiny/api-plugin-commodo-mongodb": ["./packages/api-plugin-commodo-mongodb/src"],
       "@webiny/api-security/*": ["./packages/api-security/src/*"],
@@ -77,5 +79,5 @@
     },
     "typeRoots": ["./typings", "node_modules/@types", "@types/testing-library__cypress"]
   },
-  "exclude": ["node_modules", "**/__tests__/**", "dist"]
+  "exclude": ["node_modules", "**/__tests__/**", "dist", "**jest**"]
 }

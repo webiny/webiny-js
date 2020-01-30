@@ -5,6 +5,7 @@ System.config({
         "@webiny/api-cms/*": "./packages/api-cms/src/*",
         "@webiny/api-files/*": "./packages/api-files/src/*",
         "@webiny/api-form-builder/*": "./packages/api-form-builder/src/*",
+        "@webiny/api-headless-cms/*": "./packages/api-headless-cms/src/*",
         "@webiny/api-cookie-policy/*": "./packages/api-cookie-policy/src/*",
         "@webiny/api-google-tag-manager/*": "./packages/api-google-tag-manager/src/*",
         "@webiny/api-i18n/*": "./packages/api-i18n/src/*",
@@ -12,6 +13,7 @@ System.config({
         "@webiny/api-page-builder/*": "./packages/api-page-builder/src/*",
         "@webiny/api-page-builder-theme/*": "./packages/api-page-builder-theme/src/*",
         "@webiny/api-plugin-commodo-mongodb": "./packages/api-plugin-commodo-mongodb/src",
+        "@webiny/api-plugin-commodo-db-proxy": "./packages/api-plugin-commodo-db-proxy/src",
         "@webiny/api-plugin-security-cognito/*": "./packages/api-plugin-security-cognito/src/*",
         "@webiny/api-plugin-files-resolvers-mongodb":
             "./packages/api-plugin-files-resolvers-mongodb/src",
