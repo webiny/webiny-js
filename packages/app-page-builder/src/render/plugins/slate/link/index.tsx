@@ -19,14 +19,14 @@ export default (): PbRenderSlateEditorPlugin => {
                     const newTab = data.get("newTab");
 
                     return (
-                        <Link
-                            to={href}
+                        <a
+                            href={href}
                             {...attributes}
                             rel={noFollow ? "nofollow" : null}
                             target={newTab ? "_blank" : "_self"}
                         >
                             {children}
-                        </Link>
+                        </a>
                     );
                 }
 
