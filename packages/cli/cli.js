@@ -133,6 +133,15 @@ yargs.command(
 );
 
 yargs.command(
+    "start",
+    "Start development.",
+    () => {},
+    () => {
+
+    }
+);
+
+yargs.command(
     "disable-tracking",
     "Disable tracking of Webiny stats.",
     () => {},
