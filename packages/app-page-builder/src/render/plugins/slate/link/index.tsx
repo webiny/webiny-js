@@ -18,16 +18,16 @@ export default (): PbRenderSlateEditorPlugin => {
                     const noFollow = data.get("noFollow");
                     const newTab = data.get("newTab");
 
-                    return (
-                        <a
-                            href={href}
-                            {...attributes}
-                            rel={noFollow ? "nofollow" : null}
-                            target={newTab ? "_blank" : "_self"}
-                        >
-                            {children}
-                        </a>
-                    );
+                    const isInternal = href.startsWith("/")
+                    const LinkComponent = isInternal ? Link : "a"
+                    const linkProps = {
+                        ...attributes,
+                        rel: noFollow ? "nofollow" : null,
+                        target: newTab ? "_blank" : "_self",
+                        [isInternal ? "to" : "href"]: href
+                    }
+
+                    return <LinkComponent {...linkProps}>{children}</LinkComponent>
                 }
 
                 return next();
