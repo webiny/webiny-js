@@ -57,7 +57,7 @@ const Page = ({ location }) => {
     }
 
     if (pageError.code === "NOT_FOUND") {
-        if (defaultPages.notFound) {
+        if (defaultPages.notFound && defaultPages.notFound.data) {
             return <Content settings={settings} page={defaultPages.notFound.data} />;
         }
 
@@ -66,7 +66,7 @@ const Page = ({ location }) => {
         return <Component />;
     }
 
-    if (defaultPages.error) {
+    if (defaultPages.error && defaultPages.error.data) {
         return <Content settings={settings} page={defaultPages.error.data} />;
     }
 
