@@ -1,7 +1,15 @@
-import { ListResponse } from "@webiny/api";
+import { ErrorResponse, ListResponse } from "@webiny/api";
 
 export const listPublishedPages = async ({ context, args }) => {
-    const { PbCategory, PbPage } = context.models;
+    const { PbCategory, PbPage, PbSettings } = context.models;
+
+    const settings = await PbSettings.load();
+    if (!settings.data.installation.completed) {
+        throw {
+            code: "PB_NOT_INSTALLED",
+            message: "Cannot list pages, Page Builder is not installed."
+        };
+    }
 
     const {
         page = 1,
@@ -70,5 +78,9 @@ export const listPublishedPages = async ({ context, args }) => {
 
 export default async (root: any, args: Object, context: Object) => {
     const list = await listPublishedPages({ args, context });
-    return new ListResponse(list, list.getMeta());
+    try {
+        return new ListResponse(list, list.getMeta());
+    } catch (e) {
+        return new ErrorResponse(e);
+    }
 };
