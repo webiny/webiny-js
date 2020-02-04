@@ -17,7 +17,6 @@ import {
     ListItem,
     ListItemText,
     ListItemTextSecondary,
-    ListTextOverline,
     ListItemMeta,
     ListActions
 } from "@webiny/ui/List";
