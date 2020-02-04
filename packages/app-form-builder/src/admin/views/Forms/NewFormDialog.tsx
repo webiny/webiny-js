@@ -53,7 +53,9 @@ const NewFormDialog: React.FC<NewFormDialogProps> = ({ open, onClose, formsDataL
                             setLoading(true);
                             const response = get(
                                 await update({
-                                    variables: data
+                                    variables: data,
+                                    refetchQueries: ["FormsListForms"],
+                                    awaitRefetchQueries: true
                                 }),
                                 "data.forms.form"
                             );
