@@ -4,6 +4,7 @@ import saveElements from "./utils/saveElements";
 import savePages from "./utils/savePages";
 import path from "path";
 import loadJson from "load-json-file";
+import got from "got";
 
 export const install = async (
     root: any,
@@ -11,7 +12,7 @@ export const install = async (
     context: {[key: string]: any}
 ) => {
     // Start the download of initial Page Builder page / block images.
-    const { PbSettings, PbCategory, PbMenu } = context.models;
+    const { PbSettings, PbCategory, PbMenu, PbPage } = context.models;
 
     // 1. Check if Page Builder is already installed.
     let settings = await PbSettings.load();
@@ -38,7 +39,6 @@ export const install = async (
         }
 
         if (step === 1) {
-            // /tmp/installation-files/apiPageBuilder/data/categoriesData.json'","
             const INSTALL_EXTRACT_DIR = await downloadInstallationFiles();
             const categoriesData: {[key: string]: any}[] = await loadJson(
                 path.join(INSTALL_EXTRACT_DIR, "data/categoriesData.json")
@@ -115,6 +115,22 @@ export const install = async (
 
             installation.getStep(5).markAsCompleted();
             await settings.save();
+
+            // Asynchronously send a GET request to each page so that the SSR cache gets populated.
+            const initialPages = await PbPage.find();
+            for (let i = 0; i < initialPages.length; i++) {
+                const url = await initialPages[i].fullUrl;
+                try {
+                    await got(url, {
+                        ...args,
+                        timeout: 200,
+                        retry: 0
+                    });
+                } catch {
+                    // Do nothing.
+                }
+            }
+
             return new Response(true);
         }
     } catch (e) {
