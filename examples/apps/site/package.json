@@ -19,6 +19,7 @@
     "core-js": "^3.2.1",
     "cross-fetch": "^3.0.2",
     "env-cmd": "^9.0.3",
+    "emotion": "^10.0.27",
     "isutf8": "^2.1.0",
     "react-apollo": "^3.1.0",
     "react-app-env": "^1.2.3",

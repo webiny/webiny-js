@@ -1,16 +1,11 @@
 import React from "react";
-import { Helmet } from "react-helmet";
+import GenericPage from "./GenericPage";
 
-export default function GenericErrorPage() {
+export default function GenericNotFoundPage() {
     return (
-        <div>
-            <>
-                <Helmet>
-                    <meta charSet="utf-8" />
-                    <title>Page not found.</title>
-                </Helmet>
-                <div>Page not found.</div>
-            </>
-        </div>
+        <GenericPage
+            message={"The link is either broken or the page has been removed."}
+            title={"Page not found"}
+        />
     );
 }

@@ -57,22 +57,24 @@ const Page = ({ location }) => {
     }
 
     if (pageError.code === "NOT_FOUND") {
-        if (defaultPages.notFound) {
-            return <Content settings={settings} page={defaultPages.notFound.data} />;
+        const notFoundPage = get(defaultPages, "notFound.data");
+        if (notFoundPage) {
+            return <Content settings={settings} page={notFoundPage} />;
         }
 
-        const Component = get(pageBuilder, "defaults.pages.notFound");
-        invariant(Component, NO_404_PAGE_DEFAULT);
-        return <Component />;
+        const NotFoundComponent = get(pageBuilder, "defaults.pages.notFound");
+        invariant(NotFoundComponent, NO_404_PAGE_DEFAULT);
+        return <NotFoundComponent error={pageError} />;
     }
 
-    if (defaultPages.error) {
-        return <Content settings={settings} page={defaultPages.error.data} />;
+    const errorPage = get(defaultPages, "error.data");
+    if (errorPage) {
+        return <Content settings={settings} page={errorPage} />;
     }
 
-    const Component = get(pageBuilder, "defaults.pages.error");
-    invariant(Component, NO_ERROR_PAGE_DEFAULT);
-    return <Component />;
+    const ErrorComponent = get(pageBuilder, "defaults.pages.error");
+    invariant(ErrorComponent, NO_ERROR_PAGE_DEFAULT);
+    return <ErrorComponent error={pageError} />;
 };
 
 export default Page;
