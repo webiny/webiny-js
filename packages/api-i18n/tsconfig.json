@@ -2,6 +2,7 @@
   "extends": "../../tsconfig",
   "references": [
     { "path": "../api" },
+    { "path": "../api-plugin-commodo-db-proxy" },
     { "path": "../api-security" },
     { "path": "../commodo" },
     { "path": "../commodo-graphql" },

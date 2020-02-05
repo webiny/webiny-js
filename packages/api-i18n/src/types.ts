@@ -1,16 +1,22 @@
-import { GraphQLContext, Plugin } from "@webiny/api/types";
+import { Plugin } from "@webiny/api/types";
 
-export type I18NContext = {
+export type I18NLocale = {
+    id: string;
+    code: string;
+    default: boolean;
+};
+
+export type GraphQLContext = {
     i18n: {
-        defaultLocale: string;
+        defaultLocale?: string;
         acceptLanguage?: string;
-        getLocale: () => Promise<string>;
-        getDefaultLocale: () => Promise<string>;
-        getLocales: () => Promise<string[]>;
+        getLocale: () => I18NLocale;
+        getDefaultLocale: () => I18NLocale;
+        getLocales: () => I18NLocale[];
     };
 };
 
-export type GraphQLContextI18NGetLocales = Plugin & {
+export type GraphQLContextI18NGetLocales<T = GraphQLContext> = Plugin & {
     name: "graphql-context-i18n-get-locales";
-    resolve(params: { context: GraphQLContext }): Promise<any[]>;
+    resolve(params: { context: T }): Promise<any[]>;
 };
