@@ -133,6 +133,15 @@ yargs.command(
 );
 
 yargs.command(
+    "start",
+    "Start app development.",
+    () => {},
+    async () => {
+        await require("./apps/start")();
+    }
+);
+
+yargs.command(
     "disable-tracking",
     "Disable tracking of Webiny stats.",
     () => {},
