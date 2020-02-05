@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.0.1-next.1](https://github.com/webiny/webiny-js/compare/@webiny/cli@3.0.1-next.0...@webiny/cli@3.0.1-next.1) (2020-02-05)
+
+
+### Bug Fixes
+
+* check if tag version is lower than latest, if so, use latest ([4dc2965](https://github.com/webiny/webiny-js/commit/4dc296508991facbc4ad34280dbbaa5320ba888b))
+* check if window exists ([add8bdf](https://github.com/webiny/webiny-js/commit/add8bdfadfe1803bbae826208212116e00670fca))
+
+
+
+
+
 ## [3.0.1-next.0](https://github.com/webiny/webiny-js/compare/@webiny/cli@3.0.0...@webiny/cli@3.0.1-next.0) (2020-02-05)
 
 
