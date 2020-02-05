@@ -6,7 +6,12 @@ async function getPackageVersion(name, tag = "latest") {
         const res = await fetch(`https://registry.npmjs.org/${name}`);
         const json = await res.json();
 
-        return json["dist-tags"][tag] || json["dist-tags"]["latest"];
+        const tagVersion = json["dist-tags"][tag];
+        if (!tagVersion || tagVersion < json["dist-tags"]["latest"]) {
+            return json["dist-tags"]["latest"];
+        }
+
+        return tagVersion;
     };
 
     return await pRetry(getVersion, { retries: 5 });
