@@ -22,6 +22,7 @@
     "@webiny/commodo-graphql": "^2.1.0",
     "@webiny/plugins": "^2.0.0",
     "@webiny/validation": "^2.1.0",
+    "fecha": "^4.0.0",
     "graphql-tag": "^2.10.1",
     "lodash": "^4.17.4",
     "mongodb": "^3.3.2",

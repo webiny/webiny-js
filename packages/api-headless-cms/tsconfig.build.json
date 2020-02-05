@@ -4,10 +4,13 @@
   "exclude": [
     "node_modules",
     "../api",
+    "../api-i18n",
+    "../api-plugin-commodo-db-proxy",
     "../api-security",
     "../commodo",
     "../commodo-graphql",
-    "../validation"
+    "../validation",
+    "./jest.config.js"
   ],
   "compilerOptions": {
     "outDir": "dist",
@@ -16,6 +19,8 @@
   },
   "references": [
     { "path": "../api/tsconfig.build.json" },
+    { "path": "../api-i18n/tsconfig.build.json" },
+    { "path": "../api-plugin-commodo-db-proxy/tsconfig.build.json" },
     { "path": "../api-security/tsconfig.build.json" },
     { "path": "../commodo-graphql/tsconfig.build.json" },
     { "path": "../validation/tsconfig.build.json" }
