@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.0.1-next.0](https://github.com/webiny/webiny-js/compare/@webiny/cli@3.0.0...@webiny/cli@3.0.1-next.0) (2020-02-05)
+
+
+### Bug Fixes
+
+* if PB wasn't installed, show an appropriate error message ([#692](https://github.com/webiny/webiny-js/issues/692)) ([b1d858c](https://github.com/webiny/webiny-js/commit/b1d858c45c76953d05dd32e416c6e7b355fed36c)), closes [#676](https://github.com/webiny/webiny-js/issues/676)
+* inject unique database name on project setup ([#681](https://github.com/webiny/webiny-js/issues/681)) ([c19ba44](https://github.com/webiny/webiny-js/commit/c19ba44aebdaea06424129e244eca215337eb693)), closes [#679](https://github.com/webiny/webiny-js/issues/679)
+
+
+
+
+
 # [3.0.0](https://github.com/webiny/webiny-js/compare/@webiny/cli@2.6.0...@webiny/cli@3.0.0) (2020-01-27)
 
 

@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.0.1-next.0](https://github.com/webiny/webiny-js/compare/@webiny/api-form-builder@2.0.0...@webiny/api-form-builder@2.0.1-next.0) (2020-02-05)
+
+
+### Bug Fixes
+
+* add missing await ([#691](https://github.com/webiny/webiny-js/issues/691)) ([b1fb17d](https://github.com/webiny/webiny-js/commit/b1fb17dc6f03346af2d0ffa053dafbdc2abefc66)), closes [#687](https://github.com/webiny/webiny-js/issues/687)
+
+
+
+
+
 # 2.0.0 (2020-01-27)
 
 

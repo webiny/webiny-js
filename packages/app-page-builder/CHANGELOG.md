@@ -3,6 +3,24 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.1.0-next.0](https://github.com/webiny/webiny-js/compare/@webiny/app-page-builder@3.0.1...@webiny/app-page-builder@3.1.0-next.0) (2020-02-05)
+
+
+### Bug Fixes
+
+* handle external links and fix initial page links. ([920b125](https://github.com/webiny/webiny-js/commit/920b1251ef5a61b996b8e6b6f05b829fd00950d7))
+* if PB wasn't installed, show an appropriate error message ([#692](https://github.com/webiny/webiny-js/issues/692)) ([b1d858c](https://github.com/webiny/webiny-js/commit/b1d858c45c76953d05dd32e416c6e7b355fed36c)), closes [#676](https://github.com/webiny/webiny-js/issues/676)
+* refetch forms in page builder element ([#694](https://github.com/webiny/webiny-js/issues/694)) ([4ee88f5](https://github.com/webiny/webiny-js/commit/4ee88f5f56704ff6eaf71d0624ecc7ea872c3a20)), closes [#678](https://github.com/webiny/webiny-js/issues/678)
+
+
+### Features
+
+* Clicking outside the 'Get Started Guide' modal now exits the guide ([#680](https://github.com/webiny/webiny-js/issues/680)) ([2395a4f](https://github.com/webiny/webiny-js/commit/2395a4f6050b047bbbea85400c1e73249f0fc5d8))
+
+
+
+
+
 ## [3.0.1](https://github.com/webiny/webiny-js/compare/@webiny/app-page-builder@3.0.0...@webiny/app-page-builder@3.0.1) (2020-01-27)
 
 

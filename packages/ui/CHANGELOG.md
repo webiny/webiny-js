@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.0.1-next.0](https://github.com/webiny/webiny-js/compare/@webiny/ui@3.0.0...@webiny/ui@3.0.1-next.0) (2020-02-05)
+
+
+### Bug Fixes
+
+* refetch forms in page builder element ([#694](https://github.com/webiny/webiny-js/issues/694)) ([4ee88f5](https://github.com/webiny/webiny-js/commit/4ee88f5f56704ff6eaf71d0624ecc7ea872c3a20)), closes [#678](https://github.com/webiny/webiny-js/issues/678)
+
+
+
+
+
 # [3.0.0](https://github.com/webiny/webiny-js/compare/@webiny/ui@2.0.1...@webiny/ui@3.0.0) (2020-01-27)
 
 

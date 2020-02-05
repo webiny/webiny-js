@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.0.1-next.0](https://github.com/webiny/webiny-js/compare/@webiny/api-page-builder@3.0.0...@webiny/api-page-builder@3.0.1-next.0) (2020-02-05)
+
+
+### Bug Fixes
+
+* if PB wasn't installed, show an appropriate error message ([#692](https://github.com/webiny/webiny-js/issues/692)) ([b1d858c](https://github.com/webiny/webiny-js/commit/b1d858c45c76953d05dd32e416c6e7b355fed36c)), closes [#676](https://github.com/webiny/webiny-js/issues/676)
+* request each page to generate SSR and cache ([#693](https://github.com/webiny/webiny-js/issues/693)) ([89e9468](https://github.com/webiny/webiny-js/commit/89e946817e57eddbc34b8a2570e8d73ab8370f7c)), closes [#689](https://github.com/webiny/webiny-js/issues/689)
+
+
+
+
+
 # [3.0.0](https://github.com/webiny/webiny-js/compare/@webiny/api-page-builder@2.1.2...@webiny/api-page-builder@3.0.0) (2020-01-27)
 
 
