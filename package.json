@@ -88,7 +88,6 @@
     "ts-jest": "^24.2.0",
     "typescript": "3.7.4",
     "utf-8-validate": "^5.0.2",
-    "verdaccio": "^3.11.6",
     "webpack": "^4.39.2",
     "write-json-file": "^4.2.0",
     "yargs": "^12.0.1"
@@ -110,9 +109,7 @@
     "commit:verify": "yarn lint-staged",
     "lint-staged": "lint-staged",
     "prettier": "prettier --config .prettierrc.js --write",
-    "publish-to-verdaccio": " yarn build && cross-env REGISTRY=http://localhost:4800 node scripts/publish-to-verdaccio",
     "setup-repo": "node scripts/setupRepo",
-    "start-verdaccio": "yarn verdaccio -c ./verdaccio.yaml",
     "test": "jest --config jest.config.js",
     "validate-packages": "node scripts/validatePackages.js",
     "webiny-ui-build-storybook": "cd packages/ui && cross-env OUT=../../netlify-static yarn build-storybook",
