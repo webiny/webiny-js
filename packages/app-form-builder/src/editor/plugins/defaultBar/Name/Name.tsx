@@ -4,9 +4,6 @@ import { Tooltip } from "@webiny/ui/Tooltip";
 import { Typography } from "@webiny/ui/Typography";
 import { useFormEditor } from "@webiny/app-form-builder/admin/components/FormEditor/Context";
 import { useHotkeys } from "react-hotkeyz";
-import { i18n } from "@webiny/app/i18n";
-const t = i18n.namespace("FormEditor.Name");
-
 import {
     FormMeta,
     FormName,
@@ -15,6 +12,14 @@ import {
     NameInputWrapper,
     NameWrapper
 } from "./NameStyled";
+import { i18n } from "@webiny/app/i18n";
+const t = i18n.namespace("FormEditor.Name");
+
+declare global {
+    interface Window {
+        Cypress: any;
+    }
+}
 
 export const Name = () => {
     const { state, setData } = useFormEditor();
