@@ -1,10 +1,12 @@
 import React from "react";
 import GenericPage from "./GenericPage";
 
-const getPbNotInstalledErrorMessage = ({ error }) => {
+const getPbNotInstalledErrorMessage = () => {
     const isLocalhost = window.location.hostname === "localhost";
+    const title = "Installation incomplete";
     if (isLocalhost) {
-        return (
+        return [
+            title,
             <>
                 <p>Page Builder is not installed!</p>
                 <p>
@@ -12,10 +14,11 @@ const getPbNotInstalledErrorMessage = ({ error }) => {
                     the installation wizard.
                 </p>
             </>
-        );
+        ];
     }
 
-    return (
+    return [
+        title,
         <>
             <p>Page Builder is not installed!</p>
             <p>
@@ -24,14 +27,17 @@ const getPbNotInstalledErrorMessage = ({ error }) => {
                 installation wizard.
             </p>
         </>
-    );
+    ];
 };
 
 export default function GenericErrorPage(props) {
     let message = "The link is either broken or the page has been removed.";
+    let title = "An error occurred";
+
+    // Once the Page Builder is installed, this can be safely removed.
     if (props.error.code === "PB_NOT_INSTALLED") {
-        message = getPbNotInstalledErrorMessage(props);
+        [title, message] = getPbNotInstalledErrorMessage();
     }
 
-    return <GenericPage message={message} title={"An error occurred"} />;
+    return <GenericPage message={message} title={title} />;
 }
