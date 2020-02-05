@@ -1,5 +1,4 @@
-import { flow } from "lodash";
-import { withName, withFields } from "@webiny/commodo";
+import { withName } from "@webiny/commodo";
 import { CmsModel, CmsModelFieldToCommodoFieldPlugin } from "@webiny/api-headless-cms/types";
 import { GraphQLContext } from "@webiny/api/types";
 import { GraphQLContext as I18NContext } from "@webiny/api-i18n/types";
