@@ -56,10 +56,14 @@ export const Name = () => {
         }
     });
 
+    // Disable autoFocus because for some reason, blur event would automatically be triggered when clicking
+    // on the page title when doing Cypress testing. Not sure if this is RMWC or Cypress related issue.
+    const autoFocus = !window.Cypress;
+
     return editingEnabled ? (
         <NameInputWrapper>
             <Input
-                autoFocus
+                autoFocus={autoFocus}
                 fullwidth
                 value={localName}
                 onChange={setLocalName}
@@ -79,7 +83,9 @@ export const Name = () => {
                     placement={"bottom"}
                     content={<span>{t`rename`}</span>}
                 >
-                    <FormName onClick={startEditing}>{state.data.name}</FormName>
+                    <FormName data-testid="fb-editor-form-title" onClick={startEditing}>
+                        {state.data.name}
+                    </FormName>
                 </Tooltip>
                 <FormVersion>{`(v${state.data.version})`}</FormVersion>
             </div>

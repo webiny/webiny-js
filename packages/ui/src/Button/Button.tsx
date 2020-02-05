@@ -121,6 +121,9 @@ type ButtonFloatingProps = Props &
         icon?: React.ReactNode;
         onMouseDown?: (e: SyntheticEvent) => void;
         onMouseUp?: (e: SyntheticEvent) => void;
+
+        // For testing purposes.
+        "data-testid"?: string;
     };
 
 /**
@@ -142,6 +145,7 @@ export const ButtonFloating = (props: ButtonFloatingProps) => {
     } = props;
     return (
         <Fab
+            data-testid={props["data-testid"]}
             disabled={disabled}
             mini={small}
             onClick={onClick}

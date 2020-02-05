@@ -34,17 +34,18 @@ export type NewFormDialogProps = {
     formsDataList: any;
 };
 
-const NewFormDialog: React.FC<NewFormDialogProps> = ({
-    open,
-    onClose,
-    formsDataList
-}) => {
+const NewFormDialog: React.FC<NewFormDialogProps> = ({ open, onClose, formsDataList }) => {
     const [loading, setLoading] = React.useState(false);
     const { showSnackbar } = useSnackbar();
     const { history } = useReactRouter();
 
     return (
-        <Dialog open={open} onClose={onClose} className={narrowDialog}>
+        <Dialog
+            open={open}
+            onClose={onClose}
+            className={narrowDialog}
+            data-testid="fb-new-form-modal"
+        >
             <Mutation mutation={CREATE_FORM}>
                 {update => (
                     <Form
@@ -52,7 +53,9 @@ const NewFormDialog: React.FC<NewFormDialogProps> = ({
                             setLoading(true);
                             const response = get(
                                 await update({
-                                    variables: data
+                                    variables: data,
+                                    refetchQueries: ["FormsListForms"],
+                                    awaitRefetchQueries: true
                                 }),
                                 "data.forms.form"
                             );
