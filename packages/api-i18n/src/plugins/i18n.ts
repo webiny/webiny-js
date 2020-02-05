@@ -1,8 +1,11 @@
-import { GraphQLContextPlugin } from "@webiny/api/types";
+import { GraphQLContext as APIContext, GraphQLContextPlugin } from "@webiny/api/types";
 import acceptLanguageParser from "accept-language-parser";
-import { GraphQLContextI18NGetLocales } from "@webiny/api-i18n/types";
+import {
+    GraphQLContext as I18NContext,
+    GraphQLContextI18NGetLocales
+} from "@webiny/api-i18n/types";
 
-const plugin: GraphQLContextPlugin = {
+const plugin: GraphQLContextPlugin<APIContext & I18NContext> = {
     type: "graphql-context",
     name: "graphql-context-i18n",
     apply: async context => {

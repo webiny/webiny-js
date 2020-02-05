@@ -4,6 +4,7 @@
   "exclude": [
     "node_modules",
     "../api",
+    "../api-plugin-commodo-db-proxy",
     "../api-security",
     "../commodo",
     "../commodo-graphql",
@@ -16,6 +17,7 @@
   },
   "references": [
     { "path": "../api/tsconfig.build.json" },
+    { "path": "../api-plugin-commodo-db-proxy/tsconfig.build.json" },
     { "path": "../api-security/tsconfig.build.json" },
     { "path": "../commodo-graphql/tsconfig.build.json" },
     { "path": "../validation/tsconfig.build.json" }

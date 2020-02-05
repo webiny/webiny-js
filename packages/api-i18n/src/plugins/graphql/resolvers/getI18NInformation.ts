@@ -1,6 +1,7 @@
-import { I18NContext } from "../../../types";
+import { GraphQLContext } from "../../../types";
+import { GraphQLFieldResolver } from "@webiny/api/types";
 
-export default async (_: {[key: string]: any}, args: {[key: string]: any}, context: I18NContext) => {
+const resolver: GraphQLFieldResolver<any, any, GraphQLContext> = (_, args, context) => {
     const { i18n } = context;
     return {
         currentLocale: i18n.getLocale(),
@@ -8,3 +9,5 @@ export default async (_: {[key: string]: any}, args: {[key: string]: any}, conte
         locales: i18n.getLocales()
     };
 };
+
+export default resolver;
