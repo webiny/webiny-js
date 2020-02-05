@@ -2,29 +2,20 @@ import React from "react";
 import GenericPage from "./GenericPage";
 
 const getPbNotInstalledErrorMessage = () => {
-    const isLocalhost = window.location.hostname === "localhost";
-    const title = "Installation incomplete";
+    // Check if window exists first (does not exist while doing SSR).
+    const isLocalhost = typeof window === 'object' && window.location.hostname === "localhost";
+    let adminUi = <a href="/admin">Admin UI</a>;
     if (isLocalhost) {
-        return [
-            title,
-            <>
-                <p>Page Builder is not installed!</p>
-                <p>
-                    Before you continue, please open up the <strong>Admin UI</strong> and complete
-                    the installation wizard.
-                </p>
-            </>
-        ];
+        adminUi = <strong>Admin UI</strong>;
     }
 
     return [
-        title,
+        "Installation incomplete",
         <>
             <p>Page Builder is not installed!</p>
             <p>
-                Before you continue, please open up the{" "}
-                <a href={window.location.origin + "/admin"}>Admin UI</a> and complete the
-                installation wizard.
+                Before you continue, please open up the {adminUi} and complete the installation
+                wizard.
             </p>
         </>
     ];
