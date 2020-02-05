@@ -64,6 +64,7 @@ const AddContent = ({ count, togglePlugin }) => {
                 <AddBlockContent>
                     Click the
                     <ButtonFloating
+                        data-testid={"pb-content-add-block-button"}
                         style={{ animation: pulse + " 3s ease infinite", margin: "0 10px" }}
                         small
                         icon={<AddIcon />}
@@ -76,7 +77,6 @@ const AddContent = ({ count, togglePlugin }) => {
     );
 };
 
-export default connect<any, any, any>(
-    state => ({ count: getContent(state).elements.length }),
-    { togglePlugin }
-)(React.memo(AddContent));
+export default connect<any, any, any>(state => ({ count: getContent(state).elements.length }), {
+    togglePlugin
+})(React.memo(AddContent));
