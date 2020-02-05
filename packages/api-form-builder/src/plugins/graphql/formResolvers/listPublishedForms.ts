@@ -53,8 +53,8 @@ export const listPublishedForms: GraphQLFieldResolver = async (root, args, conte
     return await Form.find({ page, perPage, search, sort, query });
 };
 
-const resolver: GraphQLFieldResolver = (...args) => {
-    const forms = listPublishedForms(...args);
+const resolver: GraphQLFieldResolver = async (...args) => {
+    const forms = await listPublishedForms(...args);
     return new ListResponse(forms, forms.getMeta());
 };
 
