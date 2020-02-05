@@ -5,7 +5,8 @@ import {
     PluginsContainer,
     GraphQLMiddlewarePlugin,
     GraphQLContextPlugin,
-    CreateApolloHandlerPlugin
+    CreateApolloHandlerPlugin,
+    GraphQLContext
 } from "./types";
 import { prepareSchema } from "./graphql/prepareSchema";
 
@@ -18,8 +19,11 @@ type CreateHandlerParams = {
  * @param plugins
  * @returns {Promise<void>}
  */
-export const createSchema = async ({ plugins }: CreateHandlerParams): Promise<GraphQLSchema> => {
-    let schema = await prepareSchema({ plugins });
+export const createSchema = async ({
+    plugins
+}: CreateHandlerParams): Promise<{ schema: GraphQLSchema; context: GraphQLContext }> => {
+    // eslint-disable-next-line prefer-const
+    let { schema, context } = await prepareSchema({ plugins });
 
     const registeredMiddleware = [];
 
@@ -67,14 +71,14 @@ export const createSchema = async ({ plugins }: CreateHandlerParams): Promise<Gr
         }
     });
 
-    return schema;
+    return { schema, context };
 };
 
 /**
  * Create Apollo handler
  */
 export const createHandler = async ({ plugins }: CreateHandlerParams) => {
-    const schema = await createSchema({ plugins });
+    const { schema } = await createSchema({ plugins });
 
     const plugin = plugins.byName<CreateApolloHandlerPlugin>("create-apollo-handler");
 

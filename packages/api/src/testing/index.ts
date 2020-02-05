@@ -5,14 +5,7 @@ import { GraphQLContextPlugin } from "@webiny/api/types";
 export const setupSchema = async plugins => {
     const pluginsContainer = new PluginsContainer([plugins]);
 
-    const schema = await createSchema({ plugins: pluginsContainer });
-
-    const context = { plugins: pluginsContainer };
-
-    return {
-        schema,
-        context
-    };
+    return await createSchema({ plugins: pluginsContainer });
 };
 
 export const setupContext = async (plugins, baseContext = {}) => {

@@ -9,7 +9,8 @@ import {
     GraphQLSchemaPlugin,
     GraphqlScalarPlugin,
     SchemaDefinition,
-    GraphQLBeforeSchemaPlugin, GraphQLContext
+    GraphQLBeforeSchemaPlugin,
+    GraphQLContext
 } from "../types";
 
 type PrepareSchemaParams = { plugins: PluginsContainer };
@@ -69,6 +70,5 @@ export async function prepareSchema({ plugins }: PrepareSchemaParams) {
         }
     }
 
-    // @ts-ignore
-    return buildFederatedSchema([...schemaDefs]);
+    return { schema: buildFederatedSchema([...schemaDefs]), context };
 }
