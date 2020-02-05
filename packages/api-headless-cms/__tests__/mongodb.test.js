@@ -28,6 +28,6 @@ const plugins = [mongoDbPlugins, i18n(), mockI18NLocales()];
 describe("MongoDB Headless CMS API", () => {
     afterAll(async () => await Promise.all(callbacks.afterAll.map(cb => cb())));
     graphqlTests({ plugins });
-    toModelTests({ plugins });
-    contentModelTests({ plugins });
+    //toModelTests({ plugins });
+    //contentModelTests({ plugins });
 });

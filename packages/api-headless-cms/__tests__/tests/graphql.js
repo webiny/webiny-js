@@ -23,20 +23,21 @@ const schemaTypes = /* GraphQL */ `
     }
 `;
 
+// const response = await graphql(testing.schema, schemaTypes, {}, testing.context);
+// const cmsTypes = response.data.__schema.types.filter(t => t.name === "CmsContentModel");
+// console.log(JSON.stringify(cmsTypes, null, 2));
+// return;
+
 export default ({ plugins }) => {
-    describe("Content models", () => {
+    describe("GraphQL API", () => {
         let testing;
 
-        beforeAll(async () => {
+        beforeEach(async () => {
             // Setup schema
             testing = await setupSchema([plugins, headlessPlugins()]);
         });
 
-        test("create content models", async () => {
-            // const response = await graphql(testing.schema, schemaTypes, {}, testing.context);
-            // const cmsTypes = response.data.__schema.types.filter(t => t.name === "CmsContentModel");
-            // console.log(JSON.stringify(cmsTypes, null, 2));
-            // return;
+        test("insert content models data", async () => {
             const mutation = /* GraphQL */ `
                 mutation CreateContentModel($data: CmsContentModelInput!) {
                     cmsManage {
@@ -74,6 +75,39 @@ export default ({ plugins }) => {
                     }
                 });
             }
+        });
+
+        test("create commodo models from content models data", async () => {
+            for (let i = 0; i < contentModels.length; i++) {
+                expect(testing.context.models[contentModels[i].modelId]).toBeTruthy();
+            }
+        });
+
+        test("create GraphQL types from content models data", async () => {
+            const schemaTypes = /* GraphQL */ `
+                {
+                    __schema {
+                        types {
+                            name
+                            fields {
+                                name
+                                type {
+                                    name
+                                    kind
+                                    ofType {
+                                        name
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            `;
+
+            const response = await graphql(testing.schema, schemaTypes, {}, testing.context);
+            const typeNames = contentModels.map(m => `Cms${m.title}`);
+            const cmsTypes = response.data.__schema.types.filter(t => typeNames.includes(t.name));
+            console.log(cmsTypes);
         });
     });
 };

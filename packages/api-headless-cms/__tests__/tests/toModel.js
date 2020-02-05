@@ -1,3 +1,4 @@
+import { blue } from "chalk";
 import { setupContext } from "@webiny/api/testing";
 import contentModels from "./data/contentModels";
 import { locales } from "../mocks/mockI18NLocales";
@@ -5,7 +6,7 @@ import { createModelFromData } from "../../src/plugins/utils/createModelFromData
 import headlessPlugins from "../../src/plugins";
 
 export default ({ plugins }) => {
-    describe("data to Commodo model", () => {
+    describe(`Utilities`, () => {
         let context;
 
         beforeAll(async () => {
@@ -15,99 +16,102 @@ export default ({ plugins }) => {
             });
         });
 
-        test("create model from data", async () => {
-            // Create content models
-            for (let i = 0; i < contentModels.length; i++) {
-                const modelData = contentModels[i];
-                context.models[modelData.modelId] = createModelFromData(
-                    context.models.createBase(),
-                    modelData,
-                    context
-                );
-            }
-
-            // Test instantiation and presence of fields
-            for (let i = 0; i < contentModels.length; i++) {
-                const Model = context.models[contentModels[i].modelId];
-                const instance = new Model();
-                expect(instance).toBeInstanceOf(Model);
-
-                for (let j = 0; j < contentModels[i].fields.length; j++) {
-                    const field = contentModels[i].fields[j];
-                    expect(instance.getField(field.fieldId)).toBeTruthy();
+        describe(`"createModelFromData"`, () => {
+            test("data is converted to commodo model", async () => {
+                // Create content models
+                for (let i = 0; i < contentModels.length; i++) {
+                    const modelData = contentModels[i];
+                    context.models[modelData.modelId] = createModelFromData(
+                        context.models.createBase(),
+                        modelData,
+                        context
+                    );
                 }
-            }
 
-            // Test Category
-            const Category = context.models["category"];
-            const category = new Category();
-            category.populate({
-                title: {
+                // Test instantiation and presence of fields
+                for (let i = 0; i < contentModels.length; i++) {
+                    const Model = context.models[contentModels[i].modelId];
+                    const instance = new Model();
+                    expect(instance).toBeInstanceOf(Model);
+
+                    for (let j = 0; j < contentModels[i].fields.length; j++) {
+                        const field = contentModels[i].fields[j];
+                        expect(instance.getField(field.fieldId)).toBeTruthy();
+                    }
+                }
+
+                // Test Category
+                const Category = context.models["category"];
+                const category = new Category();
+                category.populate({
+                    title: {
+                        values: [
+                            { locale: locales.en.id, value: "Hardware EN" },
+                            { locale: locales.de.id, value: "Hardware DE" }
+                        ]
+                    }
+                });
+
+                await category.save();
+
+                expect(category.id).toMatch(/^[0-9a-fA-F]{24}$/);
+                expect(category.title).toMatchObject({
                     values: [
                         { locale: locales.en.id, value: "Hardware EN" },
                         { locale: locales.de.id, value: "Hardware DE" }
                     ]
-                }
-            });
+                });
+                expect(category.title.value).toBe("Hardware EN");
 
-            await category.save();
+                // Test Product
+                const Product = context.models["product"];
+                const product = new Product();
+                product.populate({
+                    title: {
+                        values: [
+                            { locale: locales.en.id, value: "Laptop EN" },
+                            { locale: locales.de.id, value: "Laptop DE" }
+                        ]
+                    },
+                    category: {
+                        values: [{ locale: locales.en.id, value: category }]
+                    },
+                    price: {
+                        values: [
+                            { locale: locales.en.id, value: 100 },
+                            { locale: locales.de.id, value: 87 }
+                        ]
+                    },
+                    availableOn: {
+                        values: [
+                            { locale: locales.en.id, value: "2020-04-16" },
+                            { locale: locales.de.id, value: "2020-04-17" }
+                        ]
+                    }
+                });
 
-            expect(category.id).toMatch(/^[0-9a-fA-F]{24}$/);
-            expect(category.title).toMatchObject({
-                values: [
-                    { locale: locales.en.id, value: "Hardware EN" },
-                    { locale: locales.de.id, value: "Hardware DE" }
-                ]
-            });
-            expect(category.title.value).toBe("Hardware EN");
+                await product.save();
 
-            // Test Product
-            const Product = context.models["product"];
-            const product = new Product();
-            product.populate({
-                title: {
+                expect(product.id).toMatch(/^[0-9a-fA-F]{24}$/);
+                expect(product.title).toMatchObject({
                     values: [
                         { locale: locales.en.id, value: "Laptop EN" },
                         { locale: locales.de.id, value: "Laptop DE" }
                     ]
-                },
-                category: {
-                    values: [{ locale: locales.en.id, value: category }]
-                },
-                price: {
-                    values: [
-                        { locale: locales.en.id, value: 100 },
-                        { locale: locales.de.id, value: 87 }
-                    ]
-                },
-                availableOn: {
-                    values: [
-                        { locale: locales.en.id, value: "2020-04-16" },
-                        { locale: locales.de.id, value: "2020-04-17" }
-                    ]
-                }
+                });
+                expect(product.title.value).toBe("Laptop EN");
+                expect(product.price.value).toBe(100);
+
+                const productCategory = await product.category.value;
+                expect(productCategory.id).toBe(category.id);
+                expect(productCategory.title.value).toBe("Hardware EN");
             });
-
-            await product.save();
-
-            expect(product.id).toMatch(/^[0-9a-fA-F]{24}$/);
-            expect(product.title).toMatchObject({
-                values: [
-                    { locale: locales.en.id, value: "Laptop EN" },
-                    { locale: locales.de.id, value: "Laptop DE" }
-                ]
-            });
-            expect(product.title.value).toBe("Laptop EN");
-            expect(product.price.value).toBe(100);
-
-            const productCategory = await product.category.value;
-            expect(productCategory.id).toBe(category.id);
-            expect(productCategory.title.value).toBe("Hardware EN");
         });
     });
 
-    describe("datetime field validation", () => {
+    describe("Model fields", () => {
         let context;
+        let instance;
 
         function createValue(value) {
             return { values: [{ locale: locales.en.id, value }] };
@@ -119,8 +123,6 @@ export default ({ plugins }) => {
                 event: { headers: { "accept-language": "en-US" } }
             });
         });
-
-        let instance;
 
         beforeEach(() => {
             const datetime = context.plugins
@@ -172,11 +174,13 @@ export default ({ plugins }) => {
             instance = new model();
         });
 
-        describe("dateTimeWithTimezone", () => {
+        describe(`"datetime": ${blue("dateTimeWithTimezone")}`, () => {
             const field = "dateTimeWithTimezone";
 
             test(`Date object should pass`, () => {
-                expect(() => instance.populate({ [field]: createValue(new Date()) })).not.toThrow();
+                expect(() =>
+                    instance.populate({ [field]: createValue(new Date()) })
+                ).not.toThrow();
             });
 
             test(`"random string" should fail`, () => {
@@ -185,14 +189,14 @@ export default ({ plugins }) => {
                 ).toThrow();
             });
 
-            test(`"2020-05-04 12:35:17" should fail`, () => {
+            test(`"2020-05-04T12:35:17Z" should pass`, () => {
                 expect(() =>
-                    instance.populate({ [field]: createValue("2020-05-04 12:35:17") })
-                ).toThrow();
+                    instance.populate({ [field]: createValue("2020-05-04T12:35:17Z") })
+                ).resolves;
             });
         });
 
-        describe("dateTimeWithoutTimezone", () => {
+        describe(`"datetime": ${blue("dateTimeWithoutTimezone")}`, () => {
             const field = "dateTimeWithoutTimezone";
 
             test(`"2020-05-04 12:35:17" should pass`, async () => {
@@ -221,7 +225,7 @@ export default ({ plugins }) => {
             });
         });
 
-        describe("date", () => {
+        describe(`"datetime": ${blue("date")}`, () => {
             const field = "date";
 
             test(`"2020-11-04" should pass`, async () => {
@@ -245,7 +249,7 @@ export default ({ plugins }) => {
             });
         });
 
-        describe("time", () => {
+        describe(`"datetime": ${blue("time")}`, () => {
             const field = "time";
 
             test(`"12:35:17" should pass`, async () => {
