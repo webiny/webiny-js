@@ -27,6 +27,7 @@
     "apollo-link-batch-http": "^1.2.3",
     "core-js": "^3.2.1",
     "cross-fetch": "^3.0.2",
+    "emotion": "^10.0.27",
     "isutf8": "^2.1.0",
     "mime-types": "^2.1.24",
     "react-hot-loader": "^4.3.5",
