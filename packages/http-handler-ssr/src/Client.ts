@@ -27,20 +27,20 @@ const ssrApiCall = async ({ url, action, actionPayload, async }) => {
 };
 
 interface InvalidateSsrCacheByPathParams {
-    path: null;
-    refresh: boolean;
-    expired: boolean;
-    async: boolean;
+    path: string;
+    refresh?: boolean;
+    expired?: boolean;
+    async?: boolean;
 }
 
 type Tag = {
-    id: string;
-    class: string;
+    id?: string;
+    class?: string;
 };
 
 interface InvalidateSsrCacheByTagsParams {
     tags: Tag[];
-    async: boolean;
+    async?: boolean;
 }
 
 export default class Client {
