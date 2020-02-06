@@ -29,7 +29,9 @@ import pageBuilderPlugins from "@webiny/app-page-builder/admin/plugins";
 
 registerPlugins(pageBuilderPlugins);
 ```
-    
+
+Note that, once deployed, when you open your Admin interface for the first time, you will be prompted with a short installation wizard.
+     
 #### Site
 ```
 import { registerPlugins } from "@webiny/plugins";
@@ -37,3 +39,4 @@ import pageBuilderPlugins from "@webiny/app-page-builder/site/plugins";
 
 registerPlugins(pageBuilderPlugins);
 ```
+
