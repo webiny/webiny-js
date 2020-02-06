@@ -35,9 +35,9 @@ const minorVersion = parseInt(currentNodeVersion.split(".")[1]);
         }
     } catch (err) {
         console.error(
-            chalk.red(`"@webiny/cli" depends on "yarn" and its built-in support for workspaces.`)
+            chalk.red(`"@webiny/cli" depends on "yarn@^1" and its built-in support for workspaces.`)
         );
-        console.log(`Please visit https://yarnpkg.com to install "yarn".`);
+        console.log(`Please visit https://classic.yarnpkg.com to install "yarn@^1".`);
         process.exit(1);
     }
 
