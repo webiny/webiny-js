@@ -4,16 +4,17 @@ import saveElements from "./utils/saveElements";
 import savePages from "./utils/savePages";
 import path from "path";
 import loadJson from "load-json-file";
-import got from "got";
+import { PbInstallPlugin } from "@webiny/api-page-builder/types";
 
 export const install = async (
     root: any,
-    args: {[key: string]: any},
-    context: {[key: string]: any}
+    args: { [key: string]: any },
+    context: { [key: string]: any }
 ) => {
     // Start the download of initial Page Builder page / block images.
-    const { PbSettings, PbCategory, PbMenu, PbPage } = context.models;
+    const { PbSettings, PbCategory, PbMenu } = context.models;
 
+    const installPlugins = context.plugins.byType<PbInstallPlugin>("pb-install");
     // 1. Check if Page Builder is already installed.
     let settings = await PbSettings.load();
     if (!settings) {
@@ -28,6 +29,13 @@ export const install = async (
         });
     }
 
+    for (let i = 0; i < installPlugins.length; i++) {
+        const installPlugin = installPlugins[i];
+        if (typeof installPlugin.before === "function") {
+            await installPlugin.before({ data: args.data, context });
+        }
+    }
+
     const { step } = args;
 
     try {
@@ -40,7 +48,7 @@ export const install = async (
 
         if (step === 1) {
             const INSTALL_EXTRACT_DIR = await downloadInstallationFiles();
-            const categoriesData: {[key: string]: any}[] = await loadJson(
+            const categoriesData: { [key: string]: any }[] = await loadJson(
                 path.join(INSTALL_EXTRACT_DIR, "data/categoriesData.json")
             );
             installation.getStep(1).markAsStarted();
@@ -79,7 +87,7 @@ export const install = async (
 
         if (step === 4) {
             const INSTALL_EXTRACT_DIR = await downloadInstallationFiles();
-            const menusData: {[key: string]: any}[] = await loadJson(
+            const menusData: { [key: string]: any }[] = await loadJson(
                 path.join(INSTALL_EXTRACT_DIR, "data/menusData.json")
             );
             installation.getStep(4).markAsStarted();
@@ -116,18 +124,10 @@ export const install = async (
             installation.getStep(5).markAsCompleted();
             await settings.save();
 
-            // Asynchronously send a GET request to each page so that the SSR cache gets populated.
-            const initialPages = await PbPage.find();
-            for (let i = 0; i < initialPages.length; i++) {
-                const url = await initialPages[i].fullUrl;
-                try {
-                    await got(url, {
-                        ...args,
-                        timeout: 200,
-                        retry: 0
-                    });
-                } catch {
-                    // Do nothing.
+            for (let i = 0; i < installPlugins.length; i++) {
+                const installPlugin = installPlugins[i];
+                if (typeof installPlugin.after === "function") {
+                    await installPlugin.after({ data: args.data, context });
                 }
             }
 
@@ -143,8 +143,8 @@ export const install = async (
 
 export const isInstalled = async (
     root: any,
-    args: {[key: string]: any},
-    context: {[key: string]: any}
+    args: { [key: string]: any },
+    context: { [key: string]: any }
 ) => {
     const { PbSettings } = context.models;
     const settings = await PbSettings.load();

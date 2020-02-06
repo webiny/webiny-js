@@ -102,6 +102,23 @@ export default () => [
         }
     },
     {
+        // After successful installation, GET requests will be issued to initially installed pages.
+        // This is fine, but if a user visited the homepage first (without going straight to "/admin", which is
+        // a frequent case), that page will get cached unfortunately, and we need to invalidate it. There could be
+        // of course more pages that the user visited before entering admin, for now we'll just focus on the homepage.
+        type: "pb-install",
+        name: "pb-install-invalidate-previous-homepage-cache",
+        async after({ data }) {
+            // Although we had client registered above, it's not ready yet because domain wasn't
+            // set in PbSettings instance. That's why we just take the domain from the received args.
+            const ssrApiClient = new SsrApiClient({ url: data.domain });
+            await ssrApiClient.invalidateSsrCacheByPath({
+                path: "/",
+                refresh: true
+            });
+        }
+    },
+    {
         name: "graphql-schema-page-builder-use-ssr-cache-tags",
         type: "graphql-schema",
         schema: {
