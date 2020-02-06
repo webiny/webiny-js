@@ -14,7 +14,7 @@
     "@emotion/styled": "^10.0.17",
     "@webiny/app": "^3.0.0",
     "@webiny/app-admin": "^3.0.0",
-    "@webiny/app-page-builder": "^3.0.1",
+    "@webiny/app-page-builder": "^3.1.0-next.0",
     "@webiny/app-security": "^3.0.1",
     "@webiny/form": "^3.0.0",
     "@webiny/plugins": "^3.0.0",
