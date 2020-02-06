@@ -24,7 +24,7 @@ export type SchemaDefinitionFactory = (params: {
 }) => Promise<SchemaDefinition>;
 
 export type GraphQLSchemaPlugin = Plugin & {
-    prepare?: (params: { plugins: PluginsContainer }) => void;
+    prepare?: (params: { context: GraphQLContext }) => Promise<void>;
     schema: SchemaDefinition | SchemaDefinitionFactory;
     [key: string]: any;
 };
