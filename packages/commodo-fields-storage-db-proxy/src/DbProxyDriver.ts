@@ -32,7 +32,7 @@ class DbProxyClient {
         if (parsedPayload.error) {
             if (MONGO_CONNECTION_ERRORS.includes(parsedPayload.error.name)) {
                 throw new Error(
-                    `Could not connect to MongoDB server, make sure the connection string is correct and that the database server allows outside connections. Check https://docs.webiny.com/docs/get-started/quick-start#3-setup-database-connection for more information.`
+                    `Could not connect to the MongoDB server, make sure the connection string is correct and that the database server allows outside connections. Check https://docs.webiny.com/docs/get-started/quick-start#3-setup-database-connection for more information.`
                 );
             }
             throw new Error(`${parsedPayload.error.name}: ${parsedPayload.error.message}`);
