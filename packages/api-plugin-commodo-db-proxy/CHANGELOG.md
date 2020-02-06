@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.0.1-next.1](https://github.com/webiny/webiny-js/compare/@webiny/api-plugin-commodo-db-proxy@2.0.1-next.0...@webiny/api-plugin-commodo-db-proxy@2.0.1-next.1) (2020-02-06)
+
+
+### Bug Fixes
+
+* update package version ([6a28bd8](https://github.com/webiny/webiny-js/commit/6a28bd865e1da82343c6dbe4b72f17fe21b63810))
+
+
+
+
+
 ## [2.0.1-next.0](https://github.com/webiny/webiny-js/compare/@webiny/api-plugin-commodo-db-proxy@2.0.0...@webiny/api-plugin-commodo-db-proxy@2.0.1-next.0) (2020-02-06)
 
 **Note:** Version bump only for package @webiny/api-plugin-commodo-db-proxy
