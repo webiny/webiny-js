@@ -4,7 +4,6 @@ import saveElements from "./utils/saveElements";
 import savePages from "./utils/savePages";
 import path from "path";
 import loadJson from "load-json-file";
-import got from "got";
 
 export const install = async (
     root: any,
@@ -27,6 +26,8 @@ export const install = async (
             message: "Page builder is already installed."
         });
     }
+
+    await settings.hook('beforeInstallation');
 
     const { step } = args;
 
@@ -116,20 +117,7 @@ export const install = async (
             installation.getStep(5).markAsCompleted();
             await settings.save();
 
-            // Asynchronously send a GET request to each page so that the SSR cache gets populated.
-            const initialPages = await PbPage.find();
-            for (let i = 0; i < initialPages.length; i++) {
-                const url = await initialPages[i].fullUrl;
-                try {
-                    await got(url, {
-                        ...args,
-                        timeout: 200,
-                        retry: 0
-                    });
-                } catch {
-                    // Do nothing.
-                }
-            }
+            await settings.hook('afterInstallation');
 
             return new Response(true);
         }
