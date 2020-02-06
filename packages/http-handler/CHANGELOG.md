@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.0.1-next.0](https://github.com/webiny/webiny-js/compare/@webiny/http-handler@2.0.0...@webiny/http-handler@2.0.1-next.0) (2020-02-06)
+
+
+### Bug Fixes
+
+* on thrown errors, respond with a nice error message ([4288412](https://github.com/webiny/webiny-js/commit/4288412e4a2d2267bd994be575daf3a06ff2f254))
+
+
+
+
+
 # 2.0.0 (2020-01-27)
 
 

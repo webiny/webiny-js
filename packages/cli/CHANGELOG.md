@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.0.1-next.2](https://github.com/webiny/webiny-js/compare/@webiny/cli@3.0.1-next.1...@webiny/cli@3.0.1-next.2) (2020-02-06)
+
+
+### Bug Fixes
+
+* abort process gracefully for yarn v2. ([b269d90](https://github.com/webiny/webiny-js/commit/b269d90716a64c07b7310993806d2fa2234001ca))
+* check tags using semver. ([2729696](https://github.com/webiny/webiny-js/commit/27296961f37176a1414f01c968f88aeba9f02242))
+
+
+
+
+
 ## [3.0.1-next.1](https://github.com/webiny/webiny-js/compare/@webiny/cli@3.0.1-next.0...@webiny/cli@3.0.1-next.1) (2020-02-05)
 
 
