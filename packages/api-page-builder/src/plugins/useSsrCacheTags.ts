@@ -102,6 +102,24 @@ export default () => [
         }
     },
     {
+        // After successful installation, GET requests will be issued to initially installed pages.
+        // This is fine, but if a user visited the homepage first (without going straight to "/admin", which is
+        // a frequent case), that page will get cached unfortunately, and we need to invalidate it. There could be
+        // of course more pages that the user visited before entering admin, for now we'll just focus on the homepage.
+        type: "graphql-context",
+        name: "graphql-context-after-pb-installation-invalidate-cache",
+        apply({ ssrApiClient, models: { PbSettings } }) {
+            withHooks({
+                async afterInstallation() {
+                    await ssrApiClient.invalidateSsrCacheByPath({
+                        path: "/",
+                        refresh: true
+                    });
+                }
+            })(PbSettings);
+        }
+    },
+    {
         name: "graphql-schema-page-builder-use-ssr-cache-tags",
         type: "graphql-schema",
         schema: {
