@@ -75,5 +75,35 @@ export default (): GraphQLContextPlugin[] => [
                 }
             })(PbPage);
         }
+    },
+    {
+        // After successful installation, GET requests will be issued to all of the initially installed pages.
+        // This way, once user visits one of the initially installed pages, he won't have to wait for the background
+        // SSR render to finish.
+        type: "graphql-context",
+        name: "graphql-context-after-pb-installation-generate-ssr-via-get-requests",
+        apply(context) {
+            const {
+                models: { PbPage, PbSettings }
+            } = context;
+
+            withHooks({
+                async afterInstallation() {
+                    // Asynchronously send a GET request to each page so that the SSR cache gets populated.
+                    const initialPages = await PbPage.find();
+                    for (let i = 0; i < initialPages.length; i++) {
+                        const url = await initialPages[i].fullUrl;
+                        try {
+                            await got(url, {
+                                timeout: 200,
+                                retry: 0
+                            });
+                        } catch {
+                            // Do nothing.
+                        }
+                    }
+                }
+            })(PbSettings);
+        }
     }
 ];
