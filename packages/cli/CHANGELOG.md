@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.0.1](https://github.com/webiny/webiny-js/compare/@webiny/cli@3.0.1-next.2...@webiny/cli@3.0.1) (2020-02-06)
+
+**Note:** Version bump only for package @webiny/cli
+
+
+
+
+
 ## [3.0.1-next.2](https://github.com/webiny/webiny-js/compare/@webiny/cli@3.0.1-next.1...@webiny/cli@3.0.1-next.2) (2020-02-06)
 
 
