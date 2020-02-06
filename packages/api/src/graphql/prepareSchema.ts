@@ -30,7 +30,7 @@ export async function prepareSchema({ plugins }: PrepareSchemaParams) {
 
     for (let i = 0; i < gqlPlugins.length; i++) {
         if (typeof gqlPlugins[i].prepare === "function") {
-            await gqlPlugins[i].prepare({ plugins });
+            await gqlPlugins[i].prepare({ context });
         }
     }
 
