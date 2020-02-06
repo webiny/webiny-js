@@ -7,9 +7,8 @@ import pbMenu from "./models/pbMenu.model";
 import pbPage from "./models/pbPage.model";
 import pbSettings from "./models/pbSettings.model";
 import got from "got";
-import { GraphQLContextPlugin } from "@webiny/api/types";
 
-export default (): GraphQLContextPlugin[] => [
+export default () => [
     {
         name: "graphql-context-models",
         type: "graphql-context",

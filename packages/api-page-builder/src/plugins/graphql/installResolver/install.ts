@@ -5,12 +5,9 @@ import savePages from "./utils/savePages";
 import path from "path";
 import loadJson from "load-json-file";
 import { PbInstallPlugin } from "@webiny/api-page-builder/types";
+import { GraphQLContext } from "@webiny/api/types";
 
-export const install = async (
-    root: any,
-    args: { [key: string]: any },
-    context: { [key: string]: any }
-) => {
+export const install = async (root: any, args: { [key: string]: any }, context: GraphQLContext) => {
     // Start the download of initial Page Builder page / block images.
     const { PbSettings, PbCategory, PbMenu } = context.models;
 
