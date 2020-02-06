@@ -4,6 +4,7 @@ import mockI18NLocales from "./mocks/mockI18NLocales";
 import graphqlTests from "./tests/graphql";
 import toModelTests from "./tests/toModel";
 import contentModelTests from "./tests/contentModel";
+import contentModelToSDL from "./tests/contentModelToSDL";
 
 const callbacks = {
     afterAll: []
@@ -27,7 +28,8 @@ const plugins = [mongoDbPlugins, i18n(), mockI18NLocales()];
 
 describe("MongoDB Headless CMS API", () => {
     afterAll(async () => await Promise.all(callbacks.afterAll.map(cb => cb())));
-    graphqlTests({ plugins });
-    //toModelTests({ plugins });
-    //contentModelTests({ plugins });
+    contentModelToSDL({ plugins });
+    // graphqlTests({ plugins });
+    // toModelTests({ plugins });
+    // contentModelTests({ plugins });
 });

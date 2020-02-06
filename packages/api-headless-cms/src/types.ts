@@ -1,4 +1,4 @@
-import { GraphQLContext, Plugin } from "@webiny/api/types";
+import { GraphQLContext, GraphQLFieldResolver, Plugin } from "@webiny/api/types";
 import { GraphQLContext as I18NContext } from "@webiny/api-i18n/types";
 import { GraphQLContext as CommodoContext } from "@webiny/api-plugin-commodo-db-proxy/types";
 
@@ -65,4 +65,34 @@ export type CmsModelFieldToCommodoFieldPlugin<
         field: CmsModelField;
         validation(value): Promise<boolean>;
     }): Function;
+};
+
+export type CmsModelFieldToGraphQLPlugin = Plugin & {
+    type: "cms-model-field-to-graphql";
+    isSortable: boolean;
+    fieldType: string;
+    read: {
+        createListFilters?(params: { model: CmsModel; field: CmsModelField }): string;
+        createTypeField(params: { model: CmsModel; field: CmsModelField }): string;
+        createResolver(params: {
+            models: CmsModel[];
+            model: CmsModel;
+            field: CmsModelField;
+        }): GraphQLFieldResolver;
+    };
+    manage: {
+        createListFilters?(params: { model: CmsModel; field: CmsModelField }): string;
+        createTypes?(params: { models: CmsModel[]; model: CmsModel }): string;
+        createTypeField(params: { model: CmsModel; field: CmsModelField }): string;
+        createInputField(params: { model: CmsModel; field: CmsModelField }): string;
+        createResolver(params: {
+            models: CmsModel[];
+            model: CmsModel;
+            field: CmsModelField;
+        }): GraphQLFieldResolver;
+    };
+};
+
+export type CmsFieldTypePlugins = {
+    [key: string]: CmsModelFieldToGraphQLPlugin;
 };

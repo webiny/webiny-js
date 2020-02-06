@@ -53,8 +53,16 @@ export const i18nField = ({
                 )
             }),
             withProps({
-                get value() {
-                    const locale = i18n.getLocale();
+                value(code: string) {
+                    let locale;
+                    if (code) {
+                        locale = i18n.getLocales().find(l => l.code === code);
+                    }
+
+                    if (!locale) {
+                        locale = i18n.getDefaultLocale();
+                    }
+
                     const value = this.values.find(value => value.locale === locale.id);
                     return value ? value.value : defaultValue;
                 }
