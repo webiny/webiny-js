@@ -78,10 +78,10 @@ const plugin: CmsModelFieldToGraphQLPlugin = {
             const { type } = field.settings;
 
             if (type === "dateTimeWithTz") {
-                return field.fieldId + ": DateTime";
+                return field.fieldId + "(locale: String): DateTime";
             }
 
-            return field.fieldId + ": String";
+            return field.fieldId + "(locale: String): String";
         }
     },
     manage: {

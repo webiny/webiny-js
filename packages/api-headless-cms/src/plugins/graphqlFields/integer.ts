@@ -39,12 +39,12 @@ const plugin: CmsModelFieldToGraphQLPlugin = {
     read: {
         createListFilters,
         createResolver({ field }) {
-            return instance => {
-                return instance[field.fieldId];
+            return (instance, args) => {
+                return instance[field.fieldId].value(args.locale);
             };
         },
         createTypeField({ field }) {
-            return field.fieldId + ": Int";
+            return field.fieldId + "(locale: String): Int";
         }
     },
     manage: {

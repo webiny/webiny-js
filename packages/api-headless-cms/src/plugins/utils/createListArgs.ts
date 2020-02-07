@@ -6,6 +6,7 @@ interface CreateListArgs {
 
 export const createListArgs: CreateListArgs = () => {
     return /* GraphQL */ `(
+        locale: String
         page: Int
         perPage: Int
         where: JSON

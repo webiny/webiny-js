@@ -61,7 +61,7 @@ export default ({ plugins }) => {
                         { locale: locales.de.id, value: "Hardware DE" }
                     ]
                 });
-                expect(category.title.value).toBe("Hardware EN");
+                expect(category.title.value()).toBe("Hardware EN");
 
                 // Test Product
                 const Product = context.models["product"];
@@ -99,12 +99,12 @@ export default ({ plugins }) => {
                         { locale: locales.de.id, value: "Laptop DE" }
                     ]
                 });
-                expect(product.title.value).toBe("Laptop EN");
-                expect(product.price.value).toBe(100);
+                expect(product.title.value()).toBe("Laptop EN");
+                expect(product.price.value()).toBe(100);
 
-                const productCategory = await product.category.value;
+                const productCategory = await product.category.value();
                 expect(productCategory.id).toBe(category.id);
-                expect(productCategory.title.value).toBe("Hardware EN");
+                expect(productCategory.title.value()).toBe("Hardware EN");
             });
         });
     });

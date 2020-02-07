@@ -12,7 +12,7 @@ const plugin: CmsModelFieldToGraphQLPlugin = {
             const { modelId, type } = field.settings;
             const many = type === "many";
             const gqlType = createReadTypeName(modelId);
-            const fieldArgs = many ? createListArgs({ model, field }) : "";
+            const fieldArgs = many ? createListArgs({ model, field }) : "(locale: String)";
 
             return field.fieldId + fieldArgs + `: ${many ? `${gqlType}ListResponse` : gqlType}`;
         },
@@ -20,7 +20,7 @@ const plugin: CmsModelFieldToGraphQLPlugin = {
             return (instance, args) => {
                 return instance[field.fieldId].value(args.locale);
             };
-        },
+        }
     },
     manage: {
         createResolver({ field }) {
@@ -30,40 +30,56 @@ const plugin: CmsModelFieldToGraphQLPlugin = {
         },
         createTypes() {
             return /* GraphQL */ `
-                type CmsManageRefOne {
-                    locale: String
+                # ref:one
+                type CmsManageRefOneLocalized {
+                    locale: ID
                     value: ID
                 }
 
-                input CmsManageRefOneInput {
-                    locale: String!
+                type CmsManageRefOne {
+                    values: [CmsManageRefOneLocalized]
+                }
+
+                input CmsManageRefOneLocalizedInput {
+                    locale: ID!
                     value: ID!
                 }
 
-                type CmsManageRefMany {
-                    locale: String
+                input CmsManageRefOneInput {
+                    values: [CmsManageRefOneLocalizedInput]
+                }
+
+                # ref:many
+                type CmsManageRefManyLocalized {
+                    locale: ID
                     value: [ID]
                 }
 
+                type CmsManageRefMany {
+                    values: [CmsManageRefManyLocalized]
+                }
+
+                input CmsManageRefManyLocalizedInput {
+                    locale: ID!
+                    value: [ID]!
+                }
+
                 input CmsManageRefManyInput {
-                    locale: String!
-                    value: [ID!]
+                    values: [CmsManageRefManyLocalizedInput]!
                 }
             `;
         },
         createTypeField({ field }) {
             const { type } = field.settings;
 
-            return (
-                field.fieldId + `: ${type === "many" ? `[CmsManageRefMany]` : `[CmsManageRefOne]`}`
-            );
+            return field.fieldId + `: ${type === "many" ? `CmsManageRefMany` : `CmsManageRefOne`}`;
         },
         createInputField({ field }) {
             const { type } = field.settings;
 
             return (
                 field.fieldId +
-                `: ${type === "many" ? "[CmsManageRefManyInput]" : "[CmsManageRefOneInput]"}`
+                `: ${type === "many" ? "CmsManageRefManyInput" : "CmsManageRefOneInput"}`
             );
         }
     }
