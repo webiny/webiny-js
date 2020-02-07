@@ -1,11 +1,11 @@
 {
   "name": "@webiny/serverless-function",
-  "version": "3.0.0",
+  "version": "3.0.1-next.0",
   "main": "serverless.js",
   "license": "MIT",
   "dependencies": {
     "@serverless/core": "^1.1.1",
-    "@webiny/serverless-aws-lambda": "^2.0.0",
+    "@webiny/serverless-aws-lambda": "^2.0.1-next.0",
     "execa": "^2.0.3"
   },
   "scripts": {

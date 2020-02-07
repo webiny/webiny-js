@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.0.1-next.0](https://github.com/Webiny/webiny-js/compare/@webiny/serverless-apollo-gateway@3.0.0...@webiny/serverless-apollo-gateway@3.0.1-next.0) (2020-02-07)
+
+**Note:** Version bump only for package @webiny/serverless-apollo-gateway
+
+
+
+
+
 # [3.0.0](https://github.com/Webiny/webiny-js/compare/@webiny/serverless-apollo-gateway@2.2.0...@webiny/serverless-apollo-gateway@3.0.0) (2020-01-27)
 
 

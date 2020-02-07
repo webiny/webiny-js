@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.0.1-next.0](https://github.com/webiny/webiny-js/compare/@webiny/project-utils@1.0.0...@webiny/project-utils@1.0.1-next.0) (2020-02-07)
+
+**Note:** Version bump only for package @webiny/project-utils
+
+
+
+
+
 # [1.0.0](https://github.com/webiny/webiny-js/compare/@webiny/project-utils@0.1.8...@webiny/project-utils@1.0.0) (2020-01-27)
 
 

@@ -1,6 +1,6 @@
 {
   "name": "@webiny/api",
-  "version": "3.0.0",
+  "version": "3.0.1-next.0",
   "main": "index.js",
   "types": "dist/types.d.ts",
   "repository": {
@@ -16,7 +16,7 @@
   "license": "MIT",
   "dependencies": {
     "@apollo/federation": "^0.10.2",
-    "@webiny/plugins": "^3.0.0",
+    "@webiny/plugins": "^3.0.1-next.0",
     "graphql": "^14.4.2",
     "graphql-iso-date": "^3.6.1",
     "graphql-middleware": "^4.0.1",

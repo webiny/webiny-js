@@ -1,6 +1,6 @@
 {
   "name": "@webiny/api-security",
-  "version": "3.0.0",
+  "version": "3.0.1-next.0",
   "main": "index.js",
   "repository": {
     "type": "git",
@@ -15,10 +15,10 @@
   "license": "MIT",
   "dependencies": {
     "@babel/runtime": "^7.5.5",
-    "@webiny/api": "^3.0.0",
-    "@webiny/commodo": "^3.0.0",
-    "@webiny/commodo-graphql": "^3.0.0",
-    "@webiny/validation": "^3.0.0",
+    "@webiny/api": "^3.0.1-next.0",
+    "@webiny/commodo": "^3.0.1-next.0",
+    "@webiny/commodo-graphql": "^3.0.1-next.0",
+    "@webiny/validation": "^3.0.1-next.0",
     "bcryptjs": "^2.4.3",
     "graphql-shield": "^6.1.0",
     "graphql-tag": "^2.10.1",
