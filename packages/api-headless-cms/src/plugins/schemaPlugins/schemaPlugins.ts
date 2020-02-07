@@ -30,7 +30,20 @@ export const generateSchemaPlugins: GenerateSchemaPlugins = async ({ context }) 
     const { CmsContentModel } = context.models;
 
     const models: CmsModel[] = await CmsContentModel.find();
-    const newPlugins = [];
+
+    const newPlugins = [
+        {
+            name: "graphql-schema-cms-field-types",
+            type: "graphql-schema",
+            schema: {
+                typeDefs: gql`
+                    ${renderTypesFromFieldPlugins({ fieldTypePlugins, type: "manage" })}
+                    ${renderTypesFromFieldPlugins({ fieldTypePlugins, type: "read" })}
+                `,
+                resolvers: {}
+            }
+        }
+    ];
 
     models.forEach(model => {
         // Create a schema plugin for each model (Management API)
@@ -38,10 +51,9 @@ export const generateSchemaPlugins: GenerateSchemaPlugins = async ({ context }) 
             name: "graphql-schema-" + model.modelId + "-manage",
             type: "graphql-schema",
             schema: {
-                typeDefs: gql([
-                    renderTypesFromFieldPlugins({ fieldTypePlugins, type: "manage" }),
-                    createManageSDL({ model, context, fieldTypePlugins })
-                ]),
+                typeDefs: gql`
+                    ${createManageSDL({ model, context, fieldTypePlugins })}
+                `,
                 resolvers: {} // createManageResolvers({ models, model, fieldTypePlugins, context })
             }
         });
@@ -51,10 +63,9 @@ export const generateSchemaPlugins: GenerateSchemaPlugins = async ({ context }) 
             name: "graphql-schema-" + model.modelId + "-read",
             type: "graphql-schema",
             schema: {
-                typeDefs: gql([
-                    renderTypesFromFieldPlugins({ fieldTypePlugins, type: "read" }),
-                    createReadSDL({ model, context, fieldTypePlugins })
-                ]),
+                typeDefs: gql`
+                    ${createReadSDL({ model, context, fieldTypePlugins })}
+                `,
                 resolvers: {} // createReadResolvers({ models, model, fieldTypePlugins, context })
             }
         });
