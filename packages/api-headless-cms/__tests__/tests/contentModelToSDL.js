@@ -5,8 +5,11 @@ import graphqlFieldPlugins from "../../src/plugins/graphqlFields";
 import { createReadSDL } from "../../src/plugins/schemaPlugins/createReadSDL";
 import { createManageSDL } from "../../src/plugins/schemaPlugins/createManageSDL";
 import categoryReadSDL from "./snapshots/category.read";
+import categoryManageSDL from "./snapshots/category.manage";
 import productReadSDL from "./snapshots/product.read";
+import productManageSDL from "./snapshots/product.manage";
 import reviewReadSDL from "./snapshots/review.read";
+import reviewManageSDL from "./snapshots/review.manage";
 
 export default ({ plugins }) => {
     describe("ContentModel to SDL", () => {
@@ -52,27 +55,24 @@ export default ({ plugins }) => {
             const model = contentModels.find(c => c.modelId === "category");
             const sdl = createManageSDL({ model, context, fieldTypePlugins });
             const prettyGql = prettier.format(sdl.trim(), { parser: "graphql" });
-            console.log(prettyGql);
-            //const prettySnapshot = prettier.format(categoryManageSDL.trim(), { parser: "graphql" });
-            //expect(prettyGql).toBe(prettySnapshot);
+            const prettySnapshot = prettier.format(categoryManageSDL.trim(), { parser: "graphql" });
+            expect(prettyGql).toBe(prettySnapshot);
         });
 
         test("createManageSDL - Product", async () => {
             const model = contentModels.find(c => c.modelId === "product");
             const sdl = createManageSDL({ model, context, fieldTypePlugins });
             const prettyGql = prettier.format(sdl.trim(), { parser: "graphql" });
-            console.log(prettyGql);
-            //const prettySnapshot = prettier.format(productManageSDL.trim(), { parser: "graphql" });
-            //expect(prettyGql).toBe(prettySnapshot);
+            const prettySnapshot = prettier.format(productManageSDL.trim(), { parser: "graphql" });
+            expect(prettyGql).toBe(prettySnapshot);
         });
 
         test("createManageSDL - Review", async () => {
             const model = contentModels.find(c => c.modelId === "review");
             const sdl = createManageSDL({ model, context, fieldTypePlugins });
             const prettyGql = prettier.format(sdl.trim(), { parser: "graphql" });
-            console.log(prettyGql);
-            //const prettySnapshot = prettier.format(reviewManageSDL.trim(), { parser: "graphql" });
-            //expect(prettyGql).toBe(prettySnapshot);
+            const prettySnapshot = prettier.format(reviewManageSDL.trim(), { parser: "graphql" });
+            expect(prettyGql).toBe(prettySnapshot);
         });
     });
 };
