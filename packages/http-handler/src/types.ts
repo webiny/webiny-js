@@ -12,8 +12,8 @@ export type HttpContextPlugin = Plugin & {
     apply(params: { context: HttpContext; args: HttpArgs }): void;
 };
 
-export type HttpBeforeHandlePlugin = Plugin & {
-    type: "before-handle";
+export type HttpBeforeHandlerPlugin = Plugin & {
+    type: "before-handler";
     handle(params: { context: HttpContext; args: HttpArgs }): Promise<void>;
 };
 
@@ -23,7 +23,7 @@ export type HttpHandlerPlugin = Plugin & {
     handle(params: { context: HttpContext; args: HttpArgs }): Promise<any>;
 };
 
-export type HttpAfterHandlePlugin = Plugin & {
-    type: "after-handle";
+export type HttpAfterHandlerPlugin = Plugin & {
+    type: "after-handler";
     handle(params: { context: HttpContext; args: HttpArgs; result: any }): Promise<void>;
 };

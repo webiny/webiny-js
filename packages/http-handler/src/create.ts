@@ -1,8 +1,8 @@
 import { PluginsContainer } from "@webiny/plugins";
 import createResponse from "./createResponse";
 import {
-    HttpAfterHandlePlugin,
-    HttpBeforeHandlePlugin,
+    HttpAfterHandlerPlugin,
+    HttpBeforeHandlerPlugin,
     HttpContextPlugin,
     HttpHandlerPlugin
 } from "./types";
@@ -18,7 +18,7 @@ export default (...plugins) => async (...args) => {
             contextPlugins[i].apply({ context, args });
         }
 
-        const beforeHandle = context.plugins.byType<HttpBeforeHandlePlugin>("before-handle");
+        const beforeHandle = context.plugins.byType<HttpBeforeHandlerPlugin>("before-handler");
         for (let i = 0; i < beforeHandle.length; i++) {
             await beforeHandle[i].handle({ context, args });
         }
@@ -32,7 +32,7 @@ export default (...plugins) => async (...args) => {
             }
         }
 
-        const afterHandle = context.plugins.byType<HttpAfterHandlePlugin>("after-handle");
+        const afterHandle = context.plugins.byType<HttpAfterHandlerPlugin>("after-handler");
         for (let i = 0; i < afterHandle.length; i++) {
             await afterHandle[i].handle({ context, args, result });
         }
