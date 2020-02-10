@@ -1135,7 +1135,7 @@
     exec-sh "^0.3.2"
     minimist "^1.2.0"
 
-"@commodo/fields-storage-mongodb@^1.0.0", "@commodo/fields-storage-mongodb@^1.0.3":
+"@commodo/fields-storage-mongodb@^1.0.3":
   version "1.0.3"
   resolved "https://registry.yarnpkg.com/@commodo/fields-storage-mongodb/-/fields-storage-mongodb-1.0.3.tgz#1e747107c1d28f7f0a9dcb3fcc9a0a950e5b3d45"
   integrity sha512-NXpiMoiBUGD5441m1M1F3EsKoq//QMQzXSjEiK/1okKajWXXzj8PSkNfoz9pNk2aaO9z4VK5LzGQ16iTMZVMDA==
@@ -4983,73 +4983,6 @@
     "@webassemblyjs/wast-parser" "1.8.5"
     "@xtuc/long" "4.2.2"
 
-"@webiny/api-security@^2.1.1":
-  version "2.1.2"
-  resolved "https://registry.yarnpkg.com/@webiny/api-security/-/api-security-2.1.2.tgz#ac6f04da1a56ff10b8b7acdc38af7b43411a8b08"
-  integrity sha512-McIQfTQr+P1vYVt1cOMyA9l5SJO0wLAqLn8XZDJlEAdyKvwWV2XiIGJJxBwVt0Nao6s9NnwciMSEcNeKQRIvBQ==
-  dependencies:
-    "@babel/runtime" "^7.5.5"
-    "@commodo/fields-storage-mongodb" "^1.0.0"
-    "@webiny/api" "^2.1.0"
-    "@webiny/commodo" "^2.0.1"
-    "@webiny/commodo-graphql" "^2.1.0"
-    "@webiny/validation" "^2.1.0"
-    bcryptjs "^2.4.3"
-    graphql-shield "^6.1.0"
-    graphql-tag "^2.10.1"
-    jsonwebtoken "^8.2.2"
-    lodash "^4.17.4"
-    md5 "^2.2.1"
-  optionalDependencies:
-    fsevents "^1.2.4"
-
-"@webiny/api@^2.1.0":
-  version "2.1.0"
-  resolved "https://registry.yarnpkg.com/@webiny/api/-/api-2.1.0.tgz#b193d5ac5404d2b35ec4c08d15f9658105310d9c"
-  integrity sha512-yw6KM3evRkN//OKY1osXh0WGyWY9TI9mASZjOpr1GeBWR/ewdbAmM9Dvq9UgpmwxKQU871PXc4xImqi1srEimA==
-  dependencies:
-    "@apollo/federation" "^0.10.2"
-    graphql "^14.4.2"
-    graphql-iso-date "^3.6.1"
-    graphql-middleware "^4.0.1"
-    graphql-tag "^2.10.1"
-    graphql-tools "^4.0.5"
-    graphql-type-json "^0.3.0"
-    graphql-type-long "^0.1.1"
-
-"@webiny/commodo-graphql@^2.1.0":
-  version "2.1.1"
-  resolved "https://registry.yarnpkg.com/@webiny/commodo-graphql/-/commodo-graphql-2.1.1.tgz#898cc9da5e801219c551a2fb2493cd014b4b8c9a"
-  integrity sha512-V21b3/jq38v9jKq/8lCryxzI83/wNNX2jlaMyFrBdZTtJleBUizFMFGzEBxBX9o5P88dvXSwY6HQnZMGWk58Sg==
-  dependencies:
-    "@webiny/api" "^2.1.0"
-    "@webiny/commodo" "^2.0.0"
-    lodash "^4.17.4"
-
-"@webiny/commodo@^2.0.0", "@webiny/commodo@^2.0.1":
-  version "2.0.1"
-  resolved "https://registry.yarnpkg.com/@webiny/commodo/-/commodo-2.0.1.tgz#e8818605c4d1ad9234d083996009ae28500b3d0d"
-  integrity sha512-EWT1GXvcyIUdXu/6KeUM484wzxRwTZCA5mKO8cTgONqnQ1yqt0i55nC0SHr67hDoy5e+O+bEHqTqsOcEDrX+fg==
-  dependencies:
-    "@commodo/fields" "^1.0.0"
-    "@commodo/fields-storage" "^1.0.0"
-    "@commodo/fields-storage-mongodb" "^1.0.0"
-    "@commodo/fields-storage-ref" "^1.0.0"
-    "@commodo/fields-storage-soft-delete" "^1.0.0"
-    "@commodo/hooks" "^1.0.0"
-    "@commodo/name" "^1.0.2"
-    commodo-fields-date "^1.0.3"
-    commodo-fields-object "^1.0.3"
-    commodo-fields-storage-crud-logs "^1.0.2"
-    repropose "^1.0.2"
-
-"@webiny/plugins@^2.0.0":
-  version "2.0.0"
-  resolved "https://registry.yarnpkg.com/@webiny/plugins/-/plugins-2.0.0.tgz#8272d071c45460b5ef13f483a14c589ceb08bbc5"
-  integrity sha512-hcIp5/72/DQoUy8ICHFYEnC0jcSxK15WFSEdwll45pckoSWS0Yke05qO7aC/Sf0JHGTDn/upDS3gIFeS9/iaug==
-  dependencies:
-    "@babel/runtime" "^7.5.5"
-
 "@webiny/serverless-api-gateway@^2.0.1":
   version "2.0.1"
   resolved "https://registry.yarnpkg.com/@webiny/serverless-api-gateway/-/serverless-api-gateway-2.0.1.tgz#f1e57cb73b034ebd4ad9738a3aa565bffddb5b45"
@@ -5067,15 +5000,6 @@
     aws-sdk "^2.0.0"
     lodash.isequal "^4.5.0"
     p-retry "^4.1.0"
-
-"@webiny/validation@^2.1.0":
-  version "2.1.0"
-  resolved "https://registry.yarnpkg.com/@webiny/validation/-/validation-2.1.0.tgz#bc91e50d584e0c48fa34e023cc3593bea7ea4b30"
-  integrity sha512-lPySxTkGH3LHuyprP9hdzxzXXj/RXyDYDBqynB5XmGmZTr34fCQ/0CGYMDmWYYXyKWGF/G5FnolHDyorRJ9oxA==
-  dependencies:
-    "@babel/runtime" "^7.5.5"
-    isnumeric "^0.3.3"
-    lodash "^4.17.4"
 
 "@webpack-contrib/schema-utils@^1.0.0-beta.0":
   version "1.0.0-beta.0"
@@ -8067,6 +7991,22 @@ commodo-fields-date@^1.0.3:
     "@commodo/fields" "^1.0.0"
     repropose "^1.0.2"
 
+commodo-fields-float@^1.0.2:
+  version "1.0.2"
+  resolved "https://registry.yarnpkg.com/commodo-fields-float/-/commodo-fields-float-1.0.2.tgz#05d09a79420dedb88a705a1deec1aaaebc7eea4f"
+  integrity sha512-p3ItnkcvakglQskds3qrprfx/q1kls4bPIXVdknNWLHEdcgx2OCL4ptUH24XI8jB3os3nWnxT7q8vhlB09e4Uw==
+  dependencies:
+    "@commodo/fields" "^1.0.0"
+    repropose "^1.0.2"
+
+commodo-fields-int@^1.0.1:
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/commodo-fields-int/-/commodo-fields-int-1.0.1.tgz#be6b4d3ea721934e777ef3da2e0682f70b2e9ffe"
+  integrity sha512-VFCQiy9uEVZ+wBAroADQ1AGxH2vBeR14EnHVVios7fcrhOoEy03Rq/Fp8hs1rIfIZJYAzfQKsqJua1hdYaIZ6A==
+  dependencies:
+    "@commodo/fields" "^1.0.0"
+    repropose "^1.0.2"
+
 commodo-fields-object@^1.0.3:
   version "1.0.3"
   resolved "https://registry.yarnpkg.com/commodo-fields-object/-/commodo-fields-object-1.0.3.tgz#9b1a7157e2385162c42562cd8604046349cf1679"
@@ -9914,7 +9854,7 @@ emotion@10.0.17:
     babel-plugin-emotion "^10.0.17"
     create-emotion "^10.0.14"
 
-emotion@^10.0.17:
+emotion@^10.0.17, emotion@^10.0.27:
   version "10.0.27"
   resolved "https://registry.yarnpkg.com/emotion/-/emotion-10.0.27.tgz#f9ca5df98630980a23c819a56262560562e5d75e"
   integrity sha512-2xdDzdWWzue8R8lu4G76uWX5WhyQuzATon9LmNeCy/2BHVC6dsEpfhN1a0qhELgtDVdjyEA6J8Y/VlI5ZnaH0g==
@@ -21079,7 +21019,7 @@ semver@7.0.0:
   resolved "https://registry.yarnpkg.com/semver/-/semver-7.0.0.tgz#5f3ca35761e47e05b206c6daff2cf814f0316b8e"
   integrity sha512-+GB6zVA9LWh6zovYQLALHwv5rb2PHGlJi3lfiqIHxR0uuwCgefcOJc59v9fv1w8GbStwxuuqqAjI9NMAOOgq1A==
 
-semver@^7.1.1:
+semver@^7.1.1, semver@^7.1.2:
   version "7.1.2"
   resolved "https://registry.yarnpkg.com/semver/-/semver-7.1.2.tgz#847bae5bce68c5d08889824f02667199b70e3d87"
   integrity sha512-BJs9T/H8sEVHbeigqzIEo57Iu/3DG6c4QoqTfbQB3BPA4zgzAomh/Fk9E7QtjWQ8mx2dgA9YCfSF4y9k9bHNpQ==
