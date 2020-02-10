@@ -87,20 +87,20 @@ export default ({ createBase, options = {} }: any = {}) =>
             get isRefreshing() {
                 return this.lastRefresh.startedOn && !this.lastRefresh.endedOn;
             },
-            isStale(version) {
+            isStale(currentVersion) {
                 if (this.hasExpired) {
                     return true;
                 }
 
-                return version && version !== this.version;
+                return currentVersion && currentVersion !== this.version;
             },
             incrementExpiresOn(seconds = options.cache.staleTtl) {
                 this.expiresOn = new Date();
                 this.expiresOn.setSeconds(this.expiresOn.getSeconds() + seconds);
                 return this;
             },
-            async refresh(version = null) {
-                this.version = version;
+            async refresh(currentVersion = null) {
+                this.version = currentVersion;
                 this.lastRefresh.startedOn = new Date();
                 this.lastRefresh.endedOn = null;
                 this.lastRefresh.duration = null;
