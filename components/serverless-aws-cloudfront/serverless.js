@@ -22,7 +22,7 @@ class ServerlessAwsCloudfront extends Component {
         setCdnDistributionForwardedHeader({
             DistributionConfig,
             key: "X-Cdn-Deployment-Id",
-            value: new Date().getTime()
+            value: String(new Date().getTime())
         });
 
         // If enabled, append CDN ID into the forwarded headers list.
