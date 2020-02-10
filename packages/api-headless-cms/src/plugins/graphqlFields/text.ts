@@ -33,7 +33,8 @@ const plugin: CmsModelFieldToGraphQLPlugin = {
     read: {
         createListFilters,
         createTypeField({ field }) {
-            return `${field.fieldId}(locale: String): String`;
+            const localeArg = field.localization ? "(locale: String)" : "";
+            return `${field.fieldId}${localeArg}: String`;
         },
         createResolver({ field }) {
             return (instance, args) => {

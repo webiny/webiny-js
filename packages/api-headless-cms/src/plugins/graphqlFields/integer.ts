@@ -44,7 +44,8 @@ const plugin: CmsModelFieldToGraphQLPlugin = {
             };
         },
         createTypeField({ field }) {
-            return field.fieldId + "(locale: String): Int";
+            const localeArg = field.localization ? "(locale: String)" : "";
+            return `${field.fieldId}${localeArg}: Int`;
         }
     },
     manage: {
@@ -60,16 +61,16 @@ const plugin: CmsModelFieldToGraphQLPlugin = {
                     value: Int
                     locale: ID!
                 }
-            
+
                 input CmsManageIntInput {
                     values: [CmsManageIntLocalizedInput]
                 }
-                
+
                 type CmsManageIntLocalized {
                     value: Int
                     locale: ID!
                 }
-            
+
                 type CmsManageInt {
                     value: Int
                     values: [CmsManageIntLocalized]!

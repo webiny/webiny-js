@@ -8,18 +8,17 @@ export default /* GraphQL */ `
         updatedOn: DateTime
         savedOn: DateTime
         title(locale: String): String
-        category(locale: String): CmsReadCategory
+        category: CmsReadCategory
         reviews(
-            locale: String
             page: Int
             perPage: Int
-            where: JSON
-            sort: JSON
+            where: CmsReadReviewFilterInput
+            sort: [CmsReadReviewSorter]
         ): CmsReadReviewListResponse
-        price(locale: String): Float
-        inStock(locale: String): Boolean
-        itemsInStock(locale: String): Int
-        availableOn(locale: String): String
+        price: Float
+        inStock: Boolean
+        itemsInStock: Int
+        availableOn: String
     }
 
     input CmsReadProductFilterInput {

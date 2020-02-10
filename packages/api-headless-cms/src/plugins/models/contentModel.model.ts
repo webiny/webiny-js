@@ -1,6 +1,6 @@
 import { flow } from "lodash";
 import { validation } from "@webiny/validation";
-import { withFields, string, withName, fields, object } from "@webiny/commodo";
+import { withFields, string, withName, fields, object, boolean } from "@webiny/commodo";
 import { i18nString } from "@webiny/api-i18n/fields";
 
 export default ({ createBase, context }) => {
@@ -18,6 +18,7 @@ export default ({ createBase, context }) => {
                     fieldId: string({ validation: validation.create("required") }),
                     label: i18nString({ context, validation: validation.create("required") }),
                     type: string({ validation: validation.create("required") }),
+                    localization: boolean({ validation: validation.create("required") }),
                     validation: fields({
                         list: true,
                         value: [],

@@ -44,7 +44,8 @@ const plugin: CmsModelFieldToGraphQLPlugin = {
             };
         },
         createTypeField({ field }) {
-            return field.fieldId + "(locale: String): Float";
+            const localeArg = field.localization ? "(locale: String)" : "";
+            return `${field.fieldId}${localeArg}: Float`;
         }
     },
     manage: {

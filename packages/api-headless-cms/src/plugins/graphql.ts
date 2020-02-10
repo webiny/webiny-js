@@ -90,6 +90,7 @@ export default () => [
                     label: CmsString
                     fieldId: String
                     type: String
+                    localization: Boolean
                     validation: [CmsFieldValidation]
                     settings: JSON
                 }
@@ -99,6 +100,7 @@ export default () => [
                     label: CmsStringInput
                     fieldId: String
                     type: String
+                    localization: Boolean
                     validation: [CmsFieldValidationInput]
                     settings: JSON
                 }

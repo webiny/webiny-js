@@ -26,7 +26,8 @@ const plugin: CmsModelFieldToGraphQLPlugin = {
             };
         },
         createTypeField({ field }) {
-            return field.fieldId + "(locale: String): Boolean";
+            const localeArg = field.localization ? "(locale: String)" : "";
+            return `${field.fieldId}${localeArg}: Boolean`;
         }
     },
     manage: {
@@ -42,16 +43,16 @@ const plugin: CmsModelFieldToGraphQLPlugin = {
                     value: Boolean
                     locale: ID!
                 }
-            
+
                 input CmsManageBooleanInput {
                     values: [CmsManageBooleanLocalizedInput]
                 }
-                
+
                 type CmsManageBooleanLocalized {
                     value: Boolean
                     locale: ID!
                 }
-            
+
                 type CmsManageBoolean {
                     value: Boolean
                     values: [CmsManageBooleanLocalized]!

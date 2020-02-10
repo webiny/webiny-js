@@ -1,15 +1,20 @@
-import {CmsModel, CmsModelField} from "@webiny/api-headless-cms/types";
+import { CmsModel, CmsModelField } from "@webiny/api-headless-cms/types";
+import { createReadTypeName, createTypeName } from "../utils/createTypeName";
 
 interface CreateListArgs {
     (params: { model: CmsModel; field: CmsModelField }): string;
 }
 
-export const createListArgs: CreateListArgs = () => {
+export const createListArgs: CreateListArgs = ({ field }) => {
+    const localeArg = field.localization ? "locale: String" : "";
+    const typeName = createTypeName(field.settings.modelId);
+    const rTypeName = createReadTypeName(typeName);
+
     return /* GraphQL */ `(
-        locale: String
+        ${localeArg}
         page: Int
         perPage: Int
-        where: JSON
-        sort: JSON
+        where: ${rTypeName}FilterInput
+        sort: [${rTypeName}Sorter]
     )`;
 };

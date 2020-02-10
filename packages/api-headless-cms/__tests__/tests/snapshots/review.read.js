@@ -7,9 +7,9 @@ export default /* GraphQL */ `
         createdOn: DateTime
         updatedOn: DateTime
         savedOn: DateTime
-        text(locale: String): String
-        product(locale: String): CmsReadProduct
-        rating(locale: String): Float
+        text: String
+        product: CmsReadProduct
+        rating: Float
     }
 
     input CmsReadReviewFilterInput {

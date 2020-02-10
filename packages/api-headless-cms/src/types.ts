@@ -22,6 +22,7 @@ export type CmsModelField = {
     label: CmsModelFieldValue<string>;
     type: string;
     fieldId: string;
+    localization: boolean;
     validation: CmsFieldValidation[];
     settings?: { [key: string]: any };
 };
