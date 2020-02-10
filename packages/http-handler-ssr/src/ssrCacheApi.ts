@@ -115,17 +115,17 @@ export default (): HttpHandlerPlugin => ({
                     });
                 }
 
-                const key = event.headers["X-Cdn-Deployment-Id"];
+                const version = event.headers["X-Cdn-Deployment-Id"];
 
                 // "expired" flag tells us to invalidate only if the cache is considered as expired.
                 if (actionArgs.expired === true) {
-                    // Only check "key" if it was actually received in the headers.
-                    let keysDifferent = false;
-                    if (key) {
-                        keysDifferent = ssrCache.key !== key;
+                    // Only check "version" if it was actually received in the headers.
+                    let versionsDifferent = false;
+                    if (version) {
+                        versionsDifferent = ssrCache.version !== version;
                     }
 
-                    if (!keysDifferent && !ssrCache.hasExpired) {
+                    if (!versionsDifferent && !ssrCache.hasExpired) {
                         return createResponse({
                             type: "text/json",
                             body: JSON.stringify({
@@ -139,7 +139,7 @@ export default (): HttpHandlerPlugin => ({
                 await ssrCache.invalidate();
                 data.invalidated = true;
                 if (actionArgs.refresh) {
-                    await ssrCache.refresh(key);
+                    await ssrCache.refresh(version);
                     data.refreshed = true;
                 }
 

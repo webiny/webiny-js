@@ -26,11 +26,11 @@ export default ({ createBase, options = {} }: any = {}) =>
                 }
             }),
             content: string({ value: null }),
-            key: string({
+            version: string({
                 value: null,
                 validate(value) {
                     if (value && value.length > 100) {
-                        throw Error(`Field "key" cannot have more than 100 characters.`);
+                        throw Error(`Field "version" cannot have more than 100 characters.`);
                     }
                 }
             }),
@@ -87,20 +87,20 @@ export default ({ createBase, options = {} }: any = {}) =>
             get isRefreshing() {
                 return this.lastRefresh.startedOn && !this.lastRefresh.endedOn;
             },
-            isStale(key) {
+            isStale(version) {
                 if (this.hasExpired) {
                     return true;
                 }
 
-                return key && key !== this.key;
+                return version && version !== this.version;
             },
             incrementExpiresOn(seconds = options.cache.staleTtl) {
                 this.expiresOn = new Date();
                 this.expiresOn.setSeconds(this.expiresOn.getSeconds() + seconds);
                 return this;
             },
-            async refresh(key = null) {
-                this.key = key;
+            async refresh(version = null) {
+                this.version = version;
                 this.lastRefresh.startedOn = new Date();
                 this.lastRefresh.endedOn = null;
                 this.lastRefresh.duration = null;
@@ -118,7 +118,7 @@ export default ({ createBase, options = {} }: any = {}) =>
                 await this.hook("beforeInvalidate");
                 this.expiresOn = null;
                 this.content = null;
-                this.key = null;
+                this.version = null;
                 await this.save();
                 await this.hook("afterInvalidate");
             }

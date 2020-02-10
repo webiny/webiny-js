@@ -27,12 +27,12 @@ export default (options): HttpHandlerPlugin => {
                     await ssrCache.save();
                 }
 
-                const key = event.headers["X-Cdn-Deployment-Id"];
+                const version = event.headers["X-Cdn-Deployment-Id"];
 
                 if (ssrCache.isEmpty) {
-                    await ssrCache.refresh(key);
+                    await ssrCache.refresh(version);
                 } else {
-                    if (ssrCache.isStale(key)) {
+                    if (ssrCache.isStale(version)) {
                         // On expiration, asynchronously trigger SSR cache refreshing.
                         // This will only increment expiresOn for the "options.cache.staleTtl" seconds, which
                         // is a short duration, enough for the actual refresh to complete, which will again update the
