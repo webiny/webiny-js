@@ -60,15 +60,24 @@ export default [
             {
                 _id: shortId.generate(),
                 label: {
-                    values: [{ locale: locales.en.id, value: "Products" }]
+                    values: [{ locale: locales.en.id, value: "Product" }]
                 },
                 type: "ref",
-                fieldId: "products",
+                fieldId: "product",
                 validation: [],
                 settings: {
-                    type: "many",
+                    type: "one",
                     modelId: "product"
                 }
+            },
+            {
+                _id: shortId.generate(),
+                label: {
+                    values: [{ locale: locales.en.id, value: "Rating" }]
+                },
+                type: "float",
+                fieldId: "rating",
+                validation: []
             }
         ]
     },
@@ -134,7 +143,7 @@ export default [
                     values: [{ locale: locales.en.id, value: "Price" }]
                 },
                 fieldId: "price",
-                type: "integer",
+                type: "float",
                 validation: [
                     {
                         name: "required",
@@ -143,6 +152,24 @@ export default [
                         }
                     }
                 ]
+            },
+            {
+                _id: shortId.generate(),
+                label: {
+                    values: [{ locale: locales.en.id, value: "Price" }]
+                },
+                fieldId: "inStock",
+                type: "boolean",
+                validation: []
+            },
+            {
+                _id: shortId.generate(),
+                label: {
+                    values: [{ locale: locales.en.id, value: "Price" }]
+                },
+                fieldId: "itemsInStock",
+                type: "integer",
+                validation: []
             },
             {
                 _id: shortId.generate(),

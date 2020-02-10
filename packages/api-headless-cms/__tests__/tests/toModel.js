@@ -78,8 +78,20 @@ export default ({ plugins }) => {
                     },
                     price: {
                         values: [
-                            { locale: locales.en.id, value: 100 },
-                            { locale: locales.de.id, value: 87 }
+                            { locale: locales.en.id, value: 100.0 },
+                            { locale: locales.de.id, value: 87.0 }
+                        ]
+                    },
+                    inStock: {
+                        values: [
+                            { locale: locales.en.id, value: true },
+                            { locale: locales.de.id, value: false }
+                        ]
+                    },
+                    itemsInStock: {
+                        values: [
+                            { locale: locales.en.id, value: 20 },
+                            { locale: locales.de.id, value: 45 }
                         ]
                     },
                     availableOn: {
@@ -100,11 +112,31 @@ export default ({ plugins }) => {
                     ]
                 });
                 expect(product.title.value()).toBe("Laptop EN");
-                expect(product.price.value()).toBe(100);
+                expect(product.price.value()).toBe(100.0);
 
                 const productCategory = await product.category.value();
                 expect(productCategory.id).toBe(category.id);
                 expect(productCategory.title.value()).toBe("Hardware EN");
+
+                const Review = context.models["review"];
+                const review = new Review();
+                review.populate({
+                    text: {
+                        values: [{ locale: locales.en.id, value: "An average product" }]
+                    },
+                    rating: {
+                        values: [{ locale: locales.en.id, value: 4.5 }]
+                    },
+                    product: {
+                        values: [{ locale: locales.en.id, value: product.id }]
+                    }
+                });
+
+                await review.save();
+
+                expect(review.text.value()).toBe("An average product");
+                expect(review.rating.value()).toBe(4.5);
+                expect((await review.product.value()).id).toBe(product.id);
             });
         });
     });
@@ -178,9 +210,7 @@ export default ({ plugins }) => {
             const field = "dateTimeWithTimezone";
 
             test(`Date object should pass`, () => {
-                expect(() =>
-                    instance.populate({ [field]: createValue(new Date()) })
-                ).not.toThrow();
+                expect(() => instance.populate({ [field]: createValue(new Date()) })).not.toThrow();
             });
 
             test(`"random string" should fail`, () => {
@@ -190,9 +220,8 @@ export default ({ plugins }) => {
             });
 
             test(`"2020-05-04T12:35:17Z" should pass`, () => {
-                expect(() =>
-                    instance.populate({ [field]: createValue("2020-05-04T12:35:17Z") })
-                ).resolves;
+                expect(() => instance.populate({ [field]: createValue("2020-05-04T12:35:17Z") }))
+                    .resolves;
             });
         });
 

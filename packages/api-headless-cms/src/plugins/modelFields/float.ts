@@ -1,5 +1,5 @@
 import { CmsModelFieldToCommodoFieldPlugin } from "@webiny/api-headless-cms/types";
-import { withFields, number } from "@webiny/commodo";
+import { withFields, float } from "@webiny/commodo";
 import { i18nField } from "./i18nFields";
 
 const plugin: CmsModelFieldToCommodoFieldPlugin = {
@@ -9,7 +9,7 @@ const plugin: CmsModelFieldToCommodoFieldPlugin = {
     apply({ model, field, validation, context }) {
         return withFields({
             [field.fieldId]: i18nField({
-                field: number({ validation }),
+                field: float({ validation }),
                 defaultValue: null,
                 context
             })

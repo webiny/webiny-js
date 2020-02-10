@@ -3,6 +3,7 @@ import { CmsFieldTypePlugins, CmsModel } from "@webiny/api-headless-cms/types";
 import { GraphQLContext } from "@webiny/api/types";
 import { createManageTypeName, createTypeName } from "../utils/createTypeName";
 import { renderInputFields } from "../utils/renderInputFields";
+import { renderSortEnum } from "../utils/renderSortEnum";
 import { renderFields } from "../utils/renderFields";
 import { renderListFilterFields } from "../utils/renderListFilterFields";
 
@@ -53,6 +54,14 @@ export const createManageSDL: CreateManageSDL = ({ model, fieldTypePlugins }): s
             error: CmsError
         }
         
+        enum ${mTypeName}Sorter {
+            createdOn_ASC
+            createdOn_DESC
+            updatedOn_ASC
+            updatedOn_DESC
+            ${renderSortEnum({ model, fieldTypePlugins })}
+        }
+        
         extend type CmsManageQuery {
             get${typeName}(id: ID, locale: String): ${mTypeName}Response
             
@@ -60,7 +69,7 @@ export const createManageSDL: CreateManageSDL = ({ model, fieldTypePlugins }): s
                 locale: String
                 page: Int
                 perPage: Int
-                sort: JSON
+                sort: [${mTypeName}Sorter]
                 where: ${mTypeName}FilterInput
             ): ${mTypeName}ListResponse
         }

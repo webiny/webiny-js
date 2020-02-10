@@ -53,6 +53,15 @@ export default /* GraphQL */ `
         error: CmsError
     }
 
+    enum CmsManageCategorySorter {
+        createdOn_ASC
+        createdOn_DESC
+        updatedOn_ASC
+        updatedOn_DESC
+        title_ASC
+        title_DESC
+    }
+
     extend type CmsManageQuery {
         getCategory(id: ID, locale: String): CmsManageCategoryResponse
 
@@ -60,7 +69,7 @@ export default /* GraphQL */ `
             locale: String
             page: Int
             perPage: Int
-            sort: JSON
+            sort: [CmsManageCategorySorter]
             where: CmsManageCategoryFilterInput
         ): CmsManageCategoryListResponse
     }
