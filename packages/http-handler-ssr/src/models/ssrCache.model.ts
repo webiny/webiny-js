@@ -26,6 +26,14 @@ export default ({ createBase, options = {} }: any = {}) =>
                 }
             }),
             content: string({ value: null }),
+            key: string({
+                value: null,
+                validate(value) {
+                    if (value && value.length > 100) {
+                        throw Error(`Field "key" cannot have more than 100 characters.`);
+                    }
+                }
+            }),
             refreshedOn: skipOnPopulate()(date()),
             expiresOn: skipOnPopulate()(date()),
             cacheTags: skipOnPopulate()(object({ list: true })),
@@ -76,21 +84,32 @@ export default ({ createBase, options = {} }: any = {}) =>
                 const expiresIn = this.expiresOn - new Date();
                 return expiresIn > 0 ? expiresIn : 0;
             },
+            get isRefreshing() {
+                return this.lastRefresh.startedOn && !this.lastRefresh.endedOn;
+            },
+            isStale(key) {
+                if (this.hasExpired) {
+                    return true;
+                }
 
+                return key && key !== this.key;
+            },
             incrementExpiresOn(seconds = options.cache.staleTtl) {
                 this.expiresOn = new Date();
                 this.expiresOn.setSeconds(this.expiresOn.getSeconds() + seconds);
                 return this;
             },
-            async refresh() {
+            async refresh(key = null) {
+                this.key = key;
                 this.lastRefresh.startedOn = new Date();
+                this.lastRefresh.endedOn = null;
+                this.lastRefresh.duration = null;
                 await this.save();
 
                 this.content = await getSsrHtml(options.ssrFunction, { path: this.path });
-
-                this.lastRefresh.endedOn = new Date();
-                this.lastRefresh.duration = this.lastRefresh.endedOn - this.lastRefresh.startedOn;
                 this.refreshedOn = new Date();
+                this.lastRefresh.endedOn = this.refreshedOn;
+                this.lastRefresh.duration = this.lastRefresh.endedOn - this.lastRefresh.startedOn;
                 this.incrementExpiresOn(options.cache.ttl);
 
                 await this.save();
@@ -99,6 +118,7 @@ export default ({ createBase, options = {} }: any = {}) =>
                 await this.hook("beforeInvalidate");
                 this.expiresOn = null;
                 this.content = null;
+                this.key = null;
                 await this.save();
                 await this.hook("afterInvalidate");
             }
