@@ -37,7 +37,6 @@ export default (): HttpHandlerPlugin => ({
         const [event] = args;
         const path = event.path + qs.stringify(event.multiValueQueryStringParameters, true);
 
-
         let body = event.body;
         if (event.isBase64Encoded) {
             body = Buffer.from(event.body, "base64").toString("utf-8");
@@ -101,11 +100,12 @@ export default (): HttpHandlerPlugin => ({
                     ssrCache: {
                         hasExpired: ssrCache.hasExpired,
                         expiresIn: ssrCache.expiresIn,
-                        expiresOn: ssrCache.expiresOn
+                        expiresOn: ssrCache.expiresOn,
+                        isRefreshing: ssrCache.isRefreshing
                     }
                 };
 
-                if (actionArgs.expired === true && !ssrCache.hasExpired) {
+                if (data.ssrCache.isRefreshing) {
                     return createResponse({
                         type: "text/json",
                         body: JSON.stringify({
@@ -115,17 +115,39 @@ export default (): HttpHandlerPlugin => ({
                     });
                 }
 
+                const key = event.headers["X-Cdn-Deployment-Id"];
+
+                // "expired" flag tells us to invalidate only if the cache is considered as expired.
+                if (actionArgs.expired === true) {
+                    // Only check "key" if it was actually received in the headers.
+                    let keysDifferent = false;
+                    if (key) {
+                        keysDifferent = ssrCache.key !== key;
+                    }
+
+                    if (!keysDifferent && !ssrCache.hasExpired) {
+                        return createResponse({
+                            type: "text/json",
+                            body: JSON.stringify({
+                                error: false,
+                                data
+                            })
+                        });
+                    }
+                }
+
                 await ssrCache.invalidate();
                 data.invalidated = true;
                 if (actionArgs.refresh) {
-                    await ssrCache.refresh();
+                    await ssrCache.refresh(key);
                     data.refreshed = true;
                 }
 
                 data.ssrCache = {
                     hasExpired: ssrCache.hasExpired,
                     expiresIn: ssrCache.expiresIn,
-                    expiresOn: ssrCache.expiresOn
+                    expiresOn: ssrCache.expiresOn,
+                    isRefreshing: ssrCache.isRefreshing
                 };
 
                 return createResponse({
