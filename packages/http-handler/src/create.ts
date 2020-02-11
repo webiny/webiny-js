@@ -4,15 +4,16 @@ import {
     HttpAfterHandlerPlugin,
     HttpBeforeHandlerPlugin,
     HttpContextPlugin,
-    HttpHandlerPlugin
+    HttpHandlerPlugin,
+    HttpErrorHandlerPlugin
 } from "./types";
 
 export default (...plugins) => async (...args) => {
-    try {
-        const context = {
-            plugins: new PluginsContainer(plugins)
-        };
+    const context = {
+        plugins: new PluginsContainer(plugins)
+    };
 
+    try {
         const contextPlugins = context.plugins.byType<HttpContextPlugin>("context");
         for (let i = 0; i < contextPlugins.length; i++) {
             contextPlugins[i].apply({ context, args });
@@ -23,13 +24,19 @@ export default (...plugins) => async (...args) => {
             await beforeHandlers[i].handle({ context, args });
         }
 
-        let result;
+        let result, handled;
         const handlers = context.plugins.byType<HttpHandlerPlugin>("handler");
         for (let i = 0; i < handlers.length; i++) {
             const handler = handlers[i];
             if (handler.canHandle({ context, args })) {
                 result = await handler.handle({ context, args });
+                handled = true;
+                break;
             }
+        }
+
+        if (!handled) {
+            throw new Error("Not a single handler could handle the request.");
         }
 
         const afterHandlers = context.plugins.byType<HttpAfterHandlerPlugin>("after-handler");
@@ -37,19 +44,20 @@ export default (...plugins) => async (...args) => {
             await afterHandlers[i].handle({ context, args, result });
         }
 
-        if (!result) {
-            return createResponse({
-                body: "Request not handled. Please check registered handlers."
-            });
+        return result;
+    } catch (error) {
+        const handlers = context.plugins.byType<HttpErrorHandlerPlugin>("error-handler");
+        for (let i = 0; i < handlers.length; i++) {
+            const handler = handlers[i];
+            if (handler.canHandle({ context, args, error })) {
+                return handler.handle({ context, args, error });
+            }
         }
 
-        return result;
-    } catch (e) {
-        // TODO: Make optional and pluginable.
         return createResponse({
             statusCode: 404,
             type: "text/html",
-            body: `<html><h1>An error occurred</h1><p>${e.stack}</p></html>`,
+            body: `<html><h1>An error occurred</h1><p>${error.stack}</p></html>`,
             headers: { "Cache-Control": "no-store" }
         });
     }
