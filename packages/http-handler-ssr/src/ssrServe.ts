@@ -27,24 +27,28 @@ export default (options): HttpHandlerPlugin => {
                     await ssrCache.save();
                 }
 
+                const version = event.headers["X-Cdn-Deployment-Id"];
+
                 if (ssrCache.isEmpty) {
-                    await ssrCache.refresh();
-                } else if (ssrCache.hasExpired) {
-                    // On expiration, asynchronously trigger SSR cache refreshing.
-                    // This will only increment expiresOn for the "options.cache.staleTtl" seconds, which
-                    // is a short duration, enough for the actual refresh to complete, which will again update the
-                    // expiration. Default value of "options.cache.staleTtl" is 20 seconds.
-                    await ssrCache.incrementExpiresOn().save();
-                    const Lambda = new LambdaClient({ region: process.env.AWS_REGION });
-                    await Lambda.invoke({
-                        FunctionName: process.env.AWS_LAMBDA_FUNCTION_NAME,
-                        InvocationType: "Event",
-                        Payload: JSON.stringify({
-                            ...event,
-                            httpMethod: "POST",
-                            body: ["refreshSsrCache", { path: ssrCache.path }]
-                        })
-                    }).promise();
+                    await ssrCache.refresh(version);
+                } else {
+                    if (ssrCache.isStale(version)) {
+                        // On expiration, asynchronously trigger SSR cache refreshing.
+                        // This will only increment expiresOn for the "options.cache.staleTtl" seconds, which
+                        // is a short duration, enough for the actual refresh to complete, which will again update the
+                        // expiration. Default value of "options.cache.staleTtl" is 20 seconds.
+                        await ssrCache.incrementExpiresOn().save();
+                        const Lambda = new LambdaClient({ region: process.env.AWS_REGION });
+                        await Lambda.invoke({
+                            FunctionName: process.env.AWS_LAMBDA_FUNCTION_NAME,
+                            InvocationType: "Event",
+                            Payload: JSON.stringify({
+                                ...event,
+                                httpMethod: "POST",
+                                body: { ssr: ["invalidateSsrCacheByPath", { path: ssrCache.path }] }
+                            })
+                        }).promise();
+                    }
                 }
 
                 let buffer = Buffer.from(ssrCache.content);
