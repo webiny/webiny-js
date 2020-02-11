@@ -26,7 +26,11 @@ export default /* GraphQL */ `
         availableOn: CmsManageDateInput
     }
 
-    input CmsManageProductFilterInput {
+    input CmsManageProductGetWhereInput {
+        id: ID!
+    }
+
+    input CmsManageProductListWhereInput {
         id: ID
         id_not: ID
         id_in: [ID]
@@ -144,6 +148,14 @@ export default /* GraphQL */ `
         availableOn_gte: String
     }
 
+    input CmsManageProductUpdateWhereInput {
+        id: ID!
+    }
+
+    input CmsManageProductDeleteWhereInput {
+        id: ID!
+    }
+
     type CmsManageProductResponse {
         data: CmsManageProduct
         error: CmsError
@@ -155,7 +167,7 @@ export default /* GraphQL */ `
         error: CmsError
     }
 
-    enum CmsManageProductSorter {
+    enum CmsManageProductListSorter {
         createdOn_ASC
         createdOn_DESC
         updatedOn_ASC
@@ -173,20 +185,25 @@ export default /* GraphQL */ `
     }
 
     extend type CmsManageQuery {
-        getProduct(id: ID, locale: String): CmsManageProductResponse
+        getProduct(locale: String, where: CmsManageProductGetWhereInput!): CmsManageProductResponse
 
         listProducts(
             locale: String
             page: Int
             perPage: Int
-            sort: [CmsManageProductSorter]
-            where: CmsManageProductFilterInput
+            sort: [CmsManageProductListSorter]
+            where: CmsManageProductListWhereInput
         ): CmsManageProductListResponse
     }
 
     extend type CmsManageMutation {
         createProduct(data: CmsManageProductInput!): CmsManageProductResponse
-        updateProduct(id: ID!, data: CmsManageProductInput!): CmsManageProductResponse
-        deleteProduct(id: ID!): CmsDeleteResponse
+
+        updateProduct(
+            where: CmsManageProductUpdateWhereInput!
+            data: CmsManageProductInput!
+        ): CmsManageProductResponse
+
+        deleteProduct(where: CmsManageProductDeleteWhereInput!): CmsDeleteResponse
     }
 `;

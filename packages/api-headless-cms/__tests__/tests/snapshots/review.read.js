@@ -12,7 +12,11 @@ export default /* GraphQL */ `
         rating: Float
     }
 
-    input CmsReadReviewFilterInput {
+    input CmsReadReviewGetWhereInput {
+        id: ID!
+    }
+
+    input CmsReadReviewListWhereInput {
         id: ID
         id_not: ID
         id_in: [ID]
@@ -67,7 +71,7 @@ export default /* GraphQL */ `
         rating_gte: Float
     }
 
-    enum CmsReadReviewSorter {
+    enum CmsReadReviewListSorter {
         createdOn_ASC
         createdOn_DESC
         updatedOn_ASC
@@ -90,18 +94,14 @@ export default /* GraphQL */ `
     }
 
     extend type CmsReadQuery {
-        getReview(
-            locale: String
-            where: CmsReadReviewFilterInput
-            sort: [CmsReadReviewSorter]
-        ): CmsReadReviewResponse
+        getReview(locale: String, where: CmsReadReviewGetWhereInput!): CmsReadReviewResponse
 
         listReviews(
             locale: String
             page: Int
             perPage: Int
-            where: CmsReadReviewFilterInput
-            sort: [CmsReadReviewSorter]
+            where: CmsReadReviewListWhereInput
+            sort: [CmsReadReviewListSorter]
         ): CmsReadReviewListResponse
     }
 `;

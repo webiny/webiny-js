@@ -10,7 +10,11 @@ export default /* GraphQL */ `
         title(locale: String): String
     }
 
-    input CmsReadCategoryFilterInput {
+    input CmsReadCategoryGetWhereInput {
+        id: ID!
+    }
+
+    input CmsReadCategoryListWhereInput {
         id: ID
         id_not: ID
         id_in: [ID]
@@ -38,7 +42,7 @@ export default /* GraphQL */ `
         title_not_contains: String
     }
 
-    enum CmsReadCategorySorter {
+    enum CmsReadCategoryListSorter {
         createdOn_ASC
         createdOn_DESC
         updatedOn_ASC
@@ -59,18 +63,14 @@ export default /* GraphQL */ `
     }
 
     extend type CmsReadQuery {
-        getCategory(
-            locale: String
-            where: CmsReadCategoryFilterInput
-            sort: [CmsReadCategorySorter]
-        ): CmsReadCategoryResponse
+        getCategory(locale: String, where: CmsReadCategoryGetWhereInput!): CmsReadCategoryResponse
 
         listCategories(
             locale: String
             page: Int
             perPage: Int
-            where: CmsReadCategoryFilterInput
-            sort: [CmsReadCategorySorter]
+            where: CmsReadCategoryListWhereInput
+            sort: [CmsReadCategoryListSorter]
         ): CmsReadCategoryListResponse
     }
 `;

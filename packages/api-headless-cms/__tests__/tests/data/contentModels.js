@@ -10,7 +10,9 @@ export default [
             {
                 _id: shortId.generate(),
                 label: {
-                    values: [{ locale: locales.en.id, value: "Title" }]
+                    values: [
+                        { locale: locales.en.id, value: "Title" }
+                    ]
                 },
                 type: "text",
                 fieldId: "title",
@@ -190,7 +192,7 @@ export default [
                 localization: false,
                 type: "datetime",
                 settings: {
-                  type: "date"
+                    type: "date"
                 },
                 validation: [
                     {

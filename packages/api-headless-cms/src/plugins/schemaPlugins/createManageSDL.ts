@@ -35,12 +35,24 @@ export const createManageSDL: CreateManageSDL = ({ model, fieldTypePlugins }): s
             ${renderInputFields({ model, fieldTypePlugins })}
         }
         
-        input ${mTypeName}FilterInput {
+        input ${mTypeName}GetWhereInput {
+            id: ID!
+        }
+        
+        input ${mTypeName}ListWhereInput {
             id: ID
             id_not: ID
             id_in: [ID]
             id_not_in: [ID]
             ${renderListFilterFields({ model, type: "manage", fieldTypePlugins })}
+        }
+        
+        input ${mTypeName}UpdateWhereInput {
+            id: ID!
+        }
+        
+        input ${mTypeName}DeleteWhereInput {
+            id: ID!
         }
         
         type ${mTypeName}Response {
@@ -54,7 +66,7 @@ export const createManageSDL: CreateManageSDL = ({ model, fieldTypePlugins }): s
             error: CmsError
         }
         
-        enum ${mTypeName}Sorter {
+        enum ${mTypeName}ListSorter {
             createdOn_ASC
             createdOn_DESC
             updatedOn_ASC
@@ -63,21 +75,23 @@ export const createManageSDL: CreateManageSDL = ({ model, fieldTypePlugins }): s
         }
         
         extend type CmsManageQuery {
-            get${typeName}(id: ID, locale: String): ${mTypeName}Response
+            get${typeName}(locale: String, where: ${mTypeName}GetWhereInput!): ${mTypeName}Response
             
             list${pluralize(typeName)}(
                 locale: String
                 page: Int
                 perPage: Int
-                sort: [${mTypeName}Sorter]
-                where: ${mTypeName}FilterInput
+                sort: [${mTypeName}ListSorter]
+                where: ${mTypeName}ListWhereInput
             ): ${mTypeName}ListResponse
         }
         
         extend type CmsManageMutation{
             create${typeName}(data: ${mTypeName}Input!): ${mTypeName}Response
-            update${typeName}(id: ID!, data: ${mTypeName}Input!): ${mTypeName}Response
-            delete${typeName}(id: ID!): CmsDeleteResponse
+            
+            update${typeName}(where: ${mTypeName}UpdateWhereInput!, data: ${mTypeName}Input!): ${mTypeName}Response
+            
+            delete${typeName}(where: ${mTypeName}DeleteWhereInput!): CmsDeleteResponse
         }
     `;
 };

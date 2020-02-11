@@ -4,6 +4,7 @@ import { upperFirst } from "lodash";
 import pluralize from "pluralize";
 import contentModels from "./data/contentModels";
 import headlessPlugins from "../../src/plugins";
+import { locales } from "../mocks/mockI18NLocales";
 
 const schemaTypes = /* GraphQL */ `
     {
@@ -109,7 +110,7 @@ export default ({ plugins }) => {
             expect(cmsTypes).toContain("CmsManageReview");
         });
 
-        describe("cmsRead", () => {
+        describe("cmsRead typeDefs", () => {
             const contentModel = contentModels[0];
             const modelName = upperFirst(contentModel.modelId);
 
@@ -135,20 +136,10 @@ export default ({ plugins }) => {
                 expect(whereArg).toMatchObject({
                     name: "where",
                     type: {
-                        name: `CmsRead${modelName}FilterInput`,
-                        kind: "INPUT_OBJECT",
-                        ofType: null
-                    }
-                });
-
-                const sortArg = field.args.find(arg => arg.name === "sort");
-                expect(sortArg).toMatchObject({
-                    name: "sort",
-                    type: {
                         name: null,
-                        kind: "LIST",
+                        kind: "NON_NULL",
                         ofType: {
-                            name: `CmsRead${modelName}Sorter`
+                            name: `CmsRead${modelName}GetWhereInput`
                         }
                     }
                 });
@@ -205,7 +196,7 @@ export default ({ plugins }) => {
                 expect(where).toMatchObject({
                     name: "where",
                     type: {
-                        name: `CmsRead${modelName}FilterInput`,
+                        name: `CmsRead${modelName}ListWhereInput`,
                         kind: "INPUT_OBJECT",
                         ofType: null
                     }
@@ -218,7 +209,7 @@ export default ({ plugins }) => {
                         name: null,
                         kind: "LIST",
                         ofType: {
-                            name: `CmsRead${modelName}Sorter`
+                            name: `CmsRead${modelName}ListSorter`
                         }
                     }
                 });
@@ -232,7 +223,58 @@ export default ({ plugins }) => {
             });
         });
 
-        describe("cmsManage", () => {
+        describe("cmsRead resolvers", () => {
+            let category;
+            let targetResult;
+
+            beforeAll(async () => {
+                // Insert demo data via models
+                const Category = testing.context.models["category"];
+                category = new Category();
+
+                await category
+                    .populate({
+                        title: {
+                            values: [
+                                { locale: locales.en.id, value: "Hardware EN" },
+                                { locale: locales.de.id, value: "Hardware DE" }
+                            ]
+                        }
+                    })
+                    .save();
+
+                targetResult = {
+                    data: {
+                        id: category.id,
+                        title: "Hardware EN"
+                    }
+                };
+            });
+
+            test(`get category by ID`, async () => {
+                // Test resolvers
+                const query = /* GraphQL */ `
+                    query GetCategory($id: ID!) {
+                        cmsRead {
+                            getCategory(where: { id: $id }) {
+                                data {
+                                    id
+                                    title
+                                }
+                            }
+                        }
+                    }
+                `;
+
+                const { data } = await graphql(testing.schema, query, {}, testing.context, {
+                    id: category.id
+                });
+                
+                expect(data.cmsRead.getCategory).toMatchObject(targetResult);
+            });
+        });
+
+        describe("cmsManage typeDefs", () => {
             const contentModel = contentModels[0];
             const modelName = upperFirst(contentModel.modelId);
 
@@ -256,13 +298,15 @@ export default ({ plugins }) => {
                     }
                 });
 
-                const idArg = field.args.find(arg => arg.name === "id");
-                expect(idArg).toMatchObject({
-                    name: "id",
+                const whereArg = field.args.find(arg => arg.name === "where");
+                expect(whereArg).toMatchObject({
+                    name: "where",
                     type: {
-                        name: "ID",
-                        kind: "SCALAR",
-                        ofType: null
+                        name: null,
+                        kind: "NON_NULL",
+                        ofType: {
+                            name: `CmsManage${modelName}GetWhereInput`
+                        }
                     }
                 });
 
@@ -320,7 +364,7 @@ export default ({ plugins }) => {
                 expect(where).toMatchObject({
                     name: "where",
                     type: {
-                        name: `CmsManage${modelName}FilterInput`,
+                        name: `CmsManage${modelName}ListWhereInput`,
                         kind: "INPUT_OBJECT",
                         ofType: null
                     }
@@ -333,7 +377,7 @@ export default ({ plugins }) => {
                         name: null,
                         kind: "LIST",
                         ofType: {
-                            name: `CmsManage${modelName}Sorter`
+                            name: `CmsManage${modelName}ListSorter`
                         }
                     }
                 });
@@ -385,14 +429,15 @@ export default ({ plugins }) => {
 
                 const field = CmsManageMutation.fields.find(f => f.name === `update${modelName}`);
                 expect(field).toBeTruthy();
-                
-                const idArg = field.args.find(arg => arg.name === "id");
-                expect(idArg).toMatchObject({
-                    name: "id",
+
+                const whereArg = field.args.find(arg => arg.name === "where");
+                expect(whereArg).toMatchObject({
+                    name: "where",
                     type: {
+                        name: null,
                         kind: "NON_NULL",
                         ofType: {
-                            name: "ID"
+                            name: `CmsManage${modelName}UpdateWhereInput`
                         }
                     }
                 });
@@ -416,6 +461,7 @@ export default ({ plugins }) => {
                     ofType: null
                 });
             });
+
             test(`delete a model entry`, async () => {
                 const { data } = await graphql(testing.schema, schemaTypes, {}, testing.context);
                 const CmsManageMutation = data.__schema.types.find(
@@ -426,13 +472,14 @@ export default ({ plugins }) => {
                 const field = CmsManageMutation.fields.find(f => f.name === `delete${modelName}`);
                 expect(field).toBeTruthy();
 
-                const idArg = field.args.find(arg => arg.name === "id");
-                expect(idArg).toMatchObject({
-                    name: "id",
+                const whereArg = field.args.find(arg => arg.name === "where");
+                expect(whereArg).toMatchObject({
+                    name: "where",
                     type: {
+                        name: null,
                         kind: "NON_NULL",
                         ofType: {
-                            name: "ID"
+                            name: `CmsManage${modelName}DeleteWhereInput`
                         }
                     }
                 });

@@ -12,8 +12,8 @@ export default /* GraphQL */ `
         reviews(
             page: Int
             perPage: Int
-            where: CmsReadReviewFilterInput
-            sort: [CmsReadReviewSorter]
+            where: CmsReadReviewListWhereInput
+            sort: [CmsReadReviewListSorter]
         ): CmsReadReviewListResponse
         price: Float
         inStock: Boolean
@@ -21,7 +21,11 @@ export default /* GraphQL */ `
         availableOn: String
     }
 
-    input CmsReadProductFilterInput {
+    input CmsReadProductGetWhereInput {
+        id: ID!
+    }
+
+    input CmsReadProductListWhereInput {
         id: ID
         id_not: ID
         id_in: [ID]
@@ -139,7 +143,7 @@ export default /* GraphQL */ `
         availableOn_gte: String
     }
 
-    enum CmsReadProductSorter {
+    enum CmsReadProductListSorter {
         createdOn_ASC
         createdOn_DESC
         updatedOn_ASC
@@ -168,18 +172,14 @@ export default /* GraphQL */ `
     }
 
     extend type CmsReadQuery {
-        getProduct(
-            locale: String
-            where: CmsReadProductFilterInput
-            sort: [CmsReadProductSorter]
-        ): CmsReadProductResponse
+        getProduct(locale: String, where: CmsReadProductGetWhereInput!): CmsReadProductResponse
 
         listProducts(
             locale: String
             page: Int
             perPage: Int
-            where: CmsReadProductFilterInput
-            sort: [CmsReadProductSorter]
+            where: CmsReadProductListWhereInput
+            sort: [CmsReadProductListSorter]
         ): CmsReadProductListResponse
     }
 `;

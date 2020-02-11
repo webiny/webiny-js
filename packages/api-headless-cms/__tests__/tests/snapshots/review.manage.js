@@ -18,7 +18,11 @@ export default /* GraphQL */ `
         rating: CmsManageFloatInput
     }
 
-    input CmsManageReviewFilterInput {
+    input CmsManageReviewGetWhereInput {
+        id: ID!
+    }
+
+    input CmsManageReviewListWhereInput {
         id: ID
         id_not: ID
         id_in: [ID]
@@ -44,33 +48,42 @@ export default /* GraphQL */ `
 
         # Matches if given value is not a substring of the the field value
         text_not_contains: String
-        
+
         # Matches if the field is equal to the given value
         rating: Float
-        
+
         # Matches if the field is not equal to the given value
         rating_not: Float
-        
+
         # Matches if the field exists
         rating_exists: Boolean
-        
+
         # Matches if the field value equal one of the given values
         rating_in: [Float]
-        
+
         # Matches if the field value does not equal any of the given values
         rating_not_in: [Float]
-        
+
         # Matches if the field value is strictly smaller than the given value
         rating_lt: Float
-        
+
         # Matches if the field value is smaller than or equal to the given value
         rating_lte: Float
-        
+
         # Matches if the field value is strictly greater than the given value
         rating_gt: Float
-        
+
         # Matches if the field value is greater than or equal to the given value
         rating_gte: Float
+    }
+    
+    
+    input CmsManageReviewUpdateWhereInput {
+        id: ID!
+    }
+
+    input CmsManageReviewDeleteWhereInput {
+        id: ID!
     }
 
     type CmsManageReviewResponse {
@@ -84,7 +97,7 @@ export default /* GraphQL */ `
         error: CmsError
     }
 
-    enum CmsManageReviewSorter {
+    enum CmsManageReviewListSorter {
         createdOn_ASC
         createdOn_DESC
         updatedOn_ASC
@@ -96,20 +109,25 @@ export default /* GraphQL */ `
     }
 
     extend type CmsManageQuery {
-        getReview(id: ID, locale: String): CmsManageReviewResponse
+        getReview(locale: String, where: CmsManageReviewGetWhereInput!): CmsManageReviewResponse
 
         listReviews(
             locale: String
             page: Int
             perPage: Int
-            sort: [CmsManageReviewSorter]
-            where: CmsManageReviewFilterInput
+            sort: [CmsManageReviewListSorter]
+            where: CmsManageReviewListWhereInput
         ): CmsManageReviewListResponse
     }
 
     extend type CmsManageMutation {
         createReview(data: CmsManageReviewInput!): CmsManageReviewResponse
-        updateReview(id: ID!, data: CmsManageReviewInput!): CmsManageReviewResponse
-        deleteReview(id: ID!): CmsDeleteResponse
+        
+        updateReview(
+            where: CmsManageReviewUpdateWhereInput!
+            data: CmsManageReviewInput!
+        ): CmsManageReviewResponse
+        
+        deleteReview(where: CmsManageReviewDeleteWhereInput!): CmsDeleteResponse
     }
 `;

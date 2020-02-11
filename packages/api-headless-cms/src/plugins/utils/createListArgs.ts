@@ -14,7 +14,7 @@ export const createListArgs: CreateListArgs = ({ field }) => {
         ${localeArg}
         page: Int
         perPage: Int
-        where: ${rTypeName}FilterInput
-        sort: [${rTypeName}Sorter]
+        where: ${rTypeName}ListWhereInput
+        sort: [${rTypeName}ListSorter]
     )`;
 };

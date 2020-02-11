@@ -30,7 +30,11 @@ export const createReadSDL: CreateManageSDL = ({ model, fieldTypePlugins }): str
             ${renderFields({ model, type: "read", fieldTypePlugins })}
         }
         
-        input ${rTypeName}FilterInput {
+        input ${rTypeName}GetWhereInput {
+            id: ID!
+        }
+        
+        input ${rTypeName}ListWhereInput {
             id: ID
             id_not: ID
             id_in: [ID]
@@ -38,7 +42,7 @@ export const createReadSDL: CreateManageSDL = ({ model, fieldTypePlugins }): str
             ${renderListFilterFields({ model, type: "read", fieldTypePlugins })}
         }
         
-        enum ${rTypeName}Sorter {
+        enum ${rTypeName}ListSorter {
             createdOn_ASC
             createdOn_DESC
             updatedOn_ASC
@@ -58,14 +62,14 @@ export const createReadSDL: CreateManageSDL = ({ model, fieldTypePlugins }): str
         }
         
         extend type CmsReadQuery {
-            get${typeName}(locale: String, where: ${rTypeName}FilterInput, sort: [${rTypeName}Sorter]): ${rTypeName}Response
+            get${typeName}(locale: String, where: ${rTypeName}GetWhereInput!): ${rTypeName}Response
 
             list${pluralize(typeName)}(
                 locale: String
                 page: Int
                 perPage: Int
-                where: ${rTypeName}FilterInput
-                sort: [${rTypeName}Sorter]
+                where: ${rTypeName}ListWhereInput
+                sort: [${rTypeName}ListSorter]
             ): ${rTypeName}ListResponse
         }
     `;

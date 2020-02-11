@@ -1,7 +1,7 @@
 import { flow } from "lodash";
 import { withUser } from "@webiny/api-security";
 import { withStorage, withCrudLogs, withSoftDelete, withFields } from "@webiny/commodo";
-import { GraphQLBeforeSchemaPlugin, GraphQLContextPlugin } from "@webiny/api/types";
+import { GraphQLContextPlugin } from "@webiny/api/types";
 import { GraphQLContext } from "@webiny/api-plugin-commodo-db-proxy/types";
 import contentModel from "./models/contentModel.model";
 import { createModelFromData } from "./utils/createModelFromData";
@@ -41,13 +41,6 @@ export default () => {
     }
 
     return [
-        {
-            name: "before-schema-headless-models",
-            type: "before-schema",
-            apply(context) {
-                return apply(context);
-            }
-        } as GraphQLBeforeSchemaPlugin,
         {
             name: "graphql-context-cms-models",
             type: "graphql-context",

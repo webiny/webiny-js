@@ -14,7 +14,11 @@ export default /* GraphQL */ `
         title: CmsManageTextInput
     }
 
-    input CmsManageCategoryFilterInput {
+    input CmsManageCategoryGetWhereInput {
+        id: ID!
+    }
+
+    input CmsManageCategoryListWhereInput {
         id: ID
         id_not: ID
         id_in: [ID]
@@ -42,6 +46,14 @@ export default /* GraphQL */ `
         title_not_contains: String
     }
 
+    input CmsManageCategoryUpdateWhereInput {
+        id: ID!
+    }
+
+    input CmsManageCategoryDeleteWhereInput {
+        id: ID!
+    }
+
     type CmsManageCategoryResponse {
         data: CmsManageCategory
         error: CmsError
@@ -53,7 +65,7 @@ export default /* GraphQL */ `
         error: CmsError
     }
 
-    enum CmsManageCategorySorter {
+    enum CmsManageCategoryListSorter {
         createdOn_ASC
         createdOn_DESC
         updatedOn_ASC
@@ -63,20 +75,28 @@ export default /* GraphQL */ `
     }
 
     extend type CmsManageQuery {
-        getCategory(id: ID, locale: String): CmsManageCategoryResponse
+        getCategory(
+            locale: String
+            where: CmsManageCategoryGetWhereInput!
+        ): CmsManageCategoryResponse
 
         listCategories(
             locale: String
             page: Int
             perPage: Int
-            sort: [CmsManageCategorySorter]
-            where: CmsManageCategoryFilterInput
+            sort: [CmsManageCategoryListSorter]
+            where: CmsManageCategoryListWhereInput
         ): CmsManageCategoryListResponse
     }
 
     extend type CmsManageMutation {
         createCategory(data: CmsManageCategoryInput!): CmsManageCategoryResponse
-        updateCategory(id: ID!, data: CmsManageCategoryInput!): CmsManageCategoryResponse
-        deleteCategory(id: ID!): CmsDeleteResponse
+
+        updateCategory(
+            where: CmsManageCategoryUpdateWhereInput!
+            data: CmsManageCategoryInput!
+        ): CmsManageCategoryResponse
+
+        deleteCategory(where: CmsManageCategoryDeleteWhereInput!): CmsDeleteResponse
     }
 `;
