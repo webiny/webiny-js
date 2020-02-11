@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.0.2-next.0](https://github.com/Webiny/webiny-js/compare/@webiny/serverless-aws-cloudfront@3.0.1...@webiny/serverless-aws-cloudfront@3.0.2-next.0) (2020-02-11)
+
+
+### Bug Fixes
+
+* on new deployments, consider existing SSR HTML as stale ([#709](https://github.com/Webiny/webiny-js/issues/709)) ([cab83c8](https://github.com/Webiny/webiny-js/commit/cab83c8e188f0f78ff1deab4a472f3d8dabb0aaf)), closes [#708](https://github.com/Webiny/webiny-js/issues/708)
+
+
+
+
+
 ## [3.0.1](https://github.com/Webiny/webiny-js/compare/@webiny/serverless-aws-cloudfront@3.0.1-next.0...@webiny/serverless-aws-cloudfront@3.0.1) (2020-02-07)
 
 **Note:** Version bump only for package @webiny/serverless-aws-cloudfront

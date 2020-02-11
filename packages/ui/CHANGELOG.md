@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.0.3-next.0](https://github.com/webiny/webiny-js/compare/@webiny/ui@3.0.2...@webiny/ui@3.0.3-next.0) (2020-02-11)
+
+
+### Bug Fixes
+
+* menu items form (page + pages list items) ([#703](https://github.com/webiny/webiny-js/issues/703)) ([97818d2](https://github.com/webiny/webiny-js/commit/97818d2862ed08ec8493985e46c515362df3179b)), closes [#702](https://github.com/webiny/webiny-js/issues/702)
+
+
+
+
+
 ## [3.0.2](https://github.com/webiny/webiny-js/compare/@webiny/ui@3.0.2-next.0...@webiny/ui@3.0.2) (2020-02-07)
 
 **Note:** Version bump only for package @webiny/ui
