@@ -35,18 +35,6 @@ export type GraphQLContextPlugin<T = GraphQLContext> = Plugin & {
     postApply?: (context: T) => void | Promise<void>;
 };
 
-/**
- * These plugins are processed before Schema construction begins.
- * It allows you to generate dynamic schema plugins and prepare the system for Schema generation.
- */
-export type GraphQLBeforeSchemaPlugin = Plugin & {
-    type: "before-schema";
-    /**
-     * Modify context before schema construction begins.
-     */
-    apply(context: GraphQLContext): void | Promise<void>;
-};
-
 export type GraphQLMiddlewarePlugin = Plugin & {
     middleware: (params: { plugins: PluginsContainer }) => Function[];
 };

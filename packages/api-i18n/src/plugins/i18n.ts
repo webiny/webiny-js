@@ -20,6 +20,7 @@ const plugin: GraphQLContextPlugin<APIContext & I18NContext> = {
         }
 
         const { event } = context;
+
         const self = {
             __i18n: {
                 acceptLanguage: null,
@@ -39,7 +40,7 @@ const plugin: GraphQLContextPlugin<APIContext & I18NContext> = {
                 const allLocales = self.getLocales();
                 const acceptLanguage = acceptLanguageParser.pick(
                     allLocales.map(item => item.code),
-                    event.headers["accept-language"]
+                    event ? event.headers["accept-language"] : null
                 );
 
                 let currentLocale;

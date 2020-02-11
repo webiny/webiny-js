@@ -9,9 +9,9 @@ import {
     GraphQLSchemaPlugin,
     GraphqlScalarPlugin,
     SchemaDefinition,
-    GraphQLBeforeSchemaPlugin,
     GraphQLContext
 } from "../types";
+import { applyGraphQLContextPlugins } from "@webiny/api/utils/contextPlugins";
 
 type PrepareSchemaParams = { plugins: PluginsContainer };
 
@@ -20,10 +20,7 @@ type PrepareSchemaParams = { plugins: PluginsContainer };
  */
 export async function prepareSchema({ plugins }: PrepareSchemaParams) {
     const context: GraphQLContext = { plugins };
-    const beforeSchemaPlugins = plugins.byType<GraphQLBeforeSchemaPlugin>("before-schema");
-    for (let i = 0; i < beforeSchemaPlugins.length; i++) {
-        await beforeSchemaPlugins[i].apply(context);
-    }
+    await applyGraphQLContextPlugins(context);
 
     // This allows developers to register more plugins dynamically, before the graphql schema is instantiated.
     const gqlPlugins = plugins.byType<GraphQLSchemaPlugin>("graphql-schema");

@@ -4,11 +4,11 @@ import { GraphQLSchema } from "graphql";
 import {
     PluginsContainer,
     GraphQLMiddlewarePlugin,
-    GraphQLContextPlugin,
     CreateApolloHandlerPlugin,
     GraphQLContext
 } from "./types";
 import { prepareSchema } from "./graphql/prepareSchema";
+import { applyGraphQLContextPlugins } from "./utils/contextPlugins";
 
 type CreateHandlerParams = {
     plugins: PluginsContainer;
@@ -51,24 +51,7 @@ export const createSchema = async ({
         delete info.operation["__runAtMostOnce"];
 
         // Process `graphql-context` plugins
-        const ctxPlugins = plugins.byType<GraphQLContextPlugin>("graphql-context");
-        for (let i = 0; i < ctxPlugins.length; i++) {
-            if (typeof ctxPlugins[i].preApply === "function") {
-                await ctxPlugins[i].preApply(context);
-            }
-        }
-
-        for (let i = 0; i < ctxPlugins.length; i++) {
-            if (typeof ctxPlugins[i].apply === "function") {
-                await ctxPlugins[i].apply(context);
-            }
-        }
-
-        for (let i = 0; i < ctxPlugins.length; i++) {
-            if (typeof ctxPlugins[i].postApply === "function") {
-                await ctxPlugins[i].postApply(context);
-            }
-        }
+        await applyGraphQLContextPlugins(context);
     });
 
     return { schema, context };

@@ -1,6 +1,6 @@
 import { MongoClient } from "mongodb";
 import { MongoDbDriver, id } from "@commodo/fields-storage-mongodb";
-import { GraphQLBeforeSchemaPlugin, GraphQLContextPlugin } from "@webiny/api/types";
+import { GraphQLContextPlugin } from "@webiny/api/types";
 
 let database = null;
 let client = null;
@@ -66,13 +66,6 @@ export default (options: CommodoMongoDBFactoryOptions) => {
             preApply(context) {
                 return setup(options, context);
             }
-        } as GraphQLContextPlugin,
-        {
-            name: "before-schema-commodo-mongodb",
-            type: "before-schema",
-            apply(context) {
-                return setup(options, context);
-            }
-        } as GraphQLBeforeSchemaPlugin
+        } as GraphQLContextPlugin
     ];
 };

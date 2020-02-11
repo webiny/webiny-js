@@ -1,6 +1,6 @@
 import { createSchema } from "../index";
 import { PluginsContainer } from "@webiny/plugins/PluginsContainer";
-import { GraphQLContextPlugin } from "@webiny/api/types";
+import { applyGraphQLContextPlugins } from "@webiny/api/utils/contextPlugins";
 
 export const setupSchema = async plugins => {
     const pluginsContainer = new PluginsContainer([plugins]);
@@ -14,24 +14,7 @@ export const setupContext = async (plugins, baseContext = {}) => {
     const context = { ...baseContext, plugins: pluginsContainer };
 
     // Process `graphql-context` plugins
-    const ctxPlugins = pluginsContainer.byType<GraphQLContextPlugin>("graphql-context");
-    for (let i = 0; i < ctxPlugins.length; i++) {
-        if (typeof ctxPlugins[i].preApply === "function") {
-            await ctxPlugins[i].preApply(context);
-        }
-    }
-
-    for (let i = 0; i < ctxPlugins.length; i++) {
-        if (typeof ctxPlugins[i].apply === "function") {
-            await ctxPlugins[i].apply(context);
-        }
-    }
-
-    for (let i = 0; i < ctxPlugins.length; i++) {
-        if (typeof ctxPlugins[i].postApply === "function") {
-            await ctxPlugins[i].postApply(context);
-        }
-    }
+    await applyGraphQLContextPlugins(context);
 
     return context;
 };
