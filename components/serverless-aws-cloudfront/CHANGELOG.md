@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.0.2-next.1](https://github.com/Webiny/webiny-js/compare/@webiny/serverless-aws-cloudfront@3.0.2-next.0...@webiny/serverless-aws-cloudfront@3.0.2-next.1) (2020-02-11)
+
+
+### Bug Fixes
+
+* build command ([613930b](https://github.com/Webiny/webiny-js/commit/613930b5a2c5e1bd90714ef9b8ca570a8cc7e0b2))
+
+
+
+
+
 ## [3.0.2-next.0](https://github.com/Webiny/webiny-js/compare/@webiny/serverless-aws-cloudfront@3.0.1...@webiny/serverless-aws-cloudfront@3.0.2-next.0) (2020-02-11)
 
 
