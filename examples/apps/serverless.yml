@@ -9,6 +9,7 @@ vars:
 dbProxy:
   component: "@webiny/serverless-db-proxy/dist"
   inputs:
+    testConnectionBeforeDeploy: true
     region: ${vars.region}
     concurrencyLimit: 15
     timeout: 30
