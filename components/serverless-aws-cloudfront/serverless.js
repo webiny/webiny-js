@@ -64,8 +64,6 @@ class ServerlessAwsCloudfront extends Component {
                     }
                 })
                 .promise();
-        } else {
-            this.context.instance.debug(`Skipping creation of CDN cache invalidation request.`);
         }
 
         this.state.output = output;
