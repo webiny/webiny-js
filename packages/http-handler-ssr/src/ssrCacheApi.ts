@@ -18,7 +18,7 @@ export default (): HttpHandlerPlugin => ({
             return false;
         }
 
-        if (event.path !== "/" || event.httpMethod !== "POST") {
+        if (event.httpMethod !== "POST") {
             return false;
         }
 
