@@ -72,7 +72,6 @@ api:
 cdn:
   component: "@webiny/serverless-aws-cloudfront"
   inputs:
-    invalidateOnDeploy: true
     forwardIdViaHeaders: true
     defaults: # optional
       ttl: 300
