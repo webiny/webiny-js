@@ -293,7 +293,7 @@ export default {
             ) => {
                 const resolver = context.plugins.byName("pb-resolver-search-tags");
 
-                return await resolver.resolve(root, args, context, info);
+                return await resolver.resolve({ root, args, context, info });
             },
             oembedData: oembed
         },
