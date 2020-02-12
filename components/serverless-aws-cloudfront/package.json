@@ -1,6 +1,6 @@
 {
   "name": "@webiny/serverless-aws-cloudfront",
-  "version": "3.0.2-next.1",
+  "version": "3.0.2",
   "main": "serverless.js",
   "license": "MIT",
   "dependencies": {

@@ -1,6 +1,6 @@
 {
   "name": "@webiny/api-form-builder",
-  "version": "2.0.3-next.0",
+  "version": "2.0.3",
   "main": "index.js",
   "repository": {
     "type": "git",
@@ -19,7 +19,7 @@
     "@webiny/api-security": "^3.0.1",
     "@webiny/commodo": "^3.0.1",
     "@webiny/commodo-graphql": "^3.0.1",
-    "@webiny/http-handler-ssr": "^2.0.3-next.0",
+    "@webiny/http-handler-ssr": "^2.0.3",
     "@webiny/validation": "^3.0.1",
     "form-data": "^2.5.0",
     "got": "^9.6.0",

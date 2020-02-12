@@ -1,6 +1,6 @@
 {
   "name": "@webiny/http-handler-index",
-  "version": "2.0.3-next.0",
+  "version": "2.0.3",
   "main": "index.js",
   "license": "MIT",
   "repository": {
@@ -15,7 +15,7 @@
   ],
   "dependencies": {
     "@babel/runtime": "^7.5.5",
-    "@webiny/http-handler": "^2.1.0-next.0",
+    "@webiny/http-handler": "^2.1.0",
     "mime-types": "^2.1.26",
     "zlib": "^1.0.5"
   },

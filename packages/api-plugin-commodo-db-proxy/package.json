@@ -1,6 +1,6 @@
 {
   "name": "@webiny/api-plugin-commodo-db-proxy",
-  "version": "2.0.3-next.0",
+  "version": "2.0.3",
   "main": "index.js",
   "license": "MIT",
   "repository": {
@@ -15,7 +15,7 @@
   ],
   "dependencies": {
     "@babel/runtime": "^7.5.5",
-    "@webiny/commodo-fields-storage-db-proxy": "^2.0.3-next.0"
+    "@webiny/commodo-fields-storage-db-proxy": "^2.0.3"
   },
   "devDependencies": {
     "@babel/cli": "^7.5.5",

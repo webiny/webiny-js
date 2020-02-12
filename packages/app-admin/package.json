@@ -1,6 +1,6 @@
 {
   "name": "@webiny/app-admin",
-  "version": "3.0.2-next.0",
+  "version": "3.0.2",
   "main": "index.js",
   "description": "A collection of plugins that together form a complete admin interface, customizable and extensible with Webiny apps and plugins.",
   "repository": {
@@ -14,11 +14,11 @@
     "@emotion/core": "^10.0.17",
     "@emotion/styled": "^10.0.17",
     "@svgr/webpack": "^4.3.2",
-    "@webiny/app": "^3.0.2-next.0",
+    "@webiny/app": "^3.0.2",
     "@webiny/form": "^3.0.1",
     "@webiny/plugins": "^3.0.1",
     "@webiny/react-router": "^2.0.1",
-    "@webiny/ui": "^3.0.3-next.0",
+    "@webiny/ui": "^3.0.3",
     "apollo-client": "^2.6.8",
     "bytes": "^3.1.0",
     "classnames": "^2.2.6",

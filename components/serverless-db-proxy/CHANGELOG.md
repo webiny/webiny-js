@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.1.0](https://github.com/Webiny/webiny-js/compare/@webiny/serverless-db-proxy@3.1.0-next.0...@webiny/serverless-db-proxy@3.1.0) (2020-02-12)
+
+**Note:** Version bump only for package @webiny/serverless-db-proxy
+
+
+
+
+
 # [3.1.0-next.0](https://github.com/Webiny/webiny-js/compare/@webiny/serverless-db-proxy@3.0.1...@webiny/serverless-db-proxy@3.1.0-next.0) (2020-02-11)
 
 

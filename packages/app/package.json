@@ -1,6 +1,6 @@
 {
   "name": "@webiny/app",
-  "version": "3.0.2-next.0",
+  "version": "3.0.2",
   "main": "index.js",
   "repository": {
     "type": "git",
@@ -18,7 +18,7 @@
     "@webiny/i18n": "^3.0.1",
     "@webiny/i18n-react": "^3.0.1",
     "@webiny/plugins": "^3.0.1",
-    "@webiny/ui": "^3.0.3-next.0",
+    "@webiny/ui": "^3.0.3",
     "apollo-client": "^2.6.8",
     "apollo-link": "^1.2.1",
     "graphql": "^14.5.8",

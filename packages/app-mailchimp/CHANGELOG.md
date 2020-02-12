@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.0.4](https://github.com/webiny/webiny-js/compare/@webiny/app-mailchimp@3.0.4-next.0...@webiny/app-mailchimp@3.0.4) (2020-02-12)
+
+**Note:** Version bump only for package @webiny/app-mailchimp
+
+
+
+
+
 ## [3.0.4-next.0](https://github.com/webiny/webiny-js/compare/@webiny/app-mailchimp@3.0.3...@webiny/app-mailchimp@3.0.4-next.0) (2020-02-11)
 
 **Note:** Version bump only for package @webiny/app-mailchimp

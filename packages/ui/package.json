@@ -1,6 +1,6 @@
 {
   "name": "@webiny/ui",
-  "version": "3.0.3-next.0",
+  "version": "3.0.3",
   "main": "index.js",
   "repository": {
     "type": "git",

@@ -1,11 +1,11 @@
 {
   "name": "@webiny/app-page-builder-theme",
-  "version": "2.0.3-next.0",
+  "version": "2.0.3",
   "main": "index.js",
   "license": "MIT",
   "dependencies": {
-    "@webiny/app": "^3.0.2-next.0",
-    "@webiny/app-page-builder": "^3.1.2-next.0",
+    "@webiny/app": "^3.0.2",
+    "@webiny/app-page-builder": "^3.1.2",
     "@webiny/plugins": "^3.0.1",
     "@webiny/react-router": "^2.0.1",
     "classnames": "^2.2.6",
