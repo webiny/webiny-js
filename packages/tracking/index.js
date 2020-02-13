@@ -77,6 +77,14 @@ const trackProject = async ({ cliVersion }) => {
 };
 
 const trackActivity = async ({ cliVersion, type, activityId }) => {
+    if (!type) {
+        throw new Error("Cannot track activity - type not specified.");
+    }
+
+    if (!cliVersion) {
+        throw new Error("Cannot track activity - CLI version not specified.");
+    }
+
     try {
         await loadConfig();
 
