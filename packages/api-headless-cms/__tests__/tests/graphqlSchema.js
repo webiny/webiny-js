@@ -1,12 +1,12 @@
 import { graphql } from "graphql";
-import { setupSchema } from "@webiny/api/testing";
-import { upperFirst } from "lodash";
-import pluralize from "pluralize";
+import { setupSchema as setupTestingSchema } from "@webiny/api/testing";
 import contentModels from "./data/contentModels";
 import headlessPlugins from "../../src/plugins";
-import { locales } from "../mocks/mockI18NLocales";
+import cmsReadTypeDefs from "./graphqlSchema/cmsReadTypeDefs";
+import cmsManageTypeDefs from "./graphqlSchema/cmsManageTypeDefs";
+import cmsReadResolvers from "./graphqlSchema/cmsReadResolvers";
 
-const schemaTypes = /* GraphQL */ `
+const schemaTypesQuery = /* GraphQL */ `
     {
         __schema {
             types {
@@ -38,12 +38,9 @@ const schemaTypes = /* GraphQL */ `
 
 export default ({ plugins }) => {
     describe("GraphQL Schema", () => {
-        let testing;
-
-        beforeEach(async () => {
-            // Setup schema
-            testing = await setupSchema([plugins, headlessPlugins()]);
-        });
+        function setupSchema() {
+            return setupTestingSchema([plugins, headlessPlugins()]);
+        }
 
         test("insert content models data", async () => {
             const mutation = /* GraphQL */ `
@@ -59,12 +56,12 @@ export default ({ plugins }) => {
                 }
             `;
 
+            const { schema, context } = await setupSchema();
+
             const responses = [];
             for (let i = 0; i < contentModels.length; i++) {
                 responses.push(
-                    await graphql(testing.schema, mutation, {}, testing.context, {
-                        data: contentModels[i]
-                    })
+                    await graphql(schema, mutation, {}, context, { data: contentModels[i] })
                 );
             }
 
@@ -86,13 +83,16 @@ export default ({ plugins }) => {
         });
 
         test("create commodo models from content models data", async () => {
+            const { context } = await setupSchema();
+
             for (let i = 0; i < contentModels.length; i++) {
-                expect(testing.context.models[contentModels[i].modelId]).toBeTruthy();
+                expect(context.models[contentModels[i].modelId]).toBeTruthy();
             }
         });
 
         test("create GraphQL types from content models data", async () => {
-            const response = await graphql(testing.schema, schemaTypes, {}, testing.context);
+            const { schema, context } = await setupSchema();
+            const response = await graphql(schema, schemaTypesQuery, {}, context);
             const typeNames = contentModels.reduce((acc, item) => {
                 acc.push(`CmsRead${item.title}`);
                 acc.push(`CmsManage${item.title}`);
@@ -110,387 +110,10 @@ export default ({ plugins }) => {
             expect(cmsTypes).toContain("CmsManageReview");
         });
 
-        describe("cmsRead typeDefs", () => {
-            const contentModel = contentModels[0];
-            const modelName = upperFirst(contentModel.modelId);
+        //cmsReadTypeDefs({ setupSchema, schemaTypesQuery });
 
-            test("get a single model entry", async () => {
-                const { data } = await graphql(testing.schema, schemaTypes, {}, testing.context);
-                const CmsReadQuery = data.__schema.types.find(type => type.name === "CmsReadQuery");
-                expect(CmsReadQuery).toBeTruthy();
+        //cmsManageTypeDefs({ setupSchema, schemaTypesQuery });
 
-                const field = CmsReadQuery.fields.find(f => f.name === `get${modelName}`);
-                expect(field).toBeTruthy();
-
-                const localeArg = field.args.find(arg => arg.name === "locale");
-                expect(localeArg).toMatchObject({
-                    name: "locale",
-                    type: {
-                        name: "String",
-                        kind: "SCALAR",
-                        ofType: null
-                    }
-                });
-
-                const whereArg = field.args.find(arg => arg.name === "where");
-                expect(whereArg).toMatchObject({
-                    name: "where",
-                    type: {
-                        name: null,
-                        kind: "NON_NULL",
-                        ofType: {
-                            name: `CmsRead${modelName}GetWhereInput`
-                        }
-                    }
-                });
-
-                // return type
-                expect(field.type).toMatchObject({
-                    name: `CmsRead${modelName}Response`,
-                    kind: "OBJECT",
-                    ofType: null
-                });
-            });
-
-            test(`list model entries`, async () => {
-                const { data } = await graphql(testing.schema, schemaTypes, {}, testing.context);
-                const CmsReadQuery = data.__schema.types.find(type => type.name === "CmsReadQuery");
-                expect(CmsReadQuery).toBeTruthy();
-
-                const listModelField = CmsReadQuery.fields.find(
-                    f => f.name === `list${pluralize(modelName)}`
-                );
-                expect(listModelField).toBeTruthy();
-
-                const localeArg = listModelField.args.find(arg => arg.name === "locale");
-                expect(localeArg).toMatchObject({
-                    name: "locale",
-                    type: {
-                        name: "String",
-                        kind: "SCALAR",
-                        ofType: null
-                    }
-                });
-
-                const page = listModelField.args.find(arg => arg.name === "page");
-                expect(page).toMatchObject({
-                    name: "page",
-                    type: {
-                        name: "Int",
-                        kind: "SCALAR",
-                        ofType: null
-                    }
-                });
-
-                const perPage = listModelField.args.find(arg => arg.name === "perPage");
-                expect(perPage).toMatchObject({
-                    name: "perPage",
-                    type: {
-                        name: "Int",
-                        kind: "SCALAR",
-                        ofType: null
-                    }
-                });
-
-                const where = listModelField.args.find(arg => arg.name === "where");
-                expect(where).toMatchObject({
-                    name: "where",
-                    type: {
-                        name: `CmsRead${modelName}ListWhereInput`,
-                        kind: "INPUT_OBJECT",
-                        ofType: null
-                    }
-                });
-
-                const sort = listModelField.args.find(arg => arg.name === "sort");
-                expect(sort).toMatchObject({
-                    name: "sort",
-                    type: {
-                        name: null,
-                        kind: "LIST",
-                        ofType: {
-                            name: `CmsRead${modelName}ListSorter`
-                        }
-                    }
-                });
-
-                // return type
-                expect(listModelField.type).toMatchObject({
-                    name: `CmsRead${modelName}ListResponse`,
-                    kind: "OBJECT",
-                    ofType: null
-                });
-            });
-        });
-
-        describe("cmsRead resolvers", () => {
-            let category;
-            let targetResult;
-
-            beforeAll(async () => {
-                // Insert demo data via models
-                const Category = testing.context.models["category"];
-                category = new Category();
-
-                await category
-                    .populate({
-                        title: {
-                            values: [
-                                { locale: locales.en.id, value: "Hardware EN" },
-                                { locale: locales.de.id, value: "Hardware DE" }
-                            ]
-                        }
-                    })
-                    .save();
-
-                targetResult = {
-                    data: {
-                        id: category.id,
-                        title: "Hardware EN"
-                    }
-                };
-            });
-
-            test(`get category by ID`, async () => {
-                // Test resolvers
-                const query = /* GraphQL */ `
-                    query GetCategory($id: ID!) {
-                        cmsRead {
-                            getCategory(where: { id: $id }) {
-                                data {
-                                    id
-                                    title
-                                }
-                            }
-                        }
-                    }
-                `;
-
-                const { data } = await graphql(testing.schema, query, {}, testing.context, {
-                    id: category.id
-                });
-                
-                expect(data.cmsRead.getCategory).toMatchObject(targetResult);
-            });
-        });
-
-        describe("cmsManage typeDefs", () => {
-            const contentModel = contentModels[0];
-            const modelName = upperFirst(contentModel.modelId);
-
-            test(`get a model entry`, async () => {
-                const { data } = await graphql(testing.schema, schemaTypes, {}, testing.context);
-                const CmsManageQuery = data.__schema.types.find(
-                    type => type.name === "CmsManageQuery"
-                );
-                expect(CmsManageQuery).toBeTruthy();
-
-                const field = CmsManageQuery.fields.find(f => f.name === `get${modelName}`);
-                expect(field).toBeTruthy();
-
-                const localeArg = field.args.find(arg => arg.name === "locale");
-                expect(localeArg).toMatchObject({
-                    name: "locale",
-                    type: {
-                        name: "String",
-                        kind: "SCALAR",
-                        ofType: null
-                    }
-                });
-
-                const whereArg = field.args.find(arg => arg.name === "where");
-                expect(whereArg).toMatchObject({
-                    name: "where",
-                    type: {
-                        name: null,
-                        kind: "NON_NULL",
-                        ofType: {
-                            name: `CmsManage${modelName}GetWhereInput`
-                        }
-                    }
-                });
-
-                // return type
-                expect(field.type).toMatchObject({
-                    name: `CmsManage${modelName}Response`,
-                    kind: "OBJECT",
-                    ofType: null
-                });
-            });
-
-            test(`list model entries`, async () => {
-                const { data } = await graphql(testing.schema, schemaTypes, {}, testing.context);
-                const CmsManageQuery = data.__schema.types.find(
-                    type => type.name === "CmsManageQuery"
-                );
-                expect(CmsManageQuery).toBeTruthy();
-
-                const listModelField = CmsManageQuery.fields.find(
-                    f => f.name === `list${pluralize(modelName)}`
-                );
-                expect(listModelField).toBeTruthy();
-
-                const localeArg = listModelField.args.find(arg => arg.name === "locale");
-                expect(localeArg).toMatchObject({
-                    name: "locale",
-                    type: {
-                        name: "String",
-                        kind: "SCALAR",
-                        ofType: null
-                    }
-                });
-
-                const page = listModelField.args.find(arg => arg.name === "page");
-                expect(page).toMatchObject({
-                    name: "page",
-                    type: {
-                        name: "Int",
-                        kind: "SCALAR",
-                        ofType: null
-                    }
-                });
-
-                const perPage = listModelField.args.find(arg => arg.name === "perPage");
-                expect(perPage).toMatchObject({
-                    name: "perPage",
-                    type: {
-                        name: "Int",
-                        kind: "SCALAR",
-                        ofType: null
-                    }
-                });
-
-                const where = listModelField.args.find(arg => arg.name === "where");
-                expect(where).toMatchObject({
-                    name: "where",
-                    type: {
-                        name: `CmsManage${modelName}ListWhereInput`,
-                        kind: "INPUT_OBJECT",
-                        ofType: null
-                    }
-                });
-
-                const sort = listModelField.args.find(arg => arg.name === "sort");
-                expect(sort).toMatchObject({
-                    name: "sort",
-                    type: {
-                        name: null,
-                        kind: "LIST",
-                        ofType: {
-                            name: `CmsManage${modelName}ListSorter`
-                        }
-                    }
-                });
-
-                // return type
-                expect(listModelField.type).toMatchObject({
-                    name: `CmsManage${modelName}ListResponse`,
-                    kind: "OBJECT",
-                    ofType: null
-                });
-            });
-
-            test(`create a model entry`, async () => {
-                const { data } = await graphql(testing.schema, schemaTypes, {}, testing.context);
-                const CmsManageMutation = data.__schema.types.find(
-                    type => type.name === "CmsManageMutation"
-                );
-                expect(CmsManageMutation).toBeTruthy();
-
-                const field = CmsManageMutation.fields.find(f => f.name === `create${modelName}`);
-                expect(field).toBeTruthy();
-
-                const dataArg = field.args.find(arg => arg.name === "data");
-                expect(dataArg).toMatchObject({
-                    name: "data",
-                    type: {
-                        name: null,
-                        kind: "NON_NULL",
-                        ofType: {
-                            name: `CmsManage${modelName}Input`
-                        }
-                    }
-                });
-
-                // return type
-                expect(field.type).toMatchObject({
-                    name: `CmsManage${modelName}Response`,
-                    kind: "OBJECT",
-                    ofType: null
-                });
-            });
-
-            test(`update a model entry`, async () => {
-                const { data } = await graphql(testing.schema, schemaTypes, {}, testing.context);
-                const CmsManageMutation = data.__schema.types.find(
-                    type => type.name === "CmsManageMutation"
-                );
-                expect(CmsManageMutation).toBeTruthy();
-
-                const field = CmsManageMutation.fields.find(f => f.name === `update${modelName}`);
-                expect(field).toBeTruthy();
-
-                const whereArg = field.args.find(arg => arg.name === "where");
-                expect(whereArg).toMatchObject({
-                    name: "where",
-                    type: {
-                        name: null,
-                        kind: "NON_NULL",
-                        ofType: {
-                            name: `CmsManage${modelName}UpdateWhereInput`
-                        }
-                    }
-                });
-
-                const dataArg = field.args.find(arg => arg.name === "data");
-                expect(dataArg).toMatchObject({
-                    name: "data",
-                    type: {
-                        name: null,
-                        kind: "NON_NULL",
-                        ofType: {
-                            name: `CmsManage${modelName}Input`
-                        }
-                    }
-                });
-
-                // return type
-                expect(field.type).toMatchObject({
-                    name: `CmsManage${modelName}Response`,
-                    kind: "OBJECT",
-                    ofType: null
-                });
-            });
-
-            test(`delete a model entry`, async () => {
-                const { data } = await graphql(testing.schema, schemaTypes, {}, testing.context);
-                const CmsManageMutation = data.__schema.types.find(
-                    type => type.name === "CmsManageMutation"
-                );
-                expect(CmsManageMutation).toBeTruthy();
-
-                const field = CmsManageMutation.fields.find(f => f.name === `delete${modelName}`);
-                expect(field).toBeTruthy();
-
-                const whereArg = field.args.find(arg => arg.name === "where");
-                expect(whereArg).toMatchObject({
-                    name: "where",
-                    type: {
-                        name: null,
-                        kind: "NON_NULL",
-                        ofType: {
-                            name: `CmsManage${modelName}DeleteWhereInput`
-                        }
-                    }
-                });
-
-                // return type
-                expect(field.type).toMatchObject({
-                    name: `CmsDeleteResponse`,
-                    kind: "OBJECT",
-                    ofType: null
-                });
-            });
-        });
+        cmsReadResolvers({ setupSchema });
     });
 };
