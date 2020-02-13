@@ -4,6 +4,9 @@ const { green, red } = require("chalk");
 const notifier = require("node-notifier");
 const execute = require("./execute");
 const { isApiEnvDeployed, isAppsEnvDeployed } = require("./utils");
+const { trackActivity } = require("@webiny/tracking");
+const { version } = require(require.resolve("@webiny/cli/package.json"));
+const uniqueId = require("uniqid");
 
 const perks = ["🍪", "☕️", "🍎", "🍺", "🥤"];
 
@@ -22,6 +25,8 @@ module.exports = async inputs => {
 
     const webinyJs = resolve("webiny.js");
     const config = require(webinyJs);
+
+    const activityId = uniqueId();
 
     if (what === "apps") {
         if (typeof env === "undefined") {
@@ -57,7 +62,11 @@ module.exports = async inputs => {
 
         const isFirstDeploy = !(await isAppsEnvDeployed(env));
 
+        await trackActivity({ activityId, type: "apps_deploy_start", cliVersion: version });
+
         const { output, duration } = await execute(inputs);
+
+        await trackActivity({ activityId, type: "apps_deploy_end", cliVersion: version });
 
         console.log(`\n🎉 Done! Deploy finished in ${green(duration + "s")}.`);
 
@@ -86,7 +95,11 @@ module.exports = async inputs => {
             );
         }
 
+        await trackActivity({ activityId, type: "api_deploy_start", cliVersion: version });
+
         const { output, duration } = await execute(inputs);
+
+        await trackActivity({ activityId, type: "api_deploy_end", cliVersion: version });
 
         // Run app state hooks
         if (!fs.existsSync(webinyJs)) {
@@ -95,7 +108,9 @@ module.exports = async inputs => {
                     webinyJs
                 )}, skipping processing of hooks.`
             );
+
             console.log(`\n🎉 Done! Deploy finished in ${green(duration + "s")}.`);
+
             return;
         }
 
@@ -119,6 +134,7 @@ module.exports = async inputs => {
         }
 
         console.log(`\n🎉 Done! Deploy finished in ${green(duration + "s")}.`);
+
         notify({ message: `API deploy completed in ${duration}s.` });
 
         if (output.cdn) {
