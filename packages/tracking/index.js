@@ -6,12 +6,12 @@ const request = require("request");
 let config;
 const defaultLogger = () => {};
 
-const sendStats = data => {
+const sendStats = (action, data) => {
     return new Promise(resolve => {
         request.post(
             {
                 url: "https://stats.webiny.com/track",
-                json: data
+                json: { action, data }
             },
             resolve
         );
@@ -45,7 +45,7 @@ const trackComponent = async ({ context, component, method = "deploy" }) => {
 
         const { name, version } = readJson.sync(path.join(path.dirname(component), "package.json"));
         context.debug(`Tracking component: ${name} (${method})`);
-        await sendStats({
+        await sendStats("telemetry", {
             type: "component",
             user: config.id,
             instance: context.instance.id,
@@ -66,7 +66,7 @@ const trackProject = async ({ cliVersion }) => {
             return;
         }
 
-        await sendStats({
+        await sendStats("telemetry", {
             type: "project",
             user: config.id,
             version: cliVersion
