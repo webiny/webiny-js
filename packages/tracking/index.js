@@ -76,7 +76,27 @@ const trackProject = async ({ cliVersion }) => {
     }
 };
 
+const trackActivity = async ({ cliVersion, type, activityId }) => {
+    try {
+        await loadConfig();
+
+        if (config.tracking !== true) {
+            return;
+        }
+
+        await sendStats("activity", {
+            type,
+            activityId,
+            user: config.id,
+            version: cliVersion
+        });
+    } catch (e) {
+        // Ignore errors
+    }
+};
+
 module.exports = {
     trackProject,
-    trackComponent
+    trackComponent,
+    trackActivity
 };
