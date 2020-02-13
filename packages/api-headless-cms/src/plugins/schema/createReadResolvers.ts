@@ -1,6 +1,6 @@
 import pluralize from "pluralize";
 import { CmsModel, CmsFieldTypePlugins } from "@webiny/api-headless-cms/types";
-import { GraphQLContext } from "@webiny/api/types";
+import { GraphQLContext, GraphQLFieldResolver } from "@webiny/api/types";
 import { createReadTypeName, createTypeName } from "../utils/createTypeName";
 import { commonFieldResolvers } from "../utils/commonFieldResolvers";
 import { resolveGet } from "../utils/resolveGet";
@@ -19,24 +19,27 @@ export const createReadResolvers: CreateReadResolvers = ({ models, model, fieldT
     const typeName = createTypeName(model.modelId);
     const rTypeName = createReadTypeName(typeName);
 
+    const resolvers: { [key: string]: GraphQLFieldResolver } = commonFieldResolvers();
+
     return {
         CmsReadQuery: {
-            [`get${typeName}`]: resolveGet({ model }),
-            [`list${pluralize(typeName)}`]: resolveList({ model })
+            [`get${typeName}`]: resolveGet({ model })
+            //[`list${pluralize(typeName)}`]: resolveList({ model })
         },
         [rTypeName]: model.fields.reduce((resolvers, field) => {
             const { read } = fieldTypePlugins[field.type];
             const resolver = read.createResolver({ models, model, field });
 
-            resolvers[field.fieldId] = (entry, args, ctx, info) => {
-                const value = resolver(entry, args, ctx, info);
-
-                const cacheKey = `${model.modelId}:${entry._id}:${field.fieldId}`;
+            resolvers[field.fieldId] = async (entry, args, ctx, info) => {
+                // If field-level locale is not specified, use context locale.
+                const locale = args.locale || ctx.cms.locale.code;
+                const value = await resolver(entry, { ...args, locale }, ctx, info);
+                const cacheKey = `${model.modelId}:${entry.id}:${field.fieldId}`;
                 ctx.resolvedValues.set(cacheKey, value);
                 return value;
             };
 
             return resolvers;
-        }, commonFieldResolvers())
+        }, resolvers)
     };
 };

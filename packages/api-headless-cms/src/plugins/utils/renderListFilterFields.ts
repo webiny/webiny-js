@@ -13,7 +13,7 @@ export const renderListFilterFields: RenderListFilterFields = ({
         .map(field => {
             const { createListFilters } = fieldTypePlugins[field.type][type];
             if (typeof createListFilters === "function") {
-                return createListFilters({ field });
+                return createListFilters({ model, field });
             }
         })
         .filter(Boolean)

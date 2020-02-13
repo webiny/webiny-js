@@ -2,8 +2,6 @@ import { graphql } from "graphql";
 import { setupSchema as setupTestingSchema } from "@webiny/api/testing";
 import contentModels from "./data/contentModels";
 import headlessPlugins from "../../src/plugins";
-import cmsReadTypeDefs from "./graphqlSchema/cmsReadTypeDefs";
-import cmsManageTypeDefs from "./graphqlSchema/cmsManageTypeDefs";
 import cmsReadResolvers from "./graphqlSchema/cmsReadResolvers";
 
 const schemaTypesQuery = /* GraphQL */ `
@@ -109,10 +107,6 @@ export default ({ plugins }) => {
             expect(cmsTypes).toContain("CmsReadReview");
             expect(cmsTypes).toContain("CmsManageReview");
         });
-
-        //cmsReadTypeDefs({ setupSchema, schemaTypesQuery });
-
-        //cmsManageTypeDefs({ setupSchema, schemaTypesQuery });
 
         cmsReadResolvers({ setupSchema });
     });

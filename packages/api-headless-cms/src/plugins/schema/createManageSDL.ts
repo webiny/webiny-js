@@ -75,10 +75,9 @@ export const createManageSDL: CreateManageSDL = ({ model, fieldTypePlugins }): s
         }
         
         extend type CmsManageQuery {
-            get${typeName}(locale: String, where: ${mTypeName}GetWhereInput!): ${mTypeName}Response
+            get${typeName}(where: ${mTypeName}GetWhereInput!): ${mTypeName}Response
             
             list${pluralize(typeName)}(
-                locale: String
                 page: Int
                 perPage: Int
                 sort: [${mTypeName}ListSorter]

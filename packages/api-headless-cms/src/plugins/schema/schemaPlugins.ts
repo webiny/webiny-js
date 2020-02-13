@@ -8,7 +8,7 @@ import {
 import { createManageSDL } from "./createManageSDL";
 import { createReadSDL } from "./createReadSDL";
 // import { createManageResolvers } from "./createManageResolvers";
-// import { createReadResolvers } from "./createReadResolvers";
+ import { createReadResolvers } from "./createReadResolvers";
 import { renderTypesFromFieldPlugins } from "../utils/renderTypesFromFieldPlugins";
 
 export interface GenerateSchemaPlugins {
@@ -66,7 +66,7 @@ export const generateSchemaPlugins: GenerateSchemaPlugins = async ({ context }) 
                 typeDefs: gql`
                     ${createReadSDL({ model, context, fieldTypePlugins })}
                 `,
-                resolvers: {} // createReadResolvers({ models, model, fieldTypePlugins, context })
+                resolvers: createReadResolvers({ models, model, fieldTypePlugins, context })
             }
         });
     });

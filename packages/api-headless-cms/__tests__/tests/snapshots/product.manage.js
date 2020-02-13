@@ -185,10 +185,9 @@ export default /* GraphQL */ `
     }
 
     extend type CmsManageQuery {
-        getProduct(locale: String, where: CmsManageProductGetWhereInput!): CmsManageProductResponse
+        getProduct(where: CmsManageProductGetWhereInput!): CmsManageProductResponse
 
         listProducts(
-            locale: String
             page: Int
             perPage: Int
             sort: [CmsManageProductListSorter]

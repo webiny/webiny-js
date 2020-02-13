@@ -8,10 +8,12 @@ export default /* GraphQL */ `
         updatedOn: DateTime
         savedOn: DateTime
         title: CmsManageText
+        slug: CmsManageText
     }
 
     input CmsManageCategoryInput {
         title: CmsManageTextInput
+        slug: CmsManageTextInput
     }
 
     input CmsManageCategoryGetWhereInput {
@@ -44,6 +46,27 @@ export default /* GraphQL */ `
 
         # Matches if given value is not a substring of the the field value
         title_not_contains: String
+
+        # Matches if the field is equal to the given value
+        slug: String
+
+        # Matches if the field is not equal to the given value
+        slug_not: String
+
+        # Matches if the field exists
+        slug_exists: Boolean
+
+        # Matches if the field value equal one of the given values
+        slug_in: [String]
+
+        # Matches if the field value does not equal any of the given values
+        slug_not_in: [String]
+
+        # Matches if given value is a substring of the the field value
+        slug_contains: String
+
+        # Matches if given value is not a substring of the the field value
+        slug_not_contains: String
     }
 
     input CmsManageCategoryUpdateWhereInput {
@@ -72,16 +95,14 @@ export default /* GraphQL */ `
         updatedOn_DESC
         title_ASC
         title_DESC
+        slug_ASC
+        slug_DESC
     }
 
     extend type CmsManageQuery {
-        getCategory(
-            locale: String
-            where: CmsManageCategoryGetWhereInput!
-        ): CmsManageCategoryResponse
+        getCategory(where: CmsManageCategoryGetWhereInput!): CmsManageCategoryResponse
 
         listCategories(
-            locale: String
             page: Int
             perPage: Int
             sort: [CmsManageCategoryListSorter]

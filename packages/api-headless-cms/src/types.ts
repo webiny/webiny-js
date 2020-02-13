@@ -23,6 +23,7 @@ export type CmsModelField = {
     type: string;
     fieldId: string;
     localization: boolean;
+    unique: boolean;
     validation: CmsFieldValidation[];
     settings?: { [key: string]: any };
 };
@@ -73,6 +74,7 @@ export type CmsModelFieldToGraphQLPlugin = Plugin & {
     isSortable: boolean;
     fieldType: string;
     read: {
+        createGetFilters?(params: { model: CmsModel; field: CmsModelField }): string;
         createListFilters?(params: { model: CmsModel; field: CmsModelField }): string;
         createTypeField(params: { model: CmsModel; field: CmsModelField }): string;
         createResolver(params: {
@@ -96,4 +98,15 @@ export type CmsModelFieldToGraphQLPlugin = Plugin & {
 
 export type CmsFieldTypePlugins = {
     [key: string]: CmsModelFieldToGraphQLPlugin;
+};
+
+export type CmsFindFilterOperator = Plugin & {
+    type: "cms-find-filter-operator";
+    operator: string;
+    createCondition(params: {
+        fieldId: string;
+        field: CmsModelField;
+        value: any;
+        context: GraphQLContext;
+    }): { [key: string]: any };
 };

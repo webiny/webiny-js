@@ -1,25 +1,20 @@
-import createFindSorters from "./createFindSorters";
-import createFindQuery from "./createFindQuery";
-import parseBoolean from "./parseBoolean";
+import { GraphQLContext as APIContext } from "@webiny/api/types";
+import { CmsModel } from "@webiny/api-headless-cms/types";
+import { createFindQuery } from "./createFindQuery";
 
-export default async function findEntry({ model, args, context }) {
-    // Create a shallow copy of context and override the `locale` value
-    const localContext = { ...context };
-    if (args.locale) {
-        localContext.locale = args.locale;
-    }
+type FindEntry = {
+    model: CmsModel;
+    args: {
+        locale: string;
+        where: { [key: string]: any };
+    };
+    context: APIContext;
+};
 
-    parseBoolean(args);
-    let { where, sort } = args;
+export const findEntry = async ({ model, args, context }: FindEntry) => {
+    const Model = context.models[model.modelId];
 
-    const match = createFindQuery(model, where, localContext);
-    const sorters = createFindSorters(model, sort);
+    const query = createFindQuery(model, args.where, context);
 
-    const [entry] = await collection
-        .find(match)
-        .sort(sorters)
-        .limit(1)
-        .toArray();
-
-    return entry;
-}
+    return Model.findOne({ query });
+};

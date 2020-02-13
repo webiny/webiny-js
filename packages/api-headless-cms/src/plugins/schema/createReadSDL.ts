@@ -5,6 +5,7 @@ import { createReadTypeName, createTypeName } from "../utils/createTypeName";
 import { renderSortEnum } from "../utils/renderSortEnum";
 import { renderFields } from "../utils/renderFields";
 import { renderListFilterFields } from "../utils/renderListFilterFields";
+import { renderGetFilterFields } from "../utils/renderGetFilterFields";
 
 export interface CreateManageSDL {
     (params: {
@@ -31,7 +32,7 @@ export const createReadSDL: CreateManageSDL = ({ model, fieldTypePlugins }): str
         }
         
         input ${rTypeName}GetWhereInput {
-            id: ID!
+            ${renderGetFilterFields({ model, fieldTypePlugins })}
         }
         
         input ${rTypeName}ListWhereInput {

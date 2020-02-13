@@ -1,4 +1,4 @@
-import { GraphQLSchemaPlugin } from "@webiny/api/types";
+import { GraphQLContextPlugin, GraphQLSchemaPlugin } from "@webiny/api/types";
 import {
     resolveCreate,
     resolveDelete,
@@ -13,7 +13,7 @@ import { i18nFieldInput } from "./graphqlTypes/i18nFieldInput";
 
 import gql from "graphql-tag";
 import { hasScope } from "@webiny/api-security";
-import { generateSchemaPlugins } from "./schemaPlugins/schemaPlugins";
+import { generateSchemaPlugins } from "./schema/schemaPlugins";
 import { TypeValueEmitter } from "./utils/TypeValueEmitter";
 
 const contentModelFetcher = ctx => ctx.models.CmsContentModel;
@@ -101,6 +101,7 @@ export default () => [
                     fieldId: String
                     type: String
                     localization: Boolean
+                    unique: Boolean
                     validation: [CmsFieldValidationInput]
                     settings: JSON
                 }
@@ -155,7 +156,7 @@ export default () => [
                 Query: {
                     cmsManage: {
                         resolve: (parent, args, context) => {
-                            context.cmsManage = true;
+                            context.cms.manage = true;
                             return {};
                         }
                     },
@@ -192,5 +193,12 @@ export default () => [
                 }
             }
         }
-    } as GraphQLSchemaPlugin
+    } as GraphQLSchemaPlugin,
+    {
+        name: "graphql-context-cms-context",
+        type: "graphql-context",
+        apply(context) {
+            context.cms = context.cms || {};
+        }
+    } as GraphQLContextPlugin
 ];

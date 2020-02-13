@@ -76,8 +76,7 @@ export default /* GraphQL */ `
         # Matches if the field value is greater than or equal to the given value
         rating_gte: Float
     }
-    
-    
+
     input CmsManageReviewUpdateWhereInput {
         id: ID!
     }
@@ -109,10 +108,9 @@ export default /* GraphQL */ `
     }
 
     extend type CmsManageQuery {
-        getReview(locale: String, where: CmsManageReviewGetWhereInput!): CmsManageReviewResponse
+        getReview(where: CmsManageReviewGetWhereInput!): CmsManageReviewResponse
 
         listReviews(
-            locale: String
             page: Int
             perPage: Int
             sort: [CmsManageReviewListSorter]
@@ -122,12 +120,12 @@ export default /* GraphQL */ `
 
     extend type CmsManageMutation {
         createReview(data: CmsManageReviewInput!): CmsManageReviewResponse
-        
+
         updateReview(
             where: CmsManageReviewUpdateWhereInput!
             data: CmsManageReviewInput!
         ): CmsManageReviewResponse
-        
+
         deleteReview(where: CmsManageReviewDeleteWhereInput!): CmsDeleteResponse
     }
 `;

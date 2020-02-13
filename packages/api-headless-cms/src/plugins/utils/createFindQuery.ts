@@ -1,23 +1,21 @@
-const fieldMap = {
-    id: "_id"
+import { CmsFindFilterOperator, CmsModel } from "@webiny/api-headless-cms/types";
+import { GraphQLContext } from "@webiny/api/types";
+
+export type FindWhere = {
+    [key: string]: any;
 };
 
-function mapFieldId(fieldId) {
-    if (fieldId in fieldMap) {
-        return fieldMap[fieldId];
-    }
-    return fieldId;
-}
-
-export default function createFindQuery(model, where, context) {
-    const match = {};
-    const filterOperators = context.plugins.byType("cms-filter-operator");
+export const createFindQuery = (model: CmsModel, where: FindWhere, context: GraphQLContext) => {
+    const match: any = {};
+    const filterOperators = context.plugins.byType<CmsFindFilterOperator>(
+        "cms-find-filter-operator"
+    );
 
     function createCondition(key) {
         const value = where[key];
         const delim = key.indexOf("_");
-        const fieldId = mapFieldId(key.substring(0, delim > 0 ? delim : undefined));
-        let operator = delim > 0 ? key.substring(delim + 1) : "eq";
+        const fieldId = key.substring(0, delim > 0 ? delim : undefined);
+        const operator = delim > 0 ? key.substring(delim + 1) : "eq";
 
         const operatorPlugin = filterOperators.find(pl => pl.operator === operator);
 
@@ -26,7 +24,15 @@ export default function createFindQuery(model, where, context) {
         }
 
         const field = model.fields.find(f => f.fieldId === fieldId);
-        return { [fieldId]: operatorPlugin.createCondition({ fieldId, field, value, context }) };
+        const condition = operatorPlugin.createCondition({ fieldId, field, value, context });
+
+        if (field) {
+            // This condition is executed for user-defined content model fields.
+            return { [`${fieldId}.values`]: condition };
+        }
+
+        // This condition is executed for built-in model fields, e.g. "id"
+        return { [fieldId]: condition };
     }
 
     const whereKeys = Object.keys(where);
@@ -40,4 +46,4 @@ export default function createFindQuery(model, where, context) {
     });
 
     return match;
-}
+};

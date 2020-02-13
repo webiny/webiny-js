@@ -8,10 +8,12 @@ export default /* GraphQL */ `
         updatedOn: DateTime
         savedOn: DateTime
         title(locale: String): String
+        slug(locale: String): String
     }
 
     input CmsReadCategoryGetWhereInput {
-        id: ID!
+        id: ID
+        slug: String
     }
 
     input CmsReadCategoryListWhereInput {
@@ -40,6 +42,27 @@ export default /* GraphQL */ `
 
         # Matches if given value is not a substring of the the field value
         title_not_contains: String
+
+        # Matches if the field is equal to the given value
+        slug: String
+
+        # Matches if the field is not equal to the given value
+        slug_not: String
+
+        # Matches if the field exists
+        slug_exists: Boolean
+
+        # Matches if the field value equal one of the given values
+        slug_in: [String]
+
+        # Matches if the field value does not equal any of the given values
+        slug_not_in: [String]
+
+        # Matches if given value is a substring of the the field value
+        slug_contains: String
+
+        # Matches if given value is not a substring of the the field value
+        slug_not_contains: String
     }
 
     enum CmsReadCategoryListSorter {
@@ -49,6 +72,8 @@ export default /* GraphQL */ `
         updatedOn_DESC
         title_ASC
         title_DESC
+        slug_ASC
+        slug_DESC
     }
 
     type CmsReadCategoryResponse {

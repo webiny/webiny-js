@@ -31,11 +31,17 @@ const plugin: CmsModelFieldToGraphQLPlugin = {
     fieldType: "text",
     isSortable: true,
     read: {
-        createListFilters,
         createTypeField({ field }) {
             const localeArg = field.localization ? "(locale: String)" : "";
             return `${field.fieldId}${localeArg}: String`;
         },
+        createGetFilters({ field }) {
+            if (!field.unique) {
+                return null;
+            }
+            return `${field.fieldId}: String`;
+        },
+        createListFilters,
         createResolver({ field }) {
             return (instance, args) => {
                 return instance[field.fieldId].value(args.locale);
