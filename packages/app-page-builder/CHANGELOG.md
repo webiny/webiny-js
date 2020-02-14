@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.1.3](https://github.com/webiny/webiny-js/compare/@webiny/app-page-builder@3.1.2...@webiny/app-page-builder@3.1.3) (2020-02-14)
+
+
+### Bug Fixes
+
+* restore slate v0.42 onKeyDown plugin signature ([#718](https://github.com/webiny/webiny-js/issues/718)) ([357e36c](https://github.com/webiny/webiny-js/commit/357e36ca82140237316a264bad8a5708f995d7ee))
+* synchronize pageList component name with element plugin ([#717](https://github.com/webiny/webiny-js/issues/717)) ([87f8bf8](https://github.com/webiny/webiny-js/commit/87f8bf85b08cc97766c52d420d4ad7a7236d9b3e))
+
+
+
+
+
 ## [3.1.2](https://github.com/webiny/webiny-js/compare/@webiny/app-page-builder@3.1.2-next.0...@webiny/app-page-builder@3.1.2) (2020-02-12)
 
 **Note:** Version bump only for package @webiny/app-page-builder
