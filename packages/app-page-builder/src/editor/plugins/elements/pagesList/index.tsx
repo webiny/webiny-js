@@ -46,7 +46,7 @@ export default () => {
                     type: "pages-list",
                     data: {
                         resultsPerPage: 10,
-                        component: "pb-editor-page-element-pages-list-component-default",
+                        component: "default",
                         settings: {
                             margin: {
                                 desktop: { all: 0 },
