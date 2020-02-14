@@ -76,13 +76,17 @@ const trackProject = async ({ cliVersion }) => {
     }
 };
 
-const trackActivity = async ({ cliVersion, type, activityId }) => {
-    if (!type) {
-        throw new Error("Cannot track activity - type not specified.");
+const trackActivity = async ({ cliVersion, type, activityId, instance = "" }) => {
+    if (!cliVersion) {
+        throw new Error(`Cannot track activity - "cliVersion" not specified.`);
     }
 
-    if (!cliVersion) {
-        throw new Error("Cannot track activity - CLI version not specified.");
+    if (!type) {
+        throw new Error(`Cannot track activity - "type" not specified.`);
+    }
+
+    if (!activityId) {
+        throw new Error(`Cannot track activity - "activityId" not specified.`);
     }
 
     try {
@@ -93,10 +97,45 @@ const trackActivity = async ({ cliVersion, type, activityId }) => {
         }
 
         await sendStats("activity", {
+            version: cliVersion,
             type,
             activityId,
-            user: config.id,
-            version: cliVersion
+            instance,
+            user: config.id
+        });
+    } catch (e) {
+        // Ignore errors
+    }
+};
+
+const trackError = async ({ cliVersion, type, errorMessage, errorStack, activityId, instance = "" }) => {
+    if (!cliVersion) {
+        throw new Error("Cannot track activity - CLI version not specified.");
+    }
+
+    if (!type) {
+        throw new Error("Cannot track activity - type not specified.");
+    }
+
+    if (!errorMessage) {
+        throw new Error("Cannot track activity - CLI version not specified.");
+    }
+
+    try {
+        await loadConfig();
+
+        if (config.tracking !== true) {
+            return;
+        }
+
+        await sendStats("error", {
+            version: cliVersion,
+            type,
+            errorMessage,
+            errorStack,
+            activityId,
+            instance,
+            user: config.id
         });
     } catch (e) {
         // Ignore errors
@@ -106,5 +145,6 @@ const trackActivity = async ({ cliVersion, type, activityId }) => {
 module.exports = {
     trackProject,
     trackComponent,
-    trackActivity
+    trackActivity,
+    trackError
 };
