@@ -132,7 +132,7 @@ module.exports = async ({ name, tag }) => {
     spinner.succeed(`All dependencies installed successfully!`);
 
     await trackProject({ cliVersion: version });
-    await trackActivity({ activityId, ype: "create_project_end", cliVersion: version });
+    await trackActivity({ activityId, type: "create_project_end", cliVersion: version });
 
     console.log(await getSuccessBanner());
 };
