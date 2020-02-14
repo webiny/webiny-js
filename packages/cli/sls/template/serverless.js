@@ -2,6 +2,9 @@ const fs = require("fs");
 const path = require("path");
 const { Component } = require("@serverless/core");
 const { loadEnv } = require("../utils");
+const uniqueId = require("uniqid");
+const { trackActivity, trackError } = require("@webiny/tracking");
+const { version } = require(require.resolve("@webiny/cli/package.json"));
 
 const {
     getTemplate,
@@ -52,6 +55,16 @@ class Template extends Component {
     }
 
     async deploy(inputs = {}) {
+        const activityId = uniqueId();
+        const { what } = inputs;
+
+        await trackActivity({
+            activityId,
+            type: `${what}_deploy_start`,
+            cliVersion: version,
+            instance: this.context.instance.id
+        });
+
         this.context.status("Deploying");
 
         const template = await getTemplate(inputs);
@@ -70,19 +83,38 @@ class Template extends Component {
 
         this.context.debug(`Executing the template's components graph.`);
 
-        const allComponentsWithOutputs = await executeGraph(
-            allComponentsWithDependencies,
-            graph,
-            this,
-            inputs
-        );
+        try {
+            const allComponentsWithOutputs = await executeGraph(
+                allComponentsWithDependencies,
+                graph,
+                this,
+                inputs
+            );
 
-        const outputs = getOutputs(allComponentsWithOutputs);
+            const outputs = getOutputs(allComponentsWithOutputs);
 
-        this.state.outputs = outputs;
-        await this.save();
+            this.state.outputs = outputs;
+            await this.save();
 
-        return outputs;
+            await trackActivity({
+                activityId,
+                type: `${what}_deploy_end`,
+                cliVersion: version,
+                instance: this.context.instance.id
+            });
+
+            return outputs;
+        } catch (e) {
+            await trackError({
+                instance: this.context.instance.id,
+                activityId,
+                type: `${what}_deploy`,
+                cliVersion: version,
+                errorMessage: e.message,
+                errorStack: e.stack
+            });
+            throw e;
+        }
     }
 
     async deployAlias(alias, inputs) {
