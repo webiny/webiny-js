@@ -95,7 +95,7 @@ Thanks goes to these wonderful people:
   <tr>
     <td align="center"><a href="https://github.com/tjrexer"><img src="https://avatars2.githubusercontent.com/u/7013045?v=4" width="100px;" alt=""/><br /><sub><b>Tim Rexer</b></sub></a><br /></td>
     <td align="center"><a href="https://github.com/bigb123"><img src="https://avatars2.githubusercontent.com/u/9221943?v=4" width="100px;" alt=""/><br /><sub><b>Piotr Pałka</b></sub></a><br /></td>
-    <td align="center"><a href="http://jinesh.varia.in"><img src="https://avatars2.githubusercontent.com/u/4205770?v=4" width="100px;" alt=""/><br /><sub><b>Jinesh Varia</b></sub></a><br /><a href="#ideas-jinman" title="Ideas, Planning, & Feedback">🤔</a></td>
+    <td align="center"><a href="http://jinesh.varia.in"><img src="https://avatars2.githubusercontent.com/u/4205770?v=4" width="100px;" alt=""/><br /><sub><b>Jinesh Varia</b></sub></a><br /></td>
   </tr>
 </table>
 
