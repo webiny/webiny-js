@@ -106,6 +106,15 @@
       "avatar_url": "https://avatars2.githubusercontent.com/u/9221943?v=4",
       "profile": "https://github.com/bigb123",
       "contributions": []
+    },
+    {
+      "login": "jinman",
+      "name": "Jinesh Varia",
+      "avatar_url": "https://avatars2.githubusercontent.com/u/4205770?v=4",
+      "profile": "http://jinesh.varia.in",
+      "contributions": [
+        "ideas"
+      ]
     }
   ],
   "contributorsPerLine": 6,
