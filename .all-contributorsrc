@@ -85,6 +85,15 @@
       "avatar_url": "https://avatars1.githubusercontent.com/u/16700631?v=4",
       "profile": "https://github.com/Fsalker",
       "contributions": []
+    },
+    {
+      "login": "naokia",
+      "name": "naokia",
+      "avatar_url": "https://avatars2.githubusercontent.com/u/5516121?v=4",
+      "profile": "https://github.com/naokia",
+      "contributions": [
+        "bug"
+      ]
     }
   ],
   "contributorsPerLine": 6,
