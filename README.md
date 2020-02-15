@@ -90,11 +90,11 @@ Thanks goes to these wonderful people:
     <td align="center"><a href="https://thebeast.me/about/"><img src="https://avatars3.githubusercontent.com/u/418747?v=4" width="100px;" alt=""/><br /><sub><b>John Bampton</b></sub></a><br /></td>
     <td align="center"><a href="https://ghuser.io/jamesgeorge007"><img src="https://avatars2.githubusercontent.com/u/25279263?v=4" width="100px;" alt=""/><br /><sub><b>James George</b></sub></a><br /></td>
     <td align="center"><a href="https://github.com/Fsalker"><img src="https://avatars1.githubusercontent.com/u/16700631?v=4" width="100px;" alt=""/><br /><sub><b>Fsalker</b></sub></a><br /></td>
-    <td align="center"><a href="https://github.com/naokia"><img src="https://avatars2.githubusercontent.com/u/5516121?v=4" width="100px;" alt=""/><br /><sub><b>naokia</b></sub></a><br /><a href="https://github.com/Webiny/webiny-js/issues?q=author%3Anaokia" title="Bug reports">🐛</a></td>
+    <td align="center"><a href="https://github.com/naokia"><img src="https://avatars2.githubusercontent.com/u/5516121?v=4" width="100px;" alt=""/><br /><sub><b>naokia</b></sub></a><br /></td>
   </tr>
   <tr>
-    <td align="center"><a href="https://github.com/tjrexer"><img src="https://avatars2.githubusercontent.com/u/7013045?v=4" width="100px;" alt=""/><br /><sub><b>Tim Rexer</b></sub></a><br /><a href="https://github.com/Webiny/webiny-js/issues?q=author%3Atjrexer" title="Bug reports">🐛</a></td>
-    <td align="center"><a href="https://github.com/bigb123"><img src="https://avatars2.githubusercontent.com/u/9221943?v=4" width="100px;" alt=""/><br /><sub><b>Piotr Pałka</b></sub></a><br /><a href="#question-bigb123" title="Answering Questions">💬</a></td>
+    <td align="center"><a href="https://github.com/tjrexer"><img src="https://avatars2.githubusercontent.com/u/7013045?v=4" width="100px;" alt=""/><br /><sub><b>Tim Rexer</b></sub></a><br /></td>
+    <td align="center"><a href="https://github.com/bigb123"><img src="https://avatars2.githubusercontent.com/u/9221943?v=4" width="100px;" alt=""/><br /><sub><b>Piotr Pałka</b></sub></a><br /></td>
   </tr>
 </table>
 

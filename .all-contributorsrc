@@ -91,27 +91,21 @@
       "name": "naokia",
       "avatar_url": "https://avatars2.githubusercontent.com/u/5516121?v=4",
       "profile": "https://github.com/naokia",
-      "contributions": [
-        "bug"
-      ]
+      "contributions": []
     },
     {
       "login": "tjrexer",
       "name": "Tim Rexer",
       "avatar_url": "https://avatars2.githubusercontent.com/u/7013045?v=4",
       "profile": "https://github.com/tjrexer",
-      "contributions": [
-        "bug"
-      ]
+      "contributions": []
     },
     {
       "login": "bigb123",
       "name": "Piotr Pałka",
       "avatar_url": "https://avatars2.githubusercontent.com/u/9221943?v=4",
       "profile": "https://github.com/bigb123",
-      "contributions": [
-        "question"
-      ]
+      "contributions": []
     }
   ],
   "contributorsPerLine": 6,
