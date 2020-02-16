@@ -96,7 +96,7 @@ const trackActivity = async ({ cliVersion, type, activityId, instance = "" }) =>
             return;
         }
 
-        await sendStats("activity", {
+        await sendStats("activities", {
             version: cliVersion,
             type,
             activityId,
@@ -128,7 +128,7 @@ const trackError = async ({ cliVersion, type, errorMessage, errorStack, activity
             return;
         }
 
-        await sendStats("error", {
+        await sendStats("errors", {
             version: cliVersion,
             type,
             errorMessage,
