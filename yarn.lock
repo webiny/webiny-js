@@ -5030,6 +5030,57 @@
     "@webassemblyjs/wast-parser" "1.8.5"
     "@xtuc/long" "4.2.2"
 
+"@webiny/app@^3.0.2":
+  version "3.0.2"
+  resolved "https://registry.yarnpkg.com/@webiny/app/-/app-3.0.2.tgz#dc734b47b70e78a6072ca287e2b36c1d2a63d948"
+  integrity sha512-JrDb6YGyx4dhu0rvyKVyMTs+zs9VIOeVcC9GAlQ/PEpQRiDMuwM3TS97cyu/Jf+kfHkeE9CVEak8H/BMiXJLmw==
+  dependencies:
+    "@babel/runtime" "^7.5.5"
+    "@webiny/i18n" "^3.0.1"
+    "@webiny/i18n-react" "^3.0.1"
+    "@webiny/plugins" "^3.0.1"
+    "@webiny/ui" "^3.0.3"
+    apollo-client "^2.6.8"
+    apollo-link "^1.2.1"
+    graphql "^14.5.8"
+    graphql-tag "^2.10.1"
+    invariant "^2.2.4"
+    lodash "^4.17.4"
+    lodash.get "^4.4.2"
+    react "^16.8.6"
+    react-apollo "^3.1.3"
+    react-dom "^16.6.0"
+    use-react-router "^1.0.7"
+    warning "^4.0.2"
+
+"@webiny/i18n-react@^3.0.1":
+  version "3.0.1"
+  resolved "https://registry.yarnpkg.com/@webiny/i18n-react/-/i18n-react-3.0.1.tgz#d3c89afe49e86f3f07b2d5d5485ee53873b3954e"
+  integrity sha512-qWfA7LaDG0qyzGuHRMQD4BUTWiJgJXL2Nvnma1gQjEmIO6/DAiRliqdZZse+p11fB8DL6EqyQAj9me3qGJioUw==
+  dependencies:
+    "@babel/runtime" "^7.5.5"
+    "@webiny/i18n" "^3.0.1"
+    lodash "^4.17.4"
+
+"@webiny/i18n@^3.0.1":
+  version "3.0.1"
+  resolved "https://registry.yarnpkg.com/@webiny/i18n/-/i18n-3.0.1.tgz#d3e1112a51f15dbaf26fd36da117b94a9a17ef38"
+  integrity sha512-YZsgf0Crq1I3xVZcHYcq6J6NkGHT97G8iIysW1O1dFyUSLYMDQJ0zpuplIr+EaFbdVPDMhn0G2b3KcY2OOxiaQ==
+  dependencies:
+    "@babel/runtime" "^7.5.5"
+    accounting "^0.4.1"
+    fecha "^2.3.3"
+    lodash "^4.17.4"
+    short-hash "^1.0.0"
+    yargs "12.0.5"
+
+"@webiny/plugins@^3.0.1":
+  version "3.0.1"
+  resolved "https://registry.yarnpkg.com/@webiny/plugins/-/plugins-3.0.1.tgz#61605c3f422cc3c11e1af60647c54f10196e2bf2"
+  integrity sha512-KKZWUmxSOjGw5rKL28ADN3HP/+etUsmsO8jRK1CYGfx2lSaY+U2xS7rHOiy5PhtURcz/ND0i4gyN+2p9jLikbQ==
+  dependencies:
+    "@babel/runtime" "^7.5.5"
+
 "@webiny/serverless-api-gateway@^2.0.1":
   version "2.0.1"
   resolved "https://registry.yarnpkg.com/@webiny/serverless-api-gateway/-/serverless-api-gateway-2.0.1.tgz#f1e57cb73b034ebd4ad9738a3aa565bffddb5b45"
@@ -5047,6 +5098,63 @@
     aws-sdk "^2.0.0"
     lodash.isequal "^4.5.0"
     p-retry "^4.1.0"
+
+"@webiny/ui@^3.0.3":
+  version "3.0.3"
+  resolved "https://registry.yarnpkg.com/@webiny/ui/-/ui-3.0.3.tgz#517096d182ab493f08fa100f342d4d1fd967e2ff"
+  integrity sha512-n3XwqCKzR6sksPVFYCBSJq6R+d98wMtuTRdX9mqgEdNKBsjLOU2fI3+o0O6ACaBdmFg03lH0qN9GzVqraybf9A==
+  dependencies:
+    "@babel/runtime" "^7.5.5"
+    "@emotion/core" "^10.0.17"
+    "@emotion/styled" "^10.0.17"
+    "@rmwc/base" "^5.6.0"
+    "@rmwc/button" "^5.6.0"
+    "@rmwc/checkbox" "^5.6.0"
+    "@rmwc/chip" "^5.6.0"
+    "@rmwc/dialog" "^5.6.0"
+    "@rmwc/drawer" "^5.6.0"
+    "@rmwc/elevation" "^5.6.0"
+    "@rmwc/fab" "^5.6.0"
+    "@rmwc/grid" "^5.6.0"
+    "@rmwc/icon-button" "^5.6.0"
+    "@rmwc/list" "^5.6.0"
+    "@rmwc/menu" "^5.6.0"
+    "@rmwc/radio" "^5.6.0"
+    "@rmwc/ripple" "^5.6.0"
+    "@rmwc/select" "^5.6.0"
+    "@rmwc/slider" "^5.6.0"
+    "@rmwc/snackbar" "^5.6.0"
+    "@rmwc/switch" "^5.6.0"
+    "@rmwc/tabs" "^5.6.0"
+    "@rmwc/textfield" "^5.6.0"
+    "@rmwc/top-app-bar" "^5.6.0"
+    "@rmwc/typography" "^5.6.0"
+    "@svgr/webpack" "^4.3.2"
+    brace "^0.11.1"
+    classnames "^2.2.6"
+    cropperjs "^1.4.3"
+    dot-prop-immutable "^1.4.0"
+    downshift "^2.1.5"
+    emotion "10.0.17"
+    keycode "^2.2.0"
+    load-script "^1.0.0"
+    lodash "^4.17.11"
+    material-components-web "^3.1.1"
+    nprogress "^0.2.0"
+    nuka-carousel "^4.3.9"
+    rc-tooltip "^3.7.2"
+    react-ace "^6.1.4"
+    react-butterfiles "^1.3.0"
+    react-color "^2.14.1"
+    react-columned "^1.0.0"
+    react-custom-scrollbars "^4.2.1"
+    react-loading-skeleton "^0.5.0"
+    react-spinner-material "^1.0.19"
+    react-transition-group "^4.3.0"
+    shortid "^2.2.12"
+    slate "^0.42.2"
+    slate-plain-serializer "^0.6.15"
+    slate-react "^0.19.3"
 
 "@webpack-contrib/schema-utils@^1.0.0-beta.0":
   version "1.0.0-beta.0"

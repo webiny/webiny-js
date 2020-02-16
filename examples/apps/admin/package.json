@@ -92,7 +92,7 @@
   },
   "scripts": {
     "analyze": "source-map-explorer build/static/js/main.*",
-    "start": "env-cmd -r .env.json -e default,local webiny start",
+    "start": "env-cmd -r .env.json -e default,local rescripts start",
     "build": "rescripts build",
     "build:dev": "env-cmd -r .env.json -e default,dev yarn build",
     "build:prod": "env-cmd -r .env.json -e default,prod yarn build",

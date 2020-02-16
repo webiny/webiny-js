@@ -1,0 +1,45 @@
+{
+  "extends": "../../tsconfig.build.json",
+  "include": ["./src"],
+  "exclude": [
+    "node_modules",
+    "./dist",
+    "../app",
+    "../app-admin",
+    "../app-i18n",
+    "../app-cookie-policy",
+    "../app-google-tag-manager",
+    "../app-mailchimp",
+    "../app-typeform",
+    "../app-plugin-security-cognito",
+    "../app-plugin-security-cognito-theme",
+    "../app-page-builder",
+    "../app-page-builder-theme",
+    "../app-form-builder",
+    "../app-form-builder-theme",
+    "../app-template",
+    "../ui"
+  ],
+  "compilerOptions": {
+    "rootDir": "./src",
+    "outDir": "./dist",
+    "declarationDir": "./dist"
+  },
+  "references": [
+    { "path": "../app/tsconfig.build.json" },
+    { "path": "../app-admin/tsconfig.build.json" },
+    { "path": "../app-i18n/tsconfig.build.json" },
+    { "path": "../app-cookie-policy/tsconfig.build.json" },
+    { "path": "../app-google-tag-manager/tsconfig.build.json" },
+    { "path": "../app-mailchimp/tsconfig.build.json" },
+    { "path": "../app-typeform/tsconfig.build.json" },
+    { "path": "../app-plugin-security-cognito/tsconfig.build.json" },
+    { "path": "../app-plugin-security-cognito-theme/tsconfig.build.json" },
+    { "path": "../app-page-builder/tsconfig.build.json" },
+    { "path": "../app-page-builder-theme/tsconfig.build.json" },
+    { "path": "../app-form-builder/tsconfig.build.json" },
+    { "path": "../app-form-builder-theme/tsconfig.build.json" },
+    { "path": "../app-template/tsconfig.build.json" },
+    { "path": "../ui/tsconfig.build.json" }
+  ]
+}
