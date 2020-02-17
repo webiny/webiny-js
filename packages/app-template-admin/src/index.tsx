@@ -50,76 +50,64 @@ export type AdminAppOptions = {
 export default createTemplate<AdminAppOptions>(opts => {
     const appStructure = [
         {
-            type: "app-template-hoc",
-            name: "app-template-hoc-apollo",
-            hoc: Component => props => {
+            type: "app-template-renderer",
+            name: "app-template-renderer-apollo",
+            render(children) {
                 return (
                     <ApolloProvider client={createApolloClient(opts.apolloClient)}>
-                        <NetworkError>
-                            <Component {...props} />
-                        </NetworkError>
+                        <NetworkError>{children}</NetworkError>
                     </ApolloProvider>
                 );
             }
         },
         {
-            type: "app-template-hoc",
-            name: "app-template-hoc-router",
-            hoc: Component => props => {
+            type: "app-template-renderer",
+            name: "app-template-renderer-router",
+            render(children) {
                 return (
                     <BrowserRouter basename={process.env.PUBLIC_URL}>
-                        <Component {...props} />
+                        {children}
                         <Route exact path="/" render={() => <Redirect to={opts.defaultRoute} />} />
                     </BrowserRouter>
                 );
             }
         },
         {
-            type: "app-template-hoc",
-            name: "app-template-hoc-ui",
-            hoc: Component => props => {
-                return (
-                    <UiProvider>
-                        <Component {...props} />
-                    </UiProvider>
-                );
+            type: "app-template-renderer",
+            name: "app-template-renderer-ui",
+            render(children) {
+                return <UiProvider>{children}</UiProvider>;
             }
         },
         {
-            type: "app-template-hoc",
-            name: "app-template-hoc-i18n",
-            hoc: Component => props => {
+            type: "app-template-renderer",
+            name: "app-template-renderer-i18n",
+            render(children) {
                 return (
                     <I18NProvider loader={<CircularProgress label={"Loading locales..."} />}>
-                        <Component {...props} />
+                        {children}
                     </I18NProvider>
                 );
             }
         },
         {
-            type: "app-template-hoc",
-            name: "app-template-hoc-app-installer",
-            hoc: Component => props => {
+            type: "app-template-renderer",
+            name: "app-template-renderer-app-installer",
+            render(children) {
                 const securityProvider = (
                     <SecurityProvider loader={<CircularProgress label={"Checking user..."} />} />
                 );
 
-                return (
-                    <AppInstaller security={securityProvider}>
-                        <Component {...props} />
-                    </AppInstaller>
-                );
+                return <AppInstaller security={securityProvider}>{children}</AppInstaller>;
             }
         },
         {
-            type: "app-template-hoc",
-            name: "app-template-hoc-page-builder",
-            hoc: Component => props => {
+            type: "app-template-renderer",
+            name: "app-template-renderer-page-builder",
+            render(children) {
                 return (
                     <PageBuilderProvider isEditor>
-                        <ThemeProvider>
-                            <Component {...props} />
-                        </ThemeProvider>
+                        <ThemeProvider>{children}</ThemeProvider>
                     </PageBuilderProvider>
                 );
             }

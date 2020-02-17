@@ -19,4 +19,4 @@ const App = adminTemplate({
     defaultRoute: "/page-builder/pages"
 });
 
-ReactDOM.render(<App />, document.getElementById("root"));
+ReactDOM.render(<App customProp={"Pavel"}/>, document.getElementById("root"));

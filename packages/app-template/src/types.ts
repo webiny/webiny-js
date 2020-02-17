@@ -1,9 +1,9 @@
 import * as React from "react";
 import { Plugin } from "@webiny/plugins/types";
 
-export type AppTemplateHOC = (BaseComponent: React.ComponentType) => React.ComponentType;
+export type AppTemplateRenderer = (children: React.ReactElement) => React.ReactElement;
 
-export type AppTemplateHOCPlugin = Plugin & {
-    type: "app-template-hoc";
-    hoc: AppTemplateHOC;
+export type AppTemplateRendererPlugin = Plugin & {
+    type: "app-template-renderer";
+    render: AppTemplateRenderer;
 };

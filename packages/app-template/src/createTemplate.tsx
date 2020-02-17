@@ -1,9 +1,9 @@
-import { registerPlugins, getPlugins } from "@webiny/plugins";
-import { AppTemplateHOC, AppTemplateHOCPlugin } from "./types";
 import React from "react";
-import { WebinyInitPlugin, Plugin } from "@webiny/app/types";
+import { registerPlugins, getPlugins } from "@webiny/plugins";
+import { AppTemplateRenderer, AppTemplateRendererPlugin } from "./types";
+import { WebinyInitPlugin } from "@webiny/app/types";
 
-const compose = (...funcs: AppTemplateHOC[]) =>
+const compose = (...funcs: AppTemplateRenderer[]) =>
     funcs.reduce(
         (a, b) => (...args) => a(b(...args)),
         arg => arg
@@ -26,7 +26,9 @@ export function createTemplate<T>(factory: TemplateFactory<T>) {
 
         getPlugins<WebinyInitPlugin>("webiny-init").forEach(plugin => plugin.init());
 
-        const hocs = getPlugins<AppTemplateHOCPlugin>("app-template-hoc").map(pl => pl.hoc);
-        return compose(...hocs)(Routes);
+        const renderers = getPlugins<AppTemplateRendererPlugin>("app-template-renderer").map(
+            pl => pl.render
+        );
+        return () => compose(...renderers)(<Routes />);
     };
 }
