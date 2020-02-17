@@ -2,6 +2,7 @@ const os = require("os");
 const path = require("path");
 const readJson = require("load-json-file");
 const request = require("request");
+const get = require("lodash.get");
 
 let config;
 const defaultLogger = () => {};
@@ -48,7 +49,7 @@ const trackComponent = async ({ context, component, method = "deploy" }) => {
         await sendStats("telemetry", {
             type: "component",
             user: config.id,
-            instance: context.instance.id,
+            instance: get(context, "instance.id") || "",
             component: name,
             version,
             method
@@ -76,7 +77,7 @@ const trackProject = async ({ cliVersion }) => {
     }
 };
 
-const trackActivity = async ({ cliVersion, type, activityId, instance = "" }) => {
+const trackActivity = async ({ cliVersion, type, activityId, context }) => {
     if (!cliVersion) {
         throw new Error(`Cannot track activity - "cliVersion" not specified.`);
     }
@@ -100,7 +101,7 @@ const trackActivity = async ({ cliVersion, type, activityId, instance = "" }) =>
             version: cliVersion,
             type,
             activityId,
-            instance,
+            instance: get(context, "instance.id") || "",
             user: config.id
         });
     } catch (e) {
@@ -108,7 +109,7 @@ const trackActivity = async ({ cliVersion, type, activityId, instance = "" }) =>
     }
 };
 
-const trackError = async ({ cliVersion, type, errorMessage, errorStack, activityId, instance = "" }) => {
+const trackError = async ({ cliVersion, type, errorMessage, errorStack, activityId }) => {
     if (!cliVersion) {
         throw new Error("Cannot track activity - CLI version not specified.");
     }
@@ -134,7 +135,7 @@ const trackError = async ({ cliVersion, type, errorMessage, errorStack, activity
             errorMessage,
             errorStack,
             activityId,
-            instance,
+            instance: get(context, "instance.id") || "",
             user: config.id
         });
     } catch (e) {
