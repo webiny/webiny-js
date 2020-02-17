@@ -27,7 +27,7 @@ export default function createMongoSorters(model, sort) {
         if (isBuiltIn(model, key)) {
             acc[key] = dir === "ASC" ? 1 : -1;
         } else {
-            acc[`${key}.value`] = dir === "ASC" ? 1 : -1;
+            acc[`${key}.values.value`] = dir === "ASC" ? 1 : -1;
         }
 
         return acc;

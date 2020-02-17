@@ -23,8 +23,8 @@ export const createReadResolvers: CreateReadResolvers = ({ models, model, fieldT
 
     return {
         CmsReadQuery: {
-            [`get${typeName}`]: resolveGet({ model })
-            //[`list${pluralize(typeName)}`]: resolveList({ model })
+            [`get${typeName}`]: resolveGet({ model }),
+            [`list${pluralize(typeName)}`]: resolveList({ model })
         },
         [rTypeName]: model.fields.reduce((resolvers, field) => {
             const { read } = fieldTypePlugins[field.type];

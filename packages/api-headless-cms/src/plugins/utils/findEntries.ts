@@ -1,59 +1,35 @@
-import { createPaginationMeta } from "@webiny/commodo";
+import { GraphQLContext as APIContext } from "@webiny/api/types";
+import { CmsModel } from "@webiny/api-headless-cms/types";
 import createFindSorters from "./createFindSorters";
-import createFindQuery from "./createFindQuery";
+import { createFindQuery } from "./createFindQuery";
 import parseBoolean from "./parseBoolean";
 
-export default async function findEntries({ model, args, context, info }) {
-    // Create a local copy of context and override the `locale` value
-    const localContext = { ...context };
-    if (args.locale) {
-        localContext.locale = args.locale;
-    }
+type FindEntries = {
+    model: CmsModel;
+    args: {
+        locale: string;
+        where: { [key: string]: any };
+        sort: string[];
+        perPage: number;
+        page: number;
+    };
+    context: APIContext;
+};
 
+export default async function findEntries({ model, args, context }: FindEntries) {
+    const Model = context.models[model.modelId];
     parseBoolean(args);
+    // eslint-disable-next-line prefer-const
     let { where = {}, sort = [], perPage, page } = args;
     page = isNaN(page) || page < 1 ? 1 : page;
     perPage = isNaN(perPage) || perPage < 1 ? 100 : perPage;
 
-    const match = createFindQuery(model, where, localContext);
+    const match = createFindQuery(model, where, context);
     const sorters = createFindSorters(model, sort);
 
-    const entries = await collection
-        .find(match)
-        .sort(sorters)
-        .skip((page - 1) * perPage)
-        .limit(perPage)
-        .toArray();
-
-    // Set entry locale
-    entries.forEach(entry => (entry._locale = args.locale || context.locale));
-
-    // Create meta
-    const { selections } = info.fieldNodes[0].selectionSet;
-    const metaField = selections.find(s => s.name.value === "meta");
-
-    if (!metaField) {
-        return { entries };
+    if (!Object.keys(sorters).length) {
+        sorters["createdOn"] = -1;
     }
 
-    const [res] = await collection
-        .aggregate(
-            [
-                where
-                    ? {
-                          $match: match
-                      }
-                    : null,
-                sort ? { $sort: sorters } : null,
-                {
-                    $count: "totalCount"
-                }
-            ].filter(Boolean)
-        )
-        .toArray();
-
-    return {
-        entries,
-        meta: createPaginationMeta({ page, perPage, totalCount: res ? res.totalCount : 0 })
-    };
+    return await Model.find({ query: match, sort: sorters, perPage, page });
 }
