@@ -106,7 +106,7 @@ class Template extends Component {
             return outputs;
         } catch (e) {
             await trackError({
-                instance: this.context.instance.id,
+                context: this.context,
                 activityId,
                 type: `${what}_deploy`,
                 cliVersion: version,
