@@ -18,7 +18,7 @@ const sendStats = (action, data) => {
     });
 };
 
-const loadConfig = async ({ logger = defaultLogger }) => {
+const loadConfig = async ({ logger = defaultLogger } = {}) => {
     if (!config) {
         const dataPath = path.join(os.homedir(), ".webiny", "config");
         try {
