@@ -77,7 +77,7 @@ const trackProject = async ({ cliVersion }) => {
     }
 };
 
-const trackActivity = async ({ cliVersion, type, activityId, context }) => {
+const trackActivity = async ({ cliVersion, type, activityId, context = {} }) => {
     if (!cliVersion) {
         throw new Error(`Cannot track activity - "cliVersion" not specified.`);
     }
@@ -91,7 +91,7 @@ const trackActivity = async ({ cliVersion, type, activityId, context }) => {
     }
 
     try {
-        await loadConfig();
+        await loadConfig({ logger: context.debug });
 
         if (config.tracking !== true) {
             return;
@@ -109,7 +109,7 @@ const trackActivity = async ({ cliVersion, type, activityId, context }) => {
     }
 };
 
-const trackError = async ({ cliVersion, type, errorMessage, errorStack, activityId }) => {
+const trackError = async ({ cliVersion, type, errorMessage, errorStack, activityId, context = {} }) => {
     if (!cliVersion) {
         throw new Error("Cannot track activity - CLI version not specified.");
     }
@@ -123,7 +123,7 @@ const trackError = async ({ cliVersion, type, errorMessage, errorStack, activity
     }
 
     try {
-        await loadConfig();
+        await loadConfig({ logger: context.debug });
 
         if (config.tracking !== true) {
             return;
