@@ -65,25 +65,25 @@ class Template extends Component {
             context: this.context
         });
 
-        this.context.status("Deploying");
-
-        const template = await getTemplate(inputs);
-
-        const resolvedTemplate = resolveTemplate(inputs, template);
-
-        this.context.debug("Collecting components from the template.");
-
-        const allComponents = getAllComponents(resolvedTemplate);
-
-        const allComponentsWithDependencies = setDependencies(allComponents);
-
-        const graph = createGraph(allComponentsWithDependencies);
-
-        await syncState(allComponentsWithDependencies, this);
-
-        this.context.debug(`Executing the template's components graph.`);
-
         try {
+            this.context.status("Deploying");
+
+            const template = await getTemplate(inputs);
+
+            const resolvedTemplate = resolveTemplate(inputs, template);
+
+            this.context.debug("Collecting components from the template.");
+
+            const allComponents = getAllComponents(resolvedTemplate);
+
+            const allComponentsWithDependencies = setDependencies(allComponents);
+
+            const graph = createGraph(allComponentsWithDependencies);
+
+            await syncState(allComponentsWithDependencies, this);
+
+            this.context.debug(`Executing the template's components graph.`);
+
             const allComponentsWithOutputs = await executeGraph(
                 allComponentsWithDependencies,
                 graph,
@@ -113,6 +113,7 @@ class Template extends Component {
                 errorMessage: e.message,
                 errorStack: e.stack
             });
+
             throw e;
         }
     }
