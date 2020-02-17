@@ -25,8 +25,9 @@ export default (): HttpHandlerPlugin => ({
         let body = event.body;
         if (event.isBase64Encoded) {
             body = Buffer.from(event.body, "base64").toString("utf-8");
-            body = parseBody(body);
         }
+
+        body = parseBody(body);
 
         return (
             body.ssr && Array.isArray(body.ssr) && Object.values(API_ACTION).includes(body.ssr[0])
@@ -39,8 +40,9 @@ export default (): HttpHandlerPlugin => ({
         let body = event.body;
         if (event.isBase64Encoded) {
             body = Buffer.from(event.body, "base64").toString("utf-8");
-            body = parseBody(body);
         }
+
+        body = parseBody(body);
 
         const [action, actionArgs = {}] = body.ssr;
 
