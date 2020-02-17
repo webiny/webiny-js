@@ -45,7 +45,12 @@ export default (options): HttpHandlerPlugin => {
                             Payload: JSON.stringify({
                                 ...event,
                                 httpMethod: "POST",
-                                body: { ssr: ["invalidateSsrCacheByPath", { path: ssrCache.path }] }
+                                body: {
+                                    ssr: ["invalidateSsrCacheByPath", {
+                                        path: ssrCache.path,
+                                        refresh: true,
+                                    }]
+                                }
                             })
                         }).promise();
                     }
