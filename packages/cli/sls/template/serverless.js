@@ -62,7 +62,7 @@ class Template extends Component {
             activityId,
             type: `${what}_deploy_start`,
             cliVersion: version,
-            instance: this.context.instance.id
+            context: this.context
         });
 
         this.context.status("Deploying");
@@ -100,7 +100,7 @@ class Template extends Component {
                 activityId,
                 type: `${what}_deploy_end`,
                 cliVersion: version,
-                instance: this.context.instance.id
+                context: this.context
             });
 
             return outputs;
