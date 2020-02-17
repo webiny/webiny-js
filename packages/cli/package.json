@@ -34,6 +34,7 @@
     "semver": "^7.1.2",
     "traverse": "^0.6.6",
     "update-notifier": "^3.0.1",
+    "uniqid": "^5.0.3",
     "uuid": "^3.3.3",
     "write-json-file": "^4.2.0",
     "yargs": "^14.0.0"
