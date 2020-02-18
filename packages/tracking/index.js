@@ -59,24 +59,6 @@ const trackComponent = async ({ context, component, method = "deploy" }) => {
     }
 };
 
-const trackProject = async ({ cliVersion }) => {
-    try {
-        await loadConfig();
-
-        if (config.tracking !== true) {
-            return;
-        }
-
-        await sendStats("telemetry", {
-            type: "project",
-            user: config.id,
-            version: cliVersion
-        });
-    } catch (e) {
-        // Ignore errors
-    }
-};
-
 const trackActivity = async ({ cliVersion, type, activityId, context = {} }) => {
     if (!cliVersion) {
         throw new Error(`Cannot track activity - "cliVersion" not specified.`);
@@ -144,7 +126,6 @@ const trackError = async ({ cliVersion, type, errorMessage, errorStack, activity
 };
 
 module.exports = {
-    trackProject,
     trackComponent,
     trackActivity,
     trackError
