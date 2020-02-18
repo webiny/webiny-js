@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.1.0-next.0](https://github.com/Webiny/webiny-js/compare/@webiny/tracking@3.0.1...@webiny/tracking@3.1.0-next.0) (2020-02-18)
+
+
+### Features
+
+* improve CLI usage tracking ([#723](https://github.com/Webiny/webiny-js/issues/723)) ([1bbf80a](https://github.com/Webiny/webiny-js/commit/1bbf80aa9a6ad9be87d007162d7899ce85da7a2d))
+
+
+
+
+
 ## [3.0.1](https://github.com/Webiny/webiny-js/compare/@webiny/tracking@3.0.1-next.0...@webiny/tracking@3.0.1) (2020-02-07)
 
 **Note:** Version bump only for package @webiny/tracking

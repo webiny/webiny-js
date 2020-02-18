@@ -3,6 +3,23 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.1.0-next.0](https://github.com/webiny/webiny-js/compare/@webiny/http-handler-ssr@2.0.3...@webiny/http-handler-ssr@2.1.0-next.0) (2020-02-18)
+
+
+### Bug Fixes
+
+* parse JSON only if string ([#721](https://github.com/webiny/webiny-js/issues/721)) ([e214fcb](https://github.com/webiny/webiny-js/commit/e214fcb06c347576418a4d774f71537400e461dd))
+* send "refresh" flag to actually trigger the refresh ([#722](https://github.com/webiny/webiny-js/issues/722)) ([51af70d](https://github.com/webiny/webiny-js/commit/51af70d783c6b46ab0f633ecd551edee04c4bf60))
+
+
+### Features
+
+* improve CLI usage tracking ([#723](https://github.com/webiny/webiny-js/issues/723)) ([1bbf80a](https://github.com/webiny/webiny-js/commit/1bbf80aa9a6ad9be87d007162d7899ce85da7a2d))
+
+
+
+
+
 ## [2.0.3](https://github.com/webiny/webiny-js/compare/@webiny/http-handler-ssr@2.0.3-next.0...@webiny/http-handler-ssr@2.0.3) (2020-02-12)
 
 **Note:** Version bump only for package @webiny/http-handler-ssr
