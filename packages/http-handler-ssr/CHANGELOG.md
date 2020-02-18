@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.1.0](https://github.com/webiny/webiny-js/compare/@webiny/http-handler-ssr@2.1.0-next.1...@webiny/http-handler-ssr@2.1.0) (2020-02-18)
+
+
+### Bug Fixes
+
+* increase timeout wait duration ([abaa2af](https://github.com/webiny/webiny-js/commit/abaa2af8ba5b316c9b049fc82f3d63335c3a234e))
+
+
+
+
+
 # [2.1.0-next.1](https://github.com/webiny/webiny-js/compare/@webiny/http-handler-ssr@2.1.0-next.0...@webiny/http-handler-ssr@2.1.0-next.1) (2020-02-18)
 
 
