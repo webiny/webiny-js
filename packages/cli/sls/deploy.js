@@ -95,7 +95,9 @@ module.exports = async inputs => {
                     webinyJs
                 )}, skipping processing of hooks.`
             );
+
             console.log(`\n🎉 Done! Deploy finished in ${green(duration + "s")}.`);
+
             return;
         }
 
@@ -119,6 +121,7 @@ module.exports = async inputs => {
         }
 
         console.log(`\n🎉 Done! Deploy finished in ${green(duration + "s")}.`);
+
         notify({ message: `API deploy completed in ${duration}s.` });
 
         if (output.cdn) {

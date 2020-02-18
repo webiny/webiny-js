@@ -9,10 +9,11 @@ const uuid = require("uuid/v4");
 const loadJsonFile = require("load-json-file");
 const ora = require("ora");
 const writeJsonFile = require("write-json-file");
-const { trackProject } = require("@webiny/tracking");
+const { trackActivity } = require("@webiny/tracking");
 const { version } = require(require.resolve("@webiny/cli/package.json"));
 const { getSuccessBanner } = require("./messages");
 const { getPackageVersion } = require("./utils");
+const uniqueId = require('uniqid');
 
 const globFiles = util.promisify(glob);
 
@@ -33,6 +34,10 @@ module.exports = async ({ name, tag }) => {
     }
 
     console.log(`📦 Creating a new Webiny project in ${green(root)}...`);
+
+    const activityId = uniqueId();
+    await trackActivity({ activityId, type: "create_project_start", cliVersion: version });
+
     fs.ensureDirSync(root);
     process.chdir(root);
 
@@ -126,7 +131,7 @@ module.exports = async ({ name, tag }) => {
     await execa("yarn", [], { cwd: root });
     spinner.succeed(`All dependencies installed successfully!`);
 
-    await trackProject({ cliVersion: version });
+    await trackActivity({ activityId, type: "create_project_end", cliVersion: version });
 
     console.log(await getSuccessBanner());
 };

@@ -2,6 +2,9 @@ const fs = require("fs");
 const path = require("path");
 const { Component } = require("@serverless/core");
 const { loadEnv } = require("../utils");
+const uniqueId = require("uniqid");
+const { trackActivity, trackError } = require("@webiny/tracking");
+const { version } = require(require.resolve("@webiny/cli/package.json"));
 
 const {
     getTemplate,
@@ -52,37 +55,67 @@ class Template extends Component {
     }
 
     async deploy(inputs = {}) {
-        this.context.status("Deploying");
+        const activityId = uniqueId();
+        const { what } = inputs;
 
-        const template = await getTemplate(inputs);
+        await trackActivity({
+            activityId,
+            type: `${what}_deploy_start`,
+            cliVersion: version,
+            context: this.context
+        });
 
-        const resolvedTemplate = resolveTemplate(inputs, template);
+        try {
+            this.context.status("Deploying");
 
-        this.context.debug("Collecting components from the template.");
+            const template = await getTemplate(inputs);
 
-        const allComponents = getAllComponents(resolvedTemplate);
+            const resolvedTemplate = resolveTemplate(inputs, template);
 
-        const allComponentsWithDependencies = setDependencies(allComponents);
+            this.context.debug("Collecting components from the template.");
 
-        const graph = createGraph(allComponentsWithDependencies);
+            const allComponents = getAllComponents(resolvedTemplate);
 
-        await syncState(allComponentsWithDependencies, this);
+            const allComponentsWithDependencies = setDependencies(allComponents);
 
-        this.context.debug(`Executing the template's components graph.`);
+            const graph = createGraph(allComponentsWithDependencies);
 
-        const allComponentsWithOutputs = await executeGraph(
-            allComponentsWithDependencies,
-            graph,
-            this,
-            inputs
-        );
+            await syncState(allComponentsWithDependencies, this);
 
-        const outputs = getOutputs(allComponentsWithOutputs);
+            this.context.debug(`Executing the template's components graph.`);
 
-        this.state.outputs = outputs;
-        await this.save();
+            const allComponentsWithOutputs = await executeGraph(
+                allComponentsWithDependencies,
+                graph,
+                this,
+                inputs
+            );
 
-        return outputs;
+            const outputs = getOutputs(allComponentsWithOutputs);
+
+            this.state.outputs = outputs;
+            await this.save();
+
+            await trackActivity({
+                activityId,
+                type: `${what}_deploy_end`,
+                cliVersion: version,
+                context: this.context
+            });
+
+            return outputs;
+        } catch (e) {
+            await trackError({
+                context: this.context,
+                activityId,
+                type: `${what}_deploy`,
+                cliVersion: version,
+                errorMessage: e.message,
+                errorStack: e.stack
+            });
+
+            throw e;
+        }
     }
 
     async deployAlias(alias, inputs) {
