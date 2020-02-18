@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.1.0-next.1](https://github.com/webiny/webiny-js/compare/@webiny/http-handler-ssr@2.1.0-next.0...@webiny/http-handler-ssr@2.1.0-next.1) (2020-02-18)
+
+
+### Bug Fixes
+
+* revert changes ([6f600e7](https://github.com/webiny/webiny-js/commit/6f600e7a8568b14495b40122de8c9f486778d75c))
+
+
+
+
+
 # [2.1.0-next.0](https://github.com/webiny/webiny-js/compare/@webiny/http-handler-ssr@2.0.3...@webiny/http-handler-ssr@2.1.0-next.0) (2020-02-18)
 
 
