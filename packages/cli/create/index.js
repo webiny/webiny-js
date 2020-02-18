@@ -36,7 +36,7 @@ module.exports = async ({ name, tag }) => {
     console.log(`📦 Creating a new Webiny project in ${green(root)}...`);
 
     const activityId = uniqueId();
-    await trackActivity({ activityId, type: "create_project_start", cliVersion: version });
+    await trackActivity({ activityId, type: "create-project-start", cliVersion: version });
 
     fs.ensureDirSync(root);
     process.chdir(root);
@@ -131,7 +131,7 @@ module.exports = async ({ name, tag }) => {
     await execa("yarn", [], { cwd: root });
     spinner.succeed(`All dependencies installed successfully!`);
 
-    await trackActivity({ activityId, type: "create_project_end", cliVersion: version });
+    await trackActivity({ activityId, type: "create-project-end", cliVersion: version });
 
     console.log(await getSuccessBanner());
 };

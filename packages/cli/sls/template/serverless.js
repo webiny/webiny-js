@@ -60,7 +60,7 @@ class Template extends Component {
 
         await trackActivity({
             activityId,
-            type: `${what}_deploy_start`,
+            type: `${what}-deploy-start`,
             cliVersion: version,
             context: this.context
         });
@@ -98,7 +98,7 @@ class Template extends Component {
 
             await trackActivity({
                 activityId,
-                type: `${what}_deploy_end`,
+                type: `${what}-deploy-end`,
                 cliVersion: version,
                 context: this.context
             });
