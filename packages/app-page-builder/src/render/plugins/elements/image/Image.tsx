@@ -44,7 +44,7 @@ const Image = props => {
             style={{ textAlign: horizontalAlign }}
             className={"webiny-pb-base-page-element-style webiny-pb-page-element-image"}
         >
-            <Link link={link}>
+            <a href={link.href}>
                 <WebinyImage
                     title={title}
                     alt={title}
@@ -52,7 +52,7 @@ const Image = props => {
                     src={image.file.src}
                     srcSet="auto"
                 />
-            </Link>
+            </a>
         </ElementRoot>
     );
 };
