@@ -8,7 +8,7 @@ const style = css({
     fontSize: 18,
     h1: {
         fontSize: 30,
-        fontWeight: 'bold',
+        fontWeight: "bold",
         padding: 50
     },
     p: {
