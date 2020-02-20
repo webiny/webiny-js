@@ -16,11 +16,9 @@ const App = () => {
     return (
         <I18NProvider>
             <UiProvider>
-                <PageBuilderProvider>
-                    {getPlugins("route").map(pl =>
-                        React.cloneElement(pl.route, { key: pl.name, exact: true })
-                    )}
-                </PageBuilderProvider>
+                {getPlugins("route").map(pl =>
+                    React.cloneElement(pl.route, { key: pl.name, exact: true })
+                )}
             </UiProvider>
         </I18NProvider>
     );
