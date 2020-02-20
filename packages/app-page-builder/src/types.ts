@@ -49,6 +49,11 @@ export type PbPageLayoutPlugin = Plugin & {
     layout: PbPageLayout;
 };
 
+export type PbDefaultPagePlugin = Plugin & {
+    type: "pb-default-page";
+    component: React.ComponentType<any>;
+};
+
 export type PbPageLayoutComponentPlugin = Plugin & {
     componentType: string;
     component: React.ComponentType<any>;
