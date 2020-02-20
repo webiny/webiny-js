@@ -16,7 +16,7 @@ const style = css({
     }
 });
 
-export default function GenericErrorPage({ title, message }) {
+export default function DefaultErrorPage({ title, message }) {
     return (
         <div className={style}>
             <Helmet>

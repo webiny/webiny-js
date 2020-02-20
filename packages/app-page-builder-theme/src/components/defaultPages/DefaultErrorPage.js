@@ -1,5 +1,5 @@
 import React from "react";
-import GenericPage from "./GenericPage";
+import DefaultPage from "./DefaultPage";
 
 const getPbNotInstalledErrorMessage = () => {
     // Check if window exists first (does not exist while doing SSR).
@@ -21,7 +21,7 @@ const getPbNotInstalledErrorMessage = () => {
     ];
 };
 
-export default function GenericErrorPage(props) {
+export default function DefaultErrorPage(props) {
     let message = "The link is either broken or the page has been removed.";
     let title = "An error occurred";
 
@@ -30,5 +30,5 @@ export default function GenericErrorPage(props) {
         [title, message] = getPbNotInstalledErrorMessage();
     }
 
-    return <GenericPage message={message} title={title} />;
+    return <DefaultPage message={message} title={title} />;
 }
