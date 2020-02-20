@@ -9,7 +9,7 @@ type Props = { settings: any; page: any };
 
 class Content extends React.Component<Props> {
     getPageTitle({ page, settings }): string {
-        let output = [];
+        const output = [];
         page.title && output.push(page.title);
         settings.name && output.push(settings.name);
         return output.join(" | ");
