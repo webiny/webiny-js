@@ -11,7 +11,7 @@ const defaultParams = {
 };
 
 export class ErrorResponse {
-    data: null;
+    data: any;
     error: {
         code: string;
         message: string;
