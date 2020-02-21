@@ -32,6 +32,7 @@ const plugin: CmsModelFieldToCommodoFieldPlugin = {
     name: "cms-model-field-to-commodo-field-datetime",
     type: "cms-model-field-to-commodo-field",
     fieldType: "datetime",
+    sortable: true,
     apply({ model, field, validation, context }) {
         const type: DATE_TYPE = field.settings.type;
         let cField;

@@ -41,6 +41,7 @@ export default ({ plugins }) => {
                 }
 
                 // Test Category
+                const { CmsFieldValueModel } = context.models;
                 const Category = context.models["category"];
                 const category = new Category();
                 category.populate({
@@ -62,6 +63,16 @@ export default ({ plugins }) => {
                     ]
                 });
                 expect(category.title.value()).toBe("Hardware EN");
+
+                // Test Category field values
+                const data = await CmsFieldValueModel.find({
+                    query: { field: "title", modelId: "category", ref: category.id }
+                });
+
+                expect(data.length).toBe(2);
+                expect(data.find(d => d.locale === locales.en.id).value).toBe("Hardware EN");
+                expect(data.find(d => d.locale === locales.de.id).value).toBe("Hardware DE");
+                expect(data.find(d => d.locale === locales.it.id)).toBe(undefined);
 
                 // Test Product
                 const Product = context.models["product"];
@@ -118,6 +129,27 @@ export default ({ plugins }) => {
                 expect(productCategory.id).toBe(category.id);
                 expect(productCategory.title.value()).toBe("Hardware EN");
 
+                // Test Product field values
+                const pFields = await CmsFieldValueModel.find({
+                    query: { modelId: "product", ref: product.id }
+                });
+
+                const getValue = (locale, field) => {
+                    const rec = pFields.find(f => f.locale === locale && f.field === field);
+                    return rec ? rec.value : undefined;
+                };
+
+                expect(pFields.length).toBe(10);
+                expect(getValue(locales.en.id, "title")).toBe("Laptop EN");
+                expect(getValue(locales.de.id, "title")).toBe("Laptop DE");
+
+                expect(getValue(locales.en.id, "price")).toBe(100);
+                expect(getValue(locales.de.id, "price")).toBe(87);
+
+                expect(getValue(locales.en.id, "inStock")).toBe(true);
+                expect(getValue(locales.de.id, "inStock")).toBe(false);
+
+                // Test Review
                 const Review = context.models["review"];
                 const review = new Review();
                 review.populate({

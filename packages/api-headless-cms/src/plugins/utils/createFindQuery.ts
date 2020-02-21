@@ -26,13 +26,7 @@ export const createFindQuery = (model: CmsModel, where: FindWhere, context: Grap
         const field = model.fields.find(f => f.fieldId === fieldId);
         const condition = operatorPlugin.createCondition({ fieldId, field, value, context });
 
-        if (field) {
-            // This condition is executed for user-defined content model fields.
-            return { [`${fieldId}.values`]: condition };
-        }
-
-        // This condition is executed for built-in model fields, e.g. "id"
-        return { [fieldId]: condition };
+        return { field: fieldId, value: condition, locale: context.cms.locale.id};
     }
 
     const whereKeys = Object.keys(where);

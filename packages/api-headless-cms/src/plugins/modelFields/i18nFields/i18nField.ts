@@ -30,7 +30,6 @@ export const getI18NValues = (value: { [key: string]: any }[], i18n: I18NContext
 
 export const i18nField = ({
     field,
-    defaultValue,
     context: { i18n, commodo },
     ...rest
 }: I18NField) => {
@@ -64,7 +63,7 @@ export const i18nField = ({
                     }
 
                     const value = this.values.find(value => value.locale === locale.id);
-                    return value ? value.value : defaultValue;
+                    return value ? value.value : undefined;
                 }
             })
         )()

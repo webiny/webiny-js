@@ -4,6 +4,7 @@ import { withStorage, withCrudLogs, withSoftDelete, withFields } from "@webiny/c
 import { GraphQLContextPlugin } from "@webiny/api/types";
 import { GraphQLContext } from "@webiny/api-plugin-commodo-db-proxy/types";
 import contentModel from "./models/contentModel.model";
+import fieldValueModel from "./models/fieldValue.model";
 import { createModelFromData } from "./utils/createModelFromData";
 
 export default () => {
@@ -29,6 +30,7 @@ export default () => {
 
         context.models = {
             CmsContentModel: contentModel({ createBase, context }),
+            CmsFieldValueModel: fieldValueModel({ createBase }),
             createBase
         };
 

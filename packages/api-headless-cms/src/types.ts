@@ -61,6 +61,7 @@ export type CmsModelFieldToCommodoFieldPlugin<
 > = Plugin & {
     type: "cms-model-field-to-commodo-field";
     fieldType: string;
+    sortable: boolean;
     apply(params: {
         context: TContext;
         model: Function;
