@@ -1,7 +1,7 @@
-import * as React from "react";
+import React, { useMemo } from "react";
+
 import { getPlugins } from "@webiny/plugins";
-import { usePageBuilder } from "@webiny/app-page-builder/hooks/usePageBuilder";
-import { PbElement, PbRenderElementPlugin } from "@webiny/app-page-builder/types";
+import { PbElement, PbRenderElementPlugin, PbThemePlugin } from "@webiny/app-page-builder/types";
 
 export type ElementProps = {
     element: PbElement;
@@ -9,7 +9,11 @@ export type ElementProps = {
 
 const Element = (props: ElementProps) => {
     const { element } = props;
-    const { theme } = usePageBuilder();
+
+    const theme = useMemo(
+        () => Object.assign({}, ...getPlugins("pb-theme").map((pl: PbThemePlugin) => pl.theme)),
+        []
+    );
 
     if (!element) {
         return null;
