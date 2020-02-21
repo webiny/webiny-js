@@ -166,9 +166,9 @@ export default {
             ): PbPageResponse
             
             getPublishedPage(
-                id: String
+                id: ID
                 url: String
-                parent: String
+                parent: ID
                 returnNotFoundPage: Boolean
                 returnErrorPage: Boolean
             ): PbPageResponse
