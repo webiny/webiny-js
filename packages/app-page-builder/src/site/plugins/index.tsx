@@ -8,7 +8,7 @@ import { Query } from "react-apollo";
 import gql from "graphql-tag";
 import { get } from "lodash";
 import linkPreloadPlugin from "./linkPreload";
-import Page from "./../components/Page";
+import { Page } from "./../components/Page";
 
 export default [
     {
@@ -19,16 +19,22 @@ export default [
     linkPreloadPlugin(),
     {
         type: "addon-render",
-        name: "addon-render-favicon",
+        name: "addon-render-site-head",
         component: (
             <Query
                 query={gql`
-                    query PbGetFavicon {
+                    query PbGetSettings {
                         pageBuilder {
                             getSettings {
                                 data {
+                                    name
                                     favicon {
                                         src
+                                    }
+                                    social {
+                                        image {
+                                            src
+                                        }
                                     }
                                 }
                             }
@@ -37,7 +43,8 @@ export default [
                 `}
             >
                 {({ data: response }) => {
-                    const { favicon } = get(response, "pageBuilder.getSettings.data") || {};
+                    const { favicon, name, social } =
+                        get(response, "pageBuilder.getSettings.data") || {};
 
                     // Manually added "?width=128" to the favicon URL. In the future, fix this.
                     // See "packages/webiny-app/src/plugins/imagePlugin.js:54"
@@ -50,6 +57,17 @@ export default [
                                     href={favicon.src + "?width=128"}
                                     sizes="16x16"
                                 />
+
+                                {name && (
+                                    <>
+                                        <meta name="title" content={name} />
+                                        <meta property="og:title" content={name} />
+                                    </>
+                                )}
+
+                                {social?.image?.src && (
+                                    <meta property="og:image" content={social.image.src} />
+                                )}
                             </Helmet>
                         );
                     }
