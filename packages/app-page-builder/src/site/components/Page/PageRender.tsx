@@ -11,10 +11,9 @@ const NO_NOT_FOUND_PAGE_DEFAULT =
 const NO_ERROR_PAGE_DEFAULT =
     "Could not fetch error page nor was a default page provided (set via PageBuilderProvider).";
 
-// TODO: create types for settings and page
-type Props = { settings: any; data: any };
+type PageRenderProps = { error?: any; loading?: boolean; data?: any };
 
-function PageRender({ loading, data, error }) {
+function PageRender({ loading, data, error }: PageRenderProps) {
     const Loader = useMemo(() => {
         const plugins = getPlugins<PbPageLayoutComponentPlugin>("pb-layout-component");
         const pl = plugins.find(pl => pl.componentType === "loader");
@@ -80,9 +79,7 @@ function PageRender({ loading, data, error }) {
 
                 {head.title && <title>{head.title}</title>}
                 {head.seo.title && <meta name="title" content={head.seo.title} />}
-                {head.seo.description && (
-                    <meta name="description" content={head.seo.description} />
-                )}
+                {head.seo.description && <meta name="description" content={head.seo.description} />}
                 {head.seo.meta.map(({ name, content }, index) => (
                     <meta key={index} name={name} content={content} />
                 ))}
@@ -90,9 +87,7 @@ function PageRender({ loading, data, error }) {
                 {head.social.image && (
                     <meta property="og:image" content={head.social.image.src + "?width=1596"} />
                 )}
-                {head.social.title && (
-                    <meta property="og:title" content={head.social.title} />
-                )}
+                {head.social.title && <meta property="og:title" content={head.social.title} />}
 
                 {head.social.description && (
                     <meta property="og:description" content={head.social.description} />
