@@ -3,7 +3,7 @@ import Element from "@webiny/app-page-builder/render/components/Element";
 import { Helmet } from "react-helmet";
 import { get } from "lodash";
 import Layout from "./Layout";
-import { getPlugins } from "@webiny/plugins";
+import { getPlugin, getPlugins } from "@webiny/plugins";
 import { PbPageLayoutComponentPlugin, PbDefaultPagePlugin } from "@webiny/app-page-builder/types";
 
 const NO_NOT_FOUND_PAGE_DEFAULT =
@@ -20,20 +20,9 @@ function PageRender({ loading, data, error }: PageRenderProps) {
         return pl ? pl.component : null;
     }, []);
 
-    const [DefaultErrorPage, DefaultNotFoundPage] = useMemo(() => {
-        let DefaultErrorPage, DefaultNotFoundPage;
-        const plugins = getPlugins<PbDefaultPagePlugin>("pb-default-page");
-        for (let i = 0; i < plugins.length; i++) {
-            const plugin = plugins[i];
-            if (plugin.name === "pb-default-page-error") {
-                DefaultErrorPage = plugin.component;
-            }
-
-            if (plugin.name === "pb-default-page-not-found") {
-                DefaultNotFoundPage = plugin.component;
-            }
-        }
-
+    const { DefaultErrorPage, DefaultNotFoundPage } = useMemo(() => {
+        const DefaultErrorPage = getPlugin<PbDefaultPagePlugin>("pb-default-page-error");
+        const DefaultNotFoundPage = getPlugin<PbDefaultPagePlugin>("pb-default-page-not-found");
         if (!DefaultErrorPage) {
             throw new Error(NO_ERROR_PAGE_DEFAULT);
         }
@@ -42,7 +31,7 @@ function PageRender({ loading, data, error }: PageRenderProps) {
             throw new Error(NO_NOT_FOUND_PAGE_DEFAULT);
         }
 
-        return [DefaultErrorPage, DefaultNotFoundPage];
+        return { DefaultNotFoundPage, DefaultErrorPage };
     }, []);
 
     if (loading) {
