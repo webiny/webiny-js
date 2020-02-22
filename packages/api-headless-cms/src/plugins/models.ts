@@ -4,8 +4,8 @@ import { withStorage, withCrudLogs, withSoftDelete, withFields } from "@webiny/c
 import { GraphQLContextPlugin } from "@webiny/api/types";
 import { GraphQLContext } from "@webiny/api-plugin-commodo-db-proxy/types";
 import contentModel from "./models/contentModel.model";
-import fieldValueModel from "./models/fieldValue.model";
-import { createModelFromData } from "./utils/createModelFromData";
+import { createDataModelFromData } from "./utils/createDataModelFromData";
+import { createSearchModelFromData } from "./utils/createSearchModelFromData";
 
 export default () => {
     async function apply(context) {
@@ -30,7 +30,6 @@ export default () => {
 
         context.models = {
             CmsContentModel: contentModel({ createBase, context }),
-            CmsFieldValueModel: fieldValueModel({ createBase }),
             createBase
         };
 
@@ -38,7 +37,12 @@ export default () => {
         const contentModels = await context.models.CmsContentModel.find();
         for (let i = 0; i < contentModels.length; i++) {
             const data = contentModels[i];
-            context.models[data.modelId] = createModelFromData(createBase(), data, context);
+            context.models[data.modelId] = createDataModelFromData(createBase(), data, context);
+            context.models[data.modelId + "Search"] = createSearchModelFromData(
+                createBase(),
+                data,
+                context
+            );
         }
     }
 

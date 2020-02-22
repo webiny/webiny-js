@@ -6,7 +6,6 @@ import { GraphQLContext as I18NContext } from "@webiny/api-i18n/types";
 
 export type I18NField = {
     field: any;
-    defaultValue: any;
     context: CommodoContext & I18NContext;
     [key: string]: any;
 };

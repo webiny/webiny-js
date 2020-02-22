@@ -1,6 +1,6 @@
 import * as React from "react";
 import { css } from "emotion";
-import { sortable } from "react-sortable";
+import { sortable } from "react-isSortable";
 import { FileManager } from "@webiny/app-admin/components";
 import { Grid, Cell } from "@webiny/ui/Grid";
 import { ButtonPrimary } from "@webiny/ui/Button";

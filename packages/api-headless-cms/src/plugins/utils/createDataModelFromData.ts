@@ -6,7 +6,7 @@ import { GraphQLContext as CommodoContext } from "@webiny/api-plugin-commodo-db-
 import { createValidation } from "./createValidation";
 import { flow } from "lodash";
 
-export const createModelFromData = (
+export const createDataModelFromData = (
     baseModel: Function,
     data: CmsModel,
     context: GraphQLContext & CommodoContext & I18NContext
@@ -16,38 +16,36 @@ export const createModelFromData = (
     );
 
     // Create base model to be enhanced by field plugins
-    let base = flow(
+    const model = flow(
         withName(data.title),
         withHooks({
             async afterSave() {
-                const { CmsFieldValueModel } = context.models;
+                const SearchModel = context.models[data.modelId + "Search"];
                 const locales = context.i18n.getLocales();
+
                 for (let x = 0; x < locales.length; x++) {
                     const locale = locales[x];
+                    const fieldValues = {};
                     for (let y = 0; y < data.fields.length; y++) {
                         const field = data.fields[y];
-                        const fieldPlugin = plugins.find(pl => pl.fieldType === field.type);
+                        fieldValues[field.fieldId] = await this[field.fieldId].value(locale.code);
+                    }
 
-                        if (!fieldPlugin.sortable) {
-                            continue;
-                        }
+                    // Create/Update search entry
+                    const entry = {
+                        locale: locale.id,
+                        model: data.modelId,
+                        instance: this.id
+                    };
 
-                        const fieldValue = new CmsFieldValueModel();
-                        const value = await this[field.fieldId].value(locale.code);
-
-                        if (typeof value === "undefined") {
-                            continue;
-                        }
-
-                        fieldValue.populate({
-                            locale: locale.id,
-                            field: field.fieldId,
-                            value,
-                            ref: this.id,
-                            modelId: data.modelId,
-                            modelName: data.title
-                        });
-                        await fieldValue.save();
+                    const searchEntry = await SearchModel.findOne({ query: entry });
+                    if (searchEntry) {
+                        searchEntry.populate(fieldValues);
+                        await searchEntry.save();
+                    } else {
+                        const searchEntry = new SearchModel();
+                        searchEntry.populate({ ...entry, ...fieldValues });
+                        await searchEntry.save();
                     }
                 }
             }
@@ -63,13 +61,13 @@ export const createModelFromData = (
             );
         }
 
-        base = plugin.apply({
+        plugin.dataModel({
             context,
             field,
-            model: base,
+            model,
             validation: createValidation(field, context)
         });
     }
 
-    return base;
+    return model;
 };

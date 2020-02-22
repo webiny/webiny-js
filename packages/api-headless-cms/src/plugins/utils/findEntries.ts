@@ -16,20 +16,39 @@ type FindEntries = {
     context: APIContext;
 };
 
+function unique(value, index, self) {
+    return self.indexOf(value) === index;
+}
+
 export default async function findEntries({ model, args, context }: FindEntries) {
     const Model = context.models[model.modelId];
+    const ModelSearch = context.models[model.modelId + "Search"];
     parseBoolean(args);
     // eslint-disable-next-line prefer-const
     let { where = {}, sort = [], perPage, page } = args;
     page = isNaN(page) || page < 1 ? 1 : page;
     perPage = isNaN(perPage) || perPage < 1 ? 100 : perPage;
 
+    // Build query
     const match = createFindQuery(model, where, context);
+    if (context.cms.manage) {
+        match.locale = context.cms.locale.id;
+    }
+
+    // Build sorters
     const sorters = createFindSorters(model, sort);
 
     if (!Object.keys(sorters).length) {
         sorters["createdOn"] = -1;
     }
 
-    return await Model.find({ query: match, sort: sorters, perPage, page });
+    // Find IDs using search collection
+    // TODO:Ways to optimize this search
+    // - in Manage API, limit records by locales.length * perPage (since we can't groupBy)
+    // - return only IDs
+    const searchEntries = await ModelSearch.find({ query: match, sort: sorters });
+    const ids = searchEntries.map(item => item.instance).filter(unique);
+
+    // Find actual data records
+    return await Model.find({ query: { id: { $in: ids } }, perPage, page });
 }

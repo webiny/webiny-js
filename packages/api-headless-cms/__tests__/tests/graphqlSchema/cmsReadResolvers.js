@@ -77,9 +77,9 @@ export default ({ setupSchema }) => {
                 .save();
         });
 
-        /*test(`get category by ID`, async () => {
+        test(`get category by ID`, async () => {
             // Test resolvers
-            const query = /!* GraphQL *!/ `
+            const query = /* GraphQL */ `
                 query GetCategory($id: ID) {
                     cmsRead {
                         getCategory(where: { id: $id }) {
@@ -102,7 +102,7 @@ export default ({ setupSchema }) => {
 
         test(`get category by slug (default locale matches slug language)`, async () => {
             // Test resolvers
-            const query = /!* GraphQL *!/ `
+            const query = /* GraphQL */ `
                 query GetCategory($slug: String) {
                     cmsRead {
                         getCategory(where: { slug: $slug }) {
@@ -126,7 +126,7 @@ export default ({ setupSchema }) => {
 
         test(`get category by slug (default locale)`, async () => {
             // Test resolvers
-            const query = /!* GraphQL *!/ `
+            const query = /* GraphQL */ `
                 query GetCategory($slug: String) {
                     cmsRead {
                         getCategory(where: { slug: $slug }) {
@@ -150,7 +150,7 @@ export default ({ setupSchema }) => {
 
         test(`get category by slug (specific locale)`, async () => {
             // Test resolvers
-            const query = /!* GraphQL *!/ `
+            const query = /* GraphQL */ `
                 query GetCategory($locale: String, $slug: String) {
                     cmsRead {
                         getCategory(locale: $locale, where: { slug: $slug }) {
@@ -181,7 +181,7 @@ export default ({ setupSchema }) => {
 
         test(`get category by slug with field locale override`, async () => {
             // Test resolvers
-            const query = /!* GraphQL *!/ `
+            const query = /* GraphQL */ `
                 query GetCategory($slug: String) {
                     cmsRead {
                         getCategory(where: { slug: $slug }) {
@@ -211,11 +211,11 @@ export default ({ setupSchema }) => {
                     deSlug: "hardware-de"
                 }
             });
-        });*/
+        });
 
-        /*test(`list categories (no parameters)`, async () => {
+        test(`list categories (no parameters)`, async () => {
             // Test resolvers
-            const query = /!* GraphQL *!/ `
+            const query = /* GraphQL */ `
                 {
                     cmsRead {
                         listCategories {
@@ -244,7 +244,7 @@ export default ({ setupSchema }) => {
 
         test(`list categories (specific locale)`, async () => {
             // Test resolvers
-            const query = /!* GraphQL *!/ `
+            const query = /* GraphQL */ `
                 {
                     cmsRead {
                         listCategories(locale: "de-DE") {
@@ -273,7 +273,7 @@ export default ({ setupSchema }) => {
 
         test(`list categories (perPage)`, async () => {
             // Test resolvers
-            const query = /!* GraphQL *!/ `
+            const query = /* GraphQL */ `
                 {
                     cmsRead {
                         listCategories(perPage: 1) {
@@ -306,7 +306,7 @@ export default ({ setupSchema }) => {
 
         test(`list categories (page)`, async () => {
             // Test resolvers
-            const query = /!* GraphQL *!/ `
+            const query = /* GraphQL */ `
                 query ListCategories($page: Int) {
                     cmsRead {
                         listCategories(page: $page, perPage: 1) {
@@ -357,7 +357,7 @@ export default ({ setupSchema }) => {
                     totalPages: 3
                 }
             });
-        });*/
+        });
 
         test(`list categories (sort ASC)`, async () => {
             // Test resolvers
@@ -392,37 +392,37 @@ export default ({ setupSchema }) => {
             });
         });
 
-        test(`list categories (sort DESC)`, async () => {
-            // Test resolvers
-            const query = /* GraphQL */ `
-                query ListCategories($sort: [CmsReadCategoryListSorter]) {
-                    cmsRead {
-                        listCategories(sort: $sort) {
-                            data {
-                                title
-                            }
-                        }
-                    }
-                }
-            `;
-
-            const { schema, context } = await setupSchema();
-            const { data } = await graphql(schema, query, {}, context, {
-                sort: ["title_DESC"]
-            });
-            expect(data.cmsRead.listCategories).toMatchObject({
-                data: [
-                    {
-                        title: "Hardware EN"
-                    },
-                    {
-                        title: "B Category EN"
-                    },
-                    {
-                        title: "A Category EN"
-                    }
-                ]
-            });
-        });
+        // test(`list categories (sort DESC)`, async () => {
+        //     // Test resolvers
+        //     const query = /* GraphQL */ `
+        //         query ListCategories($sort: [CmsReadCategoryListSorter]) {
+        //             cmsRead {
+        //                 listCategories(sort: $sort) {
+        //                     data {
+        //                         title
+        //                     }
+        //                 }
+        //             }
+        //         }
+        //     `;
+        //
+        //     const { schema, context } = await setupSchema();
+        //     const { data } = await graphql(schema, query, {}, context, {
+        //         sort: ["title_DESC"]
+        //     });
+        //     expect(data.cmsRead.listCategories).toMatchObject({
+        //         data: [
+        //             {
+        //                 title: "Hardware EN"
+        //             },
+        //             {
+        //                 title: "B Category EN"
+        //             },
+        //             {
+        //                 title: "A Category EN"
+        //             }
+        //         ]
+        //     });
+        // });
     });
 };
