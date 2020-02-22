@@ -2,7 +2,7 @@ import { blue } from "chalk";
 import { setupContext } from "@webiny/api/testing";
 import contentModels from "./data/contentModels";
 import { locales } from "../mocks/mockI18NLocales";
-import { createModelFromData } from "../../src/plugins/utils/createModelFromData";
+import { createDataModelFromData } from "../../src/plugins/utils/createDataModelFromData";
 import headlessPlugins from "../../src/plugins";
 
 export default ({ plugins }) => {
@@ -21,7 +21,7 @@ export default ({ plugins }) => {
                 // Create content models
                 for (let i = 0; i < contentModels.length; i++) {
                     const modelData = contentModels[i];
-                    context.models[modelData.modelId] = createModelFromData(
+                    context.models[modelData.model] = createDataModelFromData(
                         context.models.createBase(),
                         modelData,
                         context
@@ -41,7 +41,6 @@ export default ({ plugins }) => {
                 }
 
                 // Test Category
-                const { CmsFieldValueModel } = context.models;
                 const Category = context.models["category"];
                 const category = new Category();
                 category.populate({
@@ -49,6 +48,12 @@ export default ({ plugins }) => {
                         values: [
                             { locale: locales.en.id, value: "Hardware EN" },
                             { locale: locales.de.id, value: "Hardware DE" }
+                        ]
+                    },
+                    slug: {
+                        values: [
+                            { locale: locales.en.id, value: "hardware-en" },
+                            { locale: locales.de.id, value: "hardware-de" }
                         ]
                     }
                 });
@@ -64,15 +69,13 @@ export default ({ plugins }) => {
                 });
                 expect(category.title.value()).toBe("Hardware EN");
 
-                // Test Category field values
-                const data = await CmsFieldValueModel.find({
-                    query: { field: "title", modelId: "category", ref: category.id }
+                // Test CategorySearch
+                const CategorySearch = context.models["categorySearch"];
+                const cSearch = await CategorySearch.find({
+                    query: { model: "category", instance: category.id }
                 });
-
-                expect(data.length).toBe(2);
-                expect(data.find(d => d.locale === locales.en.id).value).toBe("Hardware EN");
-                expect(data.find(d => d.locale === locales.de.id).value).toBe("Hardware DE");
-                expect(data.find(d => d.locale === locales.it.id)).toBe(undefined);
+                expect(cSearch.length).toBe(3);
+                expect(cSearch.find(s => s.locale === locales.en.id).title).toBe("Hardware EN");
 
                 // Test Product
                 const Product = context.models["product"];
@@ -113,7 +116,12 @@ export default ({ plugins }) => {
                     }
                 });
 
-                await product.save();
+                try {
+                    await product.save();
+                } catch (e) {
+                    console.log(e.data.invalidFields);
+                    throw e;
+                }
 
                 expect(product.id).toMatch(/^[0-9a-fA-F]{24}$/);
                 expect(product.title).toMatchObject({
@@ -128,26 +136,6 @@ export default ({ plugins }) => {
                 const productCategory = await product.category.value();
                 expect(productCategory.id).toBe(category.id);
                 expect(productCategory.title.value()).toBe("Hardware EN");
-
-                // Test Product field values
-                const pFields = await CmsFieldValueModel.find({
-                    query: { modelId: "product", ref: product.id }
-                });
-
-                const getValue = (locale, field) => {
-                    const rec = pFields.find(f => f.locale === locale && f.field === field);
-                    return rec ? rec.value : undefined;
-                };
-
-                expect(pFields.length).toBe(10);
-                expect(getValue(locales.en.id, "title")).toBe("Laptop EN");
-                expect(getValue(locales.de.id, "title")).toBe("Laptop DE");
-
-                expect(getValue(locales.en.id, "price")).toBe(100);
-                expect(getValue(locales.de.id, "price")).toBe(87);
-
-                expect(getValue(locales.en.id, "inStock")).toBe(true);
-                expect(getValue(locales.de.id, "inStock")).toBe(false);
 
                 // Test Review
                 const Review = context.models["review"];
@@ -195,7 +183,7 @@ export default ({ plugins }) => {
 
             const model = context.models.createBase();
 
-            datetime.apply({
+            datetime.dataModel({
                 model,
                 field: {
                     fieldId: "dateTimeWithTimezone",
@@ -205,7 +193,7 @@ export default ({ plugins }) => {
                 context
             });
 
-            datetime.apply({
+            datetime.dataModel({
                 model,
                 field: {
                     fieldId: "dateTimeWithoutTimezone",
@@ -215,7 +203,7 @@ export default ({ plugins }) => {
                 context
             });
 
-            datetime.apply({
+            datetime.dataModel({
                 model,
                 field: {
                     fieldId: "date",
@@ -225,7 +213,7 @@ export default ({ plugins }) => {
                 context
             });
 
-            datetime.apply({
+            datetime.dataModel({
                 model,
                 field: {
                     fieldId: "time",

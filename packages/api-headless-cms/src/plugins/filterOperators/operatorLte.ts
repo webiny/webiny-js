@@ -4,14 +4,12 @@ export default {
     operator: "lte",
     createCondition({ value, context }) {
         if (context.cms.manage) {
-            return { $elemMatch: { value: { $lte: value } } };
+            return { value: { $lte: value } };
         }
 
         return {
-            $elemMatch: {
-                value: { $lte: value },
-                locale: context.cms.locale.id
-            }
+            value: { $lte: value },
+            locale: context.cms.locale.id
         };
     }
 };

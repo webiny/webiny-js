@@ -6,14 +6,18 @@ const plugin: CmsModelFieldToCommodoFieldPlugin = {
     name: "cms-model-field-to-commodo-field-integer",
     type: "cms-model-field-to-commodo-field",
     fieldType: "integer",
-    sortable: true,
-    apply({ model, field, validation, context }) {
+    isSortable: true,
+    dataModel({ model, field, validation, context }) {
         return withFields({
             [field.fieldId]: i18nField({
                 field: int({ validation }),
-                defaultValue: null,
                 context
             })
+        })(model);
+    },
+    searchModel({ model, field, validation }) {
+        return withFields({
+            [field.fieldId]: int({ validation })
         })(model);
     }
 };

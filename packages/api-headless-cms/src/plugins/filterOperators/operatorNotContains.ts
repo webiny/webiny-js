@@ -5,16 +5,14 @@ export default {
     createCondition({ value, context }) {
         if (context.cms.manage) {
             return {
-                $not: { $elemMatch: { value: { $regex: `.*${value}.*`, $options: "i" } } }
+                $not: { value: { $regex: `.*${value}.*`, $options: "i" } }
             };
         }
 
         return {
             $not: {
-                $elemMatch: {
-                    value: { $regex: `.*${value}.*`, $options: "i" },
-                    locale: context.cms.locale.id
-                }
+                value: { $regex: `.*${value}.*`, $options: "i" },
+                locale: context.cms.locale.id
             }
         };
     }

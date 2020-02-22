@@ -6,14 +6,14 @@ const plugin: CmsFindFilterOperator = {
     operator: "eq",
     createCondition({ fieldId, value, context }) {
         if (fieldId === "id") {
-            return value;
+            return { value };
         }
 
         if (context.cms.manage) {
-            return { $elemMatch: { value } };
+            return { value };
         }
 
-        return { $elemMatch: { value, locale: context.cms.locale.id } };
+        return { value, locale: context.cms.locale.id };
     }
 };
 

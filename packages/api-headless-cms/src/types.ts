@@ -61,13 +61,19 @@ export type CmsModelFieldToCommodoFieldPlugin<
 > = Plugin & {
     type: "cms-model-field-to-commodo-field";
     fieldType: string;
-    sortable: boolean;
-    apply(params: {
+    isSortable: boolean;
+    dataModel(params: {
         context: TContext;
         model: Function;
         field: CmsModelField;
         validation(value): Promise<boolean>;
-    }): Function;
+    }): void;
+    searchModel?(params: {
+        context: TContext;
+        model: Function;
+        field: CmsModelField;
+        validation?(value): Promise<boolean>;
+    }): void;
 };
 
 export type CmsModelFieldToGraphQLPlugin = Plugin & {

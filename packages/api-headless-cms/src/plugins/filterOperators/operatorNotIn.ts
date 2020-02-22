@@ -8,14 +8,12 @@ export default {
         }
 
         if (context.cms.manage) {
-            return { $elemMatch: { value: { $nin: value } } };
+            return { value: { $nin: value } };
         }
 
         return {
-            $elemMatch: {
-                value: { $nin: value },
-                locale: context.cms.locale.id
-            }
+            value: { $nin: value },
+            locale: context.cms.locale.id
         };
     }
 };

@@ -6,10 +6,15 @@ const plugin: CmsModelFieldToCommodoFieldPlugin = {
     name: "cms-model-field-to-commodo-field-text",
     type: "cms-model-field-to-commodo-field",
     fieldType: "text",
-    sortable: true,
-    apply({ model, field, validation, context }) {
-        return withFields({
-            [field.fieldId]: i18nField({ field: string({ validation }), defaultValue: "", context })
+    isSortable: true,
+    dataModel({ model, field, validation, context }) {
+        withFields({
+            [field.fieldId]: i18nField({ field: string({ validation }), context })
+        })(model);
+    },
+    searchModel({ model, field, validation }) {
+        withFields({
+            [field.fieldId]: string({ validation })
         })(model);
     }
 };

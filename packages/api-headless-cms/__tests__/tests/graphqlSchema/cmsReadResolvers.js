@@ -392,37 +392,37 @@ export default ({ setupSchema }) => {
             });
         });
 
-        test(`list categories (sort DESC)`, async () => {
-            // Test resolvers
-            const query = /* GraphQL */ `
-                query ListCategories($sort: [CmsReadCategoryListSorter]) {
-                    cmsRead {
-                        listCategories(sort: $sort) {
-                            data {
-                                title
-                            }
-                        }
-                    }
-                }
-            `;
-
-            const { schema, context } = await setupSchema();
-            const { data } = await graphql(schema, query, {}, context, {
-                sort: ["title_DESC"]
-            });
-            expect(data.cmsRead.listCategories).toMatchObject({
-                data: [
-                    {
-                        title: "Hardware EN"
-                    },
-                    {
-                        title: "B Category EN"
-                    },
-                    {
-                        title: "A Category EN"
-                    }
-                ]
-            });
-        });
+        // test(`list categories (sort DESC)`, async () => {
+        //     // Test resolvers
+        //     const query = /* GraphQL */ `
+        //         query ListCategories($sort: [CmsReadCategoryListSorter]) {
+        //             cmsRead {
+        //                 listCategories(sort: $sort) {
+        //                     data {
+        //                         title
+        //                     }
+        //                 }
+        //             }
+        //         }
+        //     `;
+        //
+        //     const { schema, context } = await setupSchema();
+        //     const { data } = await graphql(schema, query, {}, context, {
+        //         sort: ["title_DESC"]
+        //     });
+        //     expect(data.cmsRead.listCategories).toMatchObject({
+        //         data: [
+        //             {
+        //                 title: "Hardware EN"
+        //             },
+        //             {
+        //                 title: "B Category EN"
+        //             },
+        //             {
+        //                 title: "A Category EN"
+        //             }
+        //         ]
+        //     });
+        // });
     });
 };

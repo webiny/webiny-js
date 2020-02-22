@@ -6,8 +6,8 @@ const plugin: CmsModelFieldToCommodoFieldPlugin = {
     name: "cms-model-field-to-commodo-field-ref",
     type: "cms-model-field-to-commodo-field",
     fieldType: "ref",
-    sortable: false,
-    apply({ model, field, validation, context }) {
+    isSortable: false,
+    dataModel({ model, field, validation, context }) {
         const { type, modelId } = field.settings;
 
         if (type === "one") {
@@ -18,7 +18,6 @@ const plugin: CmsModelFieldToCommodoFieldPlugin = {
                         parent: instance,
                         validation
                     }),
-                    defaultValue: null,
                     context
                 })
             }))(model);
@@ -33,7 +32,6 @@ const plugin: CmsModelFieldToCommodoFieldPlugin = {
                         parent: instance,
                         validation
                     }),
-                    defaultValue: null,
                     context
                 })
             }))(model);

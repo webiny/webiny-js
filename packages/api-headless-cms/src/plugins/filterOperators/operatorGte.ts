@@ -4,14 +4,12 @@ export default {
     operator: "gte",
     createCondition({ value, context }) {
         if (context.cms.manage) {
-            return { $elemMatch: { value: { $gte: value } } };
+            return { value: { $gte: value } };
         }
 
         return {
-            $elemMatch: {
-                value: { $gte: value },
-                locale: context.cms.locale.id
-            }
+            value: { $gte: value },
+            locale: context.cms.locale.id
         };
     }
 };

@@ -8,14 +8,12 @@ export default {
         }
 
         if (context.cms.manage) {
-            return { $elemMatch: { value: { $in: value } } };
+            return { value: { $in: value } };
         }
 
         return {
-            $elemMatch: {
-                value: { $in: value },
-                locale: context.cms.locale.id
-            }
+            value: { $in: value },
+            locale: context.cms.locale.id
         };
     }
 };
