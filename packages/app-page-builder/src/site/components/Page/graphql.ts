@@ -2,7 +2,11 @@ import gql from "graphql-tag";
 import { getPlugins } from "@webiny/plugins";
 import { PbPageSettingsFieldsPlugin } from "@webiny/app-page-builder/types";
 
-export const GET_PUBLISHED_PAGE = () => {
+export const GET_PUBLISHED_PAGE = (rawArgs: {
+    returnNotFoundPage?: boolean;
+    returnErrorPage?: boolean;
+}) => {
+    const args = { returnErrorPage: false, returnNotFoundPage: false, ...rawArgs };
     const pageSettingsFields = getPlugins("pb-page-settings-fields")
         .map((pl: PbPageSettingsFieldsPlugin) => pl.fields)
         .join("\n");
@@ -10,7 +14,7 @@ export const GET_PUBLISHED_PAGE = () => {
     return gql`
         query PbGetPublishedPage($id: ID, $url: String) {
             pageBuilder {
-                page: getPublishedPage(id: $id, url: $url, returnNotFoundPage: true, returnErrorPage: true) {
+                page: getPublishedPage(id: $id, url: $url, returnNotFoundPage: ${args.returnNotFoundPage}, returnErrorPage: ${args.returnErrorPage}) {
                     data {
                         id
                         title
