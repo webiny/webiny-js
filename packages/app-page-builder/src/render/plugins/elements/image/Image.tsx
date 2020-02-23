@@ -7,7 +7,7 @@ import { Link as RouterLink } from "@webiny/react-router";
 const Link = ({ link, children }) => {
     if (link && link.href) {
         return (
-            <RouterLink href={link.href} target={link.newTab ? "_blank" : "_self"}>
+            <RouterLink to={link.href} target={link.newTab ? "_blank" : "_self"}>
                 {children}
             </RouterLink>
         );

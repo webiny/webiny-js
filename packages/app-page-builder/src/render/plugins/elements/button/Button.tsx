@@ -33,7 +33,7 @@ const Button = ({ element }: { element: PbElement }) => {
                     {...elementAttributes}
                 >
                     <Link
-                        href={link.href || null}
+                        to={link.href || null}
                         target={link.newTab ? "_blank" : "_self"}
                         className={getAllClasses(...classes)}
                     >
