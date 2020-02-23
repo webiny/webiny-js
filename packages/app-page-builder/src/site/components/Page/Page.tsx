@@ -2,12 +2,14 @@ import React from "react";
 import PageRender from "./PageRender";
 import PageLoad from "./PageLoad";
 import PageContent from "./PageContent";
+import { PbPageData } from "@webiny/app-page-builder/types";
 
 type PageProps = {
     url?: string;
     id?: string;
     parent?: string;
-    data?: any;
+    data?: PbPageData;
+    content?: any;
 };
 
 const Page = (props: PageProps) => {
@@ -19,7 +21,7 @@ const Page = (props: PageProps) => {
         return <PageRender {...props} />;
     }
 
-    if (props.location) {
+    if (props.url || props.id || props.parent) {
         return <PageLoad {...props} />;
     }
 

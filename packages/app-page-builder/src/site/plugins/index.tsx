@@ -8,13 +8,13 @@ import { Query } from "react-apollo";
 import gql from "graphql-tag";
 import { get } from "lodash";
 import linkPreloadPlugin from "./linkPreload";
-import { Page } from "./../components/Page";
+import { PageRoute } from "./../components/Page";
 
 export default [
     {
         name: "pb-route",
         type: "route",
-        route: <Route component={Page} />
+        route: <Route component={PageRoute} />
     } as RoutePlugin,
     linkPreloadPlugin(),
     {
