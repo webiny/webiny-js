@@ -1,5 +1,5 @@
 import React from "react";
-import DefaultPage, { DefaultPageProps } from "./DefaultPage";
+import DefaultPage from "./DefaultPage";
 
 const getPbNotInstalledErrorMessage = () => {
     // Check if window exists first (does not exist while doing SSR).
