@@ -32,13 +32,13 @@ const Button = ({ element }: { element: PbElement }) => {
                     style={{ ...elementStyle, display: "flex", justifyContent: alignItems }}
                     {...elementAttributes}
                 >
-                    <a
+                    <Link
                         href={link.href || null}
                         target={link.newTab ? "_blank" : "_self"}
                         className={getAllClasses(...classes)}
                     >
                         {content}
-                    </a>
+                    </Link>
                 </div>
             )}
         </ElementRoot>

@@ -7,7 +7,7 @@ import { Link as RouterLink } from "@webiny/react-router";
 const Link = ({ link, children }) => {
     if (link && link.href) {
         return (
-            <RouterLink to={link.href} target={link.newTab ? "_blank" : "_self"}>
+            <RouterLink href={link.href} target={link.newTab ? "_blank" : "_self"}>
                 {children}
             </RouterLink>
         );
@@ -44,7 +44,7 @@ const Image = props => {
             style={{ textAlign: horizontalAlign }}
             className={"webiny-pb-base-page-element-style webiny-pb-page-element-image"}
         >
-            <a href={link.href}>
+            <Link link={link}>
                 <WebinyImage
                     title={title}
                     alt={title}
@@ -52,7 +52,7 @@ const Image = props => {
                     src={image.file.src}
                     srcSet="auto"
                 />
-            </a>
+            </Link>
         </ElementRoot>
     );
 };
