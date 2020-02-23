@@ -1,7 +1,6 @@
 import React, { useContext, useEffect } from "react";
 import { Link as RouterLink, LinkProps as RouterLinkProps } from "react-router-dom";
 import { RouterContext } from "./context/RouterContext";
-import PropTypes from "prop-types";
 
 export type LinkProps = RouterLinkProps;
 
