@@ -5,7 +5,7 @@ import { PbPageSettingsFieldsPlugin } from "@webiny/app-page-builder/types";
 export const GET_PUBLISHED_PAGE = (rawArgs: {
     returnNotFoundPage?: boolean;
     returnErrorPage?: boolean;
-}) => {
+} = {}) => {
     const args = { returnErrorPage: false, returnNotFoundPage: false, ...rawArgs };
     const pageSettingsFields = getPlugins("pb-page-settings-fields")
         .map((pl: PbPageSettingsFieldsPlugin) => pl.fields)
