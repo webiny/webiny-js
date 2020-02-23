@@ -10,11 +10,6 @@ import {
     PbPageData
 } from "@webiny/app-page-builder/types";
 
-const NO_NOT_FOUND_PAGE_DEFAULT =
-    "Could not fetch 404 (not found) page nor was a default page provided (set via PageBuilderProvider).";
-const NO_ERROR_PAGE_DEFAULT =
-    "Could not fetch error page nor was a default page provided (set via PageBuilderProvider).";
-
 type PageRenderProps = { error?: any; loading?: boolean; data?: PbPageData };
 
 function PageRender({ loading, data, error }: PageRenderProps) {
@@ -25,17 +20,15 @@ function PageRender({ loading, data, error }: PageRenderProps) {
     }, []);
 
     const { DefaultErrorPage, DefaultNotFoundPage } = useMemo(() => {
-        const DefaultErrorPage = getPlugin<PbDefaultPagePlugin>("pb-default-page-error");
-        const DefaultNotFoundPage = getPlugin<PbDefaultPagePlugin>("pb-default-page-not-found");
-        if (!DefaultErrorPage) {
-            throw new Error(NO_ERROR_PAGE_DEFAULT);
-        }
+        const defaultErrorPagePlugin = getPlugin<PbDefaultPagePlugin>("pb-default-page-error");
+        const defaultNotFoundPagePlugin = getPlugin<PbDefaultPagePlugin>(
+            "pb-default-page-not-found"
+        );
 
-        if (!DefaultNotFoundPage) {
-            throw new Error(NO_NOT_FOUND_PAGE_DEFAULT);
-        }
-
-        return { DefaultNotFoundPage, DefaultErrorPage };
+        return {
+            DefaultNotFoundPage: defaultNotFoundPagePlugin?.component,
+            DefaultErrorPage: defaultErrorPagePlugin?.component
+        };
     }, []);
 
     if (loading) {
@@ -43,7 +36,7 @@ function PageRender({ loading, data, error }: PageRenderProps) {
     }
 
     if (!data) {
-        if (error.code === "NOT_FOUND") {
+        if (error?.code === "NOT_FOUND") {
             return <DefaultNotFoundPage error={error} />;
         }
         return <DefaultErrorPage error={error} />;
