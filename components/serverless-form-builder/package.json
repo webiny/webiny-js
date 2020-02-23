@@ -1,11 +1,11 @@
 {
   "name": "@webiny/serverless-form-builder",
-  "version": "3.0.1",
+  "version": "3.0.2-next.0",
   "main": "serverless.js",
   "license": "MIT",
   "dependencies": {
     "@serverless/core": "^1.1.1",
-    "@webiny/serverless-apollo-service": "^3.0.1",
+    "@webiny/serverless-apollo-service": "^3.0.2-next.0",
     "lodash.get": "^4.4.2"
   },
   "scripts": {

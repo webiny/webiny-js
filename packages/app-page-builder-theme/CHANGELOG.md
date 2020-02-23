@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.0.5-next.0](https://github.com/Webiny/webiny-js/compare/@webiny/app-page-builder-theme@2.0.4...@webiny/app-page-builder-theme@2.0.5-next.0) (2020-02-23)
+
+
+### Bug Fixes
+
+* **page-builder:** simplify usage and improve performance when loading with pages ([91c12c8](https://github.com/Webiny/webiny-js/commit/91c12c8dfbdfe2adef809b556ab2eee40eb3a2ca))
+* typescript ([5ddd281](https://github.com/Webiny/webiny-js/commit/5ddd281b6ee206362f7163c5c063e3eea1cd72a2))
+
+
+
+
+
 ## [2.0.4](https://github.com/webiny/webiny-js/compare/@webiny/app-page-builder-theme@2.0.3...@webiny/app-page-builder-theme@2.0.4) (2020-02-14)
 
 **Note:** Version bump only for package @webiny/app-page-builder-theme
