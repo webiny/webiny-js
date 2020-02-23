@@ -1,17 +1,21 @@
 import React, { useMemo } from "react";
-import Element from "@webiny/app-page-builder/render/components/Element";
 import { Helmet } from "react-helmet";
 import { get } from "lodash";
 import Layout from "./Layout";
+import PageContent from "./PageContent";
 import { getPlugin, getPlugins } from "@webiny/plugins";
-import { PbPageLayoutComponentPlugin, PbDefaultPagePlugin } from "@webiny/app-page-builder/types";
+import {
+    PbPageLayoutComponentPlugin,
+    PbDefaultPagePlugin,
+    PbPageData
+} from "@webiny/app-page-builder/types";
 
 const NO_NOT_FOUND_PAGE_DEFAULT =
     "Could not fetch 404 (not found) page nor was a default page provided (set via PageBuilderProvider).";
 const NO_ERROR_PAGE_DEFAULT =
     "Could not fetch error page nor was a default page provided (set via PageBuilderProvider).";
 
-type PageRenderProps = { error?: any; loading?: boolean; data?: any };
+type PageRenderProps = { error?: any; loading?: boolean; data?: PbPageData };
 
 function PageRender({ loading, data, error }: PageRenderProps) {
     const Loader = useMemo(() => {
@@ -64,8 +68,6 @@ function PageRender({ loading, data, error }: PageRenderProps) {
     return (
         <div className="webiny-pb-page">
             <Helmet>
-                <meta charSet="utf-8" />
-
                 {head.title && <title>{head.title}</title>}
                 {head.seo.title && <meta name="title" content={head.seo.title} />}
                 {head.seo.description && <meta name="description" content={head.seo.description} />}
@@ -88,7 +90,7 @@ function PageRender({ loading, data, error }: PageRenderProps) {
                 })}
             </Helmet>
             <Layout layout={data.settings.general.layout}>
-                <Element element={data.content} />
+                <PageContent data={data.content} />
             </Layout>
         </div>
     );
