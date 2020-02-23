@@ -10,8 +10,8 @@ const getPbNotInstalledErrorMessage = () => {
     }
 
     return {
-        message: "Installation incomplete",
-        title: (
+        title: "Installation incomplete",
+        message: (
             <>
                 <p>Page Builder is not installed!</p>
                 <p>
@@ -25,8 +25,8 @@ const getPbNotInstalledErrorMessage = () => {
 
 export default function DefaultErrorPage(props) {
     let pageProps = {
-        message: "The link is either broken or the page has been removed.",
-        title: <>An error occurred</>
+        message: <>The link is either broken or the page has been removed.</>,
+        title: "An error occurred"
     };
 
     // Once the Page Builder is installed, this can be safely removed.
