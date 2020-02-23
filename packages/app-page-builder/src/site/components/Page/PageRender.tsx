@@ -89,7 +89,7 @@ function PageRender({ loading, data, error }: PageRenderProps) {
                     return <meta key={index} property={preparedProperty} content={content} />;
                 })}
             </Helmet>
-            <Layout layout={data.settings.general.layout}>
+            <Layout layout={data?.settings?.general?.layout}>
                 <PageContent data={data.content} />
             </Layout>
         </div>
