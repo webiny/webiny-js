@@ -6,12 +6,15 @@ import { GET_PUBLISHED_PAGE } from "./graphql";
 const PageLoad = ({ location }) => {
     const query = new URLSearchParams(location.search);
 
-    const { loading, data, error } = useQuery(GET_PUBLISHED_PAGE(), {
-        variables: {
-            url: location.pathname,
-            id: query.get("preview")
+    const { loading, data, error } = useQuery(
+        GET_PUBLISHED_PAGE({ returnErrorPage: true, returnNotFoundPage: true }),
+        {
+            variables: {
+                url: location.pathname,
+                id: query.get("preview")
+            }
         }
-    });
+    );
 
     if (error) {
         return <PageRender error={error} />;
