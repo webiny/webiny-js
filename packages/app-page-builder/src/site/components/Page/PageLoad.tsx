@@ -3,16 +3,17 @@ import { useQuery } from "react-apollo";
 import PageRender from "./PageRender";
 import { GET_PUBLISHED_PAGE } from "./graphql";
 
-const PageLoad = ({ location }) => {
-    const query = new URLSearchParams(location.search);
+type PageLoadProps = {
+    url?: string;
+    id?: string;
+    parent?: string;
+};
 
+const PageLoad = ({ parent, id, url }: PageLoadProps) => {
     const { loading, data, error } = useQuery(
-        GET_PUBLISHED_PAGE({ returnErrorPage: true, returnNotFoundPage: true }),
+        GET_PUBLISHED_PAGE(),
         {
-            variables: {
-                url: location.pathname,
-                id: query.get("preview")
-            }
+            variables: { parent, id, url, returnErrorPage: true, returnNotFoundPage: true }
         }
     );
 
