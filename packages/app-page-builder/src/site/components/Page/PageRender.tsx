@@ -37,9 +37,9 @@ function PageRender({ loading, data, error }: PageRenderProps) {
 
     if (!data) {
         if (error?.code === "NOT_FOUND") {
-            return <DefaultNotFoundPage error={error} />;
+            return DefaultNotFoundPage ? <DefaultNotFoundPage error={error} /> : null;
         }
-        return <DefaultErrorPage error={error} />;
+        return DefaultErrorPage ? <DefaultErrorPage error={error} /> : null;
     }
 
     const head = {
