@@ -1,6 +1,5 @@
-import Location from "ulocation";
-import buildQueryProps from "../components/Page/buildQueryProps";
-import {ReactRouterOnLinkPlugin} from "@webiny/react-router/types";
+import { ReactRouterOnLinkPlugin } from "@webiny/react-router/types";
+import { GET_PUBLISHED_PAGE } from "../components/Page/graphql";
 
 export default (): ReactRouterOnLinkPlugin => {
     const preloadedLinks = [];
@@ -15,8 +14,10 @@ export default (): ReactRouterOnLinkPlugin => {
                 }
 
                 preloadedLinks.push(link);
-                const queryProps = buildQueryProps({ location: new Location(link) });
-                apolloClient.query(queryProps);
+                apolloClient.query({
+                    query: GET_PUBLISHED_PAGE(),
+                    variables: { url: link, id: null }
+                });
             }
         }
     };

@@ -1,9 +1,9 @@
 import React from "react";
-import GenericPage from "./GenericPage";
+import DefaultPage from "./DefaultPage";
 
-export default function GenericNotFoundPage() {
+export default function DefaultNotFoundPage() {
     return (
-        <GenericPage
+        <DefaultPage
             message={"The link is either broken or the page has been removed."}
             title={"Page not found"}
         />

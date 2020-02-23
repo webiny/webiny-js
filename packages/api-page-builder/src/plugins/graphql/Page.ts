@@ -10,10 +10,7 @@ import createRevisionFrom from "./pageResolvers/createRevisionFrom";
 import listPages from "./pageResolvers/listPages";
 import listPublishedPages from "./pageResolvers/listPublishedPages";
 import getPublishedPage from "./pageResolvers/getPublishedPage";
-import getHomePage from "./pageResolvers/getHomePage";
 import setHomePage from "./pageResolvers/setHomePage";
-import getNotFoundPage from "./pageResolvers/getNotFoundPage";
-import getErrorPage from "./pageResolvers/getErrorPage";
 import oembed from "./pageResolvers/oembed";
 
 const pageFetcher = ctx => ctx.models.PbPage;
@@ -168,16 +165,13 @@ export default {
                 sort: String
             ): PbPageResponse
             
-            getPublishedPage(id: String, url: String, parent: String): PbPageResponse
-            
-            # Returns page set as home page (managed in PB settings).
-            getHomePage: PbPageResponse
-            
-            # Returns 404 (not found) page (managed in PB settings).
-            getNotFoundPage: PbPageResponse
-            
-            # Returns error page (managed in PB settings).
-            getErrorPage: PbPageResponse
+            getPublishedPage(
+                id: ID
+                url: String
+                parent: ID
+                returnNotFoundPage: Boolean
+                returnErrorPage: Boolean
+            ): PbPageResponse
             
             listPages(
                 page: Int
@@ -281,9 +275,6 @@ export default {
             listPages: listPages,
             listPublishedPages,
             getPublishedPage,
-            getHomePage,
-            getNotFoundPage,
-            getErrorPage,
             listElements: resolveList(elementFetcher),
             searchTags: async (
                 root: any,

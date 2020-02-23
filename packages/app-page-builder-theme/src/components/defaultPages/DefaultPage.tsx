@@ -1,4 +1,4 @@
-import React from "react";
+import React, { ReactNode } from "react";
 import { Helmet } from "react-helmet";
 import { css } from "emotion";
 
@@ -8,7 +8,7 @@ const style = css({
     fontSize: 18,
     h1: {
         fontSize: 30,
-        fontWeight: 'bold',
+        fontWeight: "bold",
         padding: 50
     },
     p: {
@@ -16,7 +16,9 @@ const style = css({
     }
 });
 
-export default function GenericErrorPage({ title, message }) {
+export type DefaultPageProps = { title?: ReactNode; message?: ReactNode };
+
+export default function DefaultPage({ title, message }): DefaultPageProps {
     return (
         <div className={style}>
             <Helmet>

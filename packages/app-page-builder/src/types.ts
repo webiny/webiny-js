@@ -49,9 +49,37 @@ export type PbPageLayoutPlugin = Plugin & {
     layout: PbPageLayout;
 };
 
+export type PbDefaultPagePlugin = Plugin & {
+    type: "pb-default-page";
+    component: React.ComponentType<any>;
+};
+
 export type PbPageLayoutComponentPlugin = Plugin & {
     componentType: string;
     component: React.ComponentType<any>;
+};
+
+export type PbPageData = {
+    title?: string;
+    content: any;
+    seo?: {
+        title: string;
+        description: string;
+        meta: { name: string; content: string }[];
+    };
+    social?: {
+        title: string;
+        description: string;
+        meta: { property: string; content: string }[];
+        image: {
+            src: string;
+        };
+    };
+    settings?: {
+        general?: {
+            layout?: string;
+        };
+    };
 };
 
 export type PbRenderElementPlugin = Plugin & {
