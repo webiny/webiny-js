@@ -14,19 +14,18 @@ const GeneralSettings = ({ Bind }) => {
     );
 
     const layouts = useMemo(
-            () =>
-                [
-                    ...(get(theme, "forms.layouts") || []),
-                    ...getPlugins<FbFormLayoutPlugin>("form-layout").map(pl => pl.layout)
-                ].reduce((acc, item) => {
-                    if (!acc.find(l => l.name === item.name)) {
-                        acc.push(item);
-                    }
-                    return acc;
-                }, []),
-            []
-        ),
-        [];
+        () =>
+            [
+                ...(get(theme, "forms.layouts") || []),
+                ...getPlugins<FbFormLayoutPlugin>("form-layout").map(pl => pl.layout)
+            ].reduce((acc, item) => {
+                if (!acc.find(l => l.name === item.name)) {
+                    acc.push(item);
+                }
+                return acc;
+            }, []),
+        []
+    );
 
     return (
         <React.Fragment>

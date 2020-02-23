@@ -18,7 +18,7 @@ const style = css({
 
 export type DefaultPageProps = { title?: ReactNode; message?: ReactNode };
 
-export default function DefaultPage({ title, message }): DefaultPageProps {
+export default function DefaultPage({ title, message }: DefaultPageProps) {
     return (
         <div className={style}>
             <Helmet>
