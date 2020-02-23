@@ -21,7 +21,7 @@ const NetworkError = ({ children }) => {
     const { data } = useQuery(GET_ERROR, { fetchPolicy: "cache-only" });
 
     return data && data.networkError ? (
-        <Elevation css={errorStyle} z={2}>
+        <Elevation className={errorStyle} z={2}>
             <Alert type={"danger"} title={"Network error"}>
                 Your API seems to be unavailable!
                 <br />

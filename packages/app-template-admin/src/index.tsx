@@ -44,7 +44,8 @@ export type AdminAppOptions = {
         userPoolId: string;
         userPoolWebClientId: string;
     };
-    defaultRoute: string;
+    defaultRoute?: string;
+    plugins?: any[];
 };
 
 export default createTemplate<AdminAppOptions>(opts => {
@@ -67,7 +68,13 @@ export default createTemplate<AdminAppOptions>(opts => {
                 return (
                     <BrowserRouter basename={process.env.PUBLIC_URL}>
                         {children}
-                        <Route exact path="/" render={() => <Redirect to={opts.defaultRoute} />} />
+                        <Route
+                            exact
+                            path="/"
+                            render={() => (
+                                <Redirect to={opts.defaultRoute || "/page-builder/pages"} />
+                            )}
+                        />
                     </BrowserRouter>
                 );
             }
@@ -130,7 +137,8 @@ export default createTemplate<AdminAppOptions>(opts => {
         typeformPlugins,
         mailchimpPlugins,
         cognito(opts.cognito),
-        cognitoTheme()
+        cognitoTheme(),
+        ...(opts.plugins || [])
     ];
 
     return [...appStructure, ...otherPlugins];

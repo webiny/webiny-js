@@ -30,7 +30,6 @@
     "@webiny/app-plugin-security-cognito-theme": "^2.0.3",
     "@webiny/app-template": "^1.0.0",
     "@webiny/app-typeform": "^3.0.5",
-    "@webiny/plugins": "^3.0.1",
     "@webiny/react-router": "^2.0.1",
     "@webiny/ui": "^3.0.3"
   },

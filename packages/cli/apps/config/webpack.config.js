@@ -16,16 +16,22 @@ const ManifestPlugin = require("webpack-manifest-plugin");
 const InterpolateHtmlPlugin = require("react-dev-utils/InterpolateHtmlPlugin");
 const WorkboxWebpackPlugin = require("workbox-webpack-plugin");
 const WatchMissingNodeModulesPlugin = require("react-dev-utils/WatchMissingNodeModulesPlugin");
-const ModuleScopePlugin = require("react-dev-utils/ModuleScopePlugin");
 const getCSSModuleLocalIdent = require("react-dev-utils/getCSSModuleLocalIdent");
 const modules = require("./modules");
 const getClientEnvironment = require("./env");
 const ModuleNotFoundPlugin = require("react-dev-utils/ModuleNotFoundPlugin");
 const ForkTsCheckerWebpackPlugin = require("react-dev-utils/ForkTsCheckerWebpackPlugin");
 const typescriptFormatter = require("react-dev-utils/typescriptFormatter");
-
+const WebpackBar = require("webpackbar");
 const postcssNormalize = require("postcss-normalize");
+const aliases = require("./aliases");
 
+const materialNodeModules = require.resolve("@material/base/package.json").split("@material")[0];
+const sassIncludePaths = [
+    path.resolve("./src"),
+    path.resolve("./node_modules"),
+    materialNodeModules
+];
 
 // Source maps are resource heavy and can cause out of memory issue for large source files.
 const shouldUseSourceMap = process.env.GENERATE_SOURCEMAP !== "false";
@@ -40,6 +46,13 @@ const cssRegex = /\.css$/;
 const cssModuleRegex = /\.module\.css$/;
 const sassRegex = /\.(scss|sass)$/;
 const sassModuleRegex = /\.module\.(scss|sass)$/;
+const sassLoader = {
+    loader: require.resolve("sass-loader"),
+    options: {
+        sourceMap: true,
+        sassOptions: { includePaths: sassIncludePaths }
+    }
+};
 
 // This is the production and development configuration.
 // It is focused on developer experience, fast rebuilds, and a minimal bundle.
@@ -116,12 +129,7 @@ module.exports = function(webpackEnv, { paths }) {
                         sourceMap: isEnvProduction && shouldUseSourceMap
                     }
                 },
-                {
-                    loader: require.resolve(preProcessor),
-                    options: {
-                        sourceMap: true
-                    }
-                }
+                preProcessor
             );
         }
         return loaders;
@@ -286,12 +294,14 @@ module.exports = function(webpackEnv, { paths }) {
                 // Support React Native Web
                 // https://www.smashingmagazine.com/2016/08/a-glimpse-into-the-future-with-react-native-for-web/
                 "react-native": "react-native-web",
+                "react-dom": "@hot-loader/react-dom",
                 // Allows for better profiling with ReactDevTools
                 ...(isEnvProductionProfile && {
                     "react-dom$": "react-dom/profiling",
                     "scheduler/tracing": "scheduler/tracing-profiling"
                 }),
-                ...(modules.webpackAliases || {})
+                ...(modules.webpackAliases || {}),
+                ...aliases
             },
             plugins: [
                 // Adds support for installing with Plug'n'Play, leading to faster installs and adding
@@ -452,7 +462,7 @@ module.exports = function(webpackEnv, { paths }) {
                                     importLoaders: 3,
                                     sourceMap: isEnvProduction && shouldUseSourceMap
                                 },
-                                "sass-loader"
+                                sassLoader
                             ),
                             // Don't consider CSS imports dead code even if the
                             // containing package claims to have no side effects.
@@ -472,7 +482,7 @@ module.exports = function(webpackEnv, { paths }) {
                                         getLocalIdent: getCSSModuleLocalIdent
                                     }
                                 },
-                                "sass-loader"
+                                sassLoader
                             )
                         },
                         // "file" loader makes sure those assets get served by WebpackDevServer.
@@ -638,7 +648,8 @@ module.exports = function(webpackEnv, { paths }) {
                     silent: true,
                     // The formatter is invoked directly in WebpackDevServerUtils during development
                     formatter: isEnvProduction ? typescriptFormatter : undefined
-                })
+                }),
+            new WebpackBar({ name: "Webiny" })
         ].filter(Boolean),
         // Some libraries import Node modules but don't use them in the browser.
         // Tell Webpack to provide empty mocks for them so importing them works.

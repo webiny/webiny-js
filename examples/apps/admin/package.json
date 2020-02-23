@@ -92,12 +92,12 @@
   },
   "scripts": {
     "analyze": "source-map-explorer build/static/js/main.*",
-    "start": "env-cmd -r .env.json -e default,local rescripts start",
-    "build": "rescripts build",
+    "start": "env-cmd -r .env.json -e default,local webiny app start",
+    "build": "webiny app build",
     "build:dev": "env-cmd -r .env.json -e default,dev yarn build",
     "build:prod": "env-cmd -r .env.json -e default,prod yarn build",
     "postbuild": "webpack --config ./handler/webpack.config.js",
-    "test": "rescripts test --env=jsdom"
+    "test": "webiny app test --env=jsdom"
   },
   "browserslist": {
     "development": [
