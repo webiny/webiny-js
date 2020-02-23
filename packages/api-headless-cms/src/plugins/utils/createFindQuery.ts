@@ -5,6 +5,10 @@ export type FindWhere = {
     [key: string]: any;
 };
 
+const fieldMap = {
+    id: "instance"
+};
+
 export const createFindQuery = (model: CmsModel, where: FindWhere, context: GraphQLContext) => {
     const match: any = {};
     const filterOperators = context.plugins.byType<CmsFindFilterOperator>(
@@ -26,7 +30,7 @@ export const createFindQuery = (model: CmsModel, where: FindWhere, context: Grap
         const field = model.fields.find(f => f.fieldId === fieldId);
         const condition = operatorPlugin.createCondition({ fieldId, field, value, context });
 
-        return { [fieldId]: condition };
+        return { [fieldMap[fieldId] || field.fieldId]: condition };
     }
 
     const whereKeys = Object.keys(where);

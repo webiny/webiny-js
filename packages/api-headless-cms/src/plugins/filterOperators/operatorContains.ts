@@ -4,15 +4,8 @@ const plugin: CmsFindFilterOperator = {
     name: "cms-find-filter-operator-contains",
     type: "cms-find-filter-operator",
     operator: "contains",
-    createCondition({ value, context }) {
-        if (context.cms.manage) {
-            return { value: { $regex: `.*${value}.*`, $options: "i" } };
-        }
-
-        return {
-            value: { $regex: `.*${value}.*`, $options: "i" },
-            locale: context.cms.locale.id
-        };
+    createCondition({ value }) {
+        return { $regex: `.*${value}.*`, $options: "i" };
     }
 };
 

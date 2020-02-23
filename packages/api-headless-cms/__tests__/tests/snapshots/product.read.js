@@ -37,9 +37,6 @@ export default /* GraphQL */ `
         # Matches if the field is not equal to the given value
         title_not: String
 
-        # Matches if the field exists
-        title_exists: Boolean
-
         # Matches if the field value equal one of the given values
         title_in: [String]
 
@@ -57,9 +54,6 @@ export default /* GraphQL */ `
 
         # Matches if the field is not equal to the given value
         price_not: Float
-
-        # Matches if the field exists
-        price_exists: Boolean
 
         # Matches if the field value equal one of the given values
         price_in: [Float]
@@ -85,17 +79,11 @@ export default /* GraphQL */ `
         # Matches if the field is not equal to the given value
         inStock_not: Boolean
 
-        # Matches if the field exists
-        inStock_exists: Boolean
-
         # Matches if the field is equal to the given value
         itemsInStock: Int
 
         # Matches if the field is not equal to the given value
         itemsInStock_not: Int
-
-        # Matches if the field exists
-        itemsInStock_exists: Boolean
 
         # Matches if the field value equal one of the given values
         itemsInStock_in: [Int]
@@ -120,9 +108,6 @@ export default /* GraphQL */ `
 
         # Matches if the field is not equal to the given value
         availableOn_not: String
-
-        # Matches if the field exists
-        availableOn_exists: Boolean
 
         # Matches if the field value equal one of the given values
         availableOn_in: [String]

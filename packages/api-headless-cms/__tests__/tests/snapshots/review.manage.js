@@ -34,9 +34,6 @@ export default /* GraphQL */ `
         # Matches if the field is not equal to the given value
         text_not: String
 
-        # Matches if the field exists
-        text_exists: Boolean
-
         # Matches if the field value equal one of the given values
         text_in: [String]
 
@@ -54,9 +51,6 @@ export default /* GraphQL */ `
 
         # Matches if the field is not equal to the given value
         rating_not: Float
-
-        # Matches if the field exists
-        rating_exists: Boolean
 
         # Matches if the field value equal one of the given values
         rating_in: [Float]

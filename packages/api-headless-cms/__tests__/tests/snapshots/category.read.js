@@ -28,9 +28,6 @@ export default /* GraphQL */ `
         # Matches if the field is not equal to the given value
         title_not: String
 
-        # Matches if the field exists
-        title_exists: Boolean
-
         # Matches if the field value equal one of the given values
         title_in: [String]
 
@@ -48,9 +45,6 @@ export default /* GraphQL */ `
 
         # Matches if the field is not equal to the given value
         slug_not: String
-
-        # Matches if the field exists
-        slug_exists: Boolean
 
         # Matches if the field value equal one of the given values
         slug_in: [String]

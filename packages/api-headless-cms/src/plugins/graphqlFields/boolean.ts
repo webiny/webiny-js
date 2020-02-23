@@ -7,9 +7,7 @@ const createListFilters = ({ field }) => {
         
         # Matches if the field is not equal to the given value
         ${field.fieldId}_not: Boolean
-        
-        # Matches if the field exists
-        ${field.fieldId}_exists: Boolean
+
     `;
 };
 

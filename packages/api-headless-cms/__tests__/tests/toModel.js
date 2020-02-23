@@ -16,7 +16,7 @@ export default ({ plugins }) => {
             });
         });
 
-        describe(`"createModelFromData"`, () => {
+        describe(`"createDataModelFromData"`, () => {
             test("data is converted to commodo model", async () => {
                 // Create content models
                 for (let i = 0; i < contentModels.length; i++) {
