@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.1.4-next.1](https://github.com/webiny/webiny-js/compare/@webiny/app-page-builder@3.1.4-next.0...@webiny/app-page-builder@3.1.4-next.1) (2020-02-24)
+
+
+### Bug Fixes
+
+* add missing variables ([d40cd56](https://github.com/webiny/webiny-js/commit/d40cd5664bf5a14199ae32c672f9ac2765c6e354))
+
+
+
+
+
 ## [3.1.4-next.0](https://github.com/webiny/webiny-js/compare/@webiny/app-page-builder@3.1.3...@webiny/app-page-builder@3.1.4-next.0) (2020-02-23)
 
 
