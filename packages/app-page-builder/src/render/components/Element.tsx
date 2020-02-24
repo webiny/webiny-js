@@ -7,6 +7,40 @@ export type ElementProps = {
     element: PbElement;
 };
 
+// Using a class element for a change because `componentDidCatch` only works with class elements ;/
+class ErrorBoundary extends React.Component {
+    constructor(props) {
+        super(props)
+        this.state = {
+            error: null,
+            errorInfo: null
+        }
+    }
+
+    componentDidCatch(error, errorInfo) {
+        this.setState({
+            error,
+            errorInfo
+        })
+    }
+
+    render() {
+        if(this.state.error) {
+            return (
+                <div>
+                    <h3>An unexpected error has occurred</h3>
+                    <details>
+                        <div>{this.state.error.toString()}</div>
+                        <div>{this.state.errorInfo.componentStack}</div>
+                    </details>
+                </div>
+            )
+        }
+
+        return this.props.children
+    }
+}
+
 const Element = (props: ElementProps) => {
     const { element } = props;
 
@@ -27,7 +61,7 @@ const Element = (props: ElementProps) => {
         return null;
     }
 
-    return <>{plugin.render({ theme, element })}</>;
+    return <ErrorBoundary>{plugin.render({ theme, element })}</ErrorBoundary>;
 };
 
 export default Element;
