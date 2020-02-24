@@ -36,41 +36,6 @@ export type ElementProps = {
     dragging: boolean;
 };
 
-// Using a class element for a change because `componentDidCatch` only works with class elements ;/
-class ErrorBoundary extends React.Component {
-    constructor(props) {
-        super(props)
-        this.state = {
-            error: null,
-            errorInfo: null
-        }
-    }
-
-    componentDidCatch(error, errorInfo) {
-        this.setState({
-            error,
-            errorInfo
-        })
-    }
-
-    render() {
-        if(this.state.error) {
-            return (
-                <div>
-                    <h3>An unexpected error has occurred</h3>
-                    <details>
-                        <div>{this.state.error.toString()}</div>
-                        <div>{this.state.errorInfo.componentStack}</div>
-                    </details>
-                </div>
-            )
-        }
-
-        return this.props.children
-    }
-}
-
-
 const getElementPlugin = (element): PbEditorPageElementPlugin => {
     if (!element) {
         return null;
@@ -135,32 +100,44 @@ const Element = (props: ElementProps) => {
         return null;
     }
 
+    let renderedPlugin = null
+    try {
+        throw new Error("bahaha!!")
+        renderedPlugin = plugin.render({ theme, element })
+    } catch(err) {
+        renderedPlugin = (
+            <div>
+                <div>{err.message}</div>
+                <div>{err.stack}</div>
+            </div>
+        )
+        console.log(err)
+    }
+
     return (
-        <ErrorBoundary>
-            <Transition in={true} timeout={250} appear={true}>
-                {state => (
-                    <ElementContainer
-                        id={element.id}
-                        onMouseOver={onMouseOver}
-                        highlight={highlight}
-                        active={active}
-                        style={{ ...defaultStyle, ...transitionStyles[state] }}
-                        className={"webiny-pb-page-element-container"}
-                    >
-                        <div className={["innerWrapper", className].filter(c => c).join(" ")}>
-                            <Draggable target={plugin.target} beginDrag={beginDrag} endDrag={endDrag}>
-                                {renderDraggable}
-                            </Draggable>
-                            {plugin.render({ element })}
-                        </div>
-                        {/*
-                            <div className="add-element add-element--above">+</div>
-                            <div className="add-element add-element--below">+</div>
-                            */}
-                    </ElementContainer>
-                )}
-            </Transition>
-        </ErrorBoundary>
+        <Transition in={true} timeout={250} appear={true}>
+            {state => (
+                <ElementContainer
+                    id={element.id}
+                    onMouseOver={onMouseOver}
+                    highlight={highlight}
+                    active={active}
+                    style={{ ...defaultStyle, ...transitionStyles[state] }}
+                    className={"webiny-pb-page-element-container"}
+                >
+                    <div className={["innerWrapper", className].filter(c => c).join(" ")}>
+                        <Draggable target={plugin.target} beginDrag={beginDrag} endDrag={endDrag}>
+                            {renderDraggable}
+                        </Draggable>
+                        {renderedPlugin}
+                    </div>
+                    {/*
+                        <div className="add-element add-element--above">+</div>
+                        <div className="add-element add-element--below">+</div>
+                        */}
+                </ElementContainer>
+            )}
+        </Transition>
     );
 };
 
