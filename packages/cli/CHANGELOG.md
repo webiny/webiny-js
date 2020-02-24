@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.2.3](https://github.com/webiny/webiny-js/compare/@webiny/cli@3.2.2...@webiny/cli@3.2.3) (2020-02-24)
+
+
+### Bug Fixes
+
+* gitignore build and build-ssr folders ([e897efe](https://github.com/webiny/webiny-js/commit/e897efe877e19825a2ed7e28e450c313446b121f))
+
+
+
+
+
 ## [3.2.2](https://github.com/webiny/webiny-js/compare/@webiny/cli@3.2.2-next.0...@webiny/cli@3.2.2) (2020-02-24)
 
 **Note:** Version bump only for package @webiny/cli
