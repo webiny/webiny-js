@@ -29,7 +29,6 @@ const Element = (props: ElementProps) => {
 
     let renderedPlugin = null
     try {
-        throw new Error("bahaha!!")
         renderedPlugin = plugin.render({ theme, element })
     } catch(err) {
         renderedPlugin = (

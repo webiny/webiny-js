@@ -102,8 +102,7 @@ const Element = (props: ElementProps) => {
 
     let renderedPlugin = null
     try {
-        throw new Error("bahaha!!")
-        renderedPlugin = plugin.render({ theme, element })
+        renderedPlugin = plugin.render({ element })
     } catch(err) {
         renderedPlugin = (
             <div>
