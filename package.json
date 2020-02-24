@@ -101,6 +101,8 @@
     "build:apps": "lerna run build --scope=@webiny/app* --stream",
     "build:api": "lerna run build --scope=@webiny/api* --stream",
     "build:packages": "lerna run build --scope=@webiny/* --ignore=@webiny/serv* --stream",
+    "watch:apps": "lerna run watch --scope=@webiny/app* --stream --parallel",
+    "watch:api": "lerna run watch --scope=@webiny/api* --stream --parallel",
     "watch:packages": "lerna run watch --scope=@webiny/* --ignore=@webiny/serv* --stream --parallel",
     "clear-dist": "yarn rimraf components/*/dist packages/*/dist",
     "contributors:add": "all-contributors add",
