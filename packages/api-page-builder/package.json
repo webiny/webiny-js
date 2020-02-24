@@ -1,6 +1,6 @@
 {
   "name": "@webiny/api-page-builder",
-  "version": "3.0.5-next.0",
+  "version": "3.0.5",
   "main": "index.js",
   "repository": {
     "type": "git",
@@ -15,10 +15,10 @@
   "license": "MIT",
   "dependencies": {
     "@babel/runtime": "^7.5.5",
-    "@webiny/api": "^3.0.2-next.0",
-    "@webiny/api-security": "^3.0.2-next.0",
+    "@webiny/api": "^3.0.2",
+    "@webiny/api-security": "^3.0.2",
     "@webiny/commodo": "^3.0.1",
-    "@webiny/commodo-graphql": "^3.0.2-next.0",
+    "@webiny/commodo-graphql": "^3.0.2",
     "@webiny/http-handler-ssr": "^2.1.0",
     "@webiny/validation": "^3.0.1",
     "download": "^5.0.3",

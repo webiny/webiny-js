@@ -1,13 +1,13 @@
 {
   "name": "@webiny/app-page-builder-theme",
-  "version": "2.0.5-next.1",
+  "version": "2.0.5",
   "main": "index.js",
   "license": "MIT",
   "dependencies": {
     "@webiny/app": "^3.0.2",
-    "@webiny/app-page-builder": "^3.1.4-next.1",
+    "@webiny/app-page-builder": "^3.1.4",
     "@webiny/plugins": "^3.0.1",
-    "@webiny/react-router": "^2.0.2-next.0",
+    "@webiny/react-router": "^2.0.2",
     "classnames": "^2.2.6",
     "graphql-tag": "2.10.1",
     "lodash.get": "^4.4.2",

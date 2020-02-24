@@ -1,6 +1,6 @@
 {
   "name": "@webiny/app-typeform",
-  "version": "3.0.6-next.1",
+  "version": "3.0.6",
   "main": "index.js",
   "repository": {
     "type": "git",
@@ -12,7 +12,7 @@
   "dependencies": {
     "@babel/runtime": "^7.5.5",
     "@emotion/styled": "^10.0.17",
-    "@webiny/app-page-builder": "^3.1.4-next.1",
+    "@webiny/app-page-builder": "^3.1.4",
     "@webiny/ui": "^3.0.3",
     "@webiny/validation": "^3.0.1",
     "lodash": "^4.17.4"
