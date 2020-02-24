@@ -16,7 +16,12 @@ export default (): ReactRouterOnLinkPlugin => {
                 preloadedLinks.push(link);
                 apolloClient.query({
                     query: GET_PUBLISHED_PAGE(),
-                    variables: { url: link, id: null }
+                    variables: {
+                        url: link,
+                        id: null,
+                        returnErrorPage: true,
+                        returnNotFoundPage: true
+                    }
                 });
             }
         }
