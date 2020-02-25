@@ -20,6 +20,7 @@ import {
     transitionStyles,
     typeStyle
 } from "./Element/ElementStyled";
+import tryRenderingPlugin from "./../../utils/tryRenderingPlugin";
 
 export type ElementProps = {
     className?: string;
@@ -100,18 +101,7 @@ const Element = (props: ElementProps) => {
         return null;
     }
 
-    let renderedPlugin = null
-    try {
-        renderedPlugin = plugin.render({ element })
-    } catch(err) {
-        renderedPlugin = (
-            <div>
-                <div>{err.message}</div>
-                <div>{err.stack}</div>
-            </div>
-        )
-        console.log(err)
-    }
+    const renderedPlugin = tryRenderingPlugin(() => plugin.render({ element }));
 
     return (
         <Transition in={true} timeout={250} appear={true}>

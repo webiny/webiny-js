@@ -3,6 +3,8 @@ import React, { useMemo } from "react";
 import { getPlugins } from "@webiny/plugins";
 import { PbElement, PbRenderElementPlugin, PbThemePlugin } from "@webiny/app-page-builder/types";
 
+import tryRenderingPlugin from "./../../utils/tryRenderingPlugin";
+
 export type ElementProps = {
     element: PbElement;
 };
@@ -27,18 +29,7 @@ const Element = (props: ElementProps) => {
         return null;
     }
 
-    let renderedPlugin = null
-    try {
-        renderedPlugin = plugin.render({ theme, element })
-    } catch(err) {
-        renderedPlugin = (
-            <div>
-                <div>{err.message}</div>
-                <div>{err.stack}</div>
-            </div>
-        )
-        console.log(err)
-    }
+    const renderedPlugin = tryRenderingPlugin(() => plugin.render({ theme, element }));
 
     return <>{renderedPlugin}</>;
 };
