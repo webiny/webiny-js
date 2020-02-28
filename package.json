@@ -141,5 +141,8 @@
       "cliPath": "node_modules/commitizen",
       "path": "./scripts/cz-adapter"
     }
+  },
+  "dependencies": {
+    "node-sass": "^4.13.1"
   }
 }
