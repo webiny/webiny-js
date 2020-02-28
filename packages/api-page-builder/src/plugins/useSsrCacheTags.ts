@@ -102,6 +102,20 @@ export default () => [
         }
     },
     {
+        type: "graphql-context",
+        name: "graphql-context-invalidate-cache-on-pb-settings-save",
+        apply({ ssrApiClient, models: { PbSettings } }) {
+            withHooks({
+                async afterSave() {
+                    await ssrApiClient.invalidateSsrCacheByTags({
+                        tags: [{ class: "pb-menu" }],
+                        refresh: true
+                    });
+                }
+            })(PbSettings);
+        }
+    },
+    {
         // After successful installation, GET requests will be issued to initially installed pages.
         // This is fine, but if a user visited the homepage first (without going straight to "/admin", which is
         // a frequent case), that page will get cached unfortunately, and we need to invalidate it. There could be

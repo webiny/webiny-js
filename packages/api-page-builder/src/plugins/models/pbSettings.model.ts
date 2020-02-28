@@ -3,7 +3,6 @@ import {
     withStaticProps,
     withProps,
     withName,
-    withHooks,
     string,
     date,
     fields,
@@ -119,17 +118,6 @@ export default ({ createBase, context }) => {
                     })
                 })()
             })
-        }),
-        withHooks({
-            async afterSave() {
-                const getPluginByName = () => () =>
-                    "gimme le plugin (i actually haven't imported the proper function here bc idk if this really is a good implementation. Saving time ftw!)";
-                const invalidateCachePlugin = getPluginByName(
-                    "pb-install-invalidate-previous-homepage-cache"
-                );
-
-                invalidateCachePlugin();
-            }
         })
     )(createBase());
 };
