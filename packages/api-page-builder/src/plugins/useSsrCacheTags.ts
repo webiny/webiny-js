@@ -81,25 +81,21 @@ export default () => [
         name: "graphql-context-extend-pb-page-pb-menu-invalidate-ssr-cache-cache-menu",
         apply({ ssrApiClient, models: { PbMenu } }) {
             // If the menu has changed, we need to delete page caches.
-            console.log("[Andrei] Outside the hook");
             withHooks({
                 async beforeSave() {
-                    console.log("[Andrei] Inside the hook");
-                    await ssrApiClient.invalidateAllSsrCache();
-
                     // If menus structure has changed, we need to invalidate SSR caches that contain this menu.
-                    // if (this.isDirty()) {
-                    //     const removeCallback = this.hook("afterSave", async () => {
-                    //         try {
-                    //             await ssrApiClient.invalidateSsrCacheByTags({
-                    //                 tags: [{ class: "pb-menu", id: this.slug }]
-                    //             });
-                    //         } catch {
-                    //             // Do nothing.
-                    //         }
-                    //         removeCallback();
-                    //     });
-                    // }
+                    if (this.isDirty()) {
+                        const removeCallback = this.hook("afterSave", async () => {
+                            try {
+                                await ssrApiClient.invalidateSsrCacheByTags({
+                                    tags: [{ class: "pb-menu", id: this.slug }]
+                                });
+                            } catch {
+                                // Do nothing.
+                            }
+                            removeCallback();
+                        });
+                    }
                 }
             })(PbMenu);
         }
