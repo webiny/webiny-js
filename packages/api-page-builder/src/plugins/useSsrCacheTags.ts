@@ -70,6 +70,7 @@ export default () => [
                         } catch {
                             // Do nothing.
                         }
+                        removeCallback();
                     });
                 }
             })(PbSettings);
