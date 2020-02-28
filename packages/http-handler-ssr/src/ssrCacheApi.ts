@@ -3,11 +3,16 @@ import { createResponse } from "@webiny/http-handler";
 import mime from "mime-types";
 import { parseBody } from "./functions";
 import { HttpHandlerPlugin } from "@webiny/http-handler/types";
+import { API_ACTION } from "./common";
 
-const API_ACTION = {
-    INVALIDATE_SSR_CACHE_BY_PATH: "invalidateSsrCacheByPath",
-    INVALIDATE_SSR_CACHE_BY_TAGS: "invalidateSsrCacheByTags"
-};
+const createSuccessResponse = ({ data }) =>
+    createResponse({
+        type: "text/json",
+        body: JSON.stringify({
+            error: false,
+            data
+        })
+    });
 
 export default (): HttpHandlerPlugin => ({
     type: "handler",
@@ -75,13 +80,7 @@ export default (): HttpHandlerPlugin => ({
                     });
                 }
 
-                return createResponse({
-                    type: "text/json",
-                    body: JSON.stringify({
-                        error: false,
-                        data: null
-                    })
-                });
+                return createSuccessResponse({ data: null });
             }
 
             const { SsrCache } = context.models;
@@ -106,13 +105,7 @@ export default (): HttpHandlerPlugin => ({
                 };
 
                 if (data.ssrCache.isRefreshing) {
-                    return createResponse({
-                        type: "text/json",
-                        body: JSON.stringify({
-                            error: false,
-                            data
-                        })
-                    });
+                    return createSuccessResponse({ data });
                 }
 
                 const version = event.headers["X-Cdn-Deployment-Id"];
@@ -126,13 +119,7 @@ export default (): HttpHandlerPlugin => ({
                     }
 
                     if (!versionsDifferent && !ssrCache.hasExpired) {
-                        return createResponse({
-                            type: "text/json",
-                            body: JSON.stringify({
-                                error: false,
-                                data
-                            })
-                        });
+                        return createSuccessResponse({ data });
                     }
                 }
 
@@ -150,13 +137,18 @@ export default (): HttpHandlerPlugin => ({
                     isRefreshing: ssrCache.isRefreshing
                 };
 
-                return createResponse({
-                    type: "text/json",
-                    body: JSON.stringify({
-                        error: false,
-                        data
-                    })
+                return createSuccessResponse({ data });
+            }
+
+            if (action === API_ACTION.INVALIDATE_SSR_CACHE_ALL) {
+                const { SsrCache } = context.models;
+                const driver = SsrCache.getStorageDriver();
+                await driver.getClient().runOperation({
+                    collection: driver.getCollectionName(SsrCache),
+                    operation: ["update", {}, { $set: { expiresOn: null } }, { multi: true }]
                 });
+
+                return createSuccessResponse({ data: null });
             }
 
             return createResponse({

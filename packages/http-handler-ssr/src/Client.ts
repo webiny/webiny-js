@@ -1,11 +1,7 @@
 import got from "got";
+import { API_ACTION } from "./common";
 
-const API_ACTION = {
-    INVALIDATE_SSR_CACHE_BY_PATH: "invalidateSsrCacheByPath",
-    INVALIDATE_SSR_CACHE_BY_TAGS: "invalidateSsrCacheByTags"
-};
-
-const ssrApiCall = async ({ url, action, actionPayload, async }) => {
+const ssrApiCall = async ({ url, action, actionPayload = {}, async }) => {
     const args = {
         method: "POST",
         body: JSON.stringify({ ssr: [action, actionPayload] })
@@ -69,6 +65,14 @@ export default class Client {
             url: this.url,
             action: API_ACTION.INVALIDATE_SSR_CACHE_BY_TAGS,
             actionPayload: { tags },
+            async
+        });
+    }
+
+    async invalidateAllSsrCache({ async = true } = {}) {
+        await ssrApiCall({
+            url: this.url,
+            action: API_ACTION.INVALIDATE_SSR_CACHE_ALL,
             async
         });
     }
