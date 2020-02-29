@@ -3,7 +3,7 @@ import {
     GraphQLSchema,
     GraphQLFieldResolver as BaseGraphQLFieldResolver
 } from "graphql";
-
+import { GraphQLSchemaModule } from "apollo-graphql";
 import { Plugin, PluginsContainer } from "@webiny/plugins/types";
 
 export { Plugin, PluginsContainer };
@@ -14,18 +14,13 @@ export interface GraphQLContext {
     [key: string]: any;
 }
 
-export type SchemaDefinition = {
-    typeDefs: any;
-    resolvers: any;
-};
-
 export type SchemaDefinitionFactory = (params: {
     plugins: PluginsContainer;
-}) => Promise<SchemaDefinition>;
+}) => Promise<GraphQLSchemaModule>;
 
 export type GraphQLSchemaPlugin = Plugin & {
     prepare?: (params: { context: GraphQLContext }) => Promise<void>;
-    schema: SchemaDefinition | SchemaDefinitionFactory;
+    schema: GraphQLSchemaModule | SchemaDefinitionFactory;
     [key: string]: any;
 };
 

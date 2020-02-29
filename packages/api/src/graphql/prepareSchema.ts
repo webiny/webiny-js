@@ -1,3 +1,4 @@
+import { GraphQLSchemaModule } from "apollo-graphql";
 import gql from "graphql-tag";
 import { buildFederatedSchema } from "@apollo/federation";
 import GraphQLJSON from "graphql-type-json";
@@ -8,7 +9,6 @@ import {
     PluginsContainer,
     GraphQLSchemaPlugin,
     GraphqlScalarPlugin,
-    SchemaDefinition,
     GraphQLContext
 } from "../types";
 import { applyGraphQLContextPlugins } from "@webiny/api/utils/contextPlugins";
@@ -33,7 +33,7 @@ export async function prepareSchema({ plugins }: PrepareSchemaParams) {
 
     const scalars = plugins.byType<GraphqlScalarPlugin>("graphql-scalar").map(item => item.scalar);
 
-    const schemaDefs: SchemaDefinition[] = [
+    const schemaDefs: GraphQLSchemaModule[] = [
         {
             typeDefs: gql`
                 ${scalars.map(scalar => `scalar ${scalar.name}`).join(" ")}
@@ -43,7 +43,10 @@ export async function prepareSchema({ plugins }: PrepareSchemaParams) {
                 scalar RefInput
             `,
             resolvers: {
-                ...scalars,
+                ...scalars.reduce((acc, s) => {
+                    acc[s.name] = s;
+                    return acc;
+                }, {}),
                 JSON: GraphQLJSON,
                 DateTime: GraphQLDateTime,
                 Long: GraphQLLong,
@@ -67,5 +70,5 @@ export async function prepareSchema({ plugins }: PrepareSchemaParams) {
         }
     }
 
-    return { schema: buildFederatedSchema([...schemaDefs]), context };
+    return { schema: buildFederatedSchema(schemaDefs), context };
 }
