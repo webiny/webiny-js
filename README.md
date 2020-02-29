@@ -98,7 +98,7 @@ Thanks goes to these wonderful people:
     <td align="center"><a href="http://jinesh.varia.in"><img src="https://avatars2.githubusercontent.com/u/4205770?v=4" width="100px;" alt=""/><br /><sub><b>Jinesh Varia</b></sub></a><br /></td>
     <td align="center"><a href="https://github.com/val-fom"><img src="https://avatars0.githubusercontent.com/u/17828806?v=4" width="100px;" alt=""/><br /><sub><b>Valentyn Fomenko</b></sub></a><br /></td>
     <td align="center"><a href="https://github.com/Naion"><img src="https://avatars3.githubusercontent.com/u/13139397?v=4" width="100px;" alt=""/><br /><sub><b>Lenon Tolfo</b></sub></a><br /></td>
-    <td align="center"><a href="https://github.com/ahmad-reza619"><img src="https://avatars3.githubusercontent.com/u/52902060?v=4" width="100px;" alt=""/><br /><sub><b>Ahmad Reza</b></sub></a><br /><a href="https://github.com/Webiny/webiny-js/commits?author=ahmad-reza619" title="Code">💻</a></td>
+    <td align="center"><a href="https://github.com/ahmad-reza619"><img src="https://avatars3.githubusercontent.com/u/52902060?v=4" width="100px;" alt=""/><br /><sub><b>Ahmad Reza</b></sub></a><br /></td>
   </tr>
 </table>
 
