@@ -1,3 +1,4 @@
+import gql from "graphql-tag";
 import { CmsModelFieldToGraphQLPlugin } from "@webiny/api-headless-cms/types";
 import { createReadTypeName } from "../utils/createTypeName";
 import { createListArgs } from "../utils/createListArgs";
@@ -29,46 +30,48 @@ const plugin: CmsModelFieldToGraphQLPlugin = {
                 return instance[field.fieldId];
             };
         },
-        createTypes() {
-            return /* GraphQL */ `
-                # ref:one
-                type CmsManageRefOneLocalized {
-                    locale: ID
-                    value: ID
-                }
+        createSchema() {
+            return {
+                typeDefs: gql`
+                    # ref:one
+                    type CmsManageRefOneLocalized {
+                        locale: ID
+                        value: ID
+                    }
 
-                type CmsManageRefOne {
-                    values: [CmsManageRefOneLocalized]
-                }
+                    type CmsManageRefOne {
+                        values: [CmsManageRefOneLocalized]
+                    }
 
-                input CmsManageRefOneLocalizedInput {
-                    locale: ID!
-                    value: ID!
-                }
+                    input CmsManageRefOneLocalizedInput {
+                        locale: ID!
+                        value: ID!
+                    }
 
-                input CmsManageRefOneInput {
-                    values: [CmsManageRefOneLocalizedInput]
-                }
+                    input CmsManageRefOneInput {
+                        values: [CmsManageRefOneLocalizedInput]
+                    }
 
-                # ref:many
-                type CmsManageRefManyLocalized {
-                    locale: ID
-                    value: [ID]
-                }
+                    # ref:many
+                    type CmsManageRefManyLocalized {
+                        locale: ID
+                        value: [ID]
+                    }
 
-                type CmsManageRefMany {
-                    values: [CmsManageRefManyLocalized]
-                }
+                    type CmsManageRefMany {
+                        values: [CmsManageRefManyLocalized]
+                    }
 
-                input CmsManageRefManyLocalizedInput {
-                    locale: ID!
-                    value: [ID]!
-                }
+                    input CmsManageRefManyLocalizedInput {
+                        locale: ID!
+                        value: [ID]!
+                    }
 
-                input CmsManageRefManyInput {
-                    values: [CmsManageRefManyLocalizedInput]!
-                }
-            `;
+                    input CmsManageRefManyInput {
+                        values: [CmsManageRefManyLocalizedInput]!
+                    }
+                `
+            };
         },
         createTypeField({ field }) {
             const { type } = field.settings;

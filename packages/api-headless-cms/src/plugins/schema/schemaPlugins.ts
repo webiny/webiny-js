@@ -1,5 +1,5 @@
 import gql from "graphql-tag";
-import { GraphQLContext as APIContext } from "@webiny/api/types";
+import { GraphQLContext as APIContext, GraphQLSchemaPlugin } from "@webiny/api/types";
 import {
     CmsModel,
     CmsModelFieldToGraphQLPlugin,
@@ -7,9 +7,9 @@ import {
 } from "@webiny/api-headless-cms/types";
 import { createManageSDL } from "./createManageSDL";
 import { createReadSDL } from "./createReadSDL";
-// import { createManageResolvers } from "./createManageResolvers";
- import { createReadResolvers } from "./createReadResolvers";
-import { renderTypesFromFieldPlugins } from "../utils/renderTypesFromFieldPlugins";
+import { createManageResolvers } from "./createManageResolvers";
+import { createReadResolvers } from "./createReadResolvers";
+import { getSchemaFromFieldPlugins } from "../utils/getSchemaFromFieldPlugins";
 
 export interface GenerateSchemaPlugins {
     (params: { context: APIContext }): Promise<void>;
@@ -31,19 +31,19 @@ export const generateSchemaPlugins: GenerateSchemaPlugins = async ({ context }) 
 
     const models: CmsModel[] = await CmsContentModel.find();
 
-    const newPlugins = [
-        {
-            name: "graphql-schema-cms-field-types",
-            type: "graphql-schema",
-            schema: {
-                typeDefs: gql`
-                    ${renderTypesFromFieldPlugins({ fieldTypePlugins, type: "manage" })}
-                    ${renderTypesFromFieldPlugins({ fieldTypePlugins, type: "read" })}
-                `,
-                resolvers: {}
-            }
-        }
+    const schemas = [
+        ...getSchemaFromFieldPlugins({ fieldTypePlugins, type: "manage" }),
+        ...getSchemaFromFieldPlugins({ fieldTypePlugins, type: "read" })
     ];
+
+    const newPlugins: GraphQLSchemaPlugin[] = schemas.map((s, i) => ({
+        name: "graphql-schema-cms-field-types-" + i,
+        type: "graphql-schema",
+        schema: {
+            typeDefs: s.typeDefs,
+            resolvers: s.resolvers || {}
+        }
+    }));
 
     models.forEach(model => {
         // Create a schema plugin for each model (Management API)
@@ -54,7 +54,7 @@ export const generateSchemaPlugins: GenerateSchemaPlugins = async ({ context }) 
                 typeDefs: gql`
                     ${createManageSDL({ model, context, fieldTypePlugins })}
                 `,
-                resolvers: {} // createManageResolvers({ models, model, fieldTypePlugins, context })
+                resolvers: createManageResolvers({ models, model, fieldTypePlugins, context })
             }
         });
 

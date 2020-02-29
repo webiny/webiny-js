@@ -3,6 +3,7 @@ import { setupSchema as setupTestingSchema } from "@webiny/api/testing";
 import contentModels from "./data/contentModels";
 import headlessPlugins from "../../src/plugins";
 import cmsReadResolvers from "./graphqlSchema/cmsReadResolvers";
+import cmsManageResolvers from "./graphqlSchema/cmsManageResolvers";
 
 const schemaTypesQuery = /* GraphQL */ `
     {
@@ -80,11 +81,12 @@ export default ({ plugins }) => {
             }
         });
 
-        test("create commodo models from content models data", async () => {
+        test("create commodo models and set them in the context", async () => {
             const { context } = await setupSchema();
 
             for (let i = 0; i < contentModels.length; i++) {
                 expect(context.models[contentModels[i].modelId]).toBeTruthy();
+                expect(context.models[contentModels[i].modelId + "Search"]).toBeTruthy();
             }
         });
 
@@ -109,5 +111,6 @@ export default ({ plugins }) => {
         });
 
         cmsReadResolvers({ setupSchema });
+        cmsManageResolvers({ setupSchema });
     });
 };

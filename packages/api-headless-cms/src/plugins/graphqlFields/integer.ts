@@ -1,3 +1,4 @@
+import gql from "graphql-tag";
 import { CmsModelFieldToGraphQLPlugin } from "@webiny/api-headless-cms/types";
 
 const createListFilters = ({ field }) => {
@@ -53,27 +54,29 @@ const plugin: CmsModelFieldToGraphQLPlugin = {
                 return instance[field.fieldId];
             };
         },
-        createTypes() {
-            return /* GraphQL */ `
-                input CmsManageIntLocalizedInput {
-                    value: Int
-                    locale: ID!
-                }
+        createSchema() {
+            return {
+                typeDefs: gql`
+                    input CmsManageIntLocalizedInput {
+                        value: Int
+                        locale: ID!
+                    }
 
-                input CmsManageIntInput {
-                    values: [CmsManageIntLocalizedInput]
-                }
+                    input CmsManageIntInput {
+                        values: [CmsManageIntLocalizedInput]
+                    }
 
-                type CmsManageIntLocalized {
-                    value: Int
-                    locale: ID!
-                }
+                    type CmsManageIntLocalized {
+                        value: Int
+                        locale: ID!
+                    }
 
-                type CmsManageInt {
-                    value: Int
-                    values: [CmsManageIntLocalized]!
-                }
-            `;
+                    type CmsManageInt {
+                        value: Int
+                        values: [CmsManageIntLocalized]!
+                    }
+                `
+            };
         },
         createTypeField({ field }) {
             return field.fieldId + ": CmsManageInt";

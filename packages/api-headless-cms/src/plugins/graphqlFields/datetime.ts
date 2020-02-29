@@ -1,3 +1,4 @@
+import gql from "graphql-tag";
 import { CmsModelFieldToGraphQLPlugin } from "@webiny/api-headless-cms/types";
 
 const createListFilters = ({ field }) => {
@@ -88,88 +89,90 @@ const plugin: CmsModelFieldToGraphQLPlugin = {
                 return instance[field.fieldId];
             };
         },
-        createTypes() {
-            return /* GraphQL */ `
-                # dateTimeWithTimezone types
-                input CmsManageDateTimeWithTzLocalizedInput {
-                    value: DateTime
-                    locale: ID!
-                }
+        createSchema() {
+            return {
+                typeDefs: gql`
+                    # dateTimeWithTimezone types
+                    input CmsManageDateTimeWithTzLocalizedInput {
+                        value: DateTime
+                        locale: ID!
+                    }
 
-                input CmsManageDateTimeWithTzInput {
-                    values: [CmsManageDateTimeWithTzLocalizedInput]
-                }
+                    input CmsManageDateTimeWithTzInput {
+                        values: [CmsManageDateTimeWithTzLocalizedInput]
+                    }
 
-                type CmsManageDateTimeWithTzLocalized {
-                    value: DateTime
-                    locale: ID!
-                }
+                    type CmsManageDateTimeWithTzLocalized {
+                        value: DateTime
+                        locale: ID!
+                    }
 
-                type CmsManageDateTimeWithTz {
-                    value: DateTime
-                    values: [CmsManageDateTimeWithTzLocalized]!
-                }
+                    type CmsManageDateTimeWithTz {
+                        value: DateTime
+                        values: [CmsManageDateTimeWithTzLocalized]!
+                    }
 
-                # dateTimeWithoutTimezone types
-                input CmsManageDateTimeLocalizedInput {
-                    value: String
-                    locale: ID!
-                }
+                    # dateTimeWithoutTimezone types
+                    input CmsManageDateTimeLocalizedInput {
+                        value: String
+                        locale: ID!
+                    }
 
-                input CmsManageDateTimeInput {
-                    values: [CmsManageDateTimeLocalizedInput]
-                }
+                    input CmsManageDateTimeInput {
+                        values: [CmsManageDateTimeLocalizedInput]
+                    }
 
-                type CmsManageDateTimeLocalized {
-                    value: String
-                    locale: ID!
-                }
+                    type CmsManageDateTimeLocalized {
+                        value: String
+                        locale: ID!
+                    }
 
-                type CmsManageDateTime {
-                    value: String
-                    values: [CmsManageDateTimeLocalized]!
-                }
+                    type CmsManageDateTime {
+                        value: String
+                        values: [CmsManageDateTimeLocalized]!
+                    }
 
-                # date types
-                input CmsManageDateLocalizedInput {
-                    value: String
-                    locale: ID!
-                }
+                    # date types
+                    input CmsManageDateLocalizedInput {
+                        value: String
+                        locale: ID!
+                    }
 
-                input CmsManageDateInput {
-                    values: [CmsManageDateLocalizedInput]
-                }
+                    input CmsManageDateInput {
+                        values: [CmsManageDateLocalizedInput]
+                    }
 
-                type CmsManageDateLocalized {
-                    value: String
-                    locale: ID!
-                }
+                    type CmsManageDateLocalized {
+                        value: String
+                        locale: ID!
+                    }
 
-                type CmsManageDate {
-                    value: String
-                    values: [CmsManageDateLocalized]!
-                }
+                    type CmsManageDate {
+                        value: String
+                        values: [CmsManageDateLocalized]!
+                    }
 
-                # time types
-                input CmsManageTimeLocalizedInput {
-                    value: String
-                    locale: ID!
-                }
+                    # time types
+                    input CmsManageTimeLocalizedInput {
+                        value: String
+                        locale: ID!
+                    }
 
-                input CmsManageTimeInput {
-                    values: [CmsManageTimeLocalizedInput]
-                }
+                    input CmsManageTimeInput {
+                        values: [CmsManageTimeLocalizedInput]
+                    }
 
-                type CmsManageTimeLocalized {
-                    value: String
-                    locale: ID!
-                }
+                    type CmsManageTimeLocalized {
+                        value: String
+                        locale: ID!
+                    }
 
-                type CmsManageTime {
-                    value: String
-                    values: [CmsManageTimeLocalized]!
-                }
-            `;
+                    type CmsManageTime {
+                        value: String
+                        values: [CmsManageTimeLocalized]!
+                    }
+                `
+            };
         },
         createTypeField({ field }) {
             switch (field.settings.type) {

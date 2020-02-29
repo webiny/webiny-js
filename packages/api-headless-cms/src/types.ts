@@ -1,3 +1,4 @@
+import { GraphQLSchemaModule } from "apollo-graphql";
 import { GraphQLContext, GraphQLFieldResolver, Plugin } from "@webiny/api/types";
 import { GraphQLContext as I18NContext } from "@webiny/api-i18n/types";
 import { GraphQLContext as CommodoContext } from "@webiny/api-plugin-commodo-db-proxy/types";
@@ -92,7 +93,10 @@ export type CmsModelFieldToGraphQLPlugin = Plugin & {
     };
     manage: {
         createListFilters?(params: { model: CmsModel; field: CmsModelField }): string;
-        createTypes?(params: { models: CmsModel[]; model: CmsModel }): string;
+        createSchema?(params: {
+            models: CmsModel[];
+            model: CmsModel;
+        }): GraphQLSchemaModule;
         createTypeField(params: { model: CmsModel; field: CmsModelField }): string;
         createInputField(params: { model: CmsModel; field: CmsModelField }): string;
         createResolver(params: {

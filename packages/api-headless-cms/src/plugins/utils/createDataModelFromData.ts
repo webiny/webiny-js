@@ -48,6 +48,16 @@ export const createDataModelFromData = (
                         await searchEntry.save();
                     }
                 }
+            },
+            async afterDelete() {
+                const SearchModel = context.models[data.modelId + "Search"];
+                const entries = await SearchModel.find({
+                    query: { model: data.modelId, instance: this.id }
+                });
+
+                for (let i = 0; i < entries.length; i++) {
+                    await entries[i].delete();
+                }
             }
         })
     )(baseModel) as Function;

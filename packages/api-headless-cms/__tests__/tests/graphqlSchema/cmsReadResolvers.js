@@ -5,12 +5,13 @@ export default ({ setupSchema }) => {
     describe("cmsRead resolvers", () => {
         let category;
         let targetResult;
+        let Category;
 
         beforeAll(async () => {
             // Insert demo data via models
             const { context } = await setupSchema();
 
-            const Category = context.models["category"];
+            Category = context.models["category"];
             category = new Category();
 
             await category
@@ -75,6 +76,13 @@ export default ({ setupSchema }) => {
                     }
                 })
                 .save();
+        });
+
+        afterAll(async () => {
+            const entries = await Category.find();
+            for (let i = 0; i < entries.length; i++) {
+                await entries[i].delete();
+            }
         });
 
         test(`get category by ID`, async () => {
@@ -326,7 +334,7 @@ export default ({ setupSchema }) => {
 
             const { schema, context } = await setupSchema();
             const { data: data1 } = await graphql(schema, query, {}, context, { page: 2 });
-            console.log(data1.cmsRead.listCategories);
+
             expect(data1.cmsRead.listCategories).toMatchObject({
                 data: [
                     {

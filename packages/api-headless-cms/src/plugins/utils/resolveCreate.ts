@@ -1,18 +1,12 @@
-import { GraphQLFieldResolver } from "@webiny/api/types";
 import { Response, ErrorResponse } from "@webiny/commodo-graphql";
-import { findEntry } from "./findEntry";
-import { entryNotFound } from "./entryNotFound";
+import { GraphQLFieldResolver } from "@webiny/api/types";
 import { setContextLocale } from "./setContextLocale";
 
-export const resolveUpdate = ({ model }): GraphQLFieldResolver => async (root, args, context) => {
+export const resolveCreate = ({ model }): GraphQLFieldResolver => async (root, args, context) => {
     setContextLocale(context, args.locale);
-    const instance = await findEntry({ model, args, context });
-
-    if (!instance) {
-        return entryNotFound(JSON.stringify(args.where));
-    }
-
     try {
+        const Model = context.models[model.modelId];
+        const instance = new Model();
         instance.populate(args.data);
         await instance.save();
         return new Response(instance);

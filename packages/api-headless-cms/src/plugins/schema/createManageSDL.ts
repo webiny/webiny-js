@@ -6,6 +6,7 @@ import { renderInputFields } from "../utils/renderInputFields";
 import { renderSortEnum } from "../utils/renderSortEnum";
 import { renderFields } from "../utils/renderFields";
 import { renderListFilterFields } from "../utils/renderListFilterFields";
+import { renderGetFilterFields } from "../utils/renderGetFilterFields";
 
 export interface CreateManageSDL {
     (params: {
@@ -36,7 +37,7 @@ export const createManageSDL: CreateManageSDL = ({ model, fieldTypePlugins }): s
         }
         
         input ${mTypeName}GetWhereInput {
-            id: ID!
+            ${renderGetFilterFields({ model, fieldTypePlugins })}
         }
         
         input ${mTypeName}ListWhereInput {
@@ -48,11 +49,11 @@ export const createManageSDL: CreateManageSDL = ({ model, fieldTypePlugins }): s
         }
         
         input ${mTypeName}UpdateWhereInput {
-            id: ID!
+            ${renderGetFilterFields({ model, fieldTypePlugins })}
         }
         
         input ${mTypeName}DeleteWhereInput {
-            id: ID!
+            ${renderGetFilterFields({ model, fieldTypePlugins })}
         }
         
         type ${mTypeName}Response {

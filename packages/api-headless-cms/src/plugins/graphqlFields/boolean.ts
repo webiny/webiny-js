@@ -1,3 +1,4 @@
+import gql from "graphql-tag";
 import { CmsModelFieldToGraphQLPlugin } from "@webiny/api-headless-cms/types";
 
 const createListFilters = ({ field }) => {
@@ -35,27 +36,29 @@ const plugin: CmsModelFieldToGraphQLPlugin = {
                 return instance[field.fieldId];
             };
         },
-        createTypes() {
-            return /* GraphQL */ `
-                input CmsManageBooleanLocalizedInput {
-                    value: Boolean
-                    locale: ID!
-                }
+        createSchema() {
+            return {
+                typeDefs: gql`
+                    input CmsManageBooleanLocalizedInput {
+                        value: Boolean
+                        locale: ID!
+                    }
 
-                input CmsManageBooleanInput {
-                    values: [CmsManageBooleanLocalizedInput]
-                }
+                    input CmsManageBooleanInput {
+                        values: [CmsManageBooleanLocalizedInput]
+                    }
 
-                type CmsManageBooleanLocalized {
-                    value: Boolean
-                    locale: ID!
-                }
+                    type CmsManageBooleanLocalized {
+                        value: Boolean
+                        locale: ID!
+                    }
 
-                type CmsManageBoolean {
-                    value: Boolean
-                    values: [CmsManageBooleanLocalized]!
-                }
-            `;
+                    type CmsManageBoolean {
+                        value: Boolean
+                        values: [CmsManageBooleanLocalized]!
+                    }
+                `
+            };
         },
         createTypeField({ field }) {
             return field.fieldId + ": CmsManageBoolean";

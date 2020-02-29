@@ -17,7 +17,8 @@ export default /* GraphQL */ `
     }
 
     input CmsManageCategoryGetWhereInput {
-        id: ID!
+        id: ID
+        slug: String
     }
 
     input CmsManageCategoryListWhereInput {
@@ -64,11 +65,13 @@ export default /* GraphQL */ `
     }
 
     input CmsManageCategoryUpdateWhereInput {
-        id: ID!
+        id: ID
+        slug: String
     }
 
     input CmsManageCategoryDeleteWhereInput {
-        id: ID!
+        id: ID
+        slug: String
     }
 
     type CmsManageCategoryResponse {
