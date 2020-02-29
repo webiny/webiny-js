@@ -10,6 +10,8 @@
     "@webiny/react-router": "^2.0.2",
     "classnames": "^2.2.6",
     "graphql-tag": "2.10.1",
+    "react-helmet": "^5.2.0",
+    "emotion": "^10.0.17",
     "lodash.get": "^4.4.2",
     "react-apollo": "^3.1.0",
     "react-hamburger-menu": "^1.1.1"
