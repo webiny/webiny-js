@@ -39,9 +39,9 @@ const prepareItems = async ({
     modifiers,
     context = {}
 }: {
-    items?: {[key: string]: any}[];
-    modifiers: Function[];
-    context?: {[key: string]: any};
+    items?: { [key: string]: any }[];
+    modifiers: Array<({ item: any, context: any }) => any>;
+    context?: { [key: string]: any };
 }) => {
     for (let i = 0; i < modifiers.length; i++) {
         const modifier = modifiers[i];
@@ -52,12 +52,13 @@ const prepareItems = async ({
     await applyCleanup(items);
 };
 
-export default async ({ menu, context }: {[key: string]: any}) => {
+export default async ({ menu, context }: { [key: string]: any }) => {
     const items = cloneDeep(menu.items);
 
     // Each modifier is recursively applied to all items.
     await prepareItems({
         items,
+        context,
         modifiers: [
             ({ item, context }) => {
                 switch (item.type) {
@@ -108,22 +109,25 @@ export default async ({ menu, context }: {[key: string]: any}) => {
 
                         break;
                     }
-                    case "page-list": {
-                        const { category, sortBy, sortDir } = item;
+                    case "pages-list": {
+                        const { category, sortBy, sortDir, tags } = item;
 
                         item.children = await listPublishedPages({
-                            args: { category, sort: { [sortBy]: parseInt(sortDir) } },
+                            args: { tags, category, sort: { [sortBy]: parseInt(sortDir) } },
                             context
                         });
 
-                        item.children = await item.children.toJSON("id,title,url");
+                        item.children = item.children.map(item => ({
+                            url: item.url,
+                            title: item.title,
+                            id: item.id
+                        }));
 
                         break;
                     }
                 }
             }
-        ],
-        context
+        ]
     });
 
     return items;
