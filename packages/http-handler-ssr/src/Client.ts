@@ -18,7 +18,7 @@ const ssrApiCall = async ({ url, action, actionPayload, async }) => {
     try {
         await got(url, {
             ...args,
-            timeout: 200,
+            timeout: 400,
             retry: 0
         });
     } catch {

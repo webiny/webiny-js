@@ -3,6 +3,68 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.0.5](https://github.com/webiny/webiny-js/compare/@webiny/api-page-builder@3.0.5-next.0...@webiny/api-page-builder@3.0.5) (2020-02-24)
+
+**Note:** Version bump only for package @webiny/api-page-builder
+
+
+
+
+
+## [3.0.5-next.0](https://github.com/webiny/webiny-js/compare/@webiny/api-page-builder@3.0.4...@webiny/api-page-builder@3.0.5-next.0) (2020-02-23)
+
+
+### Bug Fixes
+
+* **page-builder:** simplify usage and improve performance when loading with pages ([91c12c8](https://github.com/webiny/webiny-js/commit/91c12c8dfbdfe2adef809b556ab2eee40eb3a2ca))
+
+
+
+
+
+## [3.0.4](https://github.com/webiny/webiny-js/compare/@webiny/api-page-builder@3.0.4-next.1...@webiny/api-page-builder@3.0.4) (2020-02-18)
+
+**Note:** Version bump only for package @webiny/api-page-builder
+
+
+
+
+
+## [3.0.4-next.1](https://github.com/webiny/webiny-js/compare/@webiny/api-page-builder@3.0.4-next.0...@webiny/api-page-builder@3.0.4-next.1) (2020-02-18)
+
+**Note:** Version bump only for package @webiny/api-page-builder
+
+
+
+
+
+## [3.0.4-next.0](https://github.com/webiny/webiny-js/compare/@webiny/api-page-builder@3.0.3...@webiny/api-page-builder@3.0.4-next.0) (2020-02-18)
+
+**Note:** Version bump only for package @webiny/api-page-builder
+
+
+
+
+
+## [3.0.3](https://github.com/webiny/webiny-js/compare/@webiny/api-page-builder@3.0.3-next.0...@webiny/api-page-builder@3.0.3) (2020-02-12)
+
+**Note:** Version bump only for package @webiny/api-page-builder
+
+
+
+
+
+## [3.0.3-next.0](https://github.com/webiny/webiny-js/compare/@webiny/api-page-builder@3.0.2...@webiny/api-page-builder@3.0.3-next.0) (2020-02-11)
+
+
+### Bug Fixes
+
+* menu items form (page + pages list items) ([#703](https://github.com/webiny/webiny-js/issues/703)) ([97818d2](https://github.com/webiny/webiny-js/commit/97818d2862ed08ec8493985e46c515362df3179b)), closes [#702](https://github.com/webiny/webiny-js/issues/702)
+
+
+
+
+
 ## [3.0.2](https://github.com/webiny/webiny-js/compare/@webiny/api-page-builder@3.0.2-next.0...@webiny/api-page-builder@3.0.2) (2020-02-07)
 
 **Note:** Version bump only for package @webiny/api-page-builder

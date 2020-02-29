@@ -43,11 +43,14 @@ export default () => {
                 name: "pb-editor-slate-editor-italic",
                 type: "pb-editor-slate-editor",
                 slate: {
-                    onKeyDown(event, change) {
+                    onKeyDown(event, change, next) {
                         if (isItalicHotkey(event)) {
                             event.preventDefault();
                             change.toggleMark(mark);
+                            return true;
                         }
+
+                        return next();
                     },
                     renderMark(props, next) {
                         if (props.mark.type === mark) {

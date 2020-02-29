@@ -1,6 +1,6 @@
 {
   "name": "@webiny/serverless-aws-cloudfront",
-  "version": "3.0.1",
+  "version": "3.0.2",
   "main": "serverless.js",
   "license": "MIT",
   "dependencies": {
@@ -9,7 +9,7 @@
     "lodash.get": "^4.4.2"
   },
   "scripts": {
-    "build": "rm -rf dist && mkdir dist && cp serverless.js dist/",
+    "build": "rm -rf dist && mkdir dist && cp -R serverless.js utils dist/",
     "postbuild": "cp package.json README.md LICENSE dist/",
     "prepublishOnly": "yarn build"
   },

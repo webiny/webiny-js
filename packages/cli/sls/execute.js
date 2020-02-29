@@ -30,7 +30,7 @@ module.exports = async (inputs, method = "default") => {
     const component = new Template(`Webiny.${env}`, context);
     await component.init();
 
-    const output = await component[method]({ env, debug, alias });
+    const output = await component[method]({ env, debug, alias, what });
     if (debug) {
         // Add an empty line after debug output for nicer output
         console.log();

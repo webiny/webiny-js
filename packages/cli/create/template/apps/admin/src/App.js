@@ -20,7 +20,7 @@ const App = () => {
         <UiProvider>
             <I18NProvider>
                 <AppInstaller security={<SecurityProvider />}>
-                    <PageBuilderProvider isEditor>
+                    <PageBuilderProvider>
                         <ThemeProvider>
                             {getPlugins("route").map(pl =>
                                 React.cloneElement(pl.route, {

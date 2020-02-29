@@ -1,8 +1,7 @@
 import { I18NValue } from "@webiny/app-i18n/components";
-import { usePageBuilder } from "@webiny/app-page-builder/hooks/usePageBuilder";
 import { getPlugins } from "@webiny/plugins";
 import { cloneDeep, get } from "lodash";
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useMemo } from "react";
 import { useApolloClient } from "react-apollo";
 import { createReCaptchaComponent, createTermsOfServiceComponent } from "./components";
 import {
@@ -22,6 +21,7 @@ import {
     FbFormFieldValidatorPlugin,
     FbFormLayoutPlugin
 } from "@webiny/app-form-builder/types";
+import { PbThemePlugin } from "@webiny/app-page-builder/types";
 
 declare global {
     // eslint-disable-next-line
@@ -36,7 +36,11 @@ declare global {
 }
 
 const FormRender = (props: FbFormRenderComponentProps) => {
-    const { theme } = usePageBuilder();
+    const theme = useMemo(
+        () => Object.assign({}, ...getPlugins("pb-theme").map((pl: PbThemePlugin) => pl.theme)),
+        []
+    );
+
     const client = useApolloClient();
     const data = props.data || ({} as FbFormModel);
 

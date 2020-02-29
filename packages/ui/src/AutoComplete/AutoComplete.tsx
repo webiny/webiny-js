@@ -10,7 +10,10 @@ import { AutoCompleteBaseProps } from "./types";
 import { getOptionValue, getOptionText } from "./utils";
 import { isEqual } from "lodash";
 
-export type AutoCompleteProps = AutoCompleteBaseProps;
+export type AutoCompleteProps = AutoCompleteBaseProps & {
+    /* A callback that is executed each time a value is changed. */
+    onChange?: (value: any, selection: any) => void;
+};
 
 type State = {
     inputValue: string;
@@ -159,7 +162,7 @@ class AutoComplete extends React.Component<AutoCompleteProps, State> {
                 if (!selection || !onChange) {
                     return;
                 }
-                onChange(getOptionValue(selection, this.props));
+                onChange(getOptionValue(selection, this.props), selection);
             }
         };
 

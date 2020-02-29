@@ -1,6 +1,8 @@
 const { Component } = require("@serverless/core");
 const CloudFront = require("aws-sdk/clients/cloudfront");
 const get = require("lodash.get");
+const setCdnDistributionForwardedHeader = require("./utils/setCdnDistributionForwardedHeader");
+const unsetCdnDistributionForwardedHeader = require("./utils/unsetCdnDistributionForwardedHeader");
 
 class ServerlessAwsCloudfront extends Component {
     async default(inputs = {}) {
@@ -9,65 +11,44 @@ class ServerlessAwsCloudfront extends Component {
 
         const cloudfrontClient = new CloudFront();
 
+        // Get CDN Distribution's config and the ETag.
+        const { DistributionConfig, ETag } = await cloudfrontClient
+            .getDistributionConfig({ Id: output.id })
+            .promise();
+
+        // Append deployment ID (a simple timestamp) into the forwarded headers list.
+        this.context.instance.debug(`Adding "X-Cdn-Deployment-Id" forwarded header...`);
+
+        setCdnDistributionForwardedHeader({
+            DistributionConfig,
+            key: "X-Cdn-Deployment-Id",
+            value: String(new Date().getTime())
+        });
+
+        // If enabled, append CDN ID into the forwarded headers list.
         const forwardIdViaHeadersChanged =
             get(this.state, "output.forwardIdViaHeaders") !== inputs.forwardIdViaHeaders;
 
         if (forwardIdViaHeadersChanged) {
             output.forwardIdViaHeaders = inputs.forwardIdViaHeaders;
-            const { DistributionConfig, ETag } = await cloudfrontClient
-                .getDistributionConfig({ Id: output.id })
-                .promise();
 
             if (inputs.forwardIdViaHeaders) {
-                DistributionConfig.Origins.Items.forEach(origin => {
-                    let hasHeader = false;
-                    for (let i = 0; i < origin.CustomHeaders.Items.length; i++) {
-                        const item = origin.CustomHeaders.Items[i];
-                        if (item.HeaderName === "X-Cdn-Id") {
-                            item.HeaderValue = output.id;
-                            hasHeader = true;
-                            break;
-                        }
-                    }
-
-                    if (!hasHeader) {
-                        origin.CustomHeaders.Quantity++;
-                        origin.CustomHeaders.Items.push({
-                            HeaderName: "X-Cdn-Id",
-                            HeaderValue: output.id
-                        });
-                    }
+                this.context.instance.debug(`Adding "X-Cdn-Id" forwarded header...`);
+                setCdnDistributionForwardedHeader({
+                    DistributionConfig,
+                    key: "X-Cdn-Id",
+                    value: output.id
                 });
-
-                this.context.instance.debug(
-                    `Adding custom header forwarding - Cloudfront Distribution ID.`
-                );
             } else {
-                DistributionConfig.Origins.Items.forEach(origin => {
-                    let headerItemIndex = null;
-                    for (let i = 0; i < origin.CustomHeaders.Items.length; i++) {
-                        const item = origin.CustomHeaders.Items[i];
-                        if (item.HeaderName === "X-Cdn-Id") {
-                            headerItemIndex = i;
-                            break;
-                        }
-                    }
-
-                    if (headerItemIndex !== null) {
-                        origin.CustomHeaders.Items.splice(headerItemIndex, 1);
-                        origin.CustomHeaders.Quantity--;
-                    }
-                });
-
-                this.context.instance.debug(
-                    `Removing custom header forwarding - Cloudfront Distribution ID.`
-                );
+                this.context.instance.debug(`Removing "X-Cdn-Deployment-Id" forwarded header...`);
+                unsetCdnDistributionForwardedHeader({ DistributionConfig, key: "X-Cdn-Id" });
             }
-
-            await cloudfrontClient
-                .updateDistribution({ DistributionConfig, Id: output.id, IfMatch: ETag })
-                .promise();
         }
+
+        this.context.instance.debug(`Updating CDN with forwarded headers...`);
+        await cloudfrontClient
+            .updateDistribution({ DistributionConfig, Id: output.id, IfMatch: ETag })
+            .promise();
 
         if (inputs.invalidateOnDeploy === true) {
             this.context.instance.debug(`Creating a CDN cache invalidation request.`);
@@ -83,8 +64,6 @@ class ServerlessAwsCloudfront extends Component {
                     }
                 })
                 .promise();
-        } else {
-            this.context.instance.debug(`Skipping creation of CDN cache invalidation request.`);
         }
 
         this.state.output = output;

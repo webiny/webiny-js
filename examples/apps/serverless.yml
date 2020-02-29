@@ -9,6 +9,7 @@ vars:
 dbProxy:
   component: "@webiny/serverless-db-proxy/dist"
   inputs:
+    testConnectionBeforeDeploy: true
     region: ${vars.region}
     concurrencyLimit: 15
     timeout: 30
@@ -72,7 +73,6 @@ api:
 cdn:
   component: "@webiny/serverless-aws-cloudfront"
   inputs:
-    invalidateOnDeploy: true
     forwardIdViaHeaders: true
     defaults: # optional
       ttl: 300

@@ -32,22 +32,13 @@ const Button = ({ element }: { element: PbElement }) => {
                     style={{ ...elementStyle, display: "flex", justifyContent: alignItems }}
                     {...elementAttributes}
                 >
-                    {link.href ? (
-                        <Link
-                            to={link.href}
-                            target={link.newTab ? "_blank" : "_self"}
-                            className={getAllClasses(...classes)}
-                        >
-                            {content}
-                        </Link>
-                    ) : (
-                        <a
-                            target={link.newTab ? "_blank" : "_self"}
-                            className={getAllClasses(...classes)}
-                        >
-                            {content}
-                        </a>
-                    )}
+                    <Link
+                        to={link.href || null}
+                        target={link.newTab ? "_blank" : "_self"}
+                        className={getAllClasses(...classes)}
+                    >
+                        {content}
+                    </Link>
                 </div>
             )}
         </ElementRoot>

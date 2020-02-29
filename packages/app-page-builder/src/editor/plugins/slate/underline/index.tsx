@@ -43,12 +43,15 @@ export default () => {
                 name: "pb-editor-slate-editor-underline",
                 type: "pb-editor-slate-editor",
                 slate: {
-                    onKeyDown(event, change) {
+                    onKeyDown(event, change, next) {
                         // Decide what to do based on the key code...
                         if (isUnderlineHotkey(event)) {
                             event.preventDefault();
                             change.toggleMark(mark);
+                            return true;
                         }
+
+                        return next();
                     },
                     renderMark(props, next) {
                         if (props.mark.type === mark) {

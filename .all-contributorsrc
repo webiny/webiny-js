@@ -85,6 +85,49 @@
       "avatar_url": "https://avatars1.githubusercontent.com/u/16700631?v=4",
       "profile": "https://github.com/Fsalker",
       "contributions": []
+    },
+    {
+      "login": "naokia",
+      "name": "naokia",
+      "avatar_url": "https://avatars2.githubusercontent.com/u/5516121?v=4",
+      "profile": "https://github.com/naokia",
+      "contributions": []
+    },
+    {
+      "login": "tjrexer",
+      "name": "Tim Rexer",
+      "avatar_url": "https://avatars2.githubusercontent.com/u/7013045?v=4",
+      "profile": "https://github.com/tjrexer",
+      "contributions": []
+    },
+    {
+      "login": "bigb123",
+      "name": "Piotr Pałka",
+      "avatar_url": "https://avatars2.githubusercontent.com/u/9221943?v=4",
+      "profile": "https://github.com/bigb123",
+      "contributions": []
+    },
+    {
+      "login": "jinman",
+      "name": "Jinesh Varia",
+      "avatar_url": "https://avatars2.githubusercontent.com/u/4205770?v=4",
+      "profile": "http://jinesh.varia.in",
+      "contributions": []
+    },
+    {
+      "login": "val-fom",
+      "name": "Valentyn Fomenko",
+      "avatar_url": "https://avatars0.githubusercontent.com/u/17828806?v=4",
+      "profile": "https://github.com/val-fom",
+      "contributions": []
+    },
+    {
+      "login": "Naion",
+      "name": "Lenon Tolfo",
+      "avatar_url": "https://avatars3.githubusercontent.com/u/13139397?v=4",
+      "profile": "https://github.com/Naion",
+      "contributions": [
+      ]
     }
   ],
   "contributorsPerLine": 6,

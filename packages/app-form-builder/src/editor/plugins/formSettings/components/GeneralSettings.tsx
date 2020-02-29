@@ -1,16 +1,19 @@
-import * as React from "react";
-import { usePageBuilder } from "@webiny/app-page-builder/hooks/usePageBuilder";
+import React, { useMemo } from "react";
 import { Grid, Cell } from "@webiny/ui/Grid";
 import { Select } from "@webiny/ui/Select";
 import { get } from "lodash";
 import { I18NInput } from "@webiny/app-i18n/admin/components";
 import { getPlugins } from "@webiny/plugins";
 import { FbFormLayoutPlugin } from "@webiny/app-form-builder/types";
+import { PbThemePlugin } from "@webiny/app-page-builder/types";
 
 const GeneralSettings = ({ Bind }) => {
-    const { theme } = usePageBuilder();
+    const theme = useMemo(
+        () => Object.assign({}, ...getPlugins("pb-theme").map((pl: PbThemePlugin) => pl.theme)),
+        []
+    );
 
-    const layouts = React.useMemo(
+    const layouts = useMemo(
         () =>
             [
                 ...(get(theme, "forms.layouts") || []),

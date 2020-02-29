@@ -20,6 +20,7 @@ import {
     transitionStyles,
     typeStyle
 } from "./Element/ElementStyled";
+import tryRenderingPlugin from "./../../utils/tryRenderingPlugin";
 
 export type ElementProps = {
     className?: string;
@@ -100,6 +101,8 @@ const Element = (props: ElementProps) => {
         return null;
     }
 
+    const renderedPlugin = tryRenderingPlugin(() => plugin.render({ element }));
+
     return (
         <Transition in={true} timeout={250} appear={true}>
             {state => (
@@ -115,7 +118,7 @@ const Element = (props: ElementProps) => {
                         <Draggable target={plugin.target} beginDrag={beginDrag} endDrag={endDrag}>
                             {renderDraggable}
                         </Draggable>
-                        {plugin.render({ element })}
+                        {renderedPlugin}
                     </div>
                     {/*
                         <div className="add-element add-element--above">+</div>

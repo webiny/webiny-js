@@ -3,7 +3,6 @@ import ConnectedElement from "@webiny/app-page-builder/editor/components/Connect
 import { ElementRoot } from "@webiny/app-page-builder/render/components/ElementRoot";
 import RowContainer from "./RowContainer";
 import ElementAnimation from "@webiny/app-page-builder/render/components/ElementAnimation";
-
 /**
  * TODO: this entire component can be further optimized (see the Chrome Profiler) to avoid unnecessary elements re-renders.
  */

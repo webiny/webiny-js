@@ -5,7 +5,7 @@ import { getName } from "@commodo/name";
 import LambdaClient from "aws-sdk/clients/lambda";
 import { EJSON } from "bson";
 
-const MONGO_CONNECTION_ERRORS = ['MongoServerSelectionError'];
+const MONGO_CONNECTION_ERRORS = ["MongoServerSelectionError", "MongoNetworkError"];
 
 class DbProxyClient {
     dbProxyFunctionName: string;

@@ -3,6 +3,90 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.2.3](https://github.com/webiny/webiny-js/compare/@webiny/cli@3.2.2...@webiny/cli@3.2.3) (2020-02-24)
+
+
+### Bug Fixes
+
+* gitignore build and build-ssr folders ([e897efe](https://github.com/webiny/webiny-js/commit/e897efe877e19825a2ed7e28e450c313446b121f))
+
+
+
+
+
+## [3.2.2](https://github.com/webiny/webiny-js/compare/@webiny/cli@3.2.2-next.0...@webiny/cli@3.2.2) (2020-02-24)
+
+**Note:** Version bump only for package @webiny/cli
+
+
+
+
+
+## [3.2.2-next.0](https://github.com/webiny/webiny-js/compare/@webiny/cli@3.2.1...@webiny/cli@3.2.2-next.0) (2020-02-23)
+
+
+### Bug Fixes
+
+* **page-builder:** simplify usage and improve performance when loading with pages ([91c12c8](https://github.com/webiny/webiny-js/commit/91c12c8dfbdfe2adef809b556ab2eee40eb3a2ca))
+
+
+
+
+
+## [3.2.1](https://github.com/webiny/webiny-js/compare/@webiny/cli@3.2.0...@webiny/cli@3.2.1) (2020-02-18)
+
+
+### Bug Fixes
+
+* use `-` instead of `_` ([13201e2](https://github.com/webiny/webiny-js/commit/13201e2c3937c42f91b2c9fcdc672240a3ac10bf))
+
+
+
+
+
+# [3.2.0](https://github.com/webiny/webiny-js/compare/@webiny/cli@3.2.0-next.0...@webiny/cli@3.2.0) (2020-02-18)
+
+**Note:** Version bump only for package @webiny/cli
+
+
+
+
+
+# [3.2.0-next.0](https://github.com/webiny/webiny-js/compare/@webiny/cli@3.1.0...@webiny/cli@3.2.0-next.0) (2020-02-18)
+
+
+### Features
+
+* improve CLI usage tracking ([#723](https://github.com/webiny/webiny-js/issues/723)) ([1bbf80a](https://github.com/webiny/webiny-js/commit/1bbf80aa9a6ad9be87d007162d7899ce85da7a2d))
+
+
+
+
+
+# [3.1.0](https://github.com/webiny/webiny-js/compare/@webiny/cli@3.1.0-next.0...@webiny/cli@3.1.0) (2020-02-12)
+
+**Note:** Version bump only for package @webiny/cli
+
+
+
+
+
+# [3.1.0-next.0](https://github.com/webiny/webiny-js/compare/@webiny/cli@3.0.2...@webiny/cli@3.1.0-next.0) (2020-02-11)
+
+
+### Bug Fixes
+
+* on new deployments, consider existing SSR HTML as stale ([#709](https://github.com/webiny/webiny-js/issues/709)) ([cab83c8](https://github.com/webiny/webiny-js/commit/cab83c8e188f0f78ff1deab4a472f3d8dabb0aaf)), closes [#708](https://github.com/webiny/webiny-js/issues/708)
+
+
+### Features
+
+* **db-proxy:** test connection before deploying ([#707](https://github.com/webiny/webiny-js/issues/707)) ([b23cfd3](https://github.com/webiny/webiny-js/commit/b23cfd38e109814ebaf0aa001664b122d930dbfa))
+
+
+
+
+
 ## [3.0.2](https://github.com/webiny/webiny-js/compare/@webiny/cli@3.0.2-next.0...@webiny/cli@3.0.2) (2020-02-07)
 
 **Note:** Version bump only for package @webiny/cli

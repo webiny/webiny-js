@@ -3,6 +3,65 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.1.4](https://github.com/webiny/webiny-js/compare/@webiny/app-page-builder@3.1.4-next.1...@webiny/app-page-builder@3.1.4) (2020-02-24)
+
+**Note:** Version bump only for package @webiny/app-page-builder
+
+
+
+
+
+## [3.1.4-next.1](https://github.com/webiny/webiny-js/compare/@webiny/app-page-builder@3.1.4-next.0...@webiny/app-page-builder@3.1.4-next.1) (2020-02-24)
+
+
+### Bug Fixes
+
+* add missing variables ([d40cd56](https://github.com/webiny/webiny-js/commit/d40cd5664bf5a14199ae32c672f9ac2765c6e354))
+
+
+
+
+
+## [3.1.4-next.0](https://github.com/webiny/webiny-js/compare/@webiny/app-page-builder@3.1.3...@webiny/app-page-builder@3.1.4-next.0) (2020-02-23)
+
+
+### Bug Fixes
+
+* improve handling of internal/external links ([#724](https://github.com/webiny/webiny-js/issues/724)) ([ddb8f8a](https://github.com/webiny/webiny-js/commit/ddb8f8a73e6109508bb69610923806e7b225431f)), closes [#719](https://github.com/webiny/webiny-js/issues/719)
+* **page-builder:** simplify usage and improve performance when loading with pages ([91c12c8](https://github.com/webiny/webiny-js/commit/91c12c8dfbdfe2adef809b556ab2eee40eb3a2ca))
+
+
+
+
+
+## [3.1.3](https://github.com/webiny/webiny-js/compare/@webiny/app-page-builder@3.1.2...@webiny/app-page-builder@3.1.3) (2020-02-14)
+
+
+### Bug Fixes
+
+* restore slate v0.42 onKeyDown plugin signature ([#718](https://github.com/webiny/webiny-js/issues/718)) ([357e36c](https://github.com/webiny/webiny-js/commit/357e36ca82140237316a264bad8a5708f995d7ee))
+* synchronize pageList component name with element plugin ([#717](https://github.com/webiny/webiny-js/issues/717)) ([87f8bf8](https://github.com/webiny/webiny-js/commit/87f8bf85b08cc97766c52d420d4ad7a7236d9b3e))
+
+
+
+
+
+## [3.1.2](https://github.com/webiny/webiny-js/compare/@webiny/app-page-builder@3.1.2-next.0...@webiny/app-page-builder@3.1.2) (2020-02-12)
+
+**Note:** Version bump only for package @webiny/app-page-builder
+
+
+
+
+
+## [3.1.2-next.0](https://github.com/webiny/webiny-js/compare/@webiny/app-page-builder@3.1.1...@webiny/app-page-builder@3.1.2-next.0) (2020-02-11)
+
+**Note:** Version bump only for package @webiny/app-page-builder
+
+
+
+
+
 ## [3.1.1](https://github.com/webiny/webiny-js/compare/@webiny/app-page-builder@3.1.1-next.0...@webiny/app-page-builder@3.1.1) (2020-02-07)
 
 **Note:** Version bump only for package @webiny/app-page-builder
