@@ -28,7 +28,6 @@
     "@webiny/ui": "^3.0.3",
     "@webiny/validation": "^3.0.1",
     "aos": "^2.3.4",
-    "apollo-client": "^2.6.8",
     "classnames": "^2.2.6",
     "dataurl-to-blob": "^0.0.1",
     "dot-prop-immutable": "^1.4.0",
@@ -64,7 +63,6 @@
     "slugify": "^1.2.9",
     "store": "^2.0.12",
     "timeago-react": "^2.0.0",
-    "ulocation": "^0.8.0",
     "uniqid": "^5.0.3",
     "use-react-router": "^1.0.7",
     "warning": "^4.0.2"
