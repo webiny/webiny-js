@@ -10,7 +10,10 @@ npm-debug.log
 node_modules
 .DS_Store
 coverage
-yarn-error.log
+lerna-debug.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
 dist/
 lib/
 build/
@@ -21,3 +24,4 @@ build/
 *.tsbuildinfo
 .cloudfnsrc.js
 .cloudfns/
+yarn.lock
