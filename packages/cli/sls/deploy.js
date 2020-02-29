@@ -52,7 +52,7 @@ module.exports = async inputs => {
                             app.location + "/.env.json"
                         )} file.`,
                         "Have you deployed the corresponding API environment?",
-                        `To deploy the API, run ${blue('webiny deploy-api --env=dev')}.`
+                        `To deploy the API, run ${blue(`webiny deploy-api --env=${env}`)}.`
                     ].join("\n")
                 );
                 process.exit(1);
