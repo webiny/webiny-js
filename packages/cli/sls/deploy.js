@@ -1,6 +1,6 @@
 const { join, resolve } = require("path");
 const fs = require("fs");
-const { green, red } = require("chalk");
+const { green, red, blue } = require("chalk");
 const notifier = require("node-notifier");
 const execute = require("./execute");
 const { isApiEnvDeployed, isAppsEnvDeployed } = require("./utils");
@@ -47,9 +47,13 @@ module.exports = async inputs => {
             const envJson = require(join(appLocation, ".env.json"));
             if (!envJson[env]) {
                 console.log(
-                    `🚨 Environment ${green(env)} is missing in ${green(
-                        app.name
-                    )} app. Check your ${green(app.location + "/.env.json")} file.`
+                    [
+                        `🚨 Environment ${green(env)} is missing in ${green(
+                            app.location + "/.env.json"
+                        )} file.`,
+                        "Have you deployed the corresponding API environment?",
+                        `To deploy the API, run ${blue(`webiny deploy-api --env=${env}`)}.`
+                    ].join("\n")
                 );
                 process.exit(1);
             }
