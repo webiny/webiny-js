@@ -3,6 +3,19 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.1.5-next.0](https://github.com/webiny/webiny-js/compare/@webiny/app-page-builder@3.1.4...@webiny/app-page-builder@3.1.5-next.0) (2020-03-01)
+
+
+### Bug Fixes
+
+* handle PB Element errors during render ([#726](https://github.com/webiny/webiny-js/issues/726)) ([43fec78](https://github.com/webiny/webiny-js/commit/43fec78b8970e54ba9cb68c6901a92b9eb4870eb))
+* improve error message of deploy-apps command([#732](https://github.com/webiny/webiny-js/issues/732)) ([f696517](https://github.com/webiny/webiny-js/commit/f69651758832a68acce92650da58cd6505735ec2))
+* tags search & "Pages List" menu item site rendering ([#734](https://github.com/webiny/webiny-js/issues/734)) ([2f39e7a](https://github.com/webiny/webiny-js/commit/2f39e7a5a7bb0915e9bfcd460007108a69a1accd)), closes [#731](https://github.com/webiny/webiny-js/issues/731)
+
+
+
+
+
 ## [3.1.4](https://github.com/webiny/webiny-js/compare/@webiny/app-page-builder@3.1.4-next.1...@webiny/app-page-builder@3.1.4) (2020-02-24)
 
 **Note:** Version bump only for package @webiny/app-page-builder

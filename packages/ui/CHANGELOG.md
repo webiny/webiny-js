@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.0.4-next.0](https://github.com/webiny/webiny-js/compare/@webiny/ui@3.0.3...@webiny/ui@3.0.4-next.0) (2020-03-01)
+
+
+### Bug Fixes
+
+* lock react-spinner-material version ([bc370ad](https://github.com/webiny/webiny-js/commit/bc370ade3b3a37bf8ffabb4f25c6c1c6d0e18e06))
+
+
+
+
+
 ## [3.0.3](https://github.com/webiny/webiny-js/compare/@webiny/ui@3.0.3-next.0...@webiny/ui@3.0.3) (2020-02-12)
 
 **Note:** Version bump only for package @webiny/ui

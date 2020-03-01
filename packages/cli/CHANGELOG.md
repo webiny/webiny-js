@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.2.4-next.0](https://github.com/webiny/webiny-js/compare/@webiny/cli@3.2.3...@webiny/cli@3.2.4-next.0) (2020-03-01)
+
+
+### Bug Fixes
+
+* improve error message of deploy-apps command([#732](https://github.com/webiny/webiny-js/issues/732)) ([f696517](https://github.com/webiny/webiny-js/commit/f69651758832a68acce92650da58cd6505735ec2))
+
+
+
+
+
 ## [3.2.3](https://github.com/webiny/webiny-js/compare/@webiny/cli@3.2.2...@webiny/cli@3.2.3) (2020-02-24)
 
 
