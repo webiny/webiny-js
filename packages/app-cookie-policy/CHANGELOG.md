@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.0.6](https://github.com/webiny/webiny-js/compare/@webiny/app-cookie-policy@3.0.6-next.0...@webiny/app-cookie-policy@3.0.6) (2020-03-01)
+
+**Note:** Version bump only for package @webiny/app-cookie-policy
+
+
+
+
+
 ## [3.0.6-next.0](https://github.com/webiny/webiny-js/compare/@webiny/app-cookie-policy@3.0.5...@webiny/app-cookie-policy@3.0.6-next.0) (2020-03-01)
 
 **Note:** Version bump only for package @webiny/app-cookie-policy
