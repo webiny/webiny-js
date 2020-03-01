@@ -23,7 +23,7 @@ context("Menus Module", () => {
             .findByText("Page list")
             .click()
             .findByLabelText("Title")
-            .type(`Page List ${id}`)
+            .type(id)
             .findByText(/Save Menu Item/i)
             .click()
             .wait(200)
@@ -57,20 +57,57 @@ context("Menus Module", () => {
             .click()
             .findByText("Save menu")
             .click()
+            .wait(2000)
             .visit(Cypress.env("SITE_URL"))
             .wait(30000);
 
         cy.visit(Cypress.env("SITE_URL"))
             .findByTestId("pb-desktop-header")
             .within(() => {
-                cy.findByText(`Page List ${id}`)
-                    .should("exist")
-                    .findByText(/404/i)
-                    .should("exist")
-                    .findByText(/error page/i)
-                    .should("exist");
+                // Let's check the links and the order.
+                cy.findByText(id).within(() => {
+                    cy.get("ul li:nth-child(1)").contains(/error page/i);
+                    cy.get("ul li:nth-child(2)").contains(/404/i);
+                });
             });
 
         cy.visit("/page-builder/menus");
+
+        // Let's return to the admin and change the ordering of links.
+        cy.wait(500)
+            .findByTestId("default-data-list")
+            .within(() => {
+                cy.get("div")
+                    .first()
+                    .within(() => {
+                        cy.findByText(/Main Menu/i).click();
+                    });
+            });
+
+        cy.findByTestId(`pb-menu-item-render-${id}`).within(() => {
+            cy.findByTestId("pb-edit-icon-button").click();
+        });
+
+        cy.findByText("Sort direction...")
+            .prev()
+            .select("Ascending");
+
+        cy.findByText(/Save Menu Item/i)
+            .click()
+            .findByText("Save menu")
+            .click()
+            .wait(2000)
+            .visit(Cypress.env("SITE_URL"))
+            .wait(30000);
+
+        cy.visit(Cypress.env("SITE_URL"))
+            .findByTestId("pb-desktop-header")
+            .within(() => {
+                // Let's check the links and the order.
+                cy.findByText(id).within(() => {
+                    cy.get("ul li:nth-child(1)").contains(/404/i);
+                    cy.get("ul li:nth-child(2)").contains(/error page/i);
+                });
+            });
     });
 });
