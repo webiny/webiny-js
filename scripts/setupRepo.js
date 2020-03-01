@@ -80,9 +80,7 @@ const execa = require("execa");
         });
         console.log(`✅️ Packages were built successfully!`);
     } catch (err) {
-        console.log(
-            `🚨 Failed to build packages: ${err.message}`
-        );
+        console.log(`🚨 Failed to build packages: ${err.message}`);
     }
 
     // Link `@webiny/cli`
@@ -108,7 +106,7 @@ const execa = require("execa");
     console.log(`\n🏁 Your repo is almost ready!`);
     console.log(
         `Update ${green(
-            "examples/api/.env.json"
+            "examples/.env.json"
         )} with your MongoDB connection string and you're ready to develop!\n`
     );
 })();
