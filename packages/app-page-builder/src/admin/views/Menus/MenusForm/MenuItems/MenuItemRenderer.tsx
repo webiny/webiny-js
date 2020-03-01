@@ -1,5 +1,5 @@
 import * as React from "react";
-import { isDescendant } from "react-isSortable-tree";
+import { isDescendant } from "react-sortable-tree";
 import classnames from "classnames";
 import { getPlugins } from "@webiny/plugins";
 import { IconButton } from "@webiny/ui/Button";

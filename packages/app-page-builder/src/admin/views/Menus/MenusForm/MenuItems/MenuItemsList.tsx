@@ -1,5 +1,5 @@
 import React from "react";
-import SortableTree from "react-isSortable-tree";
+import SortableTree from "react-sortable-tree";
 import { getPlugins } from "@webiny/plugins";
 import MenuItemRenderer from "./MenuItemRenderer";
 import { Typography } from "@webiny/ui/Typography";
