@@ -24,6 +24,7 @@
     "fs-extra": "^8.1.0",
     "glob": "^7.1.4",
     "graphlib": "^2.1.7",
+    "inquirer": "^7.0.5",
     "load-json-file": "^6.2.0",
     "lodash.kebabcase": "^4.1.1",
     "node-fetch": "^2.6.0",
