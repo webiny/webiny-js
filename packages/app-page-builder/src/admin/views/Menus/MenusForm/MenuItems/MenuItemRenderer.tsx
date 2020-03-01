@@ -71,7 +71,7 @@ class NodeRendererDefault extends React.Component<any> {
         const buttonStyle = { left: -0.5 * scaffoldBlockPxWidth };
 
         return (
-            <div style={{ height: "100%" }} data-testid={`pb-menu-item-render-${node.id}`}>
+            <div style={{ height: "100%" }} data-testid={`pb-menu-item-render-${nodeTitle}`}>
                 {toggleChildrenVisibility &&
                     node.children &&
                     (node.children.length > 0 || typeof node.children === "function") && (
