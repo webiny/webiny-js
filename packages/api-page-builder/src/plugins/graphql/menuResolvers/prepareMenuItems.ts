@@ -40,7 +40,7 @@ const prepareItems = async ({
     context = {}
 }: {
     items?: { [key: string]: any }[];
-    modifiers: Array<({ item: any, context: any }) => any>;
+    modifiers: Array<(args: { item: any, context: any }) => any>;
     context?: { [key: string]: any };
 }) => {
     for (let i = 0; i < modifiers.length; i++) {
