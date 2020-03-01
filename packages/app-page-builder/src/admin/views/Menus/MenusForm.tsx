@@ -22,7 +22,7 @@ function MenusForm() {
     return (
         <Form {...crudForm} data={crudForm.id ? crudForm.data : { items: [] }}>
             {({ data, form, Bind }) => (
-                <SimpleForm>
+                <SimpleForm data-testid={"pb-menus-form"}>
                     {crudForm.loading && <CircularProgress />}
                     <SimpleFormContent>
                         <Grid>
