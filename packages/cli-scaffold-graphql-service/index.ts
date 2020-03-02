@@ -17,7 +17,6 @@ module.exports = [
                     message: "The name of your service"
                 }
             ],
-
             generate: async ({ input, context }) => {
                 try {
                     // First we update serverless.yml

@@ -40,13 +40,12 @@ module.exports = async () => {
                     throw new Error(
                               "Oddly, there are no available scaffold templates. This must be a coding oversight..."
                     );
-          // const { selectedPluginName } = await inquirer.prompt({
-          //     type: "list",
-          //     name: "selectedPluginName",
-          //     message: "Pick the template you'd like to employ",
-          //     choices
-          // });
-          const selectedPluginName = "scaffold-template-apollo-service";
+          const { selectedPluginName } = await inquirer.prompt({
+                    type: "list",
+                    name: "selectedPluginName",
+                    message: "Pick the template you'd like to employ",
+                    choices
+          });
 
           const selectedPlugin = scaffoldPlugins.byName(selectedPluginName);
           const input = await inquirer.prompt(
