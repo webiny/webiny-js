@@ -3,6 +3,7 @@ const yargs = require("yargs");
 const { blue, green, dim } = require("chalk");
 const fs = require("fs").promises;
 const inquirer = require("inquirer");
+// const { PluginsContainer } = require("@webiny/plugins")
 
 const trackingNotice = () => {
           console.log();
@@ -173,46 +174,34 @@ yargs.command(
 
 yargs.command(
           "scaffold <name>",
-          "Scaffold your application with one of the available templates.",
+          "Scaffold your application with one of the available templates. (Run it from within your app's folder)",
           yargs => {
                     yargs.positional("name", {
-                              describe: "The name of your generated API."
+                              describe:
+                                        "The name to be assigned to your generated template."
                     });
           },
-          async () => {
+          async argv => {
                     const regexIsCliModule = /(^@webiny\/cli-scaffold-.+$)|(^webiny-cli-scaffold.*$)/;
                     const moduleToChoice = module =>
-                              `${module.name} - ${module.description}`;
+                              `${module.scaffold.name} - ${module.scaffold.description}`;
 
-                    const scaffoldModuleNames = (
-                              await fs.readdir("./node_modules")
-                    ).filter(moduleName => moduleName.match(regexIsCliModule));
-                    let scaffoldModules = scaffoldModuleNames.reduce(
+                    const webinyModulesNames = (
+                              await fs.readdir("../node_modules/@webiny")
+                    ).map(moduleName => `@webiny/${moduleName}`);
+                    const nodeModulesNames = await fs.readdir(
+                              "../node_modules"
+                    );
+                    const scaffoldModulesNames = webinyModulesNames
+                              .concat(nodeModulesNames)
+                              .filter(moduleName =>
+                                        moduleName.match(regexIsCliModule)
+                              );
+                    const scaffoldModules = scaffoldModulesNames.reduce(
                               (modules, crtModuleName) =>
                                         modules.concat(require(crtModuleName)),
                               []
                     );
-                    scaffoldModules = [
-                              {
-                                        name: "Pokemons",
-                                        description:
-                                                  "Summon a couple of pokemons!!",
-                                        generate: () => {
-                                                  console.log(
-                                                            "[Generating...] Drop the bass... Wobwbobowobwobob!!14eq23rftwer89gjd89sh"
-                                                  );
-                                        }
-                              },
-                              {
-                                        name: "Tetrominos",
-                                        description:
-                                                  "Drop the almighty tetrominos!!!"
-                              },
-                              {
-                                        name: "Knights",
-                                        description: "Mount 'n blade. Charge!"
-                              }
-                    ]; // For testing purposes
                     const choices = scaffoldModules.map(module =>
                               moduleToChoice(module)
                     );
@@ -220,20 +209,19 @@ yargs.command(
                               throw new Error(
                                         "Oddly, there are no available scaffold templates. This must be a coding error..."
                               );
-                    const { scaffoldTemplate } = await inquirer.prompt({
-                              type: "list",
-                              name: "scaffoldTemplate",
-                              message: "Pick the template you'd like to employ",
-                              choices
+                    // const { scaffoldTemplate } = await inquirer.prompt({
+                    //     type: "list",
+                    //     name: "scaffoldTemplate",
+                    //     message: "Pick the template you'd like to employ",
+                    //     choices
+                    // });
+                    // const selectedScaffoldModule = scaffoldModules.find(
+                    //     module => moduleToChoice(module) === scaffoldTemplate
+                    // );
+                    const selectedScaffoldModule = scaffoldModules[0];
+                    selectedScaffoldModule.scaffold.generate({
+                              serviceName: argv.name
                     });
-                    console.log(scaffoldTemplate);
-                    const selectedScaffoldModule = scaffoldModules.find(
-                              module =>
-                                        moduleToChoice(module) ===
-                                        scaffoldTemplate
-                    );
-                    console.log(selectedScaffoldModule);
-                    selectedScaffoldModule.generate();
           }
 );
 

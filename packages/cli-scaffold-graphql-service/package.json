@@ -2,7 +2,7 @@
   "name": "@webiny/cli-scaffold-graphql-service",
   "version": "1.0.0",
   "description": "Scaffolds a graphql service for you",
-  "main": "index.js",
+  "main": "index.ts",
   "scripts": {},
   "repository": {
     "type": "git",
@@ -14,5 +14,8 @@
     "url": "https://github.com/webiny/webiny-js/issues"
   },
   "homepage": "https://github.com/webiny/webiny-js#readme",
-  "dependencies": {}
+  "dependencies": {
+    "js-yaml": "^3.13.1",
+    "ncp": "^2.0.0"
+  }
 }
