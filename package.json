@@ -130,7 +130,7 @@
       "prettier --write",
       "eslint --fix",
       "git add",
-      "jest --config ./scripts/jest/config.src.js --findRelatedTests"
+      "jest --config jest.config.js --findRelatedTests"
     ]
   },
   "yargs": {
