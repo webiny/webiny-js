@@ -15,7 +15,6 @@
   },
   "homepage": "https://github.com/webiny/webiny-js#readme",
   "dependencies": {
-    "inquirer": "^7.0.5",
     "js-yaml": "^3.13.1",
     "ncp": "^2.0.0"
   }

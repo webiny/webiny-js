@@ -3,7 +3,6 @@ const fs = require("fs");
 const path = require("path");
 const util = require("util");
 const ncp = util.promisify(require("ncp").ncp);
-const inquirer = require("inquirer");
 
 module.exports = [
     {
@@ -12,27 +11,19 @@ module.exports = [
         scaffold: {
             name: "GraphQL Apollo Service",
             description: "Creates an /api template and fills it in serverless.yml",
-            generate: async () => {
-                try {
-                    const { appName, serviceName } = await inquirer.prompt([
-                        {
-                            name: "appName",
-                            message: "The name of your application",
-                            default: "examples"
-                        },
-                        {
-                            name: "serviceName",
-                            message: "The name of your service"
-                        }
-                    ]);
+            questions: [
+                {
+                    name: "serviceName",
+                    message: "The name of your service"
+                }
+            ],
 
+            generate: async ({ input, context }) => {
+                try {
                     // First we update serverless.yml
-                    const serverlessFilePath = path.join(
-                        process.cwd(),
-                        appName,
-                        "api/serverless.yml"
-                    );
-                    const serverlessJson = yaml.safeLoad(fs.readFileSync(serverlessFilePath));
+                    const { serviceName, appName } = input;
+
+                    const serverlessJson = yaml.safeLoad(fs.readFileSync(context.apiYaml));
                     if (serverlessJson[serviceName])
                         throw new Error(
                             "This service already exists in serverless.yml! Please pick a different name for it."
@@ -47,11 +38,12 @@ module.exports = [
                             debug: "${vars.debug}"
                         }
                     };
-                    fs.writeFileSync(serverlessFilePath, yaml.safeDump(serverlessJson));
+                    fs.writeFileSync(context.apiYaml, yaml.safeDump(serverlessJson));
 
                     // Then we also copy the template folder
+                    console.log(__dirname);
                     const sourceFolder = path.join(__dirname, "templateFiles");
-                    const destFolder = path.join(process.cwd(), appName, "api", serviceName);
+                    const destFolder = path.join(context.apiPath, serviceName);
 
                     if (fs.existsSync(destFolder))
                         throw new Error(
