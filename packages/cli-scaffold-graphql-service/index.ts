@@ -3,6 +3,7 @@ const fs = require("fs");
 const path = require("path");
 const util = require("util");
 const ncp = util.promisify(require("ncp").ncp);
+const inquirer = require("inquirer");
 
 module.exports = [
     {
@@ -10,12 +11,27 @@ module.exports = [
         type: "scaffold-template",
         scaffold: {
             name: "GraphQL Apollo Service",
-            description:
-                "Creates an /api template for this service. Also fills it in serverless.yml",
-            generate: async ({ serviceName }) => {
+            description: "Creates an /api template and fills it in serverless.yml",
+            generate: async () => {
                 try {
+                    const { appName, serviceName } = await inquirer.prompt([
+                        {
+                            name: "appName",
+                            message: "The name of your application",
+                            default: "examples"
+                        },
+                        {
+                            name: "serviceName",
+                            message: "The name of your service"
+                        }
+                    ]);
+
                     // First we update serverless.yml
-                    const serverlessFilePath = path.join(process.cwd(), "api/serverless.yml");
+                    const serverlessFilePath = path.join(
+                        process.cwd(),
+                        appName,
+                        "api/serverless.yml"
+                    );
                     const serverlessJson = yaml.safeLoad(fs.readFileSync(serverlessFilePath));
                     if (serverlessJson[serviceName])
                         throw new Error(
@@ -35,7 +51,7 @@ module.exports = [
 
                     // Then we also copy the template folder
                     const sourceFolder = path.join(__dirname, "templateFiles");
-                    const destFolder = path.join(process.cwd(), "api", serviceName);
+                    const destFolder = path.join(process.cwd(), appName, "api", serviceName);
 
                     if (fs.existsSync(destFolder))
                         throw new Error(

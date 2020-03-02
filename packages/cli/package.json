@@ -15,6 +15,7 @@
   "dependencies": {
     "@serverless/cli": "^1.1.1",
     "@serverless/core": "^1.1.1",
+    "@webiny/plugins": "^3.0.1",
     "@webiny/tracking": "^3.1.0",
     "ansi-escapes": "^4.2.1",
     "chalk": "^2.4.2",
