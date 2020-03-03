@@ -58,12 +58,8 @@ export default [
                                     sizes="16x16"
                                 />
 
-                                {name && (
-                                    <>
-                                        <meta name="title" content={name} />
-                                        <meta property="og:title" content={name} />
-                                    </>
-                                )}
+                                {name && <meta name="title" content={name} />}
+                                {name && <meta property="og:title" content={name} />}
 
                                 {social?.image?.src && (
                                     <meta property="og:image" content={social.image.src} />
