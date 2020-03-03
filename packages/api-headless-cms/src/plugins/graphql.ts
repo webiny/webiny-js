@@ -91,6 +91,7 @@ export default () => [
                     fieldId: String
                     type: String
                     localization: Boolean
+                    unique: Boolean
                     validation: [CmsFieldValidation]
                     settings: JSON
                 }
