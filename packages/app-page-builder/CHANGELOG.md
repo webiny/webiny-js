@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.1.6](https://github.com/webiny/webiny-js/compare/@webiny/app-page-builder@3.1.5...@webiny/app-page-builder@3.1.6) (2020-03-03)
+
+
+### Bug Fixes
+
+* do not use fragments inside of the Helmet component ([85aaebe](https://github.com/webiny/webiny-js/commit/85aaebe5fa2fbce0849e554be6a2ace5d10a3aa9))
+
+
+
+
+
 ## [3.1.5](https://github.com/webiny/webiny-js/compare/@webiny/app-page-builder@3.1.5-next.0...@webiny/app-page-builder@3.1.5) (2020-03-01)
 
 **Note:** Version bump only for package @webiny/app-page-builder
