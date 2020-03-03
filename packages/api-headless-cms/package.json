@@ -1,0 +1,47 @@
+{
+  "name": "@webiny/api-headless-cms",
+  "version": "2.1.1",
+  "private": true,
+  "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/webiny/webiny-js.git"
+  },
+  "description": "GraphQL API for Webiny Headless CMS.",
+  "contributors": [
+    "Pavel Denisjuk <pavel@webiny.com>",
+    "Sven Al Hamad <sven@webiny.com>",
+    "Adrian Smijulj <adrian@webiny.com>"
+  ],
+  "license": "MIT",
+  "dependencies": {
+    "@babel/runtime": "^7.5.5",
+    "@webiny/api": "^3.0.0",
+    "@webiny/api-i18n": "^3.0.0",
+    "@webiny/api-security": "^3.0.0",
+    "@webiny/commodo": "^3.0.0",
+    "@webiny/commodo-graphql": "^3.0.0",
+    "@webiny/plugins": "^3.0.0",
+    "@webiny/validation": "^3.0.0",
+    "fecha": "^4.0.0",
+    "graphql-tag": "^2.10.1",
+    "lodash": "^4.17.4",
+    "mongodb": "^3.3.2",
+    "pluralize": "^8.0.0"
+  },
+  "devDependencies": {
+    "@babel/cli": "^7.5.5",
+    "@babel/core": "^7.5.5",
+    "@babel/preset-env": "^7.5.5",
+    "@babel/preset-flow": "^7.0.0"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "build": "rimraf ./dist *.tsbuildinfo && babel src -d dist --source-maps --copy-files --extensions \".ts\"",
+    "watch": "babel src -d dist --source-maps --copy-files --extensions \".ts\" --watch",
+    "postbuild": "cp package.json LICENSE README.md dist/ && tsc -p tsconfig.build.json",
+    "prepublishOnly": "yarn build"
+  }
+}

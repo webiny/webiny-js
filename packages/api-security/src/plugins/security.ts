@@ -38,6 +38,10 @@ const middlewarePlugin = (options): GraphQLContextPlugin => ({
     type: "graphql-context",
     name: "graphql-context-security",
     preApply: async context => {
+        if (!context.event) {
+            return;
+        }
+
         context.security = options;
         context.token = null;
         context.user = null;

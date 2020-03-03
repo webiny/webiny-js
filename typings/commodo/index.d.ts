@@ -11,6 +11,8 @@ declare module "@webiny/commodo" {
     export const onGet: any;
     export const object: any;
     export const number: any;
+    export const int: any;
+    export const float: any;
     export const date: any;
     export const ref: any;
     export const skipOnPopulate: any;
@@ -47,6 +49,14 @@ declare module "@webiny/commodo/repropose" {
 
 declare module "@webiny/commodo/fields-date" {
     export const date: any;
+}
+
+declare module "@webiny/commodo/fields-int" {
+    export const int: any;
+}
+
+declare module "@webiny/commodo/fields-float" {
+    export const float: any;
 }
 
 declare module "@webiny/commodo/fields-object" {

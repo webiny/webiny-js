@@ -1,3 +1,4 @@
+import { GraphQLSchemaModule } from "apollo-graphql";
 import gql from "graphql-tag";
 import { buildFederatedSchema } from "@apollo/federation";
 import GraphQLJSON from "graphql-type-json";
@@ -8,8 +9,9 @@ import {
     PluginsContainer,
     GraphQLSchemaPlugin,
     GraphqlScalarPlugin,
-    SchemaDefinition
+    GraphQLContext
 } from "../types";
+import { applyGraphQLContextPlugins } from "@webiny/api/utils/contextPlugins";
 
 type PrepareSchemaParams = { plugins: PluginsContainer };
 
@@ -17,20 +19,21 @@ type PrepareSchemaParams = { plugins: PluginsContainer };
  * @return {schema, context}
  */
 export async function prepareSchema({ plugins }: PrepareSchemaParams) {
+    const context: GraphQLContext = { plugins };
+    await applyGraphQLContextPlugins(context);
+
     // This allows developers to register more plugins dynamically, before the graphql schema is instantiated.
     const gqlPlugins = plugins.byType<GraphQLSchemaPlugin>("graphql-schema");
 
     for (let i = 0; i < gqlPlugins.length; i++) {
         if (typeof gqlPlugins[i].prepare === "function") {
-            await gqlPlugins[i].prepare({ plugins });
+            await gqlPlugins[i].prepare({ context });
         }
     }
 
-    const scalars = plugins
-        .byType<GraphqlScalarPlugin>("graphql-scalar")
-        .map(item => item.scalar);
+    const scalars = plugins.byType<GraphqlScalarPlugin>("graphql-scalar").map(item => item.scalar);
 
-    const schemaDefs: SchemaDefinition[] = [
+    const schemaDefs: GraphQLSchemaModule[] = [
         {
             typeDefs: gql`
                 ${scalars.map(scalar => `scalar ${scalar.name}`).join(" ")}
@@ -40,7 +43,10 @@ export async function prepareSchema({ plugins }: PrepareSchemaParams) {
                 scalar RefInput
             `,
             resolvers: {
-                ...scalars,
+                ...scalars.reduce((acc, s) => {
+                    acc[s.name] = s;
+                    return acc;
+                }, {}),
                 JSON: GraphQLJSON,
                 DateTime: GraphQLDateTime,
                 Long: GraphQLLong,
@@ -64,6 +70,5 @@ export async function prepareSchema({ plugins }: PrepareSchemaParams) {
         }
     }
 
-    // @ts-ignore
-    return buildFederatedSchema([...schemaDefs]);
+    return { schema: buildFederatedSchema(schemaDefs), context };
 }

@@ -1,8 +1,11 @@
-import { GraphQLContextPlugin } from "@webiny/api/types";
+import { GraphQLContext as APIContext, GraphQLContextPlugin } from "@webiny/api/types";
 import acceptLanguageParser from "accept-language-parser";
-import { GraphQLContextI18NGetLocales } from "@webiny/api-i18n/types";
+import {
+    GraphQLContext as I18NContext,
+    GraphQLContextI18NGetLocales
+} from "@webiny/api-i18n/types";
 
-const plugin: GraphQLContextPlugin = {
+const plugin: GraphQLContextPlugin<APIContext & I18NContext> = {
     type: "graphql-context",
     name: "graphql-context-i18n",
     apply: async context => {
@@ -17,6 +20,7 @@ const plugin: GraphQLContextPlugin = {
         }
 
         const { event } = context;
+
         const self = {
             __i18n: {
                 acceptLanguage: null,
@@ -36,7 +40,7 @@ const plugin: GraphQLContextPlugin = {
                 const allLocales = self.getLocales();
                 const acceptLanguage = acceptLanguageParser.pick(
                     allLocales.map(item => item.code),
-                    event.headers["accept-language"]
+                    event ? event.headers["accept-language"] : null
                 );
 
                 let currentLocale;

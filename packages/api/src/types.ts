@@ -3,35 +3,31 @@ import {
     GraphQLSchema,
     GraphQLFieldResolver as BaseGraphQLFieldResolver
 } from "graphql";
-
+import { GraphQLSchemaModule } from "apollo-graphql";
 import { Plugin, PluginsContainer } from "@webiny/plugins/types";
 
 export { Plugin, PluginsContainer };
 
 export interface GraphQLContext {
+    event?: any;
     plugins: PluginsContainer;
     [key: string]: any;
-};
-
-export type SchemaDefinition = {
-    typeDefs: any;
-    resolvers: any;
-};
+}
 
 export type SchemaDefinitionFactory = (params: {
     plugins: PluginsContainer;
-}) => Promise<SchemaDefinition>;
+}) => Promise<GraphQLSchemaModule>;
 
 export type GraphQLSchemaPlugin = Plugin & {
-    prepare?: (params: { plugins: PluginsContainer }) => void;
-    schema: SchemaDefinition | SchemaDefinitionFactory;
+    prepare?: (params: { context: GraphQLContext }) => Promise<void>;
+    schema: GraphQLSchemaModule | SchemaDefinitionFactory;
     [key: string]: any;
 };
 
-export type GraphQLContextPlugin = Plugin & {
-    preApply?: (context: GraphQLContext) => void | Promise<void>;
-    apply?: (context: GraphQLContext) => void | Promise<void>;
-    postApply?: (context: GraphQLContext) => void | Promise<void>;
+export type GraphQLContextPlugin<T = GraphQLContext> = Plugin & {
+    preApply?: (context: T) => void | Promise<void>;
+    apply?: (context: T) => void | Promise<void>;
+    postApply?: (context: T) => void | Promise<void>;
 };
 
 export type GraphQLMiddlewarePlugin = Plugin & {

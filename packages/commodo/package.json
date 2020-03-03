@@ -22,6 +22,8 @@
     "@commodo/hooks": "^1.0.0",
     "@commodo/name": "^1.0.2",
     "commodo-fields-date": "^1.0.3",
+    "commodo-fields-int": "^1.0.1",
+    "commodo-fields-float": "^1.0.2",
     "commodo-fields-object": "^1.0.3",
     "commodo-fields-storage-crud-logs": "^1.0.2",
     "repropose": "^1.0.2"
