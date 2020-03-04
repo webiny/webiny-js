@@ -12,7 +12,7 @@ const scaffoldContext = {
 
 module.exports = async () => {
     const pluginToChoice = plugin => ({
-        name: `${plugin.scaffold.name} - ${plugin.scaffold.description}`,
+        name: `${plugin.scaffold.name}`,
         value: plugin.name
     });
 
@@ -39,7 +39,7 @@ module.exports = async () => {
     const { selectedPluginName } = await inquirer.prompt({
         type: "list",
         name: "selectedPluginName",
-        message: "Pick the template you'd like to employ",
+        message: "Choose a template",
         choices
     });
 

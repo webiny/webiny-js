@@ -10,14 +10,15 @@ module.exports = [
         type: "scaffold-template",
         scaffold: {
             name: "GraphQL Apollo Service",
-            description: "Creates an /api template and fills it in serverless.yml",
+            // description: "Creates an /api template and fills it in serverless.yml",
             questions: [
                 {
                     name: "serviceName",
-                    message: "The name of your service"
+                    message: "Service Name"
                 }
             ],
             generate: async ({ input, context }) => {
+                const warnings = [];
                 try {
                     // First we update serverless.yml
                     const { serviceName, appName } = input;
@@ -31,8 +32,8 @@ module.exports = [
                     const fixServerlessVariables = (serverlessJson, serverlessVariables) => {
                         for (const variable of serverlessVariables)
                             if (serverlessJson.vars[variable.name] === undefined) {
-                                console.log(
-                                    `[Warning] Variable "${variable.name}" does not exist in serverless.yml. The default value of "${variable.default}" was provided.`
+                                warnings.push(
+                                    `[Info] Variable "${variable.name}" does not exist in serverless.yml. The default value of "${variable.default}" was provided.`
                                 );
                                 serverlessJson.vars[variable.name] = variable.default;
                             }
@@ -61,7 +62,6 @@ module.exports = [
                     fs.writeFileSync(context.apiYaml, yaml.safeDump(serverlessJson));
 
                     // Then we also copy the template folder
-                    console.log(__dirname);
                     const sourceFolder = path.join(__dirname, "templateFiles");
                     const destFolder = path.join(context.apiPath, serviceName);
 
@@ -72,9 +72,11 @@ module.exports = [
                     await fs.mkdirSync(destFolder);
                     await ncp(sourceFolder, destFolder);
 
-                    console.log(`Successfully scaffolded service ${serviceName}!`);
+                    console.log(`Successfully scaffolded service ${serviceName}!\n`);
                 } catch (e) {
                     console.log(e);
+                } finally {
+                    console.log(warnings.join("\n"));
                 }
             }
         }

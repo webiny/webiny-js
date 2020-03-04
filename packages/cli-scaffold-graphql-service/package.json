@@ -15,7 +15,12 @@
   },
   "homepage": "https://github.com/webiny/webiny-js#readme",
   "dependencies": {
+    "@webiny/api": "^3.0.2",
+    "@webiny/api-security": "^3.0.2",
+    "@webiny/commodo": "^3.0.1",
+    "graphql-tag": "^2.10.3",
     "js-yaml": "^3.13.1",
+    "lodash": "^4.17.15",
     "ncp": "^2.0.0"
   }
 }
