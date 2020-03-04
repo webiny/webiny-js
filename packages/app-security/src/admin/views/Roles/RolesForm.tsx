@@ -1,16 +1,13 @@
-import * as React from "react";
+import React from "react";
 import { i18n } from "@webiny/app/i18n";
 import { Form } from "@webiny/form";
 import { Grid, Cell } from "@webiny/ui/Grid";
 import { Input } from "@webiny/ui/Input";
 import { ButtonPrimary } from "@webiny/ui/Button";
-import { MultiAutoComplete } from "@webiny/ui/AutoComplete";
+import { ScopesMultiAutoComplete } from "@webiny/app-security/admin/components";
 import { CircularProgress } from "@webiny/ui/Progress";
-import { useQuery } from "react-apollo";
 import { useCrud } from "@webiny/app-admin/hooks/useCrud";
 import { validation } from "@webiny/validation";
-import { get } from "lodash";
-import { LIST_SCOPES } from "./graphql";
 import {
     SimpleForm,
     SimpleFormFooter,
@@ -21,8 +18,6 @@ import {
 const t = i18n.ns("app-security/admin/roles/form");
 
 const RoleForm = () => {
-    const scopesQuery = useQuery(LIST_SCOPES);
-    const scopes = get(scopesQuery, "data.security.scopes") || [];
     const { form: crudForm } = useCrud();
 
     return (
@@ -54,14 +49,7 @@ const RoleForm = () => {
                         <Grid>
                             <Cell span={12}>
                                 <Bind name="scopes">
-                                    <MultiAutoComplete
-                                        useSimpleValues
-                                        options={scopes}
-                                        label={t`Scopes`}
-                                        description={t`Choose one or more scopes.`}
-                                        /* TODO: @adrian what's this "multiple" prop ? // multiple */
-                                        unique
-                                    />
+                                    <ScopesMultiAutoComplete />
                                 </Bind>
                             </Cell>
                         </Grid>

@@ -34,3 +34,17 @@ export type SecurityViewUserFormPlugin = Plugin & {
 export type SecurityViewUserAccountFormPlugin = Plugin & {
     view: React.ComponentType<SecurityViewProps>;
 };
+
+type SecurityScopesListPluginScope = {
+    title: any;
+    description: any;
+    scope: string;
+};
+
+export type SecurityScopesListPlugin = Plugin & {
+    type: "security-scopes-list";
+    scopes:
+        | SecurityScopesListPluginScope[]
+        | (() => SecurityScopesListPluginScope[])
+        | (() => Promise<SecurityScopesListPluginScope[]>);
+};
