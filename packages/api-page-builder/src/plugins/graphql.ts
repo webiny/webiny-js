@@ -110,10 +110,10 @@ export default {
                 createPage: hasScope("pb:page:crud"),
                 deletePage: hasScope("pb:page:crud"),
 
-                createRevisionFrom: hasScope("pb:page:revision:create"),
-                updateRevision: hasScope("pb:page:revision:update"),
-                publishRevision: hasScope("pb:page:revision:publish"),
-                deleteRevision: hasScope("pb:page:revision:delete"),
+                createRevisionFrom: hasScope("pb:page:crud"),
+                updateRevision: hasScope("pb:page:crud"),
+                publishRevision: hasScope("pb:page:crud"),
+                deleteRevision: hasScope("pb:page:crud"),
 
                 createElement: hasScope("pb:element:crud"),
                 updateElement: hasScope("pb:element:crud"),
