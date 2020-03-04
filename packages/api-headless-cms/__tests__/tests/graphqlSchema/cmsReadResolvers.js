@@ -1,84 +1,29 @@
 import { graphql } from "graphql";
-import { locales } from "../../mocks/mockI18NLocales";
+import createCategories from "../data/createCategories";
 
 export default ({ setupSchema }) => {
     describe("cmsRead resolvers", () => {
-        let category;
+        let categories;
         let targetResult;
         let Category;
 
-        beforeAll(async () => {
+        beforeEach(async () => {
             // Insert demo data via models
             const { context } = await setupSchema();
 
-            Category = context.models["category"];
-            category = new Category();
-
-            await category
-                .populate({
-                    title: {
-                        values: [
-                            { locale: locales.en.id, value: "Hardware EN" },
-                            { locale: locales.de.id, value: "Hardware DE" }
-                        ]
-                    },
-                    slug: {
-                        values: [
-                            { locale: locales.en.id, value: "hardware-en" },
-                            { locale: locales.de.id, value: "hardware-de" }
-                        ]
-                    }
-                })
-                .save();
+            Category = context.models.category;
+            categories = await createCategories(context);
 
             targetResult = {
                 data: {
-                    id: category.id,
-                    title: "Hardware EN",
-                    slug: "hardware-en"
+                    id: categories[0].model.id,
+                    title: categories[0].model.title.value(),
+                    slug: categories[0].model.slug.value()
                 }
             };
-
-            // More categories
-            const categoryA = new Category();
-            await categoryA
-                .populate({
-                    title: {
-                        values: [
-                            { locale: locales.en.id, value: "A Category EN" },
-                            { locale: locales.de.id, value: "A Category DE" },
-                            { locale: locales.it.id, value: "A Category IT" }
-                        ]
-                    },
-                    slug: {
-                        values: [
-                            { locale: locales.en.id, value: "a-category-en" },
-                            { locale: locales.de.id, value: "a-category-de" }
-                        ]
-                    }
-                })
-                .save();
-
-            const categoryB = new Category();
-            await categoryB
-                .populate({
-                    title: {
-                        values: [
-                            { locale: locales.en.id, value: "B Category EN" },
-                            { locale: locales.de.id, value: "B Category DE" }
-                        ]
-                    },
-                    slug: {
-                        values: [
-                            { locale: locales.en.id, value: "b-category-en" },
-                            { locale: locales.de.id, value: "b-category-de" }
-                        ]
-                    }
-                })
-                .save();
         });
 
-        afterAll(async () => {
+        afterEach(async () => {
             const entries = await Category.find();
             for (let i = 0; i < entries.length; i++) {
                 await entries[i].delete();
@@ -103,7 +48,7 @@ export default ({ setupSchema }) => {
 
             const { schema, context } = await setupSchema();
             const { data } = await graphql(schema, query, {}, context, {
-                id: category.id
+                id: categories[0].model.id
             });
             expect(data.cmsRead.getCategory).toMatchObject(targetResult);
         });
@@ -180,7 +125,7 @@ export default ({ setupSchema }) => {
 
             expect(data.cmsRead.getCategory).toMatchObject({
                 data: {
-                    id: category.id,
+                    id: categories[0].model.id,
                     title: "Hardware DE",
                     slug: "hardware-de"
                 }
@@ -212,7 +157,7 @@ export default ({ setupSchema }) => {
 
             expect(data.cmsRead.getCategory).toMatchObject({
                 data: {
-                    id: category.id,
+                    id: categories[0].model.id,
                     title: "Hardware EN",
                     deTitle: "Hardware DE",
                     enSlug: "hardware-en",
