@@ -53,7 +53,7 @@ const TypographySelector = props => {
                                             >
                                                 {React.createElement(
                                                     style.component || "span",
-                                                    { className: style.className },
+                                                    {},
                                                     style.label
                                                 )}
                                             </Item>
