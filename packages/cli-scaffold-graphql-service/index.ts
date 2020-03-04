@@ -21,7 +21,7 @@ module.exports = [
                 const warnings = [];
                 try {
                     // First we update serverless.yml
-                    const { serviceName, appName } = input;
+                    const { serviceName } = input;
 
                     const serverlessJson = yaml.safeLoad(fs.readFileSync(context.apiYaml));
                     if (serverlessJson[serviceName])
@@ -30,6 +30,11 @@ module.exports = [
                         );
 
                     const fixServerlessVariables = (serverlessJson, serverlessVariables) => {
+                        if (serverlessVariables.length === 0) return;
+
+                        if (serverlessJson.vars === undefined) {
+                            serverlessJson.vars = {};
+                        }
                         for (const variable of serverlessVariables)
                             if (serverlessJson.vars[variable.name] === undefined) {
                                 warnings.push(
@@ -46,6 +51,15 @@ module.exports = [
                         {
                             name: "debug",
                             default: false
+                        },
+                        {
+                            name: "security",
+                            default: {
+                                token: {
+                                    expiresIn: 2592000,
+                                    secret: "${env.JWT_SECRET}"
+                                }
+                            }
                         }
                     ]);
 
@@ -54,8 +68,14 @@ module.exports = [
                         inputs: {
                             description: `Apollo service '${serviceName}' scaffoled by the CLI.`,
                             region: "${vars.region}",
-                            memory: "512",
-                            debug: "${vars.debug}"
+                            memory: 512,
+                            debug: "${vars.debug}",
+                            plugins: [
+                                {
+                                    factory: "@webiny/api-security/plugins",
+                                    options: "${vars.security}"
+                                }
+                            ]
                         }
                     };
 
