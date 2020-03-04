@@ -28,6 +28,26 @@ module.exports = [
                             "This service already exists in serverless.yml! Please pick a different name for it."
                         );
 
+                    const fixServerlessVariables = (serverlessJson, serverlessVariables) => {
+                        for (const variable of serverlessVariables)
+                            if (serverlessJson.vars[variable.name] === undefined) {
+                                console.log(
+                                    `Warning: variable "${variable.name}" does not exist in serverless.yml. The default value of "${variable.default}" was provided.`
+                                );
+                                serverlessJson.vars[variable.name] = variable.default;
+                            }
+                    };
+                    fixServerlessVariables(serverlessJson, [
+                        {
+                            name: "region",
+                            default: "us-east-1"
+                        },
+                        {
+                            name: "debug",
+                            default: false
+                        }
+                    ]);
+
                     serverlessJson[serviceName] = {
                         component: "@webiny/serverless-apollo-service",
                         inputs: {
@@ -37,6 +57,7 @@ module.exports = [
                             debug: "${vars.debug}"
                         }
                     };
+
                     fs.writeFileSync(context.apiYaml, yaml.safeDump(serverlessJson));
 
                     // Then we also copy the template folder
