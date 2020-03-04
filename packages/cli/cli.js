@@ -171,7 +171,7 @@ yargs.command(
 );
 
 yargs.command(
-          "scaffold>",
+          "scaffold",
           "Scaffold your application with one of the available templates.",
           () => {}, // eslint-disable-line
           async () => {
