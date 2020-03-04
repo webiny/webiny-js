@@ -104,12 +104,12 @@ const plugin: GraphQLSchemaPlugin = {
                 updateSettings: hasScope("forms:settings"),
                 createForm: hasScope("forms:form:crud"),
                 deleteForm: hasScope("forms:form:crud"),
-                createRevisionFrom: hasScope("forms:form:revision:create"),
-                updateRevision: hasScope("forms:form:revision:update"),
+                createRevisionFrom: hasScope("forms:form:crud"),
+                updateRevision: hasScope("forms:form:crud"),
                 publishRevision: hasScope("forms:form:revision:publish"),
                 unpublishRevision: hasScope("forms:form:revision:unpublish"),
-                deleteRevision: hasScope("forms:form:revision:delete"),
-                exportFormSubmissions: hasScope("forms:form:submission:export")
+                deleteRevision: hasScope("forms:form:crud"),
+                exportFormSubmissions: hasScope("forms:form:submissions:export")
                 // saveFormView: hasScope("forms:form:revision:delete") // Expose publicly.
                 // createFormSubmission: hasScope("forms:form:revision:delete") // Expose publicly.
             }
