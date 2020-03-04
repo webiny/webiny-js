@@ -3,6 +3,26 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.0.6](https://github.com/webiny/webiny-js/compare/@webiny/api-page-builder@3.0.6-next.0...@webiny/api-page-builder@3.0.6) (2020-03-01)
+
+**Note:** Version bump only for package @webiny/api-page-builder
+
+
+
+
+
+## [3.0.6-next.0](https://github.com/webiny/webiny-js/compare/@webiny/api-page-builder@3.0.5...@webiny/api-page-builder@3.0.6-next.0) (2020-03-01)
+
+
+### Bug Fixes
+
+* modifier args type ([f193a16](https://github.com/webiny/webiny-js/commit/f193a167993251cf91a18c9122e9b921e5a77c45))
+* tags search & "Pages List" menu item site rendering ([#734](https://github.com/webiny/webiny-js/issues/734)) ([2f39e7a](https://github.com/webiny/webiny-js/commit/2f39e7a5a7bb0915e9bfcd460007108a69a1accd)), closes [#731](https://github.com/webiny/webiny-js/issues/731)
+
+
+
+
+
 ## [3.0.5](https://github.com/webiny/webiny-js/compare/@webiny/api-page-builder@3.0.5-next.0...@webiny/api-page-builder@3.0.5) (2020-02-24)
 
 **Note:** Version bump only for package @webiny/api-page-builder

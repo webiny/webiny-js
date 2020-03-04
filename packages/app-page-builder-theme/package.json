@@ -1,20 +1,20 @@
 {
   "name": "@webiny/app-page-builder-theme",
-  "version": "2.0.5",
+  "version": "2.0.7",
   "main": "index.js",
   "license": "MIT",
   "dependencies": {
-    "@webiny/app": "^3.0.2",
-    "@webiny/app-page-builder": "^3.1.4",
+    "@webiny/app": "^3.0.3",
+    "@webiny/app-page-builder": "^3.1.6",
     "@webiny/plugins": "^3.0.1",
     "@webiny/react-router": "^2.0.2",
     "classnames": "^2.2.6",
-    "graphql-tag": "2.10.1",
-    "react-helmet": "^5.2.0",
     "emotion": "^10.0.17",
+    "graphql-tag": "2.10.1",
     "lodash.get": "^4.4.2",
     "react-apollo": "^3.1.0",
-    "react-hamburger-menu": "^1.1.1"
+    "react-hamburger-menu": "^1.1.1",
+    "react-helmet": "^5.2.0"
   },
   "peerDependencies": {
     "react": "^16.8.6"
