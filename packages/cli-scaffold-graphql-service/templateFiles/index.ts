@@ -1,9 +1,9 @@
-// import models from "./models";
-// import graphql from "./graphql";
+import models from "./models";
+import graphql from "./graphql";
 
 export default () => [
-    // models(),
-    // graphql,
+    models(),
+    graphql,
     {
         name: "",
         type: "apollo-service",

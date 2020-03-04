@@ -32,7 +32,7 @@ module.exports = [
                         for (const variable of serverlessVariables)
                             if (serverlessJson.vars[variable.name] === undefined) {
                                 console.log(
-                                    `Warning: variable "${variable.name}" does not exist in serverless.yml. The default value of "${variable.default}" was provided.`
+                                    `[Warning] Variable "${variable.name}" does not exist in serverless.yml. The default value of "${variable.default}" was provided.`
                                 );
                                 serverlessJson.vars[variable.name] = variable.default;
                             }
