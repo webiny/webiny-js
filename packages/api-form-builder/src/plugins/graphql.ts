@@ -93,7 +93,7 @@ const plugin: GraphQLSchemaPlugin = {
     security: {
         shield: {
             FormsQuery: {
-                getSettings: hasScope("cms:settings"),
+                getSettings: hasScope("forms:settings"),
                 getForm: hasScope("forms:form:crud"),
                 listForms: hasScope("forms:form:crud"),
                 listFormSubmissions: hasScope("forms:form:crud")
@@ -101,7 +101,7 @@ const plugin: GraphQLSchemaPlugin = {
                 // getPublishedForms: hasScope("forms:form:crud") // Expose publicly.
             },
             FormsMutation: {
-                updateSettings: hasScope("cms:settings"),
+                updateSettings: hasScope("forms:settings"),
                 createForm: hasScope("forms:form:crud"),
                 deleteForm: hasScope("forms:form:crud"),
                 createRevisionFrom: hasScope("forms:form:revision:create"),
