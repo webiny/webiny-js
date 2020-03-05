@@ -99,7 +99,7 @@ context("Roles Module", () => {
             });
     });
 
-    it.only("should save scopes correctly", () => {
+    it("should save scopes correctly", () => {
         const id = uniqid();
         cy.visit("/roles")
             .findByLabelText("Name")
