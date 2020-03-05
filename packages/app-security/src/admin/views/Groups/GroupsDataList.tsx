@@ -42,7 +42,7 @@ const GroupsDataList = () => {
             ]}
         >
             {({ data, select, isSelected }) => (
-                <ScrollList>
+                <ScrollList data-testid="default-data-list">
                     {data.map(item => (
                         <ListItem key={item.id} selected={isSelected(item)}>
                             <ListItemText onClick={() => select(item)}>
