@@ -41,6 +41,10 @@ type SecurityScopesListPluginScope = {
     scope: string;
 };
 
+/**
+ * Enables adding custom security scopes to the multi-select autocomplete component in the Roles form.
+ * @see https://docs.webiny.com/docs/webiny-apps/security/development/plugin-reference/app/#security-scopes-list
+ */
 export type SecurityScopesListPlugin = Plugin & {
     type: "security-scopes-list";
     scopes:
