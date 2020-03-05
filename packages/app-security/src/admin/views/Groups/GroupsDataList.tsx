@@ -56,9 +56,7 @@ const GroupsDataList = () => {
                                         {({ showConfirmation }) => (
                                             <DeleteIcon
                                                 onClick={() =>
-                                                    showConfirmation(() =>
-                                                        actions.deleteRecord(item)
-                                                    )
+                                                    showConfirmation(() => actions.delete(item))
                                                 }
                                             />
                                         )}
