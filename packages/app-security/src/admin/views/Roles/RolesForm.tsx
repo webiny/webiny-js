@@ -23,7 +23,7 @@ const RoleForm = () => {
     return (
         <Form {...crudForm}>
             {({ data, form, Bind }) => (
-                <SimpleForm>
+                <SimpleForm data-testid={"default-form"}>
                     {crudForm.loading && <CircularProgress />}
                     <SimpleFormHeader title={data.name ? data.name : t`Untitled`} />
                     <SimpleFormContent>
