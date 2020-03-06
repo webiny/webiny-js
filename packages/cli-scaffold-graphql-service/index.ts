@@ -11,14 +11,34 @@ module.exports = [
         scaffold: {
             name: "GraphQL Apollo Service",
             // description: "Creates an /api template and fills it in serverless.yml",
-            questions: [
-                {
-                    name: "serviceName",
-                    message: "Service Name"
+            questions: ({ context }) => {
+                if (!fs.existsSync(context.apiYaml)) {
+                    console.log(
+                        "File ./api/serverless.yml can not be loaded! Make sure you are running the scaffold utilty from your Project's root."
+                    );
+                    process.exit();
                 }
-            ],
+
+                return [
+                    {
+                        name: "serviceName",
+                        message: "Service Name",
+                        validate: serviceName => {
+                            if (serviceName === "")
+                                return "Please enter a valid name for your service.";
+
+                            if (fs.existsSync(path.join(context.apiPath, serviceName)))
+                                return "This service already exists! Please pick a different name";
+                            // if (!fs.existsSync(path.join(__dirname, serviceName, "serverless.yml")))
+                            //     return "Serverless.yml does not exist";
+                            return true;
+                        }
+                    }
+                ];
+            },
             generate: async ({ input, context }) => {
                 const warnings = [];
+                await new Promise(res => setTimeout(() => res(), 2000));
                 try {
                     // First we update serverless.yml
                     const { serviceName } = input;
@@ -26,7 +46,7 @@ module.exports = [
                     const serverlessJson = yaml.safeLoad(fs.readFileSync(context.apiYaml));
                     if (serverlessJson[serviceName])
                         throw new Error(
-                            "This service already exists in serverless.yml! Please pick a different name for it."
+                            `Service ${serviceName} serverless.yml. This error should've been thrown earlier...`
                         );
 
                     const fixServerlessVariables = (serverlessJson, serverlessVariables) => {
@@ -91,12 +111,10 @@ module.exports = [
                         );
                     await fs.mkdirSync(destFolder);
                     await ncp(sourceFolder, destFolder);
-
-                    console.log(`Successfully scaffolded service ${serviceName}!\n`);
                 } catch (e) {
                     console.log(e);
                 } finally {
-                    console.log(warnings.join("\n"));
+                    if (warnings.length > 0) console.log(warnings.join("\n"));
                 }
             }
         }

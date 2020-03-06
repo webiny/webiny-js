@@ -2,6 +2,7 @@ const inquirer = require("inquirer");
 const execa = require("execa");
 const { PluginsContainer } = require("@webiny/plugins");
 const path = require("path");
+const ora = require("ora");
 
 const scaffoldContext = {
     apiPath: "api",
@@ -16,11 +17,15 @@ module.exports = async () => {
         value: plugin.name
     });
 
+    const oraSpinner = ora().start("Loading available plugins...");
     const scaffoldModulesNames = JSON.parse(
         (
-            await execa(
-                'yarn list --pattern="@webiny/cli-scaffold-*|webiny-cli-scaffold-*" --depth=0 --json'
-            )
+            await execa("yarn", [
+                "list",
+                "--pattern=@webiny/cli-scaffold-*|webiny-cli-scaffold-*",
+                "--depth=0",
+                "--json"
+            ])
         ).stdout
     ).data.trees.map(treeNode =>
         treeNode.name
@@ -28,6 +33,7 @@ module.exports = async () => {
             .slice(0, -1) // Remove the trailing version tag
             .join("@")
     );
+    oraSpinner.stop();
     const scaffoldPlugins = new PluginsContainer(
         scaffoldModulesNames.map(crtModuleName => require(crtModuleName))
     );
@@ -43,11 +49,19 @@ module.exports = async () => {
         choices
     });
 
-    const selectedPlugin = scaffoldPlugins.byName("scaffold-template-model"); // scaffoldPlugins.byName(selectedPluginName);
+    const selectedPlugin = scaffoldPlugins.byName(selectedPluginName);
     const questions =
         typeof selectedPlugin.scaffold.questions === "function"
-            ? selectedPlugin.scaffold.questions(scaffoldContext)
+            ? selectedPlugin.scaffold.questions({ context: scaffoldContext })
             : selectedPlugin.scaffold.questions;
     const input = await inquirer.prompt(questions);
-    selectedPlugin.scaffold.generate({ input, context: scaffoldContext });
+    const souvenirs = ["🥓", "🥝", "🍕", "🍺", "🍓", "🍏", "🌈", "🍫"];
+    const emoji = souvenirs[Math.floor(Math.random() * souvenirs.length)];
+    oraSpinner.start(
+        `Generating the template... Here's some ${emoji} to make the time pass faster!`
+    );
+    await selectedPlugin.scaffold.generate({ input, context: scaffoldContext });
+    oraSpinner.stop();
+
+    console.log(`Successfully scaffolded the template!`);
 };
