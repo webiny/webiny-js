@@ -17,7 +17,7 @@ Cypress.Commands.add("visitAndReloadOnceInvalidated", url => {
                             }
                             return cy
                                 .log("Cache invalidated, moving on.")
-                                .wait(500)
+                                .wait(1000)
                                 .reload();
                         } catch (err) {
                             if (retries > 10) {
