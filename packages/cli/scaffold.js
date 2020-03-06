@@ -43,7 +43,11 @@ module.exports = async () => {
         choices
     });
 
-    const selectedPlugin = scaffoldPlugins.byName(selectedPluginName);
-    const input = await inquirer.prompt(selectedPlugin.scaffold.questions);
+    const selectedPlugin = scaffoldPlugins.byName("scaffold-template-model"); // scaffoldPlugins.byName(selectedPluginName);
+    const questions =
+        typeof selectedPlugin.scaffold.questions === "function"
+            ? selectedPlugin.scaffold.questions(scaffoldContext)
+            : selectedPlugin.scaffold.questions;
+    const input = await inquirer.prompt(questions);
     selectedPlugin.scaffold.generate({ input, context: scaffoldContext });
 };
