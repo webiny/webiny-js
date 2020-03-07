@@ -5,6 +5,7 @@ const path = require("path");
 const ora = require("ora");
 
 const scaffoldContext = {
+    packagesPath: "packages",
     apiPath: "api",
     appPath: "app",
     apiYaml: path.join("api", "serverless.yml"),

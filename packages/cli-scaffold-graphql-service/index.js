@@ -3,6 +3,10 @@ const fs = require("fs");
 const path = require("path");
 const util = require("util");
 const ncp = util.promisify(require("ncp").ncp);
+const execa = require("execa");
+
+const getServiceLocation = ({ context, serviceName }) => path.join(context.apiPath, serviceName);
+// path.join(context.packagesPath, `api-${serviceName}`);
 
 module.exports = [
     {
@@ -26,11 +30,9 @@ module.exports = [
                         validate: serviceName => {
                             if (serviceName === "")
                                 return "Please enter a valid name for your service.";
-
-                            if (fs.existsSync(path.join(context.apiPath, serviceName)))
+                            if (fs.existsSync(getServiceLocation({ context, serviceName })))
                                 return "This service already exists! Please pick a different name";
-                            // if (!fs.existsSync(path.join(__dirname, serviceName, "serverless.yml")))
-                            //     return "Serverless.yml does not exist";
+
                             return true;
                         }
                     }
@@ -42,11 +44,12 @@ module.exports = [
                 try {
                     // First we update serverless.yml
                     const { serviceName } = input;
+                    const serviceLocation = getServiceLocation({ context, serviceName });
 
                     const serverlessJson = yaml.safeLoad(fs.readFileSync(context.apiYaml));
                     if (serverlessJson[serviceName])
                         throw new Error(
-                            `Service ${serviceName} serverless.yml. This error should've been thrown earlier...`
+                            `Service ${serviceName} already exists serverless.yml! This error should've been thrown earlier...`
                         );
 
                     const fixServerlessVariables = (serverlessJson, serverlessVariables) => {
@@ -90,6 +93,9 @@ module.exports = [
                             region: "${vars.region}",
                             memory: 512,
                             debug: "${vars.debug}",
+                            hook: "yarn build",
+                            root: serviceLocation,
+                            code: `${serviceLocation}/build`,
                             plugins: [
                                 {
                                     factory: "@webiny/api-security/plugins",
@@ -102,15 +108,18 @@ module.exports = [
                     fs.writeFileSync(context.apiYaml, yaml.safeDump(serverlessJson));
 
                     // Then we also copy the template folder
-                    const sourceFolder = path.join(__dirname, "templateFiles");
-                    const destFolder = path.join(context.apiPath, serviceName);
+                    const sourceFolder = path.join(__dirname, "templateService");
+                    const destFolder = path.join(serviceLocation);
 
-                    if (fs.existsSync(destFolder))
+                    if (fs.existsSync(serviceLocation))
                         throw new Error(
-                            "This service already exists in the 'api' folder! Please pick a different name for it."
+                            `Service ${serviceName} already exists! This error should've been thrown earlier...`
                         );
                     await fs.mkdirSync(destFolder);
                     await ncp(sourceFolder, destFolder);
+
+                    // [WIP] Run "yarn build" in order to link the new package
+                    // await execa("yarn", ["--cwd", context.apiPath]);
                 } catch (e) {
                     console.log(e);
                 } finally {
