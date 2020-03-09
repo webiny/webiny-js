@@ -43,7 +43,10 @@ const Groups = ({ scopes, formProps, listProps }: any) => {
                                 <GroupsForm scopes={scopes} {...formProps} />
                             </RightPanel>
                         </SplitView>
-                        <FloatingActionButton onClick={actions.resetForm} />
+                        <FloatingActionButton
+                            data-testid="new-record-button"
+                            onClick={actions.resetForm}
+                        />
                     </>
                 )}
             </CrudProvider>

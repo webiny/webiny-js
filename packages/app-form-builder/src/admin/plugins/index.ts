@@ -12,6 +12,7 @@ import previewContent from "./formDetails/previewContent";
 import formRevisions from "./formDetails/formRevisions";
 import formSubmissions from "./formDetails/formSubmissions";
 import install from "./install";
+import scopesList from "./scopesList";
 
 export default [
     install,
@@ -21,6 +22,7 @@ export default [
     formSubmissions,
     previewContent,
     formRevisions,
+    scopesList,
 
     // Editor
     fields,
