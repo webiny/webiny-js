@@ -5,8 +5,9 @@ const util = require("util");
 const ncp = util.promisify(require("ncp").ncp);
 const execa = require("execa");
 
-const getServiceLocation = ({ context, serviceName }) => path.join(context.apiPath, serviceName);
-// path.join(context.packagesPath, `api-${serviceName}`);
+const getServiceLocation = (
+    { context, serviceName } //path.join(context.apiPath, serviceName);
+) => path.join(context.packagesPath, `api-${serviceName}`);
 
 module.exports = [
     {
@@ -14,7 +15,6 @@ module.exports = [
         type: "scaffold-template",
         scaffold: {
             name: "GraphQL Apollo Service",
-            // description: "Creates an /api template and fills it in serverless.yml",
             questions: ({ context }) => {
                 if (!fs.existsSync(context.apiYaml)) {
                     console.log(
@@ -40,7 +40,6 @@ module.exports = [
             },
             generate: async ({ input, context }) => {
                 const warnings = [];
-                await new Promise(res => setTimeout(() => res(), 2000));
                 try {
                     // First we update serverless.yml
                     const { serviceName } = input;
@@ -86,6 +85,17 @@ module.exports = [
                         }
                     ]);
 
+                    // [WIP #1] These two are the plugins defined in /src/plugins/graphql.ts and /src/plugins/models.ts respectively
+                    // How do we acutally include them in the 'plugins' array in serverlessJson below?
+
+                    // const templateServicePlugins = [
+                    //     {
+                    //         name: "graphql-schema-thingy"
+                    //     },
+                    //     {
+                    //         name: "graphql-context-models"
+                    //     }
+                    // ];
                     serverlessJson[serviceName] = {
                         component: "@webiny/serverless-apollo-service",
                         inputs: {
@@ -115,11 +125,20 @@ module.exports = [
                         throw new Error(
                             `Service ${serviceName} already exists! This error should've been thrown earlier...`
                         );
-                    await fs.mkdirSync(destFolder);
+                    await fs.mkdirSync(destFolder, { recursive: true });
                     await ncp(sourceFolder, destFolder);
 
-                    // [WIP] Run "yarn build" in order to link the new package
-                    // await execa("yarn", ["--cwd", context.apiPath]);
+                    // Update the package's name
+                    const servicePackageJsonPath = path.join(serviceLocation, "package.json");
+                    let servicePackageJson = fs.readFileSync(servicePackageJsonPath).toString();
+                    servicePackageJson = servicePackageJson.replace("SERVICE_NAME", serviceName);
+                    fs.writeFileSync(servicePackageJsonPath, servicePackageJson);
+
+                    // [WIP #2] Does this guy work? Well, I've attempted to test it locally but it seems to break the
+                    // installed packages; testing it with a freshly created webiny app is troublesome aswell, as
+                    // 'yarn list' doesn't show the GraphQL Service Template ;/
+
+                    // await execa("yarn");
                 } catch (e) {
                     console.log(e);
                 } finally {
