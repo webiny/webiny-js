@@ -1,6 +1,8 @@
 import EventEmitter from "events";
 
 export class TypeValueEmitter extends EventEmitter {
+    cache: { [key: string]: any };
+
     constructor() {
         super();
         this.cache = {};

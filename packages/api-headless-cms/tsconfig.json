@@ -4,7 +4,6 @@
   "references": [
     { "path": "../api" },
     { "path": "../api-i18n" },
-    { "path": "../api-headless-cms" },
     { "path": "../api-plugin-commodo-db-proxy" },
     { "path": "../api-security" },
     { "path": "../commodo" },
