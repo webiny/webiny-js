@@ -31,7 +31,8 @@
     "@babel/plugin-proposal-class-properties": "^7.5.5",
     "@babel/preset-env": "^7.5.5",
     "@babel/preset-typescript": "^7.7.7",
-    "@types/aws-lambda": "^8.10.40"
+    "@types/aws-lambda": "^8.10.40",
+    "apollo-graphql": "^0.4.1"
   },
   "publishConfig": {
     "access": "public"

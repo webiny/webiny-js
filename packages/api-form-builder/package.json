@@ -37,6 +37,7 @@
     "@babel/core": "^7.5.5",
     "@babel/preset-env": "^7.5.5",
     "@babel/preset-typescript": "^7.8.3",
+    "@webiny/api-plugin-commodo-db-proxy": "^2.0.4",
     "flow-copy-source": "^2.0.2"
   },
   "publishConfig": {
