@@ -58,8 +58,7 @@ context("Menus Module", () => {
             .findByText("Save menu")
             .click()
             .wait(2000)
-            .visit(Cypress.env("SITE_URL"))
-            .wait(30000);
+            .visitAndReloadOnceInvalidated(Cypress.env("SITE_URL"));
 
         cy.visit(Cypress.env("SITE_URL"))
             .findByTestId("pb-desktop-header")
@@ -97,8 +96,7 @@ context("Menus Module", () => {
             .findByText("Save menu")
             .click()
             .wait(2000)
-            .visit(Cypress.env("SITE_URL"))
-            .wait(30000);
+            .visitAndReloadOnceInvalidated(Cypress.env("SITE_URL"));
 
         cy.visit(Cypress.env("SITE_URL"))
             .findByTestId("pb-desktop-header")
