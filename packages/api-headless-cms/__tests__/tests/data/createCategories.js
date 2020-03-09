@@ -30,7 +30,8 @@ export default async context => {
             slug: {
                 values: [
                     { locale: locales.en.id, value: "a-category-en" },
-                    { locale: locales.de.id, value: "a-category-de" }
+                    { locale: locales.de.id, value: "a-category-de" },
+                    // do NOT define `it` locale value - it's on purpose
                 ]
             }
         },
@@ -39,12 +40,14 @@ export default async context => {
                 values: [
                     { locale: locales.en.id, value: "B Category EN" },
                     { locale: locales.de.id, value: "B Category DE" }
+                    // do NOT define `it` locale value - it's on purpose
                 ]
             },
             slug: {
                 values: [
                     { locale: locales.en.id, value: "b-category-en" },
                     { locale: locales.de.id, value: "b-category-de" }
+                    // do NOT define `it` locale value - it's on purpose
                 ]
             }
         }

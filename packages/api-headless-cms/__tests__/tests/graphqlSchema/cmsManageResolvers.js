@@ -10,6 +10,7 @@ export default ({ setupSchema }) => {
         beforeEach(async () => {
             const { context } = await setupSchema();
             Category = context.models.category;
+            const entries = await Category.find();
             categories = await createCategories(context);
         });
 
@@ -98,6 +99,283 @@ export default ({ setupSchema }) => {
             expect(data.cmsManage.getCategory).toMatchObject({
                 data: categories[0].data
             });
+        });
+
+        test(`list categories (no parameters)`, async () => {
+            // Test resolvers
+            const query = /* GraphQL */ `
+                {
+                    cmsManage {
+                        listCategories {
+                            data {
+                                id
+                                title {
+                                    values {
+                                        locale
+                                        value
+                                    }
+                                }
+                                slug {
+                                    values {
+                                        locale
+                                        value
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            `;
+
+            const { schema, context } = await setupSchema();
+            const { data, errors } = await graphql(schema, query, {}, context);
+
+            if (errors) {
+                throw Error(JSON.stringify(errors, null, 2));
+            }
+
+            expect(data.cmsManage.listCategories).toMatchObject({
+                data: expect.arrayContaining([
+                    expect.objectContaining({
+                        id: expect.stringMatching(/^[0-9a-fA-F]{24}$/),
+                        title: expect.objectContaining({
+                            values: expect.arrayContaining([
+                                expect.objectContaining({
+                                    locale: expect.stringMatching(/^[0-9a-fA-F]{24}$/),
+                                    value: expect.stringMatching(
+                                        /^A Category EN|B Category EN|Hardware EN$/
+                                    )
+                                })
+                            ])
+                        }),
+                        slug: expect.objectContaining({
+                            values: expect.arrayContaining([
+                                expect.objectContaining({
+                                    locale: expect.stringMatching(/^[0-9a-fA-F]{24}$/),
+                                    value: expect.stringMatching(
+                                        /^a-category-en|b-category-en|hardware-en$/
+                                    )
+                                })
+                            ])
+                        })
+                    })
+                ])
+            });
+        });
+
+        // TODO: discuss with the team whether `perPage` in Manage API makes any sense at all
+        test(`list categories (perPage)`, async () => {
+            // Test resolvers
+            const query = /* GraphQL */ `
+                {
+                    cmsManage {
+                        listCategories(perPage: 1) {
+                            data {
+                                id
+                            }
+                        }
+                    }
+                }
+            `;
+
+            const { schema, context } = await setupSchema();
+            const { data, errors } = await graphql(schema, query, {}, context);
+
+            if (errors) {
+                throw Error(JSON.stringify(errors, null, 2));
+            }
+
+            expect(data.cmsManage.listCategories).toMatchObject({
+                data: expect.arrayContaining([
+                    expect.objectContaining({
+                        id: expect.stringMatching(/^[0-9a-fA-F]{24}$/)
+                    })
+                ])
+            });
+        });
+
+        test(`list categories (sort ASC)`, async () => {
+            // Test resolvers
+            const query = /* GraphQL */ `
+                query ListCategories($sort: [CmsManageCategoryListSorter]) {
+                    cmsManage {
+                        listCategories(sort: $sort) {
+                            data {
+                                title {
+                                    values {
+                                        value
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            `;
+
+            const { schema, context } = await setupSchema();
+            const { data, errors } = await graphql(schema, query, {}, context, {
+                sort: ["title_ASC"]
+            });
+
+            if (errors) {
+                throw Error(JSON.stringify(errors, null, 2));
+            }
+
+            expect(data.cmsManage.listCategories).toMatchObject({
+                data: [
+                    {
+                        title: expect.objectContaining({
+                            values: expect.arrayContaining([
+                                expect.objectContaining({
+                                    value: "A Category EN"
+                                })
+                            ])
+                        })
+                    },
+                    {
+                        title: expect.objectContaining({
+                            values: expect.arrayContaining([
+                                expect.objectContaining({
+                                    value: "B Category EN"
+                                })
+                            ])
+                        })
+                    },
+                    {
+                        title: expect.objectContaining({
+                            values: expect.arrayContaining([
+                                expect.objectContaining({
+                                    value: "Hardware EN"
+                                })
+                            ])
+                        })
+                    }
+                ]
+            });
+        });
+
+        test(`list categories (sort DESC)`, async () => {
+            // Test resolvers
+            const query = /* GraphQL */ `
+                query ListCategories($sort: [CmsManageCategoryListSorter]) {
+                    cmsManage {
+                        listCategories(sort: $sort) {
+                            data {
+                                title {
+                                    values {
+                                        value
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            `;
+
+            const { schema, context } = await setupSchema();
+            const { data, errors } = await graphql(schema, query, {}, context, {
+                sort: ["title_DESC"]
+            });
+
+            if (errors) {
+                throw Error(JSON.stringify(errors, null, 2));
+            }
+
+            expect(data.cmsManage.listCategories).toMatchObject({
+                data: [
+                    {
+                        title: expect.objectContaining({
+                            values: expect.arrayContaining([
+                                expect.objectContaining({
+                                    value: "Hardware EN"
+                                })
+                            ])
+                        })
+                    },
+                    {
+                        title: expect.objectContaining({
+                            values: expect.arrayContaining([
+                                expect.objectContaining({
+                                    value: "B Category EN"
+                                })
+                            ])
+                        })
+                    },
+                    {
+                        title: expect.objectContaining({
+                            values: expect.arrayContaining([
+                                expect.objectContaining({
+                                    value: "A Category EN"
+                                })
+                            ])
+                        })
+                    }
+                ]
+            });
+        });
+
+        test(`list categories (contains, not_contains, in, not_in)`, async () => {
+            // Test resolvers
+            const query = /* GraphQL */ `
+                query ListCategories($where: CmsManageCategoryListWhereInput) {
+                    cmsManage {
+                        listCategories(where: $where) {
+                            data {
+                                title {
+                                    values {
+                                        value
+                                    }
+                                }
+                            }
+                            error {
+                                message
+                            }
+                        }
+                    }
+                }
+            `;
+
+            const { schema, context } = await setupSchema();
+            const { data: data1, errors: errors1 } = await graphql(schema, query, {}, context, {
+                where: { title_contains: "category" }
+            });
+
+            if (errors1) {
+                throw Error(JSON.stringify(errors1, null, 2));
+            }
+
+            expect(data1.cmsManage.listCategories.data.length).toBe(2);
+
+            const { data: data2, errors: errors2 } = await graphql(schema, query, {}, context, {
+                where: { title_not_contains: "category" }
+            });
+
+            if (errors2) {
+                throw Error(JSON.stringify(errors2, null, 2));
+            }
+
+            expect(data2.cmsManage.listCategories.data.length).toBe(1);
+
+            const { data: data3, errors: errors3 } = await graphql(schema, query, {}, context, {
+                where: { title_in: ["B Category EN"] }
+            });
+
+            if (errors3) {
+                throw Error(JSON.stringify(errors3, null, 2));
+            }
+
+            expect(data3.cmsManage.listCategories.data.length).toBe(1);
+
+            const { data: data4, errors: errors4 } = await graphql(schema, query, {}, context, {
+                where: { title_not_in: ["A Category EN", "B Category EN"] }
+            });
+
+            if (errors4) {
+                throw Error(JSON.stringify(errors4, null, 2));
+            }
+
+            expect(data4.cmsManage.listCategories.data.length).toBe(1);
+            expect(data4.cmsManage.listCategories.data[0].title.values[0].value).toBe("Hardware EN");
         });
 
         test(`create category`, async () => {
@@ -216,7 +494,7 @@ export default ({ setupSchema }) => {
                     }
                 }
             });
-            
+
             if (errors1) {
                 throw Error(JSON.stringify(errors1, null, 2));
             }

@@ -278,7 +278,11 @@ export default ({ setupSchema }) => {
             `;
 
             const { schema, context } = await setupSchema();
-            const { data: data1 } = await graphql(schema, query, {}, context, { page: 2 });
+            const { data: data1, errors: errors1 } = await graphql(schema, query, {}, context, { page: 2 });
+
+            if (errors1) {
+                throw Error(JSON.stringify(errors1, null, 2));
+            }
 
             expect(data1.cmsRead.listCategories).toMatchObject({
                 data: [
@@ -294,7 +298,13 @@ export default ({ setupSchema }) => {
                 }
             });
 
-            const { data: data2 } = await graphql(schema, query, {}, context, { page: 3 });
+            const { data: data2, errors: errors2 } = await graphql(schema, query, {}, context, { page: 3 });
+
+            if (errors2) {
+                throw Error(JSON.stringify(errors2, null, 2));
+            }
+
+
             expect(data2.cmsRead.listCategories).toMatchObject({
                 data: [
                     {

@@ -1,26 +1,21 @@
 import { CmsFindFilterOperator, CmsModel } from "@webiny/api-headless-cms/types";
 import { GraphQLContext } from "@webiny/api/types";
-
-export type FindWhere = {
-    [key: string]: any;
-};
+import { WhereCondition } from "./parseWhere";
 
 const fieldMap = {
     id: "instance"
 };
 
-export const createFindQuery = (model: CmsModel, where: FindWhere, context: GraphQLContext) => {
-    const match: any = {};
+export const createFindQuery = (
+    model: CmsModel,
+    where: WhereCondition[],
+    context: GraphQLContext
+): { [key: string]: any } => {
     const filterOperators = context.plugins.byType<CmsFindFilterOperator>(
         "cms-find-filter-operator"
     );
 
-    function createCondition(key) {
-        const value = where[key];
-        const delim = key.indexOf("_");
-        const fieldId = key.substring(0, delim > 0 ? delim : undefined);
-        const operator = delim > 0 ? key.substring(delim + 1) : "eq";
-
+    function createCondition({ fieldId, operator, value }: WhereCondition) {
         const operatorPlugin = filterOperators.find(pl => pl.operator === operator);
 
         if (!operatorPlugin) {
@@ -33,15 +28,7 @@ export const createFindQuery = (model: CmsModel, where: FindWhere, context: Grap
         return { [fieldMap[fieldId] || field.fieldId]: condition };
     }
 
-    const whereKeys = Object.keys(where);
+    const conditions = where.map(filter => createCondition(filter)).filter(Boolean);
 
-    if (whereKeys.length) {
-        match.$and = [];
-    }
-
-    whereKeys.forEach(key => {
-        match.$and.push(createCondition(key));
-    });
-
-    return match;
+    return conditions.length ? { $and: conditions } : {};
 };
