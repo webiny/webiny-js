@@ -1,6 +1,6 @@
 const inquirer = require("inquirer");
 const execa = require("execa");
-const { PluginsContainer } = require("@webiny/plugins");
+const { PluginsContainer } = require("@webiny/plugins/dist");
 const path = require("path");
 const ora = require("ora");
 
@@ -35,8 +35,12 @@ module.exports = async () => {
             .join("@")
     );
     oraSpinner.stop();
+
     const scaffoldPlugins = new PluginsContainer(
-        scaffoldModulesNames.map(crtModuleName => require(crtModuleName))
+        scaffoldModulesNames.map(crtModuleName =>
+            // `require.resolve` here is needed for correct module resolution during local testing
+            require(require.resolve(crtModuleName, { paths: [process.cwd()] }))
+        )
     );
     const choices = Object.values(scaffoldPlugins.plugins).map(pluginToChoice);
     if (choices.length === 0)
