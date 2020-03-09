@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.0.8-next.0](https://github.com/Webiny/webiny-js/compare/@webiny/app-page-builder-theme@2.0.7...@webiny/app-page-builder-theme@2.0.8-next.0) (2020-03-09)
+
+
+### Bug Fixes
+
+* CDN cache is now invalidated properly upon updating Page Builder settings ([#746](https://github.com/Webiny/webiny-js/issues/746)) ([f686fc0](https://github.com/Webiny/webiny-js/commit/f686fc06c747081473baac35e22941945b6351db)), closes [#727](https://github.com/Webiny/webiny-js/issues/727)
+
+
+
+
+
 ## [2.0.7](https://github.com/Webiny/webiny-js/compare/@webiny/app-page-builder-theme@2.0.6...@webiny/app-page-builder-theme@2.0.7) (2020-03-03)
 
 **Note:** Version bump only for package @webiny/app-page-builder-theme
