@@ -4,7 +4,7 @@ import { GraphQLSchemaPlugin } from "@webiny/api/types";
 
 const plugin: GraphQLSchemaPlugin = {
     type: "graphql-schema",
-    name: "graphql-schema-i18n",
+    name: "graphql-schema-thingy",
     schema: {
         typeDefs: gql`
             ${graphqlSchema.typeDefs}

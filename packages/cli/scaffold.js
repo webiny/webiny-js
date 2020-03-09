@@ -63,7 +63,7 @@ module.exports = async () => {
     const souvenirs = ["🥓", "🥝", "🍕", "🍺", "🍓", "🍏", "🌈", "🍫"];
     const emoji = souvenirs[Math.floor(Math.random() * souvenirs.length)];
     oraSpinner.start(
-        `Generating the template... Here's some ${emoji} to make the time pass faster!`
+        `Generating the template... Here's some ${emoji} to make the time pass faster!\n`
     );
     await selectedPlugin.scaffold.generate({ input, context: scaffoldContext });
     oraSpinner.stop();
