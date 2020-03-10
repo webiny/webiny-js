@@ -24,7 +24,7 @@ const plugins: RoutePlugin[] = [
                 exact
                 path={"/cms/content-models/:id"}
                 render={() => (
-                    <SecureRoute roles={["form-editors-editor"]}>
+                    <SecureRoute roles={["headless-cms-editors-editor"]}>
                         <Helmet>
                             <title>{t`Edit Content Model`}</title>
                         </Helmet>
@@ -44,7 +44,7 @@ const plugins: RoutePlugin[] = [
                 exact
                 path="/cms/content-models"
                 render={() => (
-                    <SecureRoute roles={["form-editors"]}>
+                    <SecureRoute roles={["headless-cms-editors"]}>
                         <AdminLayout>
                             <Helmet title={t`Content Models`} />
                             <Loader>
