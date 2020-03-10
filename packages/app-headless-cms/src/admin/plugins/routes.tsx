@@ -13,7 +13,7 @@ const Loader = ({ children, ...props }) => (
 );
 
 const FormEditor = lazy(() => import("../views/Editor"));
-const Forms = lazy(() => import("../views/Forms/Forms"));
+const Forms = lazy(() => import("../views/ContentModels/ContentModels"));
 
 const plugins: RoutePlugin[] = [
     {
