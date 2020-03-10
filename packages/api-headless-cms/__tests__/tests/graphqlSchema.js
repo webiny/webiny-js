@@ -81,6 +81,43 @@ export default ({ plugins }) => {
             }
         });
 
+        test("insert content models data (empty fields)", async () => {
+            const mutation = /* GraphQL */ `
+                mutation CreateContentModel($data: CmsContentModelInput!) {
+                    cmsManage {
+                        createContentModel(data: $data) {
+                            data {
+                                id
+                                modelId
+                            }
+                        }
+                    }
+                }
+            `;
+
+            const { schema, context } = await setupSchema();
+
+            const response = await graphql(schema, mutation, {}, context, {
+                data: {
+                    title: "EmptyModel",
+                    modelId: "emptyModel"
+                }
+            });
+
+            expect(response).toMatchObject({
+                data: {
+                    cmsManage: {
+                        createContentModel: {
+                            data: {
+                                id: expect.stringMatching("^[0-9a-fA-F]{24}$"),
+                                modelId: expect.stringMatching(/^[a-zA-Z]+$/)
+                            }
+                        }
+                    }
+                }
+            });
+        });
+
         test("create commodo models and set them in the context", async () => {
             const { context } = await setupSchema();
 

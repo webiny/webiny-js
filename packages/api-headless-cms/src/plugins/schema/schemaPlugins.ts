@@ -45,31 +45,33 @@ export const generateSchemaPlugins: GenerateSchemaPlugins = async ({ context }) 
         }
     }));
 
-    models.forEach(model => {
-        // Create a schema plugin for each model (Management API)
-        newPlugins.push({
-            name: "graphql-schema-" + model.modelId + "-manage",
-            type: "graphql-schema",
-            schema: {
-                typeDefs: gql`
-                    ${createManageSDL({ model, context, fieldTypePlugins })}
-                `,
-                resolvers: createManageResolvers({ models, model, fieldTypePlugins, context })
-            }
-        });
+    models
+        .filter(model => model.fields.length > 0)
+        .forEach(model => {
+            // Create a schema plugin for each model (Management API)
+            newPlugins.push({
+                name: "graphql-schema-" + model.modelId + "-manage",
+                type: "graphql-schema",
+                schema: {
+                    typeDefs: gql`
+                        ${createManageSDL({ model, context, fieldTypePlugins })}
+                    `,
+                    resolvers: createManageResolvers({ models, model, fieldTypePlugins, context })
+                }
+            });
 
-        // Create a schema plugin for each model (Read API)
-        newPlugins.push({
-            name: "graphql-schema-" + model.modelId + "-read",
-            type: "graphql-schema",
-            schema: {
-                typeDefs: gql`
-                    ${createReadSDL({ model, context, fieldTypePlugins })}
-                `,
-                resolvers: createReadResolvers({ models, model, fieldTypePlugins, context })
-            }
+            // Create a schema plugin for each model (Read API)
+            newPlugins.push({
+                name: "graphql-schema-" + model.modelId + "-read",
+                type: "graphql-schema",
+                schema: {
+                    typeDefs: gql`
+                        ${createReadSDL({ model, context, fieldTypePlugins })}
+                    `,
+                    resolvers: createReadResolvers({ models, model, fieldTypePlugins, context })
+                }
+            });
         });
-    });
 
     plugins.register(newPlugins);
 };
