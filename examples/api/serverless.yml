@@ -39,6 +39,8 @@ gateway:
               url: ${i18n.api.graphqlUrl}
             - name: formBuilder
               url: ${formBuilder.api.graphqlUrl}
+            - name: headlessCms
+              url: ${headlessCms.api.graphqlUrl}
 
 dbProxy:
   component: "@webiny/serverless-db-proxy/dist"
