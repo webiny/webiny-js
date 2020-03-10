@@ -13,7 +13,7 @@ const SimpleFormPlaceholder = styled.div({
     minWidth: 400
 });
 
-const t = i18n.ns("app-forms/admin/installation");
+const t = i18n.ns("app-headless-cms/admin/installation");
 
 const IS_INSTALLED = gql`
     {
