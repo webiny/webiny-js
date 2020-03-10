@@ -5,6 +5,8 @@ import { CircularProgress } from "@webiny/ui/Progress";
 import { Route } from "@webiny/react-router";
 import { AdminLayout } from "@webiny/app-admin/components/AdminLayout";
 import { RoutePlugin } from "@webiny/app/types";
+import { i18n } from "@webiny/app/i18n";
+const t = i18n.ns("app-headless-cms/admin/routes");
 
 const Loader = ({ children, ...props }) => (
     <Suspense fallback={<CircularProgress />}>{React.cloneElement(children, props)}</Suspense>
@@ -20,11 +22,11 @@ const plugins: RoutePlugin[] = [
         route: (
             <Route
                 exact
-                path={"/forms/:id"}
+                path={"/cms/content-models/:id"}
                 render={() => (
                     <SecureRoute roles={["form-editors-editor"]}>
                         <Helmet>
-                            <title>Edit form</title>
+                            <title>{t`Edit Content Model`}</title>
                         </Helmet>
                         <Loader>
                             <FormEditor />
@@ -40,11 +42,11 @@ const plugins: RoutePlugin[] = [
         route: (
             <Route
                 exact
-                path="/forms"
+                path="/cms/content-models"
                 render={() => (
                     <SecureRoute roles={["form-editors"]}>
                         <AdminLayout>
-                            <Helmet title={"Headless cms"} />
+                            <Helmet title={t`Content Models`} />
                             <Loader>
                                 <Forms />
                             </Loader>
