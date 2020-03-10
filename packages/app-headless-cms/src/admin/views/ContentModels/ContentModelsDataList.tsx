@@ -6,7 +6,7 @@ import { get, upperFirst } from "lodash";
 import { Typography } from "@webiny/ui/Typography";
 import { ConfirmationDialog } from "@webiny/ui/ConfirmationDialog";
 import { DeleteIcon, EditIcon } from "@webiny/ui/List/DataList/icons";
-import { DELETE_FORM, CREATE_REVISION_FROM } from "@webiny/app-headless-cms/admin/viewsGraphql";
+import { DELETE_CONTENT_MODEL, CREATE_REVISION_FROM } from "@webiny/app-headless-cms/admin/viewsGraphql";
 import { useApolloClient } from "react-apollo";
 import { useHandler } from "@webiny/app/hooks/useHandler";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
@@ -22,17 +22,17 @@ import {
 } from "@webiny/ui/List";
 
 import { i18n } from "@webiny/app/i18n";
-const t = i18n.namespace("FormsApp.FormsDataList");
+const t = i18n.namespace("FormsApp.ContentModelsDataList");
 
 const rightAlign = css({
     alignItems: "flex-end !important"
 });
 
-export type FormsDataListProps = {
+export type ContentModelsDataListProps = {
     dataList: any;
-}
+};
 
-const FormsDataList = (props: FormsDataListProps) => {
+const ContentModelsDataList = (props: ContentModelsDataListProps) => {
     const editHandlers = useRef({});
 
     const { dataList } = props;
@@ -41,8 +41,8 @@ const FormsDataList = (props: FormsDataListProps) => {
     const client = useApolloClient();
     const { showSnackbar } = useSnackbar();
 
-    const deleteRecord = useHandler(props, ({ id }) => async (item) => {
-        const res = await client.mutate({ mutation: DELETE_FORM, variables: { id: item.id } });
+    const deleteRecord = useHandler(props, ({ id }) => async item => {
+        const res = await client.mutate({ mutation: DELETE_CONTENT_MODEL, variables: { id: item.id } });
         const { data, error } = get(res, "data.forms.deleteForm");
 
         if (data) {
@@ -92,7 +92,7 @@ const FormsDataList = (props: FormsDataListProps) => {
     return (
         <DataList
             {...dataList}
-            title={t`Forms`}
+            title={t`Content Models`}
             sorters={[
                 {
                     label: t`Newest to oldest`,
@@ -164,4 +164,4 @@ const FormsDataList = (props: FormsDataListProps) => {
     );
 };
 
-export default FormsDataList;
+export default ContentModelsDataList;

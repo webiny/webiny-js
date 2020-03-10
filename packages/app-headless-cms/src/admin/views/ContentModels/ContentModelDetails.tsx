@@ -4,10 +4,12 @@ import { renderPlugins } from "@webiny/app/plugins";
 import useReactRouter from "use-react-router";
 import styled from "@emotion/styled";
 import { Elevation } from "@webiny/ui/Elevation";
-import { GET_FORM } from "@webiny/app-headless-cms/admin/viewsGraphql";
+import { GET_CONTENT_MODEL } from "@webiny/app-headless-cms/admin/viewsGraphql";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { get } from "lodash";
 import { Tabs } from "@webiny/ui/Tabs";
+import { i18n } from "@webiny/app/i18n";
+const t = i18n.ns("app-headless-cms/admin/views/content-models");
 
 const EmptySelect = styled("div")({
     width: "100%",
@@ -35,33 +37,33 @@ const DetailsContainer = styled("div")({
     }
 });
 
-const EmptyFormDetails = () => {
+const EmptyContentModelDetails = () => {
     return (
         <EmptySelect>
             <Elevation z={2} className={"select-form"}>
-                Select a form on the left side, or click the green button to create a new one.
+                {t`Select a content model on the left side, or click the green button to create a new one.`}
             </Elevation>
         </EmptySelect>
     );
 };
 
-export type FormDetailsProps = {
+export type ContentModelDetailsProps = {
     refreshForms: () => void;
 };
 
-const FormDetails = ({ refreshForms }: FormDetailsProps) => {
+const ContentModelDetails = ({ refreshForms }: ContentModelDetailsProps) => {
     const { location, history } = useReactRouter();
     const { showSnackbar } = useSnackbar();
     const query = new URLSearchParams(location.search);
     const formId = query.get("id");
 
     if (!formId) {
-        return <EmptyFormDetails />;
+        return <EmptyContentModelDetails />;
     }
 
     return (
         <Query
-            query={GET_FORM}
+            query={GET_CONTENT_MODEL}
             variables={{ id: formId }}
             onCompleted={data => {
                 const error = get(data, "forms.form.error.message");
@@ -92,4 +94,4 @@ const FormDetails = ({ refreshForms }: FormDetailsProps) => {
     );
 };
 
-export default FormDetails;
+export default ContentModelDetails;

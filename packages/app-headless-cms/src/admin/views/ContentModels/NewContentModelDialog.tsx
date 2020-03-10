@@ -4,13 +4,14 @@ import useReactRouter from "use-react-router";
 import { Mutation } from "react-apollo";
 import { Form } from "@webiny/form";
 import { Input } from "@webiny/ui/Input";
-import { CREATE_FORM } from "../../viewsGraphql";
+import { CREATE_CONTENT_MODEL } from "../../viewsGraphql";
 import get from "lodash.get";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { CircularProgress } from "@webiny/ui/Progress";
+import { Grid, Cell } from "@webiny/ui/Grid";
 
 import { i18n } from "@webiny/app/i18n";
-const t = i18n.namespace("Forms.NewFormDialog");
+const t = i18n.ns("app-headless-cms/admin/views/content-models/new-content-model-dialog");
 
 import {
     Dialog,
@@ -28,13 +29,17 @@ const narrowDialog = css({
     }
 });
 
-export type NewFormDialogProps = {
+export type NewContentModelDialogProps = {
     open: boolean;
     onClose: DialogOnClose;
-    formsDataList: any;
+    contentModelsDataList: any;
 };
 
-const NewFormDialog: React.FC<NewFormDialogProps> = ({ open, onClose, formsDataList }) => {
+const NewContentModelDialog: React.FC<NewContentModelDialogProps> = ({
+    open,
+    onClose,
+    contentModelsDataList
+}) => {
     const [loading, setLoading] = React.useState(false);
     const { showSnackbar } = useSnackbar();
     const { history } = useReactRouter();
@@ -46,18 +51,18 @@ const NewFormDialog: React.FC<NewFormDialogProps> = ({ open, onClose, formsDataL
             className={narrowDialog}
             data-testid="fb-new-form-modal"
         >
-            <Mutation mutation={CREATE_FORM}>
+            <Mutation mutation={CREATE_CONTENT_MODEL}>
                 {update => (
                     <Form
                         onSubmit={async data => {
                             setLoading(true);
                             const response = get(
                                 await update({
-                                    variables: data,
-                                    refetchQueries: ["FormsListForms"],
+                                    variables: { data },
+                                    refetchQueries: ["FormsListForms"], // TODO @i18n: Proper refetch here!
                                     awaitRefetchQueries: true
                                 }),
-                                "data.forms.form"
+                                "data.cmsManage.createContentModel"
                             );
 
                             if (response.error) {
@@ -65,18 +70,31 @@ const NewFormDialog: React.FC<NewFormDialogProps> = ({ open, onClose, formsDataL
                                 return showSnackbar(response.error.message);
                             }
 
-                            await formsDataList.refresh();
-                            history.push("/forms/" + response.data.id);
+                            await contentModelsDataList.refresh();
+                            history.push("/cms/content-models/" + response.data.id);
                         }}
                     >
                         {({ Bind, submit }) => (
                             <>
                                 {loading && <CircularProgress />}
-                                <DialogTitle>{t`New form`}</DialogTitle>
+                                <DialogTitle>{t`New Content Model`}</DialogTitle>
                                 <DialogContent>
-                                    <Bind name={"name"}>
-                                        <Input placeholder={"Enter a name for your new form"} />
-                                    </Bind>
+                                    <Grid>
+                                        <Cell span={12}>
+                                            <Bind name={"title"}>
+                                                <Input
+                                                    placeholder={
+                                                        "Enter a name for your new content model"
+                                                    }
+                                                />
+                                            </Bind>
+                                        </Cell>
+                                        <Cell span={12}>
+                                            <Bind name={"modelId"}>
+                                                <Input placeholder={"Enter a model ID"} />
+                                            </Bind>
+                                        </Cell>
+                                    </Grid>
                                 </DialogContent>
                                 <DialogActions>
                                     <ButtonDefault onClick={submit}>+ {t`Create`}</ButtonDefault>
@@ -90,4 +108,4 @@ const NewFormDialog: React.FC<NewFormDialogProps> = ({ open, onClose, formsDataL
     );
 };
 
-export default NewFormDialog;
+export default NewContentModelDialog;
