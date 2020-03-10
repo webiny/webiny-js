@@ -13,7 +13,7 @@ export default [
             return (
                 <SecureView roles={["headless-cms-editors"]}>
                     <Section label={t`Headless CMS`}>
-                        <Item label={t`Headless CMS`} path="/forms" />
+                        <Item label={t`Content Models`} path="/cms/content-models" />
                     </Section>
                 </SecureView>
             );
