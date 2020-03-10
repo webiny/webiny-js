@@ -4,10 +4,11 @@ const path = require("path");
 const util = require("util");
 const ncp = util.promisify(require("ncp").ncp);
 const execa = require("execa");
+const _ = require("lodash");
 
-const getServiceLocation = (
-    { context, serviceName } //path.join(context.apiPath, serviceName);
-) => path.join(context.packagesPath, `api-${serviceName}`);
+const getPackageLocation = ({ context, packageFolderName }) =>
+    path.join(context.packagesPath, packageFolderName);
+const getPackageFolderName = packageName => packageName.split("/").pop();
 
 module.exports = [
     {
@@ -25,25 +26,28 @@ module.exports = [
 
                 return [
                     {
-                        name: "serviceName",
-                        message: "Service Name",
-                        validate: serviceName => {
-                            if (serviceName === "")
-                                return "Please enter a valid name for your service.";
-                            if (fs.existsSync(getServiceLocation({ context, serviceName })))
-                                return "This service already exists! Please pick a different name";
+                        name: "packageName",
+                        message: "Package Name",
+                        validate: packageName => {
+                            const packageFolderName = getPackageFolderName(packageName);
+                            if (packageName === "")
+                                return "Please enter a valid name for your package.";
+                            if (fs.existsSync(getPackageLocation({ context, packageFolderName })))
+                                return "This package already exists! Please pick a different name";
 
                             return true;
                         }
                     }
                 ];
             },
-            generate: async ({ input, context }) => {
+            generate: async ({ input, context, oraSpinner }) => {
                 const warnings = [];
                 try {
                     // First we update serverless.yml
-                    const { serviceName } = input;
-                    const serviceLocation = getServiceLocation({ context, serviceName });
+                    const { packageName } = input;
+                    const serviceName = _.camelCase(packageName.split("/").pop()); // There can be only one slash, ie: @webiny/my-package. We extract the package's name and convert it to camelCase
+                    const packageFolderName = getPackageFolderName(packageName);
+                    const packageLocation = getPackageLocation({ context, packageFolderName });
 
                     const serverlessJson = yaml.safeLoad(fs.readFileSync(context.apiYaml));
                     if (serverlessJson[serviceName])
@@ -85,17 +89,6 @@ module.exports = [
                         }
                     ]);
 
-                    // [WIP #1] These two are the plugins defined in /src/plugins/graphql.ts and /src/plugins/models.ts respectively
-                    // How do we acutally include them in the 'plugins' array in serverlessJson below?
-
-                    // const templateServicePlugins = [
-                    //     {
-                    //         name: "graphql-schema-thingy"
-                    //     },
-                    //     {
-                    //         name: "graphql-context-models"
-                    //     }
-                    // ];
                     serverlessJson[serviceName] = {
                         component: "@webiny/serverless-apollo-service",
                         inputs: {
@@ -104,8 +97,9 @@ module.exports = [
                             memory: 512,
                             debug: "${vars.debug}",
                             hook: "yarn build",
-                            root: serviceLocation,
-                            code: `${serviceLocation}/build`,
+                            root: `../${packageLocation}`,
+                            code: `../${packageLocation}/dist`,
+                            webpackConfig: "./webpack.config.js",
                             plugins: [
                                 {
                                     factory: "@webiny/api-security/plugins",
@@ -119,27 +113,26 @@ module.exports = [
 
                     // Then we also copy the template folder
                     const sourceFolder = path.join(__dirname, "templateService");
-                    const destFolder = path.join(serviceLocation);
+                    const destFolder = packageLocation;
 
-                    if (fs.existsSync(serviceLocation))
-                        throw new Error(
-                            `Service ${serviceName} already exists! This error should've been thrown earlier...`
-                        );
+                    if (fs.existsSync(packageLocation))
+                        throw new Error(`Package ${packageName} already exists!`);
                     await fs.mkdirSync(destFolder, { recursive: true });
                     await ncp(sourceFolder, destFolder);
 
                     // Update the package's name
-                    const servicePackageJsonPath = path.join(serviceLocation, "package.json");
+                    const servicePackageJsonPath = path.join(packageLocation, "package.json");
                     let servicePackageJson = fs.readFileSync(servicePackageJsonPath).toString();
-                    servicePackageJson = servicePackageJson.replace("SERVICE_NAME", serviceName);
+                    servicePackageJson = servicePackageJson.replace("PACKAGE_NAME", packageName);
                     fs.writeFileSync(servicePackageJsonPath, servicePackageJson);
 
-                    // [WIP #2] Does this guy work? Well, I've attempted to test it locally but it seems to break the
-                    // installed packages; testing it with a freshly created webiny app is troublesome aswell, as
-                    // 'yarn list' doesn't show the GraphQL Service Template ;/
-
-                    // await execa("yarn");
+                    oraSpinner.text = "Linking packages...";
+                    await execa("yarn");
+                    oraSpinner.text = "Building the newly generated package...";
+                    await execa("yarn", ["build"], { cwd: packageLocation });
+                    oraSpinner.succeed("Successfully scaffolded the template!");
                 } catch (e) {
+                    oraSpinner.stop();
                     console.log(e);
                 } finally {
                     if (warnings.length > 0) console.log(warnings.join("\n"));

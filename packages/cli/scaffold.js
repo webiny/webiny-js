@@ -37,10 +37,7 @@ module.exports = async () => {
     oraSpinner.stop();
 
     const scaffoldPlugins = new PluginsContainer(
-        scaffoldModulesNames.map(crtModuleName =>
-            // `require.resolve` here is needed for correct module resolution during local testing
-            require(require.resolve(crtModuleName, { paths: [process.cwd()] }))
-        )
+        scaffoldModulesNames.map(crtModuleName => require(crtModuleName))
     );
     const choices = Object.values(scaffoldPlugins.plugins).map(pluginToChoice);
     if (choices.length === 0)
@@ -65,8 +62,5 @@ module.exports = async () => {
     oraSpinner.start(
         `Generating the template... Here's some ${emoji} to make the time pass faster!\n`
     );
-    await selectedPlugin.scaffold.generate({ input, context: scaffoldContext });
-    oraSpinner.stop();
-
-    console.log(`Successfully scaffolded the template!`);
+    await selectedPlugin.scaffold.generate({ input, context: scaffoldContext, oraSpinner });
 };
