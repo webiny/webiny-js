@@ -172,6 +172,26 @@ formBuilder:
       - "@webiny/api-form-builder/plugins"
       - "@webiny/api-form-builder/plugins/useSsrCacheTags"
 
+headlessCms:
+  component: "@webiny/serverless-apollo-service"
+  inputs:
+    env:
+      I18N_API_URL: ${i18n.api.graphqlUrl}
+    region: ${vars.region}
+    memory: 512
+    debug: ${vars.debug}
+    webpackConfig: ./webpack.config.js
+    plugins:
+      - factory: "@webiny/api-plugin-create-apollo-handler"
+        options: ${vars.apollo}
+      - factory: "@webiny/api-plugin-commodo-db-proxy"
+        options:
+          functionArn: ${dbProxy.arn}
+      - factory: "@webiny/api-security/plugins/service"
+        options: ${vars.security}
+      - "@webiny/api-i18n/plugins/service"
+      - "@webiny/api-headless-cms/plugins"
+
 api:
   component: "@webiny/serverless-api-gateway"
   inputs:
