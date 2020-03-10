@@ -3,7 +3,7 @@ import {
     FormSubmitResponseType
 } from "@webiny/app-headless-cms/types";
 
-import { CREATE_FORM_SUBMISSION } from "./graphql";
+import { CREATE_CONTENT_MODEL_SUBMISSION } from "./graphql";
 import getClientIp from "./getClientIp";
 import { get } from "lodash";
 import { ApolloClient } from "apollo-client";
@@ -28,7 +28,7 @@ export default async ({
     const data = {};
     if (!form) {
         return {
-            error: { message: "Form data is missing.", code: "FORM_DATA_MISSING" },
+            error: { message: "Form data is missing.", code: "CONTENT_MODEL_DATA_MISSING" },
             data: null,
             preview: false
         };
@@ -41,7 +41,7 @@ export default async ({
     });
 
     let response: any = await client.mutate({
-        mutation: CREATE_FORM_SUBMISSION,
+        mutation: CREATE_CONTENT_MODEL_SUBMISSION,
         variables: {
             id: form.id,
             reCaptchaResponseToken,

@@ -4,7 +4,7 @@ import { useApolloClient } from "react-apollo";
 import { cloneDeep, get } from "lodash";
 import { useHandlers } from "@webiny/app/hooks/useHandlers";
 import {
-    GET_FORM,
+    GET_CONTENT_MODEL,
     CREATE_REVISION_FROM,
     DELETE_REVISION,
     PUBLISH_REVISION,
@@ -64,7 +64,7 @@ export const useRevision = ({ revision, form }: UseRevisionProps) => {
                         return history.push("/forms");
                     }
 
-                    const gqlParams = { query: GET_FORM, variables: { id: form.id } };
+                    const gqlParams = { query: GET_CONTENT_MODEL, variables: { id: form.id } };
                     const data: any = cloneDeep(cache.readQuery(gqlParams));
                     const indexOfDeleted = data.forms.form.data.revisions.findIndex(
                         item => item.id === revision.id

@@ -1,6 +1,6 @@
 import { get, set } from "lodash";
 import { FbFormRenderComponentProps } from "@webiny/app-headless-cms/types";
-import { SAVE_FORM_VIEW } from "./graphql";
+import { SAVE_CONTENT_MODEL_VIEW } from "./graphql";
 import { ApolloClient } from "apollo-client";
 
 // TODO: `client` is not part of FbFormRenderComponentProps but is injected by `FormRender`
@@ -20,7 +20,7 @@ const saveFormView = ({
 
     set(window, "localStorage.form_view_" + data.id, 1);
     client.mutate({
-        mutation: SAVE_FORM_VIEW,
+        mutation: SAVE_CONTENT_MODEL_VIEW,
         variables: {
             id: data.id
         }

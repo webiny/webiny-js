@@ -6,7 +6,7 @@ const ERROR_FIELDS = `
     data
 `;
 
-const BASE_FORM_FIELDS = `  
+const BASE_CONTENT_MODEL_FIELDS = `  
     id
     name
     version
@@ -20,12 +20,12 @@ const BASE_FORM_FIELDS = `
     }
 `;
 
-export const LIST_FORMS = gql`
+export const LIST_CONTENT_MODELS = gql`
     query FormsListForms($sort: JSON, $page: Int, $perPage: Int, $search: String) {
         forms {
             listForms(sort: $sort, page: $page, perPage: $perPage, search: $search) {
                 data {  
-                    ${BASE_FORM_FIELDS}
+                    ${BASE_CONTENT_MODEL_FIELDS}
                 }
                 meta {
                     totalCount
@@ -39,27 +39,31 @@ export const LIST_FORMS = gql`
     }
 `;
 
-export const CREATE_FORM = gql`
-    mutation FormsCreateForm($name: String!) {
-        forms {
-            form: createForm(data: { name: $name }) {
+export const CREATE_CONTENT_MODEL = gql`
+    mutation CreateContentModel($data: CmsContentModelInput!) {
+        cmsManage {
+            createContentModel(data: $data) {
                 data {
                     id
+                    title
+                    description
+                    modelId
                 }
                 error {
-                    ${ERROR_FIELDS}
+                    message
+                    data
                 }
             }
         }
     }
 `;
 
-export const GET_FORM = gql`
+export const GET_CONTENT_MODEL = gql`
     query FormsGetForm($id: ID!) {
         forms {
             form: getForm(id: $id) {
                 data {
-                    ${BASE_FORM_FIELDS}
+                    ${BASE_CONTENT_MODEL_FIELDS}
                     overallStats {
                         views
                         submissions
@@ -87,7 +91,7 @@ export const GET_FORM = gql`
     }
 `;
 
-export const LIST_FORM_SUBMISSIONS = gql`
+export const LIST_CONTENT_MODEL_SUBMISSIONS = gql`
     query FormsListFormSubmissions(
         $sort: JSON
         $page: Int
@@ -145,7 +149,7 @@ export const LIST_FORM_SUBMISSIONS = gql`
     }
 `;
 
-export const EXPORT_FORM_SUBMISSIONS = gql`
+export const EXPORT_CONTENT_MODEL_SUBMISSIONS = gql`
     mutation FormsExportFormSubmissions($ids: [ID], $parent: ID, $form: ID) {
         forms {
             exportFormSubmissions(ids: $ids, parent: $parent, form: $form) {
@@ -222,7 +226,7 @@ export const DELETE_REVISION = gql`
     }
 `;
 
-export const DELETE_FORM = gql`
+export const DELETE_CONTENT_MODEL = gql`
     mutation DeleteForm($id: ID!) {
         forms {
             deleteForm(id: $id) {

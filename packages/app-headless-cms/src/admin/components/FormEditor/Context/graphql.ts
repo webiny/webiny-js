@@ -71,7 +71,7 @@ const SETTINGS_FIELDS = /* GraphQL */ `
     }
 `;
 
-export const GET_FORM = gql`
+export const GET_CONTENT_MODEL = gql`
     query GetForm($id: ID!) {
         forms {
             getForm(id: $id) {

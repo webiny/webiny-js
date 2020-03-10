@@ -1,6 +1,6 @@
 import gql from "graphql-tag";
 
-export const SAVE_FORM_VIEW = gql`
+export const SAVE_CONTENT_MODEL_VIEW = gql`
     mutation SaveFormView($id: ID!) {
         forms {
             saveFormView(id: $id) {
@@ -12,7 +12,7 @@ export const SAVE_FORM_VIEW = gql`
     }
 `;
 
-export const CREATE_FORM_SUBMISSION = gql`
+export const CREATE_CONTENT_MODEL_SUBMISSION = gql`
     mutation CreateFormSubmission(
         $id: ID!
         $data: JSON!

@@ -23,7 +23,7 @@ export const GET_RECAPTCHA_SETTINGS = gql`
     }
 `;
 
-export const UPDATE_FORMS_SETTINGS = gql`
+export const UPDATE_CONTENT_MODELS_SETTINGS = gql`
     mutation updateSettings($data: FormsSettingsInput) {
         forms {
             updateSettings(data: $data) ${fields}

@@ -1,6 +1,6 @@
 import React from "react";
 import { get } from "lodash";
-import { GET_PUBLISHED_FORM } from "./graphql";
+import { GET_PUBLISHED_CONTENT_MODEL } from "./graphql";
 import { Query } from "react-apollo";
 import FormRender from "./FormRender";
 import { FormLoadComponentPropsType } from "@webiny/app-headless-cms/types";
@@ -25,7 +25,7 @@ const FormLoad = (props: FormLoadComponentPropsType) => {
     }
 
     return (
-        <Query query={GET_PUBLISHED_FORM} variables={variables}>
+        <Query query={GET_PUBLISHED_CONTENT_MODEL} variables={variables}>
             {({ data, loading }) => {
                 if (loading) {
                     // TODO: handle loading

@@ -6,7 +6,7 @@ import get from "lodash.get";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { CircularProgress } from "@webiny/ui/Progress";
 import { Grid, Cell } from "@webiny/ui/Grid";
-import { UPDATE_FORMS_SETTINGS } from "./graphql";
+import { UPDATE_CONTENT_MODELS_SETTINGS } from "./graphql";
 import { useFormEditor } from "@webiny/app-headless-cms/admin/components/FormEditor/Context";
 import { validation } from "@webiny/validation";
 import { i18n } from "@webiny/app/i18n";
@@ -29,7 +29,7 @@ const ReCaptchaSettingsDialog = ({ open, onClose, reCaptchaSettings, onSubmit }:
 
     return (
         <Dialog open={open} onClose={onClose}>
-            <Mutation mutation={UPDATE_FORMS_SETTINGS}>
+            <Mutation mutation={UPDATE_CONTENT_MODELS_SETTINGS}>
                 {update => (
                     <Form
                         data={reCaptchaSettings}

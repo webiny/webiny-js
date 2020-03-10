@@ -70,7 +70,7 @@ export const DATA_FIELDS = `
     }
 `;
 
-export const GET_PUBLISHED_FORM = gql`
+export const GET_PUBLISHED_CONTENT_MODEL = gql`
     query GetPublishedForm($id: ID, $parent: ID, $version: Int, $slug: String) {
         forms {
             getPublishedForm(id: $id, parent: $parent, version: $version, slug: $slug) {

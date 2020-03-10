@@ -1,7 +1,7 @@
 import React from "react";
 import shortid from "shortid";
 import { get, cloneDeep, pick } from "lodash";
-import { GET_FORM, UPDATE_REVISION } from "./graphql";
+import { GET_CONTENT_MODEL, UPDATE_REVISION } from "./graphql";
 import { getFieldPosition, moveField, moveRow, deleteField } from "./functions";
 import { getPlugins } from "@webiny/plugins";
 
@@ -28,7 +28,7 @@ export default FormEditorContext => {
             data: state.data,
             state,
             async getForm(id: string) {
-                const response = await self.apollo.query({ query: GET_FORM, variables: { id } });
+                const response = await self.apollo.query({ query: GET_CONTENT_MODEL, variables: { id } });
                 const { data, error } = get(response, "data.forms.getForm");
                 if (error) {
                     throw new Error(error);

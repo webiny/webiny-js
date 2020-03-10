@@ -5,7 +5,7 @@ import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { IconButton } from "@webiny/ui/Button";
 import { Tooltip } from "@webiny/ui/Tooltip";
 import { ReactComponent as DeleteIcon } from "@webiny/app-headless-cms/admin/icons/delete.svg";
-import { GET_FORM, DELETE_FORM } from "@webiny/app-headless-cms/admin/viewsGraphql";
+import { GET_CONTENT_MODEL, DELETE_CONTENT_MODEL } from "@webiny/app-headless-cms/admin/viewsGraphql";
 import { ConfirmationDialog } from "@webiny/ui/ConfirmationDialog";
 import { cloneDeep, get } from "lodash";
 
@@ -30,7 +30,7 @@ const DeleteForm = ({ form, revision, selectRevision }) => {
                         onClick={() =>
                             showConfirmation(async () => {
                                 await client.mutate({
-                                    mutation: DELETE_FORM,
+                                    mutation: DELETE_CONTENT_MODEL,
                                     variables: { id: revision.id },
                                     refetchQueries: ["FormsListForms"],
                                     update: (cache, updated) => {
@@ -51,7 +51,7 @@ const DeleteForm = ({ form, revision, selectRevision }) => {
                                         }
 
                                         const gqlParams = {
-                                            query: GET_FORM,
+                                            query: GET_CONTENT_MODEL,
                                             variables: { id: form.id }
                                         };
                                         const data: any = cloneDeep(cache.readQuery(gqlParams));

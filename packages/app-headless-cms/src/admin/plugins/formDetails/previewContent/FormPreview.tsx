@@ -7,7 +7,7 @@ import gql from "graphql-tag";
 import { get } from "lodash";
 import { FbFormModel } from "@webiny/app-headless-cms/types";
 
-const GET_FORM = gql`
+const GET_CONTENT_MODEL = gql`
     query GetForm($id: ID!) {
         forms {
             getForm(id: $id) {
@@ -38,7 +38,7 @@ type FormPreviewProps = {
 
 const FormPreview = ({ revision }: FormPreviewProps) => {
     return (
-        <Query query={GET_FORM} variables={{ id: revision.id }}>
+        <Query query={GET_CONTENT_MODEL} variables={{ id: revision.id }}>
             {data => (
                 <div className={pageInnerWrapper}>
                     {revision && <Form preview data={get(data, "data.forms.getForm.data")} />}

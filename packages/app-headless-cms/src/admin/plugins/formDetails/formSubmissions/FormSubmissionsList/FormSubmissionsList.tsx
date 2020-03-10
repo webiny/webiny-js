@@ -16,7 +16,7 @@ import {
 import FormSubmissionDialog from "./FormSubmissionDialog";
 import { ReactComponent as ImportExport } from "./icons/round-cloud_download-24px.svg";
 import { IconButton } from "@webiny/ui/Button";
-import { EXPORT_FORM_SUBMISSIONS } from "@webiny/app-headless-cms/admin/viewsGraphql";
+import { EXPORT_CONTENT_MODEL_SUBMISSIONS } from "@webiny/app-headless-cms/admin/viewsGraphql";
 import { Mutation } from "react-apollo";
 import { Tooltip } from "@webiny/ui/Tooltip";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
@@ -69,7 +69,7 @@ const FormSubmissionsList = props => {
                     multiSelectAll={dataList.multiSelectAll}
                     multiSelect={dataList.multiSelect}
                     multiSelectActions={
-                        <Mutation mutation={EXPORT_FORM_SUBMISSIONS}>
+                        <Mutation mutation={EXPORT_CONTENT_MODEL_SUBMISSIONS}>
                             {update => (
                                 <Tooltip
                                     content={renderExportFormSubmissionsTooltip(dataList)}
