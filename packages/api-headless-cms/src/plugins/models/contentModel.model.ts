@@ -12,6 +12,7 @@ export default ({ createBase, context }) => {
             title: string({ validation: required }),
             modelId: string({ validation: required }),
             description: string(),
+            layout: object({ value: [] }),
             fields: fields({
                 list: true,
                 value: [],
