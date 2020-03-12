@@ -128,8 +128,8 @@ module.exports = [
 
                     oraSpinner.text = "Linking packages...";
                     await execa("yarn");
-                    oraSpinner.text = "Building the newly generated package...";
-                    await execa("yarn", ["build"], { cwd: packageLocation });
+                    // oraSpinner.text = "Building the newly generated package...";
+                    // await execa("yarn", ["build"], { cwd: packageLocation });
                     oraSpinner.succeed("Successfully scaffolded the template!");
                 } catch (e) {
                     oraSpinner.stop();
