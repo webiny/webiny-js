@@ -2,7 +2,7 @@ import React from "react";
 import HTML5Backend from "react-dnd-html5-backend";
 import { DndProvider } from "react-dnd";
 import Snackbar from "@webiny/app-admin/plugins/Snackbar/Snackbar";
-import { FormEditorApp } from "@webiny/app-headless-cms/admin/components/FormEditor";
+import { FormEditorApp } from "../components/FormEditor";
 
 export default function EditorView() {
     return (
