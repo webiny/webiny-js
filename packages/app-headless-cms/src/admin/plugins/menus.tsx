@@ -8,7 +8,7 @@ const t = i18n.ns("app-headless-cms/admin/menus");
 export default [
     {
         type: "menu-content-section",
-        name: "menu-content-section-forms",
+        name: "menu-content-section-cms",
         render({ Section, Item }) {
             return (
                 <SecureView roles={["headless-cms-editors"]}>
