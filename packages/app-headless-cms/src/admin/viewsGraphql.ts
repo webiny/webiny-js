@@ -8,11 +8,7 @@ const ERROR_FIELDS = `
 
 const BASE_CONTENT_MODEL_FIELDS = `  
     id
-    name
-    version
-    parent
-    published
-    status
+    title
     savedOn
     createdBy {
         firstName
@@ -21,9 +17,9 @@ const BASE_CONTENT_MODEL_FIELDS = `
 `;
 
 export const LIST_CONTENT_MODELS = gql`
-    query FormsListForms($sort: JSON, $page: Int, $perPage: Int, $search: String) {
-        forms {
-            listForms(sort: $sort, page: $page, perPage: $perPage, search: $search) {
+    query HeadlessCmsListContentModels($sort: JSON, $page: Int, $perPage: Int) {
+        cmsManage {
+            listContentModels(sort: $sort, page: $page, perPage: $perPage) {
                 data {  
                     ${BASE_CONTENT_MODEL_FIELDS}
                 }
