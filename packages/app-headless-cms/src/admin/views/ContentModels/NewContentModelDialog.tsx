@@ -49,7 +49,7 @@ const NewContentModelDialog: React.FC<NewContentModelDialogProps> = ({
             open={open}
             onClose={onClose}
             className={narrowDialog}
-            data-testid="fb-new-form-modal"
+            data-testid="cms-new-content-model-modal"
         >
             <Mutation mutation={CREATE_CONTENT_MODEL}>
                 {update => (
@@ -59,7 +59,7 @@ const NewContentModelDialog: React.FC<NewContentModelDialogProps> = ({
                             const response = get(
                                 await update({
                                     variables: { data },
-                                    refetchQueries: ["FormsListForms"], // TODO @i18n: Proper refetch here!
+                                    refetchQueries: ["HeadlessCmsListContentModels"], // TODO @i18n: Proper refetch here!
                                     awaitRefetchQueries: true
                                 }),
                                 "data.cmsManage.createContentModel"

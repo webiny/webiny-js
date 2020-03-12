@@ -7,7 +7,7 @@ import NewContentModelDialog from "./NewContentModelDialog";
 import { LIST_CONTENT_MODELS } from "../../viewsGraphql";
 import { useDataList } from "@webiny/app/hooks/useDataList";
 
-function Forms() {
+function ContentModels() {
     const [newContentModelDialogOpened, openNewContentModelDialog] = React.useState(false);
 
     const dataList = useDataList({
@@ -30,7 +30,7 @@ function Forms() {
                     <ContentModelsDataList dataList={dataList} />
                 </LeftPanel>
                 <RightPanel span={8}>
-                    <ContentModelDetails refreshForms={dataList.refresh} />
+                    <ContentModelDetails refreshContentModels={dataList.refresh} />
                 </RightPanel>
             </SplitView>
             <FloatingActionButton
@@ -41,4 +41,4 @@ function Forms() {
     );
 }
 
-export default Forms;
+export default ContentModels;
