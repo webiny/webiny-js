@@ -92,9 +92,9 @@ module.exports = [
                     pushNewEndpoint({
                         serverlessJson,
                         newEndpoint: {
+                            path: `/${lambdaUrlPath}`,
                             method: "ANY",
-                            function: `\${${serviceName}}`,
-                            path: `/${lambdaUrlPath}`
+                            function: `\${${serviceName}}`
                         }
                     });
                     fixServerlessVariables(serverlessJson, [
