@@ -101,7 +101,7 @@ Thanks goes to these wonderful people:
     <td align="center"><a href="https://github.com/ahmad-reza619"><img src="https://avatars3.githubusercontent.com/u/52902060?v=4" width="100px;" alt=""/><br /><sub><b>Ahmad Reza</b></sub></a><br /></td>
   </tr>
   <tr>
-    <td align="center"><a href="https://github.com/visshaljagtap"><img src="https://avatars2.githubusercontent.com/u/35190080?v=4" width="100px;" alt=""/><br /><sub><b>Vishal Jagtap</b></sub></a><br /><a href="https://github.com/Webiny/webiny-js/commits?author=visshaljagtap" title="Documentation">📖</a></td>
+    <td align="center"><a href="https://github.com/visshaljagtap"><img src="https://avatars2.githubusercontent.com/u/35190080?v=4" width="100px;" alt=""/><br /><sub><b>Vishal Jagtap</b></sub></a><br /></td>
   </tr>
 </table>
 
