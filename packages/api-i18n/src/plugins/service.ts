@@ -1,6 +1,7 @@
 import i18n from "./i18n";
 import { GraphQLClient } from "graphql-request";
 import get from "lodash/get";
+import { validation, ValidationError } from '@webiny/validation';
 import { GraphQLContextI18NGetLocales } from "@webiny/api-i18n/types";
 
 let localesCache;
@@ -29,12 +30,16 @@ export default () => [
                 return localesCache;
             }
 
-            const urlRegEx = /^(https?:\/\/)((([a-z\d]([a-z\d-]*[a-z\d])*)\.)+[a-z]{2,}|((\d{1,3}\.){3}\d{1,3}))(\:\d+)?(\/[-a-z\d%_.~+]*)*(\?[;&a-z\d%_.~+=-]*)?(\#[-a-z\d_]*)?$/i;
-
-            if (!urlRegEx.test(process.env.I18N_API_URL)) {
-                throw Error(
-                    `I18N_API_URL env variable is not a valid URL. Make sure it's specified in the service configuration.`
+            if (!process.env.I18N_API_URL) {
+                throw new Error(
+                    `I18N_API_URL env variable is missing. Make sure it's specified in the service 'serverless.yml' configuration.`
                 );
+            }
+
+            if (validation.validate(process.env.I18N_API_URL, 'url', { throw: false }) instanceof ValidationError) {
+                throw new Error(
+                    `Invalid URL specified for I18N_API_URL env variable.`
+                )
             }
 
             const client = new GraphQLClient(process.env.I18N_API_URL);
