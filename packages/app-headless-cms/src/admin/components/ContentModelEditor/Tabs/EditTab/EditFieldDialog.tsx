@@ -17,8 +17,8 @@ import GeneralTab from "./EditFieldDialog/GeneralTab";
 import ValidatorsTab from "./EditFieldDialog/ValidatorsTab";
 import FieldTypeSelector from "./EditFieldDialog/FieldTypeSelector";
 import { i18n } from "@webiny/app/i18n";
-const t = i18n.namespace("FormEditor.EditFieldDialog");
-import { useFormEditor } from "@webiny/app-headless-cms/admin/components/FormEditor/Context";
+const t = i18n.namespace("ContentModelEditor.EditFieldDialog");
+import { useContentModelEditor } from "@webiny/app-headless-cms/admin/components/ContentModelEditor/Context";
 import { useI18N } from "@webiny/app-i18n/hooks/useI18N";
 import { FbBuilderFieldPlugin, FbFormModelField } from "@webiny/app-headless-cms/types";
 
@@ -49,7 +49,7 @@ const EditFieldDialog = ({ field, onSubmit, ...props }: EditFieldDialogProps) =>
     const [isNewField, setIsNewField] = useState(false);
     const [screen, setScreen] = useState();
 
-    const { getFieldPlugin } = useFormEditor();
+    const { getFieldPlugin } = useContentModelEditor();
     const i18n = useI18N();
 
     useEffect(() => {

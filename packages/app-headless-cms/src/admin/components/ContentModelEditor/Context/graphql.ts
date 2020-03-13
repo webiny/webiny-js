@@ -6,6 +6,22 @@ const I18N_FIELDS = `
         locale
     }
 `;
+/*
+list: true,
+    label: i18nString({ context, validation: required }),
+    type: string({ validation: required }),
+    localization: boolean({ validation: required }),
+    unique: boolean({ validation: required }),
+    validation: fields({
+        list: true,
+        value: [],
+        instanceOf: withFields({
+            name: string({ validation: required }),
+            message: i18nString({ context }),
+            settings: object({ value: {} })
+        })()
+    }),
+    settings: object({ value: {} })*/
 
 export const FIELDS_FIELDS = `
         _id
@@ -37,65 +53,17 @@ export const FIELDS_FIELDS = `
         settings
 `;
 
-const SETTINGS_FIELDS = /* GraphQL */ `
-    {
-        reCaptcha {
-            enabled
-            settings {
-                enabled
-                siteKey
-                secretKey
-            }
-            errorMessage {
-                ${I18N_FIELDS}
-            }
-        }
-        layout {
-            renderer
-        }
-        successMessage {
-            ${I18N_FIELDS}
-        }
-        submitButtonLabel {
-            ${I18N_FIELDS}
-        }
-        termsOfServiceMessage {
-            enabled
-            message {
-                ${I18N_FIELDS}
-            }
-            errorMessage {
-                ${I18N_FIELDS}
-            }
-        }
-    }
-`;
-
 export const GET_CONTENT_MODEL = gql`
-    query GetForm($id: ID!) {
-        forms {
-            getForm(id: $id) {
+    query GetContentModel($id: ID!) {
+        cmsManage {
+            getContentModel(id: $id) {
                 data {
                     id
-                    name
-                    version
+                    title
                     fields {
                         ${FIELDS_FIELDS}
                     }
                     layout
-                    settings ${SETTINGS_FIELDS}
-                    triggers
-                    published
-                    locked
-                    status
-                    revisions {
-                        id
-                        name
-                        published
-                        locked
-                        status
-                        version
-                    }
                 }
             }
         }
@@ -104,17 +72,16 @@ export const GET_CONTENT_MODEL = gql`
 
 export const UPDATE_REVISION = gql`
     mutation UpdateForm($id: ID!, $data: UpdateFormInput!) {
-        forms {
+        cmsManage {
             updateRevision(id: $id, data: $data) {
                 data {
                     id
-                    name
+                    title
                     version
                     fields {
                         ${FIELDS_FIELDS}
                     }
                     layout
-                    settings ${SETTINGS_FIELDS}
                     triggers
                 }
             }

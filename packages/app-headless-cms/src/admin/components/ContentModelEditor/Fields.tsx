@@ -1,5 +1,5 @@
 import React from "react";
-import { useFormEditor } from "@webiny/app-headless-cms/admin/components/FormEditor/Context";
+import { useContentModelEditor } from "@webiny/app-headless-cms/admin/components/ContentModelEditor/Context";
 import { getPlugins } from "@webiny/plugins";
 import styled from "@emotion/styled";
 import { css } from "emotion";
@@ -86,7 +86,7 @@ const Field = ({ onFieldDragStart, fieldType: { name, label } }) => {
 };
 
 export const Fields = ({ onFieldDragStart }) => {
-    const { getField } = useFormEditor();
+    const { getField } = useContentModelEditor();
 
     function getGroups() {
         const presetFieldPlugins = getPlugins<FbBuilderFieldPlugin>("form-editor-field-type")

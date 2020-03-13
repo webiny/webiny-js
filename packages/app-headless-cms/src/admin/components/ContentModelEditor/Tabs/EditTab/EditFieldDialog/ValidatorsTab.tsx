@@ -6,7 +6,7 @@ import {
     SimpleFormContent,
     SimpleFormHeader
 } from "@webiny/app-admin/components/SimpleForm";
-import { useFormEditor } from "@webiny/app-headless-cms/admin/components/FormEditor/Context";
+import { useContentModelEditor } from "@webiny/app-headless-cms/admin/components/ContentModelEditor/Context";
 import { Form } from "@webiny/form";
 import { cloneDeep, debounce } from "lodash";
 import { Grid, Cell } from "@webiny/ui/Grid";
@@ -52,7 +52,7 @@ const onFormChange = debounce(({ data, validationValue, onChangeValidation, vali
 
 const ValidatorsTab = props => {
     const i18n = useI18N();
-    const { getFieldPlugin } = useFormEditor();
+    const { getFieldPlugin } = useContentModelEditor();
     const {
         field,
         form: { Bind }

@@ -5,21 +5,25 @@ import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import EditorBar from "./Bar";
 import EditorContent from "./EditorContent";
 import DragPreview from "./DragPreview";
-import { useFormEditor } from "./Context";
+import { useContentModelEditor } from "./Context";
 
-const FormEditor = () => {
+import { i18n } from "@webiny/app/i18n";
+const t = i18n.ns("app-headless-cms/admin/editor");
+
+const ContentModelEditor = () => {
     const {
-        getForm,
+        getContentModel,
         state: { data, id }
-    } = useFormEditor();
+    } = useContentModelEditor();
 
     const { history } = useReactRouter();
     const { showSnackbar } = useSnackbar();
 
     React.useEffect(() => {
-        getForm(id).catch(() => {
-            history.push(`/forms`);
-            showSnackbar("Could not load form with given ID.");
+        getContentModel(id).catch((e) => {
+            console.log('ada', e)
+            history.push(`/cms/content-models`);
+            showSnackbar(t`Could not load content model with given ID.`);
         });
     }, [id]);
 
@@ -36,4 +40,4 @@ const FormEditor = () => {
     );
 };
 
-export default FormEditor;
+export default ContentModelEditor;

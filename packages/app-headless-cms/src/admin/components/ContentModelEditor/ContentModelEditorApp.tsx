@@ -1,11 +1,11 @@
 import React from "react";
 import { useApolloClient } from "react-apollo";
 import useReactRouter from "use-react-router";
-import { FormEditorProvider } from "./Context";
-import FormEditor from "./FormEditor";
+import { ContentModelEditorProvider } from "./Context";
+import ContentModelEditor from "./ContentModelEditor";
 import { match } from "react-router";
 
-const FormEditorApp = () => {
+const ContentModelEditorApp = () => {
     const router = useReactRouter();
     const client = useApolloClient();
 
@@ -15,15 +15,15 @@ const FormEditorApp = () => {
     const { id } = matched.params;
 
     return (
-        <FormEditorProvider
+        <ContentModelEditorProvider
             key={id}
             apollo={client}
             id={id}
             defaultLayoutRenderer={"forms-form-layout-default"}
         >
-            <FormEditor />
-        </FormEditorProvider>
+            <ContentModelEditor />
+        </ContentModelEditorProvider>
     );
 };
 
-export default FormEditorApp;
+export default ContentModelEditorApp;

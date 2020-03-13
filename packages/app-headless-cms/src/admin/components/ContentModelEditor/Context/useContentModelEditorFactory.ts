@@ -13,12 +13,14 @@ import {
     FbBuilderFieldPlugin
 } from "@webiny/app-headless-cms/types";
 
-export default FormEditorContext => {
+export default ContentModelEditorContext => {
     return () => {
         // TODO: @ts-adrian add proper type
-        const context = React.useContext<any>(FormEditorContext);
+        const context = React.useContext<any>(ContentModelEditorContext);
         if (!context) {
-            throw new Error("useFormEditor must be used within a FormEditorProvider");
+            throw new Error(
+                "useContentModelEditor must be used within a ContentModelEditorProvider"
+            );
         }
 
         const { state, dispatch } = context;
@@ -27,24 +29,21 @@ export default FormEditorContext => {
             apollo: state.apollo,
             data: state.data,
             state,
-            async getForm(id: string) {
-                const response = await self.apollo.query({ query: GET_CONTENT_MODEL, variables: { id } });
-                const { data, error } = get(response, "data.forms.getForm");
+            async getContentModel(id: string) {
+                const response = await self.apollo.query({
+                    query: GET_CONTENT_MODEL,
+                    variables: { id }
+                });
+                const { data, error } = get(response, "data.cmsManage.getContentModel");
                 if (error) {
                     throw new Error(error);
                 }
 
-                self.setData(() => {
-                    const form = cloneDeep(data);
-                    if (!form.settings.layout.renderer) {
-                        form.settings.layout.renderer = state.defaultLayoutRenderer;
-                    }
-                    return form;
-                }, false);
+                self.setData(() => cloneDeep(data), false);
 
                 return response;
             },
-            saveForm: async data => {
+            saveContentModel: async data => {
                 data = data || state.data;
                 const response = await self.apollo.mutate({
                     mutation: UPDATE_REVISION,
@@ -54,18 +53,18 @@ export default FormEditorContext => {
                     }
                 });
 
-                return get(response, "data.forms.updateRevision");
+                return get(response, "data.cmsManage.updateRevision");
             },
             /**
              * Set form data by providing a callback, which receives a fresh copy of data on which you can work on.
              * Return new data once finished.
              * @param setter
-             * @param saveForm
+             * @param saveContentModel
              */
-            setData(setter: Function, saveForm = true) {
+            setData(setter: Function, saveContentModel = true) {
                 const data = setter(cloneDeep(self.data));
                 dispatch({ type: "data", data });
-                saveForm !== false && self.saveForm(data);
+                saveContentModel !== false && self.saveContentModel(data);
             },
 
             /**

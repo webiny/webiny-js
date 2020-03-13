@@ -2,7 +2,7 @@ import React, { useEffect, useCallback, useRef } from "react";
 import { Input } from "@webiny/ui/Input";
 import { Grid, Cell } from "@webiny/ui/Grid";
 import { camelCase } from "lodash";
-import { useFormEditor } from "@webiny/app-headless-cms/admin/components/FormEditor/Context";
+import { useContentModelEditor } from "@webiny/app-headless-cms/admin/components/ContentModelEditor/Context";
 import { I18NInput } from "@webiny/app-i18n/admin/components";
 import { useI18N } from "@webiny/app-i18n/hooks/useI18N";
 import { validation } from "@webiny/validation";
@@ -17,7 +17,7 @@ type GeneralTabProps = {
 const GeneralTab = ({ field, form }: GeneralTabProps) => {
     const { Bind, setValue } = form;
     const inputRef = useRef(null);
-    const { getField, getFieldPlugin } = useFormEditor();
+    const { getField, getFieldPlugin } = useContentModelEditor();
     const { getValue } = useI18N();
 
     const setRef = useCallback(ref => (inputRef.current = ref), []);

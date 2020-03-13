@@ -3,7 +3,7 @@ import styled from "@emotion/styled";
 import { Accordion, AccordionItem } from "@webiny/ui/Accordion";
 import { Typography } from "@webiny/ui/Typography";
 import { Form } from "@webiny/form";
-import { useFormEditor } from "@webiny/app-headless-cms/admin/components/FormEditor/Context";
+import { useContentModelEditor } from "@webiny/app-headless-cms/admin/components/ContentModelEditor/Context";
 import { getPlugins } from "@webiny/plugins";
 import { get, set } from "lodash";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
@@ -17,7 +17,7 @@ const Container = styled("div")({
 });
 
 export const TriggersTab = () => {
-    const { setData, data: formData } = useFormEditor();
+    const { setData, data: formData } = useContentModelEditor();
     const plugins = getPlugins<FbEditorTrigger>("form-editor-trigger");
     const { showSnackbar } = useSnackbar();
 

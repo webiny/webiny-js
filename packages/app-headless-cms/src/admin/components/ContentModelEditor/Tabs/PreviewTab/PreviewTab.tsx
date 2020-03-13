@@ -1,8 +1,8 @@
 import React from 'react';
 import {css} from 'emotion';
 import {
-  useFormEditor,
-} from '@webiny/app-headless-cms/admin/components/FormEditor/Context';
+  useContentModelEditor,
+} from '@webiny/app-headless-cms/admin/components/ContentModelEditor/Context';
 import {Elevation} from '@webiny/ui/Elevation';
 import {Form} from '@webiny/app-headless-cms/components/Form';
 
@@ -14,7 +14,7 @@ const formPreviewWrapper = css ({
 });
 
 export const PreviewTab = () => {
-  const {data} = useFormEditor ();
+  const {data} = useContentModelEditor ();
 
   return (
     <Elevation z={1} className={formPreviewWrapper}>

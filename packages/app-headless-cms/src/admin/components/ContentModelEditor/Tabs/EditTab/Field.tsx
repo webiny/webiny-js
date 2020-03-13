@@ -5,7 +5,7 @@ import { Typography } from "@webiny/ui/Typography";
 import { ReactComponent as EditIcon } from "../../icons/edit.svg";
 import { ReactComponent as DeleteIcon } from "../../icons/delete.svg";
 import { useI18N } from "@webiny/app-i18n/hooks/useI18N";
-import { useFormEditor } from "@webiny/app-headless-cms/admin/components/FormEditor/Context";
+import { useContentModelEditor } from "@webiny/app-headless-cms/admin/components/ContentModelEditor/Context";
 
 const FieldContainer = styled("div")({
     display: "flex",
@@ -35,7 +35,7 @@ const Actions = styled("div")({
 const Field = props => {
     const { field, onEdit, onDelete } = props;
     const { getValue } = useI18N();
-    const { getFieldPlugin } = useFormEditor();
+    const { getFieldPlugin } = useContentModelEditor();
 
     const fieldPlugin = getFieldPlugin({ name: field.name });
     return (
