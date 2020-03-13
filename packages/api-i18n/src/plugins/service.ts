@@ -31,15 +31,13 @@ export default () => [
             }
 
             if (!process.env.I18N_API_URL) {
-                throw new Error(
-                    `I18N_API_URL env variable is missing. Make sure it's specified in the service 'serverless.yml' configuration.`
-                );
+                throw new Error('I18N_API_URL environment variable is missing. Please check the service configuration, located in the "api/serverless.yml" file.');
             }
 
-            if (validation.validate(process.env.I18N_API_URL, 'url', { throw: false }) instanceof ValidationError) {
-                throw new Error(
-                    `Invalid URL specified for I18N_API_URL env variable.`
-                )
+            try {
+                validation.validateSync(process.env.I18N_API_URL, "url");
+            } catch (e) {
+                throw new Error('The value specified for the I18N_API_URL env variable is not a valid URL. Please check the service configuration, located in the "api/serverless.yml" file.')
             }
 
             const client = new GraphQLClient(process.env.I18N_API_URL);
