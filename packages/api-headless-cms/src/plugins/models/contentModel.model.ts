@@ -19,7 +19,10 @@ export default ({ createBase, context }) => {
                 instanceOf: withFields({
                     _id: string({ validation: required }),
                     fieldId: string({ validation: required }),
+                    name: string({ validation: required }),
                     label: i18nString({ context, validation: required }),
+                    helpText: i18nString({ context }),
+                    placeholderText: i18nString({ context }),
                     type: string({ validation: required }),
                     localization: boolean({ validation: required }),
                     unique: boolean({ validation: required }),

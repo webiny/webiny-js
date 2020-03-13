@@ -10,7 +10,6 @@ import {
 
 import { i18nFieldType } from "./graphqlTypes/i18nFieldType";
 import { i18nFieldInput } from "./graphqlTypes/i18nFieldInput";
-
 import gql from "graphql-tag";
 import { hasScope } from "@webiny/api-security";
 import { generateSchemaPlugins } from "./schema/schemaPlugins";
@@ -60,10 +59,12 @@ export default () => [
                     id: ID
                     title: String
                     modelId: String
+                    savedOn: DateTime
                     description: String
                     createdOn: DateTime
                     createdBy: SecurityUser
                     fields: [CmsContentModelField]
+                    layout: [[ID]]
                 }
 
                 input CmsContentModelInput {
@@ -85,26 +86,44 @@ export default () => [
                     settings: JSON
                 }
 
+                type CmsFieldOptions {
+                    label: CmsString
+                    value: String
+                }
+
+                input CmsFieldOptionsInput {
+                    label: CmsStringInput
+                    value: String
+                }
+                
                 type CmsContentModelField {
                     _id: String
                     label: CmsString
+                    placeholderText: CmsString
+                    helpText: CmsString
                     fieldId: String
                     type: String
+                    name: String
                     localization: Boolean
                     unique: Boolean
                     validation: [CmsFieldValidation]
                     settings: JSON
+                    options: [CmsFieldOptions]
                 }
 
                 input CmsContentModelFieldInput {
                     _id: String
                     label: CmsStringInput
+                    placeholderText: CmsStringInput
+                    helpText: CmsStringInput
                     fieldId: String
                     type: String
+                    name: String
                     localization: Boolean
                     unique: Boolean
                     validation: [CmsFieldValidationInput]
                     settings: JSON
+                    options: [CmsFieldOptionsInput]
                 }
 
                 type CmsContentModelListResponse {
@@ -154,6 +173,11 @@ export default () => [
                 }
             `,
             resolvers: {
+                CmsContentModel: {
+                    createdBy(contentModel) {
+                        return { __typename: "SecurityUser", id: contentModel.createdBy };
+                    }
+                },
                 Query: {
                     cmsManage: {
                         resolve: (parent, args, context) => {
