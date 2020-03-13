@@ -9,13 +9,14 @@ const _ = require("lodash");
 const getPackageLocation = ({ context, packageFolderName }) =>
     path.join(context.packagesPath, packageFolderName);
 const getPackageFolderName = packageName => packageName.split("/").pop();
+const getServiceName = packageName => _.camelCase(packageName.split("/").pop());
 
 module.exports = [
     {
-        name: "scaffold-template-apollo-service",
+        name: "scaffold-template-custom-lambda",
         type: "scaffold-template",
         scaffold: {
-            name: "GraphQL Apollo Service",
+            name: "Custom Lambda Function",
             questions: ({ context }) => {
                 if (!fs.existsSync(context.apiYaml)) {
                     console.log(
@@ -37,24 +38,42 @@ module.exports = [
 
                             return true;
                         }
+                    },
+                    {
+                        name: "lambdaUrlPath",
+                        message: "Lambda URL Path",
+                        validate: lambdaPath => {
+                            if (lambdaPath.match(/[^0-9a-zA-Z-_]/))
+                                return "Please insert a valid URL path. (alphanumeric, hyphens and underscores only)";
+
+                            return true;
+                        }
                     }
                 ];
             },
             generate: async ({ input, context, oraSpinner }) => {
                 const warnings = [];
                 try {
-                    // First we update serverless.yml
-                    const { packageName } = input;
-                    const serviceName = _.camelCase(packageName.split("/").pop()); // There can be only one slash, ie: @webiny/my-package. We extract the package's name and convert it to camelCase
+                    const { packageName, lambdaUrlPath } = input;
+                    const serviceName = getServiceName(packageName);
                     const packageFolderName = getPackageFolderName(packageName);
                     const packageLocation = getPackageLocation({ context, packageFolderName });
 
                     const serverlessJson = yaml.safeLoad(fs.readFileSync(context.apiYaml));
                     if (serverlessJson[serviceName])
-                        throw new Error(
-                            `Service ${serviceName} already exists in serverless.yml! This error should've been thrown earlier...`
-                        );
+                        throw new Error(`Service ${serviceName} already exists serverless.yml!`);
 
+                    const pushNewEndpoint = ({ serverlessJson, newEndpoint }) => {
+                        if (
+                            serverlessJson.api.inputs.endpoints.find(
+                                endpoint => endpoint.path === lambdaUrlPath
+                            )
+                        )
+                            throw new Error(
+                                `Path ${lambdaUrlPath} already exists among the endpoints! Please pick a different path or modify the exiting ones.`
+                            );
+                        serverlessJson.api.inputs.endpoints.push(newEndpoint);
+                    };
                     const fixServerlessVariables = (serverlessJson, serverlessVariables) => {
                         if (serverlessVariables.length === 0) return;
 
@@ -69,43 +88,33 @@ module.exports = [
                                 serverlessJson.vars[variable.name] = variable.default;
                             }
                     };
+
+                    pushNewEndpoint({
+                        serverlessJson,
+                        newEndpoint: {
+                            method: "ANY",
+                            function: `\${${serviceName}}`,
+                            path: `/${lambdaUrlPath}`
+                        }
+                    });
                     fixServerlessVariables(serverlessJson, [
                         {
                             name: "region",
                             default: "us-east-1"
-                        },
-                        {
-                            name: "debug",
-                            default: false
-                        },
-                        {
-                            name: "security",
-                            default: {
-                                token: {
-                                    expiresIn: 2592000,
-                                    secret: "${env.JWT_SECRET}"
-                                }
-                            }
                         }
                     ]);
 
                     serverlessJson[serviceName] = {
-                        component: "@webiny/serverless-apollo-service",
+                        component: "@webiny/serverless-function",
                         inputs: {
-                            description: `Apollo GraphQL service '${serviceName}' scaffoled by the CLI.`,
+                            description: "Lambda Function generated by the CLI",
                             region: "${vars.region}",
-                            memory: 512,
-                            debug: "${vars.debug}",
-                            hook: "yarn build",
-                            root: `../${packageLocation}`,
-                            code: `../${packageLocation}/dist`,
-                            webpackConfig: "./webpack.config.js",
-                            plugins: [
-                                {
-                                    factory: "@webiny/api-security/plugins",
-                                    options: "${vars.security}"
-                                }
-                            ]
+                            hook: `yarn build`,
+                            root: `./../packages/${packageFolderName}`,
+                            code: `./../packages/${packageFolderName}/dist`,
+                            handler: "handler.handler",
+                            memory: 2048,
+                            timeout: 60
                         }
                     };
 
@@ -128,9 +137,9 @@ module.exports = [
 
                     oraSpinner.text = "Linking packages...";
                     await execa("yarn");
-                    // oraSpinner.text = "Building the newly generated package...";
-                    // await execa("yarn", ["build"], { cwd: packageLocation });
-                    oraSpinner.succeed("Successfully scaffolded the GraphQL Apollo Service!");
+                    oraSpinner.text = "Building the newly generated package...";
+                    await execa("yarn", ["build"], { cwd: packageLocation });
+                    oraSpinner.succeed("Successfully scaffolded the Custom Lambda Function!");
                 } catch (e) {
                     oraSpinner.stop();
                     console.log(e);
