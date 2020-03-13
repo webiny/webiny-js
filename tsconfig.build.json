@@ -43,6 +43,8 @@
       "@webiny/app-form-builder/*": ["./packages/app-form-builder/src/*"],
       "@webiny/app-form-builder-theme": ["./packages/app-form-builder-theme/src"],
       "@webiny/app-form-builder-theme/*": ["./packages/app-form-builder-theme/src/*"],
+      "@webiny/app-headless-cms": ["./packages/app-headless-cms/src"],
+      "@webiny/app-headless-cms/*": ["./packages/app-headless-cms/src/*"],
       "@webiny/app-page-builder/*": ["./packages/app-page-builder/src/*"],
       "@webiny/app-page-builder-theme": ["./packages/app-page-builder-theme/src"],
       "@webiny/app-page-builder-theme/*": ["./packages/app-page-builder-theme/src/*"],
