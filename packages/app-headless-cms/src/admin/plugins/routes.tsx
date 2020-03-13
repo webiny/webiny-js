@@ -12,12 +12,12 @@ const Loader = ({ children, ...props }) => (
     <Suspense fallback={<CircularProgress />}>{React.cloneElement(children, props)}</Suspense>
 );
 
-const FormEditor = lazy(() => import("../views/Editor"));
+const ContentModelEditor = lazy(() => import("../views/Editor"));
 const Forms = lazy(() => import("../views/ContentModels/ContentModels"));
 
 const plugins: RoutePlugin[] = [
     {
-        name: "route-form-editors-editor",
+        name: "route-cms-content-models-editor",
         type: "route",
         route: (
             <Route
@@ -29,7 +29,7 @@ const plugins: RoutePlugin[] = [
                             <title>{t`Edit Content Model`}</title>
                         </Helmet>
                         <Loader>
-                            <FormEditor />
+                            <ContentModelEditor />
                         </Loader>
                     </SecureRoute>
                 )}
@@ -37,7 +37,7 @@ const plugins: RoutePlugin[] = [
         )
     },
     {
-        name: "route-form-editors",
+        name: "route-cms-content-models",
         type: "route",
         route: (
             <Route
