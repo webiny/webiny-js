@@ -134,6 +134,15 @@
       "avatar_url": "https://avatars3.githubusercontent.com/u/52902060?v=4",
       "profile": "https://github.com/ahmad-reza619",
       "contributions": []
+    },
+    {
+      "login": "visshaljagtap",
+      "name": "Vishal Jagtap",
+      "avatar_url": "https://avatars2.githubusercontent.com/u/35190080?v=4",
+      "profile": "https://github.com/visshaljagtap",
+      "contributions": [
+        "doc"
+      ]
     }
   ],
   "contributorsPerLine": 6,
