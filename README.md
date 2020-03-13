@@ -28,7 +28,7 @@
 [![Contributor Covenant](https://img.shields.io/badge/Contributor%20Covenant-v1.4%20adopted-ff69b4.svg)](CODE_OF_CONDUCT.md)
 [![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2FWebiny%2Fwebiny-js.svg?type=shield)](https://app.fossa.io/projects/git%2Bgithub.com%2FWebiny%2Fwebiny-js?ref=badge_shield)
 [![Join the chat at https://gitter.im/Webiny/webiny-js](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/Webiny/webiny-js) <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-[![All Contributors](https://img.shields.io/badge/all_contributors-19-orange.svg?style=flat-square)](#contributors-)
+[![All Contributors](https://img.shields.io/badge/all_contributors-20-orange.svg?style=flat-square)](#contributors-)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 
 </p>
@@ -102,6 +102,7 @@ Thanks goes to these wonderful people:
   </tr>
   <tr>
     <td align="center"><a href="https://github.com/visshaljagtap"><img src="https://avatars2.githubusercontent.com/u/35190080?v=4" width="100px;" alt=""/><br /><sub><b>Vishal Jagtap</b></sub></a><br /></td>
+    <td align="center"><a href="https://github.com/Arvisix"><img src="https://avatars1.githubusercontent.com/u/13711406?v=4" width="100px;" alt=""/><br /><sub><b>Maxim Moroz</b></sub></a><br /></td>
   </tr>
 </table>
 
