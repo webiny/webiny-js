@@ -4,23 +4,8 @@ import Divider from "./Divider";
 import PublishFormButton from "./PublishFormButton";
 import { Name } from "./Name";
 import { FormSettingsButton } from "./FormSettings";
-import Revisions from "./Revisions";
 
 export default [
-    {
-        name: "form-editor-default-bar-right-revisions-select",
-        type: "form-editor-default-bar-right",
-        render() {
-            return <Revisions />;
-        }
-    },
-    {
-        name: "form-editor-default-bar-right-revisions-divider",
-        type: "form-editor-default-bar-right",
-        render() {
-            return <Divider />;
-        }
-    },
     {
         name: "form-editor-default-bar-right-form-settings-button",
         type: "form-editor-default-bar-right",
