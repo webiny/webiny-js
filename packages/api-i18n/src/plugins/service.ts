@@ -1,7 +1,7 @@
 import i18n from "./i18n";
 import { GraphQLClient } from "graphql-request";
 import get from "lodash/get";
-import { validation, ValidationError } from '@webiny/validation';
+import { validation } from '@webiny/validation';
 import { GraphQLContextI18NGetLocales } from "@webiny/api-i18n/types";
 
 let localesCache;
