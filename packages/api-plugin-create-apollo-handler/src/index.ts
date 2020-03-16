@@ -1,5 +1,6 @@
 import { ApolloServer } from "apollo-server-lambda";
 import { CreateApolloHandlerPlugin } from "@webiny/api/types";
+import { ApolloHandlerPluginOptions } from "./types";
 
 function toBool(value) {
     if (typeof value === "string") {
@@ -16,16 +17,6 @@ function normalizeEvent(event) {
     if (event.isBase64Encoded) {
         event.body = Buffer.from(event.body, "base64").toString("utf-8");
     }
-}
-
-interface ApolloHandlerPluginOptions {
-    server?: {
-        introspection?: boolean;
-        playground?: boolean;
-    };
-    handler?: {
-        cors?: { [key: string]: any };
-    };
 }
 
 export default (options: ApolloHandlerPluginOptions = {}): CreateApolloHandlerPlugin => {

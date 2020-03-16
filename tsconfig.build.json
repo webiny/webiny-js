@@ -27,6 +27,8 @@
       "@webiny/api-page-builder": ["./packages/api-page-builder/src"],
       "@webiny/api-i18n/*": ["./packages/api-i18n/src/*"],
       "@webiny/api-i18n": ["./packages/api-i18n/src"],
+      "@webiny/api-plugin-create-apollo-handler": ["./packages/api-plugin-create-apollo-handler/src"],
+      "@webiny/api-plugin-create-apollo-handler/*": ["./packages/api-plugin-create-apollo-handler/src/*"],
       "@webiny/api-plugin-commodo-db-proxy/*": ["./packages/api-plugin-commodo-db-proxy/src/*"],
       "@webiny/api-plugin-commodo-db-proxy": ["./packages/api-plugin-commodo-db-proxy/src"],
       "@webiny/api-plugin-commodo-mongodb/*": ["./packages/api-plugin-commodo-mongodb/src/*"],
