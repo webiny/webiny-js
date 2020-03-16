@@ -4,7 +4,8 @@
     "packages": [
       "packages/*",
       "components/*",
-      "examples/apps/*"
+      "examples/apps/*",
+      "examples/api/services/*"
     ],
     "nohoist": [
       "**/inquirer/**",
