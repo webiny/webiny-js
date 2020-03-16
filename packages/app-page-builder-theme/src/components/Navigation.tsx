@@ -15,14 +15,22 @@ const Navigation = ({ data }) => {
                             {item.title}
                             <ul>
                                 {item.children.map((item, index) => {
-                                    return <li key={item.id + index}><Link to={item.url}>{item.title}</Link></li>;
+                                    return (
+                                        <li key={item.id + index}>
+                                            <Link to={item.url}>{item.title}</Link>
+                                        </li>
+                                    );
                                 })}
                             </ul>
                         </li>
                     );
                 }
 
-                return <li key={item.id + index}><Link to={item.url}>{item.title}</Link></li>;
+                return (
+                    <li key={item.id + index}>
+                        <Link to={item.url}>{item.title}</Link>
+                    </li>
+                );
             })}
         </ul>
     );

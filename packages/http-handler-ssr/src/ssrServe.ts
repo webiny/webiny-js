@@ -46,10 +46,13 @@ export default (options): HttpHandlerPlugin => {
                                 ...event,
                                 httpMethod: "POST",
                                 body: {
-                                    ssr: ["invalidateSsrCacheByPath", {
-                                        path: ssrCache.path,
-                                        refresh: true,
-                                    }]
+                                    ssr: [
+                                        "invalidateSsrCacheByPath",
+                                        {
+                                            path: ssrCache.path,
+                                            refresh: true
+                                        }
+                                    ]
                                 }
                             })
                         }).promise();

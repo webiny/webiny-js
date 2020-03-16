@@ -57,7 +57,7 @@ const plugin: GraphQLSchemaPlugin = {
                 },
                 Mutation: {
                     security: emptyResolver
-                },
+                }
             },
             install.resolvers,
             role.resolvers,
