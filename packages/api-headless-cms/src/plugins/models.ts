@@ -4,6 +4,7 @@ import { withStorage, withCrudLogs, withSoftDelete, withFields } from "@webiny/c
 import { GraphQLContextPlugin } from "@webiny/api/types";
 import { GraphQLContext } from "@webiny/api-plugin-commodo-db-proxy/types";
 import contentModel from "./models/contentModel.model";
+import contentModelGroup from "./models/contentModelGroup.model";
 import { createDataModelFromData } from "./utils/createDataModelFromData";
 import { createSearchModelFromData } from "./utils/createSearchModelFromData";
 
@@ -28,8 +29,12 @@ export default () => {
                 withCrudLogs()
             )() as Function;
 
+        const CmsContentModelGroup = contentModelGroup({ createBase, context });
+        const CmsContentModel = contentModel({ createBase, context, CmsContentModelGroup });
+
         context.models = {
-            CmsContentModel: contentModel({ createBase, context }),
+            CmsContentModelGroup,
+            CmsContentModel,
             createBase
         };
 
