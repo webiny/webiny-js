@@ -18,6 +18,28 @@ const ContentModelGroupsView = lazy(() => import("../views/ContentModelGroups/Co
 
 const plugins: RoutePlugin[] = [
     {
+        name: "route-cms-content-models-groups",
+        type: "route",
+        route: (
+            <Route
+                exact
+                path={"/cms/content-models-groups"}
+                render={() => (
+                    <SecureRoute roles={["cms-content-model-groups"]}>
+                        <AdminLayout>
+                            <Helmet>
+                                <title>{t`Content Model Groups`}</title>
+                            </Helmet>
+                            <Loader>
+                                <ContentModelGroupsView />
+                            </Loader>
+                        </AdminLayout>
+                    </SecureRoute>
+                )}
+            />
+        )
+    },
+    {
         name: "route-cms-content-models-editor",
         type: "route",
         route: (

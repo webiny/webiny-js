@@ -1,9 +1,9 @@
 import gql from "graphql-tag";
 
 export const SAVE_CONTENT_MODEL_VIEW = gql`
-    mutation SaveFormView($id: ID!) {
-        forms {
-            saveFormView(id: $id) {
+    mutation SaveContentModelView($id: ID!) {
+        cmsManage {
+            saveContentModelView(id: $id) {
                 error {
                     message
                 }
@@ -19,7 +19,7 @@ export const CREATE_CONTENT_MODEL_SUBMISSION = gql`
         $meta: JSON!
         $reCaptchaResponseToken: String
     ) {
-        forms {
+        cmsManage {
             createFormSubmission(
                 id: $id
                 data: $data

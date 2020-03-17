@@ -1,10 +1,6 @@
-import {
-    FbFormRenderComponentProps,
-    FormSubmitResponseType
-} from "@webiny/app-headless-cms/types";
+import { FbFormRenderComponentProps, FormSubmitResponseType } from "@webiny/app-headless-cms/types";
 
 import { CREATE_CONTENT_MODEL_SUBMISSION } from "./graphql";
-import getClientIp from "./getClientIp";
 import { get } from "lodash";
 import { ApolloClient } from "apollo-client";
 
@@ -12,14 +8,12 @@ type Args = {
     client: ApolloClient<any>;
     props: FbFormRenderComponentProps;
     data: any;
-    reCaptchaResponseToken: string;
 };
 
 export default async ({
     client,
     props: { data: form, preview },
     data: rawData,
-    reCaptchaResponseToken
 }: Args): Promise<FormSubmitResponseType> => {
     if (preview) {
         return { preview: true, error: null, data: null };
@@ -44,15 +38,11 @@ export default async ({
         mutation: CREATE_CONTENT_MODEL_SUBMISSION,
         variables: {
             id: form.id,
-            reCaptchaResponseToken,
-            data,
-            meta: {
-                ip: await getClientIp()
-            }
+            data
         }
     });
 
-    response = get(response, "data.forms.createFormSubmission");
+    response = get(response, "data.cmsManage.createFormSubmission");
 
     return {
         preview: false,

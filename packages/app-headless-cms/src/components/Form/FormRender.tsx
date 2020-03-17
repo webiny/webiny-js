@@ -1,64 +1,30 @@
 import { I18NValue } from "@webiny/app-i18n/components";
 import { getPlugins } from "@webiny/plugins";
-import { cloneDeep, get } from "lodash";
-import React, { useEffect, useRef, useMemo } from "react";
+import { cloneDeep } from "lodash";
+import React from "react";
 import { useApolloClient } from "react-apollo";
-import { createReCaptchaComponent, createTermsOfServiceComponent } from "./components";
-import {
-    createFormSubmission,
-    handleFormTriggers,
-    onFormMounted,
-    reCaptchaEnabled,
-    termsOfServiceEnabled
-} from "./functions";
+import LayoutRenderComponent from "./LayoutRenderComponent/DefaultFormLayout";
+import { createFormSubmission } from "./functions";
 
 import {
     FormRenderPropsType,
     FbFormRenderComponentProps,
     FormSubmitResponseType,
-    FbFormModel,
+    CmsContentModelModel,
     FbFormSubmissionData,
-    FbFormFieldValidatorPlugin,
-    FbFormLayoutPlugin
+    CmsFormFieldValidatorPlugin
 } from "@webiny/app-headless-cms/types";
-import { PbThemePlugin } from "@webiny/app-page-builder/types";
-
-declare global {
-    // eslint-disable-next-line
-    namespace JSX {
-        interface IntrinsicElements {
-            "ssr-cache": {
-                class?: string;
-                id?: string;
-            };
-        }
-    }
-}
 
 const FormRender = (props: FbFormRenderComponentProps) => {
-    const theme = useMemo(
-        () => Object.assign({}, ...getPlugins("pb-theme").map((pl: PbThemePlugin) => pl.theme)),
-        []
-    );
-
     const client = useApolloClient();
-    const data = props.data || ({} as FbFormModel);
-
-    useEffect(() => {
-        if (data.id) {
-            onFormMounted({ ...props, client });
-        }
-    }, [data.id]);
-
-    const reCaptchaResponseToken = useRef("");
-    const termsOfServiceAccepted = useRef(false);
+    const data = props.data || ({} as CmsContentModelModel);
 
     if (!data.id) {
         return null;
     }
 
-    const formData: FbFormModel = cloneDeep(data);
-    const { layout, fields, settings } = formData;
+    const formData: CmsContentModelModel = cloneDeep(data);
+    const { layout, fields } = formData;
 
     const getFieldById = id => {
         return fields.find(field => field._id === id);
@@ -70,7 +36,7 @@ const FormRender = (props: FbFormRenderComponentProps) => {
 
     const getFields = () => {
         const fields: any = cloneDeep(layout);
-        const validatorPlugins = getPlugins<FbFormFieldValidatorPlugin>("form-field-validator");
+        const validatorPlugins = getPlugins<CmsFormFieldValidatorPlugin>("form-field-validator");
 
         fields.forEach(row => {
             row.forEach((id, idIndex) => {
@@ -130,73 +96,12 @@ const FormRender = (props: FbFormRenderComponentProps) => {
     };
 
     const submit = async (data: FbFormSubmissionData): Promise<FormSubmitResponseType> => {
-        if (reCaptchaEnabled(formData) && !reCaptchaResponseToken.current) {
-            return {
-                data: null,
-                preview: Boolean(props.preview),
-                error: {
-                    code: "RECAPTCHA_NOT_PASSED",
-                    message: settings.reCaptcha.errorMessage
-                }
-            };
-        }
-
-        if (termsOfServiceEnabled(formData) && !termsOfServiceAccepted.current) {
-            return {
-                data: null,
-                preview: Boolean(props.preview),
-                error: {
-                    code: "TOS_NOT_ACCEPTED",
-                    message: settings.termsOfServiceMessage.errorMessage
-                }
-            };
-        }
-
-        const formSubmission = await createFormSubmission({
+        return createFormSubmission({
             client,
             props,
-            data,
-            reCaptchaResponseToken: reCaptchaResponseToken.current
+            data
         });
-
-        await handleFormTriggers({ props, data, formSubmission });
-        return formSubmission;
     };
-
-    const layouts = React.useMemo(
-        () =>
-            [
-                ...(get(theme, "forms.layouts") || []),
-                ...getPlugins<FbFormLayoutPlugin>("form-layout").map(pl => pl.layout)
-            ].reduce((acc, item) => {
-                if (!acc.find(l => l.name === item.name)) {
-                    acc.push(item);
-                }
-                return acc;
-            }, []),
-        []
-    );
-
-    // Get form layout, defined in theme.
-    let LayoutRenderComponent = layouts.find(item => item.name === settings.layout.renderer);
-
-    if (!LayoutRenderComponent) {
-        return <span>Cannot render form, layout missing.</span>;
-    }
-
-    LayoutRenderComponent = LayoutRenderComponent.component;
-
-    const ReCaptcha = createReCaptchaComponent({
-        props,
-        formData,
-        setResponseToken: value => (reCaptchaResponseToken.current = value)
-    });
-
-    const TermsOfService = createTermsOfServiceComponent({
-        props,
-        formData,
-        setTermsOfServiceAccepted: value => (termsOfServiceAccepted.current = value)
-    });
 
     const layoutProps: FormRenderPropsType = {
         getFieldById,
@@ -204,17 +109,10 @@ const FormRender = (props: FbFormRenderComponentProps) => {
         getDefaultValues,
         getFields,
         submit,
-        formData,
-        ReCaptcha,
-        TermsOfService
+        formData
     };
 
-    return (
-        <>
-            <ssr-cache data-class="fb-form" data-id={data.parent} />
-            <LayoutRenderComponent {...layoutProps} />
-        </>
-    );
+    return <LayoutRenderComponent {...layoutProps} />;
 };
 
 export default FormRender;

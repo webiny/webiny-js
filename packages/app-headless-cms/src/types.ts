@@ -1,24 +1,24 @@
 import * as React from "react";
 import { Plugin } from "@webiny/plugins/types";
-import { ReCaptchaComponent } from "@webiny/app-headless-cms/components/Form/components/createReCaptchaComponent";
-import { TermsOfServiceComponent } from "@webiny/app-headless-cms/components/Form/components/createTermsOfServiceComponent";
+import { ReactElement } from "react";
+
 import { I18NStringValue } from "@webiny/app-i18n/types";
 import {
     BindComponent,
     FormChildrenFunctionParams,
     Form,
-    FormChildrenFunctionParamsSubmit
 } from "@webiny/form";
 import { ApolloClient } from "apollo-client";
+import { IconPrefix, IconName } from "@fortawesome/fontawesome-svg-core";
 
-export type FbBuilderFieldValidator = {
+export type CmsBuilderFieldValidator = {
     name: string;
     message: I18NStringValue;
     settings: any;
 };
 
-export type FbBuilderFormFieldValidatorPlugin = Plugin & {
-    type: "form-editor-field-validator";
+export type CmsBuilderFormFieldValidatorPlugin = Plugin & {
+    type: "content-model-editor-field-validator";
     validator: {
         name: string;
         label: string;
@@ -28,13 +28,13 @@ export type FbBuilderFormFieldValidatorPlugin = Plugin & {
             Bind: BindComponent;
             setValue: (name: string, value: any) => void;
             setMessage: (message: string) => void;
-            data: FbBuilderFieldValidator;
+            data: CmsBuilderFieldValidator;
         }) => React.ReactElement;
     };
 };
 
-export type FbFormFieldPatternValidatorPlugin = Plugin & {
-    type: "form-editor-field-validator-pattern";
+export type CmsFormFieldPatternValidatorPlugin = Plugin & {
+    type: "content-model-editor-field-validator-pattern";
     pattern: {
         name: string;
         message: string;
@@ -42,22 +42,22 @@ export type FbFormFieldPatternValidatorPlugin = Plugin & {
     };
 };
 
-export type FbFormFieldValidator = {
+export type CmsFormFieldValidator = {
     name: string;
     message: any;
     settings: any;
 };
 
-export type FbFormFieldValidatorPlugin = Plugin & {
+export type CmsFormFieldValidatorPlugin = Plugin & {
     type: "form-field-validator";
     validator: {
         name: string;
-        validate: (value: any, validator: FbFormFieldValidator) => Promise<any>;
+        validate: (value: any, validator: CmsFormFieldValidator) => Promise<any>;
     };
 };
 
 export type FieldIdType = string;
-export type FbFormModelFieldsLayout = FieldIdType[][];
+export type CmsContentModelModelFieldsLayout = FieldIdType[][];
 
 export type FieldLayoutPositionType = {
     row: number;
@@ -65,7 +65,7 @@ export type FieldLayoutPositionType = {
 };
 
 export type FbBuilderFieldPlugin = Plugin & {
-    type: "form-editor-field-type";
+    type: "content-model-editor-field-type";
     field: {
         group?: string;
         unique?: boolean;
@@ -75,7 +75,7 @@ export type FbBuilderFieldPlugin = Plugin & {
         validators?: string[];
         description: string;
         icon: React.ReactNode;
-        createField: ({ i18n: any }) => FbFormModelField;
+        createField: ({ i18n: any }) => CmsContentModelModelField;
         renderSettings?: (params: {
             form: FormChildrenFunctionParams;
             afterChangeLabel: (value: string) => void;
@@ -86,7 +86,7 @@ export type FbBuilderFieldPlugin = Plugin & {
 
 export type FbFormDetailsPluginRenderParams = {
     refreshForms: () => Promise<void>;
-    form: FbFormModel;
+    form: CmsContentModelModel;
     loading: boolean;
 };
 
@@ -97,15 +97,15 @@ export type FbFormDetailsPluginType = Plugin & {
 
 export type FbFormDetailsSubmissionsPlugin = Plugin & {
     type: "forms-form-details-submissions";
-    render: (props: { form: FbFormModel }) => React.ReactNode;
+    render: (props: { form: CmsContentModelModel }) => React.ReactNode;
 };
 
-export type FbFormModel = {
+export type CmsContentModelModel = {
     id: FieldIdType;
     version: number;
     parent: string;
-    layout: FbFormModelFieldsLayout;
-    fields: FbFormModelField[];
+    layout: CmsContentModelModelFieldsLayout;
+    fields: CmsContentModelModelField[];
     name: string;
     settings: any;
     status: string;
@@ -118,7 +118,7 @@ export type FbFormModel = {
     };
 };
 
-export type FbFormModelField = {
+export type CmsContentModelModelField = {
     _id?: string;
     type: string;
     name: string;
@@ -126,7 +126,7 @@ export type FbFormModelField = {
     label?: I18NStringValue;
     helpText?: I18NStringValue;
     placeholderText?: I18NStringValue;
-    validation?: FbBuilderFieldValidator[];
+    validation?: CmsBuilderFieldValidator[];
     options?: Array<{ value: string; label: I18NStringValue }>;
     settings: {[key: string]: any};
 };
@@ -134,20 +134,12 @@ export type FbFormModelField = {
 export type FbFormSubmissionData = {
     data: any;
     form: {
-        revision: FbFormModel;
+        revision: CmsContentModelModel;
     };
 };
 
-export type FbFormTriggerHandlerPlugin = Plugin & {
-    type: "form-trigger-handler";
-    trigger: {
-        id: string;
-        handle: (params: { trigger: any; data: any; form: FbFormModel }) => void;
-    };
-};
-
-export type FbEditorFormSettingsPlugin = Plugin & {
-    type: "form-editor-form-settings";
+export type CmsEditorFormSettingsPlugin = Plugin & {
+    type: "content-model-editor-form-settings";
     title: string;
     description: string;
     icon: React.ReactElement<any>;
@@ -159,55 +151,47 @@ export type FbEditorFormSettingsPlugin = Plugin & {
     }): React.ReactNode;
 };
 
-export type FbEditorFieldGroup = Plugin & {
-    type: "form-editor-field-group";
+export type CmsEditorFieldGroup = Plugin & {
+    type: "content-model-editor-field-group";
     group: {
         title: string;
     };
 };
 
-export type FbFormLayoutPlugin = Plugin & {
-    type: "form-layout";
-    layout: {
-        name: string;
-        title: string;
-        component: React.ComponentType<any>;
-    };
+export type CmsIcon = {
+    /**
+     * [ pack, icon ], ex: ["fab", "cog"]
+     */
+    id: [IconPrefix, IconName];
+    /**
+     * Icon name
+     */
+    name: string;
+    /**
+     * SVG element
+     */
+    svg: ReactElement;
 };
 
-export type FbEditorTrigger = Plugin & {
-    type: "form-editor-trigger";
-    trigger: {
-        id: string;
-        title: string;
-        description: string;
-        icon: React.ReactElement<any>;
-        renderSettings(params: {
-            Bind: BindComponent;
-            submit: FormChildrenFunctionParamsSubmit;
-            form: FbFormModel;
-        }): React.ReactElement<any>;
-    };
+export type CmsIconsPlugin = Plugin & {
+    type: "cms-icons";
+    getIcons(): CmsIcon[];
 };
 
 // ------------------------------------------------------------------------------------------------------------
 
-export type FormRenderFbFormModelField = FbFormModelField & {
+export type FormRenderCmsContentModelModelField = CmsContentModelModelField & {
     validators: Array<(value: any) => boolean>;
 };
 
 export type FormRenderPropsType = {
     getFieldById: Function;
     getFieldByFieldId: Function;
-    getFields: () => Array<Array<FormRenderFbFormModelField>>;
+    getFields: () => Array<Array<FormRenderCmsContentModelModelField>>;
     getDefaultValues: () => { [key: string]: any };
-    ReCaptcha: ReCaptchaComponent;
-    TermsOfService: TermsOfServiceComponent;
     submit: (data: Object) => Promise<FormSubmitResponseType>;
-    formData: FbFormModel;
+    formData: CmsContentModelModel;
 };
-
-export type FormLayoutComponent = (props: FormRenderPropsType) => React.ReactNode;
 
 export type FormComponentPropsType = {
     preview?: boolean;
@@ -219,7 +203,7 @@ export type FormComponentPropsType = {
 
 export type FbFormRenderComponentProps = {
     preview?: boolean;
-    data?: FbFormModel;
+    data?: CmsContentModelModel;
 };
 
 export type FormSubmitResponseType = {
@@ -239,7 +223,7 @@ export type FormLoadComponentPropsType = {
     version?: number;
 };
 
-export type UseFormEditorReducerStateType = {
+export type UseContentModelEditorReducerStateType = {
     apolloClient: ApolloClient<any>;
     id: string;
     defaultLayoutRenderer: string;
@@ -254,6 +238,6 @@ export type FormSettingsPluginType = Plugin & {
 
 export type FormSettingsPluginRenderFunctionType = (props: {
     Bind: BindComponent;
-    formData: any; // Form settings.
+    formData: any; // Content model settings.
     form: any;
 }) => React.ReactElement<any>;

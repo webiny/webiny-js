@@ -1,13 +1,13 @@
 import * as React from "react";
 import { I18NValue } from "@webiny/app-i18n/components";
 import HelperMessage from "../components/HelperMessage";
-import { FbFormModelField } from "@webiny/app-form-builder/types";
+import { CmsContentModelModelField } from "@webiny/app-form-builder/types";
 import { BindComponentRenderProp } from "@webiny/form";
 
 type Props = {
     type?: string;
     bind: BindComponentRenderProp;
-    field: FbFormModelField;
+    field: CmsContentModelModelField;
 };
 
 const Input = (props: Props) => {

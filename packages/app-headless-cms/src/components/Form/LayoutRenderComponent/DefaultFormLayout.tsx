@@ -5,7 +5,7 @@ import Radio from "./fields/Radio";
 import Checkbox from "./fields/Checkbox";
 import Textarea from "./fields/Textarea";
 import { BindComponentRenderProp, Form } from "@webiny/form";
-import { FbFormModelField, FormLayoutComponent } from "@webiny/app-form-builder/types";
+import { CmsContentModelModelField, FormLayoutComponent } from "@webiny/app-form-builder/types";
 
 const DefaultFormLayout: FormLayoutComponent = ({
     getFields,
@@ -81,7 +81,7 @@ const DefaultFormLayout: FormLayoutComponent = ({
      * All of these components are located in the "./fields" folder.
      */
     const renderFieldElement = (props: {
-        field: FbFormModelField;
+        field: CmsContentModelModelField;
         bind: BindComponentRenderProp;
     }) => {
         switch (props.field.type) {
