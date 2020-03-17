@@ -80,6 +80,7 @@ export default () => [
                     group: ID
                     description: String
                     fields: [CmsContentModelFieldInput]
+                    layout: [[ID]]
                 }
 
                 input CmsFieldValidationInput {
