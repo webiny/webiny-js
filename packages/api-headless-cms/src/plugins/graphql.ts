@@ -1,4 +1,12 @@
 import { GraphQLContextPlugin, GraphQLSchemaPlugin } from "@webiny/api/types";
+import merge from "lodash.merge";
+import { i18nFieldType } from "./graphqlTypes/i18nFieldType";
+import { i18nFieldInput } from "./graphqlTypes/i18nFieldInput";
+import gql from "graphql-tag";
+import { hasScope } from "@webiny/api-security";
+import { generateSchemaPlugins } from "./schema/schemaPlugins";
+import { TypeValueEmitter } from "./utils/TypeValueEmitter";
+import contentModelGroup from "./graphql/contentModelGroup";
 import {
     resolveCreate,
     resolveDelete,
@@ -7,13 +15,6 @@ import {
     resolveUpdate,
     emptyResolver
 } from "@webiny/commodo-graphql";
-
-import { i18nFieldType } from "./graphqlTypes/i18nFieldType";
-import { i18nFieldInput } from "./graphqlTypes/i18nFieldInput";
-import gql from "graphql-tag";
-import { hasScope } from "@webiny/api-security";
-import { generateSchemaPlugins } from "./schema/schemaPlugins";
-import { TypeValueEmitter } from "./utils/TypeValueEmitter";
 
 const contentModelFetcher = ctx => ctx.models.CmsContentModel;
 
@@ -180,53 +181,61 @@ export default () => [
 
                     deleteContentModel(id: ID!): CmsDeleteResponse
                 }
+
+                ${contentModelGroup.typeDefs}
             `,
-            resolvers: {
-                CmsContentModel: {
-                    createdBy(contentModel) {
-                        return { __typename: "SecurityUser", id: contentModel.createdBy };
-                    }
-                },
-                Query: {
-                    cmsManage: {
-                        resolve: (parent, args, context) => {
-                            context.cms.manage = true;
-                            return {};
+            resolvers: merge(
+                {
+                    CmsContentModel: {
+                        createdBy(contentModel) {
+                            return { __typename: "SecurityUser", id: contentModel.createdBy };
                         }
                     },
-                    cmsRead: {
-                        resolve: (parent, args, context) => {
-                            /**
-                             * Create emitter for resolved values.
-                             * It is used in model field plugins to access values from sibling resolvers.
-                             */
-                            context.resolvedValues = new TypeValueEmitter();
-                            return {};
+                    Query: {
+                        cmsManage: {
+                            resolve: (parent, args, context) => {
+                                context.cms.manage = true;
+                                return {};
+                            }
+                        },
+                        cmsRead: {
+                            resolve: (parent, args, context) => {
+                                /**
+                                 * Create emitter for resolved values.
+                                 * It is used in model field plugins to access values from sibling resolvers.
+                                 */
+                                context.resolvedValues = new TypeValueEmitter();
+                                return {};
+                            }
                         }
+                    },
+                    Mutation: {
+                        cmsManage: emptyResolver
+                    },
+                    CmsManageQuery: {
+                        getContentModel: resolveGet(contentModelFetcher),
+                        listContentModels: resolveList(contentModelFetcher)
+                    },
+                    CmsManageMutation: {
+                        createContentModel: resolveCreate(contentModelFetcher),
+                        updateContentModel: resolveUpdate(contentModelFetcher),
+                        deleteContentModel: resolveDelete(contentModelFetcher)
                     }
                 },
-                Mutation: {
-                    cmsManage: emptyResolver
-                },
-                CmsManageQuery: {
-                    getContentModel: resolveGet(contentModelFetcher),
-                    listContentModels: resolveList(contentModelFetcher)
-                },
-                CmsManageMutation: {
-                    createContentModel: resolveCreate(contentModelFetcher),
-                    updateContentModel: resolveUpdate(contentModelFetcher),
-                    deleteContentModel: resolveDelete(contentModelFetcher)
-                }
-            }
+                contentModelGroup.resolvers
+            )
         },
-        security: {
-            shield: {
-                CmsManageQuery: {
-                    getContentModel: hasScope("cms:contentModel:crud"),
-                    listContentModels: hasScope("cms:contentModel:crud")
+        security: merge(
+            {
+                shield: {
+                    CmsManageQuery: {
+                        getContentModel: hasScope("cms:contentModel:crud"),
+                        listContentModels: hasScope("cms:contentModel:crud")
+                    }
                 }
-            }
-        }
+            },
+            contentModelGroup.security
+        )
     } as GraphQLSchemaPlugin,
     {
         name: "graphql-context-cms-context",
