@@ -33,6 +33,12 @@ export default () => [
                     id: ID @external
                 }
 
+                input CmsSearchInput {
+                    query: String
+                    fields: [String]
+                    operator: String
+                }
+
                 type CmsError {
                     code: String
                     message: String
