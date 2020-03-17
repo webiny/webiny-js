@@ -30,10 +30,8 @@ export default ({ type, environment }) => [
                 ${i18nFieldType("CmsString", "String")}
                 ${i18nFieldInput("CmsString", "String")}
 
-                type SecurityUser {
-                    id: ID
-                    firstName: String
-                    lastName: String
+                extend type SecurityUser @key(fields: "id") {
+                    id: ID @external
                 }
 
                 type CmsError {
@@ -121,10 +119,15 @@ export default ({ type, environment }) => [
                 }
 
                 extend type Query {
-                    _empty: String
+                    cmsRead: CmsReadQuery
+                    cmsManage: CmsManageQuery
                 }
 
                 extend type Mutation {
+                    cmsManage: CmsManageMutation
+                }
+
+                type CmsReadQuery {
                     _empty: String
                 }
 

@@ -12,12 +12,12 @@ declare const SECURITY_OPTIONS: any;
 
 export const handler = createHandler(
     headlessHandler({
-        plugins: [
+        plugins: options => [
             createApolloHandler(APOLLO_HANDLER_OPTIONS),
             dbProxy(DB_PROXY_OPTIONS),
             securityService(SECURITY_OPTIONS),
             i18nPlugins(),
-            headlessPlugins()
+            headlessPlugins(options)
         ]
     })
 );
