@@ -83,12 +83,12 @@ const ContentModelsDataList = (props: ContentModelsDataListProps) => {
                     sorters: { createdOn: 1 }
                 },
                 {
-                    label: t`Name A-Z`,
-                    sorters: { name: 1 }
+                    label: t`Title A-Z`,
+                    sorters: { title: 1 }
                 },
                 {
-                    label: t`Name Z-A`,
-                    sorters: { name: -1 }
+                    label: t`Title Z-A`,
+                    sorters: { title: -1 }
                 }
             ]}
         >
@@ -102,7 +102,7 @@ const ContentModelsDataList = (props: ContentModelsDataListProps) => {
                                     history.push({ search: query.toString() });
                                 }}
                             >
-                                {contentModel.name}
+                                {contentModel.title}
                                 {contentModel.createdBy && (
                                     <ListItemTextSecondary>
                                         {contentModel.createdBy.firstName && (
