@@ -2,8 +2,43 @@ import React from "react";
 import { i18n } from "@webiny/app/i18n";
 import { SecureView } from "@webiny/app-security/components";
 import { MenuPlugin } from "@webiny/app-admin/types";
+import { useQuery } from "react-apollo";
+import { LIST_MENU_CONTENT_GROUPS_MODELS } from "./../viewsGraphql";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
+import get from "lodash.get";
 const t = i18n.ns("app-headless-cms/admin/menus");
+
+const ContentModelMenuItems = function({ Menu, Item }) {
+    const response = useQuery(LIST_MENU_CONTENT_GROUPS_MODELS);
+
+    const { data } = get(response, "data.cmsManage.listContentModelGroups") || {};
+    if (!data) {
+        return null;
+    }
+
+    return data.map(contentModelGroup => {
+        return (
+            <Menu
+                key={contentModelGroup.id}
+                name={`cms-content-models-${contentModelGroup.id}`}
+                label={contentModelGroup.name}
+                icon={<FontAwesomeIcon icon={contentModelGroup.icon.split("/")} size={"2x"} />}
+            >
+                {contentModelGroup.contentModels.length === 0 && (
+                    <Item style={{ opacity: 0.4 }} key={"empty-item"} label={t`Nothing to show.`} />
+                )}
+                {contentModelGroup.contentModels.map(contentModel => (
+                    <Item
+                        key={contentModel.id}
+                        label={contentModel.title}
+                        path={`/cms/content-models/manage/${contentModel.id}`}
+                    />
+                ))}
+            </Menu>
+        );
+    });
+};
 
 export default [
     {
@@ -11,10 +46,44 @@ export default [
         name: "menu-content-section-cms",
         render({ Section, Item }) {
             return (
+                <SecureView
+                    roles={{
+                        contentModels: ["cms-content-models"],
+                        contentModelGroups: ["cms-content-model-groups"]
+                    }}
+                >
+                    {({ roles }) => {
+                        const { contentModels, contentModelGroups } = roles;
+                        if (!contentModels && !contentModelGroups) {
+                            return null;
+                        }
+
+                        return (
+                            <Section label={t`Headless CMS`}>
+                                {contentModels && (
+                                    <Item label={t`Content Models`} path="/cms/content-models" />
+                                )}
+
+                                {contentModelGroups && (
+                                    <Item
+                                        label={t`Content Model Groups`}
+                                        path="/cms/content-models-groups"
+                                    />
+                                )}
+                            </Section>
+                        );
+                    }}
+                </SecureView>
+            );
+        }
+    },
+    {
+        type: "menu",
+        name: "menu-cms-content-models",
+        render({ Menu, Item }) {
+            return (
                 <SecureView roles={["headless-cms-editors"]}>
-                    <Section label={t`Headless CMS`}>
-                        <Item label={t`Content Models`} path="/cms/content-models" />
-                    </Section>
+                    <ContentModelMenuItems Menu={Menu} Item={Item} />
                 </SecureView>
             );
         }
