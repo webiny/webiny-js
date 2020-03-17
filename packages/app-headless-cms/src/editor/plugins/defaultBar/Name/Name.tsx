@@ -1,19 +1,11 @@
 import React, { useState } from "react";
 import { Input } from "@webiny/ui/Input";
 import { Tooltip } from "@webiny/ui/Tooltip";
-import { Typography } from "@webiny/ui/Typography";
-import { useFormEditor } from "@webiny/app-headless-cms/admin/components/FormEditor/Context";
+import { useContentModelEditor } from "@webiny/app-headless-cms/admin/components/ContentModelEditor/Context";
 import { useHotkeys } from "react-hotkeyz";
-import {
-    FormMeta,
-    FormName,
-    formNameWrapper,
-    FormVersion,
-    NameInputWrapper,
-    NameWrapper
-} from "./NameStyled";
+import { FormName, formNameWrapper, NameInputWrapper, NameWrapper } from "./NameStyled";
 import { i18n } from "@webiny/app/i18n";
-const t = i18n.namespace("FormEditor.Name");
+const t = i18n.namespace("ContentModelEditor.Name");
 
 declare global {
     interface Window {
@@ -22,7 +14,7 @@ declare global {
 }
 
 export const Name = () => {
-    const { state, setData } = useFormEditor();
+    const { state, setData } = useContentModelEditor();
     const [localName, setLocalName] = useState(null);
     const [editingEnabled, setEditing] = useState(false);
 
@@ -31,7 +23,7 @@ export const Name = () => {
     }
 
     function startEditing() {
-        setLocalName(state.data.name);
+        setLocalName(state.data.title);
         setEditing(true);
     }
 
@@ -53,7 +45,7 @@ export const Name = () => {
             enter: e => {
                 e.preventDefault();
                 setData(data => {
-                    data.name = localName;
+                    data.title = localName;
                     return data;
                 });
                 setEditing(false);
@@ -77,23 +69,15 @@ export const Name = () => {
         </NameInputWrapper>
     ) : (
         <NameWrapper>
-            <FormMeta>
-                <Typography use={"overline"}>
-                    {`status: ${state.data.published ? t`published` : t`draft`}`}
-                </Typography>
-            </FormMeta>
-            <div style={{ width: "100%", display: "flex" }}>
-                <Tooltip
-                    className={formNameWrapper}
-                    placement={"bottom"}
-                    content={<span>{t`rename`}</span>}
-                >
-                    <FormName data-testid="fb-editor-form-title" onClick={startEditing}>
-                        {state.data.name}
-                    </FormName>
-                </Tooltip>
-                <FormVersion>{`(v${state.data.version})`}</FormVersion>
-            </div>
+            <Tooltip
+                className={formNameWrapper}
+                placement={"bottom"}
+                content={<span>{t`rename`}</span>}
+            >
+                <FormName data-testid="fb-editor-form-title" onClick={startEditing}>
+                    {state.data.title}
+                </FormName>
+            </Tooltip>
         </NameWrapper>
     );
 };

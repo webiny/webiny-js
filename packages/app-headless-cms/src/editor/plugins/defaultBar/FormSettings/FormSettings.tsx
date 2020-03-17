@@ -7,7 +7,7 @@ import { Form } from "@webiny/form";
 import { Icon } from "@webiny/ui/Icon";
 import { ButtonPrimary } from "@webiny/ui/Button";
 import { List, ListItem, ListItemGraphic } from "@webiny/ui/List";
-import { useFormEditor } from "@webiny/app-headless-cms/admin/components/FormEditor/Context";
+import { useContentModelEditor } from "@webiny/app-headless-cms/admin/components/ContentModelEditor/Context";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 
 import { i18n } from "@webiny/app/i18n";
@@ -20,15 +20,15 @@ import {
     SimpleFormHeader
 } from "@webiny/app-admin/components/SimpleForm";
 import { Title, listItem, ListItemTitle, listStyle, TitleContent } from "./FormSettingsStyled";
-import { FbEditorFormSettingsPlugin } from "@webiny/app-headless-cms/types";
+import { CmsEditorFormSettingsPlugin } from "@webiny/app-headless-cms/types";
 
 type FormSettingsProps = {
     onExited: () => void;
 };
 
 const FormSettings = ({ onExited }: FormSettingsProps) => {
-    const plugins = getPlugins<FbEditorFormSettingsPlugin>("form-editor-form-settings");
-    const { data, setData } = useFormEditor();
+    const plugins = getPlugins<CmsEditorFormSettingsPlugin>("content-model-editor-form-settings");
+    const { data, setData } = useContentModelEditor();
     const { showSnackbar } = useSnackbar();
 
     const [activePlugin, setActivePlugin] = useState(plugins[0]);
@@ -57,14 +57,11 @@ const FormSettings = ({ onExited }: FormSettingsProps) => {
                 </LeftPanel>
                 <RightPanel span={7}>
                     <Form
-                        data={data.settings}
-                        onSubmit={settings => {
-                            setData(data => {
-                                data.settings = settings;
-                                return data;
-                            });
+                        data={data}
+                        onSubmit={data => {
+                            setData(() => data);
                             onExited();
-                            showSnackbar(t`Form settings updated successfully.`);
+                            showSnackbar(t`Content model settings updated successfully.`);
                         }}
                     >
                         {({ Bind, submit, form, data: formData }) => (
