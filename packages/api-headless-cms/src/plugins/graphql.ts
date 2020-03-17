@@ -65,6 +65,7 @@ export default () => [
                     id: ID
                     title: String
                     modelId: String
+                    group: CmsContentModelGroup
                     savedOn: DateTime
                     description: String
                     createdOn: DateTime
@@ -76,6 +77,7 @@ export default () => [
                 input CmsContentModelInput {
                     title: String
                     modelId: String
+                    group: ID
                     description: String
                     fields: [CmsContentModelFieldInput]
                 }
@@ -101,7 +103,7 @@ export default () => [
                     label: CmsStringInput
                     value: String
                 }
-                
+
                 type CmsContentModelField {
                     _id: String
                     label: CmsString
