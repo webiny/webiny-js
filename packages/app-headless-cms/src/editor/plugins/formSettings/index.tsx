@@ -5,10 +5,10 @@ import { ReactComponent as SettingsIcon } from "./icons/round-settings-24px.svg"
 
 export default ([
     {
-        name: "form-editor-form-settings-general",
-        type: "form-editor-form-settings",
+        name: "content-model-editor-form-settings-general",
+        type: "content-model-editor-form-settings",
         title: "General settings",
-        description: "Manage things like submit success messages and form layout.",
+        description: "Manage content model's name and description.",
         icon: <SettingsIcon />,
         render(props) {
             return <GeneralSettings {...props} />;
