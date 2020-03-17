@@ -11,7 +11,13 @@ const InnerDivVertical = styled("div")({
     display: "none"
 });
 
-const OuterDivVertical = React.memo(
+type OuterDivVerticalProps = {
+    isOver: boolean;
+    last: boolean;
+    children: React.ReactNode;
+};
+
+const OuterDivVertical = React.memo<OuterDivVerticalProps>(
     // @ts-ignore
     styled("div")(
         {
@@ -22,7 +28,7 @@ const OuterDivVertical = React.memo(
             zIndex: 10,
             backgroundColor: "transparent"
         },
-        props => ({
+        (props: OuterDivVerticalProps) => ({
             [props.last ? "right" : "left"]: -2,
             textAlign: props.last ? "right" : "left",
             // @ts-ignore

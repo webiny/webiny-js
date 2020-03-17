@@ -40,8 +40,18 @@ export const typeStyle = css({
     }
 });
 
-export const ElementContainer = React.memo(
-    styled("div")(({ highlight, active, dragged }) => {
+type ElementContainerProps = {
+    id: string;
+    onMouseOver: any;
+    highlight: boolean;
+    active: boolean;
+    children: React.ReactNode;
+    style: React.CSSProperties;
+    className: string;
+};
+
+export const ElementContainer = React.memo<ElementContainerProps>(
+    styled<"div", ElementContainerProps>("div")(({ highlight, active }) => {
         const color = active ? "var(--mdc-theme-primary)" : "var(--mdc-theme-secondary)";
 
         return {
@@ -49,7 +59,7 @@ export const ElementContainer = React.memo(
             position: "relative",
             flex: "100%",
             padding: 0,
-            opacity: dragged ? 0.3 : 1,
+            opacity: 1,
             borderRadius: 2,
             boxSizing: "border-box",
             zIndex: 10,
