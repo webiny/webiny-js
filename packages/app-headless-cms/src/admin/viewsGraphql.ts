@@ -16,6 +16,25 @@ const BASE_CONTENT_MODEL_FIELDS = `
     }
 `;
 
+// Fetches data needed for constructing content models list in the main menu.
+export const LIST_MENU_CONTENT_GROUPS_MODELS = gql`
+    query HeadlessCmsListMenuContentGroupsModels {
+        cmsManage {
+            listContentModelGroups(sort: { name: 1 }, page: 1, perPage: 100) {
+                data {
+                    id
+                    name
+                    icon
+                    contentModels {
+                        title
+                        id
+                    }
+                }
+            }
+        }
+    }
+`;
+
 export const LIST_CONTENT_MODELS = gql`
     query HeadlessCmsListContentModels($sort: JSON, $page: Int, $perPage: Int) {
         cmsManage {
