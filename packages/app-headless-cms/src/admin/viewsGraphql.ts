@@ -75,7 +75,7 @@ export const CREATE_CONTENT_MODEL = gql`
 
 export const DELETE_CONTENT_MODEL = gql`
     mutation DeleteForm($id: ID!) {
-        forms {
+        cmsManage {
             deleteForm(id: $id) {
                 data
                 error {
