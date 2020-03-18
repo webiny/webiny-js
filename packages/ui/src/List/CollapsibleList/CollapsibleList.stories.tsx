@@ -8,7 +8,7 @@ import {
     StorySandboxExample
 } from "@webiny/storybook-utils/Story";
 import readme from "./README.md";
-import { withKnobs, boolean, text, object, array } from "@storybook/addon-knobs";
+import { withKnobs } from "@storybook/addon-knobs";
 
 import { CollapsibleList } from "./index";
 import { SimpleListItem } from "./../List";
@@ -19,7 +19,6 @@ story.addDecorator(withKnobs);
 story.add(
     "collapsible list",
     () => {
-        const name = "Andrei";
         return (
             <Story>
                 <StoryReadme>{readme}</StoryReadme>
@@ -47,16 +46,7 @@ story.add(
     },
     {
         info: {
-            propTables: [
-                CollapsibleList,
-                SimpleListItem
-                // List,
-                // ListItem,
-                // ListItemText,
-                // ListItemTextSecondary,
-                // ListItemMeta,
-                // ListItemGraphic
-            ]
+            propTables: [CollapsibleList, SimpleListItem]
         }
     }
 );
