@@ -2,7 +2,7 @@ import { merge } from "lodash";
 import gql from "graphql-tag";
 import { emptyResolver } from "@webiny/commodo-graphql";
 import { GraphQLSchemaPlugin } from "@webiny/api/types";
-import { getRegisteredScopes, hasScope } from "@webiny/api-security";
+import { hasScope } from "@webiny/api-security";
 
 import role from "./graphql/Role";
 import group from "./graphql/Group";
@@ -19,8 +19,7 @@ const plugin: GraphQLSchemaPlugin = {
             }
 
             type SecurityQuery {
-                # Returns all scopes that were registered throughout the schema.
-                scopes: [String]
+                _empty: String
             }
 
             type SecurityMutation {
@@ -59,9 +58,6 @@ const plugin: GraphQLSchemaPlugin = {
                 Mutation: {
                     security: emptyResolver
                 },
-                SecurityQuery: {
-                    scopes: getRegisteredScopes
-                }
             },
             install.resolvers,
             role.resolvers,

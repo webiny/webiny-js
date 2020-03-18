@@ -4,6 +4,7 @@ import routes from "./routes";
 import menus from "./menus";
 import richTextEditor from "./richTextEditor";
 import install from "./install";
+import scopesList from "./scopesList";
 
 /**
  * Prevents opening global search menu when pressing "/" inside of I18N Rich Text Editor.
@@ -19,4 +20,4 @@ const globalSearchHotkey: GlobalSearchPreventHotkeyPlugin = {
     }
 };
 
-export default [routes, menus, richTextEditor, i18nSitePlugins, globalSearchHotkey, install];
+export default [routes, menus, scopesList, richTextEditor, i18nSitePlugins, globalSearchHotkey, install];

@@ -7,7 +7,7 @@ const required = validation.create("required");
 
 export default ({ createBase, context, CmsContentModelGroup }) => {
     return flow(
-        withName("CmsContentModel"),
+        withName(`CmsContentModel_${context.cms.environment}`),
         withFields({
             title: string({ validation: required }),
             modelId: string({ validation: required }),

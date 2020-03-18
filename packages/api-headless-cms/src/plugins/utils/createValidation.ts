@@ -1,8 +1,7 @@
-import { CmsModelField, CmsModelFieldValidatorPlugin } from "@webiny/api-headless-cms/types";
-import { GraphQLContext } from "@webiny/api/types";
+import { CmsGraphQLContext, CmsModelField, CmsModelFieldValidatorPlugin } from "@webiny/api-headless-cms/types";
 import { getI18NValue } from "./getI18NValue";
 
-export const createValidation = (field: CmsModelField, context: GraphQLContext) => {
+export const createValidation = (field: CmsModelField, context: CmsGraphQLContext) => {
     const plugins = context.plugins.byType<CmsModelFieldValidatorPlugin>(
         "cms-model-field-validator"
     );

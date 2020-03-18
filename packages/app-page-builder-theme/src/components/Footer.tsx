@@ -15,7 +15,7 @@ const Footer = () => {
                 const { name, logo, social } = get(response, "pageBuilder.getSettings.data") || {};
 
                 return (
-                    <div className={"webiny-pb-section-footer"}>
+                    <div className={"webiny-pb-section-footer"} data-testid={"pb-footer"}>
                         <div className="webiny-pb-section-footer__wrapper">
                             <div className={"webiny-pb-section-footer__logo"}>
                                 <Link to="/">

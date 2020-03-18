@@ -57,32 +57,32 @@ const plugin: CmsModelFieldToGraphQLPlugin = {
         createSchema() {
             return {
                 typeDefs: gql`
-                    input CmsManageFloatLocalizedInput {
+                    input CmsFloatLocalizedInput {
                         value: Float
                         locale: ID!
                     }
 
-                    input CmsManageFloatInput {
-                        values: [CmsManageFloatLocalizedInput]
+                    input CmsFloatInput {
+                        values: [CmsFloatLocalizedInput]
                     }
 
-                    type CmsManageFloatLocalized {
+                    type CmsFloatLocalized {
                         value: Float
                         locale: ID!
                     }
 
-                    type CmsManageFloat {
+                    type CmsFloat {
                         value: Float
-                        values: [CmsManageFloatLocalized]!
+                        values: [CmsFloatLocalized]!
                     }
                 `
             };
         },
         createTypeField({ field }) {
-            return field.fieldId + ": CmsManageFloat";
+            return field.fieldId + ": CmsFloat";
         },
         createInputField({ field }) {
-            return field.fieldId + ": CmsManageFloatInput";
+            return field.fieldId + ": CmsFloatInput";
         }
     }
 };

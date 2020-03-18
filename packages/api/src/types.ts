@@ -16,10 +16,10 @@ export interface GraphQLContext {
 
 export type SchemaDefinitionFactory = (params: {
     plugins: PluginsContainer;
-}) => Promise<GraphQLSchemaModule>;
+}) => GraphQLSchemaModule | Promise<GraphQLSchemaModule>;
 
-export type GraphQLSchemaPlugin = Plugin & {
-    prepare?: (params: { context: GraphQLContext }) => Promise<void>;
+export type GraphQLSchemaPlugin<T = GraphQLContext> = Plugin & {
+    prepare?: (params: { context: T }) => Promise<void>;
     schema: GraphQLSchemaModule | SchemaDefinitionFactory;
     [key: string]: any;
 };

@@ -93,83 +93,83 @@ const plugin: CmsModelFieldToGraphQLPlugin = {
             return {
                 typeDefs: gql`
                     # dateTimeWithTimezone types
-                    input CmsManageDateTimeWithTzLocalizedInput {
+                    input CmsDateTimeWithTzLocalizedInput {
                         value: DateTime
                         locale: ID!
                     }
 
-                    input CmsManageDateTimeWithTzInput {
-                        values: [CmsManageDateTimeWithTzLocalizedInput]
+                    input CmsDateTimeWithTzInput {
+                        values: [CmsDateTimeWithTzLocalizedInput]
                     }
 
-                    type CmsManageDateTimeWithTzLocalized {
+                    type CmsDateTimeWithTzLocalized {
                         value: DateTime
                         locale: ID!
                     }
 
-                    type CmsManageDateTimeWithTz {
+                    type CmsDateTimeWithTz {
                         value: DateTime
-                        values: [CmsManageDateTimeWithTzLocalized]!
+                        values: [CmsDateTimeWithTzLocalized]!
                     }
 
                     # dateTimeWithoutTimezone types
-                    input CmsManageDateTimeLocalizedInput {
+                    input CmsDateTimeLocalizedInput {
                         value: String
                         locale: ID!
                     }
 
-                    input CmsManageDateTimeInput {
-                        values: [CmsManageDateTimeLocalizedInput]
+                    input CmsDateTimeInput {
+                        values: [CmsDateTimeLocalizedInput]
                     }
 
-                    type CmsManageDateTimeLocalized {
+                    type CmsDateTimeLocalized {
                         value: String
                         locale: ID!
                     }
 
-                    type CmsManageDateTime {
+                    type CmsDateTime {
                         value: String
-                        values: [CmsManageDateTimeLocalized]!
+                        values: [CmsDateTimeLocalized]!
                     }
 
                     # date types
-                    input CmsManageDateLocalizedInput {
+                    input CmsDateLocalizedInput {
                         value: String
                         locale: ID!
                     }
 
-                    input CmsManageDateInput {
-                        values: [CmsManageDateLocalizedInput]
+                    input CmsDateInput {
+                        values: [CmsDateLocalizedInput]
                     }
 
-                    type CmsManageDateLocalized {
+                    type CmsDateLocalized {
                         value: String
                         locale: ID!
                     }
 
-                    type CmsManageDate {
+                    type CmsDate {
                         value: String
-                        values: [CmsManageDateLocalized]!
+                        values: [CmsDateLocalized]!
                     }
 
                     # time types
-                    input CmsManageTimeLocalizedInput {
+                    input CmsTimeLocalizedInput {
                         value: String
                         locale: ID!
                     }
 
-                    input CmsManageTimeInput {
-                        values: [CmsManageTimeLocalizedInput]
+                    input CmsTimeInput {
+                        values: [CmsTimeLocalizedInput]
                     }
 
-                    type CmsManageTimeLocalized {
+                    type CmsTimeLocalized {
                         value: String
                         locale: ID!
                     }
 
-                    type CmsManageTime {
+                    type CmsTime {
                         value: String
-                        values: [CmsManageTimeLocalized]!
+                        values: [CmsTimeLocalized]!
                     }
                 `
             };
@@ -177,25 +177,25 @@ const plugin: CmsModelFieldToGraphQLPlugin = {
         createTypeField({ field }) {
             switch (field.settings.type) {
                 case "dateTimeWithTimezone":
-                    return field.fieldId + ": CmsManageDateTimeWithTz";
+                    return field.fieldId + ": CmsDateTimeWithTz";
                 case "dateTimeWithoutTimezone":
-                    return field.fieldId + ": CmsManageDateTime";
+                    return field.fieldId + ": CmsDateTime";
                 case "date":
-                    return field.fieldId + ": CmsManageDate";
+                    return field.fieldId + ": CmsDate";
                 case "time":
-                    return field.fieldId + ": CmsManageTime";
+                    return field.fieldId + ": CmsTime";
             }
         },
         createInputField({ field }) {
             switch (field.settings.type) {
                 case "dateTimeWithTimezone":
-                    return field.fieldId + ": CmsManageDateTimeWithTzInput";
+                    return field.fieldId + ": CmsDateTimeWithTzInput";
                 case "dateTimeWithoutTimezone":
-                    return field.fieldId + ": CmsManageDateTimeInput";
+                    return field.fieldId + ": CmsDateTimeInput";
                 case "date":
-                    return field.fieldId + ": CmsManageDateInput";
+                    return field.fieldId + ": CmsDateInput";
                 case "time":
-                    return field.fieldId + ": CmsManageTimeInput";
+                    return field.fieldId + ": CmsTimeInput";
             }
         }
     }

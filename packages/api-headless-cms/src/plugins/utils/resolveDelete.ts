@@ -3,8 +3,11 @@ import { Response, ErrorResponse } from "@webiny/commodo-graphql";
 import { findEntry } from "./findEntry";
 import { entryNotFound } from "./entryNotFound";
 import { setContextLocale } from "./setContextLocale";
+import { CmsGraphQLContext } from "@webiny/api-headless-cms/types";
 
-export const resolveDelete = ({ model }): GraphQLFieldResolver => async (root, args, context) => {
+export const resolveDelete = ({
+    model
+}): GraphQLFieldResolver<any, any, CmsGraphQLContext> => async (root, args, context) => {
     setContextLocale(context, args.locale);
     const instance = await findEntry({ model, args, context });
 

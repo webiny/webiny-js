@@ -62,17 +62,16 @@ export class MultiAutoComplete extends React.Component<MultiAutoCompleteProps, S
             // 1) If "unique" prop was passed, we don't want to show already picked options again.
             if (unique) {
                 const values = value;
-                if (!Array.isArray(values)) {
-                    return true;
-                }
-
-                if (
-                    values.find(
-                        value =>
-                            getOptionValue(value, this.props) === getOptionValue(item, this.props)
-                    )
-                ) {
-                    return false;
+                if (Array.isArray(values)) {
+                    if (
+                        values.find(
+                            value =>
+                                getOptionValue(value, this.props) ===
+                                getOptionValue(item, this.props)
+                        )
+                    ) {
+                        return false;
+                    }
                 }
             }
 

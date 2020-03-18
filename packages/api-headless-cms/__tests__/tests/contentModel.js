@@ -2,6 +2,7 @@ import { setupContext } from "@webiny/api/testing";
 import contentModelFactory from "../../src/plugins/models/contentModel.model";
 import createBase from "./utils/createModel";
 import contentModels from "./data/contentModels";
+import headlessPlugins from "../../src/plugins";
 
 export default ({ plugins }) => {
     describe("ContentModel model fields", () => {
@@ -9,7 +10,10 @@ export default ({ plugins }) => {
 
         beforeAll(async () => {
             // Setup context
-            context = await setupContext([plugins]);
+            context = await setupContext([
+                plugins,
+                headlessPlugins({ type: "read", environment: "default" })
+            ]);
         });
 
         test("toStorage returns correct values", async () => {

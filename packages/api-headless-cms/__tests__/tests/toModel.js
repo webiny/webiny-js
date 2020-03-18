@@ -11,9 +11,12 @@ export default ({ plugins }) => {
 
         beforeAll(async () => {
             // Setup context
-            context = await setupContext([plugins, ...headlessPlugins()], {
-                event: { headers: { "accept-language": "en-US" } }
-            });
+            context = await setupContext(
+                [plugins, ...headlessPlugins({ type: "read", environment: "default" })],
+                {
+                    event: { headers: { "accept-language": "en-US" } }
+                }
+            );
         });
 
         describe(`"createDataModelFromData"`, () => {
@@ -171,9 +174,12 @@ export default ({ plugins }) => {
 
         beforeAll(async () => {
             // Setup context
-            context = await setupContext([plugins, ...headlessPlugins()], {
-                event: { headers: { "accept-language": "en-US" } }
-            });
+            context = await setupContext(
+                [plugins, ...headlessPlugins({ type: "read", environment: "default" })],
+                {
+                    event: { headers: { "accept-language": "en-US" } }
+                }
+            );
         });
 
         beforeEach(() => {

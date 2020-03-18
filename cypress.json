@@ -4,11 +4,12 @@
   "baseUrl": "http://localhost:3001",
   "defaultCommandTimeout": 10000,
   "env": {
-    "AWS_COGNITO_USER_POOL_ID": "eu-central-1_LGh6br2ix",
-    "AWS_COGNITO_CLIENT_ID": "561rp7m88m81t4jgdvq1j5eobf",
-    "API_URL": "https://d1cfsi9llzrdlf.cloudfront.net",
-    "DEFAULT_ADMIN_USER_USERNAME": "asd@net.hr",
+    "SITE_URL": "http://localhost:3000",
+    "AWS_COGNITO_USER_POOL_ID": "eu-central-1_4rzqiPNHm",
+    "AWS_COGNITO_CLIENT_ID": "1agul1e3ge3afpb4a0vsrqtuhb",
+    "API_URL": "https://d2sj4ukj5xxt5i.cloudfront.net",
+    "DEFAULT_ADMIN_USER_USERNAME": "admin@webiny.com",
     "DEFAULT_ADMIN_USER_PASSWORD": "12345678",
-    "GRAPHQL_API_URL": "https://d1cfsi9llzrdlf.cloudfront.net/graphql"
+    "GRAPHQL_API_URL": "https://d2sj4ukj5xxt5i.cloudfront.net/graphql"
   }
 }

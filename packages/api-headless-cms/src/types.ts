@@ -1,12 +1,29 @@
 import { GraphQLSchemaModule } from "apollo-graphql";
-import { GraphQLContext, GraphQLFieldResolver, Plugin } from "@webiny/api/types";
-import { GraphQLContext as I18NContext } from "@webiny/api-i18n/types";
+import {
+    GraphQLContext as APIGraphQLContext,
+    GraphQLFieldResolver,
+    Plugin
+} from "@webiny/api/types";
+import { GraphQLContext as I18NContext, I18NLocale } from "@webiny/api-i18n/types";
 import { GraphQLContext as CommodoContext } from "@webiny/api-plugin-commodo-db-proxy/types";
 
 export type CmsLocalizedModelFieldValue<T> = {
     locale: string;
     value: T;
 };
+
+export type GraphQLContext = {
+    cms: {
+        type: string;
+        environment: string;
+        locale: I18NLocale;
+    };
+};
+
+/**
+ * This combines all contexts used in the CMS into a single type.
+ */
+export type CmsGraphQLContext = APIGraphQLContext & I18NContext & CommodoContext & GraphQLContext;
 
 export type CmsModelFieldValue<T> = {
     values: CmsLocalizedModelFieldValue<T>[];
@@ -36,7 +53,7 @@ export type CmsModelFieldValidatorPlugin = Plugin & {
         validate(params: {
             value: any;
             validator: CmsFieldValidation;
-            context: GraphQLContext;
+            context: CmsGraphQLContext;
         }): Promise<boolean>;
     };
 };
@@ -57,9 +74,7 @@ export type CmsModel = {
     fields: CmsModelField[];
 };
 
-export type CmsModelFieldToCommodoFieldPlugin<
-    TContext = GraphQLContext & CommodoContext & I18NContext
-> = Plugin & {
+export type CmsModelFieldToCommodoFieldPlugin<TContext = CmsGraphQLContext> = Plugin & {
     type: "cms-model-field-to-commodo-field";
     fieldType: string;
     isSortable: boolean;
@@ -93,10 +108,7 @@ export type CmsModelFieldToGraphQLPlugin = Plugin & {
     };
     manage: {
         createListFilters?(params: { model: CmsModel; field: CmsModelField }): string;
-        createSchema?(params: {
-            models: CmsModel[];
-            model: CmsModel;
-        }): GraphQLSchemaModule;
+        createSchema?(params: { models: CmsModel[]; model: CmsModel }): GraphQLSchemaModule;
         createTypeField(params: { model: CmsModel; field: CmsModelField }): string;
         createInputField(params: { model: CmsModel; field: CmsModelField }): string;
         createResolver(params: {
@@ -118,6 +130,6 @@ export type CmsFindFilterOperator = Plugin & {
         fieldId: string;
         field: CmsModelField;
         value: any;
-        context: GraphQLContext;
+        context: CmsGraphQLContext;
     }): { [key: string]: any };
 };

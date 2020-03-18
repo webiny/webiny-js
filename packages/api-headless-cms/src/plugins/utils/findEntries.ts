@@ -1,6 +1,4 @@
-import { GraphQLContext as APIContext } from "@webiny/api/types";
-import { GraphQLContext as I18NContext } from "@webiny/api-i18n/types";
-import { CmsModel } from "@webiny/api-headless-cms/types";
+import {CmsGraphQLContext, CmsModel} from "@webiny/api-headless-cms/types";
 import createFindSorters from "./createFindSorters";
 import { createFindQuery } from "./createFindQuery";
 import parseBoolean from "./parseBoolean";
@@ -15,10 +13,10 @@ type FindEntries = {
         perPage: number;
         page: number;
     };
-    context: APIContext & I18NContext;
+    context: CmsGraphQLContext
 };
 
-export default async function findEntries<T = APIContext & I18NContext>({
+export default async function findEntries<T = CmsGraphQLContext>({
     model,
     args,
     context
@@ -33,7 +31,7 @@ export default async function findEntries<T = APIContext & I18NContext>({
 
     // For Manage API, limit records by locales.length * perPage
     // (since we can't use "$group" and you should be able to search values in all locales)
-    if (context.cms.manage) {
+    if (context.cms.type === "manage") {
         // TODO @adrian Error: { message: 'Cannot query for more than 100 models per page.' }
         // perPage = perPage * context.i18n.getLocales().length;
     }
@@ -54,7 +52,7 @@ export default async function findEntries<T = APIContext & I18NContext>({
         }
     });
 
-    if (context.cms.manage && notConditions.length) {
+    if (context.cms.type === "manage" && notConditions.length) {
         // Replace "not"
         const invertedConditions = notConditions.map(cond => {
             if (cond.operator === "not") {
@@ -78,7 +76,7 @@ export default async function findEntries<T = APIContext & I18NContext>({
     }
 
     // For `read` API we always include `locale` in the queries
-    if (!context.cms.manage) {
+    if (context.cms.type !== "manage") {
         match.locale = context.cms.locale.id;
     }
 

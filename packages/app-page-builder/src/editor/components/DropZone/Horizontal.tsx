@@ -11,7 +11,13 @@ const InnerDiv = styled("div")({
     display: "none"
 });
 
-const OuterDiv = React.memo(
+type OuterDiv = {
+    isOver: boolean;
+    below: boolean;
+    children: React.ReactNode;
+};
+
+const OuterDiv = React.memo<OuterDiv>(
     // @ts-ignore
     styled("div")(
         {
@@ -24,7 +30,7 @@ const OuterDiv = React.memo(
             display: "flex",
             justifyContent: "center"
         },
-        props => ({
+        (props: OuterDiv) => ({
             [props.below ? "bottom" : "top"]: 0,
             // @ts-ignore
             [InnerDiv]: {

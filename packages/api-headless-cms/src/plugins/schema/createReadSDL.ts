@@ -1,6 +1,5 @@
 import pluralize from "pluralize";
-import { CmsModel, CmsFieldTypePlugins } from "@webiny/api-headless-cms/types";
-import { GraphQLContext } from "@webiny/api/types";
+import { CmsModel, CmsFieldTypePlugins, CmsGraphQLContext } from "@webiny/api-headless-cms/types";
 import { createReadTypeName, createTypeName } from "../utils/createTypeName";
 import { renderSortEnum } from "../utils/renderSortEnum";
 import { renderFields } from "../utils/renderFields";
@@ -10,7 +9,7 @@ import { renderGetFilterFields } from "../utils/renderGetFilterFields";
 export interface CreateManageSDL {
     (params: {
         model: CmsModel;
-        context: GraphQLContext;
+        context: CmsGraphQLContext;
         fieldTypePlugins: CmsFieldTypePlugins;
     }): string;
 }
@@ -62,7 +61,7 @@ export const createReadSDL: CreateManageSDL = ({ model, fieldTypePlugins }): str
             error: CmsError
         }
         
-        extend type CmsReadQuery {
+        extend type Query {
             get${typeName}(locale: String, where: ${rTypeName}GetWhereInput!): ${rTypeName}Response
 
             list${pluralize(typeName)}(

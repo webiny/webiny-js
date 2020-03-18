@@ -1,6 +1,5 @@
 import pluralize from "pluralize";
-import { CmsModel, CmsFieldTypePlugins } from "@webiny/api-headless-cms/types";
-import { GraphQLContext } from "@webiny/api/types";
+import { CmsModel, CmsFieldTypePlugins, CmsGraphQLContext } from "@webiny/api-headless-cms/types";
 import { createManageTypeName, createTypeName } from "../utils/createTypeName";
 import { commonFieldResolvers } from "../utils/commonFieldResolvers";
 import { resolveGet } from "../utils/resolveGet";
@@ -13,7 +12,7 @@ export interface CreateManageResolvers {
     (params: {
         models: CmsModel[];
         model: CmsModel;
-        context: GraphQLContext;
+        context: CmsGraphQLContext;
         fieldTypePlugins: CmsFieldTypePlugins;
     }): any;
 }
@@ -27,11 +26,11 @@ export const createManageResolvers: CreateManageResolvers = ({
     const mTypeName = createManageTypeName(typeName);
 
     return {
-        CmsManageQuery: {
+        Query: {
             [`get${typeName}`]: resolveGet({ model }),
             [`list${pluralize(typeName)}`]: resolveList({ model })
         },
-        CmsManageMutation: {
+        Mutation: {
             [`create${typeName}`]: resolveCreate({ model }),
             [`update${typeName}`]: resolveUpdate({ model }),
             [`delete${typeName}`]: resolveDelete({ model })

@@ -12,7 +12,7 @@ type PageProps = {
     content?: any;
 };
 
-const Page = (props: PageProps) => {
+const getPageRender = props => {
     if (props.content) {
         return <PageContent data={props.content} />;
     }
@@ -26,6 +26,15 @@ const Page = (props: PageProps) => {
     }
 
     return null;
+};
+
+const Page = (props: PageProps) => {
+    return (
+        <>
+            {getPageRender(props)}
+            <ssr-cache data-class="pb-page" />
+        </>
+    );
 };
 
 export default Page;

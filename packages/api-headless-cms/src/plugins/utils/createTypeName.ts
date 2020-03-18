@@ -5,9 +5,9 @@ export const createTypeName = (modelId: string) => {
 };
 
 export const createReadTypeName = (baseTypeName: string) => {
-    return "CmsRead" + createTypeName(baseTypeName);
+    return createTypeName(baseTypeName);
 };
 
 export const createManageTypeName = (baseTypeName: string) => {
-    return "CmsManage" + createTypeName(baseTypeName);
+    return createTypeName(baseTypeName);
 };

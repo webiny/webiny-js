@@ -1,5 +1,4 @@
-import { GraphQLContext as APIContext } from "@webiny/api/types";
-import { CmsModel } from "@webiny/api-headless-cms/types";
+import {CmsGraphQLContext, CmsModel} from "@webiny/api-headless-cms/types";
 import { createFindQuery } from "./createFindQuery";
 import { parseWhere } from "./parseWhere";
 
@@ -9,7 +8,7 @@ type FindEntry = {
         locale: string;
         where: { [key: string]: any };
     };
-    context: APIContext;
+    context: CmsGraphQLContext;
 };
 
 export const findEntry = async ({ model, args, context }: FindEntry) => {
@@ -17,7 +16,7 @@ export const findEntry = async ({ model, args, context }: FindEntry) => {
     const ModelSearch = context.models[model.modelId + "Search"];
 
     const query = createFindQuery(model, parseWhere(args.where), context);
-    if (!context.cms.manage) {
+    if (context.cms.type !== "manage") {
         query.locale = context.cms.locale.id;
     }
 

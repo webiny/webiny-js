@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 const yargs = require("yargs");
 const { blue, green, dim } = require("chalk");
+const { createCommands } = require("./commands");
 
 const trackingNotice = () => {
     console.log();
@@ -11,6 +12,8 @@ const trackingNotice = () => {
     console.log(`To learn more, check out https://www.webiny.com/telemetry/.`);
     console.log();
 };
+
+createCommands(yargs);
 
 yargs
     .usage("Usage: $0 <command>")

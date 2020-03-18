@@ -1,14 +1,4 @@
-import { GraphQLContextPlugin, GraphQLSchemaPlugin } from "@webiny/api/types";
-import merge from "lodash.merge";
-import { i18nFieldType } from "./graphqlTypes/i18nFieldType";
-import { i18nFieldInput } from "./graphqlTypes/i18nFieldInput";
-import gql from "graphql-tag";
-import { hasScope } from "@webiny/api-security";
-import { generateSchemaPlugins } from "./schema/schemaPlugins";
-import { TypeValueEmitter } from "./utils/TypeValueEmitter";
-import contentModelGroup from "./graphql/contentModelGroup";
-import cmsEnvironment from "./graphql/cmsEnvironment";
-
+import { GraphQLSchemaPlugin } from "@webiny/api/types";
 import {
     resolveCreate,
     resolveDelete,
@@ -17,10 +7,46 @@ import {
     resolveUpdate,
     emptyResolver
 } from "@webiny/commodo-graphql";
+import gql from "graphql-tag";
+import { hasScope } from "@webiny/api-security";
+import { CmsGraphQLContext } from "@webiny/api-headless-cms/types";
+import { generateSchemaPlugins } from "./schema/schemaPlugins";
+import { i18nFieldType } from "./graphqlTypes/i18nFieldType";
+import { i18nFieldInput } from "./graphqlTypes/i18nFieldInput";
 
 const contentModelFetcher = ctx => ctx.models.CmsContentModel;
 
-export default () => [
+const getMutations = type => {
+    if (type === "manage") {
+        return `
+            createContentModel(data: CmsContentModelInput!): CmsContentModelResponse
+            updateContentModel(
+                id: ID!
+                data: CmsContentModelInput!
+            ): CmsContentModelResponse
+
+            deleteContentModel(id: ID!): CmsDeleteResponse
+        `;
+    }
+
+    return "_empty: String";
+};
+
+const getMutationResolvers = type => {
+    if (type === "manage") {
+        return {
+            createContentModel: resolveCreate(contentModelFetcher),
+            updateContentModel: resolveUpdate(contentModelFetcher),
+            deleteContentModel: resolveDelete(contentModelFetcher)
+        };
+    }
+
+    return {
+        _empty: emptyResolver
+    };
+};
+
+export default ({ type }) => [
     {
         name: "graphql-schema-headless",
         type: "graphql-schema",
@@ -32,14 +58,10 @@ export default () => [
                 ${i18nFieldType("CmsString", "String")}
                 ${i18nFieldInput("CmsString", "String")}
 
-                extend type SecurityUser @key(fields: "id") {
-                    id: ID @external
-                }
-
-                input CmsSearchInput {
-                    query: String
-                    fields: [String]
-                    operator: String
+                type SecurityUser {
+                    id: ID
+                    firstName: String
+                    lastName: String
                 }
 
                 type CmsError {
@@ -68,22 +90,17 @@ export default () => [
                     id: ID
                     title: String
                     modelId: String
-                    group: CmsContentModelGroup
-                    savedOn: DateTime
                     description: String
                     createdOn: DateTime
                     createdBy: SecurityUser
                     fields: [CmsContentModelField]
-                    layout: [[ID]]
                 }
 
                 input CmsContentModelInput {
                     title: String
                     modelId: String
-                    group: ID
                     description: String
                     fields: [CmsContentModelFieldInput]
-                    layout: [[ID]]
                 }
 
                 input CmsFieldValidationInput {
@@ -98,44 +115,26 @@ export default () => [
                     settings: JSON
                 }
 
-                type CmsFieldOptions {
-                    label: CmsString
-                    value: String
-                }
-
-                input CmsFieldOptionsInput {
-                    label: CmsStringInput
-                    value: String
-                }
-
                 type CmsContentModelField {
                     _id: String
                     label: CmsString
-                    placeholderText: CmsString
-                    helpText: CmsString
                     fieldId: String
                     type: String
-                    name: String
                     localization: Boolean
                     unique: Boolean
                     validation: [CmsFieldValidation]
                     settings: JSON
-                    options: [CmsFieldOptions]
                 }
 
                 input CmsContentModelFieldInput {
                     _id: String
                     label: CmsStringInput
-                    placeholderText: CmsStringInput
-                    helpText: CmsStringInput
                     fieldId: String
                     type: String
-                    name: String
                     localization: Boolean
                     unique: Boolean
                     validation: [CmsFieldValidationInput]
                     settings: JSON
-                    options: [CmsFieldOptionsInput]
                 }
 
                 type CmsContentModelListResponse {
@@ -150,19 +149,6 @@ export default () => [
                 }
 
                 extend type Query {
-                    cmsRead: CmsReadQuery
-                    cmsManage: CmsManageQuery
-                }
-
-                extend type Mutation {
-                    cmsManage: CmsManageMutation
-                }
-
-                type CmsReadQuery {
-                    _empty: String
-                }
-
-                type CmsManageQuery {
                     getContentModel(id: ID, where: JSON, sort: String): CmsContentModelResponse
 
                     listContentModels(
@@ -173,80 +159,25 @@ export default () => [
                     ): CmsContentModelListResponse
                 }
 
-                type CmsManageMutation {
-                    createContentModel(data: CmsContentModelInput!): CmsContentModelResponse
-
-                    updateContentModel(
-                        id: ID!
-                        data: CmsContentModelInput!
-                    ): CmsContentModelResponse
-
-                    deleteContentModel(id: ID!): CmsDeleteResponse
+                extend type Mutation {
+                    ${getMutations(type)}
                 }
-
-                ${contentModelGroup.typeDefs}
-                ${cmsEnvironment.typeDefs}
             `,
-            resolvers: merge(
-                {
-                    CmsContentModel: {
-                        createdBy(contentModel) {
-                            return { __typename: "SecurityUser", id: contentModel.createdBy };
-                        }
-                    },
-                    Query: {
-                        cmsManage: {
-                            resolve: (parent, args, context) => {
-                                context.cms.manage = true;
-                                return {};
-                            }
-                        },
-                        cmsRead: {
-                            resolve: (parent, args, context) => {
-                                /**
-                                 * Create emitter for resolved values.
-                                 * It is used in model field plugins to access values from sibling resolvers.
-                                 */
-                                context.resolvedValues = new TypeValueEmitter();
-                                return {};
-                            }
-                        }
-                    },
-                    Mutation: {
-                        cmsManage: emptyResolver
-                    },
-                    CmsManageQuery: {
-                        getContentModel: resolveGet(contentModelFetcher),
-                        listContentModels: resolveList(contentModelFetcher)
-                    },
-                    CmsManageMutation: {
-                        createContentModel: resolveCreate(contentModelFetcher),
-                        updateContentModel: resolveUpdate(contentModelFetcher),
-                        deleteContentModel: resolveDelete(contentModelFetcher)
-                    }
+            resolvers: {
+                Query: {
+                    getContentModel: resolveGet(contentModelFetcher),
+                    listContentModels: resolveList(contentModelFetcher)
                 },
-                contentModelGroup.resolvers,
-                cmsEnvironment.resolvers,
-            )
+                Mutation: getMutationResolvers(type)
+            }
         },
-        security: merge(
-            {
-                shield: {
-                    CmsManageQuery: {
-                        getContentModel: hasScope("cms:contentModel:crud"),
-                        listContentModels: hasScope("cms:contentModel:crud")
-                    }
+        security: {
+            shield: {
+                Query: {
+                    getContentModel: hasScope("cms:contentModel:crud"),
+                    listContentModels: hasScope("cms:contentModel:crud")
                 }
-            },
-            contentModelGroup.security,
-            cmsEnvironment.security
-        )
-    } as GraphQLSchemaPlugin,
-    {
-        name: "graphql-context-cms-context",
-        type: "graphql-context",
-        apply(context) {
-            context.cms = context.cms || {};
+            }
         }
-    } as GraphQLContextPlugin
+    } as GraphQLSchemaPlugin<CmsGraphQLContext>
 ];
