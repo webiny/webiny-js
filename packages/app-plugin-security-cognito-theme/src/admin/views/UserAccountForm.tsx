@@ -29,6 +29,7 @@ const UserAccountForm = ({ Bind, data, fields }) => {
                     </Cell>
                     <Cell span={12}>{fields.firstName}</Cell>
                     <Cell span={12}>{fields.lastName}</Cell>
+                    <Cell span={12}>{fields.tokens}</Cell>
                 </Grid>
             </Cell>
         </Grid>
