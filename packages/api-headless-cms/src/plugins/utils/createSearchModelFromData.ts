@@ -1,15 +1,16 @@
 import { withName, withFields, string } from "@webiny/commodo";
-import { CmsModel, CmsModelFieldToCommodoFieldPlugin } from "@webiny/api-headless-cms/types";
-import { GraphQLContext } from "@webiny/api/types";
-import { GraphQLContext as I18NContext } from "@webiny/api-i18n/types";
-import { GraphQLContext as CommodoContext } from "@webiny/api-plugin-commodo-db-proxy/types";
+import {
+    CmsGraphQLContext,
+    CmsModel,
+    CmsModelFieldToCommodoFieldPlugin
+} from "@webiny/api-headless-cms/types";
 import { flow } from "lodash";
 import { createValidation } from "@webiny/api-headless-cms/plugins/utils/createValidation";
 
 export const createSearchModelFromData = (
     baseModel: Function,
     data: CmsModel,
-    context: GraphQLContext & CommodoContext & I18NContext
+    context: CmsGraphQLContext
 ) => {
     const plugins = context.plugins.byType<CmsModelFieldToCommodoFieldPlugin>(
         "cms-model-field-to-commodo-field"

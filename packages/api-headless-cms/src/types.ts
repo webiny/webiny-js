@@ -4,7 +4,7 @@ import {
     GraphQLFieldResolver,
     Plugin
 } from "@webiny/api/types";
-import { GraphQLContext as I18NContext } from "@webiny/api-i18n/types";
+import { GraphQLContext as I18NContext, I18NLocale } from "@webiny/api-i18n/types";
 import { GraphQLContext as CommodoContext } from "@webiny/api-plugin-commodo-db-proxy/types";
 
 export type CmsLocalizedModelFieldValue<T> = {
@@ -16,6 +16,7 @@ export type GraphQLContext = {
     cms: {
         type: string;
         environment: string;
+        locale: I18NLocale;
     };
 };
 

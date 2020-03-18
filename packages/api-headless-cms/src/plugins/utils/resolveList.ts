@@ -1,12 +1,14 @@
 import { ListResponse, ListErrorResponse } from "@webiny/commodo-graphql";
-import { GraphQLContext as I18NContext } from "@webiny/api-i18n/types";
-import { GraphQLFieldResolver, GraphQLContext as APIContext } from "@webiny/api/types";
+import { GraphQLFieldResolver } from "@webiny/api/types";
 import { setContextLocale } from "./setContextLocale";
 import findEntries from "./findEntries";
+import { CmsGraphQLContext } from "@webiny/api-headless-cms/types";
 
-export const resolveList = ({
-    model
-}): GraphQLFieldResolver<any, any, APIContext & I18NContext> => async (entry, args, context) => {
+export const resolveList = ({ model }): GraphQLFieldResolver<any, any, CmsGraphQLContext> => async (
+    entry,
+    args,
+    context
+) => {
     setContextLocale(context, args.locale);
     try {
         const { entries, meta } = await findEntries({ model, args, context });
