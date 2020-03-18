@@ -1,3 +1,4 @@
+import "./index.css";
 import * as React from "react";
 import {
     CollapsibleList as RmwcCollapsibleList,
