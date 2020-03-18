@@ -9,7 +9,10 @@ export default (): ReactRouterOnLinkPlugin => {
         type: "react-router-on-link",
         onLink({ link, apolloClient }) {
             if (process.env.REACT_APP_ENV === "browser") {
-                if (!link.startsWith("/") || preloadedLinks.includes(link)) {
+                if (
+                    typeof link !== "string" ||
+                    !link.startsWith("/") || preloadedLinks.includes(link)
+                ) {
                     return;
                 }
 

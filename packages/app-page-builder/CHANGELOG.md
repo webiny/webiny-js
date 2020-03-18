@@ -3,6 +3,32 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.2.0](https://github.com/webiny/webiny-js/compare/@webiny/app-page-builder@3.2.0-next.0...@webiny/app-page-builder@3.2.0) (2020-03-09)
+
+**Note:** Version bump only for package @webiny/app-page-builder
+
+
+
+
+
+# [3.2.0-next.0](https://github.com/webiny/webiny-js/compare/@webiny/app-page-builder@3.1.6...@webiny/app-page-builder@3.2.0-next.0) (2020-03-09)
+
+
+### Bug Fixes
+
+* CDN cache is now invalidated properly upon updating Page Builder settings ([#746](https://github.com/webiny/webiny-js/issues/746)) ([f686fc0](https://github.com/webiny/webiny-js/commit/f686fc06c747081473baac35e22941945b6351db)), closes [#727](https://github.com/webiny/webiny-js/issues/727)
+* don't apply CSS class to typography selector items ([1c2e022](https://github.com/webiny/webiny-js/commit/1c2e0222cd8ddad20a6bffeb8936b056338347de))
+* ensure passed "link" is string before proceeding ([#744](https://github.com/webiny/webiny-js/issues/744)) ([931b0bb](https://github.com/webiny/webiny-js/commit/931b0bb4e66412d00f565cea51a3cb0dadab5f39))
+
+
+### Features
+
+* improved scopes selection auto-complete component([#743](https://github.com/webiny/webiny-js/issues/743)) ([f3acbc5](https://github.com/webiny/webiny-js/commit/f3acbc5aa467ac3d70649628bfbe68727345487e)), closes [#729](https://github.com/webiny/webiny-js/issues/729)
+
+
+
+
+
 ## [3.1.6](https://github.com/webiny/webiny-js/compare/@webiny/app-page-builder@3.1.5...@webiny/app-page-builder@3.1.6) (2020-03-03)
 
 

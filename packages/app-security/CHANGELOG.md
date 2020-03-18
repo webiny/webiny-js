@@ -3,6 +3,25 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.1.0](https://github.com/webiny/webiny-js/compare/@webiny/app-security@3.1.0-next.0...@webiny/app-security@3.1.0) (2020-03-09)
+
+**Note:** Version bump only for package @webiny/app-security
+
+
+
+
+
+# [3.1.0-next.0](https://github.com/webiny/webiny-js/compare/@webiny/app-security@3.0.5...@webiny/app-security@3.1.0-next.0) (2020-03-09)
+
+
+### Features
+
+* improved scopes selection auto-complete component([#743](https://github.com/webiny/webiny-js/issues/743)) ([f3acbc5](https://github.com/webiny/webiny-js/commit/f3acbc5aa467ac3d70649628bfbe68727345487e)), closes [#729](https://github.com/webiny/webiny-js/issues/729)
+
+
+
+
+
 ## [3.0.5](https://github.com/webiny/webiny-js/compare/@webiny/app-security@3.0.5-next.0...@webiny/app-security@3.0.5) (2020-03-01)
 
 **Note:** Version bump only for package @webiny/app-security

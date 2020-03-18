@@ -75,7 +75,7 @@ module.exports = {
             answers.subject = commitTypes[answers.type].emoji + "  " + answers.subject;
 
             // Build commit message
-            const message = buildCommit(answers);
+            const message = buildCommit(answers, { breaklineChar: "\n" });
             console.log("\n\nCommit message:");
             console.log(chalk.blue(`\n\n${message}\n`));
             commitCb(message);

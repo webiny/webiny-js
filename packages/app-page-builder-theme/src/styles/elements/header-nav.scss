@@ -60,6 +60,7 @@
       a {
         color: var(--webiny-theme-color-primary, #ee896b);
         text-decoration: none;
+        padding: 10px;
       }
 
       ul{
@@ -74,14 +75,15 @@
           line-height: 1rem;
           font-weight: 400;
           cursor: pointer;
-          padding: 10px;
           transition: background-color .2s;
           ul{
             display: none;
           }
           &:hover{
-            background-color: var(--webiny-theme-color-background, #eaecec);
-            border-radius: var(--webiny-theme-border-radius, 2px);
+            a{
+              background-color: var(--webiny-theme-color-background, #eaecec);
+              border-radius: var(--webiny-theme-border-radius, 2px);
+            }
             ul{
               display: block;
               position: absolute;

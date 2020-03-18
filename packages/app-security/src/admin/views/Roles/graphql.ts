@@ -8,14 +8,6 @@ const fields = `
     scopes
 `;
 
-export const LIST_SCOPES = gql`
-    query loadScopes {
-        security {
-            scopes
-        }
-    }
-`;
-
 export const LIST_ROLES = gql`
     query listRoles(
         $where: JSON
