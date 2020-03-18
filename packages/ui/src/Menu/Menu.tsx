@@ -40,8 +40,8 @@ type MenuProps = RmwcMenuProps & {
     // Class that will be added to the Menu element.
     className?: string;
 
-    onOpen?: Function;
-    onClose?: Function;
+    onOpen?: () => void;
+    onClose?: () => void;
 };
 
 type State = {
