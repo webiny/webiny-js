@@ -15,7 +15,6 @@ import AvatarImage from "./Components/AvatarImage";
 import { validation } from "@webiny/validation";
 import { useSecurity } from "@webiny/app-security/hooks/useSecurity";
 import { CollapsibleList, SimpleListItem, ListItemMeta } from "@webiny/ui/List";
-// import { CollapsibleList } from "@rmwc/list";
 import { IconButton } from "@webiny/ui/Button";
 
 import {
