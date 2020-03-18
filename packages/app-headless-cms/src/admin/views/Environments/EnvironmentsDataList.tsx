@@ -3,6 +3,7 @@ import { i18n } from "@webiny/app/i18n";
 import { ConfirmationDialog } from "@webiny/ui/ConfirmationDialog";
 import { DeleteIcon } from "@webiny/ui/List/DataList/icons";
 import { useCrud } from "@webiny/app-admin/hooks/useCrud";
+import { Typography } from "@webiny/ui/Typography";
 
 import {
     DataList,
@@ -47,10 +48,13 @@ const EnvironmentsDataList = () => {
                     {data.map(item => (
                         <ListItem key={item.id} selected={isSelected(item)}>
                             <ListItemText onClick={() => select(item)}>
-                                {item.name}
-                                <ListItemTextSecondary>
-                                    {item.description || t`No description provided.`}
-                                </ListItemTextSecondary>
+                                {item.name}{" "}
+                                {item.default && (
+                                    <Typography use={"overline"}>
+                                        {t`(default)`}
+                                    </Typography>
+                                )}
+                                <ListItemTextSecondary>{item.slug}</ListItemTextSecondary>
                             </ListItemText>
 
                             <ListItemMeta>
