@@ -12,8 +12,8 @@ import {
     withHooks
 } from "@webiny/commodo";
 
-export default ({ createBase }) => {
-    const CmsEnvironment: any = compose(
+export default ({ createBase }) =>
+    compose(
         withName("CmsEnvironment"),
         withFields(instance => ({
             name: string({ validation: validation.create("required") }),
@@ -56,6 +56,3 @@ export default ({ createBase }) => {
             }
         })
     )(createBase());
-
-    return CmsEnvironment;
-};
