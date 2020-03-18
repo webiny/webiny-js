@@ -1,4 +1,4 @@
-import React, { useReducer, useEffect } from "react";
+import React, { useState, useReducer, useEffect } from "react";
 import gql from "graphql-tag";
 import { omit } from "lodash";
 import { get } from "dot-prop-immutable";
@@ -14,6 +14,9 @@ import { CircularProgress } from "@webiny/ui/Progress";
 import AvatarImage from "./Components/AvatarImage";
 import { validation } from "@webiny/validation";
 import { useSecurity } from "@webiny/app-security/hooks/useSecurity";
+import { CollapsibleList, SimpleListItem, ListItemMeta } from "@webiny/ui/List";
+// import { CollapsibleList } from "@rmwc/list";
+import { IconButton } from "@webiny/ui/Button";
 
 import {
     SimpleForm,
@@ -108,6 +111,32 @@ const UserAccountForm = () => {
         });
     }, []);
 
+    const [tokens, setTokens] = useState(
+        user.data.tokens ||
+            (user.data.tokens = [
+                "sdhgsahgasighsdgssdhgsahgasighsdgssdhgsahgasighsdgs",
+                "fhdiasjhdfjiohfdijfhdiasjhdfjiohfdijfhdiasjhdfjiohf"
+            ])
+    );
+    const TokenListItem = ({ value }) => (
+        <SimpleListItem text={value}>
+            <ListItemMeta>
+                <IconButton onClick={() => deleteToken(value)} icon="X" label="Rate this!" />
+            </ListItemMeta>
+        </SimpleListItem>
+    );
+
+    const deleteToken = removedValue => {
+        setTokens(tokens.filter(token => token !== removedValue));
+    };
+
+    const generateToken = () => {
+        const base =
+            "hbdfspbgmdfpibgiopfdgkpfasdiocmiosaioasfasiwqpwqkoperpoerkqwoprkewfpokedweidjosgajiwgfiosjfgiosjifosoihgfiweahfowiogfweiogfwohgfiohaihgfiowhoigfawhgiohwioohoieawhgiowoiweahgoiwghiow";
+        const index = Math.floor(Math.random() * (base.length - 51));
+        setTokens([...tokens, base.slice(index, index + 51)]);
+    };
+
     return (
         <Form data={user.data} onSubmit={onSubmit}>
             {({ data, form, Bind }) => (
@@ -143,6 +172,22 @@ const UserAccountForm = () => {
                                 email: (
                                     <Bind name="email" validators={validation.create("required")}>
                                         <Input label={t`E-mail`} />
+                                    </Bind>
+                                ),
+                                tokens: (
+                                    <Bind name="tokens">
+                                        <div>
+                                            <CollapsibleList
+                                                handle={<SimpleListItem text="Tokens" />}
+                                            >
+                                                {tokens.map(token =>
+                                                    TokenListItem({ value: token })
+                                                )}
+                                                <ButtonPrimary onClick={() => generateToken()}>
+                                                    Generate
+                                                </ButtonPrimary>
+                                            </CollapsibleList>
+                                        </div>
                                     </Bind>
                                 )
                             }
