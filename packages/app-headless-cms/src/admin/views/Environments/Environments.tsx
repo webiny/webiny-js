@@ -21,10 +21,10 @@ function Environments() {
             {({ actions }) => (
                 <>
                     <SplitView>
-                        <LeftPanel span={3}>
+                        <LeftPanel span={4}>
                             <EnvironmentsDataList />
                         </LeftPanel>
-                        <RightPanel span={9}>
+                        <RightPanel span={8}>
                             <EnvironmentsForm />
                         </RightPanel>
                     </SplitView>
