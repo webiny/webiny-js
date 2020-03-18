@@ -1,8 +1,8 @@
 import prettier from "prettier";
 import { setupContext } from "@webiny/api/testing";
 import contentModels from "../data/contentModels";
-import graphqlFieldPlugins from "../../../src/plugins/graphqlFields";
-import { createManageSDL } from "../../../src/plugins/schema/createManageSDL";
+import graphqlFieldPlugins from "../../../src/handler/plugins/graphqlFields";
+import { createManageSDL } from "../../../src/handler/plugins/schema/createManageSDL";
 import category from "./snapshots/category";
 import product from "./snapshots/product";
 import review from "./snapshots/review";

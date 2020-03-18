@@ -5,7 +5,7 @@ import { i18nString } from "@webiny/api-i18n/fields";
 
 const required = validation.create("required");
 
-export default ({ createBase, context, CmsContentModelGroup }) => {
+export default ({ createBase, context }) => {
     return flow(
         withName(`CmsContentModel_${context.cms.environment}`),
         withFields({
@@ -13,14 +13,13 @@ export default ({ createBase, context, CmsContentModelGroup }) => {
             modelId: string({ validation: required }),
             description: string(),
             layout: object({ value: [] }),
-            group: ref({ instanceOf: CmsContentModelGroup, validation: required }),
+            // group: ref({ instanceOf: CmsContentModelGroup, validation: required }),
             fields: fields({
                 list: true,
                 value: [],
                 instanceOf: withFields({
                     _id: string({ validation: required }),
                     fieldId: string({ validation: required }),
-                    name: string({ validation: required }),
                     label: i18nString({ context, validation: required }),
                     helpText: i18nString({ context }),
                     placeholderText: i18nString({ context }),

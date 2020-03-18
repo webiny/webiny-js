@@ -1,8 +1,8 @@
 import { setupContext } from "@webiny/api/testing";
-import contentModelFactory from "../../src/plugins/models/contentModel.model";
+import contentModelFactory from "../../src/handler/plugins/models/contentModel.model";
 import createBase from "./utils/createModel";
 import contentModels from "./data/contentModels";
-import headlessPlugins from "../../src/plugins";
+import headlessPlugins from "../../src/handler/plugins";
 
 export default ({ plugins }) => {
     describe("ContentModel model fields", () => {

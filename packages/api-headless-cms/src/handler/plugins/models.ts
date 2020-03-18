@@ -30,14 +30,14 @@ export default () => {
                 withCrudLogs()
             )() as Function;
 
-        const CmsContentModelGroup = contentModelGroup({ createBase, context });
-        const CmsContentModel = contentModel({ createBase, context, CmsContentModelGroup });
-        const CmsEnvironment = environment({ createBase });
+        // const CmsContentModelGroup = contentModelGroup({ createBase, context });
+        const CmsContentModel = contentModel({ createBase, context });
+        // const CmsEnvironment = environment({ createBase });
 
         context.models = {
-            CmsContentModelGroup,
+            // CmsContentModelGroup,
             CmsContentModel,
-            CmsEnvironment,
+            // CmsEnvironment,
             createBase
         };
 
