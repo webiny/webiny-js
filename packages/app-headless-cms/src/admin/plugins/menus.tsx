@@ -49,12 +49,13 @@ export default [
                 <SecureView
                     roles={{
                         contentModels: ["cms-content-models"],
-                        contentModelGroups: ["cms-content-model-groups"]
+                        contentModelGroups: ["cms-content-model-groups"],
+                        environments: ["cms-content-environments"]
                     }}
                 >
                     {({ roles }) => {
-                        const { contentModels, contentModelGroups } = roles;
-                        if (!contentModels && !contentModelGroups) {
+                        const { contentModels, contentModelGroups, environments } = roles;
+                        if (!contentModels && !contentModelGroups && !environments) {
                             return null;
                         }
 
@@ -69,6 +70,9 @@ export default [
                                         label={t`Content Model Groups`}
                                         path="/cms/content-models-groups"
                                     />
+                                )}
+                                {environments && (
+                                    <Item label={t`Environments`} path="/cms/environments" />
                                 )}
                             </Section>
                         );

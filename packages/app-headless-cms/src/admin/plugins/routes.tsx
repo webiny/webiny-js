@@ -15,8 +15,29 @@ const Loader = ({ children, ...props }) => (
 const ContentModelEditor = lazy(() => import("../views/Editor"));
 const ContentModelsView = lazy(() => import("../views/ContentModels/ContentModels"));
 const ContentModelGroupsView = lazy(() => import("../views/ContentModelGroups/ContentModelGroups"));
+const EnvironmentsView = lazy(() => import("../views/Environments/Environments"));
 
 const plugins: RoutePlugin[] = [
+    {
+        name: "route-cms-environments",
+        type: "route",
+        route: (
+            <Route
+                exact
+                path="/cms/environments"
+                render={() => (
+                    <SecureRoute roles={["headless-cms-environments"]}>
+                        <AdminLayout>
+                            <Helmet title={t`Environments`} />
+                            <Loader>
+                                <EnvironmentsView />
+                            </Loader>
+                        </AdminLayout>
+                    </SecureRoute>
+                )}
+            />
+        )
+    },
     {
         name: "route-cms-content-models-groups",
         type: "route",
@@ -47,7 +68,7 @@ const plugins: RoutePlugin[] = [
                 exact
                 path={"/cms/content-models/:id"}
                 render={() => (
-                    <SecureRoute roles={["headless-cms-editors-editor"]}>
+                    <SecureRoute roles={["headless-cms-content-models"]}>
                         <Helmet>
                             <title>{t`Edit Content Model`}</title>
                         </Helmet>
@@ -67,7 +88,7 @@ const plugins: RoutePlugin[] = [
                 exact
                 path="/cms/content-models"
                 render={() => (
-                    <SecureRoute roles={["headless-cms-editors"]}>
+                    <SecureRoute roles={["headless-cms-content-models"]}>
                         <AdminLayout>
                             <Helmet title={t`Content Models`} />
                             <Loader>
