@@ -7,6 +7,8 @@ import { hasScope } from "@webiny/api-security";
 import { generateSchemaPlugins } from "./schema/schemaPlugins";
 import { TypeValueEmitter } from "./utils/TypeValueEmitter";
 import contentModelGroup from "./graphql/contentModelGroup";
+import cmsEnvironment from "./graphql/cmsEnvironment";
+
 import {
     resolveCreate,
     resolveDelete,
@@ -183,6 +185,7 @@ export default () => [
                 }
 
                 ${contentModelGroup.typeDefs}
+                ${cmsEnvironment.typeDefs}
             `,
             resolvers: merge(
                 {
@@ -222,7 +225,8 @@ export default () => [
                         deleteContentModel: resolveDelete(contentModelFetcher)
                     }
                 },
-                contentModelGroup.resolvers
+                contentModelGroup.resolvers,
+                cmsEnvironment.resolvers,
             )
         },
         security: merge(
@@ -234,7 +238,8 @@ export default () => [
                     }
                 }
             },
-            contentModelGroup.security
+            contentModelGroup.security,
+            cmsEnvironment.security
         )
     } as GraphQLSchemaPlugin,
     {

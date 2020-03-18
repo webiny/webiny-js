@@ -15,7 +15,7 @@ export default ({ createBase, context }) => {
         withFields({
             name: string({ validation: validation.create("required") }),
             slug: setOnce()(string({ validation: validation.create("required") })),
-            description: string(),
+            description: string({ validation: validation.create("maxLength: 500") }),
             icon: string({ validation: validation.create("required") })
         }),
         withProps({
@@ -34,8 +34,10 @@ export default ({ createBase, context }) => {
         }),
         withHooks({
             async beforeDelete() {
-                if (await this.totalContentModels > 0) {
-                    throw new Error("Cannot delete this group because there are models that belong to it.")
+                if ((await this.totalContentModels) > 0) {
+                    throw new Error(
+                        "Cannot delete this group because there are models that belong to it."
+                    );
                 }
             },
             async beforeCreate() {

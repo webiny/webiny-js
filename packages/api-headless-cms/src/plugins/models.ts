@@ -5,6 +5,7 @@ import { GraphQLContextPlugin } from "@webiny/api/types";
 import { GraphQLContext } from "@webiny/api-plugin-commodo-db-proxy/types";
 import contentModel from "./models/contentModel.model";
 import contentModelGroup from "./models/contentModelGroup.model";
+import cmsEnvironment from "./models/cmsEnvironment.model";
 import { createDataModelFromData } from "./utils/createDataModelFromData";
 import { createSearchModelFromData } from "./utils/createSearchModelFromData";
 
@@ -31,10 +32,12 @@ export default () => {
 
         const CmsContentModelGroup = contentModelGroup({ createBase, context });
         const CmsContentModel = contentModel({ createBase, context, CmsContentModelGroup });
+        const CmsEnvironment = cmsEnvironment({ createBase });
 
         context.models = {
             CmsContentModelGroup,
             CmsContentModel,
+            CmsEnvironment,
             createBase
         };
 
