@@ -1,31 +1,36 @@
 export default /* GraphQL */ `
     "Products being sold in our webshop"
-    type CmsReadProduct {
+    type Product {
         id: ID
         createdBy: SecurityUser
         updatedBy: SecurityUser
         createdOn: DateTime
         updatedOn: DateTime
         savedOn: DateTime
-        title(locale: String): String
-        category: CmsReadCategory
-        reviews(
-            page: Int
-            perPage: Int
-            where: CmsReadReviewListWhereInput
-            sort: [CmsReadReviewListSorter]
-        ): CmsReadReviewListResponse
-        price: Float
-        inStock: Boolean
-        itemsInStock: Int
-        availableOn: String
+        title: CmsText
+        category: CmsRefOne
+        reviews: CmsRefMany
+        price: CmsFloat
+        inStock: CmsBoolean
+        itemsInStock: CmsInt
+        availableOn: CmsDate
     }
 
-    input CmsReadProductGetWhereInput {
+    input ProductInput {
+        title: CmsTextInput
+        category: CmsRefOneInput
+        reviews: CmsRefManyInput
+        price: CmsFloatInput
+        inStock: CmsBooleanInput
+        itemsInStock: CmsIntInput
+        availableOn: CmsDateInput
+    }
+
+    input ProductGetWhereInput {
         id: ID!
     }
 
-    input CmsReadProductListWhereInput {
+    input ProductListWhereInput {
         id: ID
         id_not: ID
         id_in: [ID]
@@ -128,7 +133,26 @@ export default /* GraphQL */ `
         availableOn_gte: String
     }
 
-    enum CmsReadProductListSorter {
+    input ProductUpdateWhereInput {
+        id: ID!
+    }
+
+    input ProductDeleteWhereInput {
+        id: ID!
+    }
+
+    type ProductResponse {
+        data: Product
+        error: CmsError
+    }
+
+    type ProductListResponse {
+        data: [Product]
+        meta: CmsListMeta
+        error: CmsError
+    }
+
+    enum ProductListSorter {
         createdOn_ASC
         createdOn_DESC
         updatedOn_ASC
@@ -145,26 +169,22 @@ export default /* GraphQL */ `
         availableOn_DESC
     }
 
-    type CmsReadProductResponse {
-        data: CmsReadProduct
-        error: CmsError
-    }
-
-    type CmsReadProductListResponse {
-        data: [CmsReadProduct]
-        meta: CmsListMeta
-        error: CmsError
-    }
-
-    extend type CmsReadQuery {
-        getProduct(locale: String, where: CmsReadProductGetWhereInput!): CmsReadProductResponse
+    extend type Query {
+        getProduct(where: ProductGetWhereInput!): ProductResponse
 
         listProducts(
-            locale: String
             page: Int
             perPage: Int
-            where: CmsReadProductListWhereInput
-            sort: [CmsReadProductListSorter]
-        ): CmsReadProductListResponse
+            sort: [ProductListSorter]
+            where: ProductListWhereInput
+        ): ProductListResponse
+    }
+
+    extend type Mutation {
+        createProduct(data: ProductInput!): ProductResponse
+
+        updateProduct(where: ProductUpdateWhereInput!, data: ProductInput!): ProductResponse
+
+        deleteProduct(where: ProductDeleteWhereInput!): CmsDeleteResponse
     }
 `;

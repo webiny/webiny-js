@@ -1,9 +1,5 @@
 import { graphql } from "graphql";
-import { setupSchema as setupTestingSchema } from "@webiny/api/testing";
-import contentModels from "./data/contentModels";
-import headlessPlugins from "../../src/plugins";
-import cmsReadResolvers from "./graphqlSchema/cmsReadResolvers";
-import cmsManageResolvers from "./graphqlSchema/cmsManageResolvers";
+import contentModels from "../data/contentModels";
 
 const schemaTypesQuery = /* GraphQL */ `
     {
@@ -35,21 +31,15 @@ const schemaTypesQuery = /* GraphQL */ `
     }
 `;
 
-export default ({ plugins }) => {
+export default ({ setupSchema }) => {
     describe("GraphQL Schema", () => {
-        function setupSchema() {
-            return setupTestingSchema([plugins, headlessPlugins()]);
-        }
-
         test("insert content models data", async () => {
             const mutation = /* GraphQL */ `
                 mutation CreateContentModel($data: CmsContentModelInput!) {
-                    cmsManage {
-                        createContentModel(data: $data) {
-                            data {
-                                id
-                                modelId
-                            }
+                    createContentModel(data: $data) {
+                        data {
+                            id
+                            modelId
                         }
                     }
                 }
@@ -68,12 +58,10 @@ export default ({ plugins }) => {
                 const response = responses[i];
                 expect(response).toMatchObject({
                     data: {
-                        cmsManage: {
-                            createContentModel: {
-                                data: {
-                                    id: expect.stringMatching("^[0-9a-fA-F]{24}$"),
-                                    modelId: expect.stringMatching(/^[a-z]+$/)
-                                }
+                        createContentModel: {
+                            data: {
+                                id: expect.stringMatching("^[0-9a-fA-F]{24}$"),
+                                modelId: expect.stringMatching(/^[a-z]+$/)
                             }
                         }
                     }
@@ -84,12 +72,10 @@ export default ({ plugins }) => {
         test("insert content models data (empty fields)", async () => {
             const mutation = /* GraphQL */ `
                 mutation CreateContentModel($data: CmsContentModelInput!) {
-                    cmsManage {
-                        createContentModel(data: $data) {
-                            data {
-                                id
-                                modelId
-                            }
+                    createContentModel(data: $data) {
+                        data {
+                            id
+                            modelId
                         }
                     }
                 }
@@ -106,12 +92,10 @@ export default ({ plugins }) => {
 
             expect(response).toMatchObject({
                 data: {
-                    cmsManage: {
-                        createContentModel: {
-                            data: {
-                                id: expect.stringMatching("^[0-9a-fA-F]{24}$"),
-                                modelId: expect.stringMatching(/^[a-zA-Z]+$/)
-                            }
+                    createContentModel: {
+                        data: {
+                            id: expect.stringMatching("^[0-9a-fA-F]{24}$"),
+                            modelId: expect.stringMatching(/^[a-zA-Z]+$/)
                         }
                     }
                 }
@@ -131,23 +115,16 @@ export default ({ plugins }) => {
             const { schema, context } = await setupSchema();
             const response = await graphql(schema, schemaTypesQuery, {}, context);
             const typeNames = contentModels.reduce((acc, item) => {
-                acc.push(`CmsRead${item.title}`);
-                acc.push(`CmsManage${item.title}`);
+                acc.push(item.title);
                 return acc;
             }, []);
             const cmsTypes = response.data.__schema.types
                 .filter(t => typeNames.includes(t.name))
                 .map(t => t.name);
 
-            expect(cmsTypes).toContain("CmsReadCategory");
-            expect(cmsTypes).toContain("CmsManageCategory");
-            expect(cmsTypes).toContain("CmsReadProduct");
-            expect(cmsTypes).toContain("CmsManageProduct");
-            expect(cmsTypes).toContain("CmsReadReview");
-            expect(cmsTypes).toContain("CmsManageReview");
+            expect(cmsTypes).toContain("Category");
+            expect(cmsTypes).toContain("Product");
+            expect(cmsTypes).toContain("Review");
         });
-
-        cmsReadResolvers({ setupSchema });
-        cmsManageResolvers({ setupSchema });
     });
 };

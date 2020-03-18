@@ -3,14 +3,13 @@ import { locales } from "../../mocks/mockI18NLocales";
 import createCategories from "../data/createCategories";
 
 export default ({ setupSchema }) => {
-    describe("cmsManage resolvers", () => {
+    describe("Resolvers", () => {
         let categories;
         let Category;
 
         beforeEach(async () => {
             const { context } = await setupSchema();
             Category = context.models.category;
-            const entries = await Category.find();
             categories = await createCategories(context);
         });
 
@@ -25,21 +24,19 @@ export default ({ setupSchema }) => {
             // Test resolvers
             const query = /* GraphQL */ `
                 query GetCategory($id: ID) {
-                    cmsManage {
-                        getCategory(where: { id: $id }) {
-                            data {
-                                id
-                                title {
-                                    values {
-                                        locale
-                                        value
-                                    }
+                    getCategory(where: { id: $id }) {
+                        data {
+                            id
+                            title {
+                                values {
+                                    locale
+                                    value
                                 }
-                                slug {
-                                    values {
-                                        locale
-                                        value
-                                    }
+                            }
+                            slug {
+                                values {
+                                    locale
+                                    value
                                 }
                             }
                         }
@@ -56,7 +53,7 @@ export default ({ setupSchema }) => {
                 throw Error(JSON.stringify(errors, null, 2));
             }
 
-            expect(data.cmsManage.getCategory).toMatchObject({
+            expect(data.getCategory).toMatchObject({
                 data: categories[0].data
             });
         });
@@ -65,21 +62,19 @@ export default ({ setupSchema }) => {
             // Test resolvers
             const query = /* GraphQL */ `
                 query GetCategory($slug: String) {
-                    cmsManage {
-                        getCategory(where: { slug: $slug }) {
-                            data {
-                                id
-                                title {
-                                    values {
-                                        locale
-                                        value
-                                    }
+                    getCategory(where: { slug: $slug }) {
+                        data {
+                            id
+                            title {
+                                values {
+                                    locale
+                                    value
                                 }
-                                slug {
-                                    values {
-                                        locale
-                                        value
-                                    }
+                            }
+                            slug {
+                                values {
+                                    locale
+                                    value
                                 }
                             }
                         }
@@ -96,7 +91,7 @@ export default ({ setupSchema }) => {
                 throw Error(JSON.stringify(errors, null, 2));
             }
 
-            expect(data.cmsManage.getCategory).toMatchObject({
+            expect(data.getCategory).toMatchObject({
                 data: categories[0].data
             });
         });
@@ -105,21 +100,19 @@ export default ({ setupSchema }) => {
             // Test resolvers
             const query = /* GraphQL */ `
                 {
-                    cmsManage {
-                        listCategories {
-                            data {
-                                id
-                                title {
-                                    values {
-                                        locale
-                                        value
-                                    }
+                    listCategories {
+                        data {
+                            id
+                            title {
+                                values {
+                                    locale
+                                    value
                                 }
-                                slug {
-                                    values {
-                                        locale
-                                        value
-                                    }
+                            }
+                            slug {
+                                values {
+                                    locale
+                                    value
                                 }
                             }
                         }
@@ -134,7 +127,7 @@ export default ({ setupSchema }) => {
                 throw Error(JSON.stringify(errors, null, 2));
             }
 
-            expect(data.cmsManage.listCategories).toMatchObject({
+            expect(data.listCategories).toMatchObject({
                 data: expect.arrayContaining([
                     expect.objectContaining({
                         id: expect.stringMatching(/^[0-9a-fA-F]{24}$/),
@@ -168,11 +161,9 @@ export default ({ setupSchema }) => {
             // Test resolvers
             const query = /* GraphQL */ `
                 {
-                    cmsManage {
-                        listCategories(perPage: 1) {
-                            data {
-                                id
-                            }
+                    listCategories(perPage: 1) {
+                        data {
+                            id
                         }
                     }
                 }
@@ -185,7 +176,7 @@ export default ({ setupSchema }) => {
                 throw Error(JSON.stringify(errors, null, 2));
             }
 
-            expect(data.cmsManage.listCategories).toMatchObject({
+            expect(data.listCategories).toMatchObject({
                 data: expect.arrayContaining([
                     expect.objectContaining({
                         id: expect.stringMatching(/^[0-9a-fA-F]{24}$/)
@@ -197,14 +188,12 @@ export default ({ setupSchema }) => {
         test(`list categories (sort ASC)`, async () => {
             // Test resolvers
             const query = /* GraphQL */ `
-                query ListCategories($sort: [CmsManageCategoryListSorter]) {
-                    cmsManage {
-                        listCategories(sort: $sort) {
-                            data {
-                                title {
-                                    values {
-                                        value
-                                    }
+                query ListCategories($sort: [CategoryListSorter]) {
+                    listCategories(sort: $sort) {
+                        data {
+                            title {
+                                values {
+                                    value
                                 }
                             }
                         }
@@ -221,7 +210,7 @@ export default ({ setupSchema }) => {
                 throw Error(JSON.stringify(errors, null, 2));
             }
 
-            expect(data.cmsManage.listCategories).toMatchObject({
+            expect(data.listCategories).toMatchObject({
                 data: [
                     {
                         title: expect.objectContaining({
@@ -257,14 +246,12 @@ export default ({ setupSchema }) => {
         test(`list categories (sort DESC)`, async () => {
             // Test resolvers
             const query = /* GraphQL */ `
-                query ListCategories($sort: [CmsManageCategoryListSorter]) {
-                    cmsManage {
-                        listCategories(sort: $sort) {
-                            data {
-                                title {
-                                    values {
-                                        value
-                                    }
+                query ListCategories($sort: [CategoryListSorter]) {
+                    listCategories(sort: $sort) {
+                        data {
+                            title {
+                                values {
+                                    value
                                 }
                             }
                         }
@@ -281,7 +268,7 @@ export default ({ setupSchema }) => {
                 throw Error(JSON.stringify(errors, null, 2));
             }
 
-            expect(data.cmsManage.listCategories).toMatchObject({
+            expect(data.listCategories).toMatchObject({
                 data: [
                     {
                         title: expect.objectContaining({
@@ -317,19 +304,17 @@ export default ({ setupSchema }) => {
         test(`list categories (contains, not_contains, in, not_in)`, async () => {
             // Test resolvers
             const query = /* GraphQL */ `
-                query ListCategories($where: CmsManageCategoryListWhereInput) {
-                    cmsManage {
-                        listCategories(where: $where) {
-                            data {
-                                title {
-                                    values {
-                                        value
-                                    }
+                query ListCategories($where: CategoryListWhereInput) {
+                    listCategories(where: $where) {
+                        data {
+                            title {
+                                values {
+                                    value
                                 }
                             }
-                            error {
-                                message
-                            }
+                        }
+                        error {
+                            message
                         }
                     }
                 }
@@ -344,7 +329,7 @@ export default ({ setupSchema }) => {
                 throw Error(JSON.stringify(errors1, null, 2));
             }
 
-            expect(data1.cmsManage.listCategories.data.length).toBe(2);
+            expect(data1.listCategories.data.length).toBe(2);
 
             const { data: data2, errors: errors2 } = await graphql(schema, query, {}, context, {
                 where: { title_not_contains: "category" }
@@ -354,7 +339,7 @@ export default ({ setupSchema }) => {
                 throw Error(JSON.stringify(errors2, null, 2));
             }
 
-            expect(data2.cmsManage.listCategories.data.length).toBe(1);
+            expect(data2.listCategories.data.length).toBe(1);
 
             const { data: data3, errors: errors3 } = await graphql(schema, query, {}, context, {
                 where: { title_in: ["B Category EN"] }
@@ -364,7 +349,7 @@ export default ({ setupSchema }) => {
                 throw Error(JSON.stringify(errors3, null, 2));
             }
 
-            expect(data3.cmsManage.listCategories.data.length).toBe(1);
+            expect(data3.listCategories.data.length).toBe(1);
 
             const { data: data4, errors: errors4 } = await graphql(schema, query, {}, context, {
                 where: { title_not_in: ["A Category EN", "B Category EN"] }
@@ -374,33 +359,31 @@ export default ({ setupSchema }) => {
                 throw Error(JSON.stringify(errors4, null, 2));
             }
 
-            expect(data4.cmsManage.listCategories.data.length).toBe(1);
-            expect(data4.cmsManage.listCategories.data[0].title.values[0].value).toBe("Hardware EN");
+            expect(data4.listCategories.data.length).toBe(1);
+            expect(data4.listCategories.data[0].title.values[0].value).toBe("Hardware EN");
         });
 
         test(`create category`, async () => {
             const query = /* GraphQL */ `
-                mutation CreateCategory($data: CmsManageCategoryInput!) {
-                    cmsManage {
-                        createCategory(data: $data) {
-                            data {
-                                id
-                                title {
-                                    values {
-                                        locale
-                                        value
-                                    }
-                                    enValue: value(locale: "en-US")
-                                    deValue: value(locale: "de-DE")
+                mutation CreateCategory($data: CategoryInput!) {
+                    createCategory(data: $data) {
+                        data {
+                            id
+                            title {
+                                values {
+                                    locale
+                                    value
                                 }
-                                slug {
-                                    values {
-                                        locale
-                                        value
-                                    }
-                                    enValue: value(locale: "en-US")
-                                    deValue: value(locale: "de-DE")
+                                enValue: value(locale: "en-US")
+                                deValue: value(locale: "de-DE")
+                            }
+                            slug {
+                                values {
+                                    locale
+                                    value
                                 }
+                                enValue: value(locale: "en-US")
+                                deValue: value(locale: "de-DE")
                             }
                         }
                     }
@@ -429,7 +412,7 @@ export default ({ setupSchema }) => {
                 throw Error(JSON.stringify(errors, null, 2));
             }
 
-            expect(data.cmsManage.createCategory).toMatchObject({
+            expect(data.createCategory).toMatchObject({
                 data: {
                     id: expect.stringMatching("^[0-9a-fA-F]{24}"),
                     title: {
@@ -455,26 +438,24 @@ export default ({ setupSchema }) => {
         test(`update category (by ID, by slug)`, async () => {
             const query = /* GraphQL */ `
                 mutation UpdateCategory(
-                    $where: CmsManageCategoryUpdateWhereInput!
-                    $data: CmsManageCategoryInput!
+                    $where: CategoryUpdateWhereInput!
+                    $data: CategoryInput!
                 ) {
-                    cmsManage {
-                        updateCategory(where: $where, data: $data) {
-                            data {
-                                id
-                                title {
-                                    values {
-                                        locale
-                                        value
-                                    }
-                                    enValue: value(locale: "en-US")
-                                    deValue: value(locale: "de-DE")
+                    updateCategory(where: $where, data: $data) {
+                        data {
+                            id
+                            title {
+                                values {
+                                    locale
+                                    value
                                 }
+                                enValue: value(locale: "en-US")
+                                deValue: value(locale: "de-DE")
                             }
-                            error {
-                                code
-                                message
-                            }
+                        }
+                        error {
+                            code
+                            message
                         }
                     }
                 }
@@ -499,7 +480,7 @@ export default ({ setupSchema }) => {
                 throw Error(JSON.stringify(errors1, null, 2));
             }
 
-            expect(data1.cmsManage.updateCategory).toMatchObject({
+            expect(data1.updateCategory).toMatchObject({
                 data: {
                     id: expect.stringMatching("^[0-9a-fA-F]{24}"),
                     title: {
@@ -515,7 +496,7 @@ export default ({ setupSchema }) => {
 
             const { data: data2, errors: errors2 } = await graphql(schema, query, {}, context, {
                 where: {
-                    id: data1.cmsManage.updateCategory.data.id
+                    id: data1.updateCategory.data.id
                 },
                 data: {
                     title: {
@@ -531,7 +512,7 @@ export default ({ setupSchema }) => {
                 throw Error(JSON.stringify(errors2, null, 2));
             }
 
-            expect(data2.cmsManage.updateCategory).toMatchObject({
+            expect(data2.updateCategory).toMatchObject({
                 data: {
                     id: expect.stringMatching("^[0-9a-fA-F]{24}"),
                     title: {
@@ -548,11 +529,9 @@ export default ({ setupSchema }) => {
 
         test(`delete category (by ID, by slug)`, async () => {
             const query = /* GraphQL */ `
-                mutation DeleteCategory($where: CmsManageCategoryDeleteWhereInput!) {
-                    cmsManage {
-                        deleteCategory(where: $where) {
-                            data
-                        }
+                mutation DeleteCategory($where: CategoryDeleteWhereInput!) {
+                    deleteCategory(where: $where) {
+                        data
                     }
                 }
             `;
@@ -571,7 +550,7 @@ export default ({ setupSchema }) => {
                 throw Error(JSON.stringify(errors, null, 2));
             }
 
-            expect(data.cmsManage.deleteCategory).toMatchObject({
+            expect(data.deleteCategory).toMatchObject({
                 data: true
             });
 
@@ -580,3 +559,4 @@ export default ({ setupSchema }) => {
         });
     });
 };
+

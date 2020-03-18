@@ -34,41 +34,41 @@ const plugin: CmsModelFieldToGraphQLPlugin = {
             return {
                 typeDefs: gql`
                     # ref:one
-                    type CmsManageRefOneLocalized {
+                    type CmsRefOneLocalized {
                         locale: ID
                         value: ID
                     }
 
-                    type CmsManageRefOne {
-                        values: [CmsManageRefOneLocalized]
+                    type CmsRefOne {
+                        values: [CmsRefOneLocalized]
                     }
 
-                    input CmsManageRefOneLocalizedInput {
+                    input CmsRefOneLocalizedInput {
                         locale: ID!
                         value: ID!
                     }
 
-                    input CmsManageRefOneInput {
-                        values: [CmsManageRefOneLocalizedInput]
+                    input CmsRefOneInput {
+                        values: [CmsRefOneLocalizedInput]
                     }
 
                     # ref:many
-                    type CmsManageRefManyLocalized {
+                    type CmsRefManyLocalized {
                         locale: ID
                         value: [ID]
                     }
 
-                    type CmsManageRefMany {
-                        values: [CmsManageRefManyLocalized]
+                    type CmsRefMany {
+                        values: [CmsRefManyLocalized]
                     }
 
-                    input CmsManageRefManyLocalizedInput {
+                    input CmsRefManyLocalizedInput {
                         locale: ID!
                         value: [ID]!
                     }
 
-                    input CmsManageRefManyInput {
-                        values: [CmsManageRefManyLocalizedInput]!
+                    input CmsRefManyInput {
+                        values: [CmsRefManyLocalizedInput]!
                     }
                 `
             };
@@ -76,14 +76,14 @@ const plugin: CmsModelFieldToGraphQLPlugin = {
         createTypeField({ field }) {
             const { type } = field.settings;
 
-            return field.fieldId + `: ${type === "many" ? `CmsManageRefMany` : `CmsManageRefOne`}`;
+            return field.fieldId + `: ${type === "many" ? `CmsRefMany` : `CmsRefOne`}`;
         },
         createInputField({ field }) {
             const { type } = field.settings;
 
             return (
                 field.fieldId +
-                `: ${type === "many" ? "CmsManageRefManyInput" : "CmsManageRefOneInput"}`
+                `: ${type === "many" ? "CmsRefManyInput" : "CmsRefOneInput"}`
             );
         }
     }

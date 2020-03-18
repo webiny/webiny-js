@@ -1,6 +1,6 @@
 export default /* GraphQL */ `
     "Product category"
-    type CmsReadCategory {
+    type Category {
         id: ID
         createdBy: SecurityUser
         updatedBy: SecurityUser
@@ -11,12 +11,12 @@ export default /* GraphQL */ `
         slug(locale: String): String
     }
 
-    input CmsReadCategoryGetWhereInput {
+    input CategoryGetWhereInput {
         id: ID
         slug: String
     }
 
-    input CmsReadCategoryListWhereInput {
+    input CategoryListWhereInput {
         id: ID
         id_not: ID
         id_in: [ID]
@@ -59,7 +59,7 @@ export default /* GraphQL */ `
         slug_not_contains: String
     }
 
-    enum CmsReadCategoryListSorter {
+    enum CategoryListSorter {
         createdOn_ASC
         createdOn_DESC
         updatedOn_ASC
@@ -70,26 +70,26 @@ export default /* GraphQL */ `
         slug_DESC
     }
 
-    type CmsReadCategoryResponse {
-        data: CmsReadCategory
+    type CategoryResponse {
+        data: Category
         error: CmsError
     }
 
-    type CmsReadCategoryListResponse {
-        data: [CmsReadCategory]
+    type CategoryListResponse {
+        data: [Category]
         meta: CmsListMeta
         error: CmsError
     }
 
-    extend type CmsReadQuery {
-        getCategory(locale: String, where: CmsReadCategoryGetWhereInput!): CmsReadCategoryResponse
+    extend type Query {
+        getCategory(locale: String, where: CategoryGetWhereInput!): CategoryResponse
 
         listCategories(
             locale: String
             page: Int
             perPage: Int
-            where: CmsReadCategoryListWhereInput
-            sort: [CmsReadCategoryListSorter]
-        ): CmsReadCategoryListResponse
+            where: CategoryListWhereInput
+            sort: [CategoryListSorter]
+        ): CategoryListResponse
     }
 `;

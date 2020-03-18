@@ -1,9 +1,10 @@
 import gql from "graphql-tag";
-import { GraphQLContext as APIContext, GraphQLSchemaPlugin } from "@webiny/api/types";
+import { GraphQLSchemaPlugin } from "@webiny/api/types";
 import {
     CmsModel,
     CmsModelFieldToGraphQLPlugin,
-    CmsFieldTypePlugins
+    CmsFieldTypePlugins,
+    CmsGraphQLContext
 } from "@webiny/api-headless-cms/types";
 import { createManageSDL } from "./createManageSDL";
 import { createReadSDL } from "./createReadSDL";
@@ -12,11 +13,11 @@ import { createReadResolvers } from "./createReadResolvers";
 import { getSchemaFromFieldPlugins } from "../utils/getSchemaFromFieldPlugins";
 
 export interface GenerateSchemaPlugins {
-    (params: { context: APIContext }): Promise<void>;
+    (params: { context: CmsGraphQLContext }): Promise<void>;
 }
 
 export const generateSchemaPlugins: GenerateSchemaPlugins = async ({ context }) => {
-    const { plugins } = context;
+    const { plugins, cms } = context;
 
     // Structure plugins for faster access
     const fieldTypePlugins: CmsFieldTypePlugins = plugins
@@ -31,10 +32,7 @@ export const generateSchemaPlugins: GenerateSchemaPlugins = async ({ context }) 
 
     const models: CmsModel[] = await CmsContentModel.find();
 
-    const schemas = [
-        ...getSchemaFromFieldPlugins({ fieldTypePlugins, type: "manage" }),
-        ...getSchemaFromFieldPlugins({ fieldTypePlugins, type: "read" })
-    ];
+    const schemas = getSchemaFromFieldPlugins({ fieldTypePlugins, type: cms.type });
 
     const newPlugins: GraphQLSchemaPlugin[] = schemas.map((s, i) => ({
         name: "graphql-schema-cms-field-types-" + i,
@@ -48,29 +46,34 @@ export const generateSchemaPlugins: GenerateSchemaPlugins = async ({ context }) 
     models
         .filter(model => model.fields.length > 0)
         .forEach(model => {
-            // Create a schema plugin for each model (Management API)
-            newPlugins.push({
-                name: "graphql-schema-" + model.modelId + "-manage",
-                type: "graphql-schema",
-                schema: {
-                    typeDefs: gql`
-                        ${createManageSDL({ model, context, fieldTypePlugins })}
-                    `,
-                    resolvers: createManageResolvers({ models, model, fieldTypePlugins, context })
-                }
-            });
-
-            // Create a schema plugin for each model (Read API)
-            newPlugins.push({
-                name: "graphql-schema-" + model.modelId + "-read",
-                type: "graphql-schema",
-                schema: {
-                    typeDefs: gql`
-                        ${createReadSDL({ model, context, fieldTypePlugins })}
-                    `,
-                    resolvers: createReadResolvers({ models, model, fieldTypePlugins, context })
-                }
-            });
+            if (cms.type === "read") {
+                newPlugins.push({
+                    name: "graphql-schema-" + model.modelId + "-read",
+                    type: "graphql-schema",
+                    schema: {
+                        typeDefs: gql`
+                            ${createReadSDL({ model, context, fieldTypePlugins })}
+                        `,
+                        resolvers: createReadResolvers({ models, model, fieldTypePlugins, context })
+                    }
+                });
+            } else {
+                newPlugins.push({
+                    name: "graphql-schema-" + model.modelId + "-manage",
+                    type: "graphql-schema",
+                    schema: {
+                        typeDefs: gql`
+                            ${createManageSDL({ model, context, fieldTypePlugins })}
+                        `,
+                        resolvers: createManageResolvers({
+                            models,
+                            model,
+                            fieldTypePlugins,
+                            context
+                        })
+                    }
+                });
+            }
         });
 
     plugins.register(newPlugins);

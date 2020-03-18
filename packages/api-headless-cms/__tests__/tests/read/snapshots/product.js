@@ -1,36 +1,31 @@
 export default /* GraphQL */ `
     "Products being sold in our webshop"
-    type CmsManageProduct {
+    type Product {
         id: ID
         createdBy: SecurityUser
         updatedBy: SecurityUser
         createdOn: DateTime
         updatedOn: DateTime
         savedOn: DateTime
-        title: CmsManageText
-        category: CmsManageRefOne
-        reviews: CmsManageRefMany
-        price: CmsManageFloat
-        inStock: CmsManageBoolean
-        itemsInStock: CmsManageInt
-        availableOn: CmsManageDate
+        title(locale: String): String
+        category: Category
+        reviews(
+            page: Int
+            perPage: Int
+            where: ReviewListWhereInput
+            sort: [ReviewListSorter]
+        ): ReviewListResponse
+        price: Float
+        inStock: Boolean
+        itemsInStock: Int
+        availableOn: String
     }
 
-    input CmsManageProductInput {
-        title: CmsManageTextInput
-        category: CmsManageRefOneInput
-        reviews: CmsManageRefManyInput
-        price: CmsManageFloatInput
-        inStock: CmsManageBooleanInput
-        itemsInStock: CmsManageIntInput
-        availableOn: CmsManageDateInput
-    }
-
-    input CmsManageProductGetWhereInput {
+    input ProductGetWhereInput {
         id: ID!
     }
 
-    input CmsManageProductListWhereInput {
+    input ProductListWhereInput {
         id: ID
         id_not: ID
         id_in: [ID]
@@ -133,26 +128,7 @@ export default /* GraphQL */ `
         availableOn_gte: String
     }
 
-    input CmsManageProductUpdateWhereInput {
-        id: ID!
-    }
-
-    input CmsManageProductDeleteWhereInput {
-        id: ID!
-    }
-
-    type CmsManageProductResponse {
-        data: CmsManageProduct
-        error: CmsError
-    }
-
-    type CmsManageProductListResponse {
-        data: [CmsManageProduct]
-        meta: CmsListMeta
-        error: CmsError
-    }
-
-    enum CmsManageProductListSorter {
+    enum ProductListSorter {
         createdOn_ASC
         createdOn_DESC
         updatedOn_ASC
@@ -169,25 +145,26 @@ export default /* GraphQL */ `
         availableOn_DESC
     }
 
-    extend type CmsManageQuery {
-        getProduct(where: CmsManageProductGetWhereInput!): CmsManageProductResponse
-
-        listProducts(
-            page: Int
-            perPage: Int
-            sort: [CmsManageProductListSorter]
-            where: CmsManageProductListWhereInput
-        ): CmsManageProductListResponse
+    type ProductResponse {
+        data: Product
+        error: CmsError
     }
 
-    extend type CmsManageMutation {
-        createProduct(data: CmsManageProductInput!): CmsManageProductResponse
+    type ProductListResponse {
+        data: [Product]
+        meta: CmsListMeta
+        error: CmsError
+    }
 
-        updateProduct(
-            where: CmsManageProductUpdateWhereInput!
-            data: CmsManageProductInput!
-        ): CmsManageProductResponse
+    extend type Query {
+        getProduct(locale: String, where: ProductGetWhereInput!): ProductResponse
 
-        deleteProduct(where: CmsManageProductDeleteWhereInput!): CmsDeleteResponse
+        listProducts(
+            locale: String
+            page: Int
+            perPage: Int
+            where: ProductListWhereInput
+            sort: [ProductListSorter]
+        ): ProductListResponse
     }
 `;

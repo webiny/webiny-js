@@ -2,7 +2,7 @@ import { graphql } from "graphql";
 import createCategories from "../data/createCategories";
 
 export default ({ setupSchema }) => {
-    describe("cmsRead resolvers", () => {
+    describe("Resolvers", () => {
         let categories;
         let targetResult;
         let Category;
@@ -30,40 +30,46 @@ export default ({ setupSchema }) => {
             }
         });
 
-        test(`get category by ID`, async () => {
+        test(`get entry by ID`, async () => {
             // Test resolvers
             const query = /* GraphQL */ `
                 query GetCategory($id: ID) {
-                    cmsRead {
-                        getCategory(where: { id: $id }) {
-                            data {
-                                id
-                                title
-                                slug
-                            }
+                    getCategory(where: { id: $id }) {
+                        data {
+                            id
+                            title
+                            slug
+                        }
+                        error {
+                            code
+                            message
                         }
                     }
                 }
             `;
 
             const { schema, context } = await setupSchema();
-            const { data } = await graphql(schema, query, {}, context, {
+
+            const { data, errors } = await graphql(schema, query, {}, context, {
                 id: categories[0].model.id
             });
-            expect(data.cmsRead.getCategory).toMatchObject(targetResult);
+
+            if (errors) {
+                throw Error(JSON.stringify(errors, null, 2));
+            }
+
+            expect(data.getCategory).toMatchObject(targetResult);
         });
 
-        test(`get category by slug (default locale matches slug)`, async () => {
+        test(`get entry by slug (default locale matches slug)`, async () => {
             // Test resolvers
             const query = /* GraphQL */ `
                 query GetCategory($slug: String) {
-                    cmsRead {
-                        getCategory(where: { slug: $slug }) {
-                            data {
-                                id
-                                title
-                                slug
-                            }
+                    getCategory(where: { slug: $slug }) {
+                        data {
+                            id
+                            title
+                            slug
                         }
                     }
                 }
@@ -74,20 +80,18 @@ export default ({ setupSchema }) => {
                 slug: "hardware-en"
             });
 
-            expect(data.cmsRead.getCategory).toMatchObject(targetResult);
+            expect(data.getCategory).toMatchObject(targetResult);
         });
 
-        test(`get category by slug (default locale doesn't match slug)`, async () => {
+        test(`get entry by slug (default locale doesn't match slug)`, async () => {
             // Test resolvers
             const query = /* GraphQL */ `
                 query GetCategory($slug: String) {
-                    cmsRead {
-                        getCategory(where: { slug: $slug }) {
-                            data {
-                                id
-                                title
-                                slug
-                            }
+                    getCategory(where: { slug: $slug }) {
+                        data {
+                            id
+                            title
+                            slug
                         }
                     }
                 }
@@ -98,20 +102,18 @@ export default ({ setupSchema }) => {
                 slug: "hardware-de"
             });
 
-            expect(data.cmsRead.getCategory.data).toBe(null);
+            expect(data.getCategory.data).toBe(null);
         });
 
-        test(`get category by slug (specific locale)`, async () => {
+        test(`get entry by slug (specific locale)`, async () => {
             // Test resolvers
             const query = /* GraphQL */ `
                 query GetCategory($locale: String, $slug: String) {
-                    cmsRead {
-                        getCategory(locale: $locale, where: { slug: $slug }) {
-                            data {
-                                id
-                                title
-                                slug
-                            }
+                    getCategory(locale: $locale, where: { slug: $slug }) {
+                        data {
+                            id
+                            title
+                            slug
                         }
                     }
                 }
@@ -123,7 +125,7 @@ export default ({ setupSchema }) => {
                 locale: "de-DE"
             });
 
-            expect(data.cmsRead.getCategory).toMatchObject({
+            expect(data.getCategory).toMatchObject({
                 data: {
                     id: categories[0].model.id,
                     title: "Hardware DE",
@@ -132,19 +134,17 @@ export default ({ setupSchema }) => {
             });
         });
 
-        test(`get category by slug with field locale override`, async () => {
+        test(`get entry by slug with field locale override`, async () => {
             // Test resolvers
             const query = /* GraphQL */ `
                 query GetCategory($slug: String) {
-                    cmsRead {
-                        getCategory(where: { slug: $slug }) {
-                            data {
-                                id
-                                title
-                                deTitle: title(locale: "de-DE")
-                                enSlug: slug
-                                deSlug: slug(locale: "de-DE")
-                            }
+                    getCategory(where: { slug: $slug }) {
+                        data {
+                            id
+                            title
+                            deTitle: title(locale: "de-DE")
+                            enSlug: slug
+                            deSlug: slug(locale: "de-DE")
                         }
                     }
                 }
@@ -155,7 +155,7 @@ export default ({ setupSchema }) => {
                 slug: "hardware-en"
             });
 
-            expect(data.cmsRead.getCategory).toMatchObject({
+            expect(data.getCategory).toMatchObject({
                 data: {
                     id: categories[0].model.id,
                     title: "Hardware EN",
@@ -166,17 +166,15 @@ export default ({ setupSchema }) => {
             });
         });
 
-        test(`list categories (no parameters)`, async () => {
+        test(`list entries (no parameters)`, async () => {
             // Test resolvers
             const query = /* GraphQL */ `
                 {
-                    cmsRead {
-                        listCategories {
-                            data {
-                                id
-                                title
-                                slug
-                            }
+                    listCategories {
+                        data {
+                            id
+                            title
+                            slug
                         }
                     }
                 }
@@ -184,7 +182,7 @@ export default ({ setupSchema }) => {
 
             const { schema, context } = await setupSchema();
             const { data } = await graphql(schema, query, {}, context);
-            expect(data.cmsRead.listCategories).toMatchObject({
+            expect(data.listCategories).toMatchObject({
                 data: expect.arrayContaining([
                     expect.objectContaining({
                         id: expect.stringMatching(/^[0-9a-fA-F]{24}$/),
@@ -195,17 +193,15 @@ export default ({ setupSchema }) => {
             });
         });
 
-        test(`list categories (specific locale)`, async () => {
+        test(`list entries (specific locale)`, async () => {
             // Test resolvers
             const query = /* GraphQL */ `
                 {
-                    cmsRead {
-                        listCategories(locale: "de-DE") {
-                            data {
-                                id
-                                title
-                                slug
-                            }
+                    listCategories(locale: "de-DE") {
+                        data {
+                            id
+                            title
+                            slug
                         }
                     }
                 }
@@ -213,7 +209,7 @@ export default ({ setupSchema }) => {
 
             const { schema, context } = await setupSchema();
             const { data } = await graphql(schema, query, {}, context);
-            expect(data.cmsRead.listCategories).toMatchObject({
+            expect(data.listCategories).toMatchObject({
                 data: expect.arrayContaining([
                     expect.objectContaining({
                         id: expect.stringMatching(/^[0-9a-fA-F]{24}$/),
@@ -224,19 +220,17 @@ export default ({ setupSchema }) => {
             });
         });
 
-        test(`list categories (perPage)`, async () => {
+        test(`list entries (perPage)`, async () => {
             // Test resolvers
             const query = /* GraphQL */ `
                 {
-                    cmsRead {
-                        listCategories(perPage: 1) {
-                            data {
-                                id
-                            }
-                            meta {
-                                totalCount
-                                totalPages
-                            }
+                    listCategories(perPage: 1) {
+                        data {
+                            id
+                        }
+                        meta {
+                            totalCount
+                            totalPages
                         }
                     }
                 }
@@ -244,7 +238,7 @@ export default ({ setupSchema }) => {
 
             const { schema, context } = await setupSchema();
             const { data } = await graphql(schema, query, {}, context);
-            expect(data.cmsRead.listCategories).toMatchObject({
+            expect(data.listCategories).toMatchObject({
                 data: expect.arrayContaining([
                     expect.objectContaining({
                         id: expect.stringMatching(/^[0-9a-fA-F]{24}$/)
@@ -257,34 +251,34 @@ export default ({ setupSchema }) => {
             });
         });
 
-        test(`list categories (page)`, async () => {
+        test(`list entries (page)`, async () => {
             // Test resolvers
             const query = /* GraphQL */ `
                 query ListCategories($page: Int) {
-                    cmsRead {
-                        listCategories(page: $page, perPage: 1) {
-                            data {
-                                title
-                            }
-                            meta {
-                                nextPage
-                                previousPage
-                                totalCount
-                                totalPages
-                            }
+                    listCategories(page: $page, perPage: 1) {
+                        data {
+                            title
+                        }
+                        meta {
+                            nextPage
+                            previousPage
+                            totalCount
+                            totalPages
                         }
                     }
                 }
             `;
 
             const { schema, context } = await setupSchema();
-            const { data: data1, errors: errors1 } = await graphql(schema, query, {}, context, { page: 2 });
+            const { data: data1, errors: errors1 } = await graphql(schema, query, {}, context, {
+                page: 2
+            });
 
             if (errors1) {
                 throw Error(JSON.stringify(errors1, null, 2));
             }
 
-            expect(data1.cmsRead.listCategories).toMatchObject({
+            expect(data1.listCategories).toMatchObject({
                 data: [
                     {
                         title: "A Category EN"
@@ -298,14 +292,15 @@ export default ({ setupSchema }) => {
                 }
             });
 
-            const { data: data2, errors: errors2 } = await graphql(schema, query, {}, context, { page: 3 });
+            const { data: data2, errors: errors2 } = await graphql(schema, query, {}, context, {
+                page: 3
+            });
 
             if (errors2) {
                 throw Error(JSON.stringify(errors2, null, 2));
             }
 
-
-            expect(data2.cmsRead.listCategories).toMatchObject({
+            expect(data2.listCategories).toMatchObject({
                 data: [
                     {
                         title: "Hardware EN"
@@ -320,15 +315,13 @@ export default ({ setupSchema }) => {
             });
         });
 
-        test(`list categories (sort ASC)`, async () => {
+        test(`list entries (sort ASC)`, async () => {
             // Test resolvers
             const query = /* GraphQL */ `
-                query ListCategories($sort: [CmsReadCategoryListSorter]) {
-                    cmsRead {
-                        listCategories(sort: $sort) {
-                            data {
-                                title
-                            }
+                query ListCategories($sort: [CategoryListSorter]) {
+                    listCategories(sort: $sort) {
+                        data {
+                            title
                         }
                     }
                 }
@@ -338,7 +331,7 @@ export default ({ setupSchema }) => {
             const { data } = await graphql(schema, query, {}, context, {
                 sort: ["title_ASC"]
             });
-            expect(data.cmsRead.listCategories).toMatchObject({
+            expect(data.listCategories).toMatchObject({
                 data: [
                     {
                         title: "A Category EN"
@@ -353,15 +346,13 @@ export default ({ setupSchema }) => {
             });
         });
 
-        test(`list categories (sort DESC)`, async () => {
+        test(`list entries (sort DESC)`, async () => {
             // Test resolvers
             const query = /* GraphQL */ `
-                query ListCategories($sort: [CmsReadCategoryListSorter]) {
-                    cmsRead {
-                        listCategories(sort: $sort) {
-                            data {
-                                title
-                            }
+                query ListCategories($sort: [CategoryListSorter]) {
+                    listCategories(sort: $sort) {
+                        data {
+                            title
                         }
                     }
                 }
@@ -371,7 +362,7 @@ export default ({ setupSchema }) => {
             const { data } = await graphql(schema, query, {}, context, {
                 sort: ["title_DESC"]
             });
-            expect(data.cmsRead.listCategories).toMatchObject({
+            expect(data.listCategories).toMatchObject({
                 data: [
                     {
                         title: "Hardware EN"
@@ -386,15 +377,13 @@ export default ({ setupSchema }) => {
             });
         });
 
-        test(`list categories (contains, not_contains, in, not_in)`, async () => {
+        test(`list entries (contains, not_contains, in, not_in)`, async () => {
             // Test resolvers
             const query = /* GraphQL */ `
-                query ListCategories($where: CmsReadCategoryListWhereInput) {
-                    cmsRead {
-                        listCategories(where: $where) {
-                            data {
-                                title
-                            }
+                query ListCategories($where: CategoryListWhereInput) {
+                    listCategories(where: $where) {
+                        data {
+                            title
                         }
                     }
                 }
@@ -404,23 +393,23 @@ export default ({ setupSchema }) => {
             const { data: data1 } = await graphql(schema, query, {}, context, {
                 where: { title_contains: "category" }
             });
-            expect(data1.cmsRead.listCategories.data.length).toBe(2);
+            expect(data1.listCategories.data.length).toBe(2);
 
             const { data: data2 } = await graphql(schema, query, {}, context, {
                 where: { title_not_contains: "category" }
             });
-            expect(data2.cmsRead.listCategories.data.length).toBe(1);
+            expect(data2.listCategories.data.length).toBe(1);
 
             const { data: data3 } = await graphql(schema, query, {}, context, {
                 where: { title_in: ["B Category EN"] }
             });
-            expect(data3.cmsRead.listCategories.data.length).toBe(1);
+            expect(data3.listCategories.data.length).toBe(1);
 
             const { data: data4 } = await graphql(schema, query, {}, context, {
                 where: { title_not_in: ["A Category EN", "B Category EN"] }
             });
-            expect(data4.cmsRead.listCategories.data.length).toBe(1);
-            expect(data4.cmsRead.listCategories.data[0].title).toBe("Hardware EN");
+            expect(data4.listCategories.data.length).toBe(1);
+            expect(data4.listCategories.data[0].title).toBe("Hardware EN");
         });
     });
 };

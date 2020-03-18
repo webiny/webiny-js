@@ -1,28 +1,28 @@
 export default /* GraphQL */ `
     "Product review"
-    type CmsManageReview {
+    type Review {
         id: ID
         createdBy: SecurityUser
         updatedBy: SecurityUser
         createdOn: DateTime
         updatedOn: DateTime
         savedOn: DateTime
-        text: CmsManageText
-        product: CmsManageRefOne
-        rating: CmsManageFloat
+        text: CmsText
+        product: CmsRefOne
+        rating: CmsFloat
     }
 
-    input CmsManageReviewInput {
-        text: CmsManageTextInput
-        product: CmsManageRefOneInput
-        rating: CmsManageFloatInput
+    input ReviewInput {
+        text: CmsTextInput
+        product: CmsRefOneInput
+        rating: CmsFloatInput
     }
 
-    input CmsManageReviewGetWhereInput {
+    input ReviewGetWhereInput {
         id: ID!
     }
 
-    input CmsManageReviewListWhereInput {
+    input ReviewListWhereInput {
         id: ID
         id_not: ID
         id_in: [ID]
@@ -71,26 +71,26 @@ export default /* GraphQL */ `
         rating_gte: Float
     }
 
-    input CmsManageReviewUpdateWhereInput {
+    input ReviewUpdateWhereInput {
         id: ID!
     }
 
-    input CmsManageReviewDeleteWhereInput {
+    input ReviewDeleteWhereInput {
         id: ID!
     }
 
-    type CmsManageReviewResponse {
-        data: CmsManageReview
+    type ReviewResponse {
+        data: Review
         error: CmsError
     }
 
-    type CmsManageReviewListResponse {
-        data: [CmsManageReview]
+    type ReviewListResponse {
+        data: [Review]
         meta: CmsListMeta
         error: CmsError
     }
 
-    enum CmsManageReviewListSorter {
+    enum ReviewListSorter {
         createdOn_ASC
         createdOn_DESC
         updatedOn_ASC
@@ -101,25 +101,22 @@ export default /* GraphQL */ `
         rating_DESC
     }
 
-    extend type CmsManageQuery {
-        getReview(where: CmsManageReviewGetWhereInput!): CmsManageReviewResponse
+    extend type Query {
+        getReview(where: ReviewGetWhereInput!): ReviewResponse
 
         listReviews(
             page: Int
             perPage: Int
-            sort: [CmsManageReviewListSorter]
-            where: CmsManageReviewListWhereInput
-        ): CmsManageReviewListResponse
+            sort: [ReviewListSorter]
+            where: ReviewListWhereInput
+        ): ReviewListResponse
     }
 
-    extend type CmsManageMutation {
-        createReview(data: CmsManageReviewInput!): CmsManageReviewResponse
+    extend type Mutation {
+        createReview(data: ReviewInput!): ReviewResponse
 
-        updateReview(
-            where: CmsManageReviewUpdateWhereInput!
-            data: CmsManageReviewInput!
-        ): CmsManageReviewResponse
+        updateReview(where: ReviewUpdateWhereInput!, data: ReviewInput!): ReviewResponse
 
-        deleteReview(where: CmsManageReviewDeleteWhereInput!): CmsDeleteResponse
+        deleteReview(where: ReviewDeleteWhereInput!): CmsDeleteResponse
     }
 `;

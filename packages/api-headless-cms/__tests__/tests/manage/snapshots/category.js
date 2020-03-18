@@ -1,27 +1,27 @@
 export default /* GraphQL */ `
     "Product category"
-    type CmsManageCategory {
+    type Category {
         id: ID
         createdBy: SecurityUser
         updatedBy: SecurityUser
         createdOn: DateTime
         updatedOn: DateTime
         savedOn: DateTime
-        title: CmsManageText
-        slug: CmsManageText
+        title: CmsText
+        slug: CmsText
     }
 
-    input CmsManageCategoryInput {
-        title: CmsManageTextInput
-        slug: CmsManageTextInput
+    input CategoryInput {
+        title: CmsTextInput
+        slug: CmsTextInput
     }
 
-    input CmsManageCategoryGetWhereInput {
+    input CategoryGetWhereInput {
         id: ID
         slug: String
     }
 
-    input CmsManageCategoryListWhereInput {
+    input CategoryListWhereInput {
         id: ID
         id_not: ID
         id_in: [ID]
@@ -64,28 +64,28 @@ export default /* GraphQL */ `
         slug_not_contains: String
     }
 
-    input CmsManageCategoryUpdateWhereInput {
+    input CategoryUpdateWhereInput {
         id: ID
         slug: String
     }
 
-    input CmsManageCategoryDeleteWhereInput {
+    input CategoryDeleteWhereInput {
         id: ID
         slug: String
     }
 
-    type CmsManageCategoryResponse {
-        data: CmsManageCategory
+    type CategoryResponse {
+        data: Category
         error: CmsError
     }
 
-    type CmsManageCategoryListResponse {
-        data: [CmsManageCategory]
+    type CategoryListResponse {
+        data: [Category]
         meta: CmsListMeta
         error: CmsError
     }
 
-    enum CmsManageCategoryListSorter {
+    enum CategoryListSorter {
         createdOn_ASC
         createdOn_DESC
         updatedOn_ASC
@@ -96,25 +96,22 @@ export default /* GraphQL */ `
         slug_DESC
     }
 
-    extend type CmsManageQuery {
-        getCategory(where: CmsManageCategoryGetWhereInput!): CmsManageCategoryResponse
+    extend type Query {
+        getCategory(where: CategoryGetWhereInput!): CategoryResponse
 
         listCategories(
             page: Int
             perPage: Int
-            sort: [CmsManageCategoryListSorter]
-            where: CmsManageCategoryListWhereInput
-        ): CmsManageCategoryListResponse
+            sort: [CategoryListSorter]
+            where: CategoryListWhereInput
+        ): CategoryListResponse
     }
 
-    extend type CmsManageMutation {
-        createCategory(data: CmsManageCategoryInput!): CmsManageCategoryResponse
+    extend type Mutation {
+        createCategory(data: CategoryInput!): CategoryResponse
 
-        updateCategory(
-            where: CmsManageCategoryUpdateWhereInput!
-            data: CmsManageCategoryInput!
-        ): CmsManageCategoryResponse
+        updateCategory(where: CategoryUpdateWhereInput!, data: CategoryInput!): CategoryResponse
 
-        deleteCategory(where: CmsManageCategoryDeleteWhereInput!): CmsDeleteResponse
+        deleteCategory(where: CategoryDeleteWhereInput!): CmsDeleteResponse
     }
 `;

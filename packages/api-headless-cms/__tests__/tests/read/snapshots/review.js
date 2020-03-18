@@ -1,6 +1,6 @@
 export default /* GraphQL */ `
     "Product review"
-    type CmsReadReview {
+    type Review {
         id: ID
         createdBy: SecurityUser
         updatedBy: SecurityUser
@@ -8,15 +8,15 @@ export default /* GraphQL */ `
         updatedOn: DateTime
         savedOn: DateTime
         text: String
-        product: CmsReadProduct
+        product: Product
         rating: Float
     }
 
-    input CmsReadReviewGetWhereInput {
+    input ReviewGetWhereInput {
         id: ID!
     }
 
-    input CmsReadReviewListWhereInput {
+    input ReviewListWhereInput {
         id: ID
         id_not: ID
         id_in: [ID]
@@ -65,7 +65,7 @@ export default /* GraphQL */ `
         rating_gte: Float
     }
 
-    enum CmsReadReviewListSorter {
+    enum ReviewListSorter {
         createdOn_ASC
         createdOn_DESC
         updatedOn_ASC
@@ -76,26 +76,26 @@ export default /* GraphQL */ `
         rating_DESC
     }
 
-    type CmsReadReviewResponse {
-        data: CmsReadReview
+    type ReviewResponse {
+        data: Review
         error: CmsError
     }
 
-    type CmsReadReviewListResponse {
-        data: [CmsReadReview]
+    type ReviewListResponse {
+        data: [Review]
         meta: CmsListMeta
         error: CmsError
     }
 
-    extend type CmsReadQuery {
-        getReview(locale: String, where: CmsReadReviewGetWhereInput!): CmsReadReviewResponse
+    extend type Query {
+        getReview(locale: String, where: ReviewGetWhereInput!): ReviewResponse
 
         listReviews(
             locale: String
             page: Int
             perPage: Int
-            where: CmsReadReviewListWhereInput
-            sort: [CmsReadReviewListSorter]
-        ): CmsReadReviewListResponse
+            where: ReviewListWhereInput
+            sort: [ReviewListSorter]
+        ): ReviewListResponse
     }
 `;

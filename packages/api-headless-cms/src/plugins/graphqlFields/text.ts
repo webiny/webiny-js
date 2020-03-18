@@ -57,27 +57,27 @@ const plugin: CmsModelFieldToGraphQLPlugin = {
         createSchema() {
             return {
                 typeDefs: gql`
-                    input CmsManageTextLocalizedInput {
+                    input CmsTextLocalizedInput {
                         value: String
                         locale: ID!
                     }
 
-                    input CmsManageTextInput {
-                        values: [CmsManageTextLocalizedInput]
+                    input CmsTextInput {
+                        values: [CmsTextLocalizedInput]
                     }
 
-                    type CmsManageTextLocalized {
+                    type CmsTextLocalized {
                         value: String
                         locale: ID!
                     }
 
-                    type CmsManageText {
+                    type CmsText {
                         value(locale: String): String
-                        values: [CmsManageTextLocalized]!
+                        values: [CmsTextLocalized]!
                     }
                 `,
                 resolvers: {
-                    CmsManageText: {
+                    CmsText: {
                         value(field, args) {
                             return field.value(args.locale);
                         }
@@ -86,10 +86,10 @@ const plugin: CmsModelFieldToGraphQLPlugin = {
             };
         },
         createTypeField({ field }) {
-            return field.fieldId + ": CmsManageText";
+            return field.fieldId + ": CmsText";
         },
         createInputField({ field }) {
-            return field.fieldId + ": CmsManageTextInput";
+            return field.fieldId + ": CmsTextInput";
         }
     }
 };

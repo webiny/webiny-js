@@ -1,6 +1,5 @@
 import pluralize from "pluralize";
-import { CmsFieldTypePlugins, CmsModel } from "@webiny/api-headless-cms/types";
-import { GraphQLContext } from "@webiny/api/types";
+import { CmsFieldTypePlugins, CmsGraphQLContext, CmsModel } from "@webiny/api-headless-cms/types";
 import { createManageTypeName, createTypeName } from "../utils/createTypeName";
 import { renderInputFields } from "../utils/renderInputFields";
 import { renderSortEnum } from "../utils/renderSortEnum";
@@ -11,7 +10,7 @@ import { renderGetFilterFields } from "../utils/renderGetFilterFields";
 export interface CreateManageSDL {
     (params: {
         model: CmsModel;
-        context: GraphQLContext;
+        context: CmsGraphQLContext;
         fieldTypePlugins: CmsFieldTypePlugins;
     }): string;
 }
@@ -75,7 +74,7 @@ export const createManageSDL: CreateManageSDL = ({ model, fieldTypePlugins }): s
             ${renderSortEnum({ model, fieldTypePlugins })}
         }
         
-        extend type CmsManageQuery {
+        extend type Query {
             get${typeName}(where: ${mTypeName}GetWhereInput!): ${mTypeName}Response
             
             list${pluralize(typeName)}(
@@ -86,7 +85,7 @@ export const createManageSDL: CreateManageSDL = ({ model, fieldTypePlugins }): s
             ): ${mTypeName}ListResponse
         }
         
-        extend type CmsManageMutation{
+        extend type Mutation{
             create${typeName}(data: ${mTypeName}Input!): ${mTypeName}Response
             
             update${typeName}(where: ${mTypeName}UpdateWhereInput!, data: ${mTypeName}Input!): ${mTypeName}Response

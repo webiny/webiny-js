@@ -1,15 +1,16 @@
 import { withName, withHooks } from "@webiny/commodo";
-import { CmsModel, CmsModelFieldToCommodoFieldPlugin } from "@webiny/api-headless-cms/types";
-import { GraphQLContext } from "@webiny/api/types";
-import { GraphQLContext as I18NContext } from "@webiny/api-i18n/types";
-import { GraphQLContext as CommodoContext } from "@webiny/api-plugin-commodo-db-proxy/types";
+import {
+    CmsGraphQLContext,
+    CmsModel,
+    CmsModelFieldToCommodoFieldPlugin
+} from "@webiny/api-headless-cms/types";
 import { createValidation } from "./createValidation";
 import { flow } from "lodash";
 
 export const createDataModelFromData = (
     baseModel: Function,
     data: CmsModel,
-    context: GraphQLContext & CommodoContext & I18NContext
+    context: CmsGraphQLContext
 ) => {
     const plugins = context.plugins.byType<CmsModelFieldToCommodoFieldPlugin>(
         "cms-model-field-to-commodo-field"
@@ -17,7 +18,7 @@ export const createDataModelFromData = (
 
     // Create base model to be enhanced by field plugins
     const model = flow(
-        withName(data.title),
+        withName(`${data.title}_${context.cms.environment}`),
         withHooks({
             async afterSave() {
                 const SearchModel = context.models[data.modelId + "Search"];

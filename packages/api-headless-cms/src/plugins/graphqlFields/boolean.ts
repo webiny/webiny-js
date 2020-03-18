@@ -39,32 +39,32 @@ const plugin: CmsModelFieldToGraphQLPlugin = {
         createSchema() {
             return {
                 typeDefs: gql`
-                    input CmsManageBooleanLocalizedInput {
+                    input CmsBooleanLocalizedInput {
                         value: Boolean
                         locale: ID!
                     }
 
-                    input CmsManageBooleanInput {
-                        values: [CmsManageBooleanLocalizedInput]
+                    input CmsBooleanInput {
+                        values: [CmsBooleanLocalizedInput]
                     }
 
-                    type CmsManageBooleanLocalized {
+                    type CmsBooleanLocalized {
                         value: Boolean
                         locale: ID!
                     }
 
-                    type CmsManageBoolean {
+                    type CmsBoolean {
                         value: Boolean
-                        values: [CmsManageBooleanLocalized]!
+                        values: [CmsBooleanLocalized]!
                     }
                 `
             };
         },
         createTypeField({ field }) {
-            return field.fieldId + ": CmsManageBoolean";
+            return field.fieldId + ": CmsBoolean";
         },
         createInputField({ field }) {
-            return field.fieldId + ": CmsManageBooleanInput";
+            return field.fieldId + ": CmsBooleanInput";
         }
     }
 };

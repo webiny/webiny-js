@@ -57,32 +57,32 @@ const plugin: CmsModelFieldToGraphQLPlugin = {
         createSchema() {
             return {
                 typeDefs: gql`
-                    input CmsManageIntLocalizedInput {
+                    input CmsIntLocalizedInput {
                         value: Int
                         locale: ID!
                     }
 
-                    input CmsManageIntInput {
-                        values: [CmsManageIntLocalizedInput]
+                    input CmsIntInput {
+                        values: [CmsIntLocalizedInput]
                     }
 
-                    type CmsManageIntLocalized {
+                    type CmsIntLocalized {
                         value: Int
                         locale: ID!
                     }
 
-                    type CmsManageInt {
+                    type CmsInt {
                         value: Int
-                        values: [CmsManageIntLocalized]!
+                        values: [CmsIntLocalized]!
                     }
                 `
             };
         },
         createTypeField({ field }) {
-            return field.fieldId + ": CmsManageInt";
+            return field.fieldId + ": CmsInt";
         },
         createInputField({ field }) {
-            return field.fieldId + ": CmsManageIntInput";
+            return field.fieldId + ": CmsIntInput";
         }
     }
 };
