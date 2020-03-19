@@ -75,7 +75,7 @@ export default ({ plugins }) => {
                 // Test CategorySearch
                 const CategorySearch = context.models["categorySearch"];
                 const cSearch = await CategorySearch.find({
-                    query: { model: "category", instance: category.id }
+                    query: { revision: category.id }
                 });
                 expect(cSearch.length).toBe(3);
                 expect(cSearch.find(s => s.locale === locales.en.id).title).toBe("Hardware EN");

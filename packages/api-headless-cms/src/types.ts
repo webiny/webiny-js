@@ -14,9 +14,18 @@ export type CmsLocalizedModelFieldValue<T> = {
 
 export type GraphQLContext = {
     cms: {
+        // API type
         type: string;
+        // Requested environment
         environment: string;
+        // Requested locale
         locale: I18NLocale;
+        // This is a READ API
+        READ: boolean;
+        // This is a MANAGE API
+        MANAGE: boolean;
+        // This is a PREVIEW API
+        PREVIEW: boolean;
     };
 };
 

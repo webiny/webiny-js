@@ -1,4 +1,4 @@
-import { locales } from "../../mocks/mockI18NLocales";
+import { locales } from "./mockI18NLocales";
 
 export default async context => {
     const { category: Category } = context.models;
@@ -30,7 +30,7 @@ export default async context => {
             slug: {
                 values: [
                     { locale: locales.en.id, value: "a-category-en" },
-                    { locale: locales.de.id, value: "a-category-de" },
+                    { locale: locales.de.id, value: "a-category-de" }
                     // do NOT define `it` locale value - it's on purpose
                 ]
             }
@@ -50,18 +50,35 @@ export default async context => {
                     // do NOT define `it` locale value - it's on purpose
                 ]
             }
+        },
+        {
+            title: {
+                values: [
+                    { locale: locales.en.id, value: "Framework" },
+                    { locale: locales.de.id, value: "Framework DE" }
+                ]
+            },
+            slug: {
+                values: [
+                    { locale: locales.en.id, value: "framework-en" },
+                    { locale: locales.de.id, value: "framework-de" }
+                ]
+            }
         }
     ];
 
-    await category1.populate(data[0]).save();
+    await category1.populate({ published: true, ...data[0] }).save();
 
     const category2 = new Category();
-    await category2.populate(data[1]).save();
+    await category2.populate({ published: true, ...data[1] }).save();
 
     const category3 = new Category();
-    await category3.populate(data[2]).save();
+    await category3.populate({ published: true, ...data[2] }).save();
 
-    return [category1, category2, category3].map((model, i) => ({
+    const category4 = new Category();
+    await category4.populate(data[3]).save();
+
+    return [category1, category2, category3, category4].map((model, i) => ({
         model,
         data: { id: model.id, ...data[i] }
     }));

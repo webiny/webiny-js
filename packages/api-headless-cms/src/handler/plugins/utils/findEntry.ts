@@ -1,4 +1,4 @@
-import {CmsGraphQLContext, CmsModel} from "@webiny/api-headless-cms/types";
+import { CmsGraphQLContext, CmsModel } from "@webiny/api-headless-cms/types";
 import { createFindQuery } from "./createFindQuery";
 import { parseWhere } from "./parseWhere";
 
@@ -16,7 +16,14 @@ export const findEntry = async ({ model, args, context }: FindEntry) => {
     const ModelSearch = context.models[model.modelId + "Search"];
 
     const query = createFindQuery(model, parseWhere(args.where), context);
-    if (context.cms.type !== "manage") {
+
+    if (context.cms.READ) {
+        query.published = true;
+    } else {
+        query.latestVersion = true;
+    }
+
+    if (!context.cms.MANAGE) {
         query.locale = context.cms.locale.id;
     }
 
@@ -25,5 +32,5 @@ export const findEntry = async ({ model, args, context }: FindEntry) => {
         return null;
     }
 
-    return await Model.findById(searchData.instance);
+    return await Model.findById(searchData.revision);
 };

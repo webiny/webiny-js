@@ -31,7 +31,7 @@ export default async function findEntries<T = CmsGraphQLContext>({
 
     // For Manage API, limit records by locales.length * perPage
     // (since we can't use "$group" and you should be able to search values in all locales)
-    if (context.cms.type === "manage") {
+    if (context.cms.MANAGE) {
         // TODO @adrian Error: { message: 'Cannot query for more than 100 models per page.' }
         // perPage = perPage * context.i18n.getLocales().length;
     }
@@ -52,7 +52,7 @@ export default async function findEntries<T = CmsGraphQLContext>({
         }
     });
 
-    if (context.cms.type === "manage" && notConditions.length) {
+    if (context.cms.MANAGE && notConditions.length) {
         // Replace "not"
         const invertedConditions = notConditions.map(cond => {
             if (cond.operator === "not") {
@@ -64,9 +64,9 @@ export default async function findEntries<T = CmsGraphQLContext>({
         // Run extra query to find IDs we DON'T want to include in the final search
         const query = createFindQuery(model, invertedConditions, context);
         const searchEntries = await ModelSearch.find({ query });
-        const skipIds = searchEntries.map(entry => entry.instance);
+        const skipIds = searchEntries.map(entry => entry.revision);
         match = {
-            instance: { $nin: [...skipIds] },
+            revision: { $nin: [...skipIds] },
             ...createFindQuery(model, conditions, context)
         };
     } else {
@@ -75,8 +75,14 @@ export default async function findEntries<T = CmsGraphQLContext>({
         };
     }
 
+    if (context.cms.READ) {
+        match.published = true;
+    } else {
+        match.latestVersion = true;
+    }
+
     // For `read` API we always include `locale` in the queries
-    if (context.cms.type !== "manage") {
+    if (!context.cms.MANAGE) {
         match.locale = context.cms.locale.id;
     }
 
@@ -102,7 +108,7 @@ export default async function findEntries<T = CmsGraphQLContext>({
     const searchEntries = await ModelSearch.find({ query: match, sort: sorters, page, perPage });
     const meta = searchEntries.getMeta();
     const ids = searchEntries
-        .map(item => item.instance)
+        .map(item => item.revision)
         .filter((value, index, self) => {
             return self.indexOf(value) === index;
         });

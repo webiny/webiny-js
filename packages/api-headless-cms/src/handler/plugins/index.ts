@@ -20,7 +20,11 @@ export default (options: HeadlessPluginsOptions) => [
             context.cms.type = options.type;
             context.cms.environment = options.environment;
 
-            if (options.type === "read") {
+            context.cms.READ = options.type === "read";
+            context.cms.PREVIEW = options.type === "preview";
+            context.cms.MANAGE = options.type === "manage";
+
+            if (context.cms.READ) {
                 context.resolvedValues = new TypeValueEmitter();
             }
         }

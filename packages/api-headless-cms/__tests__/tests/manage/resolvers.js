@@ -1,6 +1,6 @@
 import { graphql } from "graphql";
 import { locales } from "../../mocks/mockI18NLocales";
-import createCategories from "../data/createCategories";
+import createCategories from "../../mocks/createCategories.manage";
 
 export default ({ setupSchema }) => {
     describe("Resolvers", () => {

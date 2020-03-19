@@ -1,5 +1,5 @@
 import { graphql } from "graphql";
-import createCategories from "../data/createCategories";
+import createCategories from "../../mocks/createCategories.read";
 
 export default ({ setupSchema }) => {
     describe("Resolvers", () => {
@@ -81,6 +81,32 @@ export default ({ setupSchema }) => {
             });
 
             expect(data.getCategory).toMatchObject(targetResult);
+        });
+
+        test(`get entry by slug (from unpublished revision - should fail)`, async () => {
+            // Test resolvers
+            const query = /* GraphQL */ `
+                query GetCategory($slug: String) {
+                    getCategory(where: { slug: $slug }) {
+                        data {
+                            id
+                            title
+                            slug
+                        }
+                        error {
+                            code
+                        }
+                    }
+                }
+            `;
+
+            const { schema, context } = await setupSchema();
+            const { data } = await graphql(schema, query, {}, context, {
+                slug: "framework-en"
+            });
+
+            expect(data.getCategory.data).toBeNull();
+            expect(data.getCategory.error.code).toBe("NOT_FOUND");
         });
 
         test(`get entry by slug (default locale doesn't match slug)`, async () => {

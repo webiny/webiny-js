@@ -46,7 +46,7 @@ export const generateSchemaPlugins: GenerateSchemaPlugins = async ({ context }) 
     models
         .filter(model => model.fields.length > 0)
         .forEach(model => {
-            if (cms.type === "read") {
+            if (cms.READ) {
                 newPlugins.push({
                     name: "graphql-schema-" + model.modelId + "-read",
                     type: "graphql-schema",

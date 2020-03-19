@@ -2,7 +2,7 @@ import { CmsFindFilterOperator, CmsGraphQLContext, CmsModel } from "@webiny/api-
 import { WhereCondition } from "./parseWhere";
 
 const fieldMap = {
-    id: "instance"
+    id: "revision"
 };
 
 export const createFindQuery = (
