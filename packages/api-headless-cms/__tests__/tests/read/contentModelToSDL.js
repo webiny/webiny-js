@@ -1,7 +1,7 @@
 import prettier from "prettier";
 import { setupContext } from "@webiny/api/testing";
-import graphqlFieldPlugins from "../../../src/plugins/graphqlFields";
-import { createReadSDL } from "../../../src/plugins/schema/createReadSDL";
+import graphqlFieldPlugins from "../../../src/handler/plugins/graphqlFields";
+import { createReadSDL } from "../../../src/handler/plugins/schema/createReadSDL";
 import contentModels from "../data/contentModels";
 import categorySDL from "./snapshots/category";
 import productSDL from "./snapshots/product";

@@ -18,7 +18,7 @@ const EmptySelect = styled("div")({
     alignItems: "center",
     justifyContent: "center",
     color: "var(--mdc-theme-on-surface)",
-    ".select-form": {
+    ".select-content-model": {
         maxWidth: 400,
         padding: "50px 100px",
         textAlign: "center",
@@ -40,7 +40,7 @@ const DetailsContainer = styled("div")({
 const EmptyContentModelDetails = () => {
     return (
         <EmptySelect>
-            <Elevation z={2} className={"select-form"}>
+            <Elevation z={2} className={"select-content-model"}>
                 {t`Select a content model on the left side, or click the green button to create a new one.`}
             </Elevation>
         </EmptySelect>
@@ -48,25 +48,25 @@ const EmptyContentModelDetails = () => {
 };
 
 export type ContentModelDetailsProps = {
-    refreshForms: () => void;
+    refreshContentModels: () => void;
 };
 
-const ContentModelDetails = ({ refreshForms }: ContentModelDetailsProps) => {
+const ContentModelDetails = ({ refreshContentModels }: ContentModelDetailsProps) => {
     const { location, history } = useReactRouter();
     const { showSnackbar } = useSnackbar();
     const query = new URLSearchParams(location.search);
-    const formId = query.get("id");
+    const contentModelId = query.get("id");
 
-    if (!formId) {
+    if (!contentModelId) {
         return <EmptyContentModelDetails />;
     }
 
     return (
         <Query
             query={GET_CONTENT_MODEL}
-            variables={{ id: formId }}
+            variables={{ id: contentModelId }}
             onCompleted={data => {
-                const error = get(data, "forms.form.error.message");
+                const error = get(data, "cmsManage.contentModel.error.message");
                 if (error) {
                     query.delete("id");
                     history.push({ search: query.toString() });
@@ -75,14 +75,14 @@ const ContentModelDetails = ({ refreshForms }: ContentModelDetailsProps) => {
             }}
         >
             {({ data, loading }) => {
-                const form = get(data, "forms.form.data") || null;
+                const contentModel = get(data, "cmsManage.contentModel.data") || null;
                 return (
                     <DetailsContainer>
-                        {form && (
+                        {contentModel && (
                             <Tabs>
                                 {renderPlugins(
-                                    "forms-form-details-revision-content",
-                                    { refreshForms, form, loading },
+                                    "cms-content-model-details-content",
+                                    { refreshContentModels, contentModel, loading },
                                     { wrapper: false }
                                 )}
                             </Tabs>

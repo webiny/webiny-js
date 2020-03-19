@@ -12,24 +12,68 @@ const Loader = ({ children, ...props }) => (
     <Suspense fallback={<CircularProgress />}>{React.cloneElement(children, props)}</Suspense>
 );
 
-const FormEditor = lazy(() => import("../views/Editor"));
-const Forms = lazy(() => import("../views/ContentModels/ContentModels"));
+const ContentModelEditor = lazy(() => import("../views/Editor"));
+const ContentModelsView = lazy(() => import("../views/ContentModels/ContentModels"));
+const ContentModelGroupsView = lazy(() => import("../views/ContentModelGroups/ContentModelGroups"));
+const EnvironmentsView = lazy(() => import("../views/Environments/Environments"));
 
 const plugins: RoutePlugin[] = [
     {
-        name: "route-form-editors-editor",
+        name: "route-cms-environments",
+        type: "route",
+        route: (
+            <Route
+                exact
+                path="/cms/environments"
+                render={() => (
+                    <SecureRoute roles={["headless-cms-environments"]}>
+                        <AdminLayout>
+                            <Helmet title={t`Environments`} />
+                            <Loader>
+                                <EnvironmentsView />
+                            </Loader>
+                        </AdminLayout>
+                    </SecureRoute>
+                )}
+            />
+        )
+    },
+    {
+        name: "route-cms-content-models-groups",
+        type: "route",
+        route: (
+            <Route
+                exact
+                path={"/cms/content-models-groups"}
+                render={() => (
+                    <SecureRoute roles={["cms-content-model-groups"]}>
+                        <AdminLayout>
+                            <Helmet>
+                                <title>{t`Content Model Groups`}</title>
+                            </Helmet>
+                            <Loader>
+                                <ContentModelGroupsView />
+                            </Loader>
+                        </AdminLayout>
+                    </SecureRoute>
+                )}
+            />
+        )
+    },
+    {
+        name: "route-cms-content-models-editor",
         type: "route",
         route: (
             <Route
                 exact
                 path={"/cms/content-models/:id"}
                 render={() => (
-                    <SecureRoute roles={["headless-cms-editors-editor"]}>
+                    <SecureRoute roles={["headless-cms-content-models"]}>
                         <Helmet>
                             <title>{t`Edit Content Model`}</title>
                         </Helmet>
                         <Loader>
-                            <FormEditor />
+                            <ContentModelEditor />
                         </Loader>
                     </SecureRoute>
                 )}
@@ -37,18 +81,18 @@ const plugins: RoutePlugin[] = [
         )
     },
     {
-        name: "route-form-editors",
+        name: "route-cms-content-models",
         type: "route",
         route: (
             <Route
                 exact
                 path="/cms/content-models"
                 render={() => (
-                    <SecureRoute roles={["headless-cms-editors"]}>
+                    <SecureRoute roles={["headless-cms-content-models"]}>
                         <AdminLayout>
                             <Helmet title={t`Content Models`} />
                             <Loader>
-                                <Forms />
+                                <ContentModelsView />
                             </Loader>
                         </AdminLayout>
                     </SecureRoute>

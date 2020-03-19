@@ -34,6 +34,8 @@ export type ListProps = RmwcListProps & {
     children?: any;
 
     className?: string;
+
+    style?: React.CSSProperties;
 };
 
 /**

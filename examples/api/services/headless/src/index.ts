@@ -4,7 +4,7 @@ import createApolloHandler from "@webiny/api-plugin-create-apollo-handler";
 import securityService from "@webiny/api-security/plugins/service";
 import dbProxy from "@webiny/api-plugin-commodo-db-proxy";
 import i18nPlugins from "@webiny/api-i18n/plugins/service";
-import headlessPlugins from "@webiny/api-headless-cms/plugins";
+import headlessPlugins from "@webiny/api-headless-cms/handler/plugins";
 
 declare const APOLLO_HANDLER_OPTIONS: any;
 declare const DB_PROXY_OPTIONS: any;

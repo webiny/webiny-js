@@ -22,7 +22,7 @@ const BackButton = React.memo(() => {
         <IconButton
             data-testid="fb-editor-back-button"
             className={backStyles}
-            onClick={() => router.history.push(`/forms?id=${id}`)}
+            onClick={() => router.history.push(`/cms/content-models?id=${id}`)}
             icon={<BackIcon />}
         />
     );

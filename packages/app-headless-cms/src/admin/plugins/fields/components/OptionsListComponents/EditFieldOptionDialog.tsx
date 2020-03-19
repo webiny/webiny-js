@@ -10,7 +10,7 @@ import { validation } from "@webiny/validation";
 
 import { Dialog, DialogTitle, DialogContent, DialogActions, DialogButton } from "@webiny/ui/Dialog";
 
-const t = i18n.namespace("Forms.FormEditor.EditFieldOptionDialog");
+const t = i18n.namespace("Forms.ContentModelEditor.EditFieldOptionDialog");
 const narrowDialog = css({
     ".mdc-dialog__surface": {
         width: 600,

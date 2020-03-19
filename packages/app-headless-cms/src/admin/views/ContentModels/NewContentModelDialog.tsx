@@ -1,14 +1,16 @@
 import React from "react";
 import { css } from "emotion";
 import useReactRouter from "use-react-router";
-import { Mutation } from "react-apollo";
+import { Mutation, useQuery } from "react-apollo";
 import { Form } from "@webiny/form";
 import { Input } from "@webiny/ui/Input";
+import { Select } from "@webiny/ui/Select";
 import { CREATE_CONTENT_MODEL } from "../../viewsGraphql";
 import get from "lodash.get";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { CircularProgress } from "@webiny/ui/Progress";
-import { Grid, Cell } from "@webiny/ui/Grid";
+import { validation } from "@webiny/validation";
+import { LIST_CONTENT_MODEL_GROUPS } from "../ContentModelGroups/graphql";
 
 import { i18n } from "@webiny/app/i18n";
 const t = i18n.ns("app-headless-cms/admin/views/content-models/new-content-model-dialog");
@@ -44,12 +46,18 @@ const NewContentModelDialog: React.FC<NewContentModelDialogProps> = ({
     const { showSnackbar } = useSnackbar();
     const { history } = useReactRouter();
 
+    const { data } = useQuery(LIST_CONTENT_MODEL_GROUPS);
+
+    const selectOptions = get(data, "cmsManage.contentModelGroups.data", []).map(item => {
+        return { value: item.id, label: item.name };
+    });
+
     return (
         <Dialog
             open={open}
             onClose={onClose}
             className={narrowDialog}
-            data-testid="fb-new-form-modal"
+            data-testid="cms-new-content-model-modal"
         >
             <Mutation mutation={CREATE_CONTENT_MODEL}>
                 {update => (
@@ -59,8 +67,11 @@ const NewContentModelDialog: React.FC<NewContentModelDialogProps> = ({
                             const response = get(
                                 await update({
                                     variables: { data },
-                                    refetchQueries: ["FormsListForms"], // TODO @i18n: Proper refetch here!
-                                    awaitRefetchQueries: true
+                                    awaitRefetchQueries: true,
+                                    refetchQueries: [
+                                        "HeadlessCmsListContentModels",
+                                        "HeadlessCmsListMenuContentGroupsModels"
+                                    ]
                                 }),
                                 "data.cmsManage.createContentModel"
                             );
@@ -79,22 +90,24 @@ const NewContentModelDialog: React.FC<NewContentModelDialogProps> = ({
                                 {loading && <CircularProgress />}
                                 <DialogTitle>{t`New Content Model`}</DialogTitle>
                                 <DialogContent>
-                                    <Grid>
-                                        <Cell span={12}>
-                                            <Bind name={"title"}>
-                                                <Input
-                                                    placeholder={
-                                                        "Enter a name for your new content model"
-                                                    }
-                                                />
-                                            </Bind>
-                                        </Cell>
-                                        <Cell span={12}>
-                                            <Bind name={"modelId"}>
-                                                <Input placeholder={"Enter a model ID"} />
-                                            </Bind>
-                                        </Cell>
-                                    </Grid>
+                                    <Bind name={"title"} validators={validation.create("required")}>
+                                        <Input
+                                            disabled={true}
+                                            placeholder={"Enter a name for your new content model"}
+                                        />
+                                    </Bind>
+                                    <Bind
+                                        name={"modelId"}
+                                        validators={validation.create("required")}
+                                    >
+                                        <Input placeholder={t`Enter a model ID`} />
+                                    </Bind>
+                                    <Bind name={"group"} validators={validation.create("required")}>
+                                        <Select
+                                            label={t`Content model group`}
+                                            options={selectOptions}
+                                        />
+                                    </Bind>
                                 </DialogContent>
                                 <DialogActions>
                                     <ButtonDefault onClick={submit}>+ {t`Create`}</ButtonDefault>

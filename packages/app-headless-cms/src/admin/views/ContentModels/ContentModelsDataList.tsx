@@ -1,4 +1,4 @@
-import React, { useRef, useCallback } from "react";
+import React, { useCallback } from "react";
 import TimeAgo from "timeago-react";
 import useReactRouter from "use-react-router";
 import { css } from "emotion";
@@ -6,7 +6,7 @@ import { get, upperFirst } from "lodash";
 import { Typography } from "@webiny/ui/Typography";
 import { ConfirmationDialog } from "@webiny/ui/ConfirmationDialog";
 import { DeleteIcon, EditIcon } from "@webiny/ui/List/DataList/icons";
-import { DELETE_CONTENT_MODEL, CREATE_REVISION_FROM } from "@webiny/app-headless-cms/admin/viewsGraphql";
+import { DELETE_CONTENT_MODEL } from "../../viewsGraphql";
 import { useApolloClient } from "react-apollo";
 import { useHandler } from "@webiny/app/hooks/useHandler";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
@@ -33,8 +33,6 @@ export type ContentModelsDataListProps = {
 };
 
 const ContentModelsDataList = (props: ContentModelsDataListProps) => {
-    const editHandlers = useRef({});
-
     const { dataList } = props;
 
     const { location, history } = useReactRouter();
@@ -42,11 +40,14 @@ const ContentModelsDataList = (props: ContentModelsDataListProps) => {
     const { showSnackbar } = useSnackbar();
 
     const deleteRecord = useHandler(props, ({ id }) => async item => {
-        const res = await client.mutate({ mutation: DELETE_CONTENT_MODEL, variables: { id: item.id } });
-        const { data, error } = get(res, "data.forms.deleteForm");
+        const res = await client.mutate({
+            mutation: DELETE_CONTENT_MODEL,
+            variables: { id: item.id }
+        });
+        const { data, error } = get(res, "data.cmsManage.deleteContentModel");
 
         if (data) {
-            showSnackbar(t`Form {name} deleted.`({ name: item.name }));
+            showSnackbar(t`Content model {name} deleted.`({ name: item.name }));
         } else {
             showSnackbar(error.message, {
                 title: t`Something unexpected happened.`
@@ -62,29 +63,8 @@ const ContentModelsDataList = (props: ContentModelsDataListProps) => {
         dataList.refresh();
     });
 
-    const editRecord = useCallback(form => {
-        if (!editHandlers.current[form.id]) {
-            editHandlers.current[form.id] = async () => {
-                if (form.published) {
-                    const { data: res } = await client.mutate({
-                        mutation: CREATE_REVISION_FROM,
-                        variables: { revision: form.id },
-                        refetchQueries: ["FormsListForms"]
-                    });
-                    const { data, error } = res.forms.revision;
-
-                    if (error) {
-                        return showSnackbar(error.message);
-                    }
-
-                    history.push(`/forms/${data.id}`);
-                } else {
-                    history.push("/forms/" + form.id);
-                }
-            };
-        }
-
-        return editHandlers.current[form.id];
+    const editRecord = useCallback(contentModel => {
+        return () => history.push("/cms/content-models/" + contentModel.id);
     }, []);
 
     const query = new URLSearchParams(location.search);
@@ -103,53 +83,55 @@ const ContentModelsDataList = (props: ContentModelsDataListProps) => {
                     sorters: { createdOn: 1 }
                 },
                 {
-                    label: t`Name A-Z`,
-                    sorters: { name: 1 }
+                    label: t`Title A-Z`,
+                    sorters: { title: 1 }
                 },
                 {
-                    label: t`Name Z-A`,
-                    sorters: { name: -1 }
+                    label: t`Title Z-A`,
+                    sorters: { title: -1 }
                 }
             ]}
         >
             {({ data = [] }) => (
                 <List data-testid="default-data-list">
-                    {data.map(form => (
-                        <ListItem key={form.id}>
+                    {data.map(contentModel => (
+                        <ListItem key={contentModel.id}>
                             <ListItemText
                                 onClick={() => {
-                                    query.set("id", form.id);
+                                    query.set("id", contentModel.id);
                                     history.push({ search: query.toString() });
                                 }}
                             >
-                                {form.name}
-                                {form.createdBy && (
+                                {contentModel.title}
+                                {contentModel.createdBy && (
                                     <ListItemTextSecondary>
-                                        {form.createdBy.firstName && (
+                                        {contentModel.createdBy.firstName && (
                                             <>
                                                 {t`Created by: {user}.`({
-                                                    user: form.createdBy.firstName
+                                                    user: contentModel.createdBy.firstName
                                                 })}{" "}
                                             </>
                                         )}
 
                                         {t`Last modified: {time}.`({
-                                            time: <TimeAgo datetime={form.savedOn} />
+                                            time: <TimeAgo datetime={contentModel.savedOn} />
                                         })}
                                     </ListItemTextSecondary>
                                 )}
                             </ListItemText>
                             <ListItemMeta className={rightAlign}>
                                 <Typography use={"subtitle2"}>
-                                    {upperFirst(form.status)} (v{form.version})
+                                    {upperFirst(contentModel.status)} (v{contentModel.version})
                                 </Typography>
                                 <ListActions>
-                                    <EditIcon onClick={editRecord(form)} />
+                                    <EditIcon onClick={editRecord(contentModel)} />
                                     <ConfirmationDialog>
                                         {({ showConfirmation }) => (
                                             <DeleteIcon
                                                 onClick={() =>
-                                                    showConfirmation(async () => deleteRecord(form))
+                                                    showConfirmation(async () =>
+                                                        deleteRecord(contentModel)
+                                                    )
                                                 }
                                             />
                                         )}

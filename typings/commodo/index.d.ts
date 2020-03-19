@@ -1,3 +1,6 @@
+export type pipe = Function;
+export type compose = Function;
+
 declare module "@webiny/commodo" {
     export const withStorage: any;
     export const withCrudLogs: any;
