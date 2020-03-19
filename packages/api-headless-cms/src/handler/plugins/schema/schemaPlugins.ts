@@ -46,33 +46,45 @@ export const generateSchemaPlugins: GenerateSchemaPlugins = async ({ context }) 
     models
         .filter(model => model.fields.length > 0)
         .forEach(model => {
-            if (cms.READ) {
-                newPlugins.push({
-                    name: "graphql-schema-" + model.modelId + "-read",
-                    type: "graphql-schema",
-                    schema: {
-                        typeDefs: gql`
-                            ${createReadSDL({ model, context, fieldTypePlugins })}
-                        `,
-                        resolvers: createReadResolvers({ models, model, fieldTypePlugins, context })
-                    }
-                });
-            } else {
-                newPlugins.push({
-                    name: "graphql-schema-" + model.modelId + "-manage",
-                    type: "graphql-schema",
-                    schema: {
-                        typeDefs: gql`
-                            ${createManageSDL({ model, context, fieldTypePlugins })}
-                        `,
-                        resolvers: createManageResolvers({
-                            models,
-                            model,
-                            fieldTypePlugins,
-                            context
-                        })
-                    }
-                });
+            switch (cms.type) {
+                case "manage":
+                    newPlugins.push({
+                        name: "graphql-schema-" + model.modelId + "-manage",
+                        type: "graphql-schema",
+                        schema: {
+                            typeDefs: gql`
+                                ${createManageSDL({ model, context, fieldTypePlugins })}
+                            `,
+                            resolvers: createManageResolvers({
+                                models,
+                                model,
+                                fieldTypePlugins,
+                                context
+                            })
+                        }
+                    });
+
+                    break;
+                case "preview":
+                case "read":
+                    newPlugins.push({
+                        name: "graphql-schema-" + model.modelId + "-read",
+                        type: "graphql-schema",
+                        schema: {
+                            typeDefs: gql`
+                                ${createReadSDL({ model, context, fieldTypePlugins })}
+                            `,
+                            resolvers: createReadResolvers({
+                                models,
+                                model,
+                                fieldTypePlugins,
+                                context
+                            })
+                        }
+                    });
+                    break;
+                default:
+                    return;
             }
         });
 
