@@ -114,7 +114,7 @@ const resolveTemplate = (inputs, template) => {
                         throw Error(`invalid reference ${match}`);
                     }
 
-                    if (!template[topLevelProp].component) {
+                    if (!template[topLevelProp].component && !template[topLevelProp].deploy) {
                         variableResolved = true;
                         const propValue = path(propPath, template);
 
