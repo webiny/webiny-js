@@ -58,6 +58,7 @@ class Template extends Component {
 
         this.context.debug(`Executing the template's components graph.`);
 
+        const start = Date.now();
         const allComponentsWithOutputs = await executeGraph(
             allComponents,
             graph,
@@ -78,6 +79,11 @@ class Template extends Component {
         this.state.outputs = outputs;
         await this.save();
 
+        await inputs.callback({
+            output: this.state.outputs,
+            duration: (Date.now() - start) / 1000
+        });
+
         return outputs;
     }
 
@@ -95,7 +101,7 @@ class Template extends Component {
         });
 
         const resolvedTemplate = resolveTemplate(inputs, template);
-        let allComponents = setDependencies(getAllComponents(resolvedTemplate));
+        const allComponents = setDependencies(getAllComponents(resolvedTemplate));
         const { debug, watch, callback } = inputs;
 
         await new Promise(async resolve => {
@@ -124,7 +130,7 @@ class Template extends Component {
                                 next();
                             } else {
                                 await callback({
-                                    output: getOutputs(allComponents),
+                                    output: this.state.outputs,
                                     duration: (Date.now() - start) / 1000
                                 });
                             }
@@ -153,7 +159,13 @@ class Template extends Component {
                 })
             );
 
+            const start = Date.now();
             await middleware();
+
+            await callback({
+                output: this.state.outputs,
+                duration: (Date.now() - start) / 1000
+            });
             firstBuild = false;
 
             if (!watch) {
