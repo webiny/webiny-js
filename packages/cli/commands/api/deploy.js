@@ -4,6 +4,7 @@ const { green, red } = require("chalk");
 const notifier = require("node-notifier");
 const { execute } = require("../utils/execute");
 const { isApiEnvDeployed } = require("../utils");
+const { paths } = require("../utils/paths");
 
 const perks = ["🍪", "☕️", "🍎", "🍺", "🥤"];
 
@@ -19,7 +20,7 @@ const notify = ({ message }) => {
 
 module.exports = async inputs => {
     const { env } = inputs;
-    const webinyJs = resolve("webiny.js");
+    const webinyJs = resolve(paths.projectRoot, "webiny.js");
     const config = require(webinyJs);
 
     const isFirstDeploy = !(await isApiEnvDeployed(env));
@@ -37,7 +38,7 @@ module.exports = async inputs => {
         // Run app state hooks
         if (!fs.existsSync(webinyJs)) {
             console.log(
-                `⚠️ ${green("webiny.config.js")} was not found at ${green(
+                `⚠️ ${green("webiny.js")} was not found at ${green(
                     webinyJs
                 )}, skipping processing of hooks.`
             );
@@ -47,7 +48,7 @@ module.exports = async inputs => {
 
         for (let i = 0; i < config.apps.length; i++) {
             const app = config.apps[i];
-            const appLocation = resolve(app.location);
+            const appLocation = resolve(paths.projectRoot, app.location);
             try {
                 const { hooks } = require(join(appLocation, "webiny"));
                 if (hooks && hooks.stateChanged) {
