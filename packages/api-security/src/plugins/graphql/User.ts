@@ -5,11 +5,23 @@ import resolveUpdateCurrentSecurityUser from "./userResolvers/updateCurrentUser"
 import resolveCreateUser from "./userResolvers/createUser";
 import resolveUpdateUser from "./userResolvers/updateUser";
 import resolveDeleteUser from "./userResolvers/deleteUser";
+import resolveCreatePAT from "./userResolvers/createPAT";
 
 const userFetcher = ctx => ctx.models.SecurityUser;
 
 export default {
     typeDefs: /* GraphQL */ `
+        # Personal Access Token type
+        input PersonalAccessTokenInput {
+            token: String
+            createdOn: DateTime
+        }
+
+        type PersonalAccessToken {
+            token: String
+            createdOn: DateTime
+        }
+
         type SecurityUserLogin {
             token: String
             expiresOn: Int
@@ -35,6 +47,7 @@ export default {
             roles: [SecurityRole]
             scopes: [String]
             access: SecurityUserAccess
+            personalAccessTokens: [PersonalAccessToken]
             createdOn: DateTime
         }
 
@@ -61,6 +74,7 @@ export default {
             firstName: String
             lastName: String
             avatar: RefInput
+            personalAccessTokens: [PersonalAccessTokenInput]
         }
 
         type SecurityUserResponse {
@@ -136,6 +150,8 @@ export default {
             updateUser(id: ID!, data: SecurityUserInput!): SecurityUserResponse
 
             deleteUser(id: ID!): SecurityUserDeleteResponse
+
+            createPAT: String
         }
     `,
     resolvers: {
@@ -157,7 +173,8 @@ export default {
             updateCurrentUser: resolveUpdateCurrentSecurityUser,
             createUser: resolveCreateUser(userFetcher),
             updateUser: resolveUpdateUser(userFetcher),
-            deleteUser: resolveDeleteUser(userFetcher)
+            deleteUser: resolveDeleteUser(userFetcher),
+            createPAT: resolveCreatePAT
         }
     }
 };

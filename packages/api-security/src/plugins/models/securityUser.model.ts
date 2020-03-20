@@ -3,6 +3,8 @@ import { validation } from "@webiny/validation";
 import md5 from "md5";
 import bcrypt from "bcryptjs";
 import { withHooks, withProps, withName, string, withFields, onSet, ref } from "@webiny/commodo";
+import { fields } from "@commodo/fields";
+import PersonalAccessTokenModel from "./securityPersonalAccessToken.model";
 
 export default ({
     createBase,
@@ -61,7 +63,11 @@ export default ({
                 instanceOf: [SecurityGroup, "model"],
                 using: [SecurityGroups2Models, "group"]
             }),
-            avatar: context.commodo.fields.id()
+            avatar: context.commodo.fields.id(),
+            personalAccessTokens: fields({
+                list: true,
+                instanceOf: PersonalAccessTokenModel
+            })
         })),
         withProps(instance => ({
             __access: null,

@@ -1,18 +1,38 @@
 import { JwtToken } from "./jwtToken";
 import { GraphQLContext } from "@webiny/api/types";
+// import LambdaClient from "aws-sdk/clients/lambda";
+
+const isJwt = token => token.split(".").length === 3; // All JWTs are split into 3 parts by two periods
 
 export default async (context: GraphQLContext) => {
     const { security, event } = context;
     const { headers = {} } = event;
     const authorization = headers["Authorization"] || headers["authorization"] || "";
-    const token = authorization.replace(/[b|B]earer\s/, "");
-    let user = null;
-    if (token !== "" && event.httpMethod === "POST") {
-        const jwt = new JwtToken({ secret: security.token.secret });
-        user = (await jwt.decode(token)).data;
 
-        // Assign token and user to context to be forwarded to ApolloServer
-        context.token = token;
-        context.user = user;
+    if (isJwt(authorization)) {
+        const token = authorization.replace(/[b|B]earer\s/, "");
+        let user = null;
+        if (token !== "" && event.httpMethod === "POST") {
+            const jwt = new JwtToken({ secret: security.token.secret });
+            user = (await jwt.decode(token)).data;
+            console.log(user);
+
+            // Assign token and user to context to be forwarded to ApolloServer
+            context.token = token;
+            context.user = user;
+        }
+    } else {
+        const token = authorization;
+
+        // const Lambda = new LambdaClient({ region: process.env.AWS_REGION });
+        // const user = await Lambda.invoke({
+        //     FunctionName: process.env.AUTHENTICATE_BY_PAT_FUNCTION_NAME,
+        //     Payload: JSON.stringify(token)
+        // }).promise();
+
+        // const user = await findByPAT({ token });
+
+        // context.token = token;
+        // context.user = user;
     }
 };
