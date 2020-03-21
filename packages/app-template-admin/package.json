@@ -31,7 +31,7 @@
     "@webiny/app-template": "^1.0.0",
     "@webiny/app-typeform": "^3.0.5",
     "@webiny/react-router": "^2.0.1",
-    "@webiny/ui": "^3.0.3"
+    "@webiny/ui": "^3.1.0"
   },
   "devDependencies": {
     "@babel/cli": "^7.5.5",

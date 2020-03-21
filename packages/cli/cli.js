@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 const yargs = require("yargs");
 const { blue, green, dim } = require("chalk");
+const { createCommands } = require("./cli");
 
 const trackingNotice = () => {
     console.log();
@@ -11,6 +12,8 @@ const trackingNotice = () => {
     console.log(`To learn more, check out https://www.webiny.com/telemetry/.`);
     console.log();
 };
+
+createCommands(yargs);
 
 yargs
     .usage("Usage: $0 <command>")
@@ -133,11 +136,11 @@ yargs.command(
 );
 
 yargs.command(
-    "start",
-    "Start app development.",
+    "enable-tracking",
+    "Enable tracking of Webiny stats.",
     () => {},
     async () => {
-        await require("./apps/start")();
+        await require("./sls/enableTracking")();
     }
 );
 
@@ -145,23 +148,8 @@ yargs.command(
     "disable-tracking",
     "Disable tracking of Webiny stats.",
     () => {},
-    () => {
-        const { setTracking } = require("./config");
-        setTracking(false);
-        console.log("INFO: tracking of Webiny stats is now DISABLED!");
-    }
-);
-
-yargs.command(
-    "enable-tracking",
-    "Enable tracking of Webiny stats.",
-    () => {},
-    () => {
-        const { setTracking } = require("./config");
-        setTracking(true);
-        console.log(
-            "INFO: tracking of Webiny stats is now ENABLED! Thank you for helping us with anonymous data 🎉"
-        );
+    async () => {
+        await require("./sls/disableTracking")();
     }
 );
 

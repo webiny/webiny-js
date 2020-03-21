@@ -18,36 +18,64 @@ dbProxy:
       MONGODB_NAME: ${vars.mongodb.name}
 
 site:
-  component: "@webiny/serverless-app"
-  inputs:
-    description: Webiny Site
-    region: ${vars.region}
-    memory: 128
-    timeout: 30
-    code: ./site/build
-    env:
-      SSR_FUNCTION: ${ssr.arn}
-      DB_PROXY_FUNCTION: ${dbProxy.arn}
-
-ssr:
-  component: "@webiny/serverless-function"
-  inputs:
-    description: Site SSR
-    region: ${vars.region}
-    hook: yarn build:${cli.env}
+  build:
     root: ./site
-    code: ./site/build-ssr
-    handler: handler.handler
-    memory: 2048
-    timeout: 60
+    script: yarn build:${cli.env}
+  deploy:
+    component: "@webiny/serverless-app"
+    inputs:
+      description: Webiny Site
+      region: ${vars.region}
+      memory: 128
+      timeout: 30
+      code: ./site/build
+
+siteSsrHandler:
+  build:
+    root: ./site-ssr
+    script: yarn build:${cli.env}
+  deploy:
+    component: "@webiny/serverless-function"
+    inputs:
+      description: Site Handler
+      region: ${vars.region}
+      code: ./site/build-handler
+      handler: handler.handler
+      memory: 512
+      timeout: 60
+      env:
+        SSR_LAMBDA_ARN: ${ssr.arn}
+
+siteSsr:
+  build:
+    - root: ./site
+      script: yarn build:${cli.env} --output=./build-site
+    - root: ./site-ssr
+      script: yarn build:${cli.env}
+  deploy:
+    component: "@webiny/serverless-function"
+    inputs:
+      description: Site SSR
+      region: ${vars.region}
+      code: ./site-ssr/build
+      handler: handler.handler
+      memory: 2048
+      timeout: 60
 
 admin:
-  component: "@webiny/serverless-app"
-  inputs:
-    region: ${vars.region}
-    description: Webiny Admin
-    hook: yarn build:${cli.env}
+  build:
+    watch:
+      ./service/github/build/*
     root: ./admin
+    script: yarn build:${cli.env}
+  deploy:
+    component: "@webiny/serverless-app"
+    inputs:
+      region: ${vars.region}
+      description: Webiny Admin
+      code: ./admin/build
+
+# lerna watch
 
 api:
   component: "@webiny/serverless-api-gateway"
@@ -57,12 +85,6 @@ api:
     description: Serverless React Apps
     binaryMediaTypes: ["*/*"]
     endpoints:
-      - path: /admin/{key+}
-        method: GET
-        function: ${admin}
-      - path: /admin
-        method: GET
-        function: ${admin}
       - path: /{key+}
         method: ANY
         function: ${site}
