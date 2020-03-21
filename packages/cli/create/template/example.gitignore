@@ -7,3 +7,5 @@ yarn-error.log
 .env.json
 .webiny
 .serverless
+build
+build-ssr

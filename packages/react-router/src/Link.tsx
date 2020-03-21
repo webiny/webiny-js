@@ -4,14 +4,26 @@ import { RouterContext } from "./context/RouterContext";
 
 export type LinkProps = RouterLinkProps;
 
-function Link({ children, ...props }: LinkProps) {
-    const { onLink } = useContext(RouterContext);
+function Link({children, ...props}: LinkProps) {
+        const { onLink } = useContext(RouterContext)
 
-    useEffect(() => {
-        onLink(props.to as string);
-    }, [props.to]);
+        useEffect(() => {
+            onLink(props.to as string);
+        }, [props.to]);
 
-    return <RouterLink {...props}>{children}</RouterLink>;
+        const isInternal = typeof props.to === 'string' ? props.to.startsWith("/") : true
+        const LinkComponent = isInternal ? RouterLink : "a"
+        const componentProps = {
+            ...props,
+            [isInternal ? "to" : "href"]: props.to
+        }
+
+        return (
+            <LinkComponent 
+                {...componentProps}>
+                {children}
+            </LinkComponent>
+        );
 }
 
 export { Link };

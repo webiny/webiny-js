@@ -10,14 +10,19 @@ This guide is for anyone who wants to contribute to the Webiny project.
 
 `master` is the main branch from which we publish packages. All `issue` branches should be branched from `master` branch, unless you're working on an issue that belongs to one of our [projects](https://github.com/webiny/webiny-js/projects). In that case, a project branch will be specified in the project board. If you're not sure about the branch, don't hesitate to contact us.
 
-### Features/Fixes
+### Workflow
 
 - create an issue branch
-- commit your changes
+- commit your changes (please follow our [commit message format](#commit-message-format) rules)
 - open a PR
 - try to keep your PRs small in scope (try to only work on 1 issue in a single PR)
 - you can add as many commits as you wish to your PR
-- the only commit message that matters is the PR merge commit, and that is handled by the project maintainers
+
+### <a name="commit-message-format"></a>Commit message format
+
+We are following the [conventional commits]([https://www.conventionalcommits.org/en/v1.0.0/](https://www.conventionalcommits.org/en/v1.0.0/)) standard.
+
+You can use `yarn commit` to commit via `commitizen` or you can commit manually, or via IDE, just make sure your commit messages are properly formatted.
 
 ## Repo overview
 
@@ -34,7 +39,7 @@ Packages prefixed with `app-` are React apps. The ones with the `api-` prefix ar
 
 1. Node `10.14` or higher (to manage your Node versions we recommend [n](https://www.npmjs.com/package/n) for OSX/Linux, and [nvm-windows](https://github.com/coreybutler/nvm-windows) for Windows)
 
-2. `yarn 1.0` or higher (because our project setup uses workspaces).
+2. `yarn 1.0` or higher (because our project setup uses workspaces). Yarn `v2` is not yet supported.
    If you don't already have `yarn`, visit [yarnpkg.com](https://yarnpkg.com/en/docs/install) to install it.
 
 3. A verified AWS account with an [IAM user for programmatic usage](https://www.youtube.com/watch?v=tgb_MRVylWw)
@@ -81,69 +86,3 @@ You can find examples of tests in some of the utility packages (`validation`, `i
 We'll be strongly focusing on tests in the near future, and of course contributions of tests are most welcome :)
 
 To add a package to Jest projects, edit the `jest.config.js` file.
-
-## Release notes
-
-This section is mostly intended for project owners, since they are the ones who can cut a release, but it is nice for contributors to be aware of how things work.
-
-> NOTE: this process represents our current way of developing, and it MAY and most probably WILL change in the future, as the community and number of contributions grow.
-
-We use `lerna` to publish our packages in the `independent` mode, using `conventional-commits`.
-Each package MUST have a `prepublishOnly` script which creates a build ready to be published to `npm` in the `dist` folder.
-
-Since we use `@webiny` scope, each package that is intended for `npm` MUST have a `"publishConfig": {"access": "public"}` in its `package.json`.
-
-At this point CI is not integrated, as we want to manually review and publish each release. This will also be automated as the project advances and we add more tests for a reliable CI workflow.
-
-### Release process
-
-This is the safest approach as you get a chance to review packages before each step, and particularly before publishing to `npm`.
-
-```
-// Make sure all dependencies are in order
-yarn adio
-
-// Validate package.json structure of each package
-yarn validate-packages
-
-// Fetch all tags from origin
-git fetch
-
-// Create github tags and release
-GH_TOKEN=xyz lerna version
-
-// Publish to NPM
-NPM_TOKEN=xyz lerna publish from-package
-```
-
-If `lerna publish from-package` fails along the way, you can fix whatever the issue was and re-run the step, as it is publishing packages from local package folders, so published packages will not be re-published.
-
-#### Prerelease
-
-Here are the steps if you want to publish a prerelease to a temporary dist-tag:
-
-```
-// Previous steps are the same, don't skip those!!
-
-// Create github tags and release
-GH_TOKEN=xyz lerna version --conventional-prerelease
-
-// Publish to NPM using `next` tag
-NPM_TOKEN=xyz lerna publish from-package --dist-tag=next
-```
-
-Repeat the process during bug fixing.
-
-#### Promoting to actual release
-
-Now that you're ready to publish your prerelease to the `latest` tag:
-
-```
-// Previous steps are the same, don't skip those!!
-
-// Create github tags and release
-GH_TOKEN=xyz lerna version --conventional-graduate
-
-// Publish to NPM (`latest` tag is default)
-NPM_TOKEN=xyz lerna publish from-package
-```

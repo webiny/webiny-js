@@ -1,12 +1,12 @@
 import * as React from "react";
 import { Query } from "react-apollo";
-import gql from "graphql-tag";
 import { get } from "lodash";
 import { Grid, Cell } from "@webiny/ui/Grid";
 import { Alert } from "@webiny/ui/Alert";
 import { AutoComplete } from "@webiny/ui/AutoComplete";
 import styled from "@emotion/styled";
 import { validation } from "@webiny/validation";
+import { LIST_FORMS } from "./graphql";
 
 const FormOptionsWrapper = styled("div")({
     minHeight: 250
@@ -57,26 +57,7 @@ const getOptions = ({ gqlResponse, data }) => {
 const FormElementAdvancedSettings = ({ Bind, data }) => {
     return (
         <FormOptionsWrapper>
-            <Query
-                query={gql`
-                    {
-                        forms {
-                            listForms {
-                                data {
-                                    parent
-                                    name
-                                    publishedRevisions {
-                                        id
-                                        name
-                                        version
-                                        published
-                                    }
-                                }
-                            }
-                        }
-                    }
-                `}
-            >
+            <Query query={LIST_FORMS} fetchPolicy="network-only">
                 {gqlResponse => {
                     const options = getOptions({ gqlResponse, data });
                     return (
@@ -86,16 +67,14 @@ const FormElementAdvancedSettings = ({ Bind, data }) => {
                                     name={"settings.form.parent"}
                                     validators={validation.create("required")}
                                 >
-                                    {({ onChange }) => {
-                                        return (
-                                            <AutoComplete
-                                                options={options.parents.options}
-                                                value={options.parents.value}
-                                                onChange={onChange}
-                                                label={"Form"}
-                                            />
-                                        );
-                                    }}
+                                    {({ onChange }) => (
+                                        <AutoComplete
+                                            options={options.parents.options}
+                                            value={options.parents.value}
+                                            onChange={onChange}
+                                            label={"Form"}
+                                        />
+                                    )}
                                 </Bind>
                             </Cell>
                             <Cell span={12}>

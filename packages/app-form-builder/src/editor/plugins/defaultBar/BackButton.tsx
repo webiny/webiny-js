@@ -20,6 +20,7 @@ const BackButton = React.memo(() => {
 
     return (
         <IconButton
+            data-testid="fb-editor-back-button"
             className={backStyles}
             onClick={() => router.history.push(`/forms?id=${id}`)}
             icon={<BackIcon />}

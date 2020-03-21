@@ -1,6 +1,6 @@
 {
   "name": "@webiny/cli",
-  "version": "3.0.0",
+  "version": "3.2.5",
   "main": "index.js",
   "bin": {
     "webiny": "./bin.js",
@@ -15,7 +15,7 @@
   "dependencies": {
     "@serverless/cli": "^1.1.1",
     "@serverless/core": "^1.1.1",
-    "@webiny/tracking": "^3.0.0",
+    "@webiny/tracking": "^3.1.0",
     "ansi-escapes": "^4.2.1",
     "chalk": "^2.4.2",
     "debug": "^4.1.1",
@@ -31,7 +31,9 @@
     "ora": "^4.0.3",
     "p-retry": "^4.2.0",
     "ramda": "^0.26.1",
+    "semver": "^7.1.2",
     "traverse": "^0.6.6",
+    "uniqid": "^5.0.3",
     "update-notifier": "^3.0.1",
     "uuid": "^3.3.3",
     "write-json-file": "^4.2.0",

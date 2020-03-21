@@ -4,9 +4,6 @@ import { Tooltip } from "@webiny/ui/Tooltip";
 import { Typography } from "@webiny/ui/Typography";
 import { useFormEditor } from "@webiny/app-form-builder/admin/components/FormEditor/Context";
 import { useHotkeys } from "react-hotkeyz";
-import { i18n } from "@webiny/app/i18n";
-const t = i18n.namespace("FormEditor.Name");
-
 import {
     FormMeta,
     FormName,
@@ -15,6 +12,14 @@ import {
     NameInputWrapper,
     NameWrapper
 } from "./NameStyled";
+import { i18n } from "@webiny/app/i18n";
+const t = i18n.namespace("FormEditor.Name");
+
+declare global {
+    interface Window {
+        Cypress: any;
+    }
+}
 
 export const Name = () => {
     const { state, setData } = useFormEditor();
@@ -56,10 +61,14 @@ export const Name = () => {
         }
     });
 
+    // Disable autoFocus because for some reason, blur event would automatically be triggered when clicking
+    // on the page title when doing Cypress testing. Not sure if this is RMWC or Cypress related issue.
+    const autoFocus = !window.Cypress;
+
     return editingEnabled ? (
         <NameInputWrapper>
             <Input
-                autoFocus
+                autoFocus={autoFocus}
                 fullwidth
                 value={localName}
                 onChange={setLocalName}
@@ -79,7 +88,9 @@ export const Name = () => {
                     placement={"bottom"}
                     content={<span>{t`rename`}</span>}
                 >
-                    <FormName onClick={startEditing}>{state.data.name}</FormName>
+                    <FormName data-testid="fb-editor-form-title" onClick={startEditing}>
+                        {state.data.name}
+                    </FormName>
                 </Tooltip>
                 <FormVersion>{`(v${state.data.version})`}</FormVersion>
             </div>

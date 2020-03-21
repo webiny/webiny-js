@@ -9,10 +9,11 @@ const uuid = require("uuid/v4");
 const loadJsonFile = require("load-json-file");
 const ora = require("ora");
 const writeJsonFile = require("write-json-file");
-const { trackProject } = require("@webiny/tracking");
+const { trackActivity } = require("@webiny/tracking");
 const { version } = require(require.resolve("@webiny/cli/package.json"));
 const { getSuccessBanner } = require("./messages");
 const { getPackageVersion } = require("./utils");
+const uniqueId = require("uniqid");
 
 const globFiles = util.promisify(glob);
 
@@ -33,6 +34,10 @@ module.exports = async ({ name, tag }) => {
     }
 
     console.log(`📦 Creating a new Webiny project in ${green(root)}...`);
+
+    const activityId = uniqueId();
+    await trackActivity({ activityId, type: "create-project-start", cliVersion: version });
+
     fs.ensureDirSync(root);
     process.chdir(root);
 
@@ -77,12 +82,16 @@ module.exports = async ({ name, tag }) => {
     writeFileContents("api/serverless.yml", apiYaml);
     writeJsonFile.sync(resolve("api/.serverless/_.json"), { id: apiId });
 
+    // Update api/.env.json
+    let apiEnvFile = getFileContents("api/.env.json");
+    apiEnvFile = apiEnvFile.replace("[JWT_SECRET]", jwtSecret);
+    apiEnvFile = apiEnvFile.replace("[BUCKET]", `webiny-files-${apiId}`);
+    writeFileContents("api/.env.json", apiEnvFile);
+
     // Update .env.json
-    let envFile = getFileContents("api/.env.json");
-    envFile = envFile.replace("[JWT_SECRET]", jwtSecret);
-    envFile = envFile.replace("[BUCKET]", `webiny-files-${apiId}`);
+    let envFile = getFileContents(".env.json");
     envFile = envFile.replace("[DATABASE]", `webiny-${apiId}`);
-    writeFileContents("api/.env.json", envFile);
+    writeFileContents(".env.json", envFile);
 
     // Update apps serverless.yml
     let appsYaml = getFileContents("apps/serverless.yml");
@@ -122,7 +131,7 @@ module.exports = async ({ name, tag }) => {
     await execa("yarn", [], { cwd: root });
     spinner.succeed(`All dependencies installed successfully!`);
 
-    await trackProject({ cliVersion: version });
+    await trackActivity({ activityId, type: "create-project-end", cliVersion: version });
 
     console.log(await getSuccessBanner());
 };

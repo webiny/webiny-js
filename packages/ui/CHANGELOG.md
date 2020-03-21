@@ -3,6 +3,98 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.1.0](https://github.com/webiny/webiny-js/compare/@webiny/ui@3.1.0-next.0...@webiny/ui@3.1.0) (2020-03-09)
+
+**Note:** Version bump only for package @webiny/ui
+
+
+
+
+
+# [3.1.0-next.0](https://github.com/webiny/webiny-js/compare/@webiny/ui@3.0.4...@webiny/ui@3.1.0-next.0) (2020-03-09)
+
+
+### Features
+
+* improved scopes selection auto-complete component([#743](https://github.com/webiny/webiny-js/issues/743)) ([f3acbc5](https://github.com/webiny/webiny-js/commit/f3acbc5aa467ac3d70649628bfbe68727345487e)), closes [#729](https://github.com/webiny/webiny-js/issues/729)
+
+
+
+
+
+## [3.0.4](https://github.com/webiny/webiny-js/compare/@webiny/ui@3.0.4-next.0...@webiny/ui@3.0.4) (2020-03-01)
+
+**Note:** Version bump only for package @webiny/ui
+
+
+
+
+
+## [3.0.4-next.0](https://github.com/webiny/webiny-js/compare/@webiny/ui@3.0.3...@webiny/ui@3.0.4-next.0) (2020-03-01)
+
+
+### Bug Fixes
+
+* lock react-spinner-material version ([bc370ad](https://github.com/webiny/webiny-js/commit/bc370ade3b3a37bf8ffabb4f25c6c1c6d0e18e06))
+
+
+
+
+
+## [3.0.3](https://github.com/webiny/webiny-js/compare/@webiny/ui@3.0.3-next.0...@webiny/ui@3.0.3) (2020-02-12)
+
+**Note:** Version bump only for package @webiny/ui
+
+
+
+
+
+## [3.0.3-next.0](https://github.com/webiny/webiny-js/compare/@webiny/ui@3.0.2...@webiny/ui@3.0.3-next.0) (2020-02-11)
+
+
+### Bug Fixes
+
+* menu items form (page + pages list items) ([#703](https://github.com/webiny/webiny-js/issues/703)) ([97818d2](https://github.com/webiny/webiny-js/commit/97818d2862ed08ec8493985e46c515362df3179b)), closes [#702](https://github.com/webiny/webiny-js/issues/702)
+
+
+
+
+
+## [3.0.2](https://github.com/webiny/webiny-js/compare/@webiny/ui@3.0.2-next.0...@webiny/ui@3.0.2) (2020-02-07)
+
+**Note:** Version bump only for package @webiny/ui
+
+
+
+
+
+## [3.0.2-next.0](https://github.com/webiny/webiny-js/compare/@webiny/ui@3.0.1...@webiny/ui@3.0.2-next.0) (2020-02-07)
+
+**Note:** Version bump only for package @webiny/ui
+
+
+
+
+
+## [3.0.1](https://github.com/webiny/webiny-js/compare/@webiny/ui@3.0.1-next.0...@webiny/ui@3.0.1) (2020-02-06)
+
+**Note:** Version bump only for package @webiny/ui
+
+
+
+
+
+## [3.0.1-next.0](https://github.com/webiny/webiny-js/compare/@webiny/ui@3.0.0...@webiny/ui@3.0.1-next.0) (2020-02-05)
+
+
+### Bug Fixes
+
+* refetch forms in page builder element ([#694](https://github.com/webiny/webiny-js/issues/694)) ([4ee88f5](https://github.com/webiny/webiny-js/commit/4ee88f5f56704ff6eaf71d0624ecc7ea872c3a20)), closes [#678](https://github.com/webiny/webiny-js/issues/678)
+
+
+
+
+
 # [3.0.0](https://github.com/webiny/webiny-js/compare/@webiny/ui@2.0.1...@webiny/ui@3.0.0) (2020-01-27)
 
 

@@ -47,6 +47,7 @@ class NodeRendererDefault extends React.Component<any> {
             style,
             didDrop
         } = this.props;
+
         const nodeTitle = title || node.title;
 
         const plugins = getPlugins("pb-menu-item") as PbMenuItemPlugin[];
@@ -70,7 +71,7 @@ class NodeRendererDefault extends React.Component<any> {
         const buttonStyle = { left: -0.5 * scaffoldBlockPxWidth };
 
         return (
-            <div style={{ height: "100%" }}>
+            <div style={{ height: "100%" }} data-testid={`pb-menu-item-render-${nodeTitle}`}>
                 {toggleChildrenVisibility &&
                     node.children &&
                     (node.children.length > 0 || typeof node.children === "function") && (
@@ -136,10 +137,12 @@ class NodeRendererDefault extends React.Component<any> {
 
                                     <div className="rst__rowToolbar">
                                         <IconButton
+                                            data-testid={"pb-edit-icon-button"}
                                             icon={<EditIcon />}
                                             onClick={() => editItem(node)}
                                         />
                                         <IconButton
+                                            data-testid={"pb-delete-icon-button"}
                                             icon={<DeleteIcon />}
                                             onClick={() => deleteItem(node)}
                                         />

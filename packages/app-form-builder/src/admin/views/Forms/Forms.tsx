@@ -33,7 +33,10 @@ function Forms() {
                     <FormDetails refreshForms={dataList.refresh} />
                 </RightPanel>
             </SplitView>
-            <FloatingActionButton onClick={() => openNewFormDialog(true)} />
+            <FloatingActionButton
+                data-testid="new-record-button"
+                onClick={() => openNewFormDialog(true)}
+            />
         </>
     );
 }

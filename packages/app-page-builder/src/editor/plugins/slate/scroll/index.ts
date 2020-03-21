@@ -5,7 +5,7 @@ export default () => {
                 name: "pb-editor-slate-editor-scroll",
                 type: "pb-editor-slate-editor",
                 slate: {
-                    onKeyDown() {
+                    onKeyDown(event, change, next) {
                         const native = window.getSelection();
                         if (native.type === "None") {
                             return { top: 0, left: 0, width: 0, height: 0 };
@@ -22,6 +22,8 @@ export default () => {
                             const scrollDiff = cursorY - height;
                             window.scrollTo(0, window.scrollY + scrollDiff + 20);
                         }
+
+                        return next();
                     }
                 }
             }

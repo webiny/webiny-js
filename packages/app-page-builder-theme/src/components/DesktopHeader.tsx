@@ -15,7 +15,10 @@ const DesktopHeader = ({
     name: string;
 }) => {
     return (
-        <div className="webiny-pb-section-header__wrapper hide-on-mobile">
+        <div
+            className="webiny-pb-section-header__wrapper hide-on-mobile"
+            data-testid={"pb-desktop-header"}
+        >
             <div className={"webiny-pb-section-header__logo"}>
                 <Link to="/">
                     {logo && logo.src && <img src={logo.src} alt={name} />}{" "}

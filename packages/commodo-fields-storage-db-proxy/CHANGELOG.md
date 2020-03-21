@@ -3,6 +3,71 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.0.3](https://github.com/webiny/commodo/compare/@webiny/commodo-fields-storage-db-proxy@2.0.3-next.0...@webiny/commodo-fields-storage-db-proxy@2.0.3) (2020-02-12)
+
+**Note:** Version bump only for package @webiny/commodo-fields-storage-db-proxy
+
+
+
+
+
+## [2.0.3-next.0](https://github.com/webiny/commodo/compare/@webiny/commodo-fields-storage-db-proxy@2.0.2...@webiny/commodo-fields-storage-db-proxy@2.0.3-next.0) (2020-02-11)
+
+
+### Bug Fixes
+
+* add "MongoNetworkError" to the list of connection errors ([#705](https://github.com/webiny/commodo/issues/705)) ([5ca4808](https://github.com/webiny/commodo/commit/5ca480886f6e3e77d5cb6cd11b10f58d7018bc24))
+
+
+
+
+
+## [2.0.2](https://github.com/webiny/commodo/compare/@webiny/commodo-fields-storage-db-proxy@2.0.2-next.0...@webiny/commodo-fields-storage-db-proxy@2.0.2) (2020-02-07)
+
+**Note:** Version bump only for package @webiny/commodo-fields-storage-db-proxy
+
+
+
+
+
+## [2.0.2-next.0](https://github.com/webiny/commodo/compare/@webiny/commodo-fields-storage-db-proxy@2.0.1...@webiny/commodo-fields-storage-db-proxy@2.0.2-next.0) (2020-02-07)
+
+**Note:** Version bump only for package @webiny/commodo-fields-storage-db-proxy
+
+
+
+
+
+## [2.0.1](https://github.com/webiny/commodo/compare/@webiny/commodo-fields-storage-db-proxy@2.0.1-next.1...@webiny/commodo-fields-storage-db-proxy@2.0.1) (2020-02-06)
+
+**Note:** Version bump only for package @webiny/commodo-fields-storage-db-proxy
+
+
+
+
+
+## [2.0.1-next.1](https://github.com/webiny/commodo/compare/@webiny/commodo-fields-storage-db-proxy@2.0.1-next.0...@webiny/commodo-fields-storage-db-proxy@2.0.1-next.1) (2020-02-06)
+
+
+### Bug Fixes
+
+* minor error message correction ([e921529](https://github.com/webiny/commodo/commit/e921529997fed7fa80c00eb09e1029af7dcb9520))
+
+
+
+
+
+## [2.0.1-next.0](https://github.com/webiny/commodo/compare/@webiny/commodo-fields-storage-db-proxy@2.0.0...@webiny/commodo-fields-storage-db-proxy@2.0.1-next.0) (2020-02-05)
+
+
+### Bug Fixes
+
+* show a more friendly database connection error message ([#696](https://github.com/webiny/commodo/issues/696)) ([08b84fb](https://github.com/webiny/commodo/commit/08b84fb0444a640b1425008a46eb9c919afa7a77)), closes [#682](https://github.com/webiny/commodo/issues/682)
+
+
+
+
+
 # 2.0.0 (2020-01-27)
 
 

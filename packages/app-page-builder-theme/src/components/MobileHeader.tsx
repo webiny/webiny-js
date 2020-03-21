@@ -7,7 +7,7 @@ import Navigation from "./Navigation";
 
 const MobileHeader = ({ menuName, logo, name, active, toggleMenu }) => {
     return (
-        <div className="webiny-pb-section-header__wrapper hide-on-desktop-and-tablet">
+        <div className="webiny-pb-section-header__wrapper hide-on-desktop-and-tablet" data-testid={"pb-mobile-header"}>
             <div className={"webiny-pb-section-header__logo"}>
                 <Link to="/">
                     {logo && logo.src && <img src={logo.src} alt={name} />}{" "}

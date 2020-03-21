@@ -25,7 +25,7 @@ const App = () => {
         <UiProvider>
             <I18NProvider loader={<CircularProgress label={"Loading locales..."} />}>
                 <AppInstaller security={securityProvider}>
-                    <PageBuilderProvider isEditor>
+                    <PageBuilderProvider>
                         <ThemeProvider>
                             {getPlugins("route").map(pl =>
                                 React.cloneElement(pl.route, {

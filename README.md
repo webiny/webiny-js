@@ -1,3 +1,7 @@
+<hr/><p align="center" style="border: 1px solid red; background: red">
+<a target="_blank" href="https://careers.webiny.com/senior-javascript-engineer/en">📢 We are hiring a Senior JavaScript Engineer - Click to Apply!</a>
+  <p>
+<hr/>
 <br>
 <p align="center">
   <img src="./static/webiny-logo.svg" width="250">
@@ -23,7 +27,9 @@
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](http://makeapullrequest.com)
 [![Contributor Covenant](https://img.shields.io/badge/Contributor%20Covenant-v1.4%20adopted-ff69b4.svg)](CODE_OF_CONDUCT.md)
 [![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2FWebiny%2Fwebiny-js.svg?type=shield)](https://app.fossa.io/projects/git%2Bgithub.com%2FWebiny%2Fwebiny-js?ref=badge_shield)
-[![Join the chat at https://gitter.im/Webiny/webiny-js](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/Webiny/webiny-js) <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->[![All Contributors](https://img.shields.io/badge/all_contributors-10-orange.svg)](#contributors-)<!-- ALL-CONTRIBUTORS-BADGE:END -->
+[![Join the chat at https://gitter.im/Webiny/webiny-js](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/Webiny/webiny-js) <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
+[![All Contributors](https://img.shields.io/badge/all_contributors-20-orange.svg?style=flat-square)](#contributors-)
+<!-- ALL-CONTRIBUTORS-BADGE:END -->
 
 </p>
 
@@ -83,6 +89,20 @@ Thanks goes to these wonderful people:
     <td align="center"><a href="https://github.com/fodurrr"><img src="https://avatars1.githubusercontent.com/u/10008597?v=4" width="100px;" alt=""/><br /><sub><b>fodurrr</b></sub></a><br /></td>
     <td align="center"><a href="https://thebeast.me/about/"><img src="https://avatars3.githubusercontent.com/u/418747?v=4" width="100px;" alt=""/><br /><sub><b>John Bampton</b></sub></a><br /></td>
     <td align="center"><a href="https://ghuser.io/jamesgeorge007"><img src="https://avatars2.githubusercontent.com/u/25279263?v=4" width="100px;" alt=""/><br /><sub><b>James George</b></sub></a><br /></td>
+    <td align="center"><a href="https://github.com/Fsalker"><img src="https://avatars1.githubusercontent.com/u/16700631?v=4" width="100px;" alt=""/><br /><sub><b>Fsalker</b></sub></a><br /></td>
+    <td align="center"><a href="https://github.com/naokia"><img src="https://avatars2.githubusercontent.com/u/5516121?v=4" width="100px;" alt=""/><br /><sub><b>naokia</b></sub></a><br /></td>
+  </tr>
+  <tr>
+    <td align="center"><a href="https://github.com/tjrexer"><img src="https://avatars2.githubusercontent.com/u/7013045?v=4" width="100px;" alt=""/><br /><sub><b>Tim Rexer</b></sub></a><br /></td>
+    <td align="center"><a href="https://github.com/bigb123"><img src="https://avatars2.githubusercontent.com/u/9221943?v=4" width="100px;" alt=""/><br /><sub><b>Piotr Pałka</b></sub></a><br /></td>
+    <td align="center"><a href="http://jinesh.varia.in"><img src="https://avatars2.githubusercontent.com/u/4205770?v=4" width="100px;" alt=""/><br /><sub><b>Jinesh Varia</b></sub></a><br /></td>
+    <td align="center"><a href="https://github.com/val-fom"><img src="https://avatars0.githubusercontent.com/u/17828806?v=4" width="100px;" alt=""/><br /><sub><b>Valentyn Fomenko</b></sub></a><br /></td>
+    <td align="center"><a href="https://github.com/Naion"><img src="https://avatars3.githubusercontent.com/u/13139397?v=4" width="100px;" alt=""/><br /><sub><b>Lenon Tolfo</b></sub></a><br /></td>
+    <td align="center"><a href="https://github.com/ahmad-reza619"><img src="https://avatars3.githubusercontent.com/u/52902060?v=4" width="100px;" alt=""/><br /><sub><b>Ahmad Reza</b></sub></a><br /></td>
+  </tr>
+  <tr>
+    <td align="center"><a href="https://github.com/visshaljagtap"><img src="https://avatars2.githubusercontent.com/u/35190080?v=4" width="100px;" alt=""/><br /><sub><b>Vishal Jagtap</b></sub></a><br /></td>
+    <td align="center"><a href="https://github.com/Arvisix"><img src="https://avatars1.githubusercontent.com/u/13711406?v=4" width="100px;" alt=""/><br /><sub><b>Maxim Moroz</b></sub></a><br /></td>
   </tr>
 </table>
 

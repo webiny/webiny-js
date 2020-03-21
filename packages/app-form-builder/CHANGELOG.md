@@ -3,6 +3,147 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.1.0](https://github.com/webiny/webiny-js/compare/@webiny/app-form-builder@2.1.0-next.0...@webiny/app-form-builder@2.1.0) (2020-03-09)
+
+**Note:** Version bump only for package @webiny/app-form-builder
+
+
+
+
+
+# [2.1.0-next.0](https://github.com/webiny/webiny-js/compare/@webiny/app-form-builder@2.0.8...@webiny/app-form-builder@2.1.0-next.0) (2020-03-09)
+
+
+### Features
+
+* improved scopes selection auto-complete component([#743](https://github.com/webiny/webiny-js/issues/743)) ([f3acbc5](https://github.com/webiny/webiny-js/commit/f3acbc5aa467ac3d70649628bfbe68727345487e)), closes [#729](https://github.com/webiny/webiny-js/issues/729)
+
+
+
+
+
+## [2.0.8](https://github.com/webiny/webiny-js/compare/@webiny/app-form-builder@2.0.7...@webiny/app-form-builder@2.0.8) (2020-03-03)
+
+**Note:** Version bump only for package @webiny/app-form-builder
+
+
+
+
+
+## [2.0.7](https://github.com/webiny/webiny-js/compare/@webiny/app-form-builder@2.0.7-next.0...@webiny/app-form-builder@2.0.7) (2020-03-01)
+
+**Note:** Version bump only for package @webiny/app-form-builder
+
+
+
+
+
+## [2.0.7-next.0](https://github.com/webiny/webiny-js/compare/@webiny/app-form-builder@2.0.6...@webiny/app-form-builder@2.0.7-next.0) (2020-03-01)
+
+**Note:** Version bump only for package @webiny/app-form-builder
+
+
+
+
+
+## [2.0.6](https://github.com/webiny/webiny-js/compare/@webiny/app-form-builder@2.0.6-next.1...@webiny/app-form-builder@2.0.6) (2020-02-24)
+
+**Note:** Version bump only for package @webiny/app-form-builder
+
+
+
+
+
+## [2.0.6-next.1](https://github.com/webiny/webiny-js/compare/@webiny/app-form-builder@2.0.6-next.0...@webiny/app-form-builder@2.0.6-next.1) (2020-02-24)
+
+**Note:** Version bump only for package @webiny/app-form-builder
+
+
+
+
+
+## [2.0.6-next.0](https://github.com/webiny/webiny-js/compare/@webiny/app-form-builder@2.0.5...@webiny/app-form-builder@2.0.6-next.0) (2020-02-23)
+
+
+### Bug Fixes
+
+* **page-builder:** simplify usage and improve performance when loading with pages ([91c12c8](https://github.com/webiny/webiny-js/commit/91c12c8dfbdfe2adef809b556ab2eee40eb3a2ca))
+* typescript ([5ddd281](https://github.com/webiny/webiny-js/commit/5ddd281b6ee206362f7163c5c063e3eea1cd72a2))
+
+
+
+
+
+## [2.0.5](https://github.com/webiny/webiny-js/compare/@webiny/app-form-builder@2.0.4...@webiny/app-form-builder@2.0.5) (2020-02-14)
+
+**Note:** Version bump only for package @webiny/app-form-builder
+
+
+
+
+
+## [2.0.4](https://github.com/webiny/webiny-js/compare/@webiny/app-form-builder@2.0.4-next.0...@webiny/app-form-builder@2.0.4) (2020-02-12)
+
+**Note:** Version bump only for package @webiny/app-form-builder
+
+
+
+
+
+## [2.0.4-next.0](https://github.com/webiny/webiny-js/compare/@webiny/app-form-builder@2.0.3...@webiny/app-form-builder@2.0.4-next.0) (2020-02-11)
+
+**Note:** Version bump only for package @webiny/app-form-builder
+
+
+
+
+
+## [2.0.3](https://github.com/webiny/webiny-js/compare/@webiny/app-form-builder@2.0.3-next.0...@webiny/app-form-builder@2.0.3) (2020-02-07)
+
+**Note:** Version bump only for package @webiny/app-form-builder
+
+
+
+
+
+## [2.0.3-next.0](https://github.com/webiny/webiny-js/compare/@webiny/app-form-builder@2.0.2...@webiny/app-form-builder@2.0.3-next.0) (2020-02-07)
+
+**Note:** Version bump only for package @webiny/app-form-builder
+
+
+
+
+
+## [2.0.2](https://github.com/webiny/webiny-js/compare/@webiny/app-form-builder@2.0.2-next.1...@webiny/app-form-builder@2.0.2) (2020-02-06)
+
+**Note:** Version bump only for package @webiny/app-form-builder
+
+
+
+
+
+## [2.0.2-next.1](https://github.com/webiny/webiny-js/compare/@webiny/app-form-builder@2.0.2-next.0...@webiny/app-form-builder@2.0.2-next.1) (2020-02-05)
+
+
+### Bug Fixes
+
+* extend Window object with Cypress ([fb8dc83](https://github.com/webiny/webiny-js/commit/fb8dc835b96c3289b34ae322bb9d7cc0f0ba3337))
+
+
+
+
+
+## [2.0.2-next.0](https://github.com/webiny/webiny-js/compare/@webiny/app-form-builder@2.0.1...@webiny/app-form-builder@2.0.2-next.0) (2020-02-05)
+
+
+### Bug Fixes
+
+* refetch forms in page builder element ([#694](https://github.com/webiny/webiny-js/issues/694)) ([4ee88f5](https://github.com/webiny/webiny-js/commit/4ee88f5f56704ff6eaf71d0624ecc7ea872c3a20)), closes [#678](https://github.com/webiny/webiny-js/issues/678)
+
+
+
+
+
 ## [2.0.1](https://github.com/webiny/webiny-js/compare/@webiny/app-form-builder@2.0.0...@webiny/app-form-builder@2.0.1) (2020-01-27)
 
 

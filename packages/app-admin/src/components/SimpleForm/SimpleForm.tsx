@@ -41,9 +41,13 @@ const footer = css({
     }
 });
 
-export const SimpleForm = (props: { children: React.ReactNode; noElevation?: boolean }) => {
+export const SimpleForm = (props: {
+    "data-testid"?: string;
+    children: React.ReactNode;
+    noElevation?: boolean;
+}) => {
     return (
-        <SimpleFormContainer className={"webiny-data-list"}>
+        <SimpleFormContainer className={"webiny-data-list"} data-testid={props["data-testid"]}>
             {props.noElevation ? props.children : <Elevation z={1}>{props.children}</Elevation>}
         </SimpleFormContainer>
     );

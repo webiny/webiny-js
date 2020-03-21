@@ -17,7 +17,6 @@ import {
     ListItem,
     ListItemText,
     ListItemTextSecondary,
-    ListTextOverline,
     ListItemMeta,
     ListActions
 } from "@webiny/ui/List";
@@ -114,7 +113,7 @@ const FormsDataList = (props: FormsDataListProps) => {
             ]}
         >
             {({ data = [] }) => (
-                <List>
+                <List data-testid="default-data-list">
                     {data.map(form => (
                         <ListItem key={form.id}>
                             <ListItemText
@@ -124,7 +123,6 @@ const FormsDataList = (props: FormsDataListProps) => {
                                 }}
                             >
                                 {form.name}
-                                <ListTextOverline>{form.name}</ListTextOverline>
                                 {form.createdBy && (
                                     <ListItemTextSecondary>
                                         {form.createdBy.firstName && (

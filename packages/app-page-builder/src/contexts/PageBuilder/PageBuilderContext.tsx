@@ -7,7 +7,6 @@ export const PageBuilderContext = React.createContext(null);
 
 export type PageBuilderContextValue = {
     theme: PbTheme;
-    isEditor?: boolean;
     defaults?: {
         pages?: {
             notFound?: React.ComponentType<any>;
@@ -21,7 +20,6 @@ export type PageBuilderProviderProps = {
      * DEPRECATED: this prop will be removed in future releases. Use `pb-theme` plugin to register a theme.
      */
     theme?: PbTheme;
-    isEditor?: boolean;
     children?: ReactElement;
     [key: string]: any;
 };

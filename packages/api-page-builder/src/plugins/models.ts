@@ -7,9 +7,8 @@ import pbMenu from "./models/pbMenu.model";
 import pbPage from "./models/pbPage.model";
 import pbSettings from "./models/pbSettings.model";
 import got from "got";
-import { GraphQLContextPlugin } from "@webiny/api/types";
 
-export default (): GraphQLContextPlugin[] => [
+export default () => [
     {
         name: "graphql-context-models",
         type: "graphql-context",
@@ -74,6 +73,32 @@ export default (): GraphQLContextPlugin[] => [
                     }
                 }
             })(PbPage);
+        }
+    },
+    {
+        // After successful installation, GET requests will be issued to all of the initially installed pages.
+        // This way, once user visits one of the initially installed pages, he won't have to wait for the background
+        // SSR render to finish.
+        type: "pb-install",
+        name: "pb-install-generate-ssr-via-get-requests",
+        async after({ context }) {
+            const {
+                models: { PbPage }
+            } = context;
+
+            // Asynchronously send a GET request to each page so that the SSR cache gets populated.
+            const initialPages = await PbPage.find();
+            for (let i = 0; i < initialPages.length; i++) {
+                const url = await initialPages[i].fullUrl;
+                try {
+                    await got(url, {
+                        timeout: 200,
+                        retry: 0
+                    });
+                } catch {
+                    // Do nothing.
+                }
+            }
         }
     }
 ];

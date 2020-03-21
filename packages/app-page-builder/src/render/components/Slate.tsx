@@ -1,12 +1,15 @@
-import React, { useRef, useState } from "react";
+import React, { useMemo, useRef, useState } from "react";
 import { Value } from "slate";
 import { Editor } from "slate-react";
 import { getPlugins } from "@webiny/plugins";
-import { usePageBuilder } from "@webiny/app-page-builder/hooks/usePageBuilder";
-import { PbRenderSlateEditorPlugin } from "@webiny/app-page-builder/types";
+import { PbRenderSlateEditorPlugin, PbThemePlugin } from "@webiny/app-page-builder/types";
 
 const SlateEditor = props => {
-    const { theme } = usePageBuilder();
+    const theme = useMemo(
+        () => Object.assign({}, ...getPlugins("pb-theme").map((pl: PbThemePlugin) => pl.theme)),
+        []
+    );
+
     const plugins = useRef(
         getPlugins<PbRenderSlateEditorPlugin>("pb-render-slate-editor").map(pl => pl.slate)
     );

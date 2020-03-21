@@ -23,6 +23,8 @@
   "devDependencies": {
     "@babel/cli": "^7.0.0",
     "@babel/core": "^7.0.0",
+    "@commitlint/cli": "^8.3.5",
+    "@commitlint/config-conventional": "^8.3.4",
     "@shelf/jest-mongodb": "^1.1.0",
     "@testing-library/cypress": "^5.0.2",
     "@types/fs-extra": "^8.0.1",
@@ -66,6 +68,7 @@
     "git-cz": "^1.7.1",
     "glob": "^7.1.3",
     "globby": "^8.0.1",
+    "husky": "^4.2.3",
     "inquirer": "^7.0.0",
     "inquirer-autocomplete-prompt": "^1.0.1",
     "inquirer-maxlength-input-prompt": "^1.0.0",
@@ -78,7 +81,6 @@
     "longest": "^2.0.1",
     "minimatch": "^3.0.4",
     "node-fetch": "^2.6.0",
-    "pre-commit": "^1.2.2",
     "prettier": "^1.14.2",
     "rimraf": "^2.6.2",
     "semver": "^6.3.0",
@@ -102,7 +104,9 @@
     "build:apps": "lerna run build --scope=@webiny/app* --stream",
     "build:api": "lerna run build --scope=@webiny/api* --stream",
     "build:packages": "lerna run build --scope=@webiny/* --ignore=@webiny/serv* --stream",
-    "build:@webiny": "lerna run build --scope=@webiny/* --stream",
+    "watch:apps": "lerna run watch --scope=@webiny/app* --stream --parallel",
+    "watch:api": "lerna run watch --scope=@webiny/api* --stream --parallel",
+    "watch:packages": "lerna run watch --scope=@webiny/* --ignore=@webiny/serv* --stream --parallel",
     "clear-dist": "yarn rimraf components/*/dist packages/*/dist",
     "contributors:add": "all-contributors add",
     "contributors:generate": "all-contributors generate",
@@ -111,25 +115,26 @@
     "commit:verify": "yarn lint-staged",
     "lint-staged": "lint-staged",
     "prettier": "prettier --config .prettierrc.js --write",
-    "publish-to-verdaccio": " yarn build && cross-env REGISTRY=http://localhost:4800 node scripts/publish-to-verdaccio",
     "setup-repo": "node scripts/setupRepo",
-    "start-verdaccio": "yarn verdaccio -c ./verdaccio.yaml",
     "test": "jest --config jest.config.js",
     "validate-packages": "node scripts/validatePackages.js",
     "webiny-ui-build-storybook": "cd packages/ui && cross-env OUT=../../netlify-static yarn build-storybook",
     "wby:fns": "cross-env NODE_ENV=development sls offline start --stage=local",
     "wby:fns:inspect": "yarn wby:fns --inspect=9001"
   },
-  "pre-commit": [
-    "lint-staged"
-  ],
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged",
+      "commit-msg": "commitlint -E HUSKY_GIT_PARAMS"
+    }
+  },
   "lint-staged": {
     "**/*.js": [
       "adio",
       "prettier --write",
       "eslint --fix",
       "git add",
-      "jest --config ./scripts/jest/config.src.js --findRelatedTests"
+      "jest --config jest.config.js --findRelatedTests"
     ]
   },
   "yargs": {
@@ -140,5 +145,8 @@
       "cliPath": "node_modules/commitizen",
       "path": "./scripts/cz-adapter"
     }
+  },
+  "commitlint": {
+    "extends": ["@commitlint/config-conventional"]
   }
 }

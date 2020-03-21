@@ -249,10 +249,7 @@ const executeGraph = async (allComponents, graph, instance, inputs) => {
             await trackComponent({ context: instance.context, component: componentData.path });
         } catch (err) {
             instance.context.log(`An error occurred during deployment of ${red(alias)}`);
-            console.log();
-            console.log(err);
-            console.log();
-            process.exit(1);
+            throw err;
         }
 
         graph.removeNode(alias);

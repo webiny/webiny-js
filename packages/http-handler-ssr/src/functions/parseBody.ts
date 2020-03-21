@@ -3,8 +3,8 @@ export default body => {
         try {
             return JSON.parse(body);
         } catch {
-            // Do nothing.
+            return {};
         }
     }
-    return {};
+    return body;
 };

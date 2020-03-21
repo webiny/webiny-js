@@ -1,10 +1,11 @@
 import { PluginsContainer } from "@webiny/plugins";
 import createResponse from "./createResponse";
 import {
-    HttpAfterHandlePlugin,
-    HttpBeforeHandlePlugin,
+    HttpAfterHandlerPlugin,
+    HttpBeforeHandlerPlugin,
     HttpContextPlugin,
-    HttpHandlerPlugin
+    HttpHandlerPlugin,
+    HttpErrorHandlerPlugin
 } from "./types";
 
 export default (...plugins) => async (...args) => {
@@ -12,35 +13,52 @@ export default (...plugins) => async (...args) => {
         plugins: new PluginsContainer(plugins)
     };
 
-    const contextPlugins = context.plugins.byType<HttpContextPlugin>("context");
-    for (let i = 0; i < contextPlugins.length; i++) {
-        contextPlugins[i].apply({ context, args });
-    }
-
-    const beforeHandle = context.plugins.byType<HttpBeforeHandlePlugin>("before-handle");
-    for (let i = 0; i < beforeHandle.length; i++) {
-        await beforeHandle[i].handle({ context, args });
-    }
-
-    let result;
-    const handlers = context.plugins.byType<HttpHandlerPlugin>("handler");
-    for (let i = 0; i < handlers.length; i++) {
-        const handler = handlers[i];
-        if (handler.canHandle({ context, args })) {
-            result = await handler.handle({ context, args });
+    try {
+        const contextPlugins = context.plugins.byType<HttpContextPlugin>("context");
+        for (let i = 0; i < contextPlugins.length; i++) {
+            contextPlugins[i].apply({ context, args });
         }
-    }
 
-    const afterHandle = context.plugins.byType<HttpAfterHandlePlugin>("after-handle");
-    for (let i = 0; i < afterHandle.length; i++) {
-        await afterHandle[i].handle({ context, args, result });
-    }
+        const beforeHandlers = context.plugins.byType<HttpBeforeHandlerPlugin>("before-handler");
+        for (let i = 0; i < beforeHandlers.length; i++) {
+            await beforeHandlers[i].handle({ context, args });
+        }
 
-    if (!result) {
+        let result, handled;
+        const handlers = context.plugins.byType<HttpHandlerPlugin>("handler");
+        for (let i = 0; i < handlers.length; i++) {
+            const handler = handlers[i];
+            if (handler.canHandle({ context, args })) {
+                result = await handler.handle({ context, args });
+                handled = true;
+                break;
+            }
+        }
+
+        if (!handled) {
+            throw new Error("Not a single handler could handle the request.");
+        }
+
+        const afterHandlers = context.plugins.byType<HttpAfterHandlerPlugin>("after-handler");
+        for (let i = 0; i < afterHandlers.length; i++) {
+            await afterHandlers[i].handle({ context, args, result });
+        }
+
+        return result;
+    } catch (error) {
+        const handlers = context.plugins.byType<HttpErrorHandlerPlugin>("error-handler");
+        for (let i = 0; i < handlers.length; i++) {
+            const handler = handlers[i];
+            if (handler.canHandle({ context, args, error })) {
+                return handler.handle({ context, args, error });
+            }
+        }
+
         return createResponse({
-            body: "Request not handled. Please check registered handlers."
+            statusCode: 404,
+            type: "text/html",
+            body: `<html><h1>An error occurred</h1><p>${error.stack}</p></html>`,
+            headers: { "Cache-Control": "no-store" }
         });
     }
-
-    return result;
 };

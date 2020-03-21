@@ -3,6 +3,168 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.2.0](https://github.com/webiny/webiny-js/compare/@webiny/app-page-builder@3.2.0-next.0...@webiny/app-page-builder@3.2.0) (2020-03-09)
+
+**Note:** Version bump only for package @webiny/app-page-builder
+
+
+
+
+
+# [3.2.0-next.0](https://github.com/webiny/webiny-js/compare/@webiny/app-page-builder@3.1.6...@webiny/app-page-builder@3.2.0-next.0) (2020-03-09)
+
+
+### Bug Fixes
+
+* CDN cache is now invalidated properly upon updating Page Builder settings ([#746](https://github.com/webiny/webiny-js/issues/746)) ([f686fc0](https://github.com/webiny/webiny-js/commit/f686fc06c747081473baac35e22941945b6351db)), closes [#727](https://github.com/webiny/webiny-js/issues/727)
+* don't apply CSS class to typography selector items ([1c2e022](https://github.com/webiny/webiny-js/commit/1c2e0222cd8ddad20a6bffeb8936b056338347de))
+* ensure passed "link" is string before proceeding ([#744](https://github.com/webiny/webiny-js/issues/744)) ([931b0bb](https://github.com/webiny/webiny-js/commit/931b0bb4e66412d00f565cea51a3cb0dadab5f39))
+
+
+### Features
+
+* improved scopes selection auto-complete component([#743](https://github.com/webiny/webiny-js/issues/743)) ([f3acbc5](https://github.com/webiny/webiny-js/commit/f3acbc5aa467ac3d70649628bfbe68727345487e)), closes [#729](https://github.com/webiny/webiny-js/issues/729)
+
+
+
+
+
+## [3.1.6](https://github.com/webiny/webiny-js/compare/@webiny/app-page-builder@3.1.5...@webiny/app-page-builder@3.1.6) (2020-03-03)
+
+
+### Bug Fixes
+
+* do not use fragments inside of the Helmet component ([85aaebe](https://github.com/webiny/webiny-js/commit/85aaebe5fa2fbce0849e554be6a2ace5d10a3aa9))
+
+
+
+
+
+## [3.1.5](https://github.com/webiny/webiny-js/compare/@webiny/app-page-builder@3.1.5-next.0...@webiny/app-page-builder@3.1.5) (2020-03-01)
+
+**Note:** Version bump only for package @webiny/app-page-builder
+
+
+
+
+
+## [3.1.5-next.0](https://github.com/webiny/webiny-js/compare/@webiny/app-page-builder@3.1.4...@webiny/app-page-builder@3.1.5-next.0) (2020-03-01)
+
+
+### Bug Fixes
+
+* handle PB Element errors during render ([#726](https://github.com/webiny/webiny-js/issues/726)) ([43fec78](https://github.com/webiny/webiny-js/commit/43fec78b8970e54ba9cb68c6901a92b9eb4870eb))
+* improve error message of deploy-apps command([#732](https://github.com/webiny/webiny-js/issues/732)) ([f696517](https://github.com/webiny/webiny-js/commit/f69651758832a68acce92650da58cd6505735ec2))
+* tags search & "Pages List" menu item site rendering ([#734](https://github.com/webiny/webiny-js/issues/734)) ([2f39e7a](https://github.com/webiny/webiny-js/commit/2f39e7a5a7bb0915e9bfcd460007108a69a1accd)), closes [#731](https://github.com/webiny/webiny-js/issues/731)
+
+
+
+
+
+## [3.1.4](https://github.com/webiny/webiny-js/compare/@webiny/app-page-builder@3.1.4-next.1...@webiny/app-page-builder@3.1.4) (2020-02-24)
+
+**Note:** Version bump only for package @webiny/app-page-builder
+
+
+
+
+
+## [3.1.4-next.1](https://github.com/webiny/webiny-js/compare/@webiny/app-page-builder@3.1.4-next.0...@webiny/app-page-builder@3.1.4-next.1) (2020-02-24)
+
+
+### Bug Fixes
+
+* add missing variables ([d40cd56](https://github.com/webiny/webiny-js/commit/d40cd5664bf5a14199ae32c672f9ac2765c6e354))
+
+
+
+
+
+## [3.1.4-next.0](https://github.com/webiny/webiny-js/compare/@webiny/app-page-builder@3.1.3...@webiny/app-page-builder@3.1.4-next.0) (2020-02-23)
+
+
+### Bug Fixes
+
+* improve handling of internal/external links ([#724](https://github.com/webiny/webiny-js/issues/724)) ([ddb8f8a](https://github.com/webiny/webiny-js/commit/ddb8f8a73e6109508bb69610923806e7b225431f)), closes [#719](https://github.com/webiny/webiny-js/issues/719)
+* **page-builder:** simplify usage and improve performance when loading with pages ([91c12c8](https://github.com/webiny/webiny-js/commit/91c12c8dfbdfe2adef809b556ab2eee40eb3a2ca))
+
+
+
+
+
+## [3.1.3](https://github.com/webiny/webiny-js/compare/@webiny/app-page-builder@3.1.2...@webiny/app-page-builder@3.1.3) (2020-02-14)
+
+
+### Bug Fixes
+
+* restore slate v0.42 onKeyDown plugin signature ([#718](https://github.com/webiny/webiny-js/issues/718)) ([357e36c](https://github.com/webiny/webiny-js/commit/357e36ca82140237316a264bad8a5708f995d7ee))
+* synchronize pageList component name with element plugin ([#717](https://github.com/webiny/webiny-js/issues/717)) ([87f8bf8](https://github.com/webiny/webiny-js/commit/87f8bf85b08cc97766c52d420d4ad7a7236d9b3e))
+
+
+
+
+
+## [3.1.2](https://github.com/webiny/webiny-js/compare/@webiny/app-page-builder@3.1.2-next.0...@webiny/app-page-builder@3.1.2) (2020-02-12)
+
+**Note:** Version bump only for package @webiny/app-page-builder
+
+
+
+
+
+## [3.1.2-next.0](https://github.com/webiny/webiny-js/compare/@webiny/app-page-builder@3.1.1...@webiny/app-page-builder@3.1.2-next.0) (2020-02-11)
+
+**Note:** Version bump only for package @webiny/app-page-builder
+
+
+
+
+
+## [3.1.1](https://github.com/webiny/webiny-js/compare/@webiny/app-page-builder@3.1.1-next.0...@webiny/app-page-builder@3.1.1) (2020-02-07)
+
+**Note:** Version bump only for package @webiny/app-page-builder
+
+
+
+
+
+## [3.1.1-next.0](https://github.com/webiny/webiny-js/compare/@webiny/app-page-builder@3.1.0...@webiny/app-page-builder@3.1.1-next.0) (2020-02-07)
+
+**Note:** Version bump only for package @webiny/app-page-builder
+
+
+
+
+
+# [3.1.0](https://github.com/webiny/webiny-js/compare/@webiny/app-page-builder@3.1.0-next.0...@webiny/app-page-builder@3.1.0) (2020-02-06)
+
+
+### Bug Fixes
+
+* minor docs addition ([62f9d81](https://github.com/webiny/webiny-js/commit/62f9d8112c9f82af120c61e64f3c8bbd56b24088))
+
+
+
+
+
+# [3.1.0-next.0](https://github.com/webiny/webiny-js/compare/@webiny/app-page-builder@3.0.1...@webiny/app-page-builder@3.1.0-next.0) (2020-02-05)
+
+
+### Bug Fixes
+
+* handle external links and fix initial page links. ([920b125](https://github.com/webiny/webiny-js/commit/920b1251ef5a61b996b8e6b6f05b829fd00950d7))
+* if PB wasn't installed, show an appropriate error message ([#692](https://github.com/webiny/webiny-js/issues/692)) ([b1d858c](https://github.com/webiny/webiny-js/commit/b1d858c45c76953d05dd32e416c6e7b355fed36c)), closes [#676](https://github.com/webiny/webiny-js/issues/676)
+* refetch forms in page builder element ([#694](https://github.com/webiny/webiny-js/issues/694)) ([4ee88f5](https://github.com/webiny/webiny-js/commit/4ee88f5f56704ff6eaf71d0624ecc7ea872c3a20)), closes [#678](https://github.com/webiny/webiny-js/issues/678)
+
+
+### Features
+
+* Clicking outside the 'Get Started Guide' modal now exits the guide ([#680](https://github.com/webiny/webiny-js/issues/680)) ([2395a4f](https://github.com/webiny/webiny-js/commit/2395a4f6050b047bbbea85400c1e73249f0fc5d8))
+
+
+
+
+
 ## [3.0.1](https://github.com/webiny/webiny-js/compare/@webiny/app-page-builder@3.0.0...@webiny/app-page-builder@3.0.1) (2020-01-27)
 
 

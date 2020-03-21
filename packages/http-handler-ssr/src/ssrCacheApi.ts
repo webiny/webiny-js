@@ -18,7 +18,7 @@ export default (): HttpHandlerPlugin => ({
             return false;
         }
 
-        if (event.path !== "/" || event.httpMethod !== "POST") {
+        if (event.httpMethod !== "POST") {
             return false;
         }
 
@@ -36,7 +36,6 @@ export default (): HttpHandlerPlugin => ({
     async handle({ context, args }) {
         const [event] = args;
         const path = event.path + qs.stringify(event.multiValueQueryStringParameters, true);
-
 
         let body = event.body;
         if (event.isBase64Encoded) {
@@ -101,11 +100,12 @@ export default (): HttpHandlerPlugin => ({
                     ssrCache: {
                         hasExpired: ssrCache.hasExpired,
                         expiresIn: ssrCache.expiresIn,
-                        expiresOn: ssrCache.expiresOn
+                        expiresOn: ssrCache.expiresOn,
+                        isRefreshing: ssrCache.isRefreshing
                     }
                 };
 
-                if (actionArgs.expired === true && !ssrCache.hasExpired) {
+                if (data.ssrCache.isRefreshing) {
                     return createResponse({
                         type: "text/json",
                         body: JSON.stringify({
@@ -115,17 +115,39 @@ export default (): HttpHandlerPlugin => ({
                     });
                 }
 
+                const version = event.headers["X-Cdn-Deployment-Id"];
+
+                // "expired" flag tells us to invalidate only if the cache is considered as expired.
+                if (actionArgs.expired === true) {
+                    // Only check "version" if it was actually received in the headers.
+                    let versionsDifferent = false;
+                    if (version) {
+                        versionsDifferent = ssrCache.version !== version;
+                    }
+
+                    if (!versionsDifferent && !ssrCache.hasExpired) {
+                        return createResponse({
+                            type: "text/json",
+                            body: JSON.stringify({
+                                error: false,
+                                data
+                            })
+                        });
+                    }
+                }
+
                 await ssrCache.invalidate();
                 data.invalidated = true;
                 if (actionArgs.refresh) {
-                    await ssrCache.refresh();
+                    await ssrCache.refresh(version);
                     data.refreshed = true;
                 }
 
                 data.ssrCache = {
                     hasExpired: ssrCache.hasExpired,
                     expiresIn: ssrCache.expiresIn,
-                    expiresOn: ssrCache.expiresOn
+                    expiresOn: ssrCache.expiresOn,
+                    isRefreshing: ssrCache.isRefreshing
                 };
 
                 return createResponse({
