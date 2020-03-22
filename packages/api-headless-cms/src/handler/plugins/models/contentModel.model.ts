@@ -1,12 +1,11 @@
-import { flow } from "lodash";
 import { validation } from "@webiny/validation";
-import { withFields, string, withName, fields, object, boolean, ref } from "@webiny/commodo";
+import { pipe, withFields, string, withName, fields, object, boolean } from "@webiny/commodo";
 import { i18nString } from "@webiny/api-i18n/fields";
 
 const required = validation.create("required");
 
 export default ({ createBase, context }) => {
-    return flow(
+    return pipe(
         withName(`CmsContentModel_${context.cms.environment}`),
         withFields({
             title: string({ validation: required }),
