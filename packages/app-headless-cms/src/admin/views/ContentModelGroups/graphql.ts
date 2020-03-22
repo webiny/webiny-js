@@ -16,7 +16,7 @@ export const LIST_CONTENT_MODEL_GROUPS = gql`
         $perPage: Int
         $search: CmsSearchInput
     ) {
-        cmsManage {
+        cms {
             contentModelGroups: listContentModelGroups(
                 where: $where
                 sort: $sort
@@ -44,7 +44,7 @@ export const LIST_CONTENT_MODEL_GROUPS = gql`
 
 export const GET_CONTENT_MODEL_GROUP = gql`
     query GetContentModelGroup($id: ID!) {
-        cmsManage {
+        cms {
             contentModelGroup: getContentModelGroup(id: $id){
                 data {
                     ${fields}
@@ -60,7 +60,7 @@ export const GET_CONTENT_MODEL_GROUP = gql`
 
 export const CREATE_CONTENT_MODEL_GROUP = gql`
     mutation CreateContentModelGroup($data: CmsContentModelGroupInput!){
-        cmsManage {
+        cms {
             contentModelGroup: createContentModelGroup(data: $data) {
                 data {
                     ${fields}
@@ -77,7 +77,7 @@ export const CREATE_CONTENT_MODEL_GROUP = gql`
 
 export const UPDATE_CONTENT_MODEL_GROUP = gql`
     mutation UpdateContentModelGroup($id: ID!, $data: CmsContentModelGroupInput!){
-        cmsManage {
+        cms {
             contentModelGroup: updateContentModelGroup(id: $id, data: $data) {
                 data {
                     ${fields}
@@ -94,7 +94,7 @@ export const UPDATE_CONTENT_MODEL_GROUP = gql`
 
 export const DELETE_CONTENT_MODEL_GROUP = gql`
     mutation DeleteContentModelGroup($id: ID!) {
-        cmsManage {
+        cms {
             deleteContentModelGroup(id: $id) {
                 data
                 error {
