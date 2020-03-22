@@ -26,6 +26,7 @@
     "commodo-fields-float": "^1.0.2",
     "commodo-fields-object": "^1.0.3",
     "commodo-fields-storage-crud-logs": "^1.0.2",
+    "ramda": "^0.26.1",
     "repropose": "^1.0.2"
   },
   "publishConfig": {
