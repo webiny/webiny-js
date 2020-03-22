@@ -1,7 +1,7 @@
 export interface ApolloHandlerPluginOptions {
     server?: {
-        introspection?: boolean;
-        playground?: boolean;
+        introspection?: boolean | string;
+        playground?: boolean | string;
     };
     handler?: {
         cors?: { [key: string]: any };
