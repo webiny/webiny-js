@@ -41,6 +41,10 @@ const GET_CURRENT_USER = gql`
                         id
                         src
                     }
+                    personalAccessTokens {
+                        token
+                        createdOn
+                    }
                 }
                 error {
                     code
@@ -68,6 +72,14 @@ const UPDATE_CURRENT_USER = gql`
     }
 `;
 
+const GET_NEW_PAT = gql`
+    mutation {
+        security {
+            createPAT
+        }
+    }
+`;
+
 const UserAccountForm = () => {
     const auth = getPlugin<SecurityViewUserAccountFormPlugin>("security-view-user-account-form");
 
@@ -77,6 +89,7 @@ const UserAccountForm = () => {
         );
     }
 
+    const [tokensListIsOpen, setTokensListIsOpen] = useState(false);
     const [{ loading, user }, setState] = useReducer((prev, next) => ({ ...prev, ...next }), {
         loading: true,
         user: { data: {} }
@@ -110,30 +123,61 @@ const UserAccountForm = () => {
         });
     }, []);
 
-    const [tokens, setTokens] = useState(
-        user.data.tokens ||
-            (user.data.tokens = [
-                "sdhgsahgasighsdgssdhgsahgasighsdgssdhgsahgasighsdgs",
-                "fhdiasjhdfjiohfdijfhdiasjhdfjiohfdijfhdiasjhdfjiohf"
-            ])
-    );
-    const TokenListItem = ({ value }) => (
-        <SimpleListItem text={value}>
+    const deleteToken = removedValue => {
+        const tokenIndex = user.data.personalAccessTokens.findIndex(
+            PAT => PAT.token === removedValue
+        );
+        if (tokenIndex === -1) return;
+
+        user.data.personalAccessTokens.splice(tokenIndex, 1);
+        setState({ loading, user });
+    };
+
+    const generateToken = async () => {
+        setState({ loading: true });
+        const r = await client.mutate({
+            mutation: GET_NEW_PAT
+        });
+        setState({ loading: false });
+        const token = r.data.security.createPAT;
+
+        user.data.personalAccessTokens.push({ token });
+        setState({ loading, user });
+    };
+
+    const TokenListItem = ({ token }) => (
+        <SimpleListItem key={token} text={token}>
             <ListItemMeta>
-                <IconButton onClick={() => deleteToken(value)} icon="X" label="Rate this!" />
+                <IconButton onClick={() => navigator.clipboard.writeText(token)} icon="C" />
+                <IconButton onClick={() => deleteToken(token)} icon="X" />
             </ListItemMeta>
         </SimpleListItem>
     );
 
-    const deleteToken = removedValue => {
-        setTokens(tokens.filter(token => token !== removedValue));
+    const TokenList = () => {
+        const personalAccessTokens = user.data.personalAccessTokens;
+        if (personalAccessTokens && personalAccessTokens.length > 0)
+            return personalAccessTokens.map(PAT => TokenListItem(PAT));
+        else return <div style={{ paddingBottom: "16px" }}>No tokens have been generated yet.</div>;
     };
 
-    const generateToken = () => {
-        const base =
-            "hbdfspbgmdfpibgiopfdgkpfasdiocmiosaioasfasiwqpwqkoperpoerkqwoprkewfpokedweidjosgajiwgfiosjfgiosjifosoihgfiweahfowiogfweiogfwohgfiohaihgfiowhoigfawhgiohwioohoieawhgiowoiweahgoiwghiow";
-        const index = Math.floor(Math.random() * (base.length - 51));
-        setTokens([...tokens, base.slice(index, index + 51)]);
+    const TokensElement = () => {
+        return (
+            <>
+                <CollapsibleList
+                    open={tokensListIsOpen}
+                    handle={
+                        <SimpleListItem
+                            onClick={() => setTokensListIsOpen(!tokensListIsOpen)}
+                            text={`Tokens`}
+                        />
+                    }
+                >
+                    <TokenList />
+                </CollapsibleList>
+                <ButtonPrimary onClick={() => generateToken()}>Generate</ButtonPrimary>
+            </>
+        );
     };
 
     return (
@@ -173,22 +217,7 @@ const UserAccountForm = () => {
                                         <Input label={t`E-mail`} />
                                     </Bind>
                                 ),
-                                tokens: (
-                                    <Bind name="tokens">
-                                        <div>
-                                            <CollapsibleList
-                                                handle={<SimpleListItem text="Tokens" />}
-                                            >
-                                                {tokens.map(token =>
-                                                    TokenListItem({ value: token })
-                                                )}
-                                                <ButtonPrimary onClick={() => generateToken()}>
-                                                    Generate
-                                                </ButtonPrimary>
-                                            </CollapsibleList>
-                                        </div>
-                                    </Bind>
-                                )
+                                personalAccessTokens: <TokensElement />
                             }
                         })}
                     </SimpleFormContent>
