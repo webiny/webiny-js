@@ -1,4 +1,3 @@
-import { flow } from "lodash";
 import { withUser } from "@webiny/api-security";
 import { pipe, withStorage, withCrudLogs, withSoftDelete, withFields } from "@webiny/commodo";
 import { GraphQLContextPlugin } from "@webiny/api/types";
