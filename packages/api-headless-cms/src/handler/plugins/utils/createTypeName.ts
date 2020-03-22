@@ -1,4 +1,4 @@
-import upperFirst from "lodash/upperFirst";
+import upperFirst from "lodash.upperfirst";
 
 export const createTypeName = (modelId: string) => {
     return upperFirst(modelId);
