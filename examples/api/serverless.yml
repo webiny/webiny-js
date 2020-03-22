@@ -5,6 +5,9 @@ vars:
   debug: ${env.DEBUG}
   bucket: ${env.S3_BUCKET}
   httpHandlerApolloServer:
+    server:
+      introspection: ${env.GRAPHQL_INTROSPECTION}
+      playground: ${env.GRAPHQL_PLAYGROUND}
     debug:
       true
   apollo:
@@ -118,7 +121,6 @@ i18n:
   build:
     entry: "./services/i18n/src/index"
     define:
-      APOLLO_HANDLER_OPTIONS: ${vars.apollo}
       HTTP_HANDLER_APOLLO_SERVER_OPTIONS: ${vars.httpHandlerApolloServer}
       DB_PROXY_OPTIONS:
         functionArn: ${dbProxy.arn}
@@ -185,7 +187,6 @@ headlessCms:
   build:
     entry: "./services/headlessCms/src/index"
     define:
-      APOLLO_HANDLER_OPTIONS: ${vars.apollo}
       HTTP_HANDLER_APOLLO_SERVER_OPTIONS: ${vars.httpHandlerApolloServer}
       DB_PROXY_OPTIONS:
         functionArn: ${dbProxy.arn}
@@ -194,7 +195,7 @@ headlessCms:
     component: "@webiny/serverless-apollo-service"
     inputs:
       region: ${vars.region}
-      description: headlessCms GraphQL API
+      description: Headless CMS GraphQL API
       function:
         code: ./services/headlessCms/build
         handler: handler.handler
