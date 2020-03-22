@@ -1,5 +1,4 @@
-import { flow } from "lodash";
-import { withStorage, withCrudLogs, withSoftDelete, withFields } from "@webiny/commodo";
+import { pipe, withStorage, withCrudLogs, withSoftDelete, withFields } from "@webiny/commodo";
 import { withUser } from "@webiny/api-security";
 import cmsEnvironment from "./models/environment.model";
 
@@ -16,7 +15,7 @@ export default () => ({
         }
 
         const createBase = () =>
-            flow(
+            pipe(
                 withFields({
                     id: context.commodo.fields.id()
                 }),
