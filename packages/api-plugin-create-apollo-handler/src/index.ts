@@ -1,14 +1,7 @@
 import { ApolloServer } from "apollo-server-lambda";
 import { CreateApolloHandlerPlugin } from "@webiny/api/types";
 import { ApolloHandlerPluginOptions } from "./types";
-
-function toBool(value) {
-    if (typeof value === "string") {
-        return value === "true";
-    }
-
-    return Boolean(value);
-}
+import { boolean } from "boolean";
 
 function normalizeEvent(event) {
     // In AWS, when enabling binary support, received body gets base64 encoded. Did not find a way to solve this
@@ -27,9 +20,9 @@ export default (options: ApolloHandlerPluginOptions = {}): CreateApolloHandlerPl
             const { server = {}, handler = {} } = options;
 
             const apollo = new ApolloServer({
-                introspection: toBool(server.introspection),
-                playground: toBool(server.playground),
-                debug: toBool(process.env.DEBUG),
+                introspection: boolean(server.introspection),
+                playground: boolean(server.playground),
+                debug: boolean(process.env.DEBUG),
                 ...server,
                 schema,
                 context: async ({ event }) => ({
