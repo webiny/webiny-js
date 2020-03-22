@@ -4,6 +4,9 @@ vars:
   region: ${env.AWS_REGION}
   debug: ${env.DEBUG}
   bucket: ${env.S3_BUCKET}
+  httpHandlerApolloServer:
+    debug:
+      true
   apollo:
     server:
       introspection: ${env.GRAPHQL_INTROSPECTION}
@@ -112,21 +115,25 @@ files:
         timeout: 30
 
 i18n:
-  component: "@webiny/serverless-apollo-service"
-  inputs:
-    region: ${vars.region}
-    memory: 512
-    debug: ${vars.debug}
-    webpackConfig: ./webpack.config.js
-    plugins:
-      - factory: "@webiny/api-plugin-create-apollo-handler"
-        options: ${vars.apollo}
-      - factory: "@webiny/api-plugin-commodo-db-proxy"
-        options:
-          functionArn: ${dbProxy.arn}
-      - factory: "@webiny/api-security/plugins/service"
-        options: ${vars.security}
-      - "@webiny/api-i18n/plugins"
+  build:
+    entry: "./services/i18n/src/index"
+    define:
+      APOLLO_HANDLER_OPTIONS: ${vars.apollo}
+      HTTP_HANDLER_APOLLO_SERVER_OPTIONS: ${vars.httpHandlerApolloServer}
+      DB_PROXY_OPTIONS:
+        functionArn: ${dbProxy.arn}
+      SECURITY_OPTIONS: ${vars.security}
+  deploy:
+    component: "@webiny/serverless-apollo-service"
+    inputs:
+      region: ${vars.region}
+      description: I18N GraphQL API
+      function:
+        code: ./services/i18n/build
+        handler: handler.handler
+        memory: 512
+        env:
+          DEBUG: ${vars.debug}
 
 pageBuilder:
   component: "@webiny/serverless-page-builder"
@@ -175,24 +182,25 @@ formBuilder:
       - "@webiny/api-form-builder/plugins/useSsrCacheTags"
 
 headlessCms:
-  component: "@webiny/serverless-apollo-service"
-  inputs:
-    env:
-      I18N_API_URL: ${i18n.api.graphqlUrl}
-    region: ${vars.region}
-    memory: 512
-    debug: ${vars.debug}
-    webpackConfig: ./webpack.config.js
-    plugins:
-      - factory: "@webiny/api-plugin-create-apollo-handler"
-        options: ${vars.apollo}
-      - factory: "@webiny/api-plugin-commodo-db-proxy"
-        options:
-          functionArn: ${dbProxy.arn}
-      - factory: "@webiny/api-security/plugins/service"
-        options: ${vars.security}
-      - "@webiny/api-i18n/plugins/service"
-      - "@webiny/api-headless-cms/plugins"
+  build:
+    entry: "./services/headlessCms/src/index"
+    define:
+      APOLLO_HANDLER_OPTIONS: ${vars.apollo}
+      HTTP_HANDLER_APOLLO_SERVER_OPTIONS: ${vars.httpHandlerApolloServer}
+      DB_PROXY_OPTIONS:
+        functionArn: ${dbProxy.arn}
+      SECURITY_OPTIONS: ${vars.security}
+  deploy:
+    component: "@webiny/serverless-apollo-service"
+    inputs:
+      region: ${vars.region}
+      description: headlessCms GraphQL API
+      function:
+        code: ./services/headlessCms/build
+        handler: handler.handler
+        memory: 512
+        env:
+          DEBUG: ${vars.debug}
 
 headlessHandler:
   build:
