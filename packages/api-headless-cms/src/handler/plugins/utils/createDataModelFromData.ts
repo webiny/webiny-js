@@ -1,6 +1,6 @@
-import { flow } from "lodash";
 import mdbid from "mdbid";
 import {
+    pipe,
     withName,
     withHooks,
     withFields,
@@ -29,7 +29,7 @@ export const createDataModelFromData = (
     );
 
     // Create base model to be enhanced by field plugins
-    const model = flow(
+    const model = pipe(
         withName(`${data.title}_${context.cms.environment}`),
         withHooks({
             async beforeCreate() {

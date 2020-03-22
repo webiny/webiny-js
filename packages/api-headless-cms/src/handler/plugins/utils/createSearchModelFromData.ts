@@ -1,10 +1,9 @@
-import { withName, withFields, string, boolean } from "@webiny/commodo";
+import { pipe, withName, withFields, string, boolean } from "@webiny/commodo";
 import {
     CmsGraphQLContext,
     CmsModel,
     CmsModelFieldToCommodoFieldPlugin
 } from "@webiny/api-headless-cms/types";
-import { flow } from "lodash";
 
 export const createSearchModelFromData = (
     baseModel: Function,
@@ -16,7 +15,7 @@ export const createSearchModelFromData = (
     );
 
     // Create base model to be enhanced by field plugins
-    const model = flow(
+    const model = pipe(
         withName(`${data.title}Search_${context.cms.environment}`),
         withFields({
             revision: context.commodo.fields.id(),
