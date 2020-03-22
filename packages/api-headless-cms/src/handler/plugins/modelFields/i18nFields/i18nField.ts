@@ -1,5 +1,4 @@
-import { flow } from "lodash";
-import { onGet, fields, withFields, withProps } from "@webiny/commodo";
+import { pipe, onGet, fields, withFields, withProps } from "@webiny/commodo";
 import { validation } from "@webiny/validation";
 import { GraphQLContext as CommodoContext } from "@webiny/api-plugin-commodo-db-proxy/types";
 import { GraphQLContext as I18NContext } from "@webiny/api-i18n/types";
@@ -37,7 +36,7 @@ export const i18nField = ({
     return fields({
         ...rest,
         value: {},
-        instanceOf: flow(
+        instanceOf: pipe(
             withFields({
                 values: onGet(value => getI18NValues(value, i18n))(
                     fields({
