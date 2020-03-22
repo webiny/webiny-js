@@ -1,6 +1,6 @@
 import { flow } from "lodash";
 import { withUser } from "@webiny/api-security";
-import { withStorage, withCrudLogs, withSoftDelete, withFields } from "@webiny/commodo";
+import { pipe, withStorage, withCrudLogs, withSoftDelete, withFields } from "@webiny/commodo";
 import { GraphQLContextPlugin } from "@webiny/api/types";
 import { GraphQLContext } from "@webiny/api-plugin-commodo-db-proxy/types";
 import contentModel from "./models/contentModel.model";
@@ -20,7 +20,7 @@ export default () => {
         }
 
         const createBase = () =>
-            flow(
+            pipe(
                 withFields({
                     id: context.commodo.fields.id()
                 }),
