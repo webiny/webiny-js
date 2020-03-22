@@ -21,11 +21,15 @@
     "@webiny/api-security": "^3.0.0",
     "@webiny/commodo": "^3.0.0",
     "@webiny/commodo-graphql": "^3.0.0",
+    "@webiny/http-handler": "^2.1.0",
     "@webiny/validation": "^3.0.0",
     "@webiny/api-plugin-create-apollo-handler": "^2.0.2",
     "fecha": "^4.0.0",
     "graphql-tag": "^2.10.1",
-    "lodash": "^4.17.4",
+    "lodash.merge": "^4.6.2",
+    "lodash.upperfirst": "^4.3.1",
+    "lodash.forown": "^4.4.0",
+    "lodash.isobject": "^3.0.2",
     "pluralize": "^8.0.0"
   },
   "devDependencies": {
