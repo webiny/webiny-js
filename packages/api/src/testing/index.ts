@@ -1,6 +1,6 @@
 import { createSchema } from "../index";
 import { PluginsContainer } from "@webiny/plugins/PluginsContainer";
-import { applyGraphQLContextPlugins } from "@webiny/api/utils/contextPlugins";
+import { applyGraphQLContextPlugins } from "@webiny/api/createSchema/contextPlugins";
 
 export const setupSchema = async plugins => {
     const pluginsContainer = new PluginsContainer([plugins]);
