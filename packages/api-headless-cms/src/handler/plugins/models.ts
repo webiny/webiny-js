@@ -3,8 +3,7 @@ import { pipe, withStorage, withCrudLogs, withSoftDelete, withFields } from "@we
 import { GraphQLContextPlugin } from "@webiny/api/types";
 import { GraphQLContext } from "@webiny/api-plugin-commodo-db-proxy/types";
 import contentModel from "./models/contentModel.model";
-import contentModelGroup from "./models/contentModelGroup.model";
-import environment from "./models/environment.model";
+// import contentModelGroup from "./models/contentModelGroup.model"; TODO: bring this back
 import { createDataModelFromData } from "./utils/createDataModelFromData";
 import { createSearchModelFromData } from "./utils/createSearchModelFromData";
 
@@ -31,12 +30,10 @@ export default () => {
 
         // const CmsContentModelGroup = contentModelGroup({ createBase, context });
         const CmsContentModel = contentModel({ createBase, context });
-        // const CmsEnvironment = environment({ createBase });
 
         context.models = {
             // CmsContentModelGroup,
             CmsContentModel,
-            // CmsEnvironment,
             createBase
         };
 
