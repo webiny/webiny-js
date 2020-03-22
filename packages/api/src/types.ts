@@ -1,8 +1,4 @@
-import {
-    GraphQLScalarType,
-    GraphQLFieldResolver as BaseGraphQLFieldResolver,
-    GraphQLSchema
-} from "graphql";
+import { GraphQLScalarType, GraphQLFieldResolver as BaseGraphQLFieldResolver } from "graphql";
 import { GraphQLSchemaModule } from "apollo-graphql";
 import { Plugin, PluginsContainer } from "@webiny/plugins/types";
 
@@ -36,16 +32,6 @@ export type GraphQLMiddlewarePlugin = Plugin & {
 
 export type GraphQLScalarPlugin = Plugin & {
     scalar: GraphQLScalarType;
-};
-
-export type CreateApolloHandlerPlugin = Plugin & {
-    create(params: {
-        plugins: PluginsContainer;
-    }): { handler: Function | Promise<Function>; schema: GraphQLSchema };
-};
-
-export type CreateApolloGatewayPlugin = Plugin & {
-    createGateway(params: { plugins: PluginsContainer }): Promise<Function>;
 };
 
 export type GraphQLFieldResolver<
