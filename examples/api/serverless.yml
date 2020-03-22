@@ -174,9 +174,13 @@ formBuilder:
 
 headlessHandler:
   watch:
-    paths:
-      - ./services/headless/build/*
+    - ./services/headless/build
   build:
+    define:
+      APOLLO_HANDLER_OPTIONS: ${vars.apollo}
+      DB_PROXY_OPTIONS:
+        functionArn: ${dbProxy.arn}
+      SECURITY_OPTIONS: ${vars.security}
     root: ./services/headless
     script: yarn build --watch=${cli.watch}
   deploy:
@@ -191,10 +195,6 @@ headlessHandler:
         SECURITY_API_URL: ${security.api.graphqlUrl}
         I18N_API_URL: ${i18n.api.graphqlUrl}
         DEBUG: ${vars.debug}
-        APOLLO_HANDLER_OPTIONS: ${vars.apollo}
-        DB_PROXY_OPTIONS:
-          functionArn: ${dbProxy.arn}
-        SECURITY_OPTIONS: ${vars.security}
 
 api:
   component: "@webiny/serverless-api-gateway"

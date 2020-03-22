@@ -2,7 +2,7 @@ const { join } = require("path");
 const loadJson = require("load-json-file");
 const writeJson = require("write-json-file");
 const { getStateValues } = require("@webiny/project-utils/serverless");
-const { createAppWebpackConfig } = require("@webiny/cli");
+const { buildApp } = require("@webiny/project-utils");
 
 const envMap = {
     REACT_APP_GRAPHQL_API_URL: "${cdn.url}/graphql",
@@ -22,8 +22,14 @@ module.exports = {
             await writeJson(envPath, json);
         }
     },
-    async webpack() {
-        const { execute, webpackConfig } = await createAppWebpackConfig();
-        return await execute(webpackConfig);
+    commands: {
+        async start() {
+            process.env.NODE_ENV = "development";
+            await buildApp();
+        },
+        async build() {
+            process.env.NODE_ENV = "production";
+            await buildApp();
+        }
     }
 };

@@ -3,6 +3,7 @@ const { Component } = require("@serverless/core");
 const { loadEnv } = require("../../index");
 const buildResource = require("./buildResource");
 const { compose } = require("./compose");
+const setupFileWatchers = require("./watch");
 
 const {
     getTemplate,
@@ -105,7 +106,9 @@ class Template extends Component {
         const { debug, watch, callback } = inputs;
 
         await new Promise(async resolve => {
+            // `firstBuild` is the first build cycle before entering the `watch` mode
             let firstBuild = true;
+
             // Due to internal logging/debug mechanism of `@serverless/components`, we need to execute deployments in series.
             // Otherwise, debug output will be messed up. `compose` creates a middleware similar to `express`,
             // and we can control when the next Promise is to be executed using the `next` callback.
@@ -130,31 +133,33 @@ class Template extends Component {
                                 next();
                             } else {
                                 await callback({
+                                    context: this.context,
                                     output: this.state.outputs,
                                     duration: (Date.now() - start) / 1000
                                 });
                             }
                         };
 
+                        if (watch) {
+                            setupFileWatchers(deployComponent, resource, resourceData);
+                        }
+
                         if (resourceData.build) {
                             // Inject template values into `build` config
                             const resolvedBuild = resolveObject(resourceData.build, allComponents);
-                            this.context.instance.debug("Building %o", resource);
 
-                            // If `watch=true`, this promise will never resolve.
+                            // In `watch` mode, this will never resolve.
+                            // Deployment is run by file watchers setup earlier.
                             await buildResource({
                                 resource,
                                 watch,
                                 debug,
                                 config: resolvedBuild,
-                                context: this.context,
-                                // Since in `watch` mode the promise never resolves, we need to pass a callback to deploy
-                                // component after each webpack compilation
-                                afterBuild: deployComponent
+                                context: this.context
                             });
-                        } else {
-                            await deployComponent();
                         }
+
+                        await deployComponent();
                     };
                 })
             );
@@ -163,6 +168,7 @@ class Template extends Component {
             await middleware();
 
             await callback({
+                context: this.context,
                 output: this.state.outputs,
                 duration: (Date.now() - start) / 1000
             });
@@ -170,6 +176,8 @@ class Template extends Component {
 
             if (!watch) {
                 resolve();
+            } else {
+                console.log("Watching for changes...");
             }
         });
 

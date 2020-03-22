@@ -170,7 +170,8 @@ const getAllComponents = (obj = {}) => {
             allComponents[key] = {
                 path: resolvedPath,
                 inputs: component.inputs || {},
-                build: obj[key].build || false
+                build: obj[key].build || false,
+                watch: obj[key].watch || false
             };
         }
     }

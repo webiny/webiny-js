@@ -1,7 +1,6 @@
-const start = require("./start");
-const build = require("./build");
+const run = require("./run");
 
-const commands = [start, build];
+const commands = [run];
 
 module.exports.createCommands = yargs => {
     commands.forEach(command => command(yargs));

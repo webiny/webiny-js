@@ -67,7 +67,9 @@ module.exports = async inputs => {
                 const hookPath = paths.replaceProjectRoot(appLocation);
                 if (hooks && hooks.stateChanged) {
                     console.log(
-                        `🎣 Processing ${green("stateChanged")} hook in ${green(hookPath)}`
+                        `🎣 Processing ${green("stateChanged")} hook in ${green(
+                            paths.replaceProjectRoot(hookPath)
+                        )}`
                     );
 
                     await hooks.stateChanged({ env, state: output });

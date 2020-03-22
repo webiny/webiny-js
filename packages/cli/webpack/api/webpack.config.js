@@ -2,7 +2,7 @@ const path = require("path");
 const fs = require("fs-extra");
 const packages = require("get-yarn-workspaces")().map(pkg => pkg.replace(/\//g, path.sep));
 const readJson = require("read-json-sync");
-const babelOptions = require("./babelrc.js");
+const webpack = require("webpack");
 
 const getAliases = buildDirectory => {
     return packages.reduce((aliases, dir) => {
@@ -18,7 +18,7 @@ const getAliases = buildDirectory => {
     }, {});
 };
 
-module.exports = () => ({
+module.exports = ({ debug = false, babelOptions, define }) => ({
     entry: path.resolve("src", "index.ts"),
     target: "node",
     output: {
@@ -27,7 +27,7 @@ module.exports = () => ({
         filename: "handler.js"
     },
     // Generate sourcemaps for proper error messages
-    devtool: process.env.SOURCE_MAP ? "source-map" : false,
+    devtool: debug ? "source-map" : false,
     externals: ["aws-sdk"],
     mode: "production",
     optimization: {
@@ -38,7 +38,7 @@ module.exports = () => ({
         // Turn off size warnings for entry points
         hints: false
     },
-    plugins: [],
+    plugins: [define && new webpack.DefinePlugin(JSON.parse(define))].filter(Boolean),
     // Run babel on all .js files and skip those in node_modules
     module: {
         exprContextCritical: false,

@@ -1,11 +1,30 @@
-const webpack = require("webpack");
+module.exports = (options, context) => {
+    const { boolean } = require("boolean");
+    const webpack = require("webpack");
+    let babelOptions = require("./babelrc");
 
-module.exports = ({ watch }) => config => {
+    // Customize babelOptions
+    if (typeof options.babel === "function") {
+        babelOptions = options.babel(babelOptions);
+    }
+
+    // Load base webpack config
+    let webpackConfig = require("./webpack.config")({
+        debug: boolean(options.debug),
+        babelOptions,
+        define: options.define
+    });
+
+    // Customize webpack config
+    if (typeof options.webpack === "function") {
+        webpackConfig = options.webpack(webpackConfig);
+    }
+
     return new Promise(async (resolve, reject) => {
-        console.log(`Start bundling`);
+        context.log(`Start bundling`);
 
-        if (watch) {
-            return webpack(config).watch({}, async (err, stats) => {
+        if (boolean(options.watch)) {
+            return webpack(webpackConfig).watch({}, async (err, stats) => {
                 if (err) {
                     return reject(err);
                 }
@@ -18,11 +37,11 @@ module.exports = ({ watch }) => config => {
                     }
                 }
 
-                console.log(`Finished bundling! Watching for changes...`);
+                context.log(`Finished bundling! Watching for changes...`);
             });
         }
 
-        return webpack(config).run(async (err, stats) => {
+        return webpack(webpackConfig).run(async (err, stats) => {
             if (err) {
                 return reject(err);
             }
@@ -37,7 +56,7 @@ module.exports = ({ watch }) => config => {
                 return reject("Build failed!");
             }
 
-            console.log(`Finished bundling`);
+            context.log(`Finished bundling`);
             resolve();
         });
     });

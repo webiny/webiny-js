@@ -1,9 +1,7 @@
 const { join } = require("path");
 const loadJson = require("load-json-file");
 const writeJson = require("write-json-file");
-const { getStateValues } = require("@webiny/project-utils/serverless");
-// Mozda ovo u project-utils staviti?
-const { createAppWebpackConfig } = require("@webiny/cli");
+const { buildApp, getStateValues } = require("@webiny/project-utils");
 
 const envMap = {
     REACT_APP_USER_POOL_REGION: "${cognito.userPool.Region}",
@@ -26,8 +24,14 @@ module.exports = {
             await writeJson(envPath, json);
         }
     },
-    async webpack() {
-        const { execute, webpackConfig } = await createAppWebpackConfig();
-        return await execute(webpackConfig);
+    commands: {
+        async start() {
+            process.env.NODE_ENV = "development";
+            await buildApp();
+        },
+        async build() {
+            process.env.NODE_ENV = "production";
+            await buildApp();
+        }
     }
 };

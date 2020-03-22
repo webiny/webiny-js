@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 const yargs = require("yargs");
 const { blue, green, dim } = require("chalk");
-const { createCommands } = require("./cli");
+const { createCommands } = require("./cli/index");
 
 const trackingNotice = () => {
     console.log();

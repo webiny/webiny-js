@@ -5,9 +5,13 @@ const resolve = (...dir) => {
     return path.resolve(projectRoot, ...dir);
 };
 
+const replaceProjectRoot = path => {
+    return path.replace(paths.projectRoot, "<projectRoot>").replace(/\\/g, "/");
+};
+
 const paths = {
     projectRoot,
-    replaceProjectRoot: path => path.replace(paths.projectRoot, "<projectRoot>"),
+    replaceProjectRoot,
     packagesPath: resolve("packages"),
     apiPath: resolve("api"),
     appPath: resolve("apps"),

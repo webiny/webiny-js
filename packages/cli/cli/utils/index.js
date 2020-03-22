@@ -3,6 +3,7 @@ const fs = require("fs");
 const { green } = require("chalk");
 const loadJson = require("load-json-file");
 const { GetEnvVars } = require("env-cmd");
+const { paths } = require("./paths");
 
 const isEnvDeployed = async env => {
     const envFile = join(process.cwd(), ".serverless", `Webiny.${env}.json`);
@@ -26,7 +27,9 @@ const loadEnv = async (envPath, env, { debug = false }) => {
         Object.assign(process.env, envConfig);
         if (debug) {
             console.log(
-                `💡 Loaded ${green(env)} environment from ${green(envPath)}...`
+                `💡 Loaded ${green(env)} environment from ${green(
+                    paths.replaceProjectRoot(envPath)
+                )}...`
             );
         }
     }
