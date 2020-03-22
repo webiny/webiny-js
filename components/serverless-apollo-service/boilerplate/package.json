@@ -1,7 +1,0 @@
-{
-  "name": "apollo-service-boilerplate",
-  "private": true,
-  "dependencies": {
-    "babel-loader": "^8.0.6"
-  }
-}
