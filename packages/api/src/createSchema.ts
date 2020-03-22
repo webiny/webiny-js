@@ -1,7 +1,8 @@
 import { applyMiddleware } from "graphql-middleware";
 import { addSchemaLevelResolveFunction } from "graphql-tools";
 import { GraphQLSchema } from "graphql";
-import { PluginsContainer, GraphQLMiddlewarePlugin, GraphQLContext } from "../types";
+import { GraphQLMiddlewarePlugin, GraphQLContext } from "./types";
+import { PluginsContainer } from "@webiny/plugins";
 import { prepareSchema } from "./createSchema/prepareSchema";
 import { applyGraphQLContextPlugins } from "./createSchema/contextPlugins";
 
