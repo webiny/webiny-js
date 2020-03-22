@@ -19,7 +19,7 @@ const BASE_CONTENT_MODEL_FIELDS = `
 // Fetches data needed for constructing content models list in the main menu.
 export const LIST_MENU_CONTENT_GROUPS_MODELS = gql`
     query HeadlessCmsListMenuContentGroupsModels {
-        cmsManage {
+        cms {
             listContentModelGroups(sort: { name: 1 }, page: 1, perPage: 100) {
                 data {
                     id
@@ -37,7 +37,7 @@ export const LIST_MENU_CONTENT_GROUPS_MODELS = gql`
 
 export const LIST_CONTENT_MODELS = gql`
     query HeadlessCmsListContentModels($sort: JSON, $page: Int, $perPage: Int) {
-        cmsManage {
+        cms {
             listContentModels(sort: $sort, page: $page, perPage: $perPage) {
                 data {  
                     ${BASE_CONTENT_MODEL_FIELDS}
@@ -56,7 +56,7 @@ export const LIST_CONTENT_MODELS = gql`
 
 export const CREATE_CONTENT_MODEL = gql`
     mutation CreateContentModel($data: CmsContentModelInput!) {
-        cmsManage {
+        cms {
             createContentModel(data: $data) {
                 data {
                     id
@@ -75,7 +75,7 @@ export const CREATE_CONTENT_MODEL = gql`
 
 export const DELETE_CONTENT_MODEL = gql`
     mutation DeleteForm($id: ID!) {
-        cmsManage {
+        cms {
             deleteForm(id: $id) {
                 data
                 error {
