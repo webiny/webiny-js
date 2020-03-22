@@ -66,7 +66,7 @@ const ContentModelDetails = ({ refreshContentModels }: ContentModelDetailsProps)
             query={GET_CONTENT_MODEL}
             variables={{ id: contentModelId }}
             onCompleted={data => {
-                const error = get(data, "cmsManage.contentModel.error.message");
+                const error = get(data, "cms.contentModel.error.message");
                 if (error) {
                     query.delete("id");
                     history.push({ search: query.toString() });
@@ -75,7 +75,7 @@ const ContentModelDetails = ({ refreshContentModels }: ContentModelDetailsProps)
             }}
         >
             {({ data, loading }) => {
-                const contentModel = get(data, "cmsManage.contentModel.data") || null;
+                const contentModel = get(data, "cms.contentModel.data") || null;
                 return (
                     <DetailsContainer>
                         {contentModel && (

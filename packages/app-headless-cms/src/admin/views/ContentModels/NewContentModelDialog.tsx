@@ -48,7 +48,7 @@ const NewContentModelDialog: React.FC<NewContentModelDialogProps> = ({
 
     const { data } = useQuery(LIST_CONTENT_MODEL_GROUPS);
 
-    const selectOptions = get(data, "cmsManage.contentModelGroups.data", []).map(item => {
+    const selectOptions = get(data, "cms.contentModelGroups.data", []).map(item => {
         return { value: item.id, label: item.name };
     });
 
@@ -73,7 +73,7 @@ const NewContentModelDialog: React.FC<NewContentModelDialogProps> = ({
                                         "HeadlessCmsListMenuContentGroupsModels"
                                     ]
                                 }),
-                                "data.cmsManage.createContentModel"
+                                "data.cms.createContentModel"
                             );
 
                             if (response.error) {
