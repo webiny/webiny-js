@@ -8,7 +8,7 @@ import { RefInput } from "./RefInputScalar";
 import {
     PluginsContainer,
     GraphQLSchemaPlugin,
-    GraphqlScalarPlugin,
+    GraphQLScalarPlugin,
     GraphQLContext
 } from "../types";
 import { applyGraphQLContextPlugins } from "./contextPlugins";
@@ -31,7 +31,7 @@ export async function prepareSchema({ plugins }: PrepareSchemaParams) {
         }
     }
 
-    const scalars = plugins.byType<GraphqlScalarPlugin>("graphql-scalar").map(item => item.scalar);
+    const scalars = plugins.byType<GraphQLScalarPlugin>("graphql-scalar").map(item => item.scalar);
 
     const schemaDefs: GraphQLSchemaModule[] = [
         {
