@@ -12,7 +12,7 @@ const t = i18n.ns("app-headless-cms/admin/menus");
 const ContentModelMenuItems = function({ Menu, Item }) {
     const response = useQuery(LIST_MENU_CONTENT_GROUPS_MODELS);
 
-    const { data } = get(response, "data.cmsManage.listContentModelGroups") || {};
+    const { data } = get(response, "data.cms.listContentModelGroups") || {};
     if (!data) {
         return null;
     }
