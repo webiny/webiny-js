@@ -18,7 +18,6 @@ const t = i18n.ns("app-page-builder/admin/environments/form");
 
 function EnvironmentsForm() {
     const { form: crudForm } = useCrud();
-
     return (
         <Form {...crudForm}>
             {({ data, form, Bind }) => (
@@ -43,7 +42,7 @@ function EnvironmentsForm() {
                             </Cell>
                             <Cell span={12}>
                                 <Bind name="default">
-                                    <Switch label={t`Is default environment`} />
+                                    <Switch label={t`Default environment`} />
                                 </Bind>
                             </Cell>
                         </Grid>

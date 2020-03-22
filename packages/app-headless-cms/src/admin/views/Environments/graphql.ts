@@ -10,7 +10,7 @@ const fields = `
 
 export const LIST_ENVIRONMENTS = gql`
     query listEnvironments($where: JSON, $sort: JSON, $page: Int, $perPage: Int, $search: CmsSearchInput) {
-        cmsManage {
+        cms {
             environments: listEnvironments(
                 where: $where
                 sort: $sort
@@ -42,7 +42,7 @@ export const LIST_ENVIRONMENTS = gql`
 
 export const READ_ENVIRONMENT = gql`
     query getEnvironment($id: ID!) {
-        cmsManage {
+        cms {
             environment: getEnvironment(id: $id){
                 data {
                     ${fields}
@@ -58,7 +58,7 @@ export const READ_ENVIRONMENT = gql`
 
 export const CREATE_ENVIRONMENT = gql`
     mutation createEnvironment($data: CmsEnvironmentInput!){
-        cmsManage {
+        cms {
             environment: createEnvironment(data: $data) {
                 data {
                     ${fields}
@@ -75,7 +75,7 @@ export const CREATE_ENVIRONMENT = gql`
 
 export const UPDATE_ENVIRONMENT = gql`
     mutation updateEnvironment($id: ID!, $data: CmsEnvironmentInput!){
-        cmsManage {
+        cms {
             environment: updateEnvironment(id: $id, data: $data) {
                 data {
                     ${fields}
@@ -92,7 +92,7 @@ export const UPDATE_ENVIRONMENT = gql`
 
 export const DELETE_ENVIRONMENT = gql`
     mutation deleteEnvironment($id: ID!) {
-        cmsManage {
+        cms {
             deleteEnvironment(id: $id) {
                 data
                 error {
