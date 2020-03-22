@@ -221,6 +221,6 @@ export const ListSelectBox = (props: ListSelectBoxProps) => {
     );
 };
 
-export const SimpleListItem = (props: RmwcSimpleListItemProps) => {
+export const SimpleListItem = (props: RmwcSimpleListItemProps & { onClick?: any }) => {
     return <RmwcSimpleListItem {...props} />;
 };
