@@ -1,14 +1,9 @@
 import { applyMiddleware } from "graphql-middleware";
 import { addSchemaLevelResolveFunction } from "graphql-tools";
 import { GraphQLSchema } from "graphql";
-import {
-    PluginsContainer,
-    GraphQLMiddlewarePlugin,
-    CreateApolloHandlerPlugin,
-    GraphQLContext
-} from "./types";
-import { prepareSchema } from "./graphql/prepareSchema";
-import { applyGraphQLContextPlugins } from "./utils/contextPlugins";
+import { PluginsContainer, GraphQLMiddlewarePlugin, GraphQLContext } from "../types";
+import { prepareSchema } from "./createSchema/prepareSchema";
+import { applyGraphQLContextPlugins } from "./createSchema/contextPlugins";
 
 type CreateHandlerParams = {
     plugins: PluginsContainer;
@@ -19,7 +14,7 @@ type CreateHandlerParams = {
  * @param plugins
  * @returns {Promise<void>}
  */
-export const createSchema = async ({
+const createSchema = async ({
     plugins
 }: CreateHandlerParams): Promise<{ schema: GraphQLSchema; context: GraphQLContext }> => {
     // eslint-disable-next-line prefer-const
@@ -57,19 +52,4 @@ export const createSchema = async ({
     return { schema, context };
 };
 
-/**
- * Create Apollo handler
- */
-export const createHandler = async ({ plugins }: CreateHandlerParams) => {
-    const { schema } = await createSchema({ plugins });
-
-    const plugin = plugins.byName<CreateApolloHandlerPlugin>("create-apollo-handler");
-
-    if (!plugin) {
-        throw Error(`"create-apollo-handler" plugin is not configured!`);
-    }
-
-    const handler = await plugin.create({ plugins, schema });
-
-    return { schema, handler };
-};
+export default createSchema;
