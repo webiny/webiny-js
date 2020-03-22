@@ -11,7 +11,7 @@ import {
     GraphqlScalarPlugin,
     GraphQLContext
 } from "../types";
-import { applyGraphQLContextPlugins } from "@webiny/api/utils/contextPlugins";
+import { applyGraphQLContextPlugins } from "./contextPlugins";
 
 type PrepareSchemaParams = { plugins: PluginsContainer };
 
