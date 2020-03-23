@@ -1,7 +1,7 @@
 const { join } = require("path");
 const loadJson = require("load-json-file");
 const writeJson = require("write-json-file");
-const { getStateValues } = require("@webiny/project-utils/serverless");
+const { getStateValues, buildAppSSR } = require("@webiny/project-utils");
 
 const envMap = {
     REACT_APP_GRAPHQL_API_URL: "${cdn.url}/graphql",
@@ -21,7 +21,12 @@ module.exports = {
             await writeJson(envPath, json);
         }
     },
-    webpack() {
-
+    commands: {
+        async build(options, context) {
+            // By defining the path to the app you want to SSR, we assume the following:
+            // - the app build is located at `{app}/build`
+            // - the `App` component can be imported from `{app}/src/App`
+            await buildAppSSR({ app: "../site" }, context);
+        }
     }
 };

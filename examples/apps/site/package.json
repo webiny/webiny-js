@@ -51,9 +51,9 @@
   },
   "scripts": {
     "analyze": "source-map-explorer build/static/js/main.*",
-    "build:dev":  "cross-env REACT_APP_ENV=browser env-cmd -r .env.json -e default,dev webiny-scripts run build",
-    "build:prod": "cross-env REACT_APP_ENV=browser env-cmd -r .env.json -e default,prod webiny-scripts run build",
-    "start": "cross-env REACT_APP_ENV=browser env-cmd -r .env.json -e default,local webiny-scripts run start"
+    "build:dev":  "env-cmd -r .env.json -e default,dev webiny-scripts run build",
+    "build:prod": "env-cmd -r .env.json -e default,prod webiny-scripts run build",
+    "start": "env-cmd -r .env.json -e default,local webiny-scripts run start"
   },
   "browserslist": {
     "development": [

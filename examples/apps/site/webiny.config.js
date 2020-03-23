@@ -27,9 +27,9 @@ module.exports = {
             process.env.NODE_ENV = "development";
             await buildApp();
         },
-        async build() {
+        async build(options) {
             process.env.NODE_ENV = "production";
-            await buildApp();
+            await buildApp(options);
         }
     }
 };

@@ -1,7 +1,11 @@
 {
   "name": "site-ssr",
   "version": "1.0.0",
+  "dependencies": {
+    "@webiny/project-utils": "^1.0.1"
+  },
   "scripts": {
-    "build": "webiny-scripts build"
+    "build:dev": "env-cmd -r .env.json -e default,dev webiny-scripts run build",
+    "build:prod": "env-cmd -r .env.json -e default,prod webiny-scripts run build"
   }
 }
