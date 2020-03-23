@@ -11,25 +11,8 @@ import readme from "./README.md";
 
 import Section from "./index";
 import styled from "@emotion/styled";
-import { Typography } from "@webiny/ui/Typography";
 
 const story = storiesOf("Components/Section", module);
-
-const StatBox = styled("div")({
-    width: "33.33%",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    flexDirection: "column",
-    color: "var(--mdc-theme-on-surface)"
-});
-
-const ContentWrapper = styled("div")({
-    flexDirection: "row",
-    display: "flex",
-    width: "100%",
-    boxSizing: "border-box"
-});
 
 const RenderSection = styled("div")({
     backgroundColor: "var(--mdc-theme-background)",
