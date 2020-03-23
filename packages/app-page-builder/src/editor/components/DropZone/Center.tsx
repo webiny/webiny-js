@@ -4,7 +4,12 @@ import { getElementProps } from "@webiny/app-page-builder/editor/selectors";
 import { connect } from "@webiny/app-page-builder/editor/redux";
 import Droppable from "./../Droppable";
 
-const Container = React.memo(
+type ContainerProps = {
+    isOver: boolean;
+    highlight: boolean;
+};
+
+const Container = React.memo<ContainerProps>(
     // @ts-ignore
     styled("div")(({ isOver }) => ({
         backgroundColor: "transparent",

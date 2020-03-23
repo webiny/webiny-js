@@ -1,6 +1,7 @@
 import i18n from "./i18n";
 import { GraphQLClient } from "graphql-request";
 import get from "lodash/get";
+import { validation } from '@webiny/validation';
 import { GraphQLContextI18NGetLocales } from "@webiny/api-i18n/types";
 
 let localesCache;
@@ -27,6 +28,16 @@ export default () => [
         async resolve() {
             if (Array.isArray(localesCache)) {
                 return localesCache;
+            }
+
+            if (!process.env.I18N_API_URL) {
+                throw new Error('I18N_API_URL environment variable is missing. Please check the service configuration, located in the "api/serverless.yml" file.');
+            }
+
+            try {
+                validation.validateSync(process.env.I18N_API_URL, "url");
+            } catch (e) {
+                throw new Error('The value specified for the I18N_API_URL env variable is not a valid URL. Please check the service configuration, located in the "api/serverless.yml" file.')
             }
 
             const client = new GraphQLClient(process.env.I18N_API_URL);
