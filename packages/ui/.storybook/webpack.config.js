@@ -1,4 +1,5 @@
 const path = require("path");
+const aliases = require("@webiny/project-utils/aliases/webpack");
 
 const includePaths = [
     path.join(__dirname, "../node_modules"),
@@ -8,6 +9,7 @@ const includePaths = [
 
 module.exports = ({ config }) => {
     config.resolve.extensions.push(".ts", ".tsx");
+    config.resolve.alias = aliases;
 
     config.module.rules.push({
         test: /\.tsx?$/,
