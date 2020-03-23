@@ -1,37 +1,18 @@
-const { join } = require("path");
-const loadJson = require("load-json-file");
-const writeJson = require("write-json-file");
-const { buildApp, getStateValues } = require("@webiny/project-utils");
-
-const envMap = {
-    REACT_APP_USER_POOL_REGION: "${cognito.userPool.Region}",
-    REACT_APP_GRAPHQL_API_URL: "${cdn.url}/graphql",
-    REACT_APP_API_URL: "${cdn.url}",
-    REACT_APP_FILES_PROXY: "${cdn.url}",
-    REACT_APP_USER_POOL_ID: "${cognito.userPool.Id}",
-    REACT_APP_USER_POOL_WEB_CLIENT_ID: "${cognito.appClients[0].ClientId}"
-};
+const { startApp, buildApp, updateEnvValues } = require("@webiny/project-utils");
 
 module.exports = {
     hooks: {
-        async stateChanged({ env, state }) {
-            const envPath = join(__dirname, ".env.json");
-            const json = await loadJson(envPath);
-            if (!json[env]) {
-                json[env] = {};
-            }
-            Object.assign(json[env], await getStateValues(state, envMap));
-            await writeJson(envPath, json);
-        }
+        stateChanged: updateEnvValues(__dirname, {
+            REACT_APP_USER_POOL_REGION: "${cognito.userPool.Region}",
+            REACT_APP_GRAPHQL_API_URL: "${cdn.url}/graphql",
+            REACT_APP_API_URL: "${cdn.url}",
+            REACT_APP_FILES_PROXY: "${cdn.url}",
+            REACT_APP_USER_POOL_ID: "${cognito.userPool.Id}",
+            REACT_APP_USER_POOL_WEB_CLIENT_ID: "${cognito.appClients[0].ClientId}"
+        })
     },
     commands: {
-        async start() {
-            process.env.NODE_ENV = "development";
-            await buildApp();
-        },
-        async build() {
-            process.env.NODE_ENV = "production";
-            await buildApp();
-        }
+        start: startApp,
+        build: buildApp
     }
 };

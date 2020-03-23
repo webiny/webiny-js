@@ -22,6 +22,7 @@ module.exports = {
         }
     },
     commands: {
+        // TODO: mozda ovo mozemo prebaciti u `site` app ? samo dodamo 1 extra komandu za buildanje SSR-a
         async build(options, context) {
             // By defining the path to the app you want to SSR, we assume the following:
             // - the app build is located at `{app}/build`

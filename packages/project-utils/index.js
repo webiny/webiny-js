@@ -1,6 +1,6 @@
-const { getStateValues } = require("./serverless");
+const { getStateValues, updateEnvValues } = require("./serverless");
 const { buildApi } = require("./bundling/api");
-const { buildApp } = require("./bundling/app");
+const { startApp, buildApp } = require("./bundling/app");
 const { buildAppSSR } = require("./bundling/ssr");
 
-module.exports = { buildApi, buildApp, buildAppSSR, getStateValues };
+module.exports = { buildApi, buildApp, startApp, buildAppSSR, getStateValues, updateEnvValues };
