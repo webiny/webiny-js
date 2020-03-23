@@ -1,5 +1,5 @@
 import * as React from "react";
-import Block from "./Block";
+import Section from "@webiny/ui/Section";
 import { Typography } from "@webiny/ui/Typography";
 import styled from "@emotion/styled";
 import { FbFormModel } from "@webiny/app-form-builder/types";
@@ -26,7 +26,7 @@ const ContentWrapper = styled("div")({
 
 const FormSubmissionsOverview = ({ form }: Props) => {
     return (
-        <Block title="Overview">
+        <Section title="Overview">
             <ContentWrapper>
                 <StatBox>
                     <Typography use="headline2">{form.overallStats.submissions}</Typography>
@@ -41,7 +41,7 @@ const FormSubmissionsOverview = ({ form }: Props) => {
                     <Typography use="overline">Conversion Rate</Typography>
                 </StatBox>
             </ContentWrapper>
-        </Block>
+        </Section>
     );
 };
 
