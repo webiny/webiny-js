@@ -27,7 +27,12 @@ const ElevationContent = styled("div")({
     backgroundColor: "#fff"
 });
 
-const Section = ({ children, title, ...props }) => {
+type SectionProps = {
+    children?: React.ReactNode;
+    title?: String;
+};
+
+const Section = ({ children, title, ...props }: SectionProps) => {
     return (
         <SectionWrapper {...props}>
             <h4>
