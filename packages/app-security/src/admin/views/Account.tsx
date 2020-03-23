@@ -16,6 +16,8 @@ import { validation } from "@webiny/validation";
 import { useSecurity } from "@webiny/app-security/hooks/useSecurity";
 import { CollapsibleList, SimpleListItem, ListItemMeta } from "@webiny/ui/List";
 import { IconButton } from "@webiny/ui/Button";
+import { ReactComponent as DeleteIcon } from "../assets/icons/delete-24px.svg";
+import { ReactComponent as CopyToClipboardIcon } from "../assets/icons/file_copy-24px.svg";
 
 import {
     SimpleForm,
@@ -105,7 +107,6 @@ const UserAccountForm = () => {
             mutation: UPDATE_CURRENT_USER,
             variables: { data: omit(formData, ["id"]) }
         });
-        const { error } = response.security.updateCurrentUser;
         setState({ loading: false });
         if (error) {
             return showSnackbar(error.message, {
@@ -148,8 +149,11 @@ const UserAccountForm = () => {
     const TokenListItem = ({ token }) => (
         <SimpleListItem key={token} text={token}>
             <ListItemMeta>
-                <IconButton onClick={() => navigator.clipboard.writeText(token)} icon="C" />
-                <IconButton onClick={() => deleteToken(token)} icon="X" />
+                <IconButton
+                    onClick={() => navigator.clipboard.writeText(token)}
+                    icon={<CopyToClipboardIcon />}
+                />
+                <IconButton onClick={() => deleteToken(token)} icon={<DeleteIcon />} />
             </ListItemMeta>
         </SimpleListItem>
     );
