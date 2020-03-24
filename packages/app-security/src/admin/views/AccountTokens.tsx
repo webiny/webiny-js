@@ -1,8 +1,16 @@
-import { CollapsibleList, ListItemMeta, SimpleListItem } from "@webiny/ui/List";
-import { ButtonPrimary, IconButton } from "@webiny/ui/Button";
+import { ListItemMeta, SimpleListItem } from "@webiny/ui/List";
+import { ButtonDefault, IconButton } from "@webiny/ui/Button";
 import { ReactComponent as CopyToClipboardIcon } from "@webiny/app-security/admin/assets/icons/file_copy-24px.svg";
 import { ReactComponent as DeleteIcon } from "@webiny/app-security/admin/assets/icons/delete-24px.svg";
-import React, { useState } from "react";
+import React from "react";
+import { Typography } from "@webiny/ui/Typography";
+import styled from "@emotion/styled";
+
+const Header = styled("div")({
+    display: "flex",
+    justifyContent: "space-between",
+    marginBottom: 15
+});
 
 const TokenListItem = ({ deleteToken, token }) => (
     <SimpleListItem key={token} text={token}>
@@ -23,21 +31,15 @@ const TokenList = ({ deleteToken, personalAccessTokens }) => {
 };
 
 const TokensElement = ({ deleteToken, generateToken, personalAccessTokens }) => {
-    const [tokensListIsOpen, setTokensListIsOpen] = useState(false);
     return (
         <>
-            <CollapsibleList
-                open={tokensListIsOpen}
-                handle={
-                    <SimpleListItem
-                        onClick={() => setTokensListIsOpen(!tokensListIsOpen)}
-                        text={`Tokens`}
-                    />
-                }
-            >
-                <TokenList deleteToken={deleteToken} personalAccessTokens={personalAccessTokens} />
-            </CollapsibleList>
-            <ButtonPrimary onClick={() => generateToken()}>Generate</ButtonPrimary>
+            <Header>
+                <Typography style={{ lineHeight: "2.4rem" }} use={"overline"}>
+                    Tokens
+                </Typography>
+                <ButtonDefault onClick={generateToken}>Create Token</ButtonDefault>
+            </Header>
+            <TokenList deleteToken={deleteToken} personalAccessTokens={personalAccessTokens} />
         </>
     );
 };
