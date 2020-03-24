@@ -1,7 +1,7 @@
 import { ApolloGateway, RemoteGraphQLDataSource, ServiceEndpointDefinition } from "@apollo/gateway";
 import { GraphQLRequestContext, GraphQLResponse } from "apollo-server-types";
 import { ApolloServer } from "apollo-server-lambda";
-import { CreateApolloGatewayPlugin } from "@webiny/api/types";
+import { CreateApolloGatewayPlugin } from "@webiny/graphql/types";
 import get from "lodash.get";
 import { ApolloGatewayHeaders } from "./types";
 import buildHeaders from "./buildHeaders";
