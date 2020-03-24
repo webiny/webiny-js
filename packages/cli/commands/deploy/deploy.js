@@ -49,11 +49,6 @@ module.exports = async inputs => {
 
         // Run app state hooks
         if (!fs.existsSync(configFile)) {
-            console.log(
-                `⚠️ ${green("webiny.config.js")} was not found at ${green(
-                    webinyJs
-                )}, skipping processing of hooks.`
-            );
             console.log(`\n🎉 Done! Deploy finished in ${green(duration + "s")}.`);
             return;
         }

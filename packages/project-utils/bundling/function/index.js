@@ -1,3 +1,3 @@
-module.exports.buildApi = (options, context) => {
+module.exports.buildFunction = (options, context) => {
     return require("./executor")(options, context);
 };

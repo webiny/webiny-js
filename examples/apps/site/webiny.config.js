@@ -1,4 +1,4 @@
-const { startApp, buildApp, updateEnvValues } = require("@webiny/project-utils");
+const { startApp, buildApp, buildAppSSR, updateEnvValues } = require("@webiny/project-utils");
 
 module.exports = {
     hooks: {
@@ -10,6 +10,10 @@ module.exports = {
     },
     commands: {
         start: startApp,
-        build: buildApp
+        build: buildApp,
+        async buildSsr(options, context) {
+            await buildApp(options, context);
+            await buildAppSSR({ ...options, app: __dirname }, context);
+        }
     }
 };

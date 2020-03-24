@@ -1,4 +1,5 @@
-const debug = require("debug")("webiny-scripts");
+process.env.DEBUG = process.env.DEBUG + ",webiny";
+const debug = require("debug")("webiny");
 
 module.exports = {
     log(...args) {

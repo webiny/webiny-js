@@ -51,9 +51,11 @@
   },
   "scripts": {
     "analyze": "source-map-explorer build/static/js/main.*",
-    "build:dev":  "env-cmd -r .env.json -e default,dev webiny-scripts run build",
-    "build:prod": "env-cmd -r .env.json -e default,prod webiny-scripts run build",
-    "start": "env-cmd -r .env.json -e default,local webiny-scripts run start"
+    "build:dev":  "env-cmd -r .env.json -e default,dev webiny run build",
+    "build:prod": "env-cmd -r .env.json -e default,prod webiny run build",
+    "build:ssr:dev":  "env-cmd -r .env.json -e default,dev webiny run build-ssr",
+    "build:ssr:prod":  "env-cmd -r .env.json -e default,prod webiny run build-ssr",
+    "start": "env-cmd -r .env.json -e default,local webiny run start"
   },
   "browserslist": {
     "development": [

@@ -34,7 +34,7 @@ class Template extends Component {
 
         const template = findTemplate();
 
-        if (inputs.resources) {
+        if (inputs.resources.length) {
             return await this.deployResources(inputs.resources, { ...inputs, template });
         }
 
@@ -92,7 +92,7 @@ class Template extends Component {
         const template = await getTemplate(inputs);
 
         if (!this.state.outputs) {
-            throw Error(`You must deploy the entire API before you can deploy single components.`);
+            throw Error(`You must deploy the entire infrastructure before you can do partial deployments.`);
         }
 
         Object.keys(this.state.outputs).forEach(key => {

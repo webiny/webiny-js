@@ -18,8 +18,8 @@ const getAliases = buildDirectory => {
     }, {});
 };
 
-module.exports = ({ debug = false, babelOptions, define }) => ({
-    entry: path.resolve("src", "index.ts"),
+module.exports = ({ entry, debug = false, babelOptions, define }) => ({
+    entry: path.resolve(entry),
     target: "node",
     output: {
         libraryTarget: "commonjs",

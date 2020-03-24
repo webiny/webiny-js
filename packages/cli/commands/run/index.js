@@ -1,7 +1,6 @@
-process.env.DEBUG = [process.env.DEBUG, "webiny-scripts"].filter(Boolean).join(",");
-
 const path = require("path");
 const fs = require("fs-extra");
+const camelCase = require("camelcase");
 const context = require("./context");
 
 module.exports = yargs => {
@@ -18,11 +17,12 @@ module.exports = yargs => {
             const webinyConfig = path.resolve("webiny.config.js");
             if (fs.existsSync(webinyConfig)) {
                 const config = require(webinyConfig);
-                if (config.commands && typeof config.commands[argv.command] === "function") {
-                    return await config.commands[argv.command]({ ...argv }, context);
+                const command = camelCase(argv.command);
+                if (config.commands && typeof config.commands[command] === "function") {
+                    return await config.commands[command]({ ...argv }, context);
                 }
 
-                throw Error(`Command "${argv.command}" is not defined in "webiny.config.js"!`);
+                throw Error(`Command "${command}" is not defined in "webiny.config.js"!`);
             }
 
             throw Error(`"webiny.config.js" does not exist in current directory!`);

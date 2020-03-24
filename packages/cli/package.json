@@ -3,8 +3,7 @@
   "version": "3.2.5",
   "main": "index.js",
   "bin": {
-    "webiny-scripts": "./bin-scripts.js",
-    "webiny": "./bin-cli.js"
+    "webiny": "./bin.js"
   },
   "repository": {
     "type": "git",
@@ -15,6 +14,7 @@
   "dependencies": {
     "@webiny/tracking": "^3.1.0",
     "ansi-escapes": "^4.2.1",
+    "camelcase": "^5.3.1",
     "chalk": "^2.4.2",
     "debug": "^4.1.1",
     "env-cmd": "^9.0.3",

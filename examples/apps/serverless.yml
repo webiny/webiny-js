@@ -30,34 +30,32 @@ vars:
 #      timeout: 30
 #      code: ./site/build
 #
-#siteSsrHandler:
-#  build:
-#    root: ./site-ssr
-#    script: yarn build:${cli.env}
-#  deploy:
-#    component: "@webiny/serverless-function"
-#    inputs:
-#      description: Site Handler
-#      region: ${vars.region}
-#      code: ./site/build-handler
-#      handler: handler.handler
-#      memory: 512
-#      timeout: 60
-#      env:
-#        SSR_LAMBDA_ARN: ${ssr.arn}
+siteSsrHandler:
+  build:
+    root: ./site-ssr
+    script: yarn build:${cli.env}
+  deploy:
+    component: "@webiny/serverless-function"
+    inputs:
+      description: Site Handler
+      region: ${vars.region}
+      code: ./site/build-handler
+      handler: handler.handler
+      memory: 512
+      timeout: 60
+      env:
+        SSR_LAMBDA_ARN: ${ssr.arn}
 
 siteSsr:
   build:
-    - root: ./site
-      script: yarn build:${cli.env}
-    - root: ./site-ssr
-      script: yarn build:${cli.env}
+    root: ./site
+    script: yarn build:ssr:${cli.env}
   deploy:
     component: "@webiny/serverless-function"
     inputs:
       description: Site SSR
       region: ${vars.region}
-      code: ./site-ssr/build
+      code: ./site/build-ssr
       handler: handler.handler
       memory: 2048
       timeout: 60
@@ -75,7 +73,6 @@ siteSsr:
 #      description: Webiny Admin
 #      code: ./admin/build
 #
-## lerna watch
 #
 #api:
 #  component: "@webiny/serverless-api-gateway"

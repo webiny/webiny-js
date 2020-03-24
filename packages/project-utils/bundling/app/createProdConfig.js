@@ -5,14 +5,13 @@ const webpack = require("webpack");
 const chalk = require("react-dev-utils/chalk");
 const checkRequiredFiles = require("react-dev-utils/checkRequiredFiles");
 const formatWebpackMessages = require("react-dev-utils/formatWebpackMessages");
-const printHostingInstructions = require("react-dev-utils/printHostingInstructions");
 const FileSizeReporter = require("react-dev-utils/FileSizeReporter");
 const printBuildError = require("react-dev-utils/printBuildError");
 const { checkBrowsers } = require("react-dev-utils/browsersHelper");
 
 module.exports = async (options = {}) => {
     const appIndexJs = path.resolve("src", "index.js");
-    const paths = require("../config/paths")({ appIndexJs });
+    const paths = require("./config/paths")({ appIndexJs });
 
     if (options.output) {
         paths.appBuild = path.resolve(options.output);
@@ -26,8 +25,8 @@ module.exports = async (options = {}) => {
     });
 
     // Ensure environment variables are read.
-    require("../config/env");
-    const configFactory = require("../config/webpack.config");
+    require("./config/env");
+    const configFactory = require("./config/webpack.config");
 
     const measureFileSizesBeforeBuild = FileSizeReporter.measureFileSizesBeforeBuild;
     const printFileSizesAfterBuild = FileSizeReporter.printFileSizesAfterBuild;
@@ -93,12 +92,6 @@ module.exports = async (options = {}) => {
             WARN_AFTER_CHUNK_GZIP_SIZE
         );
         console.log();
-
-        const appPackage = require(paths.appPackageJson);
-        const publicUrl = paths.publicUrl;
-        const publicPath = config.output.publicPath;
-        const buildFolder = path.relative(process.cwd(), paths.appBuild);
-        printHostingInstructions(appPackage, publicUrl, publicPath, buildFolder, true);
     } catch (err) {
         const tscCompileOnError = process.env.TSC_COMPILE_ON_ERROR === "true";
         if (tscCompileOnError) {

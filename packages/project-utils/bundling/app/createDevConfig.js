@@ -10,7 +10,7 @@ module.exports = async (options = {}) => {
     });
 
     // Ensure environment variables are read.
-    require("../config/env");
+    require("./config/env");
 
     const fs = require("fs");
     const chalk = require("react-dev-utils/chalk");
@@ -25,9 +25,9 @@ module.exports = async (options = {}) => {
         prepareUrls
     } = require("react-dev-utils/WebpackDevServerUtils");
     const openBrowser = require("react-dev-utils/openBrowser");
-    const paths = require("../config/paths")({ appIndexJs });
-    const configFactory = require("../config/webpack.config");
-    const createDevServerConfig = require("../config/webpackDevServer.config");
+    const paths = require("./config/paths")({ appIndexJs });
+    const configFactory = require("./config/webpack.config");
+    const createDevServerConfig = require("./config/webpackDevServer.config");
 
     const useYarn = fs.existsSync(paths.yarnLockFile);
     const isInteractive = process.stdout.isTTY;

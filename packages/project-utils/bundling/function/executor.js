@@ -10,6 +10,7 @@ module.exports = (options, context) => {
 
     // Load base webpack config
     let webpackConfig = require("./webpack.config")({
+        entry: options.entry || "./src/index",
         debug: boolean(options.debug),
         babelOptions,
         define: options.define
