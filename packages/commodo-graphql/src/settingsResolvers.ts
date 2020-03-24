@@ -1,4 +1,4 @@
-import { ErrorResponse } from "@webiny/api";
+import { ErrorResponse } from "@webiny/graphql";
 import { FieldResolver } from "./types";
 
 export const resolveGetSettings = (getClass): FieldResolver => async (_, args, context) => {
