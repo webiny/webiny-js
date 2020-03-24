@@ -4,7 +4,7 @@ import { css } from "emotion";
 import { Typography } from "@webiny/ui/Typography";
 import { Elevation } from "@webiny/ui/Elevation";
 
-const BlockWrapper = styled("div")({
+const SectionWrapper = styled("div")({
     backgroundColor: "var(--mdc-theme-background)",
     padding: "0 0 25px 0"
 });
@@ -23,12 +23,18 @@ const titleStyle = css({
 });
 
 const ElevationContent = styled("div")({
-    padding: 20
+    padding: 20,
+    backgroundColor: "#fff"
 });
 
-const Block = ({ children, title, ...props }) => {
+type SectionProps = {
+    children?: React.ReactNode;
+    title?: String;
+};
+
+const Section = ({ children, title, ...props }: SectionProps) => {
     return (
-        <BlockWrapper {...props}>
+        <SectionWrapper {...props}>
             <h4>
                 <Typography className={titleStyle} use={"overline"}>
                     {title}
@@ -38,8 +44,8 @@ const Block = ({ children, title, ...props }) => {
             <Elevation z={2}>
                 <ElevationContent>{children}</ElevationContent>
             </Elevation>
-        </BlockWrapper>
+        </SectionWrapper>
     );
 };
 
-export default Block;
+export default Section;
