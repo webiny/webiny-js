@@ -1,6 +1,6 @@
 import { MongoClient } from "mongodb";
 import { MongoDbDriver, id } from "@commodo/fields-storage-mongodb";
-import { GraphQLContextPlugin } from "@webiny/api/types";
+import { GraphQLContextPlugin } from "@webiny/graphql/types";
 
 let database = null;
 let client = null;
