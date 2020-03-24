@@ -2,7 +2,7 @@ import {
     GraphQLContextPlugin,
     GraphQLMiddlewarePlugin,
     GraphQLSchemaPlugin
-} from "@webiny/api/types";
+} from "@webiny/graphql/types";
 import { shield } from "graphql-shield";
 import authenticate from "./authentication/authenticate";
 import { SecurityPlugin } from "@webiny/api-security/types";

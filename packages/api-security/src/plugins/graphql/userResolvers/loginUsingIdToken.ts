@@ -1,5 +1,5 @@
 import { Response, ErrorResponse } from "@webiny/commodo-graphql";
-import { GraphQLContext, GraphQLFieldResolver } from "@webiny/api/types";
+import { GraphQLContext, GraphQLFieldResolver } from "@webiny/graphql/types";
 import { JWTPayload, SecurityAuthenticationProviderPlugin } from "../../../types";
 import { JwtToken } from "../../authentication/jwtToken";
 

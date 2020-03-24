@@ -1,14 +1,14 @@
 {
   "extends": "../../tsconfig.build.json",
   "include": ["./src"],
-  "exclude": ["node_modules", "./dist", "../api", "../commodo", "../commodo-graphql", "../validation"],
+  "exclude": ["node_modules", "./dist", "../graphql", "../commodo", "../commodo-graphql", "../validation"],
   "compilerOptions": {
     "rootDir": "./src",
     "outDir": "./dist",
     "declarationDir": "./dist"
   },
   "references": [
-    { "path": "../api/tsconfig.build.json" },
+    { "path": "../graphql/tsconfig.build.json" },
     { "path": "../commodo-graphql/tsconfig.build.json" },
     { "path": "../validation/tsconfig.build.json" }
   ]

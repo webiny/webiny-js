@@ -1,5 +1,5 @@
 import { WithFieldsError } from "@webiny/commodo";
-import { ErrorResponse, Response, NotFoundResponse } from "@webiny/api";
+import { ErrorResponse, Response, NotFoundResponse } from "@webiny/graphql";
 import { InvalidFieldsError } from "@webiny/commodo-graphql";
 
 export default userFetcher => async (
