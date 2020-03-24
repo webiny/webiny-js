@@ -16,7 +16,7 @@
   "license": "MIT",
   "dependencies": {
     "@babel/runtime": "^7.5.5",
-    "@webiny/api": "^3.0.0",
+    "@webiny/graphql": "^1.0.0",
     "@webiny/api-i18n": "^3.0.0",
     "@webiny/api-security": "^3.0.0",
     "@webiny/commodo": "^3.0.0",

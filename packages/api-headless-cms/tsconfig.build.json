@@ -3,7 +3,7 @@
   "include": ["src"],
   "exclude": [
     "node_modules",
-    "../api",
+    "../graphql",
     "../api-i18n",
     "../api-plugin-commodo-db-proxy",
     "../api-plugin-create-apollo-handler",
@@ -20,7 +20,7 @@
     "declarationDir": "dist"
   },
   "references": [
-    { "path": "../api/tsconfig.build.json" },
+    { "path": "../graphql/tsconfig.build.json" },
     { "path": "../api-i18n/tsconfig.build.json" },
     { "path": "../api-plugin-commodo-db-proxy/tsconfig.build.json" },
     { "path": "../api-plugin-create-apollo-handler/tsconfig.build.json" },

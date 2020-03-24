@@ -2,7 +2,7 @@
   "extends": "../../tsconfig",
   "include": ["src", "__tests__/**/*.ts"],
   "references": [
-    { "path": "../api" },
+    { "path": "../graphql" },
     { "path": "../api-i18n" },
     { "path": "../api-plugin-commodo-db-proxy" },
     { "path": "../api-plugin-create-apollo-handler" },

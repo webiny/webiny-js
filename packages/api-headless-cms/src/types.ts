@@ -3,7 +3,7 @@ import {
     GraphQLContext as APIGraphQLContext,
     GraphQLFieldResolver,
     Plugin
-} from "@webiny/api/types";
+} from "@webiny/graphql/types";
 import { GraphQLContext as I18NContext, I18NLocale } from "@webiny/api-i18n/types";
 import { GraphQLContext as CommodoContext } from "@webiny/api-plugin-commodo-db-proxy/types";
 
