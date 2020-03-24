@@ -201,22 +201,23 @@ headlessCms:
         handler: handler.handler
         memory: 512
         env:
+          I18N_API_URL: ${i18n.api.graphqlUrl}
           DEBUG: ${vars.debug}
 
-headlessHandler:
+headlessCmsHandler:
   build:
-    entry: "./services/headless/src/index"
+    entry: "./services/headlessCmsHandler/src/index"
     define:
-      APOLLO_HANDLER_OPTIONS: ${vars.apollo}
+      HTTP_HANDLER_APOLLO_SERVER_OPTIONS: ${vars.httpHandlerApolloServer}
       DB_PROXY_OPTIONS:
         functionArn: ${dbProxy.arn}
       SECURITY_OPTIONS: ${vars.security}
   deploy:
     component: "@webiny/serverless-function"
     inputs:
-      description: Headless CMS handler
+      description: Headless CMS GraphQL API (handler)
       region: ${vars.region}
-      code: ./services/headless/build
+      code: ./services/headlessCmsHandler/build
       handler: handler.handler
       memory: 512
       env:
@@ -234,7 +235,7 @@ api:
         function: ${gateway}
       - path: /cms/{key+}
         method: ANY
-        function: ${headlessHandler}
+        function: ${headlessCmsHandler}
 
 cdn:
   component: "@webiny/serverless-aws-cloudfront"
