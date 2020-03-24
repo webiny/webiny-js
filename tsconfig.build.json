@@ -82,6 +82,12 @@
       "@webiny/storybook-utils/*": ["./packages/storybook-utils/src/*"],
       "@webiny/react-router": ["./packages/react-router/src"],
       "@webiny/react-router/*": ["./packages/react-router/src/*"],
+      "@webiny/service-i18n": ["./packages/service-i18n/src"],
+      "@webiny/service-i18n/*": ["./packages/service-i18n/src/*"],
+      "@webiny/service-headless-cms": ["./packages/service-headless-cms/src"],
+      "@webiny/service-headless-cms/*": ["./packages/service-headless-cms/src/*"],
+      "@webiny/service-headless-cms-handler": ["./packages/service-headless-cms-handler/src"],
+      "@webiny/service-headless-cms-handler/*": ["./packages/service-headless-cms-handler/src/*"],
       "@webiny/validation": ["./packages/validation/src"],
       "@webiny/validation/*": ["./packages/validation/src/*"],
       "@webiny/ui/*": ["./packages/ui/src/*"]
