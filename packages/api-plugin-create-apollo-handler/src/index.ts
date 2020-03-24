@@ -1,5 +1,5 @@
 import { ApolloServer } from "apollo-server-lambda";
-import { CreateApolloHandlerPlugin } from "@webiny/api/types";
+import { CreateApolloHandlerPlugin } from "@webiny/graphql/types";
 import { ApolloHandlerPluginOptions } from "./types";
 import { boolean } from "boolean";
 
@@ -20,7 +20,9 @@ export default (options: ApolloHandlerPluginOptions = {}): CreateApolloHandlerPl
             const { server = {}, handler = {} } = options;
 
             const apollo = new ApolloServer({
+                // @ts-ignore
                 introspection: boolean(server.introspection),
+                // @ts-ignore
                 playground: boolean(server.playground),
                 debug: boolean(process.env.DEBUG),
                 ...server,
