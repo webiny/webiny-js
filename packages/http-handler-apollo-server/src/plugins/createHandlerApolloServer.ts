@@ -1,9 +1,7 @@
 import { createResponse } from "@webiny/http-handler";
 import { HttpHandlerPlugin } from "@webiny/http-handler/types";
 import { boolean } from "boolean";
-import { CreateApolloHandlerPlugin, HttpHandlerApolloServerOptions } from "./types";
-
-let apolloHandler;
+import { CreateApolloHandlerPlugin, HttpHandlerApolloServerOptions } from "./../types";
 
 export default (options: HttpHandlerApolloServerOptions = {}): HttpHandlerPlugin => ({
     type: "handler",
@@ -15,25 +13,22 @@ export default (options: HttpHandlerApolloServerOptions = {}): HttpHandlerPlugin
     async handle({ args, context }) {
         const [event] = args;
         try {
-            if (!apolloHandler) {
-                const createApolloHandlerPlugin = context.plugins.byName<CreateApolloHandlerPlugin>(
-                    "handler-apollo-server-create"
-                );
+            const createApolloHandlerPlugin = context.plugins.byName<CreateApolloHandlerPlugin>(
+                "handler-apollo-server-create-handler"
+            );
 
-                if (!createApolloHandlerPlugin) {
-                    throw Error(`"handler-apollo-server-create" plugin is not configured!`);
-                }
-
-                const { handler } = await createApolloHandlerPlugin.create({
-                    context,
-                    options
-                });
-
-                apolloHandler = handler;
+            if (!createApolloHandlerPlugin) {
+                throw Error(`"handler-apollo-server-create-handler" plugin is not configured!`);
             }
 
+            const { handler } = await createApolloHandlerPlugin.create({
+                args,
+                context,
+                options
+            });
+
             // Will return the complete response, including "statusCode", "headers", and "body" fields.
-            return await apolloHandler(event, context);
+            return await handler(event, context);
         } catch (e) {
             const { ...requestContext } = event.requestContext;
             const report = {

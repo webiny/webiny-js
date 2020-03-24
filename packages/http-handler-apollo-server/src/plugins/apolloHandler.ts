@@ -1,8 +1,7 @@
 import { ApolloServer } from "apollo-server-lambda";
-import { CreateApolloHandlerPlugin } from "./types";
+import { CreateApolloHandlerPlugin } from "./../types";
 import { boolean } from "boolean";
-import { Plugin, PluginsContainer } from "@webiny/plugins/types";
-import { GraphQLSchema } from "graphql";
+import { CreateSchemaPlugin } from "@webiny/http-handler-apollo-server/types";
 
 function normalizeEvent(event) {
     // In AWS, when enabling binary support, received body gets base64 encoded. Did not find a way to solve this
@@ -13,16 +12,16 @@ function normalizeEvent(event) {
     }
 }
 
-export type CreateSchemaPlugin = Plugin & {
-    name: "handler-apollo-server-create-schema";
-    type: "handler-apollo-server-create-schema";
-    create(params: { plugins: PluginsContainer }): { schema: GraphQLSchema };
-};
+let cache;
 
 const plugin: CreateApolloHandlerPlugin = {
-    name: "handler-apollo-server-create",
-    type: "handler-apollo-server-create",
+    name: "handler-apollo-server-create-handler",
+    type: "handler-apollo-server-create-handler",
     async create({ context, options }) {
+        if (cache) {
+            return cache;
+        }
+
         const { server = {}, handler = {} } = options;
 
         const createSchemaPlugin = context.plugins.byName<CreateSchemaPlugin>(
@@ -58,7 +57,7 @@ const plugin: CreateApolloHandlerPlugin = {
             }
         });
 
-        return {
+        cache = {
             schema,
             handler: (event, context) => {
                 normalizeEvent(event);
@@ -73,6 +72,8 @@ const plugin: CreateApolloHandlerPlugin = {
                 });
             }
         };
+
+        return cache;
     }
 };
 

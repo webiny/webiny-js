@@ -1,8 +1,8 @@
 import { HttpHandlerApolloServerOptions } from "./types";
-import apolloHandlerPlugin from "./apolloHandlerPlugin";
-import createHandlerApolloServerPlugin from "./createHandlerApolloServerPlugin";
+import { createSchema, createHandlerApolloServer, apolloHandler } from "./plugins";
 
 export default (options: HttpHandlerApolloServerOptions = {}) => [
-    createHandlerApolloServerPlugin(options),
-    apolloHandlerPlugin
+    createHandlerApolloServer(options),
+    apolloHandler,
+    createSchema
 ];

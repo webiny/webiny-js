@@ -1,6 +1,6 @@
 import { HttpHandlerContext } from "@webiny/http-handler/types";
 import { GraphQLSchema } from "graphql";
-import { Plugin } from "@webiny/plugins/types";
+import { Plugin, PluginsContainer } from "@webiny/plugins/types";
 
 export interface HttpHandlerApolloServerOptions {
     debug?: boolean | string;
@@ -19,9 +19,16 @@ type CreateApolloHandlerPluginCreateResponse = {
 };
 
 export type CreateApolloHandlerPlugin = Plugin & {
-    type: "handler-apollo-server-create";
+    type: "handler-apollo-server-create-handler";
     create(params: {
+        args: Array<{ [key: string]: any }>;
         options: HttpHandlerApolloServerOptions;
         context: HttpHandlerContext;
     }): CreateApolloHandlerPluginCreateResponse | Promise<CreateApolloHandlerPluginCreateResponse>;
+};
+
+export type CreateSchemaPlugin = Plugin & {
+    name: "handler-apollo-server-create-schema";
+    type: "handler-apollo-server-create-schema";
+    create(params: { plugins: PluginsContainer }): { schema: GraphQLSchema };
 };
