@@ -1,5 +1,5 @@
 {
-  "name": "i18n-service",
+  "name": "service-i18n",
   "version": "0.1.0",
   "scripts": {
     "build": "webpack --config ./webpack.config.js"

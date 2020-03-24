@@ -1,5 +1,5 @@
 {
-  "name": "headless-service",
+  "name": "service-cms-handler",
   "version": "0.1.0",
   "scripts": {
     "build": "webpack --config ./webpack.config.js"
