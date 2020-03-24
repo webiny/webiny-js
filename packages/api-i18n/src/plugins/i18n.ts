@@ -1,4 +1,4 @@
-import { GraphQLContext as APIContext, GraphQLContextPlugin } from "@webiny/api/types";
+import { GraphQLContext as APIContext, GraphQLContextPlugin } from "@webiny/graphql/types";
 import acceptLanguageParser from "accept-language-parser";
 import {
     GraphQLContext as I18NContext,

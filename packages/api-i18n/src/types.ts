@@ -1,4 +1,4 @@
-import { Plugin } from "@webiny/api/types";
+import { Plugin } from "@webiny/graphql/types";
 
 export type I18NLocale = {
     id: string;

@@ -4,7 +4,7 @@ import { emptyResolver } from "@webiny/commodo-graphql";
 import { hasScope } from "@webiny/api-security";
 import i18nLocale from "./graphql/I18NLocale";
 import install from "./graphql/Install";
-import { GraphQLSchemaPlugin } from "@webiny/api/types";
+import { GraphQLSchemaPlugin } from "@webiny/graphql/types";
 
 const plugin: GraphQLSchemaPlugin = {
     type: "graphql-schema",
