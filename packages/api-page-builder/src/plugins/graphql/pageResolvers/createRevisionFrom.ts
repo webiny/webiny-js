@@ -1,4 +1,4 @@
-import { ErrorResponse, NotFoundResponse, Response } from "@webiny/api";
+import { ErrorResponse, NotFoundResponse, Response } from "@webiny/graphql";
 
 export default async (root: any, args: {[key: string]: any}, context: {[key: string]: any}) => {
     const { PbPage } = context.models;
