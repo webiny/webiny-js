@@ -1,4 +1,4 @@
-import { GraphQLContextPlugin } from "@webiny/api/types";
+import { GraphQLContextPlugin } from "@webiny/graphql/types";
 
 export default [
     {

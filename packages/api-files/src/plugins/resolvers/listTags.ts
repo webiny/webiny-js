@@ -1,5 +1,5 @@
 import { GraphQLFieldResolver } from "graphql";
-import { GraphQLContext } from "@webiny/api/types";
+import { GraphQLContext } from "@webiny/graphql/types";
 import { FilesResolverListTagsPlugin } from "@webiny/api-files/types";
 
 const resolver: GraphQLFieldResolver<any, GraphQLContext> = async (root, args, context) => {

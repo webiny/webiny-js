@@ -1,4 +1,4 @@
-import { ErrorResponse, Response, NotFoundResponse } from "@webiny/api";
+import { ErrorResponse, Response, NotFoundResponse } from "@webiny/graphql";
 import S3 from "aws-sdk/clients/s3";
 
 const S3_BUCKET = process.env.S3_BUCKET;
