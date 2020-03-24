@@ -1,5 +1,5 @@
-import { ListResponse } from "@webiny/api";
-import { GraphQLFieldResolver } from "@webiny/api/types";
+import { ListResponse } from "@webiny/graphql";
+import { GraphQLFieldResolver } from "@webiny/graphql/types";
 
 export const listPublishedForms: GraphQLFieldResolver = async (root, args, context) => {
     const { Form } = context.models;
