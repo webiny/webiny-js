@@ -1,6 +1,6 @@
 module.exports = async (options = {}) => {
     const path = require("path");
-    const appIndexJs = path.resolve("src", "index.js");
+    const appIndexJs = path.resolve("src", "index.tsx");
 
     // Makes the script crash on unhandled rejections instead of silently
     // ignoring them. In the future, promise rejections that are not handled will
@@ -109,7 +109,7 @@ module.exports = async (options = {}) => {
             }
 
             console.log(chalk.cyan("Starting the development server...\n"));
-            openBrowser(urls.localUrlForBrowser);
+            // openBrowser(urls.localUrlForBrowser);
         });
 
         ["SIGINT", "SIGTERM"].forEach(function(sig) {

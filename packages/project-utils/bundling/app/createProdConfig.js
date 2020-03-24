@@ -10,7 +10,7 @@ const printBuildError = require("react-dev-utils/printBuildError");
 const { checkBrowsers } = require("react-dev-utils/browsersHelper");
 
 module.exports = async (options = {}) => {
-    const appIndexJs = path.resolve("src", "index.js");
+    const appIndexJs = path.resolve("src", "index.tsx");
     const paths = require("./config/paths")({ appIndexJs });
 
     if (options.output) {
