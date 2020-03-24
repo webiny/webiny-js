@@ -1,66 +1,30 @@
-import { ApolloHandlerPluginOptions } from "@webiny/api-plugin-create-apollo-handler/types";
-import { HttpHandlerPlugin } from "@webiny/http-handler/types";
-import { createHandler, PluginsContainer } from "@webiny/api";
+import { HttpHandlerApolloServerOptions } from "@webiny/http-handler-apollo-server/types";
 
-const handlers = {};
+// We can rely on the default Apollo server and schema creation plugins...
+import {
+    createHandlerApolloServer,
+    createSchema
+} from "@webiny/http-handler-apollo-server/plugins";
 
-const getHandler = async (type, environment, options) => {
-    const id = `${type}:${environment}`;
+// ...but a custom "handler-apollo-server-create" plugin is needed.
+import apolloHandler from "./apolloHandler";
 
-    if (!handlers[id]) {
-        // Construct a new plugins container per id
-        const plugins = new PluginsContainer(options.plugins({ type, environment }));
-        const { handler } = await createHandler({ plugins });
-        handlers[id] = handler;
-    }
+// Headless CMS models, GraphQL schema, fields, etc. This is a factory function which returns
+// a different schema depending on the provided environment and schema type (read, manage, preview).
+import headlessPlugins from "./plugins";
 
-    return handlers[id];
-};
-
-type HeadlessHandlerOptions = ApolloHandlerPluginOptions & {
-    plugins?: (type, environment) => any[];
-};
-
-export default (options: HeadlessHandlerOptions = {}): HttpHandlerPlugin => ({
-    type: "handler",
-    name: "handler-headless",
-    canHandle() {
-        return true;
-    },
-    async handle({ args }) {
-        const [event, context] = args;
-
-        try {
+export default (options: HttpHandlerApolloServerOptions = {}) => [
+    createHandlerApolloServer(options),
+    createSchema,
+    apolloHandler,
+    {
+        type: "before-handler",
+        name: "before-handler-setup-headless-plugins",
+        async handle({ args, context }) {
+            const [event] = args;
             const { key } = event.pathParameters;
             const [type, environment = "default"] = key.split("/");
-
-            return (await getHandler(type, environment, options))(event, context);
-        } catch (e) {
-            console.log("CAUGHT ERROR", JSON.stringify(e, null, 2));
-            const { identity, ...requestContext } = event.requestContext;
-
-            const report = {
-                requestContext,
-                context,
-                errors: []
-            };
-
-            report.errors.push({ name: e.constructor.name, message: e.message });
-
-            // if (e.constructor.name === "ApolloGatewayError") {
-            //     e.errors.forEach(error => report.errors.push(error));
-            // } else {
-            //     report.errors.push({ name: e.constructor.name, message: e.message });
-            // }
-
-            if (process.env.DEBUG === "true") {
-                return {
-                    statusCode: 500,
-                    body: JSON.stringify(report, null, 2)
-                };
-            }
-
-            throw e;
+            context.plugins.register(await headlessPlugins({ type, environment }));
         }
     }
-});
+];
