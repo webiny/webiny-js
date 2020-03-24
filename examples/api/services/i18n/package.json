@@ -5,8 +5,7 @@
     "build": "webpack --config ./webpack.config.js"
   },
   "dependencies": {
-    "@webiny/http-handler": "^2.1.0",
-    "@webiny/api-headless-cms": "^0.1.0"
+    "@webiny/http-handler": "^2.1.0"
   },
   "devDependencies": {
     "@babel/cli": "^7.5.5",
