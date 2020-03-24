@@ -1,5 +1,5 @@
 import { DbProxyDriver, id, isId, withId } from "@webiny/commodo-fields-storage-db-proxy";
-import { GraphQLContextPlugin } from "@webiny/api/types";
+import { GraphQLContextPlugin } from "@webiny/graphql/types";
 
 function apply(context, options) {
     if (!context.commodo) {
