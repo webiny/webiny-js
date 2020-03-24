@@ -4,7 +4,7 @@
   "exclude": [
     "node_modules",
     "../../../../packages/api-plugin-commodo-db-proxy",
-    "../../../../packages/api-i18n",
+    "../../../../packages/api-headless-cms",
     "../../../../packages/api-security",
     "../../../../packages/http-handler",
     "../../../../packages/http-handler-apollo-server"
@@ -16,7 +16,7 @@
   },
   "references": [
     { "path": "../../../../packages/api-plugin-commodo-db-proxy/tsconfig.build.json" },
-    { "path": "../../../../packages/api-i18n/tsconfig.build.json" },
+    { "path": "../../../../packages/api-headless-cms/tsconfig.build.json" },
     { "path": "../../../../packages/api-security/tsconfig.build.json" },
     { "path": "../../../../packages/http-handler/tsconfig.build.json" },
     { "path": "../../../../packages/http-handler-apollo-server/tsconfig.build.json" }

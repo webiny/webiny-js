@@ -1,7 +1,7 @@
 import { createHandler } from "@webiny/http-handler";
 import headlessCmsHttpHandlerApolloServerPlugins from "@webiny/api-headless-cms/handler";
-import securityService from "@webiny/api-security/plugins/service";
 import dbProxy from "@webiny/api-plugin-commodo-db-proxy";
+import securityService from "@webiny/api-security/plugins/service";
 import i18nPlugins from "@webiny/api-i18n/plugins/service";
 
 declare const HTTP_HANDLER_APOLLO_SERVER_OPTIONS: any;
