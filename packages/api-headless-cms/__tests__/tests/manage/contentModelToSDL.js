@@ -1,5 +1,5 @@
 import prettier from "prettier";
-import { setupContext } from "@webiny/api/testing";
+import { setupContext } from "@webiny/graphql/testing";
 import contentModels from "../data/contentModels";
 import graphqlFieldPlugins from "../../../src/handler/plugins/graphqlFields";
 import { createManageSDL } from "../../../src/handler/plugins/schema/createManageSDL";

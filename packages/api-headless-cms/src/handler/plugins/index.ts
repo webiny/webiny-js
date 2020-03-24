@@ -3,7 +3,7 @@ import modelFields from "./modelFields";
 import filterOperators from "./filterOperators";
 import graphqlFields from "./graphqlFields";
 import graphql from "./graphql";
-import { GraphQLContextPlugin } from "@webiny/api/types";
+import { GraphQLContextPlugin } from "@webiny/graphql/types";
 import { TypeValueEmitter } from "./utils/TypeValueEmitter";
 
 type HeadlessPluginsOptions = {
@@ -11,7 +11,7 @@ type HeadlessPluginsOptions = {
     environment: string;
 };
 
-export default (options: HeadlessPluginsOptions) => [
+export default (options: HeadlessPluginsOptions = { type: null, environment: null }) => [
     {
         name: "graphql-context-cms-context",
         type: "graphql-context",

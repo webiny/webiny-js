@@ -1,5 +1,5 @@
 import { Response } from "@webiny/commodo-graphql";
-import { GraphQLFieldResolver } from "@webiny/api/types";
+import { GraphQLFieldResolver } from "@webiny/graphql/types";
 import { CmsGraphQLContext } from "@webiny/api-headless-cms/types";
 import { findEntry } from "./findEntry";
 import { setContextLocale } from "./setContextLocale";

@@ -2,7 +2,7 @@ import contentModelToSDL from "./contentModelToSDL";
 import schema from "./graphqlSchema";
 import resolvers from "./resolvers";
 import headlessPlugins from "../../../src/handler/plugins";
-import { setupSchema as setupTestingSchema } from "@webiny/api/testing";
+import { setupSchema as setupTestingSchema } from "@webiny/graphql/testing";
 
 export default ({ plugins }) => {
     function setupSchema() {

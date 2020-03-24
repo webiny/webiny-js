@@ -1,4 +1,4 @@
-import { setupContext } from "@webiny/api/testing";
+import { setupContext } from "@webiny/graphql/testing";
 import contentModelFactory from "../../src/handler/plugins/models/contentModel.model";
 import createBase from "./utils/createModel";
 import contentModels from "./data/contentModels";

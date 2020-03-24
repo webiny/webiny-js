@@ -1,5 +1,5 @@
 import gql from "graphql-tag";
-import { GraphQLSchemaPlugin } from "@webiny/api/types";
+import { GraphQLSchemaPlugin } from "@webiny/graphql/types";
 import {
     CmsModel,
     CmsModelFieldToGraphQLPlugin,

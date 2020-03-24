@@ -1,4 +1,4 @@
-import { setupSchema as setupTestingSchema } from "@webiny/api/testing";
+import { setupSchema as setupTestingSchema } from "@webiny/graphql/testing";
 import contentModelToSDL from "./contentModelToSDL";
 import schema from "./graphqlSchema";
 import resolvers from "./resolvers";

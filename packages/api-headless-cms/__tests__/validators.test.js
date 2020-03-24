@@ -1,4 +1,4 @@
-import { setupContext } from "@webiny/api/testing";
+import { setupContext } from "@webiny/graphql/testing";
 import validatorPlugins from "../src/handler/plugins/validators";
 
 describe("Headless CMS - Field validators", () => {

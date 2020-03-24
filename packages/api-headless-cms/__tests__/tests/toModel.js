@@ -1,5 +1,5 @@
 import { blue } from "chalk";
-import { setupContext } from "@webiny/api/testing";
+import { setupContext } from "@webiny/graphql/testing";
 import contentModels from "./data/contentModels";
 import { locales } from "../mocks/mockI18NLocales";
 import { createDataModelFromData } from "../../src/handler/plugins/utils/createDataModelFromData";
