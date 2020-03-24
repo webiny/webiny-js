@@ -1,13 +1,11 @@
 {
-  "name": "@webiny/api",
-  "version": "3.0.2",
+  "name": "@webiny/graphql",
+  "version": "1.0.0",
   "main": "index.js",
-  "types": "dist/types.d.ts",
   "repository": {
     "type": "git",
     "url": "https://github.com/webiny/webiny-js.git"
   },
-  "description": "The base package for building GraphQL powered HTTP APIs for your Webiny apps.",
   "contributors": [
     "Pavel Denisjuk <pavel@webiny.com>",
     "Sven Al Hamad <sven@webiny.com>",
@@ -15,17 +13,14 @@
   ],
   "license": "MIT",
   "dependencies": {
-    "@webiny/plugins": "^3.0.1",
-    "graphql": "^14.4.2"
+    "@babel/runtime": "^7.5.5",
+    "@webiny/plugins": "^3.0.1"
   },
   "devDependencies": {
     "@babel/cli": "^7.5.5",
     "@babel/core": "^7.5.5",
-    "@babel/plugin-proposal-class-properties": "^7.5.5",
     "@babel/preset-env": "^7.5.5",
-    "@babel/preset-typescript": "^7.7.7",
-    "@types/aws-lambda": "^8.10.40",
-    "apollo-graphql": "^0.4.1"
+    "@babel/preset-typescript": "^7.8.3"
   },
   "publishConfig": {
     "access": "public"
@@ -36,5 +31,5 @@
     "postbuild": "cp package.json LICENSE README.md dist/ && tsc -p tsconfig.build.json",
     "prepublishOnly": "yarn build"
   },
-  "gitHead": "71cab7d5607b2e32a63034e324a663770507b32b"
+  "gitHead": "1c3e8fd44a71306cb449c653725d5d34a9a90e36"
 }

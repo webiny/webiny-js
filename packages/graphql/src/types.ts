@@ -1,4 +1,8 @@
-import { GraphQLScalarType, GraphQLFieldResolver as BaseGraphQLFieldResolver } from "graphql";
+import {
+    GraphQLScalarType,
+    GraphQLFieldResolver as BaseGraphQLFieldResolver,
+    GraphQLSchema
+} from "graphql";
 import { GraphQLSchemaModule } from "apollo-graphql";
 import { Plugin, PluginsContainer } from "@webiny/plugins/types";
 
@@ -39,3 +43,12 @@ export type GraphQLFieldResolver<
     TArgs = any,
     TContext = GraphQLContext
 > = BaseGraphQLFieldResolver<TSource, TContext, TArgs>;
+
+// TODO: remove these two once we remove "@webiny/api-plugin-create-apollo-handler".
+export type CreateApolloHandlerPlugin = Plugin & {
+    create(params: { plugins: PluginsContainer; schema: GraphQLSchema }): Function;
+};
+
+export type CreateApolloGatewayPlugin = Plugin & {
+    createGateway(params: { plugins: PluginsContainer }): Promise<Function>;
+};
