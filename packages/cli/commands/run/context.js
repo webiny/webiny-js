@@ -1,11 +1,12 @@
-process.env.DEBUG = process.env.DEBUG + ",webiny";
-const debug = require("debug")("webiny");
+module.exports = () => {
+    const debug = require("debug")("webiny:run");
 
-module.exports = {
-    log(...args) {
-        debug(...args);
-    },
-    error(...args) {
-        debug(...args);
-    }
+    return {
+        log(...args) {
+            debug(...args);
+        },
+        error(...args) {
+            debug(...args);
+        }
+    };
 };

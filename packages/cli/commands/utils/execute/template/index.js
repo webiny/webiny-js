@@ -1,4 +1,5 @@
 const path = require("path");
+const fs = require("fs");
 const { Component } = require("@serverless/core");
 const { loadEnv } = require("../../index");
 const buildResource = require("./buildResource");
@@ -29,10 +30,16 @@ class Template extends Component {
     async default(inputs = {}) {
         validateInputs(inputs);
 
-        // Load .env.json from cwd (this will change depending on the command you ran, api|apps)
+        // Load .env.json from cwd (this will change depending on the folder you specified)
         await loadEnv(path.resolve(".env.json"), inputs.env, { debug: inputs.debug });
 
-        const template = findTemplate();
+        let template;
+        if (fs.existsSync(`resources.js`)) {
+            const newTemplate = await require(path.resolve("resources.js"))({ cli: inputs });
+            template = newTemplate.resources;
+        } else {
+            template = await findTemplate();
+        }
 
         if (inputs.resources.length) {
             return await this.deployResources(inputs.resources, { ...inputs, template });
@@ -92,7 +99,9 @@ class Template extends Component {
         const template = await getTemplate(inputs);
 
         if (!this.state.outputs) {
-            throw Error(`You must deploy the entire infrastructure before you can do partial deployments.`);
+            throw Error(
+                `You must deploy the entire infrastructure before you can do partial deployments.`
+            );
         }
 
         Object.keys(this.state.outputs).forEach(key => {

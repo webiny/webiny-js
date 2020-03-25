@@ -28,7 +28,8 @@ module.exports = params => {
             try {
                 await execa(script, scriptParams, {
                     cwd: path.resolve(config.root),
-                    stdio: config.verbose ? "inherit" : undefined
+                    stdio: config.verbose ? "inherit" : undefined,
+                    env: process.env
                 });
             } catch (err) {
                 console.log(err.stderr);

@@ -11,10 +11,7 @@ const createContext = ({ root, debug }) => {
     });
 
     if (debug) {
-        const debugValue = process.env.DEBUG;
-        process.env.DEBUG = "webiny*";
         context.debug = require("debug")("webiny");
-        process.env.DEBUG = debugValue;
     }
 
     context.clearStatus = () => {
