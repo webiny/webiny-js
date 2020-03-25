@@ -171,7 +171,7 @@ module.exports = ({ cli }) => ({
         },
         i18n: {
             watch: [
-                "./services/headlessCms/build"
+                "./services/i18n/build"
             ],
             build: {
                 root: "./services/i18n",
