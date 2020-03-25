@@ -1,6 +1,6 @@
-import { FbFormModelField, FieldIdType, FbFormModel } from "@webiny/app-headless-cms/types";
+import { CmsContentModelModelField, FieldIdType, CmsContentModelModel } from "@webiny/app-headless-cms/types";
 
-export default ({ field, data }: { field: FbFormModelField; data: FbFormModel }) => {
+export default ({ field, data }: { field: CmsContentModelModelField; data: CmsContentModelModel }) => {
     // Remove the field from fields list...
     const fieldIndex = data.fields.findIndex(item => item._id === field._id);
     data.fields.splice(fieldIndex, 1);

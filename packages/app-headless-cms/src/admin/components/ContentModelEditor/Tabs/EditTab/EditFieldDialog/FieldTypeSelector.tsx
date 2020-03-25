@@ -29,7 +29,7 @@ const fieldTypeBox = css({
     }
 });
 
-const FbFormModelFieldSelector = ({ fieldType, onClick }) => {
+const CmsContentModelModelFieldSelector = ({ fieldType, onClick }) => {
     return (
         <span onClick={onClick} style={{ display: "inline-block" }}>
             <Elevation z={2} className={fieldTypeBox}>
@@ -42,4 +42,4 @@ const FbFormModelFieldSelector = ({ fieldType, onClick }) => {
     );
 };
 
-export default FbFormModelFieldSelector;
+export default CmsContentModelModelFieldSelector;

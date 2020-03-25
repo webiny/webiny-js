@@ -21,7 +21,6 @@ const ContentModelEditor = () => {
 
     React.useEffect(() => {
         getContentModel(id).catch((e) => {
-            console.log('ada', e)
             history.push(`/cms/content-models`);
             showSnackbar(t`Could not load content model with given ID.`);
         });
@@ -32,7 +31,7 @@ const ContentModelEditor = () => {
     }
 
     return (
-        <div className={"form-editor"}>
+        <div className={"content-model-editor"}>
             <EditorBar />
             <EditorContent />
             <DragPreview />

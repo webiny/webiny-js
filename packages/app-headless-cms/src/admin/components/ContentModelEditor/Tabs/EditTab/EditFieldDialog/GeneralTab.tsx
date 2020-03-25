@@ -6,11 +6,11 @@ import { useContentModelEditor } from "@webiny/app-headless-cms/admin/components
 import { I18NInput } from "@webiny/app-i18n/admin/components";
 import { useI18N } from "@webiny/app-i18n/hooks/useI18N";
 import { validation } from "@webiny/validation";
-import { FbFormModelField } from "@webiny/app-headless-cms/types";
+import { CmsContentModelModelField } from "@webiny/app-headless-cms/types";
 import {FormChildrenFunctionParams} from "@webiny/form/Form";
 
 type GeneralTabProps = {
-    field: FbFormModelField;
+    field: CmsContentModelModelField;
     form: FormChildrenFunctionParams;
 };
 

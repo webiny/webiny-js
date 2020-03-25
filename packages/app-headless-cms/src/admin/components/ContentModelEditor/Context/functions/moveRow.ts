@@ -1,4 +1,4 @@
-import { FbFormModel } from "@webiny/app-headless-cms/types";
+import { CmsContentModelModel } from "@webiny/app-headless-cms/types";
 
 export default ({
     data,
@@ -7,7 +7,7 @@ export default ({
 }: {
     source: number;
     destination: number;
-    data: FbFormModel;
+    data: CmsContentModelModel;
 }) => {
     data.layout =
         source < destination

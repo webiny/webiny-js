@@ -1,149 +1,53 @@
-# CONTRIBUTING
+### [Cypress](https://www.cypress.io/) tests
 
-This guide is for anyone who wants to contribute to the Webiny project.
+#### Prerequisites
 
-## Working on an issue
+Before running the tests, make sure you have a working API and app deployed to the actual cloud, since Cypress tests should be ran against a real environment, in which the app will live. More on this at the end of this section.
 
-> IMPORTANT: Before working on a PR, please open an issue and discuss your intended changes with the maintainers. They may provide invaluable info and point you in the right direction to get the most out of your contribution.
+#### Configuration
 
-### Branches
+Once you have a working API and app deployed to the cloud, make sure to open the `cypress.json` in the project root, and configure all of the variables.
 
-`master` is the main branch from which we publish packages. All `issue` branches should be branched from `master` branch, unless you're working on an issue that belongs to one of our [projects](https://github.com/webiny/webiny-js/projects). In that case, a project branch will be specified in the project board. If you're not sure about the branch, don't hesitate to contact us.
+Most of the needed values can be found in the `.env.json` files in your `examples/apps` folders (e.g. `examples/apps/admin/.env.json`).
 
-### Features/Fixes
+Tests that are testing different sections of the Admin app also require the `DEFAULT_ADMIN_USER_USERNAME` and `DEFAULT_ADMIN_USER_PASSWORD` values, which represent the credentials of the default full-access admin account (set in the Admin app, in the initial installation process).
 
-- create an issue branch
-- commit your changes
-- open a PR
-- try to keep your PRs small in scope (try to only work on 1 issue in a single PR)
-- you can add as many commits as you wish to your PR
-- the only commit message that matters is the PR merge commit, and that is handled by the project maintainers
+#### Opening the Cypress app
 
-## Repo overview
+Once you've configured all of the variables, you can run the following command in the project root: `cypress open`. This will open the Cypress app, which will enable you to choose the test you wish to execute. You can run only your test, which is ideal if you're in the process of creating it.
 
-Once you clone the repository, you will have a monorepo which consists of a bunch of different packages, located in `/packages` and `/components` directory.
+#### Should I run the tests against a local development server or a project deployed to the cloud?
 
-- `components` folder contains `serverless` components that are responsible for deployment of your infrastructure.
-- `packages` folder contains app packages, api packages, utility packages, etc.
+In general, Cypress tests should be ran against a project deployed into the cloud, mainly because of the existing tests that
+are making assertions related to the server side rendering (SSR) and CDN cache invalidations, which is not active in local development.
 
-Packages prefixed with `app-` are React apps. The ones with the `api-` prefix are API plugins. All the other packages are utility packages.
+The only problem with this approach is that if you're in process of creating a new test, and you need to change something in the UI in order to make it easier to test (e.g. adding a "data-testid" attribute to a HTML element), you'll need to redeploy the app, which might get a bit frustrating if your making a lot of changes (since a single deploy can take up to 180s).
 
-`examples` folder is the place that simulates a project structure of a project created using `@webiny/cli`. This is your development sandbox.
+But, if your test doesn't involve assertions related to SSR and CDN cache invalidation, while creating the test, you can actually run it against a local development server (set `SITE_URL` variable to e.g. "http://localhost:3001"). This way you'll be able to see your changes in the browser much faster, and get back to your test faster as well.
 
-## Prerequisites
+#### Where are tests located?
 
-1. Node `10.14` or higher (to manage your Node versions we recommend [n](https://www.npmjs.com/package/n) for OSX/Linux, and [nvm-windows](https://github.com/coreybutler/nvm-windows) for Windows)
+All of the tests can be found in the `cypress/integration` folder (in the project root). In there, you will find just a single `admin` folder, because at the moment we only have tests for the Admin app and various modules introduced by other Webiny apps (Page Builder, Form Builder, Security, ...).
 
-2. `yarn 1.0` or higher (because our project setup uses workspaces).
-   If you don't already have `yarn`, visit [yarnpkg.com](https://yarnpkg.com/en/docs/install) to install it.
+Follow the same structure if you're about to add a new test.
 
-3. A verified AWS account with an [IAM user for programmatic usage](https://www.youtube.com/watch?v=tgb_MRVylWw)
+#### How to test `site` app in the cloud?
 
-4. Webiny uses MongoDB as its go-to database, so you'll need to have one ready. We recommend [Mongo Atlas](https://docs.atlas.mongodb.com/getting-started/) (there is a free tier for developers, so don't worry about having to pay for anything).
+When deployed to the cloud, the `site` app (which basically represents the public-facing website) is using SSR and CDN caching in order to improve SEO compatibility and drastically speed up the site, respectively.
 
-> IMPORTANT: it's important to give the outside world access to your database because the database will be accessed from your cloud functions, thus you'll never have a fixed IP address. See the [Whitelist Your Connection IP Address](https://docs.atlas.mongodb.com/getting-started/#whitelist-your-connection-ip-address). Make sure you add a `0.0.0.0/0` entry.
+The problem occurs when you make changes in the Admin, and you want to test that these changes are actually visible on the website. Because of the CDN cache, changes won't be immediately there, but only after 5-10 seconds and in some cases it can take even longer. 
 
-> The `MONGODB_SERVER` value should be in the format of a MongoDB connection string such as:
-> `mongodb+srv://{YOUR_USERNAME}:{YOUR_PASSWORD}@someclustername.mongodb.net`.
+The initial "quick" solution was to just use `.wait(30000)` commands in order to wait for the CDN cache to be invalidated. But as you might've noticed, this isn't very effective, since in some cases CDN could be invalidate way before 30 seconds. On the other hand, sometimes 30 seconds wasn't long enough, and the tests would continue making assertions on the old page content, which would result in a failed test.
 
-> WINDOWS USERS: make sure you have installed [Visual C++ Redistributable for Visual Studio 2015](https://www.microsoft.com/en-in/download/details.aspx?id=48145). This is required to run tests using Jest [plugin for in-memory MongoDB server](https://github.com/shelfio/jest-mongodb).
+That's why we've creates a custom `visitAndReloadOnceInvalidated` Cypress command. The following code shows a usage example:
 
-> WINDOWS USERS: it's best to use `git-bash` as a terminal to work with Webiny as `cmd` won't work. If you have `Git` installed, most likely you already have the `git-bash` installed. If you're using VSCode IDE, you will be able to easily switch to the `bash` terminal. Alternatively you can install the [cmder](https://cmder.net/) terminal emulator.
-
-## Local setup
-
-1. Fork and clone the repo
-
-2. Install all dependencies:
-
-   ```
-   yarn
-   ```
-
-3. Run `yarn setup-repo`. This will setup all the necessary environment config files and build all packages to generate `dist` folders and TS declarations. You need to manually update the DB connection string, edit your `examples/.env.json` file.
-
-4. Deploy you API to use with local React apps by running `webiny deploy-api` from the `examples` folder. Once deployed, it will automatically update you React apps' `.env.json` files with the necessary variables.
-
-> NOTE: `webiny` should be run from the root of the Webiny project, and since `examples` folder is a `sandbox`, this is the place to run your `webiny` commands from.
-
-5. Begin working on React apps by navigating to `examples/apps/{admin|site}` and run `yarn start`. React apps are regular `create-react-app` apps, slightly modified, but all the CRA rules apply.
-
-6. Run `watch` on packages you are working on so that your changes are automatically built into the corresponding `dist` folder. React app build will automatically rebuild and hot-reload changes that happen in the `dist` folder of all related packages.
-
-The easiest way to run a watch is by running `lerna run watch --scope=your-scope --stream --parallel`. For more details visit the [official lerna filtering docs](https://github.com/lerna/lerna/tree/master/core/filter-options). 
-
-## Tests
-
-You can find examples of tests in some of the utility packages (`validation`, `i18n`, `plugins`).
-
-`api-files` contains an example of testing your GraphQL API.
-
-We'll be strongly focusing on tests in the near future, and of course contributions of tests are most welcome :)
-
-To add a package to Jest projects, edit the `jest.config.js` file.
-
-## Release notes
-
-This section is mostly intended for project owners, since they are the ones who can cut a release, but it is nice for contributors to be aware of how things work.
-
-> NOTE: this process represents our current way of developing, and it MAY and most probably WILL change in the future, as the community and number of contributions grow.
-
-We use `lerna` to publish our packages in the `independent` mode, using `conventional-commits`.
-Each package MUST have a `prepublishOnly` script which creates a build ready to be published to `npm` in the `dist` folder.
-
-Since we use `@webiny` scope, each package that is intended for `npm` MUST have a `"publishConfig": {"access": "public"}` in its `package.json`.
-
-At this point CI is not integrated, as we want to manually review and publish each release. This will also be automated as the project advances and we add more tests for a reliable CI workflow.
-
-### Release process
-
-This is the safest approach as you get a chance to review packages before each step, and particularly before publishing to `npm`.
-
-```
-// Make sure all dependencies are in order
-yarn adio
-
-// Validate package.json structure of each package
-yarn validate-packages
-
-// Fetch all tags from origin
-git fetch
-
-// Create github tags and release
-GH_TOKEN=xyz lerna version
-
-// Publish to NPM
-NPM_TOKEN=xyz lerna publish from-package
+```js
+cy.findByText("Save something")
+  .click()
+  .visitAndReloadOnceInvalidated(Cypress.env("SITE_URL"))
+  .continueTestingAsUsual();
 ```
 
-If `lerna publish from-package` fails along the way, you can fix whatever the issue was and re-run the step, as it is publishing packages from local package folders, so published packages will not be re-published.
+The `visitAndReloadOnceInvalidated` command will immediately visit the URL you're trying to test and will continuously refresh the page until the change was detected, after which the next assertions will start to get executed.
 
-#### Prerelease
-
-Here are the steps if you want to publish a prerelease to a temporary dist-tag:
-
-```
-// Previous steps are the same, don't skip those!!
-
-// Create github tags and release
-GH_TOKEN=xyz lerna version --conventional-prerelease
-
-// Publish to NPM using `next` tag
-NPM_TOKEN=xyz lerna publish from-package --dist-tag=next
-```
-
-Repeat the process during bug fixing.
-
-#### Promoting to actual release
-
-Now that you're ready to publish your prerelease to the `latest` tag:
-
-```
-// Previous steps are the same, don't skip those!!
-
-// Create github tags and release
-GH_TOKEN=xyz lerna version --conventional-graduate
-
-// Publish to NPM (`latest` tag is default)
-NPM_TOKEN=xyz lerna publish from-package
-```
+The page will be refreshed every ~3 seconds for 10 times. If there are no changes after that, the command will throw an error, and the test will fail. 

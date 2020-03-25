@@ -1,4 +1,4 @@
-import { FbFormModelField, FieldIdType, FieldLayoutPositionType } from "@webiny/app-headless-cms/types";
+import { CmsContentModelModelField, FieldIdType, FieldLayoutPositionType } from "@webiny/app-headless-cms/types";
 import getFieldPosition from "./getFieldPosition";
 
 /**
@@ -35,7 +35,7 @@ const moveField = ({ field, position, data }) => {
 };
 
 export default (params: {
-    field: FieldIdType | FbFormModelField;
+    field: FieldIdType | CmsContentModelModelField;
     position: FieldLayoutPositionType;
     data: object;
 }) => {

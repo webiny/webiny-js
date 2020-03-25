@@ -7,7 +7,7 @@ import { Icon } from "@webiny/ui/Icon";
 import { Accordion, AccordionItem } from "@webiny/ui/Accordion";
 import { ReactComponent as HandleIcon } from "./icons/round-drag_indicator-24px.svg";
 import Draggable from "./Draggable";
-import { FbBuilderFieldPlugin, FbEditorFieldGroup } from "@webiny/app-headless-cms/types";
+import { FbBuilderFieldPlugin, CmsEditorFieldGroup } from "@webiny/app-headless-cms/types";
 
 const FieldContainer = styled("div")({
     padding: "10px 15px",
@@ -89,7 +89,9 @@ export const Fields = ({ onFieldDragStart }) => {
     const { getField } = useContentModelEditor();
 
     function getGroups() {
-        const presetFieldPlugins = getPlugins<FbBuilderFieldPlugin>("form-editor-field-type")
+        const presetFieldPlugins = getPlugins<FbBuilderFieldPlugin>(
+            "content-model-editor-field-type"
+        )
             .filter(pl => pl.field.group)
             .filter(pl => {
                 if (pl.field.unique) {
@@ -98,7 +100,7 @@ export const Fields = ({ onFieldDragStart }) => {
                 return true;
             });
 
-        return getPlugins<FbEditorFieldGroup>("form-editor-field-group").map(pl => ({
+        return getPlugins<CmsEditorFieldGroup>("content-model-editor-field-group").map(pl => ({
             ...pl.group,
             name: pl.name,
             fields: presetFieldPlugins.filter(f => f.field.group === pl.name).map(pl => pl.field)
@@ -112,31 +114,17 @@ export const Fields = ({ onFieldDragStart }) => {
                 onFieldDragStart={onFieldDragStart}
             />
 
-            <Accordion elevation={0}>
-                {getGroups().map(group => (
-                    <AccordionItem
-                        key={group.name}
-                        title={group.title}
-                        icon={null}
-                        className={accordionItem}
-                    >
-                        <FormAccordionContent>
-                            {!group.fields.length && (
-                                <span>No fields are available at the moment!</span>
-                            )}
-                            {group.fields.map(fieldType => {
-                                return (
-                                    <Field
-                                        key={fieldType.name}
-                                        fieldType={fieldType}
-                                        onFieldDragStart={onFieldDragStart}
-                                    />
-                                );
-                            })}
-                        </FormAccordionContent>
-                    </AccordionItem>
-                ))}
-            </Accordion>
+            {getGroups().map(group =>
+                group.fields.map(fieldType => {
+                    return (
+                        <Field
+                            key={fieldType.name}
+                            fieldType={fieldType}
+                            onFieldDragStart={onFieldDragStart}
+                        />
+                    );
+                })
+            )}
         </React.Fragment>
     );
 };

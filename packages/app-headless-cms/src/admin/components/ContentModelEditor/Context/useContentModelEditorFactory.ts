@@ -1,13 +1,13 @@
 import React from "react";
 import shortid from "shortid";
 import { get, cloneDeep, pick } from "lodash";
-import { GET_CONTENT_MODEL, UPDATE_REVISION } from "./graphql";
+import { GET_CONTENT_MODEL, UPDATE_CONTENT_MODEL } from "./graphql";
 import { getFieldPosition, moveField, moveRow, deleteField } from "./functions";
 import { getPlugins } from "@webiny/plugins";
 
 import {
-    FbFormModelFieldsLayout,
-    FbFormModelField,
+    CmsContentModelModelFieldsLayout,
+    CmsContentModelModelField,
     FieldIdType,
     FieldLayoutPositionType,
     FbBuilderFieldPlugin
@@ -34,26 +34,26 @@ export default ContentModelEditorContext => {
                     query: GET_CONTENT_MODEL,
                     variables: { id }
                 });
-                const { data, error } = get(response, "data.cmsManage.getContentModel");
+                const { data, error } = get(response, "data.cms.getContentModel");
                 if (error) {
+                    console.log("neee");
                     throw new Error(error);
                 }
 
                 self.setData(() => cloneDeep(data), false);
-
                 return response;
             },
-            saveContentModel: async data => {
+            saveContentModel: async (data = null) => {
                 data = data || state.data;
                 const response = await self.apollo.mutate({
-                    mutation: UPDATE_REVISION,
+                    mutation: UPDATE_CONTENT_MODEL,
                     variables: {
                         id: data.id,
-                        data: pick(data, ["layout", "fields", "name", "settings", "triggers"])
+                        data: pick(data, ["layout", "fields", "title", "settings", "description"])
                     }
                 });
 
-                return get(response, "data.cmsManage.updateRevision");
+                return get(response, "data.cms.updateContentModel");
             },
             /**
              * Set form data by providing a callback, which receives a fresh copy of data on which you can work on.
@@ -72,7 +72,7 @@ export default ContentModelEditorContext => {
              * @param layout
              * @returns {*}
              */
-            getFields(layout = false): FbFormModelField[] | FbFormModelFieldsLayout {
+            getFields(layout = false): CmsContentModelModelField[] | CmsContentModelModelFieldsLayout {
                 if (!layout) {
                     return state.data.fields;
                 }
@@ -90,10 +90,10 @@ export default ContentModelEditorContext => {
             /**
              * Return field plugin.
              * @param query
-             * @returns {void|?FbFormModelField}
+             * @returns {void|?CmsContentModelModelField}
              */
             getFieldPlugin(query: object): FbBuilderFieldPlugin {
-                return getPlugins<FbBuilderFieldPlugin>("form-editor-field-type").find(
+                return getPlugins<FbBuilderFieldPlugin>("content-model-editor-field-type").find(
                     ({ field }) => {
                         for (const key in query) {
                             if (!(key in field)) {
@@ -115,7 +115,7 @@ export default ContentModelEditorContext => {
              * @param query
              * @returns {boolean}
              */
-            getField(query: object): FbFormModelField {
+            getField(query: object): CmsContentModelModelField {
                 return state.data.fields.find(field => {
                     for (const key in query) {
                         if (!(key in field)) {
@@ -136,7 +136,7 @@ export default ContentModelEditorContext => {
              * @param data
              * @param position
              */
-            insertField(data: FbFormModelField, position: FieldLayoutPositionType) {
+            insertField(data: CmsContentModelModelField, position: FieldLayoutPositionType) {
                 const field = cloneDeep(data);
                 if (!field._id) {
                     field._id = shortid.generate();
@@ -176,7 +176,7 @@ export default ContentModelEditorContext => {
                 field,
                 position
             }: {
-                field: FieldIdType | FbFormModelField;
+                field: FieldIdType | CmsContentModelModelField;
                 position: FieldLayoutPositionType;
             }) {
                 self.setData(data => {
@@ -218,7 +218,7 @@ export default ContentModelEditorContext => {
              * Deletes a field (both from the list of field and the layout).
              * @param field
              */
-            deleteField(field: FbFormModelField) {
+            deleteField(field: CmsContentModelModelField) {
                 self.setData(data => {
                     deleteField({ field, data });
                     return data;
@@ -230,7 +230,7 @@ export default ContentModelEditorContext => {
              * @param field
              * @returns {{index: number, row: number}|{index: null, row: null}}
              */
-            getFieldPosition(field: FieldIdType | FbFormModelField) {
+            getFieldPosition(field: FieldIdType | CmsContentModelModelField) {
                 return getFieldPosition({ field, data: self.data });
             }
         };

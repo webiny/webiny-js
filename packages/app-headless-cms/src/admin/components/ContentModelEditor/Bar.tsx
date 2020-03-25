@@ -12,11 +12,11 @@ export default function Bar() {
     return (
         <TopAppBar className={topBar} fixed>
             <TopAppBarSection style={{ width: "50%" }} alignEnd>
-                {renderPlugins("form-editor-default-bar-left")}
+                {renderPlugins("content-model-editor-default-bar-left")}
             </TopAppBarSection>
 
             <TopAppBarSection style={{ width: "50%" }} alignEnd>
-                {renderPlugins("form-editor-default-bar-right")}
+                {renderPlugins("content-model-editor-default-bar-right")}
             </TopAppBarSection>
         </TopAppBar>
     );

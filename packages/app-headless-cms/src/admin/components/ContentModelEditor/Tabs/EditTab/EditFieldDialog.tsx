@@ -20,7 +20,7 @@ import { i18n } from "@webiny/app/i18n";
 const t = i18n.namespace("ContentModelEditor.EditFieldDialog");
 import { useContentModelEditor } from "@webiny/app-headless-cms/admin/components/ContentModelEditor/Context";
 import { useI18N } from "@webiny/app-i18n/hooks/useI18N";
-import { FbBuilderFieldPlugin, FbFormModelField } from "@webiny/app-headless-cms/types";
+import { FbBuilderFieldPlugin, CmsContentModelModelField } from "@webiny/app-headless-cms/types";
 
 const dialogBody = css({
     "&.webiny-ui-dialog__content": {
@@ -29,7 +29,7 @@ const dialogBody = css({
     }
 });
 
-const FbFormModelFieldList = styled("div")({
+const CmsContentModelModelFieldList = styled("div")({
     display: "flex",
     justifyContent: "center",
     alignItems: "center",
@@ -39,7 +39,7 @@ const FbFormModelFieldList = styled("div")({
 });
 
 type EditFieldDialogProps = {
-    field: FbFormModelField;
+    field: CmsContentModelModelField;
     onClose: Function;
     onSubmit: (data: any) => void;
 };
@@ -120,8 +120,8 @@ const EditFieldDialog = ({ field, onSubmit, ...props }: EditFieldDialogProps) =>
                 render = (
                     <>
                         <DialogContent className={dialogBody}>
-                            <FbFormModelFieldList>
-                                {getPlugins<FbBuilderFieldPlugin>("form-editor-field-type")
+                            <CmsContentModelModelFieldList>
+                                {getPlugins<FbBuilderFieldPlugin>("content-model-editor-field-type")
                                     .filter(pl => !pl.field.group)
                                     .map(pl => (
                                         <FieldTypeSelector
@@ -150,7 +150,7 @@ const EditFieldDialog = ({ field, onSubmit, ...props }: EditFieldDialogProps) =>
                                             }}
                                         />
                                     ))}
-                            </FbFormModelFieldList>
+                            </CmsContentModelModelFieldList>
                         </DialogContent>
                         <DialogActions>
                             <DialogCancel onClick={onClose}>{t`Cancel`}</DialogCancel>

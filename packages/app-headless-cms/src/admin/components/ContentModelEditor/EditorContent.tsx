@@ -6,7 +6,6 @@ import { Typography } from "@webiny/ui/Typography";
 import { Tabs, Tab } from "@webiny/ui/Tabs";
 import { Icon } from "@webiny/ui/Icon";
 import { EditTab } from "./Tabs/EditTab";
-import { TriggersTab } from "./Tabs/TriggersTab";
 import { PreviewTab } from "./Tabs/PreviewTab";
 import { Fields } from "./Fields";
 
@@ -52,7 +51,7 @@ export default function EditorContent() {
                 <LeftPanel span={4}>
                     <LeftBarTitle>
                         <Icon className={titleIcon} icon={<FormIcon />} />
-                        <Typography use={"headline6"}>Form Elements</Typography>
+                        <Typography use={"headline6"}>Content Model Fields</Typography>
                     </LeftBarTitle>
                     <LeftBarFieldList>
                         <Fields
@@ -72,9 +71,6 @@ export default function EditorContent() {
                         </Tab>
                         <Tab label={"Preview"}>
                             <PreviewTab />
-                        </Tab>
-                        <Tab label={"Triggers"}>
-                            <TriggersTab />
                         </Tab>
                     </Tabs>
                 </RightPanel>

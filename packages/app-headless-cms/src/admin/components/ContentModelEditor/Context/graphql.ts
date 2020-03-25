@@ -6,22 +6,6 @@ const I18N_FIELDS = `
         locale
     }
 `;
-/*
-list: true,
-    label: i18nString({ context, validation: required }),
-    type: string({ validation: required }),
-    localization: boolean({ validation: required }),
-    unique: boolean({ validation: required }),
-    validation: fields({
-        list: true,
-        value: [],
-        instanceOf: withFields({
-            name: string({ validation: required }),
-            message: i18nString({ context }),
-            settings: object({ value: {} })
-        })()
-    }),
-    settings: object({ value: {} })*/
 
 export const FIELDS_FIELDS = `
         _id
@@ -55,11 +39,13 @@ export const FIELDS_FIELDS = `
 
 export const GET_CONTENT_MODEL = gql`
     query GetContentModel($id: ID!) {
-        cmsManage {
+        cms {
             getContentModel(id: $id) {
                 data {
                     id
                     title
+                    description
+                    modelId
                     fields {
                         ${FIELDS_FIELDS}
                     }
@@ -70,19 +56,17 @@ export const GET_CONTENT_MODEL = gql`
     }
 `;
 
-export const UPDATE_REVISION = gql`
-    mutation UpdateForm($id: ID!, $data: UpdateFormInput!) {
-        cmsManage {
-            updateRevision(id: $id, data: $data) {
+export const UPDATE_CONTENT_MODEL = gql`
+    mutation UpdateContentModel($id: ID!, $data: CmsContentModelInput!) {
+        cms {
+            updateContentModel(id: $id, data: $data) {
                 data {
                     id
                     title
-                    version
                     fields {
                         ${FIELDS_FIELDS}
                     }
                     layout
-                    triggers
                 }
             }
         }
