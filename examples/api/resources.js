@@ -170,6 +170,9 @@ module.exports = ({ cli }) => ({
             }
         },
         i18n: {
+            watch: [
+                "./services/headlessCms/build"
+            ],
             build: {
                 root: "./services/i18n",
                 script: "yarn build",
@@ -262,6 +265,9 @@ module.exports = ({ cli }) => ({
             }
         },
         headlessCms: {
+            watch: [
+                "./services/headlessCms/build"
+            ],
             build: {
                 root: "./services/headlessCms",
                 script: "yarn build",
@@ -290,6 +296,9 @@ module.exports = ({ cli }) => ({
             }
         },
         headlessCmsHandler: {
+            watch: [
+                "./services/headlessCmsHandler/build"
+            ],
             build: {
                 root: "./services/headlessCmsHandler",
                 script: "yarn build",
