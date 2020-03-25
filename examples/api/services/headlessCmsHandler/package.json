@@ -2,7 +2,7 @@
   "name": "service-cms-handler",
   "version": "0.1.0",
   "scripts": {
-    "build": "webpack --config ./webpack.config.js"
+    "build": "webiny run build"
   },
   "dependencies": {
     "@webiny/http-handler": "^2.1.0",
