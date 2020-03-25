@@ -2,6 +2,13 @@ const vars = {
     region: process.env.AWS_REGION,
     debug: "true",
     bucket: process.env.S3_BUCKET,
+    httpHandlerApolloServer: {
+        server: {
+            introspection: process.env.GRAPHQL_INTROSPECTION,
+            playground: process.env.GRAPHQL_PLAYGROUND,
+        },
+        debug: true
+    },
     apollo: {
         server: {
             introspection: process.env.GRAPHQL_INTROSPECTION,
@@ -163,29 +170,32 @@ module.exports = ({ cli }) => ({
             }
         },
         i18n: {
-            component: "@webiny/serverless-apollo-service",
-            inputs: {
-                region: vars.region,
-                memory: 512,
-                debug: vars.debug,
-                webpackConfig: "./webpack.config.js",
-                plugins: [
-                    {
-                        factory: "@webiny/api-plugin-create-apollo-handler",
-                        options: vars.apollo
+            build: {
+                root: "./services/i18n",
+                script: "yarn build",
+                define: {
+                    HTTP_HANDLER_APOLLO_SERVER_OPTIONS: vars.httpHandlerApolloServer,
+                    DB_PROXY_OPTIONS: {
+                        functionArn: "${dbProxy.arn}"
                     },
-                    {
-                        factory: "@webiny/api-plugin-commodo-db-proxy",
-                        options: {
-                            functionArn: "${dbProxy.arn}"
+                    SECURITY_OPTIONS: vars.security
+                }
+            },
+            deploy: {
+                component: "@webiny/serverless-apollo-service",
+                inputs: {
+                    region: vars.region,
+                    description: "I18N GraphQL API",
+                    function: {
+                        code: "./services/i18n/build",
+                        handler: "handler.handler",
+                        memory: 512,
+                        env: {
+                            DEBUG: vars.debug
                         }
-                    },
-                    {
-                        factory: "@webiny/api-security/plugins/service",
-                        options: vars.security
-                    },
-                    "@webiny/api-i18n/plugins"
-                ]
+                    }
+
+                }
             }
         },
         pageBuilder: {
