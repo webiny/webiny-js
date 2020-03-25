@@ -1,11 +1,11 @@
-import { FbFormFieldPatternValidatorPlugin } from "@webiny/app-headless-cms/types";
+import { CmsFormFieldPatternValidatorPlugin } from "@webiny/app-headless-cms/types";
 
 export default {
-    type: "form-editor-field-validator-pattern",
-    name: "form-editor-field-validator-pattern-upper-case",
+    type: "content-model-editor-field-validator-pattern",
+    name: "content-model-editor-field-validator-pattern-upper-case",
     pattern: {
         message: "Only upper case characters are allowed.",
         name: "upperCase",
         label: "Upper case"
     }
-} as FbFormFieldPatternValidatorPlugin;
+} as CmsFormFieldPatternValidatorPlugin;

@@ -5,8 +5,8 @@ import OptionsList from "./components/OptionsList";
 import { FbBuilderFieldPlugin } from "@webiny/app-headless-cms/types";
 
 const plugin: FbBuilderFieldPlugin = {
-    type: "form-editor-field-type",
-    name: "form-editor-field-type-radio",
+    type: "content-model-editor-field-type",
+    name: "content-model-editor-field-type-radio",
     field: {
         type: "radio",
         name: "radio",

@@ -5,13 +5,13 @@ import { Select } from "@webiny/ui/Select";
 import { getPlugins } from "@webiny/plugins";
 import { validation } from "@webiny/validation";
 import {
-    FbFormFieldPatternValidatorPlugin,
-    FbBuilderFormFieldValidatorPlugin
+    CmsFormFieldPatternValidatorPlugin,
+    CmsBuilderFormFieldValidatorPlugin
 } from "@webiny/app-headless-cms/types";
 
 export default {
-    type: "form-editor-field-validator",
-    name: "form-editor-field-validator-pattern",
+    type: "content-model-editor-field-validator",
+    name: "content-model-editor-field-validator-pattern",
     validator: {
         name: "pattern",
         label: "Pattern",
@@ -22,8 +22,8 @@ export default {
         },
         renderSettings({ Bind, setValue, setMessage, data }) {
             const inputsDisabled = data.settings.preset !== "custom";
-            const presetPlugins = getPlugins<FbFormFieldPatternValidatorPlugin>(
-                "form-editor-field-validator-pattern"
+            const presetPlugins = getPlugins<CmsFormFieldPatternValidatorPlugin>(
+                "content-model-editor-field-validator-pattern"
             );
 
             // TODO: @ts-adrian neda mi da dolje posaljem
@@ -83,4 +83,4 @@ export default {
             );
         }
     }
-} as FbBuilderFormFieldValidatorPlugin;
+} as CmsBuilderFormFieldValidatorPlugin;

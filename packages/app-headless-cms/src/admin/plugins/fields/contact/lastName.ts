@@ -2,12 +2,12 @@ import textFieldPlugin from "./../text";
 import { FbBuilderFieldPlugin } from "@webiny/app-headless-cms/types";
 
 const plugin: FbBuilderFieldPlugin = {
-    type: "form-editor-field-type",
-    name: "form-editor-field-type-last-name",
+    type: "content-model-editor-field-type",
+    name: "content-model-editor-field-type-last-name",
     field: {
         ...textFieldPlugin.field,
         unique: true,
-        group: "form-editor-field-group-contact",
+        group: "content-model-editor-field-group-contact",
         name: "lastName",
         label: "Last name",
         createField(props) {

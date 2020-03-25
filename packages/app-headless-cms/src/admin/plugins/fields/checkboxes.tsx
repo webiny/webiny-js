@@ -5,8 +5,8 @@ import OptionsList from "./components/OptionsList";
 import { FbBuilderFieldPlugin } from "@webiny/app-headless-cms/types";
 
 const plugin: FbBuilderFieldPlugin = {
-    type: "form-editor-field-type",
-    name: "form-editor-field-type-checkbox",
+    type: "content-model-editor-field-type",
+    name: "content-model-editor-field-type-checkbox",
     field: {
         type: "checkbox",
         name: "checkbox",

@@ -5,8 +5,8 @@ import { ReactComponent as HiddenIcon } from "./icons/round-visibility_off-24px.
 import { FbBuilderFieldPlugin } from "@webiny/app-headless-cms/types";
 
 const plugin: FbBuilderFieldPlugin = {
-    type: "form-editor-field-type",
-    name: "form-editor-field-type-hidden",
+    type: "content-model-editor-field-type",
+    name: "content-model-editor-field-type-hidden",
     field: {
         type: "hidden",
         name: "hidden",

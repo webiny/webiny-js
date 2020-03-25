@@ -2,11 +2,11 @@ import React from "react";
 import { Grid, Cell } from "@webiny/ui/Grid";
 import { Tags } from "@webiny/ui/Tags";
 import { validation } from "@webiny/validation";
-import { FbBuilderFormFieldValidatorPlugin } from "@webiny/app-headless-cms/types";
+import { CmsBuilderFormFieldValidatorPlugin } from "@webiny/app-headless-cms/types";
 
 export default {
-    type: "form-editor-field-validator",
-    name: "form-editor-field-validator-in",
+    type: "content-model-editor-field-validator",
+    name: "content-model-editor-field-validator-in",
     validator: {
         name: "in",
         label: "Specific values",
@@ -28,4 +28,4 @@ export default {
             );
         }
     }
-} as FbBuilderFormFieldValidatorPlugin;
+} as CmsBuilderFormFieldValidatorPlugin;

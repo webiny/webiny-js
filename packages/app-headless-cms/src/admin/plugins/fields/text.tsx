@@ -6,8 +6,8 @@ import { I18NInput } from "@webiny/app-i18n/admin/components";
 import { FbBuilderFieldPlugin } from "@webiny/app-headless-cms/types";
 
 const plugin: FbBuilderFieldPlugin = {
-    type: "form-editor-field-type",
-    name: "form-editor-field-type-text",
+    type: "content-model-editor-field-type",
+    name: "content-model-editor-field-type-text",
     field: {
         name: "text",
         type: "text",
