@@ -3,7 +3,7 @@
   "include": ["./src"],
   "exclude": [
     "node_modules",
-    "../api",
+    "../graphql",
     "../api-i18n",
     "../api-security",
     "../commodo",
@@ -17,7 +17,7 @@
     "declarationDir": "./dist"
   },
   "references": [
-    { "path": "../api/tsconfig.build.json" },
+    { "path": "../graphql/tsconfig.build.json" },
     { "path": "../api-i18n/tsconfig.build.json" },
     { "path": "../api-security/tsconfig.build.json" },
     { "path": "../commodo-graphql/tsconfig.build.json" },

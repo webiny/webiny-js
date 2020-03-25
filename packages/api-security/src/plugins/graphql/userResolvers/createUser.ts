@@ -1,8 +1,8 @@
-import { ErrorResponse, Response } from "@webiny/api";
+import { ErrorResponse, Response } from "@webiny/graphql";
 import { WithFieldsError } from "@webiny/commodo";
 import { InvalidFieldsError } from "@webiny/commodo-graphql";
 import { SecurityAuthenticationProviderPlugin } from "@webiny/api-security/types";
-import { GraphQLFieldResolver } from "@webiny/api/types";
+import { GraphQLFieldResolver } from "@webiny/graphql/types";
 
 export default (userFetcher): GraphQLFieldResolver => async (root, args, context) => {
     const User = userFetcher(context);

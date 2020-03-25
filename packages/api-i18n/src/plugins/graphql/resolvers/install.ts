@@ -1,4 +1,4 @@
-import { ErrorResponse, Response } from "@webiny/api";
+import { ErrorResponse, Response } from "@webiny/graphql";
 import { WithFieldsError } from "@webiny/commodo";
 import { InvalidFieldsError } from "@webiny/commodo-graphql";
 

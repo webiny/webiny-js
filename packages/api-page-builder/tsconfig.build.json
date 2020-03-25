@@ -3,7 +3,7 @@
   "include": ["./src"],
   "exclude": [
     "node_modules",
-    "../api",
+    "../graphql",
     "../api-security",
     "../commodo",
     "../commodo-graphql",
@@ -16,7 +16,7 @@
     "declarationDir": "./dist"
   },
   "references": [
-    { "path": "../api/tsconfig.build.json" },
+    { "path": "../graphql/tsconfig.build.json" },
     { "path": "../api-security/tsconfig.build.json" },
     { "path": "../commodo-graphql/tsconfig.build.json" },
     { "path": "../http-handler-ssr/tsconfig.build.json" },

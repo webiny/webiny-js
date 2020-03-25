@@ -1,5 +1,5 @@
 import { JwtToken } from "./jwtToken";
-import { GraphQLContext } from "@webiny/api/types";
+import { GraphQLContext } from "@webiny/graphql/types";
 
 export default async (context: GraphQLContext) => {
     const { security, event } = context;

@@ -1,0 +1,24 @@
+{
+  "extends": "../../../../tsconfig.build.json",
+  "include": ["./src"],
+  "exclude": [
+    "node_modules",
+    "../../../../api-plugin-commodo-db-proxy",
+    "../../../../api-headless-cms",
+    "../../../../api-i18n",
+    "../../../../api-security",
+    "../../../../http-handler"
+  ],
+  "compilerOptions": {
+    "rootDir": "./src",
+    "outDir": "./dist",
+    "declarationDir": "./dist"
+  },
+  "references": [
+    { "path": "../../../../api-plugin-commodo-db-proxy/tsconfig.build.json" },
+    { "path": "../../../../api-headless-cms/tsconfig.build.json" },
+    { "path": "../../../../api-i18n/tsconfig.build.json" },
+    { "path": "../../../../api-security/tsconfig.build.json" },
+    { "path": "../../../../http-handler/tsconfig.build.json" }
+  ]
+}

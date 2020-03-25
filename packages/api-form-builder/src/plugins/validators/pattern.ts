@@ -2,7 +2,7 @@
  * Since form-field-validator plugin needs access to the request context, we create a context plugin which
  * registers the actual validation plugin with access to the request context.
  */
-import { GraphQLContextPlugin } from "@webiny/api/types";
+import { GraphQLContextPlugin } from "@webiny/graphql/types";
 import { FbFormFieldPatternValidatorPlugin } from "@webiny/api-form-builder/types";
 
 export default {

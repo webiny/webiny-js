@@ -4,6 +4,12 @@ vars:
   region: ${env.AWS_REGION}
   debug: ${env.DEBUG}
   bucket: ${env.S3_BUCKET}
+  httpHandlerApolloServer:
+    server:
+      introspection: ${env.GRAPHQL_INTROSPECTION}
+      playground: ${env.GRAPHQL_PLAYGROUND}
+    debug:
+      true
   apollo:
     server:
       introspection: ${env.GRAPHQL_INTROSPECTION}
@@ -39,9 +45,11 @@ gateway:
               url: ${i18n.api.graphqlUrl}
             - name: formBuilder
               url: ${formBuilder.api.graphqlUrl}
+            - name: headlessCms
+              url: ${headlessCms.api.graphqlUrl}
 
 dbProxy:
-  component: "@webiny/serverless-db-proxy"
+  component: "@webiny/serverless-db-proxy/dist"
   inputs:
     testConnectionBeforeDeploy: true
     region: ${vars.region}
@@ -110,21 +118,24 @@ files:
         timeout: 30
 
 i18n:
-  component: "@webiny/serverless-apollo-service"
-  inputs:
-    region: ${vars.region}
-    memory: 512
-    debug: ${vars.debug}
-    webpackConfig: ./webpack.config.js
-    plugins:
-      - factory: "@webiny/api-plugin-create-apollo-handler"
-        options: ${vars.apollo}
-      - factory: "@webiny/api-plugin-commodo-db-proxy"
-        options:
-          functionArn: ${dbProxy.arn}
-      - factory: "@webiny/api-security/plugins/service"
-        options: ${vars.security}
-      - "@webiny/api-i18n/plugins"
+  build:
+    entry: "./services/i18n/src/index"
+    define:
+      HTTP_HANDLER_APOLLO_SERVER_OPTIONS: ${vars.httpHandlerApolloServer}
+      DB_PROXY_OPTIONS:
+        functionArn: ${dbProxy.arn}
+      SECURITY_OPTIONS: ${vars.security}
+  deploy:
+    component: "@webiny/serverless-apollo-service"
+    inputs:
+      region: ${vars.region}
+      description: I18N GraphQL API
+      function:
+        code: ./services/i18n/build
+        handler: handler.handler
+        memory: 512
+        env:
+          DEBUG: ${vars.debug}
 
 pageBuilder:
   component: "@webiny/serverless-page-builder"
@@ -172,29 +183,47 @@ formBuilder:
       - "@webiny/api-form-builder/plugins"
       - "@webiny/api-form-builder/plugins/useSsrCacheTags"
 
-headlessHandler:
-  watch:
-    - ./services/headless/build
+headlessCms:
   build:
+    entry: "./services/headlessCms/src/index"
     define:
-      APOLLO_HANDLER_OPTIONS: ${vars.apollo}
+      HTTP_HANDLER_APOLLO_SERVER_OPTIONS: ${vars.httpHandlerApolloServer}
       DB_PROXY_OPTIONS:
         functionArn: ${dbProxy.arn}
       SECURITY_OPTIONS: ${vars.security}
-    root: ./services/headless
-    script: yarn build --watch=${cli.watch}
   deploy:
-    component: "@webiny/serverless-function"
+    component: "@webiny/serverless-apollo-service"
     inputs:
-      description: Headless CMS handler
       region: ${vars.region}
-      code: ./services/headless/build
-      handler: handler.handler
-      memory: 512
-      env:
-        SECURITY_API_URL: ${security.api.graphqlUrl}
-        I18N_API_URL: ${i18n.api.graphqlUrl}
-        DEBUG: ${vars.debug}
+      description: Headless CMS GraphQL API
+      function:
+        code: ./services/headlessCms/build
+        handler: handler.handler
+        memory: 512
+        env:
+          I18N_API_URL: ${i18n.api.graphqlUrl}
+          DEBUG: ${vars.debug}
+
+headlessCmsHandler:
+  build:
+    entry: "./services/headlessCmsHandler/src/index"
+    define:
+      HTTP_HANDLER_APOLLO_SERVER_OPTIONS: ${vars.httpHandlerApolloServer}
+      DB_PROXY_OPTIONS:
+        functionArn: ${dbProxy.arn}
+      SECURITY_OPTIONS: ${vars.security}
+  deploy:
+    component: "@webiny/serverless-apollo-service"
+    inputs:
+      region: ${vars.region}
+      description: Headless CMS GraphQL API (handler)
+      function:
+        code: ./services/headlessCmsHandler/build
+        handler: handler.handler
+        memory: 512
+        env:
+          I18N_API_URL: ${i18n.api.graphqlUrl}
+          DEBUG: ${vars.debug}
 
 api:
   component: "@webiny/serverless-api-gateway"
@@ -205,6 +234,10 @@ api:
       - path: /graphql
         method: ANY
         function: ${gateway}
+      - path: /cms/{key+}
+        method: ANY
+        function: ${headlessCmsHandler}
+
 cdn:
   component: "@webiny/serverless-aws-cloudfront"
   inputs:
@@ -213,6 +246,11 @@ cdn:
       - url: ${api.url}
         pathPatterns:
           "/graphql":
+            ttl: 0
+            forward:
+              headers: ["Accept", "Accept-Language"]
+            allowedHttpMethods: ["GET", "HEAD", "OPTIONS", "PUT", "POST", "PATCH", "DELETE"]
+          "/cms":
             ttl: 0
             forward:
               headers: ["Accept", "Accept-Language"]

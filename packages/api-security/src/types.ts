@@ -1,4 +1,4 @@
-import { GraphQLContext, Plugin } from "@webiny/api/types";
+import { GraphQLContext, Plugin } from "@webiny/graphql/types";
 
 export type SecurityPlugin = Plugin & {
     type: "graphql-security";

@@ -4,7 +4,8 @@
     "packages": [
       "packages/*",
       "components/*",
-      "examples/apps/*"
+      "examples/apps/*",
+      "examples/api/services/*"
     ],
     "nohoist": [
       "**/inquirer/**",
@@ -91,7 +92,6 @@
     "ts-jest": "^24.2.0",
     "typescript": "3.7.4",
     "utf-8-validate": "^5.0.2",
-    "verdaccio": "^3.11.6",
     "webpack": "^4.39.2",
     "write-json-file": "^4.2.0",
     "yargs": "^12.0.1"

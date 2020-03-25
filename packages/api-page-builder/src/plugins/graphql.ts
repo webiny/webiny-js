@@ -1,6 +1,6 @@
 import gql from "graphql-tag";
 import { merge } from "lodash";
-import { emptyResolver } from "@webiny/api";
+import { emptyResolver } from "@webiny/graphql";
 import { hasScope } from "@webiny/api-security";
 import page from "./graphql/Page";
 import category from "./graphql/Category";

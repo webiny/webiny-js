@@ -1,5 +1,5 @@
 import { graphql } from "graphql";
-import { setupSchema } from "@webiny/api/testing";
+import { setupSchema } from "@webiny/graphql/testing";
 import filesPlugins from "../src/plugins";
 
 export default ({ plugins }) => {

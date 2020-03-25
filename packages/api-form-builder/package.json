@@ -14,7 +14,7 @@
   "license": "MIT",
   "dependencies": {
     "@babel/runtime": "^7.5.5",
-    "@webiny/api": "^3.0.2",
+    "@webiny/graphql": "^1.0.0",
     "@webiny/api-i18n": "^3.0.3",
     "@webiny/api-security": "^3.1.0",
     "@webiny/commodo": "^3.0.1",
@@ -37,6 +37,7 @@
     "@babel/core": "^7.5.5",
     "@babel/preset-env": "^7.5.5",
     "@babel/preset-typescript": "^7.8.3",
+    "@webiny/api-plugin-commodo-db-proxy": "^2.0.4",
     "flow-copy-source": "^2.0.2"
   },
   "publishConfig": {

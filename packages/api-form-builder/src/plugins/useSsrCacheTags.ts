@@ -1,6 +1,6 @@
 import { withHooks } from "@webiny/commodo";
 import SsrApiClient from "@webiny/http-handler-ssr/Client";
-import { GraphQLContextPlugin } from "@webiny/api/types";
+import { GraphQLContextPlugin } from "@webiny/graphql/types";
 
 export default (): GraphQLContextPlugin[] => [
     {

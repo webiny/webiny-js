@@ -16,6 +16,6 @@ export {
     ErrorResponse,
     NotFoundResponse,
     ListErrorResponse
-} from "@webiny/api/graphql/responses";
+} from "@webiny/graphql/responses";
 
 export const emptyResolver = () => ({});

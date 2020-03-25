@@ -1,0 +1,7 @@
+{
+  "extends": "../../tsconfig",
+  "references": [
+    { "path": "../form" },
+    { "path": "../app-i18n" }
+  ]
+}

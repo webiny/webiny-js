@@ -1,5 +1,5 @@
 import { merge } from "lodash";
-import { emptyResolver } from "@webiny/api";
+import { emptyResolver } from "@webiny/graphql";
 import { hasScope } from "@webiny/api-security";
 import gql from "graphql-tag";
 import {
@@ -13,7 +13,7 @@ import form from "./graphql/form";
 import formSubmission from "./graphql/formSubmission";
 import formsSettings from "./graphql/formsSettings";
 import { install, isInstalled } from "./graphql/install";
-import { GraphQLSchemaPlugin } from "@webiny/api/types";
+import { GraphQLSchemaPlugin } from "@webiny/graphql/types";
 
 const plugin: GraphQLSchemaPlugin = {
     type: "graphql-schema",

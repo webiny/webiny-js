@@ -2,7 +2,7 @@
   "extends": "../../tsconfig",
   "include": ["./src"],
   "references": [
-    { "path": "../api" },
+    { "path": "../graphql" },
     { "path": "../api-security" },
     { "path": "../commodo-graphql" },
     { "path": "../validation" }

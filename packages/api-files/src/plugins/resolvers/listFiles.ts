@@ -1,4 +1,4 @@
-import { ListResponse } from "@webiny/api";
+import { ListResponse } from "@webiny/graphql";
 
 export default async (root: any, args: {[key: string]: any}, context: {[key: string]: any}) => {
     const { File } = context.models;
