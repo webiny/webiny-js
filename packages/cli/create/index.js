@@ -13,7 +13,7 @@ const { trackActivity } = require("@webiny/tracking");
 const { version } = require(require.resolve("@webiny/cli/package.json"));
 const { getSuccessBanner } = require("./messages");
 const { getPackageVersion } = require("./utils");
-const uniqueId = require('uniqid');
+const uniqueId = require("uniqid");
 
 const globFiles = util.promisify(glob);
 

@@ -3,7 +3,7 @@ const fs = require("fs");
 const { green, red, blue } = require("chalk");
 const notifier = require("node-notifier");
 const execute = require("./execute");
-const { isApiEnvDeployed, isAppsEnvDeployed } = require("./utils");
+const { isEnvDeployed } = require("./utils");
 
 const perks = ["🍪", "☕️", "🍎", "🍺", "🥤"];
 
@@ -59,7 +59,7 @@ module.exports = async inputs => {
             }
         }
 
-        const isFirstDeploy = !(await isAppsEnvDeployed(env));
+        const isFirstDeploy = !(await isEnvDeployed(env));
 
         const { output, duration } = await execute(inputs);
 
@@ -80,7 +80,7 @@ module.exports = async inputs => {
     }
 
     if (what === "api") {
-        const isFirstDeploy = !(await isApiEnvDeployed(env));
+        const isFirstDeploy = !(await isEnvDeployed(env));
         if (isFirstDeploy) {
             const perk = perks[Math.floor(Math.random() * perks.length)];
             console.log(

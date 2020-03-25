@@ -14,6 +14,4 @@ module.exports = function unsetCdnDistributionForwardedHeader({ DistributionConf
             origin.CustomHeaders.Quantity--;
         }
     });
-
-}
-
+};

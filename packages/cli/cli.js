@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 const yargs = require("yargs");
 const { blue, green, dim } = require("chalk");
+const { createCommands } = require("./commands");
 
 const trackingNotice = () => {
     console.log();
@@ -12,10 +13,11 @@ const trackingNotice = () => {
     console.log();
 };
 
+createCommands(yargs);
+
 yargs
     .usage("Usage: $0 <command>")
     .demandCommand(1)
-    .strict()
     .recommendCommands()
     .example("$0 deploy-api --env=dev --debug")
     .example("$0 remove-api --env=dev --debug")

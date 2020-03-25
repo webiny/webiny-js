@@ -3,8 +3,7 @@
   "version": "3.2.5",
   "main": "index.js",
   "bin": {
-    "webiny": "./bin.js",
-    "wby": "./bin.js"
+    "webiny": "./bin.js"
   },
   "repository": {
     "type": "git",
@@ -13,15 +12,13 @@
   "author": "Pavel Denisjuk <pavel@webiny.com>",
   "description": "A tool to bootstrap a Webiny project.",
   "dependencies": {
-    "@serverless/cli": "^1.1.1",
-    "@serverless/core": "^1.1.1",
     "@webiny/tracking": "^3.1.0",
     "ansi-escapes": "^4.2.1",
+    "camelcase": "^5.3.1",
     "chalk": "^2.4.2",
     "debug": "^4.1.1",
     "env-cmd": "^9.0.3",
     "execa": "^2.0.5",
-    "fs-extra": "^8.1.0",
     "glob": "^7.1.4",
     "graphlib": "^2.1.7",
     "load-json-file": "^6.2.0",
@@ -31,7 +28,6 @@
     "ora": "^4.0.3",
     "p-retry": "^4.2.0",
     "ramda": "^0.26.1",
-    "semver": "^7.1.2",
     "traverse": "^0.6.6",
     "uniqid": "^5.0.3",
     "update-notifier": "^3.0.1",
@@ -44,7 +40,7 @@
     "access": "public"
   },
   "scripts": {
-    "build": "yarn rimraf ./dist *.tsbuildinfo && mkdir dist && cp -R cli.js bin.js config create sls dist/",
+    "build": "yarn rimraf ./dist *.tsbuildinfo && mkdir dist && cp -R cli.js bin-cli.js bin-scripts.js scripts.js config create sls dist/",
     "postbuild": "cp package.json LICENSE README.md dist/",
     "prepublishOnly": "yarn build"
   },

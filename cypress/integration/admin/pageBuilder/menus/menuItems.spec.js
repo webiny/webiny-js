@@ -108,9 +108,9 @@ context("Menus Module", () => {
             .reload();
 
         // After reload, let's check if we have all items still present.
-        cy.findByText(`Page List ${id}`).should('exist')
-        cy.findByText(`Single Page Item ${id}`).should('exist')
-        cy.findByText(`Simple Link Item ${id}`).should('exist')
-        cy.findByText(`Simple Folder Item ${id}`).should('exist')
+        cy.findByText(`Page List ${id}`).should("exist");
+        cy.findByText(`Single Page Item ${id}`).should("exist");
+        cy.findByText(`Simple Link Item ${id}`).should("exist");
+        cy.findByText(`Simple Folder Item ${id}`).should("exist");
     });
 });

@@ -14,6 +14,7 @@
     "@webiny/app-typeform": "^3",
     "@webiny/plugins": "^3",
     "@webiny/react-router": "^2",
+    "apollo-cache-inmemory": "^1.6.5",
     "apollo-link-batch-http": "^1.2.3",
     "apollo-link-http": "^1.5.9",
     "core-js": "^3.2.1",
@@ -50,17 +51,11 @@
   },
   "scripts": {
     "analyze": "source-map-explorer build/static/js/main.*",
-    "build": "rescripts build",
-    "build:dev": "cross-env REACT_APP_ENV=browser env-cmd -r .env.json -e default,dev yarn build && yarn build:dev:ssr",
-    "build:dev:ssr": "cross-env NODE_ENV=production REACT_APP_ENV=ssr env-cmd -r .env.json -e default,dev yarn build:ssr",
-    "build:prod": "cross-env REACT_APP_ENV=browser env-cmd -r .env.json -e default,prod yarn build && yarn build:prod:ssr",
-    "build:prod:ssr": "cross-env NODE_ENV=production REACT_APP_ENV=ssr env-cmd -r .env.json -e default,prod yarn build:ssr",
-    "build:ssr": "webpack --progress --mode production --config ./ssr/webpack.config.js && cp ./ssr/handler.js build-ssr/",
-    "build:handler": "cross-env NODE_ENV=production webpack --config ./handler/webpack.config.js",
-    "postbuild": "yarn build:handler",
-    "start": "cross-env REACT_APP_ENV=browser env-cmd -r .env.json -e default,local rescripts start",
-    "test": "rescripts test --env=jsdom",
-    "eject": "react-scripts eject"
+    "build:dev":  "env-cmd -r .env.json -e default,dev webiny run build",
+    "build:prod": "env-cmd -r .env.json -e default,prod webiny run build",
+    "build:ssr:dev":  "env-cmd -r .env.json -e default,dev webiny run build-ssr",
+    "build:ssr:prod":  "env-cmd -r .env.json -e default,prod webiny run build-ssr",
+    "start": "env-cmd -r .env.json -e default,local webiny run start"
   },
   "browserslist": {
     "development": [

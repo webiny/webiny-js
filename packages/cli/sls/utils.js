@@ -4,18 +4,8 @@ const { green } = require("chalk");
 const loadJson = require("load-json-file");
 const { GetEnvVars } = require("env-cmd");
 
-const isApiEnvDeployed = async env => {
-    const envFile = join(process.cwd(), "api", ".serverless", `Webiny.${env}.json`);
-    try {
-        const json = await loadJson(envFile);
-        return json.components && json.outputs;
-    } catch (err) {
-        return false;
-    }
-};
-
-const isAppsEnvDeployed = async env => {
-    const envFile = join(process.cwd(), "apps", ".serverless", `Webiny.${env}.json`);
+const isEnvDeployed = async env => {
+    const envFile = join(process.cwd(), ".serverless", `Webiny.${env}.json`);
     try {
         const json = await loadJson(envFile);
         return json.components && json.outputs;
@@ -42,4 +32,4 @@ const loadEnv = async (envPath, env, { debug = false }) => {
     }
 };
 
-module.exports = { isApiEnvDeployed, isAppsEnvDeployed, loadEnv };
+module.exports = { isEnvDeployed, loadEnv };

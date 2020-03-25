@@ -1,4 +1,7 @@
+const path = require("path");
 const get = require("lodash.get");
+const loadJson = require("load-json-file");
+const writeJson = require("write-json-file");
 const { green } = require("chalk");
 
 const getStateValues = (state, valueMap) => {
@@ -21,4 +24,14 @@ const getStateValues = (state, valueMap) => {
     return values;
 };
 
-module.exports = { getStateValues };
+const updateEnvValues = (envDir, envMap) => async ({ env, state }) => {
+    const envPath = path.join(envDir, ".env.json");
+    const json = await loadJson(envPath);
+    if (!json[env]) {
+        json[env] = {};
+    }
+    Object.assign(json[env], await getStateValues(state, envMap));
+    await writeJson(envPath, json);
+};
+
+module.exports = { getStateValues, updateEnvValues };

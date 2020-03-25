@@ -41,7 +41,7 @@ gateway:
               url: ${formBuilder.api.graphqlUrl}
 
 dbProxy:
-  component: "@webiny/serverless-db-proxy/dist"
+  component: "@webiny/serverless-db-proxy"
   inputs:
     testConnectionBeforeDeploy: true
     region: ${vars.region}
@@ -171,6 +171,30 @@ formBuilder:
       - "@webiny/api-i18n/plugins/service"
       - "@webiny/api-form-builder/plugins"
       - "@webiny/api-form-builder/plugins/useSsrCacheTags"
+
+headlessHandler:
+  watch:
+    - ./services/headless/build
+  build:
+    define:
+      APOLLO_HANDLER_OPTIONS: ${vars.apollo}
+      DB_PROXY_OPTIONS:
+        functionArn: ${dbProxy.arn}
+      SECURITY_OPTIONS: ${vars.security}
+    root: ./services/headless
+    script: yarn build --watch=${cli.watch}
+  deploy:
+    component: "@webiny/serverless-function"
+    inputs:
+      description: Headless CMS handler
+      region: ${vars.region}
+      code: ./services/headless/build
+      handler: handler.handler
+      memory: 512
+      env:
+        SECURITY_API_URL: ${security.api.graphqlUrl}
+        I18N_API_URL: ${i18n.api.graphqlUrl}
+        DEBUG: ${vars.debug}
 
 api:
   component: "@webiny/serverless-api-gateway"
