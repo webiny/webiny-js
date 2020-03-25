@@ -1,16 +1,16 @@
 import { HttpHandlerApolloServerOptions } from "@webiny/http-handler-apollo-server/types";
 
-// We can rely on the default Apollo server and schema creation plugins...
+// We can rely on the default "handler" and "handler-apollo-server-create-schema" plugins...
 import {
     createHandlerApolloServer,
     createSchema
 } from "@webiny/http-handler-apollo-server/plugins";
 
-// ...but a custom "handler-apollo-server-create" plugin is needed.
+// ...but a custom "handler-apollo-server-create-handler" plugin is needed.
 import apolloHandler from "./apolloHandler";
 
-// Headless CMS models, GraphQL schema, fields, etc. This is a factory function which returns
-// a different schema depending on the provided environment and schema type (read, manage, preview).
+// This is a factory function which returns a specific set of plugins depending on
+// the provided environment and schema type (read, manage, preview).
 import headlessPlugins from "./plugins";
 
 export default (options: HttpHandlerApolloServerOptions = {}) => [
