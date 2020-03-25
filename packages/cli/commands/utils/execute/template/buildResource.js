@@ -19,6 +19,10 @@ module.exports = params => {
                 scriptParams.push(JSON.stringify(definitions));
             }
 
+            if (params.watch) {
+                scriptParams.push("--watch=true");
+            }
+
             if (stages.length > 1) {
                 context.instance.debug("Building stage %o of %o", i + 1, resource);
             } else {

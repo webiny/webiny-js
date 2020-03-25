@@ -5,7 +5,7 @@ const vars = {
     httpHandlerApolloServer: {
         server: {
             introspection: process.env.GRAPHQL_INTROSPECTION,
-            playground: process.env.GRAPHQL_PLAYGROUND,
+            playground: process.env.GRAPHQL_PLAYGROUND
         },
         debug: true
     },
@@ -170,6 +170,9 @@ module.exports = ({ cli }) => ({
             }
         },
         i18n: {
+            watch: [
+                "./services/headlessCms/build"
+            ],
             build: {
                 root: "./services/i18n",
                 script: "yarn build",
@@ -194,7 +197,6 @@ module.exports = ({ cli }) => ({
                             DEBUG: vars.debug
                         }
                     }
-
                 }
             }
         },
@@ -262,7 +264,69 @@ module.exports = ({ cli }) => ({
                 ]
             }
         },
-        ...require("./services/headless/resources")({ vars, cli }),
+        headlessCms: {
+            watch: [
+                "./services/headlessCms/build"
+            ],
+            build: {
+                root: "./services/headlessCms",
+                script: "yarn build",
+                define: {
+                    HTTP_HANDLER_APOLLO_SERVER_OPTIONS: vars.httpHandlerApolloServer,
+                    DB_PROXY_OPTIONS: {
+                        functionArn: "${dbProxy.arn}"
+                    },
+                    SECURITY_OPTIONS: vars.security
+                }
+            },
+            deploy: {
+                component: "@webiny/serverless-apollo-service",
+                inputs: {
+                    region: vars.region,
+                    description: "I18N GraphQL API",
+                    function: {
+                        code: "./services/headlessCms/build",
+                        handler: "handler.handler",
+                        memory: 512,
+                        env: {
+                            DEBUG: vars.debug
+                        }
+                    }
+                }
+            }
+        },
+        headlessCmsHandler: {
+            watch: [
+                "./services/headlessCmsHandler/build"
+            ],
+            build: {
+                root: "./services/headlessCmsHandler",
+                script: "yarn build",
+                define: {
+                    API_I18N: {
+                        graphqlUrl: "${i18n.api.graphqlUrl}"
+                    },
+                    HTTP_HANDLER_APOLLO_SERVER_OPTIONS: vars.httpHandlerApolloServer,
+                    DB_PROXY_OPTIONS: {
+                        functionArn: "${dbProxy.arn}"
+                    },
+                    SECURITY_OPTIONS: vars.security
+                }
+            },
+            deploy: {
+                component: "@webiny/serverless-function",
+                inputs: {
+                    description: "Headless CMS GraphQL API (handler)",
+                    region: vars.region,
+                    code: "./services/headlessCmsHandler/build",
+                    handler: "handler.handler",
+                    memory: 512,
+                    env: {
+                        DEBUG: vars.debug
+                    }
+                }
+            }
+        },
         api: {
             component: "@webiny/serverless-api-gateway",
             inputs: {
@@ -273,6 +337,11 @@ module.exports = ({ cli }) => ({
                         path: "/graphql",
                         method: "ANY",
                         function: "${gateway}"
+                    },
+                    {
+                        path: "/cms/{key+}",
+                        method: "ANY",
+                        function: "${headlessCmsHandler}"
                     }
                 ]
             }
