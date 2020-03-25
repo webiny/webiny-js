@@ -8,8 +8,7 @@ vars:
     server:
       introspection: ${env.GRAPHQL_INTROSPECTION}
       playground: ${env.GRAPHQL_PLAYGROUND}
-    debug:
-      true
+    debug: true
   apollo:
     server:
       introspection: ${env.GRAPHQL_INTROSPECTION}
