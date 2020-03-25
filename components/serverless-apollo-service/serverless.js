@@ -3,7 +3,7 @@ const pick = require("lodash.pick");
 const get = require("lodash.get");
 
 const getInputs = ({ component, inputs }) => {
-    const output = {
+    const inputsValue = {
         api: {
             description: `API for ${component.context.instance.alias}`,
             stage: "prod",
@@ -28,9 +28,9 @@ const getInputs = ({ component, inputs }) => {
 
     const name =
         get(component.state, "output.graphql.name") ||
-        component.context.instance.getResourceName(output.name || "graphql");
+        component.context.instance.getResourceName(inputs.name || "graphql");
 
-    output.function = {
+    inputsValue.function = {
         env: {},
         memory: 512,
         timeout: 10,
@@ -38,12 +38,12 @@ const getInputs = ({ component, inputs }) => {
         root: inputs.function.code,
         handler: "handler.handler",
         description: `GraphQL server for ${component.context.instance.alias}.`,
-        region: output.region,
+        region: inputs.region,
         ...inputs.function,
         name
     };
 
-    return output;
+    return inputsValue;
 };
 
 class ApolloService extends Component {
