@@ -12,11 +12,7 @@ const replaceProjectRoot = path => {
 const paths = {
     projectRoot,
     replaceProjectRoot,
-    packagesPath: resolve("packages"),
-    apiPath: resolve("api"),
-    appPath: resolve("apps"),
-    apiYaml: resolve("api", "serverless.yml"),
-    appsYaml: resolve("apps", "serverless.yml")
+    packagesPath: resolve("packages")
 };
 
 module.exports.paths = paths;

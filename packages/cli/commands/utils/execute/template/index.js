@@ -155,7 +155,10 @@ class Template extends Component {
 
                         if (resourceData.build) {
                             // Inject template values into `build` config
-                            const resolvedBuild = resolveObject(resourceData.build, allComponents);
+                            const resolvedBuild = resolveObject(
+                                resourceData.build,
+                                getOutputs(allComponents)
+                            );
 
                             // In `watch` mode, this will never resolve.
                             // Deployment is run by file watchers setup earlier.

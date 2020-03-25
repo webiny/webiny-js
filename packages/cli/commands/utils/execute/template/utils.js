@@ -270,7 +270,7 @@ const executeComponent = async (
         if (componentData.build && typeof build === "function") {
             await build({
                 resource,
-                buildConfig: resolveObject(componentData.build, allComponents)
+                buildConfig: resolveObject(componentData.build, availableOutputs)
             });
         }
         instance.context.status("Deploying", resource);

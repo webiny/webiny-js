@@ -5,7 +5,7 @@ const Context = require("@serverless/cli/src/Context");
 const createContext = ({ root, debug }) => {
     const context = new Context({
         root,
-        stateRoot: join(root, ".serverless"),
+        stateRoot: join(root, ".webiny"),
         debug,
         entity: "Webiny"
     });
