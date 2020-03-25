@@ -1,7 +1,7 @@
 import i18n from "./i18n";
 import { GraphQLClient } from "graphql-request";
 import get from "lodash/get";
-import { validation } from '@webiny/validation';
+import { validation } from "@webiny/validation";
 import { GraphQLContextI18NGetLocales } from "@webiny/api-i18n/types";
 
 let localesCache;
@@ -20,7 +20,11 @@ const GET_I18N_INFORMATION = /* GraphQL */ `
     }
 `;
 
-export default () => [
+type I18NServicePluginsOptions = {
+    graphqlUrl: string;
+};
+
+export default (options: I18NServicePluginsOptions = { graphqlUrl: "" }) => [
     i18n,
     {
         name: "graphql-context-i18n-get-locales",
@@ -30,17 +34,21 @@ export default () => [
                 return localesCache;
             }
 
-            if (!process.env.I18N_API_URL) {
-                throw new Error('I18N_API_URL environment variable is missing. Please check the service configuration, located in the "api/serverless.yml" file.');
+            if (!options.graphqlUrl) {
+                throw new Error(
+                    `Cannot create I18N service plugins - "graphqlUrl" parameter is missing.`
+                );
             }
 
             try {
-                validation.validateSync(process.env.I18N_API_URL, "url");
+                validation.validateSync(options.graphqlUrl, "url");
             } catch (e) {
-                throw new Error('The value specified for the I18N_API_URL env variable is not a valid URL. Please check the service configuration, located in the "api/serverless.yml" file.')
+                throw new Error(
+                    `Cannot create I18N service plugins - "graphqlUrl" parameter doesn't represent a valid URL.`
+                );
             }
 
-            const client = new GraphQLClient(process.env.I18N_API_URL);
+            const client = new GraphQLClient(options.graphqlUrl);
 
             const response = await client.request(GET_I18N_INFORMATION);
             localesCache = get(response, "i18n.getI18NInformation.locales", []);
