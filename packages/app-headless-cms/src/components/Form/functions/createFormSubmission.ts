@@ -42,7 +42,7 @@ export default async ({
         }
     });
 
-    response = get(response, "data.cmsManage.createFormSubmission");
+    response = get(response, "data.cms.createFormSubmission");
 
     return {
         preview: false,

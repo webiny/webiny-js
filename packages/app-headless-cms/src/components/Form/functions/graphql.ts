@@ -2,7 +2,7 @@ import gql from "graphql-tag";
 
 export const SAVE_CONTENT_MODEL_VIEW = gql`
     mutation SaveContentModelView($id: ID!) {
-        cmsManage {
+        cms {
             saveContentModelView(id: $id) {
                 error {
                     message
@@ -19,7 +19,7 @@ export const CREATE_CONTENT_MODEL_SUBMISSION = gql`
         $meta: JSON!
         $reCaptchaResponseToken: String
     ) {
-        cmsManage {
+        cms {
             createFormSubmission(
                 id: $id
                 data: $data
