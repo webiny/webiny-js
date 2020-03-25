@@ -21,7 +21,7 @@ module.exports = yargs => {
                 const config = require(webinyConfig);
                 const command = camelCase(argv.command);
                 if (config.commands && typeof config.commands[command] === "function") {
-                    return await config.commands[command]({ ...argv.options }, context);
+                    return await config.commands[command]({ ...argv }, context);
                 }
 
                 throw Error(`Command "${command}" is not defined in "webiny.config.js"!`);
