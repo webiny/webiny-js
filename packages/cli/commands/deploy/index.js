@@ -1,10 +1,12 @@
+const { dim } = require("chalk");
+
 module.exports = yargs => {
     yargs.usage("usage: $0 deploy <folder> [resources...]").command(
         "deploy <folder> [resources...]",
-        "Deploy resources",
+        `Deploy resources from <folder>.\n${dim("(NOTE: run from project root)")}`,
         yargs => {
             yargs.positional("folder", {
-                describe: `Folder to deploy. Requires serverless.yml file`,
+                describe: `Folder to deploy. Requires resources.js file`,
                 type: "string"
             });
             yargs.positional("resources", {
