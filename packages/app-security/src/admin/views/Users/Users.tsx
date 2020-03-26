@@ -12,7 +12,8 @@ const variables = data => {
         data: {
             ...pick(data, ["email", "password", "firstName", "lastName", "avatar", "enabled"]),
             roles: (data.roles || []).map(x => x.id),
-            groups: (data.groups || []).map(x => x.id)
+            groups: (data.groups || []).map(x => x.id),
+            personalAccessTokens: data.personalAccessTokens || []
         }
     };
 };
@@ -35,7 +36,13 @@ const Users = () => {
                         <LeftPanel>
                             <UsersDataList />
                         </LeftPanel>
-                        <RightPanel>
+                        <RightPanel
+                            style={{
+                                marginLeft: "100px",
+                                marginRight: "100px",
+                                overflow: "hidden"
+                            }}
+                        >
                             <UsersForm />
                         </RightPanel>
                     </SplitView>
