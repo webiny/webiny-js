@@ -31,9 +31,6 @@ const TokenList = ({ deleteToken, personalAccessTokens }) => {
 };
 
 const TokensElement = ({ deleteToken, generateToken, personalAccessTokens }) => {
-    console.log("PATs");
-    console.log(personalAccessTokens);
-
     return (
         <>
             <Header>
