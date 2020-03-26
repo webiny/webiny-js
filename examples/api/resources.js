@@ -362,6 +362,21 @@ module.exports = ({ cli }) => ({
                                     "PATCH",
                                     "DELETE"
                                 ]
+                            },
+                            "/cms*": {
+                                ttl: 0,
+                                forward: {
+                                    headers: ["Accept", "Accept-Language"]
+                                },
+                                allowedHttpMethods: [
+                                    "GET",
+                                    "HEAD",
+                                    "OPTIONS",
+                                    "PUT",
+                                    "POST",
+                                    "PATCH",
+                                    "DELETE"
+                                ]
                             }
                         }
                     }
