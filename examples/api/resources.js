@@ -170,9 +170,7 @@ module.exports = ({ cli }) => ({
             }
         },
         i18n: {
-            watch: [
-                "./services/i18n/build"
-            ],
+            watch: ["./services/i18n/build"],
             build: {
                 root: "./services/i18n",
                 script: "yarn build",
@@ -265,9 +263,7 @@ module.exports = ({ cli }) => ({
             }
         },
         headlessCms: {
-            watch: [
-                "./services/headlessCms/build"
-            ],
+            watch: ["./services/headlessCms/build"],
             build: {
                 root: "./services/headlessCms",
                 script: "yarn build",
@@ -296,9 +292,7 @@ module.exports = ({ cli }) => ({
             }
         },
         headlessCmsHandler: {
-            watch: [
-                "./services/headlessCmsHandler/build"
-            ],
+            watch: ["./services/headlessCmsHandler/build"],
             build: {
                 root: "./services/headlessCmsHandler",
                 script: "yarn build",
@@ -355,6 +349,21 @@ module.exports = ({ cli }) => ({
                         url: "${api.url}",
                         pathPatterns: {
                             "/graphql": {
+                                ttl: 0,
+                                forward: {
+                                    headers: ["Accept", "Accept-Language"]
+                                },
+                                allowedHttpMethods: [
+                                    "GET",
+                                    "HEAD",
+                                    "OPTIONS",
+                                    "PUT",
+                                    "POST",
+                                    "PATCH",
+                                    "DELETE"
+                                ]
+                            },
+                            "/cms*": {
                                 ttl: 0,
                                 forward: {
                                     headers: ["Accept", "Accept-Language"]
