@@ -134,11 +134,11 @@ const UserAccountForm = () => {
 
     const generateToken = async () => {
         setState({ loading: true });
-        const r = await client.mutate({
+        const queryResponse = await client.mutate({
             mutation: GET_NEW_PAT
         });
         setState({ loading: false });
-        const token = r.data.security.createPAT;
+        const token = queryResponse.data.security.createPAT;
 
         user.data.personalAccessTokens.push({ token });
         setState({ loading, user });
