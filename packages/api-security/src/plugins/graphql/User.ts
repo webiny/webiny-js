@@ -66,6 +66,7 @@ export default {
             enabled: Boolean
             groups: [ID]
             roles: [ID]
+            personalAccessTokens: [PersonalAccessTokenInput]
         }
 
         # This input type is used by the user who is updating his own account
