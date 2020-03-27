@@ -8,12 +8,13 @@ import {
     emptyResolver
 } from "@webiny/commodo-graphql";
 import gql from "graphql-tag";
+import merge from "lodash.merge";
 import { hasScope } from "@webiny/api-security";
 import { CmsGraphQLContext } from "@webiny/api-headless-cms/types";
 import { generateSchemaPlugins } from "./schema/schemaPlugins";
 import { i18nFieldType } from "./graphqlTypes/i18nFieldType";
 import { i18nFieldInput } from "./graphqlTypes/i18nFieldInput";
-
+import contentModelGroup from "./graphql/contentModelGroup";
 const contentModelFetcher = ctx => ctx.models.CmsContentModel;
 
 const getMutations = type => {
@@ -46,6 +47,20 @@ const getMutationResolvers = type => {
     };
 };
 
+const getQueryResolvers = type => {
+    return {
+        getContentModel: resolveGet(contentModelFetcher),
+        listContentModels: resolveList(contentModelFetcher),
+        getMeta: (_, args, context) => {
+            return {
+                type: context.cms.type,
+                environment: context.cms.environment,
+                url: context.cms.getEnvironment().url[type]
+            };
+        }
+    };
+};
+
 export default ({ type }) => [
     {
         name: "graphql-schema-headless",
@@ -58,6 +73,14 @@ export default ({ type }) => [
                 ${i18nFieldType("CmsString", "String")}
                 ${i18nFieldInput("CmsString", "String")}
 
+                input CmsSearchInput {
+                    query: String
+                    fields: [String]
+                    operator: String
+                }
+                
+                ${contentModelGroup.getTypeDefs(type)}
+                
                 type SecurityUser {
                     id: ID
                     firstName: String
@@ -90,13 +113,16 @@ export default ({ type }) => [
                     id: ID
                     title: String
                     modelId: String
+                    group: CmsContentModelGroup
                     description: String
                     createdOn: DateTime
+                    savedOn: DateTime
                     createdBy: SecurityUser
                     fields: [CmsContentModelField]
                 }
 
                 input CmsContentModelInput {
+                    group: ID
                     title: String
                     modelId: String
                     description: String
@@ -148,6 +174,13 @@ export default ({ type }) => [
                     error: CmsError
                 }
 
+                # Contains various GraphQL API meta data.
+                type CmsMeta {
+                    environment: String
+                    type: String
+                    url: String
+                }
+
                 extend type Query {
                     getContentModel(id: ID, where: JSON, sort: String): CmsContentModelResponse
 
@@ -157,27 +190,33 @@ export default ({ type }) => [
                         where: JSON
                         sort: JSON
                     ): CmsContentModelListResponse
+                    
+                    # Returns various GraphQL API meta data. 
+                    getMeta: CmsMeta
                 }
 
                 extend type Mutation {
                     ${getMutations(type)}
                 }
             `,
-            resolvers: {
-                Query: {
-                    getContentModel: resolveGet(contentModelFetcher),
-                    listContentModels: resolveList(contentModelFetcher)
+            resolvers: merge(
+                {
+                    Query: getQueryResolvers(type),
+                    Mutation: getMutationResolvers(type)
                 },
-                Mutation: getMutationResolvers(type)
-            }
+                contentModelGroup.getResolvers(type)
+            )
         },
-        security: {
-            shield: {
-                Query: {
-                    getContentModel: hasScope("cms:contentModel:crud"),
-                    listContentModels: hasScope("cms:contentModel:crud")
+        security: merge(
+            {
+                shield: {
+                    Query: {
+                        getContentModel: hasScope("cms:contentModel:crud"),
+                        listContentModels: hasScope("cms:contentModel:crud")
+                    }
                 }
-            }
-        }
+            },
+            contentModelGroup.getResolvers(type)
+        )
     } as GraphQLSchemaPlugin<CmsGraphQLContext>
 ];
