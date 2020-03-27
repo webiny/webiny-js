@@ -19,6 +19,7 @@ type CreateApolloHandlerPluginCreateResponse = {
 };
 
 export type CreateApolloHandlerPlugin = Plugin & {
+    name: "handler-apollo-server-create-handler";
     type: "handler-apollo-server-create-handler";
     create(params: {
         args: Array<{ [key: string]: any }>;
