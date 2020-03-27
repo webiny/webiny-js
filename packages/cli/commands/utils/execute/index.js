@@ -1,6 +1,6 @@
 const { resolve } = require("path");
 const { loadEnv } = require("../index");
-const { createContext } = require("./context");
+const { Context } = require("./Context");
 const { paths } = require("../paths");
 
 module.exports.execute = async (inputs, method = "default") => {
@@ -8,11 +8,11 @@ module.exports.execute = async (inputs, method = "default") => {
 
     // Load .env.json from project root
     await loadEnv(resolve(paths.projectRoot, ".env.json"), env, { debug });
-    const context = createContext({ root: process.cwd(), debug });
+    const context = new Context({ env, debug });
 
     try {
         const Template = require("./template");
-        const component = new Template(`Webiny.${env}`, context);
+        const component = new Template(`Webiny`, context);
         await component.init();
 
         // IMPORTANT: In `watch` mode, this promise will never resolve.

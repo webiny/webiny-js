@@ -1,7 +1,8 @@
 const path = require("path");
 const AwsSdkLambda = require("aws-sdk/clients/lambda");
 const { mergeDeepRight, pick } = require("ramda");
-const { Component, utils } = require("@serverless/core");
+const { Component } = require("@webiny/serverless-component");
+const { utils } = require("@serverless/core");
 const {
     createLambda,
     updateLambdaCode,

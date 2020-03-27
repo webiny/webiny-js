@@ -9,7 +9,7 @@ const get = require("lodash.get");
 const webpack = require("webpack");
 const writeJson = require("write-json-file");
 const { transform } = require("@babel/core");
-const { Component } = require("@serverless/core");
+const { Component } = require("@webiny/serverless-component");
 
 const defaultDependencies = ["babel-loader"];
 

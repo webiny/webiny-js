@@ -1,4 +1,4 @@
-const { Component } = require("@serverless/core");
+const { Component } = require("@webiny/serverless-component");
 const get = require("lodash.get");
 const S3 = require("aws-sdk/clients/s3");
 const fs = require("fs");

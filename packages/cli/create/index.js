@@ -80,7 +80,7 @@ module.exports = async ({ name, tag }) => {
     let apiYaml = getFileContents("api/serverless.yml");
     apiYaml = apiYaml.replace(/\[PROJECT_ID\]/g, apiId);
     writeFileContents("api/serverless.yml", apiYaml);
-    writeJsonFile.sync(resolve("api/.serverless/_.json"), { id: apiId });
+    writeJsonFile.sync(resolve("api/.webiny/_.json"), { id: apiId });
 
     // Update api/.env.json
     let apiEnvFile = getFileContents("api/.env.json");
@@ -98,7 +98,7 @@ module.exports = async ({ name, tag }) => {
     const appsId = getUniqueId();
     appsYaml = appsYaml.replace(/\[PROJECT_ID\]/g, appsId);
     writeFileContents("apps/serverless.yml", appsYaml);
-    writeJsonFile.sync(resolve("apps/.serverless/_.json"), { id: appsId });
+    writeJsonFile.sync(resolve("apps/.webiny/_.json"), { id: appsId });
 
     // Inject the exact package version numbers based on the tag
     let spinner = ora(`Loading Webiny package versions...`).start();

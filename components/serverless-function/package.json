@@ -4,8 +4,8 @@
   "main": "serverless.js",
   "license": "MIT",
   "dependencies": {
-    "@serverless/core": "^1.1.1",
     "@webiny/serverless-aws-lambda": "^2.0.1",
+    "@webiny/serverless-component": "^0.1.0",
     "execa": "^2.0.3"
   },
   "scripts": {

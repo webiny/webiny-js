@@ -20,6 +20,7 @@
     "debug": "^4.1.1",
     "env-cmd": "^9.0.3",
     "execa": "^2.0.5",
+    "figures": "^3.2.0",
     "glob": "^7.1.4",
     "graphlib": "^2.1.7",
     "load-json-file": "^6.2.0",
@@ -29,6 +30,7 @@
     "ora": "^4.0.3",
     "p-retry": "^4.2.0",
     "ramda": "^0.26.1",
+    "strip-ansi": "^6.0.0",
     "traverse": "^0.6.6",
     "uniqid": "^5.0.3",
     "update-notifier": "^3.0.1",
@@ -42,7 +44,8 @@
   },
   "license": "MIT",
   "publishConfig": {
-    "access": "public"
+    "access": "public",
+    "directory": "."
   },
   "scripts": {
     "build": "yarn rimraf ./dist *.tsbuildinfo && mkdir dist && cp -R cli.js bin-cli.js bin-scripts.js scripts.js config create sls dist/",

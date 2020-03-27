@@ -6,7 +6,7 @@ const { GetEnvVars } = require("env-cmd");
 const { paths } = require("./paths");
 
 const isEnvDeployed = async env => {
-    const envFile = join(process.cwd(), ".serverless", `Webiny.${env}.json`);
+    const envFile = join(process.cwd(), ".webiny", `Webiny.${env}.json`);
     try {
         const json = await loadJson(envFile);
         return json.components && json.outputs;

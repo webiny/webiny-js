@@ -2,15 +2,14 @@ const { tmpdir } = require("os");
 const path = require("path");
 const archiver = require("archiver");
 const globby = require("globby");
-const { contains, isNil, last, split, equals, not, pick } = require("ramda");
+const { equals, not, pick } = require("ramda");
 const { readFile, createReadStream, createWriteStream } = require("fs-extra");
-const { utils } = require("@serverless/core");
 
 const VALID_FORMATS = ["zip", "tar"];
-const isValidFormat = format => contains(format, VALID_FORMATS);
+const isValidFormat = format => VALID_FORMATS.includes(format);
 
 const packDir = async (inputDirPath, outputFilePath, include = [], exclude = [], prefix) => {
-    const format = last(split(".", outputFilePath));
+    const format = outputFilePath.split(".").pop();
 
     if (!isValidFormat(format)) {
         throw new Error('Please provide a valid format. Either a "zip" or a "tar"');
@@ -18,7 +17,7 @@ const packDir = async (inputDirPath, outputFilePath, include = [], exclude = [],
 
     const patterns = ["**"];
 
-    if (!isNil(exclude)) {
+    if (Array.isArray(exclude)) {
         exclude.forEach(excludedItem => patterns.push(`!${excludedItem}`));
     }
 
@@ -46,7 +45,7 @@ const packDir = async (inputDirPath, outputFilePath, include = [], exclude = [],
                 })
             );
 
-            if (!isNil(include)) {
+            if (Array.isArray(include)) {
                 include.forEach(file => {
                     const stream = createReadStream(file);
                     archive.append(stream, { name: path.basename(file), date: new Date(0) });
@@ -230,8 +229,12 @@ const configChanged = (prevLambda, lambda) => {
     return not(equals(inputs, prevInputs));
 };
 
+const isArchivePath = path => {
+    return typeof path === "string" && (path.endsWith(".zip") || path.endsWith(".tar"));
+};
+
 const pack = async (code, shims = [], packDeps = true) => {
-    if (utils.isArchivePath(code)) {
+    if (isArchivePath(code)) {
         return path.resolve(code);
     }
 

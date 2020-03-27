@@ -1,5 +1,5 @@
 const { join } = require("path");
-const { Component } = require("@serverless/core");
+const { Component } = require("@webiny/serverless-component");
 const configureS3Bucket = require("./utils/configureS3Bucket");
 const normalizeInputs = require("./utils/normalizeInputs");
 

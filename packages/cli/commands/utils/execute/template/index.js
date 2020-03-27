@@ -1,6 +1,6 @@
 const path = require("path");
 const fs = require("fs");
-const { Component } = require("@serverless/core");
+const { Component } = require("@webiny/serverless-component");
 const { loadEnv } = require("../../index");
 const buildResource = require("./buildResource");
 const { compose } = require("./compose");
