@@ -1,5 +1,6 @@
 import { graphql } from "graphql";
 import contentModels from "../data/contentModels";
+import contentModelGroupData from "../data/contentModelGroup";
 
 const schemaTypesQuery = /* GraphQL */ `
     {
@@ -33,10 +34,14 @@ const schemaTypesQuery = /* GraphQL */ `
 
 export default ({ setupSchema }) => {
     describe("GraphQL Schema", () => {
-
         beforeAll(async () => {
             const { context } = await setupSchema();
             const ContentModel = context.models.CmsContentModel;
+            const ContentModelGroup = context.models.CmsContentModelGroup;
+
+            const contentModelGroup = new ContentModelGroup();
+            contentModelGroup.populate(contentModelGroupData);
+            await contentModelGroup.save();
 
             for (let i = 0; i < contentModels.length; i++) {
                 const contentModel = new ContentModel();
@@ -47,7 +52,6 @@ export default ({ setupSchema }) => {
 
         test("create commodo models and set them in the context", async () => {
             const { context } = await setupSchema();
-
             for (let i = 0; i < contentModels.length; i++) {
                 expect(context.models[contentModels[i].modelId]).toBeTruthy();
                 expect(context.models[contentModels[i].modelId + "Search"]).toBeTruthy();
