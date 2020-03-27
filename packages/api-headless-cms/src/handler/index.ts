@@ -23,8 +23,8 @@ export default (options: HttpHandlerApolloServerOptions = {}) => [
         async handle({ args, context }) {
             // We register plugins according to the received path params (schema type and environment).
             const [event] = args;
-            const { key = "" } = event.pathParameters;
-            const [type, environment = "default"] = key.split("/");
+            const { key = "" } = event.pathParameters || {};
+            const [type = null, environment = null] = key.split("/");
             context.plugins.register(await headlessPlugins({ type, environment }));
         }
     }

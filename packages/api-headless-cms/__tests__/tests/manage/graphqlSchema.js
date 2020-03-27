@@ -1,5 +1,6 @@
 import { graphql } from "graphql";
 import contentModels from "../data/contentModels";
+import contentModelGroup from "../data/contentModelGroup";
 
 const schemaTypesQuery = /* GraphQL */ `
     {
@@ -49,9 +50,7 @@ export default ({ setupSchema }) => {
 
             const responses = [];
             for (let i = 0; i < contentModels.length; i++) {
-                responses.push(
-                    await graphql(schema, mutation, {}, context, { data: contentModels[i] })
-                );
+                responses.push(await graphql(schema, mutation, {}, context, { data: contentModels[i] }));
             }
 
             for (let i = 0; i < responses.length; i++) {
@@ -86,7 +85,8 @@ export default ({ setupSchema }) => {
             const response = await graphql(schema, mutation, {}, context, {
                 data: {
                     title: "EmptyModel",
-                    modelId: "emptyModel"
+                    modelId: "emptyModel",
+                    group: contentModelGroup.id
                 }
             });
 

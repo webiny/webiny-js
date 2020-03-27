@@ -25,6 +25,8 @@ export type InputProps = FormComponentProps &
         // Converts input into a text area with given number of rows.
         rows?: number;
 
+        maxLength?: number;
+
         // A trailing icon. Use `<InputIcon/>` component.
         leadingIcon?: React.ReactNode;
 
@@ -62,7 +64,9 @@ export class Input extends React.Component<InputProps> {
         "rootProps",
         "fullwidth",
         "inputRef",
-        "className"
+        "className",
+        "maxLength",
+        "characterCount"
     ];
 
     onChange = (e: React.SyntheticEvent<HTMLInputElement>) => {

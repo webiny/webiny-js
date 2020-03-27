@@ -3,7 +3,8 @@ import { pipe, withStorage, withCrudLogs, withSoftDelete, withFields } from "@we
 import { GraphQLContextPlugin } from "@webiny/graphql/types";
 import { GraphQLContext } from "@webiny/api-plugin-commodo-db-proxy/types";
 import contentModel from "./models/contentModel.model";
-// import contentModelGroup from "./models/contentModelGroup.model"; TODO: bring this back
+import environmentModel from "./../../plugins/models/environment.model";
+import contentModelGroup from "./models/contentModelGroup.model";
 import { createDataModelFromData } from "./utils/createDataModelFromData";
 import { createSearchModelFromData } from "./utils/createSearchModelFromData";
 
@@ -28,11 +29,29 @@ export default () => {
                 withCrudLogs()
             )() as Function;
 
-        // const CmsContentModelGroup = contentModelGroup({ createBase, context });
-        const CmsContentModel = contentModel({ createBase, context });
+        const CmsEnvironment = environmentModel({ createBase });
+
+        // Before continuing with the rest of the models, we must load the environment and assign it to the context.
+        let environment = null;
+        if (context.cms.environment && typeof context.cms.environment === "string") {
+            environment = await CmsEnvironment.findOne({
+                query: { slug: context.cms.environment }
+            });
+        }
+
+        if (!environment) {
+            environment = await CmsEnvironment.findOne({ query: { default: true } });
+        }
+
+        context.cms.environment = environment.slug;
+        context.cms.getEnvironment = () => environment;
+
+        const CmsContentModelGroup = contentModelGroup({ createBase, context });
+        const CmsContentModel = contentModel({ createBase, context, CmsContentModelGroup });
 
         context.models = {
-            // CmsContentModelGroup,
+            CmsEnvironment,
+            CmsContentModelGroup,
             CmsContentModel,
             createBase
         };

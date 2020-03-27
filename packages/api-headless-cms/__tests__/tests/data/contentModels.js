@@ -1,18 +1,18 @@
 import shortId from "shortid";
 import { locales } from "../../mocks/mockI18NLocales";
+import contentModelGroup from "./contentModelGroup";
 
 export default [
     {
         title: "Category",
         description: "Product category",
         modelId: "category",
+        group: contentModelGroup.id,
         fields: [
             {
                 _id: shortId.generate(),
                 label: {
-                    values: [
-                        { locale: locales.en.id, value: "Title" }
-                    ]
+                    values: [{ locale: locales.en.id, value: "Title" }]
                 },
                 type: "text",
                 fieldId: "title",
@@ -41,9 +41,7 @@ export default [
             {
                 _id: shortId.generate(),
                 label: {
-                    values: [
-                        { locale: locales.en.id, value: "Slug" }
-                    ]
+                    values: [{ locale: locales.en.id, value: "Slug" }]
                 },
                 type: "text",
                 fieldId: "slug",
@@ -64,6 +62,7 @@ export default [
         title: "Review",
         description: "Product review",
         modelId: "review",
+        group: contentModelGroup.id,
         fields: [
             {
                 _id: shortId.generate(),
@@ -115,6 +114,7 @@ export default [
         title: "Product",
         modelId: "product",
         description: "Products being sold in our webshop",
+        group: contentModelGroup.id,
         fields: [
             {
                 _id: shortId.generate(),

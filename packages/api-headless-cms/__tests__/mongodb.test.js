@@ -4,7 +4,7 @@ import mockI18NLocales from "./mocks/mockI18NLocales";
 import readAPI from "./tests/read";
 import manageAPI from "./tests/manage";
 import toModel from "./tests/toModel";
-import contentModel from "./tests/contentModel";
+import useDatabase from "./useDatabase";
 
 const callbacks = {
     afterAll: []
@@ -27,9 +27,17 @@ const mongoDbPlugins = mongoDb({
 const plugins = [mongoDbPlugins, i18n(), mockI18NLocales()];
 
 describe("MongoDB Headless CMS API", () => {
+    const { getCollection } = useDatabase();
+    beforeAll(() => {
+        return getCollection("CmsEnvironment").insertOne({
+            name: "nesto",
+            slug: "nesto",
+            default: true
+        });
+    });
+
     afterAll(async () => await Promise.all(callbacks.afterAll.map(cb => cb())));
     readAPI({ plugins });
     manageAPI({ plugins });
     toModel({ plugins });
-    contentModel({ plugins });
 });
