@@ -106,5 +106,5 @@
     },
     "typeRoots": ["./typings", "node_modules/@types", "@types/testing-library__cypress"]
   },
-  "exclude": ["node_modules", "**/__tests__/**", "dist", "**jest**"]
+  "exclude": ["node_modules", "**/__tests__/**", "dist", "**jest**", "./components", "./packages/cli"]
 }
