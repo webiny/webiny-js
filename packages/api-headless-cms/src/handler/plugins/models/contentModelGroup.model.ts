@@ -11,7 +11,7 @@ import {
 
 export default ({ createBase, context }) => {
     const CmsGroup: any = compose(
-        withName("CmsContentModelGroup"),
+        withName(`CmsContentModelGroup_${context.cms.environment}`),
         withFields({
             name: string({ validation: validation.create("required") }),
             slug: setOnce()(string({ validation: validation.create("required") })),
