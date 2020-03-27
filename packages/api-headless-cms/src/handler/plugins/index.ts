@@ -17,7 +17,7 @@ export default (options: HeadlessPluginsOptions = { type: null, environment: nul
         type: "graphql-context",
         apply(context) {
             context.cms = context.cms || {};
-            context.cms.type = options.type;
+            context.cms.type = options.type || "read";
             context.cms.environment = options.environment;
 
             context.cms.READ = options.type === "read";
