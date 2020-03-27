@@ -9,7 +9,8 @@ import {
     date,
     string,
     withName,
-    withHooks
+    withHooks,
+    withProps
 } from "@webiny/commodo";
 
 export default ({ createBase }) => {
@@ -42,6 +43,16 @@ export default ({ createBase }) => {
                 })
             )(boolean({ value: false }))
         })),
+        withProps({
+            get url() {
+                const slug = this.slug;
+                return {
+                    manage: `/cms/manage/${slug}`,
+                    read: `/cms/read/${slug}`,
+                    preview: `/cms/preview/${slug}`
+                };
+            }
+        }),
         withHooks({
             beforeDelete() {
                 if (this.default) {
