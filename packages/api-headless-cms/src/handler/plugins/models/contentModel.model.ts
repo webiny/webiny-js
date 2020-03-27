@@ -1,10 +1,10 @@
 import { validation } from "@webiny/validation";
-import { pipe, withFields, string, withName, fields, object, boolean } from "@webiny/commodo";
+import { pipe, withFields, string, withName, fields, object, boolean, ref } from "@webiny/commodo";
 import { i18nString } from "@webiny/api-i18n/fields";
 
 const required = validation.create("required");
 
-export default ({ createBase, context }) => {
+export default ({ createBase, context, CmsContentModelGroup }) => {
     return pipe(
         withName(`CmsContentModel_${context.cms.environment}`),
         withFields({
@@ -12,7 +12,7 @@ export default ({ createBase, context }) => {
             modelId: string({ validation: required }),
             description: string(),
             layout: object({ value: [] }),
-            // group: ref({ instanceOf: CmsContentModelGroup, validation: required }),
+            group: ref({ instanceOf: CmsContentModelGroup, validation: required }),
             fields: fields({
                 list: true,
                 value: [],
