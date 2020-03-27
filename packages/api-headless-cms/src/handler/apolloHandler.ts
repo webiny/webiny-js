@@ -22,8 +22,8 @@ const plugin: CreateApolloHandlerPlugin = {
     async create({ args, context, options }) {
         const [event] = args;
 
-        const { key = "" } = event.pathParameters;
-        const [type, environment = "default"] = key.split("/");
+        const { key = "" } = event.pathParameters || {};
+        const [type = null, environment = null] = key.split("/");
         const id = `${type}:${environment}`;
 
         if (handlers[id]) {
