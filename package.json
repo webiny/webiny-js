@@ -114,6 +114,7 @@
     "commit:no-verify": "yarn commit --no-verify",
     "commit:verify": "yarn lint-staged",
     "lint-staged": "lint-staged",
+    "postinstall": "node ./scripts/linkPackages.js",
     "prettier": "prettier --config .prettierrc.js --write",
     "setup-repo": "node scripts/setupRepo",
     "test": "jest --config jest.config.js",
@@ -147,6 +148,8 @@
     }
   },
   "commitlint": {
-    "extends": ["@commitlint/config-conventional"]
+    "extends": [
+      "@commitlint/config-conventional"
+    ]
   }
 }
