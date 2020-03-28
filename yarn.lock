@@ -5432,24 +5432,6 @@
     "@webassemblyjs/wast-parser" "1.9.0"
     "@xtuc/long" "4.2.2"
 
-"@webiny/serverless-api-gateway@^2.0.1":
-  version "2.0.1"
-  resolved "https://registry.yarnpkg.com/@webiny/serverless-api-gateway/-/serverless-api-gateway-2.0.1.tgz#f1e57cb73b034ebd4ad9738a3aa565bffddb5b45"
-  integrity sha512-N3skd9OLlAZLePHTt3b2O56Ov8spmC42Ssx9nxCX9eZelAIGN0nFV9wtAX9Pg6Pi+x1f85oZZ+Bo5/JCsn+zVw==
-  dependencies:
-    "@serverless/core" "^1.1.1"
-    "@webiny/serverless-aws-api-gateway" "^2.1.0"
-
-"@webiny/serverless-aws-api-gateway@^2.1.0":
-  version "2.1.0"
-  resolved "https://registry.yarnpkg.com/@webiny/serverless-aws-api-gateway/-/serverless-aws-api-gateway-2.1.0.tgz#9dbf44d0df21ebde9f25688aab06bd9b03941109"
-  integrity sha512-3tCySkO3T5GzeVtdFG4Y9ez+wIufobksNPGu8A/gqPh9Hxm9/ONSMMbEoV1GGf8zZZl92OY8hgYJAQKnSrcaOw==
-  dependencies:
-    "@serverless/core" "^1.0.0"
-    aws-sdk "^2.0.0"
-    lodash.isequal "^4.5.0"
-    p-retry "^4.1.0"
-
 "@webpack-contrib/schema-utils@^1.0.0-beta.0":
   version "1.0.0-beta.0"
   resolved "https://registry.yarnpkg.com/@webpack-contrib/schema-utils/-/schema-utils-1.0.0-beta.0.tgz#bf9638c9464d177b48209e84209e23bee2eb4f65"
@@ -11694,7 +11676,7 @@ figures@^2.0.0:
   dependencies:
     escape-string-regexp "^1.0.5"
 
-figures@^3.0.0:
+figures@^3.0.0, figures@^3.2.0:
   version "3.2.0"
   resolved "https://registry.yarnpkg.com/figures/-/figures-3.2.0.tgz#625c18bd293c604dc4a8ddb2febf0c88341746af"
   integrity sha512-yaduQFRKLXYOGgEn6AZau90j3ggSOyiqXU0F9JZfeXYhNa+Jk4X+s45A2zg5jns87GAFa34BBm2kXw4XpNcbdg==

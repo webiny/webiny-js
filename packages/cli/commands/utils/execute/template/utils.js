@@ -280,9 +280,6 @@ const executeComponent = async (
         await trackComponent({ context: instance.context, component: componentData.path });
     } catch (err) {
         instance.context.log(`An error occurred during deployment of ${red(resource)}`);
-        console.log();
-        console.log(err);
-        console.log();
         throw err;
     }
 };

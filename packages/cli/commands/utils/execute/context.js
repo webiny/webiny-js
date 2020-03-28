@@ -12,14 +12,10 @@ const randomId = () =>
 
 class Context {
     constructor(config) {
-        this.stateRoot = path.resolve(".webiny");
-        this.envStateRoot = path.resolve(".webiny", config.env);
-
+        this.stateRoot = config.stateRoot;
         this.credentials = config.credentials || {};
         this.debugMode = config.debug || false;
-        this.state = {
-            id: randomId()
-        };
+        this.state = { id: config.id };
         this.id = this.state.id;
 
         // Event Handler: Control + C
@@ -33,22 +29,20 @@ class Context {
     }
 
     async init() {
-        const contextStatePath = path.join(this.stateRoot, `_.json`);
-
-        if (fs.existsSync(contextStatePath)) {
-            this.state = await loadJsonFile(contextStatePath);
-        } else {
-            await writeJsonFile(contextStatePath, this.state);
-        }
-        this.id = this.state.id;
+        // keep this for compatibility with other @serverless/components
     }
 
+    /**
+     * This method is used by @serverless/{component-name} components
+     * so we need to keep it for compatibility.
+     * @returns {string}
+     */
     resourceId() {
         return `${this.id}-${randomId()}`;
     }
 
     async readState(id) {
-        const stateFilePath = path.join(this.envStateRoot, `${id}.json`);
+        const stateFilePath = path.join(this.stateRoot, `${id}.json`);
         if (fs.existsSync(stateFilePath)) {
             return loadJsonFile(stateFilePath);
         }
@@ -56,7 +50,7 @@ class Context {
     }
 
     async writeState(id, state) {
-        const stateFilePath = path.join(this.envStateRoot, `${id}.json`);
+        const stateFilePath = path.join(this.stateRoot, `${id}.json`);
         if (Object.keys(state).length === 0) {
             await fs.unlink(stateFilePath);
         } else {

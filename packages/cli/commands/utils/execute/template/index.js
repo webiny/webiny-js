@@ -114,7 +114,7 @@ class Template extends Component {
         const allComponents = setDependencies(getAllComponents(resolvedTemplate));
         const { debug, watch, callback } = inputs;
 
-        await new Promise(async resolve => {
+        await new Promise(async (resolve, reject) => {
             // `firstBuild` is the first build cycle before entering the `watch` mode
             let firstBuild = true;
 
@@ -177,7 +177,11 @@ class Template extends Component {
             );
 
             const start = Date.now();
-            await middleware();
+            try {
+                await middleware();
+            } catch (err) {
+                return reject(err);
+            }
 
             await callback({
                 context: this.context,
