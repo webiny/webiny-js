@@ -8,7 +8,11 @@ export default (options: HttpHandlerApolloServerOptions = {}): HttpHandlerPlugin
     name: "handler-apollo-server",
     canHandle({ args }) {
         const [event] = args;
-        return event.httpMethod === "POST" || event.httpMethod === "GET" || event.httpMethod === "OPTIONS";
+        return (
+            event.httpMethod === "POST" ||
+            event.httpMethod === "GET" ||
+            event.httpMethod === "OPTIONS"
+        );
     },
     async handle({ args, context }) {
         const [event, handlerContext] = args;
