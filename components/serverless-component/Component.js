@@ -55,8 +55,6 @@ class Component {
     // and we can't run async operations in the constructor
     // so we can't auto populate state on instance construction
     async init() {
-        await this.context.instance.init();
-
         this.state = await this.context.instance.readState(this.id);
 
         // the context object in the component instance is a subset

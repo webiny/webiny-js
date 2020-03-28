@@ -26,7 +26,8 @@
     "prepublishOnly": "yarn build"
   },
   "publishConfig": {
-    "access": "public"
+    "access": "public",
+    "directory": "."
   },
   "adio": {
     "ignore": {

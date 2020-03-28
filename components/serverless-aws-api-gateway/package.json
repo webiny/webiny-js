@@ -3,7 +3,8 @@
   "version": "3.0.1",
   "main": "./serverless.js",
   "publishConfig": {
-    "access": "public"
+    "access": "public",
+    "directory": "."
   },
   "scripts": {
     "build": "rm -rf dist && mkdir dist && cp serverless.js utils.js dist/",

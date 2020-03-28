@@ -7,13 +7,9 @@
     "@webiny/serverless-component": "^0.1.0",
     "@webiny/serverless-aws-api-gateway": "^3.0.1"
   },
-  "scripts": {
-    "build": "rm -rf dist && mkdir dist && cp serverless.js dist/",
-    "postbuild": "cp package.json README.md LICENSE dist/",
-    "prepublishOnly": "yarn build"
-  },
   "publishConfig": {
-    "access": "public"
+    "access": "public",
+    "directory": "."
   },
   "gitHead": "71cab7d5607b2e32a63034e324a663770507b32b"
 }
