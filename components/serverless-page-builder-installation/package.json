@@ -1,11 +1,10 @@
 {
-  "name": "@webiny/serverless-page-builder",
+  "name": "@webiny/serverless-page-builder-installation",
   "version": "3.0.3",
   "main": "serverless.js",
   "license": "MIT",
   "dependencies": {
     "@serverless/aws-s3": "^4.1.0",
-    "@webiny/serverless-apollo-service": "^3.0.2",
     "@webiny/serverless-component": "^0.1.0",
     "lodash.get": "^4.4.2"
   },
@@ -15,14 +14,8 @@
     "prepublishOnly": "yarn build"
   },
   "publishConfig": {
-    "access": "public"
-  },
-  "adio": {
-    "ignore": {
-      "dependencies": [
-        "@webiny/api-page-builder"
-      ]
-    }
+    "access": "public",
+    "directory": "."
   },
   "gitHead": "71cab7d5607b2e32a63034e324a663770507b32b"
 }
