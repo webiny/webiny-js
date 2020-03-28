@@ -11,7 +11,7 @@ export default (options: HttpHandlerApolloServerOptions = {}): HttpHandlerPlugin
         return event.httpMethod === "POST" || event.httpMethod === "GET" || event.httpMethod === "OPTIONS";
     },
     async handle({ args, context }) {
-        const [event] = args;
+        const [event, handlerContext] = args;
         try {
             const createApolloHandlerPlugin = context.plugins.byName<CreateApolloHandlerPlugin>(
                 "handler-apollo-server-create-handler"
@@ -33,7 +33,7 @@ export default (options: HttpHandlerApolloServerOptions = {}): HttpHandlerPlugin
             const { ...requestContext } = event.requestContext;
             const report = {
                 requestContext,
-                context,
+                context: handlerContext,
                 error: {
                     name: e.constructor.name,
                     message: e.message,
