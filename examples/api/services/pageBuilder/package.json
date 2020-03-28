@@ -1,5 +1,5 @@
 {
-  "name": "service-i18n",
+  "name": "service-page-builder",
   "version": "0.1.0",
   "scripts": {
     "build": "webiny run build"
@@ -9,6 +9,7 @@
     "@webiny/http-handler-apollo-server": "^1.0.0",
     "@webiny/api-plugin-commodo-db-proxy": "^2.0.4",
     "@webiny/api-security": "^3.1.0",
-    "@webiny/api-i18n": "^3.0.3"
+    "@webiny/api-i18n": "^3.0.3",
+    "@webiny/api-form-builder": "^2.1.0"
   }
 }
