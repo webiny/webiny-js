@@ -7,7 +7,8 @@ module.exports = {
         "packages/api-files",
         "packages/plugins",
         "packages/validation",
-        "packages/http-handler-ssr"
+        "packages/http-handler-ssr",
+        "packages/http-handler-apollo-gateway"
     ],
     modulePathIgnorePatterns: ["dist"]
 };

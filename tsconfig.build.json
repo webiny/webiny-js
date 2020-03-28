@@ -27,8 +27,12 @@
       "@webiny/api-page-builder": ["./packages/api-page-builder/src"],
       "@webiny/api-i18n/*": ["./packages/api-i18n/src/*"],
       "@webiny/api-i18n": ["./packages/api-i18n/src"],
-      "@webiny/api-plugin-create-apollo-handler": ["./packages/api-plugin-create-apollo-handler/src"],
-      "@webiny/api-plugin-create-apollo-handler/*": ["./packages/api-plugin-create-apollo-handler/src/*"],
+      "@webiny/api-plugin-create-apollo-handler": [
+        "./packages/api-plugin-create-apollo-handler/src"
+      ],
+      "@webiny/api-plugin-create-apollo-handler/*": [
+        "./packages/api-plugin-create-apollo-handler/src/*"
+      ],
       "@webiny/api-plugin-commodo-db-proxy/*": ["./packages/api-plugin-commodo-db-proxy/src/*"],
       "@webiny/api-plugin-commodo-db-proxy": ["./packages/api-plugin-commodo-db-proxy/src"],
       "@webiny/api-plugin-commodo-mongodb/*": ["./packages/api-plugin-commodo-mongodb/src/*"],
@@ -62,8 +66,12 @@
       "@webiny/app-security/*": ["./packages/app-security/src/*"],
       "@webiny/app-plugin-security-cognito": ["./packages/app-plugin-security-cognito/src"],
       "@webiny/app-plugin-security-cognito/*": ["./packages/app-plugin-security-cognito/src/*"],
-      "@webiny/app-plugin-security-cognito-theme": ["./packages/app-plugin-security-cognito-theme/src"],
-      "@webiny/app-plugin-security-cognito-theme/*": ["./packages/app-plugin-security-cognito-theme/src/*"],
+      "@webiny/app-plugin-security-cognito-theme": [
+        "./packages/app-plugin-security-cognito-theme/src"
+      ],
+      "@webiny/app-plugin-security-cognito-theme/*": [
+        "./packages/app-plugin-security-cognito-theme/src/*"
+      ],
       "@webiny/app-i18n/*": ["./packages/app-i18n/src/*"],
       "@webiny/commodo": ["./packages/commodo/src"],
       "@webiny/commodo/*": ["./packages/commodo/src/*"],
@@ -78,6 +86,8 @@
       "@webiny/http-handler": ["./packages/http-handler/src"],
       "@webiny/http-handler-apollo-server": ["./packages/http-handler-apollo-server/src"],
       "@webiny/http-handler-apollo-server/*": ["./packages/http-handler-apollo-server/src/*"],
+      "@webiny/http-handler-apollo-gateway": ["./packages/http-handler-apollo-gateway/src"],
+      "@webiny/http-handler-apollo-gateway/*": ["./packages/http-handler-apollo-gateway/src/*"],
       "@webiny/http-handler-files": ["./packages/http-handler-files/src"],
       "@webiny/http-handler-files/*": ["./packages/http-handler-files/src/*"],
       "@webiny/http-handler-index": ["./packages/http-handler-index/src"],
@@ -106,5 +116,14 @@
     },
     "typeRoots": ["./typings", "node_modules/@types", "@types/testing-library__cypress"]
   },
-  "exclude": ["node_modules", "**/__tests__/**", "dist", "**jest**", "./components", "./packages/cli"]
+  "exclude": [
+    "node_modules",
+    "**/__tests__/**",
+    "dist",
+    "**jest**",
+    "./components",
+    "./packages/cli",
+    "./packages/project-utils",
+    "**resources.js"
+  ]
 }
