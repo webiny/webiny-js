@@ -1,16 +1,18 @@
 import { createHandler } from "@webiny/http-handler";
-import apolloServerPlugins from "@webiny/http-handler-apollo-server";
+import apolloServerHandler from "@webiny/http-handler-apollo-server";
 import dbProxy from "@webiny/api-plugin-commodo-db-proxy";
 import securityServicePlugins from "@webiny/api-security/plugins/service";
-import headlessCmsPlugins from "@webiny/api-headless-cms/plugins";
+import filesPlugins from "@webiny/api-files/plugins";
+import filesResolvers from "@webiny/api-plugin-files-resolvers-mongodb";
 
 declare const APOLLO_SERVER_OPTIONS: any;
 declare const DB_PROXY_OPTIONS: any;
 declare const SECURITY_OPTIONS: any;
 
 export const handler = createHandler(
-    apolloServerPlugins(APOLLO_SERVER_OPTIONS),
+    apolloServerHandler(APOLLO_SERVER_OPTIONS),
     dbProxy(DB_PROXY_OPTIONS),
     securityServicePlugins(SECURITY_OPTIONS),
-    headlessCmsPlugins()
+    filesPlugins(),
+    filesResolvers()
 );

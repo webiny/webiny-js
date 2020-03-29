@@ -28,7 +28,7 @@ const vars = {
 };
 
 const apolloServiceDefinitions = {
-    HTTP_HANDLER_APOLLO_SERVER_OPTIONS: vars.httpHandlerApolloServer,
+    APOLLO_SERVER_OPTIONS: vars.httpHandlerApolloServer,
     DB_PROXY_OPTIONS: {
         functionArn: "${dbProxy.arn}"
     },
@@ -43,29 +43,35 @@ module.exports = () => ({
                 root: "./services/apolloGateway",
                 script: "yarn build",
                 define: {
+                    // TODO: changes in these parameters do not re-deploy lambda!!!
+                    // Maybe we should upgrade lambda component to check file content hash?
                     HTTP_HANDLER_APOLLO_GATEWAY_OPTIONS: {
                         ...vars.httpHandlerApolloServer,
                         services: [
-                            /*{
+                            {
                                 name: "security",
                                 url: "${security.api.graphqlUrl}"
                             },
                             {
                                 name: "i18n",
                                 url: "${i18n.api.graphqlUrl}"
-                            },*/
-                            /*{
-                            name: "files",
-                            url: "${files.api.graphqlUrl}"
-                        },*/
+                            },
+                            {
+                                name: "files",
+                                url: "${filesGraphQL.api.graphqlUrl}"
+                            },
                             {
                                 name: "pageBuilder",
                                 url: "${pageBuilder.api.graphqlUrl}"
-                            } /*,
+                            },
                             {
                                 name: "formBuilder",
                                 url: "${formBuilder.api.graphqlUrl}"
-                            }*/
+                            },
+                            {
+                                name: "headlessCms",
+                                url: "${headlessCms.api.graphqlUrl}"
+                            }
                         ]
                     }
                 }
@@ -77,7 +83,7 @@ module.exports = () => ({
                     code: "./services/apolloGateway/build",
                     handler: "handler.handler",
                     memory: 512,
-                    timeout: 30,
+                    timeout: 29,
                     env: {
                         DEBUG: vars.debug
                     }
@@ -88,7 +94,7 @@ module.exports = () => ({
             deploy: {
                 component: "@webiny/serverless-db-proxy",
                 inputs: {
-                    testConnectionBeforeDeploy: false,
+                    testConnectionBeforeDeploy: true,
                     region: vars.region,
                     concurrencyLimit: 15,
                     timeout: 30,
@@ -99,7 +105,7 @@ module.exports = () => ({
                 }
             }
         },
-        /*cognito: {
+        cognito: {
             deploy: {
                 component: "@webiny/serverless-aws-cognito-user-pool",
                 inputs: {
@@ -140,50 +146,45 @@ module.exports = () => ({
                     }
                 }
             }
-        },*/
-        // files: {
-        //     component: "@webiny/serverless-files",
-        //     inputs: {
-        //         region: vars.region,
-        //         bucket: vars.bucket,
-        //         functions: {
-        //             apolloService: {
-        //                 memory: 512,
-        //                 timeout: 30,
-        //                 debug: vars.debug,
-        //                 uploadMinFileSize: 0,
-        //                 uploadMaxFileSize: 26214400,
-        //                 plugins: [
-        //                     {
-        //                         factory: "@webiny/api-plugin-create-apollo-handler",
-        //                         options: vars.apollo
-        //                     },
-        //                     {
-        //                         factory: "@webiny/api-plugin-commodo-db-proxy",
-        //                         options: {
-        //                             functionArn: "${dbProxy.arn}"
-        //                         }
-        //                     },
-        //                     {
-        //                         factory: "@webiny/api-security/plugins/service",
-        //                         options: vars.security
-        //                     },
-        //                     "@webiny/api-files/plugins",
-        //                     "@webiny/api-plugin-files-resolvers-mongodb"
-        //                 ]
-        //             },
-        //             downloadFile: {
-        //                 memory: 512,
-        //                 timeout: 10
-        //             },
-        //             imageTransformer: {
-        //                 memory: 1600,
-        //                 timeout: 30
-        //             }
-        //         }
-        //     }
-        // },
-        /*i18n: {
+        },
+        files: {
+            deploy: {
+                component: "@webiny/serverless-files",
+                inputs: {
+                    region: vars.region,
+                    bucket: vars.bucket
+                }
+            }
+        },
+        filesGraphQL: {
+            watch: ["./services/files/build"],
+            build: {
+                root: "./services/files",
+                script: "yarn build",
+                define: apolloServiceDefinitions
+            },
+            deploy: {
+                component: "@webiny/serverless-apollo-service",
+                inputs: {
+                    region: vars.region,
+                    description: "Files GraphQL API",
+                    binaryMediaTypes: ["*/*"],
+                    endpoints: "${files.api.endpoints}",
+                    function: {
+                        code: "./services/files/build",
+                        handler: "handler.handler",
+                        memory: 512,
+                        env: {
+                            DEBUG: vars.debug,
+                            S3_BUCKET: vars.bucket,
+                            UPLOAD_MIN_FILE_SIZE: "0",
+                            UPLOAD_MAX_FILE_SIZE: "26214400"
+                        }
+                    }
+                }
+            }
+        },
+        i18n: {
             watch: ["./services/i18n/build"],
             build: {
                 root: "./services/i18n",
@@ -205,7 +206,7 @@ module.exports = () => ({
                     }
                 }
             }
-        },*/
+        },
         pageBuilderInstallation: {
             deploy: {
                 component: "@webiny/serverless-page-builder-installation",
@@ -232,7 +233,7 @@ module.exports = () => ({
                         timeout: 30,
                         env: {
                             DEBUG: vars.debug,
-                            // FILES_API_URL: "${files.api.graphqlUrl}",
+                            FILES_API_URL: "${filesGraphQL.api.graphqlUrl}",
                             INSTALLATION_S3_BUCKET: "${pageBuilderInstallation.bucketName}",
                             INSTALLATION_FILES_ZIP_KEY: "${pageBuilderInstallation.archiveKey}"
                         }
@@ -240,12 +241,17 @@ module.exports = () => ({
                 }
             }
         },
-        /*formBuilder: {
+        formBuilder: {
             watch: ["./services/formBuilder/build"],
             build: {
                 root: "./services/formBuilder",
                 script: "yarn build",
-                define: apolloServiceDefinitions
+                define: {
+                    ...apolloServiceDefinitions,
+                    I18N_OPTIONS: {
+                        graphqlUrl: "${i18n.api.graphqlUrl}"
+                    }
+                }
             },
             deploy: {
                 component: "@webiny/serverless-apollo-service",
@@ -258,8 +264,7 @@ module.exports = () => ({
                         timeout: 30,
                         env: {
                             DEBUG: vars.debug,
-                            // FILES_API_URL: "${files.api.graphqlUrl}",
-                            I18N_API_URL: "${i18n.api.graphqlUrl}"
+                            FILES_API_URL: "${filesGraphQL.api.graphqlUrl}"
                         }
                     }
                 }
@@ -295,7 +300,7 @@ module.exports = () => ({
                 script: "yarn build",
                 define: {
                     ...apolloServiceDefinitions,
-                    API_I18N: {
+                    I18N_OPTIONS: {
                         graphqlUrl: "${i18n.api.graphqlUrl}"
                     }
                 }
@@ -313,7 +318,7 @@ module.exports = () => ({
                     }
                 }
             }
-        }*/
+        },
         api: {
             component: "@webiny/serverless-api-gateway",
             inputs: {
@@ -324,57 +329,64 @@ module.exports = () => ({
                         path: "/graphql",
                         method: "ANY",
                         function: "${apolloGateway}"
-                    }
-                    /*{
+                    },
+                    {
                         path: "/cms/{key+}",
                         method: "ANY",
                         function: "${headlessCmsHandler}"
-                    }*/
+                    }
+                ]
+            }
+        },
+        cdn: {
+            component: "@webiny/serverless-aws-cloudfront",
+            inputs: {
+                origins: [
+                    {
+                        url: "${filesGraphQL.api.url}",
+                        pathPatterns: {
+                            "/files/*": {
+                                ttl: 2592000 // 1 month
+                            }
+                        }
+                    },
+                    {
+                        url: "${api.url}",
+                        pathPatterns: {
+                            "/graphql": {
+                                ttl: 0,
+                                forward: {
+                                    headers: ["Accept", "Accept-Language"]
+                                },
+                                allowedHttpMethods: [
+                                    "GET",
+                                    "HEAD",
+                                    "OPTIONS",
+                                    "PUT",
+                                    "POST",
+                                    "PATCH",
+                                    "DELETE"
+                                ]
+                            },
+                            "/cms*": {
+                                ttl: 0,
+                                forward: {
+                                    headers: ["Accept", "Accept-Language"]
+                                },
+                                allowedHttpMethods: [
+                                    "GET",
+                                    "HEAD",
+                                    "OPTIONS",
+                                    "PUT",
+                                    "POST",
+                                    "PATCH",
+                                    "DELETE"
+                                ]
+                            }
+                        }
+                    }
                 ]
             }
         }
-        // cdn: {
-        //     component: "@webiny/serverless-aws-cloudfront",
-        //     inputs: {
-        //         origins: [
-        //             //"${files.cdnOrigin}",
-        //             {
-        //                 url: "${api.url}",
-        //                 pathPatterns: {
-        //                     "/graphql": {
-        //                         ttl: 0,
-        //                         forward: {
-        //                             headers: ["Accept", "Accept-Language"]
-        //                         },
-        //                         allowedHttpMethods: [
-        //                             "GET",
-        //                             "HEAD",
-        //                             "OPTIONS",
-        //                             "PUT",
-        //                             "POST",
-        //                             "PATCH",
-        //                             "DELETE"
-        //                         ]
-        //                     },
-        //                     "/cms*": {
-        //                         ttl: 0,
-        //                         forward: {
-        //                             headers: ["Accept", "Accept-Language"]
-        //                         },
-        //                         allowedHttpMethods: [
-        //                             "GET",
-        //                             "HEAD",
-        //                             "OPTIONS",
-        //                             "PUT",
-        //                             "POST",
-        //                             "PATCH",
-        //                             "DELETE"
-        //                         ]
-        //                     }
-        //                 }
-        //             }
-        //         ]
-        //     }
-        // }
     }
 });
