@@ -97,9 +97,6 @@ const TokensElement = ({ formIsLoading, setFormIsLoading, data, setValue }) => {
                     Tokens
                 </Typography>
                 <ButtonDefault onClick={generateToken}>Create Token</ButtonDefault>
-                <div>
-                    <button onClick={() => setValue("firstName", Math.random())}>AAAAAAAA</button>
-                </div>
             </Header>
             <TokenList data={data} setValue={setValue} />
         </>
