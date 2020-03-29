@@ -13,10 +13,11 @@ import buildHeaders from "./buildHeaders";
 import { DataSource } from "./DataSource";
 
 function getError(error) {
-    let err = get(error, "extensions.response.body.error");
+    let err = get(error, "extensions.response");
     if (err) {
+        const body = JSON.parse(err.body);
         return {
-            error: err.message,
+            error: body.error.message,
             stack: err.stack
         };
     }
@@ -83,6 +84,7 @@ const getHandler = async ({ options, context }: GetHandlerOptions) => {
                     }
                 },
                 onServiceError(error) {
+                    console.log("Service Error: " + name, error);
                     dataSourceErrors.push({
                         ...getError(error),
                         service: name,
