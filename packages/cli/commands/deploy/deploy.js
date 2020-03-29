@@ -33,7 +33,7 @@ module.exports = async inputs => {
 
     process.chdir(newCwd);
 
-    const isFirstDeploy = !(await isEnvDeployed(env));
+    const isFirstDeploy = !(await isEnvDeployed({ folder, env }));
     if (isFirstDeploy) {
         inputs.watch = false;
         const perk = perks[Math.floor(Math.random() * perks.length)];

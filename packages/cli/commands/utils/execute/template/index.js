@@ -193,6 +193,7 @@ class Template extends Component {
             if (!watch) {
                 resolve();
             } else {
+                this.context.instance.clearStatus();
                 console.log("Watching for changes...");
             }
         });

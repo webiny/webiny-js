@@ -298,7 +298,7 @@ const executeGraph = async (allComponents, graph, instance, inputs, build) => {
         graph.removeNode(resource);
     }
 
-    return executeGraph(allComponents, graph, instance, inputs);
+    return executeGraph(allComponents, graph, instance, inputs, build);
 };
 
 const syncState = async (allComponents, instance) => {

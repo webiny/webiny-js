@@ -27,7 +27,7 @@ class Status {
         process.stdout.write(ansiEscapes.cursorHide);
         this.status.running = true;
 
-        setInterval(async () => {
+        this.renderInterval = setInterval(async () => {
             this.render();
             await sleep(100);
             if (this.isRunning()) {
@@ -156,6 +156,8 @@ class Status {
     }
 
     clearStatus() {
+        clearInterval(this.renderInterval);
+        this.status.running = false;
         process.stdout.write(ansiEscapes.cursorLeft);
         process.stdout.write(ansiEscapes.eraseDown);
         process.stdout.write(ansiEscapes.cursorShow);
