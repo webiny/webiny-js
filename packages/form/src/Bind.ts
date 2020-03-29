@@ -48,6 +48,7 @@ const createBind = (form: Form) => {
 
         // Build new input props
         const newProps = {
+            disabled: false,
             form,
             validate: form.getValidateFn(name),
             validation: form.state.validation[name] || {
@@ -74,7 +75,7 @@ const createBind = (form: Form) => {
         form.inputs[name].props = newProps;
 
         if (React.isValidElement(children)) {
-            return React.cloneElement(children, { ...children.props ,...newProps });
+            return React.cloneElement(children, newProps);
         }
 
         return children(newProps);
