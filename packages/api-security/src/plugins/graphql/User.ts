@@ -13,11 +13,13 @@ export default {
     typeDefs: /* GraphQL */ `
         # Personal Access Token type
         input PersonalAccessTokenInput {
+            name: String
             token: String
             createdOn: DateTime
         }
 
         type PersonalAccessToken {
+            name: String
             token: String
             createdOn: DateTime
         }
