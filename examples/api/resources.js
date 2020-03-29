@@ -37,45 +37,53 @@ const apolloServiceDefinitions = {
 
 module.exports = () => ({
     resources: {
-        /*gateway: {
-            component: "@webiny/serverless-apollo-gateway",
-            inputs: {
-                region: vars.region,
-                memory: 512,
-                timeout: 30,
-                debug: vars.debug,
-                plugins: [
-                    {
-                        factory: "@webiny/api-plugin-create-apollo-gateway",
-                        options: {
-                            server: vars.apollo.server,
-                            services: [
-                                {
-                                    name: "security",
-                                    url: "${security.api.graphqlUrl}"
-                                },
-                                {
-                                    name: "i18n",
-                                    url: "${i18n.api.graphqlUrl}"
-                                },
-                                /!*{
-                                    name: "files",
-                                    url: "${files.api.graphqlUrl}"
-                                },
-                                {
-                                    name: "pageBuilder",
-                                    url: "${pageBuilder.api.graphqlUrl}"
-                                },*!/
-                                {
-                                    name: "formBuilder",
-                                    url: "${formBuilder.api.graphqlUrl}"
-                                }
-                            ]
-                        }
+        apolloGateway: {
+            watch: ["./services/apolloGateway/build"],
+            build: {
+                root: "./services/apolloGateway",
+                script: "yarn build",
+                define: {
+                    HTTP_HANDLER_APOLLO_GATEWAY_OPTIONS: {
+                        ...vars.httpHandlerApolloServer,
+                        services: [
+                            /*{
+                                name: "security",
+                                url: "${security.api.graphqlUrl}"
+                            },
+                            {
+                                name: "i18n",
+                                url: "${i18n.api.graphqlUrl}"
+                            },*/
+                            /*{
+                            name: "files",
+                            url: "${files.api.graphqlUrl}"
+                        },*/
+                            {
+                                name: "pageBuilder",
+                                url: "${pageBuilder.api.graphqlUrl}"
+                            } /*,
+                            {
+                                name: "formBuilder",
+                                url: "${formBuilder.api.graphqlUrl}"
+                            }*/
+                        ]
                     }
-                ]
+                }
+            },
+            deploy: {
+                component: "@webiny/serverless-function",
+                inputs: {
+                    region: vars.region,
+                    code: "./services/apolloGateway/build",
+                    handler: "handler.handler",
+                    memory: 512,
+                    timeout: 30,
+                    env: {
+                        DEBUG: vars.debug
+                    }
+                }
             }
-        },*/
+        },
         dbProxy: {
             deploy: {
                 component: "@webiny/serverless-db-proxy",
@@ -91,7 +99,7 @@ module.exports = () => ({
                 }
             }
         },
-        cognito: {
+        /*cognito: {
             deploy: {
                 component: "@webiny/serverless-aws-cognito-user-pool",
                 inputs: {
@@ -132,7 +140,7 @@ module.exports = () => ({
                     }
                 }
             }
-        },
+        },*/
         // files: {
         //     component: "@webiny/serverless-files",
         //     inputs: {
@@ -175,7 +183,7 @@ module.exports = () => ({
         //         }
         //     }
         // },
-        i18n: {
+        /*i18n: {
             watch: ["./services/i18n/build"],
             build: {
                 root: "./services/i18n",
@@ -197,7 +205,7 @@ module.exports = () => ({
                     }
                 }
             }
-        },
+        },*/
         pageBuilderInstallation: {
             deploy: {
                 component: "@webiny/serverless-page-builder-installation",
@@ -232,7 +240,7 @@ module.exports = () => ({
                 }
             }
         },
-        formBuilder: {
+        /*formBuilder: {
             watch: ["./services/formBuilder/build"],
             build: {
                 root: "./services/formBuilder",
@@ -305,8 +313,8 @@ module.exports = () => ({
                     }
                 }
             }
-        },
-        /*api: {
+        }*/
+        api: {
             component: "@webiny/serverless-api-gateway",
             inputs: {
                 region: vars.region,
@@ -315,16 +323,16 @@ module.exports = () => ({
                     {
                         path: "/graphql",
                         method: "ANY",
-                        function: "${gateway}"
-                    },
-                    {
+                        function: "${apolloGateway}"
+                    }
+                    /*{
                         path: "/cms/{key+}",
                         method: "ANY",
                         function: "${headlessCmsHandler}"
-                    }
+                    }*/
                 ]
             }
-        }*/
+        }
         // cdn: {
         //     component: "@webiny/serverless-aws-cloudfront",
         //     inputs: {
