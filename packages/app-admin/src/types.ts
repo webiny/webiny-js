@@ -40,7 +40,13 @@ export type HeaderUserMenuUserInfoPlugin = Plugin & {
     render(): React.ReactElement;
 };
 
+/**
+ * Enables adding custom menu sections and items in the main menu, located on the left side of the screen.
+ * @see https://docs.webiny.com/docs/webiny-apps/admin/development/plugins-reference/app#menu
+ */
 export type MenuPlugin = Plugin & {
+    type: "menu";
+    description: "Enables adding custom menu sections and items in the main menu, located on the left side of the screen."
     render(props: {
         Menu: typeof Menu;
         Section: typeof Section;
@@ -53,15 +59,33 @@ export type MenuContentSectionPlugin = Plugin & {
     render(props: { Section: typeof Section; Item: typeof Item }): React.ReactNode;
 };
 
+/**
+ * Enables adding custom header elements to the left side of the top bar.
+ * @see https://docs.webiny.com/docs/webiny-apps/admin/development/plugins-reference/app#header-left
+ */
 export type HeaderLeftPlugin = Plugin & {
+    type: "header-left";
+    description: "Enables adding custom header elements to the left side of the top bar.";
     render(params: RenderParams): React.ReactNode;
 };
 
+/**
+ * Enables adding custom header elements to the right side of the top bar.
+ * @see https://docs.webiny.com/docs/webiny-apps/admin/development/plugins-reference/app#header-right
+ */
 export type HeaderRightPlugin = Plugin & {
+    type: "header-right";
+    description: "Enables adding custom header elements to the right side of the top bar.";
     render(params: RenderParams): React.ReactNode;
 };
 
+/**
+ * Enables adding custom header elements to the middle of the top bar.
+ * @see https://docs.webiny.com/docs/webiny-apps/admin/development/plugins-reference/app#header-middle
+ */
 export type HeaderMiddlePlugin = Plugin & {
+    type: "header-middle";
+    description: "Enables adding custom header elements to the middle of the top bar.";
     render(params: RenderParams): React.ReactNode;
 };
 
