@@ -183,18 +183,14 @@ const setDependencies = allComponents => {
     const regex = /\${(\w*:?[\w\d.-]+)}/g;
 
     for (const resource in allComponents) {
-        const dependencies = traverse(allComponents[resource].inputs).reduce(function(
-            accum,
-            value
-        ) {
+        const dependencies = traverse({
+            ...allComponents[resource].inputs,
+            ...allComponents[resource].build
+        }).reduce(function(accum, value) {
             const matches = typeof value === "string" ? value.match(regex) : null;
             if (matches) {
                 for (const match of matches) {
                     const referencedComponent = match.substring(2, match.length - 1).split(".")[0];
-
-                    if (referencedComponent === "build") {
-                        continue;
-                    }
 
                     if (!allComponents[referencedComponent]) {
                         throw Error(
@@ -208,8 +204,7 @@ const setDependencies = allComponents => {
                 }
             }
             return accum;
-        },
-        []);
+        }, []);
 
         allComponents[resource].dependencies = dependencies;
     }
