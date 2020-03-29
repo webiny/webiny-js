@@ -93,6 +93,7 @@ const UserAccountForm = () => {
         loading: true,
         user: { data: {} }
     });
+    const setIsLoading = loading => setState(loading);
 
     const client = useApolloClient();
     const { showSnackbar } = useSnackbar();
@@ -122,37 +123,12 @@ const UserAccountForm = () => {
         });
     }, []);
 
-    const deleteToken = removedValue => {
-        const tokenIndex = user.data.personalAccessTokens.findIndex(
-            PAT => PAT.token === removedValue
-        );
-        if (tokenIndex === -1) return;
-
-        user.data.personalAccessTokens.splice(tokenIndex, 1);
-        setState({ loading, user });
-    };
-
-    const generateToken = async () => {
-        setState({ loading: true });
-        const queryResponse = await client.mutate({
-            mutation: GET_NEW_PAT
-        });
-        setState({ loading: false });
-        const personalAccessToken = {
-            token: queryResponse.data.security.createPAT,
-            name: "New token"
-        };
-
-        user.data.personalAccessTokens.push(personalAccessToken);
-        setState({ loading, user });
-    };
-
     return (
         <Grid>
             <Cell span={3} />
             <Cell span={6}>
                 <Form data={user.data} onSubmit={onSubmit}>
-                    {({ data, form, Bind }) => (
+                    {({ data, form, Bind, setValue }) => (
                         <>
                             <div style={{ marginBottom: "32px" }}>
                                 <Bind name="avatar">
@@ -192,13 +168,14 @@ const UserAccountForm = () => {
                                                 </Bind>
                                             ),
                                             personalAccessTokens: (
-                                                <AccuntTokens
-                                                    deleteToken={deleteToken}
-                                                    generateToken={generateToken}
-                                                    personalAccessTokens={
-                                                        user.data.personalAccessTokens
-                                                    }
-                                                />
+                                                <Bind name="personalAccessTokens">
+                                                    <AccuntTokens
+                                                        data={data}
+                                                        setValue={setValue}
+                                                        formIsLoading={loading}
+                                                        setFormIsLoading={setIsLoading}
+                                                    />
+                                                </Bind>
                                             )
                                         }
                                     })}
