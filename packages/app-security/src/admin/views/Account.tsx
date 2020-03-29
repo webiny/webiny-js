@@ -138,9 +138,12 @@ const UserAccountForm = () => {
             mutation: GET_NEW_PAT
         });
         setState({ loading: false });
-        const token = queryResponse.data.security.createPAT;
+        const personalAccessToken = {
+            token: queryResponse.data.security.createPAT,
+            name: "New token"
+        };
 
-        user.data.personalAccessTokens.push({ token });
+        user.data.personalAccessTokens.push(personalAccessToken);
         setState({ loading, user });
     };
 
