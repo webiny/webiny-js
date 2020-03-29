@@ -4,24 +4,14 @@ const getDefaults = () => ({
     region: null,
     bucket: null,
     functions: {
-        apolloService: {
-            memory: 512,
-            timeout: 10,
-            database: null,
-            uploadMinFileSize: 0,
-            uploadMaxFileSize: 26214400,
-            env: {},
-            plugins: [],
-            webpackConfig: null
-        },
         downloadFile: {
             memory: 512,
             timeout: 10,
             env: {}
         },
         imageTransformer: {
-            memory: 1024,
-            timeout: 10,
+            memory: 1600,
+            timeout: 30,
             env: {}
         }
     },
@@ -29,19 +19,15 @@ const getDefaults = () => ({
 
 module.exports = (inputs = {}) => {
     // This is considered as the "new" config.
-    let output = getDefaults();
+    const output = getDefaults();
     if (inputs.functions) {
         merge(output, inputs);
     } else {
         // Otherwise, we take inputs, assign specific parameters and the rest to the apollo-service function.
-        const { region, bucket, ...apolloServiceInputs } = inputs;
+        const { region, bucket } = inputs;
 
         output.region = region;
         output.bucket = bucket;
-        output.functions.apolloService = {
-            ...output.functions.apolloService,
-            ...apolloServiceInputs
-        };
     }
 
     if (!output.region) {
