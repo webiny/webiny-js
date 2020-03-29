@@ -59,25 +59,33 @@ cognito:
       - name: ReactApp
 
 security:
-  component: "@webiny/serverless-apollo-service"
+  component: "@webiny/serverless-security"
   inputs:
+    env:
+      MONGODB_SERVER: ${vars.mongodb.server}
+      MONGODB_NAME: ${vars.mongodb.name}
     region: ${vars.region}
     memory: 512
-    timeout: 30
-    webpackConfig: ./webpack.config.js
     debug: ${vars.debug}
-    plugins:
-      - factory: "@webiny/api-plugin-create-apollo-handler"
-        options: ${vars.apollo}
-      - factory: "@webiny/api-plugin-commodo-db-proxy"
-        options:
-          functionArn: ${dbProxy.arn}
-      - factory: "@webiny/api-security/plugins"
-        options: ${vars.security}
-      - factory: "@webiny/api-plugin-security-cognito"
-        options:
-          region: ${vars.region}
-          userPoolId: ${cognito.userPool.Id}
+    functions:
+      apolloService:
+        region: ${vars.region}
+        memory: 512
+        timeout: 30
+        webpackConfig: ./webpack.config.js
+        debug: ${vars.debug}
+        plugins:
+          - factory: "@webiny/api-plugin-create-apollo-handler"
+            options: ${vars.apollo}
+          - factory: "@webiny/api-plugin-commodo-db-proxy"
+            options:
+              functionArn: ${dbProxy.arn}
+          - factory: "@webiny/api-security/plugins"
+            options: ${vars.security}
+          - factory: "@webiny/api-plugin-security-cognito"
+            options:
+              region: ${vars.region}
+              userPoolId: ${cognito.userPool.Id}
 
 files:
   component: "@webiny/serverless-files/dist"
