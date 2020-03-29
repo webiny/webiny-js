@@ -23,7 +23,6 @@ const ForkTsCheckerWebpackPlugin = require("react-dev-utils/ForkTsCheckerWebpack
 const typescriptFormatter = require("react-dev-utils/typescriptFormatter");
 const WebpackBar = require("webpackbar");
 const postcssNormalize = require("postcss-normalize");
-const aliases = require("./aliases");
 
 const materialNodeModules = require.resolve("@material/base/package.json").split("@material")[0];
 const sassIncludePaths = [
@@ -303,8 +302,7 @@ module.exports = function(webpackEnv, { paths, babelCustomizer }) {
                     "react-dom$": "react-dom/profiling",
                     "scheduler/tracing": "scheduler/tracing-profiling"
                 }),
-                ...(modules.webpackAliases || {}),
-                ...aliases
+                ...(modules.webpackAliases || {})
             },
             plugins: [
                 // Adds support for installing with Plug'n'Play, leading to faster installs and adding
