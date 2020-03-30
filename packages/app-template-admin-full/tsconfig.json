@@ -1,0 +1,20 @@
+{
+  "extends": "../../tsconfig",
+  "references": [
+    { "path": "../app" },
+    { "path": "../app-admin" },
+    { "path": "../app-i18n" },
+    { "path": "../app-cookie-policy" },
+    { "path": "../app-google-tag-manager" },
+    { "path": "../app-mailchimp" },
+    { "path": "../app-typeform" },
+    { "path": "../app-plugin-security-cognito" },
+    { "path": "../app-plugin-security-cognito-theme" },
+    { "path": "../app-page-builder" },
+    { "path": "../app-page-builder-theme" },
+    { "path": "../app-form-builder" },
+    { "path": "../app-form-builder-theme" },
+    { "path": "../app-template" },
+    { "path": "../ui" }
+  ]
+}

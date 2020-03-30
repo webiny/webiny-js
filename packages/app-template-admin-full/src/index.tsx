@@ -8,6 +8,7 @@ import { I18NProvider } from "@webiny/app-i18n/contexts/I18N";
 import { SecurityProvider } from "@webiny/app-security/contexts/Security";
 import { CircularProgress } from "@webiny/ui/Progress";
 import { AppInstaller } from "@webiny/app-admin/components/Install/AppInstaller";
+import { PageBuilderProvider } from "@webiny/app-page-builder/contexts/PageBuilder";
 import { ThemeProvider } from "@webiny/app-admin/contexts/Theme";
 
 // Other plugins
@@ -15,6 +16,15 @@ import { fileUploadPlugin, imagePlugin } from "@webiny/app/plugins";
 import adminPlugins from "@webiny/app-admin/plugins";
 import i18nPlugins from "@webiny/app-i18n/admin/plugins";
 import securityPlugins from "@webiny/app-security/admin/plugins";
+import pageBuilderPlugins from "@webiny/app-page-builder/admin/plugins";
+import pageBuilderTheme from "@webiny/app-page-builder-theme";
+import formBuilderPlugins from "@webiny/app-form-builder/admin/plugins";
+import formBuilderPageBuilderPlugins from "@webiny/app-form-builder/page-builder/admin/plugins";
+import formBuilderTheme from "@webiny/app-form-builder-theme";
+import cookiePolicyPlugins from "@webiny/app-cookie-policy/admin";
+import googleTagManagerPlugins from "@webiny/app-google-tag-manager/admin";
+import typeformPlugins from "@webiny/app-typeform/admin";
+import mailchimpPlugins from "@webiny/app-mailchimp/admin";
 import cognito from "@webiny/app-plugin-security-cognito";
 import cognitoTheme from "@webiny/app-plugin-security-cognito-theme/admin";
 
@@ -62,7 +72,7 @@ export default createTemplate<AdminAppOptions>(opts => {
                             exact
                             path="/"
                             render={() => (
-                                <Redirect to={opts.defaultRoute || "/users"} />
+                                <Redirect to={opts.defaultRoute || "/page-builder/pages"} />
                             )}
                         />
                     </BrowserRouter>
@@ -100,9 +110,13 @@ export default createTemplate<AdminAppOptions>(opts => {
         },
         {
             type: "app-template-renderer",
-            name: "app-template-renderer-admin-theme",
+            name: "app-template-renderer-page-builder",
             render(children) {
-                return <ThemeProvider>{children}</ThemeProvider>;
+                return (
+                    <PageBuilderProvider isEditor>
+                        <ThemeProvider>{children}</ThemeProvider>
+                    </PageBuilderProvider>
+                );
             }
         }
     ];
@@ -113,6 +127,15 @@ export default createTemplate<AdminAppOptions>(opts => {
         adminPlugins,
         i18nPlugins,
         securityPlugins,
+        pageBuilderPlugins,
+        pageBuilderTheme(),
+        formBuilderPlugins,
+        formBuilderPageBuilderPlugins,
+        formBuilderTheme(),
+        cookiePolicyPlugins,
+        googleTagManagerPlugins,
+        typeformPlugins,
+        mailchimpPlugins,
         cognito(opts.cognito),
         cognitoTheme(),
         ...(opts.plugins || [])
