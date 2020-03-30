@@ -2,7 +2,6 @@ const fs = require("fs-extra");
 const path = require("path");
 const loadJsonFile = require("load-json-file");
 const writeJsonFile = require("write-json-file");
-const debug = require("debug")("webiny");
 const { Status } = require("./Status");
 
 const randomId = () =>
@@ -12,6 +11,7 @@ const randomId = () =>
 
 class Context {
     constructor(config) {
+        this.logger = config.logger;
         this.stateRoot = config.stateRoot;
         this.credentials = config.credentials || {};
         this.debugMode = config.debug || false;
@@ -60,11 +60,11 @@ class Context {
     }
 
     log(...args) {
-        debug(...args);
+        this.logger.log(...args);
     }
 
     debug(...args) {
-        debug(...args);
+        this.logger.debug(...args);
     }
 
     status(status, entity) {

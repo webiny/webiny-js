@@ -11,9 +11,10 @@ const ora = require("ora");
 const writeJsonFile = require("write-json-file");
 const { trackActivity } = require("@webiny/tracking");
 const { version } = require(require.resolve("@webiny/cli/package.json"));
+const uniqueId = require("uniqid");
 const { getSuccessBanner } = require("./messages");
 const { getPackageVersion } = require("./utils");
-const uniqueId = require("uniqid");
+const { trackingNotice } = require("./trackingNotice");
 
 const globFiles = util.promisify(glob);
 
@@ -22,6 +23,8 @@ function copyFile(from, to) {
 }
 
 module.exports = async ({ name, tag }) => {
+    trackingNotice();
+
     const root = join(process.cwd(), name);
 
     if (fs.existsSync(root)) {

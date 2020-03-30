@@ -7,11 +7,13 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/webiny/webiny-js.git"
+    "url": "https://github.com/webiny/webiny-js.git",
+    "directory": "packages/cli"
   },
   "author": "Pavel Denisjuk <pavel@webiny.com>",
   "description": "A tool to bootstrap a Webiny project.",
   "dependencies": {
+    "@webiny/plugins": "^3.0.1",
     "@webiny/tracking": "^3.1.0",
     "ansi-escapes": "^4.2.1",
     "boolean": "^3.0.1",

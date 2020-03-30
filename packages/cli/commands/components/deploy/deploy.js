@@ -2,11 +2,8 @@ const { join, resolve } = require("path");
 const fs = require("fs");
 const { green, red } = require("chalk");
 const notifier = require("node-notifier");
-const { execute } = require("../utils/execute");
-const { isEnvDeployed } = require("../utils");
-const { paths } = require("../utils/paths");
-
-const perks = ["🍪", "☕️", "🍎", "🍺", "🥤"];
+const loadJson = require("load-json-file");
+const { execute } = require("../execute");
 
 const notify = ({ message }) => {
     notifier.notify({
@@ -18,8 +15,25 @@ const notify = ({ message }) => {
     });
 };
 
-module.exports = async inputs => {
+module.exports = async (inputs, context) => {
     const { env, folder } = inputs;
+
+    const isEnvDeployed = async ({ folder, env }) => {
+        const envFile = join(
+            context.paths.projectRoot,
+            ".webiny",
+            "state",
+            folder,
+            env,
+            `Webiny.json`
+        );
+        try {
+            const json = await loadJson(envFile);
+            return json.components && json.outputs;
+        } catch (err) {
+            return false;
+        }
+    };
 
     // Store current `cwd`
     const cwd = process.cwd();
@@ -27,7 +41,7 @@ module.exports = async inputs => {
     // Change CWD to the requested folder
     const newCwd = join(cwd, folder);
     if (!fs.existsSync(newCwd)) {
-        console.log(`⚠️ ${red(paths.replaceProjectRoot(newCwd))} does not exist!`);
+        console.log(`⚠️ ${red(context.replaceProjectRoot(newCwd))} does not exist!`);
         return;
     }
 
@@ -36,11 +50,8 @@ module.exports = async inputs => {
     const isFirstDeploy = !(await isEnvDeployed({ folder, env }));
     if (isFirstDeploy) {
         inputs.watch = false;
-        const perk = perks[Math.floor(Math.random() * perks.length)];
         console.log(
-            `This is the first deploy of ${green(
-                env
-            )} environment, so it may take a few minutes.\nHere's ${perk} to make the time pass faster :)`
+            `This is the first deploy of ${green(env)} environment, so it may take a few minutes.`
         );
     }
 
@@ -59,11 +70,11 @@ module.exports = async inputs => {
             const appLocation = resolve(config.hooks[i]);
             try {
                 const { hooks } = require(join(appLocation, "webiny.config.js"));
-                const hookPath = paths.replaceProjectRoot(appLocation);
+                const hookPath = context.replaceProjectRoot(appLocation);
                 if (hooks && hooks.stateChanged) {
                     console.log(
                         `🎣 Processing ${green("stateChanged")} hook in ${green(
-                            paths.replaceProjectRoot(hookPath)
+                            context.replaceProjectRoot(hookPath)
                         )}`
                     );
 
@@ -89,7 +100,7 @@ module.exports = async inputs => {
         }
     };
 
-    await execute({ ...inputs, callback: afterDeploy });
+    await execute({ ...inputs, callback: afterDeploy }, "default", context);
 
     // Restore the original `cwd`
     process.chdir(cwd);

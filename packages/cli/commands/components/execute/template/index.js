@@ -1,7 +1,6 @@
 const path = require("path");
 const fs = require("fs");
 const { Component } = require("@webiny/serverless-component");
-const { loadEnv } = require("../../index");
 const buildResource = require("./buildResource");
 const { compose } = require("./compose");
 const setupFileWatchers = require("./watch");
@@ -29,9 +28,6 @@ const validateInputs = ({ env }) => {
 class Template extends Component {
     async default(inputs = {}) {
         validateInputs(inputs);
-
-        // Load .env.json from cwd (this will change depending on the folder you specified)
-        await loadEnv(path.resolve(".env.json"), inputs.env, { debug: inputs.debug });
 
         let template;
         if (fs.existsSync(`resources.js`)) {

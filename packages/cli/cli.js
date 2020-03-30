@@ -1,22 +1,11 @@
 #!/usr/bin/env node
 const yargs = require("yargs");
-const { blue, green } = require("chalk");
+const { blue } = require("chalk");
 const { createCommands } = require("./commands");
-
-const trackingNotice = () => {
-    console.log();
-    console.log(
-        `Webiny collects anonymous usage analytics to help improve the developer experience.`
-    );
-    console.log(`If you'd like to opt-out run ${green("webiny disable-tracking")}.`);
-    console.log(`To learn more, check out https://www.webiny.com/telemetry/.`);
-    console.log();
-};
-
-createCommands(yargs);
+const context = require("./context");
 
 yargs
-    .usage("Usage: $0 <command>")
+    .usage("Usage: $0 <command> [options]")
     .demandCommand(1)
     .recommendCommands()
     .example("$0 deploy api --env=dev")
@@ -31,6 +20,8 @@ yargs
         process.exit(1);
     });
 
+createCommands(yargs, context);
+
 yargs.command(
     "create <name>",
     "Create a new Webiny project.",
@@ -44,7 +35,6 @@ yargs.command(
         });
     },
     argv => {
-        trackingNotice();
         require("./create")(argv);
     }
 );
