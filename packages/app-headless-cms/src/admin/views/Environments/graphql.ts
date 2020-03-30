@@ -3,13 +3,21 @@ import gql from "graphql-tag";
 const fields = `
     id
     name
-    slug
     description
-    default
+    createdFrom {
+        id
+        name
+    }
 `;
 
 export const LIST_ENVIRONMENTS = gql`
-    query listEnvironments($where: JSON, $sort: JSON, $page: Int, $perPage: Int, $search: CmsSearchInput) {
+    query listEnvironments(
+        $where: JSON
+        $sort: JSON
+        $page: Int
+        $perPage: Int
+        $search: CmsSearchInput
+    ) {
         cms {
             environments: listEnvironments(
                 where: $where
@@ -21,11 +29,8 @@ export const LIST_ENVIRONMENTS = gql`
                 data {
                     id
                     name
-                    slug
-                    description
+                    isProduction
                     createdOn
-                    setAsDefaultOn
-                    default
                 }
                 meta {
                     totalCount

@@ -4,7 +4,7 @@ import { FloatingActionButton } from "@webiny/app-admin/components/FloatingActio
 import EnvironmentsDataList from "./EnvironmentsDataList";
 import EnvironmentsForm from "./EnvironmentsForm";
 import { CrudProvider } from "@webiny/app-admin/contexts/Crud";
-import { useCms } from "@webiny/app-headless-cms/admin/contexts/Cms";
+import { useCms } from "@webiny/app-headless-cms/admin/hooks";
 import {
     READ_ENVIRONMENT,
     LIST_ENVIRONMENTS,

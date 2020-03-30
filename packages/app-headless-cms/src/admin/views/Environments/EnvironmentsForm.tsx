@@ -2,7 +2,6 @@ import React from "react";
 import { Form } from "@webiny/form";
 import { Grid, Cell } from "@webiny/ui/Grid";
 import { Input } from "@webiny/ui/Input";
-import { Switch } from "@webiny/ui/Switch";
 import { ButtonPrimary } from "@webiny/ui/Button";
 import { CircularProgress } from "@webiny/ui/Progress";
 import { useCrud } from "@webiny/app-admin/hooks/useCrud";
@@ -13,36 +12,67 @@ import {
     SimpleFormFooter,
     SimpleFormContent
 } from "@webiny/app-admin/components/SimpleForm";
+import { useQuery } from "react-apollo";
+import { LIST_ENVIRONMENTS } from "./graphql";
+import get from "lodash.get";
+import { AutoComplete } from "@webiny/ui/AutoComplete";
 
 const t = i18n.ns("app-page-builder/admin/environments/form");
 
 function EnvironmentsForm() {
     const { form: crudForm } = useCrud();
+
+    const { data } = useQuery(LIST_ENVIRONMENTS, { variables: { perPage: 100 } });
+
+    const createdFromOptions = get(data, "cms.environments.data", []);
+
     return (
         <Form {...crudForm}>
-            {({ data, form, Bind }) => (
+            {({ form, data, Bind }) => (
                 <SimpleForm data-testid={"pb-environments-form"}>
                     {crudForm.loading && <CircularProgress />}
                     <SimpleFormContent>
                         <Grid>
-                            <Cell span={6}>
-                                <Bind name="name" validators={validation.create("required")}>
+                            <Cell span={12}>
+                                <Bind
+                                    name="name"
+                                    validators={validation.create("required,maxLength:100")}
+                                >
                                     <Input label={t`Name`} />
-                                </Bind>
-                            </Cell>
-                            <Cell span={6}>
-                                <Bind name="slug" validators={validation.create("required")}>
-                                    <Input disabled={data.id} label={t`Slug`} />
                                 </Bind>
                             </Cell>
                             <Cell span={12}>
                                 <Bind name="description">
-                                    <Input rows={5} label={t`Description`} />
+                                    {props => (
+                                        <Input
+                                            {...props}
+                                            rows={4}
+                                            maxLength={200}
+                                            characterCount
+                                            label={t`Description`}
+                                        />
+                                    )}
                                 </Bind>
                             </Cell>
+
                             <Cell span={12}>
-                                <Bind name="default">
-                                    <Switch label={t`Default environment`} />
+                                <Bind
+                                    name="createdFrom"
+                                    validators={!data.id && validation.create("required")}
+                                >
+                                    {props => (
+                                        <AutoComplete
+                                            {...props}
+                                            disabled={!!data.id}
+                                            label={data.id ? t`Created from` : t`Base environment`}
+                                            options={createdFromOptions}
+                                            description={
+                                                data.id
+                                                    ? t`A base environment from which this one was created.`
+                                                    : t`A base environment from which the new one will be created.`
+                                            }
+                                        />
+                                    )}
                                 </Bind>
                             </Cell>
                         </Grid>
