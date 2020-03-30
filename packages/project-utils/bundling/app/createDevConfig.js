@@ -1,4 +1,4 @@
-module.exports = async (options = {}) => {
+module.exports = async (options = { openBrowser: false }) => {
     const path = require("path");
     const appIndexJs = path.resolve("src", "index.tsx");
 
@@ -24,7 +24,7 @@ module.exports = async (options = {}) => {
         prepareProxy,
         prepareUrls
     } = require("react-dev-utils/WebpackDevServerUtils");
-    const openBrowser = require("react-dev-utils/openBrowser");
+    const openBrowserTab = require("react-dev-utils/openBrowser");
     const paths = require("./config/paths")({ appIndexJs });
     const configFactory = require("./config/webpack.config");
     const createDevServerConfig = require("./config/webpackDevServer.config");
@@ -109,7 +109,9 @@ module.exports = async (options = {}) => {
             }
 
             console.log(chalk.cyan("Starting the development server...\n"));
-            // openBrowser(urls.localUrlForBrowser);
+            if (options.openBrowser) {
+                openBrowserTab(urls.localUrlForBrowser);
+            }
         });
 
         ["SIGINT", "SIGTERM"].forEach(function(sig) {
