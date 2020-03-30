@@ -3,13 +3,9 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "@webiny/app-template-admin": "^1.0.0",
+    "@webiny/app-template-admin-full": "^1.0.0",
     "core-js": "^3.2.1",
     "cross-fetch": "^3.0.2",
-    "jest": "24.9.0",
-    "jest-environment-jsdom-fourteen": "1.0.1",
-    "jest-resolve": "24.9.0",
-    "jest-watch-typeahead": "0.4.2",
     "react-hot-loader": "^4.3.5",
     "regenerator-runtime": "^0.13.3"
   },

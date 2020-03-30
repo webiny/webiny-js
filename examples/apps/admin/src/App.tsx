@@ -1,4 +1,4 @@
-import adminTemplate from "@webiny/app-template-admin";
+import adminTemplate from "@webiny/app-template-admin-full";
 import "./App.scss";
 
 export const App = adminTemplate({
