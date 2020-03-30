@@ -1,0 +1,13 @@
+{
+  "extends": "../../tsconfig",
+  "references": [
+    { "path": "../app" },
+    { "path": "../app-admin" },
+    { "path": "../app-security" },
+    { "path": "../app-i18n" },
+    { "path": "../app-plugin-security-cognito" },
+    { "path": "../app-plugin-security-cognito-theme" },
+    { "path": "../app-template" },
+    { "path": "../ui" }
+  ]
+}
