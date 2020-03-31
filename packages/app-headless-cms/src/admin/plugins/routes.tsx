@@ -65,7 +65,7 @@ const plugins: RoutePlugin[] = [
         route: (
             <Route
                 exact
-                path={"/cms/content-models-groups"}
+                path={"/cms/content-model-groups"}
                 render={() => (
                     <SecureRoute roles={["cms-content-model-groups"]}>
                         <AdminLayout>
