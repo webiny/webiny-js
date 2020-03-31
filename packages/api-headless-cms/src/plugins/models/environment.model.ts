@@ -1,72 +1,54 @@
 import { validation } from "@webiny/validation";
 import {
-    compose,
-    onSet,
+    pipe,
     withFields,
-    setOnce,
-    skipOnPopulate,
-    boolean,
-    date,
+    withProps,
     string,
+    ref,
     withName,
     withHooks,
-    withProps
 } from "@webiny/commodo";
 
-export default ({ createBase }) => {
-    const CmsEnvironment = compose(
+export default ({ createBase, context }) => {
+    return pipe(
         withName("CmsEnvironment"),
-        withFields(instance => ({
-            name: string({ validation: validation.create("required") }),
-            description: string({ validation: validation.create("maxLength: 500") }),
-            slug: setOnce()(string({ validation: validation.create("required") })),
-            setAsDefaultOn: skipOnPopulate()(date()),
-            default: compose(
-                onSet(value => {
-                    // Unset previous default environment.
-                    if (!instance.default && value) {
-                        instance.setAsDefaultOn = new Date();
-                        const removeAfterSave = instance.hook("afterSave", async () => {
-                            removeAfterSave();
-                            // Deactivate previously published revision
-                            const previousDefault = await CmsEnvironment.findOne({
-                                query: { default: true, id: { $ne: instance.id } }
-                            });
-
-                            if (previousDefault) {
-                                previousDefault.default = false;
-                                await previousDefault.save();
-                            }
-                        });
-                    }
-                    return value;
-                })
-            )(boolean({ value: false }))
+        withFields(() => ({
+            name: string({ validation: validation.create("required,maxLength:100") }),
+            description: string({ validation: validation.create("maxLength:200") }),
+            createdFrom: ref({
+                instanceOf: context.models.CmsEnvironment
+            })
         })),
         withProps({
-            get url() {
-                const slug = this.slug;
-                return {
-                    manage: `/cms/manage/${slug}`,
-                    read: `/cms/read/${slug}`,
-                    preview: `/cms/preview/${slug}`
-                };
+            initial: false, // Set in the installation process in order to create the initial environment.
+            get environmentAlias() {
+                const { CmsEnvironmentAlias } = context.models;
+                return CmsEnvironmentAlias.findOne({
+                    query: { environment: this.id }
+                });
+            },
+            get isProduction() {
+                return this.environmentAlias.then(environmentAlias => {
+                    return environmentAlias && environmentAlias.isProduction === true;
+                });
             }
         }),
         withHooks({
-            beforeDelete() {
-                if (this.default) {
-                    throw new Error("Cannot delete the default environment.");
+            async beforeCreate() {
+                if (!this.initial) {
+                    if (!(await this.createdFrom)) {
+                        throw new Error('Base environment ("createdFrom" field) not set.');
+                    }
                 }
             },
-            async beforeCreate() {
-                const existingGroup = await CmsEnvironment.count({ query: { slug: this.slug } });
-                if (existingGroup > 0) {
-                    throw Error(`Environment with slug "${this.slug}" already exists.`);
+            async beforeDelete() {
+                const environmentAlias = await this.environmentAlias;
+                if (environmentAlias) {
+                    throw new Error(
+                        `Cannot delete the environment because it's currently linked to the "${environmentAlias.name}" environment alias.`
+                    );
                 }
             }
         })
     )(createBase());
-
-    return CmsEnvironment;
 };

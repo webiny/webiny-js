@@ -11,28 +11,20 @@ const environmentFetcher = ctx => ctx.models.CmsEnvironment;
 
 export default {
     typeDefs: /* GraphQL */ `
-        type CmsEnvironmentUrl {
-            manage: String
-            read: String
-            preview: String
-        }
-
         type CmsEnvironment {
             id: ID
             createdOn: DateTime
             name: String
-            slug: String
             description: String
-            default: Boolean
-            setAsDefaultOn: DateTime
-            url: CmsEnvironmentUrl
+            createdFrom: CmsEnvironment
+            environmentAlias: CmsEnvironmentAlias
+            isProduction: Boolean
         }
 
         input CmsEnvironmentInput {
             name: String
-            slug: String
             description: String
-            default: Boolean
+            createdFrom: ID
         }
 
         # Response types
