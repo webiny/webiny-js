@@ -20,46 +20,6 @@ const EnvironmentAliasesView = lazy(() => import("../views/EnvironmentAliases/En
 
 const plugins: RoutePlugin[] = [
     {
-        name: "route-cms-environments",
-        type: "route",
-        route: (
-            <Route
-                exact
-                path="/cms/environments"
-                render={() => (
-                    <SecureRoute roles={["headless-cms-environments"]}>
-                        <AdminLayout>
-                            <Helmet title={t`Environments`} />
-                            <Loader>
-                                <EnvironmentsView />
-                            </Loader>
-                        </AdminLayout>
-                    </SecureRoute>
-                )}
-            />
-        )
-    },
-    {
-        name: "route-cms-environment-aliases",
-        type: "route",
-        route: (
-            <Route
-                exact
-                path="/cms/environment-aliases"
-                render={() => (
-                    <SecureRoute roles={["headless-cms-environment-aliases"]}>
-                        <AdminLayout>
-                            <Helmet title={t`Environment Aliases`} />
-                            <Loader>
-                                <EnvironmentAliasesView />
-                            </Loader>
-                        </AdminLayout>
-                    </SecureRoute>
-                )}
-            />
-        )
-    },
-    {
         name: "route-cms-content-models-groups",
         type: "route",
         route: (
@@ -114,6 +74,47 @@ const plugins: RoutePlugin[] = [
                             <Helmet title={t`Content Models`} />
                             <Loader>
                                 <ContentModelsView />
+                            </Loader>
+                        </AdminLayout>
+                    </SecureRoute>
+                )}
+            />
+        )
+    },
+
+    {
+        type: "route",
+        name: "route-settings-cms-environments",
+        route: (
+            <Route
+                exact
+                path="/settings/cms/environments"
+                render={() => (
+                    <SecureRoute roles={["headless-cms-environments"]}>
+                        <AdminLayout>
+                            <Helmet title={t`Headless CMS - Environments Settings`} />
+                            <Loader>
+                                <EnvironmentsView />
+                            </Loader>
+                        </AdminLayout>
+                    </SecureRoute>
+                )}
+            />
+        )
+    },
+    {
+        type: "route",
+        name: "route-settings-cms-environment-aliases",
+        route: (
+            <Route
+                exact
+                path="/settings/cms/environments/aliases"
+                render={() => (
+                    <SecureRoute roles={["headless-cms-environment-aliases"]}>
+                        <AdminLayout>
+                            <Helmet title={t`Headless CMS - Environment Aliases Settings`} />
+                            <Loader>
+                                <EnvironmentAliasesView />
                             </Loader>
                         </AdminLayout>
                     </SecureRoute>

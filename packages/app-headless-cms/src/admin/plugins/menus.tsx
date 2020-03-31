@@ -1,7 +1,7 @@
 import React from "react";
 import { i18n } from "@webiny/app/i18n";
 import { SecureView } from "@webiny/app-security/components";
-import { MenuPlugin } from "@webiny/app-admin/types";
+import { MenuPlugin, MenuSettingsPlugin } from "@webiny/app-admin/types";
 import { useQuery } from "react-apollo";
 import { LIST_MENU_CONTENT_GROUPS_MODELS } from "./../viewsGraphql";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -81,7 +81,7 @@ export default [
                 </SecureView>
             );
         }
-    },
+    } as MenuPlugin,
     {
         type: "menu",
         name: "menu-cms-content-models",
@@ -92,5 +92,17 @@ export default [
                 </SecureView>
             );
         }
-    }
-] as MenuPlugin[];
+    } as MenuPlugin,
+    {
+        type: "menu-settings",
+        name: "menu-settings-cms-environments",
+        render({ Section, Item }) {
+            return (
+                <Section label={t`Headless CMS`}>
+                    <Item label={t`Environments`} path={"/settings/cms/environments"} />
+                    <Item label={t`Aliases`} path={"/settings/cms/environments/aliases"} />
+                </Section>
+            );
+        }
+    } as MenuSettingsPlugin
+];
