@@ -46,7 +46,6 @@ export type HeaderUserMenuUserInfoPlugin = Plugin & {
  */
 export type MenuPlugin = Plugin & {
     type: "menu";
-    description: "Enables adding custom menu sections and items in the main menu, located on the left side of the screen."
     render(props: {
         Menu: typeof Menu;
         Section: typeof Section;
@@ -65,7 +64,6 @@ export type MenuContentSectionPlugin = Plugin & {
  */
 export type HeaderLeftPlugin = Plugin & {
     type: "header-left";
-    description: "Enables adding custom header elements to the left side of the top bar.";
     render(params: RenderParams): React.ReactNode;
 };
 
@@ -75,7 +73,6 @@ export type HeaderLeftPlugin = Plugin & {
  */
 export type HeaderRightPlugin = Plugin & {
     type: "header-right";
-    description: "Enables adding custom header elements to the right side of the top bar.";
     render(params: RenderParams): React.ReactNode;
 };
 
@@ -85,7 +82,6 @@ export type HeaderRightPlugin = Plugin & {
  */
 export type HeaderMiddlePlugin = Plugin & {
     type: "header-middle";
-    description: "Enables adding custom header elements to the middle of the top bar.";
     render(params: RenderParams): React.ReactNode;
 };
 

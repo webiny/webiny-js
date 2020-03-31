@@ -41,11 +41,10 @@ export type ImageComponentPlugin = Plugin & {
 };
 
 /**
- * Enables registering new routes on which you can render your own views.
+ * Enables registering new routes.
  * @see https://docs.webiny.com/docs/webiny-apps/admin/development/plugins-reference/app#route
  */
 export type RoutePlugin = Plugin & {
     type: "route";
-    description: "Enables registering new routes on which you can render your own views."
     route: React.ReactElement;
 };
