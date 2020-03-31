@@ -26,9 +26,7 @@ const Header = styled("div")({
 });
 
 const TokenListItem = ({ PAT, data, setValue }) => {
-    // const [isEditing, setIsEditing] = useState(false);
-    let isEditing = false;
-    const setIsEditing = x => (isEditing = !isEditing);
+    const [isEditing, setIsEditing] = useState(false);
 
     const deleteToken = () => {
         const newPATs = data.personalAccessTokens.filter(crtPAT => crtPAT.token != PAT.token);
@@ -64,11 +62,13 @@ const TokenListItem = ({ PAT, data, setValue }) => {
 
 const TokenList = ({ data, setValue }) => {
     if (data.personalAccessTokens && data.personalAccessTokens.length > 0)
-        return data.personalAccessTokens.map(PAT => TokenListItem({ PAT, data, setValue }));
+        return data.personalAccessTokens.map(PAT => (
+            <TokenListItem key={PAT.token} PAT={PAT} data={data} setValue={setValue} />
+        ));
     else return <SimpleListItem text="No tokens have been generated yet." />;
 };
 
-const TokensElement = ({ formIsLoading, setFormIsLoading, data, setValue }) => {
+const TokensElement = ({ setFormIsLoading, data, setValue }) => {
     const client = useApolloClient();
 
     const generateToken = async () => {
