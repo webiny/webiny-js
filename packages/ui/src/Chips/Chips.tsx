@@ -8,7 +8,7 @@ export type ChipsProps = {
     /**
      * Chips to show
      */
-    children?: React.ReactElement<typeof Chip>[];
+    children?: React.ReactElement<typeof Chip> | React.ReactElement<typeof Chip>[];
 
     /**
      * Is chip disabled?
