@@ -47,7 +47,7 @@ const FormsSettings = () => {
                                             {(queryInProgress || mutationInProgress) && (
                                                 <CircularProgress />
                                             )}
-                                            <SimpleFormHeader title="Forms Settings" />
+                                            <SimpleFormHeader title="reCAPTCHA settings" />
                                             <SimpleFormContent>
                                                 <Grid>
                                                     <Cell span={12}>
