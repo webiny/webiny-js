@@ -3,25 +3,24 @@ import { Route } from "@webiny/react-router";
 import { Helmet } from "react-helmet";
 import { AdminLayout } from "@webiny/app-admin/components/AdminLayout";
 import CookiePolicySettings from "./components/CookiePolicySettings";
-import { SettingsPlugin } from "@webiny/app-admin/types";
-import { hasRoles } from "@webiny/app-security";
 import { SecureRoute } from "@webiny/app-security/components";
+import { i18n } from "@webiny/app/i18n";
+import { RoutePlugin } from "@webiny/app/types";
+import { PbMenuSettingsItem } from "@webiny/app-page-builder/types";
+const t = i18n.ns("app-cookie-policy/admin");
 
 const roles = ["pb-settings"];
 
-const plugin: SettingsPlugin = {
-    type: "settings",
-    name: "settings-cookie-policy",
-    settings: {
-        show: () => hasRoles(roles),
-        type: "integration",
-        name: "Cookie Policy",
+const plugins = [
+    {
+        type: "route",
+        name: "route-settings-page-builder-cookie-policy",
         route: (
             <Route
-                path="/cookie-policy"
+                path="/settings/page-builder/cookie-policy"
                 render={() => (
                     <AdminLayout>
-                        <Helmet title={"Cookie Policy"} />
+                        <Helmet title={"Page Builder - Cookie Policy Settings"} />
                         <SecureRoute roles={roles}>
                             <CookiePolicySettings />
                         </SecureRoute>
@@ -29,7 +28,14 @@ const plugin: SettingsPlugin = {
                 )}
             />
         )
-    }
-};
+    } as RoutePlugin,
+    {
+        type: "menu-settings-page-builder",
+        name: "menu-settings-page-builder-cookie-policy",
+        render({ Item }) {
+            return <Item label={t`Cookie Policy`} path={"/settings/page-builder/cookie-policy"} />;
+        }
+    } as PbMenuSettingsItem
+];
 
-export default plugin;
+export default plugins;
