@@ -8,7 +8,12 @@ export const LIST_ENVIRONMENTS_SELECTOR_ENVIRONMENTS = gql`
                 data {
                     id
                     name
-                    default
+                    isProduction
+                    environmentAlias {
+                        id
+                        name
+                        isProduction
+                    }
                 }
             }
         }
