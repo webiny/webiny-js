@@ -65,13 +65,9 @@ export type HeaderMiddlePlugin = Plugin & {
     render(params: RenderParams): React.ReactNode;
 };
 
-export type SettingsPlugin = Plugin & {
-    settings: {
-        name: string;
-        type?: "app" | "integration" | "other";
-        show?: () => boolean;
-        route: React.ReactElement;
-    };
+export type MenuSettingsPlugin = Plugin & {
+    type: "menu-settings";
+    render(props: { Section: typeof Section; Item: typeof Item }): React.ReactNode;
 };
 
 export type FileManagerFileTypePlugin = Plugin & {
