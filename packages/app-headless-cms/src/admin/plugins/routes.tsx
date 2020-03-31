@@ -16,6 +16,7 @@ const ContentModelEditor = lazy(() => import("../views/Editor"));
 const ContentModelsView = lazy(() => import("../views/ContentModels/ContentModels"));
 const ContentModelGroupsView = lazy(() => import("../views/ContentModelGroups/ContentModelGroups"));
 const EnvironmentsView = lazy(() => import("../views/Environments/Environments"));
+const EnvironmentAliasesView = lazy(() => import("../views/EnvironmentAliases/EnvironmentAliases"));
 
 const plugins: RoutePlugin[] = [
     {
@@ -31,6 +32,26 @@ const plugins: RoutePlugin[] = [
                             <Helmet title={t`Environments`} />
                             <Loader>
                                 <EnvironmentsView />
+                            </Loader>
+                        </AdminLayout>
+                    </SecureRoute>
+                )}
+            />
+        )
+    },
+    {
+        name: "route-cms-environment-aliases",
+        type: "route",
+        route: (
+            <Route
+                exact
+                path="/cms/environment-aliases"
+                render={() => (
+                    <SecureRoute roles={["headless-cms-environment-aliases"]}>
+                        <AdminLayout>
+                            <Helmet title={t`Environment Aliases`} />
+                            <Loader>
+                                <EnvironmentAliasesView />
                             </Loader>
                         </AdminLayout>
                     </SecureRoute>
