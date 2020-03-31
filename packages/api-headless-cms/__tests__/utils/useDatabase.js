@@ -1,7 +1,6 @@
 import { MongoClient } from "mongodb";
-import pick from "lodash.pick";
 
-export default ({ init = true } = {}) => {
+export default ({ init } = {}) => {
     const self = {
         db: null,
         connection: null,
@@ -19,7 +18,13 @@ export default ({ init = true } = {}) => {
                 cursor.toSimpleArray = async () => {
                     const array = await cursor.toArray();
                     return array.map(item => {
-                        const output = pick(Object.keys(item), item);
+                        const output = {};
+                        const keys = Object.keys(item);
+                        for (let i = 0; i < keys.length; i++) {
+                            const key = keys[i]
+                            output[key] = item[key];
+                        }
+
                         if (typeof output._id !== "undefined") {
                             output._id = String(output._id);
                         }
@@ -44,14 +49,16 @@ export default ({ init = true } = {}) => {
         }
     };
 
-    if (init !== false) {
-        beforeAll(async () => {
-            await self.beforeAll();
-        });
-        afterAll(async () => {
-            await self.afterAll();
-        });
+    if (init === false) {
+        return self;
     }
+
+    beforeAll(async () => {
+        await self.beforeAll();
+    });
+    afterAll(async () => {
+        await self.afterAll();
+    });
 
     return self;
 };
