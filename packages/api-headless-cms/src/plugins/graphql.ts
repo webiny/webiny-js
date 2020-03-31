@@ -2,6 +2,7 @@ import { GraphQLSchemaPlugin } from "@webiny/graphql/types";
 import merge from "lodash.merge";
 import gql from "graphql-tag";
 import cmsEnvironment from "./graphql/environment";
+import cmsEnvironmentAlias from "./graphql/environmentAlias";
 
 import { emptyResolver } from "@webiny/commodo-graphql";
 
@@ -60,6 +61,7 @@ export default () => [
                 }
 
                 ${cmsEnvironment.typeDefs}
+                ${cmsEnvironmentAlias.typeDefs}
             `,
             resolvers: merge(
                 {
@@ -70,9 +72,10 @@ export default () => [
                         cms: emptyResolver
                     }
                 },
-                cmsEnvironment.resolvers
+                cmsEnvironment.resolvers,
+                cmsEnvironmentAlias.resolvers
             )
         },
-        security: merge(cmsEnvironment.security)
+        security: merge(cmsEnvironment.security, cmsEnvironmentAlias.security)
     } as GraphQLSchemaPlugin
 ];
