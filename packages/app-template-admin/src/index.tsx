@@ -9,6 +9,7 @@ import { SecurityProvider } from "@webiny/app-security/contexts/Security";
 import { CircularProgress } from "@webiny/ui/Progress";
 import { AppInstaller } from "@webiny/app-admin/components/Install/AppInstaller";
 import { PageBuilderProvider } from "@webiny/app-page-builder/contexts/PageBuilder";
+import { CmsProvider } from "@webiny/app-headless-cms/admin/contexts/Cms";
 import { ThemeProvider } from "@webiny/app-admin/contexts/Theme";
 
 // Other plugins
@@ -16,6 +17,7 @@ import { fileUploadPlugin, imagePlugin } from "@webiny/app/plugins";
 import adminPlugins from "@webiny/app-admin/plugins";
 import i18nPlugins from "@webiny/app-i18n/admin/plugins";
 import securityPlugins from "@webiny/app-security/admin/plugins";
+import headlessCmsPlugins from "@webiny/app-headless-cms/admin/plugins";
 import pageBuilderPlugins from "@webiny/app-page-builder/admin/plugins";
 import pageBuilderTheme from "@webiny/app-page-builder-theme";
 import formBuilderPlugins from "@webiny/app-form-builder/admin/plugins";
@@ -118,6 +120,17 @@ export default createTemplate<AdminAppOptions>(opts => {
                     </PageBuilderProvider>
                 );
             }
+        },
+        {
+            type: "app-template-renderer",
+            name: "app-template-renderer-headless-cms",
+            render(children) {
+                return (
+                    <CmsProvider>
+                        {children}
+                    </CmsProvider>
+                );
+            }
         }
     ];
 
@@ -127,6 +140,7 @@ export default createTemplate<AdminAppOptions>(opts => {
         adminPlugins,
         i18nPlugins,
         securityPlugins,
+        headlessCmsPlugins,
         pageBuilderPlugins,
         pageBuilderTheme(),
         formBuilderPlugins,
