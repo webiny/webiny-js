@@ -19,6 +19,11 @@ export type ChipsProps = {
      * CSS class name
      */
     className?: string;
+
+    /**
+     * Style object.
+     */
+    style?: React.CSSProperties;
 };
 
 export const Chips = (props: ChipsProps) => {
