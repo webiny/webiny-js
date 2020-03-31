@@ -45,7 +45,7 @@ const PageBuilderSettings = () => {
                                         {(queryInProgress || mutationInProgress) && (
                                             <CircularProgress />
                                         )}
-                                        <SimpleFormHeader title="Page Builder Settings" />
+                                        <SimpleFormHeader title="Website Settings" />
                                         <SimpleFormContent>
                                             <Grid>
                                                 <Cell span={6}>
