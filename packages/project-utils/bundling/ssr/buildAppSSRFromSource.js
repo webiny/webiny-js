@@ -14,13 +14,8 @@ module.exports.buildAppSSRFromSource = async (
     renderer = path.resolve(renderer);
     output = setupOutput(output);
 
-    if (!process.env.NODE_ENV) {
-        process.env.NODE_ENV = "production";
-    }
-
-    if (!process.env.REACT_APP_ENV) {
-        process.env.REACT_APP_ENV = "ssr";
-    }
+    process.env.NODE_ENV = "production";
+    process.env.REACT_APP_ENV = "ssr";
 
     await bundle({ entry: renderer, output, ...options });
     await fs.copyFile(handler, path.resolve(output.path, "handler.js"));

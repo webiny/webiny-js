@@ -1,14 +1,12 @@
 import React from "react";
 import { createTemplate } from "@webiny/app-template";
+import { BrowserRouter, Route, Redirect, StaticRouter } from "@webiny/react-router";
+import ApolloClient from "apollo-client";
 import { ApolloProvider } from "react-apollo";
 
 // App structure imports
 import { UiProvider } from "@webiny/app/contexts/Ui";
 import { I18NProvider } from "@webiny/app-i18n/contexts/I18N";
-import { SecurityProvider } from "@webiny/app-security/contexts/Security";
-import { CircularProgress } from "@webiny/ui/Progress";
-import { AppInstaller } from "@webiny/app-admin/components/Install/AppInstaller";
-import { ThemeProvider } from "@webiny/app-admin/contexts/Theme";
 
 // Other plugins
 import pageBuilderPlugins from "@webiny/app-page-builder/site/plugins";
@@ -25,39 +23,30 @@ import formsPbPlugins from "@webiny/app-form-builder/page-builder/site/plugins";
 import formBuilderTheme from "@webiny/app-form-builder-theme";
 
 // ApolloClient
-import { createApolloClient } from "./apolloClient";
-import { NetworkError } from "./apolloClient/NetworkError";
+import { createApolloClient } from "./apollo";
+import { AppTemplateRendererPlugin } from "../../app-template/src/types";
 
-// Router
-import { BrowserRouter, Route, Redirect } from "@webiny/react-router";
-
-export type AdminAppOptions = {
-    apolloClient: {
-        uri: string;
-    };
-    cognito: {
-        region: string;
-        userPoolId: string;
-        userPoolWebClientId: string;
-    };
+export type SiteAppOptions = {
+    apolloClient: ApolloClient<any>;
     defaultRoute?: string;
     plugins?: any[];
+    url?: string; // Only used in SSR mode
 };
 
-export default createTemplate<AdminAppOptions>(opts => {
-    const appStructure = [
+export default createTemplate<SiteAppOptions>(opts => {
+    const isSSR = process.env.REACT_APP_ENV === "ssr";
+
+    const apolloClient = opts.apolloClient || createApolloClient();
+
+    const appStructure: AppTemplateRendererPlugin[] = [
         {
             type: "app-template-renderer",
             name: "app-template-renderer-apollo",
             render(children) {
-                return (
-                    <ApolloProvider client={createApolloClient(opts.apolloClient)}>
-                        <NetworkError>{children}</NetworkError>
-                    </ApolloProvider>
-                );
+                return <ApolloProvider client={apolloClient}>{children}</ApolloProvider>;
             }
         },
-        {
+        !isSSR && {
             type: "app-template-renderer",
             name: "app-template-renderer-router",
             render(children) {
@@ -67,9 +56,24 @@ export default createTemplate<AdminAppOptions>(opts => {
                         <Route
                             exact
                             path="/"
-                            render={() => <Redirect to={opts.defaultRoute || "/users"} />}
+                            render={() => <Redirect to={opts.defaultRoute || "/"} />}
                         />
                     </BrowserRouter>
+                );
+            }
+        },
+        isSSR && {
+            type: "app-template-renderer",
+            name: "app-template-renderer-router",
+            render(children) {
+                return (
+                    <StaticRouter
+                        basename={process.env.PUBLIC_URL === "/" ? "" : process.env.PUBLIC_URL}
+                        location={opts.url}
+                        context={{}}
+                    >
+                        {children}
+                    </StaticRouter>
                 );
             }
         },
@@ -84,29 +88,7 @@ export default createTemplate<AdminAppOptions>(opts => {
             type: "app-template-renderer",
             name: "app-template-renderer-i18n",
             render(children) {
-                return (
-                    <I18NProvider loader={<CircularProgress label={"Loading locales..."} />}>
-                        {children}
-                    </I18NProvider>
-                );
-            }
-        },
-        {
-            type: "app-template-renderer",
-            name: "app-template-renderer-app-installer",
-            render(children) {
-                const securityProvider = (
-                    <SecurityProvider loader={<CircularProgress label={"Checking user..."} />} />
-                );
-
-                return <AppInstaller security={securityProvider}>{children}</AppInstaller>;
-            }
-        },
-        {
-            type: "app-template-renderer",
-            name: "app-template-renderer-admin-theme",
-            render(children) {
-                return <ThemeProvider>{children}</ThemeProvider>;
+                return <I18NProvider>{children}</I18NProvider>;
             }
         }
     ];

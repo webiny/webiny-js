@@ -9,13 +9,8 @@ module.exports.buildAppSSR = async ({ app = null, output, ...options }, context)
     const { setupOutput } = require("./utils");
     output = setupOutput(output);
 
-    if (!process.env.NODE_ENV) {
-        process.env.NODE_ENV = "production";
-    }
-
-    if (!process.env.REACT_APP_ENV) {
-        process.env.REACT_APP_ENV = "ssr";
-    }
+    process.env.NODE_ENV = "production";
+    process.env.REACT_APP_ENV = "ssr";
 
     const indexHtml = path.resolve(app, "build", "index.html").replace(/\\/g, "\\\\");
     const appComponent = path.resolve(app, "src", "App").replace(/\\/g, "\\\\");
@@ -39,7 +34,7 @@ module.exports.buildAppSSR = async ({ app = null, output, ...options }, context)
     const entry = path.resolve(output.path, "source.js");
     const handler = path.resolve(output.path, "handler.js");
     let code = await fs.readFile(__dirname + "/template/renderer.js", "utf8");
-    const importApp = `import { App } from "${appComponent}";`;
+    const importApp = `import createApp from "${appComponent}";`;
     code = code.replace("/*{import-app-component}*/", importApp);
     code = code.replace("/*{index-html-path}*/", indexHtml);
     await fs.writeFile(entry, code);

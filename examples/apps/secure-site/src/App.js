@@ -19,7 +19,7 @@ const App = () => {
             <UiProvider>
                 <SecurityProvider allowAnonymous={true}>
                     <UserBar />
-                    {getPlugins("route").map((pl: Object) =>
+                    {getPlugins("route").map(pl =>
                         React.cloneElement(pl.route, { key: pl.name, exact: true })
                     )}
                 </SecurityProvider>

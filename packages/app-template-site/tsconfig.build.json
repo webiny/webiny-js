@@ -5,13 +5,8 @@
     "node_modules",
     "./dist",
     "../app",
-    "../app-admin",
     "../app-i18n",
-    "../app-security",
-    "../app-plugin-security-cognito",
-    "../app-plugin-security-cognito-theme",
-    "../app-template ",
-    "../ui"
+    "../app-template "
   ],
   "compilerOptions": {
     "rootDir": "./src",
@@ -20,12 +15,7 @@
   },
   "references": [
     { "path": "../app/tsconfig.build.json" },
-    { "path": "../app-admin/tsconfig.build.json" },
     { "path": "../app-i18n/tsconfig.build.json" },
-    { "path": "../app-security/tsconfig.build.json" },
-    { "path": "../app-plugin-security-cognito/tsconfig.build.json" },
-    { "path": "../app-plugin-security-cognito-theme/tsconfig.build.json" },
-    { "path": "../app-template/tsconfig.build.json" },
-    { "path": "../ui/tsconfig.build.json" }
+    { "path": "../app-template/tsconfig.build.json" }
   ]
 }

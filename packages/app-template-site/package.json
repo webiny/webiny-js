@@ -19,6 +19,7 @@
     "@babel/runtime": "^7.5.5",
     "@webiny/app": "^3.0.2",
     "@webiny/app-template": "^1.0.0",
+    "@webiny/app-i18n": "^3.1.0",
     "@webiny/react-router": "^2.0.1"
   },
   "devDependencies": {

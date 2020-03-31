@@ -1,6 +1,7 @@
 import React from "react";
 import { createTemplate } from "@webiny/app-template";
 import { ApolloProvider } from "react-apollo";
+import ApolloClient from "apollo-client";
 
 // App structure imports
 import { UiProvider } from "@webiny/app/contexts/Ui";
@@ -19,16 +20,14 @@ import cognito from "@webiny/app-plugin-security-cognito";
 import cognitoTheme from "@webiny/app-plugin-security-cognito-theme/admin";
 
 // ApolloClient
-import { createApolloClient } from "./apolloClient";
+import { createApolloClient, CreateApolloClientOptions } from "./apolloClient";
 import { NetworkError } from "./apolloClient/NetworkError";
 
 // Router
 import { BrowserRouter, Route, Redirect } from "@webiny/react-router";
 
 export type AdminAppOptions = {
-    apolloClient: {
-        uri: string;
-    };
+    apolloClient: ApolloClient<any> | CreateApolloClientOptions;
     cognito: {
         region: string;
         userPoolId: string;
@@ -39,13 +38,18 @@ export type AdminAppOptions = {
 };
 
 export default createTemplate<AdminAppOptions>(opts => {
+    const apolloClient =
+        opts.apolloClient instanceof ApolloClient
+            ? opts.apolloClient
+            : createApolloClient(opts.apolloClient);
+
     const appStructure = [
         {
             type: "app-template-renderer",
             name: "app-template-renderer-apollo",
             render(children) {
                 return (
-                    <ApolloProvider client={createApolloClient(opts.apolloClient)}>
+                    <ApolloProvider client={apolloClient}>
                         <NetworkError>{children}</NetworkError>
                     </ApolloProvider>
                 );
@@ -61,9 +65,7 @@ export default createTemplate<AdminAppOptions>(opts => {
                         <Route
                             exact
                             path="/"
-                            render={() => (
-                                <Redirect to={opts.defaultRoute || "/users"} />
-                            )}
+                            render={() => <Redirect to={opts.defaultRoute || "/users"} />}
                         />
                     </BrowserRouter>
                 );
