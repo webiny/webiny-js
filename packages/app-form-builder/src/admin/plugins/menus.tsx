@@ -13,7 +13,7 @@ export default [
             return (
                 <SecureView roles={["forms-editors"]}>
                     <Section label={t`Form Builder`}>
-                        <Item label={t`Form Builder`} path="/forms" />
+                        <Item label={t`Forms`} path="/forms" />
                     </Section>
                 </SecureView>
             );
