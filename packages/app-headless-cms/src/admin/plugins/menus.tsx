@@ -5,7 +5,7 @@ import { MenuPlugin } from "@webiny/app-admin/types";
 import { useQuery } from "react-apollo";
 import { LIST_MENU_CONTENT_GROUPS_MODELS } from "./../viewsGraphql";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-
+import EnvironmentSelector from "./menus/EnvironmentSelector";
 import get from "lodash.get";
 const t = i18n.ns("app-headless-cms/admin/menus");
 
@@ -61,6 +61,7 @@ export default [
 
                         return (
                             <Section label={t`Headless CMS`}>
+                                <EnvironmentSelector />
                                 {contentModels && (
                                     <Item label={t`Content Models`} path="/cms/content-models" />
                                 )}
@@ -68,7 +69,7 @@ export default [
                                 {contentModelGroups && (
                                     <Item
                                         label={t`Content Model Groups`}
-                                        path="/cms/content-models-groups"
+                                        path="/cms/content-model-groups"
                                     />
                                 )}
                                 {environments && (
