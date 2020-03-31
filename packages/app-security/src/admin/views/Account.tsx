@@ -172,7 +172,6 @@ const UserAccountForm = () => {
                                                     <AccuntTokens
                                                         data={data}
                                                         setValue={setValue}
-                                                        formIsLoading={loading}
                                                         setFormIsLoading={setIsLoading}
                                                     />
                                                 </Bind>
