@@ -16,27 +16,36 @@ export const LIST_CONTENT_MODEL_GROUPS = gql`
         $perPage: Int
         $search: CmsSearchInput
     ) {
-        cms {
-            contentModelGroups: listContentModelGroups(
-                where: $where
-                sort: $sort
-                page: $page
-                perPage: $perPage
-                search: $search
-            ) {
-                data {
-                    id
-                    name
-                    totalContentModels
-                }
-                meta {
-                    totalCount
-                    totalPages
-                    to
-                    from
-                    nextPage
-                    previousPage
-                }
+        contentModelGroups: listContentModelGroups(
+            where: $where
+            sort: $sort
+            page: $page
+            perPage: $perPage
+            search: $search
+        ) {
+            data {
+                id
+                name
+                totalContentModels
+            }
+            meta {
+                totalCount
+                totalPages
+                to
+                from
+                nextPage
+                previousPage
+            }
+        }
+    }
+`;
+
+export const GET_CONTENT_MODEL_GROUP_BY_SLUG = gql`
+    query getContentModelGroupBySlug($slug: String) {
+        getContentModelGroup(where: { slug: $slug }) {
+            data {
+                name
+                id
             }
         }
     }
@@ -44,15 +53,13 @@ export const LIST_CONTENT_MODEL_GROUPS = gql`
 
 export const GET_CONTENT_MODEL_GROUP = gql`
     query GetContentModelGroup($id: ID!) {
-        cms {
-            contentModelGroup: getContentModelGroup(id: $id){
-                data {
-                    ${fields}
-                }
-                error {
-                    code
-                    message
-                }
+        contentModelGroup: getContentModelGroup(id: $id){
+            data {
+                ${fields}
+            }
+            error {
+                code
+                message
             }
         }
     }
@@ -60,16 +67,14 @@ export const GET_CONTENT_MODEL_GROUP = gql`
 
 export const CREATE_CONTENT_MODEL_GROUP = gql`
     mutation CreateContentModelGroup($data: CmsContentModelGroupInput!){
-        cms {
-            contentModelGroup: createContentModelGroup(data: $data) {
-                data {
-                    ${fields}
-                }
-                error {
-                    code
-                    message
-                    data
-                }
+        contentModelGroup: createContentModelGroup(data: $data) {
+            data {
+                ${fields}
+            }
+            error {
+                code
+                message
+                data
             }
         }
     }
@@ -77,16 +82,14 @@ export const CREATE_CONTENT_MODEL_GROUP = gql`
 
 export const UPDATE_CONTENT_MODEL_GROUP = gql`
     mutation UpdateContentModelGroup($id: ID!, $data: CmsContentModelGroupInput!){
-        cms {
-            contentModelGroup: updateContentModelGroup(id: $id, data: $data) {
-                data {
-                    ${fields}
-                }
-                error {
-                    code
-                    message
-                    data
-                }
+        contentModelGroup: updateContentModelGroup(id: $id, data: $data) {
+            data {
+                ${fields}
+            }
+            error {
+                code
+                message
+                data
             }
         }
     }
@@ -94,13 +97,11 @@ export const UPDATE_CONTENT_MODEL_GROUP = gql`
 
 export const DELETE_CONTENT_MODEL_GROUP = gql`
     mutation DeleteContentModelGroup($id: ID!) {
-        cms {
-            deleteContentModelGroup(id: $id) {
-                data
-                error {
-                    code
-                    message
-                }
+        deleteContentModelGroup(id: $id) {
+            data
+            error {
+                code
+                message
             }
         }
     }

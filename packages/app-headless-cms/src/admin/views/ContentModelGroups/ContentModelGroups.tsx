@@ -11,23 +11,47 @@ import {
     UPDATE_CONTENT_MODEL_GROUP,
     DELETE_CONTENT_MODEL_GROUP
 } from "./graphql";
+import { useCms } from "@webiny/app-headless-cms/admin/hooks";
 
 function ContentModelGroups() {
+    const {
+        environments: { apolloClient }
+    } = useCms();
+
     return (
         <CrudProvider
             delete={{
                 mutation: DELETE_CONTENT_MODEL_GROUP,
-                options: { refetchQueries: ["HeadlessCmsListMenuContentGroupsModels"] }
+                options: {
+                    client: apolloClient,
+                    refetchQueries: ["HeadlessCmsListMenuContentGroupsModels"]
+                }
             }}
-            read={GET_CONTENT_MODEL_GROUP}
+            read={{
+                query: GET_CONTENT_MODEL_GROUP,
+                options: {
+                    client: apolloClient
+                }
+            }}
             create={{
                 mutation: CREATE_CONTENT_MODEL_GROUP,
-                options: { refetchQueries: ["HeadlessCmsListMenuContentGroupsModels"] }
+                options: {
+                    client: apolloClient,
+                    refetchQueries: ["HeadlessCmsListMenuContentGroupsModels"]
+                }
             }}
-            update={UPDATE_CONTENT_MODEL_GROUP}
+            update={{
+                mutation: UPDATE_CONTENT_MODEL_GROUP,
+                options: {
+                    client: apolloClient
+                }
+            }}
             list={{
                 query: LIST_CONTENT_MODEL_GROUPS,
-                variables: { sort: { savedOn: -1 } }
+                variables: { sort: { savedOn: -1 } },
+                options: {
+                    client: apolloClient
+                }
             }}
         >
             {({ actions }) => (
