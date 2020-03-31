@@ -4,15 +4,15 @@ import { i18nString } from "@webiny/api-i18n/fields";
 
 const required = validation.create("required");
 
-export default ({ createBase, context, CmsContentModelGroup }) => {
-    return pipe(
-        withName(`CmsContentModel_${context.cms.environment}`),
+export default ({ createBase, context }) =>
+    pipe(
+        withName(`CmsContentModel`),
         withFields({
             title: string({ validation: required }),
             modelId: string({ validation: required }),
-            description: string(),
+            description: string({ validation: validation.create("maxLength:200") }),
             layout: object({ value: [] }),
-            group: ref({ instanceOf: CmsContentModelGroup, validation: required }),
+            group: ref({ instanceOf: context.models.CmsContentModelGroup, validation: required }),
             fields: fields({
                 list: true,
                 value: [],
@@ -39,4 +39,3 @@ export default ({ createBase, context, CmsContentModelGroup }) => {
             })
         })
     )(createBase());
-};

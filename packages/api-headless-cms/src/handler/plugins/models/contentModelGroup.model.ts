@@ -11,25 +11,21 @@ import {
 
 export default ({ createBase, context }) => {
     const CmsGroup: any = compose(
-        withName(`CmsContentModelGroup_${context.cms.environment}`),
+        withName(`CmsContentModelGroup`),
         withFields({
             name: string({ validation: validation.create("required") }),
             slug: setOnce()(string({ validation: validation.create("required") })),
-            description: string({ validation: validation.create("maxLength: 500") }),
+            description: string({ validation: validation.create("maxLength:200") }),
             icon: string({ validation: validation.create("required") })
         }),
         withProps({
             get contentModels() {
-                return new Promise(async resolve => {
-                    const { CmsContentModel } = context.models;
-                    resolve(await CmsContentModel.find({ query: { group: this.id } }));
-                });
+                const { CmsContentModel } = context.models;
+                return CmsContentModel.find({ query: { group: this.id } });
             },
             get totalContentModels() {
-                return new Promise(async resolve => {
-                    const { CmsContentModel } = context.models;
-                    resolve(await CmsContentModel.count({ query: { group: this.id } }));
-                });
+                const { CmsContentModel } = context.models;
+                return CmsContentModel.count({ query: { group: this.id } });
             }
         }),
         withHooks({
