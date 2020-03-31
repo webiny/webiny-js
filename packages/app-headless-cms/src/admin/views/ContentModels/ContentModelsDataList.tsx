@@ -45,7 +45,7 @@ const ContentModelsDataList = (props: ContentModelsDataListProps) => {
             mutation: DELETE_CONTENT_MODEL,
             variables: { id: item.id }
         });
-        const { data, error } = get(res, "data.cms.deleteContentModel");
+        const { data, error } = get(res, "data.deleteContentModel");
 
         if (data) {
             showSnackbar(t`Content model {name} deleted.`({ name: item.name }));
