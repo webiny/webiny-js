@@ -1,6 +1,7 @@
 import { pipe, withStorage, withCrudLogs, withSoftDelete, withFields } from "@webiny/commodo";
 import { withUser } from "@webiny/api-security";
 import cmsEnvironment from "./models/environment.model";
+import cmsEnvironmentAlias from "./models/environmentAlias.model";
 
 export default () => ({
     name: "graphql-context-models",
@@ -25,11 +26,8 @@ export default () => ({
                 withCrudLogs()
             )();
 
-        const CmsEnvironment = cmsEnvironment({ createBase });
-
-        context.models = {
-            CmsEnvironment,
-            createBase
-        };
+        context.models = { createBase };
+        context.models.CmsEnvironment = cmsEnvironment({ createBase, context });
+        context.models.CmsEnvironmentAlias = cmsEnvironmentAlias({ createBase, context });
     }
 });
