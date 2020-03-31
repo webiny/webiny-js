@@ -14,6 +14,7 @@ import NameSlug from "../../components/NameSlug";
 import { AutoComplete } from "@webiny/ui/AutoComplete";
 
 import {
+    SimpleFormHeader,
     SimpleForm,
     SimpleFormFooter,
     SimpleFormContent
@@ -34,6 +35,7 @@ function EnvironmentAliasesForm() {
             {({ data, form, Bind, setValue }) => (
                 <SimpleForm data-testid={"pb-environmentAliases-form"}>
                     {crudForm.loading && <CircularProgress />}
+                    <SimpleFormHeader title={data.name ? data.name : t`New environment alias`} />
                     <SimpleFormContent>
                         <Grid>
                             <NameSlug

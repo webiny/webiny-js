@@ -10,7 +10,8 @@ import { validation } from "@webiny/validation";
 import {
     SimpleForm,
     SimpleFormFooter,
-    SimpleFormContent
+    SimpleFormContent,
+    SimpleFormHeader
 } from "@webiny/app-admin/components/SimpleForm";
 import { useQuery } from "react-apollo";
 import { LIST_ENVIRONMENTS } from "./graphql";
@@ -31,6 +32,7 @@ function EnvironmentsForm() {
             {({ form, data, Bind }) => (
                 <SimpleForm data-testid={"pb-environments-form"}>
                     {crudForm.loading && <CircularProgress />}
+                    <SimpleFormHeader title={data.name ? data.name : t`New environment`} />
                     <SimpleFormContent>
                         <Grid>
                             <Cell span={12}>
