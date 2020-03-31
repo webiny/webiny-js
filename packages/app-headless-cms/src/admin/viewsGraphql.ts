@@ -19,16 +19,14 @@ const BASE_CONTENT_MODEL_FIELDS = `
 // Fetches data needed for constructing content models list in the main menu.
 export const LIST_MENU_CONTENT_GROUPS_MODELS = gql`
     query HeadlessCmsListMenuContentGroupsModels {
-        cms {
-            listContentModelGroups(sort: { name: 1 }, page: 1, perPage: 100) {
-                data {
+        listContentModelGroups(sort: { name: 1 }, page: 1, perPage: 100) {
+            data {
+                id
+                name
+                icon
+                contentModels {
+                    title
                     id
-                    name
-                    icon
-                    contentModels {
-                        title
-                        id
-                    }
                 }
             }
         }
@@ -37,18 +35,16 @@ export const LIST_MENU_CONTENT_GROUPS_MODELS = gql`
 
 export const LIST_CONTENT_MODELS = gql`
     query HeadlessCmsListContentModels($sort: JSON, $page: Int, $perPage: Int) {
-        cms {
-            listContentModels(sort: $sort, page: $page, perPage: $perPage) {
-                data {  
-                    ${BASE_CONTENT_MODEL_FIELDS}
-                }
-                meta {
-                    totalCount
-                    to
-                    from
-                    nextPage
-                    previousPage
-                }
+        listContentModels(sort: $sort, page: $page, perPage: $perPage) {
+            data {
+                ${BASE_CONTENT_MODEL_FIELDS}
+            }
+            meta {
+                totalCount
+                to
+                from
+                nextPage
+                previousPage
             }
         }
     }
@@ -56,18 +52,16 @@ export const LIST_CONTENT_MODELS = gql`
 
 export const CREATE_CONTENT_MODEL = gql`
     mutation CreateContentModel($data: CmsContentModelInput!) {
-        cms {
-            createContentModel(data: $data) {
-                data {
-                    id
-                    title
-                    description
-                    modelId
-                }
-                error {
-                    message
-                    data
-                }
+        createContentModel(data: $data) {
+            data {
+                id
+                title
+                description
+                modelId
+            }
+            error {
+                message
+                data
             }
         }
     }
