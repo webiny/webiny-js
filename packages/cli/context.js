@@ -21,6 +21,14 @@ class Context {
         debug(...args);
     }
 
+    info(...args) {
+        debug(...args);
+    }
+
+    debug(...args) {
+        debug(...args);
+    }
+
     error(...args) {
         debug(...args);
     }
@@ -46,7 +54,7 @@ class Context {
             if (debug) {
                 console.log(
                     `💡 Loaded ${green(env)} environment from ${green(
-                        paths.replaceProjectRoot(envPath)
+                        this.replaceProjectRoot(envPath)
                     )}...`
                 );
             }

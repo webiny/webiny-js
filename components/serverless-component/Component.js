@@ -22,8 +22,8 @@ class Component {
             throw Error(`default function is missing for component "${this.id}"`);
         }
 
-        const defaultFunction = inputs => {
-            return this.default.call(this, inputs);
+        const defaultFunction = (...args) => {
+            return this.default.call(this, ...args);
         };
 
         // Add Component class properties like context and state
@@ -44,8 +44,7 @@ class Component {
         // this would overwrite the Component class save() method
         const instanceMethods = Object.getOwnPropertyNames(Object.getPrototypeOf(this));
         instanceMethods.forEach(instanceMethod => {
-            defaultFunction[instanceMethod] = instanceMethodInputs =>
-                this[instanceMethod].call(this, instanceMethodInputs); // apply instance context
+            defaultFunction[instanceMethod] = (...args) => this[instanceMethod].call(this, ...args);
         });
 
         return defaultFunction;

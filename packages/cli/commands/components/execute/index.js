@@ -28,7 +28,7 @@ module.exports.execute = async (inputs, method, context) => {
 
         // IMPORTANT: In `watch` mode, this promise will never resolve.
         // We need it to keep webpack compilers running.
-        await component[method](inputs);
+        await component[method](inputs, context);
 
         if (debug) {
             // Add an empty line after debug output for nicer output

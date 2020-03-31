@@ -26,23 +26,32 @@ const validateInputs = ({ env }) => {
 };
 
 class Template extends Component {
-    async default(inputs = {}) {
+    async default(inputs = {}, context) {
+        require("./tsRequire")({
+            projectRoot: context.paths.projectRoot,
+            tmpDir: context.resolve(".webiny", "tmp")
+        });
+
         validateInputs(inputs);
 
         let template;
         if (fs.existsSync(`resources.js`)) {
             const newTemplate = await require(path.resolve("resources.js"))({ cli: inputs });
             template = newTemplate.resources;
+        } else if (fs.existsSync(`resources.ts`)) {
+            const resources = require(path.resolve("resources.ts")).default;
+            const newTemplate = await resources({ cli: inputs });
+            template = newTemplate.resources;
         } else {
             template = await findTemplate();
         }
 
         if (inputs.resources.length) {
-            return await this.deployResources(inputs.resources, { ...inputs, template });
+            return await this.deployResources(inputs.resources, { ...inputs, template }, context);
         }
 
         // Run template
-        return await this.deployAll({ ...inputs, template });
+        return await this.deployAll({ ...inputs, template }, context);
     }
 
     async deployAll(inputs = {}) {
@@ -91,7 +100,7 @@ class Template extends Component {
         return outputs;
     }
 
-    async deployResources(resources, inputs) {
+    async deployResources(resources, inputs, context) {
         const template = await getTemplate(inputs);
 
         if (!this.state.outputs) {
@@ -146,7 +155,7 @@ class Template extends Component {
                         };
 
                         if (watch) {
-                            setupFileWatchers(deployComponent, resource, resourceData);
+                            setupFileWatchers(deployComponent, resource, resourceData, context);
                         }
 
                         if (resourceData.build) {

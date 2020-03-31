@@ -2,11 +2,10 @@ const { resolve } = require("path");
 const { green, red, blue } = require("chalk");
 const chokidar = require("chokidar");
 const ora = require("ora");
-const { paths } = require("../../paths");
 
 let deployInProgress = false;
 
-const onChange = ({ resource, execute }) => {
+const onChange = ({ resource, execute }, context) => {
     let firstChange = true;
     let interval;
     let number;
@@ -29,7 +28,7 @@ const onChange = ({ resource, execute }) => {
             deployInProgress = false;
             return;
         } else {
-            console.log(`File changed: ${blue(paths.replaceProjectRoot(file))}`);
+            console.log(`File changed: ${blue(context.replaceProjectRoot(file))}`);
         }
 
         number = 3;
@@ -55,7 +54,7 @@ const onChange = ({ resource, execute }) => {
     };
 };
 
-module.exports = (execute, resource, config) => {
+module.exports = (execute, resource, config, context) => {
     if (!config.watch) {
         return;
     }
@@ -68,5 +67,5 @@ module.exports = (execute, resource, config) => {
     });
 
     const watcher = chokidar.watch(globs, { awaitWriteFinish: true });
-    watcher.on("change", onChange({ resource, execute }));
+    watcher.on("change", onChange({ resource, execute }, context));
 };

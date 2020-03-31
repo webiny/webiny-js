@@ -34,6 +34,7 @@
     "ramda": "^0.26.1",
     "strip-ansi": "^6.0.0",
     "traverse": "^0.6.6",
+    "typescript": "^3.8.3",
     "uniqid": "^5.0.3",
     "update-notifier": "^3.0.1",
     "uuid": "^3.3.3",
