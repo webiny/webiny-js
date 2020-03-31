@@ -21,7 +21,7 @@ export const getI18NInformation = gql`
     }
 `;
 
-const I18NContext = React.createContext(null);
+export const I18NContext = React.createContext(null);
 const defState = { initializing: false, currentLocale: null, locales: [] };
 
 export type I18NContextValue = {
@@ -36,7 +36,13 @@ export type I18NContextValue = {
     };
 };
 
-const I18NProvider = ({ children, loader }) => {
+export type I18NProviderProps = {
+    children?: React.ReactNode;
+    loader?: React.ReactElement;
+};
+
+export const I18NProvider = (props: I18NProviderProps) => {
+    const { children, loader } = props;
     const { loading, data, refetch } = useQuery(getI18NInformation);
 
     if (loading && loader) {
@@ -56,5 +62,3 @@ const I18NProvider = ({ children, loader }) => {
 
     return <I18NContext.Provider value={value}>{children}</I18NContext.Provider>;
 };
-
-export { I18NProvider, I18NContext };
