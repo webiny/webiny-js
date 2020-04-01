@@ -130,6 +130,7 @@ export const CrudProvider = ({ children, ...props }: CrudProviderProps) => {
                             title: t`Something unexpected happened`
                         });
                     }
+                    setMutationInProgress(false);
                     return;
                 }
 
