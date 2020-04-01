@@ -25,7 +25,6 @@
     "@webiny/app": "^3.0.3",
     "@webiny/app-admin": "^3.0.4",
     "@webiny/app-i18n": "^3.0.4",
-    "@webiny/app-page-builder": "^3.1.6",
     "@webiny/app-security": "^3.0.5",
     "@webiny/form": "^3.0.1",
     "@webiny/plugins": "^3.0.1",
