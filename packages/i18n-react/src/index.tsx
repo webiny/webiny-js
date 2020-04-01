@@ -2,6 +2,22 @@ import _ from "lodash";
 import React from "react";
 import { Processor } from "@webiny/i18n/types";
 
+declare global {
+    // eslint-disable-next-line
+    namespace JSX {
+        interface IntrinsicElements {
+            "i18n-text": {
+                children?: React.ReactNode;
+            };
+
+            "i18n-text-part": {
+                key?: any;
+                children?: React.ReactNode;
+            };
+        }
+    }
+}
+
 const processTextPart = (part: string, values: any, modifiers): any => {
     if (!_.startsWith(part, "{")) {
         return part;
@@ -44,6 +60,7 @@ export default {
     },
     execute(data) {
         const parts = data.translation.split(/({.*?})/);
+        // @ts-ignore
         return (
             <i18n-text>
                 {parts.map((part, index) => (
