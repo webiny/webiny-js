@@ -89,7 +89,7 @@
     }
   },
   "scripts": {
-    "build": "rimraf ./dist && mkdir dist && cp -R aliases cra packages serverless dist/",
+    "build": "rimraf ./dist && mkdir dist && cp -R aliases packages bundling serverless dist/",
     "postbuild": "cp package.json LICENSE README.md dist/",
     "prepublishOnly": "yarn build"
   },
