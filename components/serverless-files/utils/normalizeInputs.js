@@ -14,7 +14,7 @@ const getDefaults = () => ({
             timeout: 30,
             env: {}
         }
-    },
+    }
 });
 
 module.exports = (inputs = {}) => {
