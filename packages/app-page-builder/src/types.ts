@@ -15,7 +15,7 @@ import { Form } from "@webiny/form/Form";
 export { Redux } from "@webiny/app-page-builder/editor/redux";
 import { Item } from "@webiny/app-admin/plugins/Menu/Navigation/components";
 
-export type PbMenuSettingsItem = {
+export type PbMenuSettingsItemPlugin = Plugin & {
     type: "menu-settings-page-builder";
     render(props: { Item: typeof Item }): React.ReactNode;
 };
