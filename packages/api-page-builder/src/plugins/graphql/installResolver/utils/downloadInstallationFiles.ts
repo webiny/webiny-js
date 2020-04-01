@@ -5,8 +5,8 @@ import path from "path";
 import rimraf from "rimraf";
 import S3 from "aws-sdk/clients/s3";
 
-const PAGE_BUILDER_S3_BUCKET = process.env.PAGE_BUILDER_S3_BUCKET;
-const PAGE_BUILDER_INSTALLATION_FILES_ZIP_KEY = process.env.PAGE_BUILDER_INSTALLATION_FILES_ZIP_KEY;
+const PAGE_BUILDER_S3_BUCKET = process.env.INSTALLATION_S3_BUCKET;
+const PAGE_BUILDER_INSTALLATION_FILES_ZIP_KEY = process.env.INSTALLATION_FILES_ZIP_KEY;
 
 function extractZip(zipPath, dir) {
     return new Promise((resolve, reject) => {

@@ -11,9 +11,10 @@ const ora = require("ora");
 const writeJsonFile = require("write-json-file");
 const { trackActivity } = require("@webiny/tracking");
 const { version } = require(require.resolve("@webiny/cli/package.json"));
+const uniqueId = require("uniqid");
 const { getSuccessBanner } = require("./messages");
 const { getPackageVersion } = require("./utils");
-const uniqueId = require("uniqid");
+const { trackingNotice } = require("./trackingNotice");
 
 const globFiles = util.promisify(glob);
 
@@ -22,6 +23,8 @@ function copyFile(from, to) {
 }
 
 module.exports = async ({ name, tag }) => {
+    trackingNotice();
+
     const root = join(process.cwd(), name);
 
     if (fs.existsSync(root)) {
@@ -80,7 +83,7 @@ module.exports = async ({ name, tag }) => {
     let apiYaml = getFileContents("api/serverless.yml");
     apiYaml = apiYaml.replace(/\[PROJECT_ID\]/g, apiId);
     writeFileContents("api/serverless.yml", apiYaml);
-    writeJsonFile.sync(resolve("api/.serverless/_.json"), { id: apiId });
+    writeJsonFile.sync(resolve("api/.webiny/_.json"), { id: apiId });
 
     // Update api/.env.json
     let apiEnvFile = getFileContents("api/.env.json");
@@ -98,7 +101,7 @@ module.exports = async ({ name, tag }) => {
     const appsId = getUniqueId();
     appsYaml = appsYaml.replace(/\[PROJECT_ID\]/g, appsId);
     writeFileContents("apps/serverless.yml", appsYaml);
-    writeJsonFile.sync(resolve("apps/.serverless/_.json"), { id: appsId });
+    writeJsonFile.sync(resolve("apps/.webiny/_.json"), { id: appsId });
 
     // Inject the exact package version numbers based on the tag
     let spinner = ora(`Loading Webiny package versions...`).start();

@@ -1,6 +1,6 @@
 const path = require("path");
 const execa = require("execa");
-const { Component } = require("@serverless/core");
+const { Component } = require("@webiny/serverless-component");
 const LambdaClient = require("aws-sdk/clients/lambda");
 
 class ServerlessFunction extends Component {

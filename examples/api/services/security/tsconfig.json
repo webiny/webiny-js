@@ -1,0 +1,9 @@
+{
+  "extends": "../../../../tsconfig",
+  "references": [
+    { "path": "../../../../packages/api-plugin-commodo-db-proxy" },
+    { "path": "../../../../packages/api-security" },
+    { "path": "../../../../packages/http-handler" },
+    { "path": "../../../../packages/http-handler-apollo-server" }
+  ]
+}

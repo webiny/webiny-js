@@ -1,4 +1,4 @@
-const { Component } = require("@serverless/core");
+const { Component } = require("@webiny/serverless-component");
 const get = require("lodash.get");
 const { MongoClient } = require("mongodb");
 
@@ -7,6 +7,7 @@ class DbProxyComponent extends Component {
         const { env, region, concurrencyLimit, timeout, testConnectionBeforeDeploy } = inputs;
 
         if (testConnectionBeforeDeploy === true) {
+            this.context.instance.debug("Testing DB connection");
             try {
                 const connection = await MongoClient.connect(env.MONGODB_SERVER, {
                     useNewUrlParser: true,

@@ -2,8 +2,6 @@ import "cross-fetch/polyfill";
 import "core-js/stable";
 import "regenerator-runtime/runtime";
 import React, { Fragment } from "react";
-import { ApolloProvider } from "react-apollo";
-import { StaticRouter } from "@webiny/react-router";
 import { renderToStaticMarkup } from "react-dom/server";
 import Helmet from "react-helmet";
 import { getDataFromTree } from "@apollo/react-ssr";
@@ -57,19 +55,9 @@ const injectContent = (content, helmet, state) => {
 
 export const renderer = async url => {
     const apolloClient = createClient();
-    const context = {};
+    const App = createApp({ apolloClient, url });
 
-    const app = (
-        <ApolloProvider client={apolloClient}>
-            <StaticRouter
-                basename={process.env.PUBLIC_URL === "/" ? "" : process.env.PUBLIC_URL}
-                location={url}
-                context={context}
-            >
-                <App />
-            </StaticRouter>
-        </ApolloProvider>
-    );
+    const app = <App />;
 
     // Executes all graphql queries for the current state of application
     await getDataFromTree(app);

@@ -1,22 +1,5 @@
 const path = require("path");
-const fs = require("fs-extra");
-const packages = require("get-yarn-workspaces")().map(pkg => pkg.replace(/\//g, path.sep));
-const readJson = require("read-json-sync");
 const webpack = require("webpack");
-
-const getAliases = buildDirectory => {
-    return packages.reduce((aliases, dir) => {
-        try {
-            const json = readJson(path.join(dir, "package.json"));
-            if (fs.existsSync(path.join(dir, buildDirectory))) {
-                aliases[`${json.name}`] = `${json.name}/${buildDirectory}`;
-            }
-        } catch (err) {
-            // No package.json, continue.
-        }
-        return aliases;
-    }, {});
-};
 
 module.exports = ({ entry, debug = false, babelOptions, define }) => ({
     entry: path.resolve(entry),
@@ -52,7 +35,6 @@ module.exports = ({ entry, debug = false, babelOptions, define }) => ({
         ]
     },
     resolve: {
-        alias: getAliases("dist"),
         modules: [path.resolve("node_modules"), "node_modules"],
         extensions: [".mjs", ".ts", ".tsx", ".js", ".jsx", ".json"]
     }

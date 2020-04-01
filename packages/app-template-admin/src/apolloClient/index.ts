@@ -7,11 +7,11 @@ import { createAuthLink } from "@webiny/app-security/components";
 import { createOmitTypenameLink } from "@webiny/app/graphql";
 import { GET_ERROR } from "./NetworkError";
 
-export type CreateApolloClient = {
+export type CreateApolloClientOptions = {
     uri: string;
 };
 
-export const createApolloClient = (opts: CreateApolloClient) => {
+export const createApolloClient = (opts: CreateApolloClientOptions) => {
     return new ApolloClient({
         link: ApolloLink.from([
             new ErrorLink(({ networkError, operation }) => {

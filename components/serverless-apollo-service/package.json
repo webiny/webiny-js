@@ -4,8 +4,8 @@
   "main": "serverless.js",
   "license": "MIT",
   "dependencies": {
-    "@serverless/core": "^1.1.1",
-    "@webiny/serverless-api-gateway": "^2.0.1",
+    "@webiny/serverless-component": "^0.1.0",
+    "@webiny/serverless-api-gateway": "^3.0.1",
     "@webiny/serverless-function": "^3.0.1",
     "lodash.get": "^4.4.2",
     "lodash.pick": "^4.4.0"
@@ -16,10 +16,8 @@
     "prepublishOnly": "yarn build"
   },
   "publishConfig": {
-    "access": "public"
-  },
-  "adio": {
-
+    "access": "public",
+    "directory": "."
   },
   "gitHead": "71cab7d5607b2e32a63034e324a663770507b32b"
 }

@@ -1,5 +1,5 @@
 const { join } = require("path");
-const { Component } = require("@serverless/core");
+const { Component } = require("@webiny/serverless-component");
 const configureS3Bucket = require("./utils/configureS3Bucket");
 const normalizeInputs = require("./utils/normalizeInputs");
 
@@ -21,15 +21,10 @@ class FilesComponent extends Component {
             region,
             bucket,
             functions: {
-                apolloService: apolloServiceInputs,
                 downloadFile: downloadFileInputs,
                 imageTransformer: imageTransformerInputs
             }
         } = inputs;
-
-        if (!apolloServiceInputs.plugins) {
-            apolloServiceInputs.plugins = [];
-        }
 
         const manageFilesLambda = await this.load("@webiny/serverless-function", "manage-files");
         const manageFilesLambdaOutput = await manageFilesLambda({
@@ -89,34 +84,11 @@ class FilesComponent extends Component {
             }
         });
 
-        // Deploy graphql API
-        const apolloService = await this.load("@webiny/serverless-apollo-service");
-        const apolloServiceOutput = await apolloService({
-            ...apolloServiceInputs,
-            region,
-            binaryMediaTypes: ["*/*"],
-            endpoints: [
-                { path: "/files/{path}", method: "ANY", function: downloadLambdaOutput.arn }
-            ],
-            env: {
-                ...apolloServiceInputs.env,
-                S3_BUCKET: bucket,
-                DEBUG: apolloServiceInputs.debug || "true",
-                UPLOAD_MIN_FILE_SIZE: String(apolloServiceInputs.uploadMinFileSize),
-                UPLOAD_MAX_FILE_SIZE: String(apolloServiceInputs.uploadMaxFileSize)
-            }
-        });
-
         const output = {
-            api: apolloServiceOutput.api,
-            s3: s3Output,
-            cdnOrigin: {
-                url: apolloServiceOutput.api.url,
-                pathPatterns: {
-                    "/files/*": {
-                        ttl: 2592000 // 1 month
-                    }
-                }
+            api: {
+                endpoints: [
+                    { path: "/files/{path}", method: "ANY", function: downloadLambdaOutput.arn }
+                ]
             }
         };
 
@@ -127,9 +99,6 @@ class FilesComponent extends Component {
     }
 
     async remove() {
-        const apolloService = await this.load("@webiny/serverless-apollo-service");
-        await apolloService.remove();
-
         let lambda = await this.load("@webiny/serverless-function", "manage-files");
         await lambda.remove();
 

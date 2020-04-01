@@ -1,6 +1,7 @@
 const AWS = require("aws-sdk");
 const isEqual = require("lodash.isequal");
-const { Component, utils } = require("@serverless/core");
+const { Component } = require("@webiny/serverless-component");
+const { utils } = require("@serverless/core");
 
 const {
     apiExists,

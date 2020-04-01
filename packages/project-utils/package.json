@@ -89,11 +89,12 @@
     }
   },
   "scripts": {
-    "build": "rimraf ./dist && mkdir dist && cp -R aliases packages bundling serverless dist/",
+    "build": "rimraf ./dist && mkdir dist && cp -R index.js aliases bundling packages serverless dist/",
     "postbuild": "cp package.json LICENSE README.md dist/",
     "prepublishOnly": "yarn build"
   },
   "publishConfig": {
-    "access": "public"
+    "access": "public",
+    "directory": "."
   }
 }

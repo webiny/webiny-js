@@ -1,0 +1,9 @@
+{
+  "extends": "../../tsconfig",
+  "references": [
+    { "path": "../app" },
+    { "path": "../app-i18n" },
+    { "path": "../app-template" },
+    { "path": "../ui" }
+  ]
+}

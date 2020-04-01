@@ -27,6 +27,7 @@ const plugin: CreateApolloHandlerPlugin = {
         const createSchemaPlugin = context.plugins.byName<CreateSchemaPlugin>(
             "handler-apollo-server-create-schema"
         );
+
         if (!createSchemaPlugin) {
             throw Error(`"handler-apollo-server-create-schema" plugin is not configured!`);
         }

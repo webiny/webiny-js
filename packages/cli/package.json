@@ -7,18 +7,22 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/webiny/webiny-js.git"
+    "url": "https://github.com/webiny/webiny-js.git",
+    "directory": "packages/cli"
   },
   "author": "Pavel Denisjuk <pavel@webiny.com>",
   "description": "A tool to bootstrap a Webiny project.",
   "dependencies": {
+    "@webiny/plugins": "^3.0.1",
     "@webiny/tracking": "^3.1.0",
     "ansi-escapes": "^4.2.1",
+    "boolean": "^3.0.1",
     "camelcase": "^5.3.1",
     "chalk": "^2.4.2",
     "debug": "^4.1.1",
     "env-cmd": "^9.0.3",
     "execa": "^2.0.5",
+    "figures": "^3.2.0",
     "glob": "^7.1.4",
     "graphlib": "^2.1.7",
     "load-json-file": "^6.2.0",
@@ -28,7 +32,9 @@
     "ora": "^4.0.3",
     "p-retry": "^4.2.0",
     "ramda": "^0.26.1",
+    "strip-ansi": "^6.0.0",
     "traverse": "^0.6.6",
+    "typescript": "^3.8.3",
     "uniqid": "^5.0.3",
     "update-notifier": "^3.0.1",
     "uuid": "^3.3.3",
@@ -41,13 +47,10 @@
   },
   "license": "MIT",
   "publishConfig": {
-    "access": "public"
+    "access": "public",
+    "directory": "."
   },
-  "scripts": {
-    "build": "yarn rimraf ./dist *.tsbuildinfo && mkdir dist && cp -R cli.js bin.js commands config create dist/",
-    "postbuild": "cp package.json LICENSE README.md dist/",
-    "prepublishOnly": "yarn build"
-  },
+  "scripts": {},
   "adio": {
     "ignoreDirs": [
       "/create/template/",

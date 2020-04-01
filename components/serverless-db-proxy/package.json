@@ -4,7 +4,7 @@
   "main": "serverless.js",
   "license": "MIT",
   "dependencies": {
-    "@serverless/core": "^1.1.1",
+    "@webiny/serverless-component": "^0.1.0",
     "@webiny/serverless-function": "^3.0.1",
     "bson": "^4.0.2",
     "lodash.get": "^4.4.2",
@@ -17,7 +17,8 @@
     "prepublishOnly": "yarn build"
   },
   "publishConfig": {
-    "access": "public"
+    "access": "public",
+    "directory": "./dist"
   },
   "gitHead": "71cab7d5607b2e32a63034e324a663770507b32b"
 }

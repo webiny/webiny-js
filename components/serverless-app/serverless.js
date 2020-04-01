@@ -1,5 +1,5 @@
 const path = require("path");
-const { Component } = require("@serverless/core");
+const { Component } = require("@webiny/serverless-component");
 
 class ServerlessApp extends Component {
     async default(inputs = {}) {

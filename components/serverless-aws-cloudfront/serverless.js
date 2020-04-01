@@ -1,4 +1,4 @@
-const { Component } = require("@serverless/core");
+const { Component } = require("@webiny/serverless-component");
 const CloudFront = require("aws-sdk/clients/cloudfront");
 const get = require("lodash.get");
 const setCdnDistributionForwardedHeader = require("./utils/setCdnDistributionForwardedHeader");

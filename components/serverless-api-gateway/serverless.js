@@ -1,4 +1,4 @@
-const { Component } = require("@serverless/core");
+const { Component } = require("@webiny/serverless-component");
 
 const defaults = {
     stage: "prod",

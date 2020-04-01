@@ -102,7 +102,8 @@
   "scripts": {
     "build:components": "lerna run build --scope=@webiny/serverless-* --stream",
     "build:apps": "lerna run build --scope=@webiny/app* --stream",
-    "build:api": "lerna run build --scope=@webiny/api* --stream",
+    "build:app-templates": "lerna run build --scope=@webiny/app-template* --stream",
+    "build:api": "lerna run build --scope=@webiny/api* --scope=@webiny/http-* --stream",
     "build:packages": "lerna run build --scope=@webiny/* --ignore=@webiny/serv* --stream",
     "watch:apps": "lerna run watch --scope=@webiny/app* --stream --parallel",
     "watch:api": "lerna run watch --scope=@webiny/api* --stream --parallel",
@@ -114,6 +115,7 @@
     "commit:no-verify": "yarn commit --no-verify",
     "commit:verify": "yarn lint-staged",
     "lint-staged": "lint-staged",
+    "postinstall": "node ./scripts/linkPackages.js",
     "prettier": "prettier --config .prettierrc.js --write",
     "setup-repo": "node scripts/setupRepo",
     "test": "jest --config jest.config.js",
@@ -147,6 +149,8 @@
     }
   },
   "commitlint": {
-    "extends": ["@commitlint/config-conventional"]
+    "extends": [
+      "@commitlint/config-conventional"
+    ]
   }
 }

@@ -3,7 +3,8 @@
   "version": "3.0.1",
   "main": "./serverless.js",
   "publishConfig": {
-    "access": "public"
+    "access": "public",
+    "directory": "."
   },
   "scripts": {
     "build": "rm -rf dist && mkdir dist && cp serverless.js utils.js dist/",
@@ -18,6 +19,7 @@
   ],
   "license": "Apache",
   "dependencies": {
+    "@webiny/serverless-component": "^0.1.0",
     "@serverless/core": "^1.0.0",
     "aws-sdk": "^2.0.0",
     "lodash.isequal": "^4.5.0",

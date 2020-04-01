@@ -1,5 +1,5 @@
 const Cognito = require("aws-sdk/clients/cognitoidentityserviceprovider");
-const { Component } = require("@serverless/core");
+const { Component } = require("@webiny/serverless-component");
 const isEqual = require("lodash.isequal");
 
 const defaultPasswordPolicy = {
