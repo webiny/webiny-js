@@ -5,13 +5,9 @@ import Radio from "./fields/Radio";
 import Checkbox from "./fields/Checkbox";
 import Textarea from "./fields/Textarea";
 import { BindComponentRenderProp, Form } from "@webiny/form";
-import { CmsContentModelModelField, FormLayoutComponent } from "@webiny/app-form-builder/types";
+import { CmsContentModelModelField } from "@webiny/app-headless-cms/types";
 
-const DefaultFormLayout: FormLayoutComponent = ({
-    getFields,
-    getDefaultValues,
-    submit,
-}) => {
+const DefaultFormLayout = ({ getFields, getDefaultValues, submit }) => {
     // Is the form in loading (submitting) state?
     const [loading, setLoading] = useState(false);
 
@@ -27,7 +23,7 @@ const DefaultFormLayout: FormLayoutComponent = ({
         setLoading(false);
         if (result.error === null) {
             // setFormSuccess(true);
-            console.log('wohooo!')
+            console.log("wohooo!");
         }
     };
 
@@ -130,7 +126,7 @@ const DefaultFormLayout: FormLayoutComponent = ({
                             ))}
                         </div>
 
-                       <button onClick={submit}>submit this</button>
+                        <button onClick={submit}>submit this</button>
                     </>
                 </div>
             )}
