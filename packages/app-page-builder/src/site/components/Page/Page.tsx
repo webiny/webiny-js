@@ -12,6 +12,19 @@ type PageProps = {
     content?: any;
 };
 
+
+declare global {
+    // eslint-disable-next-line
+    namespace JSX {
+        interface IntrinsicElements {
+            "ssr-cache": {
+                class?: string;
+                id?: string;
+            };
+        }
+    }
+}
+
 const getPageRender = props => {
     if (props.content) {
         return <PageContent data={props.content} />;

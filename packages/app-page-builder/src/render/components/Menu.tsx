@@ -4,6 +4,18 @@ import gql from "graphql-tag";
 import { get } from "lodash";
 import invariant from "invariant";
 
+declare global {
+    // eslint-disable-next-line
+    namespace JSX {
+        interface IntrinsicElements {
+            "ssr-cache": {
+                class?: string;
+                id?: string;
+            };
+        }
+    }
+}
+
 export const getMenuBySlug = gql`
     query GetMenuBySlug($slug: String!) {
         pageBuilder {

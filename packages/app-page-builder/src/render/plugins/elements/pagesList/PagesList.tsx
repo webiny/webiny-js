@@ -5,6 +5,18 @@ import { loadPages } from "./graphql";
 import { getPlugins } from "@webiny/plugins";
 import { PbPageElementPagesListComponentPlugin } from "@webiny/app-page-builder/types";
 
+declare global {
+    // eslint-disable-next-line
+    namespace JSX {
+        interface IntrinsicElements {
+            "ssr-cache": {
+                class?: string;
+                id?: string;
+            };
+        }
+    }
+}
+
 const PagesList = props => {
     const {
         data: { component, ...vars },
