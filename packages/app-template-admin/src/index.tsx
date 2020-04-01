@@ -6,7 +6,6 @@ import ApolloClient from "apollo-client";
 // App structure imports
 import { UiProvider } from "@webiny/app/contexts/Ui";
 import { I18NProvider } from "@webiny/app-i18n/contexts/I18N";
-import { CmsProvider } from "@webiny/app-headless-cms/admin/contexts/Cms";
 import { SecurityProvider } from "@webiny/app-security/contexts/Security";
 import { CircularProgress } from "@webiny/ui/Progress";
 import { AppInstaller } from "@webiny/app-admin/components/Install/AppInstaller";
@@ -17,7 +16,6 @@ import { fileUploadPlugin, imagePlugin } from "@webiny/app/plugins";
 import adminPlugins from "@webiny/app-admin/plugins";
 import i18nPlugins from "@webiny/app-i18n/admin/plugins";
 import securityPlugins from "@webiny/app-security/admin/plugins";
-import headlessCmsPlugins from "@webiny/app-headless-cms/admin/plugins";
 import cognito from "@webiny/app-plugin-security-cognito";
 import cognitoTheme from "@webiny/app-plugin-security-cognito-theme/admin";
 
@@ -93,17 +91,6 @@ export default createTemplate<AdminAppOptions>(opts => {
         },
         {
             type: "app-template-renderer",
-            name: "app-template-renderer-headless-cms",
-            render(children) {
-                return (
-                    <CmsProvider>
-                        {children}
-                    </CmsProvider>
-                );
-            }
-        },
-        {
-            type: "app-template-renderer",
             name: "app-template-renderer-app-installer",
             render(children) {
                 const securityProvider = (
@@ -128,7 +115,6 @@ export default createTemplate<AdminAppOptions>(opts => {
         adminPlugins,
         i18nPlugins,
         securityPlugins,
-        headlessCmsPlugins,
         cognito(opts.cognito),
         cognitoTheme(),
         ...(opts.plugins || [])

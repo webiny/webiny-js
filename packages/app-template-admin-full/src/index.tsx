@@ -3,6 +3,7 @@ import adminAppTemplate, { AdminAppOptions } from "@webiny/app-template-admin";
 
 // App structure imports
 import { PageBuilderProvider } from "@webiny/app-page-builder/contexts/PageBuilder";
+import { CmsProvider } from "@webiny/app-headless-cms/admin/contexts/Cms";
 
 // Other plugins
 import pageBuilderPlugins from "@webiny/app-page-builder/admin/plugins";
@@ -14,6 +15,7 @@ import cookiePolicyPlugins from "@webiny/app-cookie-policy/admin";
 import googleTagManagerPlugins from "@webiny/app-google-tag-manager/admin";
 import typeformPlugins from "@webiny/app-typeform/admin";
 import mailchimpPlugins from "@webiny/app-mailchimp/admin";
+import headlessCmsPlugins from "@webiny/app-headless-cms/admin/plugins";
 
 export default (options: AdminAppOptions) => {
     const plugins = [
@@ -24,6 +26,13 @@ export default (options: AdminAppOptions) => {
                 return <PageBuilderProvider isEditor>{children}</PageBuilderProvider>;
             }
         },
+        {
+            type: "app-template-renderer",
+            name: "app-template-renderer-headless-cms",
+            render(children) {
+                return <CmsProvider>{children}</CmsProvider>;
+            }
+        },
         pageBuilderPlugins,
         pageBuilderTheme(),
         formBuilderPlugins,
@@ -32,7 +41,8 @@ export default (options: AdminAppOptions) => {
         cookiePolicyPlugins,
         googleTagManagerPlugins,
         typeformPlugins,
-        mailchimpPlugins
+        mailchimpPlugins,
+        headlessCmsPlugins
     ];
 
     return adminAppTemplate({ ...options, plugins });

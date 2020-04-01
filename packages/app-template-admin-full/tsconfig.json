@@ -7,6 +7,7 @@
     { "path": "../app-typeform" },
     { "path": "../app-page-builder" },
     { "path": "../app-page-builder-theme" },
+    { "path": "../app-headless-cms" },
     { "path": "../app-form-builder" },
     { "path": "../app-form-builder-theme" },
     { "path": "../app-template-admin" }
