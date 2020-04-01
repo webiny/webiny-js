@@ -37,9 +37,9 @@ const Navigation = () => {
     menuPlugins &&
         sortBy(menuPlugins, [p => p.order || 50, p => p.name]).forEach(plugin => {
             menus.push(
-                <menu-component key={plugin.name}>
+                <React.Fragment key={plugin.name}>
                     {plugin.render({ Menu, Section, Item })}
-                </menu-component>
+                </React.Fragment>
             );
         });
 

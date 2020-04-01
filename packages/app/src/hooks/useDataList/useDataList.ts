@@ -11,7 +11,7 @@ import { ApolloClient } from "apollo-client";
 export type UseDataListParams = {
     useRouter?: boolean;
     variables?: ((params: UseDataListParams) => any) | object;
-    client: ApolloClient<any>;
+    client?: ApolloClient<any>;
     query: DocumentNode;
     getData?: (data: any) => any;
     getMeta?: (data: any) => any;
