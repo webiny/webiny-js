@@ -36,6 +36,7 @@ export const CrudProvider = ({ children, ...props }: CrudProviderProps) => {
     const list = useDataList({
         query: get(props, "list.query", props.list),
         variables: get(props, "list.variables"),
+        client: get(props, "list.options.client"),
         // "useDataList" will know how to handle no-handler-provided situations.
         getData: get(props, "list.getData"),
         getMeta: get(props, "list.getMeta"),
