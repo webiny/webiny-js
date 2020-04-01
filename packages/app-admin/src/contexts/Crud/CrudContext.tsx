@@ -62,6 +62,7 @@ export const CrudProvider = ({ children, ...props }: CrudProviderProps) => {
     );
 
     const readQuery = useQuery(props.read.query || props.read, {
+        ...props.read.options || {},
         variables: { id },
         skip: !id,
         onCompleted(data) {
