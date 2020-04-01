@@ -103,6 +103,8 @@ class RenderForm extends React.Component<Props, State> {
         const { values } = this.state;
         // eslint-disable-next-line @typescript-eslint/no-this-alias
         const component = this;
+
+        // @ts-ignore
         Caman(canvas.current, function() {
             this.revert(false);
             Object.keys(values).forEach(
@@ -180,6 +182,7 @@ const tool: ImageEditorTool = {
         return <RenderForm {...props} />;
     },
     cancel: ({ canvas }) => {
+        // @ts-ignore
         Caman(canvas.current, function() {
             this.revert(false);
             this.render();
