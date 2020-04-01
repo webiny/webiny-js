@@ -7,11 +7,7 @@ import { createAuthLink } from "@webiny/app-security/components";
 import { createOmitTypenameLink } from "@webiny/app/graphql";
 import { GET_ERROR } from "./NetworkError";
 
-export type CreateApolloClientOptions = {
-    uri: string;
-};
-
-export const createApolloClient = (opts: CreateApolloClientOptions) => {
+export const createApolloClient = () => {
     return new ApolloClient({
         link: ApolloLink.from([
             new ErrorLink(({ networkError, operation }) => {
@@ -27,7 +23,7 @@ export const createApolloClient = (opts: CreateApolloClientOptions) => {
             }),
             createOmitTypenameLink(),
             createAuthLink(),
-            new BatchHttpLink({ uri: opts.uri })
+            new BatchHttpLink({ uri: process.env.REACT_APP_GRAPHQL_API_URL })
         ]),
         cache: new InMemoryCache({
             addTypename: true,

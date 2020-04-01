@@ -5,11 +5,13 @@ import React, { Fragment } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import Helmet from "react-helmet";
 import { getDataFromTree } from "@apollo/react-ssr";
+import { ApolloProvider } from "react-apollo";
 import ApolloClient from "apollo-client";
 import { ApolloLink } from "apollo-link";
 import { InMemoryCache } from "apollo-cache-inmemory";
 import { createHttpLink } from "apollo-link-http";
 import { createOmitTypenameLink } from "@webiny/app/graphql";
+import { StaticRouter } from "@webiny/react-router";
 /*{import-app-component}*/
 
 // Use `raw-loader` to copy the value of index.html into the SSR bundle.
@@ -55,7 +57,33 @@ const injectContent = (content, helmet, state) => {
 
 export const renderer = async url => {
     const apolloClient = createClient();
-    const App = createApp({ apolloClient, url });
+    const App = createApp({
+        plugins: [
+            {
+                type: "app-template-renderer",
+                name: "app-template-renderer-apollo",
+                render(children) {
+                    return <ApolloProvider client={apolloClient}>{children}</ApolloProvider>;
+                }
+            },
+            {
+                type: "app-template-renderer",
+                name: "app-template-renderer-router",
+                render(children) {
+                    return (
+                        <StaticRouter
+                            basename={process.env.PUBLIC_URL === "/" ? "" : process.env.PUBLIC_URL}
+                            location={url}
+                            context={{}}
+                        >
+                            {children}
+                        </StaticRouter>
+                    );
+                }
+            }
+        ],
+        url
+    });
 
     const app = <App />;
 

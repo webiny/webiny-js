@@ -6,7 +6,15 @@
     "./dist",
     "../app",
     "../app-i18n",
-    "../app-template "
+    "../app-cookie-policy",
+    "../app-google-tag-manager",
+    "../app-mailchimp",
+    "../app-typeform",
+    "../app-page-builder",
+    "../app-page-builder-theme",
+    "../app-form-builder",
+    "../app-form-builder-theme",
+    "../app-template"
   ],
   "compilerOptions": {
     "rootDir": "./src",
@@ -16,6 +24,14 @@
   "references": [
     { "path": "../app/tsconfig.build.json" },
     { "path": "../app-i18n/tsconfig.build.json" },
-    { "path": "../app-template/tsconfig.build.json" }
+    { "path": "../app-cookie-policy/tsconfig.build.json" },
+    { "path": "../app-form-builder/tsconfig.build.json" },
+    { "path": "../app-form-builder-theme/tsconfig.build.json" },
+    { "path": "../app-google-tag-manager/tsconfig.build.json" },
+    { "path": "../app-mailchimp/tsconfig.build.json" },
+    { "path": "../app-page-builder/tsconfig.build.json" },
+    { "path": "../app-page-builder-theme/tsconfig.build.json" },
+    { "path": "../app-template/tsconfig.build.json" },
+    { "path": "../app-typeform/tsconfig.build.json" }
   ]
 }

@@ -1,7 +1,7 @@
 import React from "react";
 import { createTemplate } from "@webiny/app-template";
-import { BrowserRouter, Route, Redirect, StaticRouter } from "@webiny/react-router";
-import ApolloClient from "apollo-client";
+import { AppTemplateRendererPlugin } from "@webiny/app-template/types";
+import { BrowserRouter, Route, Redirect } from "@webiny/react-router";
 import { ApolloProvider } from "react-apollo";
 
 // App structure imports
@@ -24,19 +24,14 @@ import formBuilderTheme from "@webiny/app-form-builder-theme";
 
 // ApolloClient
 import { createApolloClient } from "./apollo";
-import { AppTemplateRendererPlugin } from "../../app-template/src/types";
 
 export type SiteAppOptions = {
-    apolloClient: ApolloClient<any>;
     defaultRoute?: string;
     plugins?: any[];
-    url?: string; // Only used in SSR mode
 };
 
 export default createTemplate<SiteAppOptions>(opts => {
-    const isSSR = process.env.REACT_APP_ENV === "ssr";
-
-    const apolloClient = opts.apolloClient || createApolloClient();
+    const apolloClient = createApolloClient();
 
     const appStructure: AppTemplateRendererPlugin[] = [
         {
@@ -46,7 +41,7 @@ export default createTemplate<SiteAppOptions>(opts => {
                 return <ApolloProvider client={apolloClient}>{children}</ApolloProvider>;
             }
         },
-        !isSSR && {
+        {
             type: "app-template-renderer",
             name: "app-template-renderer-router",
             render(children) {
@@ -59,21 +54,6 @@ export default createTemplate<SiteAppOptions>(opts => {
                             render={() => <Redirect to={opts.defaultRoute || "/"} />}
                         />
                     </BrowserRouter>
-                );
-            }
-        },
-        isSSR && {
-            type: "app-template-renderer",
-            name: "app-template-renderer-router",
-            render(children) {
-                return (
-                    <StaticRouter
-                        basename={process.env.PUBLIC_URL === "/" ? "" : process.env.PUBLIC_URL}
-                        location={opts.url}
-                        context={{}}
-                    >
-                        {children}
-                    </StaticRouter>
                 );
             }
         },
@@ -106,9 +86,8 @@ export default createTemplate<SiteAppOptions>(opts => {
         i18nPlugins,
         formsSitePlugins,
         formsPbPlugins,
-        formBuilderTheme(),
-        ...(opts.plugins || [])
+        formBuilderTheme()
     ];
 
-    return [...appStructure, ...otherPlugins];
+    return [...appStructure, ...otherPlugins, ...(opts.plugins || [])];
 });

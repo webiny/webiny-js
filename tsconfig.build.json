@@ -41,6 +41,7 @@
       "@webiny/api-security": ["./packages/api-security/src"],
       "@webiny/app/*": ["./packages/app/src/*"],
       "@webiny/app": ["./packages/app/src"],
+      "@webiny/app-template/*": ["./packages/app-template/src/*"],
       "@webiny/app-template": ["./packages/app-template/src"],
       "@webiny/app-template-site": ["./packages/app-template-site/src"],
       "@webiny/app-template-admin": ["./packages/app-template-admin/src"],
