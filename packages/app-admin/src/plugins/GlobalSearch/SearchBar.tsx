@@ -210,7 +210,9 @@ class SearchBar extends React.Component<SearchBarProps, SearchBarState> {
                                                         this.setState({ active: true });
                                                         openMenu();
                                                     },
-                                                    onChange: e => {
+                                                    onChange: (
+                                                        e: React.ChangeEvent<HTMLInputElement>
+                                                    ) => {
                                                         const value = e.target.value || "";
                                                         this.setState(state => {
                                                             state.searchTerm.current = value;
