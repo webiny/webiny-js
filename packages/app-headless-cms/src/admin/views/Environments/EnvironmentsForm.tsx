@@ -18,7 +18,7 @@ import { LIST_ENVIRONMENTS } from "./graphql";
 import get from "lodash.get";
 import { AutoComplete } from "@webiny/ui/AutoComplete";
 
-const t = i18n.ns("app-page-builder/admin/environments/form");
+const t = i18n.ns("app-headless-cms/admin/environments/form");
 
 function EnvironmentsForm() {
     const { form: crudForm } = useCrud();

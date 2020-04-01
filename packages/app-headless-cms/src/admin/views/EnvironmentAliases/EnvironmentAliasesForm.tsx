@@ -20,7 +20,7 @@ import {
     SimpleFormContent
 } from "@webiny/app-admin/components/SimpleForm";
 
-const t = i18n.ns("app-page-builder/admin/environmentAliases/form");
+const t = i18n.ns("app-headless-cms/admin/environmentAliases/form");
 
 function EnvironmentAliasesForm() {
     const { form: crudForm } = useCrud();

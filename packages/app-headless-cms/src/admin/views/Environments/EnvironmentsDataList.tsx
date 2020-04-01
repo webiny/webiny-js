@@ -15,7 +15,7 @@ import {
     ListActions
 } from "@webiny/ui/List";
 
-const t = i18n.ns("app-page-builder/admin/environments/data-list");
+const t = i18n.ns("app-headless-cms/admin/environments/data-list");
 
 const EnvironmentsDataList = () => {
     const { actions, list } = useCrud();
