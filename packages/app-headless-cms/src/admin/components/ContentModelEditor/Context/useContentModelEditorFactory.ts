@@ -34,7 +34,7 @@ export default ContentModelEditorContext => {
                     query: GET_CONTENT_MODEL,
                     variables: { id }
                 });
-                const { data, error } = get(response, "data.cms.getContentModel");
+                const { data, error } = get(response, "data.getContentModel");
                 if (error) {
                     console.log("neee");
                     throw new Error(error);
@@ -53,7 +53,7 @@ export default ContentModelEditorContext => {
                     }
                 });
 
-                return get(response, "data.cms.updateContentModel");
+                return get(response, "data.updateContentModel");
             },
             /**
              * Set form data by providing a callback, which receives a fresh copy of data on which you can work on.
