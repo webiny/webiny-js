@@ -1,15 +1,17 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { useQuery } from "react-apollo";
 import useRouter from "use-react-router";
-import { get, isEqual } from "lodash";
+import { get, isEqual, omit } from "lodash";
 import { prepareLoadListParams, redirectToRouteWithQueryParams } from "./utils";
 import { getData, getError, getMeta } from "./functions";
 
 import { DocumentNode } from "graphql";
+import { ApolloClient } from "apollo-client";
 
 export type UseDataListParams = {
     useRouter?: boolean;
     variables?: ((params: UseDataListParams) => any) | object;
+    client: ApolloClient<any>;
     query: DocumentNode;
     getData?: (data: any) => any;
     getMeta?: (data: any) => any;
@@ -58,12 +60,13 @@ const useDataList = (params: UseDataListParams) => {
         }
 
         return {
+            ...omit(params, ["query", "variables"]),
             variables: {
                 ...variables,
                 ...prepareLoadListParams(location)
             }
         };
-    }, []);
+    }, undefined);
 
     const queryData = useQuery(params.query, getQueryOptions());
     const prevLoadParamsRef = useRef({});
