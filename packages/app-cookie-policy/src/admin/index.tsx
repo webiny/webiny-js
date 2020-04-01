@@ -6,7 +6,7 @@ import CookiePolicySettings from "./components/CookiePolicySettings";
 import { SecureRoute } from "@webiny/app-security/components";
 import { i18n } from "@webiny/app/i18n";
 import { RoutePlugin } from "@webiny/app/types";
-import { PbMenuSettingsItem } from "@webiny/app-page-builder/types";
+import { PbMenuSettingsItemPlugin } from "@webiny/app-page-builder/types";
 const t = i18n.ns("app-cookie-policy/admin");
 
 const roles = ["pb-settings"];
@@ -35,7 +35,7 @@ const plugins = [
         render({ Item }) {
             return <Item label={t`Cookie Policy`} path={"/settings/page-builder/cookie-policy"} />;
         }
-    } as PbMenuSettingsItem
+    } as PbMenuSettingsItemPlugin
 ];
 
 export default plugins;

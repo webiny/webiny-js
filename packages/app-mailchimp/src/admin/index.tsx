@@ -12,11 +12,10 @@ import { ReactComponent as MailchimpLogo } from "./mailchimp-logo.svg";
 import render from "./../render";
 import {
     PbEditorPageElementPlugin,
-    PbEditorPageElementAdvancedSettingsPlugin, PbMenuSettingsItem
+    PbEditorPageElementAdvancedSettingsPlugin, PbMenuSettingsItemPlugin
 } from "@webiny/app-page-builder/types";
 import { i18n } from "@webiny/app/i18n";
 import { RoutePlugin } from "@webiny/app/types";
-import { MenuSettingsPlugin } from "@webiny/app-admin/types";
 const t = i18n.ns("app-mailchimp/admin");
 
 const PreviewBox = styled("div")({
@@ -101,5 +100,5 @@ export default [
         render({ Item }) {
             return <Item label={t`Mailchimp`} path={"/settings/page-builder/mailchimp"} />;
         }
-    } as PbMenuSettingsItem
+    } as PbMenuSettingsItemPlugin
 ];

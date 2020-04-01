@@ -6,7 +6,7 @@ import GoogleTagManagerSettings from "./components/GoogleTagManagerSettings";
 import { SecureRoute } from "@webiny/app-security/components";
 import { RoutePlugin } from "@webiny/app/types";
 import { i18n } from "@webiny/app/i18n";
-import { PbMenuSettingsItem } from "@webiny/app-page-builder/types";
+import { PbMenuSettingsItemPlugin } from "@webiny/app-page-builder/types";
 
 const t = i18n.ns("app-google-tag-manager/admin");
 
@@ -41,7 +41,7 @@ const plugins = [
                 />
             );
         }
-    } as PbMenuSettingsItem
+    } as PbMenuSettingsItemPlugin
 ];
 
 export default plugins;
