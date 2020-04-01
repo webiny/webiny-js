@@ -44,7 +44,7 @@
     "access": "public"
   },
   "scripts": {
-    "build": "yarn rimraf ./dist *.tsbuildinfo && mkdir dist && cp -R cli.js bin-cli.js bin-scripts.js scripts.js config create sls dist/",
+    "build": "yarn rimraf ./dist *.tsbuildinfo && mkdir dist && cp -R cli.js bin.js commands config create dist/",
     "postbuild": "cp package.json LICENSE README.md dist/",
     "prepublishOnly": "yarn build"
   },
