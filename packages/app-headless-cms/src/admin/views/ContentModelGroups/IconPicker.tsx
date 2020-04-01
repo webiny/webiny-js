@@ -4,7 +4,7 @@ import { getPlugins } from "@webiny/plugins";
 import { Typography } from "@webiny/ui/Typography";
 import { Grid } from "react-virtualized";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { DelayedOnChange } from "@webiny/app-page-builder/editor/components/DelayedOnChange";
+import DelayedOnChange from "./DelayedOnChange";
 import { Menu } from "@webiny/ui/Menu";
 import { Input } from "@webiny/ui/Input";
 import { CmsIcon, CmsIconsPlugin } from "@webiny/app-headless-cms/types";
