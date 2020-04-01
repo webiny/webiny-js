@@ -1,6 +1,6 @@
 import * as React from "react";
 import { I18NValue } from "@webiny/app-i18n/components";
-import { CmsContentModelModelField } from "@webiny/app-form-builder/types";
+import { CmsContentModelModelField } from "@webiny/app-headless-cms/types";
 import HelperMessage from "../components/HelperMessage";
 import { BindComponentRenderProp } from "@webiny/form";
 
