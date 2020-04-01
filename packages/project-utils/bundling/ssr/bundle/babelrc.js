@@ -13,7 +13,8 @@ module.exports = {
                 exclude: ["transform-typeof-symbol"]
             }
         ],
-        ["@babel/preset-react", { useBuiltIns: true }]
+        ["@babel/preset-react", { useBuiltIns: true }],
+        ["@babel/preset-typescript"]
     ],
     plugins: ["babel-plugin-lodash"]
 };
