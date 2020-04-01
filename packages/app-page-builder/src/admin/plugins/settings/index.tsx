@@ -7,7 +7,9 @@ import { SecureRoute } from "@webiny/app-security/components";
 import { i18n } from "@webiny/app/i18n";
 import { getPlugins } from "@webiny/plugins";
 import Helmet from "react-helmet";
-import { PbMenuSettingsItem } from "@webiny/app-page-builder/types";
+import { PbMenuSettingsItemPlugin } from "@webiny/app-page-builder/types";
+import { RoutePlugin } from "@webiny/app/types";
+import { MenuSettingsPlugin } from "@webiny/app-admin/types";
 
 const t = i18n.ns("app-page-builder/admin/menus");
 
@@ -28,7 +30,7 @@ const plugins = [
                 )}
             />
         )
-    },
+    } as RoutePlugin,
     {
         type: "route",
         name: "route-settings-general",
@@ -45,34 +47,36 @@ const plugins = [
                 )}
             />
         )
-    },
+    } as RoutePlugin,
     {
         type: "menu-settings",
         name: "menu-settings-page-builder",
         render({ Section, Item }) {
             return (
                 <Section label={t`Page Builder`}>
-                    {getPlugins("menu-settings-page-builder").map(plugin => {
-                        return plugin.render<PbMenuSettingsItem>({ Item });
-                    })}
+                    {getPlugins<PbMenuSettingsItemPlugin>("menu-settings-page-builder").map(
+                        plugin => {
+                            return plugin.render({ Item });
+                        }
+                    )}
                 </Section>
             );
         }
-    },
+    } as MenuSettingsPlugin,
     {
         type: "menu-settings-page-builder",
         name: "menu-settings-website",
         render({ Item }) {
             return <Item label={t`Website`} path={"/settings/page-builder/website"} />;
         }
-    },
+    } as PbMenuSettingsItemPlugin,
     {
         type: "menu-settings-page-builder",
         name: "menu-settings-general",
         render({ Item }) {
             return <Item label={t`General`} path={"/settings/page-builder/general"} />;
         }
-    }
+    } as PbMenuSettingsItemPlugin
 ];
 
 export default plugins;

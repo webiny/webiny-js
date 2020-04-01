@@ -36,9 +36,9 @@ const plugin: MenuPlugin = {
                             </Section>
                             {getPlugins("menu-content-section").map(
                                 (plugin: MenuContentSectionPlugin) => (
-                                    <menu-content-section key={plugin.name}>
+                                    <React.Fragment key={plugin.name}>
                                         {plugin.render({ Section, Item })}
-                                    </menu-content-section>
+                                    </React.Fragment>
                                 )
                             )}
                         </Menu>

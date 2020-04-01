@@ -114,7 +114,7 @@ const PageOptionsMenu = props => {
             {getPlugins<PbPageDetailsHeaderRightOptionsMenuItemPlugin>(
                 "pb-page-details-header-right-options-menu-item"
             ).map(plugin => (
-                <menu-item key={plugin.name}>{plugin.render(props)}</menu-item>
+                <React.Fragment key={plugin.name}>{plugin.render(props)}</React.Fragment>
             ))}
         </Menu>
     );
