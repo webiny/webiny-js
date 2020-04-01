@@ -20,14 +20,13 @@ import cognito from "@webiny/app-plugin-security-cognito";
 import cognitoTheme from "@webiny/app-plugin-security-cognito-theme/admin";
 
 // ApolloClient
-import { createApolloClient, CreateApolloClientOptions } from "./apolloClient";
+import { createApolloClient } from "./apolloClient";
 import { NetworkError } from "./apolloClient/NetworkError";
 
 // Router
 import { BrowserRouter, Route, Redirect } from "@webiny/react-router";
 
 export type AdminAppOptions = {
-    apolloClient: ApolloClient<any> | CreateApolloClientOptions;
     cognito: {
         region: string;
         userPoolId: string;
@@ -38,18 +37,13 @@ export type AdminAppOptions = {
 };
 
 export default createTemplate<AdminAppOptions>(opts => {
-    const apolloClient =
-        opts.apolloClient instanceof ApolloClient
-            ? opts.apolloClient
-            : createApolloClient(opts.apolloClient);
-
     const appStructure = [
         {
             type: "app-template-renderer",
             name: "app-template-renderer-apollo",
             render(children) {
                 return (
-                    <ApolloProvider client={apolloClient}>
+                    <ApolloProvider client={createApolloClient()}>
                         <NetworkError>{children}</NetworkError>
                     </ApolloProvider>
                 );
