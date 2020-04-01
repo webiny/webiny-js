@@ -10,6 +10,7 @@
     "../app-typeform",
     "../app-page-builder",
     "../app-page-builder-theme",
+    "../app-headless-cms",
     "../app-form-builder",
     "../app-form-builder-theme",
     "../app-template-admin"
@@ -26,6 +27,7 @@
     { "path": "../app-typeform/tsconfig.build.json" },
     { "path": "../app-page-builder/tsconfig.build.json" },
     { "path": "../app-page-builder-theme/tsconfig.build.json" },
+    { "path": "../app-headless-cms/tsconfig.build.json" },
     { "path": "../app-form-builder/tsconfig.build.json" },
     { "path": "../app-form-builder-theme/tsconfig.build.json" },
     { "path": "../app-template-admin/tsconfig.build.json" }
