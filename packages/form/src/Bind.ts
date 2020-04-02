@@ -74,8 +74,12 @@ const createBind = (form: Form) => {
 
         form.inputs[name].props = newProps;
 
+        
         if (React.isValidElement(children)) {
-            return React.cloneElement(children, newProps);
+            if (!newProps.disabled) {
+                newProps.disabled = children.props.disabled;
+            }
+            return React.cloneElement(children, { ...children.props, ...newProps });
         }
 
         return children(newProps);
