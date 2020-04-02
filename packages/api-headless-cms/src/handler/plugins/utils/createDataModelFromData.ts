@@ -30,7 +30,7 @@ export const createDataModelFromData = (
 
     // Create base model to be enhanced by field plugins
     const model = pipe(
-        withName(`${data.title}_${context.cms.environment}`),
+        withName(data.title),
         withHooks({
             async beforeCreate() {
                 if (!this.id) {

@@ -16,7 +16,7 @@ export const createSearchModelFromData = (
 
     // Create base model to be enhanced by field plugins
     const model = pipe(
-        withName(`${data.title}Search_${context.cms.environment}`),
+        withName(`${data.title}Search`),
         withFields({
             revision: context.commodo.fields.id(),
             latestVersion: boolean(),
