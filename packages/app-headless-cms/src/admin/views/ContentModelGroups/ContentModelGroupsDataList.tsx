@@ -3,7 +3,7 @@ import { i18n } from "@webiny/app/i18n";
 import { ConfirmationDialog } from "@webiny/ui/ConfirmationDialog";
 import { DeleteIcon } from "@webiny/ui/List/DataList/icons";
 import { useCrud } from "@webiny/app-admin/hooks/useCrud";
-import CurrentEnvironmentLabel from "./../components/CurrentEnvironmentLabel";
+import CurrentEnvironmentLabel from "./../../components/CurrentEnvironmentLabel";
 import {
     DataList,
     List,
