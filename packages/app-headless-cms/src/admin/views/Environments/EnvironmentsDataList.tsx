@@ -14,6 +14,7 @@ import {
     ListItemMeta,
     ListActions
 } from "@webiny/ui/List";
+import { Link } from "@webiny/react-router";
 
 const t = i18n.ns("app-headless-cms/admin/environments/data-list");
 
@@ -50,11 +51,28 @@ const EnvironmentsDataList = () => {
                             <ListItemText onClick={() => select(item)}>
                                 {item.name}{" "}
                                 {item.default && (
-                                    <Typography use={"overline"}>
-                                        {t`(default)`}
-                                    </Typography>
+                                    <Typography use={"overline"}>{t`(default)`}</Typography>
                                 )}
-                                <ListItemTextSecondary>{item.slug}</ListItemTextSecondary>
+                                <ListItemTextSecondary>
+                                    {item.environmentAlias
+                                        ? t`Linked with: {environmentAlias}`({
+                                              environmentAlias: (
+                                                  <Link
+                                                      onClick={e => e.stopPropagation()}
+                                                      to={`/settings/cms/environments/aliases?id=${item.environmentAlias.id}`}
+                                                      title={t`This environment is linked with the "{environmentAlias}" alias.`(
+                                                          {
+                                                              environmentAlias:
+                                                                  item.environmentAlias.name
+                                                          }
+                                                      )}
+                                                  >
+                                                      {item.environmentAlias.name}
+                                                  </Link>
+                                              )
+                                          })
+                                        : t`Not linked with an alias.`}
+                                </ListItemTextSecondary>
                             </ListItemText>
 
                             <ListItemMeta>
