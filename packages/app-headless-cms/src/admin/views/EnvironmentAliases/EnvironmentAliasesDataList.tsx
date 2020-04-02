@@ -14,6 +14,7 @@ import {
     ListItemMeta,
     ListActions
 } from "@webiny/ui/List";
+import { Link } from "@webiny/react-router";
 
 const t = i18n.ns("app-headless-cms/admin/environmentAliases/data-list");
 
@@ -55,7 +56,17 @@ const EnvironmentAliasesDataList = () => {
                                 <ListItemTextSecondary>
                                     {item.environment
                                         ? t`Points to: {environment}`({
-                                              environment: item.environment.name
+                                              environment: (
+                                                  <Link
+                                                      onClick={e => e.stopPropagation()}
+                                                      to={`/settings/cms/environments?id=${item.environment.id}`}
+                                                      title={t`This environment alias points to the "{environment}" environment.`(
+                                                          { environment: item.environment.name }
+                                                      )}
+                                                  >
+                                                      {item.environment.name}
+                                                  </Link>
+                                              )
                                           })
                                         : t`No environment.`}
                                 </ListItemTextSecondary>
