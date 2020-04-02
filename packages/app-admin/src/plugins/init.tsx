@@ -22,9 +22,11 @@ const plugin: WebinyInitPlugin = {
             render({ Menu, Section, Item }) {
                 return (
                     <Menu name="settings" label={t`Settings`} icon={<SettingsIcon />}>
-                        {settingsPlugins.map(plugin => {
-                            return plugin.render({ Section, Item });
-                        })}
+                        {settingsPlugins.map(plugin => (
+                            <React.Fragment key={plugin.name}>
+                                {plugin.render({ Section, Item })}
+                            </React.Fragment>
+                        ))}
                     </Menu>
                 );
             }
