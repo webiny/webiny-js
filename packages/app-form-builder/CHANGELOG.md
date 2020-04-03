@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.2.0-next.1](https://github.com/webiny/webiny-js/compare/@webiny/app-form-builder@2.2.0-next.0...@webiny/app-form-builder@2.2.0-next.1) (2020-04-03)
+
+
+### Bug Fixes
+
+* restore file ([a6df76d](https://github.com/webiny/webiny-js/commit/a6df76d318fb4dbb5f62c336409fca952cde6be9))
+* use "MenuContentSectionPlugin" instead of "MenuPlugin" ([54e43bb](https://github.com/webiny/webiny-js/commit/54e43bb10a499c67a2cf6417341754663954a798))
+
+
+
+
+
 # [2.2.0-next.0](https://github.com/webiny/webiny-js/compare/@webiny/app-form-builder@2.1.0...@webiny/app-form-builder@2.2.0-next.0) (2020-04-03)
 
 

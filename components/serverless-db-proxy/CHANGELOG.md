@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.1.1-next.0](https://github.com/Webiny/webiny-js/compare/@webiny/serverless-db-proxy@3.1.0...@webiny/serverless-db-proxy@3.1.1-next.0) (2020-04-03)
+
+
+### Bug Fixes
+
+* lock mongodb version for db-proxy component ([12535e2](https://github.com/Webiny/webiny-js/commit/12535e26fa8566325a327b8e5c332378a8e9001a))
+
+
+
+
+
 # [3.1.0](https://github.com/Webiny/webiny-js/compare/@webiny/serverless-db-proxy@3.1.0-next.0...@webiny/serverless-db-proxy@3.1.0) (2020-02-12)
 
 **Note:** Version bump only for package @webiny/serverless-db-proxy
