@@ -3,17 +3,8 @@ import { validation } from "@webiny/validation";
 import md5 from "md5";
 import bcrypt from "bcryptjs";
 import { withHooks, withProps, withName, string, withFields, onSet, ref } from "@webiny/commodo";
-import { fields } from "@commodo/fields";
-import PersonalAccessTokenModel from "./securityPersonalAccessToken.model";
 
-export default ({
-    createBase,
-    SecurityRole,
-    SecurityRoles2Models,
-    SecurityGroup,
-    SecurityGroups2Models,
-    context
-}): any => {
+export default ({ createBase, context }): any => {
     // TODO: figure out how to create typings for a `model`
     const SecurityUser: any = flow(
         withName("SecurityUser"),
@@ -55,18 +46,18 @@ export default ({
             lastName: string(),
             roles: ref({
                 list: true,
-                instanceOf: [SecurityRole, "model"],
-                using: [SecurityRoles2Models, "role"]
+                instanceOf: [context.models.SecurityRole, "model"],
+                using: [context.models.SecurityRoles2Models, "role"]
             }),
             groups: ref({
                 list: true,
-                instanceOf: [SecurityGroup, "model"],
-                using: [SecurityGroups2Models, "group"]
+                instanceOf: [context.models.SecurityGroup, "model"],
+                using: [context.models.SecurityGroups2Models, "group"]
             }),
             avatar: context.commodo.fields.id(),
-            personalAccessTokens: fields({
+            personalAccessTokens: ref({
                 list: true,
-                instanceOf: PersonalAccessTokenModel
+                instanceOf: [context.models.SecurityPersonalAccesToken, "user"]
             })
         })),
         withProps(instance => ({

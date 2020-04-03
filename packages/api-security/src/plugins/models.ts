@@ -6,6 +6,7 @@ import securityGroups2Models from "./models/securityGroups2Models.model";
 import securityRole from "./models/securityRole.model";
 import securityRoles2Models from "./models/securityRoles2Models.model";
 import securityUser from "./models/securityUser.model";
+import securityPersonalAccesToken from "./models/securityPersonalAccessToken.model";
 
 export default () => ({
     name: "graphql-context-models",
@@ -30,30 +31,23 @@ export default () => ({
                 withCrudLogs()
             )();
 
-        const SecurityRole = securityRole({ createBase });
-        const SecurityRoles2Models = securityRoles2Models({ createBase, SecurityRole });
-        const SecurityGroup = securityGroup({
+        context.models = {};
+        context.models.SecurityRole = securityRole({ createBase });
+        context.models.SecurityRoles2Models = securityRoles2Models({ createBase, context });
+        context.models.SecurityGroup = securityGroup({
             createBase,
-            SecurityRole,
-            SecurityRoles2Models
+            context
         });
-        const SecurityGroups2Models = securityGroups2Models({ createBase, SecurityGroup });
-        const SecurityUser = securityUser({
+        context.models.SecurityGroups2Models = securityGroups2Models({ createBase, context });
+        context.models.SecurityUser = securityUser({
             context,
+            createBase
+        });
+        context.models.SecurityPersonalAccesToken = securityPersonalAccesToken({
             createBase,
-            SecurityRole,
-            SecurityRoles2Models,
-            SecurityGroups2Models,
-            SecurityGroup
+            context
         });
 
-        context.models = {
-            SecurityRole,
-            SecurityRoles2Models,
-            SecurityGroup,
-            SecurityGroups2Models,
-            SecurityUser,
-            createBase
-        };
+        context.models.createBase = createBase;
     }
 });
