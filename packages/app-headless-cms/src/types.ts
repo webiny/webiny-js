@@ -151,13 +151,6 @@ export type CmsEditorFormSettingsPlugin = Plugin & {
     }): React.ReactNode;
 };
 
-export type CmsEditorFieldGroup = Plugin & {
-    type: "content-model-editor-field-group";
-    group: {
-        title: string;
-    };
-};
-
 export type CmsIcon = {
     /**
      * [ pack, icon ], ex: ["fab", "cog"]
