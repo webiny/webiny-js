@@ -1,7 +1,7 @@
 import gql from "graphql-tag";
 
 const fields = `
-    id email firstName lastName fullName avatar { id src } groups { id name } roles { id name } personalAccessTokens { token }
+    id email firstName lastName fullName avatar { id src } groups { id name } roles { id name } personalAccessTokens { id name token }
 `;
 
 export const LIST_USERS = gql`
