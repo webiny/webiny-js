@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.2.0-next.0](https://github.com/webiny/webiny-js/compare/@webiny/app-form-builder@2.1.0...@webiny/app-form-builder@2.2.0-next.0) (2020-04-03)
+
+
+### Features
+
+* fixed Storybook local deployment. Added 'Section' component ([ea5b7ee](https://github.com/webiny/webiny-js/commit/ea5b7ee30d72d38eae8b326eda424ab7ac3b9d2c))
+
+
+
+
+
 # [2.1.0](https://github.com/webiny/webiny-js/compare/@webiny/app-form-builder@2.1.0-next.0...@webiny/app-form-builder@2.1.0) (2020-03-09)
 
 **Note:** Version bump only for package @webiny/app-form-builder

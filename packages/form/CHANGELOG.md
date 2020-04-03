@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.0.2-next.0](https://github.com/webiny/webiny-js/compare/@webiny/form@3.0.1...@webiny/form@3.0.2-next.0) (2020-04-03)
+
+
+### Bug Fixes
+
+* pass all props to the child component properly ([#775](https://github.com/webiny/webiny-js/issues/775)) ([ec392a3](https://github.com/webiny/webiny-js/commit/ec392a32b2f463e409d4eff0c106389efdb162b9)), closes [#759](https://github.com/webiny/webiny-js/issues/759)
+
+
+
+
+
 ## [3.0.1](https://github.com/webiny/webiny-js/compare/@webiny/form@3.0.1-next.0...@webiny/form@3.0.1) (2020-02-07)
 
 **Note:** Version bump only for package @webiny/form

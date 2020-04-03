@@ -1,6 +1,6 @@
 {
   "name": "@webiny/ui",
-  "version": "3.1.0",
+  "version": "3.2.0-next.0",
   "main": "index.js",
   "repository": {
     "type": "git",
@@ -76,7 +76,7 @@
     "@storybook/addon-knobs": "^5.0.5",
     "@storybook/addon-links": "^5.0.5",
     "@storybook/react": "^5.2.8",
-    "@webiny/form": "^3.0.1",
+    "@webiny/form": "^3.0.2-next.0",
     "@webiny/storybook-utils": "^3.0.1",
     "@webiny/validation": "^3.0.1",
     "awesome-typescript-loader": "^5.2.1",

@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.0.9-next.0](https://github.com/webiny/webiny-js/compare/@webiny/app-google-tag-manager@3.0.8...@webiny/app-google-tag-manager@3.0.9-next.0) (2020-04-03)
+
+**Note:** Version bump only for package @webiny/app-google-tag-manager
+
+
+
+
+
 ## [3.0.8](https://github.com/webiny/webiny-js/compare/@webiny/app-google-tag-manager@3.0.8-next.0...@webiny/app-google-tag-manager@3.0.8) (2020-03-09)
 
 **Note:** Version bump only for package @webiny/app-google-tag-manager
