@@ -34,9 +34,9 @@ export default ContentModelEditorContext => {
                     query: GET_CONTENT_MODEL,
                     variables: { id }
                 });
+
                 const { data, error } = get(response, "data.getContentModel");
                 if (error) {
-                    console.log("neee");
                     throw new Error(error);
                 }
 
@@ -72,7 +72,9 @@ export default ContentModelEditorContext => {
              * @param layout
              * @returns {*}
              */
-            getFields(layout = false): CmsContentModelModelField[] | CmsContentModelModelFieldsLayout {
+            getFields(
+                layout = false
+            ): CmsContentModelModelField[] | CmsContentModelModelFieldsLayout {
                 if (!layout) {
                     return state.data.fields;
                 }
@@ -161,6 +163,7 @@ export default ContentModelEditorContext => {
 
                     moveField({ field, position, data });
 
+                    console.log('vracamo data', data)
                     // We are dropping a new field at the specified index.
                     return data;
                 });

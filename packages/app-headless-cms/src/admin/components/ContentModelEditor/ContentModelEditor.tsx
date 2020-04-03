@@ -20,7 +20,7 @@ const ContentModelEditor = () => {
     const { showSnackbar } = useSnackbar();
 
     React.useEffect(() => {
-        getContentModel(id).catch((e) => {
+        getContentModel(id).catch(() => {
             history.push(`/cms/content-models`);
             showSnackbar(t`Could not load content model with given ID.`);
         });

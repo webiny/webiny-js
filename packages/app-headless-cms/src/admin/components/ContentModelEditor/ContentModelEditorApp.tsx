@@ -1,23 +1,32 @@
 import React from "react";
-import { useApolloClient } from "react-apollo";
 import useReactRouter from "use-react-router";
 import { ContentModelEditorProvider } from "./Context";
 import ContentModelEditor from "./ContentModelEditor";
 import { match } from "react-router";
+import { useCms } from "@webiny/app-headless-cms/admin/hooks";
+
+type QueryMatch = {
+    id?: string;
+};
 
 const ContentModelEditorApp = () => {
     const router = useReactRouter();
-    const client = useApolloClient();
 
-    const matched: match<{
-        id?: string;
-    }> = router.match;
+    const {
+        environments: { apolloClient }
+    } = useCms();
+
+    const matched: match<QueryMatch> = router.match;
     const { id } = matched.params;
+
+    if (!apolloClient) {
+        return null;
+    }
 
     return (
         <ContentModelEditorProvider
             key={id}
-            apollo={client}
+            apollo={apolloClient}
             id={id}
             defaultLayoutRenderer={"forms-form-layout-default"}
         >

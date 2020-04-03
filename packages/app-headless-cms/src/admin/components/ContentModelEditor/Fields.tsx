@@ -1,13 +1,10 @@
 import React from "react";
-import { useContentModelEditor } from "@webiny/app-headless-cms/admin/components/ContentModelEditor/Context";
 import { getPlugins } from "@webiny/plugins";
 import styled from "@emotion/styled";
-import { css } from "emotion";
 import { Icon } from "@webiny/ui/Icon";
-import { Accordion, AccordionItem } from "@webiny/ui/Accordion";
 import { ReactComponent as HandleIcon } from "./icons/round-drag_indicator-24px.svg";
 import Draggable from "./Draggable";
-import { FbBuilderFieldPlugin, CmsEditorFieldGroup } from "@webiny/app-headless-cms/types";
+import { FbBuilderFieldPlugin } from "@webiny/app-headless-cms/types";
 
 const FieldContainer = styled("div")({
     padding: "10px 15px",
@@ -39,35 +36,6 @@ const FieldHandle = styled("div")({
     color: "var(--mdc-theme-on-surface)"
 });
 
-const FormAccordionContent = styled("div")({
-    marginLeft: -40
-});
-
-const accordionItem = css({
-    "&.webiny-ui-accordion-item": {
-        ".webiny-ui-accordion-item__list-item": {
-            height: "14px",
-            borderRadius: "15px !important",
-            padding: "15px 20px 14px 20px",
-            textTransform: "uppercase",
-            backgroundColor: "var(--mdc-theme-on-background)",
-            marginBottom: 20,
-            ".webiny-ui-accordion-item__title": {
-                ">div": {
-                    fontWeight: 400
-                }
-            }
-        },
-        ".webiny-ui-accordion-item__content": {
-            border: "1px solid var(--mdc-theme-on-background)",
-            borderRadius: 15,
-            paddingTop: 60,
-            marginTop: -65,
-            marginBottom: 20
-        }
-    }
-});
-
 const Field = ({ onFieldDragStart, fieldType: { name, label } }) => {
     return (
         <Draggable beginDrag={{ ui: "field", name }}>
@@ -86,45 +54,17 @@ const Field = ({ onFieldDragStart, fieldType: { name, label } }) => {
 };
 
 export const Fields = ({ onFieldDragStart }) => {
-    const { getField } = useContentModelEditor();
-
-    function getGroups() {
-        const presetFieldPlugins = getPlugins<FbBuilderFieldPlugin>(
-            "content-model-editor-field-type"
-        )
-            .filter(pl => pl.field.group)
-            .filter(pl => {
-                if (pl.field.unique) {
-                    return !getField({ name: pl.field.name });
-                }
-                return true;
-            });
-
-        return getPlugins<CmsEditorFieldGroup>("content-model-editor-field-group").map(pl => ({
-            ...pl.group,
-            name: pl.name,
-            fields: presetFieldPlugins.filter(f => f.field.group === pl.name).map(pl => pl.field)
-        }));
-    }
+    const presetFieldPlugins = getPlugins<FbBuilderFieldPlugin>("content-model-editor-field-type");
 
     return (
         <React.Fragment>
-            <Field
-                fieldType={{ name: "custom", label: "Custom field" }}
-                onFieldDragStart={onFieldDragStart}
-            />
-
-            {getGroups().map(group =>
-                group.fields.map(fieldType => {
-                    return (
-                        <Field
-                            key={fieldType.name}
-                            fieldType={fieldType}
-                            onFieldDragStart={onFieldDragStart}
-                        />
-                    );
-                })
-            )}
+            {presetFieldPlugins.map(fieldPlugin => (
+                <Field
+                    key={fieldPlugin.name}
+                    fieldType={fieldPlugin.field}
+                    onFieldDragStart={onFieldDragStart}
+                />
+            ))}
         </React.Fragment>
     );
 };

@@ -11,7 +11,6 @@ export const FIELDS_FIELDS = `
         _id
         fieldId
         type
-        name
         label {
             ${I18N_FIELDS}
         }
@@ -39,18 +38,21 @@ export const FIELDS_FIELDS = `
 
 export const GET_CONTENT_MODEL = gql`
     query GetContentModel($id: ID!) {
-        cms {
-            getContentModel(id: $id) {
-                data {
-                    id
-                    title
-                    description
-                    modelId
-                    fields {
-                        ${FIELDS_FIELDS}
-                    }
-                    layout
+        getContentModel(id: $id) {
+            data {
+                id
+                title
+                description
+                modelId
+                fields {
+                    ${FIELDS_FIELDS}
                 }
+                layout
+            }
+            error {
+                code
+                message
+                data
             }
         }
     }
@@ -58,16 +60,19 @@ export const GET_CONTENT_MODEL = gql`
 
 export const UPDATE_CONTENT_MODEL = gql`
     mutation UpdateContentModel($id: ID!, $data: CmsContentModelInput!) {
-        cms {
-            updateContentModel(id: $id, data: $data) {
-                data {
-                    id
-                    title
-                    fields {
-                        ${FIELDS_FIELDS}
-                    }
-                    layout
+        updateContentModel(id: $id, data: $data) {
+            data {
+                id
+                title
+                fields {
+                    ${FIELDS_FIELDS}
                 }
+                layout
+            }
+            error {
+                code
+                message
+                data
             }
         }
     }
