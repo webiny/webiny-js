@@ -26,61 +26,61 @@ const plugin: CreateApolloHandlerPlugin = {
         const [type = null, environment = null] = key.split("/");
         const id = `${type}:${environment}`;
 
-        if (handlers[id]) {
-            return handlers[id];
-        }
+        if (!handlers[id]) {
+            const { server = {}, handler = {} } = options;
 
-        const { server = {}, handler = {} } = options;
+            const createSchemaPlugin = context.plugins.byName<CreateSchemaPlugin>(
+                "handler-apollo-server-create-schema"
+            );
 
-        const createSchemaPlugin = context.plugins.byName<CreateSchemaPlugin>(
-            "handler-apollo-server-create-schema"
-        );
+            if (!createSchemaPlugin) {
+                throw Error(`"handler-apollo-server-create-schema" plugin is not configured!`);
+            }
 
-        if (!createSchemaPlugin) {
-            throw Error(`"handler-apollo-server-create-schema" plugin is not configured!`);
-        }
-
-        const { schema } = await createSchemaPlugin.create({
-            plugins: context.plugins
-        });
-
-        const apollo = new ApolloServer({
-            // @ts-ignore Not sure why it doesn't work, "boolean" function does return a boolean value.
-            introspection: boolean(server.introspection),
-            // @ts-ignore Not sure why it doesn't work, "boolean" function does return a boolean value.
-            playground: boolean(server.playground),
-            debug: boolean(process.env.DEBUG),
-            ...server,
-            schema,
-            context: async ({ event }) => ({
-                event,
+            const { schema } = await createSchemaPlugin.create({
                 plugins: context.plugins
-            })
-        });
+            });
 
-        const apolloHandler = apollo.createHandler({
-            cors: {
-                origin: "*",
-                methods: "GET,HEAD,POST",
-                ...(handler.cors || {})
-            }
-        });
+            const apollo = new ApolloServer({
+                // @ts-ignore Not sure why it doesn't work, "boolean" function does return a boolean value.
+                introspection: boolean(server.introspection),
+                // @ts-ignore Not sure why it doesn't work, "boolean" function does return a boolean value.
+                playground: boolean(server.playground),
+                debug: boolean(process.env.DEBUG),
+                ...server,
+                schema,
+                context: async ({ event }) => ({
+                    event,
+                    plugins: context.plugins
+                })
+            });
 
-        handlers[id] = {
-            schema,
-            handler: (event, context) => {
-                normalizeEvent(event);
-                return new Promise((resolve, reject) => {
-                    apolloHandler(event, context, (error, data) => {
-                        if (error) {
-                            return reject(error);
-                        }
+            const apolloHandler = apollo.createHandler({
+                cors: {
+                    origin: "*",
+                    methods: "GET,HEAD,POST",
+                    ...(handler.cors || {})
+                }
+            });
 
-                        resolve(data);
+            handlers[id] = {
+                schema,
+                handler: (event, context) => {
+                    normalizeEvent(event);
+                    return new Promise((resolve, reject) => {
+                        apolloHandler(event, context, (error, data) => {
+                            if (error) {
+                                return reject(error);
+                            }
+
+                            resolve(data);
+                        });
                     });
-                });
-            }
-        };
+                }
+            };
+        }
+
+
 
         return handlers[id];
     }
