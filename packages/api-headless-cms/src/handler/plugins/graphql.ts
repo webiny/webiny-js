@@ -115,6 +115,7 @@ export default ({ type }) => [
                     modelId: String
                     group: CmsContentModelGroup
                     description: String
+                    layout: [[String]]
                     createdOn: DateTime
                     savedOn: DateTime
                     createdBy: SecurityUser
@@ -127,6 +128,7 @@ export default ({ type }) => [
                     modelId: String
                     description: String
                     fields: [CmsContentModelFieldInput]
+                    layout: [[String]]
                 }
 
                 input CmsFieldValidationInput {
@@ -141,13 +143,30 @@ export default ({ type }) => [
                     settings: JSON
                 }
 
+                type CmsFieldOptions {
+                    label: CmsString
+                    value: String
+                }
+
+                input CmsFieldOptionsInput {
+                    label: CmsStringInput
+                    value: String
+                }
+
+
                 type CmsContentModelField {
                     _id: String
                     label: CmsString
+                    helpText: CmsString
+                    placeholderText: CmsString
                     fieldId: String
+                    name: String
                     type: String
                     localization: Boolean
                     unique: Boolean
+                    searchable: Boolean
+                    sortable: Boolean
+                    options: [CmsFieldOptions]
                     validation: [CmsFieldValidation]
                     settings: JSON
                 }
@@ -155,10 +174,16 @@ export default ({ type }) => [
                 input CmsContentModelFieldInput {
                     _id: String
                     label: CmsStringInput
+                    helpText: CmsStringInput
+                    placeholderText: CmsStringInput
                     fieldId: String
+                    name: String
                     type: String
                     localization: Boolean
                     unique: Boolean
+                    searchable: Boolean
+                    sortable: Boolean
+                    options: [CmsFieldOptionsInput]
                     validation: [CmsFieldValidationInput]
                     settings: JSON
                 }
