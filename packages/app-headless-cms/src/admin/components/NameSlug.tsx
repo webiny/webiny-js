@@ -52,7 +52,13 @@ function NameSlug({ formData, Bind, setValue, name = {}, slug = {}, validateSlug
                     validators={value => slugValidator(value, validateSlugUniqueness, formData)}
                 >
                     {bindProps => (
-                        <Input {...bindProps} {...slug} disabled={formData.id} label={t`Slug`} />
+                        <Input
+                            description={t`Cannot be changed.`}
+                            {...bindProps}
+                            {...slug}
+                            disabled={formData.id}
+                            label={t`Slug`}
+                        />
                     )}
                 </Bind>
             </Cell>
