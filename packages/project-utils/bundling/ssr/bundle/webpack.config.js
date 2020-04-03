@@ -1,5 +1,4 @@
 const webpack = require("webpack");
-const aliases = require("../../../aliases/webpack");
 
 module.exports = ({ entry, output, babelOptions }) => {
     // This prevents printing of messages from previous builds.
@@ -17,10 +16,9 @@ module.exports = ({ entry, output, babelOptions }) => {
         resolve: {
             alias: {
                 webfontloader: "null-loader",
-                "react-spinner-material": "null-loader",
-                ...aliases
+                "react-spinner-material": "null-loader"
             },
-            extensions: [".js", ".json", ".jsx", ".mjs"]
+            extensions: [".ts", ".tsx", ".js", ".json", ".jsx", ".mjs"]
         },
         target: "node",
         mode: "production",
