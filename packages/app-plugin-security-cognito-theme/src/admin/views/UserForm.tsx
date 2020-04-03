@@ -44,7 +44,7 @@ const UserForm = ({ Bind, data, fields }) => {
                     title="Groups & Roles"
                     icon={<SecurityIcon />}
                 >
-                    <Cell span={12} style={{ marginBottom: "0px" }}>
+                    <Cell span={12} style={{ marginBottom: "8px" }}>
                         {fields.groups}
                     </Cell>
                     <Cell span={12}>{fields.roles}</Cell>
