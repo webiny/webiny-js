@@ -1,7 +1,7 @@
 import React from "react";
 import { i18n } from "@webiny/app/i18n";
 import { SecureView } from "@webiny/app-security/components";
-import { MenuPlugin } from "@webiny/app-admin/types";
+import { MenuContentSectionPlugin } from "@webiny/app-admin/types";
 
 const t = i18n.ns("app-form-builder/admin/menus");
 
@@ -19,4 +19,4 @@ export default [
             );
         }
     }
-] as MenuPlugin[];
+] as MenuContentSectionPlugin[];
