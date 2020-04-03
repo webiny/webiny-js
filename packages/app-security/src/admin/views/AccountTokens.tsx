@@ -22,39 +22,63 @@ const GET_NEW_PAT = gql`
 const Header = styled("div")({
     display: "flex",
     justifyContent: "space-between",
-    marginBottom: 15
+    marginBottom: 15,
 });
 
 const TokenListItem = ({ PAT, data, setValue }) => {
     const [isEditing, setIsEditing] = useState(false);
 
     const deleteToken = () => {
-        const newPATs = data.personalAccessTokens.filter(crtPAT => crtPAT.token != PAT.token);
+        const newPATs = data.personalAccessTokens.filter((crtPAT) => crtPAT.token != PAT.token);
+        setValue("personalAccessTokens", newPATs);
+    };
+
+    const changeTokenName = (newName) => {
+        const newPATs = data.personalAccessTokens.map((crtPAT) =>
+            crtPAT !== PAT
+                ? crtPAT
+                : {
+                      ...crtPAT,
+                      name: newName,
+                  }
+        );
         setValue("personalAccessTokens", newPATs);
     };
 
     return (
         <SimpleListItem
+            data-testid={`pat-token-list-item-${PAT.token}`}
             key={PAT.token}
             text={
-                isEditing ? (
+                !isEditing ? (
                     <div style={{ paddingLeft: "16px" }}>{PAT.name}</div>
                 ) : (
                     <Grid style={{ width: "70%", marginLeft: 0, paddingLeft: 0 }}>
                         <Cell span={12}>
-                            <Input value={PAT.token} />
+                            <Input
+                                value={PAT.name}
+                                onChange={(newName) => changeTokenName(newName)}
+                            />
                         </Cell>
                     </Grid>
                 )
             }
         >
             <ListItemMeta>
-                <IconButton onClick={() => setIsEditing(!isEditing)} icon={<EditIcon />} />
+                <IconButton
+                    data-testid={`editToken`}
+                    onClick={() => setIsEditing(!isEditing)}
+                    icon={<EditIcon />}
+                />
                 <IconButton
                     onClick={() => navigator.clipboard.writeText(PAT.token)}
                     icon={<CopyToClipboardIcon />}
                 />
-                <IconButton onClick={() => deleteToken()} icon={<DeleteIcon />} />
+                <IconButton
+                    data-testid={`deleteToken`}
+                    onClick={() => deleteToken()}
+                    icon={<DeleteIcon />}
+                />
             </ListItemMeta>
         </SimpleListItem>
     );
@@ -62,7 +86,7 @@ const TokenListItem = ({ PAT, data, setValue }) => {
 
 const TokenList = ({ data, setValue }) => {
     if (data.personalAccessTokens && data.personalAccessTokens.length > 0)
-        return data.personalAccessTokens.map(PAT => (
+        return data.personalAccessTokens.map((PAT) => (
             <TokenListItem key={PAT.token} PAT={PAT} data={data} setValue={setValue} />
         ));
     else return <SimpleListItem text="No tokens have been generated yet." />;
@@ -75,11 +99,11 @@ const TokensElement = ({ setFormIsLoading, data, setValue }) => {
         setFormIsLoading(true);
 
         const queryResponse = await client.mutate({
-            mutation: GET_NEW_PAT
+            mutation: GET_NEW_PAT,
         });
         const personalAccessToken = {
             token: queryResponse.data.security.createPAT,
-            name: "New token"
+            name: "New token",
         };
 
         let newPATs;
