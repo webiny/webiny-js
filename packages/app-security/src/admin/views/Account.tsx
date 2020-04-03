@@ -42,8 +42,9 @@ const GET_CURRENT_USER = gql`
                         src
                     }
                     personalAccessTokens {
+                        id
+                        name
                         token
-                        createdOn
                     }
                 }
                 error {
@@ -65,6 +66,11 @@ const UPDATE_CURRENT_USER = gql`
                     avatar {
                         id
                         src
+                    }
+                    personalAccessTokens {
+                        id
+                        name
+                        token
                     }
                 }
             }
