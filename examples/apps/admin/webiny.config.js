@@ -1,4 +1,4 @@
-const { startApp, buildApp, updateEnvValues } = require("@webiny/project-utils");
+const { startApp, buildApp, buildAppHandler, updateEnvValues } = require("@webiny/project-utils");
 
 module.exports = {
     hooks: {
@@ -12,7 +12,15 @@ module.exports = {
         })
     },
     commands: {
-        start: startApp,
-        build: buildApp
+        async start(...args) {
+            // Start local development
+            await startApp(...args);
+        },
+        async build(...args) {
+            // Bundle app for deployment
+            await buildApp(...args);
+            // Build Lambda handler which will serve files to CDN
+            await buildAppHandler(...args);
+        }
     }
 };
