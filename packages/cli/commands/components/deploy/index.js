@@ -17,9 +17,9 @@ module.exports = {
                     type: "array"
                 });
                 yargs.option("env", {
+                    required: true,
                     describe: `Environment to deploy`,
-                    type: "string",
-                    default: "local"
+                    type: "string"
                 });
 
                 yargs.option("watch", {

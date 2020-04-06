@@ -14,8 +14,8 @@ module.exports = {
                 });
 
                 yargs.option("env", {
-                    describe: "Environment to remove.",
-                    default: "local"
+                    required: true,
+                    describe: "Environment to remove."
                 });
             },
             async argv => {
