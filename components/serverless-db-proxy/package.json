@@ -8,7 +8,7 @@
     "@webiny/serverless-function": "^3.0.1",
     "bson": "^4.0.2",
     "lodash.get": "^4.4.2",
-    "mongodb": "^3.3.3"
+    "mongodb": "3.5.4"
   },
   "scripts": {
     "build": "webpack --config scripts/webpack/webpack.config.js",

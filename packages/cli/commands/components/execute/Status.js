@@ -1,5 +1,5 @@
 const os = require("os");
-const { red, green, dim } = require("chalk");
+const { dim } = require("chalk");
 const stripAnsi = require("strip-ansi");
 const figures = require("figures");
 const ansiEscapes = require("ansi-escapes");
@@ -8,14 +8,9 @@ const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
 
 class Status {
     constructor() {
-        this.entity = "Webiny";
-        this.useTimer = true;
         this.seconds = 0;
         this.status = {};
         this.status.running = false;
-        this.status.message = "Running";
-        this.status.loadingDots = "";
-        this.status.dotsCount = 0;
     }
 
     isRunning() {
@@ -41,28 +36,18 @@ class Status {
         }, 1000);
     }
 
-    stop(reason, message) {
+    stop(reason) {
         if (!this.isRunning()) {
             console.log();
             process.exit(0);
             return;
         }
 
-        return this.statusEngineStop(reason, message);
+        return this.statusEngineStop(reason);
     }
 
-    statusEngineStop(reason, message) {
+    statusEngineStop(reason) {
         this.status.running = false;
-
-        if (reason === "error") {
-            message = red(message);
-        }
-        if (reason === "cancel") {
-            message = red("canceled");
-        }
-        if (reason === "done") {
-            message = green("done");
-        }
 
         // Clear any existing content
         process.stdout.write(ansiEscapes.cursorLeft);
@@ -70,13 +55,7 @@ class Status {
 
         // Write content
         console.log();
-        let content = " ";
-        if (this.useTimer) {
-            content += ` ${dim(this.seconds + "s")}`;
-            content += ` ${dim(figures.pointerSmall)}`;
-        }
-        content += ` ${this.entity}`;
-        content += ` ${dim(figures.pointerSmall)} ${message}`;
+        const content = `${dim(this.seconds + "s")} ${dim(figures.pointerSmall)} Deploying...`;
         process.stdout.write(content);
 
         // Put cursor to starting position for next view
@@ -91,7 +70,7 @@ class Status {
         }
     }
 
-    async render(status, entity) {
+    async render(status) {
         // Start Status engine, if it isn't running yet
         if (!this.isRunning()) {
             this.start();
@@ -102,40 +81,12 @@ class Status {
             this.status.message = status;
         }
 
-        // Set global status
-        if (entity) {
-            this.entity = entity;
-        }
-
-        // Loading dots
-        if (this.status.dotsCount === 0) {
-            this.status.loadingDots = `.`;
-        } else if (this.status.dotsCount === 2) {
-            this.status.loadingDots = `..`;
-        } else if (this.status.dotsCount === 4) {
-            this.status.loadingDots = `...`;
-        } else if (this.status.dotsCount === 6) {
-            this.status.loadingDots = "";
-        }
-        this.status.dotsCount++;
-        if (this.status.dotsCount > 8) {
-            this.status.dotsCount = 0;
-        }
-
         // Clear any existing content
         process.stdout.write(ansiEscapes.eraseDown);
 
         // Write content
         console.log();
-        let content = " ";
-        if (this.useTimer) {
-            content += ` ${dim(this.seconds + "s")}`;
-            content += ` ${dim(figures.pointerSmall)}`;
-        }
-
-        content += ` ${this.entity}`;
-        content += ` ${dim(figures.pointerSmall)} ${dim(this.status.message)}`;
-        content += ` ${dim(this.status.loadingDots)}`;
+        const content = `${dim(this.seconds + "s")} ${dim(figures.pointerSmall)} Deploying...`;
         process.stdout.write(content);
         console.log();
 

@@ -77,6 +77,10 @@ async function symlink(src, dest) {
         const link = path.resolve("node_modules", package.name);
         const target = path.resolve(packages[i], targetDirectory || ".");
 
+        if (!fs.existsSync(target)) {
+            fs.mkdirpSync(target);
+        }
+
         try {
             await fs.mkdirp(path.dirname(link));
             await symlink(target, link);

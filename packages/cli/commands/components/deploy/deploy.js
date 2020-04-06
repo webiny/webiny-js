@@ -59,31 +59,28 @@ module.exports = async (inputs, context) => {
         const configFile = resolve("webiny.config.js");
 
         // Run app state hooks
-        if (!fs.existsSync(configFile)) {
-            console.log(`\n🎉 Done! Deploy finished in ${green(duration + "s")}.`);
-            return;
-        }
+        if (fs.existsSync(configFile)) {
+            const config = require(configFile);
 
-        const config = require(configFile);
+            for (let i = 0; i < config.hooks.length; i++) {
+                const appLocation = resolve(config.hooks[i]);
+                try {
+                    const { hooks } = require(join(appLocation, "webiny.config.js"));
+                    const hookPath = context.replaceProjectRoot(appLocation);
+                    if (hooks && hooks.stateChanged) {
+                        console.log(
+                            `🎣 Processing ${green("stateChanged")} hook in ${green(
+                                context.replaceProjectRoot(hookPath)
+                            )}`
+                        );
 
-        for (let i = 0; i < config.hooks.length; i++) {
-            const appLocation = resolve(config.hooks[i]);
-            try {
-                const { hooks } = require(join(appLocation, "webiny.config.js"));
-                const hookPath = context.replaceProjectRoot(appLocation);
-                if (hooks && hooks.stateChanged) {
+                        await hooks.stateChanged({ env, state: output });
+                    }
+                } catch (err) {
                     console.log(
-                        `🎣 Processing ${green("stateChanged")} hook in ${green(
-                            context.replaceProjectRoot(hookPath)
-                        )}`
+                        `⚠️ ${red(err.message)}, while processing hooks at ${green(appLocation)}.`
                     );
-
-                    await hooks.stateChanged({ env, state: output });
                 }
-            } catch (err) {
-                console.log(
-                    `⚠️ ${red(err.message)}, while processing hooks at ${green(appLocation)}.`
-                );
             }
         }
 
@@ -91,7 +88,7 @@ module.exports = async (inputs, context) => {
         notify({ message: `API deploy completed in ${duration}s.` });
 
         if (output.cdn) {
-            console.log(`🚀 GraphQL API URL: ${green(output.cdn.url + "/graphql")}`);
+            console.log(`🚀 Stack URL: ${green(output.cdn.url)}`);
             if (isFirstDeploy) {
                 console.log(
                     `⏳ Please note that CDN distribution takes some time to propagate, so expect this URL to become accessible in ~10 minutes.`

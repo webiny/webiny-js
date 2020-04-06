@@ -8,6 +8,5 @@ export default async (ssrFunction, { path }) => {
         Payload: JSON.stringify({ path })
     }).promise();
 
-    const Payload = JSON.parse(response.Payload as string);
-    return Payload.body;
+    return JSON.parse(response.Payload as string).html;
 };

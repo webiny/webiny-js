@@ -36,26 +36,10 @@ module.exports = ({ cli }) => {
                         region: vars.region,
                         memory: 128,
                         timeout: 30,
-                        code: "./site/build"
-                    }
-                }
-            },
-            siteSsrHandler: {
-                build: {
-                    root: "./site-ssr-handler",
-                    script: `yarn build:${cli.env}`
-                },
-                deploy: {
-                    component: "@webiny/serverless-function",
-                    inputs: {
-                        description: "Site Handler",
-                        region: vars.region,
-                        code: "./site-ssr-handler/build",
-                        handler: "handler.handler",
-                        memory: 512,
-                        timeout: 60,
+                        code: "./site/build",
                         env: {
-                            SSR_LAMBDA_ARN: "${siteSsr.arn}"
+                            SSR_FUNCTION: "${siteSsr.arn}",
+                            DB_PROXY_FUNCTION: "${dbProxy.arn}"
                         }
                     }
                 }
