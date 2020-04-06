@@ -1,4 +1,5 @@
 import "cross-fetch/polyfill";
+import "source-map-support/register";
 import "core-js/stable";
 import "regenerator-runtime/runtime";
 import React, { Fragment } from "react";

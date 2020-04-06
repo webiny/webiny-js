@@ -20,6 +20,7 @@ module.exports = ({ entry, output, babelOptions }) => {
             },
             extensions: [".ts", ".tsx", ".js", ".json", ".jsx", ".mjs"]
         },
+        devtool: "source-map",
         target: "node",
         mode: "production",
         node: {
