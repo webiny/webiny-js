@@ -12,7 +12,7 @@ export const createApolloClient = () => {
         dataIdFromObject: obj => obj.id || null
     });
 
-    if (isProduction) {
+    if (isProduction && process.env.REACT_APP_ENV === "browser") {
         // Production build of this app will be rendered using SSR so we need to restore cache from pre-rendered state.
         // @ts-ignore
         cache.restore(window.__APOLLO_STATE__);
