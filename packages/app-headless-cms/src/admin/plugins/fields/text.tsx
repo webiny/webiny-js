@@ -12,7 +12,7 @@ const plugin: FbBuilderFieldPlugin = {
         name: "text",
         type: "text",
         validators: ["required", "minLength", "maxLength", "pattern"],
-        label: "Short Text",
+        label: "Text",
         description: "Titles, names, single line input",
         icon: <TextIcon />,
         createField() {
@@ -20,6 +20,10 @@ const plugin: FbBuilderFieldPlugin = {
                 type: this.type,
                 name: this.name,
                 validation: [],
+                localization: false,
+                unique: false,
+                searchable: false,
+                sortable: false,
                 settings: {
                     defaultValue: ""
                 }

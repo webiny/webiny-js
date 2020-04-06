@@ -36,12 +36,6 @@ export const EditTab = () => {
     const handleDropField = useCallback((source, dropTarget) => {
         const { pos, name, ui } = source;
 
-        if (name === "custom") {
-            editField({});
-            setDropTarget(dropTarget);
-            return;
-        }
-
         if (ui === "row") {
             // Reorder rows.
             // Reorder logic is different depending on the source and target position.
@@ -54,9 +48,10 @@ export const EditTab = () => {
             return moveField({ field: fieldId, position: dropTarget });
         }
 
-        // Find field plugin which handles the dropped field type "name".
         const plugin = getFieldPlugin({ name });
-        insertField(plugin.field.createField({ i18n }), dropTarget);
+        editField(plugin.field.createField({ i18n }));
+        setDropTarget(dropTarget);
+
     }, undefined);
 
     const fields: Array<any> = getFields(true);

@@ -10,7 +10,7 @@ import { DELETE_CONTENT_MODEL } from "../../viewsGraphql";
 import { useApolloClient } from "react-apollo";
 import { useHandler } from "@webiny/app/hooks/useHandler";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
-import CurrentEnvironmentLabel from "./../components/CurrentEnvironmentLabel";
+import CurrentEnvironmentLabel from "./../../components/CurrentEnvironmentLabel";
 
 import {
     DataList,

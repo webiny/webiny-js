@@ -31,6 +31,10 @@ export const LIST_ENVIRONMENTS = gql`
                     name
                     isProduction
                     createdOn
+                    environmentAlias {
+                        id
+                        name
+                    }
                 }
                 meta {
                     totalCount
