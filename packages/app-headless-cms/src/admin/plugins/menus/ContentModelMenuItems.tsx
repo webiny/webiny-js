@@ -6,7 +6,6 @@ import get from "lodash.get";
 const t = i18n.ns("app-headless-cms/admin/menus");
 import { useQuery } from "@webiny/app-headless-cms/admin/hooks";
 
-
 const ContentModelMenuItems = function({ Section, Item }) {
     const response = useQuery(LIST_MENU_CONTENT_GROUPS_MODELS);
 
@@ -21,7 +20,12 @@ const ContentModelMenuItems = function({ Section, Item }) {
                 key={contentModelGroup.id}
                 name={`cms-content-models-${contentModelGroup.id}`}
                 label={contentModelGroup.name}
-                icon={<FontAwesomeIcon icon={contentModelGroup.icon.split("/")} />}
+                icon={
+                    <FontAwesomeIcon
+                        style={{ color: "var(--mdc-theme-text-secondary-on-background)" }}
+                        icon={contentModelGroup.icon.split("/")}
+                    />
+                }
             >
                 {contentModelGroup.contentModels.length === 0 && (
                     <Item style={{ opacity: 0.4 }} key={"empty-item"} label={t`Nothing to show.`} />
