@@ -1,11 +1,12 @@
 import { validation } from "@webiny/validation";
-import { pipe, withFields, withProps, string, ref, date, withName, withHooks } from "@webiny/commodo";
+import { pipe, withFields, withProps, string, ref, withName, withHooks } from "@webiny/commodo";
+import withChangedOnFields from "./withChangedOnFields";
 
 export default ({ createBase, context }) => {
     return pipe(
         withName("CmsEnvironment"),
+        withChangedOnFields(),
         withFields(() => ({
-            changedOn: date({ value: new Date() }),
             name: string({ validation: validation.create("required,maxLength:100") }),
             description: string({ validation: validation.create("maxLength:200") }),
             createdFrom: ref({
@@ -40,6 +41,13 @@ export default ({ createBase, context }) => {
                     throw new Error(
                         `Cannot delete the environment because it's currently linked to the "${environmentAlias.name}" environment alias.`
                     );
+                }
+            },
+            async afterChange() {
+                const environmentAlias = await this.environmentAlias;
+                if (environmentAlias) {
+                    environmentAlias.changedOn = new Date();
+                    await environmentAlias.save();
                 }
             }
         })

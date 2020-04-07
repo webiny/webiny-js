@@ -1,10 +1,13 @@
 import { validation } from "@webiny/validation";
+import withChangedOnFields from "./withChangedOnFields";
+import get from "lodash.get";
 import {
     pipe,
     withFields,
     setOnce,
     string,
     ref,
+    onSet,
     withName,
     withHooks,
     withProps
@@ -13,13 +16,26 @@ import {
 export default ({ createBase, context }) => {
     const CmsEnvironmentAlias = pipe(
         withName("CmsEnvironmentAlias"),
-        withFields(() => ({
+        withChangedOnFields(),
+        withFields(instance => ({
             name: string({ validation: validation.create("required,maxLength:100") }),
             slug: setOnce()(string({ validation: validation.create("required,maxLength:100") })),
             description: string({ validation: validation.create("maxLength:200") }),
-            environment: ref({
-                instanceOf: context.models.CmsEnvironment
-            })
+            environment: onSet(async nextValue => {
+                const prevValue = await this.environment;
+                const changed = get(nextValue, "id") !== get(prevValue, "id");
+                if (changed) {
+                    const removeCallback = instance.hook("beforeSave", () => {
+                        removeCallback();
+                        this.changedOn = new Date();
+                    });
+                }
+                return nextValue;
+            })(
+                ref({
+                    instanceOf: context.models.CmsEnvironment
+                })
+            )
         })),
         withHooks({
             beforeDelete() {
