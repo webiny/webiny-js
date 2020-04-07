@@ -61,7 +61,7 @@ export default ContentModelEditorContext => {
              * @param setter
              * @param saveContentModel
              */
-            setData(setter: Function, saveContentModel = true) {
+            setData(setter: Function, saveContentModel = false) {
                 const data = setter(cloneDeep(self.data));
                 dispatch({ type: "data", data });
                 saveContentModel !== false && self.saveContentModel(data);
@@ -95,6 +95,7 @@ export default ContentModelEditorContext => {
              * @returns {void|?CmsContentModelModelField}
              */
             getFieldPlugin(query: object): FbBuilderFieldPlugin {
+                console.log('searcham fieldove', query)
                 return getPlugins<FbBuilderFieldPlugin>("content-model-editor-field-type").find(
                     ({ field }) => {
                         for (const key in query) {
