@@ -51,7 +51,7 @@ export default function EditorContent() {
                 <LeftPanel span={4}>
                     <LeftBarTitle>
                         <Icon className={titleIcon} icon={<FormIcon />} />
-                        <Typography use={"headline6"}>Content Model Fields</Typography>
+                        <Typography use={"headline6"}>Fields</Typography>
                     </LeftBarTitle>
                     <LeftBarFieldList>
                         <Fields
