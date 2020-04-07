@@ -27,6 +27,7 @@ export default [
 
                         return (
                             <HeadlessCmsMenu Menu={Menu}>
+                                <ContentModelMenuItems Section={Section} Item={Item} />
                                 <Section label={t`Content Models`}>
                                     {contentModels && (
                                         <Item label={t`Models`} path="/cms/content-models" />
@@ -38,8 +39,6 @@ export default [
                                             path="/cms/content-model-groups"
                                         />
                                     )}
-
-                                    <ContentModelMenuItems Section={Section} Item={Item} />
                                 </Section>
                             </HeadlessCmsMenu>
                         );
