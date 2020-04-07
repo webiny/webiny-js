@@ -15,6 +15,7 @@ import { generateSchemaPlugins } from "./schema/schemaPlugins";
 import { i18nFieldType } from "./graphqlTypes/i18nFieldType";
 import { i18nFieldInput } from "./graphqlTypes/i18nFieldInput";
 import contentModelGroup from "./graphql/contentModelGroup";
+import meta from "./graphql/meta";
 const contentModelFetcher = ctx => ctx.models.CmsContentModel;
 
 const getMutations = type => {
@@ -47,17 +48,10 @@ const getMutationResolvers = type => {
     };
 };
 
-const getQueryResolvers = type => {
+const getQueryResolvers = () => {
     return {
         getContentModel: resolveGet(contentModelFetcher),
-        listContentModels: resolveList(contentModelFetcher),
-        getMeta: (_, args, context) => {
-            return {
-                type: context.cms.type,
-                environment: context.cms.environment,
-                url: context.cms.getEnvironment().url[type]
-            };
-        }
+        listContentModels: resolveList(contentModelFetcher)
     };
 };
 
@@ -80,6 +74,7 @@ export default ({ type }) => [
                 }
                 
                 ${contentModelGroup.getTypeDefs(type)}
+                ${meta.typeDefs}
                 
                 type SecurityUser {
                     id: ID
@@ -199,13 +194,6 @@ export default ({ type }) => [
                     error: CmsError
                 }
 
-                # Contains various GraphQL API meta data.
-                type CmsMeta {
-                    environment: String
-                    type: String
-                    url: String
-                }
-
                 extend type Query {
                     getContentModel(id: ID, where: JSON, sort: String): CmsContentModelResponse
 
@@ -215,9 +203,6 @@ export default ({ type }) => [
                         where: JSON
                         sort: JSON
                     ): CmsContentModelListResponse
-                    
-                    # Returns various GraphQL API meta data. 
-                    getMeta: CmsMeta
                 }
 
                 extend type Mutation {
@@ -226,10 +211,11 @@ export default ({ type }) => [
             `,
             resolvers: merge(
                 {
-                    Query: getQueryResolvers(type),
+                    Query: getQueryResolvers(),
                     Mutation: getMutationResolvers(type)
                 },
-                contentModelGroup.getResolvers(type)
+                contentModelGroup.getResolvers(type),
+                meta.resolvers
             )
         },
         security: merge(
