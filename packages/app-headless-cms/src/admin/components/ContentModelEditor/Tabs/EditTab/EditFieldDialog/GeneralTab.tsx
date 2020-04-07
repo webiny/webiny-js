@@ -1,5 +1,6 @@
 import React, { useEffect, useCallback, useRef } from "react";
 import { Input } from "@webiny/ui/Input";
+import { Switch } from "@webiny/ui/Switch";
 import { Grid, Cell } from "@webiny/ui/Grid";
 import { camelCase } from "lodash";
 import { useContentModelEditor } from "@webiny/app-headless-cms/admin/components/ContentModelEditor/Context";
@@ -7,7 +8,7 @@ import { I18NInput } from "@webiny/app-i18n/admin/components";
 import { useI18N } from "@webiny/app-i18n/hooks/useI18N";
 import { validation } from "@webiny/validation";
 import { CmsContentModelModelField } from "@webiny/app-headless-cms/types";
-import {FormChildrenFunctionParams} from "@webiny/form/Form";
+import { FormChildrenFunctionParams } from "@webiny/form/Form";
 
 type GeneralTabProps = {
     field: CmsContentModelModelField;
@@ -80,6 +81,28 @@ const GeneralTab = ({ field, form }: GeneralTabProps) => {
                 </Cell>
             </Grid>
             {additionalSettings}
+            <Grid>
+                <Cell span={6}>
+                    <Bind name={"localization"}>
+                        <Switch label={"Localization"} />
+                    </Bind>
+                </Cell>
+                <Cell span={6}>
+                    <Bind name={"unique"}>
+                        <Switch label={"Unique"} />
+                    </Bind>
+                </Cell>
+                <Cell span={6}>
+                    <Bind name={"searchable"}>
+                        <Switch label={"Searchable"} />
+                    </Bind>
+                </Cell>
+                <Cell span={6}>
+                    <Bind name={"sortable"}>
+                        <Switch label={"Sortable"} />
+                    </Bind>
+                </Cell>
+            </Grid>
         </>
     );
 };
