@@ -102,7 +102,7 @@ const NewContentModelDialog: React.FC<NewContentModelDialogProps> = ({
                                 setTimeout(() => history.push("/settings/cms/environments"), 250);
                             }
                         }}
-                    >{t`View all environments`}</ButtonDefault>
+                    >{t`Manage environments`}</ButtonDefault>
                 </div>
             </DialogContent>
         </Dialog>
