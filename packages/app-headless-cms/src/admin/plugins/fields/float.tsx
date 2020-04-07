@@ -1,18 +1,18 @@
 import React from "react";
-import { ReactComponent as NumberIcon } from "./icons/round-looks_3-24px.svg";
+import { ReactComponent as FloatIcon } from "./icons/round-looks_3-24px.svg";
 import { Grid, Cell } from "@webiny/ui/Grid";
 import { I18NInput } from "@webiny/app-i18n/admin/components";
 import { FbBuilderFieldPlugin } from "@webiny/app-headless-cms/types";
 
 const plugin: FbBuilderFieldPlugin = {
     type: "content-model-editor-field-type",
-    name: "content-model-editor-field-type-number",
+    name: "content-model-editor-field-type-float",
     field: {
-        type: "number",
-        name: "number",
-        label: "Number",
-        description: "ID, order number, rating, quantity",
-        icon: <NumberIcon />,
+        type: "float",
+        name: "float",
+        label: "Float",
+        description: "ID, order float, rating, quantity",
+        icon: <FloatIcon />,
         validators: ["required", "gte", "lte", "in"],
         createField() {
             return {
@@ -25,7 +25,6 @@ const plugin: FbBuilderFieldPlugin = {
             };
         },
         renderSettings({ form: { Bind } }) {
-            // TODO: @ts-adrian: spread Bind komponente na donju komponentu
             return (
                 <Grid>
                     <Cell span={12}>

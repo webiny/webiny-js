@@ -1,20 +1,19 @@
 import React from "react";
+import { ReactComponent as DateTimeIcon } from "./icons/round-looks_3-24px.svg";
 import { Grid, Cell } from "@webiny/ui/Grid";
-import { ReactComponent as Icon } from "./icons/dropdown-icon.svg";
-import OptionsList from "./components/OptionsList";
 import { I18NInput } from "@webiny/app-i18n/admin/components";
 import { FbBuilderFieldPlugin } from "@webiny/app-headless-cms/types";
 
 const plugin: FbBuilderFieldPlugin = {
     type: "content-model-editor-field-type",
-    name: "content-model-editor-field-type-select",
+    name: "content-model-editor-field-type-dateTime",
     field: {
-        type: "select",
-        name: "select",
-        validators: ["required"],
-        label: "Select",
-        description: "Dropdown, select one of the options",
-        icon: <Icon />,
+        type: "dateTime",
+        name: "dateTime",
+        label: "Date/Time",
+        description: "Store dates and times.",
+        icon: <DateTimeIcon />,
+        validators: ["required", "gte", "lte"],
         createField() {
             return {
                 type: this.type,
@@ -25,9 +24,7 @@ const plugin: FbBuilderFieldPlugin = {
                 }
             };
         },
-        renderSettings({ form }) {
-            const { Bind } = form;
-            // TODO: @ts-adrian: spread Bind komponente na donju komponentu
+        renderSettings({ form: { Bind } }) {
             return (
                 <Grid>
                     <Cell span={12}>
@@ -37,9 +34,6 @@ const plugin: FbBuilderFieldPlugin = {
                                 description={"Placeholder text (optional)"}
                             />
                         </Bind>
-                    </Cell>
-                    <Cell span={12}>
-                        <OptionsList form={form} />
                     </Cell>
                 </Grid>
             );

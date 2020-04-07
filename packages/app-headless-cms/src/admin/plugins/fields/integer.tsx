@@ -1,18 +1,19 @@
 import React from "react";
-import { Input } from "@webiny/ui/Input";
+import { ReactComponent as IntegerIcon } from "./icons/round-looks_3-24px.svg";
 import { Grid, Cell } from "@webiny/ui/Grid";
-import { ReactComponent as HiddenIcon } from "./icons/round-visibility_off-24px.svg";
+import { I18NInput } from "@webiny/app-i18n/admin/components";
 import { FbBuilderFieldPlugin } from "@webiny/app-headless-cms/types";
 
 const plugin: FbBuilderFieldPlugin = {
     type: "content-model-editor-field-type",
-    name: "content-model-editor-field-type-hidden",
+    name: "content-model-editor-field-type-integer",
     field: {
-        type: "hidden",
-        name: "hidden",
-        label: "Hidden",
-        description: "Predefined values, hidden text",
-        icon: <HiddenIcon />,
+        type: "integer",
+        name: "integer",
+        label: "Integer",
+        description: "ID, order integer, rating, quantity",
+        icon: <IntegerIcon />,
+        validators: ["required", "gte", "lte", "in"],
         createField() {
             return {
                 type: this.type,
@@ -27,10 +28,10 @@ const plugin: FbBuilderFieldPlugin = {
             return (
                 <Grid>
                     <Cell span={12}>
-                        <Bind name={"settings.defaultValue"}>
-                            <Input
-                                label={"Default value"}
-                                description={"Default value (optional)"}
+                        <Bind name={"placeholderText"}>
+                            <I18NInput
+                                label={"Placeholder text"}
+                                description={"Placeholder text (optional)"}
                             />
                         </Bind>
                     </Cell>
