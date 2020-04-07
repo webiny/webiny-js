@@ -1,11 +1,13 @@
 import React, { useState } from "react";
-import Input from "./fields/Input";
 import Select from "./fields/Select";
 import Radio from "./fields/Radio";
+import Input from "./fields/Input";
 import Checkbox from "./fields/Checkbox";
 import Textarea from "./fields/Textarea";
 import { BindComponentRenderProp, Form } from "@webiny/form";
 import { CmsContentModelModelField } from "@webiny/app-headless-cms/types";
+
+import { ButtonPrimary } from "@webiny/ui/Button";
 
 const DefaultFormLayout = ({ getFields, getDefaultValues, submit }) => {
     // Is the form in loading (submitting) state?
@@ -83,10 +85,14 @@ const DefaultFormLayout = ({ getFields, getDefaultValues, submit }) => {
         switch (props.field.type) {
             case "text":
                 return <Input {...props} />;
+            case "integer":
+                return <Input {...props} type="number" />;
+            case "float":
+                return <Input {...props} type="number" />;
+            // ---
             case "textarea":
                 return <Textarea {...props} />;
-            case "number":
-                return <Input {...props} type="number" />;
+
             case "select":
                 return <Select {...props} />;
             case "radio":
@@ -116,7 +122,6 @@ const DefaultFormLayout = ({ getFields, getDefaultValues, submit }) => {
                                         "webiny-pb-base-page-element-style webiny-pb-layout-row webiny-fb-form-layout-row"
                                     }
                                 >
-                                    {/* render form fields */}
                                     {row.map(field =>
                                         field.type !== "hidden"
                                             ? renderFieldCell(field, Bind)
@@ -126,7 +131,7 @@ const DefaultFormLayout = ({ getFields, getDefaultValues, submit }) => {
                             ))}
                         </div>
 
-                        <button onClick={submit}>submit this</button>
+                        <ButtonPrimary onClick={submit}>Submit</ButtonPrimary>
                     </>
                 </div>
             )}
