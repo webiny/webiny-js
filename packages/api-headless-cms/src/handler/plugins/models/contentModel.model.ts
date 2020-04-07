@@ -42,10 +42,10 @@ export default ({ createBase, context }) =>
                         })()
                     }),
                     type: string({ validation: required }),
-                    localization: boolean({ validation: required }),
-                    unique: boolean({ validation: required }),
-                    searchable: boolean({ validation: required }),
-                    sortable: boolean({ validation: required }),
+                    localization: boolean({ validation: required, value: false }),
+                    unique: boolean({ validation: required, value: false }),
+                    searchable: boolean({ validation: required, value: false }),
+                    sortable: boolean({ validation: required, value: false }),
                     validation: fields({
                         list: true,
                         value: [],
@@ -60,10 +60,15 @@ export default ({ createBase, context }) =>
             })
         }),
         withHooks({
-            async afterSave() {
-                const environment = context.cms.getEvironment();
-                environment.changedOn = new Date();
-                await environment.save();
+            async beforeSave() {
+                if (this.isDirty()) {
+                    const removeCallback = this.hook("afterSave", async () => {
+                        removeCallback();
+                        const environment = context.cms.getEnvironment();
+                        environment.changedOn = new Date();
+                        await environment.save();
+                    });
+                }
             }
         })
     )(createBase());

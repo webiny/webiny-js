@@ -41,6 +41,16 @@ export default ({ createBase, context }) => {
                 if (existingGroup) {
                     throw Error(`Group with slug "${this.slug}" already exists.`);
                 }
+            },
+            async beforeSave() {
+                if (this.isDirty()) {
+                    const removeCallback = this.hook("afterSave", async () => {
+                        removeCallback();
+                        const environment = context.cms.getEnvironment();
+                        environment.changedOn = new Date();
+                        await environment.save();
+                    });
+                }
             }
         })
     )(createBase());
