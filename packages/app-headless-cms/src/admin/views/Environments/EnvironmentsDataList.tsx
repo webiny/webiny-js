@@ -55,7 +55,7 @@ const EnvironmentsDataList = () => {
                                 )}
                                 <ListItemTextSecondary>
                                     {item.environmentAlias
-                                        ? t`Linked with: {environmentAlias}`({
+                                        ? t`Assigned to: {environmentAlias}`({
                                               environmentAlias: (
                                                   <Link
                                                       onClick={e => e.stopPropagation()}
