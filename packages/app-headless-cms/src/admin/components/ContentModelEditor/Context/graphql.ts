@@ -11,6 +11,7 @@ export const FIELDS_FIELDS = `
         _id
         fieldId
         type
+        name
         label {
             ${I18N_FIELDS}
         }
@@ -26,6 +27,10 @@ export const FIELDS_FIELDS = `
             }
             value
         }
+        localization
+        unique
+        searchable
+        sortable
         validation {
             name
             settings
