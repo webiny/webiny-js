@@ -49,14 +49,15 @@ export default () => {
 
         // Before continuing with the rest of the models, we must load the environment and assign it to the context.
         let environment = null;
+        let environmentAlias = null;
         if (context.cms.environment && typeof context.cms.environment === "string") {
             if (context.commodo.isId(context.cms.environment)) {
                 environment = await context.models.CmsEnvironment.findById(context.cms.environment);
             } else {
-                environment = await context.models.CmsEnvironmentAlias.findOne({
+                environmentAlias = await context.models.CmsEnvironmentAlias.findOne({
                     query: { slug: context.cms.environment }
                 });
-                environment = await context.models.CmsEnvironmentAlias.environment;
+                environment = await environmentAlias.environment;
             }
         }
 
@@ -68,6 +69,7 @@ export default () => {
 
         context.cms.environment = environment.slug;
         context.cms.getEnvironment = () => environment;
+        context.cms.getEnvironmentAlias = () => environmentAlias;
 
         const modifyQueryArgs = (args = {}) => {
             const returnArgs = cloneDeep(args);
