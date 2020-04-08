@@ -1,32 +1,31 @@
-import { NotFoundResponse, ErrorResponse } from "@webiny/commodo-graphql";
-
+import { NotFoundResponse } from "@webiny/api";
+import { ErrorResponse } from "@webiny/commodo-graphql";
 export default async (root, args, context) => {
-    const PersonalAccessToken = context.models.SecurityPersonalAccessToken;
-    const User = context.models.SecurityUser;
+    if (!context.user) {
+        return new NotFoundResponse("Current user not found!");
+    }
 
+    const { SecurityPersonalAccessToken } = context.models;
     const currentUserId = context.user.id;
-    const currentUser = await User.findById(currentUserId);
-
-    const canAssignUser =
-        context.user.access.fullAccess ||
-        context.user.access.scopes.find((scope) => scope === "security:user:crud");
 
     try {
-        const PAT = await PersonalAccessToken.findById(args.id);
-        if (!PAT) return new NotFoundResponse("PAT not found!");
-        const PATUser = await PAT.user;
-
-        if (PATUser.id === currentUserId) {
-            if (!currentUser) return new NotFoundResponse("Current user not found!");
-        } else {
-            if (!canAssignUser)
+        const pat = await SecurityPersonalAccessToken.findById(args.id);
+        if (!pat) {
+            return new NotFoundResponse("Personal Access Token not found!");
+        }
+        const patUser = await pat.user;
+        if (patUser.id !== currentUserId) {
+            const { fullAccess, scopes } = context.user.access;
+            const canUpdateToken =
+                fullAccess || scopes.find((scope) => scope === "security:user:crud");
+            if (!canUpdateToken) {
                 return new ErrorResponse({
                     message:
-                        "Current user is not admin! You must be an admin in order to update other users.",
+                        "Cannot get user's personal access token's value - insufficient permissions.",
                 });
+            }
         }
-
-        await PAT.populate(args.data).save();
+        await pat.populate(args.data).save();
         return { data: true };
     } catch (e) {
         return new ErrorResponse({
