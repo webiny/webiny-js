@@ -146,7 +146,7 @@ export default {
             ): SecurityUserListResponse
 
             "Get part of a PAT's token's hash value"
-            getPATValue(id: ID!): String
+            getPATValue(id: ID!): PersonalAccessTokenResponse
         }
 
         extend type SecurityMutation {
