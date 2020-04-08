@@ -6,7 +6,7 @@ import securityGroups2Models from "./models/securityGroups2Models.model";
 import securityRole from "./models/securityRole.model";
 import securityRoles2Models from "./models/securityRoles2Models.model";
 import securityUser from "./models/securityUser.model";
-import securityPersonalAccesToken from "./models/securityPersonalAccessToken.model";
+import securityPersonalAccessToken from "./models/securityPersonalAccessToken.model";
 
 export default () => ({
     name: "graphql-context-models",
@@ -23,7 +23,7 @@ export default () => ({
         const createBase = () =>
             flow(
                 withFields({
-                    id: context.commodo.fields.id()
+                    id: context.commodo.fields.id(),
                 }),
                 withStorage({ driver }),
                 withUser(context),
@@ -36,18 +36,18 @@ export default () => ({
         context.models.SecurityRoles2Models = securityRoles2Models({ createBase, context });
         context.models.SecurityGroup = securityGroup({
             createBase,
-            context
+            context,
         });
         context.models.SecurityGroups2Models = securityGroups2Models({ createBase, context });
         context.models.SecurityUser = securityUser({
             context,
-            createBase
-        });
-        context.models.SecurityPersonalAccesToken = securityPersonalAccesToken({
             createBase,
-            context
+        });
+        context.models.SecurityPersonalAccessToken = securityPersonalAccessToken({
+            createBase,
+            context,
         });
 
         context.models.createBase = createBase;
-    }
+    },
 });
