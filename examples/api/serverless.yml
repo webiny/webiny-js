@@ -90,6 +90,8 @@ security:
 files:
   component: "@webiny/serverless-files/dist"
   inputs:
+    env:
+      AUTHENTICATE_BY_PAT_FUNCTION_NAME: ${security.validatePAT}
     region: ${vars.region}
     bucket: ${vars.bucket}
     functions:
@@ -120,6 +122,8 @@ files:
 i18n:
   component: "@webiny/serverless-apollo-service"
   inputs:
+    env:
+      AUTHENTICATE_BY_PAT_FUNCTION_NAME: ${security.validatePAT}
     region: ${vars.region}
     memory: 512
     debug: ${vars.debug}
@@ -137,6 +141,8 @@ i18n:
 pageBuilder:
   component: "@webiny/serverless-page-builder"
   inputs:
+    env:
+      AUTHENTICATE_BY_PAT_FUNCTION_NAME: ${security.validatePAT}
     region: ${vars.region}
     files: ${files}
     memory: 512
@@ -161,6 +167,8 @@ pageBuilder:
 formBuilder:
   component: "@webiny/serverless-form-builder"
   inputs:
+    env:
+      AUTHENTICATE_BY_PAT_FUNCTION_NAME: ${security.validatePAT}
     region: ${vars.region}
     files: ${files}
     i18n: ${i18n}
