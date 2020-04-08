@@ -2,15 +2,24 @@ import { flow } from "lodash";
 import { validation } from "@webiny/validation";
 import md5 from "md5";
 import bcrypt from "bcryptjs";
-import { withHooks, withProps, withName, string, withFields, onSet, ref } from "@webiny/commodo";
+import {
+    withHooks,
+    withProps,
+    withName,
+    string,
+    withFields,
+    onSet,
+    ref,
+    skipOnPopulate,
+} from "@webiny/commodo";
 
 export default ({ createBase, context }): any => {
     // TODO: figure out how to create typings for a `model`
     const SecurityUser: any = flow(
         withName("SecurityUser"),
         withHooks(),
-        withFields(instance => ({
-            email: onSet(value => {
+        withFields((instance) => ({
+            email: onSet((value) => {
                 if (value === instance.email) {
                     return value;
                 }
@@ -19,7 +28,7 @@ export default ({ createBase, context }): any => {
                 const removeCallback = instance.hook("beforeSave", async () => {
                     removeCallback();
                     const existingUser = await SecurityUser.findOne({
-                        query: { email: value }
+                        query: { email: value },
                     });
                     if (existingUser) {
                         throw Error("User with given e-mail already exists.");
@@ -29,17 +38,17 @@ export default ({ createBase, context }): any => {
                 return value;
             })(
                 string({
-                    validation: validation.create("required")
+                    validation: validation.create("required"),
                 })
             ),
-            password: onSet(value => {
+            password: onSet((value) => {
                 if (value) {
                     return bcrypt.hashSync(value, bcrypt.genSaltSync(10));
                 }
                 return instance.password;
             })(
                 string({
-                    validation: validation.create("required")
+                    validation: validation.create("required"),
                 })
             ),
             firstName: string(),
@@ -47,20 +56,22 @@ export default ({ createBase, context }): any => {
             roles: ref({
                 list: true,
                 instanceOf: [context.models.SecurityRole, "model"],
-                using: [context.models.SecurityRoles2Models, "role"]
+                using: [context.models.SecurityRoles2Models, "role"],
             }),
             groups: ref({
                 list: true,
                 instanceOf: [context.models.SecurityGroup, "model"],
-                using: [context.models.SecurityGroups2Models, "group"]
+                using: [context.models.SecurityGroups2Models, "group"],
             }),
             avatar: context.commodo.fields.id(),
-            personalAccessTokens: ref({
-                list: true,
-                instanceOf: [context.models.SecurityPersonalAccesToken, "user"]
-            })
+            personalAccessTokens: skipOnPopulate()(
+                ref({
+                    list: true,
+                    instanceOf: [context.models.SecurityPersonalAccessToken, "user"],
+                })
+            ),
         })),
-        withProps(instance => ({
+        withProps((instance) => ({
             __access: null,
             get fullName() {
                 return `${instance.firstName} ${instance.lastName}`.trim();
@@ -73,11 +84,11 @@ export default ({ createBase, context }): any => {
                     return this.__access;
                 }
 
-                return new Promise(async resolve => {
+                return new Promise(async (resolve) => {
                     const access = {
                         scopes: [],
                         roles: [],
-                        fullAccess: false
+                        fullAccess: false,
                     };
 
                     const groups = await this.groups;
@@ -88,7 +99,7 @@ export default ({ createBase, context }): any => {
                         for (let j = 0; j < roles.length; j++) {
                             const role = roles[j];
                             !access.roles.includes(role.slug) && access.roles.push(role.slug);
-                            role.scopes.forEach(scope => {
+                            role.scopes.forEach((scope) => {
                                 !access.scopes.includes(scope) && access.scopes.push(scope);
                             });
                         }
@@ -99,7 +110,7 @@ export default ({ createBase, context }): any => {
                     for (let j = 0; j < roles.length; j++) {
                         const role = roles[j];
                         !access.roles.includes(role.slug) && access.roles.push(role.slug);
-                        role.scopes.forEach(scope => {
+                        role.scopes.forEach((scope) => {
                             !access.scopes.includes(scope) && access.scopes.push(scope);
                         });
                     }
@@ -115,7 +126,7 @@ export default ({ createBase, context }): any => {
 
                     resolve(access);
                 });
-            }
+            },
         }))
     )(createBase());
 
