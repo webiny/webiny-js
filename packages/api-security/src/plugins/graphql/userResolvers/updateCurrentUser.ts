@@ -14,7 +14,7 @@ export default async (root: any, args: { [key: string]: any }, context: { [key: 
             const authPlugin = plugins
                 .byType("security-authentication-provider")
                 // eslint-disable-next-line no-prototype-builtins
-                .filter(pl => pl.hasOwnProperty("updateUser"))
+                .filter((pl) => pl.hasOwnProperty("updateUser"))
                 .pop();
 
             await authPlugin.updateUser({ data: args.data, user: currentUser }, context);
@@ -24,7 +24,7 @@ export default async (root: any, args: { [key: string]: any }, context: { [key: 
             return new ErrorResponse({
                 code: e.code,
                 message: e.message,
-                data: e.data || null
+                data: e.data || null,
             });
         }
     }

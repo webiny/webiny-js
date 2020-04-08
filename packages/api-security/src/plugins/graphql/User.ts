@@ -7,7 +7,7 @@ import resolveUpdateUser from "./userResolvers/updateUser";
 import resolveDeleteUser from "./userResolvers/deleteUser";
 import resolveCreatePAT from "./userResolvers/createPAT";
 
-const userFetcher = ctx => ctx.models.SecurityUser;
+const userFetcher = (ctx) => ctx.models.SecurityUser;
 
 export default {
     typeDefs: /* GraphQL */ `
@@ -168,12 +168,12 @@ export default {
             },
             avatar({ avatar }) {
                 return avatar ? { __typename: "File", id: avatar } : null;
-            }
+            },
         },
         SecurityQuery: {
             getCurrentUser: resolveGetCurrentUser,
             getUser: resolveGet(userFetcher),
-            listUsers: resolveList(userFetcher)
+            listUsers: resolveList(userFetcher),
         },
         SecurityMutation: {
             loginUsingIdToken: resolveLoginUsingIdToken(userFetcher),
@@ -181,7 +181,7 @@ export default {
             createUser: resolveCreateUser(userFetcher),
             updateUser: resolveUpdateUser(userFetcher),
             deleteUser: resolveDeleteUser(userFetcher),
-            createPAT: resolveCreatePAT
-        }
-    }
+            createPAT: resolveCreatePAT,
+        },
+    },
 };
