@@ -1,5 +1,6 @@
 import crypto from "crypto";
-import { NotFoundResponse, ErrorResponse } from "@webiny/commodo-graphql";
+import { NotFoundResponse } from "@webiny/api";
+import { ErrorResponse } from "@webiny/commodo-graphql";
 
 const generateToken = (tokenLength = 48) =>
     crypto
@@ -8,12 +9,15 @@ const generateToken = (tokenLength = 48) =>
         .slice(0, tokenLength);
 
 export default async (root, args, context) => {
+    if (!context.user) {
+        return new NotFoundResponse("Current user not found!");
+    }
+
     const PersonalAccessToken = context.models.SecurityPersonalAccessToken;
     const User = context.models.SecurityUser;
 
     const currentUserId = context.user.id;
     const otherUserId = args.userId;
-    const currentUser = await User.findById(currentUserId);
 
     const canAssignUser =
         context.user.access.fullAccess ||
@@ -22,7 +26,6 @@ export default async (root, args, context) => {
     try {
         let tokenUserId;
         if (!otherUserId) {
-            if (!currentUser) return new NotFoundResponse("Current user not found!");
             tokenUserId = currentUserId;
         } else {
             if (!canAssignUser)
