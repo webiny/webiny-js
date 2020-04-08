@@ -4,7 +4,7 @@ import { validation } from "@webiny/validation";
 
 export default ({ createBase, context }) =>
     flow(
-        withName("SecurityPersonalAccessTokens"),
+        withName("SecurityPersonalAccessToken"),
         withFields(() => ({
             name: string({ validation: validation.create("required,maxLength:100") }),
             token: string({ validation: validation.create("required,maxLength:64") }),
