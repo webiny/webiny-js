@@ -1,5 +1,5 @@
 import shortId from "shortid";
-import { locales } from "../../mocks/mockI18NLocales";
+import { locales } from "./mockI18NLocales";
 import contentModelGroup from "./contentModelGroup";
 
 export default [

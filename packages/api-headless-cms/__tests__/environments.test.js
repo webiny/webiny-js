@@ -1,5 +1,5 @@
-import { useDatabase, useApolloHandler } from "./utils";
 import mdbid from "mdbid";
+import { createUtils } from "./utils";
 
 const CREATE_ENVIRONMENT = /* GraphQL */ `
     mutation createEnvironment($data: CmsEnvironmentInput!) {
@@ -56,7 +56,8 @@ const LIST_ENVIRONMENTS = /* GraphQL */ `
 `;
 
 describe("Environments test", () => {
-    const { invoke, apolloHandler } = useApolloHandler();
+    const { useDatabase, useApolloHandler } = createUtils();
+    const { invoke } = useApolloHandler();
     const { getCollection } = useDatabase();
     const initialEnvironment = { id: mdbid() };
 
@@ -138,7 +139,7 @@ describe("Environments test", () => {
             }
         });
 
-         [body] = await invoke({
+        [body] = await invoke({
             body: {
                 query: LIST_ENVIRONMENTS
             }

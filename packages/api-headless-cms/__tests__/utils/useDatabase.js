@@ -1,6 +1,6 @@
 import { MongoClient } from "mongodb";
 
-export default ({ init } = {}) => {
+export default () => ({ init } = {}) => {
     const self = {
         db: null,
         connection: null,
@@ -21,7 +21,7 @@ export default ({ init } = {}) => {
                         const output = {};
                         const keys = Object.keys(item);
                         for (let i = 0; i < keys.length; i++) {
-                            const key = keys[i]
+                            const key = keys[i];
                             output[key] = item[key];
                         }
 
@@ -38,13 +38,14 @@ export default ({ init } = {}) => {
         },
         beforeAll: async () => {
             self.connection = await MongoClient.connect(global.__MONGO_URI__, {
-                useNewUrlParser: true
+                useNewUrlParser: true,
+                useUnifiedTopology: true
             });
             self.db = await self.connection.db(global.__MONGO_DB_NAME__);
             self.getDatabase().dropDatabase();
         },
         afterAll: async () => {
-            await self.getCollection().close();
+            await self.getConnection().close();
             await self.getDatabase().close();
         }
     };

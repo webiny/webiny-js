@@ -22,7 +22,7 @@ export default ({ createBase, context }) => {
             slug: setOnce()(string({ validation: validation.create("required,maxLength:100") })),
             description: string({ validation: validation.create("maxLength:200") }),
             environment: onSet(async nextValue => {
-                const prevValue = await this.environment;
+                const prevValue = await instance.environment;
                 const changed = get(nextValue, "id") !== get(prevValue, "id");
                 if (changed) {
                     const removeCallback = instance.hook("beforeSave", () => {

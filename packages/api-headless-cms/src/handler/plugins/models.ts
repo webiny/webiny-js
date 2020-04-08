@@ -1,3 +1,4 @@
+import cloneDeep from "lodash.clonedeep";
 import { withUser } from "@webiny/api-security";
 import {
     pipe,
@@ -12,12 +13,11 @@ import {
 import { GraphQLContextPlugin } from "@webiny/graphql/types";
 import { GraphQLContext } from "@webiny/api-plugin-commodo-db-proxy/types";
 import contentModel from "./models/contentModel.model";
-import environmentModel from "@webiny/api-headless-cms/plugins/models/environment.model";
-import environmentModelAlias from "@webiny/api-headless-cms/plugins/models/environmentAlias.model";
+import environmentModel from "../../plugins/models/environment.model";
+import environmentModelAlias from "../../plugins/models/environmentAlias.model";
 import contentModelGroup from "./models/contentModelGroup.model";
 import { createDataModelFromData } from "./utils/createDataModelFromData";
 import { createSearchModelFromData } from "./utils/createSearchModelFromData";
-import cloneDeep from "lodash.clonedeep";
 
 export default () => {
     async function apply(context) {

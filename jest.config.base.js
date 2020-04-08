@@ -6,7 +6,7 @@ module.exports = ({ name, path }, presets = []) => {
         name: name,
         displayName: name,
         modulePaths: [`${path}/src`],
-        testMatch: [`${path}/__tests__/*.test.[jt]s?(x)`],
+        testMatch: [`${path}/__tests__/**/*.test.[jt]s?(x)`],
         transform: {
             "^.+\\.(ts|tsx)$": "ts-jest"
         },
