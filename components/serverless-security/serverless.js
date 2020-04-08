@@ -9,7 +9,7 @@ const normalizeInputs = require("./utils/normalizeInputs");
  * - validatePAT - receives a Personal Access Token and returns essentialy user info
  */
 
-class FilesComponent extends Component {
+class SecurityComponent extends Component {
     async default(rawInputs = {}) {
         const inputs = normalizeInputs(rawInputs);
 
@@ -23,7 +23,7 @@ class FilesComponent extends Component {
         }
 
         const validatePATLambda = await this.load("@webiny/serverless-function", "validatePAT");
-        await validatePATLambda({
+        const validatePATLambdaOutput = await validatePATLambda({
             region,
             name: this.context.instance.getResourceName("validatePAT"),
             timeout: 10,
@@ -38,6 +38,7 @@ class FilesComponent extends Component {
 
         // Deploy graphql API
         const apolloService = await this.load("@webiny/serverless-apollo-service");
+        const AUTHENTICATE_BY_PAT_FUNCTION_NAME = validatePATLambdaOutput.name;
         const apolloServiceOutput = await apolloService({
             ...apolloServiceInputs,
             region,
@@ -45,9 +46,7 @@ class FilesComponent extends Component {
             env: {
                 ...apolloServiceInputs.env,
                 DEBUG: apolloServiceInputs.debug || "true",
-                AUTHENTICATE_BY_PAT_FUNCTION_NAME: this.context.instance.getResourceName(
-                    "validatePAT"
-                )
+                AUTHENTICATE_BY_PAT_FUNCTION_NAME
             }
         });
 
@@ -55,7 +54,8 @@ class FilesComponent extends Component {
             api: apolloServiceOutput.api,
             cdnOrigin: {
                 url: apolloServiceOutput.api.url
-            }
+            },
+            validatePAT: AUTHENTICATE_BY_PAT_FUNCTION_NAME
         };
 
         this.state.output = output;
@@ -78,4 +78,4 @@ class FilesComponent extends Component {
     }
 }
 
-module.exports = FilesComponent;
+module.exports = SecurityComponent;
