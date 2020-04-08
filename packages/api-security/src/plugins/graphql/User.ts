@@ -1,31 +1,34 @@
-import { resolveGet, resolveList } from "@webiny/commodo-graphql";
+import { resolveDelete, resolveGet, resolveList } from "@webiny/commodo-graphql";
 import resolveLoginUsingIdToken from "./userResolvers/loginUsingIdToken";
 import resolveGetCurrentUser from "./userResolvers/getCurrentUser";
 import resolveUpdateCurrentSecurityUser from "./userResolvers/updateCurrentUser";
 import resolveCreateUser from "./userResolvers/createUser";
 import resolveUpdateUser from "./userResolvers/updateUser";
 import resolveDeleteUser from "./userResolvers/deleteUser";
-import resolveCreatePAT from "./userResolvers/createPAT";
+import resolveCreatePAT from "./userResolvers/PersonalAccessTokens/createPAT";
+import resolveUpdatePAT from "./userResolvers/PersonalAccessTokens/updatePAT";
+import resolveDeletePAT from "./userResolvers/PersonalAccessTokens/deletePAT";
+import resolveGetPATValue from "./userResolvers/PersonalAccessTokens/getPATValue";
 
 const userFetcher = (ctx) => ctx.models.SecurityUser;
 
 export default {
     typeDefs: /* GraphQL */ `
         # Personal Access Token type
-        input PersonalAccessTokenInput {
-            id: ID
-            user: ID
-            name: String
-            token: String
-            createdOn: DateTime
-        }
-
         type PersonalAccessToken {
             id: ID
             user: SecurityUser
             name: String
-            token: String
             createdOn: DateTime
+        }
+
+        input PersonalAccessTokenInput {
+            name: String
+        }
+
+        type PersonalAccessTokenResponse {
+            data: String
+            error: SecurityUserError
         }
 
         type SecurityUserLogin {
@@ -72,7 +75,6 @@ export default {
             enabled: Boolean
             groups: [ID]
             roles: [ID]
-            personalAccessTokens: [PersonalAccessTokenInput]
         }
 
         # This input type is used by the user who is updating his own account
@@ -81,7 +83,6 @@ export default {
             firstName: String
             lastName: String
             avatar: RefInput
-            personalAccessTokens: [PersonalAccessTokenInput]
         }
 
         type SecurityUserResponse {
@@ -143,6 +144,9 @@ export default {
                 sort: JSON
                 search: SecurityUserSearchInput
             ): SecurityUserListResponse
+
+            "Get part of a PAT's token's hash value"
+            getPATValue(id: ID!): String
         }
 
         extend type SecurityMutation {
@@ -158,7 +162,9 @@ export default {
 
             deleteUser(id: ID!): SecurityUserDeleteResponse
 
-            createPAT: String
+            createPAT(name: String!, userId: ID): PersonalAccessTokenResponse
+            updatePAT(id: ID!, data: PersonalAccessTokenInput!): PersonalAccessTokenResponse
+            deletePAT(id: ID!): SecurityUserDeleteResponse
         }
     `,
     resolvers: {
@@ -174,6 +180,7 @@ export default {
             getCurrentUser: resolveGetCurrentUser,
             getUser: resolveGet(userFetcher),
             listUsers: resolveList(userFetcher),
+            getPATValue: resolveGetPATValue,
         },
         SecurityMutation: {
             loginUsingIdToken: resolveLoginUsingIdToken(userFetcher),
@@ -182,6 +189,8 @@ export default {
             updateUser: resolveUpdateUser(userFetcher),
             deleteUser: resolveDeleteUser(userFetcher),
             createPAT: resolveCreatePAT,
+            updatePAT: resolveUpdatePAT,
+            deletePAT: resolveDeletePAT,
         },
     },
 };
