@@ -2,12 +2,14 @@ import { JwtToken } from "./jwtToken";
 import { GraphQLContext } from "@webiny/api/types";
 import LambdaClient from "aws-sdk/clients/lambda";
 
-const isJwt = token => token.split(".").length === 3; // All JWTs are split into 3 parts by two periods
+const isJwt = (token) => token.split(".").length === 3; // All JWTs are split into 3 parts by two periods
 
 export default async (context: GraphQLContext) => {
     const { security, event } = context;
     const { headers = {} } = event;
     const authorization = headers["Authorization"] || headers["authorization"] || "";
+
+    if (!authorization) return;
 
     if (isJwt(authorization)) {
         const token = authorization.replace(/[b|B]earer\s/, "");
@@ -28,14 +30,10 @@ export default async (context: GraphQLContext) => {
             (
                 await Lambda.invoke({
                     FunctionName: process.env.AUTHENTICATE_BY_PAT_FUNCTION_NAME,
-                    Payload: JSON.stringify({ PAT: { token } })
+                    Payload: JSON.stringify({ PAT: { token } }),
                 }).promise()
-            ).Payload
+            ).Payload as string
         );
-
-        // user.access = {
-        //     scopes: [], roles: [], fullAccess: true
-        // }
 
         context.token = token;
         context.user = user;
