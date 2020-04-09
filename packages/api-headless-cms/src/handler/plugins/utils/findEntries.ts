@@ -1,4 +1,4 @@
-import {CmsGraphQLContext, CmsModel} from "@webiny/api-headless-cms/types";
+import { CmsGraphQLContext, CmsModel } from "@webiny/api-headless-cms/types";
 import createFindSorters from "./createFindSorters";
 import { createFindQuery } from "./createFindQuery";
 import parseBoolean from "./parseBoolean";
@@ -13,7 +13,7 @@ type FindEntries = {
         perPage: number;
         page: number;
     };
-    context: CmsGraphQLContext
+    context: CmsGraphQLContext;
 };
 
 export default async function findEntries<T = CmsGraphQLContext>({
