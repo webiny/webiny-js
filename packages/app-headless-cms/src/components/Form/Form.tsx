@@ -8,7 +8,7 @@ const Form: React.FC<FormComponentPropsType> = props => {
         return <FormRender {...props} />;
     }
 
-    if (props.parentId || props.revisionId || props.slug) {
+    if (props.slug) {
         return <FormLoad {...props} />;
     }
 

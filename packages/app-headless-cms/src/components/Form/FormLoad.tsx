@@ -1,46 +1,35 @@
 import React from "react";
 import { get } from "lodash";
 import { GET_PUBLISHED_CONTENT_MODEL } from "./graphql";
-import { Query } from "react-apollo";
 import FormRender from "./FormRender";
 import { FormLoadComponentPropsType } from "@webiny/app-headless-cms/types";
+import { useQuery } from "@webiny/app-headless-cms/admin/hooks";
 
 const FormLoad = (props: FormLoadComponentPropsType) => {
     const variables = {
         slug: null,
-        version: null,
-        parent: null,
         id: null
     };
 
     if (props.slug) {
         variables.slug = props.slug;
-        if (props.version) {
-            variables.version = props.version;
-        }
-    } else if (props.parentId) {
-        variables.parent = props.parentId;
     } else {
-        variables.id = props.revisionId;
+        variables.id = props.id;
     }
 
-    return (
-        <Query query={GET_PUBLISHED_CONTENT_MODEL} variables={variables}>
-            {({ data, loading }) => {
-                if (loading) {
-                    // TODO: handle loading
-                    return null;
-                }
+    const { data, loading } = useQuery(GET_PUBLISHED_CONTENT_MODEL, variables);
 
-                const formData = get(data, "forms.getPublishedForm.data");
-                if (!formData) {
-                    // TODO: handle cannot load form
-                    return <span>Form not found.</span>;
-                }
-                return <FormRender {...props} data={formData} />;
-            }}
-        </Query>
-    );
+    if (loading) {
+        // TODO: handle loading
+        return null;
+    }
+
+    const formData = get(data, "forms.getPublishedForm.data");
+    if (!formData) {
+        // TODO: handle cannot load form
+        return <span>Form not found.</span>;
+    }
+    return <FormRender {...props} data={formData} />;
 };
 
 export default FormLoad;
