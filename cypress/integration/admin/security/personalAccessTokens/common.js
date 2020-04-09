@@ -1,17 +1,16 @@
 /* eslint-disable jest/valid-expect */
-export const TestPAT = ({
-    PATComponentRoute,
-    saveUserLabel,
-    saveUserResponse,
-    runAfterVisitingRoute
-}) => {
+export const TestPAT = ({ PATComponentRoute, runAfterVisitingRoute }) => {
+    const tokenName = "Cool token #1";
+    const tokenName2 = "Cool token #2 - Updated";
     let initialTokens = null;
     let newTokens = null;
+    let lastToken = null;
+    let lastTokenId = null;
 
     const getTokens = body =>
         Array.from(body[0].querySelectorAll("[data-testid*=pat-token-list-item]"));
-    const getLastToken = $body =>
-        $body[0].querySelector(`[data-testid=${newTokens[0].getAttribute("data-testid")}]`);
+    // const getLastToken = ($body) =>
+    //     $body[0].querySelector(`[data-testid=${newTokens[0].getAttribute("data-testid")}]`);
 
     cy.visit(PATComponentRoute);
     if (runAfterVisitingRoute) runAfterVisitingRoute();
@@ -23,7 +22,14 @@ export const TestPAT = ({
         })
         .findByText("Create Token")
         .click()
+        .get(`[data-testid=CreateTokenDialogContent] > div > input`)
+        .clear()
+        .type(tokenName)
+        .findByTestId("AcceptGenerateToken")
+        .click()
         .wait(500)
+        .findByTestId(`CloseCreatedTokenDialog`)
+        .click()
         .get("body")
         .then($body => {
             const crtTokens = getTokens($body);
@@ -35,33 +41,57 @@ export const TestPAT = ({
             newTokens = crtTokens.filter(
                 token => !initialTokenDataTestIds.includes(token.getAttribute("data-testid"))
             );
+            lastToken = newTokens[0];
+            lastTokenId = lastToken
+                .getAttribute("data-testid")
+                .split("-")
+                .pop();
+            console.log(lastToken);
+            console.log(lastToken.textContent);
+            console.log(`lastTokenId = ${lastTokenId}`);
+            console.log(`[data-testid=updateToken-${lastTokenId}]`);
+            expect(lastToken.textContent).to.equal(tokenName);
 
-            const lastToken = getLastToken($body);
-            const editButton = lastToken.querySelector("[data-testid=editToken]");
-            editButton.click();
-            const editNameInput = lastToken.querySelector("input");
-            expect(editNameInput).to.exist;
-            editButton.click();
-            expect(editNameInput).to.not.exist;
+            return lastToken.querySelector(`[data-testid=updateToken-${lastTokenId}]`);
         })
-        .findByText(saveUserLabel)
         .click()
-        .findByText(saveUserResponse)
-        .should("exist")
+        .get("body")
+        .then($body =>
+            $body[0].querySelector(
+                `[data-testid=UpdateTokenDialogContent-${lastTokenId}] > div > input`
+            )
+        )
+        .clear()
+        .type(tokenName2)
+        .get("body")
+        .then($body => $body[0].querySelector(`[data-testid=AcceptUpdateToken-${lastTokenId}]`))
+        .click()
+        .wait(500)
+        .then(() => {
+            console.log(lastToken);
+            console.log(lastToken.textContent);
+        })
+        .findByText(tokenName2)
+        .get("body")
+        .then($body => $body[0].querySelector(`[data-testid=deleteToken-${lastTokenId}`))
+        .click()
         .get("body")
         .then($body => {
-            let crtTokens = getTokens($body);
-            expect(crtTokens.length).to.equal(initialTokens.length + 1);
+            console.log(
+                $body[0].querySelectorAll(
+                    `[data-testid*=DeleteTokenDialog-${lastTokenId}] > * > * > * > button`
+                )
+            );
 
-            // Delete last token
-            const lastToken = getLastToken($body);
-            const deleteButton = lastToken.querySelector("[data-testid=deleteToken]");
-            deleteButton.click();
-            crtTokens = getTokens($body);
-            expect(crtTokens.length).to.equal(initialTokens.length);
+            return $body[0].querySelectorAll(
+                `[data-testid*=DeleteTokenDialog-${lastTokenId}] > * > * > * > button`
+            )[1];
         })
-        .findByText(saveUserLabel)
         .click()
-        .findByText(saveUserResponse)
-        .should("exist");
+        .wait(1000)
+        .get("body")
+        .then($body => {
+            const crtTokens = getTokens($body);
+            expect(crtTokens.length).to.equal(initialTokens.length);
+        });
 };
