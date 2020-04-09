@@ -39,14 +39,15 @@ export default async (root, args, context) => {
         }
 
         const token = generateToken();
-        const PAT = new PersonalAccessToken();
-        await PAT.populate({
-            user: tokenUserId,
-            name: args.name,
-            token,
-        }).save();
-
-        return { data: token };
+        const pat = new PersonalAccessToken();
+        await pat
+            .populate({
+                user: tokenUserId,
+                name: args.name,
+                token,
+            })
+            .save();
+        return { data: { pat, token: pat.token } };
     } catch (e) {
         return new ErrorResponse({
             code: e.code,
