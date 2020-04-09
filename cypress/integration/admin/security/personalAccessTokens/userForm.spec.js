@@ -16,8 +16,6 @@ context("User Form PATs Module", () => {
 
         TestPAT({
             PATComponentRoute: "/users",
-            saveUserLabel: "Save user",
-            saveUserResponse: "Record saved successfully.",
             runAfterVisitingRoute
         });
     });
