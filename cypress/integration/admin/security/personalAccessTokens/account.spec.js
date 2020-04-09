@@ -5,9 +5,7 @@ context("Account PATs Module", () => {
 
     it("should be able to create, edit, save and delete tokens", () => {
         TestPAT({
-            PATComponentRoute: "/account",
-            saveUserLabel: "Update account",
-            saveUserResponse: "Account saved successfully!"
+            PATComponentRoute: "/account"
         });
     });
 });
