@@ -143,7 +143,7 @@ const TokenListItem = ({ setFormIsLoading, data, setValue, PAT }) => {
         <>
             <Dialog open={showEditDialog} onClose={() => setShowEditDialog(false)}>
                 <DialogTitle>Update Token</DialogTitle>
-                <DialogContent>
+                <DialogContent data-testid={`UpdateTokenDialogContent-${PAT.id}`}>
                     <Input
                         label="Token name"
                         value={tokenName}
@@ -152,7 +152,12 @@ const TokenListItem = ({ setFormIsLoading, data, setValue, PAT }) => {
                 </DialogContent>
                 <DialogActions>
                     <DialogCancel>Cancel</DialogCancel>
-                    <DialogAccept onClick={() => updateToken()}>OK</DialogAccept>
+                    <DialogAccept
+                        data-testid={`AcceptUpdateToken-${PAT.id}`}
+                        onClick={() => updateToken()}
+                    >
+                        OK
+                    </DialogAccept>
                 </DialogActions>
             </Dialog>
 
@@ -163,18 +168,19 @@ const TokenListItem = ({ setFormIsLoading, data, setValue, PAT }) => {
             >
                 <ListItemMeta>
                     <IconButton
-                        data-testid={`editToken`}
+                        data-testid={`updateToken-${PAT.id}`}
                         onClick={() => setShowEditDialog(true)}
                         icon={<EditIcon />}
                     />
                     <ConfirmationDialog
+                        data-testid={`DeleteTokenDialog-${PAT.id}`}
                         title="Delete Token"
                         message="Are you sure you want to delete this token?"
                     >
                         {({ showConfirmation }) => {
                             return (
                                 <IconButton
-                                    data-testid={`deleteToken`}
+                                    data-testid={`deleteToken-${PAT.id}`}
                                     onClick={() => showConfirmation(() => deleteToken())}
                                     icon={<DeleteIcon />}
                                 />
@@ -243,7 +249,7 @@ const TokensElement = ({ setFormIsLoading, data, setValue }) => {
         <>
             <Dialog open={showCreatePATDialog} onClose={() => setShowCreatePATDialog(false)}>
                 <DialogTitle>Create new Personal Access Token</DialogTitle>
-                <DialogContent>
+                <DialogContent data-testid={`CreateTokenDialogContent`}>
                     <Input
                         label="Token name"
                         value={newPATName}
@@ -252,7 +258,12 @@ const TokensElement = ({ setFormIsLoading, data, setValue }) => {
                 </DialogContent>
                 <DialogActions>
                     <DialogCancel>Cancel</DialogCancel>
-                    <DialogAccept onClick={() => generateToken()}>OK</DialogAccept>
+                    <DialogAccept
+                        data-testid={`AcceptGenerateToken`}
+                        onClick={() => generateToken()}
+                    >
+                        OK
+                    </DialogAccept>
                 </DialogActions>
             </Dialog>
 
@@ -291,7 +302,7 @@ const TokensElement = ({ setFormIsLoading, data, setValue }) => {
                     </div>
                 </DialogContent>
                 <DialogActions>
-                    <DialogAccept>Close</DialogAccept>
+                    <DialogAccept data-testid={`CloseCreatedTokenDialog`}>Close</DialogAccept>
                 </DialogActions>
             </Dialog>
 
