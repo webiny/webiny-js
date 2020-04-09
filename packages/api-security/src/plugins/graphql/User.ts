@@ -26,8 +26,19 @@ export default {
             name: String
         }
 
+        type PersonalAccessTokenCreationData {
+            pat: PersonalAccessToken
+            # The full token - you only receive it once!
+            token: String
+        }
+
+        type PersonalAccessTokenCreationResponse {
+            data: PersonalAccessTokenCreationData
+            error: SecurityUserError
+        }
+
         type PersonalAccessTokenResponse {
-            data: String
+            data: PersonalAccessToken
             error: SecurityUserError
         }
 
@@ -159,7 +170,7 @@ export default {
 
             deleteUser(id: ID!): SecurityUserDeleteResponse
 
-            createPAT(name: String!, userId: ID): PersonalAccessTokenResponse
+            createPAT(name: String!, userId: ID): PersonalAccessTokenCreationResponse
             updatePAT(id: ID!, data: PersonalAccessTokenInput!): PersonalAccessTokenResponse
             deletePAT(id: ID!): SecurityUserDeleteResponse
         }
