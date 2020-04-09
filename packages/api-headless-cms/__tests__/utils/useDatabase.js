@@ -1,6 +1,6 @@
 import { MongoClient } from "mongodb";
 
-export default () => ({ init } = {}) => {
+export default utilsId => ({ init } = {}) => {
     const self = {
         db: null,
         connection: null,
@@ -41,7 +41,7 @@ export default () => ({ init } = {}) => {
                 useNewUrlParser: true,
                 useUnifiedTopology: true
             });
-            self.db = await self.connection.db(global.__MONGO_DB_NAME__);
+            self.db = await self.connection.db(global.__MONGO_DB_NAME__ + "_" + utilsId);
             self.getDatabase().dropDatabase();
         },
         afterAll: async () => {

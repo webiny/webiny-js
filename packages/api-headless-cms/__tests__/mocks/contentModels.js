@@ -16,6 +16,7 @@ export default [
                 },
                 type: "text",
                 fieldId: "title",
+                name: "title",
                 localization: true,
                 unique: false,
                 validation: [
@@ -45,6 +46,7 @@ export default [
                 },
                 type: "text",
                 fieldId: "slug",
+                name: "slug",
                 localization: true,
                 unique: true,
                 validation: [
@@ -73,6 +75,7 @@ export default [
                 localization: false,
                 unique: false,
                 fieldId: "text",
+                name: "text",
                 validation: [
                     {
                         name: "required",
@@ -91,6 +94,7 @@ export default [
                 localization: false,
                 unique: false,
                 fieldId: "product",
+                name: "product",
                 validation: [],
                 settings: {
                     type: "one",
@@ -106,6 +110,7 @@ export default [
                 localization: false,
                 unique: false,
                 fieldId: "rating",
+                name: "rating",
                 validation: []
             }
         ]
@@ -122,6 +127,7 @@ export default [
                     values: [{ locale: locales.en.id, value: "Title" }]
                 },
                 fieldId: "title",
+                name: "title",
                 localization: true,
                 unique: false,
                 type: "text",
@@ -142,6 +148,7 @@ export default [
                     values: [{ locale: locales.en.id, value: "Category" }]
                 },
                 fieldId: "category",
+                name: "category",
                 localization: false,
                 unique: false,
                 type: "ref",
@@ -164,6 +171,7 @@ export default [
                     values: [{ locale: locales.en.id, value: "Reviews" }]
                 },
                 fieldId: "reviews",
+                name: "reviews",
                 type: "ref",
                 localization: false,
                 unique: false,
@@ -179,6 +187,7 @@ export default [
                     values: [{ locale: locales.en.id, value: "Price" }]
                 },
                 fieldId: "price",
+                name: "price",
                 localization: false,
                 unique: false,
                 type: "float",
@@ -197,6 +206,7 @@ export default [
                     values: [{ locale: locales.en.id, value: "Price" }]
                 },
                 fieldId: "inStock",
+                name: "inStock",
                 localization: false,
                 unique: false,
                 type: "boolean",
@@ -208,6 +218,7 @@ export default [
                     values: [{ locale: locales.en.id, value: "Price" }]
                 },
                 fieldId: "itemsInStock",
+                name: "itemsInStock",
                 localization: false,
                 unique: false,
                 type: "integer",
@@ -219,6 +230,7 @@ export default [
                     values: [{ locale: locales.en.id, value: "Available on" }]
                 },
                 fieldId: "availableOn",
+                name: "availableOn",
                 localization: false,
                 unique: false,
                 type: "datetime",

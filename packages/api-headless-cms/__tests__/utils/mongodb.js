@@ -10,7 +10,7 @@ const testCallbacks = {
     }
 };
 
-export default (plugins, createUtils) => {
+export default (id, plugins, createUtils) => {
     afterAll(async () => await Promise.all(callbacks.afterAll.map(cb => cb())));
 
     return createUtils([
@@ -31,7 +31,7 @@ export default (plugins, createUtils) => {
         mongoDb({
             database: {
                 server: global.__MONGO_URI__,
-                name: global.__MONGO_DB_NAME__
+                name: global.__MONGO_DB_NAME__ + "_" + id
             },
             test: testCallbacks
         })

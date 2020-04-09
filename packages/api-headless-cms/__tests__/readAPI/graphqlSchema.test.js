@@ -1,9 +1,8 @@
 import { graphql } from "graphql";
 import { createUtils } from "../utils";
-import contentModels from "../mocks/contentModels";
-import contentModelGroupData from "../mocks/contentModelGroup";
 import headlessPlugins from "../../src/handler/plugins";
 import setupDefaultEnvironment from "../setup/setupDefaultEnvironment";
+import setupContentModels from "../setup/setupContentModels";
 
 const schemaTypesQuery = /* GraphQL */ `
     {
@@ -35,7 +34,9 @@ const schemaTypesQuery = /* GraphQL */ `
     }
 `;
 
-describe("GraphQL Schema", () => {
+describe("READ - GraphQL Schema", () => {
+    let contentModels;
+
     const { useSchema, useDatabase } = createUtils([
         headlessPlugins({ type: "read", environment: "production" })
     ]);
@@ -44,21 +45,8 @@ describe("GraphQL Schema", () => {
 
     beforeAll(async () => {
         await setupDefaultEnvironment(db);
-
         const { context } = await useSchema();
-
-        const ContentModel = context.models.CmsContentModel;
-        const ContentModelGroup = context.models.CmsContentModelGroup;
-
-        const contentModelGroup = new ContentModelGroup();
-        contentModelGroup.populate(contentModelGroupData);
-        await contentModelGroup.save();
-
-        for (let i = 0; i < contentModels.length; i++) {
-            const contentModel = new ContentModel();
-            contentModel.populate(contentModels[i]);
-            await contentModel.save();
-        }
+        ({ contentModels } = await setupContentModels(context));
     });
 
     test("create commodo models and set them in the context", async () => {
@@ -69,19 +57,19 @@ describe("GraphQL Schema", () => {
         }
     });
 
-    // test("create GraphQL types from content models data", async () => {
-    //     const { schema, context } = await useSchema();
-    //     const response = await graphql(schema, schemaTypesQuery, {}, context);
-    //     const typeNames = contentModels.reduce((acc, item) => {
-    //         acc.push(item.title);
-    //         return acc;
-    //     }, []);
-    //     const cmsTypes = response.data.__schema.types
-    //         .filter(t => typeNames.includes(t.name))
-    //         .map(t => t.name);
-    //
-    //     expect(cmsTypes).toContain("Category");
-    //     expect(cmsTypes).toContain("Product");
-    //     expect(cmsTypes).toContain("Review");
-    // });
+    test("create GraphQL types from content models data", async () => {
+        const { schema, context } = await useSchema();
+        const response = await graphql(schema, schemaTypesQuery, {}, context);
+        const typeNames = contentModels.reduce((acc, item) => {
+            acc.push(item.title);
+            return acc;
+        }, []);
+        const cmsTypes = response.data.__schema.types
+            .filter(t => typeNames.includes(t.name))
+            .map(t => t.name);
+
+        expect(cmsTypes).toContain("Category");
+        expect(cmsTypes).toContain("Product");
+        expect(cmsTypes).toContain("Review");
+    });
 });
