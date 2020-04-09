@@ -8,7 +8,6 @@ import resolveDeleteUser from "./userResolvers/deleteUser";
 import resolveCreatePAT from "./userResolvers/PersonalAccessTokens/createPAT";
 import resolveUpdatePAT from "./userResolvers/PersonalAccessTokens/updatePAT";
 import resolveDeletePAT from "./userResolvers/PersonalAccessTokens/deletePAT";
-import resolveGetPATValue from "./userResolvers/PersonalAccessTokens/getPATValue";
 
 const userFetcher = (ctx) => ctx.models.SecurityUser;
 
@@ -19,6 +18,7 @@ export default {
             id: ID
             user: SecurityUser
             name: String
+            token: String
             createdOn: DateTime
         }
 
@@ -144,9 +144,6 @@ export default {
                 sort: JSON
                 search: SecurityUserSearchInput
             ): SecurityUserListResponse
-
-            "Get part of a PAT's token's hash value"
-            getPATValue(id: ID!): PersonalAccessTokenResponse
         }
 
         extend type SecurityMutation {
@@ -168,6 +165,11 @@ export default {
         }
     `,
     resolvers: {
+        PersonalAccessToken: {
+            token: (pat) => {
+                return pat.token.substr(-4);
+            },
+        },
         SecurityUser: {
             __resolveReference(reference, context) {
                 return userFetcher(context).findById(reference.id);
@@ -180,7 +182,6 @@ export default {
             getCurrentUser: resolveGetCurrentUser,
             getUser: resolveGet(userFetcher),
             listUsers: resolveList(userFetcher),
-            getPATValue: resolveGetPATValue,
         },
         SecurityMutation: {
             loginUsingIdToken: resolveLoginUsingIdToken(userFetcher),
