@@ -20,7 +20,7 @@ import {
     SimpleForm,
     SimpleFormHeader,
     SimpleFormFooter,
-    SimpleFormContent
+    SimpleFormContent,
 } from "@webiny/app-admin/components/SimpleForm";
 
 import { SecurityViewUserAccountFormPlugin } from "@webiny/app-security/types";
@@ -67,21 +67,8 @@ const UPDATE_CURRENT_USER = gql`
                         id
                         src
                     }
-                    personalAccessTokens {
-                        id
-                        name
-                        token
-                    }
                 }
             }
-        }
-    }
-`;
-
-const GET_NEW_PAT = gql`
-    mutation {
-        security {
-            createPAT
         }
     }
 `;
@@ -97,25 +84,25 @@ const UserAccountForm = () => {
 
     const [{ loading, user }, setState] = useReducer((prev, next) => ({ ...prev, ...next }), {
         loading: true,
-        user: { data: {} }
+        user: { data: {} },
     });
-    const setIsLoading = loading => setState(loading);
+    const setIsLoading = (loading) => setState({ loading });
 
     const client = useApolloClient();
     const { showSnackbar } = useSnackbar();
     const security = useSecurity();
 
-    const onSubmit = useHandler(null, () => async formData => {
+    const onSubmit = useHandler(null, () => async (formData) => {
         setState({ loading: true });
         const { data: response } = await client.mutate({
             mutation: UPDATE_CURRENT_USER,
-            variables: { data: omit(formData, ["id"]) }
+            variables: { data: omit(formData, ["id", "personalAccessTokens"]) },
         });
         const { error } = response.security.updateCurrentUser;
         setState({ loading: false });
         if (error) {
             return showSnackbar(error.message, {
-                action: "Close"
+                action: "Close",
             });
         }
 
@@ -181,8 +168,8 @@ const UserAccountForm = () => {
                                                         setFormIsLoading={setIsLoading}
                                                     />
                                                 </Bind>
-                                            )
-                                        }
+                                            ),
+                                        },
                                     })}
                                 </SimpleFormContent>
                                 <SimpleFormFooter>
