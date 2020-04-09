@@ -107,11 +107,15 @@ export default async function findEntries<T = CmsGraphQLContext>({
     // - `ModelSearch.find` returns data of which 99% is unused. We only need `instance` value of each entry.
     const searchEntries = await ModelSearch.find({ query: match, sort: sorters, page, perPage });
     const meta = searchEntries.getMeta();
-    const ids = searchEntries
-        .map(item => item.revision)
-        .filter((value, index, self) => {
-            return self.indexOf(value) === index;
-        });
+    const ids = Array.from(
+        searchEntries
+            .map(item => {
+                return item.revision;
+            })
+            .filter((value, index, self) => {
+                return self.indexOf(value) === index;
+            })
+    );
 
     // Find actual data records
     const entries = await Model.find({ query: { id: { $in: ids } } });
