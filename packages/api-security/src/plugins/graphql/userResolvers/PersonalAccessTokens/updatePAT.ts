@@ -26,7 +26,7 @@ export default async (root, args, context) => {
             }
         }
         await pat.populate(args.data).save();
-        return { data: true };
+        return { data: pat };
     } catch (e) {
         return new ErrorResponse({
             code: e.code,
