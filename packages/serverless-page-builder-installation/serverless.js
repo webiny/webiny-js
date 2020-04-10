@@ -11,7 +11,7 @@ class ServerlessPageBuilderInstallation extends Component {
         const { region } = inputs;
         const s3Component = await this.load("@serverless/aws-s3");
         const s3Output = await s3Component({
-            name: `webiny-serverless-page-builder-${this.context.instance.id}`.replace(/_/g, "-"),
+            name: `${this.context.instance.id}-webiny-page-builder-installation`.replace(/_/g, "-"),
             region
         });
 

@@ -6,11 +6,6 @@
     "access": "public",
     "directory": "."
   },
-  "scripts": {
-    "build": "rm -rf dist && mkdir dist && cp serverless.js utils.js dist/",
-    "postbuild": "cp package.json LICENSE README.md COPYRIGHT dist/",
-    "prepublishOnly": "yarn build"
-  },
   "author": "Serverless, Inc.",
   "contributors": [
     "Pavel Denisjuk <pavel@webiny.com>",

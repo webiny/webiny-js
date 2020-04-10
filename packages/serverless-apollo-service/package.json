@@ -10,11 +10,6 @@
     "lodash.get": "^4.4.2",
     "lodash.pick": "^4.4.0"
   },
-  "scripts": {
-    "build": "rm -rf dist && mkdir dist && cp -R serverless.js dist/",
-    "postbuild": "cp package.json README.md LICENSE dist/",
-    "prepublishOnly": "yarn build"
-  },
   "publishConfig": {
     "access": "public",
     "directory": "."

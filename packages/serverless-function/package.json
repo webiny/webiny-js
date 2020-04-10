@@ -8,11 +8,6 @@
     "@webiny/serverless-component": "^0.1.0",
     "execa": "^2.0.3"
   },
-  "scripts": {
-    "build": "rm -rf dist && mkdir dist && cp serverless.js dist/",
-    "postbuild": "cp package.json README.md LICENSE dist/",
-    "prepublishOnly": "yarn build"
-  },
   "publishConfig": {
     "access": "public",
     "directory": "."
