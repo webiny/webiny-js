@@ -9,7 +9,8 @@
     ],
     "nohoist": [
       "**/inquirer/**",
-      "**/mime/**"
+      "**/mime/**",
+      "**/@types/mocha"
     ]
   },
   "contributors": [
