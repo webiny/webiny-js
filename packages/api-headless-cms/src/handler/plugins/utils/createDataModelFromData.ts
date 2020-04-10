@@ -17,6 +17,7 @@ import {
     CmsModelFieldToCommodoFieldPlugin
 } from "@webiny/api-headless-cms/types";
 
+import { withModelId } from "./withModelId";
 import { createValidation } from "./createValidation";
 
 export const createDataModelFromData = (
@@ -28,9 +29,9 @@ export const createDataModelFromData = (
         "cms-model-field-to-commodo-field"
     );
 
-    // Create base model to be enhanced by field plugins
+    // Create content model
     const model = pipe(
-        withName(data.title),
+        withName("CmsContentEntry"),
         withHooks({
             async beforeCreate() {
                 if (!this.id) {
@@ -70,7 +71,7 @@ export const createDataModelFromData = (
                     const locale = locales[x];
                     const fieldValues = {
                         latestVersion: this.latestVersion,
-                        published: this.published,
+                        published: this.published
                     };
                     for (let y = 0; y < data.fields.length; y++) {
                         const field = data.fields[y];
@@ -197,7 +198,8 @@ export const createDataModelFromData = (
                     resolve(revisions);
                 });
             }
-        })
+        }),
+        withModelId(data.modelId)
     )(baseModel) as Function;
 
     for (let i = 0; i < data.fields.length; i++) {
