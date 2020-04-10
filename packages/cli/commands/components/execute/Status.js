@@ -9,7 +9,9 @@ const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
 class Status {
     constructor() {
         this.seconds = 0;
-        this.status = {};
+        this.status = {
+            message: "Deploying"
+        };
         this.status.running = false;
     }
 
@@ -86,7 +88,7 @@ class Status {
 
         // Write content
         console.log();
-        const content = `${dim(this.seconds + "s")} ${dim(figures.pointerSmall)} Deploying...`;
+        const content = `${dim(this.seconds + "s")} ${dim(figures.pointerSmall)} ${this.status.message}...`;
         process.stdout.write(content);
         console.log();
 

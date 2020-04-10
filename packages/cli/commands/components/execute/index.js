@@ -12,8 +12,9 @@ module.exports.execute = async (inputs, method, context) => {
     // Create component context
     const componentContext = new Context({
         logger: context,
-        stateRoot: join(projectRoot, ".webiny", "state", folder, env),
-        id: `${projectName}_${folder}`,
+        stateRoot: join(projectRoot, ".webiny", "state"),
+        stackStateRoot: join(projectRoot, ".webiny", "state", folder, env),
+        stackName: `${projectName}_${folder}`,
         env,
         debug
     });
