@@ -1,4 +1,4 @@
-import { NotFoundResponse } from "@webiny/api";
+import { NotFoundResponse } from "@webiny/graphql";
 import { ErrorResponse } from "@webiny/commodo-graphql";
 export default async (root, args, context) => {
     if (!context.user) {

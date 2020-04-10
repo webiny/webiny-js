@@ -1,5 +1,5 @@
 import crypto from "crypto";
-import { NotFoundResponse } from "@webiny/api";
+import { NotFoundResponse } from "@webiny/graphql";
 import { ErrorResponse } from "@webiny/commodo-graphql";
 
 const generateToken = (tokenLength = 48) =>
