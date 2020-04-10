@@ -9,12 +9,11 @@ const execa = require("execa");
 
 /**
  * - copy example .env.json files
- * - run `build` in `serverless-files`
  */
 (async () => {
     console.log(`✍️  Writing environment config files...`);
     // Create root .env.json
-    const rootEnvJsonPath = path.resolve("examples", ".env.json");
+    const rootEnvJsonPath = path.resolve("sample-project", ".env.json");
     const rootExampleEnvJsonPath = path.resolve(
         "packages",
         "cli",
@@ -23,17 +22,17 @@ const execa = require("execa");
         "example.env.json"
     );
     if (fs.existsSync(rootEnvJsonPath)) {
-        console.log(`⚠️  ${green("examples/.env.json")} already exists, skipping.`);
+        console.log(`⚠️  ${green("sample-project/.env.json")} already exists, skipping.`);
     } else {
         fs.copyFileSync(rootExampleEnvJsonPath, rootEnvJsonPath);
-        console.log(`✅️ ${green("examples/.env.json")} was created successfully!`);
+        console.log(`✅️ ${green("sample-project/.env.json")} was created successfully!`);
     }
 
     // Create API .env.json
-    const envJsonPath = path.resolve("examples", "api", ".env.json");
-    const exampleEnvJsonPath = path.resolve("examples", "api", "example.env.json");
+    const envJsonPath = path.resolve("sample-project", "api", ".env.json");
+    const exampleEnvJsonPath = path.resolve("sample-project", "api", "example.env.json");
     if (fs.existsSync(envJsonPath)) {
-        console.log(`⚠️  ${green("examples/api/.env.json")} already exists, skipping.`);
+        console.log(`⚠️  ${green("sample-project/api/.env.json")} already exists, skipping.`);
     } else {
         fs.copyFileSync(exampleEnvJsonPath, envJsonPath);
 
@@ -48,34 +47,33 @@ const execa = require("execa");
             .shift()}`;
         envJson.default.JWT_SECRET = jwtSecret;
         await writeJson(envJsonPath, envJson);
-        console.log(`✅️ ${green("examples/api/.env.json")} was created successfully!`);
+        console.log(`✅️ ${green("sample-project/api/.env.json")} was created successfully!`);
     }
 
     // Create `admin` .env.json
-    const adminEnvJsonPath = path.resolve("examples", "apps", "admin", ".env.json");
-    const exampleAdminEnvJsonPath = path.resolve("examples", "apps", "admin", "example.env.json");
+    const adminEnvJsonPath = path.resolve("sample-project", "apps", "admin", ".env.json");
+    const exampleAdminEnvJsonPath = path.resolve("sample-project", "apps", "admin", "example.env.json");
     if (fs.existsSync(adminEnvJsonPath)) {
-        console.log(`⚠️  ${green("examples/apps/admin/.env.json")} already exists, skipping.`);
+        console.log(`⚠️  ${green("sample-project/apps/admin/.env.json")} already exists, skipping.`);
     } else {
         fs.copyFileSync(exampleAdminEnvJsonPath, adminEnvJsonPath);
-        console.log(`✅️ ${green("examples/apps/admin/.env.json")} was created successfully!`);
+        console.log(`✅️ ${green("sample-project/apps/admin/.env.json")} was created successfully!`);
     }
 
     // Create `site` .env.json
-    const siteEnvJsonPath = path.resolve("examples", "apps", "site", ".env.json");
-    const exampleSiteEnvJsonPath = path.resolve("examples", "apps", "site", "example.env.json");
+    const siteEnvJsonPath = path.resolve("sample-project", "apps", "site", ".env.json");
+    const exampleSiteEnvJsonPath = path.resolve("sample-project", "apps", "site", "example.env.json");
     if (fs.existsSync(siteEnvJsonPath)) {
-        console.log(`⚠️  ${green("examples/apps/site/.env.json")} already exists, skipping.`);
+        console.log(`⚠️  ${green("sample-project/apps/site/.env.json")} already exists, skipping.`);
     } else {
         fs.copyFileSync(exampleSiteEnvJsonPath, siteEnvJsonPath);
-        console.log(`✅️ ${green("examples/apps/site/.env.json")} was created successfully!`);
+        console.log(`✅️ ${green("sample-project/apps/site/.env.json")} was created successfully!`);
     }
 
     // Build all repo packages
     console.log(`🏗  Building packages...`);
     try {
         await execa("lerna", ["run", "build", "--stream"], {
-            cwd: path.resolve("components", "serverless-files"),
             stdio: "inherit"
         });
         console.log(`✅️ Packages were built successfully!`);
@@ -106,7 +104,7 @@ const execa = require("execa");
     console.log(`\n🏁 Your repo is almost ready!`);
     console.log(
         `Update ${green(
-            "examples/.env.json"
+            "sample-project/.env.json"
         )} with your MongoDB connection string and you're ready to develop!\n`
     );
 })();
