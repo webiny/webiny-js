@@ -15,13 +15,14 @@ export const AddImageIconWrapper = styled("div")({
 });
 
 export const AddImageWrapper = styled("div")({
-    width: "100%",
-    height: "100%",
+    margin: "auto",
+    width: "150px",
+    height: "150px",
     minHeight: 50,
     minWidth: 50,
     textAlign: "center",
     backgroundColor: "var(--mdc-theme-on-background)",
-    borderRadius: 0,
+    borderRadius: "50%",
     borderBottom: "1px solid var(--mdc-theme-text-hint-on-background)",
     display: "flex",
     alignItems: "center",

@@ -14,15 +14,17 @@ import { CircularProgress } from "@webiny/ui/Progress";
 import AvatarImage from "./Components/AvatarImage";
 import { validation } from "@webiny/validation";
 import { useSecurity } from "@webiny/app-security/hooks/useSecurity";
+import AccuntTokens from "./AccountTokens";
 
 import {
     SimpleForm,
     SimpleFormHeader,
     SimpleFormFooter,
-    SimpleFormContent
+    SimpleFormContent,
 } from "@webiny/app-admin/components/SimpleForm";
 
 import { SecurityViewUserAccountFormPlugin } from "@webiny/app-security/types";
+import { Cell, Grid } from "@webiny/ui/Grid";
 
 const t = i18n.ns("app-security/admin/account-form");
 
@@ -38,6 +40,11 @@ const GET_CURRENT_USER = gql`
                     avatar {
                         id
                         src
+                    }
+                    personalAccessTokens {
+                        id
+                        name
+                        token
                     }
                 }
                 error {
@@ -77,24 +84,25 @@ const UserAccountForm = () => {
 
     const [{ loading, user }, setState] = useReducer((prev, next) => ({ ...prev, ...next }), {
         loading: true,
-        user: { data: {} }
+        user: { data: {} },
     });
+    const setIsLoading = (loading) => setState({ loading });
 
     const client = useApolloClient();
     const { showSnackbar } = useSnackbar();
     const security = useSecurity();
 
-    const onSubmit = useHandler(null, () => async formData => {
+    const onSubmit = useHandler(null, () => async (formData) => {
         setState({ loading: true });
         const { data: response } = await client.mutate({
             mutation: UPDATE_CURRENT_USER,
-            variables: { data: omit(formData, ["id"]) }
+            variables: { data: omit(formData, ["id", "personalAccessTokens"]) },
         });
         const { error } = response.security.updateCurrentUser;
         setState({ loading: false });
         if (error) {
             return showSnackbar(error.message, {
-                action: "Close"
+                action: "Close",
             });
         }
 
@@ -109,51 +117,72 @@ const UserAccountForm = () => {
     }, []);
 
     return (
-        <Form data={user.data} onSubmit={onSubmit}>
-            {({ data, form, Bind }) => (
-                <SimpleForm>
-                    {loading && <CircularProgress />}
-                    <SimpleFormHeader title={"Account"} />
-                    <SimpleFormContent>
-                        {React.createElement(auth.view, {
-                            Bind,
-                            data,
-                            fields: {
-                                firstName: (
-                                    <Bind
-                                        name="firstName"
-                                        validators={validation.create("required")}
-                                    >
-                                        <Input label={t`First Name`} />
-                                    </Bind>
-                                ),
-                                lastName: (
-                                    <Bind
-                                        name="lastName"
-                                        validators={validation.create("required")}
-                                    >
-                                        <Input label={t`Last Name`} />
-                                    </Bind>
-                                ),
-                                avatar: (
-                                    <Bind name="avatar">
-                                        <AvatarImage />
-                                    </Bind>
-                                ),
-                                email: (
-                                    <Bind name="email" validators={validation.create("required")}>
-                                        <Input label={t`E-mail`} />
-                                    </Bind>
-                                )
-                            }
-                        })}
-                    </SimpleFormContent>
-                    <SimpleFormFooter>
-                        <ButtonPrimary onClick={form.submit}>{t`Update account`}</ButtonPrimary>
-                    </SimpleFormFooter>
-                </SimpleForm>
-            )}
-        </Form>
+        <Grid>
+            <Cell span={3} />
+            <Cell span={6}>
+                <Form data={user.data} onSubmit={onSubmit}>
+                    {({ data, form, Bind, setValue }) => (
+                        <>
+                            <div style={{ marginBottom: "32px" }}>
+                                <Bind name="avatar">
+                                    <AvatarImage />
+                                </Bind>
+                            </div>
+                            <SimpleForm>
+                                {loading && <CircularProgress />}
+                                <SimpleFormHeader title={"Account"} />
+                                <SimpleFormContent>
+                                    {React.createElement(auth.view, {
+                                        Bind,
+                                        data,
+                                        fields: {
+                                            firstName: (
+                                                <Bind
+                                                    name="firstName"
+                                                    validators={validation.create("required")}
+                                                >
+                                                    <Input label={t`First Name`} />
+                                                </Bind>
+                                            ),
+                                            lastName: (
+                                                <Bind
+                                                    name="lastName"
+                                                    validators={validation.create("required")}
+                                                >
+                                                    <Input label={t`Last Name`} />
+                                                </Bind>
+                                            ),
+                                            email: (
+                                                <Bind
+                                                    name="email"
+                                                    validators={validation.create("required")}
+                                                >
+                                                    <Input label={t`E-mail`} />
+                                                </Bind>
+                                            ),
+                                            personalAccessTokens: (
+                                                <Bind name="personalAccessTokens">
+                                                    <AccuntTokens
+                                                        data={data}
+                                                        setValue={setValue}
+                                                        setFormIsLoading={setIsLoading}
+                                                    />
+                                                </Bind>
+                                            ),
+                                        },
+                                    })}
+                                </SimpleFormContent>
+                                <SimpleFormFooter>
+                                    <ButtonPrimary
+                                        onClick={form.submit}
+                                    >{t`Update account`}</ButtonPrimary>
+                                </SimpleFormFooter>
+                            </SimpleForm>
+                        </>
+                    )}
+                </Form>
+            </Cell>
+        </Grid>
     );
 };
 

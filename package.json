@@ -133,8 +133,7 @@
   "lint-staged": {
     "**/*.js": [
       "adio",
-      "prettier --write",
-      "eslint --fix",
+      "prettier --config .prettierrc.js --write",
       "git add",
       "jest --config jest.config.js --findRelatedTests"
     ]

@@ -1,7 +1,7 @@
 import { flow } from "lodash";
 import { withHooks, withName, ref, string, boolean, withFields } from "@webiny/commodo";
 
-export default ({ createBase, SecurityRole, SecurityRoles2Models }) => {
+export default ({ createBase, context }) => {
     // TODO: fix type when Commodo is migrated to TS
     const SecurityGroup: any = flow(
         withName("SecurityGroup"),
@@ -12,8 +12,8 @@ export default ({ createBase, SecurityRole, SecurityRoles2Models }) => {
             system: boolean(),
             roles: ref({
                 list: true,
-                instanceOf: [SecurityRole, "model"],
-                using: [SecurityRoles2Models, "role"]
+                instanceOf: [context.models.SecurityRole, "model"],
+                using: [context.models.SecurityRoles2Models, "role"]
             })
         })),
         withHooks({

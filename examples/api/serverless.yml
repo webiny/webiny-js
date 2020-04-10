@@ -66,29 +66,39 @@ cognito:
       - name: ReactApp
 
 security:
-  component: "@webiny/serverless-apollo-service"
+  component: "@webiny/serverless-security"
   inputs:
+    env:
+      MONGODB_SERVER: ${vars.mongodb.server}
+      MONGODB_NAME: ${vars.mongodb.name}
     region: ${vars.region}
     memory: 512
-    timeout: 30
-    webpackConfig: ./webpack.config.js
     debug: ${vars.debug}
-    plugins:
-      - factory: "@webiny/api-plugin-create-apollo-handler"
-        options: ${vars.apollo}
-      - factory: "@webiny/api-plugin-commodo-db-proxy"
-        options:
-          functionArn: ${dbProxy.arn}
-      - factory: "@webiny/api-security/plugins"
-        options: ${vars.security}
-      - factory: "@webiny/api-plugin-security-cognito"
-        options:
-          region: ${vars.region}
-          userPoolId: ${cognito.userPool.Id}
+    functions:
+      apolloService:
+        region: ${vars.region}
+        memory: 512
+        timeout: 30
+        webpackConfig: ./webpack.config.js
+        debug: ${vars.debug}
+        plugins:
+          - factory: "@webiny/api-plugin-create-apollo-handler"
+            options: ${vars.apollo}
+          - factory: "@webiny/api-plugin-commodo-db-proxy"
+            options:
+              functionArn: ${dbProxy.arn}
+          - factory: "@webiny/api-security/plugins"
+            options: ${vars.security}
+          - factory: "@webiny/api-plugin-security-cognito"
+            options:
+              region: ${vars.region}
+              userPoolId: ${cognito.userPool.Id}
 
 files:
   component: "@webiny/serverless-files/dist"
   inputs:
+    env:
+      AUTHENTICATE_BY_PAT_FUNCTION_NAME: ${security.validatePAT}
     region: ${vars.region}
     bucket: ${vars.bucket}
     functions:
@@ -135,10 +145,13 @@ i18n:
         memory: 512
         env:
           DEBUG: ${vars.debug}
+          AUTHENTICATE_BY_PAT_FUNCTION_NAME: ${security.validatePAT}
 
 pageBuilder:
   component: "@webiny/serverless-page-builder"
   inputs:
+    env:
+      AUTHENTICATE_BY_PAT_FUNCTION_NAME: ${security.validatePAT}
     region: ${vars.region}
     files: ${files}
     memory: 512
@@ -163,6 +176,8 @@ pageBuilder:
 formBuilder:
   component: "@webiny/serverless-form-builder"
   inputs:
+    env:
+      AUTHENTICATE_BY_PAT_FUNCTION_NAME: ${security.validatePAT}
     region: ${vars.region}
     files: ${files}
     i18n: ${i18n}

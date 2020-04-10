@@ -20,4 +20,12 @@ const globalSearchHotkey: GlobalSearchPreventHotkeyPlugin = {
     }
 };
 
-export default [routes, menus, scopesList, richTextEditor, i18nSitePlugins, globalSearchHotkey, install];
+export default [
+    routes,
+    menus,
+    scopesList,
+    richTextEditor,
+    i18nSitePlugins,
+    globalSearchHotkey,
+    install
+];
