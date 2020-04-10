@@ -81,7 +81,9 @@ const NewContentModelDialog: React.FC<NewContentModelDialogProps> = ({
                             </ListItemText>
                             <ListItemMeta>
                                 <ListActions>
-                                    {item.id === currentEnvironment.id && t`(Currently selected)`}
+                                    {currentEnvironment &&
+                                        item.id === currentEnvironment.id &&
+                                        t`(Currently selected)`}
                                 </ListActions>
                             </ListItemMeta>
                         </ListItem>
