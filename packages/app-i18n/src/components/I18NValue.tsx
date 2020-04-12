@@ -35,7 +35,7 @@ function getValue(valueObject?: string | I18NStringValue | I18NObjectValue): str
         return "";
     }
 
-    return valueObject.value as string || "";
+    return (valueObject.value as string) || "";
 }
 
 export function I18NValue(props: I18NValueProps): any {
