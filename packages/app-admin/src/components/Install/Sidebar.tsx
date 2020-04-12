@@ -86,7 +86,7 @@ const Sidebar = ({ allInstallers, installer, showLogin }) => {
                 items.push(loginItem);
             }
 
-            let active = installer && !showLogin && plugin.name === installer.plugin.name;
+            const active = installer && !showLogin && plugin.name === installer.plugin.name;
 
             items.push(
                 <li

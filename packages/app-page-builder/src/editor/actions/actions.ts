@@ -16,7 +16,7 @@ import {
 } from "@webiny/app-page-builder/editor/selectors";
 import { updateChildPaths } from "@webiny/app-page-builder/editor/utils";
 import undoable from "./history";
-import {Action, PbElement, PbEditorPageElementPlugin, PbPageRevision} from "@webiny/app-page-builder/types";
+import {Action, PbElement, PbEditorPageElementPlugin} from "@webiny/app-page-builder/types";
 
 export const DRAG_START = `Drag start`;
 export const DRAG_END = `Drag end`;
@@ -198,7 +198,7 @@ addMiddleware([DELETE_ELEMENT], ({ store, next, action }) => {
     store.dispatch(deactivateElement());
     const state = store.getState();
 
-    let { element } = action.payload;
+    const { element } = action.payload;
     let parent = getParentElementWithChildren(state, element.id);
 
     // Remove child from parent

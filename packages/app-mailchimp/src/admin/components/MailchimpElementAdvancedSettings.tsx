@@ -174,6 +174,7 @@ const MailchimpElementAdvancedSettings = ({ Bind }) => {
                                                 Before continuing, please enter a{" "}
                                                 <a
                                                     target={"_blank"}
+                                                    rel="noopener noreferrer"
                                                     href="https://mailchimp.com/help/about-api-keys/"
                                                 >
                                                     Mailchimp API key

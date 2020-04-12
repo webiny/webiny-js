@@ -6,7 +6,6 @@ import { Grid, Cell } from "@webiny/ui/Grid";
 import { Input } from "@webiny/ui/Input";
 import { Select } from "@webiny/ui/Select";
 import { ButtonPrimary } from "@webiny/ui/Button";
-import { usePageBuilder } from "@webiny/app-page-builder/hooks/usePageBuilder";
 import {
     SimpleForm,
     SimpleFormHeader,

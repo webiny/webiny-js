@@ -195,7 +195,7 @@ export default function undoable(reducer, rawConfig = {}) {
 
                 if (filtered) {
                     // if filtering an action, merely update the present
-                    let filteredState = newHistory(
+                    const filteredState = newHistory(
                         history.past,
                         res,
                         history.future,

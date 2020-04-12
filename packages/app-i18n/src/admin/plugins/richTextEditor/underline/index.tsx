@@ -1,6 +1,5 @@
 import * as React from "react";
 import { Editor } from "slate";
-import { Editor as SlateEditor } from "slate-react";
 import { ReactComponent as UnderlineIcon } from "./../icons/format_underlined.svg";
 import { isKeyHotkey } from "is-hotkey";
 import { I18NInputRichTextEditorPlugin } from "@webiny/app-i18n/types";
