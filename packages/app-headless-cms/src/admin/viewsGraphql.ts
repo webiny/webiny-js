@@ -26,6 +26,7 @@ export const LIST_MENU_CONTENT_GROUPS_MODELS = gql`
                 icon
                 contentModels {
                     title
+                    modelId
                     id
                 }
             }
