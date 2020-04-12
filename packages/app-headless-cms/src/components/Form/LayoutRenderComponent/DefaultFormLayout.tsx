@@ -1,13 +1,20 @@
 import React, { useState } from "react";
-import Select from "./fields/Select";
-import Radio from "./fields/Radio";
 import Input from "./fields/Input";
-import Checkbox from "./fields/Checkbox";
-import Textarea from "./fields/Textarea";
+import Switch from "./fields/Switch";
 import { BindComponentRenderProp, Form } from "@webiny/form";
 import { CmsContentModelModelField } from "@webiny/app-headless-cms/types";
+import { Grid, Cell } from "@webiny/ui/Grid";
+import { i18n } from "@webiny/app/i18n";
+const t = i18n.ns("app-headless-cms/admin/components/form-layout");
 
 import { ButtonPrimary } from "@webiny/ui/Button";
+
+import {
+    SimpleFormHeader,
+    SimpleForm,
+    SimpleFormFooter,
+    SimpleFormContent
+} from "@webiny/app-admin/components/SimpleForm";
 
 const DefaultFormLayout = ({ getFields, getDefaultValues, submit }) => {
     // Is the form in loading (submitting) state?
@@ -32,14 +39,9 @@ const DefaultFormLayout = ({ getFields, getDefaultValues, submit }) => {
     /**
      * Renders a field cell with a field element inside.
      */
-    const renderFieldCell = (field, Bind) => {
+    const renderFieldCell = ({ field, Bind, row }) => {
         return (
-            <div
-                key={field._id}
-                className={
-                    "webiny-pb-base-page-element-style webiny-pb-layout-column webiny-fb-form-layout-column"
-                }
-            >
+            <Cell span={Math.floor(12 / row.length)} key={field._id}>
                 <Bind name={field.fieldId} validators={field.validators}>
                     {bind => (
                         <React.Fragment>
@@ -51,26 +53,7 @@ const DefaultFormLayout = ({ getFields, getDefaultValues, submit }) => {
                         </React.Fragment>
                     )}
                 </Bind>
-            </div>
-        );
-    };
-
-    /**
-     * Renders hidden fields.
-     */
-    const renderHiddenField = (field, Bind) => {
-        return (
-            <Bind name={field.fieldId} validators={field.validators}>
-                {bind => (
-                    <React.Fragment>
-                        {/* Render input */}
-                        {renderFieldElement({
-                            field,
-                            bind
-                        })}
-                    </React.Fragment>
-                )}
-            </Bind>
+            </Cell>
         );
     };
 
@@ -89,51 +72,34 @@ const DefaultFormLayout = ({ getFields, getDefaultValues, submit }) => {
                 return <Input {...props} type="number" />;
             case "float":
                 return <Input {...props} type="number" />;
+            case "boolean":
+                return <Switch {...props} />;
             // ---
-            case "textarea":
-                return <Textarea {...props} />;
-
-            case "select":
-                return <Select {...props} />;
-            case "radio":
-                return <Radio {...props} />;
-            case "checkbox":
-                return <Checkbox {...props} />;
-            case "hidden":
-                return <input type="hidden" value={props.bind.value} />;
             default:
                 return <span>Cannot render field.</span>;
         }
     };
 
     return (
-        /* "onSubmit" callback gets triggered once all of the fields are valid. */
-        /* We also pass the default values for all fields via the getDefaultValues callback. */
         <Form onSubmit={submitForm} data={getDefaultValues()}>
             {({ submit, Bind }) => (
-                <div className={"webiny-fb-form"}>
-                    <>
-                        {/* Let's render all form fields. */}
-                        <div>
+                <SimpleForm data-testid={"pb-contents-form"}>
+                    <SimpleFormHeader title={"Novo rate"} />
+                    {/*{crudForm.loading && <CircularProgress />}*/}
+                    <SimpleFormContent>
+                        <Grid>
+                            {/* Let's render all form fields. */}
                             {fields.map((row, rowIndex) => (
-                                <div
-                                    key={rowIndex}
-                                    className={
-                                        "webiny-pb-base-page-element-style webiny-pb-layout-row webiny-fb-form-layout-row"
-                                    }
-                                >
-                                    {row.map(field =>
-                                        field.type !== "hidden"
-                                            ? renderFieldCell(field, Bind)
-                                            : renderHiddenField(field, Bind)
-                                    )}
-                                </div>
+                                <React.Fragment key={rowIndex}>
+                                    {row.map(field => renderFieldCell({ field, Bind, row }))}
+                                </React.Fragment>
                             ))}
-                        </div>
-
-                        <ButtonPrimary onClick={submit}>Submit</ButtonPrimary>
-                    </>
-                </div>
+                        </Grid>
+                    </SimpleFormContent>
+                    <SimpleFormFooter>
+                        <ButtonPrimary onClick={submit}>{t`Save content`}</ButtonPrimary>
+                    </SimpleFormFooter>
+                </SimpleForm>
             )}
         </Form>
     );

@@ -2,7 +2,7 @@ import * as React from "react";
 import { I18NValue } from "@webiny/app-i18n/components";
 import { CmsContentModelModelField } from "@webiny/app-headless-cms/types";
 import { BindComponentRenderProp } from "@webiny/form";
-import { Input as UiInput } from "@webiny/ui/Input";
+import { Switch as UiSwitch } from "@webiny/ui/Switch";
 
 type Props = {
     type?: string;
@@ -12,14 +12,13 @@ type Props = {
 
 const Input = (props: Props) => {
     return (
-        <UiInput
+        <UiSwitch
             {...props.bind}
             label={I18NValue({ value: props.field.label })}
-            placeholder={I18NValue({ value: props.field.placeholderText })}
             description={I18NValue({ value: props.field.helpText })}
-            type={props.type}
         />
     );
 };
 
 export default Input;
+
