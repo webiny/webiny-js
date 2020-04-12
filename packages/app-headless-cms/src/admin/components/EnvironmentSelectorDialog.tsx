@@ -3,17 +3,26 @@ import { css } from "emotion";
 import { i18n } from "@webiny/app/i18n";
 import { Dialog, DialogTitle, DialogContent } from "@webiny/ui/Dialog";
 import { useCms } from "@webiny/app-headless-cms/admin/hooks";
-import { ButtonDefault } from "@webiny/ui/Button";
+import { ButtonDefault, ButtonIcon } from "@webiny/ui/Button";
 import useReactRouter from "use-react-router";
+import { ReactComponent as DoneIcon } from "@webiny/app-headless-cms/admin/icons/__used__icons__/done-24px.svg";
+import { ReactComponent as ForwardIcon } from "@webiny/app-headless-cms/admin/icons/__used__icons__/arrow_forward-24px.svg";
+
 import {
     List,
     ListItem,
     ListItemText,
     ListItemTextPrimary,
     ListItemTextSecondary,
-    ListItemMeta,
-    ListActions
+    ListItemGraphic
 } from "@webiny/ui/List";
+
+export type NewContentModelDialogProps = {
+    open: boolean;
+    onClose: () => void;
+    onSelectViewAll?: (args: { onClose: () => void; redirect: () => void }) => void;
+    onSelectEnvironment?: (args: { onClose: () => void }) => void;
+};
 
 const t = i18n.ns("app-headless-cms/admin/components/environment-selector-dialog");
 
@@ -29,12 +38,17 @@ const centeredBottomButton = css({
     width: "100%"
 });
 
-export type NewContentModelDialogProps = {
-    open: boolean;
-    onClose: () => void;
-    onSelectViewAll?: (args: { onClose: () => void; redirect: () => void }) => void;
-    onSelectEnvironment?: (args: { onClose: () => void }) => void;
-};
+const listWrapper = css({
+    marginBottom: 10,
+    display: "flex",
+    flexDirection: "column",
+    ".mdc-list .mdc-list-item": {
+        borderBottom: "1px solid var(--mdc-theme-on-background)"
+    },
+    ".mdc-list .mdc-list-item:last-child": {
+        borderBottom: "none"
+    }
+});
 
 const NewContentModelDialog: React.FC<NewContentModelDialogProps> = ({
     open,
@@ -57,36 +71,50 @@ const NewContentModelDialog: React.FC<NewContentModelDialogProps> = ({
         >
             <DialogTitle>{t`Change environment`}</DialogTitle>
             <DialogContent>
-                <List twoLine>
-                    {environments.map(item => (
-                        <ListItem
-                            key={item.id}
-                            onClick={() => {
-                                if (typeof onSelectEnvironment === "function") {
-                                    onSelectEnvironment({
-                                        onClose
-                                    });
-                                } else {
-                                    selectEnvironment(item);
-                                    onClose();
-                                }
-                            }}
-                        >
-                            <ListItemText>
-                                <ListItemTextPrimary>{item.name}</ListItemTextPrimary>
-                                <ListItemTextSecondary>
-                                    Alias:{" "}
-                                    {item.environmentAlias ? item.environmentAlias.name : t`None`}
-                                </ListItemTextSecondary>
-                            </ListItemText>
-                            <ListItemMeta>
-                                <ListActions>
-                                    {item.id === currentEnvironment.id && t`(Currently selected)`}
-                                </ListActions>
-                            </ListItemMeta>
-                        </ListItem>
-                    ))}
-                </List>
+                <div className={listWrapper}>
+                    <List twoLine>
+                        {environments.map(item => {
+                            const selected =
+                                currentEnvironment && item.id === currentEnvironment.id;
+                            return (
+                                <ListItem
+                                    key={item.id}
+                                    onClick={() => {
+                                        if (selected) {
+                                            return;
+                                        }
+
+                                        if (typeof onSelectEnvironment === "function") {
+                                            onSelectEnvironment({
+                                                onClose
+                                            });
+                                        } else {
+                                            selectEnvironment(item);
+                                            onClose();
+                                        }
+                                    }}
+                                >
+                                    <ListItemGraphic>
+                                        {selected && (
+                                            <DoneIcon
+                                                style={{ color: "var(--mdc-theme-primary)" }}
+                                            />
+                                        )}
+                                    </ListItemGraphic>
+                                    <ListItemText>
+                                        <ListItemTextPrimary>{item.name}</ListItemTextPrimary>
+                                        <ListItemTextSecondary>
+                                            Alias:{" "}
+                                            {item.environmentAlias
+                                                ? item.environmentAlias.name
+                                                : t`None`}
+                                        </ListItemTextSecondary>
+                                    </ListItemText>
+                                </ListItem>
+                            );
+                        })}
+                    </List>
+                </div>
 
                 <div className={centeredBottomButton}>
                     <ButtonDefault
@@ -98,11 +126,14 @@ const NewContentModelDialog: React.FC<NewContentModelDialogProps> = ({
                                 });
                             } else {
                                 onClose();
-                                // Give the dialog chance to close properly.
+                                // Give the dialog a chance to close properly.
                                 setTimeout(() => history.push("/settings/cms/environments"), 250);
                             }
                         }}
-                    >{t`Manage environments`}</ButtonDefault>
+                    >
+                        <ButtonIcon icon={<ForwardIcon />} />
+                        {t`Manage environments`}
+                    </ButtonDefault>
                 </div>
             </DialogContent>
         </Dialog>
