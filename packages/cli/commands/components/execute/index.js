@@ -4,7 +4,6 @@ const { Context } = require("./Context");
 module.exports.execute = async (inputs, method, context) => {
     const projectRoot = context.paths.projectRoot;
     const { env, debug, folder } = inputs;
-    const { projectName } = require(join(projectRoot, "webiny.config.js"));
 
     // Load .env.json from project root
     await context.loadEnv(resolve(projectRoot, ".env.json"), env, { debug });
@@ -14,10 +13,13 @@ module.exports.execute = async (inputs, method, context) => {
         logger: context,
         stateRoot: join(projectRoot, ".webiny", "state"),
         stackStateRoot: join(projectRoot, ".webiny", "state", folder, env),
-        stackName: `${projectName}_${folder}`,
+        stackName: `${context.projectName}_${folder}`,
         env,
         debug
     });
+    await componentContext.init();
+
+    context.instanceId = componentContext.state.id;
 
     try {
         // Load .env.json from cwd (this will change depending on the folder you specified)

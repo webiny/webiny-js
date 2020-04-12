@@ -17,10 +17,11 @@ class Context {
         this.stackStateRoot = config.stackStateRoot;
         this.credentials = config.credentials || {};
         this.debugMode = config.debug || false;
+        this.env = config.env;
         this.state = { id: randomId() };
-        this.id = `${this.state.id}-${this.stackName}`;
+        this.id = this.state.id;
 
-        // Event Handler: Control + C
+        // Control + C
         process.on("SIGINT", async () => {
             this._status.stop("cancel");
             process.exit(1);
@@ -38,7 +39,7 @@ class Context {
         } else {
             await writeJsonFile(contextStatePath, this.state);
         }
-        this.id = `${this.state.id}-${this.stackName}`;
+        this.id = this.state.id;
     }
 
     /**

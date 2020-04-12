@@ -2,10 +2,11 @@ const fs = require("fs");
 const path = require("path");
 const { green } = require("chalk");
 const { GetEnvVars } = require("env-cmd");
+const findUp = require("find-up");
 const { PluginsContainer } = require("@webiny/plugins");
 const debug = require("debug")("webiny");
 
-const projectRoot = process.cwd();
+const projectRoot = path.dirname(findUp.sync("webiny.root.js"));
 
 class Context {
     constructor() {
@@ -14,7 +15,23 @@ class Context {
             packagesPath: this.resolve("packages")
         };
 
+        this.config = require(path.join(projectRoot, "webiny.root.js"));
+        this.projectName = this.config.projectName;
         this.plugins = new PluginsContainer();
+    }
+
+    loadUserPlugins() {
+        if (this.config.cli) {
+            const plugins = this.config.cli.plugins || [];
+            this.plugins.register(
+                ...plugins.map(plugin => {
+                    if (typeof plugin === "string") {
+                        return require(path.join(this.paths.projectRoot, plugin));
+                    }
+                    return plugin;
+                })
+            );
+        }
     }
 
     log(...args) {

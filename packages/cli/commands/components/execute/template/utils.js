@@ -1,5 +1,4 @@
-const { join, resolve } = require("path");
-const fs = require("fs");
+const { join } = require("path");
 const { isEmpty, path } = require("ramda");
 const { Graph, alg } = require("graphlib");
 const traverse = require("traverse");
@@ -253,6 +252,7 @@ const executeComponent = async (
 
         return [
             component.context.instance.id,
+            component.context.instance.stackName,
             component.context.instance.env,
             component.context.instance.resource,
             name ? kebabCase(name) : null
@@ -335,20 +335,6 @@ const syncState = async (allComponents, instance) => {
     await instance.save();
 };
 
-const findTemplate = () => {
-    if (fs.existsSync(`serverless.yml`)) {
-        return resolve(`serverless.yml`);
-    }
-
-    if (fs.existsSync(`serverless.yaml`)) {
-        return resolve(`serverless.yaml`);
-    }
-
-    throw Error(
-        `Template file was not found! Make sure your serverless file has either ".yml" or ".yaml" extension.`
-    );
-};
-
 module.exports = {
     getTemplate,
     resolveTemplate,
@@ -359,6 +345,5 @@ module.exports = {
     executeComponent,
     executeGraph,
     syncState,
-    getOutputs,
-    findTemplate
+    getOutputs
 };

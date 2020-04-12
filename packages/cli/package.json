@@ -23,6 +23,7 @@
     "env-cmd": "^9.0.3",
     "execa": "^2.0.5",
     "figures": "^3.2.0",
+    "find-up": "^4.1.0",
     "glob": "^7.1.4",
     "graphlib": "^2.1.7",
     "load-json-file": "^6.2.0",
