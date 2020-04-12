@@ -1,0 +1,13 @@
+{
+  "name": "[PACKAGE_NAME]",
+  "version": "1.0.0",
+  "description": "",
+  "license": "MIT",
+  "dependencies": {
+    "@webiny/http-handler": "^2.1.0",
+    "@webiny/http-handler-apollo-server": "^1.0.0",
+    "@webiny/api-plugin-commodo-db-proxy": "^2.0.4",
+    "@webiny/api-security": "^3.1.0",
+    "@webiny/project-utils": "^1.0.1"
+  }
+}

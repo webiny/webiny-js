@@ -9,12 +9,13 @@ if (!process.env.DEBUG.includes(WEBINY)) {
 }
 
 const tracking = require("./tracking");
+const scaffold = require("./scaffold");
 const deploy = require("./components/deploy");
 const remove = require("./components/remove");
 const run = require("./run");
 
 module.exports.createCommands = (yargs, context) => {
-    context.plugins.register(deploy, run, remove, tracking);
+    context.plugins.register(deploy, run, remove, scaffold, tracking);
 
     context.loadUserPlugins();
 
