@@ -17,6 +17,7 @@ const ContentModelsView = lazy(() => import("../views/ContentModels/ContentModel
 const ContentModelGroupsView = lazy(() => import("../views/ContentModelGroups/ContentModelGroups"));
 const EnvironmentsView = lazy(() => import("../views/Environments/Environments"));
 const EnvironmentAliasesView = lazy(() => import("../views/EnvironmentAliases/EnvironmentAliases"));
+const ContentView = lazy(() => import("../views/Content/Content"));
 
 const plugins: RoutePlugin[] = [
     {
@@ -34,6 +35,28 @@ const plugins: RoutePlugin[] = [
                             </Helmet>
                             <Loader>
                                 <ContentModelGroupsView />
+                            </Loader>
+                        </AdminLayout>
+                    </SecureRoute>
+                )}
+            />
+        )
+    },
+    {
+        name: "route-cms-content-models-manage",
+        type: "route",
+        route: (
+            <Route
+                exact
+                path={"/cms/content-models/manage/:modelId"}
+                render={() => (
+                    <SecureRoute roles={["headless-cms-content-models"]}>
+                        <AdminLayout>
+                            <Helmet>
+                                <title>{t`Content`}</title>
+                            </Helmet>
+                            <Loader>
+                                <ContentView />
                             </Loader>
                         </AdminLayout>
                     </SecureRoute>
