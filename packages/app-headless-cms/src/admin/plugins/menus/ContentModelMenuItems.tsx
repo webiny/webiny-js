@@ -34,7 +34,7 @@ const ContentModelMenuItems = function({ Section, Item }) {
                     <Item
                         key={contentModel.id}
                         label={contentModel.title}
-                        path={`/cms/content-models/manage/${contentModel.id}`}
+                        path={`/cms/content-models/manage/${contentModel.modelId}`}
                     />
                 ))}
             </Section>
