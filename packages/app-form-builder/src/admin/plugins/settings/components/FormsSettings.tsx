@@ -79,8 +79,10 @@ const FormsSettings = () => {
                                                                         <a
                                                                             href="https://www.google.com/recaptcha/admin"
                                                                             target={"_blank"}
+                                                                            rel="noopener noreferrer"
                                                                         >
-                                                                            Don't have a site key?
+                                                                            Don&apos;t have a site
+                                                                            key?
                                                                         </a>
                                                                     </>
                                                                 }
@@ -101,8 +103,10 @@ const FormsSettings = () => {
                                                                         <a
                                                                             href="https://www.google.com/recaptcha/admin"
                                                                             target={"_blank"}
+                                                                            rel="noopener noreferrer"
                                                                         >
-                                                                            Don't have a site key?
+                                                                            Don&apos;t have a site
+                                                                            key?
                                                                         </a>
                                                                     </>
                                                                 }

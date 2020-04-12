@@ -79,7 +79,7 @@ export default async ({ context, INSTALL_EXTRACT_DIR }) => {
                 new Promise(async (promise, reject) => {
                     try {
                         await console.log(`saveElements: started with chunk index ${i}`);
-                        let filesChunk = filesChunks[i];
+                        const filesChunk = filesChunks[i];
 
                         // 1. Get pre-signed POST payloads for current files chunk.
                         const response = await client.request(UPLOAD_FILES, {

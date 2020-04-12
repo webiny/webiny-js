@@ -66,7 +66,7 @@ const LinkTooltip = ({ editor, onChange, activatePlugin }) => {
         if (menu) {
             const editorRect = menu.parentNode.getBoundingClientRect();
             const menuRect = menu.getBoundingClientRect();
-            let { top, left, height } = getSelectionRect();
+            const { top, left, height } = getSelectionRect();
 
             const menuRight = left + menuRect.width;
             const diff = editorRect.right - menuRight;

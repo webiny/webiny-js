@@ -1,6 +1,6 @@
 import React from "react";
 
-export const createApp = ({ plugins }) => {
+export const createApp = () => {
     const App = () => {
         return <span>A simple component!!!</span>;
     };

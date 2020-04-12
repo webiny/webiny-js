@@ -67,7 +67,7 @@ const EditFieldOptionDialog = (props: EditFieldOptionDialogProps) => {
                                                     }
 
                                                     for (let i = 0; i < options.length; i++) {
-                                                        let current = options[i];
+                                                        const current = options[i];
                                                         if (
                                                             current.value === value &&
                                                             i !== optionIndex

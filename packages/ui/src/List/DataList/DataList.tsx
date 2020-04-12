@@ -5,7 +5,7 @@ import Loader from "./Loader";
 import NoData from "./NoData";
 import { Typography } from "@webiny/ui/Typography";
 import { css } from "emotion";
-
+import noop from "lodash/noop";
 import isEmpty from "lodash/isEmpty";
 
 import { Checkbox } from "@webiny/ui/Checkbox";
@@ -376,7 +376,7 @@ DataList.defaultProps = {
     sorters: null,
     setSorters: null,
     actions: null,
-    multiSelectAll: () => {},
+    multiSelectAll: noop,
     isAllMultiSelected: () => false,
     isNoneMultiSelected: () => false,
     loader: <Loader />,

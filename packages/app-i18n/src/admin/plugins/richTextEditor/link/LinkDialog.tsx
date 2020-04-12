@@ -20,8 +20,9 @@ const LinkDialog = props => {
 
     let linkData = null;
     if (activePlugin) {
-        let { selection, inlines, anchorText } = activePlugin.value;
-        let link = inlines.find(isLink);
+        const { selection, inlines } = activePlugin.value;
+        let { anchorText } = activePlugin.value;
+        const link = inlines.find(isLink);
 
         if (typeof anchorText !== "string") {
             anchorText = anchorText.getText();

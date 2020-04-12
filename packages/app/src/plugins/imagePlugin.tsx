@@ -98,8 +98,8 @@ const imagePlugin: ImageComponentPlugin = {
         return src + "?" + params;
     },
     render(props: { [key: string]: any }) {
-        let { transform, srcSet, ...imageProps } = props;
-
+        const { transform, srcSet : srcSetInitial, ...imageProps } = props;
+        let srcSet = srcSetInitial;
         const src = imageProps.src;
         if (srcSet && srcSet === "auto") {
             srcSet = {};

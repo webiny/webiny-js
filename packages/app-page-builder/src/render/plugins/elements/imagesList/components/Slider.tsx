@@ -1,4 +1,6 @@
 // @ts-nocheck
+/* eslint-disable */
+
 import * as React from "react";
 
 const Slider = ({ data }) => {

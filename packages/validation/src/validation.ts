@@ -157,12 +157,12 @@ class Validation {
      * @private
      */
     __parseValidateProperty(validators: string): ParsedValidators {
-        let validate: Array<string> = validators.split(",");
+        const validate: Array<string> = validators.split(",");
 
         const parsedValidators: ParsedValidators = {};
         validate.forEach((v: string) => {
-            let params = _.trim(v).split(":");
-            let vName = params.shift();
+            const params = _.trim(v).split(":");
+            const vName = params.shift();
             parsedValidators[vName] = params;
         });
         return parsedValidators;

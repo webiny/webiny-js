@@ -26,7 +26,7 @@ const onOffsetChange = monitor => () => {
     dragPreviewRef.style["-webkit-transform"] = transform;
 };
 
-export default () => {
+export default function DragPreview() {
     const [dragHelperOpacity, setDragHelperOpacity] = useState(0);
     const { isDragging } = useDragLayer((monitor: DragLayerMonitor) => {
         if (!subscribedToOffsetChange) {
@@ -85,4 +85,4 @@ export default () => {
             </div>
         </div>
     );
-};
+}

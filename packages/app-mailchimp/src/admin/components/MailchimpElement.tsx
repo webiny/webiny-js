@@ -6,7 +6,7 @@ import { getPlugins } from "@webiny/plugins";
 import { PbPageElementMailchimpComponentPlugin } from "../../types";
 
 const MailchimpElement = React.memo(({ element }: any) => {
-    let selected = get(element, "data.settings.component", get(element, "settings.component"));
+    const selected = get(element, "data.settings.component", get(element, "settings.component"));
     const component = getPlugins<PbPageElementMailchimpComponentPlugin>(
         "pb-page-element-mailchimp-component"
     ).find(cmp => cmp.componentName === selected);
