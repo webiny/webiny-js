@@ -3,11 +3,7 @@ import { Plugin } from "@webiny/plugins/types";
 import { ReactElement } from "react";
 
 import { I18NStringValue } from "@webiny/app-i18n/types";
-import {
-    BindComponent,
-    FormChildrenFunctionParams,
-    Form,
-} from "@webiny/form";
+import { BindComponent, FormChildrenFunctionParams, Form } from "@webiny/form";
 import { ApolloClient } from "apollo-client";
 import { IconPrefix, IconName } from "@fortawesome/fontawesome-svg-core";
 
@@ -84,22 +80,6 @@ export type FbBuilderFieldPlugin = Plugin & {
     };
 };
 
-export type FbFormDetailsPluginRenderParams = {
-    refreshForms: () => Promise<void>;
-    form: CmsContentModelModel;
-    loading: boolean;
-};
-
-export type FbFormDetailsPluginType = Plugin & {
-    type: "forms-form-details-revision-content";
-    render: (props: FbFormDetailsPluginRenderParams) => React.ReactNode;
-};
-
-export type FbFormDetailsSubmissionsPlugin = Plugin & {
-    type: "forms-form-details-submissions";
-    render: (props: { form: CmsContentModelModel }) => React.ReactNode;
-};
-
 export type CmsContentModelModel = {
     id: FieldIdType;
     version: number;
@@ -128,7 +108,7 @@ export type CmsContentModelModelField = {
     placeholderText?: I18NStringValue;
     validation?: CmsBuilderFieldValidator[];
     options?: Array<{ value: string; label: I18NStringValue }>;
-    settings: {[key: string]: any};
+    settings: { [key: string]: any };
 };
 
 export type FbFormSubmissionData = {
@@ -189,8 +169,6 @@ export type FormRenderPropsType = {
 export type FormComponentPropsType = {
     preview?: boolean;
     data?: any;
-    revisionId?: string;
-    parentId?: string;
     slug?: string;
 };
 
@@ -206,14 +184,6 @@ export type FormSubmitResponseType = {
         message: string;
         code: string;
     };
-};
-
-export type FormLoadComponentPropsType = {
-    preview?: boolean;
-    revisionId?: string;
-    parentId?: string;
-    slug?: string;
-    version?: number;
 };
 
 export type UseContentModelEditorReducerStateType = {
