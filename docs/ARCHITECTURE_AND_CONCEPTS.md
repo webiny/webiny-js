@@ -67,7 +67,7 @@ If you open `<webiny-js>/package.json`, you'll find a `postinstall` script. That
 
 This one tiny utility solves a lot of problems with package resolution across the entire monorepo. With this mechanism in place, we can safely rely on native node.js module resolution without dirty hacks, path mapping, webpack aliases, etc.
 
-One thing to be aware of is that _your packages must be built_ if you wnt to use them!
+One thing to be aware of is that _your packages must be built_ if you want to use them!
 
 ## Infrastructure
 
@@ -100,9 +100,9 @@ Inside the state folder you'll also find a file called `_.json` which contains a
 
 #### Hooks
 
-Although stacks can be standalone, they can also depend on other stacks. In Webiny, the stacks themselves may seem standalone but React apps depend on API URLs and other data from the `api` stack. This data needs to be available when `webpack` starts bundling the related app
+Although stacks can be standalone, they can also depend on other stacks. In Webiny, the stacks themselves may seem standalone but React apps depend on API URLs and other data from the `api` stack. This data needs to be available when `webpack` starts bundling the related app. To provide data to a React app, we utilise environment variables, which are stored in `.env.json` in each app. Once the `api` stack is deployed, we somehow need to grad its state, and inject the values we need into our app's `.env.json`.
 
-So to automate data sharing/copying, we introduced a system of `hooks`.
+To overcome this problem, we introduced a system of `hooks`.
 
 `api` stack has a file called `webiny.config.js`, which defines which hooks we need to process after stack deployment is completed. If you look at that file, you'll see something like this:
 
@@ -114,4 +114,4 @@ module.exports = {
 
 This means that we want to process hooks defined in each of these directories. What our deployment process does is, it tries to load `webiny.config.js` file in each of these folders, and executes the `hooks.stateChanged` callback (if it exists) and passes the environment being deployed, and the complete stack state.
 
-The hook implementation is up to the developer, but we provide the default implementation in our `@webiny/project-utils` package.
+The hook implementation is up to the developer, but we provide the default implementation in our `@webiny/project-utils` package and you can see how it's being used in `<webiny-js>/sample-project/apps/admin/webiny.config.js`.
