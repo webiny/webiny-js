@@ -38,6 +38,11 @@ module.exports = async ({ name, tag }) => {
 
     console.log(`📦 Creating a new Webiny project in ${green(root)}...`);
 
+    const projectName = name
+        .toLowerCase()
+        .replace(/\s\s+/g, "-")
+        .replace(/_/g, "-");
+
     const activityId = uniqueId();
     await trackActivity({ activityId, type: "create-project-start", cliVersion: version });
 
@@ -51,7 +56,7 @@ module.exports = async ({ name, tag }) => {
         "README.md",
         "example.gitignore",
         "example.env.json",
-        "webiny.js",
+        "webiny.config.js",
         ".prettierrc.js",
         "package.json"
     ];
@@ -78,30 +83,37 @@ module.exports = async ({ name, tag }) => {
         fs.renameSync(envExample, "api/.env.json");
     }
 
-    // Update API serverless.yml
-    const apiId = getUniqueId();
-    let apiYaml = getFileContents("api/serverless.yml");
-    apiYaml = apiYaml.replace(/\[PROJECT_ID\]/g, apiId);
-    writeFileContents("api/serverless.yml", apiYaml);
-    writeJsonFile.sync(resolve("api/.webiny/_.json"), { id: apiId });
+    // Update project name
+    let webinyConfig = getFileContents("webiny.config.js");
+    webinyConfig = webinyConfig.replace(/\[PROJECT_NAME\]/g, projectName);
+    writeFileContents("webiny.config.js", webinyConfig);
+
+    const projectId = getUniqueId();
+    writeJsonFile.sync(resolve(".webiny/state/_.json"), { id: projectId });
+
+    // Update API resources.js
+    let apiStack = getFileContents("api/resources.js");
+    apiStack = apiStack.replace(/\[PROJECT_ID\]/g, projectId);
+    apiStack = apiStack.replace(/\[PROJECT_NAME\]/g, projectName);
+    writeFileContents("api/resources.js", apiStack);
 
     // Update api/.env.json
     let apiEnvFile = getFileContents("api/.env.json");
     apiEnvFile = apiEnvFile.replace("[JWT_SECRET]", jwtSecret);
-    apiEnvFile = apiEnvFile.replace("[BUCKET]", `webiny-files-${apiId}`);
+    apiEnvFile = apiEnvFile.replace("[BUCKET]", `${projectId}-${projectName}-files`);
     writeFileContents("api/.env.json", apiEnvFile);
 
     // Update .env.json
     let envFile = getFileContents(".env.json");
-    envFile = envFile.replace("[DATABASE]", `webiny-${apiId}`);
+    envFile = envFile.replace("[DATABASE]", `${projectId}-${projectName}`);
     writeFileContents(".env.json", envFile);
 
-    // Update apps serverless.yml
-    let appsYaml = getFileContents("apps/serverless.yml");
-    const appsId = getUniqueId();
-    appsYaml = appsYaml.replace(/\[PROJECT_ID\]/g, appsId);
-    writeFileContents("apps/serverless.yml", appsYaml);
-    writeJsonFile.sync(resolve("apps/.webiny/_.json"), { id: appsId });
+    // Update apps resources.js
+    let appsYaml = getFileContents("apps/resources.js");
+    appsYaml = appsYaml.replace(/\[PROJECT_ID\]/g, projectId);
+    writeFileContents("apps/resources.js", appsYaml);
+
+    return;
 
     // Inject the exact package version numbers based on the tag
     let spinner = ora(`Loading Webiny package versions...`).start();
