@@ -100,7 +100,7 @@ Inside the state folder you'll also find a file called `_.json` which contains a
 
 #### Hooks
 
-Although stacks can be standalone, they can also depend on other stacks. In Webiny, the stacks themselves may seem standalone but React apps depend on API URLs and other data from the `api` stack. This data needs to be available when `webpack` starts bundling the related app. To provide data to a React app, we utilise environment variables, which are stored in `.env.json` in each app. Once the `api` stack is deployed, we somehow need to grad its state, and inject the values we need into our app's `.env.json`.
+Although stacks can be standalone, they can also depend on other stacks. In Webiny, the stacks themselves may seem standalone but React apps depend on API URLs and other data from the `api` stack. This data needs to be available when `webpack` starts bundling the related app. To provide data to a React app, we utilise environment variables, which are stored in `.env.json` in each app. Once the `api` stack is deployed, we somehow need to grab its state, and inject the values we need into our app's `.env.json`.
 
 To overcome this problem, we introduced a system of `hooks`.
 
