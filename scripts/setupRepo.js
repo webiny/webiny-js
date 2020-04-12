@@ -7,13 +7,12 @@ const writeJson = require("write-json-file");
 const uuid = require("uuid/v4");
 const execa = require("execa");
 
-/**
- * - copy example .env.json files
- */
+const PROJECT_FOLDER = "sample-project";
+
 (async () => {
     console.log(`✍️  Writing environment config files...`);
     // Create root .env.json
-    const rootEnvJsonPath = path.resolve("sample-project", ".env.json");
+    const rootEnvJsonPath = path.resolve(PROJECT_FOLDER, ".env.json");
     const rootExampleEnvJsonPath = path.resolve(
         "packages",
         "cli",
@@ -29,8 +28,8 @@ const execa = require("execa");
     }
 
     // Create API .env.json
-    const envJsonPath = path.resolve("sample-project", "api", ".env.json");
-    const exampleEnvJsonPath = path.resolve("sample-project", "api", "example.env.json");
+    const envJsonPath = path.resolve(PROJECT_FOLDER, "api", ".env.json");
+    const exampleEnvJsonPath = path.resolve(PROJECT_FOLDER, "api", "example.env.json");
     if (fs.existsSync(envJsonPath)) {
         console.log(`⚠️  ${green("sample-project/api/.env.json")} already exists, skipping.`);
     } else {
@@ -42,7 +41,7 @@ const execa = require("execa");
             .slice(0, 60);
 
         const envJson = await loadJson.sync(envJsonPath);
-        envJson.default.S3_BUCKET = `webiny-js-dev-${uuid()
+        envJson.default.S3_BUCKET = `webiny-js-files-${uuid()
             .split("-")
             .shift()}`;
         envJson.default.JWT_SECRET = jwtSecret;
@@ -51,18 +50,27 @@ const execa = require("execa");
     }
 
     // Create `admin` .env.json
-    const adminEnvJsonPath = path.resolve("sample-project", "apps", "admin", ".env.json");
-    const exampleAdminEnvJsonPath = path.resolve("sample-project", "apps", "admin", "example.env.json");
+    const adminEnvJsonPath = path.resolve(PROJECT_FOLDER, "apps", "admin", ".env.json");
+    const exampleAdminEnvJsonPath = path.resolve(
+        PROJECT_FOLDER,
+        "apps",
+        "admin",
+        "example.env.json"
+    );
     if (fs.existsSync(adminEnvJsonPath)) {
-        console.log(`⚠️  ${green("sample-project/apps/admin/.env.json")} already exists, skipping.`);
+        console.log(
+            `⚠️  ${green("sample-project/apps/admin/.env.json")} already exists, skipping.`
+        );
     } else {
         fs.copyFileSync(exampleAdminEnvJsonPath, adminEnvJsonPath);
-        console.log(`✅️ ${green("sample-project/apps/admin/.env.json")} was created successfully!`);
+        console.log(
+            `✅️ ${green("sample-project/apps/admin/.env.json")} was created successfully!`
+        );
     }
 
     // Create `site` .env.json
-    const siteEnvJsonPath = path.resolve("sample-project", "apps", "site", ".env.json");
-    const exampleSiteEnvJsonPath = path.resolve("sample-project", "apps", "site", "example.env.json");
+    const siteEnvJsonPath = path.resolve(PROJECT_FOLDER, "apps", "site", ".env.json");
+    const exampleSiteEnvJsonPath = path.resolve(PROJECT_FOLDER, "apps", "site", "example.env.json");
     if (fs.existsSync(siteEnvJsonPath)) {
         console.log(`⚠️  ${green("sample-project/apps/site/.env.json")} already exists, skipping.`);
     } else {

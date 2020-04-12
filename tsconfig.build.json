@@ -124,7 +124,7 @@
     "**/__tests__/**",
     "dist",
     "**jest**",
-    "./components",
+    "./packages/serverless**",
     "./packages/cli",
     "./packages/project-utils",
     "**resources.js"
