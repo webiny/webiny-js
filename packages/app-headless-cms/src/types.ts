@@ -150,17 +150,22 @@ export type FormRenderCmsContentModelModelField = CmsContentModelModelField & {
     validators: Array<(value: any) => boolean>;
 };
 
-export type FormRenderPropsType = {
+export type CmsContentModelFormProps = {
     getFieldById: Function;
     getFieldByFieldId: Function;
-    getFields: () => Array<Array<FormRenderCmsContentModelModelField>>;
     getDefaultValues: () => { [key: string]: any };
-    formData: CmsContentModelModel;
+    getFields: () => Array<Array<FormRenderCmsContentModelModelField>>;
+    loading: boolean;
+    onSubmit: () => void;
+    data: { [key: string]: any };
 };
 
-export type FbFormRenderComponentProps = {
+export type CmsContentModelForm = {
+    loading?: boolean;
     preview?: boolean;
-    data?: CmsContentModelModel;
+    contentModel: CmsContentModelModel;
+    data?: { [key: string]: any };
+    onSubmit?: () => void;
 };
 
 export type UseContentModelEditorReducerStateType = {
