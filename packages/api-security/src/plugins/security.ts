@@ -37,7 +37,7 @@ const shieldMiddleware: GraphQLMiddlewarePlugin = {
 const middlewarePlugin = (options): GraphQLContextPlugin => ({
     type: "graphql-context",
     name: "graphql-context-security",
-    preApply: async context => {
+    apply: async context => {
         if (!context.event) {
             return;
         }

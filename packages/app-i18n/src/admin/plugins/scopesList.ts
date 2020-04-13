@@ -12,7 +12,7 @@ export default [
                 scope: "i18n:locale:crud",
                 title: t`I18N locales CRUD`,
                 description: t`Allows CRUD operations on all locales.`
-            },
+            }
         ]
     } as SecurityScopesListPlugin
 ];

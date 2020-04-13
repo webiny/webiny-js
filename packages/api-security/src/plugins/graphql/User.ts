@@ -1,15 +1,47 @@
-import { resolveGet, resolveList } from "@webiny/commodo-graphql";
+import { resolveDelete, resolveGet, resolveList } from "@webiny/commodo-graphql";
 import resolveLoginUsingIdToken from "./userResolvers/loginUsingIdToken";
 import resolveGetCurrentUser from "./userResolvers/getCurrentUser";
 import resolveUpdateCurrentSecurityUser from "./userResolvers/updateCurrentUser";
 import resolveCreateUser from "./userResolvers/createUser";
 import resolveUpdateUser from "./userResolvers/updateUser";
 import resolveDeleteUser from "./userResolvers/deleteUser";
+import resolveCreatePAT from "./userResolvers/PersonalAccessTokens/createPAT";
+import resolveUpdatePAT from "./userResolvers/PersonalAccessTokens/updatePAT";
+import resolveDeletePAT from "./userResolvers/PersonalAccessTokens/deletePAT";
 
-const userFetcher = ctx => ctx.models.SecurityUser;
+const userFetcher = (ctx) => ctx.models.SecurityUser;
 
 export default {
     typeDefs: /* GraphQL */ `
+        # Personal Access Token type
+        type PersonalAccessToken {
+            id: ID
+            user: SecurityUser
+            name: String
+            token: String
+            createdOn: DateTime
+        }
+
+        input PersonalAccessTokenInput {
+            name: String
+        }
+
+        type PersonalAccessTokenCreationData {
+            pat: PersonalAccessToken
+            # The full token - you only receive it once!
+            token: String
+        }
+
+        type PersonalAccessTokenCreationResponse {
+            data: PersonalAccessTokenCreationData
+            error: SecurityUserError
+        }
+
+        type PersonalAccessTokenResponse {
+            data: PersonalAccessToken
+            error: SecurityUserError
+        }
+
         type SecurityUserLogin {
             token: String
             expiresOn: Int
@@ -35,6 +67,7 @@ export default {
             roles: [SecurityRole]
             scopes: [String]
             access: SecurityUserAccess
+            personalAccessTokens: [PersonalAccessToken]
             createdOn: DateTime
         }
 
@@ -136,28 +169,40 @@ export default {
             updateUser(id: ID!, data: SecurityUserInput!): SecurityUserResponse
 
             deleteUser(id: ID!): SecurityUserDeleteResponse
+
+            createPAT(name: String!, userId: ID): PersonalAccessTokenCreationResponse
+            updatePAT(id: ID!, data: PersonalAccessTokenInput!): PersonalAccessTokenResponse
+            deletePAT(id: ID!): SecurityUserDeleteResponse
         }
     `,
     resolvers: {
+        PersonalAccessToken: {
+            token: (pat) => {
+                return pat.token.substr(-4);
+            },
+        },
         SecurityUser: {
             __resolveReference(reference, context) {
                 return userFetcher(context).findById(reference.id);
             },
             avatar({ avatar }) {
                 return avatar ? { __typename: "File", id: avatar } : null;
-            }
+            },
         },
         SecurityQuery: {
             getCurrentUser: resolveGetCurrentUser,
             getUser: resolveGet(userFetcher),
-            listUsers: resolveList(userFetcher)
+            listUsers: resolveList(userFetcher),
         },
         SecurityMutation: {
             loginUsingIdToken: resolveLoginUsingIdToken(userFetcher),
             updateCurrentUser: resolveUpdateCurrentSecurityUser,
             createUser: resolveCreateUser(userFetcher),
             updateUser: resolveUpdateUser(userFetcher),
-            deleteUser: resolveDeleteUser(userFetcher)
-        }
-    }
+            deleteUser: resolveDeleteUser(userFetcher),
+            createPAT: resolveCreatePAT,
+            updatePAT: resolveUpdatePAT,
+            deletePAT: resolveDeletePAT,
+        },
+    },
 };

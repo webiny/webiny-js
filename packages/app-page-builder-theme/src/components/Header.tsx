@@ -21,7 +21,10 @@ const Header = () => {
 
                 return (
                     <React.Fragment>
-                        <div className={"webiny-pb-section-header"} data-testid={"pb-desktop-mobile-headers"}>
+                        <div
+                            className={"webiny-pb-section-header"}
+                            data-testid={"pb-desktop-mobile-headers"}
+                        >
                             <DesktopHeader menuName={menuName} name={name} logo={logo} />
                             <MobileHeader
                                 menuName={menuName}

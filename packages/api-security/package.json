@@ -37,6 +37,7 @@
     "fsevents": "^1.2.4"
   },
   "publishConfig": {
+    "directory": "./dist",
     "access": "public"
   },
   "scripts": {

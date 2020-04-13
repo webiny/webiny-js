@@ -10,6 +10,7 @@ type Props = {
     spinnerColor: string;
     spinnerWidth: number;
     visible: boolean;
+    style?: React.CSSProperties;
 };
 
 const SpinnerWrapper = styled("div")({
@@ -20,7 +21,7 @@ const SpinnerWrapper = styled("div")({
     opacity: 0.92,
     top: 0,
     left: 0,
-    zIndex: 10,
+    zIndex: 3,
     "> div": {
         position: "absolute",
         top: "50%",

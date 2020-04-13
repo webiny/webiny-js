@@ -53,17 +53,17 @@ const plugin: GraphQLSchemaPlugin = {
         resolvers: merge(
             {
                 Query: {
-                    security: emptyResolver
+                    security: emptyResolver,
                 },
                 Mutation: {
-                    security: emptyResolver
+                    security: emptyResolver,
                 },
             },
             install.resolvers,
             role.resolvers,
             group.resolvers,
             user.resolvers
-        )
+        ),
     },
     security: {
         shield: {
@@ -73,7 +73,7 @@ const plugin: GraphQLSchemaPlugin = {
                 getRole: hasScope("security:role:crud"),
                 listRoles: hasScope("security:role:crud"),
                 getUser: hasScope("security:user:crud"),
-                listUsers: hasScope("security:user:crud")
+                listUsers: hasScope("security:user:crud"),
             },
             SecurityMutation: {
                 createGroup: hasScope("security:group:crud"),
@@ -84,10 +84,9 @@ const plugin: GraphQLSchemaPlugin = {
                 deleteRole: hasScope("security:role:crud"),
                 createUser: hasScope("security:user:crud"),
                 updateUser: hasScope("security:user:crud"),
-                deleteUser: hasScope("security:user:crud")
-            }
-        }
-    }
+            },
+        },
+    },
 };
 
 export default plugin;
