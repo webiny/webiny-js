@@ -3,6 +3,25 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.0.4](https://github.com/webiny/webiny-js/compare/@webiny/api-i18n@3.0.4-next.0...@webiny/api-i18n@3.0.4) (2020-04-03)
+
+**Note:** Version bump only for package @webiny/api-i18n
+
+
+
+
+
+## [3.0.4-next.0](https://github.com/webiny/webiny-js/compare/@webiny/api-i18n@3.0.3...@webiny/api-i18n@3.0.4-next.0) (2020-04-03)
+
+
+### Bug Fixes
+
+* improve error messaging  ([#750](https://github.com/webiny/webiny-js/issues/750)) ([18d4fdb](https://github.com/webiny/webiny-js/commit/18d4fdbce356cde916f7ec57cabbe24bb06260f6)), closes [#748](https://github.com/webiny/webiny-js/issues/748)
+
+
+
+
+
 ## [3.0.3](https://github.com/webiny/webiny-js/compare/@webiny/api-i18n@3.0.3-next.0...@webiny/api-i18n@3.0.3) (2020-03-09)
 
 **Note:** Version bump only for package @webiny/api-i18n

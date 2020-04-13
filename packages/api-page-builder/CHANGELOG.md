@@ -3,6 +3,25 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.1.1](https://github.com/webiny/webiny-js/compare/@webiny/api-page-builder@3.1.1-next.0...@webiny/api-page-builder@3.1.1) (2020-04-03)
+
+**Note:** Version bump only for package @webiny/api-page-builder
+
+
+
+
+
+## [3.1.1-next.0](https://github.com/webiny/webiny-js/compare/@webiny/api-page-builder@3.1.0...@webiny/api-page-builder@3.1.1-next.0) (2020-04-03)
+
+
+### Bug Fixes
+
+* refresh "/" if the homepage was published ([#780](https://github.com/webiny/webiny-js/issues/780)) ([282399f](https://github.com/webiny/webiny-js/commit/282399fcbe5d120fbf71b032088ed003aa6ce771))
+
+
+
+
+
 # [3.1.0](https://github.com/webiny/webiny-js/compare/@webiny/api-page-builder@3.1.0-next.0...@webiny/api-page-builder@3.1.0) (2020-03-09)
 
 **Note:** Version bump only for package @webiny/api-page-builder

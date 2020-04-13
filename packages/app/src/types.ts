@@ -40,6 +40,11 @@ export type ImageComponentPlugin = Plugin & {
     presets: { [key: string]: any };
 };
 
+/**
+ * Enables registering new routes.
+ * @see https://docs.webiny.com/docs/webiny-apps/admin/development/plugins-reference/app#route
+ */
 export type RoutePlugin = Plugin & {
+    type: "route";
     route: React.ReactElement;
 };

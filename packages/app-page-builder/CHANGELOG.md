@@ -3,6 +3,25 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.2.1](https://github.com/webiny/webiny-js/compare/@webiny/app-page-builder@3.2.1-next.0...@webiny/app-page-builder@3.2.1) (2020-04-03)
+
+**Note:** Version bump only for package @webiny/app-page-builder
+
+
+
+
+
+## [3.2.1-next.0](https://github.com/webiny/webiny-js/compare/@webiny/app-page-builder@3.2.0...@webiny/app-page-builder@3.2.1-next.0) (2020-04-03)
+
+
+### Bug Fixes
+
+* add missing TS types ([93ef1ef](https://github.com/webiny/webiny-js/commit/93ef1ef7bf52cde5a3d860c190d7c0880ab3e807))
+
+
+
+
+
 # [3.2.0](https://github.com/webiny/webiny-js/compare/@webiny/app-page-builder@3.2.0-next.0...@webiny/app-page-builder@3.2.0) (2020-03-09)
 
 **Note:** Version bump only for package @webiny/app-page-builder
