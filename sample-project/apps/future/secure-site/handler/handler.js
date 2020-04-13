@@ -17,7 +17,7 @@ const createResponse = ({ type, body, isBase64Encoded, headers }) => {
 };
 
 module.exports.handler = async event => {
-    let key = event.pathParameters ? event.pathParameters.key : "";
+    const key = event.pathParameters ? event.pathParameters.key : "";
     let type = mime.lookup(key);
     let isBase64Encoded = false;
 
@@ -53,7 +53,7 @@ module.exports.handler = async event => {
     const filePath = path.resolve(key);
 
     try {
-        let buffer = await new Promise((resolve, reject) => {
+        const buffer = await new Promise((resolve, reject) => {
             fs.readFile(filePath, (err, data) => {
                 if (err) return reject(err);
                 resolve(data);

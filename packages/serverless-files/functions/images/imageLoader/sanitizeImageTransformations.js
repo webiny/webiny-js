@@ -7,7 +7,7 @@ module.exports = args => {
     const transformations = {};
 
     if (args) {
-        let width = parseInt(args.width);
+        const width = parseInt(args.width);
         if (width > 0) {
             transformations.width = SUPPORTED_IMAGE_RESIZE_WIDTHS[0];
             let i = SUPPORTED_IMAGE_RESIZE_WIDTHS.length;

@@ -19,7 +19,7 @@ module.exports = handler => async event => {
     try {
         const { data, statusCode, headers = {} } = await handler(event);
         const isBuffer = Buffer.isBuffer(data);
-        let body = isBuffer
+        const body = isBuffer
             ? data.toString("base64")
             : JSON.stringify({
                   error: false,

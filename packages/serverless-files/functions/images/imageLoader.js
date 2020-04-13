@@ -7,7 +7,7 @@ const IMAGE_TRANSFORMER_LAMBDA_NAME = process.env.IMAGE_TRANSFORMER_LAMBDA_NAME;
 const callImageTransformerLambda = async ({ key, transformations }) => {
     const env = getEnvironment();
     const imageTransformerLambda = new Lambda({ region: env.region });
-    let response = await imageTransformerLambda
+    const response = await imageTransformerLambda
         .invoke({
             FunctionName: IMAGE_TRANSFORMER_LAMBDA_NAME,
             Payload: JSON.stringify({
@@ -40,7 +40,7 @@ module.exports = {
                     params: objectParams
                 };
             } catch (e) {
-                let imageTransformerLambdaResponse = await callImageTransformerLambda({
+                const imageTransformerLambdaResponse = await callImageTransformerLambda({
                     key: file.name,
                     transformations
                 });
@@ -63,7 +63,7 @@ module.exports = {
                 params: objectParams
             };
         } catch (e) {
-            let imageTransformerLambdaResponse = await callImageTransformerLambda({
+            const imageTransformerLambdaResponse = await callImageTransformerLambda({
                 key: file.name
             });
 

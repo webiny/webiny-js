@@ -40,7 +40,7 @@ module.exports = {
                 .promise();
 
             for (let i = 0; i < imagesList.Contents.length; i++) {
-                let imageObject = imagesList.Contents[i];
+                const imageObject = imagesList.Contents[i];
                 await s3.deleteObject(getObjectParams(imageObject.Key)).promise();
             }
         }
