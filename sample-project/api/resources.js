@@ -271,9 +271,9 @@ module.exports = () => ({
             }
         },
         headlessCms: {
-            watch: ["./services/headlessCms/build"],
+            watch: ["./services/headless/graphql/build"],
             build: {
-                root: "./services/headlessCms",
+                root: "./services/headless/graphql",
                 script: "yarn build",
                 define: apolloServiceDefinitions
             },
@@ -283,7 +283,7 @@ module.exports = () => ({
                     region: vars.region,
                     description: "I18N GraphQL API",
                     function: {
-                        code: "./services/headlessCms/build",
+                        code: "./services/headless/graphql/build",
                         handler: "handler.handler",
                         memory: 512,
                         env: {
@@ -294,9 +294,9 @@ module.exports = () => ({
             }
         },
         headlessCmsHandler: {
-            watch: ["./services/headlessCmsHandler/build"],
+            watch: ["./services/headless/handler/build"],
             build: {
-                root: "./services/headlessCmsHandler",
+                root: "./services/headless/handler",
                 script: "yarn build",
                 define: {
                     ...apolloServiceDefinitions,
@@ -310,7 +310,7 @@ module.exports = () => ({
                 inputs: {
                     description: "Headless CMS GraphQL API (handler)",
                     region: vars.region,
-                    code: "./services/headlessCmsHandler/build",
+                    code: "./services/headless/handler/build",
                     handler: "handler.handler",
                     memory: 512,
                     env: {
