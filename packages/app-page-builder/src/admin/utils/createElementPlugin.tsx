@@ -6,7 +6,9 @@ import Title from "./components/Title";
 
 export default (el: PbElement) => {
     const plugins = getPlugins("pb-editor-page-element") as PbEditorPageElementPlugin[];
-    const rootPlugin: PbEditorPageElementPlugin = plugins.find(pl => pl.elementType === el.content.type);
+    const rootPlugin: PbEditorPageElementPlugin = plugins.find(
+        pl => pl.elementType === el.content.type
+    );
 
     if (!rootPlugin) {
         return;
