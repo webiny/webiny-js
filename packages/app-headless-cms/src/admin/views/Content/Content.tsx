@@ -7,47 +7,66 @@ import { CrudProvider } from "@webiny/app-admin/contexts/Crud";
 import { useApolloClient, useQuery } from "@webiny/app-headless-cms/admin/hooks";
 import { GET_CONTENT_MODEL_BY_MODEL_ID } from "./graphql";
 import useRouter from "use-react-router";
+import get from "lodash.get";
+import gql from "graphql-tag";
+import createCrudQueriesAndMutations from "./createCrudQueriesAndMutations";
 
 function Content() {
-    const {match} = useRouter();
+    const { match } = useRouter();
 
-    const {modelId} = match?.params || {};
-    const getContentModelByModelId = useQuery(GET_CONTENT_MODEL_BY_MODEL_ID);
-    console.log(getContentModelByModelId);
-
-    return null;
-
-    return;
+    const modelId = get(match, "params.modelId");
+    const { data, loading } = useQuery(GET_CONTENT_MODEL_BY_MODEL_ID, {
+        skip: !modelId,
+        variables: { modelId }
+    });
 
     const apolloClient = useApolloClient();
+
+    if (!data) {
+        return null;
+    }
+
+    const contentModel = data.getContentModel.data;
+    const crud = createCrudQueriesAndMutations(contentModel);
+
     return (
         <CrudProvider
             delete={{
-                mutation: DELETE_CONTENT_CONTENT,
+                mutation: gql`
+                    ${crud.delete}
+                `,
                 options: {
                     client: apolloClient
                 }
             }}
             read={{
-                query: GET_CONTENT_CONTENT,
+                query: gql`
+                    ${crud.read}
+                `,
                 options: {
                     client: apolloClient
                 }
             }}
             create={{
-                mutation: CREATE_CONTENT_CONTENT,
+                mutation: gql`
+                    ${crud.create}
+                `,
                 options: {
                     client: apolloClient
                 }
             }}
             update={{
-                mutation: UPDATE_CONTENT_CONTENT,
+                mutation: gql`
+                    ${crud.update}
+                `,
                 options: {
                     client: apolloClient
                 }
             }}
             list={{
-                query: LIST_CONTENT_CONTENT,
+                query: gql`
+                    ${crud.list}
+                `,
                 variables: { sort: { savedOn: -1 } },
                 options: {
                     client: apolloClient
@@ -58,10 +77,10 @@ function Content() {
                 <>
                     <SplitView>
                         <LeftPanel span={4}>
-                            <ContentDataList />
+                            <ContentDataList contentModel={contentModel} />
                         </LeftPanel>
                         <RightPanel span={8}>
-                            <ContentForm />
+                            <ContentForm contentModel={contentModel} />
                         </RightPanel>
                     </SplitView>
                     <FloatingActionButton

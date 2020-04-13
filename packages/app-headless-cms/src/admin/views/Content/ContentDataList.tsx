@@ -16,13 +16,13 @@ import {
 
 const t = i18n.ns("app-headless-cms/admin/contents/data-list");
 
-const ContentDataList = () => {
+const ContentDataList = ({ contentModel }) => {
     const { actions, list } = useCrud();
 
     return (
         <DataList
             {...list}
-            title={t`content`}
+            title={contentModel.title}
             actions={<CurrentEnvironmentLabel style={{ justifyContent: "flex-end" }} />}
             sorters={[
                 {

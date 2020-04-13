@@ -1,13 +1,20 @@
 import React from "react";
-import { Form } from "@webiny/app-headless-cms/components/Form";
-import { useQuery } from "@webiny/app-headless-cms/admin/hooks";
-import { GET_CONTENT_MODEL_BY_MODEL_ID } from "./graphql";
+import { ContentModelForm } from "@webiny/app-headless-cms/admin/components/ContentModelForm";
+import { useCrud } from "@webiny/app-admin/hooks/useCrud";
 
-function ContentForm() {
-    const getContentModelByModelId = useQuery(GET_CONTENT_MODEL_BY_MODEL_ID);
-    console.log(getContentModelByModelId);
-    return null;
-    return <Form />;
+function ContentForm({ contentModel }) {
+    const { form: crudForm } = useCrud();
+
+    console.log('saljemo crudForm', crudForm)
+    console.log('sljemo content model', contentModel)
+    return (
+        <ContentModelForm
+            contentModel={contentModel}
+            data={crudForm.data}
+            loading={crudForm.loading}
+            onSubmit={crudForm.onSubmit}
+        />
+    );
 }
 
 export default ContentForm;
