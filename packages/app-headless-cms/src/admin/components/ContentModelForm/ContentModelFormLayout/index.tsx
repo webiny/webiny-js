@@ -54,8 +54,8 @@ export const ContentModelFormLayout = ({
      * All of these components are located in the "./fields" folder.
      */
     const renderFieldElement = (props: {
-        field: CmsContentModelModelField,
-        bind: BindComponentRenderProp
+        field: CmsContentModelModelField;
+        bind: BindComponentRenderProp;
     }) => {
         switch (props.field.type) {
             case "text":
