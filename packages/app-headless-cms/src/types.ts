@@ -111,13 +111,6 @@ export type CmsContentModelModelField = {
     settings: { [key: string]: any };
 };
 
-export type FbFormSubmissionData = {
-    data: any;
-    form: {
-        revision: CmsContentModelModel;
-    };
-};
-
 export type CmsEditorFormSettingsPlugin = Plugin & {
     type: "content-model-editor-form-settings";
     title: string;
@@ -162,28 +155,12 @@ export type FormRenderPropsType = {
     getFieldByFieldId: Function;
     getFields: () => Array<Array<FormRenderCmsContentModelModelField>>;
     getDefaultValues: () => { [key: string]: any };
-    submit: (data: Object) => Promise<FormSubmitResponseType>;
     formData: CmsContentModelModel;
-};
-
-export type FormComponentPropsType = {
-    preview?: boolean;
-    data?: any;
-    slug?: string;
 };
 
 export type FbFormRenderComponentProps = {
     preview?: boolean;
     data?: CmsContentModelModel;
-};
-
-export type FormSubmitResponseType = {
-    data: any;
-    preview: boolean;
-    error: {
-        message: string;
-        code: string;
-    };
 };
 
 export type UseContentModelEditorReducerStateType = {
