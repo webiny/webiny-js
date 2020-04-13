@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.2.2](https://github.com/webiny/webiny-js/compare/@webiny/app-page-builder@3.2.1...@webiny/app-page-builder@3.2.2) (2020-04-13)
+
+
+### Bug Fixes
+
+* change "pb-page-element" to "pb-editor-page-element" ([#788](https://github.com/webiny/webiny-js/issues/788)) ([6b5a09b](https://github.com/webiny/webiny-js/commit/6b5a09b8118fd540eb98047d2aaf0b2c00e3712c)), closes [#787](https://github.com/webiny/webiny-js/issues/787)
+
+
+
+
+
 ## [3.2.1](https://github.com/webiny/webiny-js/compare/@webiny/app-page-builder@3.2.1-next.0...@webiny/app-page-builder@3.2.1) (2020-04-03)
 
 **Note:** Version bump only for package @webiny/app-page-builder
