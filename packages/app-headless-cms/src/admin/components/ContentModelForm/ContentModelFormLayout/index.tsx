@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import Input from "./fields/Input";
 import Switch from "./fields/Switch";
 import { BindComponentRenderProp, Form } from "@webiny/form";
@@ -15,26 +15,18 @@ import {
     SimpleFormFooter,
     SimpleFormContent
 } from "@webiny/app-admin/components/SimpleForm";
+import { CircularProgress } from "@webiny/ui/Progress";
 
-const DefaultFormLayout = ({ getFields, getDefaultValues, submit }) => {
-    // Is the form in loading (submitting) state?
-    const [loading, setLoading] = useState(false);
-
+export const ContentModelFormLayout = ({
+    contentModel = {},
+    getFields,
+    getDefaultValues,
+    loading,
+    data,
+    onSubmit
+}) => {
     // All form fields - an array of rows where each row is an array that contain fields.
     const fields = getFields();
-
-    /**
-     * Once the data is successfully submitted, we show a success message.
-     */
-    const submitForm = async data => {
-        setLoading(true);
-        const result = await submit(data);
-        setLoading(false);
-        if (result.error === null) {
-            // setFormSuccess(true);
-            console.log("wohooo!");
-        }
-    };
 
     /**
      * Renders a field cell with a field element inside.
@@ -80,12 +72,15 @@ const DefaultFormLayout = ({ getFields, getDefaultValues, submit }) => {
         }
     };
 
+    console.log("contentModel", contentModel);
+    const formTitle = t`New {contentModelTitle}`({ contentModelTitle: contentModel.title });
+
     return (
-        <Form onSubmit={submitForm} data={getDefaultValues()}>
+        <Form onSubmit={onSubmit} data={data ? data : getDefaultValues()}>
             {({ submit, Bind }) => (
                 <SimpleForm data-testid={"pb-contents-form"}>
-                    <SimpleFormHeader title={"Novo rate"} />
-                    {/*{crudForm.loading && <CircularProgress />}*/}
+                    <SimpleFormHeader title={formTitle} />
+                    {loading && <CircularProgress />}
                     <SimpleFormContent>
                         <Grid>
                             {/* Let's render all form fields. */}
@@ -97,12 +92,10 @@ const DefaultFormLayout = ({ getFields, getDefaultValues, submit }) => {
                         </Grid>
                     </SimpleFormContent>
                     <SimpleFormFooter>
-                        <ButtonPrimary onClick={submit}>{t`Save content`}</ButtonPrimary>
+                        <ButtonPrimary onClick={submit}>{t`Save`}</ButtonPrimary>
                     </SimpleFormFooter>
                 </SimpleForm>
             )}
         </Form>
     );
 };
-
-export default DefaultFormLayout;
