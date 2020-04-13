@@ -6,35 +6,21 @@ import { ContentModelFormLayout } from "./ContentModelFormLayout";
 
 import {
     CmsContentModelFormProps,
-    CmsContentModelForm,
-    CmsContentModelModel,
     CmsFormFieldValidatorPlugin
 } from "@webiny/app-headless-cms/types";
 
-export const ContentModelForm = (props: CmsContentModelForm) => {
-    const contentModelData = props.contentModel || ({} as CmsContentModelModel);
-    if (!contentModelData.id) {
-        return null;
-    }
+export const ContentModelForm: React.FC<CmsContentModelFormProps> = props => {
+    const { contentModel } = props;
 
-    const contentModel: CmsContentModelModel = cloneDeep(contentModelData);
     const { layout, fields } = contentModel;
-
-    const getFieldById = id => {
-        return fields.find(field => field._id === id);
-    };
-
-    const getFieldByFieldId = id => {
-        return fields.find(field => field.fieldId === id);
-    };
 
     const getFields = () => {
         const fields: any = cloneDeep(layout);
-        const validatorPlugins = getPlugins<CmsFormFieldValidatorPlugin>("form-field-validator");
+        const validatorPlugins: CmsFormFieldValidatorPlugin[] = getPlugins("form-field-validator");
 
         fields.forEach(row => {
             row.forEach((id, idIndex) => {
-                row[idIndex] = getFieldById(id);
+                row[idIndex] = fields.find(field => field._id === id);
                 row[idIndex].validators = row[idIndex].validation
                     .map(item => {
                         const validatorPlugin = validatorPlugins.find(
@@ -90,15 +76,15 @@ export const ContentModelForm = (props: CmsContentModelForm) => {
     };
 
     const { loading, onSubmit, data } = props;
-    const layoutProps: CmsContentModelFormProps = {
-        getFieldById,
-        getFieldByFieldId,
-        getDefaultValues,
-        getFields,
-        loading,
-        onSubmit,
-        data
-    };
 
-    return <ContentModelFormLayout {...layoutProps} />;
+    return (
+        <ContentModelFormLayout
+            contentModel={contentModel}
+            getFields={getFields}
+            getDefaultValues={getDefaultValues}
+            loading={loading}
+            data={data}
+            onSubmit={onSubmit}
+        />
+    );
 };

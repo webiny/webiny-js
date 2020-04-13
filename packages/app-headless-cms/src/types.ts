@@ -7,6 +7,16 @@ import { BindComponent, FormChildrenFunctionParams, Form } from "@webiny/form";
 import { ApolloClient } from "apollo-client";
 import { IconPrefix, IconName } from "@fortawesome/fontawesome-svg-core";
 
+export type CmsContentModelFormProps = {
+    loading?: boolean;
+    preview?: boolean;
+    contentModel: CmsContentModelModel;
+    data?: { [key: string]: any };
+    onSubmit?: () => void;
+};
+
+// ------------------------------------------------------------------------------------------------------------
+
 export type CmsBuilderFieldValidator = {
     name: string;
     message: I18NStringValue;
@@ -144,28 +154,9 @@ export type CmsIconsPlugin = Plugin & {
     getIcons(): CmsIcon[];
 };
 
-// ------------------------------------------------------------------------------------------------------------
 
 export type FormRenderCmsContentModelModelField = CmsContentModelModelField & {
     validators: Array<(value: any) => boolean>;
-};
-
-export type CmsContentModelFormProps = {
-    getFieldById: Function;
-    getFieldByFieldId: Function;
-    getDefaultValues: () => { [key: string]: any };
-    getFields: () => Array<Array<FormRenderCmsContentModelModelField>>;
-    loading: boolean;
-    onSubmit: () => void;
-    data: { [key: string]: any };
-};
-
-export type CmsContentModelForm = {
-    loading?: boolean;
-    preview?: boolean;
-    contentModel: CmsContentModelModel;
-    data?: { [key: string]: any };
-    onSubmit?: () => void;
 };
 
 export type UseContentModelEditorReducerStateType = {

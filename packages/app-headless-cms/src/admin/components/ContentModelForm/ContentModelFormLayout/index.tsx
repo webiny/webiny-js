@@ -18,7 +18,7 @@ import {
 import { CircularProgress } from "@webiny/ui/Progress";
 
 export const ContentModelFormLayout = ({
-    contentModel = {},
+    contentModel,
     getFields,
     getDefaultValues,
     loading,
@@ -54,8 +54,8 @@ export const ContentModelFormLayout = ({
      * All of these components are located in the "./fields" folder.
      */
     const renderFieldElement = (props: {
-        field: CmsContentModelModelField;
-        bind: BindComponentRenderProp;
+        field: CmsContentModelModelField,
+        bind: BindComponentRenderProp
     }) => {
         switch (props.field.type) {
             case "text":
@@ -72,8 +72,10 @@ export const ContentModelFormLayout = ({
         }
     };
 
-    console.log("contentModel", contentModel);
-    const formTitle = t`New {contentModelTitle}`({ contentModelTitle: contentModel.title });
+    let formTitle;
+    if (contentModel) {
+        formTitle = t`New {contentModelTitle}`({ contentModelTitle: contentModel.title });
+    }
 
     return (
         <Form onSubmit={onSubmit} data={data ? data : getDefaultValues()}>
