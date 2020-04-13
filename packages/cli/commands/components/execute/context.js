@@ -12,13 +12,16 @@ const randomId = () =>
 class Context {
     constructor(config) {
         this.logger = config.logger;
+        this.stackName = config.stackName;
         this.stateRoot = config.stateRoot;
+        this.stackStateRoot = config.stackStateRoot;
         this.credentials = config.credentials || {};
         this.debugMode = config.debug || false;
-        this.state = { id: config.id };
+        this.env = config.env;
+        this.state = { id: randomId() };
         this.id = this.state.id;
 
-        // Event Handler: Control + C
+        // Control + C
         process.on("SIGINT", async () => {
             this._status.stop("cancel");
             process.exit(1);
@@ -29,7 +32,14 @@ class Context {
     }
 
     async init() {
-        // keep this for compatibility with other @serverless/components
+        const contextStatePath = path.join(this.stateRoot, `_.json`);
+
+        if (await fs.existsSync(contextStatePath)) {
+            this.state = await loadJsonFile(contextStatePath);
+        } else {
+            await writeJsonFile(contextStatePath, this.state);
+        }
+        this.id = this.state.id;
     }
 
     /**
@@ -42,7 +52,7 @@ class Context {
     }
 
     async readState(id) {
-        const stateFilePath = path.join(this.stateRoot, `${id}.json`);
+        const stateFilePath = path.join(this.stackStateRoot, `${id}.json`);
         if (fs.existsSync(stateFilePath)) {
             return loadJsonFile(stateFilePath);
         }
@@ -50,7 +60,7 @@ class Context {
     }
 
     async writeState(id, state) {
-        const stateFilePath = path.join(this.stateRoot, `${id}.json`);
+        const stateFilePath = path.join(this.stackStateRoot, `${id}.json`);
         if (Object.keys(state).length === 0) {
             await fs.unlink(stateFilePath);
         } else {

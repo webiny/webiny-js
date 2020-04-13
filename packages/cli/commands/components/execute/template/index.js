@@ -36,7 +36,10 @@ class Template extends Component {
 
         let template;
         if (fs.existsSync(`resources.js`)) {
-            const newTemplate = await require(path.resolve("resources.js"))({ cli: inputs });
+            const newTemplate = await require(path.resolve("resources.js"))({
+                cli: inputs,
+                context
+            });
             template = newTemplate.resources;
         } else if (fs.existsSync(`resources.ts`)) {
             const resources = require(path.resolve("resources.ts")).default;

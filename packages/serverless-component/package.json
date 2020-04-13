@@ -1,0 +1,10 @@
+{
+  "name": "@webiny/serverless-component",
+  "version": "0.1.0",
+  "license": "MIT",
+  "dependencies": {},
+  "publishConfig": {
+    "access": "public",
+    "directory": "."
+  }
+}

@@ -1,13 +1,13 @@
 const path = require("path");
 const webpack = require("webpack");
 
-module.exports = ({ entry, debug = false, babelOptions, define }) => ({
+module.exports = ({ entry, output, debug = false, babelOptions, define }) => ({
     entry: path.resolve(entry),
     target: "node",
     output: {
         libraryTarget: "commonjs",
-        path: path.resolve("build"),
-        filename: "handler.js"
+        path: output.path,
+        filename: output.filename
     },
     // Generate sourcemaps for proper error messages
     devtool: debug ? "source-map" : false,

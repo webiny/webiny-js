@@ -2,6 +2,8 @@ module.exports = (options, context) => {
     const { boolean } = require("boolean");
     const webpack = require("webpack");
     let babelOptions = require("./babelrc");
+    const { setupOutput } = require("./utils");
+    const output = setupOutput(options.output);
 
     // Customize babelOptions
     if (typeof options.babel === "function") {
@@ -11,6 +13,7 @@ module.exports = (options, context) => {
     // Load base webpack config
     let webpackConfig = require("./webpack.config")({
         entry: options.entry || "./src/index",
+        output,
         debug: boolean(options.debug),
         babelOptions,
         define: options.define

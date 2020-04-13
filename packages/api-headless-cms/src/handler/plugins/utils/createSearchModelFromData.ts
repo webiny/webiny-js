@@ -5,6 +5,8 @@ import {
     CmsModelFieldToCommodoFieldPlugin
 } from "@webiny/api-headless-cms/types";
 
+import { withModelId } from "./withModelId";
+
 export const createSearchModelFromData = (
     baseModel: Function,
     data: CmsModel,
@@ -16,13 +18,14 @@ export const createSearchModelFromData = (
 
     // Create base model to be enhanced by field plugins
     const model = pipe(
-        withName(`${data.title}Search`),
+        withName("CmsContentEntrySearch"),
         withFields({
             revision: context.commodo.fields.id(),
             latestVersion: boolean(),
             published: boolean(),
             locale: string()
-        })
+        }),
+        withModelId(data.modelId)
     )(baseModel) as Function;
 
     for (let i = 0; i < data.fields.length; i++) {
