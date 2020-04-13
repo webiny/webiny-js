@@ -52,11 +52,13 @@ const createApi = async ({ apig, name, description, endpointTypes, binaryMediaTy
 
 const getPathId = async ({ apig, apiId, endpoint }) => {
     // todo this called many times to stay up to date. Is it worth the latency?
-    const existingEndpoints = (await apig
-        .getResources({
-            restApiId: apiId
-        })
-        .promise()).items;
+    const existingEndpoints = (
+        await apig
+            .getResources({
+                restApiId: apiId
+            })
+            .promise()
+    ).items;
 
     if (!endpoint) {
         const rootResourceId = existingEndpoints.find(
@@ -474,12 +476,14 @@ const createAuthorizers = async ({ apig, lambda, apiId, endpoints }) => {
     const updatedEndpoints = [];
 
     for (const endpoint of endpoints) {
-        endpoint.authorizerId = (await createAuthorizer({
-            apig,
-            lambda,
-            apiId,
-            endpoint
-        })).authorizerId;
+        endpoint.authorizerId = (
+            await createAuthorizer({
+                apig,
+                lambda,
+                apiId,
+                endpoint
+            })
+        ).authorizerId;
         updatedEndpoints.push(endpoint);
     }
 
