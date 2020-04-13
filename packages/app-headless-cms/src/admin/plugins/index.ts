@@ -4,7 +4,7 @@ import fields from "./fields";
 import validators from "./validators";
 import icons from "./icons";
 
-import contentModelEditorPlugins from "../../editor/plugins";
+import contentModelEditorPlugins from "./../editor/plugins";
 
 export default [
     routes,
