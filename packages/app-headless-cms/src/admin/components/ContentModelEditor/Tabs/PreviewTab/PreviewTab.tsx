@@ -2,7 +2,7 @@ import React from "react";
 import { css } from "emotion";
 import { useContentModelEditor } from "@webiny/app-headless-cms/admin/components/ContentModelEditor/Context";
 import { Elevation } from "@webiny/ui/Elevation";
-import { Form } from "@webiny/app-headless-cms/components/Form";
+import { ContentModelForm } from "@webiny/app-headless-cms/admin/components/ContentModelForm";
 
 const formPreviewWrapper = css({
     padding: 40,
@@ -16,7 +16,7 @@ export const PreviewTab = () => {
 
     return (
         <Elevation z={1} className={formPreviewWrapper}>
-            <Form preview data={data} />
+            <ContentModelForm contentModel={data} />
         </Elevation>
     );
 };
