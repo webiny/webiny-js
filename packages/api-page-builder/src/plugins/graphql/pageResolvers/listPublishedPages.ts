@@ -18,27 +18,27 @@ export const listPublishedPages = async ({ context, args }) => {
 
     const baseFilters: any = [{ published: true, deleted: false }];
 
-    if (parent) {
-        if (Array.isArray(parent)) {
-            baseFilters.push({ parent: { $in: parent } });
-        } else {
-            baseFilters.push({ parent });
-        }
-    }
-
     if (id) {
         if (Array.isArray(id)) {
             baseFilters.push({ id: { $in: id } });
         } else {
             baseFilters.push({ id });
         }
-    }
-
-    if (url) {
-        if (Array.isArray(url)) {
-            baseFilters.push({ url: { $in: url } });
+    } else {
+        if (parent) {
+            if (Array.isArray(parent)) {
+                baseFilters.push({ parent: { $in: parent } });
+            } else {
+                baseFilters.push({ parent });
+            }
         } else {
-            baseFilters.push({ url });
+            if (url) {
+                if (Array.isArray(url)) {
+                    baseFilters.push({ url: { $in: url } });
+                } else {
+                    baseFilters.push({ url });
+                }
+            }
         }
     }
 
