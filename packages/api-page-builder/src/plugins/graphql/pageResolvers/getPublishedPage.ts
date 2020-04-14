@@ -35,6 +35,23 @@ export default async (root: any, args: { [key: string]: any }, context: { [key: 
             throw new Error(`Please specify page "id", "parent" or "url".`);
         }
 
+        // 1. If "parent" of "id" were passed, get the page based on those.
+        //    Note that the "preview" mode is only available for the "id" filter.
+        if (args.parent || args.id) {
+            const [page] = await listPublishedPages({ context, args: { ...args, perPage: 1 } });
+            if (page) {
+                return new Response(page);
+            }
+
+            return createNotFoundResponse({
+                returnFallbackPage: args.returnNotFoundPage,
+                context,
+                page: "notFound",
+                message: "The requested page was not found."
+            });
+        }
+
+        // 2. Now we are dealing with the "url" filter. If it's set to "/", then load the page set as homepage.
         if (args.url && args.url === "/") {
             const { PbSettings } = context.models;
             const settings = await PbSettings.load();
@@ -53,6 +70,7 @@ export default async (root: any, args: { [key: string]: any }, context: { [key: 
             });
         }
 
+        // 3. Otherwise, just try to load the page via passed "url".
         const [page] = await listPublishedPages({ context, args: { ...args, perPage: 1 } });
         if (page) {
             return new Response(page);
