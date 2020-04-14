@@ -13,10 +13,15 @@ export const listPublishedPages = async ({ context, args }) => {
         url = null,
         sort = null,
         tags = null,
-        tagsRule = null
+        tagsRule = null,
+        preview = false
     } = args;
 
-    const baseFilters: any = [{ published: true, deleted: false }];
+    let baseFilters: any = [{ published: true, deleted: false }];
+    // If we are doing a search via "id" and preview mode is enabled, then we don't need to have "published" set to true.
+    if (preview && id) {
+        baseFilters = [{ deleted: false }];
+    }
 
     if (id) {
         if (Array.isArray(id)) {
