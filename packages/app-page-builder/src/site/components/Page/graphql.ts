@@ -8,9 +8,9 @@ export const GET_PUBLISHED_PAGE = () => {
         .join("\n");
 
     return gql`
-        query PbGetPublishedPage($id: ID, $url: String, $parent: ID, $returnNotFoundPage: Boolean, $returnErrorPage: Boolean) {
+        query PbGetPublishedPage($id: ID, $url: String, $parent: ID, $returnNotFoundPage: Boolean, $returnErrorPage: Boolean, $preview: Boolean) {
             pageBuilder {
-                page: getPublishedPage(id: $id, url: $url, parent: $parent, returnNotFoundPage: $returnNotFoundPage, returnErrorPage: $returnErrorPage) {
+                page: getPublishedPage(id: $id, url: $url, parent: $parent, returnNotFoundPage: $returnNotFoundPage, returnErrorPage: $returnErrorPage, preview: $preview) {
                     data {
                         id
                         title
