@@ -171,6 +171,7 @@ export default {
                 parent: ID
                 returnNotFoundPage: Boolean
                 returnErrorPage: Boolean
+                preview: Boolean
             ): PbPageResponse
             
             listPages(
