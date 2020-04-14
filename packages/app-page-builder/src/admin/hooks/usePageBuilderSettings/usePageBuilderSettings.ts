@@ -39,7 +39,7 @@ export function usePageBuilderSettings() {
             if (loading) {
                 return null;
             }
-            return formatPreviewUrl({ page, domain: getDomain() });
+            return formatPreviewUrl({ page, domain: getDomain(), addTimestamp: true });
         },
         [data, loading]
     );
