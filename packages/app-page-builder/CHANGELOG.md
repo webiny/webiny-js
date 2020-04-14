@@ -3,6 +3,19 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.2.3](https://github.com/webiny/webiny-js/compare/@webiny/app-page-builder@3.2.2...@webiny/app-page-builder@3.2.3) (2020-04-14)
+
+
+### Bug Fixes
+
+* add "preview" boolean field ([dace12e](https://github.com/webiny/webiny-js/commit/dace12eb1bb346068f0542e7c8a23b4088cefcdf))
+* set "addTimestamp" to true ([bac52b7](https://github.com/webiny/webiny-js/commit/bac52b79c957770d0229cb88f7f4fb8abdda8a8e))
+* set "preview" to true if fetching the page by "id" ([cbf9986](https://github.com/webiny/webiny-js/commit/cbf9986900480d951992a34855ab6e414ed065a2))
+
+
+
+
+
 ## [3.2.2](https://github.com/webiny/webiny-js/compare/@webiny/app-page-builder@3.2.1...@webiny/app-page-builder@3.2.2) (2020-04-13)
 
 

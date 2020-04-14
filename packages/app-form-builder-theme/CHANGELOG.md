@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.0.10](https://github.com/webiny/webiny-js/compare/@webiny/app-form-builder-theme@2.0.9...@webiny/app-form-builder-theme@2.0.10) (2020-04-14)
+
+**Note:** Version bump only for package @webiny/app-form-builder-theme
+
+
+
+
+
 ## [2.0.9](https://github.com/webiny/webiny-js/compare/@webiny/app-form-builder-theme@2.0.8...@webiny/app-form-builder-theme@2.0.9) (2020-04-13)
 
 **Note:** Version bump only for package @webiny/app-form-builder-theme

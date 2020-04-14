@@ -3,6 +3,20 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.1.2](https://github.com/webiny/webiny-js/compare/@webiny/api-page-builder@3.1.1...@webiny/api-page-builder@3.1.2) (2020-04-14)
+
+
+### Bug Fixes
+
+* add "preview" boolean field ([f2d410e](https://github.com/webiny/webiny-js/commit/f2d410ec0285f7e581c0f82ce8d509493acd3dec))
+* enable preview mode ([78481ac](https://github.com/webiny/webiny-js/commit/78481ace4833e6ce086518f7ac104f7d34735c4b))
+* give priority to "parent" and "id" querying ([9e3b253](https://github.com/webiny/webiny-js/commit/9e3b25340b132e5ead0c91f803a7757a188870ad))
+* give priority to "parent" and "id" querying ([a0737a3](https://github.com/webiny/webiny-js/commit/a0737a3087e4305f8999669fca92b794b186a110))
+
+
+
+
+
 ## [3.1.1](https://github.com/webiny/webiny-js/compare/@webiny/api-page-builder@3.1.1-next.0...@webiny/api-page-builder@3.1.1) (2020-04-03)
 
 **Note:** Version bump only for package @webiny/api-page-builder
