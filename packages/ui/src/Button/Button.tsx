@@ -26,6 +26,9 @@ type Props = {
     disabled?: boolean;
 
     style?: { [key: string]: any };
+
+    // For testing purposes.
+    "data-testid"?: string;
 };
 
 /**
@@ -44,6 +47,7 @@ export const ButtonDefault = (props: Props) => {
             onClick={onClick}
             ripple={ripple}
             className={classNames("webiny-ui-button", className)}
+            data-testid={props["data-testid"]}
         >
             {children}
         </R.Button>
@@ -77,6 +81,7 @@ export const ButtonPrimary = (props: Props) => {
             onClick={onClick}
             style={style}
             className={classNames("webiny-ui-button webiny-ui-button--primary", className)}
+            data-testid={props["data-testid"]}
         >
             {children}
         </R.Button>
@@ -109,6 +114,7 @@ export const ButtonSecondary = (props: Props) => {
             onClick={onClick}
             style={style}
             className={classNames("webiny-ui-button webiny-ui-button--secondary", className)}
+            data-testid={props["data-testid"]}
         >
             {children}
         </R.Button>
@@ -121,9 +127,6 @@ type ButtonFloatingProps = Props &
         icon?: React.ReactNode;
         onMouseDown?: (e: SyntheticEvent) => void;
         onMouseUp?: (e: SyntheticEvent) => void;
-
-        // For testing purposes.
-        "data-testid"?: string;
     };
 
 /**
