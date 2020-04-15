@@ -4,12 +4,15 @@
   "baseUrl": "http://localhost:3001",
   "defaultCommandTimeout": 10000,
   "env": {
-    "SITE_URL": "http://localhost:3000",
-    "AWS_COGNITO_USER_POOL_ID": "eu-central-1_4rzqiPNHm",
-    "AWS_COGNITO_CLIENT_ID": "1agul1e3ge3afpb4a0vsrqtuhb",
-    "API_URL": "https://d2sj4ukj5xxt5i.cloudfront.net",
+    "SITE_URL": "http://localhost:3001",
+    "SITE_NAME": "Cypress Test Site",
+    "AWS_COGNITO_USER_POOL_ID": "eu-central-1_h0dUspp3s",
+    "AWS_COGNITO_CLIENT_ID": "62bm8dujp9a9hap7pd5pla01ur",
+    "API_URL": "https://drc4mul5tt9ye.cloudfront.net",
     "DEFAULT_ADMIN_USER_USERNAME": "admin@webiny.com",
     "DEFAULT_ADMIN_USER_PASSWORD": "12345678",
-    "GRAPHQL_API_URL": "https://d2sj4ukj5xxt5i.cloudfront.net/graphql"
+    "DEFAULT_ADMIN_USER_FIRST_NAME": "admin-first-name",
+    "DEFAULT_ADMIN_USER_LAST_NAME": "admin-last-name",
+    "GRAPHQL_API_URL": "https://drc4mul5tt9ye.cloudfront.net/graphql"
   }
 }
