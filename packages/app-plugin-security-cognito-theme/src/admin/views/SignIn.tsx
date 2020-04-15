@@ -68,7 +68,7 @@ const SignIn: React.FC<SignInChildrenProps> = ({ signIn, error, loading, authPro
                                     </Bind>
                                 </Cell>
                                 <Cell span={12} className={alignRight}>
-                                    <ButtonPrimary onClick={submit}>{"Submit"}</ButtonPrimary>
+                                    <ButtonPrimary data-testid="submit-sign-in-form-button" onClick={submit}>{"Submit"}</ButtonPrimary>
                                 </Cell>
                                 <Cell span={12} className={alignCenter}>
                                     <a

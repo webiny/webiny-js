@@ -127,7 +127,10 @@ const PBInstaller = ({ onInstalled }) => {
                         </Grid>
                     </SimpleFormContent>
                     <SimpleFormFooter>
-                        <ButtonPrimary onClick={submit}>{t`Install Page Builder`}</ButtonPrimary>
+                        <ButtonPrimary
+                            data-testid="install-pb-button"
+                            onClick={submit}
+                        >{t`Install Page Builder`}</ButtonPrimary>
                     </SimpleFormFooter>
                 </SimpleForm>
             )}
