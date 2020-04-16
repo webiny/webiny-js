@@ -9,10 +9,15 @@ import { ListItemGraphic } from "@webiny/ui/List";
 import { Icon } from "@webiny/ui/Icon";
 import { ReactComponent as PreviewIcon } from "@webiny/app-page-builder/admin/assets/visibility.svg";
 
+const openTarget = window.Cypress ? "_self" : "_blank";
+
 const PreviewPageButton = ({ page }) => {
     const { getPagePreviewUrl } = usePageBuilderSettings();
     return (
-        <MenuItem onClick={() => window.open(getPagePreviewUrl(page), "_blank")}>
+        <MenuItem
+            onClick={() => window.open(getPagePreviewUrl(page), openTarget)}
+            data-testid={"pb-editor-page-options-menu-preview"}
+        >
             <ListItemGraphic>
                 <Icon icon={<PreviewIcon />} />
             </ListItemGraphic>

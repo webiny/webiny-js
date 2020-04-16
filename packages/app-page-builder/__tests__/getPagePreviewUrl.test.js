@@ -1,13 +1,13 @@
-import formatPreviewUrl from "@webiny/app-page-builder/src/admin/hooks/usePageBuilderSettings/formatPreviewUrl";
+import getPagePreviewUrl from "@webiny/app-page-builder/src/admin/hooks/usePageBuilderSettings/getPagePreviewUrl";
 
-describe("formatPreviewUrl test", () => {
+describe("getPagePreviewUrl test", () => {
     test(`if no domain, just return path ("id" query param must be present)`, async () => {
-        const url = formatPreviewUrl({ page: { id: "xyz", url: "/testers" } });
+        const url = getPagePreviewUrl({ page: { id: "xyz", url: "/testers" } });
         expect(url).toBe("/testers?preview=xyz");
     });
 
     test(`if domain, path must be prefixed with id ("id" query param must be present)`, async () => {
-        const url = formatPreviewUrl({
+        const url = getPagePreviewUrl({
             domain: "http://localhost:3002",
             page: { id: "xyz", url: "/testers" }
         });

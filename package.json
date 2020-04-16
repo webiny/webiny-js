@@ -45,7 +45,7 @@
     "chalk": "^2.4.1",
     "commitizen": "^2.10.1",
     "cross-env": "^5.2.0",
-    "cypress": "^3.8.0",
+    "cypress": "^4.4.0",
     "cz-customizable": "^5.2.0",
     "dotenv": "^5.0.1",
     "empty": "^0.10.1",
