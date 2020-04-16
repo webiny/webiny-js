@@ -3,6 +3,22 @@ const CloudFront = require("aws-sdk/clients/cloudfront");
 const get = require("lodash.get");
 const setCdnDistributionForwardedHeader = require("./utils/setCdnDistributionForwardedHeader");
 const unsetCdnDistributionForwardedHeader = require("./utils/unsetCdnDistributionForwardedHeader");
+const setCdnDistributionCustomErrorResponses = require("./utils/setCdnDistributionCustomErrorResponses");
+
+const CUSTOM_ERROR_RESPONSES = [
+    {
+        ErrorCode: 404,
+        ErrorCachingMinTTL: 0,
+        ResponseCode: "",
+        ResponsePagePath: ""
+    },
+    {
+        ErrorCode: 500,
+        ErrorCachingMinTTL: 0,
+        ResponseCode: "",
+        ResponsePagePath: ""
+    }
+];
 
 class ServerlessAwsCloudfront extends Component {
     async default(inputs = {}) {
@@ -43,6 +59,18 @@ class ServerlessAwsCloudfront extends Component {
                 this.context.instance.debug(`Removing "X-Cdn-Deployment-Id" forwarded header...`);
                 unsetCdnDistributionForwardedHeader({ DistributionConfig, key: "X-Cdn-Id" });
             }
+        }
+
+        // Add custom error responses and set minimum TTL to 0. Needed because in some cases
+        // we return "no-store" cache header, which doesn't work if minimum TTL isn't set to 0.
+        // We will do these for two codes - 404 (not found) and 500 (internal server error).
+        this.context.instance.debug(`Creating custom error responses...`);
+        for (let i = 0; i < CUSTOM_ERROR_RESPONSES.length; i++) {
+            const customErrorResponse = CUSTOM_ERROR_RESPONSES[i];
+            setCdnDistributionCustomErrorResponses({
+                DistributionConfig,
+                customErrorResponse
+            });
         }
 
         this.context.instance.debug(`Updating CDN with forwarded headers...`);
