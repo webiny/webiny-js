@@ -73,7 +73,8 @@ module.exports = () => ({
                                 url: "${headlessCms.api.graphqlUrl}"
                             }
                         ]
-                    }
+                    },
+                    AUTHENTICATE_BY_PAT_FUNCTION_NAME: "${security.graphql.name}"
                 }
             },
             deploy: {
@@ -85,7 +86,8 @@ module.exports = () => ({
                     memory: 512,
                     timeout: 29,
                     env: {
-                        DEBUG: vars.debug
+                        DEBUG: vars.debug,
+                        AUTHENTICATE_BY_PAT_FUNCTION_NAME: "${security.graphql.name}"
                     }
                 }
             }
@@ -119,16 +121,17 @@ module.exports = () => ({
             }
         },
         security: {
-            watch: ["./services/security/build"],
+            watch: ["./services/security/graphql/build"],
             build: {
-                root: "./services/security",
+                root: "./services/security/graphql",
                 script: "yarn build",
                 define: {
                     ...apolloServiceDefinitions,
                     COGNITO_OPTIONS: {
                         region: vars.region,
                         userPoolId: "${cognito.userPool.Id}"
-                    }
+                    },
+                    AUTHENTICATE_BY_PAT_FUNCTION_NAME: "big boss watch"
                 }
             },
             deploy: {
@@ -136,7 +139,37 @@ module.exports = () => ({
                 inputs: {
                     region: vars.region,
                     function: {
-                        code: "./services/security/build",
+                        code: "./services/security/graphql/build",
+                        handler: "handler.handler",
+                        memory: 512,
+                        timeout: 30,
+                        env: {
+                            DEBUG: vars.debug,
+                            AUTHENTICATE_BY_PAT_FUNCTION_NAME: "${validateAccessToken.name}"
+                        }
+                    }
+                }
+            }
+        },
+        validateAccessToken: {
+            watch: ["./services/security/validateAccessToken/build"],
+            build: {
+                root: "./services/security/validateAccessToken",
+                script: "yarn build"
+                // define: {
+                //     ...apolloServiceDefinitions,
+                //     COGNITO_OPTIONS: {
+                //         region: vars.region,
+                //         userPoolId: "${cognito.userPool.Id}"
+                //     }
+                // }
+            },
+            deploy: {
+                component: "@webiny/serverless-function",
+                inputs: {
+                    region: vars.region,
+                    function: {
+                        code: "./services/security/validateAccessToken/build",
                         handler: "handler.handler",
                         memory: 512,
                         timeout: 30,
