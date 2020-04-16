@@ -152,27 +152,21 @@ module.exports = () => ({
             watch: ["./services/security/validateAccessToken/build"],
             build: {
                 root: "./services/security/validateAccessToken",
-                script: "yarn build"
-                // define: {
-                //     ...apolloServiceDefinitions,
-                //     COGNITO_OPTIONS: {
-                //         region: vars.region,
-                //         userPoolId: "${cognito.userPool.Id}"
-                //     }
-                // }
+                script: "yarn build",
+                define: {
+                    DB_PROXY_OPTIONS: apolloServiceDefinitions.DB_PROXY_OPTIONS
+                }
             },
             deploy: {
                 component: "@webiny/serverless-function",
                 inputs: {
                     region: vars.region,
-                    function: {
-                        code: "./services/security/validateAccessToken/build",
-                        handler: "handler.handler",
-                        memory: 512,
-                        timeout: 30,
-                        env: {
-                            DEBUG: vars.debug
-                        }
+                    code: "./services/security/validateAccessToken/build",
+                    handler: "handler.handler",
+                    memory: 512,
+                    timeout: 30,
+                    env: {
+                        DEBUG: vars.debug
                     }
                 }
             }
