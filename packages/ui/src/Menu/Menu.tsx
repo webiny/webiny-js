@@ -39,6 +39,9 @@ type MenuProps = RmwcMenuProps & {
 
     // Class that will be added to the Menu element.
     className?: string;
+
+    // For testing purposes.
+    "data-testid"?: string;
 };
 
 type State = {
@@ -130,7 +133,7 @@ class Menu extends React.Component<MenuProps, State> {
 
     render() {
         return (
-            <MenuSurfaceAnchor ref={this.anchorRef}>
+            <MenuSurfaceAnchor ref={this.anchorRef} data-testid={this.props["data-testid"]}>
                 {this.renderMenuContent()}
                 {this.props.handle &&
                     React.cloneElement(this.props.handle, { onClick: this.openMenu })}
@@ -147,6 +150,7 @@ interface MenuItemProps extends BaseMenuItemProps {
     children: React.ReactNode;
     className?: string;
     onClick?: (event: React.MouseEvent) => void;
+    "data-testid"?: string;
 }
 
 const MenuItem = ({ disabled, className, ...rest }: MenuItemProps) => {
