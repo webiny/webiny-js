@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.1.2](https://github.com/webiny/webiny-js/compare/@webiny/api-form-builder@2.1.2-next.0...@webiny/api-form-builder@2.1.2) (2020-04-16)
+
+**Note:** Version bump only for package @webiny/api-form-builder
+
+
+
+
+
 ## [2.1.2-next.0](https://github.com/webiny/webiny-js/compare/@webiny/api-form-builder@2.1.1...@webiny/api-form-builder@2.1.2-next.0) (2020-04-16)
 
 **Note:** Version bump only for package @webiny/api-form-builder
