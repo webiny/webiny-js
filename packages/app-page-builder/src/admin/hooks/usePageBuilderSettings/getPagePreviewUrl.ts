@@ -1,6 +1,6 @@
 import { trimEnd } from "lodash";
 
-export default ({ page: { url, id }, domain, addTimestamp = false }) => {
+export default ({ page: { url, id }, domain }) => {
     let previewUrl = "";
 
     if (!domain) {
@@ -16,11 +16,7 @@ export default ({ page: { url, id }, domain, addTimestamp = false }) => {
 
     previewUrl = trimEnd(previewUrl, "/");
     previewUrl += url;
-    previewUrl += "?preview=" + id;
-
-    if (addTimestamp !== false) {
-        previewUrl += "&ts=" + new Date().getTime();
-    }
+    previewUrl += "?preview=" + id + '&ssr-no-cache';
 
     return previewUrl;
 };
