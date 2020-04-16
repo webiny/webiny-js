@@ -7,7 +7,6 @@ export default () => [
         type: "before-handler",
         name: "before-handler-validate-access-token",
         async handle({ context }) {
-            console.log("Reached before-handle...");
             context.plugins.register(
                 // @ts-ignore
                 securityModels({})
@@ -21,7 +20,6 @@ export default () => [
             return true;
         },
         async handle({ context, args }) {
-            console.log("Reached handle...");
             await applyGraphQLContextPlugins(context);
             return await validateAccessToken(context, args[0].PAT);
         }
