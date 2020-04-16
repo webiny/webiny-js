@@ -3,6 +3,19 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.2.4-next.0](https://github.com/webiny/webiny-js/compare/@webiny/app-page-builder@3.2.3...@webiny/app-page-builder@3.2.4-next.0) (2020-04-16)
+
+
+### Bug Fixes
+
+* correct import and function name ([7daf3b6](https://github.com/webiny/webiny-js/commit/7daf3b6aab9c22bc1999f68832d8d1e5c36b74c3))
+* correct import and function name ([b442f89](https://github.com/webiny/webiny-js/commit/b442f8902e2671e88c7902b0c166768904c77312))
+* remove addTimestamp option ([d5edf51](https://github.com/webiny/webiny-js/commit/d5edf51b97c8e570fa57ec85a60114d45eea31f6))
+
+
+
+
+
 ## [3.2.3](https://github.com/webiny/webiny-js/compare/@webiny/app-page-builder@3.2.2...@webiny/app-page-builder@3.2.3) (2020-04-14)
 
 

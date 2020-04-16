@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.0.7-next.0](https://github.com/webiny/webiny-js/compare/@webiny/app-admin@3.0.6...@webiny/app-admin@3.0.7-next.0) (2020-04-16)
+
+**Note:** Version bump only for package @webiny/app-admin
+
+
+
+
+
 ## [3.0.6](https://github.com/webiny/webiny-js/compare/@webiny/app-admin@3.0.6-next.0...@webiny/app-admin@3.0.6) (2020-04-03)
 
 **Note:** Version bump only for package @webiny/app-admin

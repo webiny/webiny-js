@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.1.1-next.0](https://github.com/webiny/webiny-js/compare/@webiny/http-handler@2.1.0...@webiny/http-handler@2.1.1-next.0) (2020-04-16)
+
+
+### Bug Fixes
+
+* instead of 404, return response code 500 ([05408ab](https://github.com/webiny/webiny-js/commit/05408ab78b35ae55d67ecb6d6d8d800c1d312b78))
+* wrap error into "pre" tag ([e2472de](https://github.com/webiny/webiny-js/commit/e2472de05b59feae0ce97f9eea0d770ad85c1f3a))
+
+
+
+
+
 # [2.1.0](https://github.com/webiny/webiny-js/compare/@webiny/http-handler@2.1.0-next.0...@webiny/http-handler@2.1.0) (2020-02-12)
 
 **Note:** Version bump only for package @webiny/http-handler

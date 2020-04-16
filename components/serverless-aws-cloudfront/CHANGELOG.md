@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.0.3-next.0](https://github.com/webiny/webiny-js/compare/@webiny/serverless-aws-cloudfront@3.0.2...@webiny/serverless-aws-cloudfront@3.0.3-next.0) (2020-04-16)
+
+
+### Bug Fixes
+
+* create custom error responses and set min TTL to 0 ([dd02b7a](https://github.com/webiny/webiny-js/commit/dd02b7a295a70891074c0d077f76338d1e872945))
+
+
+
+
+
 ## [3.0.2](https://github.com/Webiny/webiny-js/compare/@webiny/serverless-aws-cloudfront@3.0.2-next.1...@webiny/serverless-aws-cloudfront@3.0.2) (2020-02-12)
 
 **Note:** Version bump only for package @webiny/serverless-aws-cloudfront

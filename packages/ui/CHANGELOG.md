@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.2.1-next.0](https://github.com/webiny/webiny-js/compare/@webiny/ui@3.2.0...@webiny/ui@3.2.1-next.0) (2020-04-16)
+
+
+### Bug Fixes
+
+* allow "data-testid" to be passed ([571fad7](https://github.com/webiny/webiny-js/commit/571fad7f88065c94a480453636133d3a7f81d339))
+* allow "data-testid" to be passed to buttons ([0a81ab2](https://github.com/webiny/webiny-js/commit/0a81ab2e9675404fb02f2c52556fc91927f0e3eb))
+
+
+
+
+
 # [3.2.0](https://github.com/webiny/webiny-js/compare/@webiny/ui@3.2.0-next.0...@webiny/ui@3.2.0) (2020-04-03)
 
 **Note:** Version bump only for package @webiny/ui
