@@ -1,4 +1,4 @@
-import { resolveDelete, resolveGet, resolveList } from "@webiny/commodo-graphql";
+import { resolveGet, resolveList } from "@webiny/commodo-graphql";
 import resolveLoginUsingIdToken from "./userResolvers/loginUsingIdToken";
 import resolveGetCurrentUser from "./userResolvers/getCurrentUser";
 import resolveUpdateCurrentSecurityUser from "./userResolvers/updateCurrentUser";
