@@ -1,4 +1,3 @@
-import { createHandler } from "@webiny/http-handler";
 import accessTokenPlugins from "../src/validateAccessToken";
 import { createUtils } from "./utils";
 
@@ -13,8 +12,8 @@ describe("Personal Access Tokens test suite", () => {
     const token = "ewighoewhosdahgioshgioshiogs";
 
     beforeAll(async () => {
-        const user = await db.getCollection("SecurityUser").insertOne(userData);
-        const pat = await db.getCollection("SecurityPersonalAccessToken").insertOne({
+        await db.getCollection("SecurityUser").insertOne(userData);
+        await db.getCollection("SecurityPersonalAccessToken").insertOne({
             id: "5e987593df7ee5f6287074c5",
             name: "Awesome test token",
             token,
