@@ -6,6 +6,18 @@ import { getSsrHtml } from "./functions";
 import { HttpHandlerPlugin } from "@webiny/http-handler/types";
 import zlib from "zlib";
 
+const createSsrResponse = props => {
+    return createResponse({
+        type: "text/html",
+        isBase64Encoded: true,
+        headers: {
+            "Cache-Control": "no-store",
+            "Content-Encoding": "gzip"
+        },
+        ...props
+    });
+};
+
 export default (options): HttpHandlerPlugin => {
     if (options.cache.enabled) {
         return {
@@ -28,6 +40,18 @@ export default (options): HttpHandlerPlugin => {
                 }
 
                 const version = event.headers["X-Cdn-Deployment-Id"];
+                const noCache =
+                    event.queryStringParameters &&
+                    typeof event.queryStringParameters["ssr-no-cache"] !== undefined;
+
+                if (noCache) {
+                    await ssrCache.refresh(version);
+                    let buffer = Buffer.from(ssrCache.content);
+                    buffer = zlib.gzipSync(buffer);
+                    return createSsrResponse({
+                        body: buffer.toString("base64")
+                    });
+                }
 
                 if (ssrCache.isEmpty) {
                     await ssrCache.refresh(version);
@@ -46,10 +70,13 @@ export default (options): HttpHandlerPlugin => {
                                 ...event,
                                 httpMethod: "POST",
                                 body: {
-                                    ssr: ["invalidateSsrCacheByPath", {
-                                        path: ssrCache.path,
-                                        refresh: true,
-                                    }]
+                                    ssr: [
+                                        "invalidateSsrCacheByPath",
+                                        {
+                                            path: ssrCache.path,
+                                            refresh: true
+                                        }
+                                    ]
                                 }
                             })
                         }).promise();
@@ -59,10 +86,8 @@ export default (options): HttpHandlerPlugin => {
                 let buffer = Buffer.from(ssrCache.content);
                 buffer = zlib.gzipSync(buffer);
 
-                return createResponse({
-                    type: "text/html",
+                return createSsrResponse({
                     body: buffer.toString("base64"),
-                    isBase64Encoded: true,
                     headers: {
                         "Cache-Control": "public, max-age=" + ssrCache.expiresIn / 1000,
                         "Content-Encoding": "gzip"
@@ -87,11 +112,8 @@ export default (options): HttpHandlerPlugin => {
             let buffer = Buffer.from(body);
             buffer = zlib.gzipSync(buffer);
 
-            return createResponse({
-                type: "text/html",
-                body: buffer.toString("base64"),
-                isBase64Encoded: true,
-                headers: { "Cache-Control": "no-store", "Content-Encoding": "gzip" }
+            return createSsrResponse({
+                body: buffer.toString("base64")
             });
         }
     };
