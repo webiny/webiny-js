@@ -5,6 +5,7 @@ module.exports = {
     projects: [
         "packages/api-headless-cms",
         "packages/api-files",
+        "packages/api-security",
         "packages/plugins",
         "packages/validation",
         "packages/http-handler-ssr",
