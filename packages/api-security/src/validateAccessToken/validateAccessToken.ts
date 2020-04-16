@@ -1,24 +1,26 @@
 export default async (context, PAT) => {
-    console.log("Inside validateAccessToken...");
-    PAT = PAT.toLowerCase();
-    console.log("");
-    console.log("Received token = ");
-    console.log(PAT);
-    const token = await context.models.SecurityPersonalAccessToken.findOne({
-        query: { token: PAT }
-    });
-    const user = await token.user;
+    try {
+        if (!PAT) {
+            return null;
+        }
 
-    console.log("Found user = ");
-    console.log(user);
+        PAT = PAT.toLowerCase();
+        const token = await context.models.SecurityPersonalAccessToken.findOne({
+            query: { token: PAT }
+        });
+        const user = await token.user;
+        if (!user) {
+            return null;
+        }
 
-    const returnedUser = {
-        id: user.id,
-        type: "user",
-        access: await user.access
-    };
-    console.log("Returned user = 111");
-    console.log(returnedUser);
+        const returnedUser = {
+            id: user.id,
+            type: "user",
+            access: await user.access
+        };
 
-    return JSON.stringify(returnedUser);
+        return returnedUser;
+    } catch (e) {
+        console.log(e);
+    }
 };
