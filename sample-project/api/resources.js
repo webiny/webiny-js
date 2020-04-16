@@ -23,7 +23,8 @@ const vars = {
         token: {
             expiresIn: 2592000,
             secret: process.env.JWT_SECRET
-        }
+        },
+        validateAccessTokenFunction: "${validateAccessToken.name}"
     }
 };
 
@@ -73,8 +74,7 @@ module.exports = () => ({
                                 url: "${headlessCms.api.graphqlUrl}"
                             }
                         ]
-                    },
-                    AUTHENTICATE_BY_PAT_FUNCTION_NAME: "${security.graphql.name}"
+                    }
                 }
             },
             deploy: {
@@ -86,8 +86,7 @@ module.exports = () => ({
                     memory: 512,
                     timeout: 29,
                     env: {
-                        DEBUG: vars.debug,
-                        AUTHENTICATE_BY_PAT_FUNCTION_NAME: "${security.graphql.name}"
+                        DEBUG: vars.debug
                     }
                 }
             }
@@ -130,8 +129,7 @@ module.exports = () => ({
                     COGNITO_OPTIONS: {
                         region: vars.region,
                         userPoolId: "${cognito.userPool.Id}"
-                    },
-                    AUTHENTICATE_BY_PAT_FUNCTION_NAME: "big boss watch"
+                    }
                 }
             },
             deploy: {
@@ -144,8 +142,7 @@ module.exports = () => ({
                         memory: 512,
                         timeout: 30,
                         env: {
-                            DEBUG: vars.debug,
-                            AUTHENTICATE_BY_PAT_FUNCTION_NAME: "${validateAccessToken.name}"
+                            DEBUG: vars.debug
                         }
                     }
                 }
