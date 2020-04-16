@@ -40,7 +40,8 @@ context("Admin Installation", () => {
             .click();
 
         // 2. I18N installation.
-        cy.findByLabelText("Select default locale")
+        cy.wait(3000)
+            .findByLabelText("Select default locale")
             .clear()
             .type("en-g")
             .findByText("en-GB")
