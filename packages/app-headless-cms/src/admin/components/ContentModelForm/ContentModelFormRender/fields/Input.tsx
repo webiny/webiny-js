@@ -14,6 +14,12 @@ const Input = (props: Props) => {
     return (
         <UiInput
             {...props.bind}
+            onChange={value => {
+                if (props.type === "number") {
+                    value = parseFloat(value);
+                }
+                return props.bind.onChange(value);
+            }}
             label={I18NValue({ value: props.field.label })}
             placeholder={I18NValue({ value: props.field.placeholderText })}
             description={I18NValue({ value: props.field.helpText })}
