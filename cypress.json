@@ -1,18 +1,19 @@
 {
   "viewportWidth": 1600,
   "viewportHeight": 1200,
-  "baseUrl": "http://localhost:3001",
+  "baseUrl": "https://d2ddzcrqdqlmov.cloudfront.net/admin",
   "defaultCommandTimeout": 10000,
   "env": {
-    "SITE_URL": "http://localhost:3001",
-    "SITE_NAME": "Cypress Test Site",
-    "AWS_COGNITO_USER_POOL_ID": "eu-central-1_h0dUspp3s",
-    "AWS_COGNITO_CLIENT_ID": "62bm8dujp9a9hap7pd5pla01ur",
-    "API_URL": "https://drc4mul5tt9ye.cloudfront.net",
+    "ADMIN_URL": "https://d2ddzcrqdqlmov.cloudfront.net/admin",
+    "AWS_COGNITO_USER_POOL_ID": "us-east-1_7VcZpnwuV",
+    "AWS_COGNITO_CLIENT_ID": "1culrhkc4fgfqjf19vso8hnris",
+    "API_URL": "https://ddzrnuuw3gxv8.cloudfront.net",
     "DEFAULT_ADMIN_USER_USERNAME": "admin@webiny.com",
     "DEFAULT_ADMIN_USER_PASSWORD": "12345678",
     "DEFAULT_ADMIN_USER_FIRST_NAME": "admin-first-name",
     "DEFAULT_ADMIN_USER_LAST_NAME": "admin-last-name",
-    "GRAPHQL_API_URL": "https://drc4mul5tt9ye.cloudfront.net/graphql"
+    "GRAPHQL_API_URL": "https://ddzrnuuw3gxv8.cloudfront.net/graphql",
+    "SITE_NAME": "Cypress Test Site",
+    "SITE_URL": "https://d2ddzcrqdqlmov.cloudfront.net"
   }
 }
