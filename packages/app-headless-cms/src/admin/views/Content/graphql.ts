@@ -13,6 +13,11 @@ export const GET_CONTENT_MODEL_BY_MODEL_ID = gql`
                 layout
                 id
             }
+            error {
+                code
+                message
+                data
+            }
         }
     }
 `;
