@@ -2,7 +2,7 @@ import React from "react";
 import { I18NValue } from "@webiny/app-i18n/components";
 import { getPlugins } from "@webiny/plugins";
 import { cloneDeep } from "lodash";
-import { ContentModelFormLayout } from "./ContentModelFormLayout";
+import { ContentModelFormRender } from "./ContentModelFormRender";
 
 import {
     CmsContentModelFormProps,
@@ -10,9 +10,14 @@ import {
 } from "@webiny/app-headless-cms/types";
 
 export const ContentModelForm: React.FC<CmsContentModelFormProps> = props => {
-    const { contentModel } = props;
+    const { contentModel: contentModelRaw } = props;
 
+    const contentModel = cloneDeep(contentModelRaw);
     const { layout, fields } = contentModel;
+
+    const getFieldById = id => {
+        return fields.find(field => field._id === id);
+    };
 
     const getFields = () => {
         const fields: any = cloneDeep(layout);
@@ -20,7 +25,8 @@ export const ContentModelForm: React.FC<CmsContentModelFormProps> = props => {
 
         fields.forEach(row => {
             row.forEach((id, idIndex) => {
-                row[idIndex] = fields.find(field => field._id === id);
+                row[idIndex] = getFieldById(id);
+
                 row[idIndex].validators = row[idIndex].validation
                     .map(item => {
                         const validatorPlugin = validatorPlugins.find(
@@ -78,7 +84,7 @@ export const ContentModelForm: React.FC<CmsContentModelFormProps> = props => {
     const { loading, onSubmit, data } = props;
 
     return (
-        <ContentModelFormLayout
+        <ContentModelFormRender
             contentModel={contentModel}
             getFields={getFields}
             getDefaultValues={getDefaultValues}
