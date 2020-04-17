@@ -1,5 +1,5 @@
 examples
-node_modules
+**/node_modules
 **/flow-typed
 **/__tests__
 idea.js
