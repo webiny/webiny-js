@@ -11,7 +11,11 @@
 context("Admin Installation", () => {
     it("should be able to complete the initial installation wizard", () => {
         // 1. Security installation.
-        cy.visit("/")
+        cy.visit(Cypress.env("SITE_URL"))
+            .wait(2000)
+            .findByText("Admin UI")
+            .click()
+            .wait(2000)
             .findByLabelText("First Name")
             .type(Cypress.env("DEFAULT_ADMIN_USER_FIRST_NAME"))
             .findByLabelText("Last Name")
@@ -39,9 +43,11 @@ context("Admin Installation", () => {
             .findByTestId("submit-sign-in-form-button")
             .click();
 
-        // 2. I18N installation.
-        cy.wait(3000)
-            .findByLabelText("Select default locale")
+        // 2. File manager installation (happens automatically, nothing to type / select here).
+        cy.wait(5000);
+
+        // 3. I18N installation.
+        cy.findByLabelText("Select default locale")
             .clear()
             .type("en-g")
             .findByText("en-GB")
@@ -49,7 +55,7 @@ context("Admin Installation", () => {
             .findByTestId("install-i18n-button")
             .click();
 
-        // 3.Page Builder and Form Builder Installation.
+        // 4.Page Builder and Form Builder Installation.
         cy.findByLabelText("Site Name")
             .findByTestId("install-pb-button")
             .click();
@@ -60,8 +66,12 @@ context("Admin Installation", () => {
             .type(Cypress.env("SITE_NAME"))
             .findByTestId("install-pb-button")
             .click()
-            .wait(30000); // Wait for the Page Builder to install and also the Form Builder.
+            .wait(25000); // Wait for the Page Builder instllation to finish.
 
+        // 5. Form Builder installation (happens automatically, nothing to type / select here).
+        cy.wait(5000);
+
+        // 6. Installation complete, click the button and check if the pages list was shown to the user.
         cy.findByTestId("open-webiny-cms-admin-button")
             .click()
             .wait(2000)
