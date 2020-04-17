@@ -67,7 +67,6 @@ function Content() {
                 query: gql`
                     ${crud.list}
                 `,
-                variables: { sort: { savedOn: -1 } },
                 options: {
                     client: apolloClient
                 }
