@@ -10,8 +10,8 @@ context("Groups Module", () => {
             .type(`Test Group ${id}`)
             .findByText("Save group")
             .click()
-            .findByText("Value is required.")
-            .should("exist")
+            .findAllByText("Value is required.")
+            .should("have.length", 2)
             .findByLabelText("Slug")
             .type(`test-group-${id}`)
             .findByLabelText("Description")
@@ -24,7 +24,7 @@ context("Groups Module", () => {
             .should("exist");
 
         cy.findByLabelText("Slug")
-            .type("-edited")
+            .should('disabled')
             .findByLabelText("Description")
             .type(" Test test.")
             .findByText("Save group")
