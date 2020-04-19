@@ -24,7 +24,7 @@ context("Menus Module", () => {
             .should("exist");
 
         cy.findByLabelText("Slug")
-            .type("-edited")
+            .should('disabled')
             .findByLabelText("Description")
             .type(" Test test.")
             .findByText("Save menu")
@@ -61,13 +61,12 @@ context("Menus Module", () => {
         cy.visit("/page-builder/menus")
             .findByLabelText("Name")
             .type(`Cool Menu ${id}`)
-            .findByText("Save menu")
             .findByLabelText("Slug")
             .type(`cool-menu-${id}`)
             .findByText("Save menu")
             .click();
 
-        cy.wait(500);
+        cy.wait(1000);
 
         cy.findByTestId("new-record-button")
             .click()
