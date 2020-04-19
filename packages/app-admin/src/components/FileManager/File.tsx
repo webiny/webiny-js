@@ -32,14 +32,13 @@ const styles = css({
             zIndex: 11
         },
         ".infoIcon": {
+            opacity: 0,
             color: "var(--icon-color)",
             position: "absolute",
             top: 4,
             right: 4,
             zIndex: 10,
-            "&:hover": {
-                "--icon-color": "var(--mdc-theme-secondary)"
-            }
+            transition: 'all 150ms ease-in',
         },
         ".filePreview": {
             textAlign: "center",
@@ -55,6 +54,10 @@ const styles = css({
                 height: 170,
                 zIndex: 2
             }
+        },
+        "&:hover .infoIcon": {
+            opacity: 1,
+            "--icon-color": "var(--mdc-theme-secondary)",
         }
     },
     "> .label": {
