@@ -12,12 +12,29 @@ export type CmsLocalizedModelFieldValue<T> = {
     value: T;
 };
 
+export type CmsEnvironment = {
+    id: string;
+    name: string;
+    description: string;
+};
+
+export type CmsEnvironmentAlias = {
+    id: string;
+    name: string;
+    slug: string;
+    description: string;
+};
+
 export type GraphQLContext = {
     cms: {
         // API type
         type: string;
         // Requested environment
         environment: string;
+        // Returns an instance of current environment.
+        getEnvironment: () => CmsEnvironment;
+        // Returns an instance of current environment alias.
+        getEnvironmentAlias: () => CmsEnvironmentAlias;
         // Requested locale
         locale: I18NLocale;
         // This is a READ API
