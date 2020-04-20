@@ -28,7 +28,7 @@ const createFieldsList = contentModel => {
 
 const createReadQuery = ({ model, ucFirstModelId }) => {
     return /* GraphQL */ `
-        query get${ucFirstModelId}($id: ID) {
+        query get${ucFirstModelId}($id: ID!) {
             get${ucFirstModelId}(where: { id: $id }) {
                 data {
                     id
