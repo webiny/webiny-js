@@ -82,6 +82,8 @@ files:
   inputs:
     region: ${vars.region}
     bucket: ${vars.bucket}
+    storage:
+      accelerated: false
     functions:
       apolloService:
         memory: 512
