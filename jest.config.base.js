@@ -1,7 +1,9 @@
+const { basename } = require("path");
 const merge = require("merge");
 const tsPreset = require("ts-jest/presets/js-with-babel/jest-preset");
 
-module.exports = ({ name, path }, presets = []) => {
+module.exports = ({ path }, presets = []) => {
+    const name = basename(path);
     return merge.recursive(tsPreset, ...presets, {
         name: name,
         displayName: name,

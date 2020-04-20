@@ -20,20 +20,20 @@ This guide is for anyone who wants to contribute to the Webiny project.
 
 ### <a name="commit-message-format"></a>Commit message format
 
-We are following the [conventional commits]([https://www.conventionalcommits.org/en/v1.0.0/](https://www.conventionalcommits.org/en/v1.0.0/)) standard.
+We are following the [conventional commits](<[https://www.conventionalcommits.org/en/v1.0.0/](https://www.conventionalcommits.org/en/v1.0.0/)>) standard.
 
 You can use `yarn commit` to commit via `commitizen` or you can commit manually, or via IDE, just make sure your commit messages are properly formatted.
 
 ## Repo overview
 
-Once you clone the repository, you will have a monorepo which consists of a bunch of different packages, located in `/packages` and `/components` directory.
+Once you clone the repository, you will have a monorepo which consists of a bunch of different packages, located in the `/packages` directory.
 
-- `components` folder contains `serverless` components that are responsible for deployment of your infrastructure.
-- `packages` folder contains app packages, api packages, utility packages, etc.
+- `app-*` packages are used only in React apps
+- `api-*` are only used when building API services
+- `http-*` are utility packages to create serverless function handlers
+- `serverless-*` are packages containing infrastructure components used to deploy your infrastructure
 
-Packages prefixed with `app-` are React apps. The ones with the `api-` prefix are API plugins. All the other packages are utility packages.
-
-`examples` folder is the place that simulates a project structure of a project created using `@webiny/cli`. This is your development sandbox.
+`sample-project` folder is the place that simulates a project structure of a project created using `create-webiny-project`. This is your development sandbox.
 
 ## Prerequisites
 
@@ -65,27 +65,25 @@ Packages prefixed with `app-` are React apps. The ones with the `api-` prefix ar
    yarn
    ```
 
-3. Run `yarn setup-repo`. This will setup all the necessary environment config files and build all packages to generate `dist` folders and TS declarations. You need to manually update the DB connection string, edit your `examples/.env.json` file.
+3. Run `yarn setup-repo`. This will setup all the necessary environment config files and build all packages to generate `dist` folders and TS declarations. You need to manually update the DB connection string, edit your `sample-project/.env.json` file.
 
-4. Deploy you API to use with local React apps by running `webiny deploy-api` from the `examples` folder. Once deployed, it will automatically update you React apps' `.env.json` files with the necessary variables.
+4. Deploy you API to use with local React apps by running `webiny deploy api` from the `sample-project` folder. Once deployed, it will automatically update you React apps' `.env.json` files with the necessary variables.
 
-> NOTE: `webiny` should be run from the root of the Webiny project, and since `examples` folder is a `sandbox`, this is the place to run your `webiny` commands from.
+> NOTE: `webiny` should be run from the root of the Webiny project, and since `sample-project` folder is a `sandbox`, this is the place to run your `webiny` commands from.
 
-5. Begin working on React apps by navigating to `examples/apps/{admin|site}` and run `yarn start`. React apps are regular `create-react-app` apps, slightly modified, but all the CRA rules apply.
+5. Begin working on React apps by navigating to `sample-project/apps/{admin|site}` and run `yarn start`. React apps are regular `create-react-app` apps, slightly modified, but all the CRA rules apply.
 
 6. Run `watch` on packages you are working on so that your changes are automatically built into the corresponding `dist` folder. React app build will automatically rebuild and hot-reload changes that happen in the `dist` folder of all related packages.
 
-The easiest way to run a watch is by running `lerna run watch --scope=your-scope --stream --parallel`. For more details visit the [official lerna filtering docs](https://github.com/lerna/lerna/tree/master/core/filter-options). 
+The easiest way to run a watch is by running `lerna run watch --scope=your-scope --stream --parallel`. For more details visit the [official lerna filtering docs](https://github.com/lerna/lerna/tree/master/core/filter-options).
 
 ## Tests
 
 You can find examples of tests in some of the utility packages (`validation`, `i18n`, `plugins`).
 
-`api-files` contains an example of testing your GraphQL API.
+`api-files` and `api-headless-cms` contain examples of testing your GraphQL API.
 
 We'll be strongly focusing on tests in the near future, and of course contributions of tests are most welcome :)
-
-To add a package to Jest projects, edit the `jest.config.js` file.
 
 ### [Cypress](https://www.cypress.io/) tests
 
@@ -97,7 +95,7 @@ Before running the tests, make sure you have a working API and app deployed to t
 
 Once you have a working API and app deployed to the cloud, make sure to open the `cypress.json` in the project root, and configure all of the variables.
 
-Most of the needed values can be found in the `.env.json` files in your `examples/apps` folders (e.g. `examples/apps/admin/.env.json`).
+Most of the needed values can be found in the `.env.json` files in your `sample-project/apps` folders (e.g. `sample-project/apps/admin/.env.json`).
 
 Tests that are testing different sections of the Admin app also require the `DEFAULT_ADMIN_USER_USERNAME` and `DEFAULT_ADMIN_USER_PASSWORD` values, which represent the credentials of the default full-access admin account (set in the Admin app, in the initial installation process).
 
@@ -139,4 +137,4 @@ cy.findByText("Save something")
 
 The `visitAndReloadOnceInvalidated` command will immediately visit the URL you're trying to test and will continuously refresh the page until the change was detected, after which the next assertions will start to get executed.
 
-The page will be refreshed every ~3 seconds for 10 times. If there are no changes after that, the command will throw an error, and the test will fail. 
+The page will be refreshed every ~3 seconds for 10 times. If there are no changes after that, the command will throw an error, and the test will fail.

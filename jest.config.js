@@ -1,15 +1,17 @@
-// TODO: waiting for this to be released: https://github.com/facebook/jest/pull/8894/files
-// Until then, specify the packages manually
+const fs = require("fs");
+const path = require("path");
+const { allPackages } = require("@webiny/project-utils/packages");
+
+const projects = allPackages()
+    .map(pkg => {
+        if (!fs.existsSync(path.join(pkg, "jest.config.js"))) {
+            return null;
+        }
+        return pkg.replace(process.cwd() + "/", "");
+    })
+    .filter(Boolean);
 
 module.exports = {
-    projects: [
-        "packages/api-headless-cms",
-        "packages/api-files",
-        "packages/plugins",
-        "packages/validation",
-        "packages/http-handler-ssr",
-        "packages/http-handler-apollo-gateway",
-        "packages/http-handler-apollo-server"
-    ],
+    projects,
     modulePathIgnorePatterns: ["dist"]
 };

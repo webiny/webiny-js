@@ -42,11 +42,14 @@ async function symlink(src, dest) {
     }
 }
 
-module.exports.linkPackages = async () => {
+const defaults = { whitelist: ["packages"] };
+
+module.exports.linkPackages = async ({ whitelist } = defaults) => {
     console.log(`Linking repo packages...`);
 
+    whitelist = whitelist.map(p => path.resolve(p));
+
     // Filter packages to only those in the whitelisted folders
-    const whitelist = [path.resolve("components"), path.resolve("packages")];
     const packages = require("get-yarn-workspaces")()
         .map(pkg => pkg.replace(/\//g, path.sep))
         .reduce((acc, pkg) => {
@@ -67,14 +70,14 @@ module.exports.linkPackages = async () => {
             continue;
         }
 
-        const package = require(packageJson);
+        const pkg = require(packageJson);
 
-        let targetDirectory = get(package, "publishConfig.directory");
+        let targetDirectory = get(pkg, "publishConfig.directory");
         if (!targetDirectory && lerna) {
             targetDirectory = get(lerna, "command.publish.contents");
         }
 
-        const link = path.resolve("node_modules", package.name);
+        const link = path.resolve("node_modules", pkg.name);
         const target = path.resolve(packages[i], targetDirectory || ".");
 
         if (!fs.existsSync(target)) {
@@ -85,7 +88,7 @@ module.exports.linkPackages = async () => {
             await fs.mkdirp(path.dirname(link));
             await symlink(target, link);
         } catch (err) {
-            console.log(`Failed ${package.name}: ${err.message}`);
+            console.log(`Failed ${pkg.name}: ${err.message}`);
         }
     }
 };
