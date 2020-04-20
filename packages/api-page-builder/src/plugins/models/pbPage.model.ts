@@ -3,6 +3,7 @@ import { validation } from "@webiny/validation";
 import { withProps } from "@webiny/commodo";
 import mdbid from "mdbid";
 import content from "./pbPage/contentField";
+import withLatestVersion from "./pbPage/withLatestVersion";
 import {
     withFields,
     onSet,
@@ -171,7 +172,8 @@ export default ({ createBase, context, PbCategory, PbSettings }) => {
                     return Promise.all(revisions.map(rev => rev.delete()));
                 }
             }
-        })
+        }),
+        withLatestVersion()
     )(createBase());
 
     return PbPage;
