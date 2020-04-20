@@ -6,7 +6,7 @@ interface CreateListArgs {
 }
 
 export const createListArgs: CreateListArgs = ({ field }) => {
-    const localeArg = field.localization ? "locale: String" : "";
+    const localeArg = "locale: String";
     const typeName = createTypeName(field.settings.modelId);
     const rTypeName = createReadTypeName(typeName);
 

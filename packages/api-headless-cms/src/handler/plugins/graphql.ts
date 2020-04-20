@@ -157,7 +157,6 @@ export default ({ type }) => [
                     fieldId: String
                     name: String
                     type: String
-                    localization: Boolean
                     unique: Boolean
                     searchable: Boolean
                     sortable: Boolean
@@ -174,7 +173,6 @@ export default ({ type }) => [
                     fieldId: String
                     name: String
                     type: String
-                    localization: Boolean
                     unique: Boolean
                     searchable: Boolean
                     sortable: Boolean

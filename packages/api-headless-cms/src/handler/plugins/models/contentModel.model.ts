@@ -42,7 +42,6 @@ export default ({ createBase, context }) =>
                         })()
                     }),
                     type: string({ validation: required }),
-                    localization: boolean({ validation: required, value: false }),
                     unique: boolean({ validation: required, value: false }),
                     searchable: boolean({ validation: required, value: false }),
                     sortable: boolean({ validation: required, value: false }),

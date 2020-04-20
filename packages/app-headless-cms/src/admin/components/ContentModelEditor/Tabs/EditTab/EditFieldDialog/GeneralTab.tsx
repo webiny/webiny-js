@@ -83,11 +83,6 @@ const GeneralTab = ({ field, form }: GeneralTabProps) => {
             {additionalSettings}
             <Grid>
                 <Cell span={6}>
-                    <Bind name={"localization"}>
-                        <Switch label={"Localization"} />
-                    </Bind>
-                </Cell>
-                <Cell span={6}>
                     <Bind name={"unique"}>
                         <Switch label={"Unique"} />
                     </Bind>

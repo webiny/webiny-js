@@ -31,7 +31,7 @@ const plugin: CmsModelFieldToGraphQLPlugin = {
     isSortable: true,
     read: {
         createTypeField({ field }) {
-            const localeArg = field.localization ? "(locale: String)" : "";
+            const localeArg = "(locale: String)";
             return `${field.fieldId}${localeArg}: String`;
         },
         createGetFilters({ field }) {

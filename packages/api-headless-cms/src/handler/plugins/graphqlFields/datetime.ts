@@ -73,7 +73,7 @@ const plugin: CmsModelFieldToGraphQLPlugin = {
         },
         createTypeField({ field }) {
             const { type } = field.settings;
-            const localeArg = field.localization ? "(locale: String)" : "";
+            const localeArg = "(locale: String)";
 
             if (type === "dateTimeWithTimezone") {
                 return `${field.fieldId}${localeArg}: DateTime`;

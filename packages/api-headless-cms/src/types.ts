@@ -66,7 +66,6 @@ export type CmsModelField = {
     label: CmsModelFieldValue<string>;
     type: string;
     fieldId: string;
-    localization: boolean;
     unique: boolean;
     validation: CmsFieldValidation[];
     settings?: { [key: string]: any };

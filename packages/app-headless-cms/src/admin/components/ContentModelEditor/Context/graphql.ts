@@ -27,7 +27,6 @@ export const FIELDS_FIELDS = `
             }
             value
         }
-        localization
         unique
         searchable
         sortable

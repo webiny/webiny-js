@@ -25,7 +25,7 @@ const plugin: CmsModelFieldToGraphQLPlugin = {
             };
         },
         createTypeField({ field }) {
-            const localeArg = field.localization ? "(locale: String)" : "";
+            const localeArg = "(locale: String)";
             return `${field.fieldId}${localeArg}: Boolean`;
         }
     },

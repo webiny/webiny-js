@@ -10,7 +10,7 @@ const plugin: CmsModelFieldToGraphQLPlugin = {
     isSortable: false,
     read: {
         createTypeField({ model, field }) {
-            const localeArg = field.localization ? "(locale: String)" : "";
+            const localeArg = "(locale: String)";
             const { modelId, type } = field.settings;
             const many = type === "many";
             const gqlType = createReadTypeName(modelId);
