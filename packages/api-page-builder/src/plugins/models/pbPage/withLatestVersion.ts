@@ -10,7 +10,7 @@ export default () =>
 
                 if (this.version > 1) {
                     const removeCallback = this.hook("afterCreate", async () => {
-                        const previousLatestForm = await this.constructor.findOne({
+                        const previousLatestPage = await this.constructor.findOne({
                             query: {
                                 parent: this.parent,
                                 latestVersion: true,
@@ -18,9 +18,9 @@ export default () =>
                             }
                         });
 
-                        if (previousLatestForm) {
-                            previousLatestForm.latestVersion = false;
-                            await previousLatestForm.save();
+                        if (previousLatestPage) {
+                            previousLatestPage.latestVersion = false;
+                            await previousLatestPage.save();
                         }
                         removeCallback();
                     });
@@ -35,7 +35,7 @@ export default () =>
                 if (this.version > 1 && this.latestVersion) {
                     this.latestVersion = false;
                     const removeCallback = this.hook("afterDelete", async () => {
-                        const previousLatestForm = await this.constructor.findOne({
+                        const previousLatestPage = await this.constructor.findOne({
                             query: {
                                 parent: this.parent
                             },
@@ -43,8 +43,8 @@ export default () =>
                                 version: -1
                             }
                         });
-                        previousLatestForm.latestVersion = true;
-                        await previousLatestForm.save();
+                        previousLatestPage.latestVersion = true;
+                        await previousLatestPage.save();
 
                         removeCallback();
                     });
