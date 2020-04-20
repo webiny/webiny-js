@@ -1,15 +1,5 @@
-import cloneDeep from "lodash.clonedeep";
 import { withUser } from "@webiny/api-security";
-import {
-    pipe,
-    withStorage,
-    withCrudLogs,
-    withSoftDelete,
-    withFields,
-    withStaticProps,
-    setOnce,
-    withHooks
-} from "@webiny/commodo";
+import { pipe, withStorage, withCrudLogs, withSoftDelete, withFields } from "@webiny/commodo";
 import { GraphQLContextPlugin } from "@webiny/graphql/types";
 import { GraphQLContext } from "@webiny/api-plugin-commodo-db-proxy/types";
 import contentModel from "./models/contentModel.model";
@@ -18,6 +8,7 @@ import environmentModelAlias from "../../plugins/models/environmentAlias.model";
 import contentModelGroup from "./models/contentModelGroup.model";
 import { createDataModelFromData } from "./utils/createDataModelFromData";
 import { createSearchModelFromData } from "./utils/createSearchModelFromData";
+import { createEnvironmentBase as createEnvironmentBaseFactory } from "./utils/createEnvironmentBase";
 
 export default () => {
     async function apply(context) {
@@ -40,7 +31,7 @@ export default () => {
                 withCrudLogs()
             )() as Function;
 
-        context.models = {};
+        context.models = { createBase };
         context.models.CmsEnvironment = environmentModel({ createBase, context });
         context.models.CmsEnvironmentAlias = environmentModelAlias({
             createBase,
@@ -71,41 +62,10 @@ export default () => {
         context.cms.getEnvironment = () => environment;
         context.cms.getEnvironmentAlias = () => environmentAlias;
 
-        const modifyQueryArgs = (args = {}) => {
-            const returnArgs = cloneDeep(args);
-            if (returnArgs.query) {
-                returnArgs.query = {
-                    $and: [{ environment: environment.id }, returnArgs.query]
-                };
-            } else {
-                returnArgs.query = { environment: environment.id };
-            }
-
-            return returnArgs;
-        };
-
-        const createEnvironmentBase = () =>
-            pipe(
-                withStaticProps(({ find, count, findOne }) => ({
-                    find(args) {
-                        return find.call(this, modifyQueryArgs(args));
-                    },
-                    count(args) {
-                        return count.call(this, modifyQueryArgs(args));
-                    },
-                    findOne(args) {
-                        return findOne.call(this, modifyQueryArgs(args));
-                    }
-                })),
-                withFields({
-                    environment: setOnce()(context.commodo.fields.id())
-                }),
-                withHooks({
-                    beforeCreate() {
-                        this.environment = environment.id;
-                    }
-                })
-            )(createBase());
+        const createEnvironmentBase = createEnvironmentBaseFactory({
+            context,
+            addEnvironmentField: true
+        });
 
         context.models.CmsContentModelGroup = contentModelGroup({
             createBase: createEnvironmentBase,
@@ -117,16 +77,19 @@ export default () => {
             context
         });
 
-        context.createBase = createBase;
         context.createEnvironmentBase = createEnvironmentBase;
 
         // Build Commodo models from CmsContentModels
         const contentModels = await context.models.CmsContentModel.find();
         for (let i = 0; i < contentModels.length; i++) {
             const data = contentModels[i];
-            context.models[data.modelId] = createDataModelFromData(createEnvironmentBase(), data, context);
+            context.models[data.modelId] = createDataModelFromData(
+                createEnvironmentBaseFactory({ context, addEnvironmentField: false }),
+                data,
+                context
+            );
             context.models[data.modelId + "Search"] = createSearchModelFromData(
-                createEnvironmentBase(),
+                createEnvironmentBase,
                 data,
                 context
             );
