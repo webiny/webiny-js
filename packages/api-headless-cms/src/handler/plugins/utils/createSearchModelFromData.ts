@@ -1,14 +1,14 @@
-import { pipe, withName, withFields, string, boolean } from "@webiny/commodo";
+import { pipe, withName, withFields, string, boolean, setOnce } from "@webiny/commodo";
 import {
     CmsGraphQLContext,
     CmsModel,
     CmsModelFieldToCommodoFieldPlugin
 } from "@webiny/api-headless-cms/types";
 
-import { withModelId } from "./withModelId";
+import { withModelFiltering } from "./withModelFiltering";
 
 export const createSearchModelFromData = (
-    baseModel: Function,
+    createBase: Function,
     data: CmsModel,
     context: CmsGraphQLContext
 ) => {
@@ -23,10 +23,11 @@ export const createSearchModelFromData = (
             revision: context.commodo.fields.id(),
             latestVersion: boolean(),
             published: boolean(),
-            locale: string()
+            locale: string(),
+            model: setOnce()(string({ value: data.modelId }))
         }),
-        withModelId(data.modelId)
-    )(baseModel) as Function;
+        withModelFiltering(data.modelId)
+    )(createBase()) as Function;
 
     for (let i = 0; i < data.fields.length; i++) {
         const field = data.fields[i];
