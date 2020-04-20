@@ -152,7 +152,10 @@ module.exports = () => ({
                 component: "@webiny/serverless-files",
                 inputs: {
                     region: vars.region,
-                    bucket: vars.bucket
+                    bucket: vars.bucket,
+                    storage: {
+                        accelerated: false
+                    }
                 }
             }
         },

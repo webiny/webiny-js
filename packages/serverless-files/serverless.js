@@ -20,6 +20,7 @@ class FilesComponent extends Component {
         const {
             region,
             bucket,
+            storage = {},
             functions: {
                 downloadFile: downloadFileInputs,
                 imageTransformer: imageTransformerInputs
@@ -41,7 +42,7 @@ class FilesComponent extends Component {
 
         // Create S3 bucket for storing files.
         const s3 = await this.load("@serverless/aws-s3");
-        const s3Output = await s3({ name: bucket, region });
+        const s3Output = await s3({ name: bucket, region, ...storage });
         await configureS3Bucket({
             component: this,
             s3Output,
