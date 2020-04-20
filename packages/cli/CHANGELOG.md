@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.2.7-next.0](https://github.com/webiny/webiny-js/compare/@webiny/cli@3.2.6...@webiny/cli@3.2.7-next.0) (2020-04-20)
+
+
+### Bug Fixes
+
+* disable acceleration for the "serverless-files" component ([843bd68](https://github.com/webiny/webiny-js/commit/843bd6830cd2a226a1b19e47c0d997fbdcd0f6ef))
+
+
+
+
+
 ## [3.2.6](https://github.com/webiny/webiny-js/compare/@webiny/cli@3.2.6-next.0...@webiny/cli@3.2.6) (2020-04-16)
 
 **Note:** Version bump only for package @webiny/cli
