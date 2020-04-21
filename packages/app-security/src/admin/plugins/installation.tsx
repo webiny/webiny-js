@@ -133,7 +133,7 @@ const Install = ({ onInstalled }) => {
                                             name="lastName"
                                             validators={validation.create("required")}
                                         >
-                                            <Input label={t`Last name`} />
+                                            <Input label={t`Last Name`} />
                                         </Bind>
                                     ),
                                     email: (
@@ -149,7 +149,7 @@ const Install = ({ onInstalled }) => {
                     </SimpleFormContent>
                     <SimpleFormFooter>
                         {!authUserMessage && (
-                            <ButtonPrimary onClick={submit}>Install security</ButtonPrimary>
+                            <ButtonPrimary data-testid="install-security-button" onClick={submit}>Install security</ButtonPrimary>
                         )}
                         {authUserMessage && (
                             <ButtonPrimary onClick={onInstalled}>

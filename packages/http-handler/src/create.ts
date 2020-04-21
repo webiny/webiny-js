@@ -55,9 +55,9 @@ export default (...plugins) => async (...args) => {
         }
 
         return createResponse({
-            statusCode: 404,
+            statusCode: 500,
             type: "text/html",
-            body: `<html><h1>An error occurred</h1><p>${error.stack}</p></html>`,
+            body: `<html><h1>An error occurred</h1><pre>${error.stack}</pre></html>`,
             headers: { "Cache-Control": "no-store" }
         });
     }

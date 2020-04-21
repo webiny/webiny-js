@@ -3,6 +3,54 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.0.13](https://github.com/webiny/webiny-js/compare/@webiny/app-mailchimp@3.0.13-next.0...@webiny/app-mailchimp@3.0.13) (2020-04-16)
+
+**Note:** Version bump only for package @webiny/app-mailchimp
+
+
+
+
+
+## [3.0.13-next.0](https://github.com/webiny/webiny-js/compare/@webiny/app-mailchimp@3.0.12...@webiny/app-mailchimp@3.0.13-next.0) (2020-04-16)
+
+**Note:** Version bump only for package @webiny/app-mailchimp
+
+
+
+
+
+## [3.0.12](https://github.com/webiny/webiny-js/compare/@webiny/app-mailchimp@3.0.11...@webiny/app-mailchimp@3.0.12) (2020-04-14)
+
+**Note:** Version bump only for package @webiny/app-mailchimp
+
+
+
+
+
+## [3.0.11](https://github.com/webiny/webiny-js/compare/@webiny/app-mailchimp@3.0.10...@webiny/app-mailchimp@3.0.11) (2020-04-13)
+
+**Note:** Version bump only for package @webiny/app-mailchimp
+
+
+
+
+
+## [3.0.10](https://github.com/webiny/webiny-js/compare/@webiny/app-mailchimp@3.0.10-next.0...@webiny/app-mailchimp@3.0.10) (2020-04-03)
+
+**Note:** Version bump only for package @webiny/app-mailchimp
+
+
+
+
+
+## [3.0.10-next.0](https://github.com/webiny/webiny-js/compare/@webiny/app-mailchimp@3.0.9...@webiny/app-mailchimp@3.0.10-next.0) (2020-04-03)
+
+**Note:** Version bump only for package @webiny/app-mailchimp
+
+
+
+
+
 ## [3.0.9](https://github.com/webiny/webiny-js/compare/@webiny/app-mailchimp@3.0.9-next.0...@webiny/app-mailchimp@3.0.9) (2020-03-09)
 
 **Note:** Version bump only for package @webiny/app-mailchimp

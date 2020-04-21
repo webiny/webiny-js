@@ -10,11 +10,7 @@ context("Menus Module", () => {
         cy.wait(500)
             .findByTestId("default-data-list")
             .within(() => {
-                cy.get("div")
-                    .first()
-                    .within(() => {
-                        cy.findByText(/Main Menu/i).click();
-                    });
+                cy.findByText(/Main Menu/i).click();
             });
 
         // Test "Page List".

@@ -3,6 +3,30 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.2.0](https://github.com/webiny/webiny-js/compare/@webiny/http-handler-ssr@2.2.0-next.0...@webiny/http-handler-ssr@2.2.0) (2020-04-16)
+
+**Note:** Version bump only for package @webiny/http-handler-ssr
+
+
+
+
+
+# [2.2.0-next.0](https://github.com/webiny/webiny-js/compare/@webiny/http-handler-ssr@2.1.0...@webiny/http-handler-ssr@2.2.0-next.0) (2020-04-16)
+
+
+### Bug Fixes
+
+* throw on SSR errors ([9d35588](https://github.com/webiny/webiny-js/commit/9d355883a450e1bc511cb6f671e4990e02d7b52e))
+
+
+### Features
+
+* force SSR HTML generation with "ssr-no-cache" query param ([5d02ce3](https://github.com/webiny/webiny-js/commit/5d02ce37b818305f9f708b5bf6ba068eea4df2a2))
+
+
+
+
+
 # [2.1.0](https://github.com/webiny/webiny-js/compare/@webiny/http-handler-ssr@2.1.0-next.1...@webiny/http-handler-ssr@2.1.0) (2020-02-18)
 
 

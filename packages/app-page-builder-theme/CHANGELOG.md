@@ -3,6 +3,57 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.0.12](https://github.com/webiny/webiny-js/compare/@webiny/app-page-builder-theme@2.0.12-next.0...@webiny/app-page-builder-theme@2.0.12) (2020-04-16)
+
+**Note:** Version bump only for package @webiny/app-page-builder-theme
+
+
+
+
+
+## [2.0.12-next.0](https://github.com/webiny/webiny-js/compare/@webiny/app-page-builder-theme@2.0.11...@webiny/app-page-builder-theme@2.0.12-next.0) (2020-04-16)
+
+**Note:** Version bump only for package @webiny/app-page-builder-theme
+
+
+
+
+
+## [2.0.11](https://github.com/webiny/webiny-js/compare/@webiny/app-page-builder-theme@2.0.10...@webiny/app-page-builder-theme@2.0.11) (2020-04-14)
+
+**Note:** Version bump only for package @webiny/app-page-builder-theme
+
+
+
+
+
+## [2.0.10](https://github.com/webiny/webiny-js/compare/@webiny/app-page-builder-theme@2.0.9...@webiny/app-page-builder-theme@2.0.10) (2020-04-13)
+
+**Note:** Version bump only for package @webiny/app-page-builder-theme
+
+
+
+
+
+## [2.0.9](https://github.com/Webiny/webiny-js/compare/@webiny/app-page-builder-theme@2.0.9-next.0...@webiny/app-page-builder-theme@2.0.9) (2020-04-03)
+
+**Note:** Version bump only for package @webiny/app-page-builder-theme
+
+
+
+
+
+## [2.0.9-next.0](https://github.com/Webiny/webiny-js/compare/@webiny/app-page-builder-theme@2.0.8...@webiny/app-page-builder-theme@2.0.9-next.0) (2020-04-03)
+
+
+### Bug Fixes
+
+* navigation link padding ([#755](https://github.com/Webiny/webiny-js/issues/755)) ([b1eade4](https://github.com/Webiny/webiny-js/commit/b1eade43a3312a1b77947b935f64b9bbd6d02f76))
+
+
+
+
+
 ## [2.0.8](https://github.com/Webiny/webiny-js/compare/@webiny/app-page-builder-theme@2.0.8-next.0...@webiny/app-page-builder-theme@2.0.8) (2020-03-09)
 
 **Note:** Version bump only for package @webiny/app-page-builder-theme

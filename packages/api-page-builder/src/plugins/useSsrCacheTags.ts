@@ -39,6 +39,14 @@ export default () => [
                             path: this.url,
                             refresh: true
                         });
+
+                        // If the page is set as site's homepage, we need to invalidate the "/" path too.
+                        if (await this.isHomePage) {
+                            await ssrApiClient.invalidateSsrCacheByPath({
+                                path: "/",
+                                refresh: true
+                            });
+                        }
                     }
                 }
             })(PbPage);

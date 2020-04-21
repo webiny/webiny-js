@@ -3,6 +3,41 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.0.6](https://github.com/webiny/webiny-js/compare/@webiny/app@3.0.6-next.0...@webiny/app@3.0.6) (2020-04-16)
+
+**Note:** Version bump only for package @webiny/app
+
+
+
+
+
+## [3.0.6-next.0](https://github.com/webiny/webiny-js/compare/@webiny/app@3.0.5...@webiny/app@3.0.6-next.0) (2020-04-16)
+
+**Note:** Version bump only for package @webiny/app
+
+
+
+
+
+## [3.0.5](https://github.com/webiny/webiny-js/compare/@webiny/app@3.0.5-next.0...@webiny/app@3.0.5) (2020-04-03)
+
+**Note:** Version bump only for package @webiny/app
+
+
+
+
+
+## [3.0.5-next.0](https://github.com/webiny/webiny-js/compare/@webiny/app@3.0.4...@webiny/app@3.0.5-next.0) (2020-04-03)
+
+
+### Bug Fixes
+
+* improve descriptions for "route", "menu", and "header-*" plugins ([#777](https://github.com/webiny/webiny-js/issues/777)) ([b935a50](https://github.com/webiny/webiny-js/commit/b935a508ab026d69a3b55946f18b3c7ed45c3497)), closes [#770](https://github.com/webiny/webiny-js/issues/770)
+
+
+
+
+
 ## [3.0.4](https://github.com/webiny/webiny-js/compare/@webiny/app@3.0.4-next.0...@webiny/app@3.0.4) (2020-03-09)
 
 **Note:** Version bump only for package @webiny/app

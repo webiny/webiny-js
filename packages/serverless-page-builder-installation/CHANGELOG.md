@@ -3,6 +3,25 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.0.4](https://github.com/webiny/webiny-js/compare/@webiny/serverless-page-builder@3.0.4-next.0...@webiny/serverless-page-builder@3.0.4) (2020-04-20)
+
+**Note:** Version bump only for package @webiny/serverless-page-builder
+
+
+
+
+
+## [3.0.4-next.0](https://github.com/webiny/webiny-js/compare/@webiny/serverless-page-builder@3.0.3...@webiny/serverless-page-builder@3.0.4-next.0) (2020-04-20)
+
+
+### Bug Fixes
+
+* disable accceleration ([a435521](https://github.com/webiny/webiny-js/commit/a435521f443b9dad10399aa7aeb40ee2eef76f7d))
+
+
+
+
+
 ## [3.0.3](https://github.com/Webiny/webiny-js/compare/@webiny/serverless-page-builder@3.0.3-next.0...@webiny/serverless-page-builder@3.0.3) (2020-02-24)
 
 **Note:** Version bump only for package @webiny/serverless-page-builder

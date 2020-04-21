@@ -2,7 +2,7 @@ import { useCallback } from "react";
 import { useQuery } from "react-apollo";
 import gql from "graphql-tag";
 import { get } from "lodash";
-import formatPreviewUrl from "./formatPreviewUrl";
+import getPagePreviewUrlFunction from "./getPagePreviewUrl";
 
 const DOMAIN_QUERY = gql`
     query PbGetDomain {
@@ -39,7 +39,7 @@ export function usePageBuilderSettings() {
             if (loading) {
                 return null;
             }
-            return formatPreviewUrl({ page, domain: getDomain() });
+            return getPagePreviewUrlFunction({ page, domain: getDomain() });
         },
         [data, loading]
     );

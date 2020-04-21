@@ -86,7 +86,7 @@ const I18NInstaller = ({ onInstalled }) => {
                         </Grid>
                     </SimpleFormContent>
                     <SimpleFormFooter>
-                        <ButtonPrimary onClick={submit}>Install I18N</ButtonPrimary>
+                        <ButtonPrimary data-testid="install-i18n-button" onClick={submit}>Install I18N</ButtonPrimary>
                     </SimpleFormFooter>
                 </SimpleForm>
             )}

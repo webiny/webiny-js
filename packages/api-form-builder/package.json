@@ -1,6 +1,6 @@
 {
   "name": "@webiny/api-form-builder",
-  "version": "2.1.0",
+  "version": "2.1.2",
   "main": "index.js",
   "repository": {
     "type": "git",
@@ -16,11 +16,11 @@
   "dependencies": {
     "@babel/runtime": "^7.5.5",
     "@webiny/graphql": "^1.0.0",
-    "@webiny/api-i18n": "^3.0.3",
+    "@webiny/api-i18n": "^3.0.4",
     "@webiny/api-security": "^3.1.0",
     "@webiny/commodo": "^3.0.1",
     "@webiny/commodo-graphql": "^3.0.2",
-    "@webiny/http-handler-ssr": "^2.1.0",
+    "@webiny/http-handler-ssr": "^2.2.0",
     "@webiny/validation": "^3.0.1",
     "form-data": "^2.5.0",
     "got": "^9.6.0",

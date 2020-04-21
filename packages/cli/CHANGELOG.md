@@ -3,6 +3,45 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.2.7](https://github.com/webiny/webiny-js/compare/@webiny/cli@3.2.7-next.0...@webiny/cli@3.2.7) (2020-04-20)
+
+**Note:** Version bump only for package @webiny/cli
+
+
+
+
+
+## [3.2.7-next.0](https://github.com/webiny/webiny-js/compare/@webiny/cli@3.2.6...@webiny/cli@3.2.7-next.0) (2020-04-20)
+
+
+### Bug Fixes
+
+* disable acceleration for the "serverless-files" component ([843bd68](https://github.com/webiny/webiny-js/commit/843bd6830cd2a226a1b19e47c0d997fbdcd0f6ef))
+
+
+
+
+
+## [3.2.6](https://github.com/webiny/webiny-js/compare/@webiny/cli@3.2.6-next.0...@webiny/cli@3.2.6) (2020-04-16)
+
+**Note:** Version bump only for package @webiny/cli
+
+
+
+
+
+## [3.2.6-next.0](https://github.com/webiny/webiny-js/compare/@webiny/cli@3.2.5...@webiny/cli@3.2.6-next.0) (2020-04-16)
+
+
+### Bug Fixes
+
+* clean up the response ([f462b3d](https://github.com/webiny/webiny-js/commit/f462b3d5ca7255f1b4e4d80ff8b06be6d1f8ef25))
+* update React site links ([#752](https://github.com/webiny/webiny-js/issues/752)) ([ae585be](https://github.com/webiny/webiny-js/commit/ae585beb3349ec0b36315b0d266b80d178275ca3))
+
+
+
+
+
 ## [3.2.5](https://github.com/webiny/webiny-js/compare/@webiny/cli@3.2.5-next.0...@webiny/cli@3.2.5) (2020-03-09)
 
 **Note:** Version bump only for package @webiny/cli
