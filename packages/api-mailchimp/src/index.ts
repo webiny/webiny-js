@@ -35,15 +35,16 @@ export default () => [
                     apiKey: String
                 }
 
+                type MailchimpCursors {
+                    next: String
+                    previous: String
+                }
+
                 type MailchimpListMeta {
+                    cursors: MailchimpCursors
+                    hasNextPage: Boolean
+                    hasPreviousPage: Boolean
                     totalCount: Int
-                    totalPages: Int
-                    page: Int
-                    perPage: Int
-                    from: Int
-                    to: Int
-                    previousPage: Int
-                    nextPage: Int
                 }
 
                 type MailchimpError {
@@ -185,5 +186,5 @@ export default () => [
                 }
             }
         }
-    },
+    }
 ];

@@ -4,7 +4,7 @@ export default [
     {
         type: "graphql-context",
         name: "graphql-context-files",
-        apply: async (context): Promise<any> => {
+        async apply(context) {
             const { FilesSettings } = context.models;
 
             const self = {

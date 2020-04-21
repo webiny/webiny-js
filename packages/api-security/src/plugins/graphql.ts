@@ -45,6 +45,18 @@ const plugin: GraphQLSchemaPlugin = {
                 error: SecurityError
             }
 
+            type SecurityCursors {
+                next: String
+                previous: String
+            }
+
+            type SecurityListMeta {
+                cursors: SecurityCursors
+                hasNextPage: Boolean
+                hasPreviousPage: Boolean
+                totalCount: Int
+            }
+
             ${install.typeDefs}
             ${role.typeDefs}
             ${group.typeDefs}
@@ -57,7 +69,7 @@ const plugin: GraphQLSchemaPlugin = {
                 },
                 Mutation: {
                     security: emptyResolver
-                },
+                }
             },
             install.resolvers,
             role.resolvers,

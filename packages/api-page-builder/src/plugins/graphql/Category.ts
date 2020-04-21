@@ -47,11 +47,12 @@ export default {
             ): PbCategoryResponse
             
             listCategories(
-                page: Int
-                perPage: Int
                 where: JSON
                 sort: JSON
                 search: PbSearchInput
+                limit: Int
+                after: String
+                before: String
             ): PbCategoryListResponse
         }
         

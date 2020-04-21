@@ -48,7 +48,7 @@ export default {
         }
         
         type I18NInformationResponse {
-            locales: [I18NLocale],
+            locales: [I18NLocale]
             currentLocale: I18NLocale
             defaultLocale: I18NLocale 
         }
@@ -59,11 +59,12 @@ export default {
             ): I18NLocaleResponse
             
             listI18NLocales(
-                page: Int
-                perPage: Int
                 where: JSON
                 sort: JSON
                 search: I18NLocaleSearchInput
+                limit: Int
+                after: String
+                before: String
             ): I18NLocaleListResponse   
             
             getI18NInformation: I18NInformationResponse

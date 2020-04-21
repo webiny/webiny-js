@@ -4,7 +4,6 @@ import { GraphQLFieldResolver } from "@webiny/graphql/types";
 import { PbResolverListPagesPlugin } from "@webiny/api-page-builder/types";
 
 const resolver: GraphQLFieldResolver = async (root, args, context) => {
-    // TODO: @adrian create plugin type
     const plugin = context.plugins.byName<PbResolverListPagesPlugin>("pb-resolver-list-pages");
 
     if (!plugin) {
@@ -15,6 +14,7 @@ const resolver: GraphQLFieldResolver = async (root, args, context) => {
 
     return new ListResponse(
         pages,
+        // TODO: refactor for cursors
         createPaginationMeta({
             page: args.page || 1,
             perPage: args.perPage || 10,

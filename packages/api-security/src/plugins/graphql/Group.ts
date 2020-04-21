@@ -33,17 +33,6 @@ export default {
             operator: String
         }
 
-        type SecurityGroupListMeta {
-            totalCount: Int
-            totalPages: Int
-            page: Int
-            perPage: Int
-            from: Int
-            to: Int
-            previousPage: Int
-            nextPage: Int
-        }
-
         type SecurityGroupError {
             code: String
             message: String
@@ -62,18 +51,19 @@ export default {
 
         type SecurityGroupListResponse {
             data: [SecurityGroup]
-            meta: SecurityGroupListMeta
+            meta: SecurityListMeta
             error: SecurityGroupError
         }
         extend type SecurityQuery {
             getGroup(id: ID, where: JSON, sort: String): SecurityGroupResponse
 
             listGroups(
-                page: Int
-                perPage: Int
                 where: JSON
                 sort: JSON
                 search: SecurityGroupSearchInput
+                limit: Int
+                after: String
+                before: String
             ): SecurityGroupListResponse
         }
 

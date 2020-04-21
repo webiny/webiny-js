@@ -15,7 +15,7 @@ const resolver: GraphQLFieldResolver = async (root, args, context, info) => {
     }
 
     // We utilize the same query used for listing published forms (single source of truth = less maintenance).
-    const listArgs = { ...args, perPage: 1 };
+    const listArgs = { ...args, limit: 1 };
     if (!listArgs.version) {
         listArgs.sort = { version: -1 };
     }

@@ -4,16 +4,17 @@ export const listPublishedPages = async ({ context, args }) => {
     const { PbCategory, PbPage } = context.models;
 
     const {
-        page = 1,
         search,
-        perPage = 10,
         category = null,
         parent = null,
         id = null,
         url = null,
         sort = null,
         tags = null,
-        tagsRule = null
+        tagsRule = null,
+        limit = 10,
+        after,
+        before
     } = args;
 
     const baseFilters: any = [{ published: true, deleted: false }];
@@ -65,7 +66,7 @@ export const listPublishedPages = async ({ context, args }) => {
         }
     }
 
-    return PbPage.find({ query: { $and: baseFilters }, sort, page, perPage });
+    return PbPage.find({ query: { $and: baseFilters }, sort, limit, after, before });
 };
 
 export default async (root: any, args: Object, context: Object) => {

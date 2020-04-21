@@ -52,11 +52,12 @@ export default {
             ): FormSubmissionResponse
             
             listFormSubmissions(
-                page: Int
-                perPage: Int
                 sort: JSON
                 search: String
                 where: JSON
+                limit: Int
+                after: String
+                before: String
             ): FormSubmissionsListResponse
         }
         

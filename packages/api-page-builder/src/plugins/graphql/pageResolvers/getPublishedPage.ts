@@ -12,7 +12,7 @@ const createNotFoundResponse = async ({ returnFallbackPage, context, page, messa
             return response;
         }
 
-        const [foundPage] = await listPublishedPages({ context, args: { parent, perPage: 1 } });
+        const [foundPage] = await listPublishedPages({ context, args: { parent, limit: 1 } });
         response.data = foundPage;
     }
 
@@ -40,7 +40,7 @@ export default async (root: any, args: { [key: string]: any }, context: { [key: 
             const settings = await PbSettings.load();
             const parent = get(settings, `data.pages.home`);
 
-            const [page] = await listPublishedPages({ context, args: { parent, perPage: 1 } });
+            const [page] = await listPublishedPages({ context, args: { parent, limit: 1 } });
             if (page) {
                 return new Response(page);
             }
@@ -53,7 +53,7 @@ export default async (root: any, args: { [key: string]: any }, context: { [key: 
             });
         }
 
-        const [page] = await listPublishedPages({ context, args: { ...args, perPage: 1 } });
+        const [page] = await listPublishedPages({ context, args: { ...args, limit: 1 } });
         if (page) {
             return new Response(page);
         }

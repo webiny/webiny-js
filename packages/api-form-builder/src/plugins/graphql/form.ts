@@ -209,11 +209,12 @@ export default {
             getPublishedForm(id: ID, parent: ID, slug: String, version: Int): FormResponse
             
             listForms(
-                page: Int
-                perPage: Int
                 sort: JSON
                 search: String
                 parent: String
+                limit: Int
+                after: String
+                before: String
             ): FormListResponse
             
             listPublishedForms(
@@ -224,8 +225,9 @@ export default {
                 version: Int
                 tags: [String]
                 sort: FormSortInput
-                page: Int
-                perPage: Int
+                limit: Int
+                after: String
+                before: String
             ): FormListResponse
         }
         
