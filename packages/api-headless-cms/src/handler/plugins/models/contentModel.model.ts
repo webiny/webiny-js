@@ -62,14 +62,18 @@ export default ({ createBase, context }) =>
         withHooks({
             async beforeSave() {
                 // If no title field set, just use the first "text" field.
-                if (!this.titleField) {
-                    const fields = this.fields;
-                    if (Array.isArray(fields)) {
-                        for (let i = 0; i < fields.length; i++) {
-                            const field = fields[i];
-                            if (field.type === 'text') {
-                                this.titleField = field.fieldId;
-                            }
+                const fields = this.fields || [];
+
+                let hasTitleFieldId = false;
+                if (this.titleFieldId && fields.find(item => item.fieldId === this.titleFieldId)) {
+                    hasTitleFieldId = true;
+                }
+
+                if (!hasTitleFieldId) {
+                    for (let i = 0; i < fields.length; i++) {
+                        const field = fields[i];
+                        if (field.type === "text") {
+                            this.titleFieldId = field.fieldId;
                         }
                     }
                 }
