@@ -1,6 +1,6 @@
 import React, { RefObject } from "react";
 import ReactDOM from "react-dom";
-import { get, isEqual } from "lodash";
+import { get, isEqual, noop } from "lodash";
 import shortid from "shortid";
 import { Editor } from "slate-react";
 import { Value } from "slate";
@@ -110,7 +110,7 @@ class SlateEditor extends React.Component<SlateEditorProps, SlateEditorState> {
         return null;
     }
 
-    onChange = change => {
+    onChange = (change, callback = noop) => {
         if (this.state.readOnly) {
             return;
         }
@@ -123,11 +123,14 @@ class SlateEditor extends React.Component<SlateEditorProps, SlateEditorState> {
         }
 
         // Only update local state.
-        this.setState(state => ({
-            ...state,
-            value: change.value,
-            modified: true
-        }));
+        this.setState(
+            state => ({
+                ...state,
+                value: change.value,
+                modified: true
+            }),
+            callback
+        );
     };
 
     onBlur = () => {
