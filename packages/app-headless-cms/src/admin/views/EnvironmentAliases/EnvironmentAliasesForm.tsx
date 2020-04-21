@@ -39,7 +39,7 @@ function EnvironmentAliasesForm() {
                     <SimpleFormContent>
                         <Grid>
                             <NameSlug
-                                formData={data}
+                                newEntry={!crudForm.id}
                                 Bind={Bind}
                                 setValue={setValue}
                                 slug={{
