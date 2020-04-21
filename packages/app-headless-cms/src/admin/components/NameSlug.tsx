@@ -13,8 +13,8 @@ const toSlug = text =>
         remove: /[*#\?<>_\{\}\[\]+~.()'"!:;@]/g
     });
 
-const slugValidator = async (value, validateSlugUniqueness, formData) => {
-    if (formData.id) {
+const slugValidator = async (value, validateSlugUniqueness, newEntry) => {
+    if (!newEntry) {
         return;
     }
 
@@ -22,14 +22,7 @@ const slugValidator = async (value, validateSlugUniqueness, formData) => {
     await validateSlugUniqueness();
 };
 
-let currentFormData;
-
-function NameSlug({ formData, Bind, setValue, name = {}, slug = {}, validateSlugUniqueness }) {
-
-    // A weird issue is happening here - afterChange always contains the initial "{}" as the "formData" value.
-    // This was a temporary fix 😐
-    currentFormData = formData;
-
+function NameSlug({ newEntry, Bind, setValue, name = {}, slug = {}, validateSlugUniqueness }) {
     return (
         <>
             <Cell span={6}>
@@ -38,7 +31,7 @@ function NameSlug({ formData, Bind, setValue, name = {}, slug = {}, validateSlug
                     name="name"
                     validators={validation.create("required,maxLength:100")}
                     afterChange={value => {
-                        if (!currentFormData.id) {
+                        if (newEntry) {
                             setValue("slug", toSlug(value));
                         }
                     }}
@@ -49,14 +42,16 @@ function NameSlug({ formData, Bind, setValue, name = {}, slug = {}, validateSlug
             <Cell span={6}>
                 <Bind
                     name="slug"
-                    validators={value => slugValidator(value, validateSlugUniqueness, formData)}
+                    validators={value =>
+                        slugValidator(value, validateSlugUniqueness, newEntry)
+                    }
                 >
                     {bindProps => (
                         <Input
                             description={t`Cannot be changed.`}
                             {...bindProps}
                             {...slug}
-                            disabled={formData.id}
+                            disabled={!newEntry}
                             label={t`Slug`}
                         />
                     )}
