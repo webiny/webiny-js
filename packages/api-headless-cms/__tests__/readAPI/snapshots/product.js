@@ -8,17 +8,18 @@ export default /* GraphQL */ `
         updatedOn: DateTime
         savedOn: DateTime
         title(locale: String): String
-        category: Category
+        category(locale: String): Category
         reviews(
+            locale: String
             page: Int
             perPage: Int
             where: ReviewListWhereInput
             sort: [ReviewListSorter]
         ): ReviewListResponse
-        price: Float
-        inStock: Boolean
-        itemsInStock: Int
-        availableOn: String
+        price(locale: String): Float
+        inStock(locale: String): Boolean
+        itemsInStock(locale: String): Int
+        availableOn(locale: String): String
     }
 
     input ProductGetWhereInput {
