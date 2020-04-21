@@ -82,7 +82,7 @@ const Field = props => {
                             setData(data => {
                                 data.titleFieldId = field.fieldId;
                                 return data;
-                            }, () => {});
+                            });
                             showSnackbar(t`Title field set successfully.`)
                         }}
                     >
