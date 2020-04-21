@@ -131,6 +131,12 @@ class SlateEditor extends React.Component<SlateEditorProps, SlateEditorState> {
     };
 
     onBlur = () => {
+        // Do not save changes if there is a plugin that's still active. This can happen, for example, when
+        // you click on the "Link" tool, which opens a dialog, which then triggers the blur event and this callback.
+        if (this.state.activePlugin) {
+            return;
+        }
+
         if (!this.nextElement) {
             this.setState({ modified: false });
             this.props.onChange(this.state.value.toJSON());
