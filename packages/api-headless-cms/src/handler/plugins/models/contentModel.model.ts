@@ -23,6 +23,7 @@ export default ({ createBase, context }) =>
             description: string({ validation: validation.create("maxLength:200") }),
             layout: object({ value: [] }),
             group: ref({ instanceOf: context.models.CmsContentModelGroup, validation: required }),
+            titleFieldId: string(),
             fields: fields({
                 list: true,
                 value: [],
@@ -60,6 +61,19 @@ export default ({ createBase, context }) =>
         }),
         withHooks({
             async beforeSave() {
+                // If no title field set, just use the first "text" field.
+                if (!this.titleField) {
+                    const fields = this.fields;
+                    if (Array.isArray(fields)) {
+                        for (let i = 0; i < fields.length; i++) {
+                            const field = fields[i];
+                            if (field.type === 'text') {
+                                this.titleField = field.fieldId;
+                            }
+                        }
+                    }
+                }
+
                 if (this.isDirty()) {
                     const removeCallback = this.hook("afterSave", async () => {
                         removeCallback();
