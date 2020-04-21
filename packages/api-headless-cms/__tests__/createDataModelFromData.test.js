@@ -29,13 +29,13 @@ describe(`createDataModelFromData`, () => {
         for (let i = 0; i < contentModels.length; i++) {
             const modelData = contentModels[i];
             context.models[modelData.modelId] = createDataModelFromData(
-                context.createEnvironmentBase(),
+                context.createEnvironmentBase,
                 modelData,
                 context
             );
 
             context.models[modelData.modelId + "Search"] = createSearchModelFromData(
-                context.createEnvironmentBase(),
+                context.createEnvironmentBase,
                 modelData,
                 context
             );

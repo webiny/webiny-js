@@ -7,9 +7,9 @@ export default /* GraphQL */ `
         createdOn: DateTime
         updatedOn: DateTime
         savedOn: DateTime
-        text: String
-        product: Product
-        rating: Float
+        text(locale: String): String
+        product(locale: String): Product
+        rating(locale: String): Float
     }
 
     input ReviewGetWhereInput {

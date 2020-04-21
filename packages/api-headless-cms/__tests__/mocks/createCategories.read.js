@@ -67,13 +67,13 @@ export default async context => {
         }
     ];
 
-    await category1.populate({ published: true, ...data[0] }).save();
+    await category1.populate({ meta: { published: true }, ...data[0] }).save();
 
     const category2 = new Category();
-    await category2.populate({ published: true, ...data[1] }).save();
+    await category2.populate({ meta: { published: true }, ...data[1] }).save();
 
     const category3 = new Category();
-    await category3.populate({ published: true, ...data[2] }).save();
+    await category3.populate({ meta: { published: true }, ...data[2] }).save();
 
     const category4 = new Category();
     await category4.populate(data[3]).save();
