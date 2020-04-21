@@ -248,7 +248,14 @@ class SlateEditor extends React.Component<SlateEditorProps, SlateEditorState> {
                     .filter(pl => typeof pl.renderDialog === "function")
                     .map(pl => {
                         const props = {
-                            onChange: this.onChange,
+                            onChange: change => {
+                                // For dialogs, we send a complete callback, which will not only update the state of
+                                // the Slate editor, but will also save the changes via GraphQL mutation.
+                                this.onChange(change, () =>
+                                    this.props.onChange(this.state.value.toJSON())
+                                );
+                                this.setState({ modified: false });
+                            },
                             editor: this.editor.current,
                             open: activePlugin ? activePlugin.plugin === pl.name : false,
                             closeDialog: this.deactivatePlugin,
