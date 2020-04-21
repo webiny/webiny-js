@@ -89,13 +89,13 @@ const Field = props => {
                         <ListItemGraphic>
                             <Icon icon={<TitleIcon />} />
                         </ListItemGraphic>
-                        Use as title
+                        {t`Use as title`}
                     </MenuItem>
                     <MenuItem onClick={() => onDelete(field)}>
                         <ListItemGraphic>
                             <Icon icon={<DeleteIcon />} />
                         </ListItemGraphic>
-                        Remove field
+                        {t`Remove field`}
                     </MenuItem>
                 </Menu>
             </Actions>
