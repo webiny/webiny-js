@@ -1,0 +1,14 @@
+{
+    "name": "cwp-template-basic",
+    "version": "0.1.30",
+    "repository": {
+      "type": "git",
+      "directory": "packages/cwp-template-basic"
+    },
+    "workspaces": {
+      "packages": [
+        "apps/admin/",
+        "apps/site/"
+      ]
+    }
+}

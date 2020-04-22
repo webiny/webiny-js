@@ -1,0 +1,69 @@
+{
+  "name": "admin",
+  "version": "0.1.0",
+  "private": true,
+  "dependencies": {
+    "@webiny/app": "^3",
+    "@webiny/app-admin": "^3",
+    "@webiny/app-form-builder": "^2",
+    "@webiny/app-form-builder-theme": "^2",
+    "@webiny/app-cookie-policy": "^3",
+    "@webiny/app-google-tag-manager": "^3",
+    "@webiny/app-i18n": "^3",
+    "@webiny/app-mailchimp": "^3",
+    "@webiny/app-page-builder": "^3",
+    "@webiny/app-security": "^3",
+    "@webiny/app-typeform": "^3",
+    "@webiny/react-router": "^2",
+    "@webiny/plugins": "^3",
+    "@webiny/ui": "^3",
+    "apollo-cache-inmemory": "^1.1.12",
+    "apollo-client": "^2.2.8",
+    "apollo-link": "^1.2.1",
+    "apollo-link-batch-http": "^1.2.3",
+    "core-js": "^3.2.1",
+    "cross-fetch": "^3.0.2",
+    "react-apollo": "^3.1.0",
+    "react-hot-loader": "^4.3.5",
+    "react-router-dom": "^5.0.0",
+    "regenerator-runtime": "^0.13.3"
+  },
+  "devDependencies": {
+    "@rescripts/cli": "^0.0.7",
+    "node-sass": "^4.9.3",
+    "react-scripts": "^3.3.0",
+    "source-map-explorer": "^1.6.0",
+    "webpackbar": "^4.0.0"
+  },
+  "peerDependencies": {
+    "react": "^16.4.0",
+    "react-dom": "^16.6.0"
+  },
+  "scripts": {
+    "analyze": "source-map-explorer build/static/js/main.*",
+    "start": "env-cmd -r .env.json -e default,local rescripts start",
+    "build": "rescripts build",
+    "build:dev": "env-cmd -r .env.json -e default,dev yarn build",
+    "build:prod": "env-cmd -r .env.json -e default,prod yarn build",
+    "postbuild": "webpack --config ./handler/webpack.config.js",
+    "test": "rescripts test --env=jsdom",
+    "eject": "react-scripts eject"
+  },
+  "browserslist": {
+    "development": [
+      "last 2 chrome versions",
+      "last 2 firefox versions",
+      "last 2 edge versions"
+    ],
+    "production": [
+      ">0.25%",
+      "not op_mini all",
+      "ie 11"
+    ]
+  },
+  "svgo": {
+    "plugins": {
+      "removeViewBox": false
+    }
+  }
+}

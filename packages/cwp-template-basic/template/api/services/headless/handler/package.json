@@ -1,0 +1,11 @@
+{
+  "name": "service-cms-handler",
+  "version": "0.1.0",
+  "scripts": {
+    "build": "webiny run build"
+  },
+  "dependencies": {
+    "@webiny/http-handler": "^2.1.0",
+    "@webiny/api-headless-cms": "^0.1.0"
+  }
+}

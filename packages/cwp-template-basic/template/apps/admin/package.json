@@ -1,0 +1,42 @@
+{
+  "name": "admin",
+  "version": "0.1.0",
+  "private": true,
+  "dependencies": {
+    "@webiny/app-template-admin-full": "^1.0.0",
+    "core-js": "^3.2.1",
+    "cross-fetch": "^3.0.2",
+    "react-hot-loader": "^4.3.5",
+    "regenerator-runtime": "^0.13.3"
+  },
+  "devDependencies": {
+    "source-map-explorer": "^1.6.0"
+  },
+  "peerDependencies": {
+    "react": "^16.4.0",
+    "react-dom": "^16.6.0"
+  },
+  "scripts": {
+    "analyze": "source-map-explorer build/static/js/main.*",
+    "start": "env-cmd -r .env.json -e default,local webiny run start",
+    "build:dev": "env-cmd -r .env.json -e default,dev webiny run build",
+    "build:prod": "env-cmd -r .env.json -e default,prod webiny run build"
+  },
+  "browserslist": {
+    "development": [
+      "last 2 chrome versions",
+      "last 2 firefox versions",
+      "last 2 edge versions"
+    ],
+    "production": [
+      ">0.25%",
+      "not op_mini all",
+      "ie 11"
+    ]
+  },
+  "svgo": {
+    "plugins": {
+      "removeViewBox": false
+    }
+  }
+}
