@@ -9,12 +9,18 @@ import { ConfirmationDialog } from "@webiny/ui/ConfirmationDialog";
 import { ReactComponent as EditIcon } from "./icons/round-edit-24px.svg";
 import { ReactComponent as DeleteIcon } from "./icons/round-close-24px.svg";
 import * as Styled from "./StyledComponents";
+import kebabCase from "lodash/kebabCase";
 
 const BlockPreview = props => {
     const { plugin, addBlockToContent, deactivatePlugin, onEdit, onDelete } = props;
 
     return (
-        <Elevation z={1} key={plugin.name} className={Styled.blockStyle}>
+        <Elevation
+            z={1}
+            key={plugin.name}
+            className={Styled.blockStyle}
+            data-testid={`pb-editor-page-blocks-list-item-${kebabCase(plugin.title)}`}
+        >
             <Styled.Overlay>
                 <Styled.Backdrop className={"backdrop"} />
                 <Styled.AddBlock className={"add-block"}>

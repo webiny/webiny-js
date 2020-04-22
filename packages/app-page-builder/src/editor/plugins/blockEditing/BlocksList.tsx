@@ -51,7 +51,7 @@ const BlocksList = props => {
         const plugin = blocks[index];
 
         return (
-            <div key={key} style={style}>
+            <div key={key} style={style} data-testid="pb-editor-page-blocks-list-item">
                 <BlockPreview
                     plugin={plugin}
                     onEdit={() => onEdit(plugin)}
@@ -71,7 +71,11 @@ const BlocksList = props => {
         <WindowScroller scrollElement={rightPanelElement.current}>
             {({ isScrolling, registerChild, onChildScroll, scrollTop }) => (
                 <div style={{ flex: "1 1 auto" }}>
-                    <div style={{ width: "800px", margin: "0 auto" }} ref={registerChild}>
+                    <div
+                        style={{ width: "800px", margin: "0 auto" }}
+                        ref={registerChild}
+                        data-testid={"pb-editor-page-blocks-list"}
+                    >
                         <List
                             key={category}
                             autoHeight
