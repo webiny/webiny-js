@@ -92,7 +92,8 @@ module.exports = function(root, appName, templateName) {
 	try {
 		console.log('installing dependencies');
 		execa.sync("yarn", {
-			cwd: root
+			cwd: root,
+			stdio: "inherit",
 		});
 	} catch (err) {
 		console.log(err);
@@ -101,7 +102,7 @@ module.exports = function(root, appName, templateName) {
 	// Remove template from dependencies
 	try {
         execa.sync("rm", ["-r", "node_modules/" + templateName], {
-            cwd: root,
+			cwd: root
         });
 	} catch (err) {
         console.log(err);
