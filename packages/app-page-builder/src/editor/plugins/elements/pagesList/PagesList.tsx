@@ -26,7 +26,7 @@ const PagesList = ({ data }) => {
 
     let sort = null;
     if (vars.sortBy) {
-        sort = { [vars.sortBy]: vars.sortDirection || -1 };
+        sort = { [vars.sortBy]: parseInt(vars.sortDirection) || -1 };
     }
 
     const variables = {
