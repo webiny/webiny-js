@@ -95,7 +95,7 @@ export default {
                 listMenus: hasScope("pb:menu:crud"),
                 getCategory: hasScope("pb:category:crud"),
                 listCategories: hasScope("pb:category:crud"),
-                listPages: hasScope("pb:page:crud"),
+                // listPages: hasScope("pb:page:crud"),
                 listElements: hasScope("pb:element:crud"),
                 oembedData: hasScope("pb:oembed:read")
             },

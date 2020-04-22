@@ -6,6 +6,7 @@ import {
     resolveGet,
     resolveList
 } from "@webiny/commodo-graphql";
+import {customHasScope} from "@webiny/api-security/scopes";
 import createRevisionFrom from "./pageResolvers/createRevisionFrom";
 import listPages from "./pageResolvers/listPages";
 import listPublishedPages from "./pageResolvers/listPublishedPages";
@@ -27,7 +28,7 @@ export default {
         extend type SecurityUser @key(fields: "id") {
             id: ID @external
         }
-            
+
         type PbPage {
             id: ID
             createdBy: SecurityUser
@@ -49,11 +50,11 @@ export default {
             parent: ID
             revisions: [PbPage]
         }
-        
+
         type PbPageSettings {
             _empty: String
         }
-        
+
         type PbElement {
             id: ID
             name: String
@@ -62,7 +63,7 @@ export default {
             content: JSON
             preview: File
         }
-        
+
         input PbElementInput {
             name: String!
             type: String!
@@ -70,14 +71,14 @@ export default {
             content: JSON!
             preview: RefInput
         }
-                
+
         input PbUpdateElementInput {
             name: String
             category: String
             content: JSON
             preview: RefInput
         }
-        
+
         input PbUpdatePageInput {
             title: String
             snippet: String
@@ -86,15 +87,15 @@ export default {
             settings: PbPageSettingsInput
             content: JSON
         }
-        
+
         input PbPageSettingsInput {
             _empty: String
         }
-        
+
         input PbCreatePageInput {
             category: ID!
         }
-        
+
         # Response types
         type PbPageListMeta {
             totalCount: Int
@@ -111,60 +112,60 @@ export default {
             data: Boolean
             error: PbError
         }
-            
+
         type PbPageResponse {
             data: PbPage
             error: PbError
         }
-        
+
         type PbPageListResponse {
             data: [PbPage]
             meta: PbListMeta
             error: PbError
         }
-        
+
         type PbElementResponse {
             data: PbElement
             error: PbError
         }
-        
+
         type PbElementListResponse {
             data: [PbElement]
             meta: PbListMeta
         }
-        
+
         type PbSearchTagsResponse {
-            data: [String] 
+            data: [String]
         }
-        
+
         type PbOembedResponse {
             data: JSON
             error: PbError
         }
-        
+
         input PbOEmbedInput {
             url: String!
             width: Int
             height: Int
         }
-        
+
         input PbPageSortInput {
             title: Int
             publishedOn: Int
         }
-        
+
         enum PbTagsRule {
           ALL
           ANY
         }
-        
+
         extend type PbQuery {
             getPage(
-                id: ID 
+                id: ID
                 where: JSON
                 sort: String
             ): PbPageResponse
-            
+
             getPublishedPage(
                 id: ID
                 url: String
@@ -172,7 +173,7 @@ export default {
                 returnNotFoundPage: Boolean
                 returnErrorPage: Boolean
             ): PbPageResponse
-            
+
             listPages(
                 page: Int
                 perPage: Int
@@ -180,7 +181,7 @@ export default {
                 search: String
                 parent: String
             ): PbPageListResponse
-            
+
             listPublishedPages(
                 search: String
                 category: String
@@ -191,68 +192,68 @@ export default {
                 page: Int
                 perPage: Int
             ): PbPageListResponse
-            
+
             listElements(perPage: Int): PbElementListResponse
-            
-            # Returns existing tags based on given search term.        
+
+            # Returns existing tags based on given search term.
             searchTags(query: String!): PbSearchTagsResponse
-            
+
             oembedData(
-                url: String! 
+                url: String!
                 width: String
                 height: String
             ): PbOembedResponse
         }
-        
+
         extend type PbMutation {
             createPage(
                 data: PbCreatePageInput!
             ): PbPageResponse
-            
+
             # Sets given page as new homepage.
             setHomePage(id: ID!): PbPageResponse
-            
+
             # Create a new revision from an existing revision
             createRevisionFrom(
                 revision: ID!
             ): PbPageResponse
-            
+
             # Update revision
              updateRevision(
                 id: ID!
                 data: PbUpdatePageInput!
             ): PbPageResponse
-            
+
             # Publish revision
             publishRevision(
                 id: ID!
             ): PbPageResponse
-            
+
             # Delete page and all of its revisions
             deletePage(
                 id: ID!
             ): PbDeleteResponse
-            
+
             # Delete a single revision
             deleteRevision(
                 id: ID!
             ): PbDeleteResponse
-            
+
             # Create element
             createElement(
                 data: PbElementInput!
             ): PbElementResponse
-            
-            updateElement(      
+
+            updateElement(
                 id: ID!
                 data: PbUpdateElementInput!
             ): PbElementResponse
-            
+
             # Delete element
             deleteElement(
                 id: ID!
             ): PbDeleteResponse
-            
+
             updateImageSize: PbDeleteResponse
         },
     `,
@@ -272,7 +273,7 @@ export default {
         },
         PbQuery: {
             getPage: resolveGet(pageFetcher),
-            listPages: listPages,
+            listPages: customHasScope("pb:page:crud")(listPages),
             listPublishedPages,
             getPublishedPage,
             listElements: resolveList(elementFetcher),
