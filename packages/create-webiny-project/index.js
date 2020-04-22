@@ -218,7 +218,7 @@ async function run(root, appName, template) {
 		console.log("Installing packages. This might take a couple of minutes.");
 
 		// const templateInfo = await getPackageInfo("cwp-template-" + template);
-		const templateName = "cwp-template-" + template;
+		const templateName = "cwp-template-" + template ;
 
 		allDependencies.push(templateName);
 
