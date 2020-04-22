@@ -70,10 +70,12 @@ export default ({ createBase, context }) =>
                 }
 
                 if (!hasTitleFieldId) {
+                    this.titleFieldId = null;
                     for (let i = 0; i < fields.length; i++) {
                         const field = fields[i];
                         if (field.type === "text") {
                             this.titleFieldId = field.fieldId;
+                            break;
                         }
                     }
                 }
