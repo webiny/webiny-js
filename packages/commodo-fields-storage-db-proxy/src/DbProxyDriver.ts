@@ -98,58 +98,28 @@ class DbProxyDriver {
     }
 
     async find({ model, options }) {
-        const clonedOptions = { limit: 10, offset: 0, ...options };
+        const clonedOptions = { limit: 0, offset: 0, ...options };
 
-        DbProxyDriver.__preparePerPageOption(clonedOptions);
-        DbProxyDriver.__preparePageOption(clonedOptions);
         DbProxyDriver.__prepareSearchOption(clonedOptions);
 
-        const $facet: any = {
-            results: [{ $skip: clonedOptions.offset }, { $limit: clonedOptions.limit }]
-        };
-
-        if (clonedOptions.sort) {
-            $facet.results.unshift({ $sort: clonedOptions.sort });
-        }
-
-        if (options.meta !== false) {
-            $facet.totalCount = [{ $count: "value" }];
-        }
-
-        const pipeline = [
-            { $match: clonedOptions.query },
-            {
-                $facet
-            }
-        ];
-
-        const [results = {}] = await this.client.runOperation({
+        const results = await this.client.runOperation({
             collection: this.getCollectionName(model),
-            operation: ["aggregate", pipeline]
+            operation: [
+                "find",
+                clonedOptions.query,
+                {
+                    limit: clonedOptions.limit,
+                    sort: clonedOptions.sort,
+                    offset: clonedOptions.offset
+                }
+            ]
         });
 
-        if (!Array.isArray(results.results)) {
-            results.results = [];
-        }
-
-        if (!Array.isArray(results.totalCount)) {
-            results.totalCount = [];
-        }
-
-        return [
-            results.results,
-            createPaginationMeta({
-                totalCount: results.totalCount[0] ? results.totalCount[0].value : 0,
-                page: options.page,
-                perPage: options.perPage
-            })
-        ];
+        return [!Array.isArray(results) ? [] : results, {}];
     }
 
     async findOne({ model, options }) {
         const clonedOptions = { ...options };
-        DbProxyDriver.__preparePerPageOption(clonedOptions);
-        DbProxyDriver.__preparePageOption(clonedOptions);
         DbProxyDriver.__prepareSearchOption(clonedOptions);
 
         // Get first documents from cursor using each

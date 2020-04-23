@@ -173,10 +173,11 @@ export default /* GraphQL */ `
         getProduct(where: ProductGetWhereInput!): ProductResponse
 
         listProducts(
-            page: Int
-            perPage: Int
-            sort: [ProductListSorter]
             where: ProductListWhereInput
+            sort: [ProductListSorter]
+            limit: Int
+            after: String
+            before: String
         ): ProductListResponse
     }
 

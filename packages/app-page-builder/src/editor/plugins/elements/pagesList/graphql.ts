@@ -6,8 +6,9 @@ export const loadPages = gql`
         $sort: PbPageSortInput
         $tags: [String]
         $tagsRule: PbTagsRule
-        $page: Int
-        $perPage: Int
+        $limit: Int
+        $after: String
+        $before: String
     ) {
         pageBuilder {
             listPublishedPages(
@@ -15,8 +16,9 @@ export const loadPages = gql`
                 sort: $sort
                 tags: $tags
                 tagsRule: $tagsRule
-                page: $page
-                perPage: $perPage
+                limit: $limit
+                after: $after
+                before: $before
             ) {
                 data {
                     id
@@ -41,14 +43,13 @@ export const loadPages = gql`
                     }
                 }
                 meta {
-                    from
-                    to
-                    nextPage
-                    previousPage
-                    page
-                    perPage
+                    cursors {
+                        next
+                        previous
+                    }
+                    hasNextPage
+                    hasPreviousPage
                     totalCount
-                    totalPages
                 }
             }
         }

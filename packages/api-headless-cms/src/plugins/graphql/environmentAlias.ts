@@ -51,11 +51,12 @@ export default {
             getEnvironmentAlias(id: ID, where: JSON, sort: String): CmsEnvironmentAliasResponse
 
             listEnvironmentAliases(
-                page: Int
-                perPage: Int
                 where: JSON
                 sort: JSON
                 search: CmsSearchInput
+                limit: Int
+                after: String
+                before: String
             ): CmsEnvironmentAliasListResponse
         }
 

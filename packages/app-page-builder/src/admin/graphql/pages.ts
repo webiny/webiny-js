@@ -36,9 +36,9 @@ export const CREATE_PAGE = gql`
 `;
 
 export const LIST_PAGES = gql`
-    query PbListPages($sort: JSON, $page: Int, $perPage: Int, $search: String) {
+    query PbListPages($sort: JSON, $search: String, $limit: Int, $after: String, $before: String) {
         pageBuilder {
-            pages: listPages(sort: $sort, page: $page, perPage: $perPage, search: $search) {
+            pages: listPages(sort: $sort, search: $search, limit: $limit, after: $after, before: $before) {
                 data {
                     ${sharedFields}
                     category {
@@ -51,11 +51,13 @@ export const LIST_PAGES = gql`
                     }
                 }
                 meta {
+                    cursors {
+                        next
+                        previous
+                    }
+                    hasNextPage
+                    hasPreviousPage
                     totalCount
-                    to
-                    from
-                    nextPage
-                    previousPage
                 }
             }
         }
@@ -154,7 +156,7 @@ const elementFields = /*GraphQL*/ `
 export const LIST_ELEMENTS = gql`
     query PbListElements {
         pageBuilder {
-            elements: listElements(perPage: 1000) {
+            elements: listElements(limit: 1000) {
                 data {
                     ${elementFields}
                 }

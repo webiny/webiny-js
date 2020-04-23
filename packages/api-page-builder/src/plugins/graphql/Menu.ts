@@ -10,7 +10,7 @@ const menuFetcher = ctx => ctx.models.PbMenu;
 import getMenuBySlug from "./menuResolvers/getMenuBySlug";
 
 export default {
-    typeDefs: `
+    typeDefs: /* GraphQL */ `
         type PbMenu {
             id: ID
             createdOn: DateTime
@@ -19,7 +19,7 @@ export default {
             description: String
             items: JSON
         }
-    
+
         input PbMenuInput {
             id: ID
             title: String
@@ -27,54 +27,42 @@ export default {
             description: String
             items: JSON
         }
-        
+
         # Response types
-        
+
         type PbMenuResponse {
             data: PbMenu
             error: PbError
         }
-        
+
         type PbMenuListResponse {
             data: [PbMenu]
             meta: PbListMeta
             error: PbError
         }
-            
+
         extend type PbQuery {
-            getMenu(
-                id: ID 
-                where: JSON
-                sort: String
-            ): PbMenuResponse
-            
+            getMenu(id: ID, where: JSON, sort: String): PbMenuResponse
+
             listMenus(
-                page: Int
-                perPage: Int
                 where: JSON
                 sort: JSON
                 search: PbSearchInput
+                limit: Int
+                after: String
+                before: String
             ): PbMenuListResponse
-            
+
             "Returns menu by given slug."
-            getMenuBySlug(
-                slug: String!
-            ): PbMenuResponse
+            getMenuBySlug(slug: String!): PbMenuResponse
         }
-        
+
         extend type PbMutation {
-            createMenu(
-                data: PbMenuInput!
-            ): PbMenuResponse
-            
-            updateMenu(
-                id: ID!
-                data: PbMenuInput!
-            ): PbMenuResponse
-        
-            deleteMenu(
-                id: ID!
-            ): PbDeleteResponse
+            createMenu(data: PbMenuInput!): PbMenuResponse
+
+            updateMenu(id: ID!, data: PbMenuInput!): PbMenuResponse
+
+            deleteMenu(id: ID!): PbDeleteResponse
         }
     `,
     resolvers: {

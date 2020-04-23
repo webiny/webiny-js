@@ -19,7 +19,7 @@ const BASE_CONTENT_MODEL_FIELDS = `
 // Fetches data needed for constructing content models list in the main menu.
 export const LIST_MENU_CONTENT_GROUPS_MODELS = gql`
     query HeadlessCmsListMenuContentGroupsModels {
-        listContentModelGroups(sort: { name: 1 }, page: 1, perPage: 100) {
+        listContentModelGroups(sort: { name: 1 }, limit: 100) {
             data {
                 id
                 name
@@ -35,17 +35,19 @@ export const LIST_MENU_CONTENT_GROUPS_MODELS = gql`
 `;
 
 export const LIST_CONTENT_MODELS = gql`
-    query HeadlessCmsListContentModels($sort: JSON, $page: Int, $perPage: Int) {
-        listContentModels(sort: $sort, page: $page, perPage: $perPage) {
+    query HeadlessCmsListContentModels($sort: JSON, $after: String, $before: String, $limit: Int) {
+        listContentModels(sort: $sort, after: $after, before: $before, limit: $limit) {
             data {
                 ${BASE_CONTENT_MODEL_FIELDS}
             }
             meta {
+                cursors {
+                    next
+                    previous
+                }
+                hasNextPage
+                hasPreviousPage
                 totalCount
-                to
-                from
-                nextPage
-                previousPage
             }
         }
     }

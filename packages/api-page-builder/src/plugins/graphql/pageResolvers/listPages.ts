@@ -1,26 +1,38 @@
-import { createPaginationMeta } from "@webiny/commodo";
-import { ListResponse } from "@webiny/graphql";
-import { GraphQLFieldResolver } from "@webiny/graphql/types";
-import { PbResolverListPagesPlugin } from "@webiny/api-page-builder/types";
+import { ListResponse, requiresTotalCount } from "@webiny/graphql";
 
-const resolver: GraphQLFieldResolver = async (root, args, context) => {
-    // TODO: @adrian create plugin type
-    const plugin = context.plugins.byName<PbResolverListPagesPlugin>("pb-resolver-list-pages");
+export const listPages = async ({ context, args, info }) => {
+    const { PbPage } = context.models;
+    const { limit = 10, after, before, sort = null, parent = null } = args;
 
-    if (!plugin) {
-        throw Error(`Resolver plugin "pb-resolver-list-pages" is not configured!`);
+    const query: any = {
+        latestVersion: true
+    };
+
+    if (parent) {
+        query.parent = parent;
     }
 
-    const { pages, totalCount } = await plugin.resolve({ args, context });
+    let search = null;
+    if (args.search) {
+        search = {
+            query: args.search,
+            fields: ["title"],
+            operator: "or"
+        };
+    }
 
-    return new ListResponse(
-        pages,
-        createPaginationMeta({
-            page: args.page || 1,
-            perPage: args.perPage || 10,
-            totalCount: totalCount ? totalCount : 0
-        })
-    );
+    return await PbPage.find({
+        sort,
+        limit,
+        after,
+        before,
+        search,
+        query,
+        totalCount: requiresTotalCount(info)
+    });
 };
 
-export default resolver;
+export default async (root: any, args: Object, context: Object, info) => {
+    const list = await listPages({ args, context, info });
+    return new ListResponse(list, list.getMeta());
+};

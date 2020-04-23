@@ -12,7 +12,7 @@ const createNotFoundResponse = async ({ returnFallbackPage, context, page, messa
             return response;
         }
 
-        const [foundPage] = await listPublishedPages({ context, args: { parent, perPage: 1 } });
+        const [foundPage] = await listPublishedPages({ context, args: { parent, limit: 1 } });
         response.data = foundPage;
     }
 
@@ -35,12 +35,10 @@ export default async (root: any, args: { [key: string]: any }, context: { [key: 
             throw new Error(`Please specify page "id", "parent" or "url".`);
         }
 
-        if (args.url && args.url === "/") {
-            const { PbSettings } = context.models;
-            const settings = await PbSettings.load();
-            const parent = get(settings, `data.pages.home`);
-
-            const [page] = await listPublishedPages({ context, args: { parent, perPage: 1 } });
+        // 1. If "parent" of "id" were passed, get the page based on those.
+        //    Note that the "preview" mode is only available for the "id" filter.
+        if (args.parent || args.id) {
+            const [page] = await listPublishedPages({ context, args: { ...args, perPage: 1 } });
             if (page) {
                 return new Response(page);
             }
@@ -53,7 +51,27 @@ export default async (root: any, args: { [key: string]: any }, context: { [key: 
             });
         }
 
-        const [page] = await listPublishedPages({ context, args: { ...args, perPage: 1 } });
+        // 2. Now we are dealing with the "url" filter. If it's set to "/", then load the page set as homepage.
+        if (args.url && args.url === "/") {
+            const { PbSettings } = context.models;
+            const settings = await PbSettings.load();
+            const parent = get(settings, `data.pages.home`);
+
+            const [page] = await listPublishedPages({ context, args: { parent, limit: 1 } });
+            if (page) {
+                return new Response(page);
+            }
+
+            return createNotFoundResponse({
+                returnFallbackPage: args.returnNotFoundPage,
+                context,
+                page: "notFound",
+                message: "The requested page was not found."
+            });
+        }
+
+        // 3. Otherwise, just try to load the page via passed "url".
+        const [page] = await listPublishedPages({ context, args: { ...args, limit: 1 } });
         if (page) {
             return new Response(page);
         }

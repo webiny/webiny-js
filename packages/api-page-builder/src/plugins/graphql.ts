@@ -22,17 +22,6 @@ export default {
                 operator: String
             }
 
-            type PbListMeta {
-                totalCount: Int
-                totalPages: Int
-                page: Int
-                perPage: Int
-                from: Int
-                to: Int
-                previousPage: Int
-                nextPage: Int
-            }
-
             type PbError {
                 code: String
                 message: String
@@ -47,6 +36,18 @@ export default {
             type PbBooleanResponse {
                 data: Boolean
                 error: PbError
+            }
+
+            type PbCursors {
+                next: String
+                previous: String
+            }
+
+            type PbListMeta {
+                cursors: PbCursors
+                hasNextPage: Boolean
+                hasPreviousPage: Boolean
+                totalCount: Int
             }
 
             type PbQuery {

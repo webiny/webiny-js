@@ -1,26 +1,16 @@
 import * as React from "react";
 import { Grid, Cell } from "@webiny/ui/Grid";
-import { Input } from "@webiny/ui/Input";
 import { Select } from "@webiny/ui/Select";
 import { TagsMultiAutocomplete } from "@webiny/app-page-builder/admin/components/TagsMultiAutocomplete";
 import { CategoriesAutocomplete } from "@webiny/app-page-builder/admin/components/CategoriesAutocomplete";
-import { validation } from "@webiny/validation";
 
 const PagesListFilterSettings = ({ Bind }) => {
     return (
         <React.Fragment>
             <Grid>
-                <Cell span={6}>
+                <Cell span={12}>
                     <Bind name={"category"}>
                         <CategoriesAutocomplete label="Category" />
-                    </Bind>
-                </Cell>
-                <Cell span={6}>
-                    <Bind name={"pagesLimit"} validators={validation.create("numeric")}>
-                        <Input
-                            label={"Number of pages to show"}
-                            description={"Leave empty to show all"}
-                        />
                     </Bind>
                 </Cell>
                 <Cell span={6}>

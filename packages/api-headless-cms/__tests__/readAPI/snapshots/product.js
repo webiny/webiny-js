@@ -11,10 +11,11 @@ export default /* GraphQL */ `
         category(locale: String): Category
         reviews(
             locale: String
-            page: Int
-            perPage: Int
             where: ReviewListWhereInput
             sort: [ReviewListSorter]
+            limit: Int
+            after: String
+            before: String
         ): ReviewListResponse
         price(locale: String): Float
         inStock(locale: String): Boolean
@@ -162,10 +163,11 @@ export default /* GraphQL */ `
 
         listProducts(
             locale: String
-            page: Int
-            perPage: Int
             where: ProductListWhereInput
             sort: [ProductListSorter]
+            limit: Int
+            after: String
+            before: String
         ): ProductListResponse
     }
 `;

@@ -18,12 +18,26 @@ This guide is for anyone who wants to contribute to the Webiny project.
 - try to keep your PRs small in scope (try to only work on 1 issue in a single PR)
 - you can add as many commits as you wish to your PR
 
-### <a name="commit-message-format"></a>Commit message format
+### Commit message format
 
 We are following the [conventional commits](<[https://www.conventionalcommits.org/en/v1.0.0/](https://www.conventionalcommits.org/en/v1.0.0/)>) standard.
 
 You can use `yarn commit` to commit via `commitizen` or you can commit manually, or via IDE, just make sure your commit messages are properly formatted.
 
+### Pull Requests (PRs)
+
+When submitting a PR, please do not leave the PR title / body incomplete or empty. We are an open-source project, which means a lot of people will be contributing to it (hopefully ☺️), so we have to maintain a certain level of professionalism. 
+
+Try to make your PRs as informative as possible:
+- link the related issue you are resolving
+- add some info about how you've resolved the issue
+- if applicable, attach an image as well
+
+For example:
+![Snipaste_2020-04-19_20-10-44](https://user-images.githubusercontent.com/5121148/79717886-20ebe280-82db-11ea-9c23-f46e5ab01724.png)
+
+There's nothing nicer than a well-formed PR. 🤓
+ 
 ## Repo overview
 
 Once you clone the repository, you will have a monorepo which consists of a bunch of different packages, located in the `/packages` directory.

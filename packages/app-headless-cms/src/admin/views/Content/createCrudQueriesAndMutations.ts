@@ -44,12 +44,14 @@ const createListQuery = ({ model, ucFirstModelId }) => {
     return /* GraphQL */ `
         query list${pluralize(
             ucFirstModelId
-        )}($where: ${ucFirstModelId}ListWhereInput, $sort: [${ucFirstModelId}ListSorter], $page: Int, $perPage: Int) {
+        )}($where: ${ucFirstModelId}ListWhereInput, $sort: [${ucFirstModelId}ListSorter], $limit: Int, $after: String, $before: String) {
             list${pluralize(ucFirstModelId)}(
                 where: $where
                 sort: $sort
-                page: $page
-                perPage: $perPage) {
+                limit: $limit
+                after: $after
+                before: $before
+            ) {
                 data {
                     id
                     ${createFieldsList(model)}

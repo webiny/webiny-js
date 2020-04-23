@@ -108,6 +108,7 @@ export default {
             nextPage: Int
         }
 
+
         type PbPageDeleteResponse {
             data: Boolean
             error: PbError
@@ -172,14 +173,16 @@ export default {
                 parent: ID
                 returnNotFoundPage: Boolean
                 returnErrorPage: Boolean
+                preview: Boolean
             ): PbPageResponse
 
             listPages(
-                page: Int
-                perPage: Int
                 sort: JSON
                 search: String
                 parent: String
+                limit: Int
+                after: String
+                before: String
             ): PbPageListResponse
 
             listPublishedPages(
@@ -189,11 +192,12 @@ export default {
                 tags: [String]
                 tagsRule: PbTagsRule
                 sort: PbPageSortInput
-                page: Int
-                perPage: Int
+                limit: Int
+                after: String
+                before: String
             ): PbPageListResponse
 
-            listElements(perPage: Int): PbElementListResponse
+            listElements(limit: Int): PbElementListResponse
 
             # Returns existing tags based on given search term.
             searchTags(query: String!): PbSearchTagsResponse

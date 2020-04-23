@@ -12,9 +12,10 @@ export const createListArgs: CreateListArgs = ({ field }) => {
 
     return /* GraphQL */ `(
         ${localeArg}
-        page: Int
-        perPage: Int
         where: ${rTypeName}ListWhereInput
         sort: [${rTypeName}ListSorter]
+        limit: Int
+        after: String
+        before: String
     )`;
 };

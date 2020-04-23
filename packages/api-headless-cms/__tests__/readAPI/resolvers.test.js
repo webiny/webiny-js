@@ -262,17 +262,16 @@ describe("READ - Resolvers", () => {
         });
     });
 
-    test(`list entries (perPage)`, async () => {
+    test(`list entries (limit)`, async () => {
         // Test resolvers
         const query = /* GraphQL */ `
             {
-                listCategories(perPage: 1) {
+                listCategories(limit: 1) {
                     data {
                         id
                     }
                     meta {
                         totalCount
-                        totalPages
                     }
                 }
             }
@@ -287,34 +286,32 @@ describe("READ - Resolvers", () => {
                 })
             ]),
             meta: {
-                totalCount: 3,
-                totalPages: 3
+                totalCount: 3
             }
         });
     });
 
-    test(`list entries (page)`, async () => {
+    test(`list entries (limit + after)`, async () => {
         // Test resolvers
         const query = /* GraphQL */ `
-            query ListCategories($page: Int) {
-                listCategories(page: $page, perPage: 1) {
+            query ListCategories($after: String) {
+                listCategories(after: $after, limit: 1) {
                     data {
                         title
                     }
                     meta {
-                        nextPage
-                        previousPage
+                        cursors {
+                            next
+                            previous
+                        }
                         totalCount
-                        totalPages
                     }
                 }
             }
         `;
 
         const { schema, context } = await useSchema();
-        const { data: data1, errors: errors1 } = await graphql(schema, query, {}, context, {
-            page: 2
-        });
+        const { data: data1, errors: errors1 } = await graphql(schema, query, {}, context);
 
         if (errors1) {
             throw Error(JSON.stringify(errors1, null, 2));
@@ -323,19 +320,20 @@ describe("READ - Resolvers", () => {
         expect(data1.listCategories).toMatchObject({
             data: [
                 {
-                    title: "A Category EN"
+                    title: "B Category EN"
                 }
             ],
             meta: {
-                nextPage: 3,
-                previousPage: 1,
-                totalCount: 3,
-                totalPages: 3
+                cursors: {
+                    next: expect.any(String),
+                    previous: null
+                },
+                totalCount: 3
             }
         });
 
         const { data: data2, errors: errors2 } = await graphql(schema, query, {}, context, {
-            page: 3
+            after: data1.listCategories.meta.cursors.next
         });
 
         if (errors2) {
@@ -345,14 +343,15 @@ describe("READ - Resolvers", () => {
         expect(data2.listCategories).toMatchObject({
             data: [
                 {
-                    title: "Hardware EN"
+                    title: "A Category EN"
                 }
             ],
             meta: {
-                nextPage: null,
-                previousPage: 2,
-                totalCount: 3,
-                totalPages: 3
+                cursors: {
+                    next: expect.any(String),
+                    previous: expect.any(String)
+                },
+                totalCount: 3
             }
         });
     });
@@ -440,8 +439,7 @@ describe("READ - Resolvers", () => {
         });
         expect(data1.listCategories.data.length).toBe(2);
 
-        const { data: data2
-        } = await graphql(schema, query, {}, context, {
+        const { data: data2 } = await graphql(schema, query, {}, context, {
             where: { title_not_contains: "category" }
         });
 

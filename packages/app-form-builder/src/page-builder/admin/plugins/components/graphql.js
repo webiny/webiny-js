@@ -3,7 +3,7 @@ import gql from "graphql-tag";
 export const LIST_FORMS = gql`
     query FormsListForms {
         forms {
-            listForms(perPage: 50) {
+            listForms(limit: 50) {
                 data {
                     parent
                     name

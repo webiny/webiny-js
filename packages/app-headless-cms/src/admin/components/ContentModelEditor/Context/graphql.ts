@@ -48,6 +48,7 @@ export const GET_CONTENT_MODEL = gql`
                 title
                 description
                 modelId
+                titleFieldId
                 fields {
                     ${FIELDS_FIELDS}
                 }
@@ -68,6 +69,7 @@ export const UPDATE_CONTENT_MODEL = gql`
             data {
                 id
                 title
+                titleFieldId
                 fields {
                     ${FIELDS_FIELDS}
                 }

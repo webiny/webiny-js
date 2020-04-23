@@ -88,15 +88,16 @@ export default ({ type }) => [
                     data: JSON
                 }
 
+                type CmsCursors {
+                    next: String
+                    previous: String
+                }
+                
                 type CmsListMeta {
+                    cursors: CmsCursors
+                    hasNextPage: Boolean
+                    hasPreviousPage: Boolean
                     totalCount: Int
-                    totalPages: Int
-                    page: Int
-                    perPage: Int
-                    from: Int
-                    to: Int
-                    previousPage: Int
-                    nextPage: Int
                 }
 
                 type CmsDeleteResponse {
@@ -114,6 +115,7 @@ export default ({ type }) => [
                     createdOn: DateTime
                     savedOn: DateTime
                     createdBy: SecurityUser
+                    titleFieldId: String
                     fields: [CmsContentModelField]
                 }
 
@@ -122,6 +124,7 @@ export default ({ type }) => [
                     title: String
                     modelId: String
                     description: String
+                    titleFieldId: String
                     fields: [CmsContentModelFieldInput]
                     layout: [[String]]
                 }
@@ -196,10 +199,11 @@ export default ({ type }) => [
                     getContentModel(id: ID, where: JSON, sort: String): CmsContentModelResponse
 
                     listContentModels(
-                        page: Int
-                        perPage: Int
                         where: JSON
                         sort: JSON
+                        limit: Int
+                        after: String
+                        before: String
                     ): CmsContentModelListResponse
                 }
 

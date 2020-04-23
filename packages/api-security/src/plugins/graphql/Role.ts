@@ -35,17 +35,6 @@ export default {
             operator: String
         }
 
-        type SecurityRoleListMeta {
-            totalCount: Int
-            totalPages: Int
-            page: Int
-            perPage: Int
-            from: Int
-            to: Int
-            previousPage: Int
-            nextPage: Int
-        }
-
         type SecurityRoleError {
             code: String
             message: String
@@ -64,7 +53,7 @@ export default {
 
         type SecurityRoleListResponse {
             data: [SecurityRole]
-            meta: SecurityRoleListMeta
+            meta: SecurityListMeta
             error: SecurityRoleError
         }
 
@@ -72,11 +61,12 @@ export default {
             getRole(id: ID, where: JSON, sort: String): SecurityRoleResponse
 
             listRoles(
-                page: Int
-                perPage: Int
                 where: JSON
                 sort: JSON
                 search: SecurityRoleSearchInput
+                limit: Int
+                after: String
+                before: String
             ): SecurityRoleListResponse
         }
 

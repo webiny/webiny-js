@@ -142,8 +142,11 @@ type Props = {
     // Provide all pagination data, options and callbacks here.
     meta?: MetaProp;
 
-    // Triggered once the page has been selected.
-    setPage?: Function;
+    // Triggered when previous page is requested.
+    setPreviousPage?: Function;
+
+    // Triggered when next page is requested.
+    setNextPage?: Function;
 
     // Triggered once a sorter has been selected.
     setSorters?: Function;
@@ -257,23 +260,23 @@ const Pagination = (props: Props) => {
 
     return (
         <React.Fragment>
-            {typeof meta.totalCount !== "undefined" && meta.totalCount > 0 && meta.from && meta.to && (
+            {typeof meta.totalCount !== "undefined" && meta.totalCount > 0 && (
                 <ListHeaderItem>
-                    {meta.from} - {meta.to} of {meta.totalCount}
+                    Total items: {meta.totalCount}
                 </ListHeaderItem>
             )}
 
-            {props.setPage && (
+            {props.setPreviousPage && props.setNextPage && (
                 <React.Fragment>
                     <ListHeaderItem
                         className={classNames({
-                            disabled: !meta.previousPage
+                            disabled: !meta.hasPreviousPage
                         })}
                     >
                         <PreviousPageIcon
                             onClick={() => {
-                                if (props.setPage && meta.previousPage) {
-                                    props.setPage(meta.previousPage);
+                                if (props.setPreviousPage && meta.hasPreviousPage) {
+                                    props.setPreviousPage(meta.cursors.previous);
                                 }
                             }}
                         />
@@ -281,13 +284,13 @@ const Pagination = (props: Props) => {
 
                     <ListHeaderItem
                         className={classNames({
-                            disabled: !meta.nextPage
+                            disabled: !meta.hasNextPage
                         })}
                     >
                         <NextPageIcon
                             onClick={() => {
-                                if (props.setPage && meta.nextPage) {
-                                    props.setPage(meta.nextPage);
+                                if (props.setNextPage && meta.hasNextPage) {
+                                    props.setNextPage(meta.cursors.next);
                                 }
                             }}
                         />

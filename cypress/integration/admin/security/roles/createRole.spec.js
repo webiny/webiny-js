@@ -10,8 +10,8 @@ context("Roles Module", () => {
             .type(`Test Role ${id}`)
             .findByText("Save role")
             .click()
-            .findByText("Value is required.")
-            .should("exist")
+            .findAllByText("Value is required.")
+            .should("have.length", 2)
             .findByLabelText("Slug")
             .type(`test-role-${id}`)
             .findByLabelText("Description")
@@ -24,7 +24,7 @@ context("Roles Module", () => {
             .should("exist");
 
         cy.findByLabelText("Slug")
-            .type("-edited")
+            .should('disabled')
             .findByLabelText("Description")
             .type(" Test test.");
 

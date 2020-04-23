@@ -1,18 +1,20 @@
-import { ListResponse } from "@webiny/graphql";
+import { ListResponse, requiresTotalCount } from "@webiny/graphql";
+import { GraphQLFieldResolver } from "@webiny/graphql/types";
 
-export default async (root: any, args: {[key: string]: any}, context: {[key: string]: any}) => {
+const resolver: GraphQLFieldResolver = async (root, args, context, info) => {
     const { File } = context.models;
     const {
-        page = 1,
-        perPage = 10,
-        sort = null,
+        limit,
+        after,
+        before,
+        sort = {},
         search = "",
         types = [],
         tags = [],
         ids = []
     } = args;
 
-    const findArgs = { query: null, page, perPage, sort };
+    const findArgs = { query: null, limit, after, before, sort, totalCount: false };
 
     const $and = [];
 
@@ -46,6 +48,10 @@ export default async (root: any, args: {[key: string]: any}, context: {[key: str
         findArgs.query = { $and };
     }
 
+    findArgs.totalCount = requiresTotalCount(info);
+
     const data = await File.find(findArgs);
     return new ListResponse(data, data.getMeta());
 };
+
+export default resolver;

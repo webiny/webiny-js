@@ -58,15 +58,16 @@ export default [
                     data: [UploadFileResponseData]!
                 }
 
+                type FileCursors {
+                    next: String
+                    previous: String
+                }
+
                 type FileListMeta {
+                    cursors: FileCursors
+                    hasNextPage: Boolean
+                    hasPreviousPage: Boolean
                     totalCount: Int
-                    totalPages: Int
-                    page: Int
-                    perPage: Int
-                    from: Int
-                    to: Int
-                    previousPage: Int
-                    nextPage: Int
                 }
 
                 type FileError {
@@ -112,12 +113,12 @@ export default [
                     getFile(id: ID, where: JSON, sort: String): FileResponse
 
                     listFiles(
-                        page: Int
-                        perPage: Int
+                        limit: Int
+                        after: String
+                        before: String
                         types: [String]
                         tags: [String]
                         ids: [ID]
-                        sort: JSON
                         search: String
                     ): FileListResponse
 

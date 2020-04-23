@@ -75,17 +75,6 @@ export default {
             operator: String
         }
 
-        type SecurityUserListMeta {
-            totalCount: Int
-            totalPages: Int
-            page: Int
-            perPage: Int
-            from: Int
-            to: Int
-            previousPage: Int
-            nextPage: Int
-        }
-
         type SecurityUserError {
             code: String
             message: String
@@ -99,7 +88,7 @@ export default {
 
         type SecurityUserListResponse {
             data: [SecurityUser]
-            meta: SecurityUserListMeta
+            meta: SecurityListMeta
             error: SecurityUserError
         }
 
@@ -117,11 +106,12 @@ export default {
 
             "Get a list of users"
             listUsers(
-                page: Int
-                perPage: Int
                 where: JSON
                 sort: JSON
                 search: SecurityUserSearchInput
+                limit: Int
+                after: String
+                before: String
             ): SecurityUserListResponse
         }
 

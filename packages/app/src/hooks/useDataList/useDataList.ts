@@ -36,7 +36,8 @@ export type ReturnProps = {
     setWhere: (where: any) => void;
     setSorters: (sort: any) => void;
     setPerPage: (perPage: number) => void;
-    setPage: (page: number) => void;
+    setPreviousPage: (cursor: string) => void;
+    setNextPage: (cursor: string) => void;
     multiSelect: (items: string | string[], value?: boolean) => void;
     init: () => void;
 };
@@ -99,27 +100,53 @@ const useDataList = (params: UseDataListParams) => {
         setPerPage(perPage: number): void {
             const preparedParams = {
                 ...dataListProps.__loadParams,
-                perPage: parseInt("" + perPage)
+                limit: parseInt("" + perPage),
+                after: undefined,
+                before: undefined
             };
             this.refresh(preparedParams);
         },
-        setPage(page: number): void {
+        setNextPage(cursor: string): void {
             const preparedParams = {
                 ...dataListProps.__loadParams,
-                page: parseInt("" + page)
+                after: cursor,
+                before: undefined
+            };
+            this.refresh(preparedParams);
+        },
+        setPreviousPage(cursor: string): void {
+            const preparedParams = {
+                ...dataListProps.__loadParams,
+                after: undefined,
+                before: cursor
             };
             this.refresh(preparedParams);
         },
         setSearch(search): void {
-            const preparedParams = { ...dataListProps.__loadParams, search };
+            const preparedParams = {
+                ...dataListProps.__loadParams,
+                search,
+                after: undefined,
+                before: undefined
+            };
             this.refresh(preparedParams);
         },
         setWhere(where): void {
-            const preparedParams = { ...dataListProps.__loadParams, where };
+            const preparedParams = {
+                ...dataListProps.__loadParams,
+                where,
+                after: undefined,
+                before: undefined
+            };
             this.refresh(preparedParams);
         },
         setSorters(sort): void {
-            const preparedParams = { ...dataListProps.__loadParams, sort };
+            const preparedParams = {
+                ...dataListProps.__loadParams,
+                sort,
+                after: undefined,
+                before: undefined
+            };
             this.refresh(preparedParams);
         },
         multiSelect(items, value): void {

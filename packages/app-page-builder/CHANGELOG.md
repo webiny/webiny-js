@@ -3,6 +3,70 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.2.4](https://github.com/webiny/webiny-js/compare/@webiny/app-page-builder@3.2.4-next.0...@webiny/app-page-builder@3.2.4) (2020-04-16)
+
+**Note:** Version bump only for package @webiny/app-page-builder
+
+
+
+
+
+## [3.2.4-next.0](https://github.com/webiny/webiny-js/compare/@webiny/app-page-builder@3.2.3...@webiny/app-page-builder@3.2.4-next.0) (2020-04-16)
+
+
+### Bug Fixes
+
+* correct import and function name ([7daf3b6](https://github.com/webiny/webiny-js/commit/7daf3b6aab9c22bc1999f68832d8d1e5c36b74c3))
+* correct import and function name ([b442f89](https://github.com/webiny/webiny-js/commit/b442f8902e2671e88c7902b0c166768904c77312))
+* remove addTimestamp option ([d5edf51](https://github.com/webiny/webiny-js/commit/d5edf51b97c8e570fa57ec85a60114d45eea31f6))
+
+
+
+
+
+## [3.2.3](https://github.com/webiny/webiny-js/compare/@webiny/app-page-builder@3.2.2...@webiny/app-page-builder@3.2.3) (2020-04-14)
+
+
+### Bug Fixes
+
+* add "preview" boolean field ([dace12e](https://github.com/webiny/webiny-js/commit/dace12eb1bb346068f0542e7c8a23b4088cefcdf))
+* set "addTimestamp" to true ([bac52b7](https://github.com/webiny/webiny-js/commit/bac52b79c957770d0229cb88f7f4fb8abdda8a8e))
+* set "preview" to true if fetching the page by "id" ([cbf9986](https://github.com/webiny/webiny-js/commit/cbf9986900480d951992a34855ab6e414ed065a2))
+
+
+
+
+
+## [3.2.2](https://github.com/webiny/webiny-js/compare/@webiny/app-page-builder@3.2.1...@webiny/app-page-builder@3.2.2) (2020-04-13)
+
+
+### Bug Fixes
+
+* change "pb-page-element" to "pb-editor-page-element" ([#788](https://github.com/webiny/webiny-js/issues/788)) ([6b5a09b](https://github.com/webiny/webiny-js/commit/6b5a09b8118fd540eb98047d2aaf0b2c00e3712c)), closes [#787](https://github.com/webiny/webiny-js/issues/787)
+
+
+
+
+
+## [3.2.1](https://github.com/webiny/webiny-js/compare/@webiny/app-page-builder@3.2.1-next.0...@webiny/app-page-builder@3.2.1) (2020-04-03)
+
+**Note:** Version bump only for package @webiny/app-page-builder
+
+
+
+
+
+## [3.2.1-next.0](https://github.com/webiny/webiny-js/compare/@webiny/app-page-builder@3.2.0...@webiny/app-page-builder@3.2.1-next.0) (2020-04-03)
+
+
+### Bug Fixes
+
+* add missing TS types ([93ef1ef](https://github.com/webiny/webiny-js/commit/93ef1ef7bf52cde5a3d860c190d7c0880ab3e807))
+
+
+
+
+
 # [3.2.0](https://github.com/webiny/webiny-js/compare/@webiny/app-page-builder@3.2.0-next.0...@webiny/app-page-builder@3.2.0) (2020-03-09)
 
 **Note:** Version bump only for package @webiny/app-page-builder

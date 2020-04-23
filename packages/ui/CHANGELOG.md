@@ -3,6 +3,45 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.2.1](https://github.com/webiny/webiny-js/compare/@webiny/ui@3.2.1-next.0...@webiny/ui@3.2.1) (2020-04-16)
+
+**Note:** Version bump only for package @webiny/ui
+
+
+
+
+
+## [3.2.1-next.0](https://github.com/webiny/webiny-js/compare/@webiny/ui@3.2.0...@webiny/ui@3.2.1-next.0) (2020-04-16)
+
+
+### Bug Fixes
+
+* allow "data-testid" to be passed ([571fad7](https://github.com/webiny/webiny-js/commit/571fad7f88065c94a480453636133d3a7f81d339))
+* allow "data-testid" to be passed to buttons ([0a81ab2](https://github.com/webiny/webiny-js/commit/0a81ab2e9675404fb02f2c52556fc91927f0e3eb))
+
+
+
+
+
+# [3.2.0](https://github.com/webiny/webiny-js/compare/@webiny/ui@3.2.0-next.0...@webiny/ui@3.2.0) (2020-04-03)
+
+**Note:** Version bump only for package @webiny/ui
+
+
+
+
+
+# [3.2.0-next.0](https://github.com/webiny/webiny-js/compare/@webiny/ui@3.1.0...@webiny/ui@3.2.0-next.0) (2020-04-03)
+
+
+### Features
+
+* fixed Storybook local deployment. Added 'Section' component ([ea5b7ee](https://github.com/webiny/webiny-js/commit/ea5b7ee30d72d38eae8b326eda424ab7ac3b9d2c))
+
+
+
+
+
 # [3.1.0](https://github.com/webiny/webiny-js/compare/@webiny/ui@3.1.0-next.0...@webiny/ui@3.1.0) (2020-03-09)
 
 **Note:** Version bump only for package @webiny/ui

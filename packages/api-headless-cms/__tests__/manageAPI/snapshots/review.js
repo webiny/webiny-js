@@ -105,10 +105,11 @@ export default /* GraphQL */ `
         getReview(where: ReviewGetWhereInput!): ReviewResponse
 
         listReviews(
-            page: Int
-            perPage: Int
-            sort: [ReviewListSorter]
             where: ReviewListWhereInput
+            sort: [ReviewListSorter]
+            limit: Int
+            after: String
+            before: String
         ): ReviewListResponse
     }
 

@@ -52,11 +52,12 @@ export default {
                     ): CmsContentModelGroupResponse
 
                     listContentModelGroups(
-                        page: Int
-                        perPage: Int
                         where: JSON
                         sort: JSON
                         search: CmsSearchInput
+                        limit: Int
+                        after: String
+                        before: String
                     ): CmsContentModelGroupListResponse
                 }
 

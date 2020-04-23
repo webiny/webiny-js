@@ -7,12 +7,14 @@ export default (params, { history, location }) => {
         }
     });
 
-    const keys = ["perPage", "page", "where", "search", "sort"];
+    const keys = ["limit", "after", "before", "where", "search", "sort"];
 
     const query = new URLSearchParams(location.search);
     keys.forEach(key => {
         if (typeof paramsClone[key] !== "undefined") {
             query.set(key, paramsClone[key]);
+        } else {
+            query.delete(key);
         }
     });
 

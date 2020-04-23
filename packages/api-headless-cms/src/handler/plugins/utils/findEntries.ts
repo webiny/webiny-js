@@ -3,6 +3,8 @@ import createFindSorters from "./createFindSorters";
 import { createFindQuery } from "./createFindQuery";
 import parseBoolean from "./parseBoolean";
 import { parseWhere } from "./parseWhere";
+import { requiresTotalCount } from "@webiny/graphql";
+import { GraphQLResolveInfo } from "graphql";
 
 type FindEntries = {
     model: CmsModel;
@@ -10,24 +12,26 @@ type FindEntries = {
         locale: string;
         where: { [key: string]: any };
         sort: string[];
-        perPage: number;
-        page: number;
+        limit: number;
+        after: string;
+        before: string;
     };
     context: CmsGraphQLContext;
+    info: GraphQLResolveInfo;
 };
 
 export default async function findEntries<T = CmsGraphQLContext>({
     model,
     args,
-    context
+    context,
+    info
 }: FindEntries) {
     const Model = context.models[model.modelId];
     const ModelSearch = context.models[model.modelId + "Search"];
     parseBoolean(args);
     // eslint-disable-next-line prefer-const
-    let { sort = [], perPage, page } = args;
-    page = isNaN(page) || page < 1 ? 1 : page;
-    perPage = isNaN(perPage) || perPage < 1 ? 100 : perPage;
+    let { sort = [], limit, after, before } = args;
+    limit = isNaN(limit) || limit < 1 ? 100 : limit;
 
     // For Manage API, limit records by locales.length * perPage
     // (since we can't use "$group" and you should be able to search values in all locales)
@@ -90,7 +94,7 @@ export default async function findEntries<T = CmsGraphQLContext>({
     const sorters = createFindSorters(model, sort);
 
     if (!Object.keys(sorters).length) {
-        sorters["createdOn"] = -1;
+        sorters["id"] = -1;
     } else {
         // Make sure the field being sorted has a non-null value
         if (!match.$and) {
@@ -105,7 +109,14 @@ export default async function findEntries<T = CmsGraphQLContext>({
     // Find IDs using search collection
     // TODO: things to improve:
     // - `ModelSearch.find` returns data of which 99% is unused. We only need `instance` value of each entry.
-    const searchEntries = await ModelSearch.find({ query: match, sort: sorters, page, perPage });
+    const searchEntries = await ModelSearch.find({
+        query: match,
+        sort: sorters,
+        limit,
+        before,
+        after,
+        totalCount: requiresTotalCount(info)
+    });
     const meta = searchEntries.getMeta();
     const ids = Array.from(
         searchEntries

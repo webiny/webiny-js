@@ -15,17 +15,19 @@ export const LIST_ENVIRONMENT_ALIASES = gql`
     query listEnvironmentAliases(
         $where: JSON
         $sort: JSON
-        $page: Int
-        $perPage: Int
         $search: CmsSearchInput
+        $limit: Int
+        $after: String
+        $before: String
     ) {
         cms {
             environmentAliases: listEnvironmentAliases(
                 where: $where
                 sort: $sort
-                page: $page
-                perPage: $perPage
                 search: $search
+                limit: $limit
+                after: $after
+                before: $before
             ) {
                 data {
                     id
@@ -38,12 +40,13 @@ export const LIST_ENVIRONMENT_ALIASES = gql`
                     }
                 }
                 meta {
+                    cursors {
+                        next
+                        previous
+                    }
+                    hasNextPage
+                    hasPreviousPage
                     totalCount
-                    totalPages
-                    to
-                    from
-                    nextPage
-                    previousPage
                 }
             }
         }

@@ -43,11 +43,12 @@ export default {
             getEnvironment(id: ID, where: JSON, sort: String): CmsEnvironmentResponse
 
             listEnvironments(
-                page: Int
-                perPage: Int
                 where: JSON
                 sort: JSON
                 search: CmsSearchInput
+                limit: Int
+                after: String
+                before: String
             ): CmsEnvironmentListResponse
         }
 

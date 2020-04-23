@@ -12,17 +12,19 @@ export const LIST_CATEGORIES = gql`
     query PbLoadCategories(
         $where: JSON
         $sort: JSON
-        $page: Int
-        $perPage: Int
         $search: PbSearchInput
+        $limit: Int
+        $after: String
+        $before: String
     ) {
         pageBuilder {
             categories: listCategories(
                 where: $where
                 sort: $sort
-                page: $page
-                perPage: $perPage
                 search: $search
+                limit: $limit
+                after: $after
+                before: $before
             ) {
                 data {
                     id
@@ -32,11 +34,13 @@ export const LIST_CATEGORIES = gql`
                     createdOn
                 }
                 meta {
+                    cursors {
+                        next
+                        previous
+                    }
+                    hasNextPage
+                    hasPreviousPage
                     totalCount
-                    to
-                    from
-                    nextPage
-                    previousPage
                 }
             }
         }
@@ -46,7 +50,7 @@ export const LIST_CATEGORIES = gql`
 export const LIST_CATEGORIES_BY_NAME = gql`
     query PbListCategoriesByName {
         pageBuilder {
-            categories: listCategories(sort: { name: 1 }, perPage: 100) {
+            categories: listCategories(sort: { name: 1 }, limit: 100) {
                 data {
                     id
                     name
