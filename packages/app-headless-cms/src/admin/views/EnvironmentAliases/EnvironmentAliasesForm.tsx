@@ -25,7 +25,7 @@ const t = i18n.ns("app-headless-cms/admin/environmentAliases/form");
 function EnvironmentAliasesForm() {
     const { form: crudForm } = useCrud();
 
-    const listEnvironments = useQuery(LIST_ENVIRONMENTS, { variables: { perPage: 100 } });
+    const listEnvironments = useQuery(LIST_ENVIRONMENTS, { variables: { limit: 100 } });
     const apolloClient = useApolloClient();
 
     const environmentsOptions = get(listEnvironments, "data.cms.environments.data", []);

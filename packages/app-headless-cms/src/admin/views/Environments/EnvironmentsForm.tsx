@@ -23,7 +23,7 @@ const t = i18n.ns("app-headless-cms/admin/environments/form");
 function EnvironmentsForm() {
     const { form: crudForm } = useCrud();
 
-    const { data } = useQuery(LIST_ENVIRONMENTS, { variables: { perPage: 100 } });
+    const { data } = useQuery(LIST_ENVIRONMENTS, { variables: { limit: 100 } });
 
     const createdFromOptions = get(data, "cms.environments.data", []);
 

@@ -12,16 +12,18 @@ export const LIST_CONTENT_MODEL_GROUPS = gql`
     query ListContentModelGroups(
         $where: JSON
         $sort: JSON
-        $page: Int
-        $perPage: Int
         $search: CmsSearchInput
+        $limit: Int
+        $after: String
+        $before: String
     ) {
         contentModelGroups: listContentModelGroups(
             where: $where
             sort: $sort
-            page: $page
-            perPage: $perPage
             search: $search
+            limit: $limit
+            after: $after
+            before: $before
         ) {
             data {
                 id
@@ -29,12 +31,13 @@ export const LIST_CONTENT_MODEL_GROUPS = gql`
                 totalContentModels
             }
             meta {
+                cursors {
+                    next
+                    previous
+                }
+                hasNextPage
+                hasPreviousPage
                 totalCount
-                totalPages
-                to
-                from
-                nextPage
-                previousPage
             }
         }
     }
