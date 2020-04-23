@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.1.4](https://github.com/webiny/webiny-js/compare/@webiny/api-page-builder@3.1.4-next.0...@webiny/api-page-builder@3.1.4) (2020-04-23)
+
+
+### Bug Fixes
+
+* add "fullUrl" field ([04807c9](https://github.com/webiny/webiny-js/commit/04807c9c7c7f6af3c0ad56fc820a277c7840efb2))
+
+
+
+
+
 ## [3.1.4-next.0](https://github.com/webiny/webiny-js/compare/@webiny/api-page-builder@3.1.3...@webiny/api-page-builder@3.1.4-next.0) (2020-04-23)
 
 

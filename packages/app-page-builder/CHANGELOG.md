@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.3.0](https://github.com/webiny/webiny-js/compare/@webiny/app-page-builder@3.3.0-next.1...@webiny/app-page-builder@3.3.0) (2020-04-23)
+
+
+### Bug Fixes
+
+* add "fullUrl" field ([04807c9](https://github.com/webiny/webiny-js/commit/04807c9c7c7f6af3c0ad56fc820a277c7840efb2))
+* use "fullUrl" instead of "url" ([2f60d03](https://github.com/webiny/webiny-js/commit/2f60d03fa64b88f1c43e8cdc0b725915c9c0deea))
+
+
+
+
+
 # [3.3.0-next.1](https://github.com/webiny/webiny-js/compare/@webiny/app-page-builder@3.3.0-next.0...@webiny/app-page-builder@3.3.0-next.1) (2020-04-23)
 
 
