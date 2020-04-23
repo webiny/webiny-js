@@ -43,7 +43,7 @@ const plugin: GraphQLSchemaPlugin = {
             }
 
             type I18NListMeta {
-                cursors: FileCursors
+                cursors: I18NCursors
                 hasNextPage: Boolean
                 hasPreviousPage: Boolean
                 totalCount: Int

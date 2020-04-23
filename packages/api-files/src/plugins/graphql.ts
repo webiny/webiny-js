@@ -115,7 +115,7 @@ export default [
                     listFiles(
                         limit: Int
                         after: String
-                        before: Int
+                        before: String
                         types: [String]
                         tags: [String]
                         ids: [ID]
