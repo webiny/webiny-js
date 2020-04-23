@@ -4,15 +4,20 @@ export default location => {
     if (location) {
         const query = new URLSearchParams(location.search);
 
-        const page = query.get("page");
-        const perPage = query.get("perPage");
+        const after = query.get("after");
+        const before = query.get("before");
+        const limit = query.get("limit");
 
-        if (page) {
-            params.page = parseInt(page);
+        if (after) {
+            params.after = after;
         }
 
-        if (perPage) {
-            params.perPage = parseInt(perPage);
+        if (before) {
+            params.before = before;
+        }
+
+        if (limit) {
+            params.limit = parseInt(limit);
         }
 
         ["sort", "where", "search"].forEach(key => {

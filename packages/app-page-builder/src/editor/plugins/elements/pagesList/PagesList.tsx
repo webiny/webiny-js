@@ -34,9 +34,9 @@ const PagesList = ({ data }) => {
         sort,
         tags: vars.tags,
         tagsRule: vars.tagsRule,
-        perPage: parseInt(vars.resultsPerPage),
-        pagesLimit: parseInt(vars.pagesLimit),
-        page: 1
+        limit: parseInt(vars.resultsPerPage),
+        after: undefined,
+        before: undefined
     };
 
     return (
@@ -53,15 +53,13 @@ const PagesList = ({ data }) => {
                 }
 
                 let prevPage = null;
-                if (pages.meta.previousPage !== null) {
-                    prevPage = () => refetch({ ...variables, page: pages.meta.previousPage });
+                if (pages.meta.hasPreviousPage) {
+                    prevPage = () => refetch({ ...variables, before: pages.meta.cursors.before });
                 }
 
                 let nextPage = null;
-                if (pages.meta.nextPage !== null) {
-                    if (!variables.pagesLimit || variables.pagesLimit >= pages.meta.nextPage) {
-                        nextPage = () => refetch({ ...variables, page: pages.meta.nextPage });
-                    }
+                if (pages.meta.hasNextPage) {
+                    nextPage = () => refetch({ ...variables, after: pages.meta.cursors.after });
                 }
 
                 return (

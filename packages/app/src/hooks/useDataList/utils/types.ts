@@ -3,8 +3,7 @@ export type UseDataListParams = {
     name: string;
     type: string;
     fields: string;
-    page?: number;
-    perPage?: number;
+    limit?: number;
     sort?: Object;
     where?: Object;
     search?: Object;

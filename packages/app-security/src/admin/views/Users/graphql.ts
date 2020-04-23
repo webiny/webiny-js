@@ -8,16 +8,18 @@ export const LIST_USERS = gql`
     query listUsers(
         $where: JSON
         $sort: JSON
-        $page: Int
-        $perPage: Int
+        $limit: Int
+        $after: String
+        $before: String
         $search: SecurityUserSearchInput
     ) {
         security {
             users: listUsers(
                 where: $where
                 sort: $sort
-                page: $page
-                perPage: $perPage
+                limit: $limit
+                after: $after
+                before: $before
                 search: $search
             ) {
                 data {
@@ -33,11 +35,13 @@ export const LIST_USERS = gql`
                     createdOn
                 }
                 meta {
+                    cursors {
+                        next
+                        previous
+                    }
+                    hasNextPage
+                    hasPreviousPage
                     totalCount
-                    to
-                    from
-                    nextPage
-                    previousPage
                 }
             }
         }

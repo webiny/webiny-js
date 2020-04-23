@@ -11,27 +11,31 @@ export const LIST_LOCALES = gql`
     query listI18NLocales(
         $where: JSON
         $sort: JSON
-        $page: Int
-        $perPage: Int
         $search: I18NLocaleSearchInput
+        $limit: Int
+        $after: String
+        $before: String
     ) {
         i18n {
             i18NLocales: listI18NLocales(
                 where: $where
                 sort: $sort
-                page: $page
-                perPage: $perPage
                 search: $search
+                limit: $limit
+                after: $after
+                before: $before
             ) {
                 data {
                     ${BASE_FIELDS}
                 }
                 meta {
+                    cursors {
+                        next
+                        previous
+                    }
+                    hasNextPage
+                    hasPreviousPage
                     totalCount
-                    to
-                    from
-                    nextPage
-                    previousPage
                 }
             }
         }
