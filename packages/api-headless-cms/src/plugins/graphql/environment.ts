@@ -61,26 +61,13 @@ export default {
     `,
     resolvers: {
         CmsQuery: {
-            getEnvironment: resolveGet(environmentFetcher),
-            listEnvironments: resolveList(environmentFetcher)
+            getEnvironment: hasScope("cms:environment:crud")(resolveGet(environmentFetcher)),
+            listEnvironments: hasScope("cms:environment:crud")(resolveList(environmentFetcher))
         },
         CmsMutation: {
-            createEnvironment: resolveCreate(environmentFetcher),
-            updateEnvironment: resolveUpdate(environmentFetcher),
-            deleteEnvironment: resolveDelete(environmentFetcher)
-        }
-    },
-    security: {
-        shield: {
-            CmsQuery: {
-                getEnvironment: hasScope("cms:environment:crud"),
-                listEnvironments: hasScope("cms:environment:crud")
-            },
-            CmsMutation: {
-                createEnvironment: hasScope("cms:environment:crud"),
-                updateEnvironment: hasScope("cms:environment:crud"),
-                deleteEnvironment: hasScope("cms:environment:crud")
-            }
+            createEnvironment: hasScope("cms:environment:crud")(resolveCreate(environmentFetcher)),
+            updateEnvironment: hasScope("cms:environment:crud")(resolveUpdate(environmentFetcher)),
+            deleteEnvironment: hasScope("cms:environment:crud")(resolveDelete(environmentFetcher))
         }
     }
 };

@@ -5,7 +5,7 @@ import {
     resolveList,
     resolveUpdate
 } from "@webiny/commodo-graphql";
-
+import { hasScope } from "@webiny/api-security";
 const categoryFetcher = ctx => ctx.models.PbCategory;
 
 export default {
@@ -72,13 +72,13 @@ export default {
     `,
     resolvers: {
         PbQuery: {
-            getCategory: resolveGet(categoryFetcher),
-            listCategories: resolveList(categoryFetcher)
+            getCategory: hasScope("pb:category:crud")(resolveGet(categoryFetcher)),
+            listCategories: hasScope("pb:category:crud")(resolveList(categoryFetcher))
         },
         PbMutation: {
-            createCategory: resolveCreate(categoryFetcher),
-            updateCategory: resolveUpdate(categoryFetcher),
-            deleteCategory: resolveDelete(categoryFetcher)
+            createCategory: hasScope("pb:category:crud")(resolveCreate(categoryFetcher)),
+            updateCategory: hasScope("pb:category:crud")(resolveUpdate(categoryFetcher)),
+            deleteCategory: hasScope("pb:category:crud")(resolveDelete(categoryFetcher))
         }
     }
 };

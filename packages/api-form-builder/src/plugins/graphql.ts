@@ -1,6 +1,5 @@
 import { merge } from "lodash";
 import { emptyResolver } from "@webiny/graphql";
-import { hasScope } from "@webiny/api-security";
 import gql from "graphql-tag";
 import {
     I18NStringValueType,
@@ -89,31 +88,6 @@ const plugin: GraphQLSchemaPlugin = {
             formSubmission.resolvers,
             formsSettings.resolvers
         )
-    },
-    security: {
-        shield: {
-            FormsQuery: {
-                getSettings: hasScope("forms:settings"),
-                getForm: hasScope("forms:form:crud"),
-                listForms: hasScope("forms:form:crud"),
-                listFormSubmissions: hasScope("forms:form:crud")
-                // listPublishedForms: hasScope("forms:form:crud") // Expose publicly.
-                // getPublishedForms: hasScope("forms:form:crud") // Expose publicly.
-            },
-            FormsMutation: {
-                updateSettings: hasScope("forms:settings"),
-                createForm: hasScope("forms:form:crud"),
-                deleteForm: hasScope("forms:form:crud"),
-                createRevisionFrom: hasScope("forms:form:crud"),
-                updateRevision: hasScope("forms:form:crud"),
-                publishRevision: hasScope("forms:form:revision:publish"),
-                unpublishRevision: hasScope("forms:form:revision:unpublish"),
-                deleteRevision: hasScope("forms:form:crud"),
-                exportFormSubmissions: hasScope("forms:form:submissions:export")
-                // saveFormView: hasScope("forms:form:revision:delete") // Expose publicly.
-                // createFormSubmission: hasScope("forms:form:revision:delete") // Expose publicly.
-            }
-        }
     }
 };
 

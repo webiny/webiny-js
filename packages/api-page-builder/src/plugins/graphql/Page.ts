@@ -6,7 +6,7 @@ import {
     resolveGet,
     resolveList
 } from "@webiny/commodo-graphql";
-import {customHasScope} from "@webiny/api-security/scopes";
+import { hasScope } from "@webiny/api-security";
 import createRevisionFrom from "./pageResolvers/createRevisionFrom";
 import listPages from "./pageResolvers/listPages";
 import listPublishedPages from "./pageResolvers/listPublishedPages";
@@ -273,10 +273,10 @@ export default {
         },
         PbQuery: {
             getPage: resolveGet(pageFetcher),
-            listPages: customHasScope("pb:page:crud")(listPages),
+            listPages: hasScope("pb:page:crud")(listPages),
             listPublishedPages,
             getPublishedPage,
-            listElements: resolveList(elementFetcher),
+            listElements: hasScope("pb:element:crud")(resolveList(elementFetcher)),
             searchTags: async (
                 root: any,
                 args: { [key: string]: any },
@@ -287,29 +287,29 @@ export default {
 
                 return { data: await resolver.resolve({ root, args, context, info }) };
             },
-            oembedData: oembed
+            oembedData:  hasScope("pb:oembed:read")(oembed)
         },
         PbMutation: {
             // Creates a new page
-            createPage: resolveCreate(pageFetcher),
+            createPage: hasScope("pb:page:crud")(resolveCreate(pageFetcher)),
             // Deletes the entire page
-            deletePage: resolveDelete(pageFetcher),
+            deletePage: hasScope("pb:page:crud")(resolveDelete(pageFetcher)),
             // Sets given page as home page.
             setHomePage,
             // Creates a revision from the given revision
-            createRevisionFrom: createRevisionFrom,
+            createRevisionFrom: hasScope("pb:page:crud")(createRevisionFrom),
             // Updates revision
-            updateRevision: resolveUpdate(pageFetcher),
+            updateRevision: hasScope("pb:page:crud")(resolveUpdate(pageFetcher)),
             // Publish revision (must be given an exact revision ID to publish)
-            publishRevision,
+            publishRevision: hasScope("pb:page:crud")(publishRevision),
             // Delete a revision
-            deleteRevision: resolveDelete(pageFetcher),
+            deleteRevision: hasScope("pb:page:crud")(resolveDelete(pageFetcher)),
             // Creates a new element
-            createElement: resolveCreate(elementFetcher),
+            createElement: hasScope("pb:page:crud")(resolveCreate(elementFetcher)),
             // Updates an element
-            updateElement: resolveUpdate(elementFetcher),
+            updateElement: hasScope("pb:page:crud")(resolveUpdate(elementFetcher)),
             // Deletes an element
-            deleteElement: resolveDelete(elementFetcher)
+            deleteElement: hasScope("pb:page:crud")(resolveDelete(elementFetcher))
         },
         PbPageSettings: {
             _empty: () => ""

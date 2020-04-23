@@ -5,6 +5,7 @@ import listForms from "./formResolvers/listForms";
 import listPublishedForms from "./formResolvers/listPublishedForms";
 import getPublishedForm from "./formResolvers/getPublishedForm";
 import saveFormView from "./formResolvers/saveFormView";
+import { hasScope } from "@webiny/api-security";
 
 const getForm = ctx => ctx.models.Form;
 
@@ -271,25 +272,25 @@ export default {
     `,
     resolvers: {
         FormsQuery: {
-            getForm: resolveGet(getForm),
-            listForms,
+            getForm: hasScope("forms:form:crud")(resolveGet(getForm)),
+            listForms: hasScope("forms:form:crud")(listForms),
             listPublishedForms,
             getPublishedForm
         },
         FormsMutation: {
             // Creates a new form
-            createForm: resolveCreate(getForm),
+            createForm: hasScope("forms:form:crud")(resolveCreate(getForm)),
             // Deletes the entire form
-            deleteForm: resolveDelete(getForm),
+            deleteForm: hasScope("forms:form:crud")(resolveDelete(getForm)),
             // Creates a revision from the given revision
-            createRevisionFrom: createRevisionFrom,
+            createRevisionFrom: hasScope("forms:form:crud")(createRevisionFrom),
             // Updates revision
-            updateRevision: resolveUpdate(getForm),
+            updateRevision: hasScope("forms:form:crud")(resolveUpdate(getForm)),
             // Publish revision (must be given an exact revision ID to publish)
-            publishRevision,
-            unpublishRevision: publishRevision,
+            publishRevision: hasScope("forms:form:revision:publish")(publishRevision),
+            unpublishRevision: hasScope("forms:form:revision:unpublish")(publishRevision),
             // Delete a revision
-            deleteRevision: resolveDelete(getForm),
+            deleteRevision: hasScope("forms:form:crud")(resolveDelete(getForm)),
             saveFormView
         }
     }

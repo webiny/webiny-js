@@ -85,13 +85,23 @@ export default {
 
         return {
             Query: {
-                getContentModelGroup: resolveGet(contentModelGroupFetcher),
-                listContentModelGroups: resolveList(contentModelGroupFetcher)
+                getContentModelGroup: hasScope("cms:contentModelGroup:crud")(
+                    resolveGet(contentModelGroupFetcher)
+                ),
+                listContentModelGroups: hasScope("cms:contentModelGroup:crud")(
+                    resolveList(contentModelGroupFetcher)
+                )
             },
             Mutation: {
-                createContentModelGroup: resolveCreate(contentModelGroupFetcher),
-                updateContentModelGroup: resolveUpdate(contentModelGroupFetcher),
-                deleteContentModelGroup: resolveDelete(contentModelGroupFetcher)
+                createContentModelGroup: hasScope("cms:contentModelGroup:crud")(
+                    resolveCreate(contentModelGroupFetcher)
+                ),
+                updateContentModelGroup: hasScope("cms:contentModelGroup:crud")(
+                    resolveUpdate(contentModelGroupFetcher)
+                ),
+                deleteContentModelGroup: hasScope("cms:contentModelGroup:crud")(
+                    resolveDelete(contentModelGroupFetcher)
+                )
             }
         };
     },
@@ -100,18 +110,6 @@ export default {
             return {};
         }
 
-        return {
-            shield: {
-                Query: {
-                    getContentModel: hasScope("cms:contentModelGroup:crud"),
-                    listContentModels: hasScope("cms:contentModelGroup:crud")
-                },
-                Mutation: {
-                    createContentModel: hasScope("cms:contentModelGroup:crud"),
-                    updateContentModel: hasScope("cms:contentModelGroup:crud"),
-                    deleteContentModel: hasScope("cms:contentModelGroup:crud")
-                }
-            }
-        };
+        return {};
     }
 };

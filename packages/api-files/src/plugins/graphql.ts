@@ -169,32 +169,19 @@ export default [
                     files: emptyResolver
                 },
                 FilesQuery: {
-                    getFile: resolveGet(getFile),
+                    getFile: hasScope("files:file:crud")(resolveGet(getFile)),
                     listFiles: listFiles,
                     listTags: listTags,
                     isInstalled
                 },
                 FilesMutation: {
-                    uploadFile,
+                    uploadFile: hasScope("files:file:crud")(uploadFile),
                     uploadFiles,
-                    createFile: resolveCreate(getFile),
-                    updateFile: resolveUpdate(getFile),
+                    createFile: hasScope("files:file:crud")(resolveCreate(getFile)),
+                    updateFile: hasScope("files:file:crud")(resolveUpdate(getFile)),
                     createFiles,
-                    deleteFile,
+                    deleteFile: hasScope("files:file:crud")(deleteFile),
                     install
-                }
-            }
-        },
-        security: {
-            shield: {
-                FilesQuery: {
-                    getFile: hasScope("files:file:crud")
-                },
-                FilesMutation: {
-                    uploadFile: hasScope("files:file:crud"),
-                    createFile: hasScope("files:file:crud"),
-                    updateFile: hasScope("files:file:crud"),
-                    deleteFile: hasScope("files:file:crud")
                 }
             }
         }

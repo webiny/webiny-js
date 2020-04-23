@@ -1,4 +1,5 @@
 import { resolveUpdateSettings, resolveGetSettings } from "@webiny/commodo-graphql";
+import { hasScope } from "@webiny/api-security";
 
 const getFormSettings = ctx => ctx.models.FormSettings;
 
@@ -42,10 +43,10 @@ export default {
     `,
     resolvers: {
         FormsQuery: {
-            getSettings: resolveGetSettings(getFormSettings)
+            getSettings: hasScope("forms:settings")(resolveGetSettings(getFormSettings))
         },
         FormsMutation: {
-            updateSettings: resolveUpdateSettings(getFormSettings)
+            updateSettings: hasScope("forms:settings")(resolveUpdateSettings(getFormSettings))
         }
     }
 };

@@ -50,8 +50,8 @@ const getMutationResolvers = type => {
 
 const getQueryResolvers = () => {
     return {
-        getContentModel: resolveGet(contentModelFetcher),
-        listContentModels: resolveList(contentModelFetcher)
+        getContentModel: hasScope("cms:contentModel:crud")(resolveGet(contentModelFetcher)),
+        listContentModels: hasScope("cms:contentModel:crud")(resolveList(contentModelFetcher))
     };
 };
 
@@ -72,10 +72,10 @@ export default ({ type }) => [
                     fields: [String]
                     operator: String
                 }
-                
+
                 ${contentModelGroup.getTypeDefs(type)}
                 ${meta.typeDefs}
-                
+
                 type SecurityUser {
                     id: ID
                     firstName: String
@@ -216,16 +216,6 @@ export default ({ type }) => [
                 meta.resolvers
             )
         },
-        security: merge(
-            {
-                shield: {
-                    Query: {
-                        getContentModel: hasScope("cms:contentModel:crud"),
-                        listContentModels: hasScope("cms:contentModel:crud")
-                    }
-                }
-            },
-            contentModelGroup.getResolvers(type)
-        )
+        security: merge({}, contentModelGroup.getResolvers(type))
     } as GraphQLSchemaPlugin<CmsGraphQLContext>
 ];

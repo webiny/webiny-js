@@ -1,4 +1,5 @@
 import { resolveGet, resolveList } from "@webiny/commodo-graphql";
+import { hasScope } from "@webiny/api-security";
 import resolveLoginUsingIdToken from "./userResolvers/loginUsingIdToken";
 import resolveGetCurrentUser from "./userResolvers/getCurrentUser";
 import resolveUpdateCurrentSecurityUser from "./userResolvers/updateCurrentUser";
@@ -149,15 +150,15 @@ export default {
         },
         SecurityQuery: {
             getCurrentUser: resolveGetCurrentUser,
-            getUser: resolveGet(userFetcher),
-            listUsers: resolveList(userFetcher)
+            getUser: hasScope("security:user:crud")(resolveGet(userFetcher)),
+            listUsers: hasScope("security:user:crud")(resolveList(userFetcher))
         },
         SecurityMutation: {
             loginUsingIdToken: resolveLoginUsingIdToken(userFetcher),
             updateCurrentUser: resolveUpdateCurrentSecurityUser,
-            createUser: resolveCreateUser(userFetcher),
-            updateUser: resolveUpdateUser(userFetcher),
-            deleteUser: resolveDeleteUser(userFetcher)
+            createUser: hasScope("security:user:crud")(resolveCreateUser(userFetcher)),
+            updateUser: hasScope("security:user:crud")(resolveUpdateUser(userFetcher)),
+            deleteUser: hasScope("security:user:crud")(resolveDeleteUser(userFetcher))
         }
     }
 };
