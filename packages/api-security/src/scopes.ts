@@ -1,20 +1,13 @@
 import { rule } from "graphql-shield";
 import { GraphQLFieldResolver } from "@webiny/graphql/types";
 
-export const hasScope = (scope: string) => {
-    return rule()(async (parent, args, ctx) => {
-        if (!ctx.user) {
-            return false;
-        }
-
-        const access = await ctx.user.access;
-        if (access.fullAccess) {
-            return true;
-        }
-
-        return access.scopes.includes(scope);
-    });
-};
+export class ScopeError extends Error {
+    message: string;
+    constructor(message: string) {
+        super();
+        this.message = message;
+    }
+}
 
 export const hasRole = (role: string) => {
     return rule()(async (parent, args, ctx) => {
@@ -31,7 +24,7 @@ export const hasRole = (role: string) => {
     });
 };
 
-export const customHasScope = (scope: string) => {
+export const hasScope = (scope: string) => {
     return (resolver: GraphQLFieldResolver) => {
         return (parent, args, ctx, info) => {
             let allowAccess = false;
@@ -44,9 +37,8 @@ export const customHasScope = (scope: string) => {
 
             if (allowAccess) {
                 return resolver(parent, args, ctx, info);
-            } else {
-                throw Error(`Not Authorized! [hasScope] `);
             }
+            throw new ScopeError(`Not Authorized!`);
         };
     };
 };
