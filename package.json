@@ -107,6 +107,7 @@
     "fsevents": "^2.0.7"
   },
   "scripts": {
+    "build": "lerna run build --scope=@webiny/* --stream",
     "build:components": "lerna run build --scope=@webiny/serverless-* --stream",
     "build:apps": "lerna run build --scope=@webiny/app* --stream",
     "build:app-templates": "lerna run build --scope=@webiny/app-template* --stream",
