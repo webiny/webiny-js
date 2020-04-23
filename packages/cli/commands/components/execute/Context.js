@@ -20,6 +20,7 @@ class Context {
         this.env = config.env;
         this.state = { id: randomId() };
         this.id = this.state.id;
+        this.projectName = config.projectName;
 
         // Control + C
         process.on("SIGINT", async () => {

@@ -244,7 +244,6 @@ const executeComponent = async (
     const component = await instance.load(componentData.path, resource);
     component.context.instance.debug = debug(`webiny:${resource}`);
     component.context.instance.resource = resource;
-    component.context.instance.env = inputs.env;
     component.context.instance.getResourceName = (name = null) => {
         if (name && name.startsWith(component.context.instance.id)) {
             return name;

@@ -11,12 +11,14 @@ module.exports.execute = async (inputs, method, context) => {
     // Create component context
     const componentContext = new Context({
         logger: context,
+        projectName: context.projectName,
         stateRoot: join(projectRoot, ".webiny", "state"),
         stackStateRoot: join(projectRoot, ".webiny", "state", folder, env),
         stackName: `${context.projectName}_${folder}`,
         env,
         debug
     });
+    componentContext.projectName = context.projectName;
     await componentContext.init();
 
     context.instanceId = componentContext.state.id;
