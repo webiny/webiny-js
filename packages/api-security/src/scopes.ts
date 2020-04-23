@@ -1,4 +1,3 @@
-import { rule } from "graphql-shield";
 import { GraphQLFieldResolver } from "@webiny/graphql/types";
 
 export class ScopeError extends Error {
@@ -8,21 +7,6 @@ export class ScopeError extends Error {
         this.message = message;
     }
 }
-
-export const hasRole = (role: string) => {
-    return rule()(async (parent, args, ctx) => {
-        if (!ctx.user) {
-            return false;
-        }
-
-        const access = await ctx.user.access;
-        if (access.fullAccess) {
-            return true;
-        }
-
-        return access.roles.includes(role);
-    });
-};
 
 export const hasScope = (scope: string) => {
     return (resolver: GraphQLFieldResolver) => {
