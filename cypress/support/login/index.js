@@ -6,6 +6,8 @@ const DEFAULT_PASSWORD = Cypress.env("DEFAULT_ADMIN_USER_PASSWORD");
 Cypress.Commands.add(
     "login",
     async ({ username, password } = { username: DEFAULT_USERNAME, password: DEFAULT_PASSWORD }) => {
-        await authenticateWithCognito({ username, password });
+        const token = await authenticateWithCognito({ username, password });
+        localStorage.setItem(Cypress.env("AUTHORIZATION_TOKEN_KEY"), token);
+        return token;
     }
 );

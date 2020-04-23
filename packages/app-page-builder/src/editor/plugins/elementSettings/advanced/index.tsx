@@ -66,6 +66,7 @@ export default [
                     <Action
                         plugin={this.name}
                         icon={<SettingsIcon />}
+                        data-testid={"pb-editor-advanced-settings-button"}
                         tooltip={"Advanced settings"}
                     />
                 </AdvancedAction>

@@ -17,7 +17,10 @@ import { Icon } from "@webiny/ui/Icon";
 import { Typography } from "@webiny/ui/Typography";
 import { ButtonFloating } from "@webiny/ui/Button";
 import { ReactComponent as AddIcon } from "@webiny/app-page-builder/editor/assets/icons/add.svg";
-import { PbEditorPageElementGroupPlugin, PbEditorPageElementPlugin } from "@webiny/app-page-builder/types";
+import {
+    PbEditorPageElementGroupPlugin,
+    PbEditorPageElementPlugin
+} from "@webiny/app-page-builder/types";
 
 const ADD_ELEMENT = "pb-editor-toolbar-add-element";
 
@@ -97,7 +100,7 @@ const AddElement = ({ params, dropElement, dragStart, deactivatePlugin, dragEnd 
                     }}
                 >
                     {({ drag }) => (
-                        <div ref={drag}>{renderOverlay(element, null, "Drag to Add")}</div>
+                        <div ref={drag}>{renderOverlay(element, null, "Drag to Add", plugin)}</div>
                     )}
                 </Draggable>
             );
@@ -106,13 +109,14 @@ const AddElement = ({ params, dropElement, dragStart, deactivatePlugin, dragEnd 
     );
 
     const renderOverlay = useCallback(
-        (element, onClick = null, label) => {
+        (element, onClick = null, label, plugin) => {
             return (
                 <Styled.ElementPreview>
                     <Styled.Overlay>
                         <Styled.Backdrop className={"backdrop"} />
                         <Styled.AddBlock className={"add-block"}>
                             <ButtonFloating
+                                data-testid={`pb-editor-add-element-button-${plugin.elementType}`}
                                 onClick={onClick}
                                 label={label}
                                 icon={<AddIcon />}
@@ -141,7 +145,8 @@ const AddElement = ({ params, dropElement, dragStart, deactivatePlugin, dragEnd 
                         name: ADD_ELEMENT
                     });
                 },
-                "Click to Add"
+                "Click to Add",
+                plugin
             );
 
             return React.cloneElement(item, { key: plugin.name });
