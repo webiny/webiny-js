@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.0.2-next.0](https://github.com/webiny/webiny-js/compare/@webiny/project-utils@1.0.1...@webiny/project-utils@1.0.2-next.0) (2020-04-23)
+
+
+### Bug Fixes
+
+* remove "REACT_APP_FILES_PROXY" ([d30f39a](https://github.com/webiny/webiny-js/commit/d30f39a3806262f747934ee37f468eed68d9c6e6))
+
+
+
+
+
 ## [1.0.1](https://github.com/webiny/webiny-js/compare/@webiny/project-utils@1.0.1-next.0...@webiny/project-utils@1.0.1) (2020-02-07)
 
 **Note:** Version bump only for package @webiny/project-utils

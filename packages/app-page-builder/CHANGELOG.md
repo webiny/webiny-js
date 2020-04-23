@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.3.0-next.1](https://github.com/webiny/webiny-js/compare/@webiny/app-page-builder@3.3.0-next.0...@webiny/app-page-builder@3.3.0-next.1) (2020-04-23)
+
+
+### Bug Fixes
+
+* add parseInt to the render plugin as well ([5ce1078](https://github.com/webiny/webiny-js/commit/5ce1078d2b0a4f8d4025605b45e16a53d5a9233f))
+
+
+
+
+
 # [3.3.0-next.0](https://github.com/webiny/webiny-js/compare/@webiny/app-page-builder@3.2.4...@webiny/app-page-builder@3.3.0-next.0) (2020-04-23)
 
 

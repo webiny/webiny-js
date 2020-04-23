@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.2.8-next.0](https://github.com/webiny/webiny-js/compare/@webiny/cli@3.2.7...@webiny/cli@3.2.8-next.0) (2020-04-23)
+
+
+### Bug Fixes
+
+* remove "REACT_APP_FILES_PROXY" ([d30f39a](https://github.com/webiny/webiny-js/commit/d30f39a3806262f747934ee37f468eed68d9c6e6))
+
+
+
+
+
 ## [3.2.7](https://github.com/webiny/webiny-js/compare/@webiny/cli@3.2.7-next.0...@webiny/cli@3.2.7) (2020-04-20)
 
 **Note:** Version bump only for package @webiny/cli
