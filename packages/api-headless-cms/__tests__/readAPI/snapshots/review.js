@@ -92,10 +92,11 @@ export default /* GraphQL */ `
 
         listReviews(
             locale: String
-            page: Int
-            perPage: Int
             where: ReviewListWhereInput
             sort: [ReviewListSorter]
+            limit: Int
+            after: String
+            before: String
         ): ReviewListResponse
     }
 `;

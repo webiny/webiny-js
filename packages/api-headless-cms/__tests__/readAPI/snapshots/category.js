@@ -86,10 +86,11 @@ export default /* GraphQL */ `
 
         listCategories(
             locale: String
-            page: Int
-            perPage: Int
             where: CategoryListWhereInput
             sort: [CategoryListSorter]
+            limit: Int
+            after: String
+            before: String
         ): CategoryListResponse
     }
 `;

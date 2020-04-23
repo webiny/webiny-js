@@ -66,10 +66,11 @@ export const createReadSDL: CreateManageSDL = ({ model, fieldTypePlugins }): str
 
             list${pluralize(typeName)}(
                 locale: String
-                page: Int
-                perPage: Int
                 where: ${rTypeName}ListWhereInput
                 sort: [${rTypeName}ListSorter]
+                limit: Int
+                after: String
+                before: String
             ): ${rTypeName}ListResponse
         }
     `;

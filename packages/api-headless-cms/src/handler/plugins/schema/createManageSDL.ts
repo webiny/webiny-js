@@ -19,7 +19,7 @@ export const createManageSDL: CreateManageSDL = ({ model, fieldTypePlugins }): s
     const typeName = createTypeName(model.modelId);
     const mTypeName = createManageTypeName(typeName);
 
-    return `
+    return /* GraphQL */ `
         "${model.description}"
         type ${mTypeName} {
             id: ID
@@ -78,10 +78,11 @@ export const createManageSDL: CreateManageSDL = ({ model, fieldTypePlugins }): s
             get${typeName}(where: ${mTypeName}GetWhereInput!): ${mTypeName}Response
             
             list${pluralize(typeName)}(
-                page: Int
-                perPage: Int
-                sort: [${mTypeName}ListSorter]
                 where: ${mTypeName}ListWhereInput
+                sort: [${mTypeName}ListSorter]
+                limit: Int
+                after: String
+                before: String
             ): ${mTypeName}ListResponse
         }
         

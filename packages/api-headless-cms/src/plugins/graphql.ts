@@ -28,15 +28,16 @@ export default () => [
                     data: JSON
                 }
 
+                type CmsCursors {
+                    next: String
+                    previous: String
+                }
+
                 type CmsListMeta {
+                    cursors: CmsCursors
+                    hasNextPage: Boolean
+                    hasPreviousPage: Boolean
                     totalCount: Int
-                    totalPages: Int
-                    page: Int
-                    perPage: Int
-                    from: Int
-                    to: Int
-                    previousPage: Int
-                    nextPage: Int
                 }
 
                 type CmsDeleteResponse {

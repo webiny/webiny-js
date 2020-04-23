@@ -174,12 +174,10 @@ describe("MANAGE - Resolvers", () => {
         });
     });
 
-    // TODO: discuss with the team whether `perPage` in Manage API makes any sense at all
-    test(`list categories (perPage)`, async () => {
-        // Test resolvers
+    test(`list entries (limit)`, async () => {
         const query = /* GraphQL */ `
             {
-                listCategories(perPage: 1) {
+                listCategories(limit: 1) {
                     data {
                         id
                     }
@@ -188,12 +186,7 @@ describe("MANAGE - Resolvers", () => {
         `;
 
         const { schema, context } = await useSchema();
-        const { data, errors } = await graphql(schema, query, {}, context);
-
-        if (errors) {
-            throw Error(JSON.stringify(errors, null, 2));
-        }
-
+        const { data } = await graphql(schema, query, {}, context);
         expect(data.listCategories).toMatchObject({
             data: expect.arrayContaining([
                 expect.objectContaining({

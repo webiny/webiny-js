@@ -100,10 +100,11 @@ export default /* GraphQL */ `
         getCategory(where: CategoryGetWhereInput!): CategoryResponse
 
         listCategories(
-            page: Int
-            perPage: Int
-            sort: [CategoryListSorter]
             where: CategoryListWhereInput
+            sort: [CategoryListSorter]
+            limit: Int
+            after: String
+            before: String
         ): CategoryListResponse
     }
 
