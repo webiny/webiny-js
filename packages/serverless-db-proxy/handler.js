@@ -65,6 +65,18 @@ module.exports.handler = async event => {
             throw new Error("Operation name wasn't received.");
         }
 
+        if (process.env.LOG_COLLECTION) {
+            try {
+                await database.collection(process.env.LOG_COLLECTION).insertOne({
+                    collection,
+                    operationName,
+                    operationArgs: JSON.stringify(operationArgs)
+                });
+            } catch (err) {
+                console.log(`Error logging query: ${err.message}`);
+            }
+        }
+
         const result = await executeOperation(collection, operationName, operationArgs);
         return { response: EJSON.stringify({ result }) };
     } catch (e) {
