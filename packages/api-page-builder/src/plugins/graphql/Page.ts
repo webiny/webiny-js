@@ -39,6 +39,7 @@ export default {
             title: String
             snippet: String
             url: String
+            fullUrl: String
             settings: PbPageSettings
             content: JSON
             published: Boolean

@@ -22,6 +22,7 @@ export const loadPages = gql`
                     id
                     title
                     url
+                    fullUrl
                     snippet
                     publishedOn
                     settings {
