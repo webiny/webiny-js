@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.0.2-next.0](https://github.com/webiny/webiny-js/compare/@webiny/api-plugin-page-builder-resolvers-mongodb@2.0.1...@webiny/api-plugin-page-builder-resolvers-mongodb@2.0.2-next.0) (2020-04-23)
+
+
+### Bug Fixes
+
+* 🐛  remove `pb-resolver-list-pages` from listPages resolver ([0a78701](https://github.com/webiny/webiny-js/commit/0a787011f0764d2be6e3cb770e90182f0bd7755d))
+
+
+
+
+
 ## [2.0.1](https://github.com/webiny/webiny-js/compare/@webiny/api-plugin-page-builder-resolvers-mongodb@2.0.1-next.0...@webiny/api-plugin-page-builder-resolvers-mongodb@2.0.1) (2020-02-07)
 
 **Note:** Version bump only for package @webiny/api-plugin-page-builder-resolvers-mongodb

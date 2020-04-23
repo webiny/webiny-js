@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.0.14-next.0](https://github.com/webiny/webiny-js/compare/@webiny/app-typeform@3.0.13...@webiny/app-typeform@3.0.14-next.0) (2020-04-23)
+
+**Note:** Version bump only for package @webiny/app-typeform
+
+
+
+
+
 ## [3.0.13](https://github.com/webiny/webiny-js/compare/@webiny/app-typeform@3.0.13-next.0...@webiny/app-typeform@3.0.13) (2020-04-16)
 
 **Note:** Version bump only for package @webiny/app-typeform
