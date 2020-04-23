@@ -78,6 +78,76 @@ module.exports = function(root, appName, templateName) {
 		return;
 	}
 
+	//.env.json
+	const templateEnvExists = fs.existsSync(path.join(root, '.env.json'));
+	if(!templateEnvExists) {
+		fs.moveSync(
+			path.join(root, 'example.env.json'),
+			path.join(root, '.env.json'),
+			[]
+		);
+	}
+
+	//api/.env.json
+	const apiEnvExists = fs.existsSync(path.join(root, 'api','.env.json'));
+	if(!apiEnvExists) {
+		fs.moveSync(
+			path.join(root, 'api', 'example.env.json'),
+			path.join(root, 'api', '.env.json'),
+			[]
+		);
+	}
+
+	//apps/admin/.env.json
+	const appAdminEnvExists = fs.existsSync(path.join(root, 'apps','admin','.env.json'));
+	if(!appAdminEnvExists) {
+		fs.moveSync(
+			path.join(root, 'apps','admin', 'example.env.json'),
+			path.join(root, 'apps','admin', '.env.json'),
+			[]
+		);
+	}
+
+	//apps/site/.env.json
+	const appSiteEnvExists = fs.existsSync(path.join(root, 'apps','site','.env.json'));
+	if(!appSiteEnvExists) {
+		fs.moveSync(
+			path.join(root, 'apps','site', 'example.env.json'),
+			path.join(root, 'apps','site', '.env.json'),
+			[]
+		);
+	}
+
+	//.babel.node.js
+	const babelNodeExists = fs.existsSync(path.join(root, '.babel.node.js'));
+	if(!babelNodeExists) {
+		fs.moveSync(
+			path.join(root, 'example.babel.node.js'),
+			path.join(root, '.babel.node.js'),
+			[]
+		);
+	}
+
+	//.babel.react.js
+	const babelReactExists = fs.existsSync(path.join(root, '.babel.react.js'));
+	if(!babelReactExists) {
+		fs.moveSync(
+			path.join(root, 'example.babel.react.js'),
+			path.join(root, '.babel.react.js'),
+			[]
+		);
+	}
+
+	//.prettierrc.js
+	const prettierrcExists = fs.existsSync(path.join(root, '.prettierrc.js'));
+	if(!prettierrcExists) {
+		fs.moveSync(
+			path.join(root, 'example.prettierrc.js'),
+			path.join(root, '.prettierrc.js'),
+			[]
+		);
+	}
+
 	//initialize git repo
 	try {
 		execa.sync("git",  ["--version"]);

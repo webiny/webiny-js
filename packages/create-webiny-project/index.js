@@ -2,12 +2,9 @@
 const chalk = require("chalk");
 const envinfo = require("envinfo");
 const fs = require("fs-extra");
-const hyperquest = require("hyperquest");
 const os = require("os");
 const path = require("path");
 const execa = require("execa");
-const tmp = require("tmp");
-const unpack = require("tar-pack").unpack;
 const yargs = require("yargs");
 const validateProjectName = require("validate-npm-package-name");
 
@@ -104,82 +101,6 @@ function createApp(projectName, template) {
 	}
 }
 
-function extractStream(stream, dest) {
-	return new Promise((resolve, reject) => {
-		stream.pipe(
-			unpack(dest, err => {
-				if (err) {
-					reject(err);
-				} else {
-					resolve(dest);
-				}
-			})
-		);
-	});
-}
-
-async function getPackageInfo(installPackage) {
-	if (installPackage.match(/^.+\.(tgz|tar\.gz)$/)) {
-		try {
-			const obj = await getTemporaryDirectory();
-			let stream;
-			if (/^http/.test(installPackage)) {
-				stream = hyperquest(installPackage);
-			} else {
-				stream = fs.createReadStream(installPackage);
-			}
-			await extractStream(stream, obj.tmpdir);
-
-			const { name, version } = require(path.join(obj.tmpdir, "package.json"));
-			obj.cleanup();
-			return { name, version };
-		} catch (err) {
-			console.log(
-				`Could not extract the package name from the archive: ${err.message}`
-			);
-			const assumedProjectName = installPackage.match(
-				/^.+\/(.+?)(?:-\d+.+)?\.(tgz|tar\.gz)$/
-			)[1];
-			console.log(
-				`Based on the filename, assuming it is "${chalk.cyan(
-					assumedProjectName
-				)}"`
-			);
-			return { name: assumedProjectName };
-		}
-	} else if (installPackage.startsWith("git+")) {
-		// Pull package name out of git urls e.g:
-		// git+https://github.com/mycompany/package.git
-		// git+ssh://github.com/mycompany/package.git#v1.2.3
-		const packageNameGit = await installPackage.match(/([^/]+)\.git(#.*)?$/)[1];
-		return { name: packageNameGit };
-	} else if (installPackage.match(/.+@/)) {
-		// Do not match @scope/ when stripping off @version or @tag
-		return {
-			name: installPackage.charAt(0) + installPackage.substr(1).split("@")[0],
-			version: installPackage.split("@")[1]
-		};
-	} else if (installPackage.match(/^file:/)) {
-		const installPackagePath = installPackage.match(/^file:(.*)?$/)[1];
-		const { name, version } = require(path.join(
-			installPackagePath,
-			"package.json"
-		));
-		return { name, version };
-	}
-	return { name: installPackage };
-}
-
-async function getTemporaryDirectory() {
-	try {
-		const { tmpdir, callback } = await tmp.dir({ unsafeCleanup: true });
-		console.log(callback);
-		return { tmpdir, cleanup: () => callback() };
-	} catch (err) {
-		return err;
-	}
-}
-
 function informationHandler() {
 	console.log(chalk.bold("\nEnvironment Info:"));
 	console.log(
@@ -215,13 +136,12 @@ async function install(root, dependencies) {
 async function run(root, appName, template) {
 	const allDependencies = [];
 	try {
-		console.log("Installing packages. This might take a couple of minutes.");
-
-		// const templateInfo = await getPackageInfo("cwp-template-" + template);
 		const templateName = "cwp-template-" + template ;
 
 		allDependencies.push(templateName);
-
+		
+		console.log("Installing packages. This might take a couple of minutes.");
+		
 		await install(root, allDependencies);
 
 		await init(root, appName, templateName);
