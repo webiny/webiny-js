@@ -15,6 +15,11 @@ export type CmsContentModelFormProps = {
     onSubmit?: () => void;
 };
 
+export type CmsEditorFieldOptionPlugin = Plugin & {
+    type: "cms-editor-field-option";
+    render(): ReactElement;
+};
+
 // ------------------------------------------------------------------------------------------------------------
 
 export type CmsBuilderFieldValidator = {

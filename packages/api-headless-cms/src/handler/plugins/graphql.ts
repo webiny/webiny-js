@@ -114,6 +114,7 @@ export default ({ type }) => [
                     createdOn: DateTime
                     savedOn: DateTime
                     createdBy: SecurityUser
+                    titleFieldId: String
                     fields: [CmsContentModelField]
                 }
 
@@ -122,6 +123,7 @@ export default ({ type }) => [
                     title: String
                     modelId: String
                     description: String
+                    titleFieldId: String
                     fields: [CmsContentModelFieldInput]
                     layout: [[String]]
                 }

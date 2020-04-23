@@ -5,7 +5,7 @@ import { Center, Vertical, Horizontal } from "../../DropZone";
 import Draggable from "../../Draggable";
 import EditFieldDialog from "./EditFieldDialog";
 import Field from "./Field";
-import { ReactComponent as HandleIcon } from "@webiny/app-headless-cms/admin/icons/round-drag_indicator-24px.svg";
+import { ReactComponent as HandleIcon } from "@webiny/app-headless-cms/admin/icons/__used__icons__/round-drag_indicator-24px.svg";
 import { rowHandle, EditContainer, fieldHandle, fieldContainer, Row, RowContainer } from "./Styled";
 import { useContentModelEditor } from "@webiny/app-headless-cms/admin/components/ContentModelEditor/Context";
 import { FieldLayoutPositionType } from "@webiny/app-headless-cms/types";
@@ -24,6 +24,7 @@ export const EditTab = () => {
         moveRow,
         getFieldPlugin
     } = useContentModelEditor();
+
     const [editingField, setEditingField] = useState(null);
     const [dropTarget, setDropTarget]: [FieldLayoutPositionType, Function] = useState(null);
 
