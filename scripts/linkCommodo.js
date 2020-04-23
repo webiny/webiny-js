@@ -36,6 +36,12 @@ async function symlink(src, dest) {
 }
 
 (async () => {
+    const commodoRepo = path.resolve("..", "commodo", "packages");
+
+    if (!fs.existsSync(commodoRepo)) {
+        return;
+    }
+
     console.log(`Linking @commodo packages...`);
     const directories = source =>
         fs
@@ -46,7 +52,6 @@ async function symlink(src, dest) {
             .map(c => c.name);
 
     const commodoRoot = path.resolve("node_modules", "@commodo");
-    const commodoRepo = path.resolve("..", "commodo", "packages");
     const commodoPackages = directories(commodoRepo);
 
     await new Promise(resolve => rimraf(path.join(commodoRoot, "*"), resolve));
