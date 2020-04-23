@@ -36,14 +36,6 @@ const webinyConfig = {
         config["moduleNameMapper"]["^@svgr/webpack!.*$"] = __dirname + "/svgImportMock";
 
         return config;
-    },
-    devServer: config => {
-        set(config, "proxy./files", {
-            target: process.env.REACT_APP_FILES_PROXY,
-            changeOrigin: true
-        });
-
-        return config;
     }
 };
 
