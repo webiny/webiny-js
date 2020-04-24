@@ -28,6 +28,10 @@ const rightAlign = css({
     alignItems: "flex-end !important"
 });
 
+const listItemMinHeight = css({
+    minHeight: "66px !important"
+});
+
 export type FormsDataListProps = {
     dataList: any;
 }
@@ -115,7 +119,7 @@ const FormsDataList = (props: FormsDataListProps) => {
             {({ data = [] }) => (
                 <List data-testid="default-data-list">
                     {data.map(form => (
-                        <ListItem key={form.id}>
+                        <ListItem key={form.id} className={listItemMinHeight}>
                             <ListItemText
                                 onClick={() => {
                                     query.set("id", form.id);
