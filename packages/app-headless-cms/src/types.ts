@@ -159,7 +159,6 @@ export type CmsIconsPlugin = Plugin & {
     getIcons(): CmsIcon[];
 };
 
-
 export type FormRenderCmsContentModelModelField = CmsContentModelModelField & {
     validators: Array<(value: any) => boolean>;
 };

@@ -94,9 +94,9 @@ const ForgotPassword: React.FC<ForgotPasswordChildrenProps> = ({
                                                     We have sent you a code to reset your password!
                                                     <br />
                                                     <br />
-                                                    Click the &quot;Resend code&quot; button below to resend
-                                                    the code in case you haven&apos;t received it the
-                                                    first time.
+                                                    Click the &quot;Resend code&quot; button below
+                                                    to resend the code in case you haven&apos;t
+                                                    received it the first time.
                                                 </Typography>
                                             </Cell>
                                         </Grid>

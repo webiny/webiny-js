@@ -11,7 +11,10 @@ class ServerlessPageBuilderInstallation extends Component {
         const { region } = inputs;
         const s3Component = await this.load("@serverless/aws-s3");
         const s3Output = await s3Component({
-            name: this.context.instance.getResourceName().toLowerCase().replace(/_/g, "-"),
+            name: this.context.instance
+                .getResourceName()
+                .toLowerCase()
+                .replace(/_/g, "-"),
             region,
             accelerated: false // Disabled because we noticed it was frequently causing issues for our users.
         });

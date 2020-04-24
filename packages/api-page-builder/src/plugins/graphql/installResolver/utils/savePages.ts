@@ -13,7 +13,7 @@ import loadJson from "load-json-file";
 const FILES_COUNT_IN_EACH_BATCH = 15;
 
 export default async ({ context, INSTALL_EXTRACT_DIR }) => {
-    const pagesData: {[key: string]: any}[] = await loadJson(
+    const pagesData: { [key: string]: any }[] = await loadJson(
         path.join(INSTALL_EXTRACT_DIR, "data/pagesData.json")
     );
     const pagesFilesData = await loadJson(

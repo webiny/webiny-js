@@ -21,4 +21,3 @@ const Input = (props: Props) => {
 };
 
 export default Input;
-

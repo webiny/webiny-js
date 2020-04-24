@@ -81,10 +81,7 @@ const plugin: CmsModelFieldToGraphQLPlugin = {
         createInputField({ field }) {
             const { type } = field.settings;
 
-            return (
-                field.fieldId +
-                `: ${type === "many" ? "CmsRefManyInput" : "CmsRefOneInput"}`
-            );
+            return field.fieldId + `: ${type === "many" ? "CmsRefManyInput" : "CmsRefOneInput"}`;
         }
     }
 };

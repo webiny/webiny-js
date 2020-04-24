@@ -49,7 +49,14 @@ export default ContentModelEditorContext => {
                     mutation: UPDATE_CONTENT_MODEL,
                     variables: {
                         id: data.id,
-                        data: pick(data, ["layout", "fields", "title", "settings", "description", "titleFieldId"])
+                        data: pick(data, [
+                            "layout",
+                            "fields",
+                            "title",
+                            "settings",
+                            "description",
+                            "titleFieldId"
+                        ])
                     }
                 });
 
@@ -163,7 +170,7 @@ export default ContentModelEditorContext => {
 
                     moveField({ field, position, data });
 
-                    console.log('vracamo data', data)
+                    console.log("vracamo data", data);
                     // We are dropping a new field at the specified index.
                     return data;
                 });

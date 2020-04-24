@@ -83,7 +83,7 @@ const Field = props => {
                                 data.titleFieldId = field.fieldId;
                                 return data;
                             });
-                            showSnackbar(t`Title field set successfully.`)
+                            showSnackbar(t`Title field set successfully.`);
                         }}
                     >
                         <ListItemGraphic>
