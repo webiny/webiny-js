@@ -96,19 +96,6 @@ export default {
             category: ID!
         }
 
-        # Response types
-        type PbPageListMeta {
-            totalCount: Int
-            totalPages: Int
-            page: Int
-            perPage: Int
-            from: Int
-            to: Int
-            previousPage: Int
-            nextPage: Int
-        }
-
-
         type PbPageDeleteResponse {
             data: Boolean
             error: PbError
