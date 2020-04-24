@@ -6,6 +6,7 @@
     "@webiny/app-template-admin-full": "^1.0.0",
     "core-js": "^3.2.1",
     "cross-fetch": "^3.0.2",
+    "env-cmd": "^10.1.0",
     "react-hot-loader": "^4.3.5",
     "regenerator-runtime": "^0.13.3"
   },
