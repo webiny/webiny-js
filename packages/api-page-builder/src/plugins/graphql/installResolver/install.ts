@@ -36,6 +36,14 @@ export const install = async (root: any, args: { [key: string]: any }, context: 
     const { step } = args;
 
     try {
+        // For new installations, mark step 6 immediately as completed.
+        // This is because of https://github.com/webiny/webiny-js/pull/792.
+        // TODO: Remove this upon merging Headless CMS.
+        if (installation.stepAvailable(6)) {
+            installation.getStep(6).markAsCompleted();
+            await installation.save();
+        }
+
         if (!installation.stepAvailable(step)) {
             return new ErrorResponse({
                 code: "PB_INSTALL_ABORTED",
