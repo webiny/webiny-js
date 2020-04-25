@@ -41,7 +41,7 @@ export const install = async (root: any, args: { [key: string]: any }, context: 
         // TODO: Remove this upon merging Headless CMS.
         if (!installation.getStep(6).completed) {
             installation.getStep(6).markAsCompleted();
-            await installation.save();
+            await settings.save();
         }
 
         if (!installation.stepAvailable(step)) {
