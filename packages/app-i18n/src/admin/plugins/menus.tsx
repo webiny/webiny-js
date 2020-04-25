@@ -6,12 +6,15 @@ import { ReactComponent as I18NIcon } from "./../assets/icons/round-translate-24
 
 const t = i18n.ns("app-form-builder/admin/menus");
 
+
+const ROLE_I18N_LOCALES = ["i18n:locale:crud"];
+
 const plugin: MenuPlugin = {
     type: "menu",
     name: "menu-languages",
     render({ Menu, Section, Item }) {
         return (
-            <SecureView roles={["i18n-locales"]}>
+            <SecureView scopes={ROLE_I18N_LOCALES}>
                 <Menu name="languages" label={t`Languages`} icon={<I18NIcon />}>
                     <Section label={t`Locales`}>
                         <Item label={t`Locales`} path="/i18n/locales" />

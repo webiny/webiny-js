@@ -5,13 +5,15 @@ import { MenuContentSectionPlugin } from "@webiny/app-admin/types";
 
 const t = i18n.ns("app-form-builder/admin/menus");
 
+const ROLE_FORMS_EDITOR = ["forms:settings"];
+
 export default [
     {
         type: "menu-content-section",
         name: "menu-content-section-forms",
         render({ Section, Item }) {
             return (
-                <SecureView roles={["forms-editors"]}>
+                <SecureView scopes={ROLE_FORMS_EDITOR}>
                     <Section label={t`Form Builder`}>
                         <Item label={t`Forms`} path="/forms" />
                     </Section>

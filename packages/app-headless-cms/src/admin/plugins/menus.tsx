@@ -13,14 +13,14 @@ export default [
         render({ Menu, Section, Item }) {
             return (
                 <SecureView
-                    roles={{
+                    scopes={{
                         contentModels: ["cms-content-models"],
                         contentModelGroups: ["cms-content-model-groups"],
                         editors: ["headless-cms-editors"]
                     }}
                 >
-                    {({ roles }) => {
-                        const { contentModels, contentModelGroups } = roles;
+                    {({ scopes }) => {
+                        const { contentModels, contentModelGroups } = scopes;
                         if (!contentModels && !contentModelGroups) {
                             return null;
                         }
