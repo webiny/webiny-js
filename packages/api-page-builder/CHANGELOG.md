@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.1.5](https://github.com/webiny/webiny-js/compare/@webiny/api-page-builder@3.1.4...@webiny/api-page-builder@3.1.5) (2020-04-25)
+
+
+### Bug Fixes
+
+* for new installations, immediately mark step 6 as completed ([62cd762](https://github.com/webiny/webiny-js/commit/62cd76230fdfe9259aec23770704792a78d50325))
+
+
+
+
+
 ## [3.1.4](https://github.com/webiny/webiny-js/compare/@webiny/api-page-builder@3.1.4-next.0...@webiny/api-page-builder@3.1.4) (2020-04-23)
 
 
