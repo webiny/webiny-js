@@ -39,7 +39,7 @@ export const install = async (root: any, args: { [key: string]: any }, context: 
         // For new installations, mark step 6 immediately as completed.
         // This is because of https://github.com/webiny/webiny-js/pull/792.
         // TODO: Remove this upon merging Headless CMS.
-        if (installation.stepAvailable(6)) {
+        if (!installation.getStep(6).completed) {
             installation.getStep(6).markAsCompleted();
             await installation.save();
         }
