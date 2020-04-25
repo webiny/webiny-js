@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.1.7-next.0](https://github.com/webiny/webiny-js/compare/@webiny/api-page-builder@3.1.6...@webiny/api-page-builder@3.1.7-next.0) (2020-04-25)
+
+
+### Bug Fixes
+
+* call "save" on settings, not on installation ([6ce3e51](https://github.com/webiny/webiny-js/commit/6ce3e510aebb5b14f24af3bbcab208244621b6b2))
+
+
+
+
+
 ## [3.1.6](https://github.com/webiny/webiny-js/compare/@webiny/api-page-builder@3.1.5...@webiny/api-page-builder@3.1.6) (2020-04-25)
 
 
