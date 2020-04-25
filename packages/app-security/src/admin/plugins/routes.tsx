@@ -9,6 +9,8 @@ import Account from "@webiny/app-security/admin/views/Account";
 import { SecureRoute } from "@webiny/app-security/components";
 import { RoutePlugin } from "@webiny/app/types";
 
+const ROLE_SECURITY_ROLES = ["security:role:crud"];
+
 const plugins: RoutePlugin[] = [
     {
         name: "route-roles",
@@ -18,7 +20,7 @@ const plugins: RoutePlugin[] = [
                 exact
                 path={"/roles"}
                 render={() => (
-                    <SecureRoute roles={["security-roles"]}>
+                    <SecureRoute scopes={ROLE_SECURITY_ROLES}>
                         <AdminLayout>
                             <Helmet title={"Security - Roles"} />
                             <Roles />

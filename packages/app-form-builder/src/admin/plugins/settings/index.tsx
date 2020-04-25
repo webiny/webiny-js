@@ -10,6 +10,8 @@ import { MenuSettingsPlugin } from "@webiny/app-admin/types";
 import { i18n } from "@webiny/app/i18n";
 const t = i18n.ns("app-form-builder/admin/menus");
 
+const ROLE_FORMS_SETTINGS = ["forms:settings"];
+
 const plugins = [
     {
         type: "route",
@@ -20,7 +22,7 @@ const plugins = [
                 render={() => (
                     <AdminLayout>
                         <Helmet title={t`Form Builder - reCAPTCHA Settings`} />
-                        <SecureRoute roles={["forms-settings"]}>
+                        <SecureRoute scopes={ROLE_FORMS_SETTINGS}>
                             <FormsSettings />
                         </SecureRoute>
                     </AdminLayout>

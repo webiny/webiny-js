@@ -10,7 +10,7 @@ import { PbMenuSettingsItemPlugin } from "@webiny/app-page-builder/types";
 
 const t = i18n.ns("app-google-tag-manager/admin");
 
-const roles = ["pb-settings"];
+const ROLE_PB_SETTINGS = ["pb:page:crud"];
 
 const plugins = [
     {
@@ -22,7 +22,7 @@ const plugins = [
                 render={() => (
                     <AdminLayout>
                         <Helmet title={"Page Builder - Google Tag Manager Settings"} />
-                        <SecureRoute roles={roles}>
+                        <SecureRoute scopes={ROLE_PB_SETTINGS}>
                             <GoogleTagManagerSettings />
                         </SecureRoute>
                     </AdminLayout>

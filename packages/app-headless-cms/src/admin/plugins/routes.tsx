@@ -28,7 +28,7 @@ const plugins: RoutePlugin[] = [
                 exact
                 path={"/cms/content-model-groups"}
                 render={() => (
-                    <SecureRoute roles={["cms-content-model-groups"]}>
+                    <SecureRoute scopes={["cms-content-model-groups"]}>
                         <AdminLayout>
                             <Helmet>
                                 <title>{t`Content Model Groups`}</title>

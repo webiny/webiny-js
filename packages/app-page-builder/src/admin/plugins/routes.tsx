@@ -16,6 +16,8 @@ const Menus = lazy(() => import("@webiny/app-page-builder/admin/views/Menus/Menu
 const Pages = lazy(() => import("@webiny/app-page-builder/admin/views/Pages/Pages"));
 const Editor = lazy(() => import("@webiny/app-page-builder/admin/views/Pages/Editor"));
 
+const ROLE_PB_CATEGORY = ["pb:category:crud"];
+
 const plugins: RoutePlugin[] = [
     {
         name: "route-pb-categories",
@@ -25,7 +27,7 @@ const plugins: RoutePlugin[] = [
                 exact
                 path="/page-builder/categories"
                 render={() => (
-                    <SecureRoute roles={["pb-categories"]}>
+                    <SecureRoute scopes={ROLE_PB_CATEGORY}>
                         <AdminLayout>
                             <Helmet title={"Page Builder - Categories"} />
                             <Loader>

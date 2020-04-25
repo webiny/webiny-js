@@ -27,7 +27,7 @@ const PreviewBox = styled("div")({
     }
 });
 
-const roles = ["pb-settings"];
+const ROLE_PB_SETTINGS = ["pb:page:crud"];
 
 export default [
     ...render,
@@ -86,7 +86,7 @@ export default [
                 render={() => (
                     <AdminLayout>
                         <Helmet title={"Page Builder - Mailchimp Settings"} />
-                        <SecureRoute roles={roles}>
+                        <SecureRoute scopes={ROLE_PB_SETTINGS}>
                             <MailchimpSettings />
                         </SecureRoute>
                     </AdminLayout>
