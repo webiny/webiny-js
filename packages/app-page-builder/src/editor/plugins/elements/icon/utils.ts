@@ -15,7 +15,7 @@ export const getIcons = () => {
     return icons;
 };
 
-export const getSvg = (id: Array<string>, props?: any) => {
+export const getSvg = (id: Array<string>, props: any = {}) => {
     if (!props.width) {
         props.width = 50;
     }
