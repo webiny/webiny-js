@@ -13,7 +13,7 @@ import loadJson from "load-json-file";
 const FILES_COUNT_IN_EACH_BATCH = 15;
 
 export default async ({ context, INSTALL_EXTRACT_DIR }) => {
-    const pagesData: {[key: string]: any}[] = await loadJson(
+    const pagesData: { [key: string]: any }[] = await loadJson(
         path.join(INSTALL_EXTRACT_DIR, "data/pagesData.json")
     );
     const pagesFilesData = await loadJson(
@@ -65,7 +65,7 @@ export default async ({ context, INSTALL_EXTRACT_DIR }) => {
 
         // 2. Save files.
         // 2.1 Get pre-signed POST payloads.
-        const client = new GraphQLClient(process.env.FILES_API_URL, {
+        const client = new GraphQLClient(context.event.headers["X-Webiny-Apollo-Gateway-Url"], {
             headers: {
                 Authorization: context.token
             }
