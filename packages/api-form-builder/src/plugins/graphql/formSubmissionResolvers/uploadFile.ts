@@ -20,7 +20,7 @@ const uploadToS3 = async (buffer, preSignedPostPayload) => {
 
 export default async ({ context, buffer, file }) => {
     try {
-        const client = new GraphQLClient(process.env.FILES_API_URL, {
+        const client = new GraphQLClient(context.event.headers["X-Webiny-Apollo-Gateway-Url"], {
             headers: {
                 Authorization: context.token
             }
