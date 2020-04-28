@@ -11,11 +11,9 @@ export default ({
     children: any;
     scopes?: ResourcesType;
 }): React.ReactElement => {
-    const checks = {
-        scopes: scopes ? hasScopes(scopes, { forceBoolean: true }) : true
-    };
+    const checkedScopes = scopes ? hasScopes(scopes, { forceBoolean: true }) : true;
 
-    if (checks.scopes) {
+    if (checkedScopes) {
         return children;
     }
 

@@ -9,13 +9,11 @@ export default ({
     children: any;
     scopes?: ResourcesType;
 }): React.ReactElement => {
-    const checks = {
-        scopes: scopes ? hasScopes(scopes) : true
-    };
+    const checkedScopes = scopes ? hasScopes(scopes) : true;
 
     if (typeof children === "function") {
-        return children(checks);
+        return children({ scopes: checkedScopes });
     }
 
-    return checks.scopes ? children : null;
+    return checkedScopes ? children : null;
 };
