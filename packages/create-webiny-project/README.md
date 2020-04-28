@@ -1,13 +1,15 @@
 Here are some notes on some Gotcha's that may happen:
 
-Make sure to have Verdaccio running:
-How to use here:
-https://github.com/verdaccio/verdaccio
+Local dev gotchas:
 
-Point your npm registry to http://localhost:4873/ for the scope of @webiny to pull in packages
+#1: How to run `create-webiny-project`
 
-you may have to add the following dependencies on verdaccio:
+Head to  `packages/create-webiny-project` and run `npm link`
 
-@webiny/app-template-admin
-@webiny/app-template-admin-full
-@webiny/app-template
+Next:
+Navigate to the directory where you want to create your webiny project and run
+`create-webiny-project projectName -t templateName --tag ../path/to/node_modules`
+
+Note:
+The templateName can either be `full` (This will pull a package named `cwp-template-full` from npm template) or actually link to the path of the template you wish to use locally ex. `../dev/template-to-use`
+
