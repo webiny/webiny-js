@@ -60,7 +60,7 @@
   "adio": {
     "ignoreDirs": [
       "migration",
-      "src/install"
+      "src/installation"
     ],
     "ignore": {
       "src": [
