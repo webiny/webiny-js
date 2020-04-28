@@ -1,14 +1,17 @@
 {
   "name": "admin",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "private": true,
   "dependencies": {
-    "@webiny/app-template-admin-full": "^1.0.0",
+    "@webiny/app-template-admin-full": "file:../../../../app-template-admin-full/",
+    "@webiny/plugins": "file:../../../../plugins/",
     "core-js": "^3.2.1",
     "cross-fetch": "^3.0.2",
     "env-cmd": "^10.1.0",
     "react-hot-loader": "^4.3.5",
-    "regenerator-runtime": "^0.13.3"
+    "regenerator-runtime": "^0.13.3",
+    "typescript": "3.7.4",
+    "write-json-file": "^4.3.0"
   },
   "devDependencies": {
     "source-map-explorer": "^1.6.0"
