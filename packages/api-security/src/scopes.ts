@@ -1,10 +1,12 @@
 import { GraphQLFieldResolver } from "@webiny/graphql/types";
+import { ErrorResponse } from "@webiny/graphql";
 
-export class ScopeError extends Error {
-    message: string;
+export class SecurityError extends ErrorResponse {
     constructor(message: string) {
-        super();
-        this.message = message;
+        super({
+            code: "SECURITY_ERROR",
+            message
+        });
     }
 }
 
@@ -22,7 +24,7 @@ export const hasScope = (scope: string) => {
             if (allowAccess) {
                 return resolver(parent, args, ctx, info);
             }
-            throw new ScopeError(`Not Authorized!`);
+            return new SecurityError("Not authorized!");
         };
     };
 };
