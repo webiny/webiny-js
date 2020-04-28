@@ -12,11 +12,6 @@ const plugin = (): GraphQLSchemaPlugin => ({
         resolvers: {
             ...graphqlSchema.resolvers
         }
-    },
-    security: {
-        shield: {
-            // ...
-        }
     }
 });
 
