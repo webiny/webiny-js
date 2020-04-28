@@ -1,7 +1,7 @@
 import { createResponse } from "@webiny/http-handler";
 import { HttpHandlerPlugin } from "@webiny/http-handler/types";
 import { boolean } from "boolean";
-import { CreateApolloHandlerPlugin, HttpHandlerApolloServerOptions } from "./../types";
+import { CreateApolloHandlerPlugin, HttpHandlerApolloServerOptions } from "../types";
 
 export default (options: HttpHandlerApolloServerOptions = {}): HttpHandlerPlugin => ({
     type: "handler",

@@ -1,5 +1,5 @@
 import { ApolloServer } from "apollo-server-lambda";
-import { CreateApolloHandlerPlugin } from "./../types";
+import { CreateApolloHandlerPlugin } from "../types";
 import { boolean } from "boolean";
 import { CreateSchemaPlugin } from "@webiny/http-handler-apollo-server/types";
 
