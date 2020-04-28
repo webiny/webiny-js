@@ -1,0 +1,11 @@
+{
+  "name": "service-files-transform",
+  "version": "0.1.0",
+  "scripts": {
+    "build": "webiny run build"
+  },
+  "dependencies": {
+    "@webiny/http-handler": "^2.1.0",
+    "@webiny/serverless-files": "^2.1.0"
+  }
+}
