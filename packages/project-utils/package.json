@@ -23,6 +23,7 @@
     "@testing-library/user-event": "^7.1.2",
     "@typescript-eslint/eslint-plugin": "^2.8.0",
     "@typescript-eslint/parser": "^2.8.0",
+    "@types/webpack-env": "^1.15.2",
     "@webiny/http-handler": "^2.1.0",
     "@webiny/http-handler-files": "^2.0.3",
     "@webiny/http-handler-ssr": "^2.1.0",
@@ -35,7 +36,6 @@
     "camelcase": "^5.3.1",
     "case-sensitive-paths-webpack-plugin": "2.2.0",
     "css-loader": "3.2.0",
-    "chokidar": "^3.3.1",
     "dotenv": "8.2.0",
     "dotenv-expand": "5.1.0",
     "eslint": "^6.6.0",
@@ -90,11 +90,6 @@
         "babel-plugin-lodash"
       ]
     }
-  },
-  "scripts": {
-    "build": "rimraf ./dist && mkdir dist && cp -R index.js aliases bundling packages serverless dist/",
-    "postbuild": "cp package.json LICENSE README.md dist/",
-    "prepublishOnly": "yarn build"
   },
   "publishConfig": {
     "access": "public",

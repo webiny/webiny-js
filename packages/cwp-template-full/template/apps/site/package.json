@@ -11,6 +11,7 @@
     "@webiny/app-mailchimp": "file:../../../../app-mailchimp",
     "@webiny/app-page-builder": "file:../../../../app-page-builder",
     "@webiny/app-page-builder-theme": "file:../../../../app-page-builder-theme",
+    "@webiny/app-template-site": "file:../../../../app-template-site",
     "@webiny/app-typeform": "file:../../../../app-typeform",
     "@webiny/plugins": "file:../../../../plugins",
     "@webiny/react-router": "file:../../../../react-router",

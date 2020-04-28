@@ -9,10 +9,9 @@
         ",**/__fixtures__/**",
         "**/__tests__/**",
         "**/*.md",
-        "lerna.json",
-        "examples/**"
+        "lerna.json"
       ],
-      "allowBranch": ["master", "next"],
+      "allowBranch": ["master"],
       "conventionalCommits": true,
       "createRelease": "github",
       "commitHooks": false,

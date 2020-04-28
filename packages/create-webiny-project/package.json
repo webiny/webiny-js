@@ -6,21 +6,28 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "bin": {
-    "create-webiny-project": "./index.js"
-  },
+  "bin": "./bin.js",
   "keywords": [
     "Webiny"
   ],
-  "author": "Emil Kais <emil@webiny.com>",
+  "author": "Webiny Ltd.",
+  "contributors": [
+    "Emil Kais <emil@webiny.com>",
+    "Pavel Denisjuk <pavel@webiny.com>"
+  ],
   "license": "MIT",
   "dependencies": {
     "chalk": "^4.0.0",
     "envinfo": "^7.5.0",
     "execa": "^4.0.0",
     "fs-extra": "^9.0.0",
+    "fast-glob": "^3.2.2",
     "os": "^0.1.1",
     "validate-npm-package-name": "^3.0.0",
     "yargs": "^15.3.1"
+  },
+  "publishConfig": {
+    "access": "public",
+    "directory": "."
   }
 }
