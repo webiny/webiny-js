@@ -15,6 +15,7 @@
     "Adrian Smijulj <adrian@webiny.com>"
   ],
   "dependencies": {
+    "@apollo/gateway": "^0.14.1",
     "@webiny/graphql": "^1.0.0",
     "@webiny/http-handler": "^2.1.0"
   },

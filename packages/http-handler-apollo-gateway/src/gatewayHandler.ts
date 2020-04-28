@@ -12,6 +12,15 @@ import {
 import buildHeaders from "./buildHeaders";
 import { DataSource } from "./DataSource";
 
+function normalizeEvent(event) {
+    // In AWS, when enabling binary support, received body gets base64 encoded. Did not find a way to solve this
+    // correctly, so for now we "normalize" the event before passing it to the handler. It would be nice if
+    // we could resolve this issue better / smarter in the future (configure integrations correctly?).
+    if (event.isBase64Encoded) {
+        event.body = Buffer.from(event.body, "base64").toString("utf-8");
+    }
+}
+
 function getError(error) {
     let err = get(error, "extensions.response");
     if (err) {
@@ -74,7 +83,7 @@ const getHandler = async ({ options, context }: GetHandlerOptions) => {
                 url,
                 willSendRequest(params: Pick<GraphQLRequestContext, "request" | "context">) {
                     const { context, request } = params;
-                    // TODO: process plugins
+
                     if (context.headers) {
                         Object.keys(context.headers).forEach(key => {
                             if (context.headers[key]) {
@@ -113,6 +122,13 @@ const getHandler = async ({ options, context }: GetHandlerOptions) => {
             executor,
             context: async ({ event }) => {
                 const headers = buildHeaders(event);
+                const { requestContext } = event;
+
+                headers["X-Webiny-Apollo-Gateway-Url"] = [
+                    "https://",
+                    requestContext.domainName,
+                    requestContext.path
+                ].join("");
 
                 const headerPlugins = context.plugins.byType<HttpHandlerApolloGatewayHeadersPlugin>(
                     "http-handler-apollo-gateway-headers"
@@ -132,6 +148,7 @@ const getHandler = async ({ options, context }: GetHandlerOptions) => {
         });
 
         cache = (event, context) => {
+            normalizeEvent(event);
             return new Promise(resolve => {
                 apolloHandler(event, context, (error, data) => {
                     if (error) {
