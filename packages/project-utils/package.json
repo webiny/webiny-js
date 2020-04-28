@@ -36,6 +36,7 @@
     "case-sensitive-paths-webpack-plugin": "2.2.0",
     "css-loader": "3.2.0",
     "chokidar": "^3.3.1",
+    "constant-case": "^3.0.3",
     "dotenv": "8.2.0",
     "dotenv-expand": "5.1.0",
     "eslint": "^6.6.0",
