@@ -24,7 +24,6 @@
     "@webiny/commodo-graphql": "^3.0.0",
     "@webiny/http-handler": "^2.1.0",
     "@webiny/validation": "^3.0.0",
-    "@webiny/api-plugin-create-apollo-handler": "^2.0.2",
     "fecha": "^4.0.0",
     "graphql-tag": "^2.10.1",
     "lodash.merge": "^4.6.2",
