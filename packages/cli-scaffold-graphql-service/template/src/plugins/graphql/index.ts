@@ -3,7 +3,14 @@ import * as resolvers from "./resolvers";
 export default {
     /* GraphQL */
     typeDefs: `
-      # ... Here go your type definitions ...
+        type Unicorn {
+            id: ID
+            name: String
+            weight: Float
+        }
+        
+        getUnicorns: [Unicorn]
+        getUnicorn(name: String!): Unicorn
     `,
     resolvers: {
         ...resolvers
