@@ -44,7 +44,7 @@ const plugins: RoutePlugin[] = [
                 exact
                 path="/forms"
                 render={() => (
-                    <SecureRoute roles={["form-editors"]}>
+                    <SecureRoute scopes={ROLE_FORMS_EDITOR}>
                         <AdminLayout>
                             <Helmet title={"Form Builder"} />
                             <Loader>

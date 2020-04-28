@@ -6,9 +6,9 @@ import { ReactComponent as SecurityIcon } from "./../assets/icons/baseline-secur
 const t = i18n.ns("app-security/admin/menus");
 
 // TODO: Update to  more fine grained scopes
-const ROLE_SECURITY_GROUPS = ['security:group:crud']
-const ROLE_SECURITY_ROLES = ['security:role:crud']
-const ROLE_SECURITY_USERS = ['security:user:crud']
+const ROLE_SECURITY_GROUPS = ["security:group:crud"];
+const ROLE_SECURITY_ROLES = ["security:role:crud"];
+const ROLE_SECURITY_USERS = ["security:user:crud"];
 
 export default [
     {

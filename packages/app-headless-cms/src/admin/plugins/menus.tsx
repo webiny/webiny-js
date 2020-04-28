@@ -14,9 +14,8 @@ export default [
             return (
                 <SecureView
                     scopes={{
-                        contentModels: ["cms-content-models"],
-                        contentModelGroups: ["cms-content-model-groups"],
-                        editors: ["headless-cms-editors"]
+                        contentModels: ["cms:contentModel:crud"],
+                        contentModelGroups: ["cms:contentModelGroup:crud"]
                     }}
                 >
                     {({ scopes }) => {

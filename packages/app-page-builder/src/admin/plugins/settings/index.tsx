@@ -13,7 +13,7 @@ import { MenuSettingsPlugin } from "@webiny/app-admin/types";
 
 const t = i18n.ns("app-page-builder/admin/menus");
 
-const ROLE_PB_EDITOR = ["pb:page:crud"];
+const ROLE_PB_SETTINGS = ["pb:settings"];
 
 const plugins = [
     {
@@ -25,7 +25,7 @@ const plugins = [
                 render={() => (
                     <AdminLayout>
                         <Helmet title={t`Page Builder - Website Settings`} />
-                        <SecureRoute scopes={ROLE_PB_EDITOR}>
+                        <SecureRoute scopes={ROLE_PB_SETTINGS}>
                             <PageBuilderSettings />
                         </SecureRoute>
                     </AdminLayout>
@@ -42,7 +42,7 @@ const plugins = [
                 render={() => (
                     <AdminLayout>
                         <Helmet title={t`Page Builder - General Settings`} />
-                        <SecureRoute roles={["pb-settings"]}>
+                        <SecureRoute scopes={ROLE_PB_SETTINGS}>
                             <GeneralSettings />
                         </SecureRoute>
                     </AdminLayout>

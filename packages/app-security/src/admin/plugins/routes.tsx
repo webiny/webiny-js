@@ -10,6 +10,8 @@ import { SecureRoute } from "@webiny/app-security/components";
 import { RoutePlugin } from "@webiny/app/types";
 
 const ROLE_SECURITY_ROLES = ["security:role:crud"];
+const ROLE_SECURITY_GROUPS = ["security:group:crud"];
+const ROLE_SECURITY_USERS = ["security:user:crud"];
 
 const plugins: RoutePlugin[] = [
     {
@@ -38,7 +40,7 @@ const plugins: RoutePlugin[] = [
                 exact
                 path={"/groups"}
                 render={() => (
-                    <SecureRoute roles={["security-groups"]}>
+                    <SecureRoute scopes={ROLE_SECURITY_GROUPS}>
                         <AdminLayout>
                             <Helmet title={"Security - Groups"} />
                             <Groups />
@@ -56,7 +58,7 @@ const plugins: RoutePlugin[] = [
                 exact
                 path={"/users"}
                 render={() => (
-                    <SecureRoute roles={["security-users"]}>
+                    <SecureRoute scopes={ROLE_SECURITY_USERS}>
                         <AdminLayout>
                             <Helmet title={"Security - Users"} />
                             <Users />
