@@ -216,7 +216,8 @@ module.exports = async function({ root, appName, templateName, tag }) {
         console.log("installing dependencies");
         await execa("yarn", [], {
             cwd: root,
-            stdio: "inherit"
+            stdio: "inherit",
+            buffer: false
         });
     } catch (err) {
         console.log(err);
