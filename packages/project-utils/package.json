@@ -16,8 +16,6 @@
     "@babel/core": "7.7.4",
     "@hot-loader/react-dom": "^16.13.0",
     "@svgr/webpack": "4.3.3",
-    "@serverless/cli": "^1.1.1",
-    "@serverless/core": "^1.1.1",
     "@testing-library/jest-dom": "^4.2.4",
     "@testing-library/react": "^9.3.2",
     "@testing-library/user-event": "^7.1.2",

@@ -1,8 +1,4 @@
 {
   "extends": "../../tsconfig",
-  "include": ["src"],
-  "exclude": ["../../../../app-template-admin-full"],
-  "references": [
-    { "path": "../../../../app-template-admin-full/tsconfig.build.json" }
-  ]
+  "include": ["src"]
 }
