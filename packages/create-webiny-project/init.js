@@ -5,15 +5,18 @@ process.on("unhandledRejection", err => {
 });
 
 const chalk = require("chalk");
+const crypto = require("crypto");
 const execa = require("execa");
-const fs = require("fs-extra");
-const path = require("path");
-const os = require("os");
-const loadJsonFile = require("load-json-file");
-const writeJsonFile = require("write-json-file");
 const fg = require("fast-glob");
-const { getPackageVersion } = require("./utils");
+const fs = require("fs-extra");
+const loadJsonFile = require("load-json-file");
 const ora = require("ora");
+const os = require("os");
+const path = require("path");
+const { v4: uuidv4 } = require("uuid");
+const writeJsonFile = require("write-json-file");
+
+const { getPackageVersion } = require("./utils");
 
 module.exports = async function({ root, appName, templateName, tag }) {
     const appPackage = require(path.join(root, "package.json"));
@@ -55,6 +58,19 @@ module.exports = async function({ root, appName, templateName, tag }) {
         }
     }
 
+    //Update api/.env.json
+    let apiEnv = fs.readFileSync(path.join(root, "api", ".env.json"), "utf-8");
+    const projectId = uuidv4()
+        .split("-")
+        .shift();
+    const jwtSecret = crypto
+        .randomBytes(128)
+        .toString("base64")
+        .slice(0, 60);
+
+    apiEnv = apiEnv.replace("[JWT_SECRET]", jwtSecret);
+    apiEnv = apiEnv.replace("[BUCKET]", `${projectId}-${appName}-files`);
+    fs.writeFileSync(path.join(root, "api", ".env.json"), apiEnv);
     //initialize git repo
     try {
         execa.sync("git", ["--version"]);

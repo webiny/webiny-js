@@ -18,12 +18,14 @@
   "license": "MIT",
   "dependencies": {
     "chalk": "^4.0.0",
+    "crypto": "^1.0.1",
     "envinfo": "^7.5.0",
     "execa": "^4.0.0",
     "fast-glob": "^3.2.2",
     "fs-extra": "^9.0.0",
     "ora": "^4.0.4",
     "os": "^0.1.1",
+    "uuid": "^7.0.3",
     "validate-npm-package-name": "^3.0.0",
     "yargs": "^15.3.1"
   },
