@@ -39,7 +39,11 @@ function getError(error) {
         };
     }
 
-    return { error: error.message };
+    if (error.error) {
+        return { error: error.error };
+    }
+
+    return { error };
 }
 
 class ApolloGatewayError extends Error {
@@ -59,7 +63,23 @@ type GetHandlerOptions = {
 
 let cache = null;
 
-const getHandler = async ({ options, context }: GetHandlerOptions) => {
+const createHeaders = (event, context: HttpHandlerContext) => {
+    const headers = buildHeaders(event);
+    headers["x-webiny-apollo-gateway-url"] = [
+        "https://",
+        event.requestContext.domainName,
+        event.requestContext.path
+    ].join("");
+
+    const headerPlugins = context.plugins.byType<HttpHandlerApolloGatewayHeadersPlugin>(
+        "http-handler-apollo-gateway-headers"
+    );
+    headerPlugins.forEach(pl => pl.buildHeaders({ headers, plugins: context.plugins }));
+
+    return headers;
+};
+
+const getHandler = async ({ args, options, context }: GetHandlerOptions) => {
     if (cache) {
         return cache;
     }
@@ -75,29 +95,33 @@ const getHandler = async ({ options, context }: GetHandlerOptions) => {
     const { server = {}, handler = {} } = options;
     const dataSourceErrors = [];
 
+    const services = servicePlugins.map(pl => {
+        return { ...pl.service, url: pl.service.name };
+    });
+
     const gateway = new ApolloGateway({
         debug: boolean(options.debug),
-        serviceList: servicePlugins.map(pl => pl.service),
-        buildService({ name, url }) {
+        serviceList: services,
+        buildService({ name }) {
             return new DataSource({
-                url,
+                functionName: services.find(s => s.name === name).function,
                 willSendRequest(params: Pick<GraphQLRequestContext, "request" | "context">) {
-                    const { context, request } = params;
+                    let headers = params.context.headers;
 
-                    if (context.headers) {
-                        Object.keys(context.headers).forEach(key => {
-                            if (context.headers[key]) {
-                                request.http.headers.set(key, context.headers[key]);
-                            }
-                        });
+                    // If cold-start, `context.headers` will not be available.
+                    if (!headers) {
+                        headers = createHeaders(args[0], context);
                     }
+
+                    Object.keys(headers).forEach(key => {
+                        params.request.http.headers.set(key, headers[key]);
+                    });
                 },
                 onServiceError(error) {
-                    console.log("Service Error: " + name, error);
                     dataSourceErrors.push({
                         ...getError(error),
                         service: name,
-                        url
+                        functionName: services.find(s => s.name === name).function
                     });
                 }
             });
@@ -121,21 +145,7 @@ const getHandler = async ({ options, context }: GetHandlerOptions) => {
             schema,
             executor,
             context: async ({ event }) => {
-                const headers = buildHeaders(event);
-                const { requestContext } = event;
-
-                headers["X-Webiny-Apollo-Gateway-Url"] = [
-                    "https://",
-                    requestContext.domainName,
-                    requestContext.path
-                ].join("");
-
-                const headerPlugins = context.plugins.byType<HttpHandlerApolloGatewayHeadersPlugin>(
-                    "http-handler-apollo-gateway-headers"
-                );
-                headerPlugins.forEach(pl => pl.buildHeaders({ headers, plugins: context.plugins }));
-
-                return { headers };
+                return { headers: createHeaders(event, context) };
             }
         });
 
@@ -164,7 +174,6 @@ const getHandler = async ({ options, context }: GetHandlerOptions) => {
         };
     } catch (e) {
         if (dataSourceErrors.length > 0) {
-            console.log("dataSourceErrors", JSON.stringify({ dataSourceErrors }, null, 2));
             throw new ApolloGatewayError(dataSourceErrors);
         }
         throw e;

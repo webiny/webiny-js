@@ -17,13 +17,15 @@
   "dependencies": {
     "@apollo/gateway": "^0.14.1",
     "@webiny/graphql": "^1.0.0",
-    "@webiny/http-handler": "^2.1.0"
+    "@webiny/http-handler": "^2.1.0",
+    "apollo-server-lambda": "^2.4.3",
+    "apollo-server-env": "^2.4.3"
   },
   "devDependencies": {
     "@babel/cli": "^7.5.5",
     "@babel/core": "^7.5.5",
     "@babel/preset-env": "^7.5.5",
-    "apollo-server": "^2.11.0",
+    "apollo-server-types": "^0.3.1",
     "jest-mock-console": "^1.0.0"
   },
   "publishConfig": {

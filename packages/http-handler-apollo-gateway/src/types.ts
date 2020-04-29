@@ -1,5 +1,4 @@
 import { Plugin, PluginsContainer } from "@webiny/graphql/types";
-import { ServiceEndpointDefinition } from "@apollo/gateway";
 
 export type HttpHandlerApolloGatewayHeadersPlugin = Plugin & {
     type: "http-handler-apollo-gateway-headers";
@@ -18,7 +17,10 @@ export interface HttpHandlerApolloGatewayOptions {
     services: [ApolloGatewayServiceDefinition];
 }
 
-export type ApolloGatewayServiceDefinition = ServiceEndpointDefinition;
+export type ApolloGatewayServiceDefinition = {
+    name: string;
+    function: string;
+};
 
 export type HttpHandlerApolloGatewayServicePlugin = Plugin & {
     type: "http-handler-apollo-gateway-service";

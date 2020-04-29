@@ -1,7 +1,7 @@
-import { RemoteGraphQLDataSource } from "@apollo/gateway";
+import { LambdaGraphQLDataSource } from "./LambdaGraphQLDataSource";
 import { GraphQLRequestContext, GraphQLResponse } from "apollo-server-types";
 
-export class DataSource extends RemoteGraphQLDataSource {
+export class DataSource extends LambdaGraphQLDataSource {
     constructor({ onServiceError, ...config }: Partial<DataSource>) {
         super(config);
         this.onServiceError = onServiceError;
@@ -18,6 +18,7 @@ export class DataSource extends RemoteGraphQLDataSource {
                 if (res.errors) {
                     res.errors.map(error => this.onServiceError(error));
                 }
+
                 return res;
             });
         } catch (error) {
