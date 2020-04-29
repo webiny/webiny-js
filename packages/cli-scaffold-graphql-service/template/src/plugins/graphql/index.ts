@@ -12,7 +12,5 @@ export default {
         getUnicorns: [Unicorn]
         getUnicorn(name: String!): Unicorn
     `,
-    resolvers: {
-        ...resolvers
-    }
+    resolvers
 };

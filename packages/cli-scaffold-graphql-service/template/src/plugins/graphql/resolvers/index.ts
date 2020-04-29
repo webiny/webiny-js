@@ -1,4 +1,4 @@
-import { Response } from "@webiny/api";
+import { Response } from "@webiny/graphql";
 
 const unicorns = [
     {
@@ -13,13 +13,13 @@ const unicorns = [
     }
 ];
 
-export const getUnicorn = async (root, args, context) => {
-    console.log("Args = \n\n");
-    console.log(args);
-    console.log(args.name);
-    return new Response(unicorns.find(unicorn => unicorn.name === args.name));
+const resolvers = {
+    getUnicorn: async (root, args, context) => {
+        return new Response(unicorns.find(unicorn => unicorn.name === args.name));
+    },
+    getUnicorns: async (root, args, context) => {
+        return new Response(unicorns);
+    }
 };
 
-export const getUnicorns = async (root, args, context) => {
-    return new Response(unicorns);
-};
+export default resolvers;

@@ -1,6 +1,6 @@
 import gql from "graphql-tag";
-import graphqlSchema from "./graphql";
-import { GraphQLSchemaPlugin } from "@webiny/api/types";
+import graphqlSchema from "./graphql/index";
+import { GraphQLSchemaPlugin } from "@webiny/graphql/types";
 
 const plugin = (): GraphQLSchemaPlugin => ({
     type: "graphql-schema",
@@ -9,9 +9,7 @@ const plugin = (): GraphQLSchemaPlugin => ({
         typeDefs: gql`
             ${graphqlSchema.typeDefs}
         `,
-        resolvers: {
-            ...graphqlSchema.resolvers
-        }
+        resolvers: graphqlSchema.resolvers
     }
 });
 
