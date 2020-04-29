@@ -5,7 +5,7 @@
     "build": "webiny run build"
   },
   "dependencies": {
-    "@webiny/http-handler": "^2.1.0",
-    "@webiny/http-handler-apollo-gateway": "^1.0.0"
+    "@webiny/handler": "^0.1.0",
+    "@webiny/handler-apollo-gateway": "^0.1.0"
   }
 }

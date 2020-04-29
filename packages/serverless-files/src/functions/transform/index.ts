@@ -3,14 +3,11 @@ import transformImage from "./transformImage";
 import optimizeImage from "./optimizeImage";
 import { createHandler, getEnvironment, getObjectParams } from "../../utils";
 import { getImageKey } from "./utils";
-import { HttpHandlerPlugin } from "@webiny/http-handler/types";
+import { HandlerPlugin } from "@webiny/handler/types";
 
-export default (): HttpHandlerPlugin => ({
+export default (): HandlerPlugin => ({
     type: "handler",
     name: "handler-download-file",
-    canHandle() {
-        return true;
-    },
     async handle({ args }) {
         const [event] = args;
 

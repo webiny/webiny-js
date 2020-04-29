@@ -1,4 +1,4 @@
-import { createHandler } from "@webiny/http-handler";
+import { createHandler } from "@webiny/handler";
 import copyEnvironment from "@webiny/api-headless-cms/copyEnvironment";
 import dbProxy from "@webiny/api-plugin-commodo-db-proxy";
 

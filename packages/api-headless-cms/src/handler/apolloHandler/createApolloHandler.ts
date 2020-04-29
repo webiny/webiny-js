@@ -1,8 +1,8 @@
 import { ApolloServer } from "apollo-server-lambda";
 import { boolean } from "boolean";
-import { CreateSchemaPlugin } from "@webiny/http-handler-apollo-server/types";
+import { CreateSchemaPlugin } from "@webiny/handler-apollo-server/types";
 import get from "lodash.get";
-import { HttpHandlerContext } from "@webiny/http-handler/types";
+import { HandlerContext } from "@webiny/handler/types";
 
 function normalizeEvent(event) {
     // In AWS, when enabling binary support, received body gets base64 encoded. Did not find a way to solve this
@@ -14,7 +14,7 @@ function normalizeEvent(event) {
 }
 
 type CreateApolloHandlerParams = {
-    context: HttpHandlerContext;
+    context: HandlerContext;
     options: { [key: string]: any };
     meta?: { [key: string]: any };
 };

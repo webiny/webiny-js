@@ -8,7 +8,7 @@
     { "path": "../../../../packages/api-mailchimp" },
     { "path": "../../../../packages/api-cookie-policy" },
     { "path": "../../../../packages/api-google-tag-manager" },
-    { "path": "../../../../packages/http-handler" },
-    { "path": "../../../../packages/http-handler-apollo-server" }
+    { "path": "../../../../packages/handler" },
+    { "path": "../../../../packages/handler-apollo-server" }
   ]
 }

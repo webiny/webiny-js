@@ -8,8 +8,8 @@
     { "path": "../api-security" },
     { "path": "../commodo" },
     { "path": "../commodo-graphql" },
-    { "path": "../http-handler" },
-    { "path": "../http-handler-apollo-server" },
+    { "path": "../handler" },
+    { "path": "../handler-apollo-server" },
     { "path": "../validation" }
   ]
 }

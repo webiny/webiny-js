@@ -9,8 +9,8 @@
     "../api-security",
     "../commodo",
     "../commodo-graphql",
-    "../http-handler",
-    "../http-handler-apollo-server",
+    "../handler",
+    "../handler-apollo-server",
     "../validation",
     "./jest.config.js"
   ],
@@ -25,8 +25,8 @@
     { "path": "../api-plugin-commodo-db-proxy/tsconfig.build.json" },
     { "path": "../api-security/tsconfig.build.json" },
     { "path": "../commodo-graphql/tsconfig.build.json" },
-    { "path": "../http-handler/tsconfig.build.json" },
-    { "path": "../http-handler-apollo-server/tsconfig.build.json" },
+    { "path": "../handler/tsconfig.build.json" },
+    { "path": "../handler-apollo-server/tsconfig.build.json" },
     { "path": "../validation/tsconfig.build.json" }
   ]
 }

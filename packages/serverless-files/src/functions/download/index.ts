@@ -1,4 +1,4 @@
-import { HttpHandlerPlugin } from "@webiny/http-handler/types";
+import { HandlerPlugin } from "@webiny/handler/types";
 import S3 from "aws-sdk/clients/s3";
 import sanitizeFilename from "sanitize-filename";
 import pathLib from "path";
@@ -55,12 +55,9 @@ const getS3Object = async (event, s3) => {
     };
 };
 
-export default (): HttpHandlerPlugin => ({
+export default (): HandlerPlugin => ({
     type: "handler",
     name: "handler-download-file",
-    canHandle() {
-        return true;
-    },
     async handle({ args }) {
         const [event] = args;
 

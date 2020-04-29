@@ -5,7 +5,7 @@
     { "path": "../../../../../packages/api-security" },
     { "path": "../../../../../packages/api-files" },
     { "path": "../../../../../packages/api-plugin-files-resolvers-mongodb" },
-    { "path": "../../../../../packages/http-handler" },
-    { "path": "../../../../../packages/http-handler-apollo-server" }
+    { "path": "../../../../../packages/handler" },
+    { "path": "../../../../../packages/handler-apollo-server" }
   ]
 }

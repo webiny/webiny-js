@@ -1,9 +1,9 @@
+import { GraphQLContextPlugin } from "@webiny/graphql/types";
 import models from "./models";
 import modelFields from "./modelFields";
 import filterOperators from "./filterOperators";
 import graphqlFields from "./graphqlFields";
 import graphql from "./graphql";
-import { GraphQLContextPlugin } from "@webiny/graphql/types";
 import { TypeValueEmitter } from "./utils/TypeValueEmitter";
 
 type HeadlessPluginsOptions = {

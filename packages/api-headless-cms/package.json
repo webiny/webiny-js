@@ -22,7 +22,7 @@
     "@webiny/api-security": "^3.0.0",
     "@webiny/commodo": "^3.0.0",
     "@webiny/commodo-graphql": "^3.0.0",
-    "@webiny/http-handler": "^2.1.0",
+    "@webiny/handler": "^0.1.0",
     "@webiny/validation": "^3.0.0",
     "fecha": "^4.0.0",
     "graphql-tag": "^2.10.1",

@@ -1,5 +1,5 @@
-import { createHandler } from "@webiny/http-handler";
-import apolloServerHandler from "@webiny/http-handler-apollo-server";
+import { createHandler } from "@webiny/handler";
+import apolloServerHandler from "@webiny/handler-apollo-server";
 import dbProxy from "@webiny/api-plugin-commodo-db-proxy";
 import securityServicePlugins from "@webiny/api-security/plugins/service";
 import i18nPlugins from "@webiny/api-i18n/plugins";

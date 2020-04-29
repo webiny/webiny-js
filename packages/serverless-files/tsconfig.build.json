@@ -4,7 +4,7 @@
   "exclude": [
     "node_modules",
     "./dist",
-    "../http-handler",
+    "../handler",
     "../validation"
   ],
   "compilerOptions": {
@@ -13,7 +13,7 @@
     "declarationDir": "./dist"
   },
   "references": [
-    { "path": "../http-handler/tsconfig.build.json" },
+    { "path": "../handler/tsconfig.build.json" },
     { "path": "../validation/tsconfig.build.json" }
   ]
 }

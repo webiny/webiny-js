@@ -5,6 +5,6 @@
     { "path": "../../../../packages/api-headless-cms" },
     { "path": "../../../../packages/api-i18n" },
     { "path": "../../../../packages/api-security" },
-    { "path": "../../../../packages/http-handler" }
+    { "path": "../../../../packages/handler" }
   ]
 }
