@@ -9,13 +9,12 @@ import useSsrCacheTagsPlugins from "@webiny/api-form-builder/plugins/useSsrCache
 declare const APOLLO_SERVER_OPTIONS: any;
 declare const DB_PROXY_OPTIONS: any;
 declare const SECURITY_OPTIONS: any;
-declare const I18N_OPTIONS: any;
 
 export const handler = createHandler(
     apolloServerPlugins(APOLLO_SERVER_OPTIONS),
     dbProxyPlugins(DB_PROXY_OPTIONS),
     securityServicePlugins(SECURITY_OPTIONS),
-    i18nServicePlugins(I18N_OPTIONS),
+    i18nServicePlugins(),
     formBuilderPlugins(),
     useSsrCacheTagsPlugins()
 );
