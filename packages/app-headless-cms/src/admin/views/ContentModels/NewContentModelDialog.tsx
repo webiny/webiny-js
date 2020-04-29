@@ -13,6 +13,7 @@ import { LIST_CONTENT_MODEL_GROUPS } from "../ContentModelGroups/graphql";
 import { useQuery, useMutation } from "@webiny/app-headless-cms/admin/hooks";
 import { i18n } from "@webiny/app/i18n";
 import { ButtonDefault } from "@webiny/ui/Button";
+import slugify from "slugify";
 import {
     Dialog,
     DialogTitle,
@@ -20,6 +21,7 @@ import {
     DialogActions,
     DialogOnClose
 } from "@webiny/ui/Dialog";
+import { Grid, Cell } from "@webiny/ui/Grid";
 
 const t = i18n.ns("app-headless-cms/admin/views/content-models/new-content-model-dialog");
 
@@ -30,11 +32,22 @@ const narrowDialog = css({
     }
 });
 
+const noPadding = css({
+    padding: "5px !important"
+});
+
 export type NewContentModelDialogProps = {
     open: boolean;
     onClose: DialogOnClose;
     contentModelsDataList: any;
 };
+
+const toSlug = text =>
+    slugify(text, {
+        replacement: "-",
+        lower: true,
+        remove: /[*#\?<>_\{\}\[\]+~.()'"!:;@]/g
+    });
 
 const NewContentModelDialog: React.FC<NewContentModelDialogProps> = ({
     open,
@@ -83,23 +96,42 @@ const NewContentModelDialog: React.FC<NewContentModelDialogProps> = ({
                     history.push("/cms/content-models/" + response.data.id);
                 }}
             >
-                {({ Bind, submit }) => (
+                {({ Bind, submit, setValue }) => (
                     <>
                         {loading && <CircularProgress />}
                         <DialogTitle>{t`New Content Model`}</DialogTitle>
                         <DialogContent>
-                            <Bind name={"title"} validators={validation.create("required")}>
-                                <Input
-                                    disabled={true}
-                                    placeholder={"Enter a name for your new content model"}
-                                />
-                            </Bind>
-                            <Bind name={"modelId"} validators={validation.create("required")}>
-                                <Input placeholder={t`Enter a model ID`} />
-                            </Bind>
-                            <Bind name={"group"} validators={validation.create("required")}>
-                                <Select label={t`Content model group`} options={selectOptions} />
-                            </Bind>
+                            <Grid className={noPadding}>
+                                <Cell span={12}>
+                                    <Bind
+                                        name={"title"}
+                                        validators={validation.create("required")}
+                                        afterChange={value => {
+                                            setValue("modelId", toSlug(value));
+                                        }}
+                                    >
+                                        <Input
+                                            placeholder={"Enter a name for your new content model"}
+                                        />
+                                    </Bind>
+                                </Cell>
+                                <Cell span={12}>
+                                    <Bind
+                                        name={"modelId"}
+                                        validators={validation.create("required")}
+                                    >
+                                        <Input placeholder={t`Enter a model ID`} />
+                                    </Bind>
+                                </Cell>
+                                <Cell span={12}>
+                                    <Bind name={"group"} validators={validation.create("required")}>
+                                        <Select
+                                            label={t`Content model group`}
+                                            options={selectOptions}
+                                        />
+                                    </Bind>
+                                </Cell>
+                            </Grid>
                         </DialogContent>
                         <DialogActions>
                             <ButtonDefault onClick={submit}>+ {t`Create`}</ButtonDefault>

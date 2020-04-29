@@ -1,4 +1,4 @@
-import React, { useCallback } from "react";
+import React, { useCallback, useRef } from "react";
 import TimeAgo from "timeago-react";
 import useReactRouter from "use-react-router";
 import { css } from "emotion";
@@ -6,9 +6,8 @@ import { get, upperFirst } from "lodash";
 import { Typography } from "@webiny/ui/Typography";
 import { ConfirmationDialog } from "@webiny/ui/ConfirmationDialog";
 import { DeleteIcon, EditIcon } from "@webiny/ui/List/DataList/icons";
-import { DELETE_CONTENT_MODEL } from "../../viewsGraphql";
-import { useApolloClient } from "react-apollo";
-import { useHandler } from "@webiny/app/hooks/useHandler";
+import { DELETE_CONTENT_MODEL, CREATE_REVISION_FROM } from "../../viewsGraphql";
+import { useApolloClient } from "@webiny/app-headless-cms/admin/hooks";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import CurrentEnvironmentLabel from "./../../components/CurrentEnvironmentLabel";
 
@@ -26,10 +25,16 @@ import { i18n } from "@webiny/app/i18n";
 const t = i18n.namespace("FormsApp.ContentModelsDataList");
 
 const rightAlign = css({
-    alignItems: "flex-end !important"
+    alignItems: "flex-end !important",
+    justifyContent: "center !important"
+});
+
+const listItemMinHeight = css({
+    minHeight: "66px !important"
 });
 
 export type ContentModelsDataListProps = {
+    id?: any;
     dataList: any;
 };
 
@@ -40,7 +45,7 @@ const ContentModelsDataList = (props: ContentModelsDataListProps) => {
     const client = useApolloClient();
     const { showSnackbar } = useSnackbar();
 
-    const deleteRecord = useHandler(props, ({ id }) => async item => {
+    const deleteRecord = async item => {
         const res = await client.mutate({
             mutation: DELETE_CONTENT_MODEL,
             variables: { id: item.id }
@@ -55,18 +60,41 @@ const ContentModelsDataList = (props: ContentModelsDataListProps) => {
             });
         }
 
-        if (item.id === id) {
+        if (item.id === props.id) {
             const query = new URLSearchParams(location.search);
             query.delete("id");
             history.push({ search: query.toString() });
         }
 
         dataList.refresh();
-    });
+    };
 
+    const editHandlers = useRef({});
     const editRecord = useCallback(contentModel => {
-        return () => history.push("/cms/content-models/" + contentModel.id);
-    }, []);
+        if (!editHandlers.current[contentModel.id]) {
+            editHandlers.current[contentModel.id] = async () => {
+                if (contentModel.published) {
+                    const { data: res } = await client.mutate({
+                        mutation: CREATE_REVISION_FROM,
+                        variables: { revision: contentModel.id },
+                        refetchQueries: ["HeadlessCmsListContentModels"],
+                        awaitRefetchQueries: true
+                    });
+                    const { data, error } = res.revision;
+
+                    if (error) {
+                        return showSnackbar(error.message);
+                    }
+
+                    history.push(`/cms/content-models/${data.id}`);
+                } else {
+                    history.push("/cms/content-models/" + contentModel.id);
+                }
+            };
+        }
+
+        return editHandlers.current[contentModel.id];
+    }, undefined);
 
     const query = new URLSearchParams(location.search);
 
@@ -97,13 +125,8 @@ const ContentModelsDataList = (props: ContentModelsDataListProps) => {
             {({ data = [] }) => (
                 <List data-testid="default-data-list">
                     {data.map(contentModel => (
-                        <ListItem key={contentModel.id}>
-                            <ListItemText
-                                onClick={() => {
-                                    query.set("id", contentModel.id);
-                                    history.push({ search: query.toString() });
-                                }}
-                            >
+                        <ListItem key={contentModel.id} className={listItemMinHeight}>
+                            <ListItemText>
                                 {contentModel.title}
                                 {contentModel.createdBy && (
                                     <ListItemTextSecondary>
