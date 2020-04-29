@@ -7,7 +7,7 @@ const camelCase = require("lodash.camelcase");
 
 module.exports = [
     {
-        name: "scaffold-template-apollo-service",
+        name: "scaffold-template-graphql-service",
         type: "scaffold-template",
         scaffold: {
             name: "GraphQL Apollo Service",
