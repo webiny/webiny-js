@@ -1,6 +1,5 @@
-examples
 **/node_modules
-**/flow-typed
+**/dist
 **/__tests__
 idea.js
 scripts
