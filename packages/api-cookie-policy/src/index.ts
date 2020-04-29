@@ -105,16 +105,9 @@ export default () => [
                     getSettings: resolveGetSettings(({ models }) => models.CookiePolicySettings)
                 },
                 CookiePolicyMutation: {
-                    updateSettings: resolveUpdateSettings(
-                        ({ models }) => models.CookiePolicySettings
+                    updateSettings: hasScope("pb:settings")(
+                        resolveUpdateSettings(({ models }) => models.CookiePolicySettings)
                     )
-                }
-            }
-        },
-        security: {
-            shield: {
-                CookiePolicyMutation: {
-                    updateSettings: hasScope("pb:settings")
                 }
             }
         }

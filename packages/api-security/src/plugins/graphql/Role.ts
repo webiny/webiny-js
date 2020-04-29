@@ -5,6 +5,7 @@ import {
     resolveList,
     resolveUpdate
 } from "@webiny/commodo-graphql";
+import { hasScope } from "@webiny/api-security";
 
 const roleFetcher = ctx => ctx.models.SecurityRole;
 
@@ -27,7 +28,7 @@ export default {
             description: String
             scopes: [String]
         }
-        
+
         input SecurityRoleSearchInput {
             query: String
             fields: [String]
@@ -77,13 +78,13 @@ export default {
     `,
     resolvers: {
         SecurityQuery: {
-            getRole: resolveGet(roleFetcher),
-            listRoles: resolveList(roleFetcher)
+            getRole: hasScope("security:role:crud")(resolveGet(roleFetcher)),
+            listRoles: hasScope("security:role:crud")(resolveList(roleFetcher))
         },
         SecurityMutation: {
-            createRole: resolveCreate(roleFetcher),
-            updateRole: resolveUpdate(roleFetcher),
-            deleteRole: resolveDelete(roleFetcher)
+            createRole: hasScope("security:role:crud")(resolveCreate(roleFetcher)),
+            updateRole: hasScope("security:role:crud")(resolveUpdate(roleFetcher)),
+            deleteRole: hasScope("security:role:crud")(resolveDelete(roleFetcher))
         }
     }
 };

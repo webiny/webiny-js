@@ -1,24 +1,19 @@
 import * as React from "react";
-import { hasScopes, hasRoles } from "@webiny/app-security";
+import { hasScopes } from "@webiny/app-security";
 import { getPlugin } from "@webiny/plugins";
 import { ResourcesType } from "../identity";
 import { SecureRouteErrorPlugin } from "@webiny/app-security/types";
 
 export default ({
     children,
-    scopes,
-    roles
+    scopes
 }: {
     children: any;
     scopes?: ResourcesType;
-    roles?: ResourcesType;
 }): React.ReactElement => {
-    const checks = {
-        scopes: scopes ? hasScopes(scopes, { forceBoolean: true }) : true,
-        roles: roles ? hasRoles(roles, { forceBoolean: true }) : true
-    };
+    const checkedScopes = scopes ? hasScopes(scopes, { forceBoolean: true }) : true;
 
-    if (checks.scopes && checks.roles) {
+    if (checkedScopes) {
         return children;
     }
 

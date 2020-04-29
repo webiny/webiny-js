@@ -30,10 +30,6 @@ export type GraphQLContextPlugin<T = GraphQLContext> = Plugin & {
     postApply?: (context: T) => void | Promise<void>;
 };
 
-export type GraphQLMiddlewarePlugin = Plugin & {
-    middleware: (params: { plugins: PluginsContainer }) => Function[];
-};
-
 export type GraphQLScalarPlugin = Plugin & {
     scalar: GraphQLScalarType;
 };

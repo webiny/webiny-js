@@ -9,7 +9,7 @@ import { RoutePlugin } from "@webiny/app/types";
 import { PbMenuSettingsItemPlugin } from "@webiny/app-page-builder/types";
 const t = i18n.ns("app-cookie-policy/admin");
 
-const roles = ["pb-settings"];
+const ROLE_PB_SETTINGS = ["pb:page:crud"];
 
 const plugins = [
     {
@@ -21,7 +21,7 @@ const plugins = [
                 render={() => (
                     <AdminLayout>
                         <Helmet title={"Page Builder - Cookie Policy Settings"} />
-                        <SecureRoute roles={roles}>
+                        <SecureRoute scopes={ROLE_PB_SETTINGS}>
                             <CookiePolicySettings />
                         </SecureRoute>
                     </AdminLayout>

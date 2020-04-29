@@ -19,6 +19,11 @@ const EnvironmentsView = lazy(() => import("../views/Environments/Environments")
 const EnvironmentAliasesView = lazy(() => import("../views/EnvironmentAliases/EnvironmentAliases"));
 const ContentView = lazy(() => import("../views/Content/Content"));
 
+const ROLE_CMS_CONTENT_GROUPS = ["cms:contentModelGroup:crud"];
+const ROLE_CMS_ENVIRONMENT = ["cms:environment:crud"];
+const ROLE_CMS_ENVIRONMENT_ALIAS = ["cms:environment:alias:crud"];
+const ROLE_CMS_CONTENT_MODELS = ["cms:contentModel:crud"];
+
 const plugins: RoutePlugin[] = [
     {
         name: "route-cms-content-models-groups",
@@ -28,7 +33,7 @@ const plugins: RoutePlugin[] = [
                 exact
                 path={"/cms/content-model-groups"}
                 render={() => (
-                    <SecureRoute roles={["cms-content-model-groups"]}>
+                    <SecureRoute scopes={ROLE_CMS_CONTENT_GROUPS}>
                         <AdminLayout>
                             <Helmet>
                                 <title>{t`Content Model Groups`}</title>
@@ -50,7 +55,7 @@ const plugins: RoutePlugin[] = [
                 exact
                 path={"/cms/content-models/manage/:modelId"}
                 render={() => (
-                    <SecureRoute roles={["headless-cms-content-models"]}>
+                    <SecureRoute scopes={ROLE_CMS_CONTENT_MODELS}>
                         <AdminLayout>
                             <Helmet>
                                 <title>{t`Content`}</title>
@@ -72,7 +77,7 @@ const plugins: RoutePlugin[] = [
                 exact
                 path={"/cms/content-models/:id"}
                 render={() => (
-                    <SecureRoute roles={["headless-cms-content-models"]}>
+                    <SecureRoute scopes={ROLE_CMS_CONTENT_MODELS}>
                         <Helmet>
                             <title>{t`Edit Content Model`}</title>
                         </Helmet>
@@ -92,7 +97,7 @@ const plugins: RoutePlugin[] = [
                 exact
                 path="/cms/content-models"
                 render={() => (
-                    <SecureRoute roles={["headless-cms-content-models"]}>
+                    <SecureRoute scopes={ROLE_CMS_CONTENT_MODELS}>
                         <AdminLayout>
                             <Helmet title={t`Content Models`} />
                             <Loader>
@@ -113,7 +118,7 @@ const plugins: RoutePlugin[] = [
                 exact
                 path="/settings/cms/environments"
                 render={() => (
-                    <SecureRoute roles={["headless-cms-environments"]}>
+                    <SecureRoute scopes={ROLE_CMS_ENVIRONMENT}>
                         <AdminLayout>
                             <Helmet title={t`Headless CMS - Environments Settings`} />
                             <Loader>
@@ -133,7 +138,7 @@ const plugins: RoutePlugin[] = [
                 exact
                 path="/settings/cms/environments/aliases"
                 render={() => (
-                    <SecureRoute roles={["headless-cms-environment-aliases"]}>
+                    <SecureRoute scopes={ROLE_CMS_ENVIRONMENT_ALIAS}>
                         <AdminLayout>
                             <Helmet title={t`Headless CMS - Environment Aliases Settings`} />
                             <Loader>

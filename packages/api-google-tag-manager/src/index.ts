@@ -66,16 +66,9 @@ export default () => [
                     getSettings: resolveGetSettings(({ models }) => models.GoogleTagManagerSettings)
                 },
                 GtmMutation: {
-                    updateSettings: resolveUpdateSettings(
-                        ({ models }) => models.GoogleTagManagerSettings
+                    updateSettings: hasScope("pb:settings")(
+                        resolveUpdateSettings(({ models }) => models.GoogleTagManagerSettings)
                     )
-                }
-            }
-        },
-        security: {
-            shield: {
-                GtmMutation: {
-                    updateSettings: hasScope("pb:settings")
                 }
             }
         }

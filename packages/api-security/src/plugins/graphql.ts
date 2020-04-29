@@ -2,7 +2,6 @@ import { merge } from "lodash";
 import gql from "graphql-tag";
 import { emptyResolver } from "@webiny/commodo-graphql";
 import { GraphQLSchemaPlugin } from "@webiny/graphql/types";
-import { hasScope } from "@webiny/api-security";
 
 import role from "./graphql/Role";
 import group from "./graphql/Group";
@@ -76,29 +75,6 @@ const plugin: GraphQLSchemaPlugin = {
             group.resolvers,
             user.resolvers
         )
-    },
-    security: {
-        shield: {
-            SecurityQuery: {
-                getGroup: hasScope("security:group:crud"),
-                listGroups: hasScope("security:group:crud"),
-                getRole: hasScope("security:role:crud"),
-                listRoles: hasScope("security:role:crud"),
-                getUser: hasScope("security:user:crud"),
-                listUsers: hasScope("security:user:crud")
-            },
-            SecurityMutation: {
-                createGroup: hasScope("security:group:crud"),
-                updateGroup: hasScope("security:group:crud"),
-                deleteGroup: hasScope("security:group:crud"),
-                createRole: hasScope("security:role:crud"),
-                updateRole: hasScope("security:role:crud"),
-                deleteRole: hasScope("security:role:crud"),
-                createUser: hasScope("security:user:crud"),
-                updateUser: hasScope("security:user:crud"),
-                deleteUser: hasScope("security:user:crud")
-            }
-        }
     }
 };
 

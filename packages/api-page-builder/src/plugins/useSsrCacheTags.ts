@@ -153,35 +153,30 @@ export default () => [
             `,
             resolvers: {
                 PbMutation: {
-                    invalidateSsrCache: async (_, args, { models, getSsrApiClient }) => {
-                        const { PbPage } = models;
-                        const page = await PbPage.findById(args.revision);
-                        if (!page) {
-                            return new NotFoundResponse(args.revision);
-                        }
+                    invalidateSsrCache: hasScope("pb:page:crud")(
+                        async (_, args, { models, getSsrApiClient }) => {
+                            const { PbPage } = models;
+                            const page = await PbPage.findById(args.revision);
+                            if (!page) {
+                                return new NotFoundResponse(args.revision);
+                            }
 
-                        if (!page.published) {
-                            return new ErrorResponse({
-                                code: "PB_SSR_CACHE_INVALIDATION_ABORTED",
-                                message: "Cannot refresh SSR cache, revision is not published."
+                            if (!page.published) {
+                                return new ErrorResponse({
+                                    code: "PB_SSR_CACHE_INVALIDATION_ABORTED",
+                                    message: "Cannot refresh SSR cache, revision is not published."
+                                });
+                            }
+
+                            const ssrApiClient = await getSsrApiClient();
+                            await ssrApiClient.invalidateSsrCacheByPath({
+                                path: page.url,
+                                refresh: args.refresh
                             });
+
+                            return new Response(page);
                         }
-
-                        const ssrApiClient = await getSsrApiClient();
-                        await ssrApiClient.invalidateSsrCacheByPath({
-                            path: page.url,
-                            refresh: args.refresh
-                        });
-
-                        return new Response(page);
-                    }
-                }
-            }
-        },
-        security: {
-            shield: {
-                PbMutation: {
-                    invalidateSsrCache: hasScope("pb:page:crud")
+                    )
                 }
             }
         }

@@ -5,6 +5,7 @@ import {
     resolveList,
     resolveUpdate
 } from "@webiny/commodo-graphql";
+import { hasScope } from "@webiny/api-security";
 
 const groupFetcher = ctx => ctx.models.SecurityGroup;
 
@@ -75,13 +76,13 @@ export default {
     `,
     resolvers: {
         SecurityQuery: {
-            getGroup: resolveGet(groupFetcher),
-            listGroups: resolveList(groupFetcher)
+            getGroup: hasScope("security:group:crud")(resolveGet(groupFetcher)),
+            listGroups: hasScope("security:group:crud")(resolveList(groupFetcher))
         },
         SecurityMutation: {
-            createGroup: resolveCreate(groupFetcher),
-            updateGroup: resolveUpdate(groupFetcher),
-            deleteGroup: resolveDelete(groupFetcher)
+            createGroup: hasScope("security:group:crud")(resolveCreate(groupFetcher)),
+            updateGroup: hasScope("security:group:crud")(resolveUpdate(groupFetcher)),
+            deleteGroup: hasScope("security:group:crud")(resolveDelete(groupFetcher))
         }
     }
 };

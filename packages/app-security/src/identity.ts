@@ -27,13 +27,6 @@ class Identity {
         return this.getScopes().includes(scope);
     }
 
-    hasRole(role: string) {
-        return this.getRoles().includes(role);
-    }
-
-    getRoles(): Array<string> {
-        return get(this.data, "access.roles") || [];
-    }
 
     hasScopes(scopes: ResourcesType, options: OptionsType) {
         return this.__hasResources({
@@ -43,13 +36,6 @@ class Identity {
         });
     }
 
-    hasRoles(roles: ResourcesType, options: OptionsType) {
-        return this.__hasResources({
-            type: "role",
-            resources: roles,
-            options
-        });
-    }
 
     __hasResources({
         type,

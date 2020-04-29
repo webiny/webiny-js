@@ -5,6 +5,7 @@ import {
     resolveList,
     resolveUpdate
 } from "@webiny/commodo-graphql";
+import { hasScope } from "@webiny/api-security";
 import searchLocaleCodes from "./resolvers/searchLocaleCodes";
 import getI18NInformation from "./resolvers/getI18NInformation";
 
@@ -91,15 +92,15 @@ export default {
     `,
     resolvers: {
         I18NQuery: {
-            getI18NLocale: resolveGet(i18NLocaleFetcher),
-            listI18NLocales: resolveList(i18NLocaleFetcher),
+            getI18NLocale: hasScope("i18n:locale:crud")(resolveGet(i18NLocaleFetcher)),
+            listI18NLocales: hasScope("i18n:locale:crud")(resolveList(i18NLocaleFetcher)),
             searchLocaleCodes,
             getI18NInformation
         },
         I18NMutation: {
-            createI18NLocale: resolveCreate(i18NLocaleFetcher),
-            updateI18NLocale: resolveUpdate(i18NLocaleFetcher),
-            deleteI18NLocale: resolveDelete(i18NLocaleFetcher)
+            createI18NLocale: hasScope("i18n:locale:crud")(resolveCreate(i18NLocaleFetcher)),
+            updateI18NLocale: hasScope("i18n:locale:crud")(resolveUpdate(i18NLocaleFetcher)),
+            deleteI18NLocale: hasScope("i18n:locale:crud")(resolveDelete(i18NLocaleFetcher))
         }
     }
 };
