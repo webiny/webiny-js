@@ -1,5 +1,5 @@
 import {
-    GraphQLContextPlugin,
+    ContextPlugin,
     GraphQLMiddlewarePlugin,
     GraphQLSchemaPlugin
 } from "@webiny/graphql/types";
@@ -34,9 +34,9 @@ const shieldMiddleware: GraphQLMiddlewarePlugin = {
     }
 } as GraphQLMiddlewarePlugin;
 
-const middlewarePlugin = (options): GraphQLContextPlugin => ({
-    type: "graphql-context",
-    name: "graphql-context-security",
+const middlewarePlugin = (options): ContextPlugin => ({
+    type: "context",
+    name: "context-security",
     preApply: async context => {
         if (!context.event) {
             return;

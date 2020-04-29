@@ -1,5 +1,5 @@
 import pluralize from "pluralize";
-import { CmsFieldTypePlugins, CmsGraphQLContext, CmsModel } from "@webiny/api-headless-cms/types";
+import { CmsFieldTypePlugins, CmsContext, CmsModel } from "@webiny/api-headless-cms/types";
 import { createManageTypeName, createTypeName } from "../utils/createTypeName";
 import { renderInputFields } from "../utils/renderInputFields";
 import { renderSortEnum } from "../utils/renderSortEnum";
@@ -10,7 +10,7 @@ import { renderGetFilterFields } from "../utils/renderGetFilterFields";
 export interface CreateManageSDL {
     (params: {
         model: CmsModel;
-        context: CmsGraphQLContext;
+        context: CmsContext;
         fieldTypePlugins: CmsFieldTypePlugins;
     }): string;
 }

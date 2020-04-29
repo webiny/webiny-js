@@ -6,8 +6,8 @@ import { Response, ErrorResponse, NotFoundResponse } from "@webiny/graphql";
 
 export default () => [
     {
-        type: "graphql-context",
-        name: "graphql-context-ssr-cache-client",
+        type: "context",
+        name: "context-ssr-cache-client",
         async apply(context) {
             const { PbSettings } = context.models;
             if (!PbSettings) {
@@ -28,8 +28,8 @@ export default () => [
     },
     {
         // After a page was published, we want to invalidate the SSR cache.
-        type: "graphql-context",
-        name: "graphql-context-extend-pb-page-invalidate-ssr-cache-on-publish-gt-1",
+        type: "context",
+        name: "context-extend-pb-page-invalidate-ssr-cache-on-publish-gt-1",
         apply({ getSsrApiClient, models: { PbPage } }) {
             withHooks({
                 async afterPublish() {
@@ -54,8 +54,8 @@ export default () => [
     },
     {
         // After a page was published, we want to invalidate caches that contain pages list element.
-        type: "graphql-context",
-        name: "graphql-context-extend-pb-page-invalidate-ssr-cache-after-publish-pages-list",
+        type: "context",
+        name: "context-extend-pb-page-invalidate-ssr-cache-after-publish-pages-list",
         apply({ getSsrApiClient, models: { PbPage } }) {
             withHooks({
                 async afterPublish() {
@@ -69,8 +69,8 @@ export default () => [
     },
     {
         // After settings were changed, invalidate all pages that contain pb-page tag.
-        type: "graphql-context",
-        name: "graphql-context-extend-pb-page-invalidate-ssr-cache-settings",
+        type: "context",
+        name: "context-extend-pb-page-invalidate-ssr-cache-settings",
         apply({ getSsrApiClient, models: { PbSettings } }) {
             withHooks({
                 beforeSave() {
@@ -100,8 +100,8 @@ export default () => [
     },
     {
         // After settings were changed, invalidate all pages that contain pb-menu tag.
-        type: "graphql-context",
-        name: "graphql-context-extend-pb-page-pb-menu-invalidate-ssr-cache-cache-menu",
+        type: "context",
+        name: "context-extend-pb-page-pb-menu-invalidate-ssr-cache-cache-menu",
         apply({ getSsrApiClient, models: { PbMenu } }) {
             // If the menu has changed, we need to delete page caches.
             withHooks({

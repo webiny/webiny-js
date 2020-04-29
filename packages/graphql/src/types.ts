@@ -1,14 +1,10 @@
-import {
-    GraphQLScalarType,
-    GraphQLFieldResolver as BaseGraphQLFieldResolver,
-    GraphQLSchema
-} from "graphql";
+import { GraphQLScalarType, GraphQLFieldResolver as BaseGraphQLFieldResolver } from "graphql";
 import { GraphQLSchemaModule } from "apollo-graphql";
 import { Plugin, PluginsContainer } from "@webiny/plugins/types";
 
 export { Plugin, PluginsContainer };
 
-export interface GraphQLContext {
+export interface Context {
     event?: any;
     plugins: PluginsContainer;
     isColdStart?: boolean;
@@ -19,13 +15,14 @@ export type SchemaDefinitionFactory = (params: {
     plugins: PluginsContainer;
 }) => GraphQLSchemaModule | Promise<GraphQLSchemaModule>;
 
-export type GraphQLSchemaPlugin<T = GraphQLContext> = Plugin & {
+export type GraphQLSchemaPlugin<T = Context> = Plugin & {
     prepare?: (params: { context: T }) => Promise<void>;
     schema: GraphQLSchemaModule | SchemaDefinitionFactory;
     [key: string]: any;
 };
 
-export type GraphQLContextPlugin<T = GraphQLContext> = Plugin & {
+export type ContextPlugin<T = Context> = Plugin & {
+    type: "context";
     preApply?: (context: T) => void | Promise<void>;
     apply?: (context: T) => void | Promise<void>;
     postApply?: (context: T) => void | Promise<void>;
@@ -42,14 +39,5 @@ export type GraphQLScalarPlugin = Plugin & {
 export type GraphQLFieldResolver<
     TSource = any,
     TArgs = any,
-    TContext = GraphQLContext
+    TContext = Context
 > = BaseGraphQLFieldResolver<TSource, TContext, TArgs>;
-
-// TODO: remove these two once we remove "@webiny/api-plugin-create-apollo-handler".
-export type CreateApolloHandlerPlugin = Plugin & {
-    create(params: { plugins: PluginsContainer; schema: GraphQLSchema }): Function;
-};
-
-export type CreateApolloGatewayPlugin = Plugin & {
-    createGateway(params: { plugins: PluginsContainer }): Promise<Function>;
-};

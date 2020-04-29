@@ -10,7 +10,7 @@ import {
 import gql from "graphql-tag";
 import merge from "lodash.merge";
 import { hasScope } from "@webiny/api-security";
-import { CmsGraphQLContext } from "@webiny/api-headless-cms/types";
+import { CmsContext } from "@webiny/api-headless-cms/types";
 import { generateSchemaPlugins } from "./schema/schemaPlugins";
 import { i18nFieldType } from "./graphqlTypes/i18nFieldType";
 import { i18nFieldInput } from "./graphqlTypes/i18nFieldInput";
@@ -231,5 +231,5 @@ export default ({ type }) => [
             },
             contentModelGroup.getResolvers(type)
         )
-    } as GraphQLSchemaPlugin<CmsGraphQLContext>
+    } as GraphQLSchemaPlugin<CmsContext>
 ];

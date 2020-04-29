@@ -15,7 +15,7 @@ import {
 } from "@webiny/commodo";
 
 import {
-    CmsGraphQLContext,
+    CmsContext,
     CmsModel,
     CmsModelFieldToCommodoFieldPlugin
 } from "@webiny/api-headless-cms/types";
@@ -28,7 +28,7 @@ import omit from "lodash/omit";
 export const createDataModelFromData = (
     createBase: Function,
     data: CmsModel,
-    context: CmsGraphQLContext
+    context: CmsContext
 ) => {
     const plugins = context.plugins.byType<CmsModelFieldToCommodoFieldPlugin>(
         "cms-model-field-to-commodo-field"

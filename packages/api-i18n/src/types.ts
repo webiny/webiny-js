@@ -6,7 +6,7 @@ export type I18NLocale = {
     default: boolean;
 };
 
-export type GraphQLContext = {
+export type Context = {
     i18n: {
         defaultLocale?: string;
         acceptLanguage?: string;
@@ -16,7 +16,7 @@ export type GraphQLContext = {
     };
 };
 
-export type GraphQLContextI18NGetLocales<T = GraphQLContext> = Plugin & {
-    name: "graphql-context-i18n-get-locales";
+export type ContextI18NGetLocales<T = Context> = Plugin & {
+    name: "context-i18n-get-locales";
     resolve(params: { context: T }): Promise<any[]>;
 };

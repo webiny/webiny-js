@@ -1,10 +1,10 @@
 import { applyMiddleware } from "graphql-middleware";
 import { addSchemaLevelResolveFunction } from "graphql-tools";
 import { GraphQLSchema } from "graphql";
-import { GraphQLMiddlewarePlugin, GraphQLContext } from "./types";
+import { GraphQLMiddlewarePlugin, Context } from "./types";
 import { PluginsContainer } from "@webiny/plugins";
 import { prepareSchema } from "./createSchema/prepareSchema";
-import { applyGraphQLContextPlugins } from "./createSchema/contextPlugins";
+import { applyContextPlugins } from "./createSchema/contextPlugins";
 
 type CreateHandlerParams = {
     plugins: PluginsContainer;
@@ -17,7 +17,7 @@ type CreateHandlerParams = {
  */
 const createSchema = async ({
     plugins
-}: CreateHandlerParams): Promise<{ schema: GraphQLSchema; context: GraphQLContext }> => {
+}: CreateHandlerParams): Promise<{ schema: GraphQLSchema; context: Context }> => {
     // eslint-disable-next-line prefer-const
     let { schema, context } = await prepareSchema({ plugins });
 
@@ -47,7 +47,7 @@ const createSchema = async ({
         delete info.operation["__runAtMostOnce"];
 
         // Process `graphql-context` plugins
-        await applyGraphQLContextPlugins(context);
+        await applyContextPlugins(context);
     });
 
     return { schema, context };

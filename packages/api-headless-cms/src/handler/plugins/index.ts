@@ -1,4 +1,4 @@
-import { GraphQLContextPlugin } from "@webiny/graphql/types";
+import { ContextPlugin } from "@webiny/graphql/types";
 import models from "./models";
 import modelFields from "./modelFields";
 import filterOperators from "./filterOperators";
@@ -13,8 +13,8 @@ type HeadlessPluginsOptions = {
 
 export default (options: HeadlessPluginsOptions = { type: null, environment: null }) => [
     {
-        name: "graphql-context-cms-context",
-        type: "graphql-context",
+        name: "context-cms-context",
+        type: "context",
         apply(context) {
             context.cms = context.cms || {};
             context.cms.type = options.type || "read";
@@ -28,7 +28,7 @@ export default (options: HeadlessPluginsOptions = { type: null, environment: nul
                 context.resolvedValues = new TypeValueEmitter();
             }
         }
-    } as GraphQLContextPlugin,
+    } as ContextPlugin,
     models(),
     graphql(options),
     modelFields,

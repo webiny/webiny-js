@@ -4,8 +4,8 @@ import cmsEnvironment from "./models/environment.model";
 import cmsEnvironmentAlias from "./models/environmentAlias.model";
 
 export default () => ({
-    name: "graphql-context-models",
-    type: "graphql-context",
+    name: "context-models",
+    type: "context",
     apply(context) {
         const driver = context.commodo && context.commodo.driver;
 

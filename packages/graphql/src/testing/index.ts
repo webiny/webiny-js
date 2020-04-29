@@ -1,6 +1,6 @@
 import { createSchema } from "../index";
 import { PluginsContainer } from "@webiny/plugins/PluginsContainer";
-import { applyGraphQLContextPlugins } from "@webiny/graphql/createSchema/contextPlugins";
+import { applyContextPlugins } from "@webiny/graphql/createSchema/contextPlugins";
 
 export const setupSchema = async plugins => {
     const pluginsContainer = new PluginsContainer([plugins]);
@@ -14,7 +14,7 @@ export const setupContext = async (plugins, baseContext = {}) => {
     const context = { ...baseContext, plugins: pluginsContainer };
 
     // Process `graphql-context` plugins
-    await applyGraphQLContextPlugins(context);
+    await applyContextPlugins(context);
 
     return context;
 };

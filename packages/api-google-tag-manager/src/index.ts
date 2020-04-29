@@ -5,8 +5,8 @@ import googleTagManagerSettings from "./googleTagManagerSettings.model";
 
 export default () => [
     {
-        type: "graphql-context",
-        name: "graphql-context-models-google-tag-manager",
+        type: "context",
+        name: "context-models-google-tag-manager",
         apply({ models }) {
             models.GoogleTagManagerSettings = googleTagManagerSettings({
                 createBase: models.createBase

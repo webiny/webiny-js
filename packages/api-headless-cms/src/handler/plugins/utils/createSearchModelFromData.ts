@@ -1,6 +1,6 @@
 import { pipe, withName, withFields, string, boolean, setOnce } from "@webiny/commodo";
 import {
-    CmsGraphQLContext,
+    CmsContext,
     CmsModel,
     CmsModelFieldToCommodoFieldPlugin
 } from "@webiny/api-headless-cms/types";
@@ -10,7 +10,7 @@ import { withModelFiltering } from "./withModelFiltering";
 export const createSearchModelFromData = (
     createBase: Function,
     data: CmsModel,
-    context: CmsGraphQLContext
+    context: CmsContext
 ) => {
     const plugins = context.plugins.byType<CmsModelFieldToCommodoFieldPlugin>(
         "cms-model-field-to-commodo-field"

@@ -34,7 +34,7 @@ function deleteFile(path) {
 
 const INSTALL_DIR = "/tmp";
 const INSTALL_ZIP_PATH = path.join(INSTALL_DIR, "apiPageBuilder.zip");
-const INSTALL_EXTRACT_DIR = path.join(INSTALL_DIR, "page_builder_installation_files");
+const INSTALL_EXTRACT_DIR = path.join(INSTALL_DIR, "apiPageBuilder");
 
 export default async () => {
     const s3 = new S3({ region: process.env.AWS_REGION });
@@ -46,7 +46,7 @@ export default async () => {
     fs.ensureDirSync(INSTALL_DIR);
     fs.writeFileSync(INSTALL_ZIP_PATH, await download(installationFilesUrl));
 
-    await extractZip(INSTALL_ZIP_PATH, INSTALL_DIR);
+    await extractZip(INSTALL_ZIP_PATH, INSTALL_EXTRACT_DIR);
     await deleteFile(INSTALL_ZIP_PATH);
 
     return INSTALL_EXTRACT_DIR;

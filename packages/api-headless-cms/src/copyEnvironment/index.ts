@@ -1,4 +1,4 @@
-import { applyGraphQLContextPlugins } from "@webiny/graphql/createSchema/contextPlugins";
+import { applyContextPlugins } from "@webiny/graphql/createSchema/contextPlugins";
 import { HandlerPlugin } from "@webiny/handler/types";
 import headlessPlugins from "../handler/plugins";
 import { copyEnvironment } from "./copyEnvironment";
@@ -15,7 +15,7 @@ export default () => [
               await headlessPlugins({ type: "manage", environment: copyFrom })
             );
 
-            await applyGraphQLContextPlugins(context);
+            await applyContextPlugins(context);
             return await copyEnvironment(copyTo, context);
         }
     } as HandlerPlugin

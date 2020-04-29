@@ -1,11 +1,11 @@
 import { withHooks } from "@webiny/commodo";
 import SsrApiClient from "@webiny/handler-ssr/Client";
-import { GraphQLContextPlugin } from "@webiny/graphql/types";
+import { ContextPlugin } from "@webiny/graphql/types";
 
-export default (): GraphQLContextPlugin[] => [
+export default (): ContextPlugin[] => [
     {
-        type: "graphql-context",
-        name: "graphql-context-ssr-cache-client",
+        type: "context",
+        name: "context-ssr-cache-client",
         async apply(context) {
             if (!context.models || !context.models.FormSettings) {
                 throw new Error(
@@ -20,8 +20,8 @@ export default (): GraphQLContextPlugin[] => [
     },
     {
         // After settings were changed, invalidate all pages that contain pb-settings tag.
-        type: "graphql-context",
-        name: "graphql-context-extend-fb-form-invalidate-ssr-cache",
+        type: "context",
+        name: "context-extend-fb-form-invalidate-ssr-cache",
         apply({ ssrApiClient, models: { Form } }) {
             withHooks({
                 async afterPublish() {

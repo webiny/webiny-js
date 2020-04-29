@@ -8,8 +8,8 @@ import securityRoles2Models from "./models/securityRoles2Models.model";
 import securityUser from "./models/securityUser.model";
 
 export default () => ({
-    name: "graphql-context-models",
-    type: "graphql-context",
+    name: "context-models",
+    type: "context",
     apply(context) {
         const driver = context.commodo && context.commodo.driver;
 
