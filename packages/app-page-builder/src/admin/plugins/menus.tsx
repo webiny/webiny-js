@@ -7,20 +7,24 @@ import { MenuPlugin, MenuContentSectionPlugin } from "@webiny/app-admin/types";
 
 const t = i18n.ns("app-form-builder/admin/menus");
 
+const ROLE_PB_MENUS = ['pb:menus:crud']
+const ROLE_PB_CATEGORIES = ['pb:category:crud']
+const ROLE_PB_EDITOR = ['pb:page:crud']
+
 const plugin: MenuPlugin = {
     type: "menu",
     name: "menu-content",
     render({ Menu, Section, Item }) {
         return (
             <SecureView
-                roles={{
-                    menus: ["pb-menus"],
-                    categories: ["pb-categories"],
-                    editor: ["pb-editor"]
+                scopes={{
+                    menus: ROLE_PB_MENUS,
+                    categories: ROLE_PB_CATEGORIES,
+                    editor: ROLE_PB_EDITOR
                 }}
             >
-                {({ roles }) => {
-                    const { menus, categories, editor } = roles;
+                {({ scopes }) => {
+                    const { menus, categories, editor } = scopes;
                     if (!menus && !categories && !editor) {
                         return null;
                     }

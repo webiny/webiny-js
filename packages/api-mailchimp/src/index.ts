@@ -123,7 +123,9 @@ export default () => [
                             return new ListErrorResponse(e);
                         }
                     },
-                    getSettings: resolveGetSettings(({ models }) => models.MailchimpSettings)
+                    getSettings: hasScope("pb:settings")(
+                        resolveGetSettings(({ models }) => models.MailchimpSettings)
+                    )
                 },
                 MailchimpMutation: {
                     addToList: async (
@@ -172,17 +174,9 @@ export default () => [
                             });
                         }
                     },
-                    updateSettings: resolveUpdateSettings(({ models }) => models.MailchimpSettings)
-                }
-            }
-        },
-        security: {
-            shield: {
-                MailchimpQuery: {
-                    getSettings: hasScope("pb:settings")
-                },
-                MailchimpMutation: {
-                    updateSettings: hasScope("pb:settings")
+                    updateSettings: hasScope("pb:settings")(
+                        resolveUpdateSettings(({ models }) => models.MailchimpSettings)
+                    )
                 }
             }
         }

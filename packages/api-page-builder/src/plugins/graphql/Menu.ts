@@ -5,7 +5,7 @@ import {
     resolveList,
     resolveUpdate
 } from "@webiny/commodo-graphql";
-
+import { hasScope } from "@webiny/api-security";
 const menuFetcher = ctx => ctx.models.PbMenu;
 import getMenuBySlug from "./menuResolvers/getMenuBySlug";
 
@@ -67,14 +67,14 @@ export default {
     `,
     resolvers: {
         PbQuery: {
-            getMenu: resolveGet(menuFetcher),
-            listMenus: resolveList(menuFetcher),
+            getMenu: hasScope("pb:menu:crud")(resolveGet(menuFetcher)),
+            listMenus: hasScope("pb:menu:crud")(resolveList(menuFetcher)),
             getMenuBySlug: getMenuBySlug
         },
         PbMutation: {
-            createMenu: resolveCreate(menuFetcher),
-            updateMenu: resolveUpdate(menuFetcher),
-            deleteMenu: resolveDelete(menuFetcher)
+            createMenu: hasScope("pb:menu:crud")(resolveCreate(menuFetcher)),
+            updateMenu: hasScope("pb:menu:crud")(resolveUpdate(menuFetcher)),
+            deleteMenu: hasScope("pb:menu:crud")(resolveDelete(menuFetcher))
         }
     }
 };

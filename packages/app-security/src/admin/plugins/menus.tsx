@@ -5,9 +5,10 @@ import { ReactComponent as SecurityIcon } from "./../assets/icons/baseline-secur
 
 const t = i18n.ns("app-security/admin/menus");
 
-const ROLE_SECURITY_GROUPS = [
-    "security:role:crud"
-];
+// TODO: Update to  more fine grained scopes
+const ROLE_SECURITY_GROUPS = ["security:group:crud"];
+const ROLE_SECURITY_ROLES = ["security:role:crud"];
+const ROLE_SECURITY_USERS = ["security:user:crud"];
 
 export default [
     {
@@ -18,11 +19,11 @@ export default [
                 <SecureView
                     scopes={{
                         groups: ROLE_SECURITY_GROUPS,
-                        roles: ["security-roles"], // TODO
-                        users: ["security-users"] // TODO
+                        roles: ROLE_SECURITY_ROLES,
+                        users: ROLE_SECURITY_USERS
                     }}
                 >
-                    {({ roles: identityRoles }) => {
+                    {({ scopes: identityRoles }) => {
                         const { groups, roles, users } = identityRoles;
                         if (!groups && !roles && !users) {
                             return null;

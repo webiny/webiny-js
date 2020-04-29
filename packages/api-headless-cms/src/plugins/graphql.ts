@@ -76,7 +76,6 @@ export default () => [
                 cmsEnvironment.resolvers,
                 cmsEnvironmentAlias.resolvers
             )
-        },
-        security: merge(cmsEnvironment.security, cmsEnvironmentAlias.security)
+        }
     } as GraphQLSchemaPlugin
 ];
