@@ -64,7 +64,7 @@ export default ContentModelEditorContext => {
             setData(setter: Function, saveContentModel = true) {
                 const data = setter(cloneDeep(self.data));
                 dispatch({ type: "data", data });
-                saveContentModel !== false && self.saveContentModel(data);
+                return saveContentModel !== false && self.saveContentModel(data);
             },
 
             /**
@@ -163,7 +163,6 @@ export default ContentModelEditorContext => {
 
                     moveField({ field, position, data });
 
-                    console.log('vracamo data', data)
                     // We are dropping a new field at the specified index.
                     return data;
                 });
