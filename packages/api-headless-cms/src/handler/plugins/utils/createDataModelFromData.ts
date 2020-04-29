@@ -35,7 +35,7 @@ export const createDataModelFromData = (
     );
 
     // Create content model
-    const model = pipe(
+    const Model: any = pipe(
         withName("CmsContentEntry"),
         withProps(({ toStorage, populateFromStorage }) => ({
             async toStorage() {
@@ -73,7 +73,7 @@ export const createDataModelFromData = (
 
                 if (this.meta.version > 1) {
                     const removeCallback = this.hook("afterCreate", async () => {
-                        const previousLatest = await this.constructor.findOne({
+                        const previousLatest = await Model.findOne({
                             query: {
                                 parent: this.parent,
                                 latestVersion: true,
@@ -133,7 +133,7 @@ export const createDataModelFromData = (
                 if (this.meta.version > 1 && this.meta.latestVersion) {
                     this.meta.latestVersion = false;
                     const removeCallback = this.hook("afterDelete", async () => {
-                        const previousLatestForm = await this.constructor.findOne({
+                        const previousLatestForm = await Model.findOne({
                             query: {
                                 parent: this.parent
                             },
@@ -162,55 +162,94 @@ export const createDataModelFromData = (
                 // If the deleted page is the root page - delete its revisions
                 if (this.id === this.meta.parent) {
                     // Delete all revisions
-                    const revisions = await this.constructor.find({
+                    const revisions = await Model.find({
                         query: { parent: this.meta.parent }
                     });
 
                     return Promise.all(revisions.map(rev => rev.delete()));
+                }
+            },
+            async beforePublish() {
+                // TODO: check if this will cause any issues for Search catalog updates.
+                // Deactivate previously published revision.
+                const publishedRev = await Model.findOne({
+                    query: { published: true, parent: this.parent }
+                });
+
+                if (publishedRev) {
+                    this.hook("afterPublish", async () => {
+                        publishedRev.published = false;
+                        await publishedRev.save();
+                    });
                 }
             }
         }),
         withFields(instance => ({
             meta: fields({
                 value: {},
-                instanceOf: withFields({
-                    model: setOnce()(string({ value: data.modelId })),
-                    environment: setOnce()(context.commodo.fields.id()),
-                    parent: context.commodo.fields.id(),
-                    version: number(),
-                    latestVersion: boolean(),
-                    locked: skipOnPopulate()(boolean({ value: false })),
-                    published: onSet(value => {
-                        // Deactivate previously published revision
-                        if (value && value !== instance.meta.published) {
-                            instance.meta.locked = true;
-                            instance.meta.publishedOn = new Date();
-                            const removeBeforeSave = instance.hook("beforeSave", async () => {
-                                removeBeforeSave();
-                                // Deactivate previously published revision
-                                const publishedRev = await instance.constructor.findOne({
-                                    query: { published: true, parent: instance.meta.parent }
-                                });
+                instanceOf: pipe(
+                    withProps({
+                        get title() {
+                            if (data.titleFieldId) {
+                                return instance[data.titleFieldId];
+                            }
 
-                                if (publishedRev) {
-                                    publishedRev.published = false;
-                                    await publishedRev.save();
-                                }
-                            });
+                            return "";
+                        },
+                        get status() {
+                            if (this.published) {
+                                return "published";
+                            }
 
-                            const removeAfterSave = instance.hook("afterSave", async () => {
-                                removeAfterSave();
-                                await instance.hook("afterPublish");
+                            return this.locked ? "locked" : "draft";
+                        },
+                        get revisions() {
+                            return instance.constructor.find({
+                                query: { parent: instance.meta.parent },
+                                sort: { version: -1 }
                             });
                         }
-                        return value;
-                    })(boolean({ value: false }))
-                })()
+                    }),
+                    withFields({
+                        model: setOnce()(string({ value: data.modelId })),
+                        environment: setOnce()(context.commodo.fields.id()),
+                        parent: context.commodo.fields.id(),
+                        version: number(),
+                        latestVersion: boolean(),
+                        locked: skipOnPopulate()(boolean({ value: false })),
+                        published: pipe(
+                            onSet(value => {
+                                // Deactivate previously published revision.
+                                if (
+                                    value &&
+                                    value !== instance.meta.published &&
+                                    instance.isExisting()
+                                ) {
+                                    instance.meta.locked = true;
+                                    instance.meta.publishedOn = new Date();
+                                    const removeBeforeSave = instance.hook(
+                                        "beforeSave",
+                                        async () => {
+                                            removeBeforeSave();
+                                            await instance.hook("beforePublish");
+                                        }
+                                    );
+
+                                    const removeAfterSave = instance.hook("afterSave", async () => {
+                                        removeAfterSave();
+                                        await instance.hook("afterPublish");
+                                    });
+                                }
+                                return value;
+                            })
+                        )(boolean({ value: false }))
+                    })
+                )()
             })
         })),
         withProps({
             async getNextVersion() {
-                const revision = await this.constructor.findOne({
+                const revision = await Model.findOne({
                     query: { parent: this.meta.parent, deleted: { $in: [true, false] } },
                     sort: { version: -1 }
                 });
@@ -220,16 +259,6 @@ export const createDataModelFromData = (
                 }
 
                 return revision.meta.version + 1;
-            },
-            get revisions() {
-                // eslint-disable-next-line no-async-promise-executor
-                return new Promise(async resolve => {
-                    const revisions = await this.constructor.find({
-                        query: { parent: this.meta.parent },
-                        sort: { version: -1 }
-                    });
-                    resolve(revisions);
-                });
             }
         }),
         withModelFiltering(data.modelId)
@@ -247,10 +276,10 @@ export const createDataModelFromData = (
         plugin.dataModel({
             context,
             field,
-            model,
+            model: Model,
             validation: createValidation(field, context)
         });
     }
 
-    return model;
+    return Model;
 };
