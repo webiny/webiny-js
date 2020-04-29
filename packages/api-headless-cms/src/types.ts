@@ -96,6 +96,7 @@ export type CmsModel = {
     title: string;
     description: string;
     modelId: string;
+    titleFieldId: string;
     fields: CmsModelField[];
 };
 
