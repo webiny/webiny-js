@@ -13,7 +13,7 @@ export const setupContext = async (plugins, baseContext = {}) => {
 
     const context = { ...baseContext, plugins: pluginsContainer };
 
-    // Process `graphql-context` plugins
+    // Process `context` plugins
     await applyContextPlugins(context);
 
     return context;

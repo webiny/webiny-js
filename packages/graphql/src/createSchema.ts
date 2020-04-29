@@ -46,7 +46,7 @@ const createSchema = async ({
         // This is something that is baked into the graphql-tools and cannot be avoided another way.
         delete info.operation["__runAtMostOnce"];
 
-        // Process `graphql-context` plugins
+        // Process `context` plugins
         await applyContextPlugins(context);
     });
 
