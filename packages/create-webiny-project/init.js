@@ -5,7 +5,6 @@ process.on("unhandledRejection", err => {
 });
 
 const chalk = require("chalk");
-const crypto = require("crypto");
 const execa = require("execa");
 const fg = require("fast-glob");
 const fs = require("fs-extra");
@@ -13,12 +12,10 @@ const loadJsonFile = require("load-json-file");
 const ora = require("ora");
 const os = require("os");
 const path = require("path");
-const { v4: uuidv4 } = require("uuid");
 const writeJsonFile = require("write-json-file");
-
 const { getPackageVersion } = require("./utils");
 
-module.exports = async function({ root, appName, templateName, tag }) {
+module.exports = async function({ root, appName, templateName, tag, verbose }) {
     const appPackage = require(path.join(root, "package.json"));
 
     if (!templateName) {
@@ -47,30 +44,6 @@ module.exports = async function({ root, appName, templateName, tag }) {
 
     fs.writeFileSync(path.join(root, "package.json"), JSON.stringify(appPackage, null, 2) + os.EOL);
 
-    const filesToCopy = require("./files-to-copy");
-    for (let i = 0; i < filesToCopy.length; i++) {
-        if (!fs.existsSync(path.join(root, filesToCopy[i].dir, filesToCopy[i].newFile))) {
-            fs.moveSync(
-                path.join(root, filesToCopy[i].dir, filesToCopy[i].oldFile),
-                path.join(root, filesToCopy[i].dir, filesToCopy[i].newFile),
-                []
-            );
-        }
-    }
-
-    //Update api/.env.json
-    let apiEnv = fs.readFileSync(path.join(root, "api", ".env.json"), "utf-8");
-    const projectId = uuidv4()
-        .split("-")
-        .shift();
-    const jwtSecret = crypto
-        .randomBytes(128)
-        .toString("base64")
-        .slice(0, 60);
-
-    apiEnv = apiEnv.replace("[JWT_SECRET]", jwtSecret);
-    apiEnv = apiEnv.replace("[BUCKET]", `${projectId}-${appName}-files`);
-    fs.writeFileSync(path.join(root, "api", ".env.json"), apiEnv);
     //initialize git repo
     try {
         execa.sync("git", ["--version"]);
@@ -139,10 +112,14 @@ module.exports = async function({ root, appName, templateName, tag }) {
     const spinner = ora("Loading dependencies");
     try {
         spinner.start({ color: "green" });
-        await execa("yarn", [], {
+        const options = {
             cwd: root,
-            buffer: false
-        });
+            buffer: false,
+        };
+        if (verbose)
+            options.stdio = "inherit"
+
+        await execa("yarn", [], options);
     } catch (err) {
         console.log(err);
     }
@@ -157,6 +134,14 @@ module.exports = async function({ root, appName, templateName, tag }) {
             console.log(err);
             console.error("Unable to remove " + templateName);
         }
+    }
+    //run the setup for cwp-template-full
+    try {
+        const cwpTemplate = require(path.join(templatePath, './index'));
+        cwpTemplate({ appName, root });
+    } catch(err) {
+        console.log(err)
+        console.log("Unable to perform template-specific actions.");
     }
 
     spinner.stop();

@@ -8,5 +8,9 @@
   "publishConfig": {
     "access": "public",
     "directory": "."
+  },
+  "dependencies": {
+    "fs-extra": "^9.0.0",
+    "uuid": "^7.0.3"
   }
 }
