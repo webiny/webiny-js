@@ -7,6 +7,8 @@ import { resolveList } from "../utils/resolveList";
 import { resolveCreate } from "../utils/resolveCreate";
 import { resolveUpdate } from "../utils/resolveUpdate";
 import { resolveDelete } from "../utils/resolveDelete";
+import { resolvePublish } from "../utils/resolvePublish";
+import { resolveUnpublish } from "../utils/resolveUnpublish";
 
 export interface CreateManageResolvers {
     (params: {
@@ -33,7 +35,9 @@ export const createManageResolvers: CreateManageResolvers = ({
         Mutation: {
             [`create${typeName}`]: resolveCreate({ model }),
             [`update${typeName}`]: resolveUpdate({ model }),
-            [`delete${typeName}`]: resolveDelete({ model })
+            [`delete${typeName}`]: resolveDelete({ model }),
+            [`publish${typeName}`]: resolvePublish({ model }),
+            [`unpublish${typeName}`]: resolveUnpublish({ model })
         },
         [mTypeName]: model.fields.reduce((resolvers, field) => {
             const { manage } = fieldTypePlugins[field.type];

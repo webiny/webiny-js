@@ -92,6 +92,10 @@ export const createManageSDL: CreateManageSDL = ({ model, fieldTypePlugins }): s
             update${typeName}(where: ${mTypeName}UpdateWhereInput!, data: ${mTypeName}Input!): ${mTypeName}Response
             
             delete${typeName}(where: ${mTypeName}DeleteWhereInput!): CmsDeleteResponse
+            
+            publish${typeName}(revision: ID!): ${mTypeName}Response
+            
+            unpublish${typeName}(revision: ID!): ${mTypeName}Response
         }
     `;
 };
