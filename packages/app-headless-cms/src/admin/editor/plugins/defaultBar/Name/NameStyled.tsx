@@ -15,9 +15,10 @@ export const NameInputWrapper = styled("div")({
 });
 
 export const NameWrapper = styled("div")({
+    height: 50,
     display: "flex",
     alignItems: "baseline",
-    justifyContent: "flex-center",
+    justifyContent: "flex-start",
     flexDirection: "column",
     color: "var(--mdc-theme-text-primary-on-background)",
     position: "relative",
@@ -32,6 +33,7 @@ export const FormName = styled("div")({
     overflow: "hidden",
     textOverflow: "ellipsis",
     width: "100%",
+    lineHeight: "120%",
     "&:hover": {
         border: "1px solid var(--mdc-theme-on-background)"
     }
@@ -39,4 +41,16 @@ export const FormName = styled("div")({
 
 export const formNameWrapper = css({
     maxWidth: "calc(100% - 50px)"
+});
+
+export const FormVersion = styled("span")({
+    fontSize: 20,
+    color: "var(--mdc-theme-text-secondary-on-background)",
+    marginLeft: 5,
+    lineHeight: "120%"
+});
+
+export const FormMeta = styled("div")({
+    height: 20,
+    margin: "-2px 2px 2px 2px"
 });

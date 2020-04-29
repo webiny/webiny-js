@@ -32,7 +32,7 @@ export const Title = (
         style={{ margin: "0 auto", color: "var(--mdc-theme-on-surface)" }}
         use={"headline6"}
     >
-        Content model settings
+        Form Settings
     </Typography>
 );
 

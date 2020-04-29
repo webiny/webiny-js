@@ -1,17 +1,20 @@
 import React, { useState } from "react";
 import { Input } from "@webiny/ui/Input";
 import { Tooltip } from "@webiny/ui/Tooltip";
-import { useContentModelEditor } from "@webiny/app-headless-cms/admin/components/ContentModelEditor/Context";
+import { Typography } from "@webiny/ui/Typography";
 import { useHotkeys } from "react-hotkeyz";
-import { FormName, formNameWrapper, NameInputWrapper, NameWrapper } from "./NameStyled";
+import {
+    FormMeta,
+    FormName,
+    formNameWrapper,
+    FormVersion,
+    NameInputWrapper,
+    NameWrapper
+} from "./NameStyled";
 import { i18n } from "@webiny/app/i18n";
-const t = i18n.namespace("ContentModelEditor.Name");
+import { useContentModelEditor } from "@webiny/app-headless-cms/admin/components/ContentModelEditor/Context";
 
-declare global {
-    interface Window {
-        Cypress: any;
-    }
-}
+const t = i18n.namespace("FormEditor.Name");
 
 export const Name = () => {
     const { state, setData } = useContentModelEditor();
@@ -55,6 +58,7 @@ export const Name = () => {
 
     // Disable autoFocus because for some reason, blur event would automatically be triggered when clicking
     // on the page title when doing Cypress testing. Not sure if this is RMWC or Cypress related issue.
+    // @ts-ignore
     const autoFocus = !window.Cypress;
 
     return editingEnabled ? (
@@ -69,15 +73,23 @@ export const Name = () => {
         </NameInputWrapper>
     ) : (
         <NameWrapper>
-            <Tooltip
-                className={formNameWrapper}
-                placement={"bottom"}
-                content={<span>{t`rename`}</span>}
-            >
-                <FormName data-testid="fb-editor-form-title" onClick={startEditing}>
-                    {state.data.title}
-                </FormName>
-            </Tooltip>
+            <FormMeta>
+                <Typography use={"overline"}>
+                    {`status: ${state.data.published ? t`published` : t`draft`}`}
+                </Typography>
+            </FormMeta>
+            <div style={{ width: "100%", display: "flex" }}>
+                <Tooltip
+                    className={formNameWrapper}
+                    placement={"bottom"}
+                    content={<span>{t`rename`}</span>}
+                >
+                    <FormName data-testid="fb-editor-form-title" onClick={startEditing}>
+                        {state.data.title}
+                    </FormName>
+                </Tooltip>
+                <FormVersion>{`(v${state.data.version})`}</FormVersion>
+            </div>
         </NameWrapper>
     );
 };
