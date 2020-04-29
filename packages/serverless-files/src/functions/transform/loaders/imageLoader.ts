@@ -4,7 +4,7 @@ import { getObjectParams, getEnvironment } from "../../../utils";
 import { SUPPORTED_IMAGES, SUPPORTED_TRANSFORMABLE_IMAGES, getImageKey } from "../utils";
 
 // @ts-ignore
-const IMAGE_TRANSFORMER_LAMBDA_NAME = process.env.IMAGE_TRANSFORMER_LAMBDA_NAME;
+const IMAGE_TRANSFORMER_FUNCTION = process.env.IMAGE_TRANSFORMER_FUNCTION;
 
 interface TransformerParams {
     key: string;
@@ -16,7 +16,7 @@ const callImageTransformerLambda = async ({ key, transformations }: TransformerP
     const imageTransformerLambda = new Lambda({ region: env.region });
     const response = await imageTransformerLambda
         .invoke({
-            FunctionName: IMAGE_TRANSFORMER_LAMBDA_NAME,
+            FunctionName: IMAGE_TRANSFORMER_FUNCTION,
             Payload: JSON.stringify({
                 body: {
                     key,
