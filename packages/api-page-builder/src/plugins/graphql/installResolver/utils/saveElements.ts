@@ -60,7 +60,7 @@ export default async ({ context, INSTALL_EXTRACT_DIR }) => {
 
         // 2. Save files.
         // 2.1 Get pre-signed POST payloads.
-        const client = new GraphQLClient(context.event.headers["X-Webiny-Apollo-Gateway-Url"], {
+        const client = new GraphQLClient(context.event.headers["x-webiny-apollo-gateway-url"], {
             headers: {
                 Authorization: context.token
             }
