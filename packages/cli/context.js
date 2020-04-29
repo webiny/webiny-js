@@ -30,7 +30,14 @@ class Context {
             this.plugins.register(
                 ...plugins.map(plugin => {
                     if (typeof plugin === "string") {
-                        return require(path.join(this.paths.projectRoot, plugin));
+                        let loadedPlugin;
+                        try {
+                            loadedPlugin = require(path.join(this.paths.projectRoot, plugin)); // Try loading the package from the project's root
+                        } catch {
+                            // If it fails, perhaps the user still has the package installed somewhere locally...
+                            loadedPlugin = require(plugin);
+                        }
+                        return loadedPlugin;
                     }
                     return plugin;
                 })
