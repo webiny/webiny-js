@@ -12,7 +12,7 @@ export type CmsContentModelFormProps = {
     preview?: boolean;
     contentModel: CmsContentModelModel;
     data?: { [key: string]: any };
-    onSubmit?: () => void;
+    onSubmit?: (data: { [key: string]: any }) => void;
 };
 
 export type CmsEditorFieldOptionPlugin = Plugin & {
@@ -158,7 +158,6 @@ export type CmsIconsPlugin = Plugin & {
     type: "cms-icons";
     getIcons(): CmsIcon[];
 };
-
 
 export type FormRenderCmsContentModelModelField = CmsContentModelModelField & {
     validators: Array<(value: any) => boolean>;
