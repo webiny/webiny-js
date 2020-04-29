@@ -19,14 +19,14 @@ const plugin: GraphQLContextPlugin<APIContext & I18NContext> = {
             );
         }
 
-        const { event } = context;
+        const { isColdStart, event } = context;
 
         const self = {
             __i18n: {
                 acceptLanguage: null,
                 defaultLocale: null,
                 locale: null,
-                locales: await locales.resolve({ context })
+                locales: isColdStart !== false ? [] : await locales.resolve({ context })
             },
             getDefaultLocale() {
                 const allLocales = self.getLocales();
