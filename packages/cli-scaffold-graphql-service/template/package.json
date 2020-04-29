@@ -3,6 +3,9 @@
   "version": "1.0.0",
   "description": "",
   "license": "MIT",
+  "scripts": {
+    "build": "webiny run build"
+  },
   "dependencies": {
     "@webiny/http-handler": "^2.1.0",
     "@webiny/http-handler-apollo-server": "^1.0.0",
