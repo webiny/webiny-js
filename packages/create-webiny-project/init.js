@@ -13,6 +13,7 @@ const loadJsonFile = require("load-json-file");
 const writeJsonFile = require("write-json-file");
 const fg = require("fast-glob");
 const { getPackageVersion } = require("./utils");
+const ora = require("ora");
 
 module.exports = async function({ root, appName, templateName, tag }) {
     const appPackage = require(path.join(root, "package.json"));
@@ -26,48 +27,6 @@ module.exports = async function({ root, appName, templateName, tag }) {
         require.resolve(`${templateName}/package.json`, { paths: [root] })
     );
 
-    let templateJson = {};
-    const templateJsonPath = path.join(templatePath, "package.json");
-
-    if (fs.existsSync(templateJsonPath)) {
-        templateJson = require(templateJsonPath);
-    }
-
-    // Keys to ignore in templatePackage
-    const templatePackageBlacklist = [
-        "name",
-        "version",
-        "description",
-        "keywords",
-        "bugs",
-        "license",
-        "author",
-        "contributors",
-        "files",
-        "browser",
-        "bin",
-        "man",
-        "directories",
-        "repository",
-        "bundledDependencies",
-        "optionalDependencies",
-        "engineStrict",
-        "os",
-        "cpu",
-        "preferGlobal",
-        "private",
-        "publishConfig"
-    ];
-
-    const templatePackageToReplace = Object.keys(templateJson).filter(key => {
-        return !templatePackageBlacklist.includes(key);
-    });
-
-    // Add templatePackage keys/values to appPackage, replacing existing entries
-    templatePackageToReplace.forEach(key => {
-        appPackage[key] = templateJson[key];
-    });
-
     // Copy the files for the user
     const templateDir = path.join(templatePath, "template");
     if (fs.existsSync(templateDir)) {
@@ -78,73 +37,22 @@ module.exports = async function({ root, appName, templateName, tag }) {
     }
 
     const projectDeps = require(path.join(root, "dependencies.json"));
+
     Object.assign(appPackage.dependencies, projectDeps.dependencies);
+    if (appPackage.workspaces) Object.assign(appPackage.workspaces, projectDeps.workspaces);
+    else appPackage.workspaces = Object.assign({}, projectDeps.workspaces);
+
     fs.writeFileSync(path.join(root, "package.json"), JSON.stringify(appPackage, null, 2) + os.EOL);
 
-    //.env.json
-    const templateEnvExists = fs.existsSync(path.join(root, ".env.json"));
-    if (!templateEnvExists) {
-        fs.moveSync(path.join(root, "example.env.json"), path.join(root, ".env.json"), []);
-    }
-
-    //api/.env.json
-    const apiEnvExists = fs.existsSync(path.join(root, "api", ".env.json"));
-    if (!apiEnvExists) {
-        fs.moveSync(
-            path.join(root, "api", "example.env.json"),
-            path.join(root, "api", ".env.json"),
-            []
-        );
-    }
-
-    //apps/admin/.env.json
-    const appAdminEnvExists = fs.existsSync(path.join(root, "apps", "admin", ".env.json"));
-    if (!appAdminEnvExists) {
-        fs.moveSync(
-            path.join(root, "apps", "admin", "example.env.json"),
-            path.join(root, "apps", "admin", ".env.json"),
-            []
-        );
-    }
-
-    //apps/site/.env.json
-    const appSiteEnvExists = fs.existsSync(path.join(root, "apps", "site", ".env.json"));
-    if (!appSiteEnvExists) {
-        fs.moveSync(
-            path.join(root, "apps", "site", "example.env.json"),
-            path.join(root, "apps", "site", ".env.json"),
-            []
-        );
-    }
-
-    //.babel.node.js
-    const babelNodeExists = fs.existsSync(path.join(root, ".babel.node.js"));
-    if (!babelNodeExists) {
-        fs.moveSync(
-            path.join(root, "example.babel.node.js"),
-            path.join(root, ".babel.node.js"),
-            []
-        );
-    }
-
-    //.babel.react.js
-    const babelReactExists = fs.existsSync(path.join(root, ".babel.react.js"));
-    if (!babelReactExists) {
-        fs.moveSync(
-            path.join(root, "example.babel.react.js"),
-            path.join(root, ".babel.react.js"),
-            []
-        );
-    }
-
-    //.prettierrc.js
-    const prettierrcExists = fs.existsSync(path.join(root, ".prettierrc.js"));
-    if (!prettierrcExists) {
-        fs.moveSync(
-            path.join(root, "example.prettierrc.js"),
-            path.join(root, ".prettierrc.js"),
-            []
-        );
+    const filesToCopy = require("./files-to-copy");
+    for (let i = 0; i < filesToCopy.length; i++) {
+        if (!fs.existsSync(path.join(root, filesToCopy[i].dir, filesToCopy[i].newFile))) {
+            fs.moveSync(
+                path.join(root, filesToCopy[i].dir, filesToCopy[i].oldFile),
+                path.join(root, filesToCopy[i].dir, filesToCopy[i].newFile),
+                []
+            );
+        }
     }
 
     //initialize git repo
@@ -212,11 +120,11 @@ module.exports = async function({ root, appName, templateName, tag }) {
     }
 
     // Install repo dependencies
+    const spinner = ora("Loading dependencies");
     try {
-        console.log("installing dependencies");
+        spinner.start({ color: "green" });
         await execa("yarn", [], {
             cwd: root,
-            stdio: "inherit",
             buffer: false
         });
     } catch (err) {
@@ -235,9 +143,15 @@ module.exports = async function({ root, appName, templateName, tag }) {
         }
     }
 
+    spinner.stop();
+
     console.log(`Success! Created ${appName} at ${root}`);
     console.log("Inside that directory, you can run several commands:\n");
     console.log("You can begin by typing:\n");
     console.log(chalk.cyan("  cd"), appName);
-    console.log("Happy hacking!");
+    console.log("If you like the tool star us on Github! https://github.com/webiny/webiny-js\n");
+    console.log(
+        "Checkout our docs to learn more about Webiny as a tool https://docs.webiny.com/docs/webiny/introduction/\n"
+    );
+    console.log("Happy coding!");
 };
