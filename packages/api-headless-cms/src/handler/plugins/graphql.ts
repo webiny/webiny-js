@@ -1,9 +1,8 @@
-import { GraphQLSchemaPlugin } from "@webiny/graphql/types";
+import { GraphQLFieldResolver, GraphQLSchemaPlugin } from "@webiny/graphql/types";
 import {
     resolveCreate,
     resolveDelete,
     resolveGet,
-    resolveList,
     resolveUpdate,
     emptyResolver
 } from "@webiny/commodo-graphql";
@@ -16,7 +15,16 @@ import { i18nFieldType } from "./graphqlTypes/i18nFieldType";
 import { i18nFieldInput } from "./graphqlTypes/i18nFieldInput";
 import contentModelGroup from "./graphql/contentModelGroup";
 import meta from "./graphql/meta";
+import createRevisionFrom from "./graphql/contentModel/resolvers/createRevisionFrom";
+import listContentModels from "./graphql/contentModel/resolvers/listContentModels";
+
 const contentModelFetcher = ctx => ctx.models.CmsContentModel;
+
+const publishContentModel: GraphQLFieldResolver<any, any> = (_, args, ctx, info) => {
+    args.data = { published: true };
+
+    return resolveUpdate(contentModelFetcher)(_, args, ctx, info);
+};
 
 const getMutations = type => {
     if (type === "manage") {
@@ -28,6 +36,16 @@ const getMutations = type => {
             ): CmsContentModelResponse
 
             deleteContentModel(id: ID!): CmsDeleteResponse
+            
+            # Publish revision
+            publishContentModel(
+                id: ID!
+            ): CmsContentModelResponse
+            
+            # Create a new revision from an existing revision
+            createRevisionFrom(
+                revision: ID!
+            ): CmsContentModelResponse
         `;
     }
 
@@ -39,7 +57,10 @@ const getMutationResolvers = type => {
         return {
             createContentModel: resolveCreate(contentModelFetcher),
             updateContentModel: resolveUpdate(contentModelFetcher),
-            deleteContentModel: resolveDelete(contentModelFetcher)
+            deleteContentModel: resolveDelete(contentModelFetcher),
+            // Publish revision (must be given an exact revision ID to publish)
+            publishContentModel,
+            createRevisionFrom
         };
     }
 
@@ -51,7 +72,7 @@ const getMutationResolvers = type => {
 const getQueryResolvers = () => {
     return {
         getContentModel: resolveGet(contentModelFetcher),
-        listContentModels: resolveList(contentModelFetcher)
+        listContentModels
     };
 };
 
@@ -87,7 +108,7 @@ export default ({ type }) => [
                     message: String
                     data: JSON
                 }
-
+                
                 type CmsCursors {
                     next: String
                     previous: String
@@ -105,6 +126,12 @@ export default ({ type }) => [
                     error: CmsError
                 }
 
+                enum CmsContentModelStatusEnum {
+                    published
+                    draft
+                    locked
+                }
+
                 type CmsContentModel {
                     id: ID
                     title: String
@@ -117,6 +144,13 @@ export default ({ type }) => [
                     createdBy: SecurityUser
                     titleFieldId: String
                     fields: [CmsContentModelField]
+                    publishedOn: DateTime
+                    published: Boolean
+                    locked: Boolean
+                    status: CmsContentModelStatusEnum
+                    version: Int
+                    parent: ID
+                    revisions: [CmsContentModel]
                 }
 
                 input CmsContentModelInput {
@@ -150,7 +184,6 @@ export default ({ type }) => [
                     label: CmsStringInput
                     value: String
                 }
-
 
                 type CmsContentModelField {
                     _id: String
@@ -197,6 +230,7 @@ export default ({ type }) => [
 
                 extend type Query {
                     getContentModel(id: ID, where: JSON, sort: String): CmsContentModelResponse
+                    getPublishedContentModel(id: ID, where: JSON, sort: String): CmsContentModelResponse
 
                     listContentModels(
                         where: JSON
