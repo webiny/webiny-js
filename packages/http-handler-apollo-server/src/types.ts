@@ -31,5 +31,5 @@ export type CreateApolloHandlerPlugin = Plugin & {
 export type CreateSchemaPlugin = Plugin & {
     name: "handler-apollo-server-create-schema";
     type: "handler-apollo-server-create-schema";
-    create(params: { plugins: PluginsContainer }): { schema: GraphQLSchema };
+    create(params: { plugins: PluginsContainer; }): { schema: GraphQLSchema };
 };

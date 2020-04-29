@@ -16,6 +16,7 @@ export default (options: HttpHandlerApolloServerOptions = {}): HttpHandlerPlugin
     },
     async handle({ args, context }) {
         const [event, handlerContext] = args;
+
         try {
             const createApolloHandlerPlugin = context.plugins.byName<CreateApolloHandlerPlugin>(
                 "handler-apollo-server-create-handler"
