@@ -10,6 +10,8 @@ import { ReactComponent as I18NIcon } from "@webiny/app-headless-cms/admin/icons
 import { ReactComponent as DropDownIcon } from "@webiny/app-headless-cms/admin/icons/__used__icons__/round-arrow_drop_down-24px.svg";
 import cloneDeep from "lodash.clonedeep";
 import get from "lodash.get";
+import { renderPlugins } from "@webiny/app/plugins";
+import { I18NValue } from "@webiny/app-i18n/components";
 const t = i18n.ns("app-headless-cms/admin/components/content-model-form-render");
 
 import { ButtonIcon, ButtonSecondary, ButtonPrimary } from "@webiny/ui/Button";
@@ -87,8 +89,11 @@ export const ContentModelFormRender = ({
     getFields,
     getDefaultValues,
     loading,
-    data,
-    onSubmit
+    data: entry,
+    preview,
+    onSubmit,
+    onPublish,
+    onUnpublish
 }) => {
     const i18n = useI18N();
 
@@ -100,26 +105,50 @@ export const ContentModelFormRender = ({
         formTitle = t`New {contentModelTitle}`({ contentModelTitle: contentModel.title });
     }
 
+    if (entry.id) {
+        formTitle = I18NValue({ value: entry.meta.title });
+    }
+
+    const draft = get(entry, "meta.status") === "draft";
+    const published = get(entry, "meta.status") === "published";
+    const locked = get(entry, "meta.locked");
+
     return (
-        <Form onSubmit={onSubmit} data={data ? data : getDefaultValues()}>
+        <Form disabled={locked} onSubmit={onSubmit} data={entry ? entry : getDefaultValues()}>
             {({ submit, Bind }) => (
                 <SimpleForm data-testid={"cms-content-form"}>
-                    <SimpleFormHeader title={formTitle}>
-                        <Menu
-                            handle={
-                                <ButtonSecondary>
-                                    <ButtonIcon icon={<I18NIcon />} />
-                                    {t`Current locale: {locale}`({ locale: i18n.getLocale().code })}
-                                    <DropDownIcon />
-                                </ButtonSecondary>
-                            }
-                        >
-                            {i18n.getLocales().map(item => (
-                                <MenuItem key={item.id} onClick={() => {}}>
-                                    {item.code}
-                                </MenuItem>
-                            ))}
-                        </Menu>
+                    <SimpleFormHeader
+                        title={
+                            <>
+                                {formTitle}
+                                {renderPlugins("cms-content-header", {
+                                    contentModel,
+                                    entry
+                                })}
+                            </>
+                        }
+                    >
+                        {!preview && (
+                            <>
+                                <Menu
+                                    handle={
+                                        <ButtonSecondary>
+                                            <ButtonIcon icon={<I18NIcon />} />
+                                            {t`Current locale: {locale}`({
+                                                locale: i18n.getLocale().code
+                                            })}
+                                            <DropDownIcon />
+                                        </ButtonSecondary>
+                                    }
+                                >
+                                    {i18n.getLocales().map(item => (
+                                        <MenuItem key={item.id} onClick={() => {}}>
+                                            {item.code}
+                                        </MenuItem>
+                                    ))}
+                                </Menu>
+                            </>
+                        )}
                     </SimpleFormHeader>
                     {loading && <CircularProgress />}
                     <SimpleFormContent>
@@ -132,9 +161,25 @@ export const ContentModelFormRender = ({
                             ))}
                         </Grid>
                     </SimpleFormContent>
-                    <SimpleFormFooter>
-                        <ButtonPrimary onClick={submit}>{t`Save`}</ButtonPrimary>
-                    </SimpleFormFooter>
+                    {!preview && (
+                        <SimpleFormFooter>
+                            {draft && (
+                                <>
+                                    <ButtonPrimary onClick={onPublish}>{t`Publish`}</ButtonPrimary>{" "}
+                                    <ButtonSecondary onClick={submit}>{t`Save`}</ButtonSecondary>
+                                </>
+                            )}
+
+                            {published && (
+                                <>
+                                    <ButtonPrimary onClick={submit}>{t`Edit`}</ButtonPrimary>
+                                    <ButtonPrimary
+                                        onClick={onUnpublish}
+                                    >{t`Unpublish`}</ButtonPrimary>
+                                </>
+                            )}
+                        </SimpleFormFooter>
+                    )}
                 </SimpleForm>
             )}
         </Form>

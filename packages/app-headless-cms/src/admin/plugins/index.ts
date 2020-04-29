@@ -3,6 +3,7 @@ import menus from "./menus";
 import fields from "./fields";
 import validators from "./validators";
 import icons from "./icons";
+import contentFormPlugins from "./contentForm";
 
 import contentModelEditorPlugins from "./../editor/plugins";
 
@@ -11,8 +12,11 @@ export default [
     menus,
     icons,
 
-    // Editor
+    contentFormPlugins,
+
+    // Editor.
     fields,
     validators,
-    contentModelEditorPlugins
+    contentModelEditorPlugins,
+
 ];

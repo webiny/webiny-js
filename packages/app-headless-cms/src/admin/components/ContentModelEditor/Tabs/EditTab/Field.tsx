@@ -70,7 +70,7 @@ const Field = props => {
                 <Typography use={"subtitle1"}>{getValue(field.label)} </Typography>
                 <Typography use={"caption"}>
                     {fieldPlugin && fieldPlugin.field.label}{" "}
-                    {field.fieldId === data.titleFieldId && <>(title field)</>}
+                    {field.fieldId === data.titleFieldId && <>({t`entry title`})</>}
                 </Typography>
             </Info>
             <Actions>
@@ -78,12 +78,18 @@ const Field = props => {
                 <Menu className={menuStyles} handle={<IconButton icon={<MoreVerticalIcon />} />}>
                     {plugins.map(pl => React.cloneElement(pl.render(), { key: pl.name }))}
                     <MenuItem
-                        onClick={() => {
-                            setData(data => {
+                        disabled={field.type !== 'text'}
+                        onClick={async () => {
+                            const response = await setData(data => {
                                 data.titleFieldId = field.fieldId;
                                 return data;
                             });
-                            showSnackbar(t`Title field set successfully.`)
+
+                            if (response.error) {
+                                return showSnackbar(response.error.message);
+                            }
+
+                            showSnackbar(t`Title field set successfully.`);
                         }}
                     >
                         <ListItemGraphic>

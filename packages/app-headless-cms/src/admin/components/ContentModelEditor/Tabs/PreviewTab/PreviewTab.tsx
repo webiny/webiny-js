@@ -16,7 +16,7 @@ export const PreviewTab = () => {
 
     return (
         <Elevation z={1} className={formPreviewWrapper}>
-            <ContentModelForm contentModel={data} />
+            <ContentModelForm contentModel={data} preview/>
         </Elevation>
     );
 };

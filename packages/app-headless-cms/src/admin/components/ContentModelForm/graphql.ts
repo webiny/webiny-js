@@ -1,4 +1,13 @@
+import upperFirst from "lodash/upperFirst";
 import gql from "graphql-tag";
+
+const ERROR_FIELD = /* GraphQL */ `
+    {
+        message
+        code
+        data
+    }
+`;
 
 export const FIELDS_FIELDS = `
         _id
@@ -26,61 +35,45 @@ export const FIELDS_FIELDS = `
                 value
             }
         }
-        settings
-`;
+        `;
 
-export const DATA_FIELDS = `
-    id
-    parent
-    fields {
-        ${FIELDS_FIELDS}
-    }
-    layout
-    triggers
-    settings {
-        reCaptcha {
-            enabled
-            errorMessage {
-                value
+const createPublishMutation = ({ ucFirstModelId }) => gql`
+    mutation Publish${ucFirstModelId}($revision: ID!) {
+        publish${ucFirstModelId}(revision: $revision) {
+            data {
+                id
+                meta {
+                    published
+                    status
+                    locked
+                }
             }
-            settings {
-                enabled
-                siteKey
-                secretKey
-            }
-        }
-        layout {
-            renderer
-        }
-        successMessage {
-            value
-        }
-        submitButtonLabel {
-            value
-        } 
-        termsOfServiceMessage {
-            enabled
-            message {
-                value
-            }
-            errorMessage {
-                value
-            }
+            error ${ERROR_FIELD}
         }
     }
 `;
 
-export const GET_PUBLISHED_CONTENT_MODEL = gql`
-    query GetPublishedForm($id: ID, $parent: ID, $version: Int, $slug: String) {
-        cms {
-            getPublishedForm(id: $id, parent: $parent, version: $version, slug: $slug) {
-                data {
-                    ${DATA_FIELDS}
-                }
-                error {
-                    message
+const createUnpublishHMutation = ({ ucFirstModelId }) => gql`
+    mutation Unpublish${ucFirstModelId}($revision: ID!) {
+        unpublish${ucFirstModelId}(revision: $revision) {
+            data {
+                id
+                meta {
+                    published
+                    status
+                    locked
                 }
             }
+            error ${ERROR_FIELD}
         }
     }
 `;
+
+export function createCrudQueriesAndMutations(model) {
+    const ucFirstModelId = upperFirst(model.modelId);
+
+    return {
+        PUBLISH_CONTENT_ENTRY: createPublishMutation({ ucFirstModelId }),
+        UNPUBLISH_CONTENT_ENTRY: createUnpublishHMutation({ ucFirstModelId })
+    };
+}
