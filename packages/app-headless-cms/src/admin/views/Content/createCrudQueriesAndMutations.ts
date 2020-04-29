@@ -33,6 +33,26 @@ const createReadQuery = ({ model, ucFirstModelId }) => {
                 data {
                     id
                     ${createFieldsList(model)}
+                    savedOn
+                    meta {
+                        title {
+                            value
+                        }
+                        revisions {
+                            id
+                            meta {
+                                version
+                                status
+                                title {
+                                    value
+                                }
+                            }
+                        }
+                        published
+                        version
+                        parent
+                        status
+                    }
                 }
                 error ${ERROR_FIELD}
             }
@@ -55,6 +75,20 @@ const createListQuery = ({ model, ucFirstModelId }) => {
                 data {
                     id
                     ${createFieldsList(model)}
+                    createdBy {
+                        firstName
+                        lastName
+                    }
+                    savedOn
+                    meta {
+                        title {
+                            value
+                        }
+                        published
+                        version
+                        parent
+                        status
+                    }
                 }
                 error ${ERROR_FIELD}
             }
