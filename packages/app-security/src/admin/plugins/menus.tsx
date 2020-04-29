@@ -5,6 +5,10 @@ import { ReactComponent as SecurityIcon } from "./../assets/icons/baseline-secur
 
 const t = i18n.ns("app-security/admin/menus");
 
+const ROLE_SECURITY_GROUPS = [
+    "security:role:crud"
+];
+
 export default [
     {
         name: "menu-security",
@@ -12,10 +16,10 @@ export default [
         render({ Menu, Section, Item }) {
             return (
                 <SecureView
-                    roles={{
-                        groups: ["security-groups"],
-                        roles: ["security-roles"],
-                        users: ["security-users"]
+                    scopes={{
+                        groups: ROLE_SECURITY_GROUPS,
+                        roles: ["security-roles"], // TODO
+                        users: ["security-users"] // TODO
                     }}
                 >
                     {({ roles: identityRoles }) => {
