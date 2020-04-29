@@ -11,6 +11,7 @@ export { Plugin, PluginsContainer };
 export interface GraphQLContext {
     event?: any;
     plugins: PluginsContainer;
+    isColdStart?: boolean;
     [key: string]: any;
 }
 
