@@ -7,13 +7,14 @@ const pluginToChoice = plugin => ({
 });
 
 module.exports = async ({ context }) => {
-    const choices = Object.values(context.scaffoldPlugins.plugins).map(pluginToChoice);
-    if (choices.length === 0) {
+    const scaffoldPlugins = context.plugins.byType("scaffold-template");
+    if (!scaffoldPlugins.length) {
         throw new Error(
             "We couldn't find any scaffolding templates in webiny.root.js. Please add at least one!"
         );
     }
 
+    const choices = Object.values(scaffoldPlugins).map(pluginToChoice);
     const { selectedPluginName } = await inquirer.prompt({
         type: "list",
         name: "selectedPluginName",
@@ -21,7 +22,7 @@ module.exports = async ({ context }) => {
         choices
     });
 
-    const { scaffold } = context.scaffoldPlugins.byName(selectedPluginName);
+    const { scaffold } = context.plugins.byName(selectedPluginName);
     const questions = scaffold.questions;
 
     const inqQuestions = typeof questions === "function" ? questions({ context }) : questions;

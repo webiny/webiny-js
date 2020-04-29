@@ -17,21 +17,11 @@ class Context {
 
         this.config = require(path.join(projectRoot, "webiny.root.js"));
         this.projectName = this.config.projectName;
-        this.plugins = new PluginsContainer();
-        this.scaffoldPlugins = [];
-
-        if (this.config.cli && this.config.cli.scaffoldPlugins) {
-            // Devs may specify a plugin's name instead of writing a plugin itself (:
-            const loadedPlugins = this.config.cli.scaffoldPlugins.map(plugin => {
-                // console.log("Plugin =");
-                // console.log(plugin);
-                // const x = require("@webiny/cli-scaffold-graphql-service");
-
-                return typeof plugin !== "string" ? plugin : require(plugin);
-            });
-
-            this.scaffoldPlugins = new PluginsContainer(loadedPlugins);
-        }
+        this.plugins = new PluginsContainer(
+            this.config.cli.plugins.map(plugin =>
+                typeof plugin === "string" ? require(plugin) : plugin
+            )
+        );
     }
 
     loadUserPlugins() {
