@@ -125,11 +125,11 @@ const UserAccountForm = () => {
                         <>
                             <div style={{ marginBottom: "32px" }}>
                                 <Bind name="avatar">
-                                    <AvatarImage />
+                                    <AvatarImage round />
                                 </Bind>
                             </div>
                             <SimpleForm>
-                                {loading && <CircularProgress />}
+                                {loading && <CircularProgress incognito={true} />}
                                 <SimpleFormHeader title={"Account"} />
                                 <SimpleFormContent>
                                     {React.createElement(auth.view, {
