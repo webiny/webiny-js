@@ -15,7 +15,7 @@ const path = require("path");
 const writeJsonFile = require("write-json-file");
 const { getPackageVersion } = require("./utils");
 
-module.exports = async function({ root, appName, templateName, tag, verbose }) {
+module.exports = async function({ root, appName, templateName, tag, log }) {
     const appPackage = require(path.join(root, "package.json"));
 
     if (!templateName) {
@@ -114,12 +114,17 @@ module.exports = async function({ root, appName, templateName, tag, verbose }) {
         spinner.start({ color: "green" });
         const options = {
             cwd: root,
-            buffer: false,
+            maxBuffer: "500_000_000",
         };
-        if (verbose)
-            options.stdio = "inherit"
 
-        await execa("yarn", [], options);
+        let logStream;
+        if(log) {
+            logStream = fs.createWriteStream(path.join(root, 'logs.txt'), { flags: "a" });
+            await execa("yarn", [], options).stdout.pipe(logStream);
+        } else {
+            await execa("yarn", [], options);
+        }
+
     } catch (err) {
         console.log(err);
     }
@@ -135,6 +140,7 @@ module.exports = async function({ root, appName, templateName, tag, verbose }) {
             console.error("Unable to remove " + templateName);
         }
     }
+
     //run the setup for cwp-template-full
     try {
         const cwpTemplate = require(path.join(templatePath, './index'));

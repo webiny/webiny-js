@@ -43,9 +43,9 @@ yargs.command(
             default: "latest",
             demandOption: false
         });
-        yargs.option("verbose", {
-            describe: "prints more logs during installation process",
-            alias: "v",
+        yargs.option("log", {
+            describe: "creates a log file for user to see of installation.",
+            alias: "l",
             type: "boolean",
             demandOption: false
         })
@@ -75,7 +75,7 @@ function checkAppName(appName) {
     }
 }
 
-function createApp({ projectName, template, tag, verbose }) {
+function createApp({ projectName, template, tag, log }) {
     if (!projectName) {
         throw Error("You must provide a name for the project to use.");
     }
@@ -101,7 +101,7 @@ function createApp({ projectName, template, tag, verbose }) {
         JSON.stringify(packageJson, null, 2) + os.EOL
     );
 
-    run({ root, appName, template, tag, verbose });
+    run({ root, appName, template, tag, log });
 }
 
 function informationHandler() {
@@ -134,7 +134,7 @@ async function install({ root, dependencies }) {
     return;
 }
 
-async function run({ root, appName, template, tag, verbose }) {
+async function run({ root, appName, template, tag, log }) {
     const dependencies = [];
     try {
         let templateName = "cwp-template-" + template;
@@ -149,7 +149,7 @@ async function run({ root, appName, template, tag, verbose }) {
 
         await install({ root, dependencies });
 
-        await init({ root, appName, templateName, tag, verbose });
+        await init({ root, appName, templateName, tag, log });
     } catch (reason) {
         console.log("\nAborting installation.");
         if (reason.command) {
