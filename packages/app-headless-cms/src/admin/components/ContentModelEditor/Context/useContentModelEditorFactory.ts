@@ -95,7 +95,7 @@ export default ContentModelEditorContext => {
              * @returns {void|?CmsContentModelModelField}
              */
             getFieldPlugin(query: object): FbBuilderFieldPlugin {
-                console.log('searcham fieldove', query)
+                console.log("searcham fieldove", query);
                 return getPlugins<FbBuilderFieldPlugin>("content-model-editor-field-type").find(
                     ({ field }) => {
                         for (const key in query) {
@@ -164,7 +164,7 @@ export default ContentModelEditorContext => {
 
                     moveField({ field, position, data });
 
-                    console.log('vracamo data', data)
+                    console.log("vracamo data", data);
                     // We are dropping a new field at the specified index.
                     return data;
                 });

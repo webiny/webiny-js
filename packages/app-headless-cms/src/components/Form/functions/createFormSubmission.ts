@@ -13,7 +13,7 @@ type Args = {
 export default async ({
     client,
     props: { data: form, preview },
-    data: rawData,
+    data: rawData
 }: Args): Promise<FormSubmitResponseType> => {
     if (preview) {
         return { preview: true, error: null, data: null };

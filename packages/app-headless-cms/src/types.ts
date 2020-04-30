@@ -3,11 +3,7 @@ import { Plugin } from "@webiny/plugins/types";
 import { ReactElement } from "react";
 
 import { I18NStringValue } from "@webiny/app-i18n/types";
-import {
-    BindComponent,
-    FormChildrenFunctionParams,
-    Form,
-} from "@webiny/form";
+import { BindComponent, FormChildrenFunctionParams, Form } from "@webiny/form";
 import { ApolloClient } from "apollo-client";
 import { IconPrefix, IconName } from "@fortawesome/fontawesome-svg-core";
 
@@ -128,7 +124,7 @@ export type CmsContentModelModelField = {
     placeholderText?: I18NStringValue;
     validation?: CmsBuilderFieldValidator[];
     options?: Array<{ value: string; label: I18NStringValue }>;
-    settings: {[key: string]: any};
+    settings: { [key: string]: any };
 };
 
 export type FbFormSubmissionData = {

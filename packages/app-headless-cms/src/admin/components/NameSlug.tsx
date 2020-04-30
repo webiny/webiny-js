@@ -25,7 +25,6 @@ const slugValidator = async (value, validateSlugUniqueness, formData) => {
 let currentFormData;
 
 function NameSlug({ formData, Bind, setValue, name = {}, slug = {}, validateSlugUniqueness }) {
-
     // A weird issue is happening here - afterChange always contains the initial "{}" as the "formData" value.
     // This was a temporary fix 😐
     currentFormData = formData;
