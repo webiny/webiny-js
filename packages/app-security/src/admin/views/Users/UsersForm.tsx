@@ -37,7 +37,7 @@ const UsersForm = () => {
                 <>
                     <div style={{ marginBottom: "32px", marginTop: "24px" }}>
                         <Bind name="avatar">
-                            <AvatarImage />
+                            <AvatarImage round />
                         </Bind>
                     </div>
                     <SimpleForm>
