@@ -8,7 +8,9 @@ export const testPAT = ({ patComponentRoute, runAfterVisitingRoute }) => {
         Array.from(body[0].querySelectorAll("[data-testid*=pat-token-list-item]"));
 
     cy.visit(patComponentRoute);
-    if (runAfterVisitingRoute) runAfterVisitingRoute();
+    if (runAfterVisitingRoute) {
+        runAfterVisitingRoute();
+    }
     cy.findByText("Personal Access Tokens")
         .click()
         .get("body")
@@ -17,9 +19,12 @@ export const testPAT = ({ patComponentRoute, runAfterVisitingRoute }) => {
         })
         .findByText("Create Token")
         .click()
-        .get(`[data-testid=CreateTokenDialogContent] > div > input`)
-        .clear()
-        .type(tokenName)
+        .findByTestId("CreateTokenDialogContent")
+        .within(() => {
+            cy.get("div > input")
+                .clear()
+                .type(tokenName);
+        })
         .findByTestId("AcceptGenerateToken")
         .click()
         .wait(500)
@@ -64,9 +69,9 @@ export const testPAT = ({ patComponentRoute, runAfterVisitingRoute }) => {
         .click()
         .get("body")
         .then($body => {
-            return $body[0].querySelectorAll(
-                `[data-testid*=DeleteTokenDialog-${lastTokenId}] > * > * > * > button`
-            )[1];
+            return $body[0].querySelector(
+                `[data-testid*=DeleteTokenDialog-${lastTokenId}] [data-testid=confirmationdialog-confirm-action]`
+            );
         })
         .click()
         .wait(1000)
