@@ -15,14 +15,13 @@ export const AddImageIconWrapper = styled("div")({
 });
 
 export const AddImageWrapper = styled("div")({
-    margin: "auto",
-    width: "150px",
-    height: "150px",
+    width: "100%",
+    height: "100%",
     minHeight: 50,
     minWidth: 50,
     textAlign: "center",
     backgroundColor: "var(--mdc-theme-on-background)",
-    borderRadius: "50%",
+    borderRadius: 0,
     borderBottom: "1px solid var(--mdc-theme-text-hint-on-background)",
     display: "flex",
     alignItems: "center",
@@ -36,6 +35,13 @@ export const AddImageWrapper = styled("div")({
         backgroundColor: "rgba(0,0,0, 0.5)",
         borderBottom: "1px solid var(--mdc-theme-on-surface)"
     }
+});
+
+export const AddImageWrapperRound = styled(AddImageWrapper)({
+    margin: "auto",
+    width: "150px",
+    height: "150px",
+    borderRadius: "50%"
 });
 
 export const RemoveImage = styled("div")({
