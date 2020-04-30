@@ -14,8 +14,6 @@ describe("Personal Access Tokens [Lambda Handler] test suite", () => {
         });
     });
 
-    afterAll(async () => {});
-
     test("Should validate PAT", async () => {
         const validateAccessTokenHandler = useHandler();
         const event = { PAT: mockedToken.token };
