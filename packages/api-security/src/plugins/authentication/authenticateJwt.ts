@@ -13,7 +13,7 @@ export default async (context: GraphQLContext) => {
     }
 
     if (isJwt(authorization)) {
-        const token = authorization.replace(/[b|B]earer\s/, "");
+        const token = authorization.replace(/bearer\s/i, "");
         let user = null;
         if (token !== "" && event.httpMethod === "POST") {
             const jwt = new JwtToken({ secret: security.token.secret });
