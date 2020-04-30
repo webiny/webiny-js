@@ -8,7 +8,6 @@ import React, { useState } from "react";
 import { Typography } from "@webiny/ui/Typography";
 import styled from "@emotion/styled";
 import { Input } from "@webiny/ui/Input";
-import gql from "graphql-tag";
 import {
     Dialog,
     DialogCancel,
@@ -20,56 +19,10 @@ import {
 import { ConfirmationDialog } from "@webiny/ui/ConfirmationDialog";
 import { Alert } from "@webiny/ui/Alert";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
+import { i18n } from "@webiny/app/i18n";
+const t = i18n.ns("app-security/admin/roles/data-list");
 
-const CREATE_NEW_PAT = gql`
-    mutation createPat($name: String!, $userId: ID) {
-        security {
-            createPAT(name: $name, userId: $userId) {
-                data {
-                    pat {
-                        id
-                        name
-                        token
-                    }
-                    token
-                }
-                error {
-                    message
-                }
-            }
-        }
-    }
-`;
-
-const UPDATE_PAT = gql`
-    mutation($id: ID!, $data: PersonalAccessTokenInput!) {
-        security {
-            updatePAT(id: $id, data: $data) {
-                data {
-                    id
-                    name
-                    token
-                }
-                error {
-                    message
-                }
-            }
-        }
-    }
-`;
-
-const DELETE_PAT = gql`
-    mutation deletePat($id: ID!) {
-        security {
-            deletePAT(id: $id) {
-                data
-                error {
-                    message
-                }
-            }
-        }
-    }
-`;
+import { CREATE_PAT, UPDATE_PAT, DELETE_PAT } from "./AccountGraphql";
 
 const Header = styled("div")({
     display: "flex",
@@ -175,7 +128,7 @@ const TokenListItem = ({ setFormIsLoading, data, setValue, PAT }) => {
                     <ConfirmationDialog
                         data-testid={`DeleteTokenDialog-${PAT.id}`}
                         title="Delete Token"
-                        message="Are you sure you want to delete this token?"
+                        message={t`Are you sure you want to delete this token?`}
                     >
                         {({ showConfirmation }) => {
                             return (
@@ -218,7 +171,7 @@ const TokensElement = ({ setFormIsLoading, data, setValue }) => {
     const generateToken = async () => {
         setFormIsLoading(true);
         const queryResponse = await client.mutate({
-            mutation: CREATE_NEW_PAT,
+            mutation: CREATE_PAT,
             variables: {
                 name: newPATName,
                 userId: data.id
@@ -235,8 +188,9 @@ const TokensElement = ({ setFormIsLoading, data, setValue }) => {
 
         const { token, pat: personalAccessToken } = queryResponse.data.security.createPAT.data;
         let newPATs;
-        if (!data.personalAccessTokens) newPATs = [personalAccessToken];
-        else newPATs = [...data.personalAccessTokens, personalAccessToken];
+        if (!data.personalAccessTokens) {
+            newPATs = [personalAccessToken];
+        } else newPATs = [...data.personalAccessTokens, personalAccessToken];
 
         setValue("personalAccessTokens", newPATs);
         setTokenHash(token);
@@ -287,7 +241,7 @@ const TokensElement = ({ setFormIsLoading, data, setValue }) => {
                                 style={{
                                     paddingLeft: "12px",
                                     paddingRight: "12px",
-                                    background: "#DDD"
+                                    background: "var(--mdc-theme-on-background)"
                                 }}
                             >
                                 {tokenHash}
