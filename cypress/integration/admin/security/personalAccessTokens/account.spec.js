@@ -1,10 +1,10 @@
-import { TestPAT } from "./common";
+import { testPAT } from "./common";
 
 context("Account PATs Module", () => {
     beforeEach(() => cy.login());
 
     it("should be able to create, edit, save and delete tokens", () => {
-        TestPAT({
+        testPAT({
             PATComponentRoute: "/account"
         });
     });

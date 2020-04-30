@@ -1,5 +1,5 @@
 /* eslint-disable jest/valid-expect */
-export const TestPAT = ({ PATComponentRoute, runAfterVisitingRoute }) => {
+export const testPAT = ({ PATComponentRoute, runAfterVisitingRoute }) => {
     const tokenName = "Cool token #1";
     const tokenName2 = "Cool token #2 - Updated";
     let initialTokens = null;
