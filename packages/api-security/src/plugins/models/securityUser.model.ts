@@ -1,4 +1,4 @@
-import { flow } from "lodash";
+import { pipe } from "@webiny/commodo";
 import { validation } from "@webiny/validation";
 import md5 from "md5";
 import bcrypt from "bcryptjs";
@@ -15,7 +15,7 @@ import {
 
 export default ({ createBase, context }): any => {
     // TODO: figure out how to create typings for a `model`
-    const SecurityUser: any = flow(
+    const SecurityUser: any = pipe(
         withName("SecurityUser"),
         withHooks(),
         withFields(instance => ({

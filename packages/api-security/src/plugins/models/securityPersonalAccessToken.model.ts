@@ -1,9 +1,9 @@
 import { withFields, withName, string, ref } from "@webiny/commodo";
-import { flow } from "lodash";
+import { pipe } from "@webiny/commodo";
 import { validation } from "@webiny/validation";
 
 export default ({ createBase, context }) =>
-    flow(
+    pipe(
         withName("SecurityPersonalAccessToken"),
         withFields(() => ({
             name: string({ validation: validation.create("required,maxLength:100") }),
