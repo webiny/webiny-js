@@ -1,4 +1,4 @@
-  {
+{
   "name": "@webiny/serverless-db-proxy",
   "version": "3.1.0",
   "main": "serverless.js",
