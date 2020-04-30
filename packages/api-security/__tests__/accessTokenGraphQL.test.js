@@ -4,7 +4,7 @@ import { mockedUser } from "./mocks";
 import { graphql } from "graphql";
 import { JwtToken } from "../src/plugins/authentication";
 
-const gqlGetCurrentUser = `
+const GET_CURRENT_USER = /* GraphQL */ `
     {
         security {
             getCurrentUser {
@@ -26,7 +26,7 @@ const gqlGetCurrentUser = `
     }
 `;
 
-const gqlCreatePAT = `
+const CREATE_PAT = /* GraphQL */ `
     mutation createPAT($userId: ID, $tokenName: String!) {
         security {
             createPAT(name: $tokenName, userId: $userId) {
@@ -38,7 +38,7 @@ const gqlCreatePAT = `
                     }
                     token
                 }
-                error{
+                error {
                     message
                     data
                 }
@@ -47,7 +47,7 @@ const gqlCreatePAT = `
     }
 `;
 
-const gqlUpdatePAT = `
+const UPDATE_PAT = /* GraphQL */ `
     mutation updatePAT($tokenId: ID!, $tokenName: String!) {
         security {
             updatePAT(id: $tokenId, data: { name: $tokenName }) {
@@ -65,7 +65,7 @@ const gqlUpdatePAT = `
     }
 `;
 
-const gqlDeletePAT = `
+const DELETE_PAT = /* GraphQL */ `
     mutation deletePAT($tokenId: ID!) {
         security {
             deletePAT(id: $tokenId) {
@@ -117,10 +117,8 @@ describe("Personal Access Tokens [GraphQL] test suite", () => {
         };
     });
 
-    afterAll(async () => {});
-
     test("Should get PATs (no tokens)", async () => {
-        const response = await graphql(schema, gqlGetCurrentUser, {}, context);
+        const response = await graphql(schema, GET_CURRENT_USER, {}, context);
         if (response.errors) {
             throw JSON.stringify(response.errors, null, 2);
         }
@@ -130,7 +128,7 @@ describe("Personal Access Tokens [GraphQL] test suite", () => {
         expect(user.personalAccessTokens).toEqual([]);
     });
     test("Should create PAT", async () => {
-        const response = await graphql(schema, gqlCreatePAT, {}, context, {
+        const response = await graphql(schema, CREATE_PAT, {}, context, {
             userId: mockedUser.id,
             tokenName: tokenName1
         });
@@ -150,7 +148,7 @@ describe("Personal Access Tokens [GraphQL] test suite", () => {
         createdToken = data.pat;
     });
     test("Should get PATs (1 token)", async () => {
-        const response = await graphql(schema, gqlGetCurrentUser, {}, context);
+        const response = await graphql(schema, GET_CURRENT_USER, {}, context);
         if (response.errors) {
             throw JSON.stringify(response.errors, null, 2);
         }
@@ -158,7 +156,7 @@ describe("Personal Access Tokens [GraphQL] test suite", () => {
         expect(user.personalAccessTokens).toEqual([createdToken]);
     });
     test("Should update PAT", async () => {
-        const response = await graphql(schema, gqlUpdatePAT, {}, context, {
+        const response = await graphql(schema, UPDATE_PAT, {}, context, {
             tokenId: createdToken.id,
             tokenName: tokenName2
         });
@@ -173,7 +171,7 @@ describe("Personal Access Tokens [GraphQL] test suite", () => {
         updatedToken = token;
     });
     test("Should get PATs (1 token, new value)", async () => {
-        const response = await graphql(schema, gqlGetCurrentUser, {}, context);
+        const response = await graphql(schema, GET_CURRENT_USER, {}, context);
         if (response.errors) {
             throw JSON.stringify(response.errors, null, 2);
         }
@@ -181,7 +179,7 @@ describe("Personal Access Tokens [GraphQL] test suite", () => {
         expect(user.personalAccessTokens).toEqual([updatedToken]);
     });
     test("Should delete PAT", async () => {
-        const response = await graphql(schema, gqlDeletePAT, {}, context, {
+        const response = await graphql(schema, DELETE_PAT, {}, context, {
             tokenId: updatedToken.id
         });
         if (response.errors) {
@@ -194,7 +192,7 @@ describe("Personal Access Tokens [GraphQL] test suite", () => {
         expect(data).toEqual(true);
     });
     test("Should get PATs (no tokens)", async () => {
-        const response = await graphql(schema, gqlGetCurrentUser, {}, context);
+        const response = await graphql(schema, GET_CURRENT_USER, {}, context);
         if (response.errors) {
             throw JSON.stringify(response.errors, null, 2);
         }
