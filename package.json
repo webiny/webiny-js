@@ -142,6 +142,7 @@
     "**/*.js": [
       "adio",
       "prettier --config .prettierrc.js --write",
+      "eslint",
       "git add",
       "jest --config jest.config.js --findRelatedTests"
     ]
