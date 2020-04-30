@@ -7,10 +7,7 @@ export default () => [
         type: "before-handler",
         name: "before-handler-validate-access-token",
         async handle({ context }) {
-            context.plugins.register(
-                // @ts-ignore
-                securityModels({})
-            );
+            context.plugins.register(securityModels());
         }
     },
     {
