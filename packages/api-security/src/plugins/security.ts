@@ -65,7 +65,9 @@ const authenticatePat = options => async (context: GraphQLContext) => {
     const { headers = {} } = event;
     const authorization = headers["Authorization"] || headers["authorization"] || "";
 
-    if (!authorization) return;
+    if (!authorization) {
+        return;
+    }
 
     const token = authorization;
     const Lambda = new LambdaClient({ region: process.env.AWS_REGION });
