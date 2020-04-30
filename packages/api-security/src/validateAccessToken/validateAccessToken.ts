@@ -1,12 +1,12 @@
-export default async (context, PAT) => {
+export default async (context, pat) => {
     try {
-        if (!PAT) {
+        if (!pat) {
             return null;
         }
 
-        PAT = PAT.toLowerCase();
+        pat = pat.toLowerCase();
         const token = await context.models.SecurityPersonalAccessToken.findOne({
-            query: { token: PAT }
+            query: { token: pat }
         });
         const user = await token.user;
         if (!user) {
