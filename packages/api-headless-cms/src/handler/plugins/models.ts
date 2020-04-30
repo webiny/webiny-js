@@ -124,7 +124,11 @@ export default () => {
         const contentModels = await context.models.CmsContentModel.find();
         for (let i = 0; i < contentModels.length; i++) {
             const data = contentModels[i];
-            context.models[data.modelId] = createDataModelFromData(createEnvironmentBase(), data, context);
+            context.models[data.modelId] = createDataModelFromData(
+                createEnvironmentBase(),
+                data,
+                context
+            );
             context.models[data.modelId + "Search"] = createSearchModelFromData(
                 createEnvironmentBase(),
                 data,

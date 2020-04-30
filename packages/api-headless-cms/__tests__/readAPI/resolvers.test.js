@@ -440,8 +440,7 @@ describe("READ - Resolvers", () => {
         });
         expect(data1.listCategories.data.length).toBe(2);
 
-        const { data: data2
-        } = await graphql(schema, query, {}, context, {
+        const { data: data2 } = await graphql(schema, query, {}, context, {
             where: { title_not_contains: "category" }
         });
 

@@ -13,7 +13,7 @@ export default () => [
             context.plugins.register(
                 await headlessPlugins({ type: "manage", environment: copyFrom })
             );
-        },
+        }
     },
     {
         type: "handler",
@@ -26,6 +26,6 @@ export default () => [
             const { copyTo } = event;
             await applyGraphQLContextPlugins(context);
             return await copyEnvironment(copyTo, context);
-        },
-    } as HttpHandlerPlugin,
+        }
+    } as HttpHandlerPlugin
 ];
