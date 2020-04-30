@@ -25,7 +25,7 @@ story.add(
 
                 <StorySandbox>
                     <StorySandboxExample>
-                        <CollapsibleList handle={<SimpleListItem text="Tokens (click)" />}>
+                        <CollapsibleList handle={<SimpleListItem text="Fruits" />}>
                             <SimpleListItem text="Bananas" />
                             <SimpleListItem text="Grapes" />
                             <SimpleListItem text="Oranges" />
