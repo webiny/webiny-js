@@ -8,7 +8,9 @@ export default async (context: GraphQLContext) => {
     const { headers = {} } = event;
     const authorization = headers["Authorization"] || headers["authorization"] || "";
 
-    if (!authorization) return;
+    if (!authorization) {
+        return;
+    }
 
     if (isJwt(authorization)) {
         const token = authorization.replace(/[b|B]earer\s/, "");
