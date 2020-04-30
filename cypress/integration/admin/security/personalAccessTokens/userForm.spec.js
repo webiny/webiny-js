@@ -15,7 +15,7 @@ context("User Form PATs Module", () => {
         };
 
         TestPAT({
-            PATComponentRoute: "/users",
+            patComponentRoute: "/users",
             runAfterVisitingRoute
         });
     });

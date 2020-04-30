@@ -15,7 +15,7 @@ import {
     DialogAccept,
     DialogTitle,
     DialogContent,
-    DialogActions,
+    DialogActions
 } from "@webiny/ui/Dialog";
 import { ConfirmationDialog } from "@webiny/ui/ConfirmationDialog";
 import { Alert } from "@webiny/ui/Alert";
@@ -74,7 +74,7 @@ const DELETE_PAT = gql`
 const Header = styled("div")({
     display: "flex",
     justifyContent: "space-between",
-    marginBottom: 15,
+    marginBottom: 15
 });
 
 const TokenListItem = ({ setFormIsLoading, data, setValue, PAT }) => {
@@ -88,19 +88,19 @@ const TokenListItem = ({ setFormIsLoading, data, setValue, PAT }) => {
         const queryResponse = await client.mutate({
             mutation: DELETE_PAT,
             variables: {
-                id: PAT.id,
-            },
+                id: PAT.id
+            }
         });
         setFormIsLoading(false);
 
         const { error } = queryResponse.data.security.deletePAT;
         if (error) {
             return showSnackbar(error.message, {
-                action: "Close",
+                action: "Close"
             });
         }
 
-        const newPATs = data.personalAccessTokens.filter((crtPAT) => crtPAT.id != PAT.id);
+        const newPATs = data.personalAccessTokens.filter(crtPAT => crtPAT.id != PAT.id);
 
         setValue("personalAccessTokens", newPATs);
         showSnackbar("Token deleted succesfully!");
@@ -113,25 +113,25 @@ const TokenListItem = ({ setFormIsLoading, data, setValue, PAT }) => {
             variables: {
                 id: PAT.id,
                 data: {
-                    name: tokenName,
-                },
-            },
+                    name: tokenName
+                }
+            }
         });
         setFormIsLoading(false);
 
         const { error } = queryResponse.data.security.updatePAT;
         if (error) {
             return showSnackbar(error.message, {
-                action: "Close",
+                action: "Close"
             });
         }
 
-        const newPATs = data.personalAccessTokens.map((crtPAT) =>
+        const newPATs = data.personalAccessTokens.map(crtPAT =>
             crtPAT !== PAT
                 ? crtPAT
                 : {
                       ...crtPAT,
-                      name: tokenName,
+                      name: tokenName
                   }
         );
 
@@ -147,7 +147,7 @@ const TokenListItem = ({ setFormIsLoading, data, setValue, PAT }) => {
                     <Input
                         label="Token name"
                         value={tokenName}
-                        onChange={(newName) => setTokenName(newName.slice(0, 100))}
+                        onChange={newName => setTokenName(newName.slice(0, 100))}
                     />
                 </DialogContent>
                 <DialogActions>
@@ -195,7 +195,7 @@ const TokenListItem = ({ setFormIsLoading, data, setValue, PAT }) => {
 
 const TokenList = ({ setFormIsLoading, data, setValue }) => {
     if (data.personalAccessTokens && data.personalAccessTokens.length > 0)
-        return data.personalAccessTokens.map((PAT) => (
+        return data.personalAccessTokens.map(PAT => (
             <TokenListItem
                 setFormIsLoading={setFormIsLoading}
                 key={PAT.id}
@@ -221,15 +221,15 @@ const TokensElement = ({ setFormIsLoading, data, setValue }) => {
             mutation: CREATE_NEW_PAT,
             variables: {
                 name: newPATName,
-                userId: data.id,
-            },
+                userId: data.id
+            }
         });
         setFormIsLoading(false);
 
         const { error } = queryResponse.data.security.createPAT;
         if (error) {
             return showSnackbar(error.message, {
-                action: "Close",
+                action: "Close"
             });
         }
 
@@ -253,7 +253,7 @@ const TokensElement = ({ setFormIsLoading, data, setValue }) => {
                     <Input
                         label="Token name"
                         value={newPATName}
-                        onChange={(newName) => setNewPATName(newName.slice(0, 100))}
+                        onChange={newName => setNewPATName(newName.slice(0, 100))}
                     />
                 </DialogContent>
                 <DialogActions>
@@ -279,7 +279,7 @@ const TokensElement = ({ setFormIsLoading, data, setValue }) => {
                         <div
                             style={{
                                 display: "flex",
-                                alignItems: "center",
+                                alignItems: "center"
                             }}
                         >
                             <Typography
@@ -287,7 +287,7 @@ const TokensElement = ({ setFormIsLoading, data, setValue }) => {
                                 style={{
                                     paddingLeft: "12px",
                                     paddingRight: "12px",
-                                    background: "#DDD",
+                                    background: "#DDD"
                                 }}
                             >
                                 {tokenHash}

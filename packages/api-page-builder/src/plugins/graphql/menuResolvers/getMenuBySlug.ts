@@ -1,7 +1,7 @@
 import { Response, NotFoundResponse } from "@webiny/graphql";
 import prepareMenuItems from "./prepareMenuItems";
 
-export default async (root: any, args: {[key: string]: any}, context: {[key: string]: any}) => {
+export default async (root: any, args: { [key: string]: any }, context: { [key: string]: any }) => {
     const { slug } = args;
     const { PbMenu } = context.models;
 

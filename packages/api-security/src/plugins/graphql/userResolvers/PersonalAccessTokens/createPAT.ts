@@ -21,7 +21,7 @@ export default async (root, args, context) => {
 
     const canAssignUser =
         context.user.access.fullAccess ||
-        context.user.access.scopes.find((scope) => scope === "security:user:crud");
+        context.user.access.scopes.find(scope => scope === "security:user:crud");
 
     try {
         let tokenUserId;
@@ -31,7 +31,7 @@ export default async (root, args, context) => {
             if (!canAssignUser)
                 return new ErrorResponse({
                     message:
-                        "Current user is not admin! You must be an admin in order to update other users.",
+                        "Current user is not admin! You must be an admin in order to update other users."
                 });
             if (!(await User.findById(otherUserId)))
                 return new NotFoundResponse("User to be updated not found!");
@@ -44,7 +44,7 @@ export default async (root, args, context) => {
             .populate({
                 user: tokenUserId,
                 name: args.name,
-                token,
+                token
             })
             .save();
         return { data: { pat, token: pat.token } };
@@ -52,7 +52,7 @@ export default async (root, args, context) => {
         return new ErrorResponse({
             code: e.code,
             message: e.message,
-            data: e.data || null,
+            data: e.data || null
         });
     }
 };

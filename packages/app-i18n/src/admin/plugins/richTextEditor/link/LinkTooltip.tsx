@@ -66,7 +66,7 @@ const LinkTooltip = ({ editor, onChange, activatePlugin }) => {
         if (menu) {
             const editorRect = menu.parentNode.getBoundingClientRect();
             const menuRect = menu.getBoundingClientRect();
-            let { top, left, height } = getSelectionRect();
+            const { top, left, height } = getSelectionRect();
 
             const menuRight = left + menuRect.width;
             const diff = editorRect.right - menuRight;
@@ -99,8 +99,7 @@ const LinkTooltip = ({ editor, onChange, activatePlugin }) => {
         <Tooltip ref={menuRef} style={{ display: "none" }}>
             <Elevation className={tooltipInner} z={1}>
                 <span>
-                    Link:{" "}
-                    {/* eslint-disable-next-line react/jsx-no-target-blank */}
+                    Link: {/* eslint-disable-next-line react/jsx-no-target-blank */}
                     <a href={href} target={"_blank"}>
                         {href.length > 50 ? compressLink(href) : href}
                     </a>

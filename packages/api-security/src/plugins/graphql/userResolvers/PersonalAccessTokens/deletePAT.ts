@@ -17,11 +17,11 @@ export default async (root, args, context) => {
         if (patUser.id !== currentUserId) {
             const { fullAccess, scopes } = context.user.access;
             const canDeleteToken =
-                fullAccess || scopes.find((scope) => scope === "security:user:crud");
+                fullAccess || scopes.find(scope => scope === "security:user:crud");
             if (!canDeleteToken) {
                 return new ErrorResponse({
                     message:
-                        "Cannot delete user's personal access token - insufficient permissions.",
+                        "Cannot delete user's personal access token - insufficient permissions."
                 });
             }
         }
@@ -31,7 +31,7 @@ export default async (root, args, context) => {
         return new ErrorResponse({
             code: e.code,
             message: e.message,
-            data: e.data || null,
+            data: e.data || null
         });
     }
 };

@@ -1,6 +1,6 @@
 import { ListResponse } from "@webiny/graphql";
 
-export default async (root: any, args: {[key: string]: any}, context: {[key: string]: any}) => {
+export default async (root: any, args: { [key: string]: any }, context: { [key: string]: any }) => {
     const { File } = context.models;
     const {
         page = 1,

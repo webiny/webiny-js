@@ -7,13 +7,13 @@ import UsersForm from "./UsersForm";
 import { CREATE_USER, DELETE_USER, READ_USER, LIST_USERS, UPDATE_USER } from "./graphql";
 import { CrudProvider } from "@webiny/app-admin/contexts/Crud";
 
-const variables = (data) => {
+const variables = data => {
     return {
         data: {
             ...pick(data, ["email", "password", "firstName", "lastName", "avatar", "enabled"]),
-            roles: (data.roles || []).map((x) => x.id),
-            groups: (data.groups || []).map((x) => x.id),
-        },
+            roles: (data.roles || []).map(x => x.id),
+            groups: (data.groups || []).map(x => x.id)
+        }
     };
 };
 
@@ -26,7 +26,7 @@ const Users = () => {
             update={{ mutation: UPDATE_USER, variables }}
             list={{
                 query: LIST_USERS,
-                variables: { sort: { savedOn: -1 } },
+                variables: { sort: { savedOn: -1 } }
             }}
         >
             {({ actions }) => (
@@ -39,7 +39,7 @@ const Users = () => {
                             style={{
                                 marginLeft: "100px",
                                 marginRight: "100px",
-                                overflow: "hidden",
+                                overflow: "hidden"
                             }}
                         >
                             <UsersForm />

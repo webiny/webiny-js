@@ -13,7 +13,9 @@ import loadJson from "load-json-file";
 const FILES_COUNT_IN_EACH_BATCH = 15;
 
 export default async ({ context, INSTALL_EXTRACT_DIR }) => {
-    const elementsData: {[key: string]: any}[] = await loadJson(path.join(INSTALL_EXTRACT_DIR, "data/elementsData.json"));
+    const elementsData: { [key: string]: any }[] = await loadJson(
+        path.join(INSTALL_EXTRACT_DIR, "data/elementsData.json")
+    );
     const elementsFilesData = await loadJson(
         path.join(INSTALL_EXTRACT_DIR, "data/elementsFilesData.json")
     );
@@ -79,7 +81,7 @@ export default async ({ context, INSTALL_EXTRACT_DIR }) => {
                 new Promise(async (promise, reject) => {
                     try {
                         await console.log(`saveElements: started with chunk index ${i}`);
-                        let filesChunk = filesChunks[i];
+                        const filesChunk = filesChunks[i];
 
                         // 1. Get pre-signed POST payloads for current files chunk.
                         const response = await client.request(UPLOAD_FILES, {

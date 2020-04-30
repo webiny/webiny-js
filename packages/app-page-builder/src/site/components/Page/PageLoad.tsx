@@ -10,12 +10,9 @@ type PageLoadProps = {
 };
 
 const PageLoad = ({ parent, id, url }: PageLoadProps) => {
-    const { loading, data, error } = useQuery(
-        GET_PUBLISHED_PAGE(),
-        {
-            variables: { parent, id, url, returnErrorPage: true, returnNotFoundPage: true }
-        }
-    );
+    const { loading, data, error } = useQuery(GET_PUBLISHED_PAGE(), {
+        variables: { parent, id, url, returnErrorPage: true, returnNotFoundPage: true }
+    });
 
     if (error) {
         return <PageRender error={error} />;

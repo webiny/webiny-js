@@ -1,18 +1,13 @@
 /* eslint-disable jest/valid-expect */
-export const testPAT = ({ PATComponentRoute, runAfterVisitingRoute }) => {
+export const testPAT = ({ patComponentRoute, runAfterVisitingRoute }) => {
     const tokenName = "Cool token #1";
     const tokenName2 = "Cool token #2 - Updated";
-    let initialTokens = null;
-    let newTokens = null;
-    let lastToken = null;
-    let lastTokenId = null;
+    let initialTokens, newTokens, lastToken, lastTokenId;
 
     const getTokens = body =>
         Array.from(body[0].querySelectorAll("[data-testid*=pat-token-list-item]"));
-    // const getLastToken = ($body) =>
-    //     $body[0].querySelector(`[data-testid=${newTokens[0].getAttribute("data-testid")}]`);
 
-    cy.visit(PATComponentRoute);
+    cy.visit(patComponentRoute);
     if (runAfterVisitingRoute) runAfterVisitingRoute();
     cy.findByText("Personal Access Tokens")
         .click()
@@ -32,13 +27,13 @@ export const testPAT = ({ PATComponentRoute, runAfterVisitingRoute }) => {
         .click()
         .get("body")
         .then($body => {
-            const crtTokens = getTokens($body);
-            expect(crtTokens.length).to.equal(initialTokens.length + 1);
+            const currentTokens = getTokens($body);
+            expect(currentTokens.length).to.equal(initialTokens.length + 1);
 
             const initialTokenDataTestIds = initialTokens.map(token =>
                 token.getAttribute("data-testid")
             );
-            newTokens = crtTokens.filter(
+            newTokens = currentTokens.filter(
                 token => !initialTokenDataTestIds.includes(token.getAttribute("data-testid"))
             );
             lastToken = newTokens[0];
@@ -46,10 +41,6 @@ export const testPAT = ({ PATComponentRoute, runAfterVisitingRoute }) => {
                 .getAttribute("data-testid")
                 .split("-")
                 .pop();
-            console.log(lastToken);
-            console.log(lastToken.textContent);
-            console.log(`lastTokenId = ${lastTokenId}`);
-            console.log(`[data-testid=updateToken-${lastTokenId}]`);
             expect(lastToken.textContent).to.equal(tokenName);
 
             return lastToken.querySelector(`[data-testid=updateToken-${lastTokenId}]`);
@@ -67,22 +58,12 @@ export const testPAT = ({ PATComponentRoute, runAfterVisitingRoute }) => {
         .then($body => $body[0].querySelector(`[data-testid=AcceptUpdateToken-${lastTokenId}]`))
         .click()
         .wait(500)
-        .then(() => {
-            console.log(lastToken);
-            console.log(lastToken.textContent);
-        })
         .findByText(tokenName2)
         .get("body")
         .then($body => $body[0].querySelector(`[data-testid=deleteToken-${lastTokenId}`))
         .click()
         .get("body")
         .then($body => {
-            console.log(
-                $body[0].querySelectorAll(
-                    `[data-testid*=DeleteTokenDialog-${lastTokenId}] > * > * > * > button`
-                )
-            );
-
             return $body[0].querySelectorAll(
                 `[data-testid*=DeleteTokenDialog-${lastTokenId}] > * > * > * > button`
             )[1];
@@ -91,7 +72,7 @@ export const testPAT = ({ PATComponentRoute, runAfterVisitingRoute }) => {
         .wait(1000)
         .get("body")
         .then($body => {
-            const crtTokens = getTokens($body);
-            expect(crtTokens.length).to.equal(initialTokens.length);
+            const currentTokens = getTokens($body);
+            expect(currentTokens.length).to.equal(initialTokens.length);
         });
 };

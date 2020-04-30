@@ -98,10 +98,7 @@ class Menu extends React.Component<MenuProps, State> {
     };
 
     closeMenu = () => {
-        this.setState(
-            { menuIsOpen: false },
-            () => this.props.onClose && this.props.onClose()
-        );
+        this.setState({ menuIsOpen: false }, () => this.props.onClose && this.props.onClose());
     };
 
     renderMenuWithPortal = () => {

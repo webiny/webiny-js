@@ -10,7 +10,7 @@ export default ({ createBase, context }) =>
             token: string({ validation: validation.create("required,maxLength:64") }),
             user: ref({
                 instanceOf: context.models.SecurityUser,
-                validation: validation.create("required"),
-            }),
+                validation: validation.create("required")
+            })
         }))
     )(createBase());

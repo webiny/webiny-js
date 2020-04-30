@@ -9,7 +9,7 @@ import resolveCreatePAT from "./userResolvers/PersonalAccessTokens/createPAT";
 import resolveUpdatePAT from "./userResolvers/PersonalAccessTokens/updatePAT";
 import resolveDeletePAT from "./userResolvers/PersonalAccessTokens/deletePAT";
 
-const userFetcher = (ctx) => ctx.models.SecurityUser;
+const userFetcher = ctx => ctx.models.SecurityUser;
 
 export default {
     typeDefs: /* GraphQL */ `
@@ -177,9 +177,9 @@ export default {
     `,
     resolvers: {
         PersonalAccessToken: {
-            token: (pat) => {
+            token: pat => {
                 return pat.token.substr(-4);
-            },
+            }
         },
         SecurityUser: {
             __resolveReference(reference, context) {
@@ -187,12 +187,12 @@ export default {
             },
             avatar({ avatar }) {
                 return avatar ? { __typename: "File", id: avatar } : null;
-            },
+            }
         },
         SecurityQuery: {
             getCurrentUser: resolveGetCurrentUser,
             getUser: resolveGet(userFetcher),
-            listUsers: resolveList(userFetcher),
+            listUsers: resolveList(userFetcher)
         },
         SecurityMutation: {
             loginUsingIdToken: resolveLoginUsingIdToken(userFetcher),
@@ -202,7 +202,7 @@ export default {
             deleteUser: resolveDeleteUser(userFetcher),
             createPAT: resolveCreatePAT,
             updatePAT: resolveUpdatePAT,
-            deletePAT: resolveDeletePAT,
-        },
-    },
+            deletePAT: resolveDeletePAT
+        }
+    }
 };

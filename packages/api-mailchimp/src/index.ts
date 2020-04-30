@@ -147,6 +147,7 @@ export default () => [
                             await mailchimp.post({
                                 path: `/lists/${listId}/members`,
                                 body: {
+                                    // eslint-disable-next-line @typescript-eslint/camelcase
                                     email_address: email,
                                     status: listResponse.body.double_optin
                                         ? "pending"
@@ -184,5 +185,5 @@ export default () => [
                 }
             }
         }
-    },
+    }
 ];

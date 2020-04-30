@@ -88,7 +88,9 @@ class Status {
 
         // Write content
         console.log();
-        const content = `${dim(this.seconds + "s")} ${dim(figures.pointerSmall)} ${this.status.message}...`;
+        const content = `${dim(this.seconds + "s")} ${dim(figures.pointerSmall)} ${
+            this.status.message
+        }...`;
         process.stdout.write(content);
         console.log();
 

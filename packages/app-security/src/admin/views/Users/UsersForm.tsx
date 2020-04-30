@@ -15,7 +15,7 @@ import {
     SimpleForm,
     SimpleFormHeader,
     SimpleFormFooter,
-    SimpleFormContent,
+    SimpleFormContent
 } from "@webiny/app-admin/components/SimpleForm";
 import AccountTokens from "@webiny/app-security/admin/views/AccountTokens";
 
@@ -90,8 +90,8 @@ const UsersForm = () => {
                                                 setFormIsLoading={setFormIsLoading}
                                             />
                                         </Bind>
-                                    ),
-                                },
+                                    )
+                                }
                             })}
                         </SimpleFormContent>
                         <SimpleFormFooter>

@@ -23,7 +23,7 @@ export default () => ({
         const createBase = () =>
             flow(
                 withFields({
-                    id: context.commodo.fields.id(),
+                    id: context.commodo.fields.id()
                 }),
                 withStorage({ driver }),
                 withUser(context),
@@ -36,18 +36,18 @@ export default () => ({
         context.models.SecurityRoles2Models = securityRoles2Models({ createBase, context });
         context.models.SecurityGroup = securityGroup({
             createBase,
-            context,
+            context
         });
         context.models.SecurityGroups2Models = securityGroups2Models({ createBase, context });
         context.models.SecurityUser = securityUser({
             context,
-            createBase,
+            createBase
         });
         context.models.SecurityPersonalAccessToken = securityPersonalAccessToken({
             createBase,
-            context,
+            context
         });
 
         context.models.createBase = createBase;
-    },
+    }
 });
