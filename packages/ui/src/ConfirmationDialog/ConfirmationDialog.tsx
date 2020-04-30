@@ -55,7 +55,9 @@ class ConfirmationDialog extends React.Component<Props, State> {
     __isMounted = false;
 
     callbacks: ConfirmationCallbacks = {
+        // eslint-disable-next-line @typescript-eslint/no-empty-function
         onAccept: () => {},
+        // eslint-disable-next-line @typescript-eslint/no-empty-function
         onCancel: () => {}
     };
 
@@ -112,7 +114,12 @@ class ConfirmationDialog extends React.Component<Props, State> {
                     <DialogContent>{this.props.message}</DialogContent>
                     <DialogActions>
                         <DialogCancel onClick={this.onCancel}>Cancel</DialogCancel>
-                        <DialogButton onClick={this.onAccept}>Confirm</DialogButton>
+                        <DialogButton
+                            data-testid="confirmationdialog-confirm-action"
+                            onClick={this.onAccept}
+                        >
+                            Confirm
+                        </DialogButton>
                     </DialogActions>
                 </Dialog>
                 {this.props.children({
