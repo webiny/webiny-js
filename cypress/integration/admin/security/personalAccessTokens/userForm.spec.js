@@ -1,4 +1,4 @@
-import { TestPAT } from "./common";
+import { testPAT } from "./common";
 
 context("User Form PATs Module", () => {
     beforeEach(() => cy.login());
@@ -14,7 +14,7 @@ context("User Form PATs Module", () => {
             });
         };
 
-        TestPAT({
+        testPAT({
             patComponentRoute: "/users",
             runAfterVisitingRoute
         });
