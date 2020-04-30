@@ -120,7 +120,10 @@ module.exports = async function({ root, appName, templateName, tag, log }) {
         let logStream;
         if(log) {
             logStream = fs.createWriteStream(path.join(root, 'logs.txt'), { flags: "a" });
-            await execa("yarn", [], options).stdout.pipe(logStream);
+            const runner = execa("yarn", [], options);
+            runner.stdout.pipe(logStream);
+            runner.stderr.pipe(logStream);
+            await runner;
         } else {
             await execa("yarn", [], options);
         }
