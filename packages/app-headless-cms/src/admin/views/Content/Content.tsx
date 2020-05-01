@@ -1,95 +1,59 @@
-import React from "react";
+import React, { useMemo } from "react";
 import { SplitView, LeftPanel, RightPanel } from "@webiny/app-admin/components/SplitView";
-import { FloatingActionButton } from "@webiny/app-admin/components/FloatingActionButton";
+import { useDataList } from "@webiny/app/hooks/useDataList";
 import ContentDataList from "./ContentDataList";
-import ContentForm from "./ContentForm";
-import { CrudProvider } from "@webiny/app-admin/contexts/Crud";
-import { useApolloClient, useQuery } from "@webiny/app-headless-cms/admin/hooks";
-import { GET_CONTENT_MODEL_BY_MODEL_ID } from "./graphql";
+import ContentDetails from "./ContentDetails";
+import { createListQuery } from "@webiny/app-headless-cms/admin/components/ContentModelForm/graphql";
 import useRouter from "use-react-router";
 import get from "lodash.get";
-import gql from "graphql-tag";
-import createCrudQueriesAndMutations from "./createCrudQueriesAndMutations";
+import { useApolloClient, useQuery } from "@webiny/app-headless-cms/admin/hooks";
+import { GET_CONTENT_MODEL_BY_MODEL_ID } from "./graphql";
+import { FloatingActionButton } from "@webiny/app-admin/components/FloatingActionButton";
+import useReactRouter from "use-react-router";
 
-function Content() {
+const ContentRender = ({ contentModel }) => {
+    const apolloClient = useApolloClient();
+    const { history } = useReactRouter();
+
+    const LIST_QUERY = useMemo(() => createListQuery(contentModel), [contentModel.modelId]);
+
+    const dataList = useDataList({
+        client: apolloClient,
+        query: LIST_QUERY
+    });
+
+    return (
+        <React.Fragment>
+            <SplitView>
+                <LeftPanel span={4}>
+                    <ContentDataList dataList={dataList} contentModel={contentModel} />
+                </LeftPanel>
+                <RightPanel span={8}>
+                    <ContentDetails dataList={dataList} contentModel={contentModel} />
+                </RightPanel>
+            </SplitView>
+            <FloatingActionButton data-testid="new-record-button" onClick={() => {
+                const query = new URLSearchParams(location.search);
+                query.delete("id");
+                history.push({ search: query.toString() });
+            }} />
+        </React.Fragment>
+    );
+};
+
+const Content = () => {
     const { match } = useRouter();
-
     const modelId = get(match, "params.modelId");
-    const { data, loading } = useQuery(GET_CONTENT_MODEL_BY_MODEL_ID, {
+    const { data } = useQuery(GET_CONTENT_MODEL_BY_MODEL_ID, {
         skip: !modelId,
         variables: { modelId }
     });
-
-    const apolloClient = useApolloClient();
 
     if (!data) {
         return null;
     }
 
-    const contentModel = data.getContentModel.data;
-    const crud = createCrudQueriesAndMutations(contentModel);
-
-    return (
-        <CrudProvider
-            delete={{
-                mutation: gql`
-                    ${crud.delete}
-                `,
-                options: {
-                    client: apolloClient
-                }
-            }}
-            read={{
-                query: gql`
-                    ${crud.read}
-                `,
-                options: {
-                    client: apolloClient
-                }
-            }}
-            create={{
-                mutation: gql`
-                    ${crud.create}
-                `,
-                options: {
-                    client: apolloClient
-                }
-            }}
-            update={{
-                mutation: gql`
-                    ${crud.update}
-                `,
-                options: {
-                    client: apolloClient
-                }
-            }}
-            list={{
-                query: gql`
-                    ${crud.list}
-                `,
-                options: {
-                    client: apolloClient
-                }
-            }}
-        >
-            {({ actions }) => (
-                <>
-                    <SplitView>
-                        <LeftPanel span={4}>
-                            <ContentDataList contentModel={contentModel} />
-                        </LeftPanel>
-                        <RightPanel span={8}>
-                            <ContentForm contentModel={contentModel} />
-                        </RightPanel>
-                    </SplitView>
-                    <FloatingActionButton
-                        data-testid="new-record-button"
-                        onClick={actions.resetForm}
-                    />
-                </>
-            )}
-        </CrudProvider>
-    );
-}
+    return <ContentRender contentModel={data.getContentModel.data} />;
+};
 
 export default Content;
