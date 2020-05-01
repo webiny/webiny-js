@@ -75,14 +75,14 @@ export const createDataModelFromData = (
                     const removeCallback = this.hook("afterCreate", async () => {
                         const previousLatest = await Model.findOne({
                             query: {
-                                parent: this.parent,
+                                parent: this.meta.parent,
                                 latestVersion: true,
-                                version: { $ne: this.version }
+                                version: { $ne: this.meta.version }
                             }
                         });
 
                         if (previousLatest) {
-                            previousLatest.metal.latestVersion = false;
+                            previousLatest.meta.latestVersion = false;
                             await previousLatest.save();
                         }
                         removeCallback();
@@ -173,12 +173,12 @@ export const createDataModelFromData = (
                 // TODO: check if this will cause any issues for Search catalog updates.
                 // Deactivate previously published revision.
                 const publishedRev = await Model.findOne({
-                    query: { published: true, parent: this.parent }
+                    query: { published: true, parent: this.meta.parent }
                 });
 
                 if (publishedRev) {
                     this.hook("afterPublish", async () => {
-                        publishedRev.published = false;
+                        publishedRev.meta.published = false;
                         await publishedRev.save();
                     });
                 }
@@ -204,8 +204,8 @@ export const createDataModelFromData = (
                             return this.locked ? "locked" : "draft";
                         },
                         get revisions() {
-                            return instance.constructor.find({
-                                query: { parent: instance.meta.parent },
+                            return Model.find({
+                                query: { parent: this.parent },
                                 sort: { version: -1 }
                             });
                         }
