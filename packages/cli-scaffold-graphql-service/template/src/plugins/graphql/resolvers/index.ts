@@ -1,5 +1,3 @@
-import { Response } from "@webiny/graphql";
-
 const unicorns = [
     {
         id: "sdjigashoi3_1",
@@ -14,11 +12,13 @@ const unicorns = [
 ];
 
 const resolvers = {
-    getUnicorn: async (root, args, context) => {
-        return new Response(unicorns.find(unicorn => unicorn.name === args.name));
-    },
-    getUnicorns: async (root, args, context) => {
-        return new Response(unicorns);
+    Query: {
+        getUnicorn: async (root, args, context) => {
+            return unicorns.find(unicorn => unicorn.name === args.name);
+        },
+        getUnicorns: async (root, args, context) => {
+            return unicorns;
+        }
     }
 };
 
