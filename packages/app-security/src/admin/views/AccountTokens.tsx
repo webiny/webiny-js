@@ -203,7 +203,7 @@ const TokensElement = ({ setFormIsLoading, data, setValue }) => {
         <>
             <Dialog open={showCreatePATDialog} onClose={() => setShowCreatePATDialog(false)}>
                 <DialogTitle>Create new Personal Access Token</DialogTitle>
-                <DialogContent data-testid={`CreateTokenDialogContent`}>
+                <DialogContent data-testid={`create-token-dialog-content`}>
                     <Input
                         label="Token name"
                         value={newPATName}
@@ -213,7 +213,7 @@ const TokensElement = ({ setFormIsLoading, data, setValue }) => {
                 <DialogActions>
                     <DialogCancel>Cancel</DialogCancel>
                     <DialogAccept
-                        data-testid={`AcceptGenerateToken`}
+                        data-testid={`accept-generate-token`}
                         onClick={() => generateToken()}
                     >
                         OK
@@ -256,7 +256,7 @@ const TokensElement = ({ setFormIsLoading, data, setValue }) => {
                     </div>
                 </DialogContent>
                 <DialogActions>
-                    <DialogAccept data-testid={`CloseCreatedTokenDialog`}>Close</DialogAccept>
+                    <DialogAccept data-testid={`close-created-token-dialog`}>Close</DialogAccept>
                 </DialogActions>
             </Dialog>
 
