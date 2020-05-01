@@ -10,7 +10,6 @@ type Props = {
     spinnerColor: string;
     spinnerWidth: number;
     visible: boolean;
-    incognito?: boolean;
     style?: React.CSSProperties;
 };
 
@@ -39,16 +38,9 @@ const Label = styled("div")({
     marginTop: 15
 });
 
-const CircularProgress = ({
-    label,
-    size,
-    spinnerWidth,
-    spinnerColor,
-    visible,
-    incognito = false
-}: Props) => {
+const CircularProgress = ({ label, size, spinnerWidth, spinnerColor, visible, style }: Props) => {
     return (
-        <SpinnerWrapper style={incognito ? { zIndex: 3 } : null}>
+        <SpinnerWrapper style={style}>
             {process.env.REACT_APP_ENV === "ssr" ? null : (
                 <div>
                     <Spinner
