@@ -19,13 +19,15 @@ export default ({ createBase, context }) => {
             icon: string({ validation: validation.create("required") })
         }),
         withProps({
+            // Returns only published content models.
             get contentModels() {
                 const { CmsContentModel } = context.models;
-                return CmsContentModel.find({ query: { group: this.id } });
+                return CmsContentModel.find({ query: { published: true, group: this.id } });
             },
+            // Counts only published content models.
             get totalContentModels() {
                 const { CmsContentModel } = context.models;
-                return CmsContentModel.count({ query: { group: this.id } });
+                return CmsContentModel.count({ query: { published: true, group: this.id } });
             }
         }),
         withHooks({
