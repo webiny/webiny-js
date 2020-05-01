@@ -1,7 +1,3 @@
-// TODO:
-// - Check if service with the same name already exists in the `services` array
-// - Check if resource with the same name is already defined and replace it
-
 module.exports = function({ types: t, template: tpl }, { template, resourceName }) {
     return {
         visitor: {

@@ -70,8 +70,6 @@ module.exports = [
                 const formattedCode = prettier.format(code, prettierConfig);
 
                 fs.writeFileSync(rootResourcesPath, formattedCode);
-
-                // TODO: update tsconfig.json with correct path to base config
             }
         }
     }
