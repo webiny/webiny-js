@@ -11,8 +11,9 @@ export type CmsContentModelFormProps = {
     loading?: boolean;
     preview?: boolean;
     contentModel: CmsContentModelModel;
-    data?: { [key: string]: any };
-    onSubmit?: (data: { [key: string]: any }) => void;
+    content?: { [key: string]: any };
+    onSubmit?: (data: { [key: string]: any }) => any;
+    onChange?: (data: { [key: string]: any }) => any;
 };
 
 export type CmsEditorFieldOptionPlugin = Plugin & {
@@ -101,16 +102,12 @@ export type CmsContentModelModel = {
     parent: string;
     layout: CmsContentModelModelFieldsLayout;
     fields: CmsContentModelModelField[];
-    name: string;
+    title: string;
+    modelId: string;
     settings: any;
     status: string;
     savedOn: string;
     revisions: any[];
-    overallStats: {
-        submissions: number;
-        views: number;
-        conversionRate: number;
-    };
 };
 
 export type CmsContentModelModelField = {
