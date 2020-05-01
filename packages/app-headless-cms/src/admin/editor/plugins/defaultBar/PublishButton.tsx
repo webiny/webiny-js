@@ -35,7 +35,7 @@ const PublishButton = () => {
                                 },
                             });
 
-                            const { error } = response.data.publishRevision;
+                            const { error } = response.data.publishContentModel;
                             if (error) {
                                 return showSnackbar(error.message);
                             }

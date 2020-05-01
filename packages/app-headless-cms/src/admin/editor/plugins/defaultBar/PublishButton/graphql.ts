@@ -1,8 +1,8 @@
 import gql from "graphql-tag";
 
 export const PUBLISH_REVISION = gql`
-    mutation CmsPublishRevision($id: ID!) {
-        publishRevision(id: $id) {
+    mutation CmsPublishContentModel($id: ID!) {
+        publishContentModel(id: $id) {
             data {
                 id
                 status
