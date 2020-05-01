@@ -2,13 +2,14 @@ import pluralize from "pluralize";
 import { CmsModel, CmsFieldTypePlugins, CmsGraphQLContext } from "@webiny/api-headless-cms/types";
 import { createManageTypeName, createTypeName } from "../utils/createTypeName";
 import { commonFieldResolvers } from "../utils/commonFieldResolvers";
-import { resolveGet } from "../utils/resolveGet";
-import { resolveList } from "../utils/resolveList";
-import { resolveCreate } from "../utils/resolveCreate";
-import { resolveUpdate } from "../utils/resolveUpdate";
-import { resolveDelete } from "../utils/resolveDelete";
-import { resolvePublish } from "../utils/resolvePublish";
-import { resolveUnpublish } from "../utils/resolveUnpublish";
+import { resolveGet } from "../utils/resolvers/resolveGet";
+import { resolveList } from "../utils/resolvers/resolveList";
+import { resolveCreate } from "../utils/resolvers/resolveCreate";
+import { resolveUpdate } from "../utils/resolvers/resolveUpdate";
+import { resolveDelete } from "../utils/resolvers/resolveDelete";
+import { resolvePublish } from "../utils/resolvers/resolvePublish";
+import { resolveUnpublish } from "../utils/resolvers/resolveUnpublish";
+import { resolveCreateFrom } from "../utils/resolvers/resolveCreateFrom";
 
 export interface CreateManageResolvers {
     (params: {
