@@ -129,7 +129,7 @@ const UserAccountForm = () => {
                                 </Bind>
                             </div>
                             <SimpleForm>
-                                {loading && <CircularProgress incognito={true} />}
+                                {loading && <CircularProgress style={{ zIndex: 3 }} />}
                                 <SimpleFormHeader title={"Account"} />
                                 <SimpleFormContent>
                                     {React.createElement(auth.view, {
