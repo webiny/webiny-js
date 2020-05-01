@@ -24,7 +24,7 @@ type Props = {
     placeholder: string;
     style?: { [key: string]: any };
     renderImagePreview?: (props: any) => React.ReactElement<any>;
-    round?: Boolean;
+    round?: boolean;
 };
 
 class Image extends React.Component<Props> {

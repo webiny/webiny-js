@@ -56,7 +56,7 @@ type SingleImageUploadProps = FormComponentProps & {
     imagePreviewProps?: any;
 
     // Is the wrapper round?
-    round?: Boolean;
+    round?: boolean;
 };
 
 export default class SingleImageUpload extends React.Component<SingleImageUploadProps> {
