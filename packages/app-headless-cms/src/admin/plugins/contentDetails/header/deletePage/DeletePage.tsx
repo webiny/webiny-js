@@ -1,6 +1,5 @@
-import React from "react";
+import React, { useMemo } from "react";
 import dot from "dot-prop-immutable";
-import { useApolloClient } from "react-apollo";
 import useReactRouter from "use-react-router";
 import { get } from "lodash";
 import { useHandler } from "@webiny/app/hooks/useHandler";
@@ -9,16 +8,23 @@ import { useConfirmationDialog } from "@webiny/app-admin/hooks/useConfirmationDi
 import { useDialog } from "@webiny/app-admin/hooks/useDialog";
 import { IconButton } from "@webiny/ui/Button";
 import { Tooltip } from "@webiny/ui/Tooltip";
-import { ReactComponent as DeleteIcon } from "@webiny/app-page-builder/admin/assets/delete.svg";
-import { DELETE_PAGE } from "@webiny/app-page-builder/admin/graphql/pages";
+import { ReactComponent as DeleteIcon } from "@webiny/app-headless-cms/admin/icons/__used__icons__/delete.svg";
+import { createDeleteMutation } from "@webiny/app-headless-cms/admin/components/ContentModelForm/graphql";
+import { useMutation } from "@webiny/app-headless-cms/admin/hooks";
 
 const DeletePage = props => {
-    const client = useApolloClient();
     const { showSnackbar } = useSnackbar();
     const { history } = useReactRouter();
     const { showDialog } = useDialog();
 
+    const { contentModel } = props;
     const title = get(props, "pageDetails.page.title", "N/A");
+
+    const DELETE_CONTENT = useMemo(() => {
+        return createDeleteMutation(contentModel);
+    }, [contentModel.modelId]);
+
+    const [deleteContentMutation] = useMutation(DELETE_CONTENT);
 
     const { showConfirmation } = useConfirmationDialog({
         title: "Delete page",
@@ -34,11 +40,11 @@ const DeletePage = props => {
         { ...props, showConfirmation },
         ({ pageDetails: { page }, showConfirmation }) => () => {
             showConfirmation(async () => {
-                const { data: res } = await client.mutate({
-                    mutation: DELETE_PAGE,
+               /* const { data: res } = await client.mutate({
+                    mutation: DELETE_CONTENT,
                     variables: { id: page.parent },
                     refetchQueries: ["PbListPages"]
-                });
+                });*/
 
                 const { error } = dot.get(res, "pageBuilder.deletePage");
                 if (error) {
