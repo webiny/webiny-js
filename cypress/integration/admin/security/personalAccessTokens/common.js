@@ -19,16 +19,16 @@ export const testPAT = ({ patComponentRoute, runAfterVisitingRoute }) => {
         })
         .findByText("Create Token")
         .click()
-        .findByTestId("CreateTokenDialogContent")
+        .findByTestId("create-token-dialog-content")
         .within(() => {
             cy.get("div > input")
                 .clear()
                 .type(tokenName);
         })
-        .findByTestId("AcceptGenerateToken")
+        .findByTestId("accept-generate-token")
         .click()
         .wait(500)
-        .findByTestId(`CloseCreatedTokenDialog`)
+        .findByTestId(`close-created-token-dialog`)
         .click()
         .get("body")
         .then($body => {
