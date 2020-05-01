@@ -2,8 +2,6 @@ import React from "react";
 import { css } from "emotion";
 import { withRouter } from "@webiny/react-router";
 import { ButtonDefault } from "@webiny/ui/Button";
-import { Icon } from "@webiny/ui/Icon";
-import { ReactComponent as DownButton } from "@webiny/app-page-builder/admin/assets/round-arrow_drop_down-24px.svg";
 import { MenuItem } from "@rmwc/menu";
 import { Typography } from "@webiny/ui/Typography";
 import { Menu } from "@webiny/ui/Menu";
@@ -36,7 +34,7 @@ const RevisionSelector = ({ location, history, entry }) => {
             }}
             handle={
                 <ButtonDefault className={buttonStyle}>
-                    v{get(entry, "meta.version")} <Icon icon={<DownButton />} />
+                    v{get(entry, "meta.version")}
                 </ButtonDefault>
             }
         >

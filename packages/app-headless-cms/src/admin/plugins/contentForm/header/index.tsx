@@ -1,8 +1,7 @@
 import * as React from "react";
-import { PbPageDetailsPlugin } from "@webiny/app-page-builder/types";
 import RevisionSelector from "./revisionSelector/RevisionSelector";
 
-const plugins: PbPageDetailsPlugin[] = [
+const plugins: any[] = [
     {
         name: "cms-content-revision-selector",
         type: "cms-content-header",
