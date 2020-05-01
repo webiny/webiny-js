@@ -6,7 +6,7 @@ import { ButtonDefault } from "@webiny/ui/Button";
 import { Icon } from "@webiny/ui/Icon";
 import { Typography } from "@webiny/ui/Typography";
 import { ReactComponent as DownButton } from "./icons/round-arrow_drop_down-24px.svg";
-import { useFormEditor } from "@webiny/app-form-builder/admin/components/FormEditor/Context";
+import { useContentModelEditor } from "@webiny/app-headless-cms/admin/components/ContentModelEditor/Context";
 
 import { i18n } from "@webiny/app/i18n";
 const t = i18n.namespace("FormEditor.RevisionsMenu");
@@ -29,7 +29,7 @@ const menuList = css({
 const Revisions = () => {
     const {
         state: { data }
-    } = useFormEditor();
+    } = useContentModelEditor();
 
     const { history } = useReactRouter();
 

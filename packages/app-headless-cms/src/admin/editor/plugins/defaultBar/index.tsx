@@ -3,8 +3,6 @@ import BackButton from "./BackButton";
 import Divider from "./Divider";
 import PublishButton from "./PublishButton";
 import { Name } from "./Name";
-import { FormSettingsButton } from "./FormSettings";
-import Revisions from "./Revisions";
 
 export default [
     /* {
