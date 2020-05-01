@@ -38,7 +38,8 @@ export const createManageResolvers: CreateManageResolvers = ({
             [`update${typeName}`]: resolveUpdate({ model }),
             [`delete${typeName}`]: resolveDelete({ model }),
             [`publish${typeName}`]: resolvePublish({ model }),
-            [`unpublish${typeName}`]: resolveUnpublish({ model })
+            [`unpublish${typeName}`]: resolveUnpublish({ model }),
+            [`create${typeName}From`]: resolveCreateFrom({ model })
         },
         [mTypeName]: model.fields.reduce((resolvers, field) => {
             const { manage } = fieldTypePlugins[field.type];

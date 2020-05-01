@@ -103,6 +103,8 @@ export const createManageSDL: CreateManageSDL = ({ model, fieldTypePlugins }): s
         extend type Mutation{
             create${typeName}(data: ${mTypeName}Input!): ${mTypeName}Response
             
+            create${typeName}From(revision: ID!, data: ${mTypeName}Input): ${mTypeName}Response
+            
             update${typeName}(where: ${mTypeName}UpdateWhereInput!, data: ${mTypeName}Input!): ${mTypeName}Response
             
             delete${typeName}(where: ${mTypeName}DeleteWhereInput!): CmsDeleteResponse
