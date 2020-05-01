@@ -1,23 +1,29 @@
 import { GraphQLFieldResolver } from "@webiny/graphql/types";
 import { Response, ErrorResponse } from "@webiny/commodo-graphql";
-import { findEntry } from "./findEntry";
 import { entryNotFound } from "./entryNotFound";
-import { setContextLocale } from "./setContextLocale";
 import { CmsGraphQLContext } from "@webiny/api-headless-cms/types";
 
-export const resolveDelete = ({
+export const resolvePublish = ({
     model
 }): GraphQLFieldResolver<any, any, CmsGraphQLContext> => async (root, args, context) => {
-    setContextLocale(context, args.locale);
-    const instance = await findEntry({ model, args, context });
+    const Model = context.models[model.modelId];
+    const instance = await Model.findOne({ query: { id: args.revision } });
 
     if (!instance) {
         return entryNotFound(JSON.stringify(args.where));
     }
 
+    if (instance.meta.published) {
+        return new ErrorResponse({
+            code: "CONTENT_MODEL_ENTRY_ALREADY_PUBLISHED",
+            message: "Cannot publish content model entry (already published)."
+        });
+    }
+
     try {
-        await instance.delete();
-        return new Response(true);
+        instance.meta.published = true;
+        await instance.save();
+        return new Response(instance);
     } catch (e) {
         return new ErrorResponse({
             code: e.code,
