@@ -1,9 +1,9 @@
 import * as React from "react";
 import { renderPlugins } from "@webiny/app/plugins";
-import { PbPageDetailsPlugin } from "@webiny/app-page-builder/types";
+import { CmsContentDetailsPlugin } from "@webiny/app-headless-cms/types";
 import { Tabs } from "@webiny/ui/Tabs";
 
-const plugin: PbPageDetailsPlugin = {
+const plugin: CmsContentDetailsPlugin = {
     name: "cms-content-details-revision-content",
     type: "cms-content-details",
     render(props) {
