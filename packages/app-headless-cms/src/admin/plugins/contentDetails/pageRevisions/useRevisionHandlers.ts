@@ -1,62 +1,81 @@
-import { useCallback } from "react";
-import { useApolloClient } from "react-apollo";
+import { useCallback, useMemo } from "react";
 import useReactRouter from "use-react-router";
-import {
-    CREATE_REVISION_FORM,
-    DELETE_REVISION
-} from "@webiny/app-page-builder/admin/graphql/pages";
 import { usePublishRevisionHandler } from "../utils/usePublishRevisionHandler";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
-import { usePageDetails } from "@webiny/app-page-builder/admin/hooks/usePageDetails";
+import { useMutation } from "@webiny/app-headless-cms/admin/hooks";
 
-export function useRevisionHandlers({ rev }) {
+import {
+    createCreateFromMutation,
+    createCreateMutation,
+    createUpdateMutation
+} from "@webiny/app-headless-cms/admin/components/ContentModelForm/graphql";
+
+export function useRevisionHandlers({ content, contentModel, dataList }) {
     const { showSnackbar } = useSnackbar();
     const { history } = useReactRouter();
-    const client = useApolloClient();
-    const { page } = usePageDetails();
-    const { publishRevision } = usePublishRevisionHandler({ page });
+    const { publishRevision } = usePublishRevisionHandler({ content });
 
-    const createRevision = useCallback(async () => {
-        const { data: res } = await client.mutate({
-            mutation: CREATE_REVISION_FORM,
-            variables: { revision: rev.id },
-            refetchQueries: ["PbListPages"],
-            awaitRefetchQueries: true
-        });
-        const { data, error } = res.pageBuilder.revision;
+    const { CREATE_CONTENT, UPDATE_CONTENT, CREATE_CONTENT_FROM } = useMemo(() => {
+        return {
+            CREATE_CONTENT: createCreateMutation(contentModel),
+            UPDATE_CONTENT: createUpdateMutation(contentModel),
+            CREATE_CONTENT_FROM: createCreateFromMutation(contentModel)
+        };
+    }, [contentModel.modelId]);
 
-        if (error) {
-            return showSnackbar(error.message);
-        }
+    const [createMutation] = useMutation(CREATE_CONTENT);
+    const [updateMutation] = useMutation(UPDATE_CONTENT);
+    const [createFromMutation] = useMutation(CREATE_CONTENT_FROM);
 
-        history.push(`/page-builder/editor/${data.id}`);
-    }, [rev]);
+    const createContent = useCallback(
+        async data => {
+            const response = await createMutation({
+                variables: { data }
+            });
 
-    const editRevision = useCallback(() => {
-        history.push(`/page-builder/editor/${rev.id}`);
-    }, [rev]);
+            if (response.data.content.error) {
+                showSnackbar(response.data.content.message);
+            }
 
-    const deleteRevision = useCallback(async () => {
-        const { data: res } = await client.mutate({
-            mutation: DELETE_REVISION,
-            variables: { id: rev.id },
-            refetchQueries: ["PbListPages"],
-            awaitRefetchQueries: true
-        });
-        const { error } = res.pageBuilder.deleteRevision;
-        if (error) {
-            return showSnackbar(error.message);
-        }
+            const { id } = response.data.content.data;
+            const query = new URLSearchParams(location.search);
+            query.set("id", id);
+            history.push({ search: query.toString() });
+            dataList.refresh();
+        },
+        [contentModel.modelId]
+    );
 
-        if (rev.id === page.id) {
-            history.push("/page-builder/pages");
-        }
-    }, [rev, page]);
+    const updateContent = useCallback(
+        async (id, data) => {
+            const response = await updateMutation({
+                variables: { id, data }
+            });
+
+            if (response.data.content.error) {
+                showSnackbar(response.data.content.message);
+            }
+        },
+        [contentModel.modelId]
+    );
+
+    const deleteContent = useCallback(
+        async (id, data) => {
+            const response = await createFromMutation({
+                variables: { revision: id, data }
+            });
+
+            if (response.data.content.error) {
+                showSnackbar(response.data.content.message);
+            }
+        },
+        [contentModel.modelId]
+    );
 
     return {
         publishRevision,
-        createRevision,
-        editRevision,
-        deleteRevision
+        createContent,
+        updateContent,
+        deleteContent
     };
 }

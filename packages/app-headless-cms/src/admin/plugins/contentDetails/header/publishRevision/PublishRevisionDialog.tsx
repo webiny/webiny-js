@@ -25,7 +25,7 @@ type Props = {
     open: boolean;
     onClose: DialogOnClose;
     onSubmit: Function;
-    revisions: Array<{ id: string; title: string; version: number; published: boolean }>;
+    revisions: Array<{ id: string; title: string; version: number; published: boolean; meta: any }>;
     selected: string;
 };
 

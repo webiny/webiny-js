@@ -1,13 +1,12 @@
 import * as React from "react";
-import { PbPageDetailsPlugin } from "@webiny/app-page-builder/types";
+import { CmsContentDetailsPlugin } from "@webiny/app-headless-cms/types";
 import Header from "./Header";
 import RevisionSelector from "./revisionSelector/RevisionSelector";
 import LocaleSelector from "./localeSelector/LocaleSelector";
 import PublishRevision from "./publishRevision/PublishRevision";
-import DeletePage from "./deletePage/DeletePage";
-import PageOptionsMenu from "./pageOptionsMenu/PageOptionsMenu";
+import DeleteContent from "./deleteContent/DeleteContent";
 
-const plugins: PbPageDetailsPlugin[] = [
+const plugins: CmsContentDetailsPlugin[] = [
     {
         name: "cms-content-details-header",
         type: "cms-content-details-revision-content-preview",
@@ -35,22 +34,14 @@ const plugins: PbPageDetailsPlugin[] = [
         render(props) {
             return <PublishRevision {...props} />;
         }
-    }
-    /*
+    },
     {
         name: "cms-content-details-header-delete",
         type: "cms-content-details-header-right",
         render(props) {
-            return <DeletePage {...props} />;
+            return <DeleteContent {...props} />;
         }
-    },
-    {
-        name: "cms-content-details-header-options-menu",
-        type: "cms-content-details-header-right",
-        render(props) {
-            return <PageOptionsMenu {...props} />;
-        }
-    }*/
+    }
 ];
 
 export default plugins;

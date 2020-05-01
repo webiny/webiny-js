@@ -28,7 +28,9 @@ import { useRevisionHandlers } from "./useRevisionHandlers";
 import { CmsContentModelModel } from "@webiny/app-headless-cms/types";
 
 type RevisionProps = {
-    rev: CmsContentModelModel;
+    content: any;
+    dataList: any;
+    contentModel: CmsContentModelModel;
 };
 
 const primaryColor = css({ color: "var(--mdc-theme-primary)" });
@@ -41,12 +43,12 @@ const revisionsMenu = css({
 
 const getIcon = (rev: CmsContentModelModel) => {
     switch (true) {
-        case rev.locked && !rev.published:
+        case rev.meta.locked && !rev.meta.published:
             return {
                 icon: <Icon icon={<LockIcon />} />,
                 text: "This revision is locked (it has already been published)"
             };
-        case rev.published:
+        case rev.meta.published:
             return {
                 icon: <Icon icon={<BeenHereIcon />} className={primaryColor} />,
                 text: "This revision is currently published!"
@@ -63,10 +65,12 @@ const Div = ({ children }) => {
     return <div>{children}</div>;
 };
 
-const Revision = ({ rev }: RevisionProps) => {
-    const { icon, text: tooltipText } = getIcon(rev);
-    const { deleteRevision, createRevision, publishRevision, editRevision } = useRevisionHandlers({
-        rev
+const Revision = ({ contentModel, content, dataList }: RevisionProps) => {
+    const { icon, text: tooltipText } = getIcon(content);
+    const { deleteContent, createContent, publishRevision, updateContent } = useRevisionHandlers({
+        content,
+        contentModel,
+        dataList
     });
 
     return (
@@ -82,26 +86,29 @@ const Revision = ({ rev }: RevisionProps) => {
                         </Tooltip>
                     </ListItemGraphic>
                     <ListItemText>
-                        <ListItemTextPrimary>{rev.title}</ListItemTextPrimary>
+                        <ListItemTextPrimary>{content.title}</ListItemTextPrimary>
                         <ListItemTextSecondary>
-                            Last modified <TimeAgo datetime={rev.savedOn} /> (#
-                            {rev.version})
+                            Last modified <TimeAgo datetime={content.savedOn} /> (#
+                            {content.version})
                         </ListItemTextSecondary>
                     </ListItemText>
                     <ListItemMeta>
                         <Menu
                             handle={<IconButton icon={<MoreVerticalIcon />} />}
                             className={revisionsMenu}
-                            /*openSide={"left"} TODO: @adrian */
                         >
-                            <MenuItem onClick={createRevision}>
+                            <MenuItem onClick={createContent}>
                                 <ListItemGraphic>
                                     <Icon icon={<AddIcon />} />
                                 </ListItemGraphic>
                                 New from current
                             </MenuItem>
-                            {!rev.locked && (
-                                <MenuItem onClick={editRevision}>
+                            {!content.meta.locked && (
+                                <MenuItem
+                                    onClick={() => {
+                                        updateContent; // TODO: Fix this
+                                    }}
+                                >
                                     <ListItemGraphic>
                                         <Icon icon={<EditIcon />} />
                                     </ListItemGraphic>
@@ -109,8 +116,8 @@ const Revision = ({ rev }: RevisionProps) => {
                                 </MenuItem>
                             )}
 
-                            {!rev.published && (
-                                <MenuItem onClick={() => publishRevision(rev)}>
+                            {!content.meta.published && (
+                                <MenuItem onClick={() => publishRevision(content)}>
                                     <ListItemGraphic>
                                         <Icon icon={<PublishIcon />} />
                                     </ListItemGraphic>
@@ -129,10 +136,10 @@ const Revision = ({ rev }: RevisionProps) => {
                                 Preview
                             </MenuItem>
 
-                            {!rev.locked && rev.id !== rev.parent && (
+                            {!content.locked && content.id !== content.parent && (
                                 <Div>
                                     <MenuDivider />
-                                    <MenuItem onClick={() => showConfirmation(deleteRevision)}>
+                                    <MenuItem onClick={() => showConfirmation(deleteContent)}>
                                         <ListItemGraphic>
                                             <Icon icon={<DeleteIcon />} />
                                         </ListItemGraphic>

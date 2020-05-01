@@ -12,7 +12,7 @@ import { ReactComponent as DeleteIcon } from "@webiny/app-headless-cms/admin/ico
 import { createDeleteMutation } from "@webiny/app-headless-cms/admin/components/ContentModelForm/graphql";
 import { useMutation } from "@webiny/app-headless-cms/admin/hooks";
 
-const DeletePage = props => {
+const DeleteContent = props => {
     const { showSnackbar } = useSnackbar();
     const { history } = useReactRouter();
     const { showDialog } = useDialog();
@@ -40,13 +40,12 @@ const DeletePage = props => {
         { ...props, showConfirmation },
         ({ pageDetails: { page }, showConfirmation }) => () => {
             showConfirmation(async () => {
-               /* const { data: res } = await client.mutate({
-                    mutation: DELETE_CONTENT,
+                const { data: res } = await deleteContentMutation({
                     variables: { id: page.parent },
                     refetchQueries: ["PbListPages"]
-                });*/
+                });
 
-                const { error } = dot.get(res, "pageBuilder.deletePage");
+                const { error } = dot.get(res, "pageBuilder.deleteContent");
                 if (error) {
                     return showDialog(error.message, { title: "Could not delete page" });
                 }
@@ -74,4 +73,4 @@ const DeletePage = props => {
     );
 };
 
-export default DeletePage;
+export default DeleteContent;

@@ -22,7 +22,16 @@ export type CmsEditorFieldOptionPlugin = Plugin & {
 };
 
 export type CmsContentDetailsPlugin = Plugin & {
-    render: (params: { [key: string]: any }) => ReactNode;
+    render: (params: any) => ReactNode;
+};
+
+export type CmsContentDetailsRevisionContentPlugin = Plugin & {
+    type: "cms-content-details-revision-content";
+    render(params: {
+        pageDetails: any;
+        loading: boolean;
+        refreshPages: () => void;
+    }): ReactElement;
 };
 
 // ------------------------------------------------------------------------------------------------------------
@@ -112,6 +121,7 @@ export type CmsContentModelModel = {
     status: string;
     savedOn: string;
     revisions: any[];
+    meta: any;
 };
 
 export type CmsContentModelModelField = {

@@ -3,7 +3,6 @@ import { css } from "emotion";
 import { List } from "@webiny/ui/List";
 import { Elevation } from "@webiny/ui/Elevation";
 import { CircularProgress } from "@webiny/ui/Progress";
-import { PbPageDetailsContextValue } from "@webiny/app-page-builder/types";
 import Revision from "./Revision";
 
 const listWrapper = css({
@@ -20,19 +19,16 @@ const listWrapper = css({
     }
 });
 
-type RevisionsListProps = {
-    pageDetails: PbPageDetailsContextValue;
-    loading: boolean;
-};
+const RevisionsList = props => {
+    const { content, loading } = props;
 
-const RevisionsList: React.FC<RevisionsListProps> = ({ pageDetails: { page }, loading }) => {
     return (
         <Elevation className={listWrapper} z={2}>
             <div style={{ position: "relative" }}>
                 {loading && <CircularProgress />}
                 <List nonInteractive twoLine>
-                    {Array.isArray(page.revisions) &&
-                        page.revisions.map(rev => <Revision rev={rev} key={rev.id} />)}
+                    {Array.isArray(content.revisions) &&
+                        content.revisions.map(rev => <Revision {...props} key={rev.id} />)}
                 </List>
             </div>
         </Elevation>
