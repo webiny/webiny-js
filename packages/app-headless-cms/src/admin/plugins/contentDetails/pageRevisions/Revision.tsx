@@ -14,21 +14,21 @@ import { Icon } from "@webiny/ui/Icon";
 import { MenuItem, Menu, MenuDivider } from "@webiny/ui/Menu";
 import { ConfirmationDialog } from "@webiny/ui/ConfirmationDialog";
 import { Tooltip } from "@webiny/ui/Tooltip";
-import { ReactComponent as MoreVerticalIcon } from "@webiny/app-page-builder/admin/assets/more_vert.svg";
-import { ReactComponent as LockIcon } from "@webiny/app-page-builder/admin/assets/lock.svg";
-import { ReactComponent as BeenHereIcon } from "@webiny/app-page-builder/admin/assets/beenhere.svg";
-import { ReactComponent as GestureIcon } from "@webiny/app-page-builder/admin/assets/gesture.svg";
+import { ReactComponent as MoreVerticalIcon } from "@webiny/app-headless-cms/admin/icons/__used__icons__/more_vert.svg";
+import { ReactComponent as LockIcon } from "@webiny/app-headless-cms/admin/icons/__used__icons__/lock.svg";
+import { ReactComponent as BeenHereIcon } from "@webiny/app-headless-cms/admin/icons/__used__icons__/beenhere.svg";
+import { ReactComponent as GestureIcon } from "@webiny/app-headless-cms/admin/icons/__used__icons__/gesture.svg";
+import { ReactComponent as AddIcon } from "@webiny/app-headless-cms/admin/icons/__used__icons__/add.svg";
+import { ReactComponent as EditIcon } from "@webiny/app-headless-cms/admin/icons/__used__icons__/edit.svg";
+import { ReactComponent as PublishIcon } from "@webiny/app-headless-cms/admin/icons/__used__icons__/round-publish-24px.svg";
+import { ReactComponent as DeleteIcon } from "@webiny/app-headless-cms/admin/icons/__used__icons__/delete.svg";
+import { ReactComponent as PreviewIcon } from "@webiny/app-headless-cms/admin/icons/__used__icons__/visibility.svg";
+
 import { useRevisionHandlers } from "./useRevisionHandlers";
-import { usePageBuilderSettings } from "@webiny/app-page-builder/admin/hooks/usePageBuilderSettings";
-import { ReactComponent as AddIcon } from "@webiny/app-page-builder/admin/assets/add.svg";
-import { ReactComponent as EditIcon } from "@webiny/app-page-builder/admin/assets/edit.svg";
-import { ReactComponent as PublishIcon } from "@webiny/app-page-builder/admin/assets/round-publish-24px.svg";
-import { ReactComponent as DeleteIcon } from "@webiny/app-page-builder/admin/assets/delete.svg";
-import { ReactComponent as PreviewIcon } from "@webiny/app-page-builder/admin/assets/visibility.svg";
-import { PbPageRevision } from "@webiny/app-page-builder/types";
+import { CmsContentModelModel } from "@webiny/app-headless-cms/types";
 
 type RevisionProps = {
-    rev: PbPageRevision;
+    rev: CmsContentModelModel;
 };
 
 const primaryColor = css({ color: "var(--mdc-theme-primary)" });
@@ -39,7 +39,7 @@ const revisionsMenu = css({
     left: "auto !important"
 });
 
-const getIcon = (rev: PbPageRevision) => {
+const getIcon = (rev: CmsContentModelModel) => {
     switch (true) {
         case rev.locked && !rev.published:
             return {
@@ -65,7 +65,6 @@ const Div = ({ children }) => {
 
 const Revision = ({ rev }: RevisionProps) => {
     const { icon, text: tooltipText } = getIcon(rev);
-    const { getPagePreviewUrl } = usePageBuilderSettings();
     const { deleteRevision, createRevision, publishRevision, editRevision } = useRevisionHandlers({
         rev
     });
@@ -119,7 +118,11 @@ const Revision = ({ rev }: RevisionProps) => {
                                 </MenuItem>
                             )}
 
-                            <MenuItem onClick={() => window.open(getPagePreviewUrl(rev), "_blank")}>
+                            <MenuItem
+                                onClick={() => {
+                                    console.log("Go");
+                                }}
+                            >
                                 <ListItemGraphic>
                                     <Icon icon={<PreviewIcon />} />
                                 </ListItemGraphic>
