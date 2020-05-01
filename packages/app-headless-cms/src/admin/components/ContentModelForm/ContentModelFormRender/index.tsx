@@ -6,24 +6,13 @@ import { CmsContentModelModelField } from "@webiny/app-headless-cms/types";
 import { Grid, Cell } from "@webiny/ui/Grid";
 import { i18n } from "@webiny/app/i18n";
 import { useI18N } from "@webiny/app-i18n/hooks/useI18N";
-import { ReactComponent as I18NIcon } from "@webiny/app-headless-cms/admin/icons/__used__icons__/round-translate-24px.svg";
-import { ReactComponent as DropDownIcon } from "@webiny/app-headless-cms/admin/icons/__used__icons__/round-arrow_drop_down-24px.svg";
 import cloneDeep from "lodash.clonedeep";
 import get from "lodash.get";
-import { renderPlugins } from "@webiny/app/plugins";
-import { I18NValue } from "@webiny/app-i18n/components";
 const t = i18n.ns("app-headless-cms/admin/components/content-model-form-render");
 
-import { ButtonIcon, ButtonSecondary, ButtonPrimary } from "@webiny/ui/Button";
+import { ButtonPrimary } from "@webiny/ui/Button";
 
-import {
-    SimpleFormHeader,
-    SimpleForm,
-    SimpleFormFooter,
-    SimpleFormContent
-} from "@webiny/app-admin/components/SimpleForm";
 import { CircularProgress } from "@webiny/ui/Progress";
-import { MenuItem, Menu } from "@webiny/ui/Menu";
 
 const setValue = ({ value, bind, i18n }) => {
     const currentLocale = i18n.getLocale();
@@ -85,102 +74,35 @@ const renderFieldCell = ({ field, Bind, row, i18n }) => {
 };
 
 export const ContentModelFormRender = ({
-    contentModel,
     getFields,
     getDefaultValues,
     loading,
-    data: entry,
-    preview,
+    content,
     onSubmit,
-    onPublish,
-    onUnpublish
+    onChange
 }) => {
     const i18n = useI18N();
 
     // All form fields - an array of rows where each row is an array that contain fields.
     const fields = getFields();
 
-    let formTitle;
-    if (contentModel) {
-        formTitle = t`New {contentModelTitle}`({ contentModelTitle: contentModel.title });
-    }
-
-    if (entry.id) {
-        formTitle = I18NValue({ value: entry.meta.title });
-    }
-
-    const draft = get(entry, "meta.status") === "draft";
-    const published = get(entry, "meta.status") === "published";
-    const locked = get(entry, "meta.locked");
-
     return (
-        <Form disabled={locked} onSubmit={onSubmit} data={entry ? entry : getDefaultValues()}>
+        <Form onChange={onChange} onSubmit={onSubmit} data={content ? content : getDefaultValues()}>
             {({ submit, Bind }) => (
-                <SimpleForm data-testid={"cms-content-form"}>
-                    <SimpleFormHeader
-                        title={
-                            <>
-                                {formTitle}
-                                {renderPlugins("cms-content-header", {
-                                    contentModel,
-                                    entry
-                                })}
-                            </>
-                        }
-                    >
-                        {!preview && (
-                            <>
-                                <Menu
-                                    handle={
-                                        <ButtonSecondary>
-                                            <ButtonIcon icon={<I18NIcon />} />
-                                            {t`Current locale: {locale}`({
-                                                locale: i18n.getLocale().code
-                                            })}
-                                            <DropDownIcon />
-                                        </ButtonSecondary>
-                                    }
-                                >
-                                    {i18n.getLocales().map(item => (
-                                        <MenuItem key={item.id} onClick={() => {}}>
-                                            {item.code}
-                                        </MenuItem>
-                                    ))}
-                                </Menu>
-                            </>
-                        )}
-                    </SimpleFormHeader>
+                <div data-testid={"cms-content-form"}>
                     {loading && <CircularProgress />}
-                    <SimpleFormContent>
-                        <Grid>
-                            {/* Let's render all form fields. */}
-                            {fields.map((row, rowIndex) => (
-                                <React.Fragment key={rowIndex}>
-                                    {row.map(field => renderFieldCell({ field, Bind, row, i18n }))}
-                                </React.Fragment>
-                            ))}
-                        </Grid>
-                    </SimpleFormContent>
-                    {!preview && (
-                        <SimpleFormFooter>
-                            {draft && (
-                                <>
-                                    <ButtonPrimary onClick={onPublish}>{t`Publish`}</ButtonPrimary>{" "}
-                                    <ButtonSecondary onClick={submit}>{t`Save`}</ButtonSecondary>
-                                </>
-                            )}
-
-                            {published && (
-                                <>
-                                    <ButtonPrimary onClick={submit}>{t`Edit`}</ButtonPrimary>
-                                    <ButtonPrimary
-                                        onClick={onUnpublish}
-                                    >{t`Unpublish`}</ButtonPrimary>
-                                </>
-                            )}
-                        </SimpleFormFooter>
-                    )}
-                </SimpleForm>
+                    <Grid>
+                        {/* Let's render all form fields. */}
+                        {fields.map((row, rowIndex) => (
+                            <React.Fragment key={rowIndex}>
+                                {row.map(field => renderFieldCell({ field, Bind, row, i18n }))}
+                            </React.Fragment>
+                        ))}
+                        <Cell span={12} style={{ textAlign: "right" }}>
+                            <ButtonPrimary onClick={submit}>{t`Save`}</ButtonPrimary>
+                        </Cell>
+                    </Grid>
+                </div>
             )}
         </Form>
     );
