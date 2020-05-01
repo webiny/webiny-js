@@ -30,6 +30,12 @@ const Header = styled("div")({
     marginBottom: 15
 });
 
+const PatContainer = styled("div")({
+    paddingLeft: "12px",
+    paddingRight: "12px",
+    background: "var(--mdc-theme-on-background)"
+});
+
 const TokenListItem = ({ setFormIsLoading, data, setValue, PAT }) => {
     const [showEditDialog, setShowEditDialog] = useState(false);
     const [tokenName, setTokenName] = useState(PAT.name);
@@ -236,16 +242,9 @@ const TokensElement = ({ setFormIsLoading, data, setValue }) => {
                                 alignItems: "center"
                             }}
                         >
-                            <Typography
-                                use="overline"
-                                style={{
-                                    paddingLeft: "12px",
-                                    paddingRight: "12px",
-                                    background: "var(--mdc-theme-on-background)"
-                                }}
-                            >
-                                {tokenHash}
-                            </Typography>
+                            <PatContainer>
+                                <Typography use="overline">{tokenHash}</Typography>
+                            </PatContainer>
                             <>
                                 <IconButton
                                     onClick={() => navigator.clipboard.writeText(tokenHash)}
