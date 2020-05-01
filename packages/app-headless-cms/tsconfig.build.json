@@ -7,6 +7,8 @@
     "../app",
     "../app-admin",
     "../app-i18n",
+    "../app-form-builder",
+    "../app-page-builder",
     "../form",
     "../plugins"
   ],
@@ -19,6 +21,8 @@
     { "path": "../app/tsconfig.build.json" },
     { "path": "../app-admin/tsconfig.build.json" },
     { "path": "../app-i18n/tsconfig.build.json" },
+    { "path": "../app-form-builder/tsconfig.build.json" },
+    { "path": "../app-page-builder/tsconfig.build.json" },
     { "path": "../form/tsconfig.build.json" },
     { "path": "../plugins/tsconfig.build.json" }
   ]
