@@ -3,8 +3,8 @@ import { CmsModel, CmsFieldTypePlugins, CmsGraphQLContext } from "@webiny/api-he
 import { GraphQLFieldResolver } from "@webiny/graphql/types";
 import { createReadTypeName, createTypeName } from "../utils/createTypeName";
 import { commonFieldResolvers } from "../utils/commonFieldResolvers";
-import { resolveGet } from "../utils/resolveGet";
-import { resolveList } from "../utils/resolveList";
+import { resolveGet } from "../utils/resolvers/resolveGet";
+import { resolveList } from "../utils/resolvers/resolveList";
 
 export interface CreateReadResolvers {
     (params: {
