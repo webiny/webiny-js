@@ -3,7 +3,7 @@ import { FormSettingsPluginType } from "@webiny/app-headless-cms/types";
 import GeneralSettings from "./components/GeneralSettings";
 import { ReactComponent as SettingsIcon } from "./icons/round-settings-24px.svg";
 
-export default ([
+export default [
     {
         name: "content-model-editor-form-settings-general",
         type: "content-model-editor-form-settings",
@@ -14,4 +14,4 @@ export default ([
             return <GeneralSettings {...props} />;
         }
     }
-] as Array<FormSettingsPluginType>);
+] as Array<FormSettingsPluginType>;

@@ -1,7 +1,30 @@
 import gql from "graphql-tag";
 
-const fields = `
-    id email firstName lastName fullName avatar { id src } groups { id name } roles { id name }
+const fields = /* GraphQL */ `
+    {
+        id
+        email
+        firstName
+        lastName
+        fullName
+        avatar {
+            id
+            src
+        }
+        groups {
+            id
+            name
+        }
+        roles {
+            id
+            name
+        }
+        personalAccessTokens {
+            id
+            name
+            token
+        }
+    }
 `;
 
 export const LIST_USERS = gql`
@@ -52,9 +75,7 @@ export const READ_USER = gql`
     query getUser($id: ID!) {
         security {
             user: getUser(id: $id){
-                data {
-                    ${fields}
-                }
+                data ${fields}
                 error {
                     code
                     message
@@ -68,9 +89,7 @@ export const CREATE_USER = gql`
     mutation createUser($data: SecurityUserInput!){
         security {
             user: createUser(data: $data) {
-                data {
-                    ${fields}
-                }
+                data ${fields}
                 error {
                     code
                     message
@@ -85,9 +104,7 @@ export const UPDATE_USER = gql`
     mutation updateUser($id: ID!, $data: SecurityUserInput!){
         security {
             user: updateUser(id: $id, data: $data) {
-                data {
-                    ${fields}
-                }
+                data ${fields}
                 error {
                     code
                     message

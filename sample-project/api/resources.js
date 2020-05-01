@@ -23,7 +23,8 @@ const vars = {
         token: {
             expiresIn: 2592000,
             secret: process.env.JWT_SECRET
-        }
+        },
+        validateAccessTokenFunction: "${validateAccessToken.name}"
     }
 };
 
@@ -119,9 +120,9 @@ module.exports = () => ({
             }
         },
         security: {
-            watch: ["./services/security/build"],
+            watch: ["./services/security/graphql/build"],
             build: {
-                root: "./services/security",
+                root: "./services/security/graphql",
                 script: "yarn build",
                 define: {
                     ...apolloServiceDefinitions,
@@ -136,13 +137,36 @@ module.exports = () => ({
                 inputs: {
                     region: vars.region,
                     function: {
-                        code: "./services/security/build",
+                        code: "./services/security/graphql/build",
                         handler: "handler.handler",
                         memory: 512,
                         timeout: 30,
                         env: {
                             DEBUG: vars.debug
                         }
+                    }
+                }
+            }
+        },
+        validateAccessToken: {
+            watch: ["./services/security/validateAccessToken/build"],
+            build: {
+                root: "./services/security/validateAccessToken",
+                script: "yarn build",
+                define: {
+                    DB_PROXY_OPTIONS: apolloServiceDefinitions.DB_PROXY_OPTIONS
+                }
+            },
+            deploy: {
+                component: "@webiny/serverless-function",
+                inputs: {
+                    region: vars.region,
+                    code: "./services/security/validateAccessToken/build",
+                    handler: "handler.handler",
+                    memory: 512,
+                    timeout: 30,
+                    env: {
+                        DEBUG: vars.debug
                     }
                 }
             }

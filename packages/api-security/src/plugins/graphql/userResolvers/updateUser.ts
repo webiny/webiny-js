@@ -7,7 +7,7 @@ export default userFetcher => async (
     args: { [key: string]: any },
     context: { [key: string]: any }
 ) => {
-    const { id, ...data } = args;
+    const { id, data } = args;
     const User = userFetcher(context);
     const user = await User.findById(id);
 

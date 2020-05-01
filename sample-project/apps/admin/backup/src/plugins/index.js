@@ -15,7 +15,6 @@ import mailchimpPlugins from "@webiny/app-mailchimp/admin";
 import cognito from "@webiny/app-plugin-security-cognito";
 import cognitoTheme from "@webiny/app-plugin-security-cognito-theme/admin";
 
-
 const plugins = [
     fileUploadPlugin(),
     imagePlugin,

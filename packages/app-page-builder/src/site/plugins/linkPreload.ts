@@ -11,7 +11,8 @@ export default (): ReactRouterOnLinkPlugin => {
             if (process.env.REACT_APP_ENV === "browser") {
                 if (
                     typeof link !== "string" ||
-                    !link.startsWith("/") || preloadedLinks.includes(link)
+                    !link.startsWith("/") ||
+                    preloadedLinks.includes(link)
                 ) {
                     return;
                 }

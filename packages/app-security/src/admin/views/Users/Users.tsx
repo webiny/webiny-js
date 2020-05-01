@@ -35,7 +35,13 @@ const Users = () => {
                         <LeftPanel>
                             <UsersDataList />
                         </LeftPanel>
-                        <RightPanel>
+                        <RightPanel
+                            style={{
+                                marginLeft: "100px",
+                                marginRight: "100px",
+                                overflow: "hidden"
+                            }}
+                        >
                             <UsersForm />
                         </RightPanel>
                     </SplitView>

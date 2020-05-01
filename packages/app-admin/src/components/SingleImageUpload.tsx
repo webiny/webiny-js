@@ -54,6 +54,9 @@ type SingleImageUploadProps = FormComponentProps & {
 
     // Optional custom props, passed to the preview image.
     imagePreviewProps?: any;
+
+    // Is the wrapper round?
+    round?: boolean;
 };
 
 export default class SingleImageUpload extends React.Component<SingleImageUploadProps> {
@@ -73,7 +76,8 @@ export default class SingleImageUpload extends React.Component<SingleImageUpload
             maxSize,
             multipleMaxCount,
             multipleMaxSize,
-            imagePreviewProps
+            imagePreviewProps,
+            round
         } = this.props;
 
         return (
@@ -101,6 +105,7 @@ export default class SingleImageUpload extends React.Component<SingleImageUpload
                             value={value}
                             uploadImage={showFileManager}
                             removeImage={onChange}
+                            round={round}
                         />
                     )}
                 </FileManager>

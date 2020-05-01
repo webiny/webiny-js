@@ -52,7 +52,6 @@ export const EditTab = () => {
         const plugin = getFieldPlugin({ name });
         editField(plugin.field.createField({ i18n }));
         setDropTarget(dropTarget);
-
     }, undefined);
 
     const fields: Array<any> = getFields(true);

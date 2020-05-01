@@ -1,26 +1,49 @@
-import { GraphQLContextPlugin } from "@webiny/graphql/types";
-import authenticate from "./authentication/authenticate";
+import {
+    GraphQLContext,
+    GraphQLContextPlugin,
+    GraphQLSchemaPlugin
+} from "@webiny/graphql/types";
+import authenticateJwt from "./authentication/authenticateJwt";
 import { SecurityPlugin } from "@webiny/api-security/types";
+import LambdaClient from "aws-sdk/clients/lambda";
+
+const authenticatePat = options => async (context: GraphQLContext) => {
+    if (context.user) {
+        return;
+    }
+
+    const { event } = context;
+    const { headers = {} } = event;
+    const authorization = headers["Authorization"] || headers["authorization"] || "";
+
+    if (!authorization) {
+        return;
+    }
+
+    const token = authorization;
+    const Lambda = new LambdaClient({ region: process.env.AWS_REGION });
+    const user = JSON.parse(
+        (
+            await Lambda.invoke({
+                FunctionName: options.validateAccessTokenFunction,
+                Payload: JSON.stringify({ PAT: token })
+            }).promise()
+        ).Payload as string
+    );
+
+    context.token = token;
+    context.user = user;
+};
 
 export default options => [
     {
-        type: "graphql-context",
-        name: "graphql-context-security",
-        preApply: async context => {
-            if (!context.event) {
-                return;
-            }
-
-            context.security = options;
-            context.token = null;
-            context.user = null;
-            context.getUser = () => context.user;
-
-            const securityPlugins = context.plugins.byType<SecurityPlugin>("graphql-security");
-            for (let i = 0; i < securityPlugins.length; i++) {
-                await securityPlugins[i].authenticate(context);
-            }
-        }
-    } as GraphQLContextPlugin,
-    { type: "graphql-security", name: "graphql-security", authenticate }
+        type: "graphql-security",
+        name: "graphql-security-jwt",
+        authenticate: authenticateJwt
+    } as SecurityPlugin,
+    {
+        type: "graphql-security",
+        name: "graphql-security-pat",
+        authenticate: authenticatePat(options)
+    } as SecurityPlugin
 ];

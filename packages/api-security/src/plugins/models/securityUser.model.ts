@@ -1,19 +1,21 @@
-import { flow } from "lodash";
+import { pipe } from "@webiny/commodo";
 import { validation } from "@webiny/validation";
 import md5 from "md5";
 import bcrypt from "bcryptjs";
-import { withHooks, withProps, withName, string, withFields, onSet, ref } from "@webiny/commodo";
+import {
+    withHooks,
+    withProps,
+    withName,
+    string,
+    withFields,
+    onSet,
+    ref,
+    skipOnPopulate
+} from "@webiny/commodo";
 
-export default ({
-    createBase,
-    SecurityRole,
-    SecurityRoles2Models,
-    SecurityGroup,
-    SecurityGroups2Models,
-    context
-}): any => {
+export default ({ createBase, context }): any => {
     // TODO: figure out how to create typings for a `model`
-    const SecurityUser: any = flow(
+    const SecurityUser: any = pipe(
         withName("SecurityUser"),
         withHooks(),
         withFields(instance => ({
@@ -53,15 +55,21 @@ export default ({
             lastName: string(),
             roles: ref({
                 list: true,
-                instanceOf: [SecurityRole, "model"],
-                using: [SecurityRoles2Models, "role"]
+                instanceOf: [context.models.SecurityRole, "model"],
+                using: [context.models.SecurityRoles2Models, "role"]
             }),
             groups: ref({
                 list: true,
-                instanceOf: [SecurityGroup, "model"],
-                using: [SecurityGroups2Models, "group"]
+                instanceOf: [context.models.SecurityGroup, "model"],
+                using: [context.models.SecurityGroups2Models, "group"]
             }),
-            avatar: context.commodo.fields.id()
+            avatar: context.commodo.fields.id(),
+            personalAccessTokens: skipOnPopulate()(
+                ref({
+                    list: true,
+                    instanceOf: [context.models.SecurityPersonalAccessToken, "user"]
+                })
+            )
         })),
         withProps(instance => ({
             __access: null,
