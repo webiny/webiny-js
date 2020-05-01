@@ -7,8 +7,8 @@ import { css } from "emotion";
 import { IconButton } from "@webiny/ui/Button";
 
 import { Switch } from "@webiny/ui/Switch";
-import { ReactComponent as DeleteIcon } from "@webiny/app-headless-cms/admin/icons/__used__icons__/delete.svg";
-import { ReactComponent as EditIcon } from "@webiny/app-headless-cms/admin/icons/__used__icons__/edit.svg";
+import { ReactComponent as DeleteIcon } from "@webiny/app-headless-cms/admin/icons/delete.svg";
+import { ReactComponent as EditIcon } from "@webiny/app-headless-cms/admin/icons/edit.svg";
 
 import { ReactComponent as TranslateIcon } from "@webiny/app-headless-cms/admin/icons/round-translate-24px.svg";
 import { BindComponent } from "@webiny/form/Bind";

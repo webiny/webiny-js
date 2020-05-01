@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import { i18n } from "@webiny/app/i18n";
 const t = i18n.ns("app-headless-cms/admin/menus");
-import { ReactComponent as HeadlessCmsIcon } from "../../icons/__used__icons__/how_to_vote-24px.svg";
-import { ReactComponent as EnvironmentIcon } from "../../icons/__used__icons__/call_split-24px.svg";
+import { ReactComponent as HeadlessCmsIcon } from "../../icons/how_to_vote-24px.svg";
+import { ReactComponent as EnvironmentIcon } from "../../icons/call_split-24px.svg";
 import { Typography } from "@webiny/ui/Typography";
 import { css } from "emotion";
 import EnvironmentSelectorDialog from "./../../components/EnvironmentSelectorDialog";

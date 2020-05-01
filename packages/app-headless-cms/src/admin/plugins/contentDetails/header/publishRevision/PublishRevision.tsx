@@ -2,7 +2,7 @@ import React, { useState, useCallback, useMemo } from "react";
 import PublishRevisionDialog from "./PublishRevisionDialog";
 import { IconButton } from "@webiny/ui/Button";
 import { Tooltip } from "@webiny/ui/Tooltip";
-import { ReactComponent as PublishIcon } from "@webiny/app-headless-cms/admin/icons/__used__icons__/publish.svg";
+import { ReactComponent as PublishIcon } from "@webiny/app-headless-cms/admin/icons/publish.svg";
 import { get } from "lodash";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { createPublishMutation } from "@webiny/app-headless-cms/admin/components/ContentModelForm/graphql";

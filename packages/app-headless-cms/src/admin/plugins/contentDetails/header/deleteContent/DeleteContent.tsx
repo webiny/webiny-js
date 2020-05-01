@@ -8,7 +8,7 @@ import { useConfirmationDialog } from "@webiny/app-admin/hooks/useConfirmationDi
 import { useDialog } from "@webiny/app-admin/hooks/useDialog";
 import { IconButton } from "@webiny/ui/Button";
 import { Tooltip } from "@webiny/ui/Tooltip";
-import { ReactComponent as DeleteIcon } from "@webiny/app-headless-cms/admin/icons/__used__icons__/delete.svg";
+import { ReactComponent as DeleteIcon } from "@webiny/app-headless-cms/admin/icons/delete.svg";
 import { createDeleteMutation } from "@webiny/app-headless-cms/admin/components/ContentModelForm/graphql";
 import { useMutation } from "@webiny/app-headless-cms/admin/hooks";
 
