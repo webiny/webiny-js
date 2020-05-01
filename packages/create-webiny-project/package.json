@@ -17,6 +17,7 @@
   ],
   "license": "MIT",
   "dependencies": {
+    "@webiny/tracking": "^3.1.0",
     "chalk": "^4.0.0",
     "envinfo": "^7.5.0",
     "execa": "^4.0.0",
@@ -24,6 +25,7 @@
     "fs-extra": "^9.0.0",
     "ora": "^4.0.4",
     "os": "^0.1.1",
+    "uniqid": "^5.2.0",
     "validate-npm-package-name": "^3.0.0",
     "yargs": "^15.3.1"
   },

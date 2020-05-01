@@ -12,7 +12,11 @@ const loadJsonFile = require("load-json-file");
 const ora = require("ora");
 const os = require("os");
 const path = require("path");
+const uniqueId = require("uniqid");
+const { trackActivity } = require("@webiny/tracking");
 const writeJsonFile = require("write-json-file");
+
+const packageJson = require("./package.json");
 const { getPackageVersion } = require("./utils");
 
 module.exports = async function({ root, appName, templateName, tag, log }) {
@@ -22,6 +26,9 @@ module.exports = async function({ root, appName, templateName, tag, log }) {
         console.log("Please provide a template.");
         return;
     }
+
+    const activityId = uniqueId();
+    await trackActivity({ activityId, type: "create-webiny-project-start", cliVersion: packageJson.version });
 
     const templatePath = path.dirname(
         require.resolve(`${templateName}/package.json`, { paths: [root] })
@@ -44,6 +51,8 @@ module.exports = async function({ root, appName, templateName, tag, log }) {
 
     fs.writeFileSync(path.join(root, "package.json"), JSON.stringify(appPackage, null, 2) + os.EOL);
 
+    console.log("Removing unecessary dependencies...");
+    execa.sync("rm", [path.join(root, "dependencies.json")]);
     //initialize git repo
     try {
         execa.sync("git", ["--version"]);
@@ -114,7 +123,7 @@ module.exports = async function({ root, appName, templateName, tag, log }) {
         spinner.start({ color: "green" });
         const options = {
             cwd: root,
-            maxBuffer: "500_000_000",
+            buffer: false,
         };
 
         let logStream;
@@ -127,7 +136,6 @@ module.exports = async function({ root, appName, templateName, tag, log }) {
         } else {
             await execa("yarn", [], options);
         }
-
     } catch (err) {
         console.log(err);
     }
@@ -147,13 +155,14 @@ module.exports = async function({ root, appName, templateName, tag, log }) {
     //run the setup for cwp-template-full
     try {
         const cwpTemplate = require(path.join(templatePath, './index'));
-        cwpTemplate({ appName, root });
+        await cwpTemplate({ appName, root });
     } catch(err) {
         console.log(err)
         console.log("Unable to perform template-specific actions.");
     }
 
-    spinner.stop();
+    spinner.succeed("All packages installed.");
+    await trackActivity({ activityId, type: "create-webiny-project-end", cliVersion: packageJson.version });
 
     console.log(`Success! Created ${appName} at ${root}`);
     console.log("Inside that directory, you can run several commands:\n");
