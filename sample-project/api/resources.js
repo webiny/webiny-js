@@ -2,18 +2,12 @@ const vars = {
     region: process.env.AWS_REGION,
     debug: "true",
     bucket: process.env.S3_BUCKET,
-    httpHandlerApolloServer: {
+    handlerApolloServer: {
         server: {
             introspection: process.env.GRAPHQL_INTROSPECTION,
             playground: process.env.GRAPHQL_PLAYGROUND
         },
         debug: true
-    },
-    apollo: {
-        server: {
-            introspection: process.env.GRAPHQL_INTROSPECTION,
-            playground: process.env.GRAPHQL_PLAYGROUND
-        }
     },
     mongodb: {
         server: process.env.MONGODB_SERVER,
@@ -28,7 +22,7 @@ const vars = {
 };
 
 const apolloServiceDefinitions = {
-    APOLLO_SERVER_OPTIONS: vars.httpHandlerApolloServer,
+    APOLLO_SERVER_OPTIONS: vars.handlerApolloServer,
     DB_PROXY_OPTIONS: {
         functionArn: "${dbProxy.arn}"
     },
@@ -45,7 +39,7 @@ module.exports = () => ({
                 define: {
                     // Maybe we should upgrade lambda component to check file content hash?
                     HTTP_HANDLER_APOLLO_GATEWAY_OPTIONS: {
-                        ...vars.httpHandlerApolloServer,
+                        ...vars.handlerApolloServer,
                         services: [
                             {
                                 name: "security",
