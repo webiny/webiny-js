@@ -1,6 +1,6 @@
 import * as React from "react";
 import { Plugin } from "@webiny/plugins/types";
-import { ReactElement } from "react";
+import { ReactElement, ReactNode } from "react";
 
 import { I18NStringValue } from "@webiny/app-i18n/types";
 import { BindComponent, FormChildrenFunctionParams, Form } from "@webiny/form";
@@ -19,6 +19,10 @@ export type CmsContentModelFormProps = {
 export type CmsEditorFieldOptionPlugin = Plugin & {
     type: "cms-editor-field-option";
     render(): ReactElement;
+};
+
+export type CmsContentDetailsPlugin = Plugin & {
+    render: (params: { [key: string]: any }) => ReactNode;
 };
 
 // ------------------------------------------------------------------------------------------------------------
