@@ -3,36 +3,47 @@ import plugins from "../template/src/plugins";
 import { createUtils } from "./utils";
 
 describe("Scaffold graphql service test", () => {
-    const { useDatabase, useSchema } = createUtils([plugins()]);
+    const { useSchema } = createUtils([plugins()]);
+    let unicorns;
 
-    test("graphql", async () => {
-        // const query = /* GraphQL */ `
-        //     mutation {
-        //         files {
-        //             createFile(
-        //                 data: {
-        //                     id: "5c96410bf32d248a1a73b8c3"
-        //                     key: "/files/filename.png"
-        //                     name: "filename.png"
-        //                     size: 123456
-        //                     type: "image/png"
-        //                     tags: ["sketch"]
-        //                 }
-        //             ) {
-        //                 data {
-        //                     id
-        //                 }
-        //                 error {
-        //                     code
-        //                     data
-        //                     message
-        //                 }
-        //             }
-        //         }
-        //     }
-        // `;
-
+    test("Get all unicorns", async () => {
+        const query = /* GraphQL */ `
+            query {
+                getUnicorns {
+                    id
+                    name
+                    weight
+                }
+            }
+        `;
         const { schema, context } = await useSchema();
-        // const response = await graphql(schema, query, {}, context);
+        const response = await graphql(schema, query, {}, context);
+
+        if (response.errors) {
+            throw response.errors;
+        }
+        expect(response.data.getUnicorns.length).toBeGreaterThanOrEqual(1);
+        unicorns = response.data.getUnicorns;
+    });
+
+    test("Get unicorn by name", async () => {
+        const query = /* GraphQL */ `
+            query getThatUnicorn($name: String!) {
+                getUnicorn(name: $name) {
+                    id
+                    name
+                    weight
+                }
+            }
+        `;
+        const { schema, context } = await useSchema();
+        const response = await graphql(schema, query, {}, context, {
+            name: unicorns[0].name
+        });
+
+        if (response.errors) {
+            throw response.errors;
+        }
+        expect(response.data.getUnicorn).toEqual(unicorns[0]);
     });
 });
