@@ -1,3 +1,3 @@
-import myModel from "./myModel.model";
+import unicorn from "./unicorn.model";
 
-export default { myModel };
+export default { unicorn };
