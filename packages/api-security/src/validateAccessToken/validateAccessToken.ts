@@ -13,13 +13,12 @@ export default async (context, pat) => {
             return null;
         }
 
-        const returnedUser = {
+        return {
             id: user.id,
             type: "user",
             access: await user.access
         };
 
-        return returnedUser;
     } catch (e) {
         console.log(e);
     }
