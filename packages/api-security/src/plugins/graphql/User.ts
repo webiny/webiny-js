@@ -190,7 +190,7 @@ export default {
             updateCurrentUser: resolveUpdateCurrentSecurityUser,
             createUser: hasScope("security:user:crud")(resolveCreateUser(userFetcher)),
             updateUser: hasScope("security:user:crud")(resolveUpdateUser(userFetcher)),
-            deleteUser: hasScope("security:user:crud")(resolveDeleteUser(userFetcher))
+            deleteUser: hasScope("security:user:crud")(resolveDeleteUser(userFetcher)),
             createPAT: hasScope("security:user:crud")(resolveCreatePAT),
             updatePAT: hasScope("security:user:crud")(resolveUpdatePAT),
             deletePAT: hasScope("security:user:crud")(resolveDeletePAT)
