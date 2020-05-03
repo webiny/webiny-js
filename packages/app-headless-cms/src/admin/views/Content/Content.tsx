@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import React, { useMemo, useState } from "react";
 import { SplitView, LeftPanel, RightPanel } from "@webiny/app-admin/components/SplitView";
 import { useDataList } from "@webiny/app/hooks/useDataList";
 import ContentDataList from "./ContentDataList";
@@ -10,6 +10,9 @@ import { useApolloClient, useQuery } from "@webiny/app-headless-cms/admin/hooks"
 import { GET_CONTENT_MODEL_BY_MODEL_ID } from "./graphql";
 import { FloatingActionButton } from "@webiny/app-admin/components/FloatingActionButton";
 import useReactRouter from "use-react-router";
+import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
+import { i18n } from "@webiny/app/i18n";
+const t = i18n.ns("app-headless-cms/admin/content");
 
 const ContentRender = ({ contentModel }) => {
     const apolloClient = useApolloClient();
@@ -32,28 +35,48 @@ const ContentRender = ({ contentModel }) => {
                     <ContentDetails dataList={dataList} contentModel={contentModel} />
                 </RightPanel>
             </SplitView>
-            <FloatingActionButton data-testid="new-record-button" onClick={() => {
-                const query = new URLSearchParams(location.search);
-                query.delete("id");
-                history.push({ search: query.toString() });
-            }} />
+            <FloatingActionButton
+                data-testid="new-record-button"
+                onClick={() => {
+                    const query = new URLSearchParams(location.search);
+                    query.delete("id");
+                    history.push({ search: query.toString() });
+                }}
+            />
         </React.Fragment>
     );
 };
 
 const Content = () => {
     const { match } = useRouter();
+    const [contentModel, setContentModel] = useState();
+    const { history } = useReactRouter();
     const modelId = get(match, "params.modelId");
-    const { data } = useQuery(GET_CONTENT_MODEL_BY_MODEL_ID, {
+    const { showSnackbar } = useSnackbar();
+
+    useQuery(GET_CONTENT_MODEL_BY_MODEL_ID, {
         skip: !modelId,
-        variables: { modelId }
+        variables: { modelId },
+        onCompleted: data => {
+            const contentModel = get(data, "getContentModel.data");
+            if (contentModel) {
+                return setContentModel(contentModel);
+            }
+
+            history.push("/cms/content-models");
+            showSnackbar(
+                t`Could not load content for "{modelId}" model. Redirecting...`({
+                    modelId
+                })
+            );
+        }
     });
 
-    if (!data) {
+    if (!contentModel) {
         return null;
     }
 
-    return <ContentRender contentModel={data.getContentModel.data} />;
+    return <ContentRender contentModel={contentModel} />;
 };
 
 export default Content;
