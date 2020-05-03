@@ -1,5 +1,5 @@
 import mockConsole from "jest-mock-console";
-import { createHandler } from "@webiny/http-handler";
+import { createHandler } from "@webiny/handler";
 import apolloGatewayPlugins from "../src/index";
 import { startService, startServiceWithError } from "./federatedService";
 import event from "./event.mock";
@@ -30,8 +30,8 @@ describe("Apollo Gateway Handler", () => {
         const { url, stop, event } = await startServiceWithError();
 
         const handler = createHandler(apolloGatewayPlugins({ debug: true }), {
-            type: "http-handler-apollo-gateway-service",
-            name: "http-handler-apollo-gateway-service-users",
+            type: "handler-apollo-gateway-service",
+            name: "handler-apollo-gateway-service-users",
             service: { name: "users", url }
         });
 
@@ -47,8 +47,8 @@ describe("Apollo Gateway Handler", () => {
         const { url, stop, event } = await startService();
 
         const handler = createHandler(apolloGatewayPlugins({ debug: true }), {
-            type: "http-handler-apollo-gateway-service",
-            name: "http-handler-apollo-gateway-service-users",
+            type: "handler-apollo-gateway-service",
+            name: "handler-apollo-gateway-service-users",
             service: { name: "users", url }
         });
 

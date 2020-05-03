@@ -25,6 +25,7 @@
     "@babel/cli": "^7.5.5",
     "@babel/core": "^7.5.5",
     "@babel/preset-env": "^7.5.5",
+    "apollo-server": "^2.12.0",
     "apollo-server-types": "^0.3.1",
     "jest-mock-console": "^1.0.0"
   },

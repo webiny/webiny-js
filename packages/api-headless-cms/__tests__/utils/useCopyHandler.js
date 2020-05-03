@@ -1,4 +1,4 @@
-import { createHandler } from "@webiny/http-handler";
+import { createHandler } from "@webiny/handler";
 import headlessCmsPlugins from "../../src/copyEnvironment";
 
 const createCopyHandler = plugins =>

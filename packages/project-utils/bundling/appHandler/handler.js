@@ -1,8 +1,8 @@
 import "source-map-support/register";
-import { createHandler } from "@webiny/http-handler";
-import filesPlugins from "@webiny/http-handler-files";
-import ssrPlugins from "@webiny/http-handler-ssr";
-import cdnSsrCacheInvalidationPlugins from "@webiny/http-handler-ssr/cdnSsrCacheInvalidation";
+import { createHandler } from "@webiny/handler";
+import filesPlugins from "@webiny/handler-files";
+import ssrPlugins from "@webiny/handler-ssr";
+import cdnSsrCacheInvalidationPlugins from "@webiny/handler-ssr/cdnSsrCacheInvalidation";
 
 export const handler = createHandler(
     filesPlugins(),

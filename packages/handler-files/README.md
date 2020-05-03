@@ -1,6 +1,6 @@
-# @webiny/http-handler-files
-[![](https://img.shields.io/npm/dw/@webiny/http-handler-files.svg)](https://www.npmjs.com/package/@webiny/http-handler-files) 
-[![](https://img.shields.io/npm/v/@webiny/http-handler-files.svg)](https://www.npmjs.com/package/@webiny/http-handler-files)
+# @webiny/handler-files
+[![](https://img.shields.io/npm/dw/@webiny/handler-files.svg)](https://www.npmjs.com/package/@webiny/handler-files) 
+[![](https://img.shields.io/npm/v/@webiny/handler-files.svg)](https://www.npmjs.com/package/@webiny/handler-files)
 [![code style: prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg?style=flat-square)](https://github.com/prettier/prettier)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](http://makeapullrequest.com)
 

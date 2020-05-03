@@ -1,6 +1,6 @@
 import mockConsole from "jest-mock-console";
 import gql from "graphql-tag";
-import { createHandler } from "@webiny/http-handler";
+import { createHandler } from "@webiny/handler";
 import apolloServerPlugins from "../src/index";
 import event from "./event.mock";
 const context = {};
