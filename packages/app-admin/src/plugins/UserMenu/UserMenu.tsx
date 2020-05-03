@@ -18,7 +18,7 @@ const UserMenu = () => {
                 <Menu
                     className={menuDialog}
                     anchor={"topEnd"}
-                    handle={<React.Fragment>{renderPlugin("user-menu-handle")}</React.Fragment>}
+                    handle={<div>{renderPlugin("user-menu-handle")}</div>}
                 >
                     <List data-testid="logged-in-user-menu-list">
                         {renderPlugin("header-user-menu-user-info")}
