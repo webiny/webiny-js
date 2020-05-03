@@ -7,6 +7,7 @@ const {
     getAllFunctions,
     getAllIAMRoles,
     getAllLogGroups,
+    getAllBuckets,
     generateTasks
 } = require("./utils");
 
@@ -23,6 +24,14 @@ const generateOptions = resources => {
                         )}\t(last modified: ${blue(new Date(data.LastModified).toISOString())})`,
                         value: { type, data },
                         short: data.FunctionArn
+                    };
+                case "bucket":
+                    return {
+                        name: `[S3 Bucket] ${green(
+                            data.Name.padEnd(padding, " ")
+                        )}\t(created on: ${blue(new Date(data.CreationDate).toISOString())})`,
+                        value: { type, data },
+                        short: data.Name
                     };
                 case "api-gateway":
                     return {
@@ -125,6 +134,17 @@ const getPadding = (items, prop) => {
                     task.title = `Fetched ${blue(items.length)} Log Groups!`;
                     items.forEach(item =>
                         context.resources.push({ type: "log-group", data: item, padding })
+                    );
+                }
+            },
+            {
+                title: "Fetching S3 buckets...",
+                task: async (context, task) => {
+                    const items = await getAllBuckets();
+                    const padding = getPadding(items, "Name");
+                    task.title = `Fetched ${blue(items.length)} S3 buckets!`;
+                    items.forEach(item =>
+                        context.resources.push({ type: "bucket", data: item, padding })
                     );
                 }
             }

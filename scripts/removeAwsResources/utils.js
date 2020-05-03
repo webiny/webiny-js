@@ -2,6 +2,7 @@ const Lambda = require("aws-sdk/clients/lambda");
 const ApiGateway = require("aws-sdk/clients/apigateway");
 const CloudFront = require("aws-sdk/clients/cloudfront");
 const IAM = require("aws-sdk/clients/iam");
+const S3 = require("aws-sdk/clients/s3");
 const CloudWatchLogs = require("aws-sdk/clients/cloudwatchlogs");
 const { Observable } = require("rxjs");
 const pRetry = require("p-retry");
@@ -12,6 +13,7 @@ const cloudWatchLogs = new CloudWatchLogs({ region });
 const apiGateway = new ApiGateway({ region });
 const cloudFront = new CloudFront({ region });
 const iam = new IAM({ region });
+const s3 = new S3({ region });
 
 module.exports.getAllFunctions = async () => {
     const functions = [];
@@ -82,6 +84,14 @@ module.exports.getAllApiGateways = async () => {
     });
 };
 
+module.exports.getAllBuckets = async () => {
+    const { Buckets } = await s3.listBuckets({}).promise();
+
+    return Buckets.sort((a, b) => {
+        return new Date(b.CreationDate).getTime() - new Date(a.CreationDate).getTime();
+    });
+};
+
 module.exports.getAllCloudFrontDistributions = async () => {
     const distributions = [];
 
@@ -147,8 +157,51 @@ module.exports.generateTasks = resources => {
                             return new Observable(async observer => {
                                 for (let i = 0; i < resources[type].length; i++) {
                                     const { FunctionName } = resources[type][i];
-                                    observer.next(FunctionName);
+                                    observer.next(`Deleting ${FunctionName}...`);
                                     await lambda.deleteFunction({ FunctionName }).promise();
+                                }
+
+                                observer.complete();
+                            });
+                        }
+                    };
+                case "bucket":
+                    return {
+                        title: `Delete ${resources[type].length} buckets`,
+                        task: () => {
+                            return new Observable(async observer => {
+                                for (let i = 0; i < resources[type].length; i++) {
+                                    const { Name: Bucket } = resources[type][i];
+
+                                    let Marker;
+                                    while (true) {
+                                        observer.next(`Emptying ${Bucket}...`);
+                                        const { Contents, IsTruncated } = await s3
+                                            .listObjects({ Bucket, Marker })
+                                            .promise();
+
+                                        if (!Contents.length) {
+                                            break;
+                                        }
+
+                                        await s3
+                                            .deleteObjects({
+                                                Bucket,
+                                                Delete: {
+                                                    Objects: Contents.map(obj => ({ Key: obj.Key }))
+                                                }
+                                            })
+                                            .promise();
+
+                                        if (!IsTruncated) {
+                                            break;
+                                        }
+
+                                        Marker = Contents[Contents.length - 1].Key;
+                                    }
+
+                                    observer.next(`Deleting ${Bucket}...`);
+                                    await s3.deleteBucket({ Bucket }).promise();
                                 }
 
                                 observer.complete();
@@ -161,23 +214,22 @@ module.exports.generateTasks = resources => {
                         task: () => {
                             return new Observable(async observer => {
                                 for (let i = 0; i < resources[type].length; i++) {
-                                    const { name } = resources[type][i];
+                                    const { name, id } = resources[type][i];
 
-                                    observer.next(name);
+                                    observer.next(`Deleting ${name}...`);
 
                                     await pRetry(
                                         async () => {
                                             try {
                                                 await apiGateway
-                                                    .deleteRestApi({
-                                                        restApiId: data.id
-                                                    })
+                                                    .deleteRestApi({ restApiId: id })
                                                     .promise();
                                             } catch (error) {
                                                 if (error.code !== "TooManyRequestsException") {
                                                     // Stop retrying and throw the error
                                                     throw new pRetry.AbortError(error);
                                                 }
+                                                observer.next(`${error.message}. Will retry...`);
                                                 throw error;
                                             }
                                         },
@@ -188,6 +240,8 @@ module.exports.generateTasks = resources => {
                                         }
                                     );
                                 }
+
+                                observer.complete();
                             });
                         }
                     };
@@ -199,7 +253,7 @@ module.exports.generateTasks = resources => {
                                 for (let i = 0; i < resources[type].length; i++) {
                                     const { RoleName } = resources[type][i];
 
-                                    observer.next(RoleName);
+                                    observer.next(`Deleting ${RoleName}...`);
 
                                     const { PolicyNames } = await iam
                                         .listRolePolicies({ RoleName })
@@ -242,7 +296,7 @@ module.exports.generateTasks = resources => {
                                 for (let i = 0; i < resources[type].length; i++) {
                                     const { Id, DomainName } = resources[type][i];
 
-                                    observer.next(DomainName);
+                                    observer.next(`Fetching ${DomainName} configuration...`);
 
                                     const {
                                         ETag,
@@ -250,6 +304,7 @@ module.exports.generateTasks = resources => {
                                     } = await cloudFront.getDistributionConfig({ Id }).promise();
 
                                     if (DistributionConfig.Enabled) {
+                                        observer.next(`Disabling ${DomainName}...`);
                                         await cloudFront
                                             .updateDistribution({
                                                 Id,
@@ -263,9 +318,15 @@ module.exports.generateTasks = resources => {
                                         continue;
                                     }
 
-                                    await cloudFront
-                                        .deleteDistribution({ Id, IfMatch: ETag })
-                                        .promise();
+                                    try {
+                                        observer.next(`Deleting ${DomainName}...`);
+                                        await cloudFront
+                                            .deleteDistribution({ Id, IfMatch: ETag })
+                                            .promise();
+                                    } catch (err) {
+                                        observer.error(err.message);
+                                        return;
+                                    }
                                 }
 
                                 observer.complete();
@@ -279,7 +340,7 @@ module.exports.generateTasks = resources => {
                             return new Observable(async observer => {
                                 for (let i = 0; i < resources[type].length; i++) {
                                     const { logGroupName } = resources[type][i];
-                                    observer.next(logGroupName);
+                                    observer.next(`Deleting ${logGroupName}...`);
                                     await cloudWatchLogs.deleteLogGroup({ logGroupName }).promise();
                                 }
 
