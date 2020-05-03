@@ -1,22 +1,15 @@
 import { Context as APIContext, ContextPlugin } from "@webiny/graphql/types";
 import acceptLanguageParser from "accept-language-parser";
-import {
-    Context as I18NContext,
-    ContextI18NGetLocales
-} from "@webiny/api-i18n/types";
+import { Context as I18NContext, ContextI18NGetLocales } from "@webiny/api-i18n/types";
 
 const plugin: ContextPlugin<APIContext & I18NContext> = {
     type: "context",
     name: "context-i18n",
     apply: async context => {
-        const locales = context.plugins.byName<ContextI18NGetLocales>(
-            "context-i18n-get-locales"
-        );
+        const locales = context.plugins.byName<ContextI18NGetLocales>("context-i18n-get-locales");
 
         if (!locales) {
-            throw new Error(
-                'Cannot load locales - missing "context-i18n-get-locales" plugin.'
-            );
+            throw new Error('Cannot load locales - missing "context-i18n-get-locales" plugin.');
         }
 
         const { isColdStart, event } = context;
@@ -26,7 +19,9 @@ const plugin: ContextPlugin<APIContext & I18NContext> = {
                 acceptLanguage: null,
                 defaultLocale: null,
                 locale: null,
-                locales: isColdStart !== false ? [] : await locales.resolve({ context })
+                // NOTE: if `isColdStart===true`, we can't run queries against our API because Apollo Gateway hasn't yet
+                // built it's federated schema and we will end up in an infinite-loop.
+                locales: isColdStart === true ? [] : await locales.resolve({ context })
             },
             getDefaultLocale() {
                 const allLocales = self.getLocales();
