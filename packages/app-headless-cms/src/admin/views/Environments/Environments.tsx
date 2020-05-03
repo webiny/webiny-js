@@ -12,18 +12,23 @@ import {
     UPDATE_ENVIRONMENT,
     DELETE_ENVIRONMENT
 } from "./graphql";
+import { i18n } from "@webiny/app/i18n";
+const t = i18n.ns("app-headless-cms/admin/environments");
 
 function Environments() {
     const {
-        environments: { refreshEnvironments }
+        environments: { refreshEnvironments, isSelectedEnvironment }
     } = useCms();
 
     return (
         <CrudProvider
             delete={{
                 mutation: DELETE_ENVIRONMENT,
-                options: {
-                    onCompleted: refreshEnvironments
+                snackbar: item => {
+                    if (isSelectedEnvironment(item)) {
+                        return t`Record deleted successfully. Switched to first available environment.`;
+                    }
+                    return t`Record deleted successfully.`;
                 }
             }}
             read={READ_ENVIRONMENT}
@@ -34,10 +39,7 @@ function Environments() {
                 }
             }}
             update={{
-                mutation: UPDATE_ENVIRONMENT,
-                options: {
-                    onCompleted: refreshEnvironments
-                }
+                mutation: UPDATE_ENVIRONMENT
             }}
             list={{
                 query: LIST_ENVIRONMENTS,
