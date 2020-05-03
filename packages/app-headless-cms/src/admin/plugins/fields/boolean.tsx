@@ -1,5 +1,5 @@
 import React from "react";
-import { ReactComponent as BooleanIcon } from "./icons/round-looks_3-24px.svg";
+import { ReactComponent as BooleanIcon } from "./icons/toggle_on-black-24px.svg";
 import { FbBuilderFieldPlugin } from "@webiny/app-headless-cms/types";
 
 const plugin: FbBuilderFieldPlugin = {
@@ -10,7 +10,7 @@ const plugin: FbBuilderFieldPlugin = {
         name: "boolean",
         label: "Boolean",
         description: "ID, order boolean, rating, quantity",
-        icon: <BooleanIcon />,
+        icon: BooleanIcon,
         validators: ["required", "gte", "lte", "in"],
         createField() {
             return {
