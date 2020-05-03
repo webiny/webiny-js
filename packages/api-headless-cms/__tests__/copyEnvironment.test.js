@@ -1,7 +1,7 @@
 import mdbid from "mdbid";
 import { createUtils } from "./utils";
 
-describe.skip("Copy Environment test", () => {
+describe("Copy Environment test", () => {
     const { useDatabase, useCopyHandler } = createUtils();
     const { invoke } = useCopyHandler();
     const { getCollection } = useDatabase();

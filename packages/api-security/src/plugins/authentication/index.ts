@@ -1,2 +1,2 @@
-export { default as authenticate } from "./authenticate";
+export { default as authenticateJwt } from "./authenticateJwt";
 export { JwtTokenError, JwtToken } from "./jwtToken";

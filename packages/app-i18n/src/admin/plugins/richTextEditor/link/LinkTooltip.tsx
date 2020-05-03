@@ -99,8 +99,7 @@ const LinkTooltip = ({ editor, onChange, activatePlugin }) => {
         <Tooltip ref={menuRef} style={{ display: "none" }}>
             <Elevation className={tooltipInner} z={1}>
                 <span>
-                    Link:{" "}
-                    {/* eslint-disable-next-line react/jsx-no-target-blank */}
+                    Link: {/* eslint-disable-next-line react/jsx-no-target-blank */}
                     <a href={href} target={"_blank"}>
                         {href.length > 50 ? compressLink(href) : href}
                     </a>

@@ -113,7 +113,12 @@ class ConfirmationDialog extends React.Component<Props, State> {
                     <DialogContent>{this.props.message}</DialogContent>
                     <DialogActions>
                         <DialogCancel onClick={this.onCancel}>Cancel</DialogCancel>
-                        <DialogButton onClick={this.onAccept}>Confirm</DialogButton>
+                        <DialogButton
+                            data-testid="confirmationdialog-confirm-action"
+                            onClick={this.onAccept}
+                        >
+                            Confirm
+                        </DialogButton>
                     </DialogActions>
                 </Dialog>
                 {this.props.children({
