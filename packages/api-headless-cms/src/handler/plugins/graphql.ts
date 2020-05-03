@@ -71,8 +71,8 @@ const getMutationResolvers = type => {
 
 const getQueryResolvers = () => {
     return {
-        getContentModel: hasScope("cms:contentModel:crud")(resolveGet(contentModelFetcher)),
-        listContentModels: hasScope("cms:contentModel:crud")(listContentModels)
+        getContentModel: hasScope("cms:content-model:crud")(resolveGet(contentModelFetcher)),
+        listContentModels: hasScope("cms:content-model:crud")(listContentModels)
     };
 };
 

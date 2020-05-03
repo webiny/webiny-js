@@ -86,21 +86,21 @@ export default {
 
         return {
             Query: {
-                getContentModelGroup: hasScope("cms:contentModelGroup:crud")(
+                getContentModelGroup: hasScope("cms:content-model-group:crud")(
                     resolveGet(contentModelGroupFetcher)
                 ),
-                listContentModelGroups: hasScope("cms:contentModelGroup:crud")(
+                listContentModelGroups: hasScope("cms:content-model-group:crud")(
                     resolveList(contentModelGroupFetcher)
                 )
             },
             Mutation: {
-                createContentModelGroup: hasScope("cms:contentModelGroup:crud")(
+                createContentModelGroup: hasScope("cms:content-model-group:crud")(
                     resolveCreate(contentModelGroupFetcher)
                 ),
-                updateContentModelGroup: hasScope("cms:contentModelGroup:crud")(
+                updateContentModelGroup: hasScope("cms:content-model-group:crud")(
                     resolveUpdate(contentModelGroupFetcher)
                 ),
-                deleteContentModelGroup: hasScope("cms:contentModelGroup:crud")(
+                deleteContentModelGroup: hasScope("cms:content-model-group:crud")(
                     resolveDelete(contentModelGroupFetcher)
                 )
             }

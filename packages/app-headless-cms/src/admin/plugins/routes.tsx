@@ -19,10 +19,10 @@ const EnvironmentsView = lazy(() => import("../views/Environments/Environments")
 const EnvironmentAliasesView = lazy(() => import("../views/EnvironmentAliases/EnvironmentAliases"));
 const ContentView = lazy(() => import("../views/Content/Content"));
 
-const ROLE_CMS_CONTENT_GROUPS = ["cms:contentModelGroup:crud"];
+const ROLE_CMS_CONTENT_GROUPS = ["cms:content-model-group:crud"];
 const ROLE_CMS_ENVIRONMENT = ["cms:environment:crud"];
-const ROLE_CMS_ENVIRONMENT_ALIAS = ["cms:environment:alias:crud"];
-const ROLE_CMS_CONTENT_MODELS = ["cms:contentModel:crud"];
+const ROLE_CMS_ENVIRONMENT_ALIAS = ["cms:environment-alias:crud"];
+const ROLE_CMS_CONTENT_MODELS = ["cms:content-model:crud"];
 
 const plugins: RoutePlugin[] = [
     {
