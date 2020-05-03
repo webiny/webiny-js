@@ -13,19 +13,18 @@ import {
     SimpleFormContent,
     SimpleFormHeader
 } from "@webiny/app-admin/components/SimpleForm";
-import { useQuery } from "react-apollo";
-import { LIST_ENVIRONMENTS } from "./graphql";
-import get from "lodash.get";
 import { AutoComplete } from "@webiny/ui/AutoComplete";
 
 const t = i18n.ns("app-headless-cms/admin/environments/form");
 
+import { useCms } from "@webiny/app-headless-cms/admin/hooks";
+
 function EnvironmentsForm() {
     const { form: crudForm } = useCrud();
 
-    const { data } = useQuery(LIST_ENVIRONMENTS, { variables: { limit: 100 } });
-
-    const createdFromOptions = get(data, "cms.environments.data", []);
+    const {
+        environments: { environments: createdFromOptions }
+    } = useCms();
 
     return (
         <Form {...crudForm}>

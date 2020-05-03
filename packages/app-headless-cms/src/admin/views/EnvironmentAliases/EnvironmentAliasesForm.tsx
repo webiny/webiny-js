@@ -6,12 +6,13 @@ import { ButtonPrimary } from "@webiny/ui/Button";
 import { CircularProgress } from "@webiny/ui/Progress";
 import { useCrud } from "@webiny/app-admin/hooks/useCrud";
 import { i18n } from "@webiny/app/i18n";
-import { useQuery, useApolloClient } from "react-apollo";
+import { useApolloClient } from "react-apollo";
 import get from "lodash.get";
 import { GET_ENVIRONMENT_ALIAS_BY_SLUG } from "./graphql";
-import { LIST_ENVIRONMENTS } from "./../Environments/graphql";
 import NameSlug from "../../components/NameSlug";
 import { AutoComplete } from "@webiny/ui/AutoComplete";
+
+import { useCms } from "@webiny/app-headless-cms/admin/hooks";
 
 import {
     SimpleFormHeader,
@@ -24,11 +25,11 @@ const t = i18n.ns("app-headless-cms/admin/environmentAliases/form");
 
 function EnvironmentAliasesForm() {
     const { form: crudForm } = useCrud();
+    const {
+        environments: { environments: environmentsOptions }
+    } = useCms();
 
-    const listEnvironments = useQuery(LIST_ENVIRONMENTS, { variables: { limit: 100 } });
     const apolloClient = useApolloClient();
-
-    const environmentsOptions = get(listEnvironments, "data.cms.environments.data", []);
 
     return (
         <Form {...crudForm}>
