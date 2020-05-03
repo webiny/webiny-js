@@ -5,6 +5,7 @@ import { ReactComponent as HeadlessCmsIcon } from "../../icons/how_to_vote-24px.
 import { ReactComponent as EnvironmentIcon } from "../../icons/call_split-24px.svg";
 import { Typography } from "@webiny/ui/Typography";
 import { css } from "emotion";
+import { useNavigation } from '@webiny/app-admin/plugins/Menu/Navigation/components';
 import EnvironmentSelectorDialog from "./../../components/EnvironmentSelectorDialog";
 import { useCms } from "@webiny/app-headless-cms/admin/hooks";
 
@@ -44,6 +45,7 @@ const style = {
 
 const HeadlessCmsMenu = ({ Menu, children }) => {
     const [dialogOpened, setDialogOpened] = useState(false);
+    const { hideMenu } = useNavigation();
 
     const {
         environments: { currentEnvironment }
@@ -76,7 +78,10 @@ const HeadlessCmsMenu = ({ Menu, children }) => {
                         </Typography>
                         <EnvironmentSelectorDialog
                             open={dialogOpened}
-                            onClose={() => setDialogOpened(false)}
+                            onClose={() => {
+                                setDialogOpened(false);
+                                hideMenu();
+                            }}
                         />
                     </li>
                 </ul>
