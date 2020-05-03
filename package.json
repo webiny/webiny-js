@@ -68,6 +68,7 @@
     "eslint-plugin-promise": "^4.2.1",
     "eslint-plugin-react": "^7.17.0",
     "eslint-plugin-standard": "^4.0.1",
+    "eslint-plugin-webiny-i18n": "file:./eslint/webiny-i18n",
     "execa": "^1.0.0",
     "flatten": "^1.0.2",
     "fs-extra": "^7.0.0",

@@ -9,7 +9,7 @@ module.exports = {
         ecmaVersion: 2018,
         sourceType: "module"
     },
-    plugins: ["@typescript-eslint", "jest", "import", "react"],
+    plugins: ["@typescript-eslint", "jest", "import", "react", "webiny-i18n"],
     env: {
         jest: true,
         commonjs: true,
@@ -25,7 +25,9 @@ module.exports = {
         "@typescript-eslint/no-use-before-define": 0,
         "@typescript-eslint/no-var-requires": 0,
         "@typescript-eslint/no-explicit-any": 0,
-        "curly": ["error"]
+        "curly": ["error"],
+        "webiny-i18n/namespaces": "error"
+
     },
     settings: {
         react: {
