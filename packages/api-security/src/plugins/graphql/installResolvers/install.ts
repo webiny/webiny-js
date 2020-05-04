@@ -3,7 +3,7 @@ import { WithFieldsError } from "@webiny/commodo";
 import { InvalidFieldsError } from "@webiny/commodo-graphql";
 import { omit } from "lodash";
 import * as data from "./data";
-import { GraphQLContext, GraphQLFieldResolver } from "@webiny/graphql/types";
+import { Context, GraphQLFieldResolver } from "@webiny/graphql/types";
 import { SecurityAuthenticationProviderPlugin } from "@webiny/api-security/types";
 
 const ensureFullAccessRole = async context => {
@@ -29,7 +29,7 @@ const ensureFullAccessGroup = async context => {
  * We consider security to be installed if there are users in both Webiny DB
  * and 3rd party authentication provider.
  */
-const isSecurityInstalled = async (context: GraphQLContext) => {
+const isSecurityInstalled = async (context: Context) => {
     const { SecurityUser } = context.models;
 
     // Check if at least 1 user exists in the system

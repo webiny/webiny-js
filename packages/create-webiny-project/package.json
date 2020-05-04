@@ -1,0 +1,36 @@
+{
+  "name": "create-webiny-project",
+  "version": "0.1.11",
+  "description": "local build tool to create webiny project with specific template",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "bin": "./bin.js",
+  "keywords": [
+    "Webiny"
+  ],
+  "author": "Webiny Ltd.",
+  "contributors": [
+    "Emil Kais <emil@webiny.com>",
+    "Pavel Denisjuk <pavel@webiny.com>"
+  ],
+  "license": "MIT",
+  "dependencies": {
+    "@webiny/tracking": "^3.1.0",
+    "chalk": "^4.0.0",
+    "envinfo": "^7.5.0",
+    "execa": "^4.0.0",
+    "fast-glob": "^3.2.2",
+    "fs-extra": "^9.0.0",
+    "ora": "^4.0.4",
+    "os": "^0.1.1",
+    "uniqid": "^5.2.0",
+    "validate-npm-package-name": "^3.0.0",
+    "yargs": "^15.3.1"
+  },
+  "publishConfig": {
+    "access": "public",
+    "directory": "."
+  }
+}

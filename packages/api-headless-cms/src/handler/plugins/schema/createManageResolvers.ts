@@ -1,5 +1,5 @@
 import pluralize from "pluralize";
-import { CmsModel, CmsFieldTypePlugins, CmsGraphQLContext } from "@webiny/api-headless-cms/types";
+import { CmsModel, CmsFieldTypePlugins, CmsContext } from "@webiny/api-headless-cms/types";
 import { createManageTypeName, createTypeName } from "../utils/createTypeName";
 import { commonFieldResolvers } from "../utils/commonFieldResolvers";
 import { resolveGet } from "../utils/resolvers/resolveGet";
@@ -15,7 +15,7 @@ export interface CreateManageResolvers {
     (params: {
         models: CmsModel[];
         model: CmsModel;
-        context: CmsGraphQLContext;
+        context: CmsContext;
         fieldTypePlugins: CmsFieldTypePlugins;
     }): any;
 }

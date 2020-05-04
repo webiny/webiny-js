@@ -1,4 +1,4 @@
-import { createHandler } from "@webiny/http-handler";
+import { createHandler } from "@webiny/handler";
 import validateAccessToken from "@webiny/api-security/validateAccessToken";
 import dbProxy from "@webiny/api-plugin-commodo-db-proxy";
 

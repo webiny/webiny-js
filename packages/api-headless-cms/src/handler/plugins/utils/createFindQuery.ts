@@ -1,4 +1,4 @@
-import { CmsFindFilterOperator, CmsGraphQLContext, CmsModel } from "@webiny/api-headless-cms/types";
+import { CmsFindFilterOperator, CmsContext, CmsModel } from "@webiny/api-headless-cms/types";
 import { WhereCondition } from "./parseWhere";
 
 const fieldMap = {
@@ -8,7 +8,7 @@ const fieldMap = {
 export const createFindQuery = (
     model: CmsModel,
     where: WhereCondition[],
-    context: CmsGraphQLContext
+    context: CmsContext
 ): { [key: string]: any } => {
     const filterOperators = context.plugins.byType<CmsFindFilterOperator>(
         "cms-find-filter-operator"

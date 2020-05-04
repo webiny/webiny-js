@@ -4,8 +4,8 @@ import { withUser } from "@webiny/api-security";
 import models from "./models/";
 
 export default () => ({
-    name: "graphql-context-models",
-    type: "graphql-context",
+    name: "context-models",
+    type: "context",
     apply(context) {
         const driver = context.commodo && context.commodo.driver;
 

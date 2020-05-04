@@ -1,13 +1,13 @@
 import { GraphQLFieldResolver } from "@webiny/graphql/types";
 import { Response, ErrorResponse } from "@webiny/commodo-graphql";
-import { findEntry } from "./../findEntry";
+import { CmsContext } from "@webiny/api-headless-cms/types";
+import { findEntry } from "../findEntry";
 import { entryNotFound } from "./entryNotFound";
-import { setContextLocale } from "./../setContextLocale";
-import { CmsGraphQLContext } from "@webiny/api-headless-cms/types";
+import { setContextLocale } from "../setContextLocale";
 
 export const resolveUpdate = ({
     model
-}): GraphQLFieldResolver<any, any, CmsGraphQLContext> => async (root, args, context) => {
+}): GraphQLFieldResolver<any, any, CmsContext> => async (root, args, context) => {
     setContextLocale(context, args.locale);
     const instance = await findEntry({ model, args, context });
 

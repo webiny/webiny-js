@@ -9,9 +9,9 @@ import {
     PluginsContainer,
     GraphQLSchemaPlugin,
     GraphQLScalarPlugin,
-    GraphQLContext
+    Context
 } from "../types";
-import { applyGraphQLContextPlugins } from "./contextPlugins";
+import { applyContextPlugins } from "./contextPlugins";
 
 type PrepareSchemaParams = { plugins: PluginsContainer };
 
@@ -19,8 +19,8 @@ type PrepareSchemaParams = { plugins: PluginsContainer };
  * @return {schema, context}
  */
 export async function prepareSchema({ plugins }: PrepareSchemaParams) {
-    const context: GraphQLContext = { plugins };
-    await applyGraphQLContextPlugins(context);
+    const context: Context = { plugins };
+    await applyContextPlugins(context);
 
     // This allows developers to register more plugins dynamically, before the graphql schema is instantiated.
     const gqlPlugins = plugins.byType<GraphQLSchemaPlugin>("graphql-schema");

@@ -1,4 +1,0 @@
-{
-  "extends": "../../tsconfig",
-  "references": [{ "path": "../graphql" }, { "path": "../http-handler-apollo-server" }]
-}

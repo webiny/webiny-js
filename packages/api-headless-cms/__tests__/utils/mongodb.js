@@ -15,9 +15,11 @@ export default (id, plugins, createUtils) => {
 
     return createUtils([
         {
-            type: "graphql-context",
+            type: "context",
             name: "mongo-is-id",
             apply(context) {
+                context.isColdStart = false;
+
                 context.commodo.isId = value => {
                     if (typeof value === "string") {
                         return value.match(new RegExp("^[0-9a-fA-F]{24}$")) !== null;

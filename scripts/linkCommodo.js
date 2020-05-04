@@ -39,6 +39,9 @@ async function symlink(src, dest) {
     const commodoRepo = path.resolve("..", "commodo", "packages");
 
     if (!fs.existsSync(commodoRepo)) {
+        console.log(
+            `INFO: Commodo repo not found at "../commodo", using original "@commodo" packages from NPM!`
+        );
         return;
     }
 

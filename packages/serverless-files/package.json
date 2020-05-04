@@ -5,9 +5,8 @@
   "license": "MIT",
   "dependencies": {
     "@serverless/aws-s3": "^4.0.0",
-    "@webiny/serverless-apollo-service": "^3.0.2",
-    "@webiny/serverless-component": "^0.1.0",
-    "@webiny/serverless-function": "^3.0.1",
+    "@webiny/handler": "^0.1.0",
+    "@webiny/project-utils": "^1.0.1",
     "aws-sdk": "^2.539.0",
     "lodash.get": "^4.4.2",
     "lodash.merge": "^4.6.2",
@@ -16,6 +15,7 @@
   },
   "devDependencies": {
     "@babel/preset-env": "^7.6.3",
+    "@types/sharp": "^0.25.0",
     "babel-loader": "^8.0.6",
     "concurrently": "^5.0.0",
     "extract-zip": "^1.6.7",
@@ -25,11 +25,9 @@
     "webpack-cli": "^3.3.9"
   },
   "scripts": {
-    "build:download": "webpack --config scripts/webpack/webpack.config.download.js",
-    "build:image-transformer": "webpack --config scripts/webpack/webpack.config.imageTransformer.js",
-    "build:manage-files": "webpack --config scripts/webpack/webpack.config.manageFiles.js",
-    "build": "concurrently \"yarn build:image-transformer\" \"yarn build:download\" \"yarn build:manage-files\"",
-    "postbuild": "cp -r utils package.json serverless.js LICENSE README.md dist/",
+    "build": "rimraf ./dist *.tsbuildinfo && babel src -d dist --source-maps --copy-files --extensions \".ts\"",
+    "watch": "babel src -d dist --source-maps --copy-files --extensions \".ts\" --watch",
+    "postbuild": "cp package.json LICENSE README.md dist/ && tsc -p tsconfig.build.json",
     "deploy": "cd test && sls --debug",
     "prepublishOnly": "yarn build"
   },
@@ -41,9 +39,6 @@
     "ignore": {
       "src": [
         "sharp"
-      ],
-      "dependencies": [
-        "@webiny/api-files"
       ]
     }
   },

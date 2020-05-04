@@ -1,7 +1,7 @@
 import { pipe, onGet, fields, withFields, withProps } from "@webiny/commodo";
 import { validation } from "@webiny/validation";
-import { GraphQLContext as CommodoContext } from "@webiny/api-plugin-commodo-db-proxy/types";
-import { GraphQLContext as I18NContext } from "@webiny/api-i18n/types";
+import { Context as CommodoContext } from "@webiny/api-plugin-commodo-db-proxy/types";
+import { Context as I18NContext } from "@webiny/api-i18n/types";
 
 export type I18NField = {
     field: any;

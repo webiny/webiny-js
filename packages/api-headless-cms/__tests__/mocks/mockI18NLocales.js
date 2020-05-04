@@ -17,8 +17,8 @@ export const locales = {
 };
 
 export default () => ({
-    name: "graphql-context-i18n-get-locales",
-    type: "graphql-context-i18n-get-locales",
+    name: "context-i18n-get-locales",
+    type: "context-i18n-get-locales",
     async resolve() {
         return Object.values(locales);
     }

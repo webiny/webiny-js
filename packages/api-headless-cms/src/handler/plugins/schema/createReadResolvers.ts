@@ -1,5 +1,5 @@
 import pluralize from "pluralize";
-import { CmsModel, CmsFieldTypePlugins, CmsGraphQLContext } from "@webiny/api-headless-cms/types";
+import { CmsModel, CmsFieldTypePlugins, CmsContext } from "@webiny/api-headless-cms/types";
 import { GraphQLFieldResolver } from "@webiny/graphql/types";
 import { createReadTypeName, createTypeName } from "../utils/createTypeName";
 import { commonFieldResolvers } from "../utils/commonFieldResolvers";
@@ -10,7 +10,7 @@ export interface CreateReadResolvers {
     (params: {
         models: CmsModel[];
         model: CmsModel;
-        context: CmsGraphQLContext;
+        context: CmsContext;
         fieldTypePlugins: CmsFieldTypePlugins;
     }): any;
 }

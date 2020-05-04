@@ -1,11 +1,11 @@
 import { GraphQLSchemaModule } from "apollo-graphql";
 import {
-    GraphQLContext as APIGraphQLContext,
+    Context as APIContext,
     GraphQLFieldResolver,
     Plugin
 } from "@webiny/graphql/types";
-import { GraphQLContext as I18NContext, I18NLocale } from "@webiny/api-i18n/types";
-import { GraphQLContext as CommodoContext } from "@webiny/api-plugin-commodo-db-proxy/types";
+import { Context as I18NContext, I18NLocale } from "@webiny/api-i18n/types";
+import { Context as CommodoContext } from "@webiny/api-plugin-commodo-db-proxy/types";
 
 export type CmsLocalizedModelFieldValue<T> = {
     locale: string;
@@ -25,7 +25,7 @@ export type CmsEnvironmentAlias = {
     description: string;
 };
 
-export type GraphQLContext = {
+export type Context = {
     cms: {
         // API type
         type: string;
@@ -49,7 +49,7 @@ export type GraphQLContext = {
 /**
  * This combines all contexts used in the CMS into a single type.
  */
-export type CmsGraphQLContext = APIGraphQLContext & I18NContext & CommodoContext & GraphQLContext;
+export type CmsContext = APIContext & I18NContext & CommodoContext & Context;
 
 export type CmsModelFieldValue<T> = {
     values: CmsLocalizedModelFieldValue<T>[];
@@ -78,7 +78,7 @@ export type CmsModelFieldValidatorPlugin = Plugin & {
         validate(params: {
             value: any;
             validator: CmsFieldValidation;
-            context: CmsGraphQLContext;
+            context: CmsContext;
         }): Promise<boolean>;
     };
 };
@@ -100,7 +100,7 @@ export type CmsModel = {
     fields: CmsModelField[];
 };
 
-export type CmsModelFieldToCommodoFieldPlugin<TContext = CmsGraphQLContext> = Plugin & {
+export type CmsModelFieldToCommodoFieldPlugin<TContext = CmsContext> = Plugin & {
     type: "cms-model-field-to-commodo-field";
     fieldType: string;
     isSortable: boolean;
@@ -156,6 +156,6 @@ export type CmsFindFilterOperator = Plugin & {
         fieldId: string;
         field: CmsModelField;
         value: any;
-        context: CmsGraphQLContext;
+        context: CmsContext;
     }): { [key: string]: any };
 };

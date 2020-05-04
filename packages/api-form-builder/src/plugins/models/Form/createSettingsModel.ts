@@ -2,9 +2,9 @@ import { get } from "lodash";
 import { i18nString, i18nObject } from "@webiny/api-i18n/fields";
 import { withFields, string, fields, boolean, withProps } from "@webiny/commodo";
 import { flow } from "lodash";
-import { GraphQLContext as APIContext } from "@webiny/graphql/types";
-import { GraphQLContext as I18NContext } from "@webiny/api-i18n/types";
-import { GraphQLContext as CommodoContext } from "@webiny/api-plugin-commodo-db-proxy/types";
+import { Context as APIContext } from "@webiny/graphql/types";
+import { Context as I18NContext } from "@webiny/api-i18n/types";
+import { Context as CommodoContext } from "@webiny/api-plugin-commodo-db-proxy/types";
 
 export type CreateSettingsModel = {
     context: APIContext & I18NContext & CommodoContext;

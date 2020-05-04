@@ -1,7 +1,7 @@
 import LambdaClient from "aws-sdk/clients/lambda";
-import { GraphQLContext } from "@webiny/graphql/types";
+import { Context } from "@webiny/graphql/types";
 
-export default options => async (context: GraphQLContext) => {
+export default options => async (context: Context) => {
     if (context.user) {
         return;
     }

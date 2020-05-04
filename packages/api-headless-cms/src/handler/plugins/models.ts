@@ -1,7 +1,7 @@
 import { withUser } from "@webiny/api-security";
 import { pipe, withStorage, withCrudLogs, withSoftDelete, withFields } from "@webiny/commodo";
-import { GraphQLContextPlugin } from "@webiny/graphql/types";
-import { GraphQLContext } from "@webiny/api-plugin-commodo-db-proxy/types";
+import { ContextPlugin } from "@webiny/graphql/types";
+import { Context } from "@webiny/api-plugin-commodo-db-proxy/types";
 import contentModel from "./models/contentModel.model";
 import environmentModel from "../../plugins/models/environment.model";
 import environmentModelAlias from "../../plugins/models/environmentAlias.model";
@@ -98,11 +98,11 @@ export default () => {
 
     return [
         {
-            name: "graphql-context-cms-models",
-            type: "graphql-context",
+            name: "context-cms-models",
+            type: "context",
             apply(context) {
                 return apply(context);
             }
-        } as GraphQLContextPlugin<GraphQLContext>
+        } as ContextPlugin<Context>
     ];
 };

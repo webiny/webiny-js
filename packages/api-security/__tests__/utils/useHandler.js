@@ -1,8 +1,8 @@
-import { createHandler } from "@webiny/http-handler";
+import { createHandler } from "@webiny/handler";
 
 export default plugins => () => {
     return createHandler(plugins, {
-        type: "graphql-context",
+        type: "context",
         name: "mongo-is-id",
         apply(context) {
             context.commodo.isId = value => {
