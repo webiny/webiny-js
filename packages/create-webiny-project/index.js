@@ -15,13 +15,19 @@ yargs
     .usage("Usage: $0 <project-name> [options]")
     .version(packageJson.version)
     .demandCommand(1)
-    // TODO: add examples of using local template path and tag
     .example("$0 my-project --template=full")
+    .example(
+        "$0 create-webiny-project --template=../path/to/template --tag=../path/to/webiny/files"
+    )
     .help()
     .alias("help", "h")
     .fail(function(msg, err) {
-        if (msg) console.log(msg);
-        if (err) console.log(err);
+        if (msg) {
+            console.log(msg);
+        }
+        if (err) {
+            console.log(err);
+        }
         process.exit(1);
     });
 
