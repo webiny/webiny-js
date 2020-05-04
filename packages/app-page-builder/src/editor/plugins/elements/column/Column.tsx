@@ -65,6 +65,7 @@ const Column = props => {
                                 {!elements.length && (
                                     <DropZone.Center key={id} id={id} type={type} onDrop={onDrop}>
                                         <IconButton
+                                            data-testid={"pb-editor-column-add-button"}
                                             className={addIcon + " addIcon"}
                                             icon={<AddCircleOutline />}
                                             onClick={onClick}

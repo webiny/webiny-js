@@ -36,6 +36,14 @@ export const install = async (root: any, args: { [key: string]: any }, context: 
     const { step } = args;
 
     try {
+        // For new installations, mark step 6 immediately as completed.
+        // This is because of https://github.com/webiny/webiny-js/pull/792.
+        // TODO: Remove this upon merging Headless CMS.
+        if (!installation.getStep(6).completed) {
+            installation.getStep(6).markAsCompleted();
+            await settings.save();
+        }
+
         if (!installation.stepAvailable(step)) {
             return new ErrorResponse({
                 code: "PB_INSTALL_ABORTED",
@@ -143,10 +151,57 @@ export const isInstalled = async (
     args: { [key: string]: any },
     context: { [key: string]: any }
 ) => {
-    const { PbSettings } = context.models;
+    const { PbSettings, PbPage } = context.models;
     const settings = await PbSettings.load();
     if (!settings) {
         return new Response(false);
+    }
+
+    const installation = settings.data.installation;
+
+    if (installation.completed) {
+        return new Response(true);
+    }
+
+    // Backwards compatibility update. Will add "latestVersion" flag to all pages in the system.
+    // This is because of https://github.com/webiny/webiny-js/pull/792.
+    // TODO: Remove this upon merging Headless CMS.
+    if (!installation.steps.step6.completed && installation.steps.step5.completed) {
+        installation.getStep(6).markAsStarted();
+        await settings.save();
+
+        const latestPagesIds = {};
+        let page = 1;
+        const PER_PAGE = 50;
+        while (true) {
+            const pages = await PbPage.find({ version: -1, perPage: PER_PAGE, page });
+            for (let i = 0; i < pages.length; i++) {
+                const current = pages[i];
+                if (!latestPagesIds[current.parent]) {
+                    latestPagesIds[current.parent] = current.id;
+                }
+            }
+
+            if (pages.length < PER_PAGE) {
+                break;
+            }
+
+            page++;
+        }
+
+        const { driver } = context.commodo;
+        await driver.getClient().runOperation({
+            collection: "PbPage",
+            operation: [
+                "updateMany",
+                { id: { $in: Object.values(latestPagesIds) } },
+                { $set: { latestVersion: true } },
+                { $multi: true }
+            ]
+        });
+
+        installation.getStep(6).markAsCompleted();
+        await settings.save();
     }
 
     return new Response(settings.data.installation.completed);

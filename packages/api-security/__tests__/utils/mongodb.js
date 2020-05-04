@@ -15,7 +15,7 @@ export default (id, plugins, createUtils) => {
 
     return createUtils([
         {
-            type: "graphql-context",
+            type: "context",
             name: "mongo-is-id",
             apply(context) {
                 context.commodo.isId = value => {
