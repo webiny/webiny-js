@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.3.1](https://github.com/webiny/webiny-js/compare/@webiny/app-page-builder@3.3.0...@webiny/app-page-builder@3.3.1) (2020-05-04)
+
+
+### Bug Fixes
+
+* prevent execution of oembed onComplete callback ([#818](https://github.com/webiny/webiny-js/issues/818)) ([60ec8a3](https://github.com/webiny/webiny-js/commit/60ec8a3d601f7997bc04853a6a8df0847f5e3024))
+* set default icon element width ([#803](https://github.com/webiny/webiny-js/issues/803)) ([47b3c3c](https://github.com/webiny/webiny-js/commit/47b3c3c2da4c6b5745c44d72e3fb4c6d3fca2260))
+
+
+
+
+
 # [3.3.0](https://github.com/webiny/webiny-js/compare/@webiny/app-page-builder@3.3.0-next.1...@webiny/app-page-builder@3.3.0) (2020-04-23)
 
 
