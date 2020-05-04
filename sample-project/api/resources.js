@@ -94,7 +94,6 @@ module.exports = () => ({
                     concurrencyLimit: 15,
                     timeout: 30,
                     env: {
-                        LOG_COLLECTION: "DbProxyLog",
                         MONGODB_SERVER: vars.mongodb.server,
                         MONGODB_NAME: vars.mongodb.name
                     }
