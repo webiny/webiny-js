@@ -36,6 +36,7 @@ const PatContainer = styled("div")({
     background: "var(--mdc-theme-on-background)"
 });
 
+// TODO: @andrei extract these into separate files
 const TokenListItem = ({ setFormIsLoading, data, setValue, PAT }) => {
     const [showEditDialog, setShowEditDialog] = useState(false);
     const [tokenName, setTokenName] = useState(PAT.name);
@@ -171,7 +172,7 @@ const TokenList = ({ setFormIsLoading, data, setValue }) => {
 const TokensElement = ({ setFormIsLoading, data, setValue }) => {
     const [showCreatePATDialog, setShowCreatePATDialog] = useState(false);
     const [showPATHashDialog, setShowPATHashDialog] = useState(false);
-    const [tokenHash, setTokenHash] = useState("HSDIGHSDGIASDHISDHIAGDSHGIDSHIGSHAIGHI"); // TODO: @Andrei why random string here?
+    const [tokenHash, setTokenHash] = useState("HSDIGHSDGIASDHISDHIAGDSHGIDSHIGSHAIGHI"); // TODO: @andrei why random string here?
     const [newPATName, setNewPATName] = useState("New token");
     const { showSnackbar } = useSnackbar();
     const client = useApolloClient();
