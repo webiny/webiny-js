@@ -119,6 +119,7 @@
     "node_modules",
     "**/__tests__/**",
     "dist",
+    "./scripts/**",
     "**jest**",
     "./packages/cli",
     "./packages/serverless-api-gateway",
