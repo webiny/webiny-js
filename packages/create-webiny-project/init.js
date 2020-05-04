@@ -54,8 +54,11 @@ module.exports = async function({ root, appName, templateName, tag, log }) {
     const projectDeps = require(path.join(root, "dependencies.json"));
 
     Object.assign(appPackage.dependencies, projectDeps.dependencies);
-    if (appPackage.workspaces) Object.assign(appPackage.workspaces, projectDeps.workspaces);
-    else appPackage.workspaces = Object.assign({}, projectDeps.workspaces);
+    if (appPackage.workspaces) {
+        Object.assign(appPackage.workspaces, projectDeps.workspaces);
+    } else {
+        appPackage.workspaces = Object.assign({}, projectDeps.workspaces);
+    }
 
     fs.writeFileSync(path.join(root, "package.json"), JSON.stringify(appPackage, null, 2) + os.EOL);
 
@@ -131,7 +134,7 @@ module.exports = async function({ root, appName, templateName, tag, log }) {
         spinner.start({ color: "green" });
         const options = {
             cwd: root,
-            buffer: false
+            maxBuffer: "500_000_000"
         };
 
         let logStream;
@@ -145,7 +148,8 @@ module.exports = async function({ root, appName, templateName, tag, log }) {
             await execa("yarn", [], options);
         }
     } catch (err) {
-        console.log(err);
+        spinner.fail("Unable to install the necessary packages.", err);
+        return;
     }
 
     // Remove template from dependencies

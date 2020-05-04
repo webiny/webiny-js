@@ -16,10 +16,10 @@ let subscribedToOffsetChange = false;
 let dragPreviewRef = null;
 
 const onOffsetChange = monitor => () => {
-    if (!dragPreviewRef) return;
+    if (!dragPreviewRef) {return;}
 
     const offset = monitor.getClientOffset();
-    if (!offset) return;
+    if (!offset) {return;}
 
     const transform = `translate(${offset.x - 15}px, ${offset.y - 15}px)`;
     dragPreviewRef.style["transform"] = transform;

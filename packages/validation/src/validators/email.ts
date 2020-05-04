@@ -14,7 +14,7 @@ import ValidationError from "./../validationError";
  * });
  */
 export default (value: any): void => {
-    if (!value) return;
+    if (!value) {return;}
     value = value + "";
 
     // eslint-disable-next-line
