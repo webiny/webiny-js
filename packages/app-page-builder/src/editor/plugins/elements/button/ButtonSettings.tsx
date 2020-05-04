@@ -115,7 +115,7 @@ const getIcons = (): PbIcon[] => {
     return icons;
 };
 
-const getSvg = (id: string[], props) => {
+const getSvg = (id: string[], props: any = {}) => {
     if (!props.width) {
         props.width = 50;
     }

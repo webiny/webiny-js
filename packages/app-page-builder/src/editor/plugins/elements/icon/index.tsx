@@ -56,7 +56,7 @@ export default () => {
                     data: {
                         icon: {
                             id: ["far", "star"],
-                            svg: getSvg(["far", "star"]),
+                            svg: getSvg(["far", "star"], { width: 50 }),
                             width: 50
                         },
                         settings: {
