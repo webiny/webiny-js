@@ -1,6 +1,8 @@
 {
   "private": true,
   "dependencies": {
+    "@babel/plugin-proposal-object-rest-spread": "latest",
+    "semver": "^6.3.0",
     "@webiny/project-utils": "latest",
     "@webiny/serverless-api-gateway": "latest",
     "@webiny/serverless-apollo-service": "latest",
@@ -9,6 +11,7 @@
     "@webiny/serverless-aws-cloudfront": "latest",
     "@webiny/serverless-aws-cognito-user-pool": "latest",
     "@webiny/serverless-aws-lambda": "latest",
+    "@webiny/serverless-aws-s3-object": "latest",
     "@webiny/serverless-component": "latest",
     "@webiny/serverless-db-proxy": "latest",
     "@webiny/serverless-files": "latest",
