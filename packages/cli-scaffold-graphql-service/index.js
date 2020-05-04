@@ -31,12 +31,13 @@ module.exports = [
             },
             generate: async ({ input }) => {
                 const { location } = input;
+                const fullLocation = path.resolve(location);
                 const rootResourcesPath = findUp.sync("resources.js", {
-                    cwd: path.resolve(location)
+                    cwd: fullLocation
                 });
 
                 const relativeLocation = path
-                    .relative(path.dirname(rootResourcesPath), path.resolve(location))
+                    .relative(path.dirname(rootResourcesPath), fullLocation)
                     .replace(/\\/g, "/");
 
                 const packageName = path.basename(location);
@@ -50,6 +51,18 @@ module.exports = [
                 }
 
                 await fs.mkdirSync(location, { recursive: true });
+
+                // Get base TS config path
+                const baseTsConfigPath = path
+                    .relative(
+                        fullLocation,
+                        findUp.sync("tsconfig.json", {
+                            cwd: fullLocation
+                        })
+                    )
+                    .replace(/\\/g, "/");
+
+                // Copy template files
                 await ncp(sourceFolder, location);
 
                 // Update the package's name
@@ -68,7 +81,11 @@ module.exports = [
                     plugins: [[__dirname + "/transform", { template: resourceTpl, resourceName }]]
                 });
 
-                // TODO: update path to tsconfig.build.json
+                // Update tsconfig "extends" path
+                const tsConfigPath = path.join(fullLocation, "tsconfig.json");
+                const tsconfig = require(tsConfigPath);
+                tsconfig.extends = baseTsConfigPath;
+                fs.writeFileSync(tsConfigPath, JSON.stringify(tsconfig, null, 2));
 
                 // Format code with prettier
                 const prettier = require("prettier");
