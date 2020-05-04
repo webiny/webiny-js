@@ -122,6 +122,7 @@
     "./scripts/**",
     "**jest**",
     "./packages/cli",
+    "./packages/project-utils",
     "./packages/create-webiny-project",
     "./packages/cwp-template-full",
     "./packages/serverless-api-gateway",
