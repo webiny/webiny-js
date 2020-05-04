@@ -54,7 +54,7 @@
     "chalk": "^2.4.1",
     "commitizen": "^2.10.1",
     "cross-env": "^5.2.0",
-    "cypress": "^4.4.0",
+    "cypress": "^3.8.0",
     "cz-customizable": "^5.2.0",
     "empty": "^0.10.1",
     "env-ci": "2.0.1",
@@ -110,7 +110,7 @@
     "fsevents": "^2.0.7"
   },
   "scripts": {
-    "build": "lerna run build --scope=@webiny/* --stream",
+    "build": "lerna run build --stream",
     "build:components": "lerna run build --scope=@webiny/serverless-* --stream",
     "build:apps": "lerna run build --scope=@webiny/app* --stream",
     "build:app-templates": "lerna run build --scope=@webiny/app-template* --stream",
@@ -126,7 +126,7 @@
     "commit:no-verify": "yarn commit --no-verify",
     "commit:verify": "yarn lint-staged",
     "lint-staged": "lint-staged",
-    "postinstall": "node ./scripts/linkPackages.js && node ./scripts/linkCommodo.js",
+    "postinstall": "node ./scripts/linkPackages.js",
     "prettier": "prettier --config .prettierrc.js --write",
     "setup-repo": "node scripts/setupRepo",
     "test": "jest --config jest.config.js",
