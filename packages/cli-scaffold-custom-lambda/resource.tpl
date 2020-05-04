@@ -1,16 +1,15 @@
 {
-    watch: ["./[PACKAGE_PATH]/build"],
+    watch: ["./services/[PACKAGE_NAME]/build"],
     build: {
-        root: "./[PACKAGE_PATH]",
-        script: "yarn build",
-        define: apolloServiceDefinitions
+        root: "./services/[PACKAGE_NAME]",
+        script: "yarn build"
     },
     deploy: {
         component: "@webiny/serverless-function",
         inputs: {
+            description: "Custom lambda function",
             region: vars.region,
-            description: "GraphQL API",
-            code: "./[PACKAGE_PATH]/build",
+            code: "./services/[PACKAGE_NAME]/build",
             handler: "handler.handler",
             memory: 512,
             env: {

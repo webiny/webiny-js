@@ -1,45 +1,9 @@
 {
-  "name": "PACKAGE_NAME",
+  "name": "[PACKAGE_NAME]",
+  "version": "1.0.0",
+  "description": "",
+  "license": "MIT",
   "scripts": {
-    "prebuild": "adio",
-    "build": "webpack --config ./webpack.config.js"
-  },
-  "dependencies": {
-  },
-  "devDependencies": {
-    "@babel/cli": "^7.5.5",
-    "@babel/core": "^7.5.5",
-    "@babel/preset-env": "^7.5.5",
-    "@babel/preset-typescript": "^7.8.3",
-    "babel-loader": "^8.0.6",
-    "webpack": "^4.41.6",
-    "webpack-cli": "^3.3.11"
-  },
-  "adio": {
-    "parser": {
-      "plugins": [
-        "typescript"
-      ]
-    },
-    "ignore": {
-      "src": [
-        "path",
-        "os",
-        "fs",
-        "util",
-        "events",
-        "crypto",
-        "aws-sdk"
-      ],
-      "dependencies": [
-        "@babel/runtime"
-      ],
-      "devDependencies": true
-    },
-    "ignoreDirs": [
-      "node_modules",
-      "build"
-    ],
-    "package": "."
+    "build": "webiny run build"
   }
 }
