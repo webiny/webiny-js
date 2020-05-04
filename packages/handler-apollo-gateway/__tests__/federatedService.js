@@ -1,4 +1,4 @@
-const { ApolloServer, gql } = require("apollo-server");
+const { ApolloServer, gql } = require("apollo-server-lambda");
 const { buildFederatedSchema } = require("@apollo/federation");
 
 const users = [
@@ -63,7 +63,7 @@ const startService = async () => {
         }
     };
 
-    const server = new ApolloServer({
+    const apollo = new ApolloServer({
         schema: buildFederatedSchema([
             {
                 typeDefs,
@@ -72,8 +72,14 @@ const startService = async () => {
         ])
     });
 
-    const { url } = await server.listen({ port: 4002 });
-    return { url, event, stop: () => server.stop() };
+    const handler = apollo.createHandler({
+        cors: {
+            origin: "*",
+            methods: "GET,HEAD,POST"
+        }
+    });
+
+    return { handler, event };
 };
 
 const startServiceWithError = async () => {
