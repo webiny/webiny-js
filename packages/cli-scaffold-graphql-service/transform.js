@@ -15,7 +15,7 @@ module.exports = function({ types: t, template: tpl }, { template, resourceName 
                     );
                 }
 
-                if (path.node.name === "HTTP_HANDLER_APOLLO_GATEWAY_OPTIONS") {
+                if (path.node.name === "HANDLER_APOLLO_GATEWAY_OPTIONS") {
                     const services = path.parent.value.properties.find(
                         item => item.type === "ObjectProperty" && item.key.name === "services"
                     );

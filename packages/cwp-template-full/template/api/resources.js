@@ -45,7 +45,7 @@ module.exports = () => ({
                 define: {
                     // TODO: changes in these parameters do not re-deploy lambda!!!
                     // Maybe we should upgrade lambda component to check file content hash?
-                    HTTP_HANDLER_APOLLO_GATEWAY_OPTIONS: {
+                    HANDLER_APOLLO_GATEWAY_OPTIONS: {
                         ...vars.httpHandlerApolloServer,
                         services: [
                             {
