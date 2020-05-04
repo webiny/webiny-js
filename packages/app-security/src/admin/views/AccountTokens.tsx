@@ -62,7 +62,7 @@ const TokenListItem = ({ setFormIsLoading, data, setValue, PAT }) => {
         const newPATs = data.personalAccessTokens.filter(crtPAT => crtPAT.id != PAT.id);
 
         setValue("personalAccessTokens", newPATs);
-        showSnackbar("Token deleted succesfully!");
+        showSnackbar("Token deleted successfully!");
     };
 
     const updateToken = async () => {
@@ -95,7 +95,7 @@ const TokenListItem = ({ setFormIsLoading, data, setValue, PAT }) => {
         );
 
         setValue("personalAccessTokens", newPATs);
-        showSnackbar("Token updated succesfully!");
+        showSnackbar("Token updated successfully!");
     };
 
     return (
@@ -153,7 +153,7 @@ const TokenListItem = ({ setFormIsLoading, data, setValue, PAT }) => {
 };
 
 const TokenList = ({ setFormIsLoading, data, setValue }) => {
-    if (data.personalAccessTokens && data.personalAccessTokens.length > 0)
+    if (data.personalAccessTokens && data.personalAccessTokens.length > 0) {
         return data.personalAccessTokens.map(PAT => (
             <TokenListItem
                 setFormIsLoading={setFormIsLoading}
@@ -163,13 +163,15 @@ const TokenList = ({ setFormIsLoading, data, setValue }) => {
                 setValue={setValue}
             />
         ));
-    else return <SimpleListItem text="No tokens have been generated yet." />;
+    }
+
+    return <SimpleListItem text="No tokens have been generated yet." />;
 };
 
 const TokensElement = ({ setFormIsLoading, data, setValue }) => {
     const [showCreatePATDialog, setShowCreatePATDialog] = useState(false);
     const [showPATHashDialog, setShowPATHashDialog] = useState(false);
-    const [tokenHash, setTokenHash] = useState("HSDIGHSDGIASDHISDHIAGDSHGIDSHIGSHAIGHI");
+    const [tokenHash, setTokenHash] = useState("HSDIGHSDGIASDHISDHIAGDSHGIDSHIGSHAIGHI"); // TODO: @Andrei why random string here?
     const [newPATName, setNewPATName] = useState("New token");
     const { showSnackbar } = useSnackbar();
     const client = useApolloClient();
@@ -202,7 +204,7 @@ const TokensElement = ({ setFormIsLoading, data, setValue }) => {
         setTokenHash(token);
         setNewPATName("New token");
         setShowPATHashDialog(true);
-        showSnackbar("Token created succesfully!");
+        showSnackbar("Token created successfully!");
     };
 
     return (
