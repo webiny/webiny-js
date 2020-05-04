@@ -33,14 +33,14 @@ const apolloServiceDefinitions = {
 module.exports = () => ({
     resources: {
         apolloGateway: {
-            watch: ["/apolloGateway/build"],
+            watch: ["./apolloGateway/build"],
             build: {
-                root: "/apolloGateway",
+                root: "./apolloGateway",
                 script: "yarn build",
                 define: {
                     // Maybe we should upgrade lambda component to check file content hash?
                     HANDLER_APOLLO_GATEWAY_OPTIONS: {
-                        ...vars.httpHandlerApolloServer,
+                        ...vars.handlerApolloServer,
                         services: [
                             {
                                 name: "security",
@@ -75,7 +75,7 @@ module.exports = () => ({
                 inputs: {
                     region: vars.region,
                     description: "Apollo Gateway",
-                    code: "/apolloGateway/build",
+                    code: "./apolloGateway/build",
                     handler: "handler.handler",
                     memory: 512,
                     timeout: 30,
@@ -114,9 +114,9 @@ module.exports = () => ({
             }
         },
         security: {
-            watch: ["/security/graphql/build"],
+            watch: ["./security/graphql/build"],
             build: {
-                root: "/security/graphql",
+                root: "./security/graphql",
                 script: "yarn build",
                 define: {
                     ...apolloServiceDefinitions,
@@ -131,7 +131,7 @@ module.exports = () => ({
                 inputs: {
                     description: "Security GraphQL API",
                     region: vars.region,
-                    code: "/security/graphql/build",
+                    code: "./security/graphql/build",
                     handler: "handler.handler",
                     memory: 512,
                     timeout: 30,
@@ -142,9 +142,9 @@ module.exports = () => ({
             }
         },
         validateAccessToken: {
-            watch: ["/security/validateAccessToken/build"],
+            watch: ["./security/validateAccessToken/build"],
             build: {
-                root: "/security/validateAccessToken",
+                root: "./security/validateAccessToken",
                 script: "yarn build",
                 define: {
                     DB_PROXY_OPTIONS: apolloServiceDefinitions.DB_PROXY_OPTIONS
@@ -154,7 +154,7 @@ module.exports = () => ({
                 component: "@webiny/serverless-function",
                 inputs: {
                     region: vars.region,
-                    code: "/security/validateAccessToken/build",
+                    code: "./security/validateAccessToken/build",
                     handler: "handler.handler",
                     memory: 512,
                     timeout: 30,
@@ -165,9 +165,9 @@ module.exports = () => ({
             }
         },
         filesDownload: {
-            watch: ["/files/download/build"],
+            watch: ["./files/download/build"],
             build: {
-                root: "/files/download",
+                root: "./files/download",
                 script: `yarn build`
             },
             deploy: {
@@ -175,7 +175,7 @@ module.exports = () => ({
                 inputs: {
                     description: "Serves previously uploaded files.",
                     region: vars.region,
-                    code: "/files/download/build",
+                    code: "./files/download/build",
                     handler: "handler.handler",
                     memory: 512,
                     timeout: 10,
@@ -187,9 +187,9 @@ module.exports = () => ({
             }
         },
         imageTransformer: {
-            watch: ["/files/transform/build"],
+            watch: ["./files/transform/build"],
             build: {
-                root: "/files/transform",
+                root: "./files/transform",
                 script: `yarn build`
             },
             deploy: {
@@ -197,7 +197,7 @@ module.exports = () => ({
                 inputs: {
                     description: "Performs image optimization, resizing, etc.",
                     region: vars.region,
-                    code: "/files/transform/build",
+                    code: "./files/transform/build",
                     handler: "handler.handler",
                     memory: 1600,
                     timeout: 30,
@@ -208,9 +208,9 @@ module.exports = () => ({
             }
         },
         filesManage: {
-            watch: ["/files/manage/build"],
+            watch: ["./files/manage/build"],
             build: {
-                root: "/files/manage",
+                root: "./files/manage",
                 script: `yarn build`
             },
             deploy: {
@@ -218,7 +218,7 @@ module.exports = () => ({
                 inputs: {
                     description: "Triggered when a file is deleted.",
                     region: vars.region,
-                    code: "/files/manage/build",
+                    code: "./files/manage/build",
                     handler: "handler.handler",
                     memory: 512,
                     timeout: 10,
@@ -268,9 +268,9 @@ module.exports = () => ({
             }
         },
         filesGraphQL: {
-            watch: ["/files/graphql/build"],
+            watch: ["./files/graphql/build"],
             build: {
-                root: "/files/graphql",
+                root: "./files/graphql",
                 script: "yarn build",
                 define: apolloServiceDefinitions
             },
@@ -279,7 +279,7 @@ module.exports = () => ({
                 inputs: {
                     region: vars.region,
                     description: "Files GraphQL API",
-                    code: "/files/graphql/build",
+                    code: "./files/graphql/build",
                     handler: "handler.handler",
                     memory: 512,
                     env: {
@@ -292,9 +292,9 @@ module.exports = () => ({
             }
         },
         i18n: {
-            watch: ["/i18n/build"],
+            watch: ["./i18n/build"],
             build: {
-                root: "/i18n",
+                root: "./i18n",
                 script: "yarn build",
                 define: apolloServiceDefinitions
             },
@@ -303,7 +303,7 @@ module.exports = () => ({
                 inputs: {
                     region: vars.region,
                     description: "I18N GraphQL API",
-                    code: "/i18n/build",
+                    code: "./i18n/build",
                     handler: "handler.handler",
                     memory: 512,
                     env: {
@@ -328,9 +328,9 @@ module.exports = () => ({
             }
         },
         pageBuilder: {
-            watch: ["/pageBuilder/build"],
+            watch: ["./pageBuilder/build"],
             build: {
-                root: "/pageBuilder",
+                root: "./pageBuilder",
                 script: "yarn build",
                 define: apolloServiceDefinitions
             },
@@ -339,7 +339,7 @@ module.exports = () => ({
                 inputs: {
                     region: vars.region,
                     description: "Page Builder GraphQL API",
-                    code: "/pageBuilder/build",
+                    code: "./pageBuilder/build",
                     handler: "handler.handler",
                     memory: 512,
                     timeout: 30,
@@ -352,9 +352,9 @@ module.exports = () => ({
             }
         },
         formBuilder: {
-            watch: ["/formBuilder/build"],
+            watch: ["./formBuilder/build"],
             build: {
-                root: "/formBuilder",
+                root: "./formBuilder",
                 script: "yarn build",
                 define: apolloServiceDefinitions
             },
@@ -363,7 +363,7 @@ module.exports = () => ({
                 inputs: {
                     region: vars.region,
                     description: "Form Builder GraphQL API",
-                    code: "/formBuilder/build",
+                    code: "./formBuilder/build",
                     handler: "handler.handler",
                     memory: 512,
                     timeout: 30,
@@ -374,9 +374,9 @@ module.exports = () => ({
             }
         },
         headlessCms: {
-            watch: ["/headless/graphql/build"],
+            watch: ["./headless/graphql/build"],
             build: {
-                root: "/headless/graphql",
+                root: "./headless/graphql",
                 script: "yarn build",
                 define: apolloServiceDefinitions
             },
@@ -385,7 +385,7 @@ module.exports = () => ({
                 inputs: {
                     region: vars.region,
                     description: "I18N GraphQL API",
-                    code: "/headless/graphql/build",
+                    code: "./headless/graphql/build",
                     handler: "handler.handler",
                     memory: 512,
                     env: {
@@ -395,9 +395,9 @@ module.exports = () => ({
             }
         },
         headlessCmsHandler: {
-            watch: ["/headless/handler/build"],
+            watch: ["./headless/handler/build"],
             build: {
-                root: "/headless/handler",
+                root: "./headless/handler",
                 script: "yarn build",
                 define: apolloServiceDefinitions
             },
@@ -406,7 +406,7 @@ module.exports = () => ({
                 inputs: {
                     description: "Headless CMS GraphQL API (handler)",
                     region: vars.region,
-                    code: "/headless/handler/build",
+                    code: "./headless/handler/build",
                     handler: "handler.handler",
                     memory: 512,
                     env: {
