@@ -8,7 +8,7 @@ const { blue, red } = require("chalk");
  */
 (async () => {
     console.log("Validating packages...");
-    const packages = getPackages().filter(p => !p.includes("examples/"));
+    const packages = getPackages().filter(p => !p.includes("sample-project/"));
     const errors = [];
 
     for (let i = 0; i < packages.length; i++) {
@@ -34,7 +34,7 @@ const { blue, red } = require("chalk");
                 }
             }
         } catch (er) {
-            `${blue(">")} ${er.message} in ${red(path.basename(json.name))}!`;
+            `${blue(">")} ${er.message} in ${red(path.basename(package))}!`;
         }
     }
 
