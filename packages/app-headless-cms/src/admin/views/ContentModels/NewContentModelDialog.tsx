@@ -112,7 +112,7 @@ const NewContentModelDialog: React.FC<NewContentModelDialogProps> = ({
                                     >
                                         <Input
                                             label={`Name`}
-                                            description={t`Descriptive name is easy to remember`}
+                                            description={t`It will appear in the editor`}
                                         />
                                     </Bind>
                                 </Cell>
