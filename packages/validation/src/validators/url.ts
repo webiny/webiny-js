@@ -16,7 +16,7 @@ const regex = {
 };
 
 export default (value: any, params: Array<string>) => {
-    if (!value) return;
+    if (!value) {return;}
     value = value + "";
 
     if (value.startsWith("http://localhost") || value.startsWith("https://localhost")) {

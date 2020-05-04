@@ -36,7 +36,7 @@ export type PageItemProps = {
 
 const PageItem = ({ data, className }: PageItemProps) => {
     return (
-        <Link to={data.url} className={"webiny-pb-page-element-page-list__item " + className}>
+        <Link to={data.fullUrl} className={"webiny-pb-page-element-page-list__item " + className}>
             <div
                 className={"webiny-pb-page-element-page-list__media"}
                 style={{

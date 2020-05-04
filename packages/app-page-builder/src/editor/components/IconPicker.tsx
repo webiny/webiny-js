@@ -61,7 +61,10 @@ const pickIcon = css({
 
 const searchInput = css({
     input: {
-        padding: "20px 12px 20px"
+        padding: "20px 12px 20px",
+        '&::placeholder': {
+            opacity: '1 !important',
+        }
     }
 });
 
@@ -72,7 +75,7 @@ const IconPicker = ({ value, onChange }) => {
 
     const onFilterChange = useCallback(
         (value, cb) => {
-            setFilter(value);
+            setFilter(value.trim());
             cb();
         },
         [filter]
@@ -142,7 +145,7 @@ const IconPicker = ({ value, onChange }) => {
                 />
             </Fragment>
         );
-    }, []);
+    }, [icons]);
 
     return (
         <Menu

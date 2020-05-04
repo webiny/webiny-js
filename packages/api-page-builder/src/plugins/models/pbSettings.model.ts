@@ -12,6 +12,7 @@ import {
 } from "@webiny/commodo";
 
 const SETTINGS_KEY = "page-builder";
+const STEPS_COUNT = 6;
 
 const step = () =>
     fields({
@@ -46,7 +47,8 @@ export default ({ createBase, context }) => {
                     step2: step(),
                     step3: step(),
                     step4: step(),
-                    step5: step()
+                    step5: step(),
+                    step6: step(),
                 })()
             })
         }),
@@ -66,7 +68,7 @@ export default ({ createBase, context }) => {
                 return this.steps["step" + number];
             },
             get completed() {
-                for (let number = 1; number <= 5; number++) {
+                for (let number = 1; number <= STEPS_COUNT; number++) {
                     if (!this.getStep(number).completed) {
                         return false;
                     }

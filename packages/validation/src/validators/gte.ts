@@ -15,7 +15,7 @@ import ValidationError from "./../validationError";
  * });
  */
 export default (value: any, params: Array<string>) => {
-    if (!value) return;
+    if (!value) {return;}
 
     if (parseFloat(value) >= parseFloat(params[0])) {
         return;

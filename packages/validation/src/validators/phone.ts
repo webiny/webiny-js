@@ -1,7 +1,7 @@
 import ValidationError from "./../validationError";
 
 export default (value: any) => {
-    if (!value) return;
+    if (!value) {return;}
     value = value + "";
 
     if (value.match(/^[-+0-9()/\s]+$/)) {

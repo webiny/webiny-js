@@ -39,8 +39,8 @@ module.exports = () => ({
                 script: "yarn build",
                 define: {
                     // Maybe we should upgrade lambda component to check file content hash?
-                    HTTP_HANDLER_APOLLO_GATEWAY_OPTIONS: {
-                        ...vars.handlerApolloServer,
+                    HANDLER_APOLLO_GATEWAY_OPTIONS: {
+                        ...vars.httpHandlerApolloServer,
                         services: [
                             {
                                 name: "security",

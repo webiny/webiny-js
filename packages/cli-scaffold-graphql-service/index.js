@@ -7,7 +7,7 @@ const camelCase = require("lodash.camelcase");
 
 module.exports = [
     {
-        name: "scaffold-template-apollo-service",
+        name: "scaffold-template-graphql-service",
         type: "scaffold-template",
         scaffold: {
             name: "GraphQL Apollo Service",
@@ -35,6 +35,10 @@ module.exports = [
                     cwd: path.resolve(location)
                 });
 
+                const relativeLocation = path
+                    .relative(path.dirname(rootResourcesPath), path.resolve(location))
+                    .replace(/\\/g, "/");
+
                 const packageName = path.basename(location);
                 const resourceName = camelCase(packageName);
 
@@ -58,11 +62,13 @@ module.exports = [
                 const { transform } = require("@babel/core");
                 const source = fs.readFileSync(rootResourcesPath, "utf8");
                 let resourceTpl = fs.readFileSync(path.join(__dirname, "resource.tpl"), "utf8");
-                resourceTpl = resourceTpl.replace(/\[PACKAGE_NAME\]/g, packageName);
+                resourceTpl = resourceTpl.replace(/\[PACKAGE_PATH\]/g, relativeLocation);
 
                 const { code } = await transform(source, {
                     plugins: [[__dirname + "/transform", { template: resourceTpl, resourceName }]]
                 });
+
+                // TODO: update path to tsconfig.build.json
 
                 // Format code with prettier
                 const prettier = require("prettier");
@@ -70,8 +76,6 @@ module.exports = [
                 const formattedCode = prettier.format(code, prettierConfig);
 
                 fs.writeFileSync(rootResourcesPath, formattedCode);
-
-                // TODO: update tsconfig.json with correct path to base config
             }
         }
     }
