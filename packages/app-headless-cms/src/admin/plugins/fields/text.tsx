@@ -4,6 +4,8 @@ import { Grid, Cell } from "@webiny/ui/Grid";
 import { Input } from "@webiny/ui/Input";
 import { I18NInput } from "@webiny/app-i18n/admin/components";
 import { FbBuilderFieldPlugin } from "@webiny/app-headless-cms/types";
+import { i18n } from "@webiny/app/i18n";
+const t = i18n.ns("app-headless-cms/fields");
 
 const plugin: FbBuilderFieldPlugin = {
     type: "content-model-editor-field-type",
@@ -12,8 +14,8 @@ const plugin: FbBuilderFieldPlugin = {
         name: "text",
         type: "text",
         validators: ["required", "minLength", "maxLength", "pattern"],
-        label: "Text",
-        description: "Titles, names, single line input",
+        label: t`Text`,
+        description: t`Titles, names, single line values.`,
         icon: <TextIcon />,
         createField() {
             return {
@@ -31,16 +33,16 @@ const plugin: FbBuilderFieldPlugin = {
                     <Cell span={12}>
                         <Bind name={"placeholderText"}>
                             <I18NInput
-                                label={"Placeholder text"}
-                                description={"Placeholder text (optional)"}
+                                label={t`Placeholder text`}
+                                description={t`Placeholder text (optional)`}
                             />
                         </Bind>
                     </Cell>
                     <Cell span={12}>
                         <Bind name={"settings.defaultValue"}>
                             <Input
-                                label={"Default value"}
-                                description={"Default value (optional)"}
+                                label={t`Default value`}
+                                description={t`Default value (optional)`}
                             />
                         </Bind>
                     </Cell>
