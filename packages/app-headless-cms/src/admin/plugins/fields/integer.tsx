@@ -12,7 +12,7 @@ const plugin: FbBuilderFieldPlugin = {
         name: "integer",
         label: "Integer",
         description: "ID, order integer, rating, quantity",
-        icon: <IntegerIcon />,
+        icon: IntegerIcon,
         validators: ["required", "gte", "lte", "in"],
         createField() {
             return {
