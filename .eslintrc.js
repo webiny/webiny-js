@@ -30,8 +30,10 @@ module.exports = {
             "error",
             {
                 rules: {
-                    "app-headless-cms": "^app-headless-cms",
-                    "app-headless-cms/src/admin/plugins/fields": "^app-headless-cms/fields"
+                    "app-headless-cms/src/admin/components": "^app-headless-cms/admin/components",
+                    "app-headless-cms/src/admin/components/ContentModelEditor": "^app-headless-cms/admin/components/editor",
+                    "app-headless-cms/src/admin/plugins/fields": "^app-headless-cms/admin/fields",
+                    "app-headless-cms": "^app-headless-cms"
                 }
             }
         ]
