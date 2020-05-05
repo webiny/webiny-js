@@ -21,8 +21,19 @@ module.exports = [
                                 return "Please enter a package location";
                             }
 
-                            if (fs.existsSync(path.resolve(location)))
+                            if (fs.existsSync(path.resolve(location))) {
                                 return "The target location already exists";
+                            }
+
+                            const rootResourcesPath = findUp.sync("resources.js", {
+                                cwd: path.resolve(location)
+                            });
+
+                            if (!rootResourcesPath) {
+                                throw new Error(
+                                    `Resources file was not found. Make sure your package is inside of your project's root and that either it or one of its parent directories contains resources.js`
+                                );
+                            }
 
                             return true;
                         }
