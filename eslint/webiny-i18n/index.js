@@ -31,7 +31,7 @@ module.exports = {
                             const regex = new RegExp(rulesKey);
                             if (filename.match(regex)) {
                                 if (!namespace.value.match(rules[rulesKey])) {
-                                    const msg = `Incorrect I18N namespace specified. Expected "${rulesKey}", received "${namespace.value}".`;
+                                    const msg = `Incorrect I18N namespace specified. Expected "${rules[rulesKey]}", received "${namespace.value}".`;
                                     context.report(namespace, msg);
                                 }
                             }
