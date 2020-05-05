@@ -36,14 +36,14 @@ const FieldHandle = styled("div")({
     color: "var(--mdc-theme-on-surface)"
 });
 
-const Field = ({ onFieldDragStart, fieldType: { name, label } }) => {
+const Field = ({ onFieldDragStart, fieldType: { name, label, icon } }) => {
     return (
         <Draggable beginDrag={{ ui: "field", name }}>
             {({ drag }) => (
                 <div ref={drag} style={{ marginBottom: 10 }} onDragStart={onFieldDragStart}>
                     <FieldContainer>
                         <FieldHandle>
-                            <Icon icon={<HandleIcon />} />
+                            <Icon icon={icon} />
                         </FieldHandle>
                         <FieldLabel>{label}</FieldLabel>
                     </FieldContainer>
