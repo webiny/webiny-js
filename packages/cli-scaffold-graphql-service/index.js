@@ -30,9 +30,7 @@ module.exports = [
                             });
 
                             if (!rootResourcesPath) {
-                                throw new Error(
-                                    `Resources file was not found. Make sure your package is inside of your project's root and that either it or one of its parent directories contains resources.js`
-                                );
+                                return `Resources file was not found. Make sure your package is inside of your project's root and that either it or one of its parent directories contains resources.js`;
                             }
 
                             return true;
