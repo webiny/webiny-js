@@ -46,7 +46,7 @@ const LocaleSelector = ({ location, history, content }) => {
             }
         >
             {i18n.getLocales().map(item => (
-                <MenuItem key={item.id} onClick={}>
+                <MenuItem key={item.id}>
                     {item.code}
                 </MenuItem>
             ))}
