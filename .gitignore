@@ -25,3 +25,4 @@ build/
 .cloudfnsrc.js
 .cloudfns/
 yarn.lock
+cypress.json
