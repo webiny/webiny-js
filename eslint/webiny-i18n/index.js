@@ -9,7 +9,7 @@ module.exports = {
                     VariableDeclarator(node) {
                         const oName = get(node, "init.callee.object.name");
                         const pName = get(node, "init.callee.property.name");
-                        if (oName !== "i18n" || pName !== "ns") {
+                        if (oName !== "i18n" || (pName !== "ns" && pName !== "namespace")) {
                             return;
                         }
 
@@ -28,6 +28,7 @@ module.exports = {
                                 if (!namespace.value.match(rules[rulesKey])) {
                                     const msg = `Incorrect I18N namespace specified. Expected "${rules[rulesKey]}", received "${namespace.value}".`;
                                     context.report(namespace, msg);
+                                    return;
                                 }
                             }
                         }
