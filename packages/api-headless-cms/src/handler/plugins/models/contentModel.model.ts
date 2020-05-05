@@ -75,7 +75,7 @@ export default ({ createBase, context }) => {
                     this.hook("afterPublish", async () => {
                         publishedRev.published = false;
                         await publishedRev.save();
-                    })
+                    });
                 }
             },
             async afterPublish() {

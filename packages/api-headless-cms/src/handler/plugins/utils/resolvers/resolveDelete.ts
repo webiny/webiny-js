@@ -5,10 +5,11 @@ import { findEntry } from "../findEntry";
 import { entryNotFound } from "./entryNotFound";
 import { setContextLocale } from "../setContextLocale";
 
-
-export const resolveDelete = ({
-    model
-}): GraphQLFieldResolver<any, any, CmsContext> => async (root, args, context) => {
+export const resolveDelete = ({ model }): GraphQLFieldResolver<any, any, CmsContext> => async (
+    root,
+    args,
+    context
+) => {
     setContextLocale(context, args.locale);
     const instance = await findEntry({ model, args, context });
 

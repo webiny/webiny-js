@@ -85,9 +85,7 @@ export default {
         },
         FormsMutation: {
             createFormSubmission,
-            exportFormSubmissions: hasScope("forms:form:submissions:export")(
-                exportFormSubmissions
-            )
+            exportFormSubmissions: hasScope("forms:form:submissions:export")(exportFormSubmissions)
         }
     }
 };

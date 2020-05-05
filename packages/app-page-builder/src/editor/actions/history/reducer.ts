@@ -38,7 +38,9 @@ function insert(history, state, limit, group) {
 
 // jumpToFuture: jump to requested index in future history
 function jumpToFuture(history, index) {
-    if (index < 0 || index >= history.future.length) {return history;}
+    if (index < 0 || index >= history.future.length) {
+        return history;
+    }
 
     const { past, future, _latestUnfiltered } = history;
 
@@ -51,7 +53,9 @@ function jumpToFuture(history, index) {
 
 // jumpToPast: jump to requested index in past history
 function jumpToPast(history, index) {
-    if (index < 0 || index >= history.past.length) {return history;}
+    if (index < 0 || index >= history.past.length) {
+        return history;
+    }
 
     const { past, future, _latestUnfiltered } = history;
 
@@ -64,8 +68,12 @@ function jumpToPast(history, index) {
 
 // jump: jump n steps in the past or forward
 function jump(history, n) {
-    if (n > 0) {return jumpToFuture(history, n - 1);}
-    if (n < 0) {return jumpToPast(history, history.past.length + n);}
+    if (n > 0) {
+        return jumpToFuture(history, n - 1);
+    }
+    if (n < 0) {
+        return jumpToPast(history, history.past.length + n);
+    }
     return history;
 }
 

@@ -49,7 +49,14 @@ export default ContentModelEditorContext => {
                     mutation: UPDATE_CONTENT_MODEL,
                     variables: {
                         id: data.id,
-                        data: pick(data, ["layout", "fields", "title", "settings", "description", "titleFieldId"])
+                        data: pick(data, [
+                            "layout",
+                            "fields",
+                            "title",
+                            "settings",
+                            "description",
+                            "titleFieldId"
+                        ])
                     }
                 });
 

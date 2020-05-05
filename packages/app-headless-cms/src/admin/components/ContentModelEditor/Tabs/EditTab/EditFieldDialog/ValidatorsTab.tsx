@@ -61,7 +61,9 @@ const ValidatorsTab = props => {
     const fieldPlugin = getFieldPlugin({ name: field.name });
 
     const validators = useMemo(() => {
-        return getPlugins<CmsBuilderFormFieldValidatorPlugin>("content-model-editor-field-validator")
+        return getPlugins<CmsBuilderFormFieldValidatorPlugin>(
+            "content-model-editor-field-validator"
+        )
             .map(plugin => plugin.validator)
             .map(validator => {
                 if (fieldPlugin.field.validators.includes(validator.name)) {

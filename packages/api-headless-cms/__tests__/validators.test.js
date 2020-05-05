@@ -140,8 +140,12 @@ describe("Headless CMS - Field validators", () => {
             }
         };
 
-        expect(validate({ value: "https://www.webiny.com", validator, context })).resolves.toBe(true);
+        expect(validate({ value: "https://www.webiny.com", validator, context })).resolves.toBe(
+            true
+        );
         expect(validate({ value: "randomString.com", validator, context })).resolves.toBe(false);
-        expect(validate({ value: "www.missingprotocol.com", validator, context })).resolves.toBe(false);
+        expect(validate({ value: "www.missingprotocol.com", validator, context })).resolves.toBe(
+            false
+        );
     });
 });

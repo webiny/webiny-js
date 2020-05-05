@@ -8,14 +8,14 @@
     "ADMIN_URL": "http://localhost:3001",
     "AUTHORIZATION_TOKEN_KEY": "webiny-token",
     "AWS_COGNITO_USER_POOL_ID": "eu-central-1_SXgmzjvPr",
-    "AWS_COGNITO_CLIENT_ID": "4ua9bb7ai6hdu48lr7nl09n11m",
-    "API_URL": "https://ded50ecq64eno.cloudfront.net",
+    "AWS_COGNITO_CLIENT_ID": "4ua9bb7hdaqwe48lr7nl09n11m",
+    "API_URL": "https://degsdhr364eno.cloudfront.net",
     "DEFAULT_ADMIN_USER_USERNAME": "admin@webiny.com",
     "DEFAULT_ADMIN_USER_PASSWORD": "12345678",
     "DEFAULT_ADMIN_USER_FIRST_NAME": "admin-first-name",
     "DEFAULT_ADMIN_USER_LAST_NAME": "admin-last-name",
-    "GRAPHQL_API_URL": "https://ded50ecq64eno.cloudfront.net/graphql",
+    "GRAPHQL_API_URL": "https://degsdhr364eno.cloudfront.net/graphql",
     "SITE_NAME": "Cypress Test Site",
-    "SITE_URL": "https://d3bu516lrhxzpt.cloudfront.net"
+    "SITE_URL": "https://d3bughjlrh32pt.cloudfront.net"
   }
 }

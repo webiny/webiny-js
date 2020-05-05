@@ -5,12 +5,7 @@ import GraphQLJSON from "graphql-type-json";
 import { GraphQLDateTime } from "graphql-iso-date";
 import GraphQLLong from "graphql-type-long";
 import { RefInput } from "./RefInputScalar";
-import {
-    PluginsContainer,
-    GraphQLSchemaPlugin,
-    GraphQLScalarPlugin,
-    Context
-} from "../types";
+import { PluginsContainer, GraphQLSchemaPlugin, GraphQLScalarPlugin, Context } from "../types";
 import { applyContextPlugins } from "./contextPlugins";
 
 type PrepareSchemaParams = { plugins: PluginsContainer };

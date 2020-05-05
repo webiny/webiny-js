@@ -42,9 +42,7 @@ function NameSlug({ newEntry, Bind, setValue, name = {}, slug = {}, validateSlug
             <Cell span={6}>
                 <Bind
                     name="slug"
-                    validators={value =>
-                        slugValidator(value, validateSlugUniqueness, newEntry)
-                    }
+                    validators={value => slugValidator(value, validateSlugUniqueness, newEntry)}
                 >
                     {bindProps => (
                         <Input

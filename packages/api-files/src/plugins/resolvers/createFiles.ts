@@ -1,7 +1,7 @@
 import { Response, ErrorResponse } from "@webiny/graphql";
 import { BATCH_CREATE_MAX_FILES } from "./utils/constants";
 
-export default async (root: any, args: {[key: string]: any}, context) => {
+export default async (root: any, args: { [key: string]: any }, context) => {
     const { data: files } = args;
     if (!Array.isArray(files)) {
         return new ErrorResponse({

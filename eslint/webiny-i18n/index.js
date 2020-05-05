@@ -9,7 +9,7 @@ const rules = {
 module.exports = {
     rules: {
         namespaces: {
-            create: function (context) {
+            create: function(context) {
                 return {
                     VariableDeclarator(node) {
                         const oName = get(node, "init.callee.object.name");
@@ -26,6 +26,7 @@ module.exports = {
                             return;
                         }
 
+                        // eslint-disable-next-line
                         for (let rulesKey in rules) {
                             const regex = new RegExp(rulesKey);
                             if (filename.match(regex)) {

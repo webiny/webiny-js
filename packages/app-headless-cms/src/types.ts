@@ -27,11 +27,7 @@ export type CmsContentDetailsPlugin = Plugin & {
 
 export type CmsContentDetailsRevisionContentPlugin = Plugin & {
     type: "cms-content-details-revision-content";
-    render(params: {
-        pageDetails: any;
-        loading: boolean;
-        refreshPages: () => void;
-    }): ReactElement;
+    render(params: { pageDetails: any; loading: boolean; refreshPages: () => void }): ReactElement;
 };
 
 // ------------------------------------------------------------------------------------------------------------

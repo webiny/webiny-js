@@ -33,10 +33,7 @@ export default [
                                     )}
 
                                     {contentModelGroups && (
-                                        <Item
-                                            label={t`Groups`}
-                                            path="/cms/content-model-groups"
-                                        />
+                                        <Item label={t`Groups`} path="/cms/content-model-groups" />
                                     )}
                                 </Section>
                             </HeadlessCmsMenu>

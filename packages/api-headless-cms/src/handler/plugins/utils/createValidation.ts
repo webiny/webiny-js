@@ -1,4 +1,8 @@
-import { CmsContext, CmsModelField, CmsModelFieldValidatorPlugin } from "@webiny/api-headless-cms/types";
+import {
+    CmsContext,
+    CmsModelField,
+    CmsModelFieldValidatorPlugin
+} from "@webiny/api-headless-cms/types";
 import { getI18NValue } from "./getI18NValue";
 
 export const createValidation = (field: CmsModelField, context: CmsContext) => {

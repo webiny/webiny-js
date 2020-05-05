@@ -52,7 +52,7 @@ const plugin: GraphQLSchemaPlugin = {
                 message: String
                 data: JSON
             }
-            
+
             type FormCursors {
                 next: String
                 previous: String

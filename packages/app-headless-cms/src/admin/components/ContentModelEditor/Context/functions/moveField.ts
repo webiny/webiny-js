@@ -1,4 +1,8 @@
-import { CmsContentModelModelField, FieldIdType, FieldLayoutPositionType } from "@webiny/app-headless-cms/types";
+import {
+    CmsContentModelModelField,
+    FieldIdType,
+    FieldLayoutPositionType
+} from "@webiny/app-headless-cms/types";
 import getFieldPosition from "./getFieldPosition";
 
 /**

@@ -81,7 +81,7 @@ const Action = (props: ActionProps) => {
                 icon={icon}
                 onClick={clickHandler}
                 className={active && activeStyle}
-                data-testid={props['data-testid']}
+                data-testid={props["data-testid"]}
             />
         </Tooltip>
     );

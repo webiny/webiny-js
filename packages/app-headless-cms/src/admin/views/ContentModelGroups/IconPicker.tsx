@@ -134,33 +134,36 @@ const IconPicker = ({
         [icons]
     );
 
-    const renderGrid = useCallback(({ closeMenu }) => {
-        return (
-            <>
-                <DelayedOnChange value={filter} onChange={onFilterChange}>
-                    {({ value, onChange }) => (
-                        <Input
-                            autoFocus
-                            className={searchInput}
-                            value={value}
-                            onChange={onChange}
-                            placeholder={"Search icons..."}
-                        />
-                    )}
-                </DelayedOnChange>
-                <Grid
-                    className={grid}
-                    cellRenderer={renderCell({ closeMenu })}
-                    columnCount={COLUMN_COUNT}
-                    columnWidth={100}
-                    height={440}
-                    rowCount={Math.ceil(icons.length / COLUMN_COUNT)}
-                    rowHeight={100}
-                    width={640}
-                />
-            </>
-        );
-    }, [icons]);
+    const renderGrid = useCallback(
+        ({ closeMenu }) => {
+            return (
+                <>
+                    <DelayedOnChange value={filter} onChange={onFilterChange}>
+                        {({ value, onChange }) => (
+                            <Input
+                                autoFocus
+                                className={searchInput}
+                                value={value}
+                                onChange={onChange}
+                                placeholder={"Search icons..."}
+                            />
+                        )}
+                    </DelayedOnChange>
+                    <Grid
+                        className={grid}
+                        cellRenderer={renderCell({ closeMenu })}
+                        columnCount={COLUMN_COUNT}
+                        columnWidth={100}
+                        height={440}
+                        rowCount={Math.ceil(icons.length / COLUMN_COUNT)}
+                        rowHeight={100}
+                        width={640}
+                    />
+                </>
+            );
+        },
+        [icons]
+    );
 
     const fontAwesomeIconValue: any =
         typeof value === "string" && value.includes("/") ? value.split("/") : ["fas", "star"];

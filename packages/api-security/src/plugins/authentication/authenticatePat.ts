@@ -16,10 +16,14 @@ export default options => async (context: Context) => {
 
     const token = authorization;
     const Lambda = new LambdaClient({ region: process.env.AWS_REGION });
-    const user = JSON.parse((await Lambda.invoke({
-        FunctionName: options.validateAccessTokenFunction,
-        Payload: JSON.stringify({ PAT: token })
-    }).promise()).Payload as string);
+    const user = JSON.parse(
+        (
+            await Lambda.invoke({
+                FunctionName: options.validateAccessTokenFunction,
+                Payload: JSON.stringify({ PAT: token })
+            }).promise()
+        ).Payload as string
+    );
 
     context.token = token;
     context.user = user;

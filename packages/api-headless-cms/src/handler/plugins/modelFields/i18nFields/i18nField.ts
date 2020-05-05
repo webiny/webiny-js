@@ -26,11 +26,7 @@ export const getI18NValues = (value: { [key: string]: any }[], i18n: I18NContext
     return output;
 };
 
-export const i18nField = ({
-    field,
-    context: { i18n, commodo },
-    ...rest
-}: I18NField) => {
+export const i18nField = ({ field, context: { i18n, commodo }, ...rest }: I18NField) => {
     const { id } = commodo.fields;
 
     return fields({

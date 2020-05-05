@@ -3,9 +3,11 @@ import { Response, ErrorResponse } from "@webiny/commodo-graphql";
 import { entryNotFound } from "./entryNotFound";
 import { CmsContext } from "@webiny/api-headless-cms/types";
 
-export const resolveCreateFrom = ({
-    model
-}): GraphQLFieldResolver<any, any, CmsContext> => async (root, args, context) => {
+export const resolveCreateFrom = ({ model }): GraphQLFieldResolver<any, any, CmsContext> => async (
+    root,
+    args,
+    context
+) => {
     const Model = context.models[model.modelId];
     const baseRevision = await Model.findOne({ query: { id: args.revision } });
 
