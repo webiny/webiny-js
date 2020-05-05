@@ -104,7 +104,11 @@ module.exports = async function({ root, appName, templateName, tag, log }) {
         })
     );
 
-    // Add package resolutions if `tag` is pointing to a local folder
+    // Add package resolutions if `tag` is pointing to a local folder.
+
+    // Why? This is very useful when you're testing packages that are not yet published to `npm`.
+    // Just run `create-webiny-project my-project --tag=./local/webiny/project/node_modules` and the whole project
+    // will be set up to use your local packages via symlinks, so you can develop and test immediately.
     if (tag.startsWith(".")) {
         const webinyPackages = await fg(["@webiny/*"], {
             cwd: path.join(process.cwd(), tag),
@@ -118,10 +122,16 @@ module.exports = async function({ root, appName, templateName, tag, log }) {
                 rootPkgJson.resolutions = {};
             }
 
-            webinyPackages.forEach(name => {
-                rootPkgJson.resolutions[name] =
-                    "link:" + path.relative(root, path.join(process.cwd(), tag, name));
-            });
+            webinyPackages
+                .filter(name => {
+                    // Do not include private packages
+                    const pkgJson = require(path.join(process.cwd(), tag, name, "package.json"));
+                    return !pkgJson.private;
+                })
+                .forEach(name => {
+                    rootPkgJson.dependencies[name] = rootPkgJson.resolutions[name] =
+                        "link:" + path.relative(root, path.join(process.cwd(), tag, name));
+                });
 
             await writeJsonFile(rootPkg, rootPkgJson);
         }
