@@ -62,7 +62,6 @@ module.exports = async function({ root, appName, templateName, tag, log }) {
 
     fs.writeFileSync(path.join(root, "package.json"), JSON.stringify(appPackage, null, 2) + os.EOL);
 
-    console.log("Removing unnecessary dependencies...");
     execa.sync("rm", [path.join(root, "dependencies.json")]);
     //initialize git repo
     try {
@@ -129,9 +128,8 @@ module.exports = async function({ root, appName, templateName, tag, log }) {
     }
 
     // Install repo dependencies
-    const spinner = ora("Loading dependencies");
+    const spinner = ora("Installing dependencies...").start();
     try {
-        spinner.start({ color: "green" });
         const options = {
             cwd: root,
             maxBuffer: "500_000_000"

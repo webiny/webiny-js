@@ -1,4 +1,4 @@
-'use strict';
+"use strict";
 
 const crypto = require("crypto");
 const fs = require("fs-extra");
@@ -31,4 +31,8 @@ module.exports = ({ appName, root }) => {
     apiEnv = apiEnv.replace("[JWT_SECRET]", jwtSecret);
     apiEnv = apiEnv.replace("[BUCKET]", `${projectId}-${appName}-files`);
     fs.writeFileSync(path.join(root, "api", ".env.json"), apiEnv);
+
+    let baseEnv = fs.readFileSync(path.join(root, ".env.json"), "utf-8");
+    baseEnv = baseEnv.replace("webiny", `${projectId}-${appName}`);
+    fs.writeFileSync(path.join(root, ".env.json"), baseEnv);
 };
