@@ -1,20 +1,15 @@
-const get = require("lodash/get");
-
-const PREFIX = ".*packages/app-headless-cms/src";
-
-const rules = {
-    [`${PREFIX}/admin/plugins/fields.*`]: "app-headless-cms/admin/plugins/fields"
-};
+const get = require("lodash.get");
 
 module.exports = {
     rules: {
         namespaces: {
             create: function(context) {
+                const rules = get(context, "options.0.rules", {});
                 return {
                     VariableDeclarator(node) {
                         const oName = get(node, "init.callee.object.name");
                         const pName = get(node, "init.callee.property.name");
-                        if (oName !== "i18n" || pName !== "ns") {
+                        if (oName !== "i18n" || (pName !== "ns" && pName !== "namespace")) {
                             return;
                         }
 
@@ -31,8 +26,9 @@ module.exports = {
                             const regex = new RegExp(rulesKey);
                             if (filename.match(regex)) {
                                 if (!namespace.value.match(rules[rulesKey])) {
-                                    const msg = `Incorrect I18N namespace specified. Expected "${rulesKey}", received "${namespace.value}".`;
+                                    const msg = `Incorrect I18N namespace specified. Expected "${rules[rulesKey]}", received "${namespace.value}".`;
                                     context.report(namespace, msg);
+                                    return;
                                 }
                             }
                         }

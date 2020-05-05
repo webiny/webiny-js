@@ -11,7 +11,7 @@ import { useContentModelEditor } from "@webiny/app-headless-cms/admin/components
 import { FieldLayoutPositionType } from "@webiny/app-headless-cms/types";
 import { useI18N } from "@webiny/app-i18n/hooks/useI18N";
 import { i18n } from "@webiny/app/i18n";
-const t = i18n.namespace("FormsApp.Editor.EditTab");
+const t = i18n.namespace("app-headless-cms/admin/components/editor");
 
 export const EditTab = () => {
     const {
@@ -35,7 +35,7 @@ export const EditTab = () => {
     const i18n = useI18N();
 
     const handleDropField = useCallback((source, dropTarget) => {
-        const { pos, name, ui } = source;
+        const { pos, type, ui } = source;
 
         if (ui === "row") {
             // Reorder rows.
@@ -49,10 +49,10 @@ export const EditTab = () => {
             return moveField({ field: fieldId, position: dropTarget });
         }
 
-        const plugin = getFieldPlugin({ name });
+        const plugin = getFieldPlugin({ type });
         editField(plugin.field.createField({ i18n }));
         setDropTarget(dropTarget);
-    }, undefined);
+    }, null);
 
     const fields: Array<any> = getFields(true);
 

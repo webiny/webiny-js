@@ -67,6 +67,7 @@ export default async function createApolloHandler({
             const response = await output.handler(
                 {
                     httpMethod: "POST",
+                    headers: {},
                     body: JSON.stringify({
                         query: /* GraphQL */ `
                             {

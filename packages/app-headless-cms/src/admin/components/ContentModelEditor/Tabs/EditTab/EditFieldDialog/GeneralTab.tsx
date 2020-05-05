@@ -43,7 +43,7 @@ const GeneralTab = ({ field, form }: GeneralTabProps) => {
         throw new Error("Please enter a unique Field ID");
     }, undefined);
 
-    const fieldPlugin = getFieldPlugin({ name: field.name });
+    const fieldPlugin = getFieldPlugin({ type: field.type });
 
     let additionalSettings = null;
     if (typeof fieldPlugin.field.renderSettings === "function") {

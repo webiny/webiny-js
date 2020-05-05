@@ -151,16 +151,14 @@ export default ContentModelEditorContext => {
                     field._id = shortid.generate();
                 }
 
-                if (!data.name) {
-                    throw new Error(`Field "name" missing.`);
+                if (!data.type) {
+                    throw new Error(`Field "type" missing.`);
                 }
 
-                const fieldPlugin = self.getFieldPlugin({ name: data.name });
+                const fieldPlugin = self.getFieldPlugin({ type: data.type });
                 if (!fieldPlugin) {
-                    throw new Error(`Invalid field "name".`);
+                    throw new Error(`Invalid field "type".`);
                 }
-
-                data.type = fieldPlugin.field.type;
 
                 self.setData(data => {
                     if (!Array.isArray(data.fields)) {

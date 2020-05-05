@@ -58,7 +58,7 @@ const ValidatorsTab = props => {
         form: { Bind }
     } = props;
 
-    const fieldPlugin = getFieldPlugin({ name: field.name });
+    const fieldPlugin = getFieldPlugin({ type: field.type });
 
     const validators = useMemo(() => {
         return getPlugins<CmsBuilderFormFieldValidatorPlugin>(
