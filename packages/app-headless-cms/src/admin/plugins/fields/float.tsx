@@ -11,7 +11,6 @@ const plugin: FbBuilderFieldPlugin = {
     name: "content-model-editor-field-type-float",
     field: {
         type: "float",
-        name: "float",
         label: t`Float`,
         description: t`Store numbers.`,
         icon: <FloatIcon />,

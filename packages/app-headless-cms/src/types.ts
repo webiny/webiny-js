@@ -91,7 +91,6 @@ export type FbBuilderFieldPlugin = Plugin & {
         group?: string;
         unique?: boolean;
         type: string;
-        name: string;
         label: string;
         validators?: string[];
         description: string;

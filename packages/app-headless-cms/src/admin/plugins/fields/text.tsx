@@ -11,7 +11,6 @@ const plugin: FbBuilderFieldPlugin = {
     type: "content-model-editor-field-type",
     name: "content-model-editor-field-type-text",
     field: {
-        name: "text",
         type: "text",
         validators: ["required", "minLength", "maxLength", "pattern"],
         label: t`Text`,

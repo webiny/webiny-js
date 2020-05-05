@@ -11,7 +11,6 @@ const plugin: FbBuilderFieldPlugin = {
     name: "content-model-editor-field-type-integer",
     field: {
         type: "integer",
-        name: "integer",
         label: t`Integer`,
         description: t`Store numbers.`,
         icon: <IntegerIcon />,

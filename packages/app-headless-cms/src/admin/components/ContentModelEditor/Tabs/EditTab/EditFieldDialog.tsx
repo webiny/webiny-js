@@ -7,9 +7,9 @@ import { Tabs, Tab } from "@webiny/ui/Tabs";
 import GeneralTab from "./EditFieldDialog/GeneralTab";
 import ValidatorsTab from "./EditFieldDialog/ValidatorsTab";
 import { i18n } from "@webiny/app/i18n";
-const t = i18n.namespace("ContentModelEditor.EditFieldDialog");
 import { useContentModelEditor } from "@webiny/app-headless-cms/admin/components/ContentModelEditor/Context";
 import { CmsContentModelModelField } from "@webiny/app-headless-cms/types";
+const t = i18n.namespace("app-headless-cms/admin/components/editor");
 
 const dialogBody = css({
     "&.webiny-ui-dialog__content": {
@@ -26,15 +26,11 @@ type EditFieldDialogProps = {
 
 const EditFieldDialog = ({ field, onSubmit, ...props }: EditFieldDialogProps) => {
     const [current, setCurrent] = useState(null);
-    const [isNewField, setIsNewField] = useState(false);
 
     const { getFieldPlugin } = useContentModelEditor();
 
     useEffect(() => {
         setCurrent(cloneDeep(field));
-        if (field) {
-            setIsNewField(!field._id);
-        }
     }, [field]);
 
     const onClose = useCallback(() => {
@@ -46,7 +42,7 @@ const EditFieldDialog = ({ field, onSubmit, ...props }: EditFieldDialogProps) =>
     let headerTitle = t`Field Settings`;
 
     if (current) {
-        const fieldPlugin = getFieldPlugin({ name: current.name });
+        const fieldPlugin = getFieldPlugin({ type: current.type });
         if (fieldPlugin) {
             headerTitle = t`Field Settings - {fieldTypeLabel}`({
                 fieldTypeLabel: fieldPlugin.field.label

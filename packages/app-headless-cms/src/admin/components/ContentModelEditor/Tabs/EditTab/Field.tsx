@@ -16,6 +16,7 @@ import { ListItemGraphic } from "@webiny/ui/List";
 import { Icon } from "@webiny/ui/Icon";
 import { i18n } from "@webiny/app/i18n";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
+const t = i18n.ns("app-headless-cms/admin/components/editor/field");
 
 const FieldContainer = styled("div")({
     display: "flex",
@@ -52,7 +53,6 @@ const menuStyles = css({
     }
 });
 
-const t = i18n.ns("app-headless-cms/admin/editor");
 
 const Field = props => {
     const { field, onEdit, onDelete } = props;

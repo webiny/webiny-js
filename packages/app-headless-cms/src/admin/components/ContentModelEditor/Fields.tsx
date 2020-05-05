@@ -35,9 +35,9 @@ const FieldHandle = styled("div")({
     color: "var(--mdc-theme-on-surface)"
 });
 
-const Field = ({ onFieldDragStart, fieldType: { name, label, icon } }) => {
+const Field = ({ onFieldDragStart, fieldType: { type, label, icon } }) => {
     return (
-        <Draggable beginDrag={{ ui: "field", name }}>
+        <Draggable beginDrag={{ ui: "field", type }}>
             {({ drag }) => (
                 <div ref={drag} style={{ marginBottom: 10 }} onDragStart={onFieldDragStart}>
                     <FieldContainer>
@@ -53,13 +53,13 @@ const Field = ({ onFieldDragStart, fieldType: { name, label, icon } }) => {
 };
 
 export const Fields = ({ onFieldDragStart }) => {
-    const presetFieldPlugins = getPlugins<FbBuilderFieldPlugin>("content-model-editor-field-type");
+    const fieldTypePlugin = getPlugins<FbBuilderFieldPlugin>("content-model-editor-field-type");
 
     return (
         <React.Fragment>
-            {presetFieldPlugins.map(fieldPlugin => (
+            {fieldTypePlugin.map(fieldPlugin => (
                 <Field
-                    key={fieldPlugin.name}
+                    key={fieldPlugin.field.type}
                     fieldType={fieldPlugin.field}
                     onFieldDragStart={onFieldDragStart}
                 />

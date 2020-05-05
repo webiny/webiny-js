@@ -9,7 +9,6 @@ const plugin: FbBuilderFieldPlugin = {
     name: "content-model-editor-field-type-boolean",
     field: {
         type: "boolean",
-        name: "boolean",
         label: t`Boolean`,
         description: t`Store boolean ("yes" or "no" ) values.`,
         icon: <BooleanIcon />,

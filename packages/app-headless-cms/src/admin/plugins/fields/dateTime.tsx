@@ -11,7 +11,6 @@ const plugin: FbBuilderFieldPlugin = {
     name: "content-model-editor-field-type-dateTime",
     field: {
         type: "dateTime",
-        name: "dateTime",
         label: t`Date/Time`,
         description: t`Store date and time.`,
         icon: <DateTimeIcon />,
