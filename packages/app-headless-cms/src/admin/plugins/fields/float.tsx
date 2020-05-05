@@ -12,7 +12,7 @@ const plugin: FbBuilderFieldPlugin = {
         name: "float",
         label: "Float",
         description: "ID, order float, rating, quantity",
-        icon: <FloatIcon />,
+        icon: FloatIcon,
         validators: ["required", "gte", "lte", "in"],
         createField() {
             return {

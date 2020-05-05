@@ -111,7 +111,8 @@ const NewContentModelDialog: React.FC<NewContentModelDialogProps> = ({
                                         }}
                                     >
                                         <Input
-                                            placeholder={"Enter a name for your new content model"}
+                                            label={`Name`}
+                                            description={t`It will appear in the editor`}
                                         />
                                     </Bind>
                                 </Cell>
@@ -120,7 +121,10 @@ const NewContentModelDialog: React.FC<NewContentModelDialogProps> = ({
                                         name={"modelId"}
                                         validators={validation.create("required")}
                                     >
-                                        <Input placeholder={t`Enter a model ID`} />
+                                        <Input
+                                            label={`Model ID`}
+                                            description={t`Generated from name`}
+                                        />
                                     </Bind>
                                 </Cell>
                                 <Cell span={12}>
