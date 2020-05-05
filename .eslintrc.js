@@ -26,7 +26,15 @@ module.exports = {
         "@typescript-eslint/no-var-requires": 0,
         "@typescript-eslint/no-explicit-any": 0,
         curly: ["error"],
-        "webiny-i18n/namespaces": "error"
+        "webiny-i18n/namespaces": [
+            "error",
+            {
+                rules: {
+                    "app-headless-cms": "^app-headless-cms",
+                    "app-headless-cms/src/admin/plugins/fields": "^app-headless-cms/fields"
+                }
+            }
+        ]
     },
     settings: {
         react: {
