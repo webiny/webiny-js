@@ -1,0 +1,16 @@
+{
+  "name": "cwp-template-full",
+  "version": "0.1.34",
+  "repository": {
+    "type": "git",
+    "directory": "packages/cwp-template-full"
+  },
+  "publishConfig": {
+    "access": "public",
+    "directory": "."
+  },
+  "dependencies": {
+    "fs-extra": "^9.0.0",
+    "uuid": "^7.0.3"
+  }
+}

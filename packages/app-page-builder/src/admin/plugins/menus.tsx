@@ -7,9 +7,9 @@ import { MenuPlugin, MenuContentSectionPlugin } from "@webiny/app-admin/types";
 
 const t = i18n.ns("app-form-builder/admin/menus");
 
-const ROLE_PB_MENUS = ['pb:menus:crud']
-const ROLE_PB_CATEGORIES = ['pb:category:crud']
-const ROLE_PB_EDITOR = ['pb:page:crud']
+const ROLE_PB_MENUS = ["pb:menus:crud"];
+const ROLE_PB_CATEGORIES = ["pb:category:crud"];
+const ROLE_PB_EDITOR = ["pb:page:crud"];
 
 const plugin: MenuPlugin = {
     type: "menu",

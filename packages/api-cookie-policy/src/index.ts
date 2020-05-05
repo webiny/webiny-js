@@ -5,8 +5,8 @@ import cookiePolicySettings from "./cookiePolicySettings.model";
 
 export default () => [
     {
-        type: "graphql-context",
-        name: "graphql-context-models-cookie-policy",
+        type: "context",
+        name: "context-models-cookie-policy",
         apply({ models }) {
             models.CookiePolicySettings = cookiePolicySettings({
                 createBase: models.createBase

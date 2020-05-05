@@ -14,14 +14,18 @@ import ValidationError from "./../validationError";
  * });
  */
 export default (value: any): void => {
-    if (!value) return;
+    if (!value) {
+        return;
+    }
     value = value + "";
 
     if (value.length < 12) {
         throw new ValidationError("Credit card number too short.");
     }
 
-    if (/[^0-9-\s]+/.test(value)) throw new ValidationError("Credit card number invalid.");
+    if (/[^0-9-\s]+/.test(value)) {
+        throw new ValidationError("Credit card number invalid.");
+    }
 
     let nCheck = 0;
     let nDigit = 0;

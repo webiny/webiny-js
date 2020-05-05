@@ -1,11 +1,11 @@
 import authenticateJwt from "./authentication/authenticateJwt";
 import authenticatePat from "./authentication/authenticatePat";
 import { SecurityPlugin } from "@webiny/api-security/types";
-import { GraphQLContextPlugin } from "@webiny/graphql/types";
+import { ContextPlugin } from "@webiny/graphql/types";
 
-const contextPlugin = (options): GraphQLContextPlugin => ({
-    type: "graphql-context",
-    name: "graphql-context-security",
+const contextPlugin = (options): ContextPlugin => ({
+    type: "context",
+    name: "context-security",
     preApply: async context => {
         if (!context.event) {
             return;

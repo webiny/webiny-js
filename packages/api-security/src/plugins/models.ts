@@ -9,8 +9,8 @@ import securityUser from "./models/securityUser.model";
 import securityPersonalAccessToken from "./models/securityPersonalAccessToken.model";
 
 export default () => ({
-    name: "graphql-context-models",
-    type: "graphql-context",
+    name: "context-models",
+    type: "context",
     apply(context) {
         const driver = context.commodo && context.commodo.driver;
 

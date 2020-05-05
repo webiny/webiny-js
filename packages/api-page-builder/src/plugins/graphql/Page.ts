@@ -40,6 +40,7 @@ export default {
             title: String
             snippet: String
             url: String
+            fullUrl: String
             settings: PbPageSettings
             content: JSON
             published: Boolean
@@ -278,7 +279,7 @@ export default {
 
                 return { data: await resolver.resolve({ root, args, context, info }) };
             },
-            oembedData:  hasScope("pb:oembed:read")(oembed)
+            oembedData: hasScope("pb:oembed:read")(oembed)
         },
         PbMutation: {
             // Creates a new page

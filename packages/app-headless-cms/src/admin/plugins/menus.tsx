@@ -14,8 +14,8 @@ export default [
             return (
                 <SecureView
                     scopes={{
-                        contentModels: ["cms:contentModel:crud"],
-                        contentModelGroups: ["cms:contentModelGroup:crud"]
+                        contentModels: ["cms:content-model:crud"],
+                        contentModelGroups: ["cms:content-model-group:crud"]
                     }}
                 >
                     {({ scopes }) => {
@@ -33,10 +33,7 @@ export default [
                                     )}
 
                                     {contentModelGroups && (
-                                        <Item
-                                            label={t`Groups`}
-                                            path="/cms/content-model-groups"
-                                        />
+                                        <Item label={t`Groups`} path="/cms/content-model-groups" />
                                     )}
                                 </Section>
                             </HeadlessCmsMenu>

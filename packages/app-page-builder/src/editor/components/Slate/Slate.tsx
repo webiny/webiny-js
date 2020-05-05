@@ -1,6 +1,6 @@
 import React, { RefObject } from "react";
 import ReactDOM from "react-dom";
-import { get, isEqual } from "lodash";
+import { get, isEqual, noop } from "lodash";
 import shortid from "shortid";
 import { Editor } from "slate-react";
 import { Value } from "slate";
@@ -110,7 +110,7 @@ class SlateEditor extends React.Component<SlateEditorProps, SlateEditorState> {
         return null;
     }
 
-    onChange = change => {
+    onChange = (change, callback = noop) => {
         if (this.state.readOnly) {
             return;
         }
@@ -123,14 +123,23 @@ class SlateEditor extends React.Component<SlateEditorProps, SlateEditorState> {
         }
 
         // Only update local state.
-        this.setState(state => ({
-            ...state,
-            value: change.value,
-            modified: true
-        }));
+        this.setState(
+            state => ({
+                ...state,
+                value: change.value,
+                modified: true
+            }),
+            callback
+        );
     };
 
     onBlur = () => {
+        // Do not save changes if there is a plugin that's still active. This can happen, for example, when
+        // you click on the "Link" tool, which opens a dialog, which then triggers the blur event and this callback.
+        if (this.state.activePlugin) {
+            return;
+        }
+
         if (!this.nextElement) {
             this.setState({ modified: false });
             this.props.onChange(this.state.value.toJSON());
@@ -239,7 +248,14 @@ class SlateEditor extends React.Component<SlateEditorProps, SlateEditorState> {
                     .filter(pl => typeof pl.renderDialog === "function")
                     .map(pl => {
                         const props = {
-                            onChange: this.onChange,
+                            onChange: change => {
+                                // For dialogs, we send a complete callback, which will not only update the state of
+                                // the Slate editor, but will also save the changes via GraphQL mutation.
+                                this.onChange(change, () =>
+                                    this.props.onChange(this.state.value.toJSON())
+                                );
+                                this.setState({ modified: false });
+                            },
                             editor: this.editor.current,
                             open: activePlugin ? activePlugin.plugin === pl.name : false,
                             closeDialog: this.deactivatePlugin,

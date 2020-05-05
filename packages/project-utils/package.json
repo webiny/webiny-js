@@ -1,6 +1,6 @@
 {
   "name": "@webiny/project-utils",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "main": "index.js",
   "description": "A collection of utilities for Webiny project.",
   "repository": {
@@ -14,18 +14,21 @@
   ],
   "dependencies": {
     "@babel/core": "7.7.4",
+    "@babel/preset-env": "^7.9.6",
+    "@babel/preset-react": "^7.9.4",
+    "@babel/preset-typescript": "^7.9.0",
+    "@babel/plugin-proposal-class-properties": "^7.5.5",
     "@hot-loader/react-dom": "^16.13.0",
     "@svgr/webpack": "4.3.3",
-    "@serverless/cli": "^1.1.1",
-    "@serverless/core": "^1.1.1",
     "@testing-library/jest-dom": "^4.2.4",
     "@testing-library/react": "^9.3.2",
     "@testing-library/user-event": "^7.1.2",
     "@typescript-eslint/eslint-plugin": "^2.8.0",
     "@typescript-eslint/parser": "^2.8.0",
-    "@webiny/http-handler": "^2.1.0",
-    "@webiny/http-handler-files": "^2.0.3",
-    "@webiny/http-handler-ssr": "^2.1.0",
+    "@types/webpack-env": "^1.15.2",
+    "@webiny/handler": "^0.1.0",
+    "@webiny/handler-files": "^0.1.0",
+    "@webiny/handler-ssr": "^0.1.0",
     "babel-eslint": "10.0.3",
     "babel-jest": "^24.9.0",
     "babel-loader": "8.0.6",
@@ -36,6 +39,7 @@
     "case-sensitive-paths-webpack-plugin": "2.2.0",
     "css-loader": "3.2.0",
     "chokidar": "^3.3.1",
+    "constant-case": "^3.0.3",
     "dotenv": "8.2.0",
     "dotenv-expand": "5.1.0",
     "eslint": "^6.6.0",
@@ -90,11 +94,6 @@
         "babel-plugin-lodash"
       ]
     }
-  },
-  "scripts": {
-    "build": "rimraf ./dist && mkdir dist && cp -R index.js aliases bundling packages serverless dist/",
-    "postbuild": "cp package.json LICENSE README.md dist/",
-    "prepublishOnly": "yarn build"
   },
   "publishConfig": {
     "access": "public",

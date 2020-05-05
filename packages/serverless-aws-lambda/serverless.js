@@ -1,8 +1,11 @@
-const path = require("path");
 const AwsSdkLambda = require("aws-sdk/clients/lambda");
 const { mergeDeepRight, pick } = require("ramda");
 const { Component } = require("@webiny/serverless-component");
 const { utils } = require("@serverless/core");
+const pRetry = require("p-retry");
+
+const PRETRY_ARGS = { retries: 3 };
+
 const {
     createLambda,
     updateLambdaCode,
@@ -25,9 +28,9 @@ const outputsList = [
     "runtime",
     "env",
     "role",
-    "layer",
     "arn",
-    "region"
+    "region",
+    "permissions"
 ];
 
 const defaults = {
@@ -40,12 +43,13 @@ const defaults = {
     handler: "handler.hello",
     runtime: "nodejs10.x",
     env: {},
-    region: "us-east-1"
+    region: "us-east-1",
+    permissions: []
 };
 
 class AwsLambda extends Component {
     async default(inputs = {}) {
-        this.context.status(`Deploying`);
+        this.context.instance.status(`Deploying`);
 
         const config = mergeDeepRight(defaults, inputs);
 
@@ -59,7 +63,7 @@ class AwsLambda extends Component {
 
         const lambda = new AwsSdkLambda({
             region: config.region,
-            credentials: this.context.credentials.aws
+            credentials: this.context.instance.credentials.aws
         });
 
         const awsIamRole = await this.load("@serverless/aws-iam-role");
@@ -82,50 +86,15 @@ class AwsLambda extends Component {
             config.role = { arn: outputsAwsIamRole.arn };
         }
 
-        if (
-            config.bucket &&
-            config.runtime === "nodejs10.x" &&
-            (await utils.dirExists(path.join(config.code, "node_modules")))
-        ) {
-            this.context.instance.debug(
-                `Bucket %o is provided for lambda %o`,
-                config.bucket,
-                config.name
-            );
-
-            const layer = await this.load("@serverless/aws-lambda-layer");
-
-            const layerInputs = {
-                description: `${config.name} Dependencies Layer`,
-                code: path.join(config.code, "node_modules"),
-                runtimes: ["nodejs10.x"],
-                prefix: "nodejs/node_modules",
-                bucket: config.bucket,
-                region: config.region
-            };
-
-            this.context.status("Deploying Dependencies");
-            this.context.instance.debug(`Packaging lambda code from %o`, config.code);
-            this.context.instance.debug(
-                `Uploading dependencies as a layer for lambda %o.`,
-                config.name
-            );
-
-            const promises = [pack(config.code, config.shims, false), layer(layerInputs)];
-            const res = await Promise.all(promises);
-            config.zipPath = res[0];
-            config.layer = res[1];
-        } else {
-            this.context.status("Packaging");
-            this.context.instance.debug(`Packaging lambda code from %o`, config.code);
-            config.zipPath = await pack(config.code, config.shims);
-        }
+        this.context.instance.status("Packaging");
+        this.context.instance.debug(`Packaging lambda code from %o`, config.code);
+        config.zipPath = await pack(config.code, config.shims);
 
         config.hash = await utils.hashFile(config.zipPath);
 
         let deploymentBucket;
         if (config.bucket) {
-            deploymentBucket = await this.load("@serverless/aws-s3");
+            deploymentBucket = await this.load("@webiny/serverless-aws-s3");
         }
 
         const prevLambda = await getLambda({ lambda, ...config });
@@ -137,12 +106,12 @@ class AwsLambda extends Component {
                     config.name,
                     config.bucket
                 );
-                this.context.status(`Uploading`);
+                this.context.instance.status(`Uploading`);
 
                 await deploymentBucket.upload({ name: config.bucket, file: config.zipPath });
             }
 
-            this.context.status(`Creating`);
+            this.context.instance.status(`Creating`);
             this.context.instance.debug(
                 `Creating lambda %o in the %o region.`,
                 config.name,
@@ -154,7 +123,7 @@ class AwsLambda extends Component {
             config.arn = prevLambda.arn;
             if (configChanged(prevLambda, config)) {
                 if (config.bucket && prevLambda.hash !== config.hash) {
-                    this.context.status(`Uploading code`);
+                    this.context.instance.status(`Uploading code`);
                     this.context.instance.debug(
                         `Uploading %o lambda code to bucket %o`,
                         config.name,
@@ -164,11 +133,11 @@ class AwsLambda extends Component {
                     await deploymentBucket.upload({ name: config.bucket, file: config.zipPath });
                     await updateLambdaCode({ lambda, ...config });
                 } else if (!config.bucket && prevLambda.hash !== config.hash) {
-                    this.context.status(`Uploading code`);
+                    this.context.instance.status(`Uploading code`);
                     this.context.instance.debug(`Uploading %o lambda code.`, config.name);
                     await updateLambdaCode({ lambda, ...config });
                 }
-                this.context.status(`Updating`);
+                this.context.instance.status(`Updating`);
                 this.context.instance.debug(`Updating %o lambda config.`, config.name);
 
                 await updateLambdaConfig({ lambda, ...config });
@@ -176,8 +145,64 @@ class AwsLambda extends Component {
         }
 
         if (this.state.name && this.state.name !== config.name) {
-            this.context.status(`Replacing %o with %o`, this.state.name, config.name);
+            this.context.instance.status(`Replacing %o with %o`, this.state.name, config.name);
             await deleteLambda({ lambda, name: this.state.name });
+        }
+
+        // Create permissions if they don't exist in the current state
+        if (config.permissions) {
+            for (let i = 0; i < config.permissions.length; i++) {
+                const permission = config.permissions[i];
+
+                const permissionExist =
+                    Array.isArray(this.state.permissions) &&
+                    this.state.permissions.find(prm => prm.StatementId === permission.StatementId);
+
+                if (permissionExist) {
+                    continue;
+                }
+
+                if (!permission.FunctionName) {
+                    permission.FunctionName = config.name;
+                }
+                this.context.instance.debug(
+                    `Adding %o permission to %o`,
+                    permission.Action,
+                    permission.FunctionName
+                );
+                await pRetry(() => {
+                    lambda.addPermission(permission).promise();
+                }, PRETRY_ARGS);
+            }
+        }
+
+        // Remove permissions if they no longer exist in the inputs
+        if (Array.isArray(this.state.permissions)) {
+            for (let i = 0; i < this.state.permissions.length; i++) {
+                const permission = this.state.permissions[i];
+
+                const permissionExist = config.permissions.find(
+                    prm => prm.StatementId === permission.StatementId
+                );
+
+                if (permissionExist) {
+                    continue;
+                }
+
+                this.context.instance.debug(
+                    `Removing %o permission from %o`,
+                    permission.Action,
+                    permission.FunctionName
+                );
+                await pRetry(() => {
+                    lambda
+                        .removePermission({
+                            FunctionName: permission.FunctionName,
+                            StatementId: permission.StatementId
+                        })
+                        .promise();
+                }, PRETRY_ARGS);
+            }
         }
 
         this.context.instance.debug(
@@ -195,7 +220,7 @@ class AwsLambda extends Component {
     }
 
     async remove() {
-        this.context.status(`Removing`);
+        this.context.instance.status(`Removing`);
 
         if (!this.state.name) {
             this.context.instance.debug(`Aborting removal. Function name not found in state.`);
@@ -206,14 +231,11 @@ class AwsLambda extends Component {
 
         const lambda = new AwsSdkLambda({
             region,
-            credentials: this.context.credentials.aws
+            credentials: this.context.instance.credentials.aws
         });
 
         const awsIamRole = await this.load("@serverless/aws-iam-role");
-        const layer = await this.load("@serverless/aws-lambda-layer");
-
         await awsIamRole.remove();
-        await layer.remove();
 
         this.context.instance.debug(`Removing lambda %o from the %o region.`, name, region);
         await deleteLambda({ lambda, name });

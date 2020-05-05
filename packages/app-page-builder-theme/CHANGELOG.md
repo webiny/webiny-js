@@ -3,6 +3,49 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.0.15](https://github.com/webiny/webiny-js/compare/@webiny/app-page-builder-theme@2.0.14...@webiny/app-page-builder-theme@2.0.15) (2020-05-04)
+
+**Note:** Version bump only for package @webiny/app-page-builder-theme
+
+
+
+
+
+## [2.0.14](https://github.com/webiny/webiny-js/compare/@webiny/app-page-builder-theme@2.0.13...@webiny/app-page-builder-theme@2.0.14) (2020-05-01)
+
+
+### Bug Fixes
+
+* revert changes ([b718ea2](https://github.com/webiny/webiny-js/commit/b718ea29f279546cde3ca980f11b62473ede12b4))
+
+
+
+
+
+## [2.0.13](https://github.com/webiny/webiny-js/compare/@webiny/app-page-builder-theme@2.0.13-next.1...@webiny/app-page-builder-theme@2.0.13) (2020-04-23)
+
+**Note:** Version bump only for package @webiny/app-page-builder-theme
+
+
+
+
+
+## [2.0.13-next.1](https://github.com/webiny/webiny-js/compare/@webiny/app-page-builder-theme@2.0.13-next.0...@webiny/app-page-builder-theme@2.0.13-next.1) (2020-04-23)
+
+**Note:** Version bump only for package @webiny/app-page-builder-theme
+
+
+
+
+
+## [2.0.13-next.0](https://github.com/webiny/webiny-js/compare/@webiny/app-page-builder-theme@2.0.12...@webiny/app-page-builder-theme@2.0.13-next.0) (2020-04-23)
+
+**Note:** Version bump only for package @webiny/app-page-builder-theme
+
+
+
+
+
 ## [2.0.12](https://github.com/webiny/webiny-js/compare/@webiny/app-page-builder-theme@2.0.12-next.0...@webiny/app-page-builder-theme@2.0.12) (2020-04-16)
 
 **Note:** Version bump only for package @webiny/app-page-builder-theme

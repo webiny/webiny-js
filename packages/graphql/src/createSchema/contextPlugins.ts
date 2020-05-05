@@ -1,7 +1,7 @@
-import { GraphQLContext, GraphQLContextPlugin } from "@webiny/graphql/types";
+import { Context, ContextPlugin } from "@webiny/graphql/types";
 
-export const applyGraphQLContextPlugins = async (context: GraphQLContext) => {
-    const ctxPlugins = context.plugins.byType<GraphQLContextPlugin>("graphql-context");
+export const applyContextPlugins = async (context: Context) => {
+    const ctxPlugins = context.plugins.byType<ContextPlugin>("context");
     for (let i = 0; i < ctxPlugins.length; i++) {
         if (typeof ctxPlugins[i].preApply === "function") {
             await ctxPlugins[i].preApply(context);

@@ -1,11 +1,12 @@
 import { flow } from "lodash";
+// @ts-ignore
 import { withStorage, withCrudLogs, withSoftDelete, withFields } from "@webiny/commodo";
 import { withUser } from "@webiny/api-security";
-import models from "./models/";
+import book from "./models/book.model";
 
 export default () => ({
-    name: "graphql-context-models",
-    type: "graphql-context",
+    name: "context-models",
+    type: "context",
     apply(context) {
         const driver = context.commodo && context.commodo.driver;
 
@@ -26,14 +27,8 @@ export default () => ({
                 withCrudLogs()
             )();
 
-        const MyModel = models.myModel({ createBase });
-        const Models = Object.entries(models).reduce(
-            (acc, [modelName, val]) => ({ ...acc, [modelName]: val({ createBase }) }),
-            {}
-        );
-
         context.models = {
-            MyModel,
+            Book: book({ createBase }),
             createBase
         };
     }

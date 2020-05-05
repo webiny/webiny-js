@@ -1,2 +1,2 @@
 import "./login";
-import "./visitAndReloadOnceInvalidated";
+import "./reloadUntil";

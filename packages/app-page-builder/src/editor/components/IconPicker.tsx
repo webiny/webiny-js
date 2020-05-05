@@ -61,7 +61,10 @@ const pickIcon = css({
 
 const searchInput = css({
     input: {
-        padding: "20px 12px 20px"
+        padding: "20px 12px 20px",
+        "&::placeholder": {
+            opacity: "1 !important"
+        }
     }
 });
 
@@ -72,7 +75,7 @@ const IconPicker = ({ value, onChange }) => {
 
     const onFilterChange = useCallback(
         (value, cb) => {
-            setFilter(value);
+            setFilter(value.trim());
             cb();
         },
         [filter]
@@ -116,33 +119,36 @@ const IconPicker = ({ value, onChange }) => {
         [icons]
     );
 
-    const renderGrid = useCallback(({ closeMenu }) => {
-        return (
-            <Fragment>
-                <DelayedOnChange value={filter} onChange={onFilterChange}>
-                    {({ value, onChange }) => (
-                        <Input
-                            autoFocus
-                            className={searchInput}
-                            value={value}
-                            onChange={onChange}
-                            placeholder={"Search icons..."}
-                        />
-                    )}
-                </DelayedOnChange>
-                <Grid
-                    className={grid}
-                    cellRenderer={renderCell({ closeMenu })}
-                    columnCount={COLUMN_COUNT}
-                    columnWidth={100}
-                    height={440}
-                    rowCount={Math.ceil(icons.length / COLUMN_COUNT)}
-                    rowHeight={100}
-                    width={640}
-                />
-            </Fragment>
-        );
-    }, []);
+    const renderGrid = useCallback(
+        ({ closeMenu }) => {
+            return (
+                <Fragment>
+                    <DelayedOnChange value={filter} onChange={onFilterChange}>
+                        {({ value, onChange }) => (
+                            <Input
+                                autoFocus
+                                className={searchInput}
+                                value={value}
+                                onChange={onChange}
+                                placeholder={"Search icons..."}
+                            />
+                        )}
+                    </DelayedOnChange>
+                    <Grid
+                        className={grid}
+                        cellRenderer={renderCell({ closeMenu })}
+                        columnCount={COLUMN_COUNT}
+                        columnWidth={100}
+                        height={440}
+                        rowCount={Math.ceil(icons.length / COLUMN_COUNT)}
+                        rowHeight={100}
+                        width={640}
+                    />
+                </Fragment>
+            );
+        },
+        [icons]
+    );
 
     return (
         <Menu

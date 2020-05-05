@@ -7,7 +7,7 @@ const camelCase = require("lodash.camelcase");
 
 module.exports = [
     {
-        name: "scaffold-template-apollo-service",
+        name: "scaffold-template-graphql-service",
         type: "scaffold-template",
         scaffold: {
             name: "GraphQL Apollo Service",
@@ -31,9 +31,14 @@ module.exports = [
             },
             generate: async ({ input }) => {
                 const { location } = input;
+                const fullLocation = path.resolve(location);
                 const rootResourcesPath = findUp.sync("resources.js", {
-                    cwd: path.resolve(location)
+                    cwd: fullLocation
                 });
+
+                const relativeLocation = path
+                    .relative(path.dirname(rootResourcesPath), fullLocation)
+                    .replace(/\\/g, "/");
 
                 const packageName = path.basename(location);
                 const resourceName = camelCase(packageName);
@@ -46,6 +51,18 @@ module.exports = [
                 }
 
                 await fs.mkdirSync(location, { recursive: true });
+
+                // Get base TS config path
+                const baseTsConfigPath = path
+                    .relative(
+                        fullLocation,
+                        findUp.sync("tsconfig.json", {
+                            cwd: fullLocation
+                        })
+                    )
+                    .replace(/\\/g, "/");
+
+                // Copy template files
                 await ncp(sourceFolder, location);
 
                 // Update the package's name
@@ -58,11 +75,17 @@ module.exports = [
                 const { transform } = require("@babel/core");
                 const source = fs.readFileSync(rootResourcesPath, "utf8");
                 let resourceTpl = fs.readFileSync(path.join(__dirname, "resource.tpl"), "utf8");
-                resourceTpl = resourceTpl.replace(/\[PACKAGE_NAME\]/g, packageName);
+                resourceTpl = resourceTpl.replace(/\[PACKAGE_PATH\]/g, relativeLocation);
 
                 const { code } = await transform(source, {
                     plugins: [[__dirname + "/transform", { template: resourceTpl, resourceName }]]
                 });
+
+                // Update tsconfig "extends" path
+                const tsConfigPath = path.join(fullLocation, "tsconfig.json");
+                const tsconfig = require(tsConfigPath);
+                tsconfig.extends = baseTsConfigPath;
+                fs.writeFileSync(tsConfigPath, JSON.stringify(tsconfig, null, 2));
 
                 // Format code with prettier
                 const prettier = require("prettier");
@@ -70,8 +93,6 @@ module.exports = [
                 const formattedCode = prettier.format(code, prettierConfig);
 
                 fs.writeFileSync(rootResourcesPath, formattedCode);
-
-                // TODO: update tsconfig.json with correct path to base config
             }
         }
     }

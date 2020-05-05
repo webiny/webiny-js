@@ -9,7 +9,7 @@ import {
 import gql from "graphql-tag";
 import merge from "lodash.merge";
 import { hasScope } from "@webiny/api-security";
-import { CmsGraphQLContext } from "@webiny/api-headless-cms/types";
+import { CmsContext } from "@webiny/api-headless-cms/types";
 import { generateSchemaPlugins } from "./schema/schemaPlugins";
 import { i18nFieldType } from "./graphqlTypes/i18nFieldType";
 import { i18nFieldInput } from "./graphqlTypes/i18nFieldInput";
@@ -71,8 +71,8 @@ const getMutationResolvers = type => {
 
 const getQueryResolvers = () => {
     return {
-        getContentModel: hasScope("cms:contentModel:crud")(resolveGet(contentModelFetcher)),
-        listContentModels: hasScope("cms:contentModel:crud")(listContentModels)
+        getContentModel: hasScope("cms:content-model:crud")(resolveGet(contentModelFetcher)),
+        listContentModels: hasScope("cms:content-model:crud")(listContentModels)
     };
 };
 
@@ -256,5 +256,5 @@ export default ({ type }) => [
             )
         },
         security: merge({}, contentModelGroup.getResolvers(type))
-    } as GraphQLSchemaPlugin<CmsGraphQLContext>
+    } as GraphQLSchemaPlugin<CmsContext>
 ];

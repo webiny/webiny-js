@@ -12,7 +12,6 @@ type PageProps = {
     content?: any;
 };
 
-
 declare global {
     // eslint-disable-next-line
     namespace JSX {

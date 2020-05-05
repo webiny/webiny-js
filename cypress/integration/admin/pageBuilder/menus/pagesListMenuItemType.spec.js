@@ -53,10 +53,12 @@ context("Menus Module", () => {
             .click()
             .findByText("Save menu")
             .click()
-            .wait(2000)
-            .visitAndReloadOnceInvalidated(Cypress.env("SITE_URL"));
-
-        cy.visit(Cypress.env("SITE_URL"))
+            .findByText("Record saved successfully.")
+            .visit(Cypress.env("SITE_URL"))
+            .reloadUntil(() => {
+                // We wait until the document contains the newly added menu.
+                return Cypress.$(`:contains(${id})`).length;
+            })
             .findByTestId("pb-desktop-header")
             .within(() => {
                 // Let's check the links and the order.
@@ -66,10 +68,8 @@ context("Menus Module", () => {
                 });
             });
 
-        cy.visit("/page-builder/menus");
-
         // Let's return to the admin and change the ordering of links.
-        cy.wait(500)
+        cy.visit("/page-builder/menus")
             .findByTestId("default-data-list")
             .within(() => {
                 cy.get("div")
@@ -83,25 +83,61 @@ context("Menus Module", () => {
             cy.findByTestId("pb-edit-icon-button").click();
         });
 
+        const idEdited = `X-${id}-Y`;
+
         cy.findByText("Sort direction...")
             .prev()
-            .select("Ascending");
+            .select("Ascending")
+            .findByLabelText("Title")
+            .clear()
+            .type(idEdited);
 
         cy.findByText(/Save Menu Item/i)
             .click()
             .findByText("Save menu")
             .click()
-            .wait(2000)
-            .visitAndReloadOnceInvalidated(Cypress.env("SITE_URL"));
-
-        cy.visit(Cypress.env("SITE_URL"))
+            .findByText("Record saved successfully.")
+            .visit(Cypress.env("SITE_URL"))
+            .reloadUntil(() => {
+                // We wait until the document contains the newly added menu.
+                return Cypress.$(`:contains(${idEdited})`).length;
+            })
             .findByTestId("pb-desktop-header")
             .within(() => {
                 // Let's check the links and the order.
-                cy.findByText(id).within(() => {
+                cy.findByText(idEdited).within(() => {
                     cy.get("ul li:nth-child(1)").contains(/404/i);
                     cy.get("ul li:nth-child(2)").contains(/error page/i);
                 });
+            });
+
+        // Delete the menu item before leaving.
+        cy.visit("/page-builder/menus")
+            .findByTestId("default-data-list")
+            .within(() => {
+                cy.get("div")
+                    .first()
+                    .within(() => {
+                        cy.findByText(/Main Menu/i).click();
+                    });
+            });
+
+        cy.findByTestId(`pb-menu-item-render-${idEdited}`).within(() => {
+            cy.findByTestId("pb-delete-icon-button").click();
+        });
+
+        cy.findByText("Save menu")
+            .click()
+            .findByText("Record saved successfully.")
+            .visit(Cypress.env("SITE_URL"))
+            .reloadUntil(() => {
+                // We wait until the document contains the newly added menu.
+                return Cypress.$(`:contains(${idEdited})`).length === 0;
+            })
+            .findByTestId("pb-desktop-header")
+            .within(() => {
+                // Let's check the links and the order.
+                cy.findByText(idEdited).should("not.exist");
             });
     });
 });

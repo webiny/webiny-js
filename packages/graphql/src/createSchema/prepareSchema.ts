@@ -5,13 +5,8 @@ import GraphQLJSON from "graphql-type-json";
 import { GraphQLDateTime } from "graphql-iso-date";
 import GraphQLLong from "graphql-type-long";
 import { RefInput } from "./RefInputScalar";
-import {
-    PluginsContainer,
-    GraphQLSchemaPlugin,
-    GraphQLScalarPlugin,
-    GraphQLContext
-} from "../types";
-import { applyGraphQLContextPlugins } from "./contextPlugins";
+import { PluginsContainer, GraphQLSchemaPlugin, GraphQLScalarPlugin, Context } from "../types";
+import { applyContextPlugins } from "./contextPlugins";
 
 type PrepareSchemaParams = { plugins: PluginsContainer };
 
@@ -19,8 +14,8 @@ type PrepareSchemaParams = { plugins: PluginsContainer };
  * @return {schema, context}
  */
 export async function prepareSchema({ plugins }: PrepareSchemaParams) {
-    const context: GraphQLContext = { plugins };
-    await applyGraphQLContextPlugins(context);
+    const context: Context = { plugins };
+    await applyContextPlugins(context);
 
     // This allows developers to register more plugins dynamically, before the graphql schema is instantiated.
     const gqlPlugins = plugins.byType<GraphQLSchemaPlugin>("graphql-schema");

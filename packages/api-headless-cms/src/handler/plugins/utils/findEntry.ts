@@ -1,4 +1,4 @@
-import { CmsGraphQLContext, CmsModel } from "@webiny/api-headless-cms/types";
+import { CmsContext, CmsModel } from "@webiny/api-headless-cms/types";
 import { createFindQuery } from "./createFindQuery";
 import { parseWhere } from "./parseWhere";
 
@@ -8,7 +8,7 @@ type FindEntry = {
         locale: string;
         where: { [key: string]: any };
     };
-    context: CmsGraphQLContext;
+    context: CmsContext;
 };
 
 export const findEntry = async ({ model, args, context }: FindEntry) => {

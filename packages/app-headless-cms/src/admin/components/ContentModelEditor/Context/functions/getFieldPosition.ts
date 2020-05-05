@@ -1,4 +1,4 @@
-import  { FieldLayoutPositionType } from "@webiny/app-headless-cms/types";
+import { FieldLayoutPositionType } from "@webiny/app-headless-cms/types";
 
 export default ({ field, data }): FieldLayoutPositionType => {
     const id = typeof field === "string" ? field : field._id;

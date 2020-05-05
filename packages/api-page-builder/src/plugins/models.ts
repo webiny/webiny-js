@@ -10,8 +10,8 @@ import got from "got";
 
 export default () => [
     {
-        name: "graphql-context-models",
-        type: "graphql-context",
+        name: "context-models",
+        type: "context",
         apply(context) {
             const driver = context.commodo && context.commodo.driver;
 
@@ -52,8 +52,8 @@ export default () => [
         // After a page was published, we want just make a simple request, so that the cache is immediately ready.
         // Note that we assume that SSR caching is enabled on the lambda that is serving the site, because the
         // chances are very high that it will be enabled.
-        type: "graphql-context",
-        name: "graphql-context-pb-page-refresh-ssr-cache-on-initial-publish",
+        type: "context",
+        name: "context-pb-page-refresh-ssr-cache-on-initial-publish",
         apply(context) {
             const {
                 models: { PbPage }

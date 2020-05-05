@@ -11,7 +11,7 @@ const getPlugins = <T extends Plugin = Plugin>(type?: string) => {
     return plugins.byType<T>(type);
 };
 
-const getPlugin = <T extends Plugin = Plugin>(name: string)=> {
+const getPlugin = <T extends Plugin = Plugin>(name: string) => {
     return plugins.byName<T>(name);
 };
 

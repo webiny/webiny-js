@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="44px" height="44px" viewBox="0 0 44 44" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 52.5 (67469) - http://www.bohemiancoding.com/sketch -->
+    <title>Buttons / Round / 44px</title>
+    <desc>Created with Sketch.</desc>
+    <defs>
+        <circle id="path-1" cx="22" cy="22" r="22"></circle>
+        <path d="M18.8958333,-1.11022302e-16 L1.10416667,-1.11022302e-16 C0.494166667,-1.11022302e-16 -6.66133815e-16,0.494166667 -6.66133815e-16,1.10416667 L-6.66133815e-16,18.8966667 C-6.66133815e-16,19.5058333 0.494166667,20 1.10416667,20 L10.6833333,20 L10.6833333,12.255 L8.07666667,12.255 L8.07666667,9.23666667 L10.6833333,9.23666667 L10.6833333,7.01083333 C10.6833333,4.4275 12.2608333,3.02083333 14.5658333,3.02083333 C15.67,3.02083333 16.6183333,3.10333333 16.895,3.14 L16.895,5.84 L15.2966667,5.84083333 C14.0433333,5.84083333 13.8008333,6.43666667 13.8008333,7.31 L13.8008333,9.2375 L16.79,9.2375 L16.4008333,12.2558333 L13.8008333,12.2558333 L13.8008333,20 L18.8975,20 C19.5058333,20 20,19.5058333 20,18.8958333 L20,1.10416667 C20,0.494166667 19.5058333,-6.66133815e-16 18.8958333,-1.11022302e-16 Z" id="path-3"></path>
+    </defs>
+    <g id="Team" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Team-6" transform="translate(-640.000000, -386.000000)">
+            <g id="social">
+                <g transform="translate(640.000000, 386.000000)">
+                    <g id="Buttons-/-Round-/-44px">
+                        <g id="Styles-/-Base-Color">
+                            <mask id="mask-2" fill="white">
+                                <use xlink:href="#path-1"></use>
+                            </mask>
+                            <use id="◼️-Background" fill="#F3F3F3" xlink:href="#path-1"></use>
+                            <g id="Icons-/-Facebook" mask="url(#mask-2)">
+                                <g transform="translate(12.000000, 12.000000)">
+                                    <mask id="mask-4" fill="white">
+                                        <use xlink:href="#path-3"></use>
+                                    </mask>
+                                    <use id="🔹-Icon-Color" stroke="none" fill="#B9B9B9" fill-rule="evenodd" xlink:href="#path-3"></use>
+                                </g>
+                            </g>
+                        </g>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

@@ -1,6 +1,6 @@
 import { ErrorResponse, Response, NotFoundResponse } from "@webiny/graphql";
 
-export default async (root: any, args: {[key: string]: any}, context: {[key: string]: any}) => {
+export default async (root: any, args: { [key: string]: any }, context: { [key: string]: any }) => {
     const { PbPage, PbSettings } = context.models;
 
     const { id } = args;

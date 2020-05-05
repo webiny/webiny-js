@@ -5,12 +5,12 @@ import { hasScope } from "@webiny/api-security";
 import mailchimpSettings from "./mailchimpSettings.model";
 import MailchimpApi from "./MailchimpApi";
 import { get } from "lodash";
-import { GraphQLContext } from "@webiny/graphql/types";
+import { Context } from "@webiny/graphql/types";
 
 export default () => [
     {
-        type: "graphql-context",
-        name: "graphql-context-models-mailchimp",
+        type: "context",
+        name: "context-models-mailchimp",
         apply({ models }) {
             models.MailchimpSettings = mailchimpSettings({ createBase: models.createBase });
         }
@@ -131,7 +131,7 @@ export default () => [
                     addToList: async (
                         _: any,
                         { list: listId, email }: { [key: string]: any },
-                        context: GraphQLContext
+                        context: Context
                     ) => {
                         const { MailchimpSettings } = context.models;
 

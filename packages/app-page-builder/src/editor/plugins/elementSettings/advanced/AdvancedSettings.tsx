@@ -68,7 +68,12 @@ const AdvancedSettings = props => {
     });
 
     return (
-        <Dialog open={open} onClose={closeDialog} className={dialogStyle}>
+        <Dialog
+            open={open}
+            onClose={closeDialog}
+            className={dialogStyle}
+            data-testid={"pb-editor-advanced-element-settings-dialog"}
+        >
             <DialogTitle>Settings</DialogTitle>
             <Form key={element && element.id} data={data} onSubmit={onSubmit}>
                 {({ submit, Bind, data, form }) => (

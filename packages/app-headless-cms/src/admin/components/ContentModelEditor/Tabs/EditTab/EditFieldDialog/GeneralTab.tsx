@@ -87,16 +87,6 @@ const GeneralTab = ({ field, form }: GeneralTabProps) => {
                         <Switch label={"Unique"} />
                     </Bind>
                 </Cell>
-                <Cell span={6}>
-                    <Bind name={"searchable"}>
-                        <Switch label={"Searchable"} />
-                    </Bind>
-                </Cell>
-                <Cell span={6}>
-                    <Bind name={"sortable"}>
-                        <Switch label={"Sortable"} />
-                    </Bind>
-                </Cell>
             </Grid>
         </>
     );

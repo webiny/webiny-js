@@ -3,6 +3,60 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.3.1](https://github.com/webiny/webiny-js/compare/@webiny/app-page-builder@3.3.0...@webiny/app-page-builder@3.3.1) (2020-05-04)
+
+
+### Bug Fixes
+
+* prevent execution of oembed onComplete callback ([#818](https://github.com/webiny/webiny-js/issues/818)) ([60ec8a3](https://github.com/webiny/webiny-js/commit/60ec8a3d601f7997bc04853a6a8df0847f5e3024))
+* set default icon element width ([#803](https://github.com/webiny/webiny-js/issues/803)) ([47b3c3c](https://github.com/webiny/webiny-js/commit/47b3c3c2da4c6b5745c44d72e3fb4c6d3fca2260))
+
+
+
+
+
+# [3.3.0](https://github.com/webiny/webiny-js/compare/@webiny/app-page-builder@3.3.0-next.1...@webiny/app-page-builder@3.3.0) (2020-04-23)
+
+
+### Bug Fixes
+
+* add "fullUrl" field ([04807c9](https://github.com/webiny/webiny-js/commit/04807c9c7c7f6af3c0ad56fc820a277c7840efb2))
+* use "fullUrl" instead of "url" ([2f60d03](https://github.com/webiny/webiny-js/commit/2f60d03fa64b88f1c43e8cdc0b725915c9c0deea))
+
+
+
+
+
+# [3.3.0-next.1](https://github.com/webiny/webiny-js/compare/@webiny/app-page-builder@3.3.0-next.0...@webiny/app-page-builder@3.3.0-next.1) (2020-04-23)
+
+
+### Bug Fixes
+
+* add parseInt to the render plugin as well ([5ce1078](https://github.com/webiny/webiny-js/commit/5ce1078d2b0a4f8d4025605b45e16a53d5a9233f))
+
+
+
+
+
+# [3.3.0-next.0](https://github.com/webiny/webiny-js/compare/@webiny/app-page-builder@3.2.4...@webiny/app-page-builder@3.3.0-next.0) (2020-04-23)
+
+
+### Bug Fixes
+
+* "onChange" callback passed to "renderDialog" must save data as well ([e17d3ff](https://github.com/webiny/webiny-js/commit/e17d3ff7d563d72f32992f2d96be568859c2233a))
+* 🐛  Add icons as a dependency to renderGrid useCallback ([47f1ad9](https://github.com/webiny/webiny-js/commit/47f1ad9fea86427b477ed50452a8e7ef7782d383))
+* make sure the sort direction value is an integer ([1cb852b](https://github.com/webiny/webiny-js/commit/1cb852bdf1f7acf08fe048e2f003421d340b68b4))
+* prevent "onChange" if there's a plugin that's active ([000b503](https://github.com/webiny/webiny-js/commit/000b503343777cc25c243f2d88bf2b2edeeddde4))
+
+
+### Features
+
+* enable passing a callback to "SlateEditor" component's "onChange" function ([d38a0c0](https://github.com/webiny/webiny-js/commit/d38a0c03e5dc709ba80d72b82d9a16852b89cfdf))
+
+
+
+
+
 ## [3.2.4](https://github.com/webiny/webiny-js/compare/@webiny/app-page-builder@3.2.4-next.0...@webiny/app-page-builder@3.2.4) (2020-04-16)
 
 **Note:** Version bump only for package @webiny/app-page-builder

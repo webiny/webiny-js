@@ -1,4 +1,4 @@
-import { CreateApolloHandlerPlugin } from "@webiny/http-handler-apollo-server/types";
+import { CreateApolloHandlerPlugin } from "@webiny/handler-apollo-server/types";
 import createApolloHandler from "./apolloHandler/createApolloHandler";
 
 const handlers = {};

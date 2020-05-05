@@ -149,7 +149,9 @@ const Install = ({ onInstalled }) => {
                     </SimpleFormContent>
                     <SimpleFormFooter>
                         {!authUserMessage && (
-                            <ButtonPrimary data-testid="install-security-button" onClick={submit}>Install security</ButtonPrimary>
+                            <ButtonPrimary data-testid="install-security-button" onClick={submit}>
+                                Install security
+                            </ButtonPrimary>
                         )}
                         {authUserMessage && (
                             <ButtonPrimary onClick={onInstalled}>

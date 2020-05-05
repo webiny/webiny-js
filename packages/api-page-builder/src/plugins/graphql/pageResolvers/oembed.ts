@@ -1,7 +1,7 @@
 import { fetchEmbed, findProvider } from "./oembed/index";
 import { ErrorResponse, Response } from "@webiny/graphql";
 
-export default async (_: {[key: string]: any}, args: {[key: string]: any}) => {
+export default async (_: { [key: string]: any }, args: { [key: string]: any }) => {
     try {
         const provider = findProvider(args.url);
         if (!provider) {

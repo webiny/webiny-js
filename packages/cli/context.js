@@ -6,7 +6,14 @@ const findUp = require("find-up");
 const { PluginsContainer } = require("@webiny/plugins");
 const debug = require("debug")("webiny");
 
-const projectRoot = path.dirname(findUp.sync("webiny.root.js"));
+const webinyRootPath = findUp.sync("webiny.root.js");
+if (!webinyRootPath) {
+    console.log(
+        `Couldn't locate "webiny.root.js"! Webiny CLI can only be used from within a Webiny project.`
+    );
+    process.exit(1);
+}
+const projectRoot = path.dirname(webinyRootPath);
 
 class Context {
     constructor() {
@@ -26,7 +33,14 @@ class Context {
             this.plugins.register(
                 ...plugins.map(plugin => {
                     if (typeof plugin === "string") {
-                        return require(path.join(this.paths.projectRoot, plugin));
+                        let loadedPlugin;
+                        try {
+                            loadedPlugin = require(path.join(this.paths.projectRoot, plugin)); // Try loading the package from the project's root
+                        } catch {
+                            // If it fails, perhaps the user still has the package installed somewhere locally...
+                            loadedPlugin = require(plugin);
+                        }
+                        return loadedPlugin;
                     }
                     return plugin;
                 })

@@ -23,6 +23,8 @@ type ActionProps = {
     shortcut?: string[];
     slateFocused?: boolean;
     settingsActive?: boolean;
+    // For testing purposes.
+    "data-testid"?: string;
 };
 
 const Action = (props: ActionProps) => {
@@ -75,7 +77,12 @@ const Action = (props: ActionProps) => {
             content={<span>{tooltip}</span>}
             {...(active ? { visible: false } : {})}
         >
-            <IconButton icon={icon} onClick={clickHandler} className={active && activeStyle} />
+            <IconButton
+                icon={icon}
+                onClick={clickHandler}
+                className={active && activeStyle}
+                data-testid={props["data-testid"]}
+            />
         </Tooltip>
     );
 };

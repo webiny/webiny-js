@@ -9,13 +9,18 @@ export const CmsContext = React.createContext({});
 
 const apolloClientsCache = {};
 
+const getCurrentEnvironmentFromLocalStorage = () => {
+    try {
+        return JSON.parse(get(window, "localStorage.cms_environment"));
+    } catch {
+        return null;
+    }
+};
+
 export function CmsProvider(props) {
-    const [currentEnvironment, setCurrentEnvironment] = useState(() => {
-        try {
-            return JSON.parse(get(window, "localStorage.cms_environment"));
-        } catch {
-            return null;
-        }
+    const [currentEnvironmentId, setCurrentEnvironmentId] = useState(() => {
+        const environment = getCurrentEnvironmentFromLocalStorage();
+        return environment && environment.id;
     });
 
     const [apolloClient, setApolloClient] = useState();
@@ -24,8 +29,8 @@ export function CmsProvider(props) {
         onCompleted: response => {
             const { data = [] } = get(response, "cms.listEnvironments", {});
 
-            if (currentEnvironment) {
-                const existingEnvironment = data.find(item => item.id === currentEnvironment.id);
+            if (currentEnvironmentId) {
+                const existingEnvironment = data.find(item => item.id === currentEnvironmentId);
                 if (existingEnvironment) {
                     selectEnvironment(existingEnvironment);
                     return;
@@ -34,22 +39,29 @@ export function CmsProvider(props) {
 
             // 1. Try to get production environment as the default one.
             // 2. If nothing was found, just use the first one in the list.
-            let defaultEnvironment = data.find(item => item.isProduction);
-            if (!defaultEnvironment) {
-                defaultEnvironment = data[0];
+            let environmentToSelect = data.find(item => item.isProduction);
+            if (!environmentToSelect) {
+                environmentToSelect = data[0];
             }
-            selectEnvironment(defaultEnvironment);
+            selectEnvironment(environmentToSelect);
         }
     });
+
+    const environments = get(environmentsQuery, "data.cms.listEnvironments.data") || [];
+    environments.hash = environments.map(item => item.id).join("-");
 
     const selectEnvironment = useCallback(environment => {
         set(
             window,
             "localStorage.cms_environment",
-            JSON.stringify({ id: environment.id, name: environment.name })
+            JSON.stringify({
+                id: environment.id,
+                name: environment.name,
+                isProduction: environment.isProduction
+            })
         );
 
-        setCurrentEnvironment(environment);
+        setCurrentEnvironmentId(environment.id);
 
         if (!apolloClientsCache[environment.id]) {
             apolloClientsCache[environment.id] = createApolloClient({
@@ -60,19 +72,37 @@ export function CmsProvider(props) {
         setApolloClient(apolloClientsCache[environment.id]);
     }, []);
 
+    const isSelectedEnvironment = useCallback(
+        environment => {
+            return environment.id === currentEnvironmentId;
+        },
+        [currentEnvironmentId]
+    );
+
+    const selectAvailableEnvironment = useCallback(
+        blacklist => {
+            for (let i = 0; i < environments.length; i++) {
+                const current = environments[i];
+                if (!blacklist.find(item => item.id === current.id)) {
+                    selectEnvironment(current);
+                    break;
+                }
+            }
+        },
+        [currentEnvironmentId, environments.hash]
+    );
+
     const value = {
         environments: {
             apolloClient,
             selectEnvironment,
-            environments: get(environmentsQuery, "data.cms.listEnvironments.data") || [],
-            currentEnvironment,
-            refreshEnvironments: async () => {
-                const response = await environmentsQuery.refetch();
-                const { data = [] } = get(response, "data.cms.listEnvironments", {});
-                if (!data.find(item => item.id === currentEnvironment.id)) {
-                    return selectEnvironment(data.find(item => item.default));
-                }
-            }
+            isSelectedEnvironment,
+            selectAvailableEnvironment,
+            environments,
+            get currentEnvironment() {
+                return environments.find(item => item.id === currentEnvironmentId);
+            },
+            refreshEnvironments: environmentsQuery.refetch
         }
     };
 

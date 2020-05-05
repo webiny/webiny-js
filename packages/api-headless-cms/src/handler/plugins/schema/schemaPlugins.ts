@@ -4,7 +4,7 @@ import {
     CmsModel,
     CmsModelFieldToGraphQLPlugin,
     CmsFieldTypePlugins,
-    CmsGraphQLContext
+    CmsContext
 } from "@webiny/api-headless-cms/types";
 import { createManageSDL } from "./createManageSDL";
 import { createReadSDL } from "./createReadSDL";
@@ -13,7 +13,7 @@ import { createReadResolvers } from "./createReadResolvers";
 import { getSchemaFromFieldPlugins } from "../utils/getSchemaFromFieldPlugins";
 
 export interface GenerateSchemaPlugins {
-    (params: { context: CmsGraphQLContext }): Promise<void>;
+    (params: { context: CmsContext }): Promise<void>;
 }
 
 export const generateSchemaPlugins: GenerateSchemaPlugins = async ({ context }) => {

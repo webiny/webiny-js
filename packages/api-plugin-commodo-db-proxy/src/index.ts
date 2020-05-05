@@ -1,5 +1,5 @@
 import { DbProxyDriver, id, isId, withId } from "@webiny/commodo-fields-storage-db-proxy";
-import { GraphQLContextPlugin } from "@webiny/graphql/types";
+import { ContextPlugin } from "@webiny/graphql/types";
 
 function apply(context, options) {
     if (!context.commodo) {
@@ -19,10 +19,10 @@ function apply(context, options) {
 
 export default options => [
     {
-        name: "graphql-context-commodo",
-        type: "graphql-context",
+        name: "context-commodo",
+        type: "context",
         preApply(context) {
             return apply(context, options);
         }
-    } as GraphQLContextPlugin
+    } as ContextPlugin
 ];

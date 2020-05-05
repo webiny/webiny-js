@@ -5,7 +5,7 @@ const plugin: CmsFindFilterOperator = {
     type: "cms-find-filter-operator",
     operator: "eq",
     createCondition({ value }) {
-        return { $eq: value }
+        return { $eq: value };
     }
 };
 

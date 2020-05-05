@@ -1,8 +1,8 @@
 import { GraphQLFieldResolver } from "graphql";
-import { GraphQLContext } from "@webiny/graphql/types";
+import { Context } from "@webiny/graphql/types";
 import { FilesResolverListTagsPlugin } from "@webiny/api-files/types";
 
-const resolver: GraphQLFieldResolver<any, GraphQLContext> = async (root, args, context) => {
+const resolver: GraphQLFieldResolver<any, Context> = async (root, args, context) => {
     const plugin = context.plugins.byName(
         "files-resolver-list-tags"
     ) as FilesResolverListTagsPlugin;

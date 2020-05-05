@@ -2,7 +2,9 @@ import _ from "lodash";
 import ValidationError from "./../validationError";
 
 export default (value: any, params: Array<string>) => {
-    if (!value) return;
+    if (!value) {
+        return;
+    }
 
     let lengthOfValue = null;
     if (_.has(value, "length")) {

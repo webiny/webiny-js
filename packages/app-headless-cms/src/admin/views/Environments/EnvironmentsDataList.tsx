@@ -4,7 +4,7 @@ import { ConfirmationDialog } from "@webiny/ui/ConfirmationDialog";
 import { DeleteIcon } from "@webiny/ui/List/DataList/icons";
 import { useCrud } from "@webiny/app-admin/hooks/useCrud";
 import { Typography } from "@webiny/ui/Typography";
-
+import { useCms } from "@webiny/app-headless-cms/admin/hooks";
 import {
     DataList,
     List,
@@ -20,6 +20,10 @@ const t = i18n.ns("app-headless-cms/admin/environments/data-list");
 
 const EnvironmentsDataList = () => {
     const { actions, list } = useCrud();
+
+    const {
+        environments: { refreshEnvironments, selectAvailableEnvironment, isSelectedEnvironment }
+    } = useCms();
 
     return (
         <DataList
@@ -81,7 +85,17 @@ const EnvironmentsDataList = () => {
                                         {({ showConfirmation }) => (
                                             <DeleteIcon
                                                 onClick={() => {
-                                                    showConfirmation(() => actions.delete(item));
+                                                    showConfirmation(async () => {
+                                                        // If we deleted the environment that was currently selected,
+                                                        // let's automatically switch to the first available one.
+                                                        await actions.delete(item);
+
+                                                        if (isSelectedEnvironment(item)) {
+                                                            selectAvailableEnvironment([item]);
+                                                        }
+
+                                                        refreshEnvironments();
+                                                    });
                                                 }}
                                             />
                                         )}

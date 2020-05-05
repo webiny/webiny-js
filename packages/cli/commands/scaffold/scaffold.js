@@ -1,6 +1,4 @@
 const inquirer = require("inquirer");
-const execa = require("execa");
-const { PluginsContainer } = require("@webiny/plugins");
 const ora = require("ora");
 
 const pluginToChoice = plugin => ({
@@ -9,32 +7,14 @@ const pluginToChoice = plugin => ({
 });
 
 module.exports = async ({ context }) => {
-    const oraSpinner = ora().start("Loading available plugins...");
-    const { stdout } = await execa("yarn", [
-        "list",
-        "--pattern=@webiny/cli-scaffold-*|webiny-cli-scaffold-*",
-        "--depth=0",
-        "--json"
-    ]);
-
-    const scaffoldModulesNames = JSON.parse(stdout).data.trees.map(treeNode =>
-        treeNode.name
-            .split("@")
-            .slice(0, -1) // Remove the trailing version tag
-            .join("@")
-    );
-    oraSpinner.stop();
-
-    const scaffoldPlugins = new PluginsContainer(
-        scaffoldModulesNames.map(crtModuleName => require(crtModuleName))
-    );
-
-    const choices = Object.values(scaffoldPlugins.plugins).map(pluginToChoice);
-
-    if (choices.length === 0) {
-        throw new Error("We couldn't find any scaffolding templates.");
+    const scaffoldPlugins = context.plugins.byType("scaffold-template");
+    if (!scaffoldPlugins.length) {
+        throw new Error(
+            "We couldn't find any scaffolding templates in webiny.root.js. Please add at least one!"
+        );
     }
 
+    const choices = Object.values(scaffoldPlugins).map(pluginToChoice);
     const { selectedPluginName } = await inquirer.prompt({
         type: "list",
         name: "selectedPluginName",
@@ -42,13 +22,13 @@ module.exports = async ({ context }) => {
         choices
     });
 
-    const { scaffold } = scaffoldPlugins.byName(selectedPluginName);
+    const { scaffold } = context.plugins.byName(selectedPluginName);
     const questions = scaffold.questions;
 
     const inqQuestions = typeof questions === "function" ? questions({ context }) : questions;
 
     const input = await inquirer.prompt(inqQuestions);
-    oraSpinner.start(`Generating template...\n`);
+    const oraSpinner = ora().start(`Generating template...\n`);
 
     try {
         await scaffold.generate({ input, context, oraSpinner });

@@ -1,7 +1,3 @@
-import isId from "./isId";
-import generateId from "./generateId";
-import { createPaginationMeta } from "@commodo/fields-storage";
-import { getName } from "@commodo/name";
 import LambdaClient from "aws-sdk/clients/lambda";
 import { EJSON } from "bson";
 
@@ -55,55 +51,43 @@ class DbProxyDriver {
     }
 
     // eslint-disable-next-line
-    async save({ model, isCreate }) {
-        return isCreate ? this.create({ model }) : this.update({ model });
+    async save({ name, data, isCreate }) {
+        return isCreate ? this.create({ name, data }) : this.update({ name, data });
     }
 
-    async create({ model }) {
-        if (!model.id) {
-            model.id = generateId();
-        }
-
-        const data = await model.toStorage();
-
-        try {
-            await this.client.runOperation({
-                collection: this.getCollectionName(model),
-                operation: ["insertOne", data]
-            });
-            return true;
-        } catch (e) {
-            model.id && model.getField("id").reset();
-            throw e;
-        }
-    }
-
-    async update({ model }) {
-        const data = await model.toStorage();
+    async create({ name, data }) {
         await this.client.runOperation({
-            collection: this.getCollectionName(model),
-            operation: ["updateOne", { id: model.id }, { $set: data }]
+            collection: this.getCollectionName(name),
+            operation: ["insertOne", data]
+        });
+        return true;
+    }
+
+    async update({ name, data }) {
+        await this.client.runOperation({
+            collection: this.getCollectionName(name),
+            operation: ["updateOne", { id: data.id }, { $set: data }]
         });
 
         return true;
     }
 
     // eslint-disable-next-line
-    async delete({ model }) {
+    async delete({ name, data: { id } }) {
         await this.client.runOperation({
-            collection: this.getCollectionName(model),
-            operation: ["deleteOne", { id: model.id }]
+            collection: this.getCollectionName(name),
+            operation: ["deleteOne", { id }]
         });
         return true;
     }
 
-    async find({ model, options }) {
+    async find({ name, options }) {
         const clonedOptions = { limit: 0, offset: 0, ...options };
 
         DbProxyDriver.__prepareSearchOption(clonedOptions);
 
         const results = await this.client.runOperation({
-            collection: this.getCollectionName(model),
+            collection: this.getCollectionName(name),
             operation: [
                 "find",
                 clonedOptions.query,
@@ -118,13 +102,13 @@ class DbProxyDriver {
         return [!Array.isArray(results) ? [] : results, {}];
     }
 
-    async findOne({ model, options }) {
+    async findOne({ name, options }) {
         const clonedOptions = { ...options };
         DbProxyDriver.__prepareSearchOption(clonedOptions);
 
         // Get first documents from cursor using each
         const results = await this.client.runOperation({
-            collection: this.getCollectionName(model),
+            collection: this.getCollectionName(name),
             operation: [
                 "find",
                 clonedOptions.query,
@@ -138,41 +122,23 @@ class DbProxyDriver {
         return results[0];
     }
 
-    async count({ model, options }) {
+    async count({ name, options }) {
         const clonedOptions = { ...options };
         DbProxyDriver.__prepareSearchOption(clonedOptions);
 
         // Get first documents from cursor using each
         return await this.client.runOperation({
-            collection: this.getCollectionName(model),
+            collection: this.getCollectionName(name),
             operation: ["count", clonedOptions.query]
         });
     }
 
-    isId(value) {
-        return isId(value);
-    }
-
-    getCollectionName(model) {
-        return getName(model);
+    getCollectionName(name) {
+        return name;
     }
 
     getClient() {
         return this.client;
-    }
-
-    static __preparePerPageOption(options) {
-        if ("perPage" in options) {
-            options.limit = options.perPage;
-            delete options.perPage;
-        }
-    }
-
-    static __preparePageOption(options) {
-        if ("page" in options) {
-            options.offset = options.limit * (options.page - 1);
-            delete options.page;
-        }
     }
 
     static __prepareSearchOption(options) {

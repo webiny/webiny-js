@@ -34,7 +34,7 @@ const listItemMinHeight = css({
 
 export type FormsDataListProps = {
     dataList: any;
-}
+};
 
 const FormsDataList = (props: FormsDataListProps) => {
     const editHandlers = useRef({});
@@ -45,7 +45,7 @@ const FormsDataList = (props: FormsDataListProps) => {
     const client = useApolloClient();
     const { showSnackbar } = useSnackbar();
 
-    const deleteRecord = useHandler(props, ({ id }) => async (item) => {
+    const deleteRecord = useHandler(props, ({ id }) => async item => {
         const res = await client.mutate({ mutation: DELETE_FORM, variables: { id: item.id } });
         const { data, error } = get(res, "data.forms.deleteForm");
 

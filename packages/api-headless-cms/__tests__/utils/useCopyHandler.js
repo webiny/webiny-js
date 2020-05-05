@@ -1,9 +1,9 @@
-import { createHandler } from "@webiny/http-handler";
+import { createHandler } from "@webiny/handler";
 import headlessCmsPlugins from "../../src/copyEnvironment";
 
 const createCopyHandler = plugins =>
     createHandler(plugins, headlessCmsPlugins(), {
-        type: "graphql-context",
+        type: "context",
         name: "mongo-is-id",
         apply(context) {
             context.commodo.isId = value => {

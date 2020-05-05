@@ -28,11 +28,12 @@ export default async (root, args, context) => {
         if (!otherUserId) {
             tokenUserId = currentUserId;
         } else {
-            if (!canAssignUser)
+            if (!canAssignUser) {
                 return new ErrorResponse({
                     message:
                         "Current user is not admin! You must be an admin in order to update other users."
                 });
+            }
             if (!(await User.findById(otherUserId))) {
                 return new NotFoundResponse("User to be updated not found!");
             }

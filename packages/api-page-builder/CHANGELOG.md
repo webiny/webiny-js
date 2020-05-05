@@ -3,6 +3,72 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.1.7](https://github.com/webiny/webiny-js/compare/@webiny/api-page-builder@3.1.7-next.0...@webiny/api-page-builder@3.1.7) (2020-04-25)
+
+**Note:** Version bump only for package @webiny/api-page-builder
+
+
+
+
+
+## [3.1.7-next.0](https://github.com/webiny/webiny-js/compare/@webiny/api-page-builder@3.1.6...@webiny/api-page-builder@3.1.7-next.0) (2020-04-25)
+
+
+### Bug Fixes
+
+* call "save" on settings, not on installation ([6ce3e51](https://github.com/webiny/webiny-js/commit/6ce3e510aebb5b14f24af3bbcab208244621b6b2))
+
+
+
+
+
+## [3.1.6](https://github.com/webiny/webiny-js/compare/@webiny/api-page-builder@3.1.5...@webiny/api-page-builder@3.1.6) (2020-04-25)
+
+
+### Bug Fixes
+
+* use "completed" instead of "stepAvailable" ([4606d82](https://github.com/webiny/webiny-js/commit/4606d82878ad4b57aec1176b631ac42ae1d3ebf5))
+
+
+
+
+
+## [3.1.5](https://github.com/webiny/webiny-js/compare/@webiny/api-page-builder@3.1.4...@webiny/api-page-builder@3.1.5) (2020-04-25)
+
+
+### Bug Fixes
+
+* for new installations, immediately mark step 6 as completed ([62cd762](https://github.com/webiny/webiny-js/commit/62cd76230fdfe9259aec23770704792a78d50325))
+
+
+
+
+
+## [3.1.4](https://github.com/webiny/webiny-js/compare/@webiny/api-page-builder@3.1.4-next.0...@webiny/api-page-builder@3.1.4) (2020-04-23)
+
+
+### Bug Fixes
+
+* add "fullUrl" field ([04807c9](https://github.com/webiny/webiny-js/commit/04807c9c7c7f6af3c0ad56fc820a277c7840efb2))
+
+
+
+
+
+## [3.1.4-next.0](https://github.com/webiny/webiny-js/compare/@webiny/api-page-builder@3.1.3...@webiny/api-page-builder@3.1.4-next.0) (2020-04-23)
+
+
+### Bug Fixes
+
+* 🐛  add `withLatestVersion` HOC to `PbPage` model ([ea3cc0c](https://github.com/webiny/webiny-js/commit/ea3cc0c1341215f0ad309ed865ef1b681655bfc0))
+* 🐛  remove `pb-resolver-list-pages` from listPages resolver ([0a78701](https://github.com/webiny/webiny-js/commit/0a787011f0764d2be6e3cb770e90182f0bd7755d))
+* add backwards-compatibility for recently added "latestVersion" field ([7058188](https://github.com/webiny/webiny-js/commit/7058188ce29d00b8415bfa231920de3c9ef57908))
+* add step 6 ([a5c4a99](https://github.com/webiny/webiny-js/commit/a5c4a9986d0c554278df856a4419bded077630eb))
+
+
+
+
+
 ## [3.1.3](https://github.com/webiny/webiny-js/compare/@webiny/api-page-builder@3.1.3-next.0...@webiny/api-page-builder@3.1.3) (2020-04-16)
 
 **Note:** Version bump only for package @webiny/api-page-builder

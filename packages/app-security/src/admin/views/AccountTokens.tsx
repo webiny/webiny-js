@@ -36,6 +36,7 @@ const PatContainer = styled("div")({
     background: "var(--mdc-theme-on-background)"
 });
 
+// TODO: @andrei extract these into separate files
 const TokenListItem = ({ setFormIsLoading, data, setValue, PAT }) => {
     const [showEditDialog, setShowEditDialog] = useState(false);
     const [tokenName, setTokenName] = useState(PAT.name);
@@ -55,14 +56,14 @@ const TokenListItem = ({ setFormIsLoading, data, setValue, PAT }) => {
         const { error } = queryResponse.data.security.deletePAT;
         if (error) {
             return showSnackbar(error.message, {
-                action: "Close"
+                action: t`Close`
             });
         }
 
         const newPATs = data.personalAccessTokens.filter(crtPAT => crtPAT.id != PAT.id);
 
         setValue("personalAccessTokens", newPATs);
-        showSnackbar("Token deleted succesfully!");
+        showSnackbar(t`Token deleted successfully!`);
     };
 
     const updateToken = async () => {
@@ -81,7 +82,7 @@ const TokenListItem = ({ setFormIsLoading, data, setValue, PAT }) => {
         const { error } = queryResponse.data.security.updatePAT;
         if (error) {
             return showSnackbar(error.message, {
-                action: "Close"
+                action: t`Close`
             });
         }
 
@@ -95,16 +96,20 @@ const TokenListItem = ({ setFormIsLoading, data, setValue, PAT }) => {
         );
 
         setValue("personalAccessTokens", newPATs);
-        showSnackbar("Token updated succesfully!");
+        showSnackbar(t`Token updated successfully!`);
     };
 
     return (
         <>
-            <Dialog open={showEditDialog} onClose={() => setShowEditDialog(false)}>
-                <DialogTitle>Update Token</DialogTitle>
-                <DialogContent data-testid={`UpdateTokenDialogContent-${PAT.id}`}>
+            <Dialog
+                open={showEditDialog}
+                onClose={() => setShowEditDialog(false)}
+                data-testid="update-personal-account-token-dialog"
+            >
+                <DialogTitle>{t`Update Token`}</DialogTitle>
+                <DialogContent>
                     <Input
-                        label="Token name"
+                        label={t`Token name`}
                         value={tokenName}
                         onChange={newName => setTokenName(newName.slice(0, 100))}
                     />
@@ -115,31 +120,31 @@ const TokenListItem = ({ setFormIsLoading, data, setValue, PAT }) => {
                         data-testid={`AcceptUpdateToken-${PAT.id}`}
                         onClick={() => updateToken()}
                     >
-                        OK
+                        {t`OK`}
                     </DialogAccept>
                 </DialogActions>
             </Dialog>
 
             <SimpleListItem
-                data-testid={`pat-token-list-item-${PAT.id}`}
+                data-testid="pat-tokens-list-item"
                 key={PAT.id}
                 text={<div style={{ paddingLeft: "16px" }}>{PAT.name}</div>}
             >
                 <ListItemMeta>
                     <IconButton
-                        data-testid={`updateToken-${PAT.id}`}
+                        data-testid="update-personal-access-token"
                         onClick={() => setShowEditDialog(true)}
                         icon={<EditIcon />}
                     />
                     <ConfirmationDialog
-                        data-testid={`DeleteTokenDialog-${PAT.id}`}
-                        title="Delete Token"
+                        data-testid="delete-personal-access-token-dialog"
+                        title={t`Delete Token`}
                         message={t`Are you sure you want to delete this token?`}
                     >
                         {({ showConfirmation }) => {
                             return (
                                 <IconButton
-                                    data-testid={`deleteToken-${PAT.id}`}
+                                    data-testid={`delete-personal-access-token`}
                                     onClick={() => showConfirmation(() => deleteToken())}
                                     icon={<DeleteIcon />}
                                 />
@@ -153,7 +158,7 @@ const TokenListItem = ({ setFormIsLoading, data, setValue, PAT }) => {
 };
 
 const TokenList = ({ setFormIsLoading, data, setValue }) => {
-    if (data.personalAccessTokens && data.personalAccessTokens.length > 0)
+    if (data.personalAccessTokens && data.personalAccessTokens.length > 0) {
         return data.personalAccessTokens.map(PAT => (
             <TokenListItem
                 setFormIsLoading={setFormIsLoading}
@@ -163,13 +168,15 @@ const TokenList = ({ setFormIsLoading, data, setValue }) => {
                 setValue={setValue}
             />
         ));
-    else return <SimpleListItem text="No tokens have been generated yet." />;
+    }
+
+    return <SimpleListItem text={t`No tokens have been generated yet.`} />;
 };
 
 const TokensElement = ({ setFormIsLoading, data, setValue }) => {
     const [showCreatePATDialog, setShowCreatePATDialog] = useState(false);
     const [showPATHashDialog, setShowPATHashDialog] = useState(false);
-    const [tokenHash, setTokenHash] = useState("HSDIGHSDGIASDHISDHIAGDSHGIDSHIGSHAIGHI");
+    const [tokenHash, setTokenHash] = useState("HSDIGHSDGIASDHISDHIAGDSHGIDSHIGSHAIGHI"); // TODO: @andrei why random string here?
     const [newPATName, setNewPATName] = useState("New token");
     const { showSnackbar } = useSnackbar();
     const client = useApolloClient();
@@ -188,7 +195,7 @@ const TokensElement = ({ setFormIsLoading, data, setValue }) => {
         const { error } = queryResponse.data.security.createPAT;
         if (error) {
             return showSnackbar(error.message, {
-                action: "Close"
+                action: t`Close`
             });
         }
 
@@ -196,44 +203,52 @@ const TokensElement = ({ setFormIsLoading, data, setValue }) => {
         let newPATs;
         if (!data.personalAccessTokens) {
             newPATs = [personalAccessToken];
-        } else newPATs = [...data.personalAccessTokens, personalAccessToken];
+        } else {
+            newPATs = [...data.personalAccessTokens, personalAccessToken];
+        }
 
         setValue("personalAccessTokens", newPATs);
         setTokenHash(token);
         setNewPATName("New token");
         setShowPATHashDialog(true);
-        showSnackbar("Token created succesfully!");
+        showSnackbar(t`Token created successfully!`);
     };
 
     return (
         <>
-            <Dialog open={showCreatePATDialog} onClose={() => setShowCreatePATDialog(false)}>
-                <DialogTitle>Create new Personal Access Token</DialogTitle>
-                <DialogContent data-testid={`create-token-dialog-content`}>
+            <Dialog
+                open={showCreatePATDialog}
+                onClose={() => setShowCreatePATDialog(false)}
+                data-testid="account-tokens-dialog"
+            >
+                <DialogTitle>{t`Create new Personal Access Token`}</DialogTitle>
+                <DialogContent>
                     <Input
-                        label="Token name"
+                        label={t`Token name`}
                         value={newPATName}
                         onChange={newName => setNewPATName(newName.slice(0, 100))}
                     />
                 </DialogContent>
                 <DialogActions>
-                    <DialogCancel>Cancel</DialogCancel>
+                    <DialogCancel>{t`Cancel`}</DialogCancel>
                     <DialogAccept
                         data-testid={`accept-generate-token`}
                         onClick={() => generateToken()}
                     >
-                        OK
+                        {t`OK`}
                     </DialogAccept>
                 </DialogActions>
             </Dialog>
 
-            <Dialog open={showPATHashDialog} onClose={() => setShowPATHashDialog(false)}>
-                <DialogTitle>Your Personal Access Token</DialogTitle>
+            <Dialog
+                open={showPATHashDialog}
+                onClose={() => setShowPATHashDialog(false)}
+                data-testid="created-token-dialog"
+            >
+                <DialogTitle>{t`Your Personal Access Token`}</DialogTitle>
                 <DialogContent>
-                    <Alert title="Please copy the token" type="info">
-                        {/* eslint-disable-next-line react/no-unescaped-entities */}
-                        Make sure to copy your new personal access token now. You won't be able to
-                        see it again!
+                    <Alert title={t`Please copy the token`} type="info">
+                        {t`Make sure to copy your new personal access token now. You won't be able to see it again!`}
                     </Alert>
                     <div>
                         <div
@@ -255,19 +270,21 @@ const TokensElement = ({ setFormIsLoading, data, setValue }) => {
                     </div>
                 </DialogContent>
                 <DialogActions>
-                    <DialogAccept data-testid={`close-created-token-dialog`}>Close</DialogAccept>
+                    <DialogAccept>{t`Close`}</DialogAccept>
                 </DialogActions>
             </Dialog>
 
             <Header>
                 <Typography style={{ lineHeight: "2.4rem" }} use={"overline"}>
-                    Tokens
+                    {t`Tokens`}
                 </Typography>
                 <ButtonDefault onClick={() => setShowCreatePATDialog(true)}>
-                    Create Token
+                    {t`Create Token`}
                 </ButtonDefault>
             </Header>
-            <TokenList setFormIsLoading={setFormIsLoading} data={data} setValue={setValue} />
+            <div data-testid={"pat-tokens-list"}>
+                <TokenList setFormIsLoading={setFormIsLoading} data={data} setValue={setValue} />
+            </div>
         </>
     );
 };

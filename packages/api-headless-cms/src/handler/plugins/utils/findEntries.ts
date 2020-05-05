@@ -1,4 +1,4 @@
-import { CmsGraphQLContext, CmsModel } from "@webiny/api-headless-cms/types";
+import { CmsContext, CmsModel } from "@webiny/api-headless-cms/types";
 import createFindSorters from "./createFindSorters";
 import { createFindQuery } from "./createFindQuery";
 import parseBoolean from "./parseBoolean";
@@ -16,11 +16,11 @@ type FindEntries = {
         after: string;
         before: string;
     };
-    context: CmsGraphQLContext;
+    context: CmsContext;
     info: GraphQLResolveInfo;
 };
 
-export default async function findEntries<T = CmsGraphQLContext>({
+export default async function findEntries<T = CmsContext>({
     model,
     args,
     context,

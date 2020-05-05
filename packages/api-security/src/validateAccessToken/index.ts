@@ -1,23 +1,15 @@
-import { applyGraphQLContextPlugins } from "@webiny/graphql/createSchema/contextPlugins";
+import { applyContextPlugins } from "@webiny/graphql/createSchema/contextPlugins";
 import securityModels from "../plugins/models";
 import validateAccessToken from "./validateAccessToken";
 
 export default () => [
     {
-        type: "before-handler",
-        name: "before-handler-validate-access-token",
-        async handle({ context }) {
-            context.plugins.register(securityModels());
-        }
-    },
-    {
         type: "handler",
         name: "handler-validate-access-token",
-        canHandle() {
-            return true;
-        },
         async handle({ context, args }) {
-            await applyGraphQLContextPlugins(context);
+            context.plugins.register(securityModels());
+
+            await applyContextPlugins(context);
             return await validateAccessToken(context, args[0].PAT);
         }
     }

@@ -73,21 +73,21 @@ export default {
     `,
     resolvers: {
         CmsQuery: {
-            getEnvironmentAlias: hasScope("cms:environment:alias:crud")(
+            getEnvironmentAlias: hasScope("cms:environment-alias:crud")(
                 resolveGet(environmentAliasFetcher)
             ),
-            listEnvironmentAliases: hasScope("cms:environment:alias:crud")(
+            listEnvironmentAliases: hasScope("cms:environment-alias:crud")(
                 resolveList(environmentAliasFetcher)
             )
         },
         CmsMutation: {
-            createEnvironmentAlias: hasScope("cms:environment:alias:crud")(
+            createEnvironmentAlias: hasScope("cms:environment-alias:crud")(
                 resolveCreate(environmentAliasFetcher)
             ),
-            updateEnvironmentAlias: hasScope("cms:environment:alias:crud")(
+            updateEnvironmentAlias: hasScope("cms:environment-alias:crud")(
                 resolveUpdate(environmentAliasFetcher)
             ),
-            deleteEnvironmentAlias: hasScope("cms:environment:alias:crud")(
+            deleteEnvironmentAlias: hasScope("cms:environment-alias:crud")(
                 resolveDelete(environmentAliasFetcher)
             )
         }

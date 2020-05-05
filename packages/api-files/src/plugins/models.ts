@@ -5,8 +5,8 @@ import fileModel from "./models/file.model";
 import filesSettings from "./models/filesSettings.model";
 
 export default () => ({
-    name: "graphql-context-models",
-    type: "graphql-context",
+    name: "context-models",
+    type: "context",
     apply(context) {
         const driver = context.commodo && context.commodo.driver;
 

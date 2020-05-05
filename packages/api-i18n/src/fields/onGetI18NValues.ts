@@ -1,6 +1,6 @@
-import { GraphQLContext } from "@webiny/api-i18n/types";
+import { Context } from "@webiny/api-i18n/types";
 
-export default (value: { [key: string]: any }[], i18n: GraphQLContext["i18n"]) => {
+export default (value: { [key: string]: any }[], i18n: Context["i18n"]) => {
     // Let's make current locale's value the first element of the array.
     if (value.length < 2) {
         return value;

@@ -6,7 +6,6 @@ import { ReactComponent as I18NIcon } from "./../assets/icons/round-translate-24
 
 const t = i18n.ns("app-form-builder/admin/menus");
 
-
 const ROLE_I18N_LOCALES = ["i18n:locale:crud"];
 
 const plugin: MenuPlugin = {
