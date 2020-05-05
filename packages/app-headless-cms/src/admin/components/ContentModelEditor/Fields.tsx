@@ -2,7 +2,6 @@ import React from "react";
 import { getPlugins } from "@webiny/plugins";
 import styled from "@emotion/styled";
 import { Icon } from "@webiny/ui/Icon";
-import { ReactComponent as HandleIcon } from "./icons/round-drag_indicator-24px.svg";
 import Draggable from "./Draggable";
 import { FbBuilderFieldPlugin } from "@webiny/app-headless-cms/types";
 
