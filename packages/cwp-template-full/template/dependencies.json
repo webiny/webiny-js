@@ -1,6 +1,7 @@
 {
   "private": true,
   "dependencies": {
+    "@babel/plugin-proposal-class-properties": "latest",
     "@babel/plugin-proposal-object-rest-spread": "latest",
     "semver": "^6.3.0",
     "@webiny/project-utils": "latest",

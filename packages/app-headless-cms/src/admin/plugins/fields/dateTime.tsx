@@ -1,5 +1,5 @@
 import React from "react";
-import { ReactComponent as DateTimeIcon } from "./icons/round-looks_3-24px.svg";
+import { ReactComponent as DateTimeIcon } from "./icons/schedule-black-24px.svg";
 import { Grid, Cell } from "@webiny/ui/Grid";
 import { I18NInput } from "@webiny/app-i18n/admin/components";
 import { FbBuilderFieldPlugin } from "@webiny/app-headless-cms/types";

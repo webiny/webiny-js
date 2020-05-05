@@ -17,7 +17,7 @@ All the packages are located in the `packages` folder. Package name can tell you
 
 - `app-*` packages are used only in React apps
 - `api-*` are only used when building API services
-- `http-*` are utility packages to create serverless function handlers
+- `handler-*` are utility packages to create serverless function handlers
 - `serverless-*` are packages containing infrastructure components used to deploy your infrastructure
 
 Packages written in TS always extend the base `tsconfig.json` (for IDE) and `tsconfig.build.json` (for `tsc`). The base config files are located in the root of the repo. We also provide base `.babel.node.js` (for `node` packages) and `.babel.react.js` (for `react` packages).

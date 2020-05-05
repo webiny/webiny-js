@@ -72,7 +72,7 @@ const EditFieldDialog = ({ field, onSubmit, ...props }: EditFieldDialogProps) =>
                         </DialogContent>
                         <DialogActions
                             style={{
-                                justifyContent: isNewField ? "space-between" : "flex-end"
+                                justifyContent: "flex-end"
                             }}
                         >
                             <div>

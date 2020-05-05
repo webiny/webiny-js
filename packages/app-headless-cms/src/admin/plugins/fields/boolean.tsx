@@ -1,5 +1,5 @@
 import React from "react";
-import { ReactComponent as BooleanIcon } from "./icons/round-looks_3-24px.svg";
+import { ReactComponent as BooleanIcon } from "./icons/toggle_on-black-24px.svg";
 import { FbBuilderFieldPlugin } from "@webiny/app-headless-cms/types";
 import { i18n } from "@webiny/app/i18n";
 const t = i18n.ns("app-headless-cms/fields");

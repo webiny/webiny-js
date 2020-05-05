@@ -44,7 +44,7 @@ Once you clone the repository, you will have a monorepo which consists of a bunc
 
 - `app-*` packages are used only in React apps
 - `api-*` are only used when building API services
-- `http-*` are utility packages to create serverless function handlers
+- `handler-*` are utility packages to create serverless function handlers
 - `serverless-*` are packages containing infrastructure components used to deploy your infrastructure
 
 `sample-project` folder is the place that simulates a project structure of a project created using `create-webiny-project`. This is your development sandbox.

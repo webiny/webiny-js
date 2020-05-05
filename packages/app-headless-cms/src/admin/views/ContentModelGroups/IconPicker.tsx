@@ -17,6 +17,18 @@ import { FormElementMessage } from "@webiny/ui/FormElementMessage";
  */
 const iconPickerLabel = css({ marginBottom: 5, marginLeft: 2 });
 
+const MenuWrapper = css({
+    color: "var(--mdc-theme-text-secondary-on-background)",
+    backgroundColor: "var(--mdc-theme-on-background)",
+    padding: "16px 8px"
+});
+
+const NoResultWrapper = css({
+    width: 640,
+    color: "var(--mdc-theme-text-secondary-on-background)",
+    padding: "16px 12px"
+});
+
 const COLUMN_COUNT = 6;
 
 const gridItem = css({
@@ -134,36 +146,43 @@ const IconPicker = ({
         [icons]
     );
 
-    const renderGrid = useCallback(
-        ({ closeMenu }) => {
-            return (
-                <>
-                    <DelayedOnChange value={filter} onChange={onFilterChange}>
-                        {({ value, onChange }) => (
-                            <Input
-                                autoFocus
-                                className={searchInput}
-                                value={value}
-                                onChange={onChange}
-                                placeholder={"Search icons..."}
+    const renderGrid = useCallback(({ closeMenu }) => {
+        return (
+            <>
+                <DelayedOnChange value={filter} onChange={onFilterChange}>
+                    {({ value, onChange }) => (
+                        <Input
+                            autoFocus
+                            className={searchInput}
+                            value={value}
+                            onChange={onChange}
+                            placeholder={"Search icons..."}
+                        />
+                    )}
+                </DelayedOnChange>
+                {
+                    icons.length === 0 ?
+                        (
+                            <div className={NoResultWrapper}>
+                                <Typography use="body1">No results found.</Typography>
+                            </div>
+                        ) :
+                        (
+                            <Grid
+                                className={grid}
+                                cellRenderer={renderCell({ closeMenu })}
+                                columnCount={COLUMN_COUNT}
+                                columnWidth={100}
+                                height={440}
+                                rowCount={Math.ceil(icons.length / COLUMN_COUNT)}
+                                rowHeight={100}
+                                width={640}
                             />
-                        )}
-                    </DelayedOnChange>
-                    <Grid
-                        className={grid}
-                        cellRenderer={renderCell({ closeMenu })}
-                        columnCount={COLUMN_COUNT}
-                        columnWidth={100}
-                        height={440}
-                        rowCount={Math.ceil(icons.length / COLUMN_COUNT)}
-                        rowHeight={100}
-                        width={640}
-                    />
-                </>
-            );
-        },
-        [icons]
-    );
+                        )
+                }
+            </>
+        );
+    }, [icons]);
 
     const fontAwesomeIconValue: any =
         typeof value === "string" && value.includes("/") ? value.split("/") : ["fas", "star"];
@@ -175,17 +194,19 @@ const IconPicker = ({
                     <Typography use={"body1"}>{label}</Typography>
                 </div>
             )}
-            <Menu
-                onOpen={() => setMustRenderGrid(true)}
-                onClose={() => setMustRenderGrid(false)}
-                handle={
-                    <div className={pickIcon}>
-                        <FontAwesomeIcon icon={fontAwesomeIconValue} size={"2x"} />
-                    </div>
-                }
-            >
-                {mustRenderGrid && renderGrid}
-            </Menu>
+            <div className={MenuWrapper}>
+                <Menu
+                    onOpen={() => setMustRenderGrid(true)}
+                    onClose={() => setMustRenderGrid(false)}
+                    handle={
+                        <div className={pickIcon}>
+                            <FontAwesomeIcon icon={fontAwesomeIconValue} size={"2x"} />
+                        </div>
+                    }
+                >
+                    {mustRenderGrid && renderGrid}
+                </Menu>
+            </div>
             {validation.isValid === false && (
                 <FormElementMessage error>{validation.message}</FormElementMessage>
             )}
