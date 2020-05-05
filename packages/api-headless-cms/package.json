@@ -38,7 +38,7 @@
     "@babel/core": "^7.5.5",
     "@babel/preset-env": "^7.5.5",
     "@babel/preset-flow": "^7.0.0",
-    "@commodo/fields-storage": "^1.0.3",
+    "@commodo/fields-storage": "^2.0.0-next.0",
     "@commodo/fields": "^1.0.2",
     "@commodo/name": "^1.1.0",
     "@shelf/jest-mongodb": "^1.1.3",
