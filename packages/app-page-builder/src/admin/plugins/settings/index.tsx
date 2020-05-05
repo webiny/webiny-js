@@ -58,7 +58,7 @@ const plugins = [
                 <Section label={t`Page Builder`}>
                     {getPlugins<PbMenuSettingsItemPlugin>("menu-settings-page-builder").map(
                         plugin => (
-                            <React.Fragment key={plugin.name + (new Date)}>
+                            <React.Fragment key={plugin.name + new Date()}>
                                 {plugin.render({ Item })}
                             </React.Fragment>
                         )

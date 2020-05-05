@@ -1,6 +1,9 @@
 import React, { useCallback, useMemo } from "react";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
-import { createPublishMutation, createReadQuery } from "@webiny/app-headless-cms/admin/components/ContentModelForm/graphql";
+import {
+    createPublishMutation,
+    createReadQuery
+} from "@webiny/app-headless-cms/admin/components/ContentModelForm/graphql";
 import { useMutation } from "@webiny/app-headless-cms/admin/hooks";
 import get from "lodash.get";
 import set from "lodash.set";

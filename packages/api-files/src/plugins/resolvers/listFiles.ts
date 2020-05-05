@@ -3,16 +3,7 @@ import { GraphQLFieldResolver } from "@webiny/graphql/types";
 
 const resolver: GraphQLFieldResolver = async (root, args, context, info) => {
     const { File } = context.models;
-    const {
-        limit,
-        after,
-        before,
-        sort = {},
-        search = "",
-        types = [],
-        tags = [],
-        ids = []
-    } = args;
+    const { limit, after, before, sort = {}, search = "", types = [], tags = [], ids = [] } = args;
 
     const findArgs = { query: null, limit, after, before, sort, totalCount: false };
 

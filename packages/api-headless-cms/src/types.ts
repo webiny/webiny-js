@@ -1,9 +1,5 @@
 import { GraphQLSchemaModule } from "apollo-graphql";
-import {
-    Context as APIContext,
-    GraphQLFieldResolver,
-    Plugin
-} from "@webiny/graphql/types";
+import { Context as APIContext, GraphQLFieldResolver, Plugin } from "@webiny/graphql/types";
 import { Context as I18NContext, I18NLocale } from "@webiny/api-i18n/types";
 import { Context as CommodoContext } from "@webiny/api-plugin-commodo-db-proxy/types";
 

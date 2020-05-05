@@ -49,9 +49,7 @@ const Header = props => {
         <React.Fragment>
             <Grid className={headerTitle}>
                 <Cell span={8} className={pageTitle}>
-                    <Typography use="headline5">
-                        {formTitle}
-                    </Typography>
+                    <Typography use="headline5">{formTitle}</Typography>
                 </Cell>
                 <Cell span={4} className={headerActions}>
                     {renderPlugins("cms-content-details-header-left", props)}

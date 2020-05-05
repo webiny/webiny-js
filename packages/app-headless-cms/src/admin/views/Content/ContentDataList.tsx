@@ -45,13 +45,13 @@ const ContentDataList = ({ contentModel, dataList }) => {
                                 <I18NValue value={item.meta.title} />
                                 <ListItemTextSecondary>
                                     {item.createdBy &&
-                                        (item.createdBy.firstName && (
+                                        item.createdBy.firstName && (
                                             <>
                                                 {t`Created by: {user}.`({
                                                     user: item.createdBy.firstName
                                                 })}{" "}
                                             </>
-                                        ))}
+                                        )}
                                     {t`Last modified: {time}.`({
                                         time: <TimeAgo datetime={item.savedOn} />
                                     })}

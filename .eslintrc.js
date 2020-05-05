@@ -25,9 +25,8 @@ module.exports = {
         "@typescript-eslint/no-use-before-define": 0,
         "@typescript-eslint/no-var-requires": 0,
         "@typescript-eslint/no-explicit-any": 0,
-        "curly": ["error"],
+        curly: ["error"],
         "webiny-i18n/namespaces": "error"
-
     },
     settings: {
         react: {

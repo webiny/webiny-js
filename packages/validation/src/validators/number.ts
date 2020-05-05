@@ -8,7 +8,9 @@ import ValidationError from "./../validationError";
  * @return {boolean}
  */
 export default (value: any) => {
-    if (!value && !_.isNaN(value)) {return;}
+    if (!value && !_.isNaN(value)) {
+        return;
+    }
 
     if (_.isNumber(value) && !_.isNaN(value)) {
         return;

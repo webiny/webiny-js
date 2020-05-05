@@ -32,7 +32,7 @@ const PublishButton = () => {
                             const response = await update({
                                 variables: {
                                     id: data.id
-                                },
+                                }
                             });
 
                             const { error } = response.data.publishContentModel;

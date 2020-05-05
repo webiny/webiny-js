@@ -279,7 +279,7 @@ export default {
 
                 return { data: await resolver.resolve({ root, args, context, info }) };
             },
-            oembedData:  hasScope("pb:oembed:read")(oembed)
+            oembedData: hasScope("pb:oembed:read")(oembed)
         },
         PbMutation: {
             // Creates a new page

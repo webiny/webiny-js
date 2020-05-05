@@ -25,9 +25,7 @@ const canHandle = event => {
 
     body = parseBody(body);
 
-    return (
-      body.ssr && Array.isArray(body.ssr) && Object.values(API_ACTION).includes(body.ssr[0])
-    );
+    return body.ssr && Array.isArray(body.ssr) && Object.values(API_ACTION).includes(body.ssr[0]);
 };
 
 export default (): HandlerPlugin => ({

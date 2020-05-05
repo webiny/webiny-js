@@ -4,8 +4,8 @@ import { InvalidFieldsError } from "@webiny/commodo-graphql";
 
 export const install = async (
     root: any,
-    args: {[key: string]: any},
-    context: {[key: string]: any}
+    args: { [key: string]: any },
+    context: { [key: string]: any }
 ) => {
     const { I18NLocale } = context.models;
 
@@ -35,8 +35,8 @@ export const install = async (
 
 export const isInstalled = async (
     root: any,
-    args: {[key: string]: any},
-    context: {[key: string]: any}
+    args: { [key: string]: any },
+    context: { [key: string]: any }
 ) => {
     const { I18NLocale } = context.models;
 

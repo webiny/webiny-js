@@ -17,7 +17,7 @@ const getOptimizedTransformedImageKeyPrefix = key => {
 interface GetImageKeyParams {
     key: string;
     transformations?: any;
-};
+}
 
 const getImageKey = ({ key, transformations }: GetImageKeyParams) => {
     if (!transformations) {

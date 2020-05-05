@@ -4,7 +4,7 @@ export default {
     operator: "not_contains",
     createCondition({ value }) {
         return {
-            $not: { $regex: `.*${value}.*`, $options: "i" },
+            $not: { $regex: `.*${value}.*`, $options: "i" }
         };
     }
 };

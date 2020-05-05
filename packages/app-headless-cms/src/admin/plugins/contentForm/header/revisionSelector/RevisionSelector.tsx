@@ -33,9 +33,7 @@ const RevisionSelector = ({ location, history, entry }) => {
                 history.push({ search: query.toString() });
             }}
             handle={
-                <ButtonDefault className={buttonStyle}>
-                    v{get(entry, "meta.version")}
-                </ButtonDefault>
+                <ButtonDefault className={buttonStyle}>v{get(entry, "meta.version")}</ButtonDefault>
             }
         >
             {(get(entry, "meta.revisions") || []).map(rev => {

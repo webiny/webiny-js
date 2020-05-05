@@ -11,7 +11,9 @@ const load = (pathToResolve): Promise<Buffer> => {
     const pathToRead = path.resolve(pathToResolve);
     return new Promise((resolve, reject) => {
         fs.readFile(pathToRead, (err, data) => {
-            if (err) {return reject(err);}
+            if (err) {
+                return reject(err);
+            }
             resolve(data);
         });
     });

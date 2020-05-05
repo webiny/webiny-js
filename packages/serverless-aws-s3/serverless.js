@@ -22,8 +22,8 @@ const defaults = {
 };
 
 function resolveFilePath(path) {
-    if(!path.startsWith(".") && !path.startsWith("/")) {
-        return require.resolve()
+    if (!path.startsWith(".") && !path.startsWith("/")) {
+        return require.resolve();
     }
 
     return path;

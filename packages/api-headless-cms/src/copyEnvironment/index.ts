@@ -12,7 +12,7 @@ export default () => [
             const { copyFrom, copyTo } = event;
 
             context.plugins.register(
-              await headlessPlugins({ type: "manage", environment: copyFrom })
+                await headlessPlugins({ type: "manage", environment: copyFrom })
             );
 
             await applyContextPlugins(context);

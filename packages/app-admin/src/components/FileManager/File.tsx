@@ -38,7 +38,7 @@ const styles = css({
             top: 4,
             right: 4,
             zIndex: 10,
-            transition: 'all 150ms ease-in',
+            transition: "all 150ms ease-in"
         },
         ".filePreview": {
             textAlign: "center",
@@ -57,7 +57,7 @@ const styles = css({
         },
         "&:hover .infoIcon": {
             opacity: 1,
-            "--icon-color": "var(--mdc-theme-secondary)",
+            "--icon-color": "var(--mdc-theme-secondary)"
         }
     },
     "> .label": {

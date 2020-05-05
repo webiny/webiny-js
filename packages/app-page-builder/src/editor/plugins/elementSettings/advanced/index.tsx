@@ -34,9 +34,9 @@ export default [
             next(action);
 
             // Check the source of the element (could be `saved` element which behaves differently from other elements)
-            const sourcePlugin = getPlugins<PbEditorPageElementPlugin>("pb-editor-page-element").find(
-                pl => pl.elementType === source.type
-            );
+            const sourcePlugin = getPlugins<PbEditorPageElementPlugin>(
+                "pb-editor-page-element"
+            ).find(pl => pl.elementType === source.type);
             if (!sourcePlugin) {
                 return;
             }
@@ -52,7 +52,9 @@ export default [
                 const { onCreate } = plugin;
                 if (onCreate && onCreate === "open-settings") {
                     store.dispatch(activateElement({ element: element.id }));
-                    store.dispatch(togglePlugin({ name: "pb-editor-page-element-settings-advanced" }));
+                    store.dispatch(
+                        togglePlugin({ name: "pb-editor-page-element-settings-advanced" })
+                    );
                 }
             }
         }

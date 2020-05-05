@@ -48,7 +48,7 @@ export default ({ createBase, context }) => {
                     step3: step(),
                     step4: step(),
                     step5: step(),
-                    step6: step(),
+                    step6: step()
                 })()
             })
         }),

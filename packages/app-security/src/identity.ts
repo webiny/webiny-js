@@ -27,7 +27,6 @@ class Identity {
         return this.getScopes().includes(scope);
     }
 
-
     hasScopes(scopes: ResourcesType, options: OptionsType) {
         return this.__hasResources({
             type: "scope",
@@ -35,7 +34,6 @@ class Identity {
             options
         });
     }
-
 
     __hasResources({
         type,
