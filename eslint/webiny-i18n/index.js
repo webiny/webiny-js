@@ -1,15 +1,10 @@
-const get = require("lodash/get");
-
-const PREFIX = ".*packages/app-headless-cms/src";
-
-const rules = {
-    [`${PREFIX}/admin/plugins/fields.*`]: "app-headless-cms/admin/plugins/fields"
-};
+const get = require("lodash.get");
 
 module.exports = {
     rules: {
         namespaces: {
             create: function(context) {
+                const rules = get(context, "options.0.rules", {});
                 return {
                     VariableDeclarator(node) {
                         const oName = get(node, "init.callee.object.name");
