@@ -68,7 +68,7 @@ export default ContentModelEditorContext => {
              * @param setter
              * @param saveContentModel
              */
-            setData(setter: Function, saveContentModel = true) {
+            setData(setter: Function, saveContentModel = false) {
                 const data = setter(cloneDeep(self.data));
                 dispatch({ type: "data", data });
                 return saveContentModel !== false && self.saveContentModel(data);

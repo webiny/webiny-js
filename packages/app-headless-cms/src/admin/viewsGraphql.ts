@@ -10,10 +10,6 @@ const BASE_CONTENT_MODEL_FIELDS = `
     id
     title
     savedOn
-    version
-    parent
-    published
-    status
     createdBy {
         firstName
         lastName

@@ -52,19 +52,6 @@ export const GET_CONTENT_MODEL = gql`
                     ${FIELDS_FIELDS}
                 }
                 layout
-                version
-                published
-                locked
-                status
-                revisions {
-                    id
-                    title
-                    published
-                    locked
-                    status
-                    version
-                }
-                
             }
             error {
                 code

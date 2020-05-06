@@ -34,6 +34,13 @@ module.exports = {
                     "app-headless-cms/src/admin/components/ContentModelEditor": "^app-headless-cms/admin/components/editor",
                     "app-headless-cms/src/admin/plugins/fields": "^app-headless-cms/admin/fields",
                     "app-headless-cms": "^app-headless-cms"
+                },
+                rola: {
+                    "app-headless-cms/src": {
+                        "/admin": {
+
+                        }
+                    }
                 }
             }
         ]

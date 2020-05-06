@@ -1,23 +1,36 @@
 import React from "react";
 import BackButton from "./BackButton";
 import Divider from "./Divider";
-import SaveContentModelButton from "./SaveContentModelButton";
+import PublishButton from "./PublishButton";
 import { Name } from "./Name";
-import { FormSettingsButton } from "./FormSettings";
 
 export default [
+    /* {
+        name: "content-model-editor-default-bar-right-revisions-select",
+        type: "content-model-editor-default-bar-right",
+        render() {
+            return <Revisions />;
+        }
+    },
+    {
+        name: "content-model-editor-default-bar-right-revisions-divider",
+        type: "content-model-editor-default-bar-right",
+        render() {
+            return <Divider />;
+        }
+    },
     {
         name: "content-model-editor-default-bar-right-form-settings-button",
         type: "content-model-editor-default-bar-right",
         render() {
             return <FormSettingsButton />;
         }
-    },
+    },*/
     {
         name: "content-model-editor-default-bar-right-publish-button",
         type: "content-model-editor-default-bar-right",
         render() {
-            return <SaveContentModelButton />;
+            return <PublishButton />;
         }
     },
 

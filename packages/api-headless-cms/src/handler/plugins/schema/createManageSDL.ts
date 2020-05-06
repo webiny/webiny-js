@@ -28,6 +28,7 @@ export const createManageSDL: CreateManageSDL = ({ model, fieldTypePlugins }): s
             latestVersion: Boolean
             locked: Boolean
             published: Boolean
+            publishedOn: DateTime
             status: String
             revisions: [${mTypeName}]
             title: CmsText

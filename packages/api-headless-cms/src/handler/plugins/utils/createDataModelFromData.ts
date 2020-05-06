@@ -11,7 +11,8 @@ import {
     onSet,
     skipOnPopulate,
     setOnce,
-    string
+    string,
+    date
 } from "@webiny/commodo";
 
 import {
@@ -217,6 +218,7 @@ export const createDataModelFromData = (
                         version: number(),
                         latestVersion: boolean(),
                         locked: skipOnPopulate()(boolean({ value: false })),
+                        publishedOn: skipOnPopulate()(date()),
                         published: pipe(
                             onSet(value => {
                                 // Deactivate previously published revision.
