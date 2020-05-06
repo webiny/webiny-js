@@ -5,7 +5,7 @@ import { WithFieldsError } from "@webiny/commodo";
 function formatInvalidFields(invalidFields, prefix = "") {
     const formatted = {};
     each(invalidFields, ({ code, data, message }, name) => {
-        if (code !== WithFieldsError.VALIDATION_FAILED_INVALID_FIELDS) {
+        if (code !== WithFieldsError.VALIDATION_FAILED_INVALID_FIELD) {
             return;
         }
 
