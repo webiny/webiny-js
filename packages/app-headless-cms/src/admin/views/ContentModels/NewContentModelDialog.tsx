@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useRef } from "react";
 import { css } from "emotion";
 import useReactRouter from "use-react-router";
 import { Form } from "@webiny/form";
@@ -27,8 +27,8 @@ const t = i18n.ns("app-headless-cms/admin/views/content-models/new-content-model
 
 const narrowDialog = css({
     ".mdc-dialog__surface": {
-        width: 400,
-        minWidth: 400
+        width: 600,
+        minWidth: 600
     }
 });
 
@@ -57,11 +57,20 @@ const NewContentModelDialog: React.FC<NewContentModelDialogProps> = ({
     const [loading, setLoading] = React.useState(false);
     const { showSnackbar } = useSnackbar();
     const { history } = useReactRouter();
+    const formRef = useRef<any>();
 
-    const { data } = useQuery(LIST_CONTENT_MODEL_GROUPS);
-    const [update] = useMutation(CREATE_CONTENT_MODEL);
+    const [createContentModel] = useMutation(CREATE_CONTENT_MODEL);
+    const { data } = useQuery(LIST_CONTENT_MODEL_GROUPS, {
+        skip: !open,
+        onCompleted(response) {
+            if (formRef && formRef.current) {
+                const firstGroupId = get(response, "contentModelGroups.data.0.id");
+                formRef.current.onChangeFns.group(firstGroupId);
+            }
+        }
+    });
 
-    const selectOptions = get(data, "contentModelGroups.data", []).map(item => {
+    const contentModelGroups = get(data, "contentModelGroups.data", []).map(item => {
         return { value: item.id, label: item.name };
     });
 
@@ -73,10 +82,14 @@ const NewContentModelDialog: React.FC<NewContentModelDialogProps> = ({
             data-testid="cms-new-content-model-modal"
         >
             <Form
+                ref={formRef}
+                data={{
+                    group: get(contentModelGroups, "0.value")
+                }}
                 onSubmit={async data => {
                     setLoading(true);
                     const response = get(
-                        await update({
+                        await createContentModel({
                             variables: { data },
                             awaitRefetchQueries: true,
                             refetchQueries: [
@@ -105,34 +118,48 @@ const NewContentModelDialog: React.FC<NewContentModelDialogProps> = ({
                                 <Cell span={12}>
                                     <Bind
                                         name={"title"}
-                                        validators={validation.create("required")}
+                                        validators={validation.create("required,maxLength:100")}
                                         afterChange={value => {
                                             setValue("modelId", toSlug(value));
                                         }}
                                     >
                                         <Input
-                                            label={`Name`}
-                                            description={t`It will appear in the editor`}
+                                            label={t`Name`}
+                                            description={t`The name of the content model`}
                                         />
                                     </Bind>
                                 </Cell>
                                 <Cell span={12}>
                                     <Bind
                                         name={"modelId"}
-                                        validators={validation.create("required")}
+                                        validators={validation.create("required,maxLength:100")}
                                     >
                                         <Input
-                                            label={`Model ID`}
-                                            description={t`Generated from name`}
+                                            label={t`Model ID`}
+                                            description={t`Unique model ID (used upon creation GraphQL schema)`}
                                         />
                                     </Bind>
                                 </Cell>
                                 <Cell span={12}>
                                     <Bind name={"group"} validators={validation.create("required")}>
                                         <Select
+                                            description={t`Choose a content model group`}
                                             label={t`Content model group`}
-                                            options={selectOptions}
+                                            options={contentModelGroups}
                                         />
+                                    </Bind>
+                                </Cell>
+                                <Cell span={12}>
+                                    <Bind name="description">
+                                        {props => (
+                                            <Input
+                                                {...props}
+                                                rows={4}
+                                                maxLength={200}
+                                                characterCount
+                                                label={t`Description`}
+                                            />
+                                        )}
                                     </Bind>
                                 </Cell>
                             </Grid>
