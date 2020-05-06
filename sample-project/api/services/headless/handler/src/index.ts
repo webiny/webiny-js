@@ -1,16 +1,24 @@
 import { createHandler } from "@webiny/handler";
 import headlessCmsHandler from "@webiny/api-headless-cms/handler";
 import dbProxy from "@webiny/api-plugin-commodo-db-proxy";
-import securityService from "@webiny/api-security/plugins/service";
+import securityServicePlugins from "@webiny/api-security/plugins/service";
 import i18nPlugins from "@webiny/api-i18n/plugins/service";
 
-declare const APOLLO_SERVER_OPTIONS: any;
-declare const DB_PROXY_OPTIONS: any;
-declare const SECURITY_OPTIONS: any;
-
 export const handler = createHandler(
-    headlessCmsHandler(APOLLO_SERVER_OPTIONS),
-    dbProxy(DB_PROXY_OPTIONS),
-    securityService(SECURITY_OPTIONS),
+    headlessCmsHandler({
+        debug: process.env.DEBUG,
+        server: {
+            introspection: process.env.GRAPHQL_INTROSPECTION,
+            playground: process.env.GRAPHQL_PLAYGROUND
+        }
+    }),
+    dbProxy({ functionName: process.env.DB_PROXY_FUNCTION }),
+    securityServicePlugins({
+        token: {
+            expiresIn: process.env.JWT_TOKEN_EXPIRES_IN,
+            secret: process.env.JWT_TOKEN_SECRET
+        },
+        validateAccessTokenFunction: process.env.VALIDATE_ACCESS_TOKEN_FUNCTION
+    }),
     i18nPlugins()
 );

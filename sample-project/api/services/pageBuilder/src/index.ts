@@ -9,15 +9,23 @@ import pageBuilderResolvers from "@webiny/api-plugin-page-builder-resolvers-mong
 import pageBuilderPlugins from "@webiny/api-page-builder/plugins";
 import useSsrCacheTagsPlugins from "@webiny/api-page-builder/plugins/useSsrCacheTags";
 
-declare const APOLLO_SERVER_OPTIONS: any;
-declare const DB_PROXY_OPTIONS: any;
-declare const SECURITY_OPTIONS: any;
-
 export const handler = createHandler(
-    apolloServerPlugins(APOLLO_SERVER_OPTIONS),
-    dbProxy(DB_PROXY_OPTIONS),
-    securityServicePlugins(SECURITY_OPTIONS),
-    pageBuilderPlugins({}),
+    apolloServerPlugins({
+        debug: process.env.DEBUG,
+        server: {
+            introspection: process.env.GRAPHQL_INTROSPECTION,
+            playground: process.env.GRAPHQL_PLAYGROUND
+        }
+    }),
+    dbProxy({ functionName: process.env.DB_PROXY_FUNCTION }),
+    securityServicePlugins({
+        token: {
+            expiresIn: process.env.JWT_TOKEN_EXPIRES_IN,
+            secret: process.env.JWT_TOKEN_SECRET
+        },
+        validateAccessTokenFunction: process.env.VALIDATE_ACCESS_TOKEN_FUNCTION
+    }),
+    pageBuilderPlugins(),
     useSsrCacheTagsPlugins(),
     pageBuilderResolvers(),
     googleTagManagerPlugins(),

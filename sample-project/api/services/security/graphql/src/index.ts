@@ -4,14 +4,24 @@ import dbProxy from "@webiny/api-plugin-commodo-db-proxy";
 import securityPlugins from "@webiny/api-security/plugins";
 import cognitoPlugins from "@webiny/api-plugin-security-cognito";
 
-declare const APOLLO_SERVER_OPTIONS: any;
-declare const DB_PROXY_OPTIONS: any;
-declare const SECURITY_OPTIONS: any;
-declare const COGNITO_OPTIONS: any;
-
 export const handler = createHandler(
-    apolloServerPlugins(APOLLO_SERVER_OPTIONS),
-    dbProxy(DB_PROXY_OPTIONS),
-    securityPlugins(SECURITY_OPTIONS),
-    cognitoPlugins(COGNITO_OPTIONS)
+    apolloServerPlugins({
+        debug: process.env.DEBUG,
+        server: {
+            introspection: process.env.GRAPHQL_INTROSPECTION,
+            playground: process.env.GRAPHQL_PLAYGROUND
+        }
+    }),
+    dbProxy({ functionName: process.env.DB_PROXY_FUNCTION }),
+    securityPlugins({
+        token: {
+            expiresIn: process.env.JWT_TOKEN_EXPIRES_IN,
+            secret: process.env.JWT_TOKEN_SECRET
+        },
+        validateAccessTokenFunction: process.env.VALIDATE_ACCESS_TOKEN_FUNCTION
+    }),
+    cognitoPlugins({
+        region: process.env.COGNITO_REGION,
+        userPoolId: process.env.COGNITO_USER_POOL_ID
+    })
 );
