@@ -5,7 +5,7 @@ import { ReactComponent as HeadlessCmsIcon } from "../../icons/devices_other-bla
 import { ReactComponent as EnvironmentIcon } from "../../icons/call_split-24px.svg";
 import { Typography } from "@webiny/ui/Typography";
 import { css } from "emotion";
-import { useNavigation } from '@webiny/app-admin/plugins/Menu/Navigation/components';
+import { useNavigation } from "@webiny/app-admin/plugins/Menu/Navigation/components";
 import EnvironmentSelectorDialog from "./../../components/EnvironmentSelectorDialog";
 import { useCms } from "@webiny/app-headless-cms/admin/hooks";
 

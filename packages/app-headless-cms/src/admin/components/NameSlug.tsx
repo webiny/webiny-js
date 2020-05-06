@@ -7,8 +7,8 @@ import slugify from "slugify";
 import { css } from "emotion";
 const t = i18n.ns("app-headless-cms/admin/components/name-slug");
 
-const hideCell = css ({
-    display: 'none'
+const hideCell = css({
+    display: "none"
 });
 
 const toSlug = text =>
