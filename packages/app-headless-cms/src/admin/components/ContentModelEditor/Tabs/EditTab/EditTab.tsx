@@ -86,7 +86,7 @@ export const EditTab = () => {
                                         key={fieldIndex}
                                         beginDrag={{
                                             ui: "field",
-                                            name: field.name,
+                                            type: field.type,
                                             pos: {
                                                 row: index,
                                                 index: fieldIndex
