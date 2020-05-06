@@ -11,10 +11,7 @@
             region: vars.region,
             code: "./[PACKAGE_PATH]/build",
             handler: "handler.handler",
-            memory: 512,
-            env: {
-                DEBUG: vars.debug
-            }
+            memory: 512
         }
     }
 }

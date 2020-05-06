@@ -2,8 +2,7 @@
     watch: ["./[PACKAGE_PATH]/build"],
     build: {
         root: "./[PACKAGE_PATH]",
-        script: "yarn build",
-        define: apolloServiceDefinitions
+        script: "yarn build"
     },
     deploy: {
         component: "@webiny/serverless-function",
@@ -13,9 +12,7 @@
             code: "./[PACKAGE_PATH]/build",
             handler: "handler.handler",
             memory: 512,
-            env: {
-                DEBUG: vars.debug
-            }
+            env: apolloServiceEnv
         }
     }
 }
