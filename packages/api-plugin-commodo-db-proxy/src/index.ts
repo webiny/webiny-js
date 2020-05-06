@@ -1,7 +1,7 @@
 import { DbProxyDriver, id, isId, withId } from "@webiny/commodo-fields-storage-db-proxy";
 import { ContextPlugin } from "@webiny/graphql/types";
 
-function apply(context, options) {
+function apply(context, options: DbProxyOptions) {
     if (!context.commodo) {
         context.commodo = {
             isId,
@@ -14,10 +14,14 @@ function apply(context, options) {
     }
 
     context.commodo.fields.id = id;
-    context.commodo.driver = new DbProxyDriver({ dbProxyFunctionName: options.functionArn });
+    context.commodo.driver = new DbProxyDriver({ dbProxyFunction: options.functionName });
 }
 
-export default options => [
+interface DbProxyOptions {
+    functionName: string;
+}
+
+export default (options: DbProxyOptions) => [
     {
         name: "context-commodo",
         type: "context",

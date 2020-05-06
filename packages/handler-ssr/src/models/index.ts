@@ -13,7 +13,7 @@ export default (options): HandlerContextPlugin => ({
                 withId(),
                 withStorage({
                     driver: new DbProxyDriver({
-                        dbProxyFunctionName: process.env.DB_PROXY_FUNCTION
+                        dbProxyFunction: process.env.DB_PROXY_FUNCTION
                     })
                 })
             )();

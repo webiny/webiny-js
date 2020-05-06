@@ -4,16 +4,16 @@ import { EJSON } from "bson";
 const MONGO_CONNECTION_ERRORS = ["MongoServerSelectionError", "MongoNetworkError"];
 
 class DbProxyClient {
-    dbProxyFunctionName: string;
+    dbProxyFunction: string;
 
-    constructor({ dbProxyFunctionName }) {
-        this.dbProxyFunctionName = dbProxyFunctionName;
+    constructor({ dbProxyFunction }) {
+        this.dbProxyFunction = dbProxyFunction;
     }
 
     async runOperation(requestPayload) {
         const Lambda = new LambdaClient({ region: process.env.AWS_REGION });
         const { Payload } = await Lambda.invoke({
-            FunctionName: this.dbProxyFunctionName,
+            FunctionName: this.dbProxyFunction,
             Payload: JSON.stringify({ body: EJSON.stringify(requestPayload) })
         }).promise();
 
@@ -46,8 +46,8 @@ class DbProxyClient {
 class DbProxyDriver {
     client: DbProxyClient;
 
-    constructor({ dbProxyFunctionName = process.env.DB_PROXY_FUNCTION_NAME } = {}) {
-        this.client = new DbProxyClient({ dbProxyFunctionName });
+    constructor({ dbProxyFunction = process.env.DB_PROXY_FUNCTION } = {}) {
+        this.client = new DbProxyClient({ dbProxyFunction });
     }
 
     // eslint-disable-next-line
