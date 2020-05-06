@@ -192,7 +192,6 @@ export default ({ type }) => [
                     helpText: CmsString
                     placeholderText: CmsString
                     fieldId: String
-                    name: String
                     type: String
                     unique: Boolean
                     searchable: Boolean
@@ -208,7 +207,6 @@ export default ({ type }) => [
                     helpText: CmsStringInput
                     placeholderText: CmsStringInput
                     fieldId: String
-                    name: String
                     type: String
                     unique: Boolean
                     searchable: Boolean

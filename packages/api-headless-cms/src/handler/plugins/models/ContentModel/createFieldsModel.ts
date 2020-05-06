@@ -8,7 +8,6 @@ export default context =>
     withFields({
         _id: string({ validation: required }),
         fieldId: string({ validation: required }),
-        name: string({ validation: required }),
         label: i18nString({ context, validation: required }),
         helpText: i18nString({ context }),
         placeholderText: i18nString({ context }),
