@@ -109,7 +109,7 @@ const NewContentModelDialog: React.FC<NewContentModelDialogProps> = ({
                     history.push("/cms/content-models/" + response.data.id);
                 }}
             >
-                {({ Bind, submit, setValue }) => (
+                {({ Bind, submit }) => (
                     <>
                         {loading && <CircularProgress />}
                         <DialogTitle>{t`New Content Model`}</DialogTitle>
@@ -119,9 +119,6 @@ const NewContentModelDialog: React.FC<NewContentModelDialogProps> = ({
                                     <Bind
                                         name={"title"}
                                         validators={validation.create("required,maxLength:100")}
-                                        afterChange={value => {
-                                            setValue("modelId", toSlug(value));
-                                        }}
                                     >
                                         <Input
                                             label={t`Name`}

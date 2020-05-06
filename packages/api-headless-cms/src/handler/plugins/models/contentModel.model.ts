@@ -11,15 +11,7 @@ import {
     setOnce
 } from "@webiny/commodo";
 import createFieldsModel from "./ContentModel/createFieldsModel";
-import slugify from "slugify";
-import shortid from "shortid";
-
-const toSlug = text =>
-    slugify(text, {
-        replacement: "-",
-        lower: true,
-        remove: /[*#\?<>_\{\}\[\]+~.()'"!:;@]/g
-    });
+import camelCase from "lodash/camelCase";
 
 const required = validation.create("required");
 
@@ -94,16 +86,30 @@ export default ({ createBase, context }) => {
                 }
 
                 // ... otherwise, assign a unique modelId automatically.
-                this.modelId = toSlug(this.title);
-                const existing = await CmsContentModel.findOne({
-                    query: { modelId: this.modelId }
-                });
-                if (!existing) {
-                    return;
+                const modelIdCamelCase = camelCase(this.title);
+                let modelId;
+                let counter = 0;
+
+                while (true) {
+                    modelId = modelIdCamelCase;
+                    if (counter) {
+                        modelId += counter;
+                    }
+
+                    const exists = await CmsContentModel.count({
+                        query: { modelId },
+                        limit: 1
+                    });
+
+                    if (!exists) {
+                        break;
+                    }
+
+                    counter++;
                 }
 
                 this.getField("modelId").valueSet = false;
-                this.modelId = `${this.modelId}-${shortid.generate()}`;
+                this.modelId = modelId;
             }
         })
     )(createBase());
