@@ -4,7 +4,8 @@ import {
     resolveDelete,
     resolveGet,
     resolveUpdate,
-    emptyResolver
+    emptyResolver,
+    resolveList
 } from "@webiny/commodo-graphql";
 import gql from "graphql-tag";
 import merge from "lodash.merge";
@@ -15,7 +16,6 @@ import { i18nFieldType } from "./graphqlTypes/i18nFieldType";
 import { i18nFieldInput } from "./graphqlTypes/i18nFieldInput";
 import contentModelGroup from "./graphql/contentModelGroup";
 import meta from "./graphql/meta";
-import listContentModels from "./graphql/contentModel/resolvers/listContentModels";
 
 const contentModelFetcher = ctx => ctx.models.CmsContentModel;
 
@@ -52,7 +52,7 @@ const getMutationResolvers = type => {
 const getQueryResolvers = () => {
     return {
         getContentModel: hasScope("cms:content-model:crud")(resolveGet(contentModelFetcher)),
-        listContentModels: hasScope("cms:content-model:crud")(listContentModels)
+        listContentModels: hasScope("cms:content-model:crud")(resolveList(contentModelFetcher))
     };
 };
 
