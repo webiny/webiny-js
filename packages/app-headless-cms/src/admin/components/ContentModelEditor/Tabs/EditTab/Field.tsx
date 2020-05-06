@@ -53,7 +53,6 @@ const menuStyles = css({
     }
 });
 
-
 const Field = props => {
     const { field, onEdit, onDelete } = props;
     const { getValue } = useI18N();

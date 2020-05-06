@@ -21,8 +21,17 @@ module.exports = [
                                 return "Please enter a package location";
                             }
 
-                            if (fs.existsSync(path.resolve(location)))
+                            if (fs.existsSync(path.resolve(location))) {
                                 return "The target location already exists";
+                            }
+
+                            const rootResourcesPath = findUp.sync("resources.js", {
+                                cwd: path.resolve(location)
+                            });
+
+                            if (!rootResourcesPath) {
+                                return `Resources file was not found. Make sure your package is inside of your project's root and that either it or one of its parent directories contains resources.js`;
+                            }
 
                             return true;
                         }
@@ -75,7 +84,7 @@ module.exports = [
                 const { transform } = require("@babel/core");
                 const source = fs.readFileSync(rootResourcesPath, "utf8");
                 let resourceTpl = fs.readFileSync(path.join(__dirname, "resource.tpl"), "utf8");
-                resourceTpl = resourceTpl.replace(/\[PACKAGE_PATH\]/g, relativeLocation);
+                resourceTpl = resourceTpl.replace(/\[PACKAGE_PATH]/g, relativeLocation);
 
                 const { code } = await transform(source, {
                     plugins: [[__dirname + "/transform", { template: resourceTpl, resourceName }]]

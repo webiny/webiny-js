@@ -43,7 +43,6 @@
     "write-json-file": "^4.2.0",
     "yargs": "^14.0.0",
     "pkg-dir": "^4.2.0",
-    "webpack": "^4.42.0",
     "get-yarn-workspaces": "^1.0.2",
     "read-json-sync": "^2.0.1"
   },

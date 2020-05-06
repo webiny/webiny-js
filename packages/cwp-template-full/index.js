@@ -35,4 +35,8 @@ module.exports = ({ appName, root }) => {
     let baseEnv = fs.readFileSync(path.join(root, ".env.json"), "utf-8");
     baseEnv = baseEnv.replace("webiny", `${projectId}-${appName}`);
     fs.writeFileSync(path.join(root, ".env.json"), baseEnv);
+
+    let webinyRoot = fs.readFileSync(path.join(root, "webiny.root.js"), "utf-8");
+    webinyRoot = webinyRoot.replace("webiny-js", appName);
+    fs.writeFileSync(path.join(root, "webiny.root.js"), webinyRoot);
 };

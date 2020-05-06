@@ -1,7 +1,7 @@
 {
-    watch: ["./services/[PACKAGE_NAME]/build"],
+    watch: ["./[PACKAGE_PATH]/build"],
     build: {
-        root: "./services/[PACKAGE_NAME]",
+        root: "./[PACKAGE_PATH]",
         script: "yarn build"
     },
     deploy: {
@@ -9,7 +9,7 @@
         inputs: {
             description: "Custom lambda function",
             region: vars.region,
-            code: "./services/[PACKAGE_NAME]/build",
+            code: "./[PACKAGE_PATH]/build",
             handler: "handler.handler",
             memory: 512,
             env: {

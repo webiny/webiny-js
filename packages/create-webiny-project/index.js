@@ -39,10 +39,12 @@ yargs.command(
             describe: "Project name"
         });
         yargs.option("template", {
-            describe: "Name of template to use",
+            describe:
+                "Name of template to use, if no template is selected it will default to use our 'full' template",
             alias: "t",
             type: "string",
-            demandOption: true
+            default: "full",
+            demandOption: false
         });
         yargs.option("tag", {
             describe: "NPM tag to use for @webiny packages",

@@ -5,7 +5,7 @@ const { constantCase } = require("constant-case");
 const generatePackageVersionDefinitions = () => {
     const pkgJSON = require(path.resolve("package.json"));
 
-    return Object.keys(pkgJSON.dependencies).reduce((acc, item) => {
+    return Object.keys(pkgJSON.dependencies || []).reduce((acc, item) => {
         if (item.startsWith("@webiny/")) {
             const { version } = require(path.join(item, "package.json"));
             acc[`${constantCase(item)}_VERSION`] = JSON.stringify(version);
