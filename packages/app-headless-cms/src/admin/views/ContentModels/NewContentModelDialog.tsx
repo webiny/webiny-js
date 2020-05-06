@@ -130,17 +130,6 @@ const NewContentModelDialog: React.FC<NewContentModelDialogProps> = ({
                                     </Bind>
                                 </Cell>
                                 <Cell span={12}>
-                                    <Bind
-                                        name={"modelId"}
-                                        validators={validation.create("required,maxLength:100")}
-                                    >
-                                        <Input
-                                            label={t`Model ID`}
-                                            description={t`Unique model ID (used upon GraphQL schema creation)`}
-                                        />
-                                    </Bind>
-                                </Cell>
-                                <Cell span={12}>
                                     <Bind name={"group"} validators={validation.create("required")}>
                                         <Select
                                             description={t`Choose a content model group`}

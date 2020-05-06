@@ -8,8 +8,18 @@ import {
     object,
     ref,
     withHooks,
+    setOnce
 } from "@webiny/commodo";
 import createFieldsModel from "./ContentModel/createFieldsModel";
+import slugify from "slugify";
+import shortid from "shortid";
+
+const toSlug = text =>
+    slugify(text, {
+        replacement: "-",
+        lower: true,
+        remove: /[*#\?<>_\{\}\[\]+~.()'"!:;@]/g
+    });
 
 const required = validation.create("required");
 
@@ -23,7 +33,7 @@ export default ({ createBase, context }) => {
                 validation: validation.create("required,maxLength:100"),
                 value: "Untitled"
             }),
-            modelId: string({ validation: validation.create("required,maxLength:100") }),
+            modelId: setOnce()(string({ validation: validation.create("required,maxLength:100") })),
             description: string({ validation: validation.create("maxLength:200") }),
             layout: object({ value: [] }),
             group: ref({ instanceOf: context.models.CmsContentModelGroup, validation: required }),
@@ -72,14 +82,28 @@ export default ({ createBase, context }) => {
                 }
             },
             async beforeCreate() {
-                const modelIdExists = await CmsContentModel.count({
-                    query: { modelId: this.modelId, parent: { $ne: this.parent } },
-                    limit: 1
-                });
-
-                if (modelIdExists) {
-                    throw new Error(`Model with model ID "${this.modelId}" already exists.`);
+                // If there is a modelId assigned, check if it's unique ...
+                if (this.modelId) {
+                    const existing = await CmsContentModel.findOne({
+                        query: { modelId: this.modelId }
+                    });
+                    if (existing) {
+                        throw Error(`Content model with modelId "${this.modelId}" already exists.`);
+                    }
+                    return;
                 }
+
+                // ... otherwise, assign a unique modelId automatically.
+                this.modelId = toSlug(this.title);
+                const existing = await CmsContentModel.findOne({
+                    query: { modelId: this.modelId }
+                });
+                if (!existing) {
+                    return;
+                }
+
+                this.getField("modelId").valueSet = false;
+                this.modelId = `${this.modelId}-${shortid.generate()}`;
             }
         })
     )(createBase());
