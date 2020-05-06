@@ -20,6 +20,18 @@ export const createManageSDL: CreateManageSDL = ({ model, fieldTypePlugins }): s
     const mTypeName = createManageTypeName(typeName);
 
     return /* GraphQL */ `
+        "${model.description}"
+        type ${mTypeName} {
+            id: ID
+            createdBy: SecurityUser
+            updatedBy: SecurityUser
+            createdOn: DateTime
+            updatedOn: DateTime
+            savedOn: DateTime
+            meta: ${mTypeName}Meta
+            ${renderFields({ model, type: "manage", fieldTypePlugins })}
+        }
+
         type ${mTypeName}Meta {
             model: String
             environment: ID
@@ -33,19 +45,7 @@ export const createManageSDL: CreateManageSDL = ({ model, fieldTypePlugins }): s
             revisions: [${mTypeName}]
             title: CmsText
         }
-        
-        "${model.description}"
-        type ${mTypeName} {
-            id: ID
-            createdBy: SecurityUser
-            updatedBy: SecurityUser
-            createdOn: DateTime
-            updatedOn: DateTime
-            savedOn: DateTime
-            meta: ${mTypeName}Meta
-            ${renderFields({ model, type: "manage", fieldTypePlugins })}
-        }
-        
+                
         input ${mTypeName}Input {
             ${renderInputFields({ model, fieldTypePlugins })}
         }
