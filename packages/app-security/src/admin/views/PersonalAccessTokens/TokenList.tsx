@@ -14,19 +14,16 @@ import { i18n } from "@webiny/app/i18n";
 const t = i18n.ns("app-security/admin/roles/data-list");
 
 const TokenList = ({ setFormIsLoading, data, setValue }) => {
-    const [{ activeTokenName, showEditDialog, updateToken, setTokenName }, setState] = useReducer(
+    const [{ showEditDialog, updateToken, newTokenName }, setState] = useReducer(
         (prev, next) => ({ ...prev, ...next }),
         {
-            activeTokenName: null,
-            showEditDialog: false,
-            updateToken: null,
-            setTokenName: null
+            showEditDialog: false
         }
     );
 
     const setShowEditDialog = value => setState({ showEditDialog: value });
     const setUpdateToken = value => setState({ updateToken: value });
-    const setSetTokenName = value => setState({ setTokenName: value });
+    const setNewTokenName = value => setState({ newTokenName: value });
 
     let Tokens;
     if (data.personalAccessTokens && data.personalAccessTokens.length > 0) {
@@ -34,8 +31,8 @@ const TokenList = ({ setFormIsLoading, data, setValue }) => {
             <TokenListItem
                 setShowEditDialog={setShowEditDialog}
                 setUpdateToken={setUpdateToken}
-                setSetTokenName={setSetTokenName}
                 setFormIsLoading={setFormIsLoading}
+                setNewTokenName={setNewTokenName}
                 key={PAT.id}
                 PAT={PAT}
                 data={data}
@@ -57,13 +54,19 @@ const TokenList = ({ setFormIsLoading, data, setValue }) => {
                 <DialogContent>
                     <Input
                         label={t`Token name`}
-                        value={activeTokenName}
-                        onChange={newName => setTokenName(newName.slice(0, 100))}
+                        value={newTokenName}
+                        onChange={newName => {
+                            newName = newName.slice(0, 100);
+                            // setTokenName(newName);
+                            setState({ newTokenName: newName });
+                        }}
                     />
                 </DialogContent>
                 <DialogActions>
                     <DialogCancel>Cancel</DialogCancel>
-                    <DialogAccept onClick={() => updateToken()}>{t`OK`}</DialogAccept>
+                    <DialogAccept
+                        onClick={() => updateToken({ name: newTokenName })}
+                    >{t`OK`}</DialogAccept>
                 </DialogActions>
             </Dialog>
 

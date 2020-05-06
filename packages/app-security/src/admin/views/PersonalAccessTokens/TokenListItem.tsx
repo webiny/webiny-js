@@ -17,7 +17,7 @@ const TokenListItem = ({
     PAT,
     setShowEditDialog,
     setUpdateToken,
-    setSetTokenName
+    setNewTokenName
 }) => {
     const [tokenName, setTokenName] = useState(PAT.name);
     const { showSnackbar } = useSnackbar();
@@ -46,14 +46,16 @@ const TokenListItem = ({
         showSnackbar(t`Token deleted successfully!`);
     };
 
-    const updateToken = async () => {
+    const updateToken = async ({ name }) => {
+        setTokenName(name);
+
         setFormIsLoading(true);
         const queryResponse = await client.mutate({
             mutation: UPDATE_PAT,
             variables: {
                 id: PAT.id,
                 data: {
-                    name: tokenName
+                    name
                 }
             }
         });
@@ -71,7 +73,7 @@ const TokenListItem = ({
                 ? crtPAT
                 : {
                       ...crtPAT,
-                      name: tokenName
+                      name
                   }
         );
 
@@ -92,7 +94,7 @@ const TokenListItem = ({
                         onClick={() => {
                             setShowEditDialog(true);
                             setUpdateToken(updateToken);
-                            setSetTokenName(setTokenName);
+                            setNewTokenName(tokenName);
                         }}
                         icon={<EditIcon />}
                     />
