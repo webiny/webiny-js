@@ -84,7 +84,7 @@ module.exports = [
                 const { transform } = require("@babel/core");
                 const source = fs.readFileSync(rootResourcesPath, "utf8");
                 let resourceTpl = fs.readFileSync(path.join(__dirname, "resource.tpl"), "utf8");
-                resourceTpl = resourceTpl.replace(/\[PACKAGE_PATH\]/g, relativeLocation);
+                resourceTpl = resourceTpl.replace(/\[PACKAGE_PATH]/g, relativeLocation);
 
                 const { code } = await transform(source, {
                     plugins: [[__dirname + "/transform", { template: resourceTpl, resourceName }]]
