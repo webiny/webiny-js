@@ -139,26 +139,26 @@ module.exports = async function({ root, appName, templateName, tag, log }) {
 
     // Install repo dependencies
     const spinner = ora("Installing dependencies...").start();
-    // try {
-    //     const options = {
-    //         cwd: root,
-    //         maxBuffer: "500_000_000"
-    //     };
+    try {
+        const options = {
+            cwd: root,
+            maxBuffer: "500_000_000"
+        };
 
-    //     let logStream;
-    //     if (log) {
-    //         logStream = fs.createWriteStream(path.join(root, "logs.txt"), { flags: "a" });
-    //         const runner = execa("yarn", [], options);
-    //         runner.stdout.pipe(logStream);
-    //         runner.stderr.pipe(logStream);
-    //         await runner;
-    //     } else {
-    //         await execa("yarn", [], options);
-    //     }
-    // } catch (err) {
-    //     spinner.fail("Unable to install the necessary packages.", err);
-    //     return;
-    // }
+        let logStream;
+        if (log) {
+            logStream = fs.createWriteStream(path.join(root, "logs.txt"), { flags: "a" });
+            const runner = execa("yarn", [], options);
+            runner.stdout.pipe(logStream);
+            runner.stderr.pipe(logStream);
+            await runner;
+        } else {
+            await execa("yarn", [], options);
+        }
+    } catch (err) {
+        spinner.fail("Unable to install the necessary packages.", err);
+        return;
+    }
 
     // Remove template from dependencies
     if (!templateName.startsWith(".") && !templateName.startsWith("file:")) {
