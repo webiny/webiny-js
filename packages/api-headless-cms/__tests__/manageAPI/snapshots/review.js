@@ -7,11 +7,26 @@ export default /* GraphQL */ `
         createdOn: DateTime
         updatedOn: DateTime
         savedOn: DateTime
+        meta: ReviewMeta
         text: CmsText
         product: CmsRefOne
         rating: CmsFloat
     }
 
+    type ReviewMeta {
+        model: String
+        environment: ID
+        parent: ID
+        version: Int
+        latestVersion: Boolean
+        locked: Boolean
+        published: Boolean
+        publishedOn: DateTime
+        status: String
+        revisions: [Review]
+        title: CmsText
+    }
+    
     input ReviewInput {
         text: CmsTextInput
         product: CmsRefOneInput
@@ -115,9 +130,19 @@ export default /* GraphQL */ `
 
     extend type Mutation {
         createReview(data: ReviewInput!): ReviewResponse
-
-        updateReview(where: ReviewUpdateWhereInput!, data: ReviewInput!): ReviewResponse
-
+        
+        createReviewFrom(revision: ID!, data: ReviewInput): ReviewResponse
+        
+        updateReview(
+            where: ReviewUpdateWhereInput!
+            data: ReviewInput!
+        ): ReviewResponse
+        
         deleteReview(where: ReviewDeleteWhereInput!): CmsDeleteResponse
+        
+        publishReview(revision: ID!): ReviewResponse
+        
+        unpublishReview(revision: ID!): ReviewResponse
     }
+
 `;

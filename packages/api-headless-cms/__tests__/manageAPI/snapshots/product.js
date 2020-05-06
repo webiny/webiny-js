@@ -7,6 +7,7 @@ export default /* GraphQL */ `
         createdOn: DateTime
         updatedOn: DateTime
         savedOn: DateTime
+        meta: ProductMeta
         title: CmsText
         category: CmsRefOne
         reviews: CmsRefMany
@@ -14,6 +15,20 @@ export default /* GraphQL */ `
         inStock: CmsBoolean
         itemsInStock: CmsInt
         availableOn: CmsDate
+    }
+
+    type ProductMeta {
+        model: String
+        environment: ID
+        parent: ID
+        version: Int
+        latestVersion: Boolean
+        locked: Boolean
+        published: Boolean
+        publishedOn: DateTime
+        status: String
+        revisions: [Product]
+        title: CmsText
     }
 
     input ProductInput {
@@ -184,8 +199,14 @@ export default /* GraphQL */ `
     extend type Mutation {
         createProduct(data: ProductInput!): ProductResponse
 
+        createProductFrom(revision: ID!, data: ProductInput): ProductResponse
+
         updateProduct(where: ProductUpdateWhereInput!, data: ProductInput!): ProductResponse
 
         deleteProduct(where: ProductDeleteWhereInput!): CmsDeleteResponse
+
+        publishProduct(revision: ID!): ProductResponse
+
+        unpublishProduct(revision: ID!): ProductResponse
     }
 `;
