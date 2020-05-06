@@ -4,12 +4,7 @@ import { Input } from "@webiny/ui/Input";
 import { i18n } from "@webiny/app/i18n";
 import { validation } from "@webiny/validation";
 import slugify from "slugify";
-import { css } from "emotion";
 const t = i18n.ns("app-headless-cms/admin/components/name-slug");
-
-const hideCell = css ({
-    display: 'none'
-});
 
 const toSlug = text =>
     slugify(text, {
@@ -30,7 +25,7 @@ const slugValidator = async (value, validateSlugUniqueness, newEntry) => {
 function NameSlug({ newEntry, Bind, setValue, name = {}, slug = {}, validateSlugUniqueness }) {
     return (
         <>
-            <Cell span={12}>
+            <Cell span={6}>
                 <Bind
                     {...name}
                     name="name"
@@ -44,7 +39,7 @@ function NameSlug({ newEntry, Bind, setValue, name = {}, slug = {}, validateSlug
                     <Input label={t`Name`} />
                 </Bind>
             </Cell>
-            <Cell span={6} className={hideCell}>
+            <Cell span={6}>
                 <Bind
                     name="slug"
                     validators={value => slugValidator(value, validateSlugUniqueness, newEntry)}
