@@ -12,7 +12,7 @@ const invalidCredentials = new ErrorResponse({
 
 const generateJWT = async (user, context: Context) => {
     const expiresOn = new Date();
-    expiresOn.setSeconds(expiresOn.getSeconds() + context.security.token.expiresIn);
+    expiresOn.setSeconds(expiresOn.getSeconds() + parseInt(context.security.token.expiresIn));
 
     // Convert to seconds to represent "number of seconds since the epoch"
     const seconds = Math.floor(expiresOn.getTime() / 1000);
