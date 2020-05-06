@@ -65,9 +65,9 @@ module.exports = async function({ root, appName, templateName, tag, log }) {
     execa.sync("rm", [path.join(root, "dependencies.json")]);
     //initialize git repo
     try {
+        console.log(`\nInitializing git in ${appName}`);
         execa.sync("git", ["--version"]);
         execa.sync("git", ["init"]);
-        console.log("\nInitialized a git repository.");
         fs.writeFileSync(path.join(root, ".gitignore"), "node_modules/");
     } catch (err) {
         console.warn("Git repo not initialized", err);
@@ -139,26 +139,26 @@ module.exports = async function({ root, appName, templateName, tag, log }) {
 
     // Install repo dependencies
     const spinner = ora("Installing dependencies...").start();
-    try {
-        const options = {
-            cwd: root,
-            maxBuffer: "500_000_000"
-        };
+    // try {
+    //     const options = {
+    //         cwd: root,
+    //         maxBuffer: "500_000_000"
+    //     };
 
-        let logStream;
-        if (log) {
-            logStream = fs.createWriteStream(path.join(root, "logs.txt"), { flags: "a" });
-            const runner = execa("yarn", [], options);
-            runner.stdout.pipe(logStream);
-            runner.stderr.pipe(logStream);
-            await runner;
-        } else {
-            await execa("yarn", [], options);
-        }
-    } catch (err) {
-        spinner.fail("Unable to install the necessary packages.", err);
-        return;
-    }
+    //     let logStream;
+    //     if (log) {
+    //         logStream = fs.createWriteStream(path.join(root, "logs.txt"), { flags: "a" });
+    //         const runner = execa("yarn", [], options);
+    //         runner.stdout.pipe(logStream);
+    //         runner.stderr.pipe(logStream);
+    //         await runner;
+    //     } else {
+    //         await execa("yarn", [], options);
+    //     }
+    // } catch (err) {
+    //     spinner.fail("Unable to install the necessary packages.", err);
+    //     return;
+    // }
 
     // Remove template from dependencies
     if (!templateName.startsWith(".") && !templateName.startsWith("file:")) {
@@ -188,25 +188,28 @@ module.exports = async function({ root, appName, templateName, tag, log }) {
         cliVersion: packageJson.version
     });
 
-    console.log(`Success! Created ${appName} at ${root}`);
-    console.log("Inside that directory, you can run several commands:\n");
-    console.log("You can begin by typing:\n");
-    console.log(`${chalk.cyan("  cd")} ${appName}\n`);
+    console.log(`Success!\nCreated a Webiny project ${chalk.blue(appName)} at ${root}\n`);
+    console.log(`Setup your project by following these steps:\n`);
+    console.log(`1.  ${chalk.blue("cd")} ${appName}\n`);
     console.log(
-        `Make sure to update the ${chalk.cyan("MONGODB_SERVER")} variable in the ${chalk.cyan(
+        `2.  Update the ${chalk.blue("MONGODB_SERVER")} variable in the ${chalk.blue(
             `${appName}/.env.json`
         )} file with your database connection string.\n`
     );
     console.log(
-        "For more information on setting up your database connection head to https://docs.webiny.com/docs/get-started/quick-start#3-setup-database-connection.\n"
+        "For more information on setting up your database connection head to https://docs.webiny.com/docs/get-started/quick-start#3-setup-database-connection\n"
     );
+    console.log(`3.  ${chalk.blue("webiny deploy")} api --env=local\n`);
+    console.log(`4.  ${chalk.blue("cd")} apps/admin\n`);
+    console.log(`5.  ${chalk.blue("yarn start")}\n`);
+
     console.log(
-        `Once you are in the ${chalk.cyan(appName)} directory, run ${chalk.cyan(
+        `Once you are in the ${chalk.blue(appName)} directory, run ${chalk.blue(
             "webiny --help"
-        )} to see deploy options.\n`
+        )} for more Webiny options.\n`
     );
     console.log(
-        "If you want to learn more about Webiny as a tool, head to https://docs.webiny.com/docs/webiny/introduction/.\n"
+        "Want to delve deeper into Webiny? Check out https://docs.webiny.com/docs/webiny/introduction\n"
     );
     console.log("Like the tool? Star us on Github! https://github.com/webiny/webiny-js\n");
     console.log("Happy coding!");
