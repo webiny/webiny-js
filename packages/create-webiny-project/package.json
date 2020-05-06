@@ -23,7 +23,7 @@
     "execa": "^4.0.0",
     "fast-glob": "^3.2.2",
     "fs-extra": "^9.0.0",
-    "ora": "^4.0.4",
+    "listr": "^0.14.3",
     "os": "^0.1.1",
     "uniqid": "^5.2.0",
     "validate-npm-package-name": "^3.0.0",

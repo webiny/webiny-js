@@ -1,10 +1,10 @@
 #!/usr/bin/env node
 const chalk = require("chalk");
 const envinfo = require("envinfo");
+const execa = require("execa");
 const fs = require("fs-extra");
 const os = require("os");
 const path = require("path");
-const execa = require("execa");
 const yargs = require("yargs");
 const validateProjectName = require("validate-npm-package-name");
 
