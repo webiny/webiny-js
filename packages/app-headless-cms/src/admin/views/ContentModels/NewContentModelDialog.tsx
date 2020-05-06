@@ -136,7 +136,7 @@ const NewContentModelDialog: React.FC<NewContentModelDialogProps> = ({
                                     >
                                         <Input
                                             label={t`Model ID`}
-                                            description={t`Unique model ID (used upon creation GraphQL schema)`}
+                                            description={t`Unique model ID (used upon GraphQL schema creation)`}
                                         />
                                     </Bind>
                                 </Cell>
