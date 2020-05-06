@@ -9,6 +9,16 @@ import {
     withHooks
 } from "@webiny/commodo";
 
+import slugify from "slugify";
+import shortid from "shortid";
+
+const toSlug = text =>
+    slugify(text, {
+        replacement: "-",
+        lower: true,
+        remove: /[*#\?<>_\{\}\[\]+~.()'"!:;@]/g
+    });
+
 export default ({ createBase, context }) => {
     const CmsGroup: any = compose(
         withName(`CmsContentModelGroup`),
@@ -37,10 +47,24 @@ export default ({ createBase, context }) => {
                 }
             },
             async beforeCreate() {
-                const existingGroup = await CmsGroup.findOne({ query: { slug: this.slug } });
-                if (existingGroup) {
-                    throw Error(`Group with slug "${this.slug}" already exists.`);
+                // If there is a slug assigned, check if it's unique ...
+                if (this.slug) {
+                    const existingGroup = await CmsGroup.findOne({ query: { slug: this.slug } });
+                    if (existingGroup) {
+                        throw Error(`Group with slug "${this.slug}" already exists.`);
+                    }
+                    return;
                 }
+
+                // ... otherwise, assign a unique slug automatically.
+                this.slug = toSlug(this.name);
+                const existingGroup = await CmsGroup.findOne({ query: { slug: this.slug } });
+                if (!existingGroup) {
+                    return;
+                }
+
+                this.getField('slug').valueSet = false;
+                this.slug = `${this.slug}-${shortid.generate()}`;
             },
             async beforeSave() {
                 if (this.isDirty()) {
