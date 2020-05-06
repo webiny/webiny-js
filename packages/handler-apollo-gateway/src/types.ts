@@ -14,7 +14,7 @@ export interface HandlerApolloGatewayOptions {
     handler?: {
         cors?: { [key: string]: any };
     };
-    services: [ApolloGatewayServiceDefinition];
+    services: ApolloGatewayServiceDefinition[];
 }
 
 export type ApolloGatewayServiceDefinition = {
