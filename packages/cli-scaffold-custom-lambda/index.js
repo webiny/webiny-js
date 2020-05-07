@@ -4,6 +4,7 @@ const util = require("util");
 const ncp = util.promisify(require("ncp").ncp);
 const findUp = require("find-up");
 const camelCase = require("lodash.camelcase");
+const kebabCase = require("lodash.kebabcase");
 
 module.exports = [
     {
@@ -48,7 +49,7 @@ module.exports = [
                     .relative(path.dirname(rootResourcesPath), fullLocation)
                     .replace(/\\/g, "/");
 
-                const packageName = path.basename(location);
+                const packageName = kebabCase(location);
                 const resourceName = camelCase(packageName);
 
                 // Then we also copy the template folder
@@ -101,6 +102,10 @@ module.exports = [
                 const formattedCode = prettier.format(code, prettierConfig);
 
                 fs.writeFileSync(rootResourcesPath, formattedCode);
+
+                console.log(
+                    `\nIMPORTANT: make sure you add an endpoint in your API Gateway resource to point to this new Lambda!\n\n`
+                );
             }
         }
     }

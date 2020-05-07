@@ -7,7 +7,7 @@
     deploy: {
         component: "@webiny/serverless-function",
         inputs: {
-            region: vars.region,
+            region: process.env.AWS_REGION,
             description: "GraphQL API",
             code: "./[PACKAGE_PATH]/build",
             handler: "handler.handler",

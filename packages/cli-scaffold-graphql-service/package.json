@@ -15,8 +15,10 @@
   },
   "homepage": "https://github.com/webiny/webiny-js#readme",
   "dependencies": {
+    "@babel/core": "^7.9.6",
     "find-up": "^4.1.0",
     "lodash.camelcase": "^4.3.0",
+    "lodash.kebabcase": "^4.1.1",
     "ncp": "^2.0.0"
   },
   "publishConfig": {

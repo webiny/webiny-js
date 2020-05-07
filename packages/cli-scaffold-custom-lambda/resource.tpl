@@ -8,7 +8,7 @@
         component: "@webiny/serverless-function",
         inputs: {
             description: "Custom lambda function",
-            region: vars.region,
+            region: process.env.AWS_REGION,
             code: "./[PACKAGE_PATH]/build",
             handler: "handler.handler",
             memory: 512

@@ -4,6 +4,7 @@ const util = require("util");
 const ncp = util.promisify(require("ncp").ncp);
 const findUp = require("find-up");
 const camelCase = require("lodash.camelcase");
+const kebabCase = require("lodash.kebabcase");
 
 module.exports = [
     {
@@ -49,14 +50,15 @@ module.exports = [
                     .relative(path.dirname(rootResourcesPath), fullLocation)
                     .replace(/\\/g, "/");
 
-                const packageName = path.basename(location);
+                const packageName = kebabCase(location);
                 const resourceName = camelCase(packageName);
+                const serviceName = packageName.replace(/-/g, "_").toUpperCase();
 
                 // Then we also copy the template folder
                 const sourceFolder = path.join(__dirname, "template");
 
                 if (fs.existsSync(location)) {
-                    throw new Error(`Package ${packageName} already exists!`);
+                    throw new Error(`Destination folder ${location} already exists!`);
                 }
 
                 await fs.mkdirSync(location, { recursive: true });
@@ -87,7 +89,16 @@ module.exports = [
                 resourceTpl = resourceTpl.replace(/\[PACKAGE_PATH]/g, relativeLocation);
 
                 const { code } = await transform(source, {
-                    plugins: [[__dirname + "/transform", { template: resourceTpl, resourceName }]]
+                    plugins: [
+                        [
+                            __dirname + "/transform",
+                            {
+                                template: resourceTpl,
+                                resourceName,
+                                serviceName: `LAMBDA_SERVICE_${serviceName}`
+                            }
+                        ]
+                    ]
                 });
 
                 // Update tsconfig "extends" path

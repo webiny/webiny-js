@@ -1,4 +1,4 @@
-module.exports = function({ types: t, template: tpl }, { template, resourceName }) {
+module.exports = function({ types: t, template: tpl }, { template, resourceName, serviceName }) {
     return {
         visitor: {
             Identifier(path) {
@@ -15,26 +15,20 @@ module.exports = function({ types: t, template: tpl }, { template, resourceName 
                     );
                 }
 
-                if (path.node.name === "HANDLER_APOLLO_GATEWAY_OPTIONS") {
-                    const services = path.parent.value.properties.find(
-                        item => item.type === "ObjectProperty" && item.key.name === "services"
+                if (
+                    path.node.name === "apolloGatewayServices" &&
+                    path.parent.type === "VariableDeclarator"
+                ) {
+                    path.parent.init.properties = path.parent.init.properties.filter(
+                        item => item.key.name !== serviceName
                     );
-                    const newService = t.objectExpression([
-                        t.objectProperty(t.identifier("name"), t.stringLiteral(resourceName)),
+
+                    path.parent.init.properties.push(
                         t.objectProperty(
-                            t.identifier("function"),
+                            t.identifier(serviceName),
                             t.stringLiteral("${" + resourceName + ".name}")
                         )
-                    ]);
-
-                    services.value.elements = services.value.elements.filter(element => {
-                        return (
-                            element.properties.find(item => item.key.name === "name").value
-                                .value !== resourceName
-                        );
-                    });
-
-                    services.value.elements.push(newService);
+                    );
                 }
             }
         }
