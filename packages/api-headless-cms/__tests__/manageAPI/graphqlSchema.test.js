@@ -140,7 +140,7 @@ describe("MANAGE - GraphQL Schema", () => {
 
         const response = await graphql(schema, mutation, {}, context, {
             data: {
-                title: "EmptyModel",
+                name: "EmptyModel",
                 modelId: "emptyModel",
                 group: contentModelGroup.id
             }
@@ -171,7 +171,7 @@ describe("MANAGE - GraphQL Schema", () => {
         const { schema, context } = await useSchema();
         const response = await graphql(schema, schemaTypesQuery, {}, context);
         const typeNames = contentModels.reduce((acc, item) => {
-            acc.push(item.title);
+            acc.push(item.name);
             return acc;
         }, []);
         const cmsTypes = response.data.__schema.types

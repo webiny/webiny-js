@@ -52,7 +52,7 @@ export default ContentModelEditorContext => {
                         data: pick(data, [
                             "layout",
                             "fields",
-                            "title",
+                            "name",
                             "settings",
                             "description",
                             "titleFieldId"

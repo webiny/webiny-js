@@ -7,7 +7,7 @@ export const GET_CONTENT_MODEL_BY_MODEL_ID = gql`
             data {
                 modelId
                 pluralizedModelId
-                title
+                name
                 pluralizedName
                 fields {
                     ${FIELDS_FIELDS}

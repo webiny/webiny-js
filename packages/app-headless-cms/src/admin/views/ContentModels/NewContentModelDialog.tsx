@@ -117,7 +117,7 @@ const NewContentModelDialog: React.FC<NewContentModelDialogProps> = ({
                             <Grid className={noPadding}>
                                 <Cell span={12}>
                                     <Bind
-                                        name={"title"}
+                                        name={"name"}
                                         validators={validation.create("required,maxLength:100")}
                                     >
                                         <Input

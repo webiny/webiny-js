@@ -38,7 +38,7 @@ const Header = props => {
 
     let formTitle;
     if (contentModel) {
-        formTitle = t`New {contentModelTitle}`({ contentModelTitle: contentModel.title });
+        formTitle = t`New {contentModelName}`({ contentModelName: contentModel.name });
     }
 
     if (content.id) {

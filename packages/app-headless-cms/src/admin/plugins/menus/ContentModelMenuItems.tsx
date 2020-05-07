@@ -33,7 +33,7 @@ const ContentModelMenuItems = function({ Section, Item }) {
                 {contentModelGroup.contentModels.map(contentModel => (
                     <Item
                         key={contentModel.id}
-                        label={contentModel.title}
+                        label={contentModel.name}
                         path={`/cms/content-models/manage/${contentModel.modelId}`}
                     />
                 ))}

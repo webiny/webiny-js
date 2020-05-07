@@ -23,7 +23,7 @@ export const Name = () => {
     }
 
     function startEditing() {
-        setLocalName(state.data.title);
+        setLocalName(state.data.name);
         setEditing(true);
     }
 
@@ -45,7 +45,7 @@ export const Name = () => {
             enter: e => {
                 e.preventDefault();
                 setData(data => {
-                    data.title = localName;
+                    data.name = localName;
                     return data;
                 });
                 setEditing(false);
@@ -75,7 +75,7 @@ export const Name = () => {
                 content={<span>{t`rename`}</span>}
             >
                 <FormName data-testid="fb-editor-form-title" onClick={startEditing}>
-                    {state.data.title}
+                    {state.data.name}
                 </FormName>
             </Tooltip>
         </NameWrapper>

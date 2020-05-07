@@ -23,7 +23,7 @@ export default ({ createBase, context }) => {
     const CmsContentModel = pipe(
         withName(`CmsContentModel`),
         withFields({
-            title: string({
+            name: string({
                 validation: validation.create("required,maxLength:100"),
                 value: "Untitled"
             }),
@@ -40,11 +40,11 @@ export default ({ createBase, context }) => {
         }),
         withProps({
             pluralizedName() {
-                if (!this.title) {
+                if (!this.name) {
                     return "";
                 }
 
-                return pluralize(this.title);
+                return pluralize(this.name);
             },
             pluralizedModelId() {
                 if (!this.modelId) {

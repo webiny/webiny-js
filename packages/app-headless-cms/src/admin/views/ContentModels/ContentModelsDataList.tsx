@@ -114,11 +114,11 @@ const ContentModelsDataList = (props: ContentModelsDataListProps) => {
                 },
                 {
                     label: t`Title A-Z`,
-                    sorters: { title: 1 }
+                    sorters: { name: 1 }
                 },
                 {
                     label: t`Title Z-A`,
-                    sorters: { title: -1 }
+                    sorters: { name: -1 }
                 }
             ]}
         >
@@ -127,7 +127,7 @@ const ContentModelsDataList = (props: ContentModelsDataListProps) => {
                     {data.map(contentModel => (
                         <ListItem key={contentModel.id} className={listItemMinHeight}>
                             <ListItemText>
-                                {contentModel.title}
+                                {contentModel.name}
                                 {contentModel.createdBy && (
                                     <ListItemTextSecondary>
                                         {contentModel.createdBy.firstName && (

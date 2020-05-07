@@ -4,7 +4,7 @@ import contentModelGroup from "./contentModelGroup";
 
 export default [
     {
-        title: "Category",
+        name: "Category",
         description: "Product category",
         modelId: "category",
         group: contentModelGroup.id,
@@ -57,7 +57,7 @@ export default [
         ]
     },
     {
-        title: "Review",
+        name: "Review",
         description: "Product review",
         modelId: "review",
         group: contentModelGroup.id,
@@ -106,7 +106,7 @@ export default [
         ]
     },
     {
-        title: "Product",
+        name: "Product",
         modelId: "product",
         description: "Products being sold in our webshop",
         group: contentModelGroup.id,
