@@ -64,7 +64,7 @@ const TokensElement = ({ setFormIsLoading, data, setValue }) => {
         if (!data.personalAccessTokens) {
             newPATs = [personalAccessToken];
         } else {
-            newPATs = [...data.personalAccessTokens, personalAccessToken];
+            newPATs = [personalAccessToken, ...data.personalAccessTokens];
         }
 
         setValue("personalAccessTokens", newPATs);
