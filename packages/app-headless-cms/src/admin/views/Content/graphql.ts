@@ -6,7 +6,9 @@ export const GET_CONTENT_MODEL_BY_MODEL_ID = gql`
         getContentModel(where: { modelId: $modelId }) {
             data {
                 modelId
+                pluralizedModelId
                 title
+                pluralizedName
                 fields {
                     ${FIELDS_FIELDS}
                 }
