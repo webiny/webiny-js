@@ -1,24 +1,21 @@
-import mdbid from "mdbid";
 import { ErrorResponse, Response } from "@webiny/graphql";
 import { GraphQLFieldResolver } from "@webiny/graphql/types";
 
 const initialEnvironment = {
-    id: mdbid(),
     name: "Production",
-    description: "Ready to go live",
-    createdFrom: null
+    description: "This is the production environment"
 };
 
 const initialEnvironmentAlias = {
     slug: "production",
     name: "Production",
-    description: "Ready to go live"
+    description: `This is the "production" environment alias`
 };
 
 const initialContentModelGroup = {
-    name: "E-commerce",
-    slug: "e-commerce",
-    description: "A generic group for e-commerce",
+    name: "Ungrouped",
+    slug: "ungrouped",
+    description: "A generic content model group",
     icon: "fas/star"
 };
 
@@ -39,15 +36,13 @@ export const install: GraphQLFieldResolver = async (root, args, context) => {
         if (await settings.data.installed) {
             return new ErrorResponse({
                 code: "CMS_INSTALL_ABORTED",
-                message: "Cms is already installed."
+                message: "Cms -> The app is already installed."
             });
         }
         // Create a production environment
         const cmsEnvironmentProduction = await cmsEnvironment.populate({
-            id: initialEnvironment.id,
             name: initialEnvironment.name,
-            description: initialEnvironment.description,
-            createdFrom: initialEnvironment.createdFrom
+            description: initialEnvironment.description
         });
         cmsEnvironmentProduction.initial = true;
         await cmsEnvironmentProduction.save();

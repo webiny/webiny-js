@@ -8,7 +8,6 @@ import install from "./install";
 import revisionContent from "./contentDetails/revisionContent";
 import previewContent from "./contentDetails/contentForm";
 import header from "./contentDetails/header";
-// import pageRevisions from "./contentDetails/pageRevisions";
 
 import contentModelEditorPlugins from "./../editor/plugins";
 
