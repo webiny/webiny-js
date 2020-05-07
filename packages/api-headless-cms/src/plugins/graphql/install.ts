@@ -2,11 +2,6 @@ import { install, isInstalled } from "./installResolver/install";
 
 export default {
     typeDefs: /* GraphQL */ `
-        type CmsBooleanResponse {
-            data: Boolean
-            error: CmsError
-        }
-
         extend type CmsQuery {
             # Is CMS installed?
             isInstalled: CmsBooleanResponse

@@ -46,6 +46,11 @@ export default () => [
                     error: CmsError
                 }
 
+                type CmsBooleanResponse {
+                    data: Boolean
+                    error: CmsError
+                }
+
                 extend type Query {
                     cms: CmsQuery
                 }
