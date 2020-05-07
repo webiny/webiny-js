@@ -3,6 +3,7 @@ import merge from "lodash.merge";
 import gql from "graphql-tag";
 import cmsEnvironment from "./graphql/environment";
 import cmsEnvironmentAlias from "./graphql/environmentAlias";
+import cmsInstall from "./graphql/install";
 
 import { emptyResolver } from "@webiny/commodo-graphql";
 
@@ -45,6 +46,11 @@ export default () => [
                     error: CmsError
                 }
 
+                type CmsBooleanResponse {
+                    data: Boolean
+                    error: CmsError
+                }
+
                 extend type Query {
                     cms: CmsQuery
                 }
@@ -61,6 +67,7 @@ export default () => [
                     _empty: String
                 }
 
+                ${cmsInstall.typeDefs}
                 ${cmsEnvironment.typeDefs}
                 ${cmsEnvironmentAlias.typeDefs}
             `,
@@ -73,6 +80,7 @@ export default () => [
                         cms: emptyResolver
                     }
                 },
+                cmsInstall.resolvers,
                 cmsEnvironment.resolvers,
                 cmsEnvironmentAlias.resolvers
             )
