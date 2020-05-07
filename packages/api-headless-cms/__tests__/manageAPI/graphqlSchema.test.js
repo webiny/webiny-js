@@ -65,10 +65,14 @@ describe("MANAGE - GraphQL Schema", () => {
         const { schema, context } = await useSchema();
 
         const responses = [];
-        for (let i = 0; i < contentModels.length; i++) {
-            responses.push(
-                await graphql(schema, mutation, {}, context, { data: contentModels[i] })
-            );
+        const newContentModels = contentModels.map(item => {
+            item.modelId = item.modelId + "-new";
+            return item;
+        });
+
+        for (let i = 0; i < newContentModels.length; i++) {
+            const data = newContentModels[i];
+            responses.push(await graphql(schema, mutation, {}, context, { data }));
         }
 
         for (let i = 0; i < responses.length; i++) {
@@ -78,7 +82,41 @@ describe("MANAGE - GraphQL Schema", () => {
                     createContentModel: {
                         data: {
                             id: expect.stringMatching("^[0-9a-fA-F]{24}$"),
-                            modelId: expect.stringMatching(/^[a-z]+$/)
+                            modelId: newContentModels[i].modelId
+                        }
+                    }
+                }
+            });
+        }
+    });
+
+    test("should not be able to insert content models with same modelId", async () => {
+        const mutation = /* GraphQL */ `
+            mutation CreateContentModel($data: CmsContentModelInput!) {
+                createContentModel(data: $data) {
+                    error {
+                        message
+                    }
+                }
+            }
+        `;
+
+        const { schema, context } = await useSchema();
+
+        const responses = [];
+        for (let i = 0; i < contentModels.length; i++) {
+            responses.push(
+                await graphql(schema, mutation, {}, context, { data: contentModels[i] })
+            );
+        }
+
+        for (let i = 0; i < responses.length; i++) {
+            const response = responses[i];
+            expect(response).toEqual({
+                data: {
+                    createContentModel: {
+                        error: {
+                            message: `Content model with modelId "${contentModels[i].modelId}" already exists.`
                         }
                     }
                 }
