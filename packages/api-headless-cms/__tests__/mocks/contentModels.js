@@ -16,7 +16,6 @@ export default [
                 },
                 type: "text",
                 fieldId: "title",
-                name: "title",
                 unique: false,
                 validation: [
                     {
@@ -45,7 +44,6 @@ export default [
                 },
                 type: "text",
                 fieldId: "slug",
-                name: "slug",
                 unique: true,
                 validation: [
                     {
@@ -72,7 +70,6 @@ export default [
                 type: "text",
                 unique: false,
                 fieldId: "text",
-                name: "text",
                 validation: [
                     {
                         name: "required",
@@ -90,7 +87,6 @@ export default [
                 type: "ref",
                 unique: false,
                 fieldId: "product",
-                name: "product",
                 validation: [],
                 settings: {
                     type: "one",
@@ -105,7 +101,6 @@ export default [
                 type: "float",
                 unique: false,
                 fieldId: "rating",
-                name: "rating",
                 validation: []
             }
         ]
@@ -122,7 +117,6 @@ export default [
                     values: [{ locale: locales.en.id, value: "Title" }]
                 },
                 fieldId: "title",
-                name: "title",
                 unique: false,
                 type: "text",
                 validation: [
@@ -142,7 +136,6 @@ export default [
                     values: [{ locale: locales.en.id, value: "Category" }]
                 },
                 fieldId: "category",
-                name: "category",
                 unique: false,
                 type: "ref",
                 validation: [
@@ -164,7 +157,6 @@ export default [
                     values: [{ locale: locales.en.id, value: "Reviews" }]
                 },
                 fieldId: "reviews",
-                name: "reviews",
                 type: "ref",
                 unique: false,
                 validation: [],
@@ -179,7 +171,6 @@ export default [
                     values: [{ locale: locales.en.id, value: "Price" }]
                 },
                 fieldId: "price",
-                name: "price",
                 unique: false,
                 type: "float",
                 validation: [
@@ -197,7 +188,6 @@ export default [
                     values: [{ locale: locales.en.id, value: "Price" }]
                 },
                 fieldId: "inStock",
-                name: "inStock",
                 unique: false,
                 type: "boolean",
                 validation: []
@@ -208,7 +198,6 @@ export default [
                     values: [{ locale: locales.en.id, value: "Price" }]
                 },
                 fieldId: "itemsInStock",
-                name: "itemsInStock",
                 unique: false,
                 type: "integer",
                 validation: []
@@ -219,7 +208,6 @@ export default [
                     values: [{ locale: locales.en.id, value: "Available on" }]
                 },
                 fieldId: "availableOn",
-                name: "availableOn",
                 unique: false,
                 type: "datetime",
                 settings: {
