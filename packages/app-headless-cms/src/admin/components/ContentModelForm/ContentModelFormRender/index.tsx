@@ -46,6 +46,8 @@ const renderFieldElement = (props: {
             return <Input {...props} type="number" />;
         case "float":
             return <Input {...props} type="number" />;
+        case "number":
+            return <Input {...props} type="number" />;
         case "boolean":
             return <Switch {...props} />;
         // ---
