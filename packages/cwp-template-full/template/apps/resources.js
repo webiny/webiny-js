@@ -1,11 +1,3 @@
-const vars = {
-    region: process.env.AWS_REGION,
-    mongodb: {
-        server: process.env.MONGODB_SERVER,
-        name: process.env.MONGODB_NAME
-    }
-};
-
 module.exports = ({ cli }) => {
     return {
         resources: {
@@ -14,12 +6,12 @@ module.exports = ({ cli }) => {
                     component: "@webiny/serverless-db-proxy",
                     inputs: {
                         testConnectionBeforeDeploy: true,
-                        region: vars.region,
+                        region: process.env.AWS_REGION,
                         concurrencyLimit: 15,
                         timeout: 30,
                         env: {
-                            MONGODB_SERVER: vars.mongodb.server,
-                            MONGODB_NAME: vars.mongodb.name
+                            MONGODB_SERVER: process.env.MONGODB_SERVER,
+                            MONGODB_NAME: process.env.MONGODB_NAME
                         }
                     }
                 }
@@ -33,7 +25,7 @@ module.exports = ({ cli }) => {
                     component: "@webiny/serverless-app",
                     inputs: {
                         description: "Webiny Site",
-                        region: vars.region,
+                        region: process.env.AWS_REGION,
                         memory: 128,
                         timeout: 30,
                         code: "./site/build",
@@ -53,7 +45,7 @@ module.exports = ({ cli }) => {
                     component: "@webiny/serverless-function",
                     inputs: {
                         description: "Site SSR",
-                        region: vars.region,
+                        region: process.env.AWS_REGION,
                         code: "./site/build-ssr",
                         handler: "handler.handler",
                         memory: 2048,
@@ -69,7 +61,7 @@ module.exports = ({ cli }) => {
                 deploy: {
                     component: "@webiny/serverless-app",
                     inputs: {
-                        region: vars.region,
+                        region: process.env.AWS_REGION,
                         description: "Webiny Admin",
                         code: "./admin/build"
                     }
@@ -79,7 +71,7 @@ module.exports = ({ cli }) => {
                 component: "@webiny/serverless-api-gateway",
                 inputs: {
                     name: "Apps Gateway",
-                    region: vars.region,
+                    region: process.env.AWS_REGION,
                     description: "Serverless React Apps",
                     binaryMediaTypes: ["*/*"],
                     endpoints: [

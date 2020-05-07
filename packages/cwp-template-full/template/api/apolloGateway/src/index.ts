@@ -1,7 +1,21 @@
 import { createHandler } from "@webiny/handler";
-import { HandlerApolloGatewayOptions } from "@webiny/handler-apollo-gateway/types";
 import apolloGatewayHandler from "@webiny/handler-apollo-gateway";
 
-declare const HANDLER_APOLLO_GATEWAY_OPTIONS: HandlerApolloGatewayOptions;
-
-export const handler = createHandler(apolloGatewayHandler(HANDLER_APOLLO_GATEWAY_OPTIONS));
+export const handler = createHandler(
+    apolloGatewayHandler({
+        debug: process.env.DEBUG,
+        server: {
+            introspection: process.env.GRAPHQL_INTROSPECTION,
+            playground: process.env.GRAPHQL_PLAYGROUND
+        },
+        services: Object.keys(process.env)
+            .filter(name => name.startsWith("LAMBDA_SERVICE_"))
+            .map(name => {
+                const serviceName = name.replace("LAMBDA_SERVICE_", "");
+                return {
+                    name: serviceName,
+                    function: process.env[name]
+                };
+            })
+    })
+);
