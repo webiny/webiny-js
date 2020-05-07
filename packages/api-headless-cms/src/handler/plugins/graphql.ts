@@ -109,7 +109,9 @@ export default ({ type }) => [
                 type CmsContentModel {
                     id: ID
                     title: String
+                    pluralizedName: String
                     modelId: String
+                    pluralizedModelId: String
                     group: CmsContentModelGroup
                     description: String
                     layout: [[String]]

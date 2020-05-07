@@ -2,6 +2,7 @@ import { validation } from "@webiny/validation";
 import {
     pipe,
     withFields,
+    withProps,
     string,
     withName,
     fields,
@@ -12,6 +13,7 @@ import {
 } from "@webiny/commodo";
 import createFieldsModel from "./ContentModel/createFieldsModel";
 import camelCase from "lodash/camelCase";
+import pluralize from "pluralize";
 
 const required = validation.create("required");
 
@@ -35,6 +37,22 @@ export default ({ createBase, context }) => {
                 value: [],
                 instanceOf: ContentModelFieldsModel
             })
+        }),
+        withProps({
+            pluralizedName() {
+                if (!this.title) {
+                    return "";
+                }
+
+                return pluralize(this.title);
+            },
+            pluralizedModelId() {
+                if (!this.modelId) {
+                    return "";
+                }
+
+                return pluralize(this.modelId);
+            }
         }),
         withHooks({
             async beforeSave() {
