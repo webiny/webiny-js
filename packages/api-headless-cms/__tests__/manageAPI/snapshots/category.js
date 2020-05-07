@@ -25,7 +25,7 @@ export default /* GraphQL */ `
         revisions: [Category]
         title: CmsText
     }
-    
+
     input CategoryInput {
         title: CmsTextInput
         slug: CmsTextInput
@@ -125,19 +125,15 @@ export default /* GraphQL */ `
 
     extend type Mutation {
         createCategory(data: CategoryInput!): CategoryResponse
-        
+
         createCategoryFrom(revision: ID!, data: CategoryInput): CategoryResponse
-        
-        updateCategory(
-            where: CategoryUpdateWhereInput!
-            data: CategoryInput!
-        ): CategoryResponse
-        
+
+        updateCategory(where: CategoryUpdateWhereInput!, data: CategoryInput!): CategoryResponse
+
         deleteCategory(where: CategoryDeleteWhereInput!): CmsDeleteResponse
-        
+
         publishCategory(revision: ID!): CategoryResponse
-        
+
         unpublishCategory(revision: ID!): CategoryResponse
     }
-
 `;

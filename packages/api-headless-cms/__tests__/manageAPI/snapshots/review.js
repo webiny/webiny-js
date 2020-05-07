@@ -26,7 +26,7 @@ export default /* GraphQL */ `
         revisions: [Review]
         title: CmsText
     }
-    
+
     input ReviewInput {
         text: CmsTextInput
         product: CmsRefOneInput
@@ -130,19 +130,15 @@ export default /* GraphQL */ `
 
     extend type Mutation {
         createReview(data: ReviewInput!): ReviewResponse
-        
+
         createReviewFrom(revision: ID!, data: ReviewInput): ReviewResponse
-        
-        updateReview(
-            where: ReviewUpdateWhereInput!
-            data: ReviewInput!
-        ): ReviewResponse
-        
+
+        updateReview(where: ReviewUpdateWhereInput!, data: ReviewInput!): ReviewResponse
+
         deleteReview(where: ReviewDeleteWhereInput!): CmsDeleteResponse
-        
+
         publishReview(revision: ID!): ReviewResponse
-        
+
         unpublishReview(revision: ID!): ReviewResponse
     }
-
 `;
