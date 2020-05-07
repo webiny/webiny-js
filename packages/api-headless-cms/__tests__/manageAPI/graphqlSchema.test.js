@@ -66,7 +66,7 @@ describe("MANAGE - GraphQL Schema", () => {
 
         const responses = [];
         const newContentModels = contentModels.map(item => {
-            item.modelId = item.modelId + "New";
+            item.modelId = item.modelId + "-new";
             return item;
         });
 
