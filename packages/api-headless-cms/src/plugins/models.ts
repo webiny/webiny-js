@@ -2,6 +2,8 @@ import { pipe, withStorage, withCrudLogs, withSoftDelete, withFields } from "@we
 import { withUser } from "@webiny/api-security";
 import cmsEnvironment from "./models/environment.model";
 import cmsEnvironmentAlias from "./models/environmentAlias.model";
+import cmsSettings from "./models/cmsSettings.model";
+import cmsContentModelGroup from "./models/contentModelGroup.model";
 
 export default () => ({
     name: "context-models",
@@ -29,5 +31,7 @@ export default () => ({
         context.models = { createBase };
         context.models.CmsEnvironment = cmsEnvironment({ createBase, context });
         context.models.CmsEnvironmentAlias = cmsEnvironmentAlias({ createBase, context });
+        context.models.CmsSettings = cmsSettings({ createBase });
+        context.models.CmsContentModelGroup = cmsContentModelGroup({ createBase, context });
     }
 });
