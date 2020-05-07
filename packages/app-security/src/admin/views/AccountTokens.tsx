@@ -16,8 +16,8 @@ import {
 import { Alert } from "@webiny/ui/Alert";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { i18n } from "@webiny/app/i18n";
-import TokenList from "./PersonalAccessTokens/TokenList";
 const t = i18n.ns("app-security/admin/roles/data-list");
+import TokenList from "./PersonalAccessTokens/TokenList";
 
 import { CREATE_PAT } from "./AccountGraphql";
 
@@ -36,7 +36,7 @@ const PatContainer = styled("div")({
 const TokensElement = ({ setFormIsLoading, data, setValue }) => {
     const [showCreatePATDialog, setShowCreatePATDialog] = useState(false);
     const [showPATHashDialog, setShowPATHashDialog] = useState(false);
-    const [tokenHash, setTokenHash] = useState(null);
+    const [tokenHash, setTokenHash] = useState();
     const [newPATName, setNewPATName] = useState("New token");
     const { showSnackbar } = useSnackbar();
     const client = useApolloClient();
@@ -64,7 +64,7 @@ const TokensElement = ({ setFormIsLoading, data, setValue }) => {
         if (!data.personalAccessTokens) {
             newPATs = [personalAccessToken];
         } else {
-            newPATs = [personalAccessToken, ...data.personalAccessTokens];
+            newPATs = [...data.personalAccessTokens, personalAccessToken];
         }
 
         setValue("personalAccessTokens", newPATs);
