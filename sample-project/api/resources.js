@@ -9,6 +9,14 @@ const apolloServiceEnv = {
     JWT_TOKEN_SECRET: process.env.JWT_SECRET,
     VALIDATE_ACCESS_TOKEN_FUNCTION: "${validateAccessToken.name}"
 };
+const apolloGatewayServices = {
+    LAMBDA_SERVICE_SECURITY: "${security.name}",
+    LAMBDA_SERVICE_I18N: "${i18n.name}",
+    LAMBDA_SERVICE_FILES: "${filesGraphQL.name}",
+    LAMBDA_SERVICE_PAGE_BUILDER: "${pageBuilder.name}",
+    LAMBDA_SERVICE_FORM_BUILDER: "${formBuilder.name}",
+    LAMBDA_SERVICE_HEADLESS_CMS: "${headlessCms.name}"
+};
 
 module.exports = () => ({
     resources: {
@@ -27,15 +35,7 @@ module.exports = () => ({
                     handler: "handler.handler",
                     memory: 512,
                     timeout: 30,
-                    env: {
-                        ...apolloServiceEnv,
-                        LAMBDA_SERVICE_SECURITY: "${security.name}",
-                        LAMBDA_SERVICE_I18N: "${i18n.name}",
-                        LAMBDA_SERVICE_FILES: "${filesGraphQL.name}",
-                        LAMBDA_SERVICE_PAGE_BUILDER: "${pageBuilder.name}",
-                        LAMBDA_SERVICE_FORM_BUILDER: "${formBuilder.name}",
-                        LAMBDA_SERVICE_HEADLESS_CMS: "${headlessCms.name}"
-                    }
+                    env: { ...apolloServiceEnv, ...apolloGatewayServices }
                 }
             }
         },
