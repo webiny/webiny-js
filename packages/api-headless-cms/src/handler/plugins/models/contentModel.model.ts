@@ -105,7 +105,7 @@ export default ({ createBase, context }) => {
                 }
 
                 // ... otherwise, assign a unique modelId automatically.
-                const modelIdCamelCase = camelCase(this.title);
+                const modelIdCamelCase = camelCase(this.name);
                 let modelId;
                 let counter = 0;
 
