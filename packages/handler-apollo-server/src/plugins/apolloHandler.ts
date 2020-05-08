@@ -13,14 +13,12 @@ function normalizeEvent(event) {
 }
 
 let cache;
-let isColdStart = true;
 
 const plugin: CreateApolloHandlerPlugin = {
     name: "handler-apollo-server-create-handler",
     type: "handler-apollo-server-create-handler",
     async create({ context, options }) {
         if (cache) {
-            isColdStart = false;
             return cache;
         }
 
@@ -48,8 +46,7 @@ const plugin: CreateApolloHandlerPlugin = {
             schema,
             context: async ({ event }) => ({
                 event,
-                plugins: context.plugins,
-                isColdStart
+                plugins: context.plugins
             })
         });
 

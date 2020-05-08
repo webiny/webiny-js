@@ -7,7 +7,6 @@ export { Plugin, PluginsContainer };
 export interface Context {
     event?: any;
     plugins: PluginsContainer;
-    isColdStart?: boolean;
     [key: string]: any;
 }
 
