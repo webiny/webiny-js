@@ -8,10 +8,10 @@ const kebabCase = require("lodash.kebabcase");
 
 module.exports = [
     {
-        name: "scaffold-template-custom-lambda",
-        type: "scaffold-template",
+        name: "cli-plugin-scaffold-template-lambda",
+        type: "cli-plugin-scaffold-template",
         scaffold: {
-            name: "Custom Lambda Function",
+            name: "Lambda Function",
             questions: () => {
                 return [
                     {
@@ -99,7 +99,7 @@ module.exports = [
                 // Format code with prettier
                 const prettier = require("prettier");
                 const prettierConfig = await prettier.resolveConfig(rootResourcesPath);
-                const formattedCode = prettier.format(code, prettierConfig);
+                const formattedCode = prettier.format(code, { ...prettierConfig, parser: "babel" });
 
                 fs.writeFileSync(rootResourcesPath, formattedCode);
 
