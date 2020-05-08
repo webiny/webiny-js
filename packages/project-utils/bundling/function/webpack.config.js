@@ -1,5 +1,6 @@
 const path = require("path");
 const webpack = require("webpack");
+const WebpackBar = require("webpackbar");
 const { constantCase } = require("constant-case");
 
 const generatePackageVersionDefinitions = () => {
@@ -38,7 +39,10 @@ module.exports = ({ entry, output, debug = false, babelOptions, define }) => {
             // Turn off size warnings for entry points
             hints: false
         },
-        plugins: [new webpack.DefinePlugin({ ...definitions, ...packageVersions })],
+        plugins: [
+            new webpack.DefinePlugin({ ...definitions, ...packageVersions }),
+            new WebpackBar({ name: path.basename(process.cwd()), reporters: ["fancy"] })
+        ],
         // Run babel on all .js files and skip those in node_modules
         module: {
             exprContextCritical: false,
