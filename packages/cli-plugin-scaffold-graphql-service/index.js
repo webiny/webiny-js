@@ -8,8 +8,8 @@ const kebabCase = require("lodash.kebabcase");
 
 module.exports = [
     {
-        name: "scaffold-template-graphql-service",
-        type: "scaffold-template",
+        name: "cli-plugin-scaffold-template-graphql-service",
+        type: "cli-plugin-scaffold-template",
         scaffold: {
             name: "GraphQL Apollo Service",
             questions: () => {
@@ -110,7 +110,7 @@ module.exports = [
                 // Format code with prettier
                 const prettier = require("prettier");
                 const prettierConfig = await prettier.resolveConfig(rootResourcesPath);
-                const formattedCode = prettier.format(code, prettierConfig);
+                const formattedCode = prettier.format(code, { ...prettierConfig, parser: "babel" });
 
                 fs.writeFileSync(rootResourcesPath, formattedCode);
             }

@@ -1,5 +1,5 @@
 {
-  "name": "@webiny/cli-scaffold-graphql-service",
+  "name": "@webiny/cli-plugin-scaffold-graphql-service",
   "version": "1.0.0",
   "description": "Generate Webiny GraphQL service",
   "main": "index.js",
@@ -19,10 +19,21 @@
     "find-up": "^4.1.0",
     "lodash.camelcase": "^4.3.0",
     "lodash.kebabcase": "^4.1.1",
-    "ncp": "^2.0.0"
+    "ncp": "^2.0.0",
+    "prettier": "^2.0.5"
+  },
+  "devDependencies": {
+    "@shelf/jest-mongodb": "^1.1.5"
   },
   "publishConfig": {
     "access": "public",
     "directory": "."
+  },
+  "adio": {
+    "ignoreDirs": [
+      "template",
+      "node_modules",
+      "__tests__"
+    ]
   }
 }
