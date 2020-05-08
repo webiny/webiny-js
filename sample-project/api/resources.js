@@ -2,7 +2,7 @@ const apolloServiceEnv = {
     COGNITO_REGION: process.env.AWS_REGION,
     COGNITO_USER_POOL_ID: "${cognito.userPool.Id}",
     DEBUG: "true",
-    DB_PROXY_FUNCTION: "${dbProxy.arn}",
+    DB_PROXY_FUNCTION: "${databaseProxy.arn}",
     GRAPHQL_INTROSPECTION: process.env.GRAPHQL_INTROSPECTION,
     GRAPHQL_PLAYGROUND: process.env.GRAPHQL_PLAYGROUND,
     JWT_TOKEN_EXPIRES_IN: "2592000",
@@ -39,13 +39,20 @@ module.exports = () => ({
                 }
             }
         },
-        dbProxy: {
+        databaseProxy: {
+            build: {
+                root: "./services/databaseProxy",
+                script: "yarn build"
+            },
             deploy: {
-                component: "@webiny/serverless-db-proxy",
+                component: "@webiny/serverless-function",
                 inputs: {
-                    testConnectionBeforeDeploy: true,
                     region: process.env.AWS_REGION,
+                    description: "Database Proxy",
+                    code: "./services/databaseProxy/build",
                     concurrencyLimit: 15,
+                    handler: "handler.handler",
+                    memory: 512,
                     timeout: 30,
                     env: {
                         MONGODB_SERVER: process.env.MONGODB_SERVER,
@@ -101,7 +108,7 @@ module.exports = () => ({
                     memory: 512,
                     timeout: 30,
                     env: {
-                        DB_PROXY_FUNCTION: "${dbProxy.arn}",
+                        DB_PROXY_FUNCTION: "${databaseProxy.arn}",
                         DEBUG: process.env.DEBUG
                     }
                 }
