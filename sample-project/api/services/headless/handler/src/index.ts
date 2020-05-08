@@ -2,7 +2,7 @@ import { createHandler } from "@webiny/handler";
 import headlessCmsHandler from "@webiny/api-headless-cms/handler";
 import dbProxy from "@webiny/api-plugin-commodo-db-proxy";
 import securityServicePlugins from "@webiny/api-security/plugins/service";
-import i18nPlugins from "@webiny/api-i18n/plugins/service";
+import i18nServicePlugins from "@webiny/api-i18n/plugins/service";
 
 export const handler = createHandler(
     headlessCmsHandler({
@@ -20,7 +20,7 @@ export const handler = createHandler(
         },
         validateAccessTokenFunction: process.env.VALIDATE_ACCESS_TOKEN_FUNCTION
     }),
-    i18nPlugins({
+    i18nServicePlugins({
         localesFunction: process.env.I18N_LOCALES_FUNCTION
     })
 );
