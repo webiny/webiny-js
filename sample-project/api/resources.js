@@ -7,15 +7,15 @@ const apolloServiceEnv = {
     GRAPHQL_PLAYGROUND: process.env.GRAPHQL_PLAYGROUND,
     JWT_TOKEN_EXPIRES_IN: "2592000",
     JWT_TOKEN_SECRET: process.env.JWT_SECRET,
-    VALIDATE_ACCESS_TOKEN_FUNCTION: "${validateAccessToken.name}"
+    VALIDATE_ACCESS_TOKEN_FUNCTION: "${securityValidateAccessToken.name}"
 };
 const apolloGatewayServices = {
-    LAMBDA_SERVICE_SECURITY: "${security.name}",
-    LAMBDA_SERVICE_I18N: "${i18n.name}",
+    LAMBDA_SERVICE_SECURITY: "${securityGraphQL.name}",
+    LAMBDA_SERVICE_I18N: "${i18nGraphQL.name}",
     LAMBDA_SERVICE_FILES: "${filesGraphQL.name}",
-    LAMBDA_SERVICE_PAGE_BUILDER: "${pageBuilder.name}",
-    LAMBDA_SERVICE_FORM_BUILDER: "${formBuilder.name}",
-    LAMBDA_SERVICE_HEADLESS_CMS: "${headlessCms.name}"
+    LAMBDA_SERVICE_PAGE_BUILDER: "${pageBuilderGraphQL.name}",
+    LAMBDA_SERVICE_FORM_BUILDER: "${formBuilderGraphQL.name}",
+    LAMBDA_SERVICE_HEADLESS_CMS: "${headlessCmsGraphQL.name}"
 };
 
 module.exports = () => ({
@@ -48,7 +48,7 @@ module.exports = () => ({
                 component: "@webiny/serverless-function",
                 inputs: {
                     region: process.env.AWS_REGION,
-                    description: "Database Proxy",
+                    description: "Handles interaction with MongoDB",
                     code: "./services/databaseProxy/build",
                     concurrencyLimit: 15,
                     handler: "handler.handler",
@@ -74,7 +74,7 @@ module.exports = () => ({
                 }
             }
         },
-        security: {
+        securityGraphQL: {
             watch: ["./services/security/graphql/build"],
             build: {
                 root: "./services/security/graphql",
@@ -93,7 +93,7 @@ module.exports = () => ({
                 }
             }
         },
-        validateAccessToken: {
+        securityValidateAccessToken: {
             watch: ["./services/security/validateAccessToken/build"],
             build: {
                 root: "./services/security/validateAccessToken",
@@ -240,7 +240,7 @@ module.exports = () => ({
                 }
             }
         },
-        i18n: {
+        i18nGraphQL: {
             watch: ["./services/i18n/graphql/build"],
             build: {
                 root: "./services/i18n/graphql",
@@ -273,7 +273,7 @@ module.exports = () => ({
                     memory: 256,
                     timeout: 30,
                     env: {
-                        DB_PROXY_FUNCTION: "${dbProxy.arn}",
+                        DB_PROXY_FUNCTION: "${databaseProxy.arn}",
                         DEBUG: process.env.DEBUG
                     }
                 }
@@ -294,7 +294,7 @@ module.exports = () => ({
                 }
             }
         },
-        pageBuilder: {
+        pageBuilderGraphQL: {
             watch: ["./services/pageBuilder/build"],
             build: {
                 root: "./services/pageBuilder",
@@ -317,7 +317,7 @@ module.exports = () => ({
                 }
             }
         },
-        formBuilder: {
+        formBuilderGraphQL: {
             watch: ["./services/formBuilder/build"],
             build: {
                 root: "./services/formBuilder",
@@ -336,7 +336,7 @@ module.exports = () => ({
                 }
             }
         },
-        headlessCms: {
+        headlessCmsGraphQL: {
             watch: ["./services/headless/graphql/build"],
             build: {
                 root: "./services/headless/graphql",
@@ -354,7 +354,7 @@ module.exports = () => ({
                 }
             }
         },
-        headlessCmsHandler: {
+        headlessCmsAPI: {
             watch: ["./services/headless/handler/build"],
             build: {
                 root: "./services/headless/handler",
@@ -368,10 +368,7 @@ module.exports = () => ({
                     code: "./services/headless/handler/build",
                     handler: "handler.handler",
                     memory: 512,
-                    env: {
-                        ...apolloServiceEnv,
-                        I18N_LOCALES_FUNCTION: "${i18nLocales.name}"
-                    }
+                    env: { ...apolloServiceEnv, I18N_LOCALES_FUNCTION: "${i18nLocales.name}" }
                 }
             }
         },
@@ -395,7 +392,7 @@ module.exports = () => ({
                     {
                         path: "/cms/{key+}",
                         method: "ANY",
-                        function: "${headlessCmsHandler.arn}"
+                        function: "${headlessCmsAPI.arn}"
                     }
                 ]
             }
