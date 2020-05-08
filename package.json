@@ -18,7 +18,8 @@
     "nohoist": [
       "**/inquirer/**",
       "**/mime/**",
-      "**/@types/mocha"
+      "**/@types/mocha",
+      "**/semver"
     ]
   },
   "contributors": [

@@ -295,12 +295,13 @@ module.exports = function(webpackEnv, { paths, babelCustomizer }) {
             alias: {
                 // Support React Native Web
                 // https://www.smashingmagazine.com/2016/08/a-glimpse-into-the-future-with-react-native-for-web/
-                "react-native": "react-native-web",
-                "react-dom": "@hot-loader/react-dom",
+                "react-native": require.resolve("react-native-web"),
+                "react-dom$": require.resolve("@hot-loader/react-dom"),
+                react: require.resolve("react"),
                 // Allows for better profiling with ReactDevTools
                 ...(isEnvProductionProfile && {
-                    "react-dom$": "react-dom/profiling",
-                    "scheduler/tracing": "scheduler/tracing-profiling"
+                    "react-dom$": require.resolve("react-dom/profiling"),
+                    "scheduler/tracing": require.resolve("scheduler/tracing-profiling")
                 }),
                 ...(modules.webpackAliases || {})
             },
