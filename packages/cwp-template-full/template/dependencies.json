@@ -1,12 +1,12 @@
 {
   "private": true,
   "dependencies": {
-    "@babel/plugin-proposal-class-properties": "latest",
-    "@babel/plugin-proposal-object-rest-spread": "latest",
-    "semver": "^6.3.0",
+    "@webiny/cli-plugin-deploy-components": "latest",
+    "@webiny/cli-plugin-scaffold": "latest",
+    "@webiny/cli-plugin-scaffold-graphql-service": "latest",
+    "@webiny/cli-plugin-scaffold-lambda": "latest",
     "@webiny/project-utils": "latest",
     "@webiny/serverless-api-gateway": "latest",
-    "@webiny/serverless-apollo-service": "latest",
     "@webiny/serverless-app": "latest",
     "@webiny/serverless-aws-api-gateway": "latest",
     "@webiny/serverless-aws-cloudfront": "latest",
@@ -14,13 +14,10 @@
     "@webiny/serverless-aws-lambda": "latest",
     "@webiny/serverless-aws-s3-object": "latest",
     "@webiny/serverless-component": "latest",
-    "@webiny/serverless-db-proxy": "latest",
     "@webiny/serverless-files": "latest",
     "@webiny/serverless-function": "latest"
   },
   "workspaces": {
-    "packages": [
-      "apps/*"
-    ]
+    "packages": ["apps/*"]
   }
 }
