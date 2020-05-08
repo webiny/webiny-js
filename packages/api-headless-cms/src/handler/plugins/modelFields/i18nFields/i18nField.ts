@@ -53,7 +53,7 @@ export const i18nField = ({ field, context: { i18n, commodo }, ...rest }: I18NFi
                     }
 
                     if (!locale) {
-                        locale = i18n.getDefaultLocale();
+                        locale = i18n.getLocale();
                     }
 
                     const value = this.values.find(value => value.locale === locale.id);
