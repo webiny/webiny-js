@@ -2,8 +2,7 @@ import React, { useCallback, useRef } from "react";
 import TimeAgo from "timeago-react";
 import useReactRouter from "use-react-router";
 import { css } from "emotion";
-import { get, upperFirst } from "lodash";
-import { Typography } from "@webiny/ui/Typography";
+import get from "lodash/get";
 import { ConfirmationDialog } from "@webiny/ui/ConfirmationDialog";
 import { DeleteIcon, EditIcon } from "@webiny/ui/List/DataList/icons";
 import { DELETE_CONTENT_MODEL, CREATE_REVISION_FROM } from "../../viewsGraphql";
@@ -145,9 +144,6 @@ const ContentModelsDataList = (props: ContentModelsDataListProps) => {
                                 )}
                             </ListItemText>
                             <ListItemMeta className={rightAlign}>
-                                <Typography use={"subtitle2"}>
-                                    {upperFirst(contentModel.status)} (v{contentModel.version})
-                                </Typography>
                                 <ListActions>
                                     <EditIcon onClick={editRecord(contentModel)} />
                                     <ConfirmationDialog>
