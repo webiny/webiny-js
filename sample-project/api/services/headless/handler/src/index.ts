@@ -20,5 +20,7 @@ export const handler = createHandler(
         },
         validateAccessTokenFunction: process.env.VALIDATE_ACCESS_TOKEN_FUNCTION
     }),
-    i18nPlugins()
+    i18nPlugins({
+        localesFunction: process.env.I18N_LOCALES_FUNCTION
+    })
 );
