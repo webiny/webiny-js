@@ -22,7 +22,9 @@ export const handler = createHandler(
         },
         validateAccessTokenFunction: process.env.VALIDATE_ACCESS_TOKEN_FUNCTION
     }),
-    i18nServicePlugins(),
+    i18nServicePlugins({
+        localesFunction: process.env.I18N_LOCALES_FUNCTION
+    }),
     formBuilderPlugins(),
     useSsrCacheTagsPlugins()
 );
