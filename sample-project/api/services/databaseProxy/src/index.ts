@@ -1,5 +1,6 @@
-const { MongoClient } = require("mongodb");
-const { EJSON } = require("bson");
+import { MongoClient } from "mongodb";
+import { EJSON } from "bson";
+
 const MONGODB_SERVER = process.env.MONGODB_SERVER;
 const MONGODB_NAME = process.env.MONGODB_NAME;
 
@@ -44,7 +45,7 @@ const executeOperation = async (collection, operation, args) => {
     return collectionInstance[operation](...args);
 };
 
-module.exports.handler = async event => {
+export const handler = async event => {
     try {
         let { body } = event;
         body = EJSON.parse(body);
