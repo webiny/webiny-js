@@ -122,9 +122,11 @@
     "./scripts/**",
     "**jest**",
     "./packages/cli",
-    "./packages/project-utils",
+    "./packages/cli-scaffold-custom-lambda",
+    "./packages/cli-scaffold-graphql-service",
     "./packages/create-webiny-project",
     "./packages/cwp-template-full",
+    "./packages/project-utils",
     "./packages/serverless-api-gateway",
     "./packages/serverless-apollo-service",
     "./packages/serverless-app",
@@ -135,7 +137,6 @@
     "./packages/serverless-aws-s3",
     "./packages/serverless-aws-s3-object",
     "./packages/serverless-component",
-    "./packages/serverless-db-proxy",
     "./packages/serverless-function",
     "**resources.js"
   ]

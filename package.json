@@ -5,6 +5,7 @@
       "packages/*",
       "sample-project/apps/*",
       "sample-project/api/services/apolloGateway",
+      "sample-project/api/services/databaseProxy",
       "sample-project/api/services/files",
       "sample-project/api/services/formBuilder",
       "sample-project/api/services/headless/handler",
