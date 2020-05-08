@@ -1,12 +1,12 @@
 const path = require("path");
 const fs = require("fs-extra");
 const packages = require("get-yarn-workspaces")().map(pkg => pkg.replace(/\//g, path.sep));
-const readJson = require("read-json-sync");
+const loadJson = require("load-json-file");
 
 const getAliases = buildDirectory => {
     return packages.reduce((aliases, dir) => {
         try {
-            const json = readJson(path.join(dir, "package.json"));
+            const json = loadJson.sync(path.join(dir, "package.json"));
             if (fs.existsSync(path.join(dir, buildDirectory))) {
                 aliases[`${json.name}`] = `${json.name}/${buildDirectory}`;
             }

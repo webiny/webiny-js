@@ -4,6 +4,7 @@ module.exports = {
     type: "cli-command",
     name: "cli-command-remove",
     create({ yargs, context }) {
+        yargs.example("$0 remove api --env=dev");
         yargs.command(
             "remove <folder>",
             `Remove resources from <folder>.\n${dim("(NOTE: run from project root)")}`,

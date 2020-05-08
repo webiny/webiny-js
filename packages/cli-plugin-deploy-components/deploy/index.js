@@ -4,6 +4,8 @@ module.exports = {
     type: "cli-command",
     name: "cli-command-deploy",
     create({ yargs, context }) {
+        yargs.example("$0 deploy api --env=dev");
+
         yargs.command(
             "deploy <folder> [resources...]",
             `Deploy resources from <folder>.\n${dim("(NOTE: run from project root)")}`,
