@@ -110,7 +110,7 @@ export type CmsContentModelModel = {
     parent: string;
     layout: CmsContentModelModelFieldsLayout;
     fields: CmsContentModelModelField[];
-    title: string;
+    name: string;
     modelId: string;
     settings: any;
     status: string;

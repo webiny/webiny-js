@@ -54,7 +54,7 @@ const DeleteContent = props => {
                     <span>
                         The page{" "}
                         <strong>
-                            {page.title.substr(0, 20)}
+                            {page.name.substr(0, 20)}
                             ...
                         </strong>{" "}
                         was deleted successfully!

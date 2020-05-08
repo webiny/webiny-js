@@ -61,7 +61,7 @@ describe("READ - GraphQL Schema", () => {
         const { schema, context } = await useSchema();
         const response = await graphql(schema, schemaTypesQuery, {}, context);
         const typeNames = contentModels.reduce((acc, item) => {
-            acc.push(item.title);
+            acc.push(item.name);
             return acc;
         }, []);
         const cmsTypes = response.data.__schema.types

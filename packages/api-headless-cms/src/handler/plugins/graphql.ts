@@ -108,8 +108,10 @@ export default ({ type }) => [
 
                 type CmsContentModel {
                     id: ID
-                    title: String
+                    name: String
+                    pluralizedName: String
                     modelId: String
+                    pluralizedModelId: String
                     group: CmsContentModelGroup
                     description: String
                     layout: [[String]]
@@ -122,7 +124,7 @@ export default ({ type }) => [
 
                 input CmsContentModelInput {
                     group: ID
-                    title: String
+                    name: String
                     modelId: String
                     description: String
                     titleFieldId: String

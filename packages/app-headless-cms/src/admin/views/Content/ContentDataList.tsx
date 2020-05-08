@@ -30,7 +30,7 @@ const ContentDataList = ({ contentModel, dataList }) => {
     return (
         <DataList
             {...dataList}
-            title={contentModel.title}
+            title={contentModel.pluralizedName}
             actions={<CurrentEnvironmentLabel style={{ justifyContent: "flex-end" }} />}
         >
             {({ data, isSelected, select }) => (

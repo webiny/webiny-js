@@ -2,8 +2,7 @@ import React, { useCallback, useRef } from "react";
 import TimeAgo from "timeago-react";
 import useReactRouter from "use-react-router";
 import { css } from "emotion";
-import { get, upperFirst } from "lodash";
-import { Typography } from "@webiny/ui/Typography";
+import get from "lodash/get";
 import { ConfirmationDialog } from "@webiny/ui/ConfirmationDialog";
 import { DeleteIcon, EditIcon } from "@webiny/ui/List/DataList/icons";
 import { DELETE_CONTENT_MODEL, CREATE_REVISION_FROM } from "../../viewsGraphql";
@@ -114,11 +113,11 @@ const ContentModelsDataList = (props: ContentModelsDataListProps) => {
                 },
                 {
                     label: t`Title A-Z`,
-                    sorters: { title: 1 }
+                    sorters: { name: 1 }
                 },
                 {
                     label: t`Title Z-A`,
-                    sorters: { title: -1 }
+                    sorters: { name: -1 }
                 }
             ]}
         >
@@ -127,7 +126,7 @@ const ContentModelsDataList = (props: ContentModelsDataListProps) => {
                     {data.map(contentModel => (
                         <ListItem key={contentModel.id} className={listItemMinHeight}>
                             <ListItemText>
-                                {contentModel.title}
+                                {contentModel.name}
                                 {contentModel.createdBy && (
                                     <ListItemTextSecondary>
                                         {contentModel.createdBy.firstName && (
@@ -145,9 +144,6 @@ const ContentModelsDataList = (props: ContentModelsDataListProps) => {
                                 )}
                             </ListItemText>
                             <ListItemMeta className={rightAlign}>
-                                <Typography use={"subtitle2"}>
-                                    {upperFirst(contentModel.status)} (v{contentModel.version})
-                                </Typography>
                                 <ListActions>
                                     <EditIcon onClick={editRecord(contentModel)} />
                                     <ConfirmationDialog>

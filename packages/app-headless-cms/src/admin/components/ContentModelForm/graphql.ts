@@ -1,5 +1,4 @@
 import upperFirst from "lodash/upperFirst";
-import pluralize from "pluralize";
 import gql from "graphql-tag";
 
 const I18N_FIELD = /* GraphQL */ `
@@ -67,13 +66,12 @@ export const createReadQuery = model => {
 };
 
 export const createListQuery = model => {
+    const ucFirstPluralizedModelId = upperFirst(model.pluralizedModelId);
     const ucFirstModelId = upperFirst(model.modelId);
 
     return gql`
-        query list${pluralize(
-            ucFirstModelId
-        )}($where: ${ucFirstModelId}ListWhereInput, $sort: [${ucFirstModelId}ListSorter], $limit: Int, $after: String, $before: String) {
-            list${pluralize(ucFirstModelId)}(
+        query list${ucFirstPluralizedModelId}($where: ${ucFirstModelId}ListWhereInput, $sort: [${ucFirstModelId}ListSorter], $limit: Int, $after: String, $before: String) {
+            list${ucFirstPluralizedModelId}(
                 where: $where
                 sort: $sort
                 limit: $limit

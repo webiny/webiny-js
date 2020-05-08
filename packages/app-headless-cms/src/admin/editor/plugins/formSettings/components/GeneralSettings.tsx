@@ -7,8 +7,8 @@ const GeneralSettings = ({ Bind }) => {
         <React.Fragment>
             <Grid>
                 <Cell span={12}>
-                    <Bind name={"title"}>
-                        <Input label={"Content model title"} />
+                    <Bind name={"name"}>
+                        <Input label={"Content model name"} />
                     </Bind>
                 </Cell>
                 <Cell span={12}>

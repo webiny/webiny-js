@@ -5,13 +5,15 @@ export const GET_CONTENT_MODEL_BY_MODEL_ID = gql`
     query getContentBySlug($modelId: String) {
         getContentModel(where: { modelId: $modelId }) {
             data {
+                id
                 modelId
-                title
+                pluralizedModelId
+                name
+                pluralizedName
                 fields {
                     ${FIELDS_FIELDS}
                 }
                 layout
-                id
             }
             error {
                 code

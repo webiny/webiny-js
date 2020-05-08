@@ -1,6 +1,6 @@
 {
   "packages": ["packages/*"],
-  "version": "independent",
+  "version": "fixed",
   "command": {
     "version": {
       "preid": "next",
@@ -10,13 +10,13 @@
         "**/__tests__/**",
         "**/*.md",
         "lerna.json",
-        "examples/**"
+        "sample-project/**"
       ],
-      "allowBranch": ["master", "next"],
+      "allowBranch": ["master", "next", "release-*"],
       "conventionalCommits": true,
       "createRelease": "github",
       "commitHooks": false,
-      "message": "chore(release): New release :tada: :rocket:"
+      "message": "chore(release): publish %s :tada: :rocket:"
     },
     "publish": {
       "conventionalCommits": true,

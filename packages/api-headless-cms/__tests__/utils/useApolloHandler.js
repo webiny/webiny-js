@@ -12,7 +12,8 @@ export default plugins => () => {
         invoke: async ({ httpMethod = "POST", body }) => {
             const response = await apolloHandler({
                 httpMethod: "POST",
-                body: JSON.stringify(body)
+                body: JSON.stringify(body),
+                headers: {}
             });
 
             return [JSON.parse(response.body), response];

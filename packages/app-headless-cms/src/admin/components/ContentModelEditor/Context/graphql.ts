@@ -44,7 +44,7 @@ export const GET_CONTENT_MODEL = gql`
         getContentModel(id: $id) {
             data {
                 id
-                title
+                name
                 description
                 modelId
                 titleFieldId
@@ -67,7 +67,7 @@ export const UPDATE_CONTENT_MODEL = gql`
         updateContentModel(id: $id, data: $data) {
             data {
                 id
-                title
+                name
                 titleFieldId
                 fields {
                     ${FIELDS_FIELDS}

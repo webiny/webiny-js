@@ -2,6 +2,7 @@ import { validation } from "@webiny/validation";
 import {
     pipe,
     withFields,
+    withProps,
     string,
     withName,
     fields,
@@ -12,6 +13,7 @@ import {
 } from "@webiny/commodo";
 import createFieldsModel from "./ContentModel/createFieldsModel";
 import camelCase from "lodash/camelCase";
+import pluralize from "pluralize";
 
 const required = validation.create("required");
 
@@ -21,7 +23,7 @@ export default ({ createBase, context }) => {
     const CmsContentModel = pipe(
         withName(`CmsContentModel`),
         withFields({
-            title: string({
+            name: string({
                 validation: validation.create("required,maxLength:100"),
                 value: "Untitled"
             }),
@@ -35,6 +37,22 @@ export default ({ createBase, context }) => {
                 value: [],
                 instanceOf: ContentModelFieldsModel
             })
+        }),
+        withProps({
+            pluralizedName() {
+                if (!this.name) {
+                    return "";
+                }
+
+                return pluralize(this.name);
+            },
+            pluralizedModelId() {
+                if (!this.modelId) {
+                    return "";
+                }
+
+                return pluralize(this.modelId);
+            }
         }),
         withHooks({
             async beforeSave() {
@@ -76,6 +94,7 @@ export default ({ createBase, context }) => {
             async beforeCreate() {
                 // If there is a modelId assigned, check if it's unique ...
                 if (this.modelId) {
+                    this.modelId = camelCase(this.modelId)
                     const existing = await CmsContentModel.findOne({
                         query: { modelId: this.modelId }
                     });
@@ -86,7 +105,7 @@ export default ({ createBase, context }) => {
                 }
 
                 // ... otherwise, assign a unique modelId automatically.
-                const modelIdCamelCase = camelCase(this.title);
+                const modelIdCamelCase = camelCase(this.name);
                 let modelId;
                 let counter = 0;
 

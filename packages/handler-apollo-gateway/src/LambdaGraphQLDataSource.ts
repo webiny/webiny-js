@@ -36,6 +36,10 @@ export class LambdaGraphQLDataSource implements GraphQLDataSource {
         }
     }
 
+    willSendRequest: (
+        requestContext: Pick<GraphQLRequestContext<any>, "request" | "context">
+    ) => ValueOrPromise<void>;
+
     functionName: string;
     path = "/graphql";
 
@@ -79,8 +83,4 @@ export class LambdaGraphQLDataSource implements GraphQLDataSource {
 
         return body;
     }
-
-    public willSendRequest?<TContext>(
-        requestContext: Pick<GraphQLRequestContext<TContext>, "request" | "context">
-    ): ValueOrPromise<void>;
 }

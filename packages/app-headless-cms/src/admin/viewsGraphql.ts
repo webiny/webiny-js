@@ -8,7 +8,7 @@ const ERROR_FIELDS = `
 
 const BASE_CONTENT_MODEL_FIELDS = `  
     id
-    title
+    name
     savedOn
     createdBy {
         firstName
@@ -25,7 +25,7 @@ export const LIST_MENU_CONTENT_GROUPS_MODELS = gql`
                 name
                 icon
                 contentModels {
-                    title
+                    name
                     modelId
                     id
                 }
@@ -58,7 +58,7 @@ export const CREATE_CONTENT_MODEL = gql`
         createContentModel(data: $data) {
             data {
                 id
-                title
+                name
                 description
                 modelId
             }
