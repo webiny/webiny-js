@@ -42,10 +42,6 @@ const renderFieldElement = (props: {
     switch (props.field.type) {
         case "text":
             return <Input {...props} />;
-        case "integer":
-            return <Input {...props} type="number" />;
-        case "float":
-            return <Input {...props} type="number" />;
         case "number":
             return <Input {...props} type="number" />;
         case "boolean":
