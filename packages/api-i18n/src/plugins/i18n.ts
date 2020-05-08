@@ -2,6 +2,20 @@ import { Context as APIContext, ContextPlugin } from "@webiny/graphql/types";
 import acceptLanguageParser from "accept-language-parser";
 import { Context as I18NContext, ContextI18NGetLocales } from "@webiny/api-i18n/types";
 
+const getAcceptLanguageHeader = event => {
+    if (!event) {
+        return null;
+    }
+
+    for (const key in event.headers) {
+        if (key.toLowerCase() === "accept-language") {
+            return event.headers[key];
+        }
+    }
+
+    return null;
+};
+
 const plugin: ContextPlugin<APIContext & I18NContext> = {
     type: "context",
     name: "context-i18n",
@@ -12,16 +26,14 @@ const plugin: ContextPlugin<APIContext & I18NContext> = {
             throw new Error('Cannot load locales - missing "context-i18n-get-locales" plugin.');
         }
 
-        const { isColdStart, event } = context;
+        const { event } = context;
 
         const self = {
             __i18n: {
                 acceptLanguage: null,
                 defaultLocale: null,
                 locale: null,
-                // NOTE: if `isColdStart!==false`, we can't run queries against our API because Apollo Gateway hasn't yet
-                // built it's federated schema and we will end up in an infinite-loop.
-                locales: isColdStart !== false ? [] : await locales.resolve({ context })
+                locales: await locales.resolve({ context })
             },
             getDefaultLocale() {
                 const allLocales = self.getLocales();
@@ -32,17 +44,18 @@ const plugin: ContextPlugin<APIContext & I18NContext> = {
                     return self.__i18n.locale;
                 }
 
-                if (isColdStart !== false) {
-                    return null;
+                const allLocales = self.getLocales();
+
+                let acceptLanguage, currentLocale;
+                const acceptLanguageHeader = getAcceptLanguageHeader(event);
+
+                if (acceptLanguageHeader) {
+                    acceptLanguage = acceptLanguageParser.pick(
+                        allLocales.map(item => item.code),
+                        acceptLanguageHeader
+                    );
                 }
 
-                const allLocales = self.getLocales();
-                const acceptLanguage = acceptLanguageParser.pick(
-                    allLocales.map(item => item.code),
-                    event ? event.headers["accept-language"] : null
-                );
-
-                let currentLocale;
                 if (acceptLanguage) {
                     currentLocale = allLocales.find(item => item.code === acceptLanguage);
                 }
@@ -52,6 +65,7 @@ const plugin: ContextPlugin<APIContext & I18NContext> = {
                 }
 
                 self.__i18n.locale = currentLocale;
+
                 return self.__i18n.locale;
             },
             getLocales() {
