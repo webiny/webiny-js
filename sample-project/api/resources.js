@@ -234,9 +234,9 @@ module.exports = () => ({
             }
         },
         i18n: {
-            watch: ["./services/i18n/build"],
+            watch: ["./services/i18n/graphql/build"],
             build: {
-                root: "./services/i18n",
+                root: "./services/i18n/graphql",
                 script: "yarn build"
             },
             deploy: {
@@ -244,10 +244,31 @@ module.exports = () => ({
                 inputs: {
                     region: process.env.AWS_REGION,
                     description: "I18N GraphQL API",
-                    code: "./services/i18n/build",
+                    code: "./services/i18n/graphql/build",
                     handler: "handler.handler",
                     memory: 512,
                     env: apolloServiceEnv
+                }
+            }
+        },
+        i18nLocales: {
+            watch: ["./services/i18n/locales/build"],
+            build: {
+                root: "./services/i18n/locales",
+                script: "yarn build"
+            },
+            deploy: {
+                component: "@webiny/serverless-function",
+                inputs: {
+                    region: process.env.AWS_REGION,
+                    code: "./services/i18n/locales/build",
+                    handler: "handler.handler",
+                    memory: 256,
+                    timeout: 30,
+                    env: {
+                        DB_PROXY_FUNCTION: "${dbProxy.arn}",
+                        DEBUG: process.env.DEBUG
+                    }
                 }
             }
         },
@@ -304,7 +325,7 @@ module.exports = () => ({
                     handler: "handler.handler",
                     memory: 512,
                     timeout: 30,
-                    env: apolloServiceEnv
+                    env: { ...apolloServiceEnv, I18N_LOCALES_FUNCTION: "${i18nLocales.name}" }
                 }
             }
         },
@@ -340,7 +361,10 @@ module.exports = () => ({
                     code: "./services/headless/handler/build",
                     handler: "handler.handler",
                     memory: 512,
-                    env: apolloServiceEnv
+                    env: {
+                        ...apolloServiceEnv,
+                        I18N_LOCALES_FUNCTION: "${i18nLocales.name}"
+                    }
                 }
             }
         },
