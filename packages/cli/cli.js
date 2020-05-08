@@ -8,8 +8,6 @@ yargs
     .usage("Usage: $0 <command> [options]")
     .demandCommand(1)
     .recommendCommands()
-    .example("$0 deploy api --env=dev")
-    .example("$0 remove api --env=dev")
     .epilogue(
         `To find more information, docs and tutorials, see ${blue("https://docs.webiny.com")}.`
     )
@@ -25,23 +23,6 @@ yargs
     });
 
 createCommands(yargs, context);
-
-yargs.command(
-    "create <name>",
-    "Create a new Webiny project.",
-    yargs => {
-        yargs.positional("name", {
-            describe: "Project name"
-        });
-        yargs.option("tag", {
-            describe: `Dist tag of Webiny to use. Default: ${blue("latest")} `,
-            default: "latest"
-        });
-    },
-    argv => {
-        require("./create")(argv);
-    }
-);
 
 // Run
 yargs.argv;
