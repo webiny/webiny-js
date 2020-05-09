@@ -5,19 +5,16 @@ import { Typography } from "@webiny/ui/Typography";
 import { Grid, Cell } from "@webiny/ui/Grid";
 import { I18NValue } from "@webiny/app-i18n/components";
 import { i18n } from "@webiny/app/i18n";
+import classNames from "classnames";
 const t = i18n.ns("app-headless-cms/admin/plugins/content-details-header/header");
 
-const headerTitle = css({
-    "&.mdc-layout-grid": {
-        borderBottom: "1px solid var(--mdc-theme-on-background)",
-        color: "var(--mdc-theme-text-primary-on-background)",
-        background: "var(--mdc-theme-surface)",
-        paddingTop: 10,
-        paddingBottom: 9,
-        ".mdc-layout-grid__inner": {
-            alignItems: "center"
-        }
-    }
+const titleGrid = css({
+    paddingBottom: "0 !important"
+});
+
+const toolbarGrid = css({
+    paddingTop: "0 !important",
+    borderBottom: "1px solid var(--mdc-theme-on-background)"
 });
 
 const contentTitle = css({
@@ -27,10 +24,16 @@ const contentTitle = css({
 });
 
 const headerActions = css({
-    justifyContent: "flex-end",
-    marginRight: "-15px",
     display: "flex",
     alignItems: "center"
+});
+
+const headerActionsLeft = css({
+    justifyContent: "flex-end"
+});
+
+const headerActionsRight = css({
+    justifyContent: "flex-start"
 });
 
 const Header = props => {
@@ -47,12 +50,16 @@ const Header = props => {
 
     return (
         <React.Fragment>
-            <Grid className={headerTitle}>
-                <Cell span={6} className={contentTitle}>
+            <Grid className={titleGrid}>
+                <Cell span={12} className={contentTitle}>
                     <Typography use="headline5">{title}</Typography>
                 </Cell>
-                <Cell span={6} className={headerActions}>
+            </Grid>
+            <Grid className={toolbarGrid}>
+                <Cell span={6} className={classNames(headerActions, headerActionsRight)}>
                     {renderPlugins("cms-content-details-header-left", props)}
+                </Cell>
+                <Cell span={6} className={classNames(headerActions, headerActionsLeft)}>
                     {renderPlugins("cms-content-details-header-right", props)}
                 </Cell>
             </Grid>
