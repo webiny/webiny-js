@@ -4,36 +4,36 @@ import { CmsModelFieldToGraphQLPlugin } from "@webiny/api-headless-cms/types";
 const createListFilters = ({ field }) => {
     return `
         # Matches if the field is equal to the given value
-        ${field.fieldId}: Float
-        
-        # Matches if the field is not equal to the given value
-        ${field.fieldId}_not: Float
+        ${field.fieldId}: Number
 
-        
+        # Matches if the field is not equal to the given value
+        ${field.fieldId}_not: Number
+
+
         # Matches if the field value equal one of the given values
-        ${field.fieldId}_in: [Float]
-        
+        ${field.fieldId}_in: [Number]
+
         # Matches if the field value does not equal any of the given values
-        ${field.fieldId}_not_in: [Float]
-        
+        ${field.fieldId}_not_in: [Number]
+
         # Matches if the field value is strictly smaller than the given value
-        ${field.fieldId}_lt: Float
-        
+        ${field.fieldId}_lt: Number
+
         # Matches if the field value is smaller than or equal to the given value
-        ${field.fieldId}_lte: Float
-        
+        ${field.fieldId}_lte: Number
+
         # Matches if the field value is strictly greater than the given value
-        ${field.fieldId}_gt: Float
-        
+        ${field.fieldId}_gt: Number
+
         # Matches if the field value is greater than or equal to the given value
-        ${field.fieldId}_gte: Float
+        ${field.fieldId}_gte: Number
     `;
 };
 
 const plugin: CmsModelFieldToGraphQLPlugin = {
-    name: "cms-model-field-to-graphql-float",
+    name: "cms-model-field-to-graphql-number",
     type: "cms-model-field-to-graphql",
-    fieldType: "float",
+    fieldType: "number",
     isSortable: true,
     read: {
         createListFilters,
@@ -44,7 +44,7 @@ const plugin: CmsModelFieldToGraphQLPlugin = {
         },
         createTypeField({ field }) {
             const localeArg = "(locale: String)";
-            return `${field.fieldId}${localeArg}: Float`;
+            return `${field.fieldId}${localeArg}: Number`;
         }
     },
     manage: {
@@ -57,32 +57,32 @@ const plugin: CmsModelFieldToGraphQLPlugin = {
         createSchema() {
             return {
                 typeDefs: gql`
-                    input CmsFloatLocalizedInput {
-                        value: Float
+                    input CmsNumberLocalizedInput {
+                        value: Number
                         locale: ID!
                     }
 
-                    input CmsFloatInput {
-                        values: [CmsFloatLocalizedInput]
+                    input CmsNumberInput {
+                        values: [CmsNumberLocalizedInput]
                     }
 
-                    type CmsFloatLocalized {
-                        value: Float
+                    type CmsNumberLocalized {
+                        value: Number
                         locale: ID!
                     }
 
-                    type CmsFloat {
-                        value: Float
-                        values: [CmsFloatLocalized]!
+                    type CmsNumber {
+                        value: Number
+                        values: [CmsNumberLocalized]!
                     }
                 `
             };
         },
         createTypeField({ field }) {
-            return field.fieldId + ": CmsFloat";
+            return field.fieldId + ": CmsNumber";
         },
         createInputField({ field }) {
-            return field.fieldId + ": CmsFloatInput";
+            return field.fieldId + ": CmsNumberInput";
         }
     }
 };

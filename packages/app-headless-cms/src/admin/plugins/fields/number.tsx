@@ -4,14 +4,14 @@ import { Grid, Cell } from "@webiny/ui/Grid";
 import { I18NInput } from "@webiny/app-i18n/admin/components";
 import { FbBuilderFieldPlugin } from "@webiny/app-headless-cms/types";
 import { i18n } from "@webiny/app/i18n";
-const t = i18n.ns("app-headless-cms/fields");
+const t = i18n.ns("app-headless-cms/admin/fields");
 
 const plugin: FbBuilderFieldPlugin = {
     type: "content-model-editor-field-type",
-    name: "content-model-editor-field-type-float",
+    name: "content-model-editor-field-type-number",
     field: {
-        type: "float",
-        label: t`Float`,
+        type: "number",
+        label: t`Number`,
         description: t`Store numbers.`,
         icon: <FloatIcon />,
         validators: ["required", "gte", "lte"],
