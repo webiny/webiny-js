@@ -4,7 +4,6 @@ import { Tab } from "@webiny/ui/Tabs";
 import styled from "@emotion/styled";
 import { Elevation } from "@webiny/ui/Elevation";
 import ContentForm from "./ContentForm";
-import { CircularProgress } from "@webiny/ui/Progress";
 
 const RenderBlock = styled("div")({
     position: "relative",
@@ -25,7 +24,6 @@ const plugins = [
                     <RenderBlock>
                         <Elevation z={2}>
                             <div style={{ position: "relative" }}>
-                                {props.loading && <CircularProgress />}
                                 {renderPlugins(
                                     "cms-content-details-revision-content-preview",
                                     props

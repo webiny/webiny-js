@@ -32,11 +32,7 @@ function getPublishableRevisions(revisions) {
         });
 }
 
-const PublishRevision = ({ content, contentModel }) => {
-    if (!get(content, "id")) {
-        return null;
-    }
-
+const PublishRevision = ({ content, contentModel, getLoading }) => {
     const { showSnackbar } = useSnackbar();
 
     const PUBLISH_CONTENT = useMemo(() => {
@@ -76,7 +72,7 @@ const PublishRevision = ({ content, contentModel }) => {
                 content={publishableRevisions.length ? t`Publish` : t`No revisions to publish`}
                 placement={"top"}
             >
-                <IconButton icon={<PublishIcon />} onClick={showDialog} />
+                <IconButton icon={<PublishIcon />} onClick={showDialog} disabled={!content.id || getLoading()} />
             </Tooltip>
             <PublishRevisionDialog
                 open={openDialog}

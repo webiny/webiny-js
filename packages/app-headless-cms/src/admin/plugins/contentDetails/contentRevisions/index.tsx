@@ -6,10 +6,10 @@ import RevisionsList from "./RevisionsList";
 const plugin: CmsContentDetailsRevisionContentPlugin = {
     name: "cms-content-details-revision-content-revisions",
     type: "cms-content-details-revision-content",
-    render({ pageDetails, loading }) {
+    render(props) {
         return (
-            <Tab label={"Revisions"} disabled={loading}>
-                <RevisionsList pageDetails={pageDetails} loading={loading} />
+            <Tab label={"Revisions"} disabled={props.loading}>
+                <RevisionsList {...props} />
             </Tab>
         );
     }

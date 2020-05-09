@@ -20,7 +20,7 @@ const headerTitle = css({
     }
 });
 
-const pageTitle = css({
+const contentTitle = css({
     whiteSpace: "nowrap",
     overflow: "hidden",
     textOverflow: "ellipsis"
@@ -36,22 +36,22 @@ const headerActions = css({
 const Header = props => {
     const { contentModel, content } = props;
 
-    let formTitle;
+    let title;
     if (contentModel) {
-        formTitle = t`New {contentModelName}`({ contentModelName: contentModel.name });
+        title = t`New {contentModelName}`({ contentModelName: contentModel.name });
     }
 
     if (content.id) {
-        formTitle = I18NValue({ value: content.meta.title });
+        title = I18NValue({ value: content.meta.title });
     }
 
     return (
         <React.Fragment>
             <Grid className={headerTitle}>
-                <Cell span={8} className={pageTitle}>
-                    <Typography use="headline5">{formTitle}</Typography>
+                <Cell span={6} className={contentTitle}>
+                    <Typography use="headline5">{title}</Typography>
                 </Cell>
-                <Cell span={4} className={headerActions}>
+                <Cell span={6} className={headerActions}>
                     {renderPlugins("cms-content-details-header-left", props)}
                     {renderPlugins("cms-content-details-header-right", props)}
                 </Cell>

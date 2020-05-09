@@ -14,7 +14,9 @@ const buttonStyle = css({
     }
 });
 
-const menuList = css({
+const menuStyles = css({
+    width: 150,
+    right: 0,
     ".mdc-list-item": {
         flexDirection: "column",
         justifyContent: "center",
@@ -23,7 +25,7 @@ const menuList = css({
     }
 });
 
-const RevisionSelector = ({ location, history, content }) => {
+const RevisionSelector = ({ location, history, content, getLoading }) => {
     const query = new URLSearchParams(location.search);
 
     const currentRevision = {
@@ -37,13 +39,13 @@ const RevisionSelector = ({ location, history, content }) => {
 
     return (
         <Menu
-            className={menuList}
+            className={menuStyles}
             onSelect={evt => {
                 query.set("id", content.revisions[evt.detail.index].id);
                 history.push({ search: query.toString() });
             }}
             handle={
-                <ButtonDefault className={buttonStyle}>
+                <ButtonDefault className={buttonStyle} disabled={getLoading()}>
                     v{currentRevision.version} ({currentRevision.status}){" "}
                     <Icon icon={<DownButton />} />
                 </ButtonDefault>

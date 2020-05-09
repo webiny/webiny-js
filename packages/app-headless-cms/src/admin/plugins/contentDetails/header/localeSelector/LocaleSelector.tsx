@@ -4,10 +4,12 @@ import { withRouter } from "@webiny/react-router";
 import { ButtonDefault } from "@webiny/ui/Button";
 import { Icon } from "@webiny/ui/Icon";
 import { ReactComponent as DownButton } from "@webiny/app-headless-cms/admin/icons/round-arrow_drop_down-24px.svg";
+import { ReactComponent as DoneIcon } from "@webiny/app-headless-cms/admin/icons/done-24px.svg";
 import { MenuItem } from "@rmwc/menu";
 import { Menu } from "@webiny/ui/Menu";
 import { useI18N } from "@webiny/app-i18n/hooks/useI18N";
 import { i18n } from "@webiny/app/i18n";
+import { ListItemGraphic } from "@webiny/ui/List";
 const t = i18n.ns("app-headless-cms/admin");
 
 const buttonStyle = css({
@@ -16,37 +18,36 @@ const buttonStyle = css({
     }
 });
 
-const menuList = css({
-    ".mdc-list-item": {
-        flexDirection: "column",
-        justifyContent: "center",
-        alignItems: "baseline",
-        textAlign: "left"
+const menuStyles = css({
+    width: 175,
+    right: 0,
+    ".mdc-list-item__graphic": {
+        marginRight: 10
     }
 });
 
-const LocaleSelector = ({ location, history, content }) => {
-    const query = new URLSearchParams(location.search);
+const LocaleSelector = ({ getLocale, setLocale, getLoading }) => {
     const i18n = useI18N();
 
     return (
         <Menu
-            className={menuList}
-            onSelect={evt => {
-                query.set("id", content.revisions[evt.detail.index].id);
-                history.push({ search: query.toString() });
-            }}
+            className={menuStyles}
             handle={
-                <ButtonDefault className={buttonStyle}>
+                <ButtonDefault className={buttonStyle} disabled={getLoading()}>
                     {t`Locale: {locale}`({
-                        locale: i18n.getLocale().code
+                        locale: i18n.getLocales().find(item => item.id === getLocale()).code
                     })}
                     <Icon icon={<DownButton />} />
                 </ButtonDefault>
             }
         >
             {i18n.getLocales().map(item => (
-                <MenuItem key={item.id}>{item.code}</MenuItem>
+                <MenuItem key={item.id} onClick={() => setLocale(item.id)}>
+                    <ListItemGraphic>
+                        {item.id === getLocale() && <Icon icon={<DoneIcon />} />}
+                    </ListItemGraphic>
+                    {item.code}
+                </MenuItem>
             ))}
         </Menu>
     );
