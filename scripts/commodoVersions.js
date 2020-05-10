@@ -115,13 +115,11 @@ function processDeps({ deps, npm }) {
         }
 
         const currentVersion = deps[key];
-        const newVersion = npm[key];
+        const newVersion = "^" + npm[key][DIST_TAG];
 
         if (currentVersion !== newVersion) {
-            console.log(
-                `- ${key}@${blue(currentVersion)} => ${key}@${blue(`^` + newVersion[DIST_TAG])}`
-            );
-            deps[key] = `^${npm[key]}`;
+            console.log(`- ${key}@${blue(currentVersion)} => ${key}@${blue(newVersion)}`);
+            deps[key] = newVersion;
             processedCount++;
         }
     }
