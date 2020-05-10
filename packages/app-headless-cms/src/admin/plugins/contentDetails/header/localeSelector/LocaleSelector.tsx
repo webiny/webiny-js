@@ -1,10 +1,12 @@
 import React from "react";
 import { css } from "emotion";
 import { withRouter } from "@webiny/react-router";
-import { ButtonDefault } from "@webiny/ui/Button";
+import { ButtonDefault, ButtonIcon, ButtonSecondary } from "@webiny/ui/Button";
 import { Icon } from "@webiny/ui/Icon";
 import { ReactComponent as DownButton } from "@webiny/app-headless-cms/admin/icons/round-arrow_drop_down-24px.svg";
 import { ReactComponent as DoneIcon } from "@webiny/app-headless-cms/admin/icons/done-24px.svg";
+import { ReactComponent as I18NIcon } from "@webiny/app-headless-cms/admin/icons/round-translate-24px.svg";
+import { ReactComponent as DropDownIcon } from "@webiny/app-headless-cms/admin/icons/round-arrow_drop_down-24px.svg";
 import { MenuItem } from "@rmwc/menu";
 import { Menu } from "@webiny/ui/Menu";
 import { useI18N } from "@webiny/app-i18n/hooks/useI18N";
@@ -28,6 +30,26 @@ const menuStyles = css({
 
 const LocaleSelector = ({ getLocale, setLocale, getLoading }) => {
     const i18n = useI18N();
+
+    return (
+        <Menu
+            handle={
+                <ButtonSecondary>
+                    <ButtonIcon icon={<I18NIcon />} />
+                    {t`Current locale: {locale}`({
+                        locale: i18n.getLocale().code
+                    })}
+                    <DropDownIcon />
+                </ButtonSecondary>
+            }
+        >
+            {i18n.getLocales().map(item => (
+                <MenuItem key={item.id} onClick={() => {}}>
+                    {item.code}
+                </MenuItem>
+            ))}
+        </Menu>
+    );
 
     return (
         <Menu

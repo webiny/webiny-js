@@ -9,11 +9,11 @@ import classNames from "classnames";
 const t = i18n.ns("app-headless-cms/admin/plugins/content-details-header/header");
 
 const titleGrid = css({
-    paddingBottom: "0 !important"
+    paddingBottom: "5px !important"
 });
 
 const toolbarGrid = css({
-    paddingTop: "0 !important",
+    paddingTop: "5px !important",
     borderBottom: "1px solid var(--mdc-theme-on-background)"
 });
 
