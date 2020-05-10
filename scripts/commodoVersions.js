@@ -78,7 +78,7 @@ const PREVIEW = argv.preview;
             if (depsCount || devDepsCount) {
                 !PREVIEW && (await writeJson(packageJsonPath, packageJson));
             } else {
-                console.log("No changes.");
+                console.log("All up-to-date.");
             }
 
             console.log();
