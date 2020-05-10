@@ -1,5 +1,6 @@
 const path = require("path");
 const webpack = require("webpack");
+const WebpackBar = require("webpackbar");
 const { constantCase } = require("constant-case");
 
 const generatePackageVersionDefinitions = () => {
@@ -28,17 +29,25 @@ module.exports = ({ entry, output, debug = false, babelOptions, define }) => {
         },
         // Generate sourcemaps for proper error messages
         devtool: debug ? "source-map" : false,
-        externals: ["aws-sdk"],
+        externals: [
+            /^aws-sdk/,
+            /^apollo-engine-reporting/,
+            /^graphql-upload/,
+            /^subscriptions-transport-ws/
+        ],
         mode: "production",
         optimization: {
-            // We no not want to minimize our code.
+            // We do not want to minimize our code.
             minimize: false
         },
         performance: {
             // Turn off size warnings for entry points
             hints: false
         },
-        plugins: [new webpack.DefinePlugin({ ...definitions, ...packageVersions })],
+        plugins: [
+            new webpack.DefinePlugin({ ...definitions, ...packageVersions }),
+            new WebpackBar({ name: path.basename(process.cwd()), reporters: ["fancy"] })
+        ],
         // Run babel on all .js files and skip those in node_modules
         module: {
             exprContextCritical: false,

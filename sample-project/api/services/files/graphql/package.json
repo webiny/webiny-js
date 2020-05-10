@@ -1,5 +1,5 @@
 {
-  "name": "service-files",
+  "name": "api-files-graphql",
   "version": "0.1.0",
   "scripts": {
     "build": "webiny run build"

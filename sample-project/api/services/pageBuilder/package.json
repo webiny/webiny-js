@@ -1,5 +1,5 @@
 {
-  "name": "service-page-builder",
+  "name": "api-page-builder",
   "version": "0.1.0",
   "scripts": {
     "build": "webiny run build"

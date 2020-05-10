@@ -2,28 +2,28 @@ const apolloServiceEnv = {
     COGNITO_REGION: process.env.AWS_REGION,
     COGNITO_USER_POOL_ID: "${cognito.userPool.Id}",
     DEBUG: "true",
-    DB_PROXY_FUNCTION: "${dbProxy.arn}",
+    DB_PROXY_FUNCTION: "${databaseProxy.arn}",
     GRAPHQL_INTROSPECTION: process.env.GRAPHQL_INTROSPECTION,
     GRAPHQL_PLAYGROUND: process.env.GRAPHQL_PLAYGROUND,
     JWT_TOKEN_EXPIRES_IN: "2592000",
     JWT_TOKEN_SECRET: process.env.JWT_SECRET,
-    VALIDATE_ACCESS_TOKEN_FUNCTION: "${validateAccessToken.name}"
+    VALIDATE_ACCESS_TOKEN_FUNCTION: "${securityValidateAccessToken.name}"
 };
 const apolloGatewayServices = {
-    LAMBDA_SERVICE_SECURITY: "${security.name}",
-    LAMBDA_SERVICE_I18N: "${i18n.name}",
+    LAMBDA_SERVICE_SECURITY: "${securityGraphQL.name}",
+    LAMBDA_SERVICE_I18N: "${i18nGraphQL.name}",
     LAMBDA_SERVICE_FILES: "${filesGraphQL.name}",
-    LAMBDA_SERVICE_PAGE_BUILDER: "${pageBuilder.name}",
-    LAMBDA_SERVICE_FORM_BUILDER: "${formBuilder.name}",
-    LAMBDA_SERVICE_HEADLESS_CMS: "${headlessCms.name}"
+    LAMBDA_SERVICE_PAGE_BUILDER: "${pageBuilderGraphQL.name}",
+    LAMBDA_SERVICE_FORM_BUILDER: "${formBuilderGraphQL.name}",
+    LAMBDA_SERVICE_HEADLESS_CMS: "${headlessCmsGraphQL.name}"
 };
 
 module.exports = () => ({
     resources: {
         apolloGateway: {
-            watch: ["./services/apolloGateway/build"],
+            watch: ["./apolloGateway/build"],
             build: {
-                root: "./services/apolloGateway",
+                root: "./apolloGateway",
                 script: "yarn build"
             },
             deploy: {
@@ -31,7 +31,7 @@ module.exports = () => ({
                 inputs: {
                     region: process.env.AWS_REGION,
                     description: "Apollo Gateway",
-                    code: "./services/apolloGateway/build",
+                    code: "./apolloGateway/build",
                     handler: "handler.handler",
                     memory: 512,
                     timeout: 30,
@@ -39,13 +39,20 @@ module.exports = () => ({
                 }
             }
         },
-        dbProxy: {
+        databaseProxy: {
+            build: {
+                root: "./databaseProxy",
+                script: "yarn build"
+            },
             deploy: {
-                component: "@webiny/serverless-db-proxy",
+                component: "@webiny/serverless-function",
                 inputs: {
-                    testConnectionBeforeDeploy: true,
                     region: process.env.AWS_REGION,
+                    description: "Handles interaction with MongoDB",
+                    code: "./databaseProxy/build",
                     concurrencyLimit: 15,
+                    handler: "handler.handler",
+                    memory: 512,
                     timeout: 30,
                     env: {
                         MONGODB_SERVER: process.env.MONGODB_SERVER,
@@ -67,10 +74,10 @@ module.exports = () => ({
                 }
             }
         },
-        security: {
-            watch: ["./services/security/graphql/build"],
+        securityGraphQL: {
+            watch: ["./security/graphql/build"],
             build: {
-                root: "./services/security/graphql",
+                root: "./security/graphql",
                 script: "yarn build"
             },
             deploy: {
@@ -78,7 +85,7 @@ module.exports = () => ({
                 inputs: {
                     description: "Security GraphQL API",
                     region: process.env.AWS_REGION,
-                    code: "./services/security/graphql/build",
+                    code: "./security/graphql/build",
                     handler: "handler.handler",
                     memory: 512,
                     timeout: 30,
@@ -86,31 +93,31 @@ module.exports = () => ({
                 }
             }
         },
-        validateAccessToken: {
-            watch: ["./services/security/validateAccessToken/build"],
+        securityValidateAccessToken: {
+            watch: ["./security/validateAccessToken/build"],
             build: {
-                root: "./services/security/validateAccessToken",
+                root: "./security/validateAccessToken",
                 script: "yarn build"
             },
             deploy: {
                 component: "@webiny/serverless-function",
                 inputs: {
                     region: process.env.AWS_REGION,
-                    code: "./services/security/validateAccessToken/build",
+                    code: "./security/validateAccessToken/build",
                     handler: "handler.handler",
                     memory: 512,
                     timeout: 30,
                     env: {
-                        DB_PROXY_FUNCTION: "${dbProxy.arn}",
+                        DB_PROXY_FUNCTION: "${databaseProxy.arn}",
                         DEBUG: process.env.DEBUG
                     }
                 }
             }
         },
         filesDownload: {
-            watch: ["./services/files/download/build"],
+            watch: ["./files/download/build"],
             build: {
-                root: "./services/files/download",
+                root: "./files/download",
                 script: `yarn build`
             },
             deploy: {
@@ -118,7 +125,7 @@ module.exports = () => ({
                 inputs: {
                     description: "Serves previously uploaded files.",
                     region: process.env.AWS_REGION,
-                    code: "./services/files/download/build",
+                    code: "./files/download/build",
                     handler: "handler.handler",
                     memory: 512,
                     timeout: 10,
@@ -130,9 +137,9 @@ module.exports = () => ({
             }
         },
         imageTransformer: {
-            watch: ["./services/files/transform/build"],
+            watch: ["./files/transform/build"],
             build: {
-                root: "./services/files/transform",
+                root: "./files/transform",
                 script: `yarn build`
             },
             deploy: {
@@ -140,7 +147,7 @@ module.exports = () => ({
                 inputs: {
                     description: "Performs image optimization, resizing, etc.",
                     region: process.env.AWS_REGION,
-                    code: "./services/files/transform/build",
+                    code: "./files/transform/build",
                     handler: "handler.handler",
                     memory: 1600,
                     timeout: 30,
@@ -151,9 +158,9 @@ module.exports = () => ({
             }
         },
         filesManage: {
-            watch: ["./services/files/manage/build"],
+            watch: ["./files/manage/build"],
             build: {
-                root: "./services/files/manage",
+                root: "./files/manage",
                 script: `yarn build`
             },
             deploy: {
@@ -161,7 +168,7 @@ module.exports = () => ({
                 inputs: {
                     description: "Triggered when a file is deleted.",
                     region: process.env.AWS_REGION,
-                    code: "./services/files/manage/build",
+                    code: "./files/manage/build",
                     handler: "handler.handler",
                     memory: 512,
                     timeout: 10,
@@ -211,9 +218,9 @@ module.exports = () => ({
             }
         },
         filesGraphQL: {
-            watch: ["./services/files/graphql/build"],
+            watch: ["./files/graphql/build"],
             build: {
-                root: "./services/files/graphql",
+                root: "./files/graphql",
                 script: "yarn build"
             },
             deploy: {
@@ -221,7 +228,7 @@ module.exports = () => ({
                 inputs: {
                     region: process.env.AWS_REGION,
                     description: "Files GraphQL API",
-                    code: "./services/files/graphql/build",
+                    code: "./files/graphql/build",
                     handler: "handler.handler",
                     memory: 512,
                     env: {
@@ -233,10 +240,10 @@ module.exports = () => ({
                 }
             }
         },
-        i18n: {
-            watch: ["./services/i18n/build"],
+        i18nGraphQL: {
+            watch: ["./i18n/graphql/build"],
             build: {
-                root: "./services/i18n",
+                root: "./i18n/graphql",
                 script: "yarn build"
             },
             deploy: {
@@ -244,10 +251,31 @@ module.exports = () => ({
                 inputs: {
                     region: process.env.AWS_REGION,
                     description: "I18N GraphQL API",
-                    code: "./services/i18n/build",
+                    code: "./i18n/graphql/build",
                     handler: "handler.handler",
                     memory: 512,
                     env: apolloServiceEnv
+                }
+            }
+        },
+        i18nLocales: {
+            watch: ["./i18n/locales/build"],
+            build: {
+                root: "./i18n/locales",
+                script: "yarn build"
+            },
+            deploy: {
+                component: "@webiny/serverless-function",
+                inputs: {
+                    region: process.env.AWS_REGION,
+                    code: "./i18n/locales/build",
+                    handler: "handler.handler",
+                    memory: 256,
+                    timeout: 30,
+                    env: {
+                        DB_PROXY_FUNCTION: "${databaseProxy.arn}",
+                        DEBUG: process.env.DEBUG
+                    }
                 }
             }
         },
@@ -266,10 +294,10 @@ module.exports = () => ({
                 }
             }
         },
-        pageBuilder: {
-            watch: ["./services/pageBuilder/build"],
+        pageBuilderGraphQL: {
+            watch: ["./pageBuilder/build"],
             build: {
-                root: "./services/pageBuilder",
+                root: "./pageBuilder",
                 script: "yarn build"
             },
             deploy: {
@@ -277,7 +305,7 @@ module.exports = () => ({
                 inputs: {
                     region: process.env.AWS_REGION,
                     description: "Page Builder GraphQL API",
-                    code: "./services/pageBuilder/build",
+                    code: "./pageBuilder/build",
                     handler: "handler.handler",
                     memory: 512,
                     timeout: 30,
@@ -289,10 +317,10 @@ module.exports = () => ({
                 }
             }
         },
-        formBuilder: {
-            watch: ["./services/formBuilder/build"],
+        formBuilderGraphQL: {
+            watch: ["./formBuilder/build"],
             build: {
-                root: "./services/formBuilder",
+                root: "./formBuilder",
                 script: "yarn build"
             },
             deploy: {
@@ -300,18 +328,18 @@ module.exports = () => ({
                 inputs: {
                     region: process.env.AWS_REGION,
                     description: "Form Builder GraphQL API",
-                    code: "./services/formBuilder/build",
+                    code: "./formBuilder/build",
                     handler: "handler.handler",
                     memory: 512,
                     timeout: 30,
-                    env: apolloServiceEnv
+                    env: { ...apolloServiceEnv, I18N_LOCALES_FUNCTION: "${i18nLocales.name}" }
                 }
             }
         },
-        headlessCms: {
-            watch: ["./services/headless/graphql/build"],
+        headlessCmsGraphQL: {
+            watch: ["./headless/graphql/build"],
             build: {
-                root: "./services/headless/graphql",
+                root: "./headless/graphql",
                 script: "yarn build"
             },
             deploy: {
@@ -319,17 +347,17 @@ module.exports = () => ({
                 inputs: {
                     region: process.env.AWS_REGION,
                     description: "I18N GraphQL API",
-                    code: "./services/headless/graphql/build",
+                    code: "./headless/graphql/build",
                     handler: "handler.handler",
                     memory: 512,
                     env: apolloServiceEnv
                 }
             }
         },
-        headlessCmsHandler: {
-            watch: ["./services/headless/handler/build"],
+        headlessCmsAPI: {
+            watch: ["./headless/handler/build"],
             build: {
-                root: "./services/headless/handler",
+                root: "./headless/handler",
                 script: "yarn build"
             },
             deploy: {
@@ -337,10 +365,10 @@ module.exports = () => ({
                 inputs: {
                     description: "Headless CMS GraphQL API (handler)",
                     region: process.env.AWS_REGION,
-                    code: "./services/headless/handler/build",
+                    code: "./headless/handler/build",
                     handler: "handler.handler",
                     memory: 512,
-                    env: apolloServiceEnv
+                    env: { ...apolloServiceEnv, I18N_LOCALES_FUNCTION: "${i18nLocales.name}" }
                 }
             }
         },
@@ -364,7 +392,7 @@ module.exports = () => ({
                     {
                         path: "/cms/{key+}",
                         method: "ANY",
-                        function: "${headlessCmsHandler.arn}"
+                        function: "${headlessCmsAPI.arn}"
                     }
                 ]
             }

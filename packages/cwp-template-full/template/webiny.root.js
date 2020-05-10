@@ -1,6 +1,11 @@
 module.exports = {
     projectName: "webiny-js",
     cli: {
-        plugins: ["@webiny/cli-scaffold-graphql-service", "@webiny/cli-scaffold-custom-lambda"]
+        plugins: [
+            "@webiny/cli-plugin-deploy-components",
+            "@webiny/cli-plugin-scaffold",
+            "@webiny/cli-plugin-scaffold-graphql-service",
+            "@webiny/cli-plugin-scaffold-lambda"
+        ]
     }
 };

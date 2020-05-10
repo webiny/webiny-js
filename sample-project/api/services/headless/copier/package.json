@@ -1,5 +1,5 @@
 {
-  "name": "service-headless-copier",
+  "name": "api-headless-copier",
   "version": "0.1.0",
   "scripts": {
     "build": "webiny run build"
