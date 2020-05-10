@@ -21,7 +21,6 @@ const COMMODO_PACKAGES = [
  */
 (async () => {
     const DIST_TAG = argv.tag || "latest";
-    console.log(DIST_TAG);
 
     let npmData = [];
     for (let i = 0; i < COMMODO_PACKAGES.length; i++) {
