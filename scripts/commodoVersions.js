@@ -38,7 +38,7 @@ const PREVIEW = argv.preview;
     }
 
     if (PREVIEW) {
-        console.log("Running in preview mode, no changes to actual files will be applied.");
+        console.log("Running in preview mode, no changes to the package.json files will be made.");
     }
 
     console.log("⏳ Fetching package data from NPM...");
@@ -52,11 +52,11 @@ const PREVIEW = argv.preview;
     console.log();
 
     if (PREVIEW) {
-        console.log("🐰 These are the differences in package versions:");
-        console.log("==============================================");
+        console.log("🐰 After running the command, the following changes will be made:");
+        console.log("=================================================================");
     } else {
-        console.log("🐰️ These are the changes that were applied to package versions:");
-        console.log("============================================================");
+        console.log("🐰️ The following changes were made:");
+        console.log("===================================");
     }
 
     const packages = getPackages();
@@ -67,7 +67,7 @@ const PREVIEW = argv.preview;
         try {
             const packageJson = await readJson(packageJsonPath);
 
-            if (!mustProcess(packageJson)) {
+            if (!mustProcessPackage(packageJson)) {
                 continue;
             }
 
@@ -88,19 +88,15 @@ const PREVIEW = argv.preview;
     process.exit(0);
 })();
 
-function mustProcess(json) {
-    if (json.dependencies) {
-        for (let key in json.dependencies) {
-            if (COMMODO_PACKAGES.includes(key)) {
-                return true;
-            }
-        }
-    }
-
-    if (json.devDependencies) {
-        for (let key in json.devDependencies) {
-            if (COMMODO_PACKAGES.includes(key)) {
-                return true;
+function mustProcessPackage(json) {
+    const depsTypes = ["dependencies", "devDependencies"];
+    for (let i = 0; i < depsTypes.length; i++) {
+        let type = depsTypes[i];
+        if (json[type]) {
+            for (let name in json[type]) {
+                if (COMMODO_PACKAGES.includes(name)) {
+                    return true;
+                }
             }
         }
     }
@@ -115,7 +111,7 @@ function processDeps({ deps, npm }) {
         }
 
         const currentVersion = deps[key];
-        const newVersion = "^" + npm[key][DIST_TAG];
+        const newVersion = npm[key][DIST_TAG];
 
         if (currentVersion !== newVersion) {
             console.log(`- ${key}@${blue(currentVersion)} => ${key}@${blue(newVersion)}`);
