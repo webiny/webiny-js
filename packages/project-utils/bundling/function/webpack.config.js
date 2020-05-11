@@ -29,12 +29,7 @@ module.exports = ({ entry, output, debug = false, babelOptions, define }) => {
         },
         // Generate sourcemaps for proper error messages
         devtool: debug ? "source-map" : false,
-        externals: [
-            /^aws-sdk/,
-            /^apollo-engine-reporting/,
-            /^graphql-upload/,
-            /^subscriptions-transport-ws/
-        ],
+        externals: [/^aws-sdk/],
         mode: "production",
         optimization: {
             // We do not want to minimize our code.
