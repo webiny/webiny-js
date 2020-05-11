@@ -48,7 +48,7 @@ const useDataList = (params: UseDataListParams) => {
     let history = null;
     let location = null;
     const routerHook = useRouter();
-    // TODO: const router = ....
+
     if (params.useRouter !== false) {
         history = routerHook.history;
         location = routerHook.location;
@@ -90,10 +90,10 @@ const useDataList = (params: UseDataListParams) => {
                 return;
             }
 
-            if (history) {
-                redirectToRouteWithQueryParams(params, { history, location });
-                return;
-            }
+            // if (history) {
+            //     redirectToRouteWithQueryParams(params, { history, location });
+            //     return;
+            // }
 
             queryData.refetch(params);
         },
