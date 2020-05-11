@@ -28,6 +28,7 @@ export type AdminGlobalSearchPreventHotkeyPlugin = Plugin & {
 };
 
 export type AdminHeaderLogoPlugin = Plugin & {
+    name: "admin-header-logo";
     type: "admin-header-logo";
     render(): React.ReactElement;
 };
@@ -38,6 +39,7 @@ export type AdminHeaderUserMenuPlugin = Plugin & {
 };
 
 export type AdminHeaderUserMenuHandlePlugin = Plugin & {
+    name: "admin-header-user-menu-handle";
     type: "admin-header-user-menu-handle";
     render(): React.ReactElement;
 };
