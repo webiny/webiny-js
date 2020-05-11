@@ -44,14 +44,13 @@ const ContentDataList = ({ contentModel, dataList }) => {
                             <ListItemText onClick={() => select(item)}>
                                 <I18NValue value={item.meta.title} />
                                 <ListItemTextSecondary>
-                                    {item.createdBy &&
-                                        item.createdBy.firstName && (
-                                            <>
-                                                {t`Created by: {user}.`({
-                                                    user: item.createdBy.firstName
-                                                })}{" "}
-                                            </>
-                                        )}
+                                    {item.createdBy && item.createdBy.firstName && (
+                                        <>
+                                            {t`Created by: {user}.`({
+                                                user: item.createdBy.firstName
+                                            })}{" "}
+                                        </>
+                                    )}
                                     {t`Last modified: {time}.`({
                                         time: <TimeAgo datetime={item.savedOn} />
                                     })}

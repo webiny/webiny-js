@@ -77,7 +77,6 @@ export const ContentModelFormRender = ({
     onChange,
     locale
 }) => {
-
     // All form fields - an array of rows where each row is an array that contain fields.
     const fields = getFields();
 

@@ -72,7 +72,11 @@ const PublishRevision = ({ content, contentModel, getLoading }) => {
                 content={publishableRevisions.length ? t`Publish` : t`No revisions to publish`}
                 placement={"top"}
             >
-                <IconButton icon={<PublishIcon />} onClick={showDialog} disabled={!content.id || getLoading()} />
+                <IconButton
+                    icon={<PublishIcon />}
+                    onClick={showDialog}
+                    disabled={!content.id || getLoading()}
+                />
             </Tooltip>
             <PublishRevisionDialog
                 open={openDialog}
