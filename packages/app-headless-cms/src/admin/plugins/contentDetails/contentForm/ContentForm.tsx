@@ -53,6 +53,7 @@ const ContentForm = ({ contentModel, content, dataList, getLocale, setLoading, g
                 return showSnackbar(response.data.content.message);
             }
 
+            showSnackbar("Content created successfully.");
             const { id } = response.data.content.data;
             query.set("id", id);
             history.push({ search: query.toString() });
