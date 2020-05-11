@@ -17,7 +17,7 @@ export default ({
         return children;
     }
 
-    const plugin = getPlugin("secure-route-error") as SecureRouteErrorPlugin;
+    const plugin = getPlugin<SecureRouteErrorPlugin>("secure-route-error");
     if (!plugin) {
         return <span>You are not authorized to view this route.</span>;
     }

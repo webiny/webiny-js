@@ -4,7 +4,8 @@ import { isEqual } from "lodash";
 import { getPlugins } from "@webiny/plugins";
 import {
     PbRenderElementStylePlugin,
-    PbRenderElementAttributesPlugin, PbElement
+    PbRenderElementAttributesPlugin,
+    PbElement
 } from "@webiny/app-page-builder/types";
 
 const Node = "div";
@@ -35,12 +36,10 @@ class ElementRoot extends React.Component<ElementRootProps> {
     constructor(props) {
         super(props);
 
-        this.stylePlugins = getPlugins(
-            "pb-render-page-element-style"
-        ) as PbRenderElementStylePlugin[];
-        this.attributePlugins = getPlugins(
+        this.stylePlugins = getPlugins<PbRenderElementStylePlugin>("pb-render-page-element-style");
+        this.attributePlugins = getPlugins<PbRenderElementAttributesPlugin>(
             "pb-render-page-element-attributes"
-        ) as PbRenderElementAttributesPlugin[];
+        );
     }
 
     shouldComponentUpdate(props: ElementRootProps) {

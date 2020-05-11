@@ -1,10 +1,10 @@
 import React from "react";
-import { HeaderUserMenuPlugin } from "@webiny/app-admin/types";
+import { AdminHeaderUserMenuPlugin } from "@webiny/app-admin/types";
 import Feedback from "./Feedback";
 
-const plugin: HeaderUserMenuPlugin = {
-    name: "user-menu-send-feedback",
-    type: "header-user-menu",
+const plugin: AdminHeaderUserMenuPlugin = {
+    name: "admin-user-menu-send-feedback",
+    type: "admin-header-user-menu",
     render() {
         return <Feedback />;
     }

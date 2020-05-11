@@ -17,9 +17,9 @@ const menuStyles = css({
 });
 
 export default function PageOptionsMenu() {
-    const plugins = getPlugins(
+    const plugins = getPlugins<PbEditorDefaultBarRightPageOptionsPlugin>(
         "pb-editor-default-bar-right-page-options"
-    ) as PbEditorDefaultBarRightPageOptionsPlugin[];
+    );
     return (
         <Menu
             data-testid="pb-editor-page-options-menu"

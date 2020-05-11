@@ -9,7 +9,7 @@ import { getPlugins } from "@webiny/plugins";
 import Helmet from "react-helmet";
 import { PbMenuSettingsItemPlugin } from "@webiny/app-page-builder/types";
 import { RoutePlugin } from "@webiny/app/types";
-import { MenuSettingsPlugin } from "@webiny/app-admin/types";
+import { AdminMenuSettingsPlugin } from "@webiny/app-admin/types";
 
 const t = i18n.ns("app-page-builder/admin/menus");
 
@@ -51,7 +51,7 @@ const plugins = [
         )
     } as RoutePlugin,
     {
-        type: "menu-settings",
+        type: "admin-menu-settings",
         name: "menu-settings-page-builder",
         render({ Section, Item }) {
             return (
@@ -66,7 +66,7 @@ const plugins = [
                 </Section>
             );
         }
-    } as MenuSettingsPlugin,
+    } as AdminMenuSettingsPlugin,
     {
         type: "menu-settings-page-builder",
         name: "menu-settings-website",

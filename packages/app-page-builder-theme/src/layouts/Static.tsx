@@ -5,7 +5,7 @@ import { PbPageLayoutComponentPlugin } from "@webiny/app-page-builder/types";
 
 const Static = ({ children }) => {
     const { header: Header, footer: Footer }: any = useMemo(() => {
-        const plugins = getPlugins("pb-layout-component") as PbPageLayoutComponentPlugin[];
+        const plugins = getPlugins<PbPageLayoutComponentPlugin>("pb-layout-component");
         return plugins.reduce((acc, item) => {
             acc[item.componentType] = item.component;
             return acc;

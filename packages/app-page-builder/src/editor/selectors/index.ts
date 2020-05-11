@@ -34,7 +34,7 @@ export const getContent = (state: State): any => {
         return page.content;
     }
 
-    const document = getPlugin("pb-editor-page-element-document") as PbDocumentElementPlugin;
+    const document = getPlugin<PbDocumentElementPlugin>("pb-editor-page-element-document");
     invariant(document, `"pb-editor-page-element-document" plugin must exist for Page Builder to work!`);
     return document.create();
 };

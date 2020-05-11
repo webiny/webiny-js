@@ -1,4 +1,4 @@
-import React, {useReducer, useEffect, useCallback, useMemo, ReactElement} from "react";
+import React, { useReducer, useEffect, useCallback, useMemo, ReactElement } from "react";
 import { useApolloClient } from "react-apollo";
 import localStorage from "store";
 import observe from "store/plugins/observe";
@@ -37,9 +37,9 @@ export type SecurityContextValue = {
 };
 
 export const SecurityProvider = (props: Props) => {
-    const auth = getPlugins(
+    const auth = getPlugins<SecurityAuthenticationProviderPlugin>(
         "security-authentication-provider"
-    ).pop() as SecurityAuthenticationProviderPlugin;
+    ).pop();
 
     if (!auth) {
         throw Error(

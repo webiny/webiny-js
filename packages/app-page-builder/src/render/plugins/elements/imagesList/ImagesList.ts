@@ -6,9 +6,9 @@ import { PbPageElementImagesListComponentPlugin } from "@webiny/app-page-builder
 const ImagesList = props => {
     const { data = {} } = props;
     const { component } = data;
-    const plugins = getPlugins(
+    const plugins = getPlugins<PbPageElementImagesListComponentPlugin>(
         "pb-page-element-images-list-component"
-    ) as PbPageElementImagesListComponentPlugin[];
+    );
 
     const pageList = plugins.find(cmp => cmp.componentName === component);
     if (!pageList) {

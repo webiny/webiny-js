@@ -1,10 +1,11 @@
 import React from "react";
 import Logo from "./Logo";
 import { TopAppBarTitle } from "@webiny/ui/TopAppBar";
+import { AdminHeaderLeftPlugin } from "@webiny/app-admin/types";
 
-export default {
-    name: "header-logo",
-    type: "header-left",
+const plugin: AdminHeaderLeftPlugin = {
+    name: "admin-header-logo",
+    type: "admin-header-left",
     render() {
         return (
             <TopAppBarTitle>
@@ -13,3 +14,5 @@ export default {
         );
     }
 };
+
+export default plugin;

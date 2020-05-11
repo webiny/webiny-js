@@ -25,7 +25,7 @@ const UsersForm = () => {
     const [formIsLoading, setFormIsLoading] = useState(false);
     const { form: crudForm } = useCrud();
 
-    const auth = getPlugin("security-view-user-form") as SecurityViewUserFormPlugin;
+    const auth = getPlugin<SecurityViewUserFormPlugin>("security-view-user-form");
 
     if (!auth) {
         throw Error(`You must register a "security-view-user-form" plugin to render User form!`);

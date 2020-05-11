@@ -168,7 +168,7 @@ const Install = ({ onInstalled }) => {
 export default [
     {
         name: "installation-security",
-        type: "installation",
+        type: "admin-installation",
         secure: false,
         title: "Security app",
         async isInstalled({ client }) {

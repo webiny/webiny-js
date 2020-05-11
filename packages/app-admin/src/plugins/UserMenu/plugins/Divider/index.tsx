@@ -1,11 +1,11 @@
 import React from "react";
 import shortid from "shortid";
-import { HeaderUserMenuPlugin } from "@webiny/app-admin/types";
+import { AdminHeaderUserMenuPlugin } from "@webiny/app-admin/types";
 import { MenuDivider } from "@webiny/ui/Menu";
 
-export default (): HeaderUserMenuPlugin => ({
-    name: "user-menu-divider-" + shortid.generate(),
-    type: "header-user-menu",
+export default (): AdminHeaderUserMenuPlugin => ({
+    name: "admin-user-menu-divider-" + shortid.generate(),
+    type: "admin-header-user-menu",
     render() {
         return <MenuDivider />;
     }

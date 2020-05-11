@@ -5,7 +5,7 @@ import { List, ListItem, ListItemGraphic } from "@webiny/ui/List";
 import { IconButton } from "@webiny/ui/Button";
 import { Icon } from "@webiny/ui/Icon";
 import { getPlugin, getPlugins } from "@webiny/plugins";
-import { HeaderLogoPlugin, MenuPlugin } from "@webiny/app-admin/types";
+import { AdminHeaderLogoPlugin, AdminMenuPlugin } from "@webiny/app-admin/types";
 import { useNavigation, Menu, Item, Section } from "./components";
 import { logoStyle, MenuFooter, MenuHeader, navContent, navHeader, subFooter } from "./Styled";
 import { ReactComponent as MenuIcon } from "@webiny/app-admin/assets/icons/baseline-menu-24px.svg";
@@ -22,7 +22,7 @@ const Navigation = () => {
     useEffect(initSections, []);
 
     const logo = useMemo(() => {
-        const logoPlugin = getPlugin("header-logo") as HeaderLogoPlugin;
+        const logoPlugin = getPlugin<AdminHeaderLogoPlugin>("admin-header-logo");
         if (logoPlugin) {
             return React.cloneElement(logoPlugin.render(), { className: logoStyle });
         }
@@ -30,7 +30,7 @@ const Navigation = () => {
     }, []);
 
     const menus = [];
-    const menuPlugins = getPlugins("menu") as MenuPlugin[];
+    const menuPlugins = getPlugins<AdminMenuPlugin>("admin-menu");
 
     // First we sort by order (default: 50), and then by plugin name. In other words, if order isn't defined,
     // then we just sort by plugin name.

@@ -13,7 +13,7 @@ const ROLE_SECURITY_USERS = ["security:user:crud"];
 export default [
     {
         name: "menu-security",
-        type: "menu",
+        type: "admin-menu",
         render({ Menu, Section, Item }) {
             return (
                 <SecureView

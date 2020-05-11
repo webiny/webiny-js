@@ -1,14 +1,14 @@
 import React from "react";
 import { i18n } from "@webiny/app/i18n";
 import { SecureView } from "@webiny/app-security/components";
-import { MenuPlugin, MenuSettingsPlugin } from "@webiny/app-admin/types";
+import { AdminMenuPlugin, AdminMenuSettingsPlugin } from "@webiny/app-admin/types";
 import HeadlessCmsMenu from "./menus/HeadlessCmsMenu";
 import ContentModelMenuItems from "./menus/ContentModelMenuItems";
 
 const t = i18n.ns("app-headless-cms/admin/menus");
 export default [
     {
-        type: "menu",
+        type: "admin-menu",
         name: "menu-headless-cms",
         render({ Menu, Section, Item }) {
             return (
@@ -42,9 +42,9 @@ export default [
                 </SecureView>
             );
         }
-    } as MenuPlugin,
+    } as AdminMenuPlugin,
     {
-        type: "menu-settings",
+        type: "admin-menu-settings",
         name: "menu-settings-cms-environments",
         render({ Section, Item }) {
             return (
@@ -54,5 +54,5 @@ export default [
                 </Section>
             );
         }
-    } as MenuSettingsPlugin
+    } as AdminMenuSettingsPlugin
 ];

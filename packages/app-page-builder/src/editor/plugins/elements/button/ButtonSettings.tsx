@@ -107,7 +107,7 @@ const ButtonSettings = ({ element, updateElement }) => {
 let icons;
 const getIcons = (): PbIcon[] => {
     if (!icons) {
-        const plugins = getPlugins("pb-icons") as PbIconsPlugin[];
+        const plugins = getPlugins<PbIconsPlugin>("pb-icons");
         icons = plugins.reduce((icons, pl) => {
             return icons.concat(pl.getIcons());
         }, []);

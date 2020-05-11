@@ -5,7 +5,7 @@ import FormsSettings from "./components/FormsSettings";
 import { SecureRoute } from "@webiny/app-security/components";
 import Helmet from "react-helmet";
 import { RoutePlugin } from "@webiny/app/types";
-import { MenuSettingsPlugin } from "@webiny/app-admin/types";
+import { AdminMenuSettingsPlugin } from "@webiny/app-admin/types";
 
 import { i18n } from "@webiny/app/i18n";
 const t = i18n.ns("app-form-builder/admin/menus");
@@ -31,7 +31,7 @@ const plugins = [
         )
     } as RoutePlugin,
     {
-        type: "menu-settings",
+        type: "admin-menu-settings",
         name: "menu-settings-form-builder",
         render({ Item, Section }) {
             return (
@@ -40,7 +40,7 @@ const plugins = [
                 </Section>
             );
         }
-    } as MenuSettingsPlugin
+    } as AdminMenuSettingsPlugin
 ];
 
 export default plugins;

@@ -109,7 +109,7 @@ const IconPicker = ({
     );
 
     const allIcons: CmsIcon[] = useMemo(() => {
-        const plugins = getPlugins("cms-icons") as CmsIconsPlugin[];
+        const plugins = getPlugins<CmsIconsPlugin>("cms-icons");
         return plugins.reduce((icons: Array<CmsIcon>, pl) => {
             return icons.concat(pl.getIcons());
         }, []);

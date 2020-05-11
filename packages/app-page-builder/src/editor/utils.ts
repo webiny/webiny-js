@@ -84,7 +84,7 @@ export const createColumn = (options: Object = {}, parent?: PbElement) => {
 };
 
 export const createBlockElements = (name: string) => {
-    const plugin = getPlugin(name) as PbEditorBlockPlugin;
+    const plugin = getPlugin<PbEditorBlockPlugin>(name);
 
     invariant(plugin, `Missing block plugin "${name}"!`);
 

@@ -6,7 +6,7 @@ import { Alert } from "@webiny/ui/Alert";
 import { CircularProgress } from "@webiny/ui/Progress";
 import { SimpleForm, SimpleFormContent } from "@webiny/app-admin/components/SimpleForm";
 import styled from "@emotion/styled";
-import { InstallationPlugin } from "@webiny/app-admin/types";
+import { AdminInstallationPlugin } from "@webiny/app-admin/types";
 
 const SimpleFormPlaceholder = styled.div({
     minHeight: 300,
@@ -80,9 +80,9 @@ const FBInstaller = ({ onInstalled }) => {
     );
 };
 
-const plugin: InstallationPlugin = {
+const plugin: AdminInstallationPlugin = {
     name: "installation-fb",
-    type: "installation",
+    type: "admin-installation",
     title: t`Form Builder app`,
     dependencies: ["installation-security"],
     secure: true,

@@ -1,5 +1,5 @@
 import * as React from "react";
-import { GlobalSearchPlugin } from "@webiny/app-admin/types";
+import { AdminGlobalSearchPlugin } from "@webiny/app-admin/types";
 import classnames from "classnames";
 import { List, ListItem, ListItemGraphic, ListItemText, ListItemMeta } from "@webiny/ui/List";
 import { searchBarDropdown, iconSearchType } from "./styled";
@@ -40,7 +40,7 @@ export default class SearchBarDropdown extends React.Component<any> {
         return (
             <Elevation z={2} className={searchBarDropdown}>
                 <List {...getMenuProps()}>
-                    {plugins.list.map((item: GlobalSearchPlugin, index) => {
+                    {plugins.list.map((item: AdminGlobalSearchPlugin, index) => {
                         // Base classes.
                         const itemClassNames = {
                             highlighted: highlightedIndex === index,

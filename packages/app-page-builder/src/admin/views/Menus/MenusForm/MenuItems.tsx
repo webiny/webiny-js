@@ -74,7 +74,7 @@ class MenuItems extends React.Component<Props, State> {
     render() {
         const { value: items, onChange } = this.props;
         const { currentMenuItem } = this.state;
-        const plugins = getPlugins("pb-menu-item") as PbMenuItemPlugin[];
+        const plugins = getPlugins<PbMenuItemPlugin>("pb-menu-item");
 
         return (
             <>

@@ -24,7 +24,7 @@ const CategoriesForm = () => {
     const { form: crudForm } = useCrud();
 
     const layouts = React.useMemo(
-        () => (getPlugins("pb-page-layout") as PbPageLayoutPlugin[]).map(pl => pl.layout),
+        () => (getPlugins<PbPageLayoutPlugin>("pb-page-layout")).map(pl => pl.layout),
         []
     );
 

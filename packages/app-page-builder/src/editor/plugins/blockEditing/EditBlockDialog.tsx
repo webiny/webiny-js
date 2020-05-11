@@ -50,7 +50,7 @@ type EditBlockDialogProps = {
 const EditBlockDialog = (props: EditBlockDialogProps) => {
     const { open, onClose, onSubmit, plugin, loading } = props;
 
-    const plugins = getPlugins("pb-editor-block-category") as PbEditorBlockCategoryPlugin[];
+    const plugins = getPlugins<PbEditorBlockCategoryPlugin>("pb-editor-block-category");
     const blockCategoriesOptions = plugins.map(item => ({
         value: item.name,
         label: item.title

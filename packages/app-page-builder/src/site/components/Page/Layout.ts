@@ -4,7 +4,7 @@ import { PbPageLayoutPlugin } from "@webiny/app-page-builder/types";
 
 const Layout = ({ layout, children }) => {
     const layouts = React.useMemo(() => {
-        const plugins = getPlugins("pb-page-layout") as PbPageLayoutPlugin[];
+        const plugins = getPlugins<PbPageLayoutPlugin>("pb-page-layout");
         return plugins.map(pl => pl.layout);
     }, []);
 

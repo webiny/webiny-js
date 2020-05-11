@@ -71,7 +71,7 @@ class SlateEditor extends React.Component<SlateEditorProps, SlateEditorState> {
             activePlugin: null
         };
 
-        const plugins = getPlugins("pb-editor-slate-editor") as PbEditorSlateEditorPlugin[];
+        const plugins = getPlugins<PbEditorSlateEditorPlugin>("pb-editor-slate-editor");
         this.plugins = plugins.filter(pl => !props.exclude.includes(pl.name)).map(pl => pl.slate);
     }
 
@@ -244,7 +244,7 @@ class SlateEditor extends React.Component<SlateEditorProps, SlateEditorState> {
                         })
                     }
                 </WithPageBuilderTheme>
-                {(getPlugins("pb-editor-slate-menu-item") as PbEditorSlateMenuItemPlugin[])
+                {(getPlugins<PbEditorSlateMenuItemPlugin>("pb-editor-slate-menu-item"))
                     .filter(pl => typeof pl.renderDialog === "function")
                     .map(pl => {
                         const props = {

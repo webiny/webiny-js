@@ -101,8 +101,8 @@ const renderPlugin = (plugin: PbEditorToolbarTopPlugin | PbEditorToolbarBottomPl
 };
 
 const Toolbar = ({ activePluginsTop }) => {
-    const actionsTop = getPlugins("pb-editor-toolbar-top") as PbEditorToolbarTopPlugin[];
-    const actionsBottom = getPlugins("pb-editor-toolbar-bottom") as PbEditorToolbarBottomPlugin[];
+    const actionsTop = getPlugins<PbEditorToolbarTopPlugin>("pb-editor-toolbar-top");
+    const actionsBottom = getPlugins<PbEditorToolbarBottomPlugin>("pb-editor-toolbar-bottom");
 
     return (
         <React.Fragment>

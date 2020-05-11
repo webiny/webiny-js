@@ -60,7 +60,7 @@ const Field = props => {
     const { getFieldPlugin, setData, data } = useContentModelEditor();
 
     const fieldPlugin = getFieldPlugin({ type: field.type });
-    const plugins = getPlugins("cms-editor-field-option") as CmsEditorFieldOptionPlugin[];
+    const plugins = getPlugins<CmsEditorFieldOptionPlugin>("cms-editor-field-option");
 
     return (
         <FieldContainer>

@@ -1,32 +1,20 @@
 import React from "react";
 import styled from "@emotion/styled";
-import { ContentPlugin, LayoutPlugin, EmptyLayoutPlugin } from "@webiny/app-admin/types";
+import { AdminLayoutComponentPlugin } from "@webiny/app-admin/types";
 
 const AdminLayoutRoot = styled("div")({
     width: "100%",
     paddingTop: 67
 });
 
-const EmptyLayoutRoot = styled("div")({
-    width: "100%",
-    paddingTop: 67
-});
-
-const plugins: ContentPlugin[] = [
+const plugins: AdminLayoutComponentPlugin[] = [
     {
-        name: "admin-layout-content",
-        type: "layout",
+        name: "admin-layout-component-content",
+        type: "admin-layout-component",
         render({ content }) {
             return <AdminLayoutRoot>{content}</AdminLayoutRoot>;
         }
-    } as LayoutPlugin,
-    {
-        name: "empty-layout-content",
-        type: "empty-layout",
-        render({ content }) {
-            return <EmptyLayoutRoot>{content}</EmptyLayoutRoot>;
-        }
-    } as EmptyLayoutPlugin
+    }
 ];
 
 export default plugins;

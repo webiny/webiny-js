@@ -2,6 +2,11 @@ import React from "react";
 import { renderPlugins } from "@webiny/app/plugins";
 import { TopAppBarPrimary, TopAppBarSection } from "@webiny/ui/TopAppBar";
 import { css } from "emotion";
+import {
+    AdminHeaderLeftPlugin,
+    AdminHeaderMiddlePlugin,
+    AdminHeaderRightPlugin
+} from "@webiny/app-admin/types";
 
 const middleBar = css({
     width: "50%"
@@ -15,13 +20,13 @@ const Header = () => {
     return (
         <TopAppBarPrimary fixed>
             <TopAppBarSection className={edgeBars} alignStart>
-                {renderPlugins("header-left")}
+                {renderPlugins<AdminHeaderLeftPlugin>("admin-header-left")}
             </TopAppBarSection>
             <TopAppBarSection className={middleBar}>
-                {renderPlugins("header-middle")}
+                {renderPlugins<AdminHeaderMiddlePlugin>("admin-header-middle")}
             </TopAppBarSection>
             <TopAppBarSection className={edgeBars} alignEnd>
-                {renderPlugins("header-right")}
+                {renderPlugins<AdminHeaderRightPlugin>("admin-header-right")}
             </TopAppBarSection>
         </TopAppBarPrimary>
     );

@@ -82,7 +82,7 @@ const IconPicker = ({ value, onChange }) => {
     );
 
     const allIcons: PbIcon[] = useMemo(() => {
-        const plugins = getPlugins("pb-icons") as PbIconsPlugin[];
+        const plugins = getPlugins<PbIconsPlugin>("pb-icons");
         return plugins.reduce((icons: Array<PbIcon>, pl) => {
             return icons.concat(pl.getIcons());
         }, []);

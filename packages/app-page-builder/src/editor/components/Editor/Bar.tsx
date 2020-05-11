@@ -11,7 +11,7 @@ export type EditorBarProps = {
 };
 
 const Bar: React.FC<EditorBarProps> = props => {
-    const plugins = getPlugins("pb-editor-bar") as PbEditorBarPlugin[];
+    const plugins = getPlugins<PbEditorBarPlugin>("pb-editor-bar");
     let pluginBar = null;
 
     for (let i = 0; i < plugins.length; i++) {

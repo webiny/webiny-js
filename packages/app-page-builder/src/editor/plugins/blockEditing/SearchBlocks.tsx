@@ -72,12 +72,12 @@ const SearchBar = props => {
     const allCategories = useMemo(
         () => [
             allBlockCategory,
-            ...(getPlugins("pb-editor-block-category") as PbEditorBlockCategoryPlugin[])
+            ...(getPlugins<PbEditorBlockCategoryPlugin>("pb-editor-block-category"))
         ],
         []
     );
 
-    const allBlocks = getPlugins("pb-editor-block") as PbEditorBlockPlugin[];
+    const allBlocks = getPlugins<PbEditorBlockPlugin>("pb-editor-block");
 
     const { addKeyHandler, removeKeyHandler } = useKeyHandler();
 

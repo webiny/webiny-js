@@ -5,7 +5,7 @@ import { PbElement, PbEditorPageElementPlugin } from "@webiny/app-page-builder/t
 import Title from "./components/Title";
 
 export default (el: PbElement) => {
-    const plugins = getPlugins("pb-editor-page-element") as PbEditorPageElementPlugin[];
+    const plugins = getPlugins<PbEditorPageElementPlugin>("pb-editor-page-element");
     const rootPlugin: PbEditorPageElementPlugin = plugins.find(
         pl => pl.elementType === el.content.type
     );

@@ -211,7 +211,7 @@ addMiddleware([DELETE_ELEMENT], ({ store, next, action }) => {
     store.dispatch(updateElement({ element: parent }));
 
     // Execute `onChildDeleted` if defined
-    const plugins = getPlugins("pb-editor-page-element") as PbEditorPageElementPlugin[];
+    const plugins = getPlugins<PbEditorPageElementPlugin>("pb-editor-page-element");
     const plugin = plugins.find(pl => pl.elementType === parent.type);
     if (!plugin) {
         return;
@@ -233,7 +233,7 @@ addMiddleware([ELEMENT_DROPPED], ({ store, next, action }) => {
         return;
     }
 
-    const plugins = getPlugins("pb-editor-page-element") as PbEditorPageElementPlugin[];
+    const plugins = getPlugins<PbEditorPageElementPlugin>("pb-editor-page-element");
     const plugin = plugins.find(pl => pl.elementType === target.type);
 
     if (!plugin) {

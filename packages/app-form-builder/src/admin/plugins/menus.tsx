@@ -1,7 +1,7 @@
 import React from "react";
 import { i18n } from "@webiny/app/i18n";
 import { SecureView } from "@webiny/app-security/components";
-import { MenuContentSectionPlugin } from "@webiny/app-admin/types";
+import { AdminMenuContentSectionPlugin } from "@webiny/app-admin/types";
 
 const t = i18n.ns("app-form-builder/admin/menus");
 
@@ -9,7 +9,7 @@ const ROLE_FORMS_EDITOR = ["forms:settings"];
 
 export default [
     {
-        type: "menu-content-section",
+        type: "admin-menu-content-section",
         name: "menu-content-section-forms",
         render({ Section, Item }) {
             return (
@@ -21,4 +21,4 @@ export default [
             );
         }
     }
-] as MenuContentSectionPlugin[];
+] as AdminMenuContentSectionPlugin[];

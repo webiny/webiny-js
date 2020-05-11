@@ -25,10 +25,8 @@ export default [
     // Layout plugins
     Header,
     Content,
-    snackbar("layout"),
-    snackbar("empty-layout"),
-    dialog("layout"),
-    dialog("empty-layout"),
+    snackbar("admin-layout-component"),
+    dialog("admin-layout-component"),
     Footer,
     // Header plugins
     Menu,

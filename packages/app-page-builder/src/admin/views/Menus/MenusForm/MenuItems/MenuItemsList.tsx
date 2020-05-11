@@ -25,7 +25,7 @@ const EmptyTree = styled("div")({
 
 class MenuItemsList extends React.Component<any> {
     static canHaveChildren(node) {
-        const plugins = getPlugins("pb-menu-item") as PbMenuItemPlugin[];
+        const plugins = getPlugins<PbMenuItemPlugin>("pb-menu-item");
         const plugin = plugins.find(pl => pl.menuItem.type === node.type);
         return plugin ? plugin.menuItem.canHaveChildren : false;
     }

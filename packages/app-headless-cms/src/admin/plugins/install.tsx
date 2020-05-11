@@ -6,7 +6,7 @@ import { Alert } from "@webiny/ui/Alert";
 import { CircularProgress } from "@webiny/ui/Progress";
 import { SimpleForm, SimpleFormContent } from "@webiny/app-admin/components/SimpleForm";
 import styled from "@emotion/styled";
-import { InstallationPlugin } from "@webiny/app-admin/types";
+import { AdminInstallationPlugin } from "@webiny/app-admin/types";
 
 const SimpleFormPlaceholder = styled.div({
     minHeight: 300,
@@ -79,9 +79,9 @@ const CMSInstaller = ({ onInstalled }) => {
     );
 };
 
-const plugin: InstallationPlugin = {
-    name: "installation-cms",
-    type: "installation",
+const plugin: AdminInstallationPlugin = {
+    name: "admin-installation-cms",
+    type: "admin-installation",
     title: t`Headless CMS`,
     dependencies: [],
     secure: true,
