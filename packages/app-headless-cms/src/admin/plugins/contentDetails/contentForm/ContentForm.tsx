@@ -24,7 +24,7 @@ const pageInnerWrapper = css({
     }
 });
 
-const ContentForm = ({ contentModel, content, dataList }) => {
+const ContentForm = ({ contentModel, content, dataList, getLocale, setLoading, getLoading }) => {
     const query = new URLSearchParams(location.search);
     const { history } = useReactRouter();
     const { showSnackbar } = useSnackbar();
@@ -43,12 +43,14 @@ const ContentForm = ({ contentModel, content, dataList }) => {
 
     const createContent = useCallback(
         async data => {
+            setLoading(true);
             const response = await createMutation({
                 variables: { data }
             });
+            setLoading(false);
 
             if (response.data.content.error) {
-                showSnackbar(response.data.content.message);
+                return showSnackbar(response.data.content.message);
             }
 
             const { id } = response.data.content.data;
@@ -61,26 +63,38 @@ const ContentForm = ({ contentModel, content, dataList }) => {
 
     const updateContent = useCallback(
         async (id, data) => {
+            setLoading(true);
             const response = await updateMutation({
                 variables: { id, data }
             });
+            setLoading(false);
 
             if (response.data.content.error) {
-                showSnackbar(response.data.content.message);
+                return showSnackbar(response.data.content.message);
             }
+
+            showSnackbar("Content saved successfully.");
         },
         [contentModel.modelId]
     );
 
     const createContentFrom = useCallback(
         async (id, data) => {
+            setLoading(true);
             const response = await createFromMutation({
                 variables: { revision: id, data }
             });
+            setLoading(false);
 
             if (response.data.content.error) {
-                showSnackbar(response.data.content.message);
+                return showSnackbar(response.data.content.message);
             }
+
+            showSnackbar("A new revision was created.");
+            const { id: revisionId } = response.data.content.data;
+            query.set("id", revisionId);
+            history.push({ search: query.toString() });
+            dataList.refresh();
         },
         [contentModel.modelId]
     );
@@ -88,24 +102,20 @@ const ContentForm = ({ contentModel, content, dataList }) => {
     return (
         <div className={pageInnerWrapper}>
             <ContentModelForm
+                locale={getLocale()}
+                loading={getLoading()}
                 contentModel={contentModel}
                 content={content}
                 onSubmit={async data => {
                     if (content.id) {
                         if (get(content, "meta.locked")) {
-                            // eslint-disable-next-line
-                            console.log("Creating a new content revision...");
                             await createContentFrom(content.id, data);
                             return;
                         }
-                        // eslint-disable-next-line
-                        console.log("Updating existing content revision...");
                         await updateContent(content.id, data);
                         return;
                     }
 
-                    // eslint-disable-next-line
-                    console.log("Creating a new content entry...");
                     await createContent(data);
                 }}
             />

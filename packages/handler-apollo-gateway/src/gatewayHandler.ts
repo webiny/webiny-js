@@ -136,6 +136,7 @@ const getHandler = async ({ args, options, context }: GetHandlerOptions) => {
         }
 
         const apollo = new ApolloServer({
+            uploads: false,
             // @ts-ignore Not sure why it doesn't work, "boolean" function does return a boolean value.
             introspection: boolean(server.introspection),
             // @ts-ignore Not sure why it doesn't work, "boolean" function does return a boolean value.

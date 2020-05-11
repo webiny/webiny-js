@@ -20,7 +20,7 @@ import { ReactComponent as BeenHereIcon } from "@webiny/app-headless-cms/admin/i
 import { ReactComponent as GestureIcon } from "@webiny/app-headless-cms/admin/icons/gesture.svg";
 import { ReactComponent as AddIcon } from "@webiny/app-headless-cms/admin/icons/add.svg";
 import { ReactComponent as EditIcon } from "@webiny/app-headless-cms/admin/icons/edit.svg";
-import { ReactComponent as PublishIcon } from "@webiny/app-headless-cms/admin/icons/round-publish-24px.svg";
+import { ReactComponent as PublishIcon } from "@webiny/app-headless-cms/admin/icons/publish.svg";
 import { ReactComponent as DeleteIcon } from "@webiny/app-headless-cms/admin/icons/delete.svg";
 import { ReactComponent as PreviewIcon } from "@webiny/app-headless-cms/admin/icons/visibility.svg";
 

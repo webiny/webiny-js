@@ -1,8 +1,8 @@
 import { validation } from "@webiny/validation";
 import { compose, withFields, setOnce, string, withName } from "@webiny/commodo";
 
-export default ({ createBase, context }) => {
-    const CmsGroup: any = compose(
+export default ({ createBase, context }) =>
+    compose(
         withName(`CmsContentModelGroup`),
         withFields({
             name: string({ validation: validation.create("required") }),
@@ -12,6 +12,3 @@ export default ({ createBase, context }) => {
             environment: setOnce()(context.commodo.fields.id())
         })
     )(createBase());
-
-    return CmsGroup;
-};

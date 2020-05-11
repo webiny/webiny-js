@@ -2,7 +2,7 @@ import { useState, useEffect, useRef, useCallback } from "react";
 import { useQuery } from "react-apollo";
 import useRouter from "use-react-router";
 import { get, isEqual, omit } from "lodash";
-import { prepareLoadListParams, redirectToRouteWithQueryParams } from "./utils";
+import { prepareLoadListParams } from "./utils";
 import { getData, getError, getMeta } from "./functions";
 
 import { DocumentNode } from "graphql";
@@ -48,7 +48,7 @@ const useDataList = (params: UseDataListParams) => {
     let history = null;
     let location = null;
     const routerHook = useRouter();
-    // TODO: const router = ....
+
     if (params.useRouter !== false) {
         history = routerHook.history;
         location = routerHook.location;
@@ -90,10 +90,10 @@ const useDataList = (params: UseDataListParams) => {
                 return;
             }
 
-            if (history) {
-                redirectToRouteWithQueryParams(params, { history, location });
-                return;
-            }
+            // if (history) {
+            //     redirectToRouteWithQueryParams(params, { history, location });
+            //     return;
+            // }
 
             queryData.refetch(params);
         },

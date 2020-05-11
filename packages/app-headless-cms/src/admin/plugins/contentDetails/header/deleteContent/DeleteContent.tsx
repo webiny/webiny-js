@@ -1,8 +1,5 @@
-import React, { useMemo } from "react";
-import dot from "dot-prop-immutable";
+import React, { useCallback, useMemo } from "react";
 import useReactRouter from "use-react-router";
-import { get } from "lodash";
-import { useHandler } from "@webiny/app/hooks/useHandler";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { useConfirmationDialog } from "@webiny/app-admin/hooks/useConfirmationDialog";
 import { useDialog } from "@webiny/app-admin/hooks/useDialog";
@@ -11,14 +8,15 @@ import { Tooltip } from "@webiny/ui/Tooltip";
 import { ReactComponent as DeleteIcon } from "@webiny/app-headless-cms/admin/icons/delete.svg";
 import { createDeleteMutation } from "@webiny/app-headless-cms/admin/components/ContentModelForm/graphql";
 import { useMutation } from "@webiny/app-headless-cms/admin/hooks";
+import I18NValue from "@webiny/app-i18n/components/I18NValue";
+import get from "lodash/get";
+import { i18n } from "@webiny/app/i18n";
+const t = i18n.ns("app-headless-cms/admin/plugins/content/header/delete");
 
-const DeleteContent = props => {
+const DeleteContent = ({ contentModel, content, dataList, getLoading }) => {
     const { showSnackbar } = useSnackbar();
     const { history } = useReactRouter();
     const { showDialog } = useDialog();
-
-    const { contentModel } = props;
-    const title = get(props, "pageDetails.page.title", "N/A");
 
     const DELETE_CONTENT = useMemo(() => {
         return createDeleteMutation(contentModel);
@@ -26,49 +24,48 @@ const DeleteContent = props => {
 
     const [deleteContentMutation] = useMutation(DELETE_CONTENT);
 
+    const title = I18NValue({ value: get(content, "meta.title") });
+
     const { showConfirmation } = useConfirmationDialog({
-        title: "Delete page",
+        title: t`Delete page`,
         message: (
             <p>
-                You are about to delete the entire page and all of its revisions! <br />
-                Are you sure you want to permanently delete the page <strong>{title}</strong>?
+                {t`You are about to delete this content entry and all of its revisions!
+                    Are you sure you want to permanently delete {title}?`({
+                    title: <strong>{title}</strong>
+                })}
             </p>
         )
     });
 
-    const confirmDelete = useHandler(
-        { ...props, showConfirmation },
-        ({ pageDetails: { page }, showConfirmation }) => () => {
-            showConfirmation(async () => {
-                const { data: res } = await deleteContentMutation({
-                    variables: { id: page.parent },
-                    refetchQueries: ["PbListPages"]
-                });
-
-                const { error } = dot.get(res, "pageBuilder.deleteContent");
-                if (error) {
-                    return showDialog(error.message, { title: "Could not delete page" });
-                }
-
-                showSnackbar(
-                    <span>
-                        The page{" "}
-                        <strong>
-                            {page.name.substr(0, 20)}
-                            ...
-                        </strong>{" "}
-                        was deleted successfully!
-                    </span>
-                );
-
-                history.push("/page-builder/pages");
+    const confirmDelete = useCallback(() => {
+        showConfirmation(async () => {
+            const { data: res } = await deleteContentMutation({
+                variables: { id: content.meta.parent }
             });
-        }
-    );
+
+            dataList.refresh();
+
+            const { error } = get(res, "content");
+            if (error) {
+                return showDialog(error.message, { title: t`Could not delete content` });
+            }
+
+            showSnackbar(t`{title} was deleted successfully!`({ title: <strong>{title}</strong> }));
+
+            const query = new URLSearchParams(location.search);
+            query.delete("id");
+            history.push({ search: query.toString() });
+        });
+    }, null);
 
     return (
-        <Tooltip content={"Delete"} placement={"top"}>
-            <IconButton icon={<DeleteIcon />} onClick={confirmDelete} />
+        <Tooltip content={t`Delete`} placement={"top"}>
+            <IconButton
+                icon={<DeleteIcon />}
+                onClick={confirmDelete}
+                disabled={!content.id || getLoading()}
+            />
         </Tooltip>
     );
 };

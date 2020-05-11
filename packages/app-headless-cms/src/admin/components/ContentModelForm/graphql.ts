@@ -106,7 +106,7 @@ export const createDeleteMutation = model => {
     const ucFirstModelId = upperFirst(model.modelId);
 
     return gql`
-        mutation delete${ucFirstModelId}($id: ID) {
+        mutation delete${ucFirstModelId}($id: ID!) {
             content: delete${ucFirstModelId}(where: { id: $id }) {
                 data
                 error ${ERROR_FIELD}

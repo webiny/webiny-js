@@ -16,7 +16,7 @@ const plugins: CmsContentDetailsPlugin[] = [
     },
     {
         name: "cms-content-details-revision-selector",
-        type: "cms-content-details-header-left",
+        type: "cms-content-details-header-right",
         render(props) {
             return <RevisionSelector {...props} />;
         }

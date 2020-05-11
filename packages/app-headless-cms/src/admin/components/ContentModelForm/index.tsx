@@ -1,4 +1,4 @@
-import React, { useCallback } from "react";
+import React from "react";
 import { I18NValue } from "@webiny/app-i18n/components";
 import { getPlugins } from "@webiny/plugins";
 import { cloneDeep, pick } from "lodash";
@@ -81,19 +81,20 @@ export const ContentModelForm: React.FC<CmsContentModelFormProps> = props => {
         return { ...values, ...overrides };
     };
 
-    const { loading, content, onSubmit, onChange } = props;
+    const { loading, content, onSubmit, onChange, locale } = props;
 
     return (
         <ContentModelFormRender
+            locale={locale}
             getFields={getFields}
             getDefaultValues={getDefaultValues}
             loading={loading}
             content={content}
+            onChange={onChange}
             onSubmit={async data => {
                 const fieldsIds = contentModel.fields.map(item => item.fieldId);
                 onSubmit(pick(data, [...fieldsIds]));
             }}
-            onChange={onChange}
         />
     );
 };
