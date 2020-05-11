@@ -260,10 +260,6 @@ const Pagination = (props: Props) => {
 
     return (
         <React.Fragment>
-            {typeof meta.totalCount !== "undefined" && meta.totalCount > 0 && (
-                <ListHeaderItem>Total items: {meta.totalCount}</ListHeaderItem>
-            )}
-
             {props.setPreviousPage && props.setNextPage && (
                 <React.Fragment>
                     <ListHeaderItem
