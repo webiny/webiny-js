@@ -4,6 +4,7 @@ import { List } from "@webiny/ui/List";
 import { Elevation } from "@webiny/ui/Elevation";
 import { CircularProgress } from "@webiny/ui/Progress";
 import Revision from "./Revision";
+import get from "lodash/get";
 
 const listWrapper = css({
     margin: 25,
@@ -22,13 +23,16 @@ const listWrapper = css({
 const RevisionsList = props => {
     const { content, loading } = props;
 
+    const revisions = get(content, "meta.revisions", []);
+
     return (
         <Elevation className={listWrapper} z={2}>
             <div style={{ position: "relative" }}>
                 {loading && <CircularProgress />}
                 <List nonInteractive twoLine>
-                    {Array.isArray(content.revisions) &&
-                        content.revisions.map(rev => <Revision {...props} key={rev.id} />)}
+                    {revisions.map(rev => (
+                        <Revision {...props} key={rev.id} />
+                    ))}
                 </List>
             </div>
         </Elevation>

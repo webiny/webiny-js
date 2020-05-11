@@ -67,6 +67,7 @@ const Div = ({ children }) => {
 
 const Revision = ({ contentModel, content, dataList }: RevisionProps) => {
     const { icon, text: tooltipText } = getIcon(content);
+    return null;
     const { deleteContent, createContent, publishRevision, updateContent } = useRevisionHandlers({
         content,
         contentModel,
