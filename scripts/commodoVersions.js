@@ -17,7 +17,7 @@ const COMMODO_PACKAGES = [
     "@commodo/fields-storage-soft-delete"
 ];
 
-const ALLOWED_DIST_TAGS = ["latest", "canary"];
+const ALLOWED_DIST_TAGS = ["latest", "next"];
 
 const DIST_TAG = argv.tag || "latest";
 const PREVIEW = argv.preview;
