@@ -13,7 +13,7 @@ import get from "lodash/get";
 import { i18n } from "@webiny/app/i18n";
 const t = i18n.ns("app-headless-cms/admin/plugins/content/header/delete");
 
-const DeleteContent = ({ contentModel, content, dataList, getLoading }) => {
+const DeleteContent = ({ contentModel, content, dataList, getLoading, setLoading }) => {
     const { showSnackbar } = useSnackbar();
     const { history } = useReactRouter();
     const { showDialog } = useDialog();
@@ -40,9 +40,12 @@ const DeleteContent = ({ contentModel, content, dataList, getLoading }) => {
 
     const confirmDelete = useCallback(() => {
         showConfirmation(async () => {
+            setLoading(true);
             const { data: res } = await deleteContentMutation({
                 variables: { id: content.meta.parent }
             });
+
+            setLoading(false);
 
             dataList.refresh();
 

@@ -32,7 +32,7 @@ function getPublishableRevisions(revisions) {
         });
 }
 
-const PublishRevision = ({ content, contentModel, getLoading }) => {
+const PublishRevision = ({ content, contentModel, getLoading, setLoading }) => {
     const { showSnackbar } = useSnackbar();
 
     const PUBLISH_CONTENT = useMemo(() => {
@@ -43,13 +43,13 @@ const PublishRevision = ({ content, contentModel, getLoading }) => {
 
     const onPublish = useCallback(
         async revision => {
-            // setLoading(true);
+            setLoading(true);
             const response = await publishContentMutation({
                 variables: { revision: revision.id }
             });
 
             const content = get(response, "data.content");
-            // setLoading(false);
+            setLoading(false);
             if (content.error) {
                 return showSnackbar(content.error.message);
             }
