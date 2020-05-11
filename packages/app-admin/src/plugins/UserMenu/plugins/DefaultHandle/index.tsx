@@ -1,8 +1,8 @@
 import React from "react";
-import { AdminHeaderUserMenuPlugin } from "@webiny/app-admin/types";
+import { AdminHeaderUserMenuHandlePlugin } from "@webiny/app-admin/types";
 import DefaultHandle from "./DefaultHandle";
 
-const plugin: AdminHeaderUserMenuPlugin = {
+const plugin: AdminHeaderUserMenuHandlePlugin = {
     name: "admin-header-user-menu-handle",
     type: "admin-header-user-menu-handle",
     render() {
