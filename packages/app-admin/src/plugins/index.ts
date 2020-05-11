@@ -1,6 +1,5 @@
 // Layout plug
 import Header from "@webiny/app-admin/plugins/Header";
-import Footer from "@webiny/app-admin/plugins/Footer";
 import Content from "@webiny/app-admin/plugins/Content";
 import snackbar from "@webiny/app-admin/plugins/Snackbar";
 import dialog from "@webiny/app-admin/plugins/Dialog";
@@ -27,7 +26,6 @@ export default [
     Content,
     snackbar("admin-layout-component"),
     dialog("admin-layout-component"),
-    Footer,
     // Header plugins
     Menu,
     Logo,
