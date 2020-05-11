@@ -69,7 +69,8 @@ const GeneralTab = ({ field, form }: GeneralTabProps) => {
                         validators={validation.create("required")}
                         afterChange={afterChangeLabel}
                     >
-                        <I18NInput label={"Label"} inputRef={inputRef} />
+                        <I18NInput label={"Label"} inputRef={inputRef} disabled={field._id}/>
+
                     </Bind>
                 </Cell>
                 <Cell span={6}>
