@@ -137,38 +137,42 @@ module.exports = async function({ root, appName, templateName, tag, log }) {
                 // Why? This is very useful when you're testing packages that are not yet published to `npm`.
                 // Just run `create-webiny-project my-project --tag=./local/webiny/project/node_modules` and the whole project
                 // will be set up to use your local packages via symlinks, so you can develop and test immediately.
-                if (tag.startsWith(".")) {
-                    const webinyPackages = await fg(["@webiny/*"], {
-                        cwd: path.join(process.cwd(), tag),
-                        onlyDirectories: true
-                    });
+                try {
+                    if (tag.startsWith(".")) {
+                        const webinyPackages = await fg(["@webiny/*"], {
+                            cwd: path.join(process.cwd(), tag),
+                            onlyDirectories: true
+                        });
 
-                    if (webinyPackages.length) {
-                        const rootPkg = path.join(root, "package.json");
-                        const rootPkgJson = await loadJsonFile(rootPkg);
-                        if (!rootPkgJson.resolutions) {
-                            rootPkgJson.resolutions = {};
+                        if (webinyPackages.length) {
+                            const rootPkg = path.join(root, "package.json");
+                            const rootPkgJson = await loadJsonFile(rootPkg);
+                            if (!rootPkgJson.resolutions) {
+                                rootPkgJson.resolutions = {};
+                            }
+
+                            webinyPackages
+                                .filter(name => {
+                                    // Do not include private packages
+                                    const pkgJson = require(path.join(
+                                        process.cwd(),
+                                        tag,
+                                        name,
+                                        "package.json"
+                                    ));
+                                    return !pkgJson.private;
+                                })
+                                .forEach(name => {
+                                    rootPkgJson.dependencies[name] = rootPkgJson.resolutions[name] =
+                                        "link:" +
+                                        path.relative(root, path.join(process.cwd(), tag, name));
+                                });
+
+                            await writeJsonFile(rootPkg, rootPkgJson);
                         }
-
-                        webinyPackages
-                            .filter(name => {
-                                // Do not include private packages
-                                const pkgJson = require(path.join(
-                                    process.cwd(),
-                                    tag,
-                                    name,
-                                    "package.json"
-                                ));
-                                return !pkgJson.private;
-                            })
-                            .forEach(name => {
-                                rootPkgJson.dependencies[name] = rootPkgJson.resolutions[name] =
-                                    "link:" +
-                                    path.relative(root, path.join(process.cwd(), tag, name));
-                            });
-
-                        await writeJsonFile(rootPkg, rootPkgJson);
                     }
+                } catch (err) {
+                    throw new Error("Unable to resolve packages.", err);
                 }
             }
         },
@@ -218,15 +222,8 @@ module.exports = async function({ root, appName, templateName, tag, log }) {
                     const cwpTemplate = require(path.join(templatePath, "./index"));
                     await cwpTemplate({ appName, root });
                 } catch (err) {
-                    console.log(err);
-                    console.log("Unable to perform template-specific actions.");
+                    throw new Error("Unable to perform template-specific actions.", err);
                 }
-
-                await trackActivity({
-                    activityId,
-                    type: "create-webiny-project-end",
-                    cliVersion: packageJson.version
-                });
             }
         }
     ]);
@@ -234,8 +231,15 @@ module.exports = async function({ root, appName, templateName, tag, log }) {
     try {
         await tasks.run();
     } catch (err) {
-        console.error(err);
+        console.error("Unable to complete project initialization", err);
+        return;
     }
+
+    await trackActivity({
+        activityId,
+        type: "create-webiny-project-end",
+        cliVersion: packageJson.version
+    });
 
     console.log(`Success!\nCreated a Webiny project ${chalk.blue(appName)} at ${root}\n`);
     console.log(`Setup your project by following these steps:\n`);
