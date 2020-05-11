@@ -7,6 +7,16 @@ const { red, blue, cyan } = require("chalk");
 const argv = require("yargs").argv;
 const got = require("got");
 
+/**
+ * This is a small tool that updates the versions of all @commodo packages across the whole project.
+ * Useful for example when new @next versions are released, and when those need to be tested
+ * with packages in this repo.
+ *
+ * Usage:
+ * - yarn commodo-versions --preview --tag next
+ * - yarn commodo-versions
+ */
+
 const COMMODO_PACKAGES = [
     "@commodo/name",
     "@commodo/hooks",
@@ -22,9 +32,6 @@ const ALLOWED_DIST_TAGS = ["latest", "next"];
 const DIST_TAG = argv.tag || "latest";
 const PREVIEW = argv.preview;
 
-/**
- *
- */
 (async () => {
     if (!ALLOWED_DIST_TAGS.includes(DIST_TAG)) {
         console.log(
