@@ -8,7 +8,7 @@ import { ApolloClient } from "apollo-client";
 import { IconPrefix, IconName } from "@fortawesome/fontawesome-svg-core";
 
 export type CmsContentModelFormProps = {
-    locale: string;
+    locale?: string;
     loading?: boolean;
     preview?: boolean;
     contentModel: CmsContentModelModel;
