@@ -21,10 +21,16 @@ const GeneralTab = ({ field, form }: GeneralTabProps) => {
     const { getField, getFieldPlugin } = useContentModelEditor();
     const { getValue } = useI18N();
 
-    const setRef = useCallback(ref => (inputRef.current = ref), []);
-
+    // Had problems with auto-focusing the "label" field. A couple of comments on this.
+    // 1. It's probably caused by the Tabs component which wraps this component.
+    // 2. It seems that the "autoFocus" prop on the Input does'nt work. I can't see it attached in the actual DOM.
+    // 3. This works, but it's not 100%. Visually, the cursor is frozen, and that's probably caused by a bug / design
+    //    in the RMWC / Material library. If you were to click somewhere on screen, and then apply focus, then
+    //    it seems it's behaving correctly. ¯\_(ツ)_/¯
     useEffect(() => {
-        inputRef.current && inputRef.current.focus();
+        setTimeout(() => {
+            inputRef.current && inputRef.current.focus();
+        }, 200);
     }, []);
 
     const afterChangeLabel = useCallback(value => {
@@ -63,7 +69,7 @@ const GeneralTab = ({ field, form }: GeneralTabProps) => {
                         validators={validation.create("required")}
                         afterChange={afterChangeLabel}
                     >
-                        <I18NInput label={"Label"} inputRef={setRef} />
+                        <I18NInput label={"Label"} inputRef={inputRef} />
                     </Bind>
                 </Cell>
                 <Cell span={6}>
