@@ -3,6 +3,7 @@ const chalk = require("chalk");
 const envinfo = require("envinfo");
 const execa = require("execa");
 const fs = require("fs-extra");
+const Listr = require("listr");
 const os = require("os");
 const path = require("path");
 const yargs = require("yargs");
@@ -88,27 +89,40 @@ function createApp({ projectName, template, tag, log }) {
     if (!projectName) {
         throw Error("You must provide a name for the project to use.");
     }
-
     const root = path.resolve(projectName);
     const appName = path.basename(root);
+    const tasks = new Listr([
+        {
+            title: "Pre-template setup",
+            task: () => {
+                return new Listr([
+                    {
+                        title: "Check project name for valid npm nomenclature",
+                        task: () => {
+                            checkAppName(appName);
+                            fs.ensureDirSync(projectName);
+                        }
+                    },
+                    {
+                        title: `Creating your Webiny app in ${chalk.green(root)}.`,
+                        task: () => {
+                            const packageJson = {
+                                name: appName,
+                                version: "0.1.0",
+                                private: true
+                            };
+                            fs.writeFileSync(
+                                path.join(root, "package.json"),
+                                JSON.stringify(packageJson, null, 2) + os.EOL
+                            );
+                        }
+                    }
+                ]);
+            }
+        }
+    ]);
 
-    // Make sure the name provided is following npm package nomenclature
-    checkAppName(appName);
-    fs.ensureDirSync(projectName);
-
-    console.log(`\nCreating your Webiny app in ${chalk.green(root)}.\n`);
-
-    const packageJson = {
-        name: appName,
-        version: "0.1.0",
-        private: true
-    };
-
-    // prettifies the package.json
-    fs.writeFileSync(
-        path.join(root, "package.json"),
-        JSON.stringify(packageJson, null, 2) + os.EOL
-    );
+    tasks.run();
 
     run({ root, appName, template, tag, log });
 }
@@ -139,8 +153,11 @@ async function install({ root, dependencies }) {
     [].push.apply(args, dependencies);
     args.push("--cwd");
     args.push(root);
-    await execa(command, args, { stdio: "inherit" });
-    return;
+    try {
+        await execa(command, args);
+    } catch (err) {
+        throw new Error("Unable to install core dependencies for create-webiny-project.", err);
+    }
 }
 
 async function run({ root, appName, template, tag, log }) {
@@ -151,12 +168,23 @@ async function run({ root, appName, template, tag, log }) {
         if (template.startsWith(".") || template.startsWith("file:")) {
             templateName = "file:" + path.relative(appName, template.replace("file:", ""));
         }
-
         dependencies.push(templateName);
+        const tasks = new Listr([
+            {
+                title: `Installing core dependencies of create-webiny-project`,
+                task: async () => {
+                    try {
+                        await install({ root, dependencies });
+                    } catch (err) {
+                        throw new Error(
+                            "Failed installing core dependencies of create-webiny-project"
+                        );
+                    }
+                }
+            }
+        ]);
 
-        console.log("Installing packages. This might take a couple of minutes.");
-
-        await install({ root, dependencies });
+        await tasks.run();
 
         await init({ root, appName, templateName, tag, log });
     } catch (reason) {

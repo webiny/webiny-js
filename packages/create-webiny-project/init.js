@@ -96,33 +96,37 @@ module.exports = async function({ root, appName, templateName, tag, log }) {
                     cwd: root
                 });
 
-                await Promise.all(
-                    workspaces.map(async jsonPath => {
-                        jsonPath = path.join(root, jsonPath);
-                        const json = await loadJsonFile(jsonPath);
-                        const keys = Object.keys(json.dependencies).filter(k =>
-                            k.startsWith("@webiny")
-                        );
-                        await Promise.all(
-                            keys.map(async name => {
-                                if (tag.startsWith(".")) {
-                                    // This means `tag` points to the location of all @webiny packages
-                                    json.dependencies[name] =
-                                        "link:" +
-                                        path.relative(
-                                            path.dirname(jsonPath),
-                                            path.join(process.cwd(), tag, name)
-                                        );
-                                } else {
-                                    // Pull tag version from npm
-                                    json.dependencies[name] =
-                                        `^` + (await getPackageVersion(name, tag));
-                                }
-                            })
-                        );
-                        await writeJsonFile(jsonPath, json);
-                    })
-                );
+                try {
+                    await Promise.all(
+                        workspaces.map(async jsonPath => {
+                            jsonPath = path.join(root, jsonPath);
+                            const json = await loadJsonFile(jsonPath);
+                            const keys = Object.keys(json.dependencies).filter(k =>
+                                k.startsWith("@webiny")
+                            );
+                            await Promise.all(
+                                keys.map(async name => {
+                                    if (tag.startsWith(".")) {
+                                        // This means `tag` points to the location of all @webiny packages
+                                        json.dependencies[name] =
+                                            "link:" +
+                                            path.relative(
+                                                path.dirname(jsonPath),
+                                                path.join(process.cwd(), tag, name)
+                                            );
+                                    } else {
+                                        // Pull tag version from npm
+                                        json.dependencies[name] =
+                                            `^` + (await getPackageVersion(name, tag));
+                                    }
+                                })
+                            );
+                            await writeJsonFile(jsonPath, json);
+                        })
+                    );
+                } catch (err) {
+                    throw new Error("Unable to retrieve packages for new project.", err);
+                }
             }
         },
         {
