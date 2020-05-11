@@ -63,7 +63,7 @@ export default ({ createBase, context }) => {
                     return;
                 }
 
-                this.getField("slug").valueSet = false;
+                this.getField("slug").state.set = false;
                 this.slug = `${this.slug}-${shortid.generate()}`;
             },
             async beforeSave() {

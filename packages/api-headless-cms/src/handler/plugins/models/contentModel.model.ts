@@ -127,7 +127,7 @@ export default ({ createBase, context }) => {
                     counter++;
                 }
 
-                this.getField("modelId").valueSet = false;
+                this.getField("modelId").state.set = false;
                 this.modelId = modelId;
             }
         })
