@@ -2,7 +2,7 @@ import { useState, useEffect, useRef, useCallback } from "react";
 import { useQuery } from "react-apollo";
 import useRouter from "use-react-router";
 import { get, isEqual, omit } from "lodash";
-import { prepareLoadListParams, redirectToRouteWithQueryParams } from "./utils";
+import { prepareLoadListParams } from "./utils";
 import { getData, getError, getMeta } from "./functions";
 
 import { DocumentNode } from "graphql";
