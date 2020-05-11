@@ -78,11 +78,7 @@ const TokensElement = ({ setFormIsLoading, data, setValue }) => {
 
     return (
         <>
-            <Form
-                data={{ createTokenName: "New Token" }}
-                onSubmit={generateToken}
-                submitOnEnter={true}
-            >
+            <Form onSubmit={generateToken} submitOnEnter={true}>
                 {({ Bind, form }) => (
                     <Dialog
                         open={showCreatePATDialog}
