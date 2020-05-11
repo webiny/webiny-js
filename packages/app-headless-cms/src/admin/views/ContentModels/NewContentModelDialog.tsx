@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from "react";
+import React, { useRef } from "react";
 import { css } from "emotion";
 import useReactRouter from "use-react-router";
 import { Form } from "@webiny/form";
@@ -13,7 +13,6 @@ import { LIST_CONTENT_MODEL_GROUPS } from "../ContentModelGroups/graphql";
 import { useQuery, useMutation } from "@webiny/app-headless-cms/admin/hooks";
 import { i18n } from "@webiny/app/i18n";
 import { ButtonDefault } from "@webiny/ui/Button";
-import slugify from "slugify";
 import {
     Dialog,
     DialogTitle,
@@ -41,13 +40,6 @@ export type NewContentModelDialogProps = {
     onClose: DialogOnClose;
     contentModelsDataList: any;
 };
-
-const toSlug = text =>
-    slugify(text, {
-        replacement: "-",
-        lower: true,
-        remove: /[*#\?<>_\{\}\[\]+~.()'"!:;@]/g
-    });
 
 const NewContentModelDialog: React.FC<NewContentModelDialogProps> = ({
     open,
