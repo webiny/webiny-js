@@ -23,8 +23,16 @@ export default context =>
         placeholderText: i18nString({ context }),
         type: setOnce()(string({ validation: required })),
         unique: boolean({ validation: required, value: false }),
-        searchable: boolean({ validation: required, value: false }),
-        sortable: boolean({ validation: required, value: false }),
+        used: pipe(
+            skipOnPopulate(),
+            onSet(value => {
+                if (instance.used === true) {
+                    return true;
+                }
+
+                return value;
+            })
+        )(boolean({ validation: required, value: false })),
         validation: fields({
             list: true,
             value: [],
@@ -35,4 +43,4 @@ export default context =>
             })()
         }),
         settings: object({ value: {} })
-    })();
+    }))();
