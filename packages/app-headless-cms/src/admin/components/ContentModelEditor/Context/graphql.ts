@@ -27,8 +27,6 @@ export const FIELDS_FIELDS = `
             value
         }
         unique
-        searchable
-        sortable
         validation {
             name
             settings
