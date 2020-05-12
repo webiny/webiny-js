@@ -163,6 +163,7 @@ export default ({ type }) => [
                     fieldId: String
                     type: String
                     unique: Boolean
+                    used: Boolean
                     searchable: Boolean
                     sortable: Boolean
                     options: [CmsFieldOptions]
