@@ -68,32 +68,37 @@ export default ({ logCollection, database, server, name }: DatabaseProxyOptions)
                     db = await getDatabase();
                 }
 
-                const { collection, operation } = body;
-                if (!collection) {
-                    throw new Error(
-                        "Collection on which the operation needs to be executed wasn't set."
-                    );
-                }
+                const results = [];
+                for (let i = 0; i < body.operations.length; i++) {
+                    const { collection, operation } = body.operations[i];
 
-                const [operationName, ...operationArgs] = operation;
-                if (typeof operationName !== "string") {
-                    throw new Error("Operation name wasn't received.");
-                }
-
-                if (logCollection) {
-                    try {
-                        await db.collection(logCollection).insertOne({
-                            collection,
-                            operationName,
-                            operationArgs: JSON.stringify(operationArgs)
-                        });
-                    } catch (err) {
-                        console.log(`Error logging query: ${err.message}`);
+                    if (!collection) {
+                        throw new Error(
+                            "Collection on which the operation needs to be executed wasn't set."
+                        );
                     }
+
+                    const [operationName, ...operationArgs] = operation;
+                    if (typeof operationName !== "string") {
+                        throw new Error("Operation name wasn't received.");
+                    }
+
+                    if (logCollection) {
+                        try {
+                            await db.collection(logCollection).insertOne({
+                                collection,
+                                operationName,
+                                operationArgs: JSON.stringify(operationArgs)
+                            });
+                        } catch (err) {
+                            console.log(`Error logging query: ${err.message}`);
+                        }
+                    }
+
+                    results.push(await executeOperation(collection, operationName, operationArgs));
                 }
 
-                const result = await executeOperation(collection, operationName, operationArgs);
-                return { response: EJSON.stringify({ result }) };
+                return { response: EJSON.stringify({ results }) };
             } catch (e) {
                 const report = {
                     error: {
