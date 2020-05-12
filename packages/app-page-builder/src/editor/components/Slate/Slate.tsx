@@ -244,7 +244,7 @@ class SlateEditor extends React.Component<SlateEditorProps, SlateEditorState> {
                         })
                     }
                 </WithPageBuilderTheme>
-                {(getPlugins<PbEditorSlateMenuItemPlugin>("pb-editor-slate-menu-item"))
+                {getPlugins<PbEditorSlateMenuItemPlugin>("pb-editor-slate-menu-item")
                     .filter(pl => typeof pl.renderDialog === "function")
                     .map(pl => {
                         const props = {

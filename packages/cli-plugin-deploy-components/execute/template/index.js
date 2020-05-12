@@ -132,12 +132,11 @@ class Template extends Component {
             const middleware = compose(
                 resources.map(resource => {
                     return async next => {
-
                         const resourceData = allComponents[resource];
 
                         // If a resource does not exist or an invalid resource name was provided, throw an error.
                         if (!resourceData) {
-                            throw new Error(`Resource "${resource}" does not exist.`)
+                            throw new Error(`Resource "${resource}" does not exist.`);
                         }
 
                         const deployComponent = async () => {

@@ -24,5 +24,4 @@ const plugin: AdminFileManagerFileTypePlugin = {
     }
 };
 
-
 export default plugin;

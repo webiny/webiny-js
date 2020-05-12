@@ -1,7 +1,12 @@
 import _ from "lodash";
 import invariant from "invariant";
 import { getPlugin } from "@webiny/plugins";
-import {State, PbElement, PbDocumentElementPlugin, PbShallowElement} from "@webiny/app-page-builder/types";
+import {
+    State,
+    PbElement,
+    PbDocumentElementPlugin,
+    PbShallowElement
+} from "@webiny/app-page-builder/types";
 
 const getPluginType = (name: string) => {
     const plugin = getPlugin(name);
@@ -35,7 +40,10 @@ export const getContent = (state: State): any => {
     }
 
     const document = getPlugin<PbDocumentElementPlugin>("pb-editor-page-element-document");
-    invariant(document, `"pb-editor-page-element-document" plugin must exist for Page Builder to work!`);
+    invariant(
+        document,
+        `"pb-editor-page-element-document" plugin must exist for Page Builder to work!`
+    );
     return document.create();
 };
 

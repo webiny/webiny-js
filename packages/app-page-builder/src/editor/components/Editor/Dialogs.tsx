@@ -13,8 +13,8 @@ const DialogsContainer = styled("div")({
 
 const Dialogs = () => {
     const actions = [
-        ...(getPlugins<PbEditorToolbarTopPlugin>("pb-editor-toolbar-top")),
-        ...(getPlugins<PbEditorToolbarBottomPlugin>("pb-editor-toolbar-bottom"))
+        ...getPlugins<PbEditorToolbarTopPlugin>("pb-editor-toolbar-top"),
+        ...getPlugins<PbEditorToolbarBottomPlugin>("pb-editor-toolbar-bottom")
     ];
 
     return (

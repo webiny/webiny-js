@@ -23,7 +23,13 @@ const UserMenu = () => {
                 <Menu
                     className={menuDialog}
                     anchor={"topEnd"}
-                    handle={<div>{renderPlugin<AdminHeaderUserMenuHandlePlugin>("admin-header-user-menu-handle")}</div>}
+                    handle={
+                        <div>
+                            {renderPlugin<AdminHeaderUserMenuHandlePlugin>(
+                                "admin-header-user-menu-handle"
+                            )}
+                        </div>
+                    }
                 >
                     <List data-testid="logged-in-user-menu-list">
                         {renderPlugin<AdminHeaderUserMenuUserInfoPlugin>(
