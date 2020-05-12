@@ -120,6 +120,7 @@ export default ({ type }) => [
                     createdBy: SecurityUser
                     titleFieldId: String
                     fields: [CmsContentModelField]
+                    usedFields: [String]
                 }
 
                 input CmsContentModelInput {
@@ -163,7 +164,6 @@ export default ({ type }) => [
                     fieldId: String
                     type: String
                     unique: Boolean
-                    used: Boolean
                     searchable: Boolean
                     sortable: Boolean
                     options: [CmsFieldOptions]
