@@ -3,6 +3,7 @@ import { createUtils } from "../utils";
 import headlessPlugins from "../../src/handler/plugins";
 import setupDefaultEnvironment from "../setup/setupDefaultEnvironment";
 import setupContentModels from "../setup/setupContentModels";
+import camelCase from "lodash/camelCase";
 
 const schemaTypesQuery = /* GraphQL */ `
     {
@@ -82,7 +83,7 @@ describe("MANAGE - GraphQL Schema", () => {
                     createContentModel: {
                         data: {
                             id: expect.stringMatching("^[0-9a-fA-F]{24}$"),
-                            modelId: newContentModels[i].modelId
+                            modelId: camelCase(newContentModels[i].modelId)
                         }
                     }
                 }
