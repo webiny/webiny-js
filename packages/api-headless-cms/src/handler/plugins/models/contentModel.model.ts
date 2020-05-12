@@ -57,6 +57,12 @@ export default ({ createBase, context }) => {
             }
         }),
         withHooks({
+            async beforeDelete() {
+                const Model  = context.models[this.modelId];
+                if (await Model.findOne()) {
+                    throw new Error("Cannot delete content model because there are existing entries.")
+                }
+            },
             async beforeSave() {
                 const fields = this.fields || [];
 
