@@ -38,7 +38,7 @@ class DbProxyClient {
             throw new Error(`Missing "response" key in received DB Proxy's response.`);
         }
 
-        const { result } = EJSON.parse(parsedPayload.response);
+        const { result } = EJSON.parse(parsedPayload.response) as any;
         return result;
     }
 }
