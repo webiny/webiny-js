@@ -96,25 +96,29 @@ export const createDataModelFromData = (
             async beforeSave() {
                 // Let's mark fields on actual content model as used.
                 const contentModel = this.contentModel;
-                for (let i = 0; i < contentModel.fields.length; i++) {
-                    const field = contentModel.fields[i];
-                    if (!field.used) {
-                        const removeCallback = this.hook("afterSave", async () => {
-                            removeCallback();
+                const fields = contentModel.fields;
+                const usedFields = contentModel.usedFields;
 
-                            const contentModel = this.contentModel;
-                            for (let i = 0; i < contentModel.fields.length; i++) {
-                                const field = contentModel.fields[i];
-                                if (field.used) {
-                                    continue;
-                                }
-                                field.used = true;
-                            }
-
-                            await contentModel.save();
-                        });
-                        break;
+                for (let i = 0; i < fields.length; i++) {
+                    const field = fields[i];
+                    if (usedFields.includes(field.fieldId)) {
+                        continue;
                     }
+
+                    const removeCallback = this.hook("afterSave", async () => {
+                        removeCallback();
+
+                        for (let i = 0; i < fields.length; i++) {
+                            const fieldId = fields[i].fieldId;
+                            if (usedFields.includes(fieldId)) {
+                                continue;
+                            }
+                            usedFields.push(fieldId);
+                        }
+
+                        await contentModel.save();
+                    });
+                    break;
                 }
             },
             async afterSave() {

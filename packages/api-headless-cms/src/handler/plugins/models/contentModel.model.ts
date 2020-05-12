@@ -9,7 +9,8 @@ import {
     object,
     ref,
     withHooks,
-    setOnce
+    setOnce,
+    skipOnPopulate
 } from "@webiny/commodo";
 import createFieldsModel from "./ContentModel/createFieldsModel";
 import camelCase from "lodash/camelCase";
@@ -32,6 +33,7 @@ export default ({ createBase, context }) => {
             layout: object({ value: [] }),
             group: ref({ instanceOf: context.models.CmsContentModelGroup, validation: required }),
             titleFieldId: string(),
+            usedFields: skipOnPopulate()(string({ list: true, value: [] })),
             fields: fields({
                 list: true,
                 value: [],
@@ -56,9 +58,21 @@ export default ({ createBase, context }) => {
         }),
         withHooks({
             async beforeSave() {
-                // If no title field set, just use the first "text" field.
                 const fields = this.fields || [];
 
+                // We must not allow removal of fields that are already in use in content entries.
+                const usedFields = this.usedFields || [];
+                for (let i = 0; i < usedFields.length; i++) {
+                    const usedFieldId = usedFields[i];
+                    const fieldExists = fields.find(item => item.fieldId === usedFieldId);
+                    if (!fieldExists) {
+                        throw new Error(
+                            `Cannot remove field "${usedFieldId}" because it's already in use in created content`
+                        );
+                    }
+                }
+
+                // If no title field set, just use the first "text" field.
                 let hasTitleFieldId = false;
                 if (this.titleFieldId && fields.find(item => item.fieldId === this.titleFieldId)) {
                     hasTitleFieldId = true;
