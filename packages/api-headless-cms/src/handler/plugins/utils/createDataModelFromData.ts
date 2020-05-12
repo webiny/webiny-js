@@ -96,8 +96,8 @@ export const createDataModelFromData = (
             async beforeSave() {
                 // Let's mark fields on actual content model as used.
                 const contentModel = this.contentModel;
-                const fields = contentModel.fields;
-                const usedFields = contentModel.usedFields;
+                const fields = contentModel.fields || [];
+                const usedFields = contentModel.usedFields || [];
 
                 for (let i = 0; i < fields.length; i++) {
                     const field = fields[i];
@@ -116,7 +116,9 @@ export const createDataModelFromData = (
                             usedFields.push(fieldId);
                         }
 
-                        await contentModel.save();
+                        // Added this check because tests are failing - injecting raw mocked objects
+                        // instead of real Commodo instances.
+                        contentModel.save && await contentModel.save();
                     });
                     break;
                 }
