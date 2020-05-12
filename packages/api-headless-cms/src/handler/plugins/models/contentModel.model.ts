@@ -114,7 +114,9 @@ export default ({ createBase, context }) => {
             async beforeCreate() {
                 // If there is a modelId assigned, check if it's unique ...
                 if (this.modelId) {
+                    this.getField('modelId').state.set = false;
                     this.modelId = camelCase(this.modelId);
+
                     const existing = await CmsContentModel.findOne({
                         query: { modelId: this.modelId }
                     });
