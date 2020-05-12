@@ -55,6 +55,9 @@ export const createDataModelFromData = (
                 const rest = omit<any>(storageData, metaFieldsList);
 
                 return populateFromStorage.call(this, { ...rest, ...rest.fields, meta });
+            },
+            get contentModel() {
+                return data;
             }
         })),
         withHooks({
@@ -88,6 +91,30 @@ export const createDataModelFromData = (
                         }
                         removeCallback();
                     });
+                }
+            },
+            async beforeSave() {
+                // Let's mark fields on actual content model as used.
+                const contentModel = this.contentModel;
+                for (let i = 0; i < contentModel.fields.length; i++) {
+                    const field = contentModel.fields[i];
+                    if (!field.used) {
+                        const removeCallback = this.hook("afterSave", async () => {
+                            removeCallback();
+
+                            const contentModel = this.contentModel;
+                            for (let i = 0; i < contentModel.fields.length; i++) {
+                                const field = contentModel.fields[i];
+                                if (field.used) {
+                                    continue;
+                                }
+                                field.used = true;
+                            }
+
+                            await contentModel.save();
+                        });
+                        break;
+                    }
                 }
             },
             async afterSave() {
