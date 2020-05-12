@@ -98,7 +98,7 @@ export default [
                 label: {
                     values: [{ locale: locales.en.id, value: "Rating" }]
                 },
-                type: "float",
+                type: "number",
                 unique: false,
                 fieldId: "rating",
                 validation: []
@@ -172,7 +172,7 @@ export default [
                 },
                 fieldId: "price",
                 unique: false,
-                type: "float",
+                type: "number",
                 validation: [
                     {
                         name: "required",
@@ -199,7 +199,7 @@ export default [
                 },
                 fieldId: "itemsInStock",
                 unique: false,
-                type: "integer",
+                type: "number",
                 validation: []
             },
             {

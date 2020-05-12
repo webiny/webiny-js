@@ -10,7 +10,7 @@ export default /* GraphQL */ `
         meta: ReviewMeta
         text: CmsText
         product: CmsRefOne
-        rating: CmsFloat
+        rating: CmsNumber
     }
 
     type ReviewMeta {
@@ -30,7 +30,7 @@ export default /* GraphQL */ `
     input ReviewInput {
         text: CmsTextInput
         product: CmsRefOneInput
-        rating: CmsFloatInput
+        rating: CmsNumberInput
     }
 
     input ReviewGetWhereInput {
@@ -62,28 +62,28 @@ export default /* GraphQL */ `
         text_not_contains: String
 
         # Matches if the field is equal to the given value
-        rating: Float
+        rating: Number
 
         # Matches if the field is not equal to the given value
-        rating_not: Float
+        rating_not: Number
 
         # Matches if the field value equal one of the given values
-        rating_in: [Float]
+        rating_in: [Number]
 
         # Matches if the field value does not equal any of the given values
-        rating_not_in: [Float]
+        rating_not_in: [Number]
 
         # Matches if the field value is strictly smaller than the given value
-        rating_lt: Float
+        rating_lt: Number
 
         # Matches if the field value is smaller than or equal to the given value
-        rating_lte: Float
+        rating_lte: Number
 
         # Matches if the field value is strictly greater than the given value
-        rating_gt: Float
+        rating_gt: Number
 
         # Matches if the field value is greater than or equal to the given value
-        rating_gte: Float
+        rating_gte: Number
     }
 
     input ReviewUpdateWhereInput {

@@ -11,9 +11,9 @@ export default /* GraphQL */ `
         title: CmsText
         category: CmsRefOne
         reviews: CmsRefMany
-        price: CmsFloat
+        price: CmsNumber
         inStock: CmsBoolean
-        itemsInStock: CmsInt
+        itemsInStock: CmsNumber
         availableOn: CmsDate
     }
 
@@ -35,9 +35,9 @@ export default /* GraphQL */ `
         title: CmsTextInput
         category: CmsRefOneInput
         reviews: CmsRefManyInput
-        price: CmsFloatInput
+        price: CmsNumberInput
         inStock: CmsBooleanInput
-        itemsInStock: CmsIntInput
+        itemsInStock: CmsNumberInput
         availableOn: CmsDateInput
     }
 
@@ -70,28 +70,28 @@ export default /* GraphQL */ `
         title_not_contains: String
 
         # Matches if the field is equal to the given value
-        price: Float
+        price: Number
 
         # Matches if the field is not equal to the given value
-        price_not: Float
+        price_not: Number
 
         # Matches if the field value equal one of the given values
-        price_in: [Float]
+        price_in: [Number]
 
         # Matches if the field value does not equal any of the given values
-        price_not_in: [Float]
+        price_not_in: [Number]
 
         # Matches if the field value is strictly smaller than the given value
-        price_lt: Float
+        price_lt: Number
 
         # Matches if the field value is smaller than or equal to the given value
-        price_lte: Float
+        price_lte: Number
 
         # Matches if the field value is strictly greater than the given value
-        price_gt: Float
+        price_gt: Number
 
         # Matches if the field value is greater than or equal to the given value
-        price_gte: Float
+        price_gte: Number
 
         # Matches if the field is equal to the given value
         inStock: Boolean
@@ -100,28 +100,28 @@ export default /* GraphQL */ `
         inStock_not: Boolean
 
         # Matches if the field is equal to the given value
-        itemsInStock: Int
+        itemsInStock: Number
 
         # Matches if the field is not equal to the given value
-        itemsInStock_not: Int
+        itemsInStock_not: Number
 
         # Matches if the field value equal one of the given values
-        itemsInStock_in: [Int]
+        itemsInStock_in: [Number]
 
         # Matches if the field value does not equal any of the given values
-        itemsInStock_not_in: [Int]
+        itemsInStock_not_in: [Number]
 
         # Matches if the field value is strictly smaller than the given value
-        itemsInStock_lt: Int
+        itemsInStock_lt: Number
 
         # Matches if the field value is smaller than or equal to the given value
-        itemsInStock_lte: Int
+        itemsInStock_lte: Number
 
         # Matches if the field value is strictly greater than the given value
-        itemsInStock_gt: Int
+        itemsInStock_gt: Number
 
         # Matches if the field value is greater than or equal to the given value
-        itemsInStock_gte: Int
+        itemsInStock_gte: Number
 
         # Matches if the field is equal to the given value
         availableOn: String
