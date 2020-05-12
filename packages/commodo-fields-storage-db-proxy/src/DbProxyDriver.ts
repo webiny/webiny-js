@@ -11,10 +11,16 @@ class DbProxyClient {
     }
 
     async runOperation(requestPayload) {
+        const singleOperation = !Array.isArray(requestPayload);
+
         const Lambda = new LambdaClient({ region: process.env.AWS_REGION });
         const { Payload } = await Lambda.invoke({
             FunctionName: this.dbProxyFunction,
-            Payload: JSON.stringify({ body: EJSON.stringify(requestPayload) })
+            Payload: JSON.stringify({
+                body: EJSON.stringify({
+                    operations: singleOperation ? [requestPayload] : requestPayload
+                })
+            })
         }).promise();
 
         let parsedPayload;
@@ -38,8 +44,13 @@ class DbProxyClient {
             throw new Error(`Missing "response" key in received DB Proxy's response.`);
         }
 
-        const { result } = EJSON.parse(parsedPayload.response) as any;
-        return result;
+        const { results } = EJSON.parse(parsedPayload.response) as any;
+
+        if (singleOperation) {
+            return results[0];
+        }
+
+        return results;
     }
 }
 
