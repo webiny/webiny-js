@@ -67,7 +67,7 @@ export default ({ createBase, context }) => {
                     const fieldExists = fields.find(item => item.fieldId === usedFieldId);
                     if (!fieldExists) {
                         throw new Error(
-                            `Cannot remove field "${usedFieldId}" because it's already in use in created content`
+                            `Cannot remove field "${usedFieldId}" because it's already in use in created content.`
                         );
                     }
                 }
