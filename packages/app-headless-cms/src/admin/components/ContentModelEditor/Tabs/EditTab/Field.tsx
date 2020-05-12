@@ -62,6 +62,7 @@ const Field = props => {
     const fieldPlugin = getFieldPlugin({ type: field.type });
     const plugins = getPlugins<CmsEditorFieldOptionPlugin>("cms-editor-field-option");
 
+    const usedFields = data.usedFields || [];
     return (
         <FieldContainer>
             <Info>
@@ -95,11 +96,14 @@ const Field = props => {
                         </ListItemGraphic>
                         {t`Use as title`}
                     </MenuItem>
-                    <MenuItem onClick={() => onDelete(field)}>
+                    <MenuItem
+                        disabled={usedFields.includes(field.fieldId)}
+                        onClick={() => onDelete(field)}
+                    >
                         <ListItemGraphic>
                             <Icon icon={<DeleteIcon />} />
                         </ListItemGraphic>
-                        {t`Remove field`}
+                        {usedFields.includes(field.fieldId) ? t`Cannot delete` : t`Delete`}
                     </MenuItem>
                 </Menu>
             </Actions>
