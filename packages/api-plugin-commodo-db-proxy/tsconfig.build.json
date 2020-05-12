@@ -1,7 +1,7 @@
 {
   "extends": "../../tsconfig.build.json",
   "include": ["./src"],
-  "exclude": ["node_modules", "../graphql", "../commodo-fields-storage-db-proxy"],
+  "exclude": ["node_modules", "../graphql", "../commodo-fields-storage-db-proxy", "../handler"],
   "compilerOptions": {
     "rootDir": "./src",
     "outDir": "./dist",
@@ -9,6 +9,7 @@
   },
   "references": [
     { "path": "../graphql/tsconfig.build.json" },
+    { "path": "../handler/tsconfig.build.json" },
     { "path": "../commodo-fields-storage-db-proxy/tsconfig.build.json" }
   ]
 }
