@@ -46,6 +46,7 @@ export const GET_CONTENT_MODEL = gql`
                 description
                 modelId
                 titleFieldId
+                usedFields
                 fields {
                     ${FIELDS_FIELDS}
                 }
