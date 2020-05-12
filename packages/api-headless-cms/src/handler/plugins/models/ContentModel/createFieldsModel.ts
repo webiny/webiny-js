@@ -1,21 +1,11 @@
 import { i18nString } from "@webiny/api-i18n/fields";
 import { validation } from "@webiny/validation";
-import {
-    withFields,
-    string,
-    fields,
-    object,
-    boolean,
-    setOnce,
-    pipe,
-    skipOnPopulate,
-    onSet
-} from "@webiny/commodo";
+import { withFields, string, fields, object, boolean, setOnce } from "@webiny/commodo";
 
 const required = validation.create("required");
 
 export default context =>
-    withFields(instance => ({
+    withFields({
         _id: setOnce()(string({ validation: required })),
         fieldId: setOnce()(string({ validation: required })),
         label: i18nString({ context, validation: required }),
@@ -23,16 +13,6 @@ export default context =>
         placeholderText: i18nString({ context }),
         type: setOnce()(string({ validation: required })),
         unique: boolean({ validation: required, value: false }),
-        used: pipe(
-            skipOnPopulate(),
-            onSet(value => {
-                if (instance.used === true) {
-                    return true;
-                }
-
-                return value;
-            })
-        )(boolean({ validation: required, value: false })),
         validation: fields({
             list: true,
             value: [],
@@ -43,4 +23,4 @@ export default context =>
             })()
         }),
         settings: object({ value: {} })
-    }))();
+    })();
