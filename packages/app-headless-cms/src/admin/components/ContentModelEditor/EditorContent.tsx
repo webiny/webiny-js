@@ -6,6 +6,7 @@ import { Typography } from "@webiny/ui/Typography";
 import { Tabs, Tab } from "@webiny/ui/Tabs";
 import { Icon } from "@webiny/ui/Icon";
 import { EditTab } from "./Tabs/EditTab";
+import { IndexesTab } from "./Tabs/IndexesTab";
 import { PreviewTab } from "./Tabs/PreviewTab";
 import { Fields } from "./Fields";
 
@@ -68,6 +69,9 @@ export default function EditorContent() {
                     <Tabs className={formTabs} ref={tabsRef}>
                         <Tab label={"Edit"}>
                             <EditTab />
+                        </Tab>
+                        <Tab label={"Indexes"}>
+                            <IndexesTab />
                         </Tab>
                         <Tab label={"Preview"}>
                             <PreviewTab />
