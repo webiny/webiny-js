@@ -117,7 +117,7 @@ describe("MANAGE - GraphQL Schema", () => {
                 data: {
                     createContentModel: {
                         error: {
-                            message: `Content model with modelId "${contentModels[i].modelId}" already exists.`
+                            message: `Content model with modelId "${camelCase(contentModels[i].modelId)}" already exists.`
                         }
                     }
                 }
@@ -163,8 +163,8 @@ describe("MANAGE - GraphQL Schema", () => {
         const { context } = await useSchema();
 
         for (let i = 0; i < contentModels.length; i++) {
-            expect(context.models[contentModels[i].modelId]).toBeTruthy();
-            expect(context.models[contentModels[i].modelId + "Search"]).toBeTruthy();
+            expect(context.models[camelCase(contentModels[i].modelId)]).toBeTruthy();
+            expect(context.models[camelCase(contentModels[i].modelId) + "Search"]).toBeTruthy();
         }
     });
 
