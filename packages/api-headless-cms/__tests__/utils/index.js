@@ -1,4 +1,4 @@
-import i18n from "@webiny/api-i18n/plugins/service";
+import i18n from "@webiny/api-i18n/plugins/i18n";
 import mockI18NLocales from "../mocks/mockI18NLocales";
 
 import useDatabase from "./useDatabase";
@@ -10,7 +10,7 @@ import applyMongoDb from "./mongodb";
 
 export const createUtils = (plugins = []) => {
     const utilsId = Date.now();
-    return applyMongoDb(utilsId, [i18n(), mockI18NLocales(), ...plugins], plugins => ({
+    return applyMongoDb(utilsId, [i18n, mockI18NLocales(), ...plugins], plugins => ({
         useDatabase: useDatabase(utilsId, plugins),
         useApolloHandler: useApolloHandler(plugins),
         useCopyHandler: useCopyHandler(plugins),
