@@ -16,10 +16,6 @@ function createValidation(validation, format, checkLength = true) {
             return;
         }
 
-        if (typeof validation === "function") {
-            await validation(value);
-        }
-
         const error = Error(`Enter a string in the following format "${format}"`);
         if (checkLength && format.length !== value.length) {
             throw error;
@@ -28,6 +24,10 @@ function createValidation(validation, format, checkLength = true) {
         const date = parse(value, format);
         if (!date) {
             throw error;
+        }
+
+        if (typeof validation === "function") {
+            await validation(value);
         }
     };
 }

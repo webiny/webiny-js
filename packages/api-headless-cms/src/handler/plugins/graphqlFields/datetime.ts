@@ -2,7 +2,6 @@ import gql from "graphql-tag";
 import { CmsModelFieldToGraphQLPlugin } from "@webiny/api-headless-cms/types";
 
 const createListFilters = ({ field }) => {
-
     return `
         # Matches if the field is equal to the given value
         ${field.fieldId}: String
@@ -44,12 +43,7 @@ const plugin: CmsModelFieldToGraphQLPlugin = {
             };
         },
         createTypeField({ field }) {
-            const { type } = field.settings;
             const localeArg = "(locale: String)";
-
-            if (type === "dateTimeWithTimezone") {
-                return `${field.fieldId}${localeArg}: String`;
-            }
 
             return `${field.fieldId}${localeArg}: String`;
         }

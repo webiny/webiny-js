@@ -41,7 +41,7 @@ const plugin: FbBuilderFieldPlugin = {
                         <Bind name={"settings.type"}>
                             <Select
                                 label={"Format"}
-                                description={"Once set it can't be changed later on"}
+                                description={"Cannot be changed later"}
                             >
                                 <option value="date">Date only</option>
                                 <option value="time">Time only</option>
