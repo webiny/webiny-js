@@ -3,6 +3,12 @@ import { CmsContentModelModelField } from "@webiny/app-headless-cms/types";
 import { I18NValue } from "@webiny/app-i18n/components";
 import HelperMessage from "../components/HelperMessage";
 import { BindComponentRenderProp } from "@webiny/form";
+import { css } from "emotion"
+
+const selectBox = css({
+    padding: '16px !important',
+    height: '55px !important'
+})
 
 type Props = {
     bind: BindComponentRenderProp;
@@ -14,15 +20,15 @@ const Select = (props: Props) => {
 
     return (
         <div className="webiny-fb-form-field webiny-fb-form-field--select">
-            <label className="webiny-fb-form-field__label webiny-pb-typography-body">
+            {props.field.label && <label className="webiny-fb-form-field__label webiny-pb-typography-body">
                 <I18NValue value={props.field.label} />
-            </label>
+            </label>}
             <select
                 value={value}
                 onChange={e => onChange(e.target.value)}
                 id={props.field.fieldId}
                 name={props.field.fieldId}
-                className="webiny-fb-form-field__select"
+                className={`webiny-fb-form-field__select ${selectBox}`}
             >
                 <option disabled value={""}>
                     {I18NValue({ value: props.field.placeholderText })}
