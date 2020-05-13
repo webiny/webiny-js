@@ -2,58 +2,30 @@ import gql from "graphql-tag";
 import { CmsModelFieldToGraphQLPlugin } from "@webiny/api-headless-cms/types";
 
 const createListFilters = ({ field }) => {
-    if (field.settings.type === "dateTimeWithTimezone") {
-        return `
-            # Matches if the field is equal to the given value
-            ${field.fieldId}: DateTime
-            
-            # Matches if the field is not equal to the given value
-            ${field.fieldId}_not: DateTime
-    
-            
-            # Matches if the field value equal one of the given values
-            ${field.fieldId}_in: [DateTime]
-            
-            # Matches if the field value does not equal any of the given values
-            ${field.fieldId}_not_in: [DateTime]
-            
-            # Matches if the field value is strictly smaller than the given value
-            ${field.fieldId}_lt: DateTime
-            
-            # Matches if the field value is smaller than or equal to the given value
-            ${field.fieldId}_lte: DateTime
-            
-            # Matches if the field value is strictly greater than the given value
-            ${field.fieldId}_gt: DateTime
-            
-            # Matches if the field value is greater than or equal to the given value
-            ${field.fieldId}_gte: DateTime
-        `;
-    }
 
     return `
         # Matches if the field is equal to the given value
         ${field.fieldId}: String
-        
+
         # Matches if the field is not equal to the given value
         ${field.fieldId}_not: String
 
-        
+
         # Matches if the field value equal one of the given values
         ${field.fieldId}_in: [String]
-        
+
         # Matches if the field value does not equal any of the given values
         ${field.fieldId}_not_in: [String]
-        
+
         # Matches if the field value is strictly smaller than the given value
         ${field.fieldId}_lt: String
-        
+
         # Matches if the field value is smaller than or equal to the given value
         ${field.fieldId}_lte: String
-        
+
         # Matches if the field value is strictly greater than the given value
         ${field.fieldId}_gt: String
-        
+
         # Matches if the field value is greater than or equal to the given value
         ${field.fieldId}_gte: String
     `;
@@ -76,7 +48,7 @@ const plugin: CmsModelFieldToGraphQLPlugin = {
             const localeArg = "(locale: String)";
 
             if (type === "dateTimeWithTimezone") {
-                return `${field.fieldId}${localeArg}: DateTime`;
+                return `${field.fieldId}${localeArg}: String`;
             }
 
             return `${field.fieldId}${localeArg}: String`;
@@ -94,7 +66,7 @@ const plugin: CmsModelFieldToGraphQLPlugin = {
                 typeDefs: gql`
                     # dateTimeWithTimezone types
                     input CmsDateTimeWithTzLocalizedInput {
-                        value: DateTime
+                        value: String
                         locale: ID!
                     }
 
@@ -103,12 +75,12 @@ const plugin: CmsModelFieldToGraphQLPlugin = {
                     }
 
                     type CmsDateTimeWithTzLocalized {
-                        value: DateTime
+                        value: String
                         locale: ID!
                     }
 
                     type CmsDateTimeWithTz {
-                        value: DateTime
+                        value: String
                         values: [CmsDateTimeWithTzLocalized]!
                     }
 
