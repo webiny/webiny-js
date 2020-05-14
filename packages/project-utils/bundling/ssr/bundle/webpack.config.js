@@ -5,6 +5,20 @@ module.exports = ({ entry, output, babelOptions }) => {
     delete require.cache[require.resolve("webpackbar")];
     const WebpackBar = require("webpackbar");
 
+    if (typeof process.env["GENERATE_SOURCEMAP"] === "undefined") {
+        process.env.GENERATE_SOURCEMAP = "false";
+    }
+
+    // Source maps are resource heavy and can cause out of memory issue for large source files.
+    const shouldUseSourceMap = process.env.GENERATE_SOURCEMAP !== "false";
+    let sourceMapRegister = null;
+    if (!shouldUseSourceMap) {
+        sourceMapRegister = {
+            test: /source-map-support/,
+            use: require.resolve("null-loader", { paths: [__dirname] })
+        };
+    }
+
     return {
         entry,
         output: {
@@ -20,7 +34,7 @@ module.exports = ({ entry, output, babelOptions }) => {
             },
             extensions: [".ts", ".tsx", ".js", ".json", ".jsx", ".mjs"]
         },
-        devtool: "source-map",
+        devtool: shouldUseSourceMap ? "source-map" : false,
         target: "node",
         mode: "production",
         node: {
@@ -40,6 +54,7 @@ module.exports = ({ entry, output, babelOptions }) => {
             rules: [
                 {
                     oneOf: [
+                        sourceMapRegister,
                         {
                             test: [/\.mjs$/, /\.tsx?$/, /\.jsx?$/],
                             exclude: /node_modules/,
@@ -61,7 +76,7 @@ module.exports = ({ entry, output, babelOptions }) => {
                                 emitFile: false
                             }
                         }
-                    ]
+                    ].filter(Boolean)
                 }
             ]
         }
