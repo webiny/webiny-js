@@ -15,7 +15,7 @@
   ],
   "dependencies": {
     "@babel/runtime": "^7.5.5",
-    "@commodo/fields-storage-mongodb": "2.0.0-next.7",
+    "@commodo/fields-storage-mongodb": "^2.0.0-next.7",
     "mongodb": "^3.5.2"
   },
   "devDependencies": {
