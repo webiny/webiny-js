@@ -74,20 +74,29 @@ class Context {
 
     async loadEnv(envPath, env, { debug = false }) {
         if (fs.existsSync(envPath)) {
-            const envConfig = await GetEnvVars({
-                rc: {
-                    environments: ["default", env],
-                    filePath: envPath
-                }
-            });
+            const consoleError = console.error;
+            const envFile = this.replaceProjectRoot(envPath);
+            try {
+                // We need to disable console.error because `env-cmd` is printing some ugly errors we don't want in our output.
+                // eslint-disable-next-line @typescript-eslint/no-empty-function
+                console.error = () => {};
+                const envConfig = await GetEnvVars({
+                    rc: {
+                        environments: ["default", env],
+                        filePath: envPath
+                    }
+                });
 
-            Object.assign(process.env, envConfig);
-            if (debug) {
-                console.log(
-                    `💡 Loaded ${green(env)} environment from ${green(
-                        this.replaceProjectRoot(envPath)
-                    )}...`
-                );
+                Object.assign(process.env, envConfig);
+                if (debug) {
+                    console.log(`💡 Loaded ${green(env)} environment from ${green(envFile)}.`);
+                }
+            } catch (err) {
+                if (debug) {
+                    console.log(`💡 No environments were found in ${green(envFile)}. Skipping.`);
+                }
+            } finally {
+                console.error = consoleError;
             }
         }
     }
