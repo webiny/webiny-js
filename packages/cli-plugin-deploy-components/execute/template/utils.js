@@ -262,6 +262,7 @@ const executeComponent = async (
     const availableOutputs = getOutputs(allComponents);
     try {
         if (componentData.build && typeof build === "function") {
+            instance.context.status("Building", resource);
             await build({
                 resource,
                 buildConfig: resolveObject(componentData.build, availableOutputs)
