@@ -1,25 +1,24 @@
-const vars = {
-    region: process.env.AWS_REGION,
-    mongodb: {
-        server: process.env.MONGODB_SERVER,
-        name: process.env.MONGODB_NAME
-    }
-};
-
 module.exports = ({ cli }) => {
     return {
         resources: {
-            dbProxy: {
+            databaseProxy: {
+                build: {
+                    root: "./databaseProxy",
+                    script: "yarn build"
+                },
                 deploy: {
-                    component: "@webiny/serverless-db-proxy",
+                    component: "@webiny/serverless-function",
                     inputs: {
-                        testConnectionBeforeDeploy: true,
-                        region: vars.region,
+                        region: process.env.AWS_REGION,
+                        description: "Handles interaction with MongoDB",
+                        code: "./databaseProxy/build",
                         concurrencyLimit: 15,
+                        handler: "handler.handler",
+                        memory: 512,
                         timeout: 30,
                         env: {
-                            MONGODB_SERVER: vars.mongodb.server,
-                            MONGODB_NAME: vars.mongodb.name
+                            MONGODB_SERVER: process.env.MONGODB_SERVER,
+                            MONGODB_NAME: process.env.MONGODB_NAME
                         }
                     }
                 }
@@ -30,16 +29,17 @@ module.exports = ({ cli }) => {
                     script: `yarn build:${cli.env}`
                 },
                 deploy: {
-                    component: "@webiny/serverless-app",
+                    component: "@webiny/serverless-function",
                     inputs: {
                         description: "Webiny Site",
-                        region: vars.region,
+                        region: process.env.AWS_REGION,
                         memory: 128,
                         timeout: 30,
                         code: "./site/build",
+                        handler: "handler.handler",
                         env: {
                             SSR_FUNCTION: "${siteSsr.arn}",
-                            DB_PROXY_FUNCTION: "${dbProxy.arn}"
+                            DB_PROXY_FUNCTION: "${databaseProxy.arn}"
                         }
                     }
                 }
@@ -53,7 +53,7 @@ module.exports = ({ cli }) => {
                     component: "@webiny/serverless-function",
                     inputs: {
                         description: "Site SSR",
-                        region: vars.region,
+                        region: process.env.AWS_REGION,
                         code: "./site/build-ssr",
                         handler: "handler.handler",
                         memory: 2048,
@@ -67,11 +67,14 @@ module.exports = ({ cli }) => {
                     script: `yarn build:${cli.env}`
                 },
                 deploy: {
-                    component: "@webiny/serverless-app",
+                    component: "@webiny/serverless-function",
                     inputs: {
-                        region: vars.region,
+                        region: process.env.AWS_REGION,
                         description: "Webiny Admin",
-                        code: "./admin/build"
+                        code: "./admin/build",
+                        handler: "handler.handler",
+                        memory: 128,
+                        timeout: 30,
                     }
                 }
             },
@@ -79,7 +82,7 @@ module.exports = ({ cli }) => {
                 component: "@webiny/serverless-api-gateway",
                 inputs: {
                     name: "Apps Gateway",
-                    region: vars.region,
+                    region: process.env.AWS_REGION,
                     description: "Serverless React Apps",
                     binaryMediaTypes: ["*/*"],
                     endpoints: [
