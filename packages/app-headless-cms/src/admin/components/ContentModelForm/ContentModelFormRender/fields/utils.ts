@@ -1,4 +1,3 @@
-// TODO: FInd a better way to get UTC timezones
 export const UTC_TIMEZONES = [
     {
         value: "-12:00",
@@ -157,3 +156,24 @@ export const UTC_TIMEZONES = [
         label: "UTC+14:00"
     }
 ];
+/**
+ * @returns Current date string in format `YYYY-MM-DD`
+ */
+export const getCurrentDateString = () => {
+    const today = new Date();
+    const year = today.getFullYear();
+    const month = today.getMonth() + 1; // months start from 0
+    const formattedMonth = month < 10 ? `0${month}` : month;
+    const date = today.getDate();
+    return `${year}-${formattedMonth}-${date}`;
+};
+/**
+ *
+ * @param {Object} label - I18NString instance
+ * @param {String} text - text to append
+ *
+ * @return new updated instance of I18NString
+ */
+export const appendTextToLabel = (label, text) => {
+    return { values: label.values.map(el => ({ ...el, value: `${el.value}${text}` })) };
+};

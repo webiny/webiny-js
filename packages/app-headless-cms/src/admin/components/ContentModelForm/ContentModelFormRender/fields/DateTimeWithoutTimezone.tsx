@@ -1,9 +1,10 @@
 import React from "react";
 import Input from "./Input";
 import { Grid, Cell } from "@webiny/ui/Grid";
+import { getCurrentDateString, appendTextToLabel } from "./utils";
 
 const DEFAULT_TIME = "00:00:00"
-const DEFAULT_DATE = "";
+const DEFAULT_DATE = getCurrentDateString();
 
 const DateTimeWithoutTimezone = (props) => {
   // "2020-05-18 09:00:00"
@@ -11,8 +12,8 @@ const DateTimeWithoutTimezone = (props) => {
   const [time, setTime] = React.useState("")
   React.useEffect(() => {
     if (props.bind.value === null) {
-      setDate(DEFAULT_TIME)
-      setTime(DEFAULT_DATE)
+      setDate(DEFAULT_DATE)
+      setTime(DEFAULT_TIME)
       return
     }
     const [isoDate, fullTime] = props.bind.value.split(' ')
@@ -43,6 +44,10 @@ const DateTimeWithoutTimezone = (props) => {
               return props.bind.onChange(`${value} ${time}`);
             }
           }}
+          field={{
+            ...props.field,
+            label: appendTextToLabel(props.field.label, ' date')
+          }}
           type={"date"} />
       </Cell>
       <Cell span={6}>
@@ -55,6 +60,10 @@ const DateTimeWithoutTimezone = (props) => {
               setTime(`${value}:00`);
               return props.bind.onChange(`${date} ${value}:00`);
             }
+          }}
+          field={{
+            ...props.field,
+            label: appendTextToLabel(props.field.label, ' time')
           }}
           type={"time"} />
       </Cell>
