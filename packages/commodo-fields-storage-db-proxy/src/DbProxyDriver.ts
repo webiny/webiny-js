@@ -54,6 +54,11 @@ class DbProxyClient {
     }
 }
 
+type Item = {
+    name: string;
+    data: { [key: string]: any };
+};
+
 class DbProxyDriver {
     client: DbProxyClient;
 
@@ -61,34 +66,43 @@ class DbProxyDriver {
         this.client = new DbProxyClient({ dbProxyFunction });
     }
 
-    // eslint-disable-next-line
-    async save({ name, data, isCreate }) {
-        return isCreate ? this.create({ name, data }) : this.update({ name, data });
-    }
-
-    async create({ name, data }) {
-        await this.client.runOperation({
-            collection: this.getCollectionName(name),
-            operation: ["insertOne", data]
+    async create(items: Item[]) {
+        const payload = items.map(({ name, data }) => {
+            return {
+                collection: this.getCollectionName(name),
+                operation: ["insertOne", data]
+            };
         });
-        return true;
-    }
 
-    async update({ name, data }) {
-        await this.client.runOperation({
-            collection: this.getCollectionName(name),
-            operation: ["updateOne", { id: data.id }, { $set: data }]
-        });
+        await this.client.runOperation(payload);
 
         return true;
     }
 
-    // eslint-disable-next-line
-    async delete({ name, data: { id } }) {
-        await this.client.runOperation({
-            collection: this.getCollectionName(name),
-            operation: ["deleteOne", { id }]
+    async update(items: Item[]) {
+        const payload = items.map(({ name, data }) => {
+            return {
+                collection: this.getCollectionName(name),
+                operation: ["updateOne", { id: data.id }, { $set: data }]
+            };
         });
+
+        await this.client.runOperation(payload);
+
+        return true;
+    }
+
+    // eslint-disable-next-line
+    async delete(items: Item[]) {
+        const payload = items.map(({ name, data }) => {
+            return {
+                collection: this.getCollectionName(name),
+                operation: ["deleteOne", { id: data.id }]
+            };
+        });
+
+        await this.client.runOperation(payload);
+
         return true;
     }
 

@@ -1,4 +1,5 @@
 import get from "lodash.get";
+import { getName } from "@webiny/commodo";
 
 export default () => [
     {
@@ -18,7 +19,7 @@ export default () => [
             ];
 
             const results = await driver.getClient().runOperation({
-                collection: driver.getCollectionName(PbPage),
+                collection: driver.getCollectionName(getName(PbPage)),
                 operation: ["aggregate", pipeline]
             });
 

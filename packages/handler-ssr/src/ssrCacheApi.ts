@@ -3,6 +3,7 @@ import { createResponse } from "@webiny/handler";
 import mime from "mime-types";
 import { parseBody } from "./functions";
 import { HandlerPlugin } from "@webiny/handler/types";
+import { getName } from "@webiny/commodo";
 
 const API_ACTION = {
     INVALIDATE_SSR_CACHE_BY_PATH: "invalidateSsrCacheByPath",
@@ -66,7 +67,7 @@ export default (): HandlerPlugin => ({
 
                     const driver = SsrCache.getStorageDriver();
                     await driver.getClient().runOperation({
-                        collection: driver.getCollectionName(SsrCache),
+                        collection: driver.getCollectionName(getName(SsrCache)),
                         operation: [
                             "update",
                             {
