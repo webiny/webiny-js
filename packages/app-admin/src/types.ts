@@ -51,7 +51,7 @@ export type AdminHeaderUserMenuUserInfoPlugin = Plugin & {
 
 /**
  * Enables adding custom menu sections and items in the main menu, located on the left side of the screen.
- * @see https://docs.webiny.com/docs/webiny-apps/admin/development/plugins-reference/app#menu
+ * @see https://docs.webiny.com/docs/webiny-apps/admin/development/plugins-reference/app#admin-menu
  */
 export type AdminMenuPlugin = Plugin & {
     type: "admin-menu";
@@ -70,7 +70,7 @@ export type AdminMenuContentSectionPlugin = Plugin & {
 
 /**
  * Enables adding custom header elements to the left side of the top bar.
- * @see https://docs.webiny.com/docs/webiny-apps/admin/development/plugins-reference/app#header-left
+ * @see https://docs.webiny.com/docs/webiny-apps/admin/development/plugins-reference/app#admin-header-left
  */
 export type AdminHeaderLeftPlugin = Plugin & {
     type: "admin-header-left";
@@ -79,7 +79,7 @@ export type AdminHeaderLeftPlugin = Plugin & {
 
 /**
  * Enables adding custom header elements to the right side of the top bar.
- * @see https://docs.webiny.com/docs/webiny-apps/admin/development/plugins-reference/app#header-right
+ * @see https://docs.webiny.com/docs/webiny-apps/admin/development/plugins-reference/app#admin-header-right
  */
 export type AdminHeaderRightPlugin = Plugin & {
     type: "admin-header-right";
@@ -88,7 +88,7 @@ export type AdminHeaderRightPlugin = Plugin & {
 
 /**
  * Enables adding custom header elements to the middle of the top bar.
- * @see https://docs.webiny.com/docs/webiny-apps/admin/development/plugins-reference/app#header-middle
+ * @see https://docs.webiny.com/docs/webiny-apps/admin/development/plugins-reference/app#admin-header-middle
  */
 export type AdminHeaderMiddlePlugin = Plugin & {
     type: "admin-header-middle";
