@@ -2,10 +2,10 @@ import React from "react";
 import Input from "./Input";
 import Select from "./Select";
 import { Grid, Cell } from "@webiny/ui/Grid";
-import { UTC_TIMEZONES } from './utils'
+import { UTC_TIMEZONES, getCurrentDateString, appendTextToLabel } from './utils'
 
 const DEFAULT_TIME = "00:00:00"
-const DEFAULT_DATE = "";
+const DEFAULT_DATE = getCurrentDateString();
 const DEFAULT_TIMEZONE = "+01:00";
 
 const DateTimeWithTimezone = (props) => {
@@ -55,7 +55,10 @@ const DateTimeWithTimezone = (props) => {
               return props.bind.onChange(`${value}T${time}${timezone}`);
             }
           }}
-
+          field={{
+            ...props.field,
+            label: appendTextToLabel(props.field.label, ' date')
+          }}
           type={"date"} />
       </Cell>
       <Cell span={4}>
@@ -65,35 +68,25 @@ const DateTimeWithTimezone = (props) => {
             ...props.bind,
             value: time,
             onChange: value => {
-              // FIXME: better input handling
               setTime(`${value}:00`);
               return props.bind.onChange(`${date}T${value}:00${timezone}`);
             }
           }}
-
+          field={{
+            ...props.field,
+            label: appendTextToLabel(props.field.label, ' time')
+          }}
           type={"time"} />
       </Cell>
       <Cell span={4}>
         <Select
-          {...props}
-          bind={{
-            ...props.bind,
-            value: timezone,
-            onChange: value => {
-              setTimezone(value);
-              return props.bind.onChange(`${date}T${time}${value}`);
-            }
+          label="Timezone"
+          value={timezone}
+          onChange={value => {
+            setTimezone(value);
+            return props.bind.onChange(`${date}T${time}${value}`);
           }}
-          field={{
-            ...props.field,
-            label: null, // TODO: Add relevant Icon or label
-            options: [
-              ...UTC_TIMEZONES.map(t => ({
-                value: t.value,
-                label: { values: [{ value: t.label, locale: "5eb7e468d4955f0008b58fdb" }] },
-              })),
-            ]
-          }}
+          options={UTC_TIMEZONES.map(t => ({ value: t.value, label: t.label }))}
         />
       </Cell>
     </Grid>
