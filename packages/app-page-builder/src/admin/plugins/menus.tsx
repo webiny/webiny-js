@@ -38,7 +38,7 @@ const plugin: AdminMenuPlugin = {
                                 {editor && <Item label={t`Pages`} path="/page-builder/pages" />}
                                 {menus && <Item label={t`Menus`} path="/page-builder/menus" />}
                             </Section>
-                            {getPlugins("menu-content-section").map(
+                            {getPlugins("admin-menu-content-section").map(
                                 (plugin: AdminMenuContentSectionPlugin) => (
                                     <React.Fragment key={plugin.name}>
                                         {plugin.render({ Section, Item })}
