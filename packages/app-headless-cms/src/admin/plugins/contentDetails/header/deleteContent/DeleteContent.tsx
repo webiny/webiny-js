@@ -42,7 +42,7 @@ const DeleteContent = ({ contentModel, content, dataList, getLoading, setLoading
         showConfirmation(async () => {
             setLoading(true);
             const { data: res } = await deleteContentMutation({
-                variables: { id: content.meta.parent }
+                variables: { revision: content.meta.parent }
             });
 
             setLoading(false);
