@@ -186,7 +186,7 @@ export const createDataModelFromData = (
                 }
             },
             async afterDelete() {
-                // Delete Search collection records for this specific revision
+                // Delete Search collection records for this specific revision.
                 const SearchModel = context.models[data.modelId + "Search"];
                 const entries = await SearchModel.find({
                     query: { revision: this.id }
