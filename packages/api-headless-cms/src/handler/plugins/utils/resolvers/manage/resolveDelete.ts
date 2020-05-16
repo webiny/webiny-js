@@ -12,7 +12,7 @@ export const resolveDelete = ({ model }): GraphQLFieldResolver<any, any, CmsCont
     setContextLocale(context, args.locale);
 
     const Model = context.models[model.modelId];
-    const instance = await Model.findOne(args.where);
+    const instance = await Model.findOne({ query: args.where });
     if (!instance) {
         return entryNotFound(JSON.stringify(args.where));
     }
