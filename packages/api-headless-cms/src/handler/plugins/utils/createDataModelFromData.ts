@@ -118,7 +118,7 @@ export const createDataModelFromData = (
 
                         // Added this check because tests are failing - injecting raw mocked objects
                         // instead of real Commodo instances.
-                        contentModel.save && await contentModel.save();
+                        contentModel.save && (await contentModel.save());
                     });
                     break;
                 }
@@ -196,7 +196,7 @@ export const createDataModelFromData = (
                     await entries[i].delete();
                 }
 
-                // If the deleted page is the root page - delete its revisions
+                // If the deleted page is the parent page - delete its revisions.
                 if (this.id === this.meta.parent) {
                     // Delete all revisions
                     const revisions = await Model.find({
