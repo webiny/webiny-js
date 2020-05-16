@@ -1,6 +1,6 @@
 import { GraphQLFieldResolver } from "@webiny/graphql/types";
 import { Response, ErrorResponse } from "@webiny/commodo-graphql";
-import { entryNotFound } from "./entryNotFound";
+import { entryNotFound } from "./../entryNotFound";
 import { CmsContext } from "@webiny/api-headless-cms/types";
 
 export const resolveUnpublish = ({ model }): GraphQLFieldResolver<any, any, CmsContext> => async (
@@ -9,8 +9,7 @@ export const resolveUnpublish = ({ model }): GraphQLFieldResolver<any, any, CmsC
     context
 ) => {
     const Model = context.models[model.modelId];
-    const instance = await Model.findOne({ query: { id: args.revision } });
-
+    const instance = await Model.findById(args.revision);
     if (!instance) {
         return entryNotFound(JSON.stringify(args.where));
     }

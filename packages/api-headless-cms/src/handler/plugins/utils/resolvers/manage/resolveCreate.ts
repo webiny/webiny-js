@@ -1,9 +1,7 @@
 import { Response, ErrorResponse } from "@webiny/commodo-graphql";
 import { GraphQLFieldResolver } from "@webiny/graphql/types";
-import { setContextLocale } from "./../setContextLocale";
 
 export const resolveCreate = ({ model }): GraphQLFieldResolver => async (root, args, context) => {
-    setContextLocale(context, args.locale);
     try {
         const Model = context.models[model.modelId];
         const instance = new Model();

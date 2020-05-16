@@ -1,18 +1,15 @@
 import { GraphQLFieldResolver } from "@webiny/graphql/types";
 import { Response, ErrorResponse } from "@webiny/commodo-graphql";
 import { CmsContext } from "@webiny/api-headless-cms/types";
-import { findEntry } from "../findEntry";
-import { entryNotFound } from "./entryNotFound";
-import { setContextLocale } from "../setContextLocale";
+import { entryNotFound } from "./../entryNotFound";
 
 export const resolveDelete = ({ model }): GraphQLFieldResolver<any, any, CmsContext> => async (
     root,
     args,
     context
 ) => {
-    setContextLocale(context, args.locale);
-    const instance = await findEntry({ model, args, context });
-
+    const Model = context.models[model.modelId];
+    const instance = await Model.findOne(args.where);
     if (!instance) {
         return entryNotFound(JSON.stringify(args.where));
     }
