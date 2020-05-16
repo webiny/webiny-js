@@ -8,7 +8,7 @@ const plugin: CmsContentDetailsRevisionContentPlugin = {
     type: "cms-content-details-revision-content",
     render(props) {
         return (
-            <Tab label={"Revisions"} disabled={props.loading}>
+            <Tab label={"Revisions"} disabled={props.getLoading()}>
                 <RevisionsList {...props} />
             </Tab>
         );
