@@ -18,6 +18,17 @@ const ERROR_FIELD = /* GraphQL */ `
     }
 `;
 
+const CONTENT_META_FIELDS = /* GraphQL */ `
+    title {
+        value
+    }
+    published
+    version
+    locked
+    parent
+    status
+`;
+
 const createFieldsList = contentModel => {
     const fields = contentModel.fields.map(field => {
         return `${field.fieldId} ${I18N_FIELD}`;
@@ -37,24 +48,12 @@ export const createReadQuery = model => {
                     ${createFieldsList(model)}
                     savedOn
                     meta {
-                        title {
-                            value
-                        }
-                        published
-                        version
-                        locked
-                        parent
-                        status
+                        ${CONTENT_META_FIELDS}
                         revisions {
                             id
+                            savedOn
                             meta {
-                                version
-                                status
-                                locked
-                                published
-                                title {
-                                    value
-                                }
+                                ${CONTENT_META_FIELDS}
                             }
                         }
                     }
@@ -80,11 +79,6 @@ export const createListQuery = model => {
             ) {
                 data {
                     id
-                    ${createFieldsList(model)}
-                    createdBy {
-                        firstName
-                        lastName
-                    }
                     savedOn
                     meta {
                         title {
@@ -106,8 +100,8 @@ export const createDeleteMutation = model => {
     const ucFirstModelId = upperFirst(model.modelId);
 
     return gql`
-        mutation delete${ucFirstModelId}($id: ID!) {
-            content: delete${ucFirstModelId}(where: { id: $id }) {
+        mutation Delete${ucFirstModelId}($revision: ID!) {
+            content: delete${ucFirstModelId}(where: { id: $revision }) {
                 data
                 error ${ERROR_FIELD}
             }
@@ -119,7 +113,7 @@ export const createCreateMutation = model => {
     const ucFirstModelId = upperFirst(model.modelId);
 
     return gql`
-        mutation create${ucFirstModelId}($data: ${ucFirstModelId}Input!) {
+        mutation Create${ucFirstModelId}($data: ${ucFirstModelId}Input!) {
             content: create${ucFirstModelId}(data: $data) {
                 data {
                     id
@@ -131,11 +125,30 @@ export const createCreateMutation = model => {
     `;
 };
 
+export const createCreateFromMutation = model => {
+    const ucFirstModelId = upperFirst(model.modelId);
+
+    return gql`
+        mutation Create${ucFirstModelId}From($revision: ID!, $data: ${ucFirstModelId}Input) {
+            content: create${ucFirstModelId}From(revision: $revision, data: $data) {
+                data {
+                    id
+                    meta {
+                        published
+                        status
+                        locked
+                    }
+                }
+                error ${ERROR_FIELD}
+            }
+        }`;
+};
+
 export const createUpdateMutation = model => {
     const ucFirstModelId = upperFirst(model.modelId);
 
     return gql`
-        mutation update${ucFirstModelId}($id: ID!, $data: ${ucFirstModelId}Input!) {
+        mutation Update${ucFirstModelId}($id: ID!, $data: ${ucFirstModelId}Input!) {
             content: update${ucFirstModelId}(where: { id: $id }, data: $data) {
                 data {
                     id
@@ -153,16 +166,20 @@ export const createPublishMutation = model => {
     return gql`
         mutation Publish${ucFirstModelId}($revision: ID!) {
             content: publish${ucFirstModelId}(revision: $revision) {
-            data {
-                id
-                meta {
-                    published
-                    status
-                    locked
+                data {
+                    id
+                    meta {
+                        ${CONTENT_META_FIELDS}
+                        revisions {
+                            id
+                            meta {
+                                ${CONTENT_META_FIELDS}
+                            }
+                        }    
+                    }
                 }
+                error ${ERROR_FIELD}
             }
-            error ${ERROR_FIELD}
-        }
         }`;
 };
 
@@ -172,34 +189,19 @@ export const createUnpublishMutation = model => {
     return gql`
         mutation Unpublish${ucFirstModelId}($revision: ID!) {
             content: unpublish${ucFirstModelId}(revision: $revision) {
-            data {
-                id
-                meta {
-                    published
-                    status
-                    locked
+                data {
+                    id
+                    meta {
+                        ${CONTENT_META_FIELDS}
+                        revisions {
+                            id
+                            meta {
+                                ${CONTENT_META_FIELDS}
+                            }
+                        }    
+                    }
                 }
+                error ${ERROR_FIELD}
             }
-            error ${ERROR_FIELD}
-        }
-        }`;
-};
-
-export const createCreateFromMutation = model => {
-    const ucFirstModelId = upperFirst(model.modelId);
-
-    return gql`
-        mutation Create${ucFirstModelId}From($revision: ID!, $data: ${ucFirstModelId}Input!) {
-            content: create${ucFirstModelId}From(revision: $revision, data: $data) {
-            data {
-                id
-                meta {
-                    published
-                    status
-                    locked
-                }
-            }
-            error ${ERROR_FIELD}
-        }
         }`;
 };

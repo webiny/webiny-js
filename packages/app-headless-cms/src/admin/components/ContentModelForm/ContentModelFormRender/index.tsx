@@ -71,7 +71,7 @@ const renderFieldCell = ({ field, Bind, row, locale }) => {
 export const ContentModelFormRender = ({
     getFields,
     getDefaultValues,
-    loading,
+    loading = false,
     content,
     onSubmit,
     onChange,
