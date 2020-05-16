@@ -39,7 +39,7 @@
   },
   "publishConfig": {
     "access": "public",
-    "directory": "./dist"
+    "directory": "dist"
   },
   "scripts": {
     "build": "rimraf ./dist *.tsbuildinfo && babel src -d dist --source-maps --copy-files --extensions \".ts,.tsx\"",

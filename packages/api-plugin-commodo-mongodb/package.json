@@ -25,7 +25,8 @@
     "@webiny/graphql": "^1.0.0"
   },
   "publishConfig": {
-    "access": "public"
+    "access": "public",
+    "directory": "dist"
   },
   "scripts": {
     "build": "rimraf ./dist *.tsbuildinfo && babel src -d dist --source-maps --copy-files --extensions \".ts\"",

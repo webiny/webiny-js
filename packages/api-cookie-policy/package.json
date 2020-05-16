@@ -27,7 +27,8 @@
     "@svgr/webpack": "^4.3.2"
   },
   "publishConfig": {
-    "access": "public"
+    "access": "public",
+    "directory": "dist"
   },
   "scripts": {
     "build": "rimraf ./dist *.tsbuildinfo && babel src -d dist --source-maps --copy-files --extensions \".ts\"",
