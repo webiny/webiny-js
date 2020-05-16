@@ -22,16 +22,12 @@ import { ReactComponent as AddIcon } from "@webiny/app-headless-cms/admin/icons/
 import { ReactComponent as EditIcon } from "@webiny/app-headless-cms/admin/icons/edit.svg";
 import { ReactComponent as PublishIcon } from "@webiny/app-headless-cms/admin/icons/publish.svg";
 import { ReactComponent as DeleteIcon } from "@webiny/app-headless-cms/admin/icons/delete.svg";
-import { ReactComponent as PreviewIcon } from "@webiny/app-headless-cms/admin/icons/visibility.svg";
-
-import { useRevisionHandlers } from "./useRevisionHandlers";
+import useReactRouter from "use-react-router";
 import { CmsContentModelModel } from "@webiny/app-headless-cms/types";
+import { I18NValue } from "@webiny/app-i18n/components";
+import { i18n } from "@webiny/app/i18n";
 
-type RevisionProps = {
-    content: any;
-    dataList: any;
-    contentModel: CmsContentModelModel;
-};
+const t = i18n.ns("app-headless-cms/admin/plugins/content-details/content-revisions");
 
 const primaryColor = css({ color: "var(--mdc-theme-primary)" });
 
@@ -61,23 +57,16 @@ const getIcon = (rev: CmsContentModelModel) => {
     }
 };
 
-const Div = ({ children }) => {
-    return <div>{children}</div>;
-};
+const Revision = props => {
+    const { revision, createContentFrom, deleteContent, publishContent } = props;
+    const { icon, text: tooltipText } = getIcon(revision);
 
-const Revision = ({ contentModel, content, dataList }: RevisionProps) => {
-    const { icon, text: tooltipText } = getIcon(content);
-    return null;
-    const { deleteContent, createContent, publishRevision, updateContent } = useRevisionHandlers({
-        content,
-        contentModel,
-        dataList
-    });
+    const { history } = useReactRouter();
 
     return (
         <ConfirmationDialog
-            title="Confirmation required!"
-            message={<span>Are you sure you want to delete this revision?</span>}
+            title={t`Confirmation required!`}
+            message={<span>{t`Are you sure you want to delete this revision?`}</span>}
         >
             {({ showConfirmation }) => (
                 <ListItem>
@@ -87,10 +76,14 @@ const Revision = ({ contentModel, content, dataList }: RevisionProps) => {
                         </Tooltip>
                     </ListItemGraphic>
                     <ListItemText>
-                        <ListItemTextPrimary>{content.title}</ListItemTextPrimary>
+                        <ListItemTextPrimary>
+                            <I18NValue value={revision.meta.title} default={t`N/A`} />
+                        </ListItemTextPrimary>
                         <ListItemTextSecondary>
-                            Last modified <TimeAgo datetime={content.savedOn} /> (#
-                            {content.version})
+                            {t`Last modified: {time} (#{version})`({
+                                time: <TimeAgo datetime={revision.savedOn} />,
+                                version: revision.meta.version
+                            })}
                         </ListItemTextSecondary>
                     </ListItemText>
                     <ListItemMeta>
@@ -98,55 +91,52 @@ const Revision = ({ contentModel, content, dataList }: RevisionProps) => {
                             handle={<IconButton icon={<MoreVerticalIcon />} />}
                             className={revisionsMenu}
                         >
-                            <MenuItem onClick={createContent}>
+                            <MenuItem onClick={() => createContentFrom(revision)}>
                                 <ListItemGraphic>
                                     <Icon icon={<AddIcon />} />
                                 </ListItemGraphic>
-                                New from current
+                                {t`New from current`}
                             </MenuItem>
-                            {!content.meta.locked && (
+
+                            {!revision.meta.locked && (
                                 <MenuItem
                                     onClick={() => {
-                                        updateContent; // TODO: Fix this
+                                        const { id } = revision;
+                                        const query = new URLSearchParams(location.search);
+                                        query.set("id", id);
+                                        history.push({ search: query.toString() });
                                     }}
                                 >
                                     <ListItemGraphic>
                                         <Icon icon={<EditIcon />} />
                                     </ListItemGraphic>
-                                    Edit
+                                    {t` Edit`}
                                 </MenuItem>
                             )}
 
-                            {!content.meta.published && (
-                                <MenuItem onClick={() => publishRevision(content)}>
+                            {!revision.meta.published && (
+                                <MenuItem onClick={() => publishContent(revision)}>
                                     <ListItemGraphic>
                                         <Icon icon={<PublishIcon />} />
                                     </ListItemGraphic>
-                                    Publish
+                                    {t`Publish`}
                                 </MenuItem>
                             )}
 
-                            <MenuItem
-                                onClick={() => {
-                                    console.log("Go");
-                                }}
-                            >
-                                <ListItemGraphic>
-                                    <Icon icon={<PreviewIcon />} />
-                                </ListItemGraphic>
-                                Preview
-                            </MenuItem>
-
-                            {!content.locked && content.id !== content.parent && (
-                                <Div>
+                            {!revision.meta.locked && revision.id !== revision.meta.parent && (
+                                <div>
                                     <MenuDivider />
-                                    <MenuItem onClick={() => showConfirmation(deleteContent)}>
+                                    <MenuItem
+                                        onClick={() =>
+                                            showConfirmation(() => deleteContent(revision))
+                                        }
+                                    >
                                         <ListItemGraphic>
                                             <Icon icon={<DeleteIcon />} />
                                         </ListItemGraphic>
-                                        Delete
+                                        {t` Delete`}
                                     </MenuItem>
-                                </Div>
+                                </div>
                             )}
                         </Menu>
                     </ListItemMeta>
