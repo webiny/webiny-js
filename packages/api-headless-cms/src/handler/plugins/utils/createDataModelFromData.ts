@@ -167,18 +167,21 @@ export const createDataModelFromData = (
                 if (this.meta.version > 1 && this.meta.latestVersion) {
                     this.meta.latestVersion = false;
                     const removeCallback = this.hook("afterDelete", async () => {
-                        const previousLatestForm = await Model.findOne({
+                        removeCallback();
+
+                        const previousLatest = await Model.findOne({
                             query: {
-                                parent: this.parent
+                                parent: this.meta.parent
                             },
                             sort: {
                                 version: -1
                             }
                         });
-                        previousLatestForm.meta.latestVersion = true;
-                        await previousLatestForm.save();
 
-                        removeCallback();
+                        if (previousLatest) {
+                            previousLatest.meta.latestVersion = true;
+                            await previousLatest.save();
+                        }
                     });
                 }
             },
