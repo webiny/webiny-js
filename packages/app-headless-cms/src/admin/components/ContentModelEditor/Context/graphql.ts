@@ -50,6 +50,9 @@ export const GET_CONTENT_MODEL = gql`
                 fields {
                     ${FIELDS_FIELDS}
                 }
+                indexes {
+                    fields
+                }
                 layout
             }
             error {

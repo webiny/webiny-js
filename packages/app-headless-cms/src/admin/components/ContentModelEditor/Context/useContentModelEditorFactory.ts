@@ -55,7 +55,8 @@ export default ContentModelEditorContext => {
                             "name",
                             "settings",
                             "description",
-                            "titleFieldId"
+                            "titleFieldId",
+                            "indexes"
                         ])
                     }
                 });
