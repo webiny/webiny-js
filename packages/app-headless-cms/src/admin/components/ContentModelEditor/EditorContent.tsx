@@ -70,11 +70,11 @@ export default function EditorContent() {
                         <Tab label={"Edit"}>
                             <EditTab />
                         </Tab>
-                        <Tab label={"Indexes"}>
-                            <IndexesTab />
-                        </Tab>
                         <Tab label={"Preview"}>
                             <PreviewTab />
+                        </Tab>
+                        <Tab label={"Indexes"}>
+                            <IndexesTab />
                         </Tab>
                     </Tabs>
                 </RightPanel>
