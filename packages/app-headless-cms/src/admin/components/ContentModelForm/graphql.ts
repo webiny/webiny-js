@@ -49,6 +49,23 @@ export const createReadQuery = model => {
                     savedOn
                     meta {
                         ${CONTENT_META_FIELDS}
+                    }
+                }
+                error ${ERROR_FIELD}
+            }
+        }
+    `;
+};
+
+export const createListRevisionsQuery = model => {
+    const ucFirstModelId = upperFirst(model.modelId);
+
+    return gql`
+        query List${ucFirstModelId}Revisions($id: ID!) {
+            content: get${ucFirstModelId}(where: { id: $id }) {
+                data {
+                    id
+                    meta {
                         revisions {
                             id
                             savedOn
