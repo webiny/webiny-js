@@ -10,12 +10,12 @@ import {
     ref,
     withHooks,
     setOnce,
-    skipOnPopulate,
-    onSet
+    skipOnPopulate
 } from "@webiny/commodo";
 import createFieldsModel from "./ContentModel/createFieldsModel";
 import camelCase from "lodash/camelCase";
 import pluralize from "pluralize";
+import { indexes } from "./indexesField";
 
 const required = validation.create("required");
 
@@ -34,23 +34,17 @@ export default ({ createBase, context }) => {
             layout: object({ value: [] }),
             group: ref({ instanceOf: context.models.CmsContentModelGroup, validation: required }),
             titleFieldId: string(),
+
+            // Contains a list of all fields that were utilized by existing content entries. If a field is on the list,
+            // it cannot be removed anymore, because we don't want the user to loose any previously inserted data.
             usedFields: skipOnPopulate()(string({ list: true, value: [] })),
+
             fields: fields({
                 list: true,
                 value: [],
                 instanceOf: ContentModelFieldsModel
             }),
-            indexes: onSet(value => {
-                return value.map(index => ({ fields: index.fields.sort() }));
-            })(
-                fields({
-                    list: true,
-                    instanceOf: withFields({
-                        fields: string({ list: true }),
-                        id: string()
-                    })()
-                })
-            )
+            indexes: indexes()
         }),
         withProps({
             pluralizedName() {
