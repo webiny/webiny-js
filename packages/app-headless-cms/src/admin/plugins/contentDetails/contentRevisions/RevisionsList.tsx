@@ -5,11 +5,12 @@ import { Elevation } from "@webiny/ui/Elevation";
 import Revision from "./Revision";
 import get from "lodash/get";
 import { CircularProgress } from "@webiny/ui/Progress";
-import { useMutation } from "@webiny/app-headless-cms/admin/hooks";
+import { useMutation, useQuery } from "@webiny/app-headless-cms/admin/hooks";
 import {
     createCreateFromMutation,
     createDeleteMutation,
-    createPublishMutation
+    createPublishMutation,
+    createListRevisionsQuery
 } from "@webiny/app-headless-cms/admin/components/ContentModelForm/graphql";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import useReactRouter from "use-react-router";
@@ -43,15 +44,21 @@ const RevisionsList = props => {
     const { content, contentModel, setLoading, dataList } = props;
     const { history } = useReactRouter();
 
-    const revisions = get(content, "meta.revisions", []);
-
-    const { CREATE_CONTENT_FROM, DELETE_CONTENT, PUBLISH_CONTENT } = useMemo(() => {
+    const { CREATE_CONTENT_FROM, DELETE_CONTENT, PUBLISH_CONTENT, LIST_REVISIONS } = useMemo(() => {
         return {
             CREATE_CONTENT_FROM: createCreateFromMutation(contentModel),
             DELETE_CONTENT: createDeleteMutation(contentModel),
-            PUBLISH_CONTENT: createPublishMutation(contentModel)
+            PUBLISH_CONTENT: createPublishMutation(contentModel),
+            LIST_REVISIONS: createListRevisionsQuery(contentModel)
         };
     }, [contentModel.modelId]);
+
+    console.log(content);
+    const { data: revisionsList, refetch } = useQuery(LIST_REVISIONS, {
+        variables: { id: get(content, "meta.parent") }
+    });
+
+    const revisions = get(revisionsList, "content.data.meta.revisions", []);
 
     const [createFromMutation] = useMutation(CREATE_CONTENT_FROM);
     const [deleteMutation] = useMutation(DELETE_CONTENT);
@@ -62,19 +69,21 @@ const RevisionsList = props => {
         const response = await createFromMutation({
             variables: { revision: revision.id }
         });
-        setLoading(false);
 
         if (response.data.content.error) {
+            setLoading(false);
             showSnackbar(response.data.content.error.message);
             return;
         }
+
+        await Promise.all([dataList.refresh(), refetch()]);
+        setLoading(false);
 
         showSnackbar(t`New content entry revision created.`);
         const { id } = response.data.content.data;
         const query = new URLSearchParams(location.search);
         query.set("id", id);
         history.push({ search: query.toString() });
-        dataList.refresh();
     }, []);
 
     const deleteContent = useCallback(async revision => {
@@ -82,19 +91,25 @@ const RevisionsList = props => {
         const response = await deleteMutation({
             variables: { revision: revision.id }
         });
-        setLoading(false);
 
         if (response.data.content.error) {
+            setLoading(false);
             showSnackbar(response.data.content.error.message);
             return;
         }
 
-        dataList.refresh();
-
         if (revision.id === revision.meta.parent) {
+            await dataList.refresh();
+            setLoading(false);
             history.push(`/cms/content-models/manage/${contentModel.modelId}`);
             showSnackbar(t`Content entry and all of its revisions deleted.`);
-        } else if (revision.id === content.id) {
+            return;
+        }
+
+        await Promise.all([dataList.refresh(), refetch()]);
+        setLoading(false);
+
+        if (revision.id === content.id) {
             let revisionId;
             for (let i = 0; i < content.revisions.length; i++) {
                 const current = content.revisions[i];
@@ -110,6 +125,7 @@ const RevisionsList = props => {
                 history.push({ search: query.toString() });
             }
         }
+
         showSnackbar(t`Content entry revision deleted.`);
     }, []);
 
@@ -120,12 +136,14 @@ const RevisionsList = props => {
         });
 
         const content = get(response, "data.content");
-        setLoading(false);
         if (content.error) {
-            return showSnackbar(content.error.message);
+            setLoading(false);
+            showSnackbar(content.error.message);
+            return;
         }
 
-        dataList.refresh();
+        await dataList.refresh();
+        setLoading(false);
 
         showSnackbar(
             <span>
