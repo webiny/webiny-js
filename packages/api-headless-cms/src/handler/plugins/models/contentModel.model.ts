@@ -10,7 +10,8 @@ import {
     ref,
     withHooks,
     setOnce,
-    skipOnPopulate
+    skipOnPopulate,
+    onSet
 } from "@webiny/commodo";
 import createFieldsModel from "./ContentModel/createFieldsModel";
 import camelCase from "lodash/camelCase";
@@ -38,7 +39,18 @@ export default ({ createBase, context }) => {
                 list: true,
                 value: [],
                 instanceOf: ContentModelFieldsModel
-            })
+            }),
+            indexes: onSet(value => {
+                return value.map(index => ({ fields: index.fields.sort() }));
+            })(
+                fields({
+                    list: true,
+                    instanceOf: withFields({
+                        fields: string({ list: true }),
+                        id: string()
+                    })()
+                })
+            )
         }),
         withProps({
             pluralizedName() {
@@ -58,9 +70,11 @@ export default ({ createBase, context }) => {
         }),
         withHooks({
             async beforeDelete() {
-                const Model  = context.models[this.modelId];
+                const Model = context.models[this.modelId];
                 if (await Model.findOne()) {
-                    throw new Error("Cannot delete content model because there are existing entries.")
+                    throw new Error(
+                        "Cannot delete content model because there are existing entries."
+                    );
                 }
             },
             async beforeSave() {
@@ -114,7 +128,7 @@ export default ({ createBase, context }) => {
             async beforeCreate() {
                 // If there is a modelId assigned, check if it's unique ...
                 if (this.modelId) {
-                    this.getField('modelId').state.set = false;
+                    this.getField("modelId").state.set = false;
                     this.modelId = camelCase(this.modelId);
 
                     const existing = await CmsContentModel.findOne({
