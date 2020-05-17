@@ -35,15 +35,12 @@ const ContentDetails = ({ contentModel, dataList }) => {
     const [locale, setLocale] = useState(i18n.getLocale().id);
     const [loading, setLoading] = useState(false);
 
-    const getLocale = useCallback(() => locale, [locale]);
-    const getLoading = useCallback(() => loading, [loading]);
-
     const query = new URLSearchParams(location.search);
     const contentId = query.get("id");
 
     const READ_QUERY = useMemo(() => createReadQuery(contentModel), [contentModel.id]);
 
-    const { data } = useQuery(READ_QUERY, {
+    const { data, loading: readQueryLoading } = useQuery(READ_QUERY, {
         variables: { id: contentId },
         skip: !contentId,
         onCompleted: data => {
@@ -55,6 +52,9 @@ const ContentDetails = ({ contentModel, dataList }) => {
             }
         }
     });
+
+    const getLocale = useCallback(() => locale, [locale]);
+    const getLoading = useCallback(() => readQueryLoading || loading, [loading, readQueryLoading]);
 
     const content = get(data, "content.data") || {};
 
