@@ -52,6 +52,7 @@ export const GET_CONTENT_MODEL = gql`
                 }
                 indexes {
                     fields
+                    createdOn
                 }
                 layout
             }

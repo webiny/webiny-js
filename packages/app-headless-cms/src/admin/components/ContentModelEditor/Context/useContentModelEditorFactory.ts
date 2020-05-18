@@ -4,6 +4,7 @@ import { get, cloneDeep, pick } from "lodash";
 import { GET_CONTENT_MODEL, UPDATE_CONTENT_MODEL } from "./graphql";
 import { getFieldPosition, moveField, moveRow, deleteField } from "./functions";
 import { getPlugins } from "@webiny/plugins";
+import omit from "lodash/omit";
 
 import {
     CmsContentModelModelFieldsLayout,
@@ -43,8 +44,11 @@ export default ContentModelEditorContext => {
                 self.setData(() => cloneDeep(data), false);
                 return response;
             },
-            saveContentModel: async (data = null) => {
-                data = data || state.data;
+            saveContentModel: async (rawData = state.data) => {
+                const data = cloneDeep(rawData);
+                // Remove "createdOn" from entries in the "indexes" field.
+                data.indexes = data.indexes.map(item => omit(item, ["createdOn"]));
+
                 const response = await self.apollo.mutate({
                     mutation: UPDATE_CONTENT_MODEL,
                     variables: {
