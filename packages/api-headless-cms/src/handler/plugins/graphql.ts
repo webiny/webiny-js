@@ -122,6 +122,7 @@ export default ({ type }) => [
                     createdBy: SecurityUser
                     titleFieldId: String
                     fields: [CmsContentModelField]
+                    indexes: [ContentModelIndexes]
                     usedFields: [String]
                 }
 
@@ -132,6 +133,7 @@ export default ({ type }) => [
                     description: String
                     titleFieldId: String
                     fields: [CmsContentModelFieldInput]
+                    indexes: [ContentModelIndexesInput]
                     layout: [[String]]
                 }
 
@@ -186,6 +188,15 @@ export default ({ type }) => [
                     options: [CmsFieldOptionsInput]
                     validation: [CmsFieldValidationInput]
                     settings: JSON
+                }
+
+                type ContentModelIndexes {
+                    fields: [String]
+                    createdOn: DateTime
+                }
+
+                input ContentModelIndexesInput {
+                    fields: [String]
                 }
 
                 type CmsContentModelListResponse {

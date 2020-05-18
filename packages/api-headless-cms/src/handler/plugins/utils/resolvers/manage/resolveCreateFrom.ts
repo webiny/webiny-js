@@ -1,15 +1,18 @@
 import { GraphQLFieldResolver } from "@webiny/graphql/types";
 import { Response, ErrorResponse } from "@webiny/commodo-graphql";
-import { entryNotFound } from "./entryNotFound";
+import { entryNotFound } from "./../entryNotFound";
 import { CmsContext } from "@webiny/api-headless-cms/types";
+import { setContextLocale } from "./../../setContextLocale";
 
 export const resolveCreateFrom = ({ model }): GraphQLFieldResolver<any, any, CmsContext> => async (
     root,
     args,
     context
 ) => {
+    setContextLocale(context, args.locale);
+
     const Model = context.models[model.modelId];
-    const baseRevision = await Model.findOne({ query: { id: args.revision } });
+    const baseRevision = await Model.findById(args.revision);
 
     if (!baseRevision) {
         return entryNotFound(JSON.stringify(args.where));

@@ -1,6 +1,8 @@
 {
-  "packages": ["packages/*"],
-  "version": "fixed",
+  "packages": [
+    "packages/*"
+  ],
+  "version": "4.0.0",
   "command": {
     "version": {
       "preid": "next",
@@ -12,15 +14,18 @@
         "lerna.json",
         "sample-project/**"
       ],
-      "allowBranch": ["master", "next", "release-*"],
+      "allowBranch": [
+        "master",
+        "next",
+        "release-*"
+      ],
       "conventionalCommits": true,
       "createRelease": "github",
       "commitHooks": false,
       "message": "chore(release): publish %s :tada: :rocket:"
     },
     "publish": {
-      "conventionalCommits": true,
-      "contents": "dist"
+      "conventionalCommits": true
     }
   }
 }

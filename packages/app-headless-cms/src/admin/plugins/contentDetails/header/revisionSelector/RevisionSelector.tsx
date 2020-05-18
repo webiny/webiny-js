@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useCallback } from "react";
 import { css } from "emotion";
 import { withRouter } from "@webiny/react-router";
 import { ButtonDefault } from "@webiny/ui/Button";
@@ -40,10 +40,6 @@ const RevisionSelector = ({ location, history, content, getLoading }) => {
     return (
         <Menu
             className={menuStyles}
-            onSelect={evt => {
-                query.set("id", content.revisions[evt.detail.index].id);
-                history.push({ search: query.toString() });
-            }}
             handle={
                 <ButtonDefault className={buttonStyle} disabled={getLoading()}>
                     v{currentRevision.version} ({currentRevision.status}){" "}
@@ -52,7 +48,13 @@ const RevisionSelector = ({ location, history, content, getLoading }) => {
             }
         >
             {allRevisions.map(revision => (
-                <MenuItem key={revision.id}>
+                <MenuItem
+                    key={revision.id}
+                    onClick={() => {
+                        query.set("id", revision.id);
+                        history.push({ search: query.toString() });
+                    }}
+                >
                     <Typography use={"body2"}>v{revision.meta.version}</Typography>
                     <Typography use={"caption"}>({revision.meta.status})</Typography>
                 </MenuItem>

@@ -118,7 +118,7 @@ export const createDataModelFromData = (
 
                         // Added this check because tests are failing - injecting raw mocked objects
                         // instead of real Commodo instances.
-                        contentModel.save && await contentModel.save();
+                        contentModel.save && (await contentModel.save());
                     });
                     break;
                 }
@@ -167,23 +167,26 @@ export const createDataModelFromData = (
                 if (this.meta.version > 1 && this.meta.latestVersion) {
                     this.meta.latestVersion = false;
                     const removeCallback = this.hook("afterDelete", async () => {
-                        const previousLatestForm = await Model.findOne({
+                        removeCallback();
+
+                        const previousLatest = await Model.findOne({
                             query: {
-                                parent: this.parent
+                                parent: this.meta.parent
                             },
                             sort: {
                                 version: -1
                             }
                         });
-                        previousLatestForm.meta.latestVersion = true;
-                        await previousLatestForm.save();
 
-                        removeCallback();
+                        if (previousLatest) {
+                            previousLatest.meta.latestVersion = true;
+                            await previousLatest.save();
+                        }
                     });
                 }
             },
             async afterDelete() {
-                // Delete Search collection records for this specific revision
+                // Delete Search collection records for this specific revision.
                 const SearchModel = context.models[data.modelId + "Search"];
                 const entries = await SearchModel.find({
                     query: { revision: this.id }
@@ -193,7 +196,7 @@ export const createDataModelFromData = (
                     await entries[i].delete();
                 }
 
-                // If the deleted page is the root page - delete its revisions
+                // If the deleted page is the parent page - delete its revisions.
                 if (this.id === this.meta.parent) {
                     // Delete all revisions
                     const revisions = await Model.find({

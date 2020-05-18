@@ -2,6 +2,9 @@ import React from "react";
 import RichTextInput from "./fields/RichTextInput";
 import Input from "./fields/Input";
 import Switch from "./fields/Switch";
+import Time from "./fields/Time";
+import DateTimeWithoutTimezone from './fields/DateTimeWithoutTimezone';
+import DateTimeWithTimezone from './fields/DateTimeWithTimezone';
 import { BindComponentRenderProp, Form } from "@webiny/form";
 import { CmsContentModelModelField } from "@webiny/app-headless-cms/types";
 import { Grid, Cell } from "@webiny/ui/Grid";
@@ -45,7 +48,18 @@ const renderFieldElement = (props: {
         case "boolean":
             return <Switch {...props} />;
         case "rich-text":
-            return <RichTextInput {...props} />
+            return <RichTextInput {...props} />;
+        case "datetime":
+            if (props.field.settings.type === 'dateTimeWithoutTimezone') {
+                return <DateTimeWithoutTimezone {...props} />;
+            }
+            if (props.field.settings.type === 'dateTimeWithTimezone') {
+                return <DateTimeWithTimezone {...props} />;
+            }
+            if (props.field.settings.type === 'time') {
+                return <Time {...props} />;
+            }
+            return <Input {...props} type={props.field.settings.type} />;
         // ---
         default:
             return <span>Cannot render field.</span>;
@@ -74,7 +88,7 @@ const renderFieldCell = ({ field, Bind, row, locale }) => {
 export const ContentModelFormRender = ({
     getFields,
     getDefaultValues,
-    loading,
+    loading = false,
     content,
     onSubmit,
     onChange,

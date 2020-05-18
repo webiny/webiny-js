@@ -1,5 +1,5 @@
 import { CmsModelFieldToCommodoFieldPlugin } from "@webiny/api-headless-cms/types";
-import { withFields, date, string } from "@webiny/commodo";
+import { withFields, string } from "@webiny/commodo";
 import { parse } from "fecha";
 import { i18nField } from "./i18nFields";
 
@@ -10,24 +10,24 @@ enum DATE_TYPE {
     TIME = "time"
 }
 
-function createValidation(validation, format) {
+function createValidation(validation, format, checkLength = true) {
     return async value => {
         if (validation === false) {
             return;
         }
 
-        if (typeof validation === "function") {
-            await validation(value);
-        }
-
         const error = Error(`Enter a string in the following format "${format}"`);
-        if (format.length !== value.length) {
+        if (checkLength && format.length !== value.length) {
             throw error;
         }
 
         const date = parse(value, format);
         if (!date) {
             throw error;
+        }
+
+        if (typeof validation === "function") {
+            await validation(value);
         }
     };
 }
@@ -37,7 +37,9 @@ function getDateField({ field, validation }) {
     let cField;
     switch (type) {
         case DATE_TYPE.DATE_TIME_WITH_TIMEZONE:
-            cField = date({ validation });
+            cField = string({
+                validation: createValidation(validation, "YYYY-MM-DDTHH:mm:ssZ", false)
+            });
             break;
         case DATE_TYPE.DATE_TIME_WITHOUT_TIMEZONE:
             cField = string({

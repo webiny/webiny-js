@@ -4,12 +4,22 @@ import validateAccessToken from "./validateAccessToken";
 
 export default () => [
     {
+        type: "context",
+        name: "handler-validate-access-token",
+        async apply(context) {
+            const superSecure = args.superSecure;
+
+            context.plugins.register(securityModels(superSecure));
+        }
+    },
+    {
         type: "handler",
         name: "handler-validate-access-token",
         async handle({ context, args }) {
-            context.plugins.register(securityModels());
+            const superSecure = args.superSecure;
 
-            await applyContextPlugins(context);
+            context.plugins.register();
+
             return await validateAccessToken(context, args[0].PAT);
         }
     }
