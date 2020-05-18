@@ -1,6 +1,9 @@
 import React from "react";
 import Input from "./fields/Input";
 import Switch from "./fields/Switch";
+import Time from "./fields/Time";
+import DateTimeWithoutTimezone from './fields/DateTimeWithoutTimezone';
+import DateTimeWithTimezone from './fields/DateTimeWithTimezone';
 import { BindComponentRenderProp, Form } from "@webiny/form";
 import { CmsContentModelModelField } from "@webiny/app-headless-cms/types";
 import { Grid, Cell } from "@webiny/ui/Grid";
@@ -43,6 +46,17 @@ const renderFieldElement = (props: {
             return <Input {...props} type="number" />;
         case "boolean":
             return <Switch {...props} />;
+        case "datetime":
+            if (props.field.settings.type === 'dateTimeWithoutTimezone') {
+                return <DateTimeWithoutTimezone {...props} />;
+            }
+            if (props.field.settings.type === 'dateTimeWithTimezone') {
+                return <DateTimeWithTimezone {...props} />;
+            }
+            if (props.field.settings.type === 'time') {
+                return <Time {...props} />;
+            }
+            return <Input {...props} type={props.field.settings.type} />;
         // ---
         default:
             return <span>Cannot render field.</span>;
