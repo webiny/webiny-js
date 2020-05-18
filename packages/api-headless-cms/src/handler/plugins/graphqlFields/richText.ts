@@ -1,4 +1,4 @@
-import gql from "graphql-tag";
+
 import { CmsModelFieldToGraphQLPlugin } from "@webiny/api-headless-cms/types";
 
 const createListFilters = ({ field }) => {
@@ -54,42 +54,11 @@ const plugin: CmsModelFieldToGraphQLPlugin = {
                 return instance[field.fieldId];
             };
         },
-        createSchema() {
-            return {
-                typeDefs: gql`
-                    input CmsRichTextLocalizedInput {
-                        value: JSON
-                        locale: ID!
-                    }
-
-                    input CmsRichTextInput {
-                        values: [CmsRichTextLocalizedInput]
-                    }
-
-                    type CmsRichTextLocalized {
-                        value: JSON
-                        locale: ID!
-                    }
-
-                    type CmsRichText {
-                        value(locale: String): JSON
-                        values: [CmsRichTextLocalized]!
-                    }
-                `,
-                resolvers: {
-                    CmsRichText: {
-                        value(field, args) {
-                            return field.value(args.locale);
-                        }
-                    }
-                }
-            };
-        },
         createTypeField({ field }) {
-            return field.fieldId + ": CmsRichText";
+            return field.fieldId + ": CmsI18NJSONValue";
         },
         createInputField({ field }) {
-            return field.fieldId + ": CmsRichTextInput";
+            return field.fieldId + ": CmsI18NJSONValueInput";
         }
     }
 };

@@ -67,16 +67,18 @@ export default ({ type }) => [
             typeDefs: gql`
                 ${i18nFieldType("CmsString", "String")}
                 ${i18nFieldInput("CmsString", "String")}
+                ${i18nFieldType("CmsI18NJSONValue", "JSON")}
+                ${i18nFieldInput("CmsI18NJSONValue", "JSON")}
 
                 input CmsSearchInput {
                     query: String
                     fields: [String]
                     operator: String
                 }
-                
+
                 ${contentModelGroup.getTypeDefs(type)}
                 ${meta.typeDefs}
-                
+
                 type SecurityUser {
                     id: ID
                     firstName: String
@@ -93,7 +95,7 @@ export default ({ type }) => [
                     next: String
                     previous: String
                 }
-                
+
                 type CmsListMeta {
                     cursors: CmsCursors
                     hasNextPage: Boolean
