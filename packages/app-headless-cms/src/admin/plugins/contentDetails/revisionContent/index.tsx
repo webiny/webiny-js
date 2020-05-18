@@ -9,7 +9,19 @@ const plugin: CmsContentDetailsPlugin = {
     render(props) {
         return (
             <Tabs>
-                {renderPlugins("cms-content-details-revision-content", props, { wrapper: false })}
+                {({ switchTab }) => {
+                    return (
+                        <>
+                            {renderPlugins(
+                                "cms-content-details-revision-content",
+                                { ...props, switchTab },
+                                {
+                                    wrapper: false
+                                }
+                            )}
+                        </>
+                    );
+                }}
             </Tabs>
         );
     }
