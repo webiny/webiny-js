@@ -53,7 +53,7 @@ const NewContentModelDialog: React.FC<NewContentModelDialogProps> = ({ open, onC
                         onClose();
                         form.setState({ data: {} });
                         showSnackbar(
-                            t`Index added, please save the content model to save the changes.`
+                            t`Index added. To apply the changes, please save the content model.`
                         );
                     }}
                 >
