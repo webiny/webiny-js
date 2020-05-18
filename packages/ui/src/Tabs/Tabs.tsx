@@ -3,11 +3,15 @@ import classNames from "classnames";
 import { TabBar } from "@rmwc/tabs";
 import { Tab, TabProps } from "./Tab";
 
+export type TabsRenderProps = {
+    switchTab(tabIndex: number): void;
+};
+
 export type TabsProps = {
     /**
-     * Any element that needs to be highlighted.
+     * A collection of tabs that needs to be rendered.
      */
-    children?: React.ReactNode;
+    children: ((props: TabsRenderProps) => React.ReactElement) | React.ReactElement;
 
     /**
      * Append a class name.
@@ -41,8 +45,8 @@ export class Tabs extends React.Component<TabsProps, State> {
         this.setState({ activeTabIndex });
     }
 
-    render() {
-        const tabs = React.Children.toArray(this.props.children)
+    renderChildren(children) {
+        const tabs = React.Children.toArray(children)
             .filter(c => c !== null)
             .map((child: React.ReactElement<TabProps>) => {
                 return {
@@ -102,5 +106,16 @@ export class Tabs extends React.Component<TabsProps, State> {
                 <div className={"webiny-ui-tabs__content mdc-tab-content"}>{content}</div>
             </div>
         );
+    }
+
+    render() {
+        let children = this.props.children;
+        if (typeof children === "function") {
+            children = children({
+                switchTab: this.switchTab.bind(this)
+            });
+        }
+
+        return this.renderChildren(children);
     }
 }
