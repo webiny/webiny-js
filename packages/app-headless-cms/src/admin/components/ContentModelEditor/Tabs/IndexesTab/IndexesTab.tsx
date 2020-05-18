@@ -122,10 +122,14 @@ export const IndexesTab = () => {
                                                                 onClick={() => {
                                                                     showConfirmation(() => {
                                                                         setData(data => {
-                                                                            const itemHash = item.fields.sort().join();
+                                                                            const itemHash = item.fields
+                                                                                .sort()
+                                                                                .join();
                                                                             const index = data.indexes.findIndex(
                                                                                 current => {
-                                                                                    const currentHash = current.fields.sort().join();
+                                                                                    const currentHash = current.fields
+                                                                                        .sort()
+                                                                                        .join();
                                                                                     return (
                                                                                         itemHash ===
                                                                                         currentHash
