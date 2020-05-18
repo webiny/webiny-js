@@ -17,9 +17,9 @@ import { ButtonDefault, ButtonIcon } from "@webiny/ui/Button";
 import { ReactComponent as AddIcon } from "@webiny/app-admin/assets/icons/round-add-24px.svg";
 import NewIndexDialog from "./NewIndexDialog";
 import { i18n } from "@webiny/app/i18n";
-import { Typography } from "@webiny/ui/Typography";
 import TimeAgo from "timeago-react";
 import { Tooltip } from "@webiny/ui/Tooltip";
+import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 
 const t = i18n.ns("app-headless-cms/admin/components/editor/tabs/indexes");
 
@@ -51,8 +51,9 @@ const style = {
 };
 
 export const IndexesTab = () => {
-    const { data } = useContentModelEditor();
+    const { data, setData } = useContentModelEditor();
     const [dialogOpen, setDialogOpen] = useState(false);
+    const { showSnackbar } = useSnackbar();
 
     const { indexes, fields } = data;
 
@@ -68,7 +69,7 @@ export const IndexesTab = () => {
                         <div className={style.addIndexButton}>
                             <ButtonDefault onClick={() => setDialogOpen(true)}>
                                 <ButtonIcon icon={<AddIcon />} />
-                                {t`Create index`}
+                                {t`Add index`}
                             </ButtonDefault>
                             <NewIndexDialog
                                 open={dialogOpen}
@@ -104,13 +105,45 @@ export const IndexesTab = () => {
                                                         <DeleteIcon disabled />
                                                     </Tooltip>
                                                 ) : (
-                                                    <ConfirmationDialog>
+                                                    <ConfirmationDialog
+                                                        title={t`Confirm index removal`}
+                                                        message={t`You are about to remove the {index} index. Are you sure you want to continue?`(
+                                                            {
+                                                                index: (
+                                                                    <strong>
+                                                                        {item.fields.join(", ")}
+                                                                    </strong>
+                                                                )
+                                                            }
+                                                        )}
+                                                    >
                                                         {({ showConfirmation }) => (
                                                             <DeleteIcon
                                                                 onClick={() => {
-                                                                    showConfirmation(() =>
-                                                                        console.log(12)
-                                                                    );
+                                                                    showConfirmation(() => {
+                                                                        setData(data => {
+                                                                            const itemHash = item.fields.sort().join();
+                                                                            const index = data.indexes.findIndex(
+                                                                                current => {
+                                                                                    const currentHash = current.fields.sort().join();
+                                                                                    return (
+                                                                                        itemHash ===
+                                                                                        currentHash
+                                                                                    );
+                                                                                }
+                                                                            );
+
+                                                                            data.indexes.splice(
+                                                                                index,
+                                                                                1
+                                                                            );
+                                                                            return data;
+                                                                        });
+
+                                                                        showSnackbar(
+                                                                            t`Index removed. To apply the changes, please save the content model.`
+                                                                        );
+                                                                    });
                                                                 }}
                                                             />
                                                         )}
