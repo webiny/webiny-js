@@ -190,10 +190,11 @@ export default ({ type }) => [
 
                 type ContentModelIndexes {
                     fields: [String]
+                    createdOn: DateTime
                 }
 
                 input ContentModelIndexesInput {
-                    fields: [String]    
+                    fields: [String]
                 }
 
                 type CmsContentModelListResponse {
