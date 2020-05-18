@@ -5,7 +5,7 @@ import { renderPlugins } from "@webiny/app/plugins";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { get } from "lodash";
 import { useQuery } from "@webiny/app-headless-cms/admin/hooks";
-import { createReadQuery } from "@webiny/app-headless-cms/admin/components/ContentModelForm/graphql";
+import { createReadQuery, createListRevisionsQuery } from "@webiny/app-headless-cms/admin/components/ContentModelForm/graphql";
 import { useI18N } from "@webiny/app-i18n/hooks/useI18N";
 
 const DetailsContainer = styled("div")({
@@ -38,9 +38,14 @@ const ContentDetails = ({ contentModel, dataList }) => {
     const query = new URLSearchParams(location.search);
     const contentId = query.get("id");
 
-    const READ_QUERY = useMemo(() => createReadQuery(contentModel), [contentModel.id]);
+    const { READ_CONTENT, LIST_REVISIONS } = useMemo(() => {
+        return {
+            READ_CONTENT: createReadQuery(contentModel),
+            LIST_REVISIONS: createListRevisionsQuery(contentModel)
+        };
+    }, [contentModel.modelId]);
 
-    const { data, loading: readQueryLoading } = useQuery(READ_QUERY, {
+    const { data, loading: readQueryLoading } = useQuery(READ_CONTENT, {
         variables: { id: contentId },
         skip: !contentId,
         onCompleted: data => {
@@ -58,6 +63,12 @@ const ContentDetails = ({ contentModel, dataList }) => {
 
     const content = get(data, "content.data") || {};
 
+    const contentParent = get(content, "meta.parent");
+    const revisionsList = useQuery(LIST_REVISIONS, {
+        skip: !contentParent,
+        variables: { id: contentParent }
+    });
+
     return (
         <DetailsContainer>
             <test-id data-testid="cms-content-details">
@@ -68,7 +79,8 @@ const ContentDetails = ({ contentModel, dataList }) => {
                     getLoading,
                     dataList,
                     content,
-                    contentModel
+                    contentModel,
+                    revisionsList
                 })}
             </test-id>
         </DetailsContainer>
