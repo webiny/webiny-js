@@ -10,16 +10,12 @@ const plugin: CmsContentDetailsPlugin = {
         return (
             <Tabs>
                 {({ switchTab }) => {
-                    return (
-                        <>
-                            {renderPlugins(
-                                "cms-content-details-revision-content",
-                                { ...props, switchTab },
-                                {
-                                    wrapper: false
-                                }
-                            )}
-                        </>
+                    return renderPlugins(
+                        "cms-content-details-revision-content",
+                        { ...props, switchTab },
+                        {
+                            wrapper: false
+                        }
                     );
                 }}
             </Tabs>
