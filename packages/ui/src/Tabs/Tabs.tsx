@@ -1,4 +1,4 @@
-import * as React from "react";
+import React, { ReactNode } from "react";
 import classNames from "classnames";
 import { TabBar } from "@rmwc/tabs";
 import { Tab, TabProps } from "./Tab";
@@ -11,7 +11,7 @@ export type TabsProps = {
     /**
      * A collection of tabs that needs to be rendered.
      */
-    children: ((props: TabsRenderProps) => React.ReactElement) | React.ReactElement;
+    children: ((props: TabsRenderProps) => ReactNode) | ReactNode;
 
     /**
      * Append a class name.
@@ -110,10 +110,9 @@ export class Tabs extends React.Component<TabsProps, State> {
 
     render() {
         let children = this.props.children;
-        if (typeof children === "function") {
-            children = children({
-                switchTab: this.switchTab.bind(this)
-            });
+        if (typeof this.props.children === "function") {
+            // @ts-ignore
+            children = this.props.children({ switchTab: this.switchTab.bind(this) });
         }
 
         return this.renderChildren(children);
