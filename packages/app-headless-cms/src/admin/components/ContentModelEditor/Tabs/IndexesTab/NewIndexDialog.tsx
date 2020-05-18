@@ -1,26 +1,17 @@
-import React, { useRef } from "react";
+import React from "react";
 import { css } from "emotion";
-import useReactRouter from "use-react-router";
 import { Form } from "@webiny/form";
-import { CREATE_INDEX } from "./graphql";
 import get from "lodash.get";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
-import { CircularProgress } from "@webiny/ui/Progress";
-import { useMutation } from "@webiny/app-headless-cms/admin/hooks";
 import { i18n } from "@webiny/app/i18n";
 import { ButtonDefault } from "@webiny/ui/Button";
 import { useContentModelEditor } from "@webiny/app-headless-cms/admin/components/ContentModelEditor/Context";
 import { Grid, Cell } from "@webiny/ui/Grid";
 import { CheckboxGroup, Checkbox } from "@webiny/ui/Checkbox";
-import {
-    Dialog,
-    DialogTitle,
-    DialogContent,
-    DialogActions,
-    DialogOnClose
-} from "@webiny/ui/Dialog";
+import { Dialog, DialogTitle, DialogContent, DialogActions } from "@webiny/ui/Dialog";
 import { I18NValue } from "@webiny/app-i18n/components";
 import { Typography } from "@webiny/ui/Typography";
+import { Alert } from "@webiny/ui/Alert";
 
 const t = i18n.ns("app-headless-cms/admin/components/editor/tabs/index");
 
@@ -37,17 +28,12 @@ const noPadding = css({
 
 export type NewContentModelDialogProps = {
     open: boolean;
-    onClose: DialogOnClose;
+    onClose: () => void;
 };
 
 const NewContentModelDialog: React.FC<NewContentModelDialogProps> = ({ open, onClose }) => {
-    const [loading, setLoading] = React.useState(false);
     const { showSnackbar } = useSnackbar();
-    const { history } = useReactRouter();
-    const formRef = useRef<any>();
-    const { data } = useContentModelEditor();
-
-    const [createContentModel] = useMutation(CREATE_INDEX);
+    const { data, setData } = useContentModelEditor();
 
     return (
         <Dialog
@@ -56,58 +42,123 @@ const NewContentModelDialog: React.FC<NewContentModelDialogProps> = ({ open, onC
             className={narrowDialog}
             data-testid="cms-new-content-model-modal"
         >
-            <Form
-                ref={formRef}
-                onSubmit={async data => {
-                    setLoading(true);
-                    const response = get(
-                        await createContentModel({
-                            variables: { data },
-                            awaitRefetchQueries: true
-                        }),
-                        "data.createContentModel"
-                    );
+            {
+                <Form
+                    onSubmit={async (index, form) => {
+                        await setData(data => {
+                            data.indexes.push(index);
+                            return data;
+                        });
 
-                    if (response.error) {
-                        setLoading(false);
-                        return showSnackbar(response.error.message);
-                    }
+                        onClose();
+                        form.setState({ data: {} });
+                        showSnackbar(
+                            t`Index added, please save the content model to save the changes.`
+                        );
+                    }}
+                >
+                    {({ Bind, submit, data: formData }) => {
+                        const selectedFields = get(formData, "fields", []);
+                        const justIdSelected =
+                            selectedFields.length === 1 && selectedFields[0] === "id";
 
-                    await contentModelsDataList.refresh();
-                    history.push("/cms/content-models/" + response.data.id);
-                }}
-            >
-                {({ Bind, submit }) => (
-                    <>
-                        {loading && <CircularProgress />}
-                        <DialogTitle>{t`Create index`}</DialogTitle>
-                        <DialogContent>
-                            <Bind name="fruits">
-                                <CheckboxGroup label={t`Choose fields`}>
-                                    {({ onChange, getValue }) => (
+                        let isExisting;
+                        const hash = selectedFields.sort().join();
+                        data.indexes.forEach(item => {
+                            const itemHash = get(item, "fields", [])
+                                .sort()
+                                .join();
+                            if (itemHash === hash) {
+                                isExisting = true;
+                                return false;
+                            }
+                        });
+
+                        return (
+                            <>
+                                <DialogTitle>{t`Create index`}</DialogTitle>
+                                <DialogContent>
+                                    <Bind name="fields">
+                                        <CheckboxGroup label={t`Choose fields`}>
+                                            {({ onChange, getValue }) => (
+                                                <>
+                                                    <Grid className={noPadding}>
+                                                        <Cell span={12}>
+                                                            <Checkbox
+                                                                value={getValue("id")}
+                                                                onChange={onChange("id")}
+                                                                label={
+                                                                    <>
+                                                                        <div>id</div>
+                                                                        <div>
+                                                                            <Typography
+                                                                                use={"caption"}
+                                                                            >
+                                                                                ID
+                                                                            </Typography>
+                                                                        </div>
+                                                                    </>
+                                                                }
+                                                            />
+                                                        </Cell>
+
+                                                        {data.fields.map(
+                                                            ({ label, fieldId, type }) => (
+                                                                <Cell span={6} key={fieldId}>
+                                                                    <Checkbox
+                                                                        value={getValue(fieldId)}
+                                                                        onChange={onChange(fieldId)}
+                                                                        label={
+                                                                            <>
+                                                                                <div>
+                                                                                    <I18NValue
+                                                                                        value={
+                                                                                            label
+                                                                                        }
+                                                                                    />
+                                                                                </div>
+                                                                                <div>
+                                                                                    <Typography
+                                                                                        use={
+                                                                                            "caption"
+                                                                                        }
+                                                                                    >
+                                                                                        {type}
+                                                                                    </Typography>
+                                                                                </div>
+                                                                            </>
+                                                                        }
+                                                                    />
+                                                                </Cell>
+                                                            )
+                                                        )}
+                                                    </Grid>
+                                                </>
+                                            )}
+                                        </CheckboxGroup>
+                                    </Bind>
+                                    {isExisting && !justIdSelected && (
                                         <>
-                                            <Grid className={noPadding}>
-                                                {data.fields.map(({ label, fieldId }) => (
-                                                    <Cell span={6} key={fieldId}>
-                                                        <Checkbox
-                                                            label={<I18NValue value={label} />}
-                                                            value={getValue(fieldId)}
-                                                            onChange={onChange(fieldId)}
-                                                        />
-                                                    </Cell>
-                                                ))}
-                                            </Grid>
+                                            <br />
+                                            <Alert type="warning" title="Already existing">
+                                                {t`An index with the same combination of fields already exists.`}
+                                            </Alert>
                                         </>
                                     )}
-                                </CheckboxGroup>
-                            </Bind>
-                        </DialogContent>
-                        <DialogActions>
-                            <ButtonDefault onClick={submit}>+ {t`Create`}</ButtonDefault>
-                        </DialogActions>
-                    </>
-                )}
-            </Form>
+                                </DialogContent>
+                                <DialogActions>
+                                    <ButtonDefault
+                                        disabled={justIdSelected || isExisting}
+                                        onClick={submit}
+                                    >
+                                        + {t`Create`}
+                                    </ButtonDefault>
+                                </DialogActions>
+                            </>
+                        );
+                    }}
+                </Form>
+            }
         </Dialog>
     );
 };
