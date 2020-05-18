@@ -53,7 +53,6 @@ const RevisionsList = props => {
         };
     }, [contentModel.modelId]);
 
-    console.log(content);
     const { data: revisionsList, refetch } = useQuery(LIST_REVISIONS, {
         variables: { id: get(content, "meta.parent") }
     });
