@@ -1,4 +1,5 @@
 import React from "react";
+import RichTextInput from "./fields/RichTextInput";
 import Input from "./fields/Input";
 import Switch from "./fields/Switch";
 import { BindComponentRenderProp, Form } from "@webiny/form";
@@ -43,6 +44,8 @@ const renderFieldElement = (props: {
             return <Input {...props} type="number" />;
         case "boolean":
             return <Switch {...props} />;
+        case "rich-text":
+            return <RichTextInput {...props} />
         // ---
         default:
             return <span>Cannot render field.</span>;
