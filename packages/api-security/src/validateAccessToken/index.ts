@@ -3,7 +3,6 @@ import securityModels from "../plugins/models";
 import validateAccessToken from "./validateAccessToken";
 
 export default () => [
-
     {
         type: "handler",
         name: "handler-validate-access-token",

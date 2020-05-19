@@ -10,15 +10,18 @@ export default () => [
 
             const results = await driver.getClient().runOperation({
                 collection: driver.getCollectionName(getName(File)),
-                operation: ["aggregate", [
-                    { $sort: { _id: 1 } },
-                    { $match: { tags: { $exists: true, $ne: [] } } },
-                    { $project: { tags: 1 } },
-                    { $unwind: "$tags" },
-                    { $group: { _id: "$tags" } },
-                    { $sort: { _id: 1 } },
-                    { $limit: 100 }
-                ]]
+                operation: [
+                    "aggregate",
+                    [
+                        { $sort: { _id: 1 } },
+                        { $match: { tags: { $exists: true, $ne: [] } } },
+                        { $project: { tags: 1 } },
+                        { $unwind: "$tags" },
+                        { $group: { _id: "$tags" } },
+                        { $sort: { _id: 1 } },
+                        { $limit: 100 }
+                    ]
+                ]
             });
 
             return results.map(item => item._id);

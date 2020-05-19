@@ -11,11 +11,15 @@ import applyMongoDb from "./mongodb";
 
 export const createUtils = (plugins = []) => {
     const utilsId = Date.now();
-    return applyMongoDb(utilsId, [i18n, I18NLocales(), ...plugins, dataManagerPlugins()], plugins => ({
-        useDatabase: useDatabase(utilsId, plugins),
-        useApolloHandler: useApolloHandler(plugins),
-        useDataManagerHandler: useDataManagerHandler(plugins),
-        useContext: useContext(plugins),
-        useSchema: useSchema(plugins)
-    }));
+    return applyMongoDb(
+        utilsId,
+        [i18n, I18NLocales(), ...plugins, dataManagerPlugins()],
+        plugins => ({
+            useDatabase: useDatabase(utilsId, plugins),
+            useApolloHandler: useApolloHandler(plugins),
+            useDataManagerHandler: useDataManagerHandler(plugins),
+            useContext: useContext(plugins),
+            useSchema: useSchema(plugins)
+        })
+    );
 };

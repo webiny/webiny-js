@@ -195,7 +195,7 @@ describe("MANAGE - Resolvers", () => {
         `;
 
         const { schema, context } = await useSchema();
-        const { data } = await graphql(schema, query, {}, context);;
+        const { data } = await graphql(schema, query, {}, context);
         expect(data.listCategories).toMatchObject({
             data: expect.arrayContaining([
                 expect.objectContaining({
@@ -203,7 +203,7 @@ describe("MANAGE - Resolvers", () => {
                 })
             ])
         });
-        expect(data.listCategories.data.length).toBe(1)
+        expect(data.listCategories.data.length).toBe(1);
     });
 
     test(`list categories (sort ASC)`, async () => {
@@ -373,7 +373,9 @@ describe("MANAGE - Resolvers", () => {
         expect(data3.listCategories.data.length).toBe(1);
 
         const { data: data4, errors: errors4 } = await graphql(schema, query, {}, context, {
-            where: { slug_not_in: ["a-category-en", "a-category-de", "b-category-en", "b-category-de"] }
+            where: {
+                slug_not_in: ["a-category-en", "a-category-de", "b-category-en", "b-category-de"]
+            }
         });
 
         if (errors4) {
