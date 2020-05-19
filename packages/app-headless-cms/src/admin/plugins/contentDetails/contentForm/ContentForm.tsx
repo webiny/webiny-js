@@ -14,17 +14,18 @@ import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 
 const pageInnerWrapper = css({
     overflowY: "scroll",
-    overflowX: "hidden",
-    height: "calc(100vh - 230px)",
-    position: "relative",
-    ".webiny-pb-page-document": {
-        transform: "scale(var(--webiny-pb-page-preview-scale))",
-        transition: "transform 0.5s ease-in-out",
-        transformOrigin: "top center"
-    }
+    position: "relative"
 });
 
-const ContentForm = ({ contentModel, content, dataList, getLocale, setLoading, getLoading }) => {
+const ContentForm = ({
+    contentModel,
+    content,
+    dataList,
+    getLocale,
+    setLoading,
+    getLoading,
+    setState
+}) => {
     const query = new URLSearchParams(location.search);
     const { history } = useReactRouter();
     const { showSnackbar } = useSnackbar();
@@ -107,6 +108,7 @@ const ContentForm = ({ contentModel, content, dataList, getLocale, setLoading, g
                 loading={getLoading()}
                 contentModel={contentModel}
                 content={content}
+                onForm={contentForm => setState({ contentForm })}
                 onSubmit={async data => {
                     if (content.id) {
                         if (get(content, "meta.locked")) {
