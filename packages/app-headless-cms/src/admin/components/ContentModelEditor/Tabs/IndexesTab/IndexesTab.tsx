@@ -63,8 +63,8 @@ export const IndexesTab = () => {
 
     return (
         <Elevation z={1} className={style.previewWrapper}>
-            <div className={style.listWrapper}>
-                {fields && fields.length ? (
+            {fields && fields.length ? (
+                <div className={style.listWrapper}>
                     <React.Fragment>
                         <div className={style.addIndexButton}>
                             <ButtonDefault onClick={() => setDialogOpen(true)}>
@@ -160,12 +160,12 @@ export const IndexesTab = () => {
                             })}
                         </List>
                     </React.Fragment>
-                ) : (
-                    <div className={style.noFieldsMessage}>
-                        {t`Before creating an index, please add at least one field to the content model.`}
-                    </div>
-                )}
-            </div>
+                </div>
+            ) : (
+                <div className={style.noFieldsMessage}>
+                    {t`Before creating an index, please add at least one field to the content model.`}
+                </div>
+            )}
         </Elevation>
     );
 };
