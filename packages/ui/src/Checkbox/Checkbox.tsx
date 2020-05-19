@@ -5,7 +5,7 @@ import { FormComponentProps } from "./../types";
 
 type Props = FormComponentProps & {
     // Component label.
-    label?: string;
+    label?: React.ReactNode ;
 
     // Is checkbox disabled?
     disabled?: boolean;
@@ -53,6 +53,7 @@ class Checkbox extends React.Component<Props> {
                     checked={Boolean(value)}
                     onChange={this.onChange}
                     onClick={() => typeof onClick === "function" && onClick(Boolean(value))}
+                    // @ts-ignore Although the label is React.ReactNode internally, an error is still thrown.
                     label={label}
                 />
                 {validation.isValid === false && (
