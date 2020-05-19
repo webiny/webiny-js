@@ -6,6 +6,7 @@ import { Form } from "@webiny/form";
 import { Tabs, Tab } from "@webiny/ui/Tabs";
 import GeneralTab from "./EditFieldDialog/GeneralTab";
 import ValidatorsTab from "./EditFieldDialog/ValidatorsTab";
+import AppearanceTab from "./EditFieldDialog/AppearanceTab";
 import { i18n } from "@webiny/app/i18n";
 import { useContentModelEditor } from "@webiny/app-headless-cms/admin/components/ContentModelEditor/Context";
 import { CmsContentModelModelField } from "@webiny/app-headless-cms/types";
@@ -64,6 +65,9 @@ const EditFieldDialog = ({ field, onSubmit, ...props }: EditFieldDialogProps) =>
                                             <ValidatorsTab form={form} field={current} />
                                         </Tab>
                                     )}
+                                <Tab label={t`Appearance`}>
+                                    <AppearanceTab form={form} field={current} />
+                                </Tab>
                             </Tabs>
                         </DialogContent>
                         <DialogActions
