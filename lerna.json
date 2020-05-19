@@ -1,6 +1,15 @@
 {
   "packages": [
-    "packages/*"
+    "packages/*",
+    "sample-project/apps/*",
+    "sample-project/api/apolloGateway",
+    "sample-project/api/databaseProxy",
+    "sample-project/api/files/*",
+    "sample-project/api/formBuilder",
+    "sample-project/api/headless/*",
+    "sample-project/api/i18n",
+    "sample-project/api/pageBuilder",
+    "sample-project/api/security/*"
   ],
   "version": "4.0.0",
   "command": {
