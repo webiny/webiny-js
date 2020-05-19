@@ -62,8 +62,8 @@ export type CmsEditorFieldValidator = {
     settings: any;
 };
 
-export type CmsBuilderFormFieldValidatorPlugin = Plugin & {
-    type: "content-model-editor-field-validator";
+export type CmsEditorFieldValidatorPlugin = Plugin & {
+    type: "cms-editor-field-validator";
     validator: {
         name: string;
         label: string;
@@ -106,7 +106,7 @@ export type CmsContentDetailsRevisionContentPlugin = Plugin & {
 
 
 export type CmsFormFieldPatternValidatorPlugin = Plugin & {
-    type: "content-model-editor-field-validator-pattern";
+    type: "cms-editor-field-validator-pattern";
     pattern: {
         name: string;
         message: string;

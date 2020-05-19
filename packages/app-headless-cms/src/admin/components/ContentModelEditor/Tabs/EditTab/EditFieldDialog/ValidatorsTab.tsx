@@ -13,7 +13,7 @@ import { Grid, Cell } from "@webiny/ui/Grid";
 import { I18NInput } from "@webiny/app-i18n/admin/components";
 import { useI18N } from "@webiny/app-i18n/hooks/useI18N";
 import { validation } from "@webiny/validation";
-import { CmsBuilderFormFieldValidatorPlugin } from "@webiny/app-headless-cms/types";
+import { CmsEditorFieldValidatorPlugin } from "@webiny/app-headless-cms/types";
 
 const onEnabledChange = ({ i18n, data, validationValue, onChangeValidation, validator }) => {
     if (data) {
@@ -61,8 +61,8 @@ const ValidatorsTab = props => {
     const fieldPlugin = getFieldPlugin({ type: field.type });
 
     const validators = useMemo(() => {
-        return getPlugins<CmsBuilderFormFieldValidatorPlugin>(
-            "content-model-editor-field-validator"
+        return getPlugins<CmsEditorFieldValidatorPlugin>(
+            "cms-editor-field-validator"
         )
             .map(plugin => plugin.validator)
             .map(validator => {
