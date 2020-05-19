@@ -1,15 +1,17 @@
-import React, { useCallback, useMemo, useState } from "react";
+import React, { useCallback, useMemo, useState, useRef } from "react";
 import useReactRouter from "use-react-router";
 import styled from "@emotion/styled";
 import { renderPlugins } from "@webiny/app/plugins";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { get } from "lodash";
 import { useQuery } from "@webiny/app-headless-cms/admin/hooks";
-import { createReadQuery, createListRevisionsQuery } from "@webiny/app-headless-cms/admin/components/ContentModelForm/graphql";
+import {
+    createReadQuery,
+    createListRevisionsQuery
+} from "@webiny/app-headless-cms/admin/components/ContentModelForm/graphql";
 import { useI18N } from "@webiny/app-i18n/hooks/useI18N";
 
 const DetailsContainer = styled("div")({
-    height: "calc(100% - 10px)",
     overflow: "hidden",
     position: "relative",
     nav: {
@@ -30,6 +32,7 @@ declare global {
 const ContentDetails = ({ contentModel, dataList }) => {
     const { history, location } = useReactRouter();
     const { showSnackbar } = useSnackbar();
+    const [state, setState] = useState({});
 
     const i18n = useI18N();
     const [locale, setLocale] = useState(i18n.getLocale().id);
@@ -80,7 +83,9 @@ const ContentDetails = ({ contentModel, dataList }) => {
                     dataList,
                     content,
                     contentModel,
-                    revisionsList
+                    revisionsList,
+                    state,
+                    setState
                 })}
             </test-id>
         </DetailsContainer>
