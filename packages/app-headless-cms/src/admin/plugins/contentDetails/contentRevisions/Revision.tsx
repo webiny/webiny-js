@@ -58,7 +58,7 @@ const getIcon = (rev: CmsContentModelModel) => {
 };
 
 const Revision = props => {
-    const { revision, createContentFrom, deleteContent, publishContent } = props;
+    const { revision, createContentFrom, deleteContent, publishContent, switchTab } = props;
     const { icon, text: tooltipText } = getIcon(revision);
 
     const { history } = useReactRouter();
@@ -111,6 +111,7 @@ const Revision = props => {
                                         const query = new URLSearchParams(location.search);
                                         query.set("id", id);
                                         history.push({ search: query.toString() });
+                                        switchTab(0);
                                     }}
                                 >
                                     <ListItemGraphic>

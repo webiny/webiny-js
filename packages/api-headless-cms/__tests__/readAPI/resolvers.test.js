@@ -370,7 +370,7 @@ describe("READ - Resolvers", () => {
 
         const { schema, context } = await useSchema();
         const { data } = await graphql(schema, query, {}, context, {
-            sort: ["title_ASC"]
+            sort: ["slug_ASC"]
         });
         expect(data.listCategories).toMatchObject({
             data: [
@@ -401,7 +401,7 @@ describe("READ - Resolvers", () => {
 
         const { schema, context } = await useSchema();
         const { data } = await graphql(schema, query, {}, context, {
-            sort: ["title_DESC"]
+            sort: ["slug_DESC"]
         });
         expect(data.listCategories).toMatchObject({
             data: [
@@ -435,23 +435,23 @@ describe("READ - Resolvers", () => {
 
         const { schema, context } = await useSchema();
         const { data: data1 } = await graphql(schema, query, {}, context, {
-            where: { title_contains: "category" }
+            where: { slug_contains: "category" }
         });
         expect(data1.listCategories.data.length).toBe(2);
 
         const { data: data2 } = await graphql(schema, query, {}, context, {
-            where: { title_not_contains: "category" }
+            where: { slug_not_contains: "category" }
         });
 
         expect(data2.listCategories.data.length).toBe(1);
 
         const { data: data3 } = await graphql(schema, query, {}, context, {
-            where: { title_in: ["B Category EN"] }
+            where: { slug_in: ["b-category-en"] }
         });
         expect(data3.listCategories.data.length).toBe(1);
 
         const { data: data4 } = await graphql(schema, query, {}, context, {
-            where: { title_not_in: ["A Category EN", "B Category EN"] }
+            where: { slug_not_in: ["a-category-en", "b-category-en"] }
         });
         expect(data4.listCategories.data.length).toBe(1);
         expect(data4.listCategories.data[0].title).toBe("Hardware EN");

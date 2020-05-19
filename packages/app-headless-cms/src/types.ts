@@ -10,7 +10,7 @@ import { IconPrefix, IconName } from "@fortawesome/fontawesome-svg-core";
 export type CmsContentModelFormProps = {
     locale?: string;
     loading?: boolean;
-    preview?: boolean;
+    onForm?: (form: any) => void;
     contentModel: CmsContentModelModel;
     content?: { [key: string]: any };
     onSubmit?: (data: { [key: string]: any }) => any;
@@ -28,7 +28,7 @@ export type CmsContentDetailsPlugin = Plugin & {
 
 export type CmsContentDetailsRevisionContentPlugin = Plugin & {
     type: "cms-content-details-revision-content";
-    render(params: { pageDetails: any; loading: boolean; refreshPages: () => void }): ReactElement;
+    render(params: any): ReactElement;
 };
 
 // ------------------------------------------------------------------------------------------------------------

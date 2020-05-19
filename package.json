@@ -4,14 +4,14 @@
     "packages": [
       "packages/*",
       "sample-project/apps/*",
-      "sample-project/api/services/apolloGateway",
-      "sample-project/api/services/databaseProxy",
-      "sample-project/api/services/files/*",
-      "sample-project/api/services/formBuilder",
-      "sample-project/api/services/headless/*",
-      "sample-project/api/services/i18n",
-      "sample-project/api/services/pageBuilder",
-      "sample-project/api/services/security/*"
+      "sample-project/api/apolloGateway",
+      "sample-project/api/databaseProxy",
+      "sample-project/api/files/*",
+      "sample-project/api/formBuilder",
+      "sample-project/api/headless/*",
+      "sample-project/api/i18n",
+      "sample-project/api/pageBuilder",
+      "sample-project/api/security/*"
     ],
     "nohoist": [
       "**/inquirer/**",

@@ -9,9 +9,16 @@ import { TypeValueEmitter } from "./utils/TypeValueEmitter";
 type HeadlessPluginsOptions = {
     type: string;
     environment: string;
+    dataManagerFunction?: string;
 };
 
-export default (options: HeadlessPluginsOptions = { type: null, environment: null }) => [
+export default (
+    options: HeadlessPluginsOptions = {
+        type: null,
+        environment: null,
+        dataManagerFunction: null
+    }
+) => [
     {
         name: "context-cms-context",
         type: "context",
@@ -19,6 +26,7 @@ export default (options: HeadlessPluginsOptions = { type: null, environment: nul
             context.cms = context.cms || {};
             context.cms.type = options.type || "read";
             context.cms.environment = options.environment;
+            context.cms.dataManagerFunction = options.dataManagerFunction;
 
             context.cms.READ = options.type === "read";
             context.cms.PREVIEW = options.type === "preview";

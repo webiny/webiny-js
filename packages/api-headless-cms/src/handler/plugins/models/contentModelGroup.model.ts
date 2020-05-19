@@ -40,7 +40,8 @@ export default ({ createBase, context }) => {
         }),
         withHooks({
             async beforeDelete() {
-                if ((await this.totalContentModels) > 0) {
+                const totalContentModels = await this.totalContentModels;
+                if (totalContentModels > 0) {
                     throw new Error(
                         "Cannot delete this group because there are models that belong to it."
                     );

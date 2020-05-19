@@ -1,7 +1,7 @@
 import * as React from "react";
 import { Select as UiSelect } from "@webiny/ui/Select";
 
-const Select = (props) => {
+const Select = props => {
     return (
         <UiSelect {...props}>
             {props.options.map(t => {
@@ -9,7 +9,7 @@ const Select = (props) => {
                     <option key={t.value} value={t.value}>
                         {t.label}
                     </option>
-                )
+                );
             })}
         </UiSelect>
     );

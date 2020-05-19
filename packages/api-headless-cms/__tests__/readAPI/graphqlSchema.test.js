@@ -53,7 +53,6 @@ describe("READ - GraphQL Schema", () => {
         const { context } = await useSchema();
         for (let i = 0; i < contentModels.length; i++) {
             expect(context.models[contentModels[i].modelId]).toBeTruthy();
-            expect(context.models[contentModels[i].modelId + "Search"]).toBeTruthy();
         }
     });
 

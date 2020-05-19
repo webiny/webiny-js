@@ -1,9 +1,9 @@
-import { CmsContext, CmsModel } from "@webiny/api-headless-cms/types";
-import { createFindQuery } from "./createFindQuery";
+import { CmsContext, CmsContentModel } from "@webiny/api-headless-cms/types";
+import { createFindParameters } from "./createFindParameters";
 import { parseWhere } from "./parseWhere";
 
 type FindEntry = {
-    model: CmsModel;
+    model: CmsContentModel;
     args: {
         locale: string;
         where: { [key: string]: any };
@@ -13,9 +13,9 @@ type FindEntry = {
 
 export const findEntry = async ({ model, args, context }: FindEntry) => {
     const Model = context.models[model.modelId];
-    const ModelSearch = context.models[model.modelId + "Search"];
+    const { CmsContentEntrySearch } = context.models;
 
-    const query = createFindQuery(model, parseWhere(args.where), context);
+    const { query } = createFindParameters({ model, where: parseWhere(args.where), context });
 
     if (context.cms.READ) {
         query.published = true;
@@ -27,10 +27,17 @@ export const findEntry = async ({ model, args, context }: FindEntry) => {
         query.locale = context.cms.locale.id;
     }
 
-    const searchData = await ModelSearch.findOne({ query });
-    if (!searchData) {
+    const index: any = await CmsContentEntrySearch.findOne({
+        query: {
+            ...query,
+            model: model.modelId
+        },
+        fields: ["revision"]
+    });
+
+    if (!index) {
         return null;
     }
 
-    return await Model.findById(searchData.revision);
+    return await Model.findById(index.revision);
 };

@@ -17,8 +17,8 @@ const modifyQuery = (modelId, args = {}) => {
 // Applies proper "model" field filtering when doing basic "find", "count", and "findOne" querying.
 // Note that it doesn't assign the "model" field itself, just because different models can have this
 // field assigned in different ways. Check the following references for examples:
-// - packages/api-headless-cms/src/handler/plugins/utils/createSearchModelFromData.ts:27
-// - packages/api-headless-cms/src/handler/plugins/utils/createDataModelFromData.ts:177
+// - packages/api-headless-cms/src/handler/plugins/models/contentEntrySearch.model.ts
+// - packages/api-headless-cms/src/handler/plugins/utils/createDataModel.ts:177
 export const withModelFiltering = modelId => {
     return pipe(
         withStaticProps(({ find, count, findOne }) => ({

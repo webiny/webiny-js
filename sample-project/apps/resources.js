@@ -74,7 +74,7 @@ module.exports = ({ cli }) => {
                         code: "./admin/build",
                         handler: "handler.handler",
                         memory: 128,
-                        timeout: 30,
+                        timeout: 30
                     }
                 }
             },

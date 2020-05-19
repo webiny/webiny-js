@@ -39,14 +39,15 @@ const plugin: FbBuilderFieldPlugin = {
                     </Cell>
                     <Cell span={12}>
                         <Bind name={"settings.type"}>
-                            <Select
-                                label={t`Format`}
-                                description={t`Cannot be changed later`}
-                            >
+                            <Select label={t`Format`} description={t`Cannot be changed later`}>
                                 <option value={t`date`}>Date only</option>
                                 <option value={t`time`}>Time only</option>
-                                <option value={t`dateTimeWithTimezone`}>Date and time with timezone</option>
-                                <option value={t`dateTimeWithoutTimezone`}>Date and time without timezone</option>
+                                <option value={t`dateTimeWithTimezone`}>
+                                    Date and time with timezone
+                                </option>
+                                <option value={t`dateTimeWithoutTimezone`}>
+                                    Date and time without timezone
+                                </option>
                             </Select>
                         </Bind>
                     </Cell>

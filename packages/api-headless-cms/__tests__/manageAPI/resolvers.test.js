@@ -1,8 +1,9 @@
 import { graphql } from "graphql";
+import get from "lodash.get";
 import setupContentModels from "../setup/setupContentModels";
 import { createUtils } from "../utils";
 import createCategories from "../mocks/createCategories.manage";
-import { locales } from "../mocks/mockI18NLocales";
+import { locales } from "../mocks/I18NLocales";
 import headlessPlugins from "../../src/handler/plugins";
 import setupDefaultEnvironment from "../setup/setupDefaultEnvironment";
 
@@ -69,7 +70,11 @@ describe("MANAGE - Resolvers", () => {
         }
 
         expect(data.getCategory).toMatchObject({
-            data: categories[0].data
+            data: {
+                id: get(categories[0].data, "id"),
+                title: get(categories[0].data, "fields.title"),
+                slug: get(categories[0].data, "fields.slug")
+            }
         });
     });
 
@@ -107,7 +112,11 @@ describe("MANAGE - Resolvers", () => {
         }
 
         expect(data.getCategory).toMatchObject({
-            data: categories[0].data
+            data: {
+                id: get(categories[0].data, "id"),
+                title: get(categories[0].data, "fields.title"),
+                slug: get(categories[0].data, "fields.slug")
+            }
         });
     });
 
@@ -194,6 +203,7 @@ describe("MANAGE - Resolvers", () => {
                 })
             ])
         });
+        expect(data.listCategories.data.length).toBe(1);
     });
 
     test(`list categories (sort ASC)`, async () => {
@@ -214,7 +224,7 @@ describe("MANAGE - Resolvers", () => {
 
         const { schema, context } = await useSchema();
         const { data, errors } = await graphql(schema, query, {}, context, {
-            sort: ["title_ASC"]
+            sort: ["slug_ASC"]
         });
 
         if (errors) {
@@ -272,7 +282,7 @@ describe("MANAGE - Resolvers", () => {
 
         const { schema, context } = await useSchema();
         const { data, errors } = await graphql(schema, query, {}, context, {
-            sort: ["title_DESC"]
+            sort: ["slug_DESC"]
         });
 
         if (errors) {
@@ -333,7 +343,7 @@ describe("MANAGE - Resolvers", () => {
 
         const { schema, context } = await useSchema();
         const { data: data1, errors: errors1 } = await graphql(schema, query, {}, context, {
-            where: { title_contains: "category" }
+            where: { slug_contains: "category" }
         });
 
         if (errors1) {
@@ -343,7 +353,7 @@ describe("MANAGE - Resolvers", () => {
         expect(data1.listCategories.data.length).toBe(2);
 
         const { data: data2, errors: errors2 } = await graphql(schema, query, {}, context, {
-            where: { title_not_contains: "category" }
+            where: { slug_not_contains: "category" }
         });
 
         if (errors2) {
@@ -353,7 +363,7 @@ describe("MANAGE - Resolvers", () => {
         expect(data2.listCategories.data.length).toBe(1);
 
         const { data: data3, errors: errors3 } = await graphql(schema, query, {}, context, {
-            where: { title_in: ["B Category EN"] }
+            where: { slug_in: ["b-category-en"] }
         });
 
         if (errors3) {
@@ -363,7 +373,9 @@ describe("MANAGE - Resolvers", () => {
         expect(data3.listCategories.data.length).toBe(1);
 
         const { data: data4, errors: errors4 } = await graphql(schema, query, {}, context, {
-            where: { title_not_in: ["A Category EN", "B Category EN"] }
+            where: {
+                slug_not_in: ["a-category-en", "a-category-de", "b-category-en", "b-category-de"]
+            }
         });
 
         if (errors4) {

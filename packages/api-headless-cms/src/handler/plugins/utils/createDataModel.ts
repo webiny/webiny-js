@@ -12,12 +12,13 @@ import {
     skipOnPopulate,
     setOnce,
     string,
-    date
+    date,
+    getName
 } from "@webiny/commodo";
 
 import {
     CmsContext,
-    CmsModel,
+    CmsContentModel,
     CmsModelFieldToCommodoFieldPlugin
 } from "@webiny/api-headless-cms/types";
 
@@ -26,9 +27,23 @@ import { createValidation } from "./createValidation";
 import pick from "lodash/pick";
 import omit from "lodash/omit";
 
-export const createDataModelFromData = (
+async function deleteRevisionIndexes(revision, context) {
+    const { CmsContentEntrySearch } = context.models;
+    const query = {
+        model: revision.meta.model,
+        revision: revision.id,
+        environment: revision.meta.environment
+    };
+
+    await context.commodo.driver.delete({
+        name: getName(CmsContentEntrySearch),
+        options: { query }
+    });
+}
+
+export const createDataModel = (
     createBase: Function,
-    data: CmsModel,
+    contentModel: CmsContentModel,
     context: CmsContext
 ) => {
     const plugins = context.plugins.byType<CmsModelFieldToCommodoFieldPlugin>(
@@ -40,8 +55,11 @@ export const createDataModelFromData = (
         withName("CmsContentEntry"),
         withProps(({ toStorage, populateFromStorage }) => ({
             async toStorage() {
-                const toStorageData = await toStorage.call(this);
-                const fieldIds = data.fields.map(item => item.fieldId);
+                // When storing data to DB, we restructure data:
+                // - all user-defined fields are stored in the `fields` object
+                // - all other fields are moved to the root of the object (environment, locale, createdOn, createdBy, etc.)
+                const toStorageData = await toStorage.call(this, { skipDifferenceCheck: true });
+                const fieldIds = contentModel.fields.map(item => item.fieldId);
 
                 const fields = pick(toStorageData, fieldIds);
                 const { meta, ...rest } = omit<any>(toStorageData, fieldIds);
@@ -49,6 +67,9 @@ export const createDataModelFromData = (
                 return { ...rest, ...meta, fields };
             },
             async populateFromStorage(storageData) {
+                // When loading data from DB, we restructure data:
+                // - all user-defined fields which are stored in `fields` field are moved to the root of the model
+                // - all system fields are moved to `meta` model field
                 const metaFieldsList = Object.keys(this.meta.getFields());
 
                 const meta = pick(storageData, metaFieldsList);
@@ -57,7 +78,7 @@ export const createDataModelFromData = (
                 return populateFromStorage.call(this, { ...rest, ...rest.fields, meta });
             },
             get contentModel() {
-                return data;
+                return contentModel;
             }
         })),
         withHooks({
@@ -94,8 +115,26 @@ export const createDataModelFromData = (
                 }
             },
             async beforeSave() {
+                // Check if any of the index fields are dirty
+                const indexFields = contentModel.getUniqueIndexFields();
+
+                // Get entry fields that match indexes and are dirty
+                const relFields = indexFields
+                    .filter(f => Boolean(this[f]))
+                    .map(f => this.getField(f).isDirty());
+
+                // Determine if there are any dirty fields
+                const dirty = relFields.filter(Boolean).length > 0;
+
+                if (dirty) {
+                    // If index related fields are dirty, we need to call DataManager to rebuild indexes
+                    const removeCallback = this.hook("afterSave", async () => {
+                        removeCallback();
+                        await context.cms.dataManager.generateRevisionIndexes({ revision: this });
+                    });
+                }
+
                 // Let's mark fields on actual content model as used.
-                const contentModel = this.contentModel;
                 const fields = contentModel.fields || [];
                 const usedFields = contentModel.usedFields || [];
 
@@ -116,46 +155,10 @@ export const createDataModelFromData = (
                             usedFields.push(fieldId);
                         }
 
-                        // Added this check because tests are failing - injecting raw mocked objects
-                        // instead of real Commodo instances.
-                        contentModel.save && (await contentModel.save());
+                        contentModel.usedFields = usedFields;
+                        //TODO @adrian: await contentModel.save();
                     });
                     break;
-                }
-            },
-            async afterSave() {
-                const SearchModel = context.models[data.modelId + "Search"];
-                const locales = context.i18n.getLocales();
-
-                for (let x = 0; x < locales.length; x++) {
-                    const locale = locales[x];
-                    const fieldValues = {
-                        latestVersion: this.meta.latestVersion,
-                        published: this.meta.published
-                    };
-                    for (let y = 0; y < data.fields.length; y++) {
-                        const field = data.fields[y];
-                        fieldValues[field.fieldId] = await this[field.fieldId].value(locale.code);
-                    }
-
-                    // Create/Update search entry
-                    const entry = {
-                        locale: locale.id,
-                        revision: this.id
-                    };
-
-                    const searchEntry = await SearchModel.findOne({ query: entry });
-                    if (searchEntry) {
-                        searchEntry.populate(fieldValues);
-                        await searchEntry.save();
-                    } else {
-                        const searchEntry = new SearchModel();
-                        searchEntry.populate({
-                            ...entry,
-                            ...fieldValues
-                        });
-                        await searchEntry.save();
-                    }
                 }
             },
             async beforeDelete() {
@@ -186,15 +189,8 @@ export const createDataModelFromData = (
                 }
             },
             async afterDelete() {
-                // Delete Search collection records for this specific revision.
-                const SearchModel = context.models[data.modelId + "Search"];
-                const entries = await SearchModel.find({
-                    query: { revision: this.id }
-                });
-
-                for (let i = 0; i < entries.length; i++) {
-                    await entries[i].delete();
-                }
+                // Delete indexes for this revision
+                await deleteRevisionIndexes(this, context);
 
                 // If the deleted page is the parent page - delete its revisions.
                 if (this.id === this.meta.parent) {
@@ -207,7 +203,6 @@ export const createDataModelFromData = (
                 }
             },
             async beforePublish() {
-                // TODO: check if this will cause any issues for Search catalog updates.
                 // Deactivate previously published revision.
                 const publishedRev = await Model.findOne({
                     query: { published: true, parent: this.meta.parent }
@@ -217,6 +212,10 @@ export const createDataModelFromData = (
                     this.hook("afterPublish", async () => {
                         publishedRev.meta.published = false;
                         await publishedRev.save();
+                        // We only want to keep indexes for `published` and `latestVersion` revisions
+                        if (!publishedRev.latestVersion) {
+                            await deleteRevisionIndexes(publishedRev, context);
+                        }
                     });
                 }
             }
@@ -227,8 +226,8 @@ export const createDataModelFromData = (
                 instanceOf: pipe(
                     withProps({
                         get title() {
-                            if (data.titleFieldId) {
-                                return instance[data.titleFieldId];
+                            if (contentModel.titleFieldId) {
+                                return instance[contentModel.titleFieldId];
                             }
 
                             return "";
@@ -248,7 +247,7 @@ export const createDataModelFromData = (
                         }
                     }),
                     withFields({
-                        model: setOnce()(string({ value: data.modelId })),
+                        model: setOnce()(string({ value: contentModel.modelId })),
                         environment: setOnce()(context.commodo.fields.id()),
                         parent: context.commodo.fields.id(),
                         version: number(),
@@ -276,6 +275,11 @@ export const createDataModelFromData = (
                                     const removeAfterSave = instance.hook("afterSave", async () => {
                                         removeAfterSave();
                                         await instance.hook("afterPublish");
+
+                                        // When publishing a revision, we need to generate its indexes
+                                        await context.cms.dataManager.generateRevisionIndexes({
+                                            revision: instance
+                                        });
                                     });
                                 }
                                 return value;
@@ -299,11 +303,11 @@ export const createDataModelFromData = (
                 return revision.meta.version + 1;
             }
         }),
-        withModelFiltering(data.modelId)
+        withModelFiltering(contentModel.modelId)
     )(createBase()) as Function;
 
-    for (let i = 0; i < data.fields.length; i++) {
-        const field = data.fields[i];
+    for (let i = 0; i < contentModel.fields.length; i++) {
+        const field = contentModel.fields[i];
         const plugin = plugins.find(pl => pl.fieldType === field.type);
         if (!plugin) {
             throw Error(

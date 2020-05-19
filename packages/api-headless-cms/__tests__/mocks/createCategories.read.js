@@ -1,4 +1,4 @@
-import { locales } from "./mockI18NLocales";
+import { locales } from "./I18NLocales";
 
 export default async context => {
     const { category: Category } = context.models;

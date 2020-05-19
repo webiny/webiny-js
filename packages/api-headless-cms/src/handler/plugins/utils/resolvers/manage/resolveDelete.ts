@@ -3,6 +3,7 @@ import { Response, ErrorResponse } from "@webiny/commodo-graphql";
 import { CmsContext } from "@webiny/api-headless-cms/types";
 import { entryNotFound } from "./../entryNotFound";
 import { setContextLocale } from "./../../setContextLocale";
+import { findEntry } from "../../findEntry";
 
 export const resolveDelete = ({ model }): GraphQLFieldResolver<any, any, CmsContext> => async (
     root,
@@ -10,14 +11,20 @@ export const resolveDelete = ({ model }): GraphQLFieldResolver<any, any, CmsCont
     context
 ) => {
     setContextLocale(context, args.locale);
-
-    const Model = context.models[model.modelId];
-    const instance = await Model.findOne({ query: args.where });
-    if (!instance) {
-        return entryNotFound(JSON.stringify(args.where));
-    }
-
     try {
+        let instance;
+        // For the MANAGE API, we also allow getting entries directly by ID.
+        if (context.cms.MANAGE && args.where && args.where.id) {
+            const Model = context.models[model.modelId];
+            instance = await Model.findById(args.where.id);
+        } else {
+            instance = await findEntry({ model, args, context });
+        }
+
+        if (!instance) {
+            return entryNotFound(JSON.stringify(args.where));
+        }
+
         await instance.delete();
         return new Response(true);
     } catch (e) {

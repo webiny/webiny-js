@@ -25,7 +25,7 @@ const menuStyles = css({
     }
 });
 
-const RevisionSelector = ({ location, history, content, getLoading }) => {
+const RevisionSelector = ({ location, history, content, getLoading, revisionsList }) => {
     const query = new URLSearchParams(location.search);
 
     const currentRevision = {
@@ -33,7 +33,7 @@ const RevisionSelector = ({ location, history, content, getLoading }) => {
         status: get(content, "meta.status", "draft")
     };
 
-    const allRevisions = get(content, "meta.revisions", [
+    const allRevisions = get(revisionsList, "data.content.data.meta.revisions", [
         { id: "new", meta: { version: 1, status: "draft" } }
     ]);
 

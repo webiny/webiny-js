@@ -1,12 +1,12 @@
+import setupContentModels from "./setup/setupContentModels";
 import setupDefaultEnvironment from "./setup/setupDefaultEnvironment";
 import contentModels from "./mocks/contentModels";
-import { locales } from "./mocks/mockI18NLocales";
+import { locales } from "./mocks/I18NLocales";
 import { createUtils } from "./utils";
-import { createDataModelFromData } from "../src/handler/plugins/utils/createDataModelFromData";
-import { createSearchModelFromData } from "../src/handler/plugins/utils/createSearchModelFromData";
+import { createDataModel } from "../src/handler/plugins/utils/createDataModel";
 import headlessPlugins from "../src/handler/plugins";
 
-describe(`createDataModelFromData`, () => {
+describe(`createDataModel`, () => {
     let context;
 
     const { useContext, useDatabase } = createUtils([
@@ -14,6 +14,7 @@ describe(`createDataModelFromData`, () => {
     ]);
 
     const db = useDatabase();
+    let models = [];
 
     beforeAll(async () => {
         await setupDefaultEnvironment(db);
@@ -22,21 +23,18 @@ describe(`createDataModelFromData`, () => {
         context = await useContext([], {
             event: { headers: { "accept-language": "en-US" } }
         });
+
+        const { contentModelInstances } = await setupContentModels(context);
+        models = contentModelInstances;
     });
 
     test("data is converted to commodo model", async () => {
         // Create content models
-        for (let i = 0; i < contentModels.length; i++) {
-            const modelData = contentModels[i];
-            context.models[modelData.modelId] = createDataModelFromData(
+        for (let i = 0; i < models.length; i++) {
+            const model = models[i];
+            context.models[model.modelId] = createDataModel(
                 context.createEnvironmentBase,
-                modelData,
-                context
-            );
-
-            context.models[modelData.modelId + "Search"] = createSearchModelFromData(
-                context.createEnvironmentBase,
-                modelData,
+                model,
                 context
             );
         }
@@ -82,14 +80,6 @@ describe(`createDataModelFromData`, () => {
         });
         expect(category.title.value()).toBe("Hardware EN");
 
-        // Test CategorySearch
-        const CategorySearch = context.models["categorySearch"];
-        const cSearch = await CategorySearch.find({
-            query: { revision: category.id }
-        });
-        expect(cSearch.length).toBe(3);
-        expect(cSearch.find(s => s.locale === locales.en.id).title).toBe("Hardware EN");
-
         // Test Product
         const Product = context.models["product"];
         const product = new Product();
@@ -132,7 +122,12 @@ describe(`createDataModelFromData`, () => {
         try {
             await product.save();
         } catch (e) {
-            console.log(e.data.invalidFields);
+            if (e.data) {
+                console.log(e.data.invalidFields);
+            } else {
+                console.log(e);
+            }
+
             throw e;
         }
 

@@ -117,7 +117,9 @@ describe("MANAGE - GraphQL Schema", () => {
                 data: {
                     createContentModel: {
                         error: {
-                            message: `Content model with modelId "${camelCase(contentModels[i].modelId)}" already exists.`
+                            message: `Content model with modelId "${camelCase(
+                                contentModels[i].modelId
+                            )}" already exists.`
                         }
                     }
                 }
@@ -164,7 +166,6 @@ describe("MANAGE - GraphQL Schema", () => {
 
         for (let i = 0; i < contentModels.length; i++) {
             expect(context.models[camelCase(contentModels[i].modelId)]).toBeTruthy();
-            expect(context.models[camelCase(contentModels[i].modelId) + "Search"]).toBeTruthy();
         }
     });
 
@@ -182,5 +183,31 @@ describe("MANAGE - GraphQL Schema", () => {
         expect(cmsTypes).toContain("Category");
         expect(cmsTypes).toContain("Product");
         expect(cmsTypes).toContain("Review");
+    });
+
+    test(`should correctly check if "indexes" field is "dirty"`, async () => {
+        const { models } = await useContext();
+        // Get content model to fetch model indexes
+        const categoryModel = await models.CmsContentModel.findOne({ modelId: "category" });
+
+        // Update content model indexes
+        categoryModel.indexes = [{ fields: ["slug"] }];
+
+        expect(categoryModel.getField("indexes").isDirty()).toBe(true);
+
+        categoryModel.getField("indexes").state.dirty = false;
+
+        categoryModel.indexes = [{ fields: ["slug"] }];
+        expect(categoryModel.getField("indexes").isDirty()).toBe(false);
+
+        categoryModel.indexes = [{ fields: ["title", "slug"] }];
+        expect(categoryModel.getField("indexes").isDirty()).toBe(true);
+        categoryModel.getField("indexes").state.dirty = false;
+
+        categoryModel.indexes = [{ fields: ["slug", "title"] }];
+        expect(categoryModel.getField("indexes").isDirty()).toBe(false);
+
+        categoryModel.indexes = [{ fields: ["title", "price"] }];
+        expect(categoryModel.getField("indexes").isDirty()).toBe(true);
     });
 });
