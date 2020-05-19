@@ -29,7 +29,7 @@ export type CmsEditorFieldTypePlugin = Plugin & {
 export type CmsEditorField = {
     _id?: string;
     type: string;
-    fieldId?: FieldIdType;
+    fieldId?: CmsEditorFieldId;
     label?: I18NStringValue;
     helpText?: I18NStringValue;
     placeholderText?: I18NStringValue;
@@ -38,13 +38,31 @@ export type CmsEditorField = {
     settings: { [key: string]: any };
 };
 
+export type CmsEditorFieldId = string;
+export type CmsEditorFieldsLayout = CmsEditorFieldId[][];
+
+export type CmsEditorContentModel = {
+    id: CmsEditorFieldId;
+    version: number;
+    parent: string;
+    layout: CmsEditorFieldsLayout;
+    fields: CmsEditorField[];
+    name: string;
+    modelId: string;
+    settings: any;
+    status: string;
+    savedOn: string;
+    revisions: any[];
+    meta: any;
+};
+
 // ------------------------------------------------------------------------------------------------------------
 
 export type CmsContentModelFormProps = {
     locale?: string;
     loading?: boolean;
     onForm?: (form: any) => void;
-    contentModel: CmsContentModelModel;
+    contentModel: CmsEditorContentModel;
     content?: { [key: string]: any };
     onSubmit?: (data: { [key: string]: any }) => any;
     onChange?: (data: { [key: string]: any }) => any;
@@ -110,27 +128,9 @@ export type CmsFormFieldValidatorPlugin = Plugin & {
     };
 };
 
-export type FieldIdType = string;
-export type CmsEditorFieldsLayout = FieldIdType[][];
-
 export type FieldLayoutPositionType = {
     row: number;
     index: number;
-};
-
-export type CmsContentModelModel = {
-    id: FieldIdType;
-    version: number;
-    parent: string;
-    layout: CmsEditorFieldsLayout;
-    fields: CmsEditorField[];
-    name: string;
-    modelId: string;
-    settings: any;
-    status: string;
-    savedOn: string;
-    revisions: any[];
-    meta: any;
 };
 
 export type CmsEditorFormSettingsPlugin = Plugin & {

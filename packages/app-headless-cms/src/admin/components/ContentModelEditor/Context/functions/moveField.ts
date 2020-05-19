@@ -1,6 +1,6 @@
 import {
     CmsEditorField,
-    FieldIdType,
+    CmsEditorFieldId,
     FieldLayoutPositionType
 } from "@webiny/app-headless-cms/types";
 import getFieldPosition from "./getFieldPosition";
@@ -39,7 +39,7 @@ const moveField = ({ field, position, data }) => {
 };
 
 export default (params: {
-    field: FieldIdType | CmsEditorField;
+    field: CmsEditorFieldId | CmsEditorField;
     position: FieldLayoutPositionType;
     data: object;
 }) => {

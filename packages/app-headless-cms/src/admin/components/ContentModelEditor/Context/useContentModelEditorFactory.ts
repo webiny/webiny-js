@@ -9,7 +9,7 @@ import omit from "lodash/omit";
 import {
     CmsEditorFieldsLayout,
     CmsEditorField,
-    FieldIdType,
+    CmsEditorFieldId,
     FieldLayoutPositionType,
     CmsEditorFieldTypePlugin
 } from "@webiny/app-headless-cms/types";
@@ -188,7 +188,7 @@ export default ContentModelEditorContext => {
                 field,
                 position
             }: {
-                field: FieldIdType | CmsEditorField;
+                field: CmsEditorFieldId | CmsEditorField;
                 position: FieldLayoutPositionType;
             }) {
                 self.setData(data => {
@@ -242,7 +242,7 @@ export default ContentModelEditorContext => {
              * @param field
              * @returns {{index: number, row: number}|{index: null, row: null}}
              */
-            getFieldPosition(field: FieldIdType | CmsEditorField) {
+            getFieldPosition(field: CmsEditorFieldId | CmsEditorField) {
                 return getFieldPosition({ field, data: self.data });
             }
         };

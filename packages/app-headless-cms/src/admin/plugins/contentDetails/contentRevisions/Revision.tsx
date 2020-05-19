@@ -23,7 +23,7 @@ import { ReactComponent as EditIcon } from "@webiny/app-headless-cms/admin/icons
 import { ReactComponent as PublishIcon } from "@webiny/app-headless-cms/admin/icons/publish.svg";
 import { ReactComponent as DeleteIcon } from "@webiny/app-headless-cms/admin/icons/delete.svg";
 import useReactRouter from "use-react-router";
-import { CmsContentModelModel } from "@webiny/app-headless-cms/types";
+import { CmsEditorContentModel } from "@webiny/app-headless-cms/types";
 import { I18NValue } from "@webiny/app-i18n/components";
 import { i18n } from "@webiny/app/i18n";
 
@@ -37,7 +37,7 @@ const revisionsMenu = css({
     left: "auto !important"
 });
 
-const getIcon = (rev: CmsContentModelModel) => {
+const getIcon = (rev: CmsEditorContentModel) => {
     switch (true) {
         case rev.meta.locked && !rev.meta.published:
             return {
