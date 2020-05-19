@@ -1,5 +1,5 @@
 import {
-    CmsContentModelModelField,
+    CmsEditorField,
     FieldIdType,
     FieldLayoutPositionType
 } from "@webiny/app-headless-cms/types";
@@ -39,7 +39,7 @@ const moveField = ({ field, position, data }) => {
 };
 
 export default (params: {
-    field: FieldIdType | CmsContentModelModelField;
+    field: FieldIdType | CmsEditorField;
     position: FieldLayoutPositionType;
     data: object;
 }) => {

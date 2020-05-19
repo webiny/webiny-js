@@ -1,12 +1,12 @@
 import React from "react";
-import { CmsContentModelModelField } from "@webiny/app-headless-cms/types";
+import { CmsEditorField } from "@webiny/app-headless-cms/types";
 import { I18NValue } from "@webiny/app-i18n/components";
 import HelperMessage from "../components/HelperMessage";
 import { BindComponentRenderProp } from "@webiny/form";
 
 type Props = {
     bind: BindComponentRenderProp;
-    field: CmsContentModelModelField;
+    field: CmsEditorField;
 };
 
 const change = ({ option, value, onChange }) => {

@@ -1,5 +1,5 @@
 import {
-    CmsContentModelModelField,
+    CmsEditorField,
     FieldIdType,
     CmsContentModelModel
 } from "@webiny/app-headless-cms/types";
@@ -8,7 +8,7 @@ export default ({
     field,
     data
 }: {
-    field: CmsContentModelModelField;
+    field: CmsEditorField;
     data: CmsContentModelModel;
 }) => {
     // Remove the field from fields list...

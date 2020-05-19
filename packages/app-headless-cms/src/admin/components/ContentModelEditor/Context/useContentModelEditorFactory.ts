@@ -7,8 +7,8 @@ import { getPlugins } from "@webiny/plugins";
 import omit from "lodash/omit";
 
 import {
-    CmsContentModelModelFieldsLayout,
-    CmsContentModelModelField,
+    CmsEditorFieldsLayout,
+    CmsEditorField,
     FieldIdType,
     FieldLayoutPositionType,
     CmsEditorFieldTypePlugin
@@ -86,7 +86,7 @@ export default ContentModelEditorContext => {
              */
             getFields(
                 layout = false
-            ): CmsContentModelModelField[] | CmsContentModelModelFieldsLayout {
+            ): CmsEditorField[] | CmsEditorFieldsLayout {
                 if (!layout) {
                     return state.data.fields;
                 }
@@ -104,7 +104,7 @@ export default ContentModelEditorContext => {
             /**
              * Return field plugin.
              * @param query
-             * @returns {void|?CmsContentModelModelField}
+             * @returns {void|?CmsEditorField}
              */
             getFieldPlugin(query: object): CmsEditorFieldTypePlugin {
                 return getPlugins<CmsEditorFieldTypePlugin>("cms-editor-field-type").find(
@@ -129,7 +129,7 @@ export default ContentModelEditorContext => {
              * @param query
              * @returns {boolean}
              */
-            getField(query: object): CmsContentModelModelField {
+            getField(query: object): CmsEditorField {
                 return state.data.fields.find(field => {
                     for (const key in query) {
                         if (!(key in field)) {
@@ -150,7 +150,7 @@ export default ContentModelEditorContext => {
              * @param data
              * @param position
              */
-            insertField(data: CmsContentModelModelField, position: FieldLayoutPositionType) {
+            insertField(data: CmsEditorField, position: FieldLayoutPositionType) {
                 const field = cloneDeep(data);
                 if (!field._id) {
                     field._id = shortid.generate();
@@ -188,7 +188,7 @@ export default ContentModelEditorContext => {
                 field,
                 position
             }: {
-                field: FieldIdType | CmsContentModelModelField;
+                field: FieldIdType | CmsEditorField;
                 position: FieldLayoutPositionType;
             }) {
                 self.setData(data => {
@@ -230,7 +230,7 @@ export default ContentModelEditorContext => {
              * Deletes a field (both from the list of field and the layout).
              * @param field
              */
-            deleteField(field: CmsContentModelModelField) {
+            deleteField(field: CmsEditorField) {
                 self.setData(data => {
                     deleteField({ field, data });
                     return data;
@@ -242,7 +242,7 @@ export default ContentModelEditorContext => {
              * @param field
              * @returns {{index: number, row: number}|{index: null, row: null}}
              */
-            getFieldPosition(field: FieldIdType | CmsContentModelModelField) {
+            getFieldPosition(field: FieldIdType | CmsEditorField) {
                 return getFieldPosition({ field, data: self.data });
             }
         };

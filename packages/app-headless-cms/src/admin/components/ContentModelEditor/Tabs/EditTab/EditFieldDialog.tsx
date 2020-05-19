@@ -9,7 +9,7 @@ import ValidatorsTab from "./EditFieldDialog/ValidatorsTab";
 import AppearanceTab from "./EditFieldDialog/AppearanceTab";
 import { i18n } from "@webiny/app/i18n";
 import { useContentModelEditor } from "@webiny/app-headless-cms/admin/components/ContentModelEditor/Context";
-import { CmsContentModelModelField } from "@webiny/app-headless-cms/types";
+import { CmsEditorField } from "@webiny/app-headless-cms/types";
 const t = i18n.namespace("app-headless-cms/admin/components/editor");
 
 const dialogBody = css({
@@ -20,7 +20,7 @@ const dialogBody = css({
 });
 
 type EditFieldDialogProps = {
-    field: CmsContentModelModelField;
+    field: CmsEditorField;
     onClose: Function;
     onSubmit: (data: any) => void;
 };

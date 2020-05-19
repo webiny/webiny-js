@@ -17,13 +17,25 @@ export type CmsEditorFieldTypePlugin = Plugin & {
         validators?: string[];
         description: string;
         icon: React.ReactNode;
-        createField: ({ i18n: any }) => CmsContentModelModelField;
+        createField: ({ i18n: any }) => CmsEditorField;
         renderSettings?: (params: {
             form: FormChildrenFunctionParams;
             afterChangeLabel: (value: string) => void;
             uniqueFieldIdValidator: (fieldId: string) => void;
         }) => React.ReactNode;
     };
+};
+
+export type CmsEditorField = {
+    _id?: string;
+    type: string;
+    fieldId?: FieldIdType;
+    label?: I18NStringValue;
+    helpText?: I18NStringValue;
+    placeholderText?: I18NStringValue;
+    validation?: CmsBuilderFieldValidator[];
+    options?: Array<{ value: string; label: I18NStringValue }>;
+    settings: { [key: string]: any };
 };
 
 // ------------------------------------------------------------------------------------------------------------
@@ -99,7 +111,7 @@ export type CmsFormFieldValidatorPlugin = Plugin & {
 };
 
 export type FieldIdType = string;
-export type CmsContentModelModelFieldsLayout = FieldIdType[][];
+export type CmsEditorFieldsLayout = FieldIdType[][];
 
 export type FieldLayoutPositionType = {
     row: number;
@@ -110,8 +122,8 @@ export type CmsContentModelModel = {
     id: FieldIdType;
     version: number;
     parent: string;
-    layout: CmsContentModelModelFieldsLayout;
-    fields: CmsContentModelModelField[];
+    layout: CmsEditorFieldsLayout;
+    fields: CmsEditorField[];
     name: string;
     modelId: string;
     settings: any;
@@ -119,19 +131,6 @@ export type CmsContentModelModel = {
     savedOn: string;
     revisions: any[];
     meta: any;
-};
-
-export type CmsContentModelModelField = {
-    _id?: string;
-    type: string;
-    name: string;
-    fieldId?: FieldIdType;
-    label?: I18NStringValue;
-    helpText?: I18NStringValue;
-    placeholderText?: I18NStringValue;
-    validation?: CmsBuilderFieldValidator[];
-    options?: Array<{ value: string; label: I18NStringValue }>;
-    settings: { [key: string]: any };
 };
 
 export type CmsEditorFormSettingsPlugin = Plugin & {
@@ -167,7 +166,7 @@ export type CmsIconsPlugin = Plugin & {
     getIcons(): CmsIcon[];
 };
 
-export type FormRenderCmsContentModelModelField = CmsContentModelModelField & {
+export type FormRenderCmsEditorField = CmsEditorField & {
     validators: Array<(value: any) => boolean>;
 };
 
