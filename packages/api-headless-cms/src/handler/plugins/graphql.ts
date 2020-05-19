@@ -67,8 +67,8 @@ export default ({ type }) => [
             typeDefs: gql`
                 ${i18nFieldType("CmsString", "String")}
                 ${i18nFieldInput("CmsString", "String")}
-                ${i18nFieldType("CmsI18NJSONValue", "JSON")}
-                ${i18nFieldInput("CmsI18NJSONValue", "JSON")}
+                ${i18nFieldType("CmsJSON", "JSON")}
+                ${i18nFieldInput("CmsJSON", "JSON")}
 
                 input CmsSearchInput {
                     query: String

@@ -55,10 +55,10 @@ const plugin: CmsModelFieldToGraphQLPlugin = {
             };
         },
         createTypeField({ field }) {
-            return field.fieldId + ": CmsI18NJSONValue";
+            return field.fieldId + ": CmsJSON";
         },
         createInputField({ field }) {
-            return field.fieldId + ": CmsI18NJSONValueInput";
+            return field.fieldId + ": CmsJSONInput";
         }
     }
 };
