@@ -1,5 +1,2 @@
-import user from "./user";
-import token from "./token";
-
-export const mockedUser = user;
-export const mockedToken = token;
+export { default as mockedUser } from "./user";
+export { default as mockedToken } from "./token";
