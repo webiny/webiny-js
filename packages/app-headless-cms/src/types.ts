@@ -33,7 +33,7 @@ export type CmsEditorField = {
     label?: I18NStringValue;
     helpText?: I18NStringValue;
     placeholderText?: I18NStringValue;
-    validation?: CmsBuilderFieldValidator[];
+    validation?: CmsEditorFieldValidator[];
     options?: Array<{ value: string; label: I18NStringValue }>;
     settings: { [key: string]: any };
 };
@@ -54,6 +54,28 @@ export type CmsEditorContentModel = {
     savedOn: string;
     revisions: any[];
     meta: any;
+};
+
+export type CmsEditorFieldValidator = {
+    name: string;
+    message: I18NStringValue;
+    settings: any;
+};
+
+export type CmsBuilderFormFieldValidatorPlugin = Plugin & {
+    type: "content-model-editor-field-validator";
+    validator: {
+        name: string;
+        label: string;
+        description: string;
+        defaultMessage: string;
+        renderSettings?: (props: {
+            Bind: BindComponent;
+            setValue: (name: string, value: any) => void;
+            setMessage: (message: string) => void;
+            data: CmsEditorFieldValidator;
+        }) => React.ReactElement;
+    };
 };
 
 // ------------------------------------------------------------------------------------------------------------
@@ -82,28 +104,6 @@ export type CmsContentDetailsRevisionContentPlugin = Plugin & {
     render(params: any): ReactElement;
 };
 
-
-export type CmsBuilderFieldValidator = {
-    name: string;
-    message: I18NStringValue;
-    settings: any;
-};
-
-export type CmsBuilderFormFieldValidatorPlugin = Plugin & {
-    type: "content-model-editor-field-validator";
-    validator: {
-        name: string;
-        label: string;
-        description: string;
-        defaultMessage: string;
-        renderSettings?: (props: {
-            Bind: BindComponent;
-            setValue: (name: string, value: any) => void;
-            setMessage: (message: string) => void;
-            data: CmsBuilderFieldValidator;
-        }) => React.ReactElement;
-    };
-};
 
 export type CmsFormFieldPatternValidatorPlugin = Plugin & {
     type: "content-model-editor-field-validator-pattern";
