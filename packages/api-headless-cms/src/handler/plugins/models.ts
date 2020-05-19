@@ -6,8 +6,8 @@ import contentModel from "./models/contentModel.model";
 import environmentModel from "../../plugins/models/environment.model";
 import environmentModelAlias from "../../plugins/models/environmentAlias.model";
 import contentModelGroup from "./models/contentModelGroup.model";
-import { createDataModelFromData } from "./utils/createDataModelFromData";
-import { createSearchModelFromData } from "./utils/createSearchModelFromData";
+import contentEntrySearch from "./models/contentEntrySearch.model";
+import { createDataModel } from "./utils/createDataModel";
 import { createEnvironmentBase as createEnvironmentBaseFactory } from "./utils/createEnvironmentBase";
 
 export default () => {
@@ -31,12 +31,14 @@ export default () => {
                 withCrudLogs()
             )() as Function;
 
-        context.models = { createBase };
-        context.models.CmsEnvironment = environmentModel({ createBase, context });
-        context.models.CmsEnvironmentAlias = environmentModelAlias({
+        context.models = {
             createBase,
-            context
-        });
+            CmsEnvironment: environmentModel({ createBase, context }),
+            CmsEnvironmentAlias: environmentModelAlias({
+                createBase,
+                context
+            })
+        };
 
         // Before continuing with the rest of the models, we must load the environment and assign it to the context.
         let environment = null;
@@ -77,20 +79,19 @@ export default () => {
             context
         });
 
+        context.models.CmsContentEntrySearch = contentEntrySearch({
+            createBase: createEnvironmentBase
+        });
+
         context.createEnvironmentBase = createEnvironmentBase;
 
         // Build Commodo models from CmsContentModels
         const contentModels = await context.models.CmsContentModel.find();
         for (let i = 0; i < contentModels.length; i++) {
-            const data = contentModels[i];
-            context.models[data.modelId] = createDataModelFromData(
+            const contentModel = contentModels[i];
+            context.models[contentModel.modelId] = createDataModel(
                 createEnvironmentBaseFactory({ context, addEnvironmentField: false }),
-                data,
-                context
-            );
-            context.models[data.modelId + "Search"] = createSearchModelFromData(
-                createEnvironmentBase,
-                data,
+                contentModel,
                 context
             );
         }

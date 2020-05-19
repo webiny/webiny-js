@@ -10,7 +10,7 @@ import apolloHandler from "./apolloHandler";
 // the provided environment and schema type (read, manage, preview).
 import headlessPlugins from "./plugins";
 
-export default (options: HandlerApolloServerOptions = {}) => [
+export default (options: HandlerApolloServerOptions) => [
     {
         type: "handler",
         name: "handler-setup-headless-plugins",
@@ -19,7 +19,12 @@ export default (options: HandlerApolloServerOptions = {}) => [
             const [event] = args;
             const { key = "" } = event.pathParameters || {};
             const [type = null, environment = null] = key.split("/");
-            context.plugins.register(await headlessPlugins({ type, environment }));
+            context.plugins.register(
+                await headlessPlugins({
+                    type,
+                    environment
+                })
+            );
             return next();
         }
     },

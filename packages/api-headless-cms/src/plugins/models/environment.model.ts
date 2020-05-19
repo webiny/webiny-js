@@ -1,8 +1,9 @@
 import { validation } from "@webiny/validation";
 import { pipe, withFields, withProps, string, ref, withName, withHooks } from "@webiny/commodo";
 import withChangedOnFields from "./withChangedOnFields";
+import { CmsContext } from "../../types";
 
-export default ({ createBase, context }) => {
+export default ({ createBase, context }: { createBase: Function; context: CmsContext }) => {
     return pipe(
         withName("CmsEnvironment"),
         withChangedOnFields(),
@@ -35,6 +36,15 @@ export default ({ createBase, context }) => {
                     }
                 }
             },
+            async afterCreate() {
+                const sourceEnvironment = await this.createdFrom;
+                if (sourceEnvironment) {
+                    await context.cms.dataManager.copyEnvironment({
+                        copyFrom: sourceEnvironment.id,
+                        copyTo: this.id
+                    });
+                }
+            },
             async beforeDelete() {
                 const environmentAlias = await this.environmentAlias;
                 if (environmentAlias) {
@@ -49,6 +59,9 @@ export default ({ createBase, context }) => {
                     environmentAlias.changedOn = new Date();
                     await environmentAlias.save();
                 }
+            },
+            async afterDelete() {
+                await context.cms.dataManager.deleteEnvironment({ environment: this.id });
             }
         })
     )(createBase());

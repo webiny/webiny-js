@@ -1,5 +1,5 @@
 import pluralize from "pluralize";
-import { CmsModel, CmsFieldTypePlugins, CmsContext } from "@webiny/api-headless-cms/types";
+import { CmsContentModel, CmsFieldTypePlugins, CmsContext } from "@webiny/api-headless-cms/types";
 import { createManageTypeName, createTypeName } from "../utils/createTypeName";
 import { commonFieldResolvers } from "../utils/commonFieldResolvers";
 import { resolveGet } from "../utils/resolvers/resolveGet";
@@ -13,8 +13,8 @@ import { resolveCreateFrom } from "../utils/resolvers/manage/resolveCreateFrom";
 
 export interface CreateManageResolvers {
     (params: {
-        models: CmsModel[];
-        model: CmsModel;
+        models: CmsContentModel[];
+        model: CmsContentModel;
         context: CmsContext;
         fieldTypePlugins: CmsFieldTypePlugins;
     }): any;

@@ -1,5 +1,5 @@
 import shortId from "shortid";
-import { locales } from "./mockI18NLocales";
+import { locales } from "./I18NLocales";
 import contentModelGroup from "./contentModelGroup";
 
 export default [
@@ -8,6 +8,7 @@ export default [
         description: "Product category",
         modelId: "category",
         group: contentModelGroup.id,
+        indexes: [{ fields: ["title", "slug"] }, { fields: ["slug"] }],
         fields: [
             {
                 _id: shortId.generate(),

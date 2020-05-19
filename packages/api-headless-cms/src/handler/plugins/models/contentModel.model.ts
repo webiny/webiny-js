@@ -16,10 +16,11 @@ import createFieldsModel from "./ContentModel/createFieldsModel";
 import camelCase from "lodash/camelCase";
 import pluralize from "pluralize";
 import { indexes } from "./indexesField";
+import { CmsContext } from "@webiny/api-headless-cms/types";
 
 const required = validation.create("required");
 
-export default ({ createBase, context }) => {
+export default ({ createBase, context }: { createBase: Function; context: CmsContext }) => {
     const ContentModelFieldsModel = createFieldsModel(context);
 
     const CmsContentModel = pipe(
@@ -38,7 +39,6 @@ export default ({ createBase, context }) => {
             // Contains a list of all fields that were utilized by existing content entries. If a field is on the list,
             // it cannot be removed anymore, because we don't want the user to loose any previously inserted data.
             usedFields: skipOnPopulate()(string({ list: true, value: [] })),
-
             fields: fields({
                 list: true,
                 value: [],
@@ -60,6 +60,13 @@ export default ({ createBase, context }) => {
                 }
 
                 return pluralize(this.modelId);
+            },
+            getUniqueIndexFields() {
+                const indexFields = [];
+                this.indexes.forEach(({ fields }) => {
+                    fields.forEach(field => indexFields.push(field));
+                });
+                return [...new Set(indexFields)];
             }
         }),
         withHooks({
@@ -72,6 +79,16 @@ export default ({ createBase, context }) => {
                 }
             },
             async beforeSave() {
+                if (this.getField("indexes").isDirty()) {
+                    const removeCallback = this.hook("afterSave", async () => {
+                        removeCallback();
+
+                        await context.cms.dataManager.generateContentModelIndexes({
+                            contentModel: this
+                        });
+                    });
+                }
+
                 const fields = this.fields || [];
 
                 // We must not allow removal of fields that are already in use in content entries.

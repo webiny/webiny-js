@@ -1,13 +1,13 @@
-import { CmsContext, CmsModel } from "@webiny/api-headless-cms/types";
-import createFindSorters from "./createFindSorters";
-import { createFindQuery } from "./createFindQuery";
+import { CmsContext, CmsContentModel } from "@webiny/api-headless-cms/types";
+import { parseSort } from "./parseSort";
+import { createFindParameters } from "./createFindParameters";
 import parseBoolean from "./parseBoolean";
 import { parseWhere } from "./parseWhere";
 import { requiresTotalCount } from "@webiny/graphql";
 import { GraphQLResolveInfo } from "graphql";
 
 type FindEntries = {
-    model: CmsModel;
+    model: CmsContentModel;
     args: {
         locale: string;
         where: { [key: string]: any };
@@ -27,97 +27,45 @@ export default async function findEntries<T = CmsContext>({
     info
 }: FindEntries) {
     const Model = context.models[model.modelId];
-    const ModelSearch = context.models[model.modelId + "Search"];
+    const { CmsContentEntrySearch } = context.models;
+
     parseBoolean(args);
     // eslint-disable-next-line prefer-const
-    let { sort = [], limit, after, before } = args;
+    let { limit, after, before } = args;
     limit = isNaN(limit) || limit < 1 ? 100 : limit;
 
-    // For Manage API, limit records by locales.length * perPage
-    // (since we can't use "$group" and you should be able to search values in all locales)
-    if (context.cms.MANAGE) {
-        // TODO @adrian Error: { message: 'Cannot query for more than 100 models per page.' }
-        // perPage = perPage * context.i18n.getLocales().length;
-    }
-
-    // Parse "where" arguments
-    const where = parseWhere(args.where);
-
-    // Build query
-    let match: any = {};
-    const conditions = [];
-    const notConditions = [];
-
-    where.forEach(cond => {
-        if (cond.operator.startsWith("not")) {
-            notConditions.push(cond);
-        } else {
-            conditions.push(cond);
-        }
+    const { query, sort } = createFindParameters({
+        context,
+        model,
+        sort: parseSort(model, args.sort),
+        where: parseWhere(args.where)
     });
 
-    if (context.cms.MANAGE && notConditions.length) {
-        // Replace "not"
-        const invertedConditions = notConditions.map(cond => {
-            if (cond.operator === "not") {
-                return { ...cond, operator: "eq" };
-            }
-            return { ...cond, operator: cond.operator.replace("not_", "") };
-        });
-
-        // Run extra query to find IDs we DON'T want to include in the final search
-        const query = createFindQuery(model, invertedConditions, context);
-        const searchEntries = await ModelSearch.find({ query });
-        const skipIds = searchEntries.map(entry => entry.revision);
-        match = {
-            revision: { $nin: [...skipIds] },
-            ...createFindQuery(model, conditions, context)
-        };
-    } else {
-        match = {
-            ...createFindQuery(model, [...conditions, ...notConditions], context)
-        };
-    }
-
     if (context.cms.READ) {
-        match.published = true;
+        query.published = true;
     } else {
-        match.latestVersion = true;
+        query.latestVersion = true;
     }
 
     // For `read` API we always include `locale` in the queries
     if (!context.cms.MANAGE) {
-        match.locale = context.cms.locale.id;
-    }
-
-    // Build sorters
-    const sorters = createFindSorters(model, sort);
-
-    if (!Object.keys(sorters).length) {
-        sorters["id"] = -1;
-    } else {
-        // Make sure the field being sorted has a non-null value
-        if (!match.$and) {
-            match.$and = [];
-        }
-
-        Object.keys(sorters).forEach(key => {
-            match.$and.push({ [key]: { $ne: null } });
-        });
+        query.locale = context.cms.locale.id;
     }
 
     // Find IDs using search collection
-    // TODO: things to improve:
-    // - `ModelSearch.find` returns data of which 99% is unused. We only need `instance` value of each entry.
-    const searchEntries = await ModelSearch.find({
-        query: match,
-        sort: sorters,
+    const searchEntries = await CmsContentEntrySearch.find({
+        query,
+        sort,
         limit,
         before,
         after,
-        totalCount: requiresTotalCount(info)
+        totalCount: requiresTotalCount(info),
+        defaultSortField: "revision",
+        fields: ["revision"]
     });
+
     const meta = searchEntries.getMeta();
+
     const ids = Array.from(
         searchEntries
             .map(item => {

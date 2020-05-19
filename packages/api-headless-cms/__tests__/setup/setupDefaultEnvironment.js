@@ -15,4 +15,6 @@ export default async db => {
         default: true,
         environment: envId
     });
+
+    return envId;
 };

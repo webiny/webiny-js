@@ -1,4 +1,4 @@
-import { locales } from "./mockI18NLocales";
+import { locales } from "./I18NLocales";
 
 export default async context => {
     const { category: Category } = context.models;
@@ -61,8 +61,10 @@ export default async context => {
     const category3 = new Category();
     await category3.populate(data[2]).save();
 
-    return [category1, category2, category3].map((model, i) => ({
-        model,
-        data: { id: model.id, ...data[i] }
-    }));
+    return await Promise.all(
+        [category1, category2, category3].map(async model => ({
+            model,
+            data: await model.toStorage({ skipDifferenceCheck: true })
+        }))
+    );
 };

@@ -42,7 +42,7 @@ export default utilsId => ({ init } = {}) => {
                 useUnifiedTopology: true
             });
             self.db = await self.connection.db(global.__MONGO_DB_NAME__ + "_" + utilsId);
-            self.getDatabase().dropDatabase();
+            await self.getDatabase().dropDatabase();
         },
         afterAll: async () => {
             await self.getConnection().close();

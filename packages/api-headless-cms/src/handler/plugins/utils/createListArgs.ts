@@ -1,8 +1,8 @@
-import { CmsModel, CmsModelField } from "@webiny/api-headless-cms/types";
+import { CmsContentModel, CmsContentModelField } from "@webiny/api-headless-cms/types";
 import { createReadTypeName, createTypeName } from "../utils/createTypeName";
 
 interface CreateListArgs {
-    (params: { model: CmsModel; field: CmsModelField }): string;
+    (params: { model: CmsContentModel; field: CmsContentModelField }): string;
 }
 
 export const createListArgs: CreateListArgs = ({ field }) => {

@@ -1,6 +1,6 @@
 import { blue } from "chalk";
 import setupDefaultEnvironment from "./setup/setupDefaultEnvironment";
-import { locales } from "./mocks/mockI18NLocales";
+import { locales } from "./mocks/I18NLocales";
 import { createUtils } from "./utils";
 import headlessPlugins from "../src/handler/plugins";
 
@@ -77,7 +77,7 @@ describe("Model fields", () => {
         instance = new model();
     });
 
-    describe(`"datetime": ${blue("dateTimeWithTimezone")}`, () => {
+    describe.skip(`"datetime": ${blue("dateTimeWithTimezone")}`, () => {
         const field = "dateTimeWithTimezone";
 
         test(`Date object should pass`, () => {

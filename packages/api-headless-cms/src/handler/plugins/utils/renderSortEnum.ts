@@ -1,7 +1,7 @@
-import { CmsFieldTypePlugins, CmsModel } from "@webiny/api-headless-cms/types";
+import { CmsFieldTypePlugins, CmsContentModel } from "@webiny/api-headless-cms/types";
 
 interface RenderSortEnum {
-    (params: { model: CmsModel; fieldTypePlugins: CmsFieldTypePlugins }): string;
+    (params: { model: CmsContentModel; fieldTypePlugins: CmsFieldTypePlugins }): string;
 }
 
 export const renderSortEnum: RenderSortEnum = ({ model, fieldTypePlugins }) => {

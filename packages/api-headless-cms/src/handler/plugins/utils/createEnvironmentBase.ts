@@ -38,7 +38,9 @@ export const createEnvironmentBase = ({ context, addEnvironmentField }) => () =>
             }),
             withHooks({
                 beforeCreate() {
-                    this.environment = environment.id;
+                    if (!this.environment) {
+                        this.environment = environment.id;
+                    }
                 }
             })
         )(base);
