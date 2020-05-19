@@ -5,8 +5,9 @@ import validators from "./validators";
 import icons from "./icons";
 import install from "./install";
 import revisionContent from "./contentDetails/revisionContent";
-import contentForm from "./contentDetails/contentForm";
 import header from "./contentDetails/header";
+import contentForm from "./contentDetails/contentForm";
+import footer from "./contentDetails/footer";
 import contentRevisions from "./contentDetails/contentRevisions";
 
 import contentModelEditorPlugins from "./../editor/plugins";
@@ -20,6 +21,7 @@ export default [
     header,
     revisionContent,
     contentForm,
+    footer,
     contentRevisions,
 
     // Editor.

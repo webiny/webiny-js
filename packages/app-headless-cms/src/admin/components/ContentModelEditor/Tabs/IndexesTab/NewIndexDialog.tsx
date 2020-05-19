@@ -78,6 +78,14 @@ const NewContentModelDialog: React.FC<NewContentModelDialogProps> = ({ open, onC
                             <>
                                 <DialogTitle>{t`Create index`}</DialogTitle>
                                 <DialogContent>
+                                    {isExisting && !justIdSelected && (
+                                        <>
+                                            <br />
+                                            <Alert type="warning" title="Already existing">
+                                                {t`An index with the same combination of fields already exists.`}
+                                            </Alert>
+                                        </>
+                                    )}
                                     <Bind name="fields">
                                         <CheckboxGroup label={t`Choose fields`}>
                                             {({ onChange, getValue }) => (
@@ -90,13 +98,6 @@ const NewContentModelDialog: React.FC<NewContentModelDialogProps> = ({ open, onC
                                                                 label={
                                                                     <>
                                                                         <div>id</div>
-                                                                        <div>
-                                                                            <Typography
-                                                                                use={"caption"}
-                                                                            >
-                                                                                ID
-                                                                            </Typography>
-                                                                        </div>
                                                                     </>
                                                                 }
                                                             />
@@ -137,21 +138,13 @@ const NewContentModelDialog: React.FC<NewContentModelDialogProps> = ({ open, onC
                                             )}
                                         </CheckboxGroup>
                                     </Bind>
-                                    {isExisting && !justIdSelected && (
-                                        <>
-                                            <br />
-                                            <Alert type="warning" title="Already existing">
-                                                {t`An index with the same combination of fields already exists.`}
-                                            </Alert>
-                                        </>
-                                    )}
                                 </DialogContent>
                                 <DialogActions>
                                     <ButtonDefault
                                         disabled={justIdSelected || isExisting}
                                         onClick={submit}
                                     >
-                                        + {t`Create`}
+                                        + {t`Add index`}
                                     </ButtonDefault>
                                 </DialogActions>
                             </>

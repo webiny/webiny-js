@@ -10,7 +10,7 @@ import { IconPrefix, IconName } from "@fortawesome/fontawesome-svg-core";
 export type CmsContentModelFormProps = {
     locale?: string;
     loading?: boolean;
-    preview?: boolean;
+    onForm?: (form: any) => void;
     contentModel: CmsContentModelModel;
     content?: { [key: string]: any };
     onSubmit?: (data: { [key: string]: any }) => any;

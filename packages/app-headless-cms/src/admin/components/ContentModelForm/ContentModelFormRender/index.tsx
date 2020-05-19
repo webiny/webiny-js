@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useRef } from "react";
 import Input from "./fields/Input";
 import Switch from "./fields/Switch";
 import Time from "./fields/Time";
@@ -7,12 +7,8 @@ import DateTimeWithTimezone from "./fields/DateTimeWithTimezone";
 import { BindComponentRenderProp, Form } from "@webiny/form";
 import { CmsContentModelModelField } from "@webiny/app-headless-cms/types";
 import { Grid, Cell } from "@webiny/ui/Grid";
-import { i18n } from "@webiny/app/i18n";
 import cloneDeep from "lodash.clonedeep";
 import get from "lodash.get";
-const t = i18n.ns("app-headless-cms/admin/components/content-model-form-render");
-
-import { ButtonPrimary } from "@webiny/ui/Button";
 
 import { CircularProgress } from "@webiny/ui/Progress";
 
@@ -89,14 +85,25 @@ export const ContentModelFormRender = ({
     content,
     onSubmit,
     onChange,
-    locale
+    locale,
+    onForm = null
 }) => {
     // All form fields - an array of rows where each row is an array that contain fields.
     const fields = getFields();
+    const ref = useRef(null);
+
+    useEffect(() => {
+        typeof onForm === "function" && onForm(ref.current);
+    }, []);
 
     return (
-        <Form onChange={onChange} onSubmit={onSubmit} data={content ? content : getDefaultValues()}>
-            {({ submit, Bind }) => (
+        <Form
+            onChange={onChange}
+            onSubmit={onSubmit}
+            data={content ? content : getDefaultValues()}
+            ref={ref}
+        >
+            {({ Bind }) => (
                 <div data-testid={"cms-content-form"}>
                     {loading && <CircularProgress />}
                     <Grid>
@@ -106,9 +113,6 @@ export const ContentModelFormRender = ({
                                 {row.map(field => renderFieldCell({ field, Bind, row, locale }))}
                             </React.Fragment>
                         ))}
-                        <Cell span={12} style={{ textAlign: "right" }}>
-                            <ButtonPrimary onClick={submit}>{t`Save`}</ButtonPrimary>
-                        </Cell>
                     </Grid>
                 </div>
             )}

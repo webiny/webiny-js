@@ -5,12 +5,11 @@ import { Elevation } from "@webiny/ui/Elevation";
 import Revision from "./Revision";
 import get from "lodash/get";
 import { CircularProgress } from "@webiny/ui/Progress";
-import { useMutation, useQuery } from "@webiny/app-headless-cms/admin/hooks";
+import { useMutation } from "@webiny/app-headless-cms/admin/hooks";
 import {
     createCreateFromMutation,
     createDeleteMutation,
-    createPublishMutation,
-    createListRevisionsQuery
+    createPublishMutation
 } from "@webiny/app-headless-cms/admin/components/ContentModelForm/graphql";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import useReactRouter from "use-react-router";
@@ -41,24 +40,18 @@ const style = {
 
 const RevisionsList = props => {
     const { showSnackbar } = useSnackbar();
-    const { content, contentModel, setLoading, dataList } = props;
+    const { content, contentModel, setLoading, dataList, revisionsList } = props;
     const { history } = useReactRouter();
 
-    const { CREATE_CONTENT_FROM, DELETE_CONTENT, PUBLISH_CONTENT, LIST_REVISIONS } = useMemo(() => {
+    const { CREATE_CONTENT_FROM, DELETE_CONTENT, PUBLISH_CONTENT } = useMemo(() => {
         return {
             CREATE_CONTENT_FROM: createCreateFromMutation(contentModel),
             DELETE_CONTENT: createDeleteMutation(contentModel),
-            PUBLISH_CONTENT: createPublishMutation(contentModel),
-            LIST_REVISIONS: createListRevisionsQuery(contentModel)
+            PUBLISH_CONTENT: createPublishMutation(contentModel)
         };
     }, [contentModel.modelId]);
 
-    console.log(content);
-    const { data: revisionsList, refetch } = useQuery(LIST_REVISIONS, {
-        variables: { id: get(content, "meta.parent") }
-    });
-
-    const revisions = get(revisionsList, "content.data.meta.revisions", []);
+    const revisions = get(revisionsList, "data.content.data.meta.revisions", []);
 
     const [createFromMutation] = useMutation(CREATE_CONTENT_FROM);
     const [deleteMutation] = useMutation(DELETE_CONTENT);
@@ -76,7 +69,7 @@ const RevisionsList = props => {
             return;
         }
 
-        await Promise.all([dataList.refresh(), refetch()]);
+        await Promise.all([dataList.refresh(), revisionsList.refetch()]);
         setLoading(false);
 
         showSnackbar(t`New content entry revision created.`);
@@ -106,7 +99,7 @@ const RevisionsList = props => {
             return;
         }
 
-        await Promise.all([dataList.refresh(), refetch()]);
+        await Promise.all([dataList.refresh(), revisionsList.refetch()]);
         setLoading(false);
 
         if (revision.id === content.id) {
@@ -157,7 +150,7 @@ const RevisionsList = props => {
     return (
         <Elevation className={style.list} z={2}>
             {props.getLoading() && <CircularProgress />}
-            {revisions.length ? (
+            {content.id && revisions.length ? (
                 <List nonInteractive twoLine>
                     {revisions.map(revisions => (
                         <Revision
