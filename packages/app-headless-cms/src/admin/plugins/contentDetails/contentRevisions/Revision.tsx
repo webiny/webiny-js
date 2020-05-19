@@ -111,7 +111,7 @@ const Revision = props => {
                                         const query = new URLSearchParams(location.search);
                                         query.set("id", id);
                                         history.push({ search: query.toString() });
-                                        switchTab(0)
+                                        switchTab(0);
                                     }}
                                 >
                                     <ListItemGraphic>
