@@ -77,7 +77,7 @@ const GeneralTab = ({ field, form }: GeneralTabProps) => {
                         name={"fieldId"}
                         validators={[validation.create("required"), uniqueFieldIdValidator]}
                     >
-                        <Input label={"Field ID"} disabled={field._id} />
+                        <Input label={"Field ID"} disabled={!!field._id} />
                     </Bind>
                 </Cell>
                 <Cell span={12}>
