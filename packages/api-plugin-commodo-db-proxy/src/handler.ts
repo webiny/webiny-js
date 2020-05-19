@@ -44,6 +44,10 @@ export default ({ logCollection, database, server, name }: DatabaseProxyOptions)
                 results.sort(findRestArgs.sort);
             }
 
+            if (findRestArgs.project) {
+                results.project(findRestArgs.project);
+            }
+
             return results.toArray();
         }
 

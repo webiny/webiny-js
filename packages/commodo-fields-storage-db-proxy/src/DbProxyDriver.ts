@@ -92,16 +92,15 @@ class DbProxyDriver {
         return true;
     }
 
-    // eslint-disable-next-line
-    async delete(items: Item[]) {
-        const payload = items.map(({ name, data }) => {
-            return {
-                collection: this.getCollectionName(name),
-                operation: ["deleteOne", { id: data.id }]
-            };
-        });
+    async delete({ name, options }) {
+        const clonedOptions = { ...options };
 
-        await this.client.runOperation(payload);
+        DbProxyDriver.__prepareSearchOption(clonedOptions);
+
+        await this.client.runOperation({
+            collection: this.getCollectionName(name),
+            operation: ["deleteMany", clonedOptions.query]
+        });
 
         return true;
     }
@@ -110,6 +109,7 @@ class DbProxyDriver {
         const clonedOptions = { limit: 0, offset: 0, ...options };
 
         DbProxyDriver.__prepareSearchOption(clonedOptions);
+        DbProxyDriver.__prepareProjectFields(clonedOptions);
 
         const results = await this.client.runOperation({
             collection: this.getCollectionName(name),
@@ -119,7 +119,8 @@ class DbProxyDriver {
                 {
                     limit: clonedOptions.limit,
                     sort: clonedOptions.sort,
-                    offset: clonedOptions.offset
+                    offset: clonedOptions.offset,
+                    project: clonedOptions.project
                 }
             ]
         });
@@ -130,6 +131,7 @@ class DbProxyDriver {
     async findOne({ name, options }) {
         const clonedOptions = { ...options };
         DbProxyDriver.__prepareSearchOption(clonedOptions);
+        DbProxyDriver.__prepareProjectFields(clonedOptions);
 
         // Get first documents from cursor using each
         const results = await this.client.runOperation({
@@ -139,7 +141,8 @@ class DbProxyDriver {
                 clonedOptions.query,
                 {
                     limit: 1,
-                    sort: clonedOptions.sort
+                    sort: clonedOptions.sort,
+                    project: clonedOptions.project
                 }
             ]
         });
@@ -189,6 +192,21 @@ class DbProxyDriver {
             }
 
             delete options.search;
+        }
+    }
+
+    static __prepareProjectFields(options) {
+        // Here we convert requested fields into a "project" parameter
+        if (options.fields) {
+            options.project = options.fields.reduce(
+                (acc, item) => {
+                    acc[item] = 1;
+                    return acc;
+                },
+                { id: 1 }
+            );
+
+            delete options.fields;
         }
     }
 }
