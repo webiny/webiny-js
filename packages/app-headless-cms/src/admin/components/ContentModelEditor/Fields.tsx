@@ -3,7 +3,7 @@ import { getPlugins } from "@webiny/plugins";
 import styled from "@emotion/styled";
 import { Icon } from "@webiny/ui/Icon";
 import Draggable from "./Draggable";
-import { FbBuilderFieldPlugin } from "@webiny/app-headless-cms/types";
+import { CmsEditorFieldTypePlugin } from "@webiny/app-headless-cms/types";
 
 const FieldContainer = styled("div")({
     padding: "10px 15px",
@@ -53,7 +53,7 @@ const Field = ({ onFieldDragStart, fieldType: { type, label, icon } }) => {
 };
 
 export const Fields = ({ onFieldDragStart }) => {
-    const fieldTypePlugin = getPlugins<FbBuilderFieldPlugin>("content-model-editor-field-type");
+    const fieldTypePlugin = getPlugins<CmsEditorFieldTypePlugin>("cms-editor-field-type");
 
     return (
         <React.Fragment>

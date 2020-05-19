@@ -7,6 +7,27 @@ import { BindComponent, FormChildrenFunctionParams, Form } from "@webiny/form";
 import { ApolloClient } from "apollo-client";
 import { IconPrefix, IconName } from "@fortawesome/fontawesome-svg-core";
 
+export type CmsEditorFieldTypePlugin = Plugin & {
+    type: "cms-editor-field-type";
+    field: {
+        group?: string;
+        unique?: boolean;
+        type: string;
+        label: string;
+        validators?: string[];
+        description: string;
+        icon: React.ReactNode;
+        createField: ({ i18n: any }) => CmsContentModelModelField;
+        renderSettings?: (params: {
+            form: FormChildrenFunctionParams;
+            afterChangeLabel: (value: string) => void;
+            uniqueFieldIdValidator: (fieldId: string) => void;
+        }) => React.ReactNode;
+    };
+};
+
+// ------------------------------------------------------------------------------------------------------------
+
 export type CmsContentModelFormProps = {
     locale?: string;
     loading?: boolean;
@@ -31,7 +52,6 @@ export type CmsContentDetailsRevisionContentPlugin = Plugin & {
     render(params: any): ReactElement;
 };
 
-// ------------------------------------------------------------------------------------------------------------
 
 export type CmsBuilderFieldValidator = {
     name: string;
@@ -84,25 +104,6 @@ export type CmsContentModelModelFieldsLayout = FieldIdType[][];
 export type FieldLayoutPositionType = {
     row: number;
     index: number;
-};
-
-export type FbBuilderFieldPlugin = Plugin & {
-    type: "content-model-editor-field-type";
-    field: {
-        group?: string;
-        unique?: boolean;
-        type: string;
-        label: string;
-        validators?: string[];
-        description: string;
-        icon: React.ReactNode;
-        createField: ({ i18n: any }) => CmsContentModelModelField;
-        renderSettings?: (params: {
-            form: FormChildrenFunctionParams;
-            afterChangeLabel: (value: string) => void;
-            uniqueFieldIdValidator: (fieldId: string) => void;
-        }) => React.ReactNode;
-    };
 };
 
 export type CmsContentModelModel = {

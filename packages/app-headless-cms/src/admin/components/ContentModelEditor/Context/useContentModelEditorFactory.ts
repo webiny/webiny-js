@@ -11,7 +11,7 @@ import {
     CmsContentModelModelField,
     FieldIdType,
     FieldLayoutPositionType,
-    FbBuilderFieldPlugin
+    CmsEditorFieldTypePlugin
 } from "@webiny/app-headless-cms/types";
 
 export default ContentModelEditorContext => {
@@ -106,8 +106,8 @@ export default ContentModelEditorContext => {
              * @param query
              * @returns {void|?CmsContentModelModelField}
              */
-            getFieldPlugin(query: object): FbBuilderFieldPlugin {
-                return getPlugins<FbBuilderFieldPlugin>("content-model-editor-field-type").find(
+            getFieldPlugin(query: object): CmsEditorFieldTypePlugin {
+                return getPlugins<CmsEditorFieldTypePlugin>("cms-editor-field-type").find(
                     ({ field }) => {
                         for (const key in query) {
                             if (!(key in field)) {
