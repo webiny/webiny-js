@@ -27,7 +27,7 @@ export const PreviewTab = () => {
     return (
         <Elevation z={1} className={formPreviewWrapper}>
             {fields && fields.length ? (
-                <ContentModelForm contentModel={data} preview />
+                <ContentModelForm contentModel={data} />
             ) : (
                 <div className={style.noFieldsMessage}>
                     {t`Before previewing the form, please add at least one field to the content model.`}
