@@ -358,9 +358,9 @@ module.exports = () => ({
             }
         },
         headlessCmsAPI: {
-            watch: ["./headless/handler/build"],
+            watch: ["./headless/api/build"],
             build: {
-                root: "./headless/handler",
+                root: "./headless/api",
                 script: "yarn build"
             },
             deploy: {
@@ -368,7 +368,7 @@ module.exports = () => ({
                 inputs: {
                     description: "Headless CMS GraphQL API (handler)",
                     region: process.env.AWS_REGION,
-                    code: "./headless/handler/build",
+                    code: "./headless/api/build",
                     handler: "handler.handler",
                     memory: 512,
                     env: {
