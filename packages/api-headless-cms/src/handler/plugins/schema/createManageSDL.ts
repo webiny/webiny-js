@@ -55,10 +55,6 @@ export const createManageSDL: CreateManageSDL = ({ model, fieldTypePlugins }): s
         }
         
         input ${mTypeName}ListWhereInput {
-            id: ID
-            id_not: ID
-            id_in: [ID]
-            id_not_in: [ID]
             ${renderListFilterFields({ model, type: "manage", fieldTypePlugins })}
         }
         
