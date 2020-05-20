@@ -5,20 +5,20 @@ const createListFilters = ({ field }) => {
     return `
         # Matches if the field is equal to the given value
         ${field.fieldId}: String
-        
+
         # Matches if the field is not equal to the given value
         ${field.fieldId}_not: String
 
-        
+
         # Matches if the field value equal one of the given values
         ${field.fieldId}_in: [String]
-        
+
         # Matches if the field value does not equal any of the given values
         ${field.fieldId}_not_in: [String]
-        
+
         # Matches if given value is a substring of the the field value
         ${field.fieldId}_contains: String
-        
+
         # Matches if given value is not a substring of the the field value
         ${field.fieldId}_not_contains: String
     `;
@@ -28,7 +28,7 @@ const plugin: CmsModelFieldToGraphQLPlugin = {
     name: "cms-model-field-to-graphql-text",
     type: "cms-model-field-to-graphql",
     fieldType: "text",
-    isSortable: true,
+    isSortable: false,
     read: {
         createTypeField({ field }) {
             const localeArg = "(locale: String)";
