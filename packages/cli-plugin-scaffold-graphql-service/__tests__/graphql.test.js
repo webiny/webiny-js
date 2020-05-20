@@ -62,6 +62,33 @@ describe("Scaffold GraphQL service test", () => {
         book = response.data.books.createBook.data;
     });
 
+    test("List books (1 book)", async () => {
+        const query = /* GraphQL */ `
+            query {
+                books {
+                    listBooks {
+                        data {
+                            id
+                            title
+                            createdOn
+                        }
+                    }
+                }
+            }
+        `;
+
+        const { schema, context } = await useSchema();
+        const response = await graphql(schema, query, {}, context);
+
+        if (response.errors) {
+            throw response.errors;
+        }
+        expect(response.data.books.listBooks.data.length).toEqual(1);
+        expect(response.data.books.listBooks.data[0]).toMatchObject({
+            title: bookName
+        });
+    });
+
     test("Update book", async () => {
         const query = /* GraphQL */ `
             mutation updateBook($title: String!, $bookId: ID!) {
