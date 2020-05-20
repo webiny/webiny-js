@@ -4,7 +4,7 @@ const babel = {
             "@babel/preset-env",
             {
                 targets: {
-                    node: "8.10"
+                    node: "10.14.0"
                 }
             }
         ],
