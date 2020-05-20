@@ -118,7 +118,7 @@ export default () => {
 
             return <Image {...imageProps} srcSet={srcSet} src={src} />;
         }
-    }
+    };
 
     return imagePlugin;
 };
