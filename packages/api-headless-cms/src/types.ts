@@ -98,8 +98,11 @@ export type CmsModelFieldPatternValidatorPlugin = Plugin & {
     };
 };
 
+export type FieldId = string;
+
 export type CmsContentModelIndex = {
-    fields: string[];
+    fields: FieldId[];
+    createdOn: Date;
 };
 
 export type CmsContentModel = {
@@ -111,7 +114,7 @@ export type CmsContentModel = {
     titleFieldId: string;
     indexes: CmsContentModelIndex[];
     fields: CmsContentModelField[];
-    getUniqueIndexFields(): string[];
+    getUniqueIndexFields(): FieldId[];
     save(): Promise<boolean>;
 };
 
@@ -134,7 +137,6 @@ export type CmsModelFieldToCommodoFieldPlugin<TContext = CmsContext> = Plugin & 
 
 export type CmsModelFieldToGraphQLPlugin = Plugin & {
     type: "cms-model-field-to-graphql";
-    isSortable: boolean;
     fieldType: string;
     read: {
         createGetFilters?(params: { model: CmsContentModel; field: CmsContentModelField }): string;
