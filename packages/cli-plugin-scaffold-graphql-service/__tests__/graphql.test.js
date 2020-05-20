@@ -4,8 +4,8 @@ import { createUtils } from "./utils";
 
 describe("Scaffold GraphQL service test", () => {
     const { useSchema } = createUtils([plugins()]);
-    const bookName = "Book #1";
-    const newBookName = "Book #1 [renamed]";
+    const bookTitle = "Book #1";
+    const newBookTitle = "Book #1 [renamed]";
     let book;
 
     test("List books (0 books)", async () => {
@@ -49,7 +49,7 @@ describe("Scaffold GraphQL service test", () => {
 
         const { schema, context } = await useSchema();
         const response = await graphql(schema, query, {}, context, {
-            title: bookName
+            title: bookTitle
         });
 
         if (response.errors) {
@@ -57,7 +57,7 @@ describe("Scaffold GraphQL service test", () => {
         }
 
         expect(response.data.books.createBook.data).toMatchObject({
-            title: bookName
+            title: bookTitle
         });
         book = response.data.books.createBook.data;
     });
@@ -85,7 +85,7 @@ describe("Scaffold GraphQL service test", () => {
         }
         expect(response.data.books.listBooks.data.length).toEqual(1);
         expect(response.data.books.listBooks.data[0]).toMatchObject({
-            title: bookName
+            title: bookTitle
         });
     });
 
@@ -106,7 +106,7 @@ describe("Scaffold GraphQL service test", () => {
 
         const { schema, context } = await useSchema();
         const response = await graphql(schema, query, {}, context, {
-            title: newBookName,
+            title: newBookTitle,
             bookId: book.id
         });
 
@@ -115,7 +115,7 @@ describe("Scaffold GraphQL service test", () => {
         }
 
         expect(response.data.books.updateBook.data).toMatchObject({
-            title: newBookName
+            title: newBookTitle
         });
     });
 
@@ -144,7 +144,7 @@ describe("Scaffold GraphQL service test", () => {
         }
 
         expect(response.data.books.getBook.data).toMatchObject({
-            title: newBookName
+            title: newBookTitle
         });
     });
 
