@@ -1,27 +1,18 @@
 {
   "name": "admin",
-  "version": "0.1.1",
+  "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "@webiny/app-template-admin-full": "file:../../../../app-template-admin-full/",
-    "@webiny/plugins": "file:../../../../plugins/",
-    "core-js": "^3.2.1",
-    "cross-fetch": "^3.0.2",
-    "env-cmd": "^10.1.0",
-    "react-hot-loader": "^4.3.5",
-    "regenerator-runtime": "^0.13.3",
-    "typescript": "3.7.4",
-    "write-json-file": "^4.3.0"
+    "@webiny/app-template-admin-full": "latest",
+    "react": "^16.13.1",
+    "react-dom": "^16.13.1"
   },
   "devDependencies": {
-    "source-map-explorer": "^1.6.0"
-  },
-  "peerDependencies": {
-    "react": "^16.4.0",
-    "react-dom": "^16.6.0"
+    "env-cmd": "^10.1.0",
+    "@webiny/cli": "latest",
+    "@webiny/project-utils": "latest"
   },
   "scripts": {
-    "analyze": "source-map-explorer build/static/js/main.*",
     "start": "env-cmd -r .env.json -e default,local webiny run start",
     "build:dev": "env-cmd -r .env.json -e default,dev webiny run build",
     "build:prod": "env-cmd -r .env.json -e default,prod webiny run build"
