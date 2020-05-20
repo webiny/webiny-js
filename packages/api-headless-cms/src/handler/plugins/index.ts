@@ -32,7 +32,7 @@ export default (
             context.cms.PREVIEW = options.type === "preview";
             context.cms.MANAGE = options.type === "manage";
 
-            if (context.cms.READ) {
+            if (!context.cms.MANAGE) {
                 context.resolvedValues = new TypeValueEmitter();
             }
         }
