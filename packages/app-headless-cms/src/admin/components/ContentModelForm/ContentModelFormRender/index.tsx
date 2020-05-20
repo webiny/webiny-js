@@ -1,5 +1,6 @@
 import React, { useEffect, useRef } from "react";
 import Input from "./fields/Input";
+import Textarea from "./fields/Textarea";
 import Switch from "./fields/Switch";
 import Time from "./fields/Time";
 import DateTimeWithoutTimezone from "./fields/DateTimeWithoutTimezone";
@@ -35,6 +36,8 @@ const renderFieldElement = (props: { field: CmsEditorField; bind: BindComponentR
     switch (props.field.type) {
         case "text":
             return <Input {...props} />;
+        case "long-text":
+            return <Textarea {...props} />;
         case "number":
             return <Input {...props} type="number" />;
         case "boolean":
