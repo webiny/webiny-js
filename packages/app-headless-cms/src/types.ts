@@ -10,13 +10,13 @@ import { IconPrefix, IconName } from "@fortawesome/fontawesome-svg-core";
 export type CmsEditorFieldTypePlugin = Plugin & {
     type: "cms-editor-field-type";
     field: {
-        group?: string;
-        unique?: boolean;
         type: string;
         label: string;
         validators?: string[];
         description: string;
         icon: React.ReactNode;
+        canHaveMultipleValues: boolean;
+        canHavePredefinedValues: boolean;
         createField: ({ i18n: any }) => CmsEditorField;
         renderSettings?: (params: {
             form: FormChildrenFunctionParams;
@@ -103,7 +103,6 @@ export type CmsContentDetailsRevisionContentPlugin = Plugin & {
     type: "cms-content-details-revision-content";
     render(params: any): ReactElement;
 };
-
 
 export type CmsFormFieldPatternValidatorPlugin = Plugin & {
     type: "cms-editor-field-validator-pattern";
