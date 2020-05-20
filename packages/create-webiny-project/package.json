@@ -1,5 +1,5 @@
 {
-  "name": "create-webiny-project",
+  "name": "@webiny/create-webiny-project",
   "version": "0.1.11",
   "description": "local build tool to create webiny project with specific template",
   "main": "index.js",

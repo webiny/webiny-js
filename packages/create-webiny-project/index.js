@@ -163,7 +163,7 @@ async function install({ root, dependencies }) {
 async function run({ root, appName, template, tag, log }) {
     const dependencies = [];
     try {
-        let templateName = "cwp-template-" + template;
+        let templateName = "@webiny/cwp-template-" + template;
 
         if (template.startsWith(".") || template.startsWith("file:")) {
             templateName = "file:" + path.relative(appName, template.replace("file:", ""));
