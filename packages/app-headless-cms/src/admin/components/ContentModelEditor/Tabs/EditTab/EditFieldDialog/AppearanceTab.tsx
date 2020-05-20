@@ -10,7 +10,7 @@ import { Form } from "@webiny/form";
 import { cloneDeep, debounce } from "lodash";
 import { Grid, Cell } from "@webiny/ui/Grid";
 import { validation } from "@webiny/validation";
-import {CmsEditorFieldRendererPlugin} from "@webiny/app-headless-cms/types";
+// import { CmsEditorFieldRendererPlugin } from "@webiny/app-headless-cms/types";
 
 const AppearanceTab = props => {
     const { getFieldPlugin } = useContentModelEditor();
@@ -19,7 +19,7 @@ const AppearanceTab = props => {
         form: { Bind, data }
     } = props;
 
-    const renderPlugins = getPlugins<CmsEditorFieldRendererPlugin>();
+    // const renderPlugins = getPlugins<CmsEditorFieldRendererPlugin>();
 
     return (
         <Bind name={"appearance"}>

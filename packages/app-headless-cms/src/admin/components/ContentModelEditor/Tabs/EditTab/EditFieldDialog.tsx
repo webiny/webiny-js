@@ -57,16 +57,28 @@ const EditFieldDialog = ({ field, onSubmit, ...props }: EditFieldDialogProps) =>
                         <DialogContent className={dialogBody}>
                             <Tabs>
                                 <Tab label={t`General`}>
-                                    <GeneralTab form={form} field={current} />
+                                    <GeneralTab
+                                        form={form}
+                                        field={current}
+                                        fieldPlugin={fieldPlugin}
+                                    />
                                 </Tab>
                                 {Array.isArray(fieldPlugin.field.validators) &&
                                     fieldPlugin.field.validators.length > 0 && (
                                         <Tab label={"Validators"}>
-                                            <ValidatorsTab form={form} field={current} />
+                                            <ValidatorsTab
+                                                form={form}
+                                                field={current}
+                                                fieldPlugin={fieldPlugin}
+                                            />
                                         </Tab>
                                     )}
                                 <Tab label={t`Appearance`}>
-                                    <AppearanceTab form={form} field={current} />
+                                    <AppearanceTab
+                                        form={form}
+                                        field={current}
+                                        fieldPlugin={fieldPlugin}
+                                    />
                                 </Tab>
                             </Tabs>
                         </DialogContent>
