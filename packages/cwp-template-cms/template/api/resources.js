@@ -291,14 +291,17 @@ module.exports = () => ({
                     code: "./headless/graphql/build",
                     handler: "handler.handler",
                     memory: 512,
-                    env: apolloServiceEnv
+                    env: {
+                        ...apolloServiceEnv,
+                        CMS_DATA_MANAGER_FUNCTION: "${headlessCmsDataManager.name}"
+                    }
                 }
             }
         },
         headlessCmsAPI: {
-            watch: ["./headless/handler/build"],
+            watch: ["./headless/api/build"],
             build: {
-                root: "./headless/handler",
+                root: "./headless/api",
                 script: "yarn build"
             },
             deploy: {
@@ -306,10 +309,14 @@ module.exports = () => ({
                 inputs: {
                     description: "Headless CMS GraphQL API (handler)",
                     region: process.env.AWS_REGION,
-                    code: "./headless/handler/build",
+                    code: "./headless/api/build",
                     handler: "handler.handler",
                     memory: 512,
-                    env: { ...apolloServiceEnv, I18N_LOCALES_FUNCTION: "${i18nLocales.name}" }
+                    env: {
+                        ...apolloServiceEnv,
+                        I18N_LOCALES_FUNCTION: "${i18nLocales.name}",
+                        CMS_DATA_MANAGER_FUNCTION: "${headlessCmsDataManager.name}"
+                    }
                 }
             }
         },

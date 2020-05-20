@@ -8,7 +8,7 @@ import {
     resolveList
 } from "@webiny/commodo-graphql";
 import gql from "graphql-tag";
-import merge from "lodash.merge";
+import { merge } from "lodash";
 import { hasScope } from "@webiny/api-security";
 import { CmsContext } from "@webiny/api-headless-cms/types";
 import { generateSchemaPlugins } from "./schema/schemaPlugins";

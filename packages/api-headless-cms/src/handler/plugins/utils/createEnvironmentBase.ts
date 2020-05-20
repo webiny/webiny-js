@@ -1,5 +1,5 @@
 import { pipe, withFields, withStaticProps, setOnce, withHooks } from "@webiny/commodo";
-import cloneDeep from "lodash.clonedeep";
+import { cloneDeep } from "lodash";
 
 const modifyQueryArgs = (args = {}, environment) => {
     const returnArgs = cloneDeep(args);

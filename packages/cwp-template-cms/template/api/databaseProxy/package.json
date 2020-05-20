@@ -5,7 +5,11 @@
     "build": "webiny run build"
   },
   "dependencies": {
-    "mongodb": "^3.5.7",
-    "bson": "^4.0.4"
+    "@webiny/handler": "^0.1.0",
+    "@webiny/api-plugin-commodo-db-proxy": "^2.0.4"
+  },
+  "devDependencies": {
+    "@webiny/cli": "^3.2.8",
+    "@webiny/project-utils": "^1.0.2"
   }
 }

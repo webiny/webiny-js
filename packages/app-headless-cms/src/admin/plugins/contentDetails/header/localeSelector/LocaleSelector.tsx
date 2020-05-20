@@ -5,8 +5,7 @@ import { ButtonDefault } from "@webiny/ui/Button";
 import { Icon } from "@webiny/ui/Icon";
 import { ReactComponent as DownButton } from "@webiny/app-headless-cms/admin/icons/round-arrow_drop_down-24px.svg";
 import { ReactComponent as DoneIcon } from "@webiny/app-headless-cms/admin/icons/done-24px.svg";
-import { MenuItem } from "@rmwc/menu";
-import { Menu } from "@webiny/ui/Menu";
+import { Menu, MenuItem } from "@webiny/ui/Menu";
 import { useI18N } from "@webiny/app-i18n/hooks/useI18N";
 import { ListItemGraphic } from "@webiny/ui/List";
 

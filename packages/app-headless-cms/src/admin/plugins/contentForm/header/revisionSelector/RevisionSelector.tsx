@@ -2,9 +2,8 @@ import React from "react";
 import { css } from "emotion";
 import { withRouter } from "@webiny/react-router";
 import { ButtonDefault } from "@webiny/ui/Button";
-import { MenuItem } from "@rmwc/menu";
 import { Typography } from "@webiny/ui/Typography";
-import { Menu } from "@webiny/ui/Menu";
+import { Menu, MenuItem } from "@webiny/ui/Menu";
 import { get } from "lodash";
 
 const buttonStyle = css({

@@ -1,4 +1,4 @@
-import cloneDeep from "lodash.clonedeep";
+import { cloneDeep } from "lodash";
 import { pipe, withStaticProps } from "@webiny/commodo";
 
 const modifyQuery = (modelId, args = {}) => {
