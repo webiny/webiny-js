@@ -29,5 +29,5 @@ export default () => [
     groups,
     validators,
     formEditorPlugins,
-    formSitePlugins
+    formSitePlugins()
 ];
