@@ -34,7 +34,6 @@ const plugin: CmsModelFieldToGraphQLPlugin = {
     name: "cms-model-field-to-graphql-datetime",
     type: "cms-model-field-to-graphql",
     fieldType: "datetime",
-    isSortable: true,
     read: {
         createListFilters,
         createResolver({ field }) {

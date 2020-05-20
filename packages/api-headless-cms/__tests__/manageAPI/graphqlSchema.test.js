@@ -4,6 +4,7 @@ import headlessPlugins from "../../src/handler/plugins";
 import setupDefaultEnvironment from "../setup/setupDefaultEnvironment";
 import setupContentModels from "../setup/setupContentModels";
 import camelCase from "lodash/camelCase";
+import omit from "lodash/omit";
 
 const schemaTypesQuery = /* GraphQL */ `
     {
@@ -72,7 +73,7 @@ describe("MANAGE - GraphQL Schema", () => {
         });
 
         for (let i = 0; i < newContentModels.length; i++) {
-            const data = newContentModels[i];
+            const data = omit(newContentModels[i], ["getUniqueIndexFields", "indexes"]);
             responses.push(await graphql(schema, mutation, {}, context, { data }));
         }
 
@@ -106,9 +107,9 @@ describe("MANAGE - GraphQL Schema", () => {
 
         const responses = [];
         for (let i = 0; i < contentModels.length; i++) {
-            responses.push(
-                await graphql(schema, mutation, {}, context, { data: contentModels[i] })
-            );
+            const data = omit(contentModels[i], ["getUniqueIndexFields", "indexes"]);
+
+            responses.push(await graphql(schema, mutation, {}, context, { data }));
         }
 
         for (let i = 0; i < responses.length; i++) {

@@ -1,6 +1,6 @@
 const os = require("os");
 const path = require("path");
-const uuid = require("uuid/v4");
+const { v4: uuid } = require("uuid");
 const readJson = require("load-json-file");
 const writeJson = require("write-json-file");
 

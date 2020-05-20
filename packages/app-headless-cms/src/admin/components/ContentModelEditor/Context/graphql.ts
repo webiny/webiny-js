@@ -26,7 +26,6 @@ export const FIELDS_FIELDS = `
             }
             value
         }
-        unique
         validation {
             name
             settings

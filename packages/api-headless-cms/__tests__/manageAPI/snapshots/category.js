@@ -33,6 +33,7 @@ export default /* GraphQL */ `
 
     input CategoryGetWhereInput {
         id: ID
+        title: String
         slug: String
     }
 
@@ -81,11 +82,13 @@ export default /* GraphQL */ `
 
     input CategoryUpdateWhereInput {
         id: ID
+        title: String
         slug: String
     }
 
     input CategoryDeleteWhereInput {
         id: ID
+        title: String
         slug: String
     }
 
@@ -101,10 +104,8 @@ export default /* GraphQL */ `
     }
 
     enum CategoryListSorter {
-        createdOn_ASC
-        createdOn_DESC
-        updatedOn_ASC
-        updatedOn_DESC
+        id_ASC
+        id_DESC
         title_ASC
         title_DESC
         slug_ASC
