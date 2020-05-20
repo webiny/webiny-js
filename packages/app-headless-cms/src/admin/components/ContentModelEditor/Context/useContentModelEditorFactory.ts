@@ -84,9 +84,7 @@ export default ContentModelEditorContext => {
              * @param layout
              * @returns {*}
              */
-            getFields(
-                layout = false
-            ): CmsEditorField[] | CmsEditorFieldsLayout {
+            getFields(layout = false): CmsEditorField[] | CmsEditorFieldsLayout {
                 if (!layout) {
                     return state.data.fields;
                 }

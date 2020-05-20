@@ -31,10 +31,7 @@ const getValue = ({ bind, locale }) => {
     return value ? value.value : null;
 };
 
-const renderFieldElement = (props: {
-    field: CmsEditorField;
-    bind: BindComponentRenderProp;
-}) => {
+const renderFieldElement = (props: { field: CmsEditorField; bind: BindComponentRenderProp }) => {
     switch (props.field.type) {
         case "text":
             return <Input {...props} />;
