@@ -2,11 +2,11 @@ import React from "react";
 import { Grid, Cell } from "@webiny/ui/Grid";
 import { Input } from "@webiny/ui/Input";
 import { validation } from "@webiny/validation";
-import { CmsBuilderFormFieldValidatorPlugin } from "@webiny/app-headless-cms/types";
+import { CmsEditorFieldValidatorPlugin } from "@webiny/app-headless-cms/types";
 
 export default {
-    type: "content-model-editor-field-validator",
-    name: "content-model-editor-field-validator-min-length",
+    type: "cms-editor-field-validator",
+    name: "cms-editor-field-validator-min-length",
     validator: {
         name: "minLength",
         label: "Min length",
@@ -31,4 +31,4 @@ export default {
             );
         }
     }
-} as CmsBuilderFormFieldValidatorPlugin;
+} as CmsEditorFieldValidatorPlugin;

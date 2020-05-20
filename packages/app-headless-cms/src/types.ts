@@ -7,11 +7,84 @@ import { BindComponent, FormChildrenFunctionParams, Form } from "@webiny/form";
 import { ApolloClient } from "apollo-client";
 import { IconPrefix, IconName } from "@fortawesome/fontawesome-svg-core";
 
+export type CmsEditorFieldTypePlugin = Plugin & {
+    type: "cms-editor-field-type";
+    field: {
+        group?: string;
+        unique?: boolean;
+        type: string;
+        label: string;
+        validators?: string[];
+        description: string;
+        icon: React.ReactNode;
+        createField: ({ i18n: any }) => CmsEditorField;
+        renderSettings?: (params: {
+            form: FormChildrenFunctionParams;
+            afterChangeLabel: (value: string) => void;
+            uniqueFieldIdValidator: (fieldId: string) => void;
+        }) => React.ReactNode;
+    };
+};
+
+export type CmsEditorField = {
+    _id?: string;
+    type: string;
+    fieldId?: CmsEditorFieldId;
+    label?: I18NStringValue;
+    helpText?: I18NStringValue;
+    placeholderText?: I18NStringValue;
+    validation?: CmsEditorFieldValidator[];
+    options?: Array<{ value: string; label: I18NStringValue }>;
+    settings: { [key: string]: any };
+};
+
+export type CmsEditorFieldId = string;
+export type CmsEditorFieldsLayout = CmsEditorFieldId[][];
+
+export type CmsEditorContentModel = {
+    id: CmsEditorFieldId;
+    version: number;
+    parent: string;
+    layout: CmsEditorFieldsLayout;
+    fields: CmsEditorField[];
+    name: string;
+    modelId: string;
+    settings: any;
+    status: string;
+    savedOn: string;
+    revisions: any[];
+    meta: any;
+};
+
+export type CmsEditorFieldValidator = {
+    name: string;
+    message: I18NStringValue;
+    settings: any;
+};
+
+export type CmsEditorFieldValidatorPlugin = Plugin & {
+    type: "cms-editor-field-validator";
+    validator: {
+        name: string;
+        label: string;
+        description: string;
+        defaultMessage: string;
+        renderSettings?: (props: {
+            Bind: BindComponent;
+            setValue: (name: string, value: any) => void;
+            setMessage: (message: string) => void;
+            data: CmsEditorFieldValidator;
+        }) => React.ReactElement;
+    };
+};
+
+// ------------------------------------------------------------------------------------------------------------
+
 export type CmsContentModelFormProps = {
     locale?: string;
     loading?: boolean;
     onForm?: (form: any) => void;
-    contentModel: CmsContentModelModel;
+    contentModel: CmsEditorContentModel;
     content?: { [key: string]: any };
     onSubmit?: (data: { [key: string]: any }) => any;
     onChange?: (data: { [key: string]: any }) => any;
@@ -31,32 +104,9 @@ export type CmsContentDetailsRevisionContentPlugin = Plugin & {
     render(params: any): ReactElement;
 };
 
-// ------------------------------------------------------------------------------------------------------------
-
-export type CmsBuilderFieldValidator = {
-    name: string;
-    message: I18NStringValue;
-    settings: any;
-};
-
-export type CmsBuilderFormFieldValidatorPlugin = Plugin & {
-    type: "content-model-editor-field-validator";
-    validator: {
-        name: string;
-        label: string;
-        description: string;
-        defaultMessage: string;
-        renderSettings?: (props: {
-            Bind: BindComponent;
-            setValue: (name: string, value: any) => void;
-            setMessage: (message: string) => void;
-            data: CmsBuilderFieldValidator;
-        }) => React.ReactElement;
-    };
-};
 
 export type CmsFormFieldPatternValidatorPlugin = Plugin & {
-    type: "content-model-editor-field-validator-pattern";
+    type: "cms-editor-field-validator-pattern";
     pattern: {
         name: string;
         message: string;
@@ -78,59 +128,9 @@ export type CmsFormFieldValidatorPlugin = Plugin & {
     };
 };
 
-export type FieldIdType = string;
-export type CmsContentModelModelFieldsLayout = FieldIdType[][];
-
 export type FieldLayoutPositionType = {
     row: number;
     index: number;
-};
-
-export type FbBuilderFieldPlugin = Plugin & {
-    type: "content-model-editor-field-type";
-    field: {
-        group?: string;
-        unique?: boolean;
-        type: string;
-        label: string;
-        validators?: string[];
-        description: string;
-        icon: React.ReactNode;
-        createField: ({ i18n: any }) => CmsContentModelModelField;
-        renderSettings?: (params: {
-            form: FormChildrenFunctionParams;
-            afterChangeLabel: (value: string) => void;
-            uniqueFieldIdValidator: (fieldId: string) => void;
-        }) => React.ReactNode;
-    };
-};
-
-export type CmsContentModelModel = {
-    id: FieldIdType;
-    version: number;
-    parent: string;
-    layout: CmsContentModelModelFieldsLayout;
-    fields: CmsContentModelModelField[];
-    name: string;
-    modelId: string;
-    settings: any;
-    status: string;
-    savedOn: string;
-    revisions: any[];
-    meta: any;
-};
-
-export type CmsContentModelModelField = {
-    _id?: string;
-    type: string;
-    name: string;
-    fieldId?: FieldIdType;
-    label?: I18NStringValue;
-    helpText?: I18NStringValue;
-    placeholderText?: I18NStringValue;
-    validation?: CmsBuilderFieldValidator[];
-    options?: Array<{ value: string; label: I18NStringValue }>;
-    settings: { [key: string]: any };
 };
 
 export type CmsEditorFormSettingsPlugin = Plugin & {
@@ -166,7 +166,7 @@ export type CmsIconsPlugin = Plugin & {
     getIcons(): CmsIcon[];
 };
 
-export type FormRenderCmsContentModelModelField = CmsContentModelModelField & {
+export type FormRenderCmsEditorField = CmsEditorField & {
     validators: Array<(value: any) => boolean>;
 };
 

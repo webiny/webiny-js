@@ -1,15 +1,15 @@
 import {
-    CmsContentModelModelField,
-    FieldIdType,
-    CmsContentModelModel
+    CmsEditorField,
+    CmsEditorFieldId,
+    CmsEditorContentModel
 } from "@webiny/app-headless-cms/types";
 
 export default ({
     field,
     data
 }: {
-    field: CmsContentModelModelField;
-    data: CmsContentModelModel;
+    field: CmsEditorField;
+    data: CmsEditorContentModel;
 }) => {
     // Remove the field from fields list...
     const fieldIndex = data.fields.findIndex(item => item._id === field._id);
