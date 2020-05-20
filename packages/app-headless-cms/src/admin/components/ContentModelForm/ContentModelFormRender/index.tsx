@@ -5,7 +5,7 @@ import Time from "./fields/Time";
 import DateTimeWithoutTimezone from "./fields/DateTimeWithoutTimezone";
 import DateTimeWithTimezone from "./fields/DateTimeWithTimezone";
 import { BindComponentRenderProp, Form } from "@webiny/form";
-import { CmsContentModelModelField } from "@webiny/app-headless-cms/types";
+import { CmsEditorField } from "@webiny/app-headless-cms/types";
 import { Grid, Cell } from "@webiny/ui/Grid";
 import cloneDeep from "lodash.clonedeep";
 import get from "lodash.get";
@@ -31,10 +31,7 @@ const getValue = ({ bind, locale }) => {
     return value ? value.value : null;
 };
 
-const renderFieldElement = (props: {
-    field: CmsContentModelModelField;
-    bind: BindComponentRenderProp;
-}) => {
+const renderFieldElement = (props: { field: CmsEditorField; bind: BindComponentRenderProp }) => {
     switch (props.field.type) {
         case "text":
             return <Input {...props} />;

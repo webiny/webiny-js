@@ -2,11 +2,11 @@ import React from "react";
 import { Grid, Cell } from "@webiny/ui/Grid";
 import { Input } from "@webiny/ui/Input";
 import { validation } from "@webiny/validation";
-import { CmsBuilderFormFieldValidatorPlugin } from "@webiny/app-headless-cms/types";
+import { CmsEditorFieldValidatorPlugin } from "@webiny/app-headless-cms/types";
 
 export default {
-    type: "content-model-editor-field-validator",
-    name: "content-model-editor-field-validator-gte",
+    type: "cms-editor-field-validator",
+    name: "cms-editor-field-validator-gte",
     validator: {
         name: "gte",
         label: "Greater or equal",
@@ -31,4 +31,4 @@ export default {
             );
         }
     }
-} as CmsBuilderFormFieldValidatorPlugin;
+} as CmsEditorFieldValidatorPlugin;

@@ -6,12 +6,12 @@ import { getPlugins } from "@webiny/plugins";
 import { validation } from "@webiny/validation";
 import {
     CmsFormFieldPatternValidatorPlugin,
-    CmsBuilderFormFieldValidatorPlugin
+    CmsEditorFieldValidatorPlugin
 } from "@webiny/app-headless-cms/types";
 
 export default {
-    type: "content-model-editor-field-validator",
-    name: "content-model-editor-field-validator-pattern",
+    type: "cms-editor-field-validator",
+    name: "cms-editor-field-validator-pattern",
     validator: {
         name: "pattern",
         label: "Pattern",
@@ -23,7 +23,7 @@ export default {
         renderSettings({ Bind, setValue, setMessage, data }) {
             const inputsDisabled = data.settings.preset !== "custom";
             const presetPlugins = getPlugins<CmsFormFieldPatternValidatorPlugin>(
-                "content-model-editor-field-validator-pattern"
+                "cms-editor-field-validator-pattern"
             );
 
             // TODO: @ts-adrian neda mi da dolje posaljem
@@ -83,4 +83,4 @@ export default {
             );
         }
     }
-} as CmsBuilderFormFieldValidatorPlugin;
+} as CmsEditorFieldValidatorPlugin;

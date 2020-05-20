@@ -124,6 +124,7 @@
     "./packages/cli**",
     "./packages/create-webiny-project",
     "./packages/cwp-template-full",
+    "./packages/cwp-template-cms",
     "./packages/project-utils",
     "./packages/serverless-api-gateway",
     "./packages/serverless-apollo-service",

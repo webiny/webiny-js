@@ -5,7 +5,7 @@ import { FormComponentProps } from "./../types";
 
 type Props = FormComponentProps & {
     // Component label.
-    label?: React.ReactNode ;
+    label?: React.ReactNode;
 
     // Is checkbox disabled?
     disabled?: boolean;
@@ -18,7 +18,7 @@ type Props = FormComponentProps & {
 
     // Description beneath the checkbox.
     description?: string;
-}
+};
 
 /**
  * Single Checkbox component can be used to store simple boolean values.

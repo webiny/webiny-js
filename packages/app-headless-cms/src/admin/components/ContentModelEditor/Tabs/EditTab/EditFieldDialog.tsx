@@ -6,9 +6,10 @@ import { Form } from "@webiny/form";
 import { Tabs, Tab } from "@webiny/ui/Tabs";
 import GeneralTab from "./EditFieldDialog/GeneralTab";
 import ValidatorsTab from "./EditFieldDialog/ValidatorsTab";
+import AppearanceTab from "./EditFieldDialog/AppearanceTab";
 import { i18n } from "@webiny/app/i18n";
 import { useContentModelEditor } from "@webiny/app-headless-cms/admin/components/ContentModelEditor/Context";
-import { CmsContentModelModelField } from "@webiny/app-headless-cms/types";
+import { CmsEditorField } from "@webiny/app-headless-cms/types";
 const t = i18n.namespace("app-headless-cms/admin/components/editor");
 
 const dialogBody = css({
@@ -19,7 +20,7 @@ const dialogBody = css({
 });
 
 type EditFieldDialogProps = {
-    field: CmsContentModelModelField;
+    field: CmsEditorField;
     onClose: Function;
     onSubmit: (data: any) => void;
 };
@@ -56,14 +57,29 @@ const EditFieldDialog = ({ field, onSubmit, ...props }: EditFieldDialogProps) =>
                         <DialogContent className={dialogBody}>
                             <Tabs>
                                 <Tab label={t`General`}>
-                                    <GeneralTab form={form} field={current} />
+                                    <GeneralTab
+                                        form={form}
+                                        field={current}
+                                        fieldPlugin={fieldPlugin}
+                                    />
                                 </Tab>
                                 {Array.isArray(fieldPlugin.field.validators) &&
                                     fieldPlugin.field.validators.length > 0 && (
                                         <Tab label={"Validators"}>
-                                            <ValidatorsTab form={form} field={current} />
+                                            <ValidatorsTab
+                                                form={form}
+                                                field={current}
+                                                fieldPlugin={fieldPlugin}
+                                            />
                                         </Tab>
                                     )}
+                                <Tab label={t`Appearance`}>
+                                    <AppearanceTab
+                                        form={form}
+                                        field={current}
+                                        fieldPlugin={fieldPlugin}
+                                    />
+                                </Tab>
                             </Tabs>
                         </DialogContent>
                         <DialogActions

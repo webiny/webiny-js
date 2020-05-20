@@ -4,17 +4,13 @@
   "private": true,
   "dependencies": {
     "@webiny/app-template-admin-full": "^1.0.0",
-    "core-js": "^3.2.1",
-    "cross-fetch": "^3.0.2",
-    "react-hot-loader": "^4.3.5",
-    "regenerator-runtime": "^0.13.3"
+    "react": "^16.13.1",
+    "react-dom": "^16.13.1"
   },
   "devDependencies": {
-    "source-map-explorer": "^1.6.0"
-  },
-  "peerDependencies": {
-    "react": "^16.4.0",
-    "react-dom": "^16.6.0"
+    "env-cmd": "^10.1.0",
+    "@webiny/cli": "^3.2.8",
+    "@webiny/project-utils": "^1.0.2"
   },
   "scripts": {
     "analyze": "source-map-explorer build/static/js/main.*",

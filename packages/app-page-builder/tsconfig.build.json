@@ -5,6 +5,7 @@
     "node_modules",
     "../app",
     "../app-admin",
+    "../app-template",
     "../app-security",
     "../plugins",
     "../react-router",
@@ -19,6 +20,7 @@
   "references": [
     { "path": "../app/tsconfig.build.json" },
     { "path": "../app-admin/tsconfig.build.json" },
+    { "path": "../app-template/tsconfig.build.json" },
     { "path": "../app-security/tsconfig.build.json" },
     { "path": "../plugins/tsconfig.build.json" },
     { "path": "../react-router/tsconfig.build.json" },

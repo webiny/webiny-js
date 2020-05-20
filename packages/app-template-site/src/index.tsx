@@ -75,17 +75,17 @@ export default createTemplate<SiteAppOptions>(opts => {
 
     const otherPlugins = [
         fileUploadPlugin(),
-        imagePlugin,
-        pageBuilderPlugins,
-        pageBuilderUseSsrCacheTagsPlugins,
+        imagePlugin(),
+        pageBuilderPlugins(),
+        pageBuilderUseSsrCacheTagsPlugins(),
         pageBuilderTheme(),
-        cookiePolicyPlugins,
-        typeformPlugins,
-        mailchimpPlugins,
-        gtmPlugins,
-        i18nPlugins,
-        formsSitePlugins,
-        formsPbPlugins,
+        cookiePolicyPlugins(),
+        typeformPlugins(),
+        mailchimpPlugins(),
+        gtmPlugins(),
+        i18nPlugins(),
+        formsSitePlugins(),
+        formsPbPlugins(),
         formBuilderTheme()
     ];
 

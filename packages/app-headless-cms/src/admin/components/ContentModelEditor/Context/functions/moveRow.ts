@@ -1,4 +1,4 @@
-import { CmsContentModelModel } from "@webiny/app-headless-cms/types";
+import { CmsEditorContentModel } from "@webiny/app-headless-cms/types";
 
 export default ({
     data,
@@ -7,7 +7,7 @@ export default ({
 }: {
     source: number;
     destination: number;
-    data: CmsContentModelModel;
+    data: CmsEditorContentModel;
 }) => {
     data.layout =
         source < destination
