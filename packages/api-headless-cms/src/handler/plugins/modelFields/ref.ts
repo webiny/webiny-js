@@ -6,7 +6,6 @@ const plugin: CmsModelFieldToCommodoFieldPlugin = {
     name: "cms-model-field-to-commodo-field-ref",
     type: "cms-model-field-to-commodo-field",
     fieldType: "ref",
-    isSortable: false,
     dataModel({ model, field, validation, context }) {
         const { type, modelId } = field.settings;
 

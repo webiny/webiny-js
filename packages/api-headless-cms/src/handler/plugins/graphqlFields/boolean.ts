@@ -16,7 +16,6 @@ const plugin: CmsModelFieldToGraphQLPlugin = {
     name: "cms-model-field-to-graphql-boolean",
     type: "cms-model-field-to-graphql",
     fieldType: "boolean",
-    isSortable: true,
     read: {
         createListFilters,
         createResolver({ field }) {
