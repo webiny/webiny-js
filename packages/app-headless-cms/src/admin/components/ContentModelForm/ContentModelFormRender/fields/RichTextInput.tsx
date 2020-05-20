@@ -1,7 +1,7 @@
 import * as React from "react";
 import { I18NValue } from "@webiny/app-i18n/components";
 import I18NRichTextEditor from "@webiny/app-i18n/admin/components/I18NRichTextEditor";
-import { CmsContentModelModelField } from "@webiny/app-headless-cms/types";
+import { CmsEditorField } from "@webiny/app-headless-cms/types";
 import { BindComponentRenderProp } from "@webiny/form";
 import numberedListPlugins from "@webiny/app-i18n/admin/plugins/richTextEditor/numberedList";
 import bulletedListPlugins from "@webiny/app-i18n/admin/plugins/richTextEditor/bulletedList";
@@ -10,7 +10,7 @@ import codePlugins from "@webiny/app-i18n/admin/plugins/richTextEditor/code";
 
 type Props = {
     bind: BindComponentRenderProp;
-    field: CmsContentModelModelField;
+    field: CmsEditorField;
 };
 
 const richTextPlugins = [
