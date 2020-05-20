@@ -1,0 +1,11 @@
+{
+  "name": "api-database-proxy",
+  "version": "0.1.0",
+  "scripts": {
+    "build": "webiny run build"
+  },
+  "dependencies": {
+    "mongodb": "^3.5.7",
+    "bson": "^4.0.4"
+  }
+}
