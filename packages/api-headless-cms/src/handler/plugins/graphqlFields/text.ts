@@ -33,9 +33,6 @@ const plugin: CmsModelFieldToGraphQLPlugin = {
             return `${field.fieldId}${localeArg}: String`;
         },
         createGetFilters({ field }) {
-            if (!field.unique) {
-                return null;
-            }
             return `${field.fieldId}: String`;
         },
         createListFilters,
