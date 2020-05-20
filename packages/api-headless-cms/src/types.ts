@@ -73,7 +73,6 @@ export type CmsContentModelField = {
     label: CmsModelFieldValue<string>;
     type: string;
     fieldId: string;
-    unique: boolean;
     validation: CmsFieldValidation[];
     settings?: { [key: string]: any };
 };
