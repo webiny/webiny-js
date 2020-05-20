@@ -3,8 +3,8 @@
   "references": [
     { "path": "../../../../packages/api-plugin-commodo-db-proxy" },
     { "path": "../../../../packages/api-headless-cms" },
+    { "path": "../../../../packages/api-i18n" },
     { "path": "../../../../packages/api-security" },
-    { "path": "../../../../packages/handler" },
-    { "path": "../../../../packages/handler-apollo-server" }
+    { "path": "../../../../packages/handler" }
   ]
 }

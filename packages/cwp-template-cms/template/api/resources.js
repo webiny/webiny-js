@@ -313,6 +313,28 @@ module.exports = () => ({
                 }
             }
         },
+        headlessCmsDataManager: {
+            watch: ["./headless/dataManager/build"],
+            build: {
+                root: "./headless/dataManager",
+                script: "yarn build"
+            },
+            deploy: {
+                component: "@webiny/serverless-function",
+                inputs: {
+                    description: "Headless CMS Data Manager",
+                    region: process.env.AWS_REGION,
+                    code: "./headless/dataManager/build",
+                    handler: "handler.handler",
+                    memory: 512,
+                    env: {
+                        MONGODB_SERVER: process.env.MONGODB_SERVER,
+                        MONGODB_NAME: process.env.MONGODB_NAME,
+                        I18N_LOCALES_FUNCTION: "${i18nLocales.name}"
+                    }
+                }
+            }
+        },
         api: {
             component: "@webiny/serverless-api-gateway",
             inputs: {
