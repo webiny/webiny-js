@@ -82,10 +82,6 @@ export const createManageSDL: CreateManageSDL = ({ model, fieldTypePlugins }): s
         }
         
         enum ${mTypeName}ListSorter {
-            createdOn_ASC
-            createdOn_DESC
-            updatedOn_ASC
-            updatedOn_DESC
             ${renderSortEnum({ model, fieldTypePlugins })}
         }
         
