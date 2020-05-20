@@ -118,7 +118,6 @@ export type CmsContentModel = {
 export type CmsModelFieldToCommodoFieldPlugin<TContext = CmsContext> = Plugin & {
     type: "cms-model-field-to-commodo-field";
     fieldType: string;
-    isSortable: boolean;
     dataModel(params: {
         context: TContext;
         model: Function;
