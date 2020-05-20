@@ -10,7 +10,7 @@ import { get } from "lodash";
 import linkPreloadPlugin from "./linkPreload";
 import { PageRoute } from "./../components/Page";
 
-export default [
+export default () => [
     {
         name: "pb-route",
         type: "route",
@@ -73,5 +73,5 @@ export default [
             </Query>
         )
     } as PbAddonRenderPlugin,
-    ...renderPlugins
+    ...renderPlugins()
 ];

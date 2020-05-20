@@ -2,7 +2,7 @@ import React from "react";
 import { Form as FormsForm } from "@webiny/app-form-builder/components/Form";
 import { get } from "lodash";
 
-export default [
+export default () => [
     {
         name: "pb-render-page-element-form",
         type: "pb-render-page-element",

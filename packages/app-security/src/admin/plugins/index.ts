@@ -6,7 +6,7 @@ import secureRouteError from "./secureRouteError";
 import installation from "./installation";
 import scopesList from "./scopesList";
 
-export default [
+export default () => [
     // Layout plugins
     UserMenu,
     globalSearchUsers,

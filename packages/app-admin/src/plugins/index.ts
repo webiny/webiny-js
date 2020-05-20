@@ -20,7 +20,7 @@ import install from "@webiny/app-admin/plugins/install";
 
 import init from "./init";
 
-export default [
+export default () => [
     // Layout plugins
     Header,
     Content,

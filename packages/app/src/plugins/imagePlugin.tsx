@@ -73,50 +73,52 @@ const convertTransformToQueryParams = (transform: Object): string => {
         .join("&");
 };
 
-const imagePlugin: ImageComponentPlugin = {
-    name: "image-component",
-    type: "image-component",
-    presets: {
-        avatar: { width: 300 }
-    },
-    getImageSrc: (props: { [key: string]: any }) => {
-        if (!props) {
-            return "";
-        }
+export default () => {
+    const imagePlugin: ImageComponentPlugin = {
+        name: "image-component",
+        type: "image-component",
+        presets: {
+            avatar: { width: 300 }
+        },
+        getImageSrc: (props: { [key: string]: any }) => {
+            if (!props) {
+                return "";
+            }
 
-        const { src, transform } = props;
-        if (!transform) {
-            return src;
-        }
+            const { src, transform } = props;
+            if (!transform) {
+                return src;
+            }
 
-        if (!src || src.startsWith("data:") || src.endsWith("svg")) {
-            return src;
-        }
+            if (!src || src.startsWith("data:") || src.endsWith("svg")) {
+                return src;
+            }
 
-        let params = sanitizeTransformArgs(transform);
-        params = convertTransformToQueryParams(params);
-        return src + "?" + params;
-    },
-    render(props: { [key: string]: any }) {
-        const { transform, srcSet: srcSetInitial, ...imageProps } = props;
-        let srcSet = srcSetInitial;
-        const src = imageProps.src;
-        if (srcSet && srcSet === "auto") {
-            srcSet = {};
+            let params = sanitizeTransformArgs(transform);
+            params = convertTransformToQueryParams(params);
+            return src + "?" + params;
+        },
+        render(props: { [key: string]: any }) {
+            const { transform, srcSet: srcSetInitial, ...imageProps } = props;
+            let srcSet = srcSetInitial;
+            const src = imageProps.src;
+            if (srcSet && srcSet === "auto") {
+                srcSet = {};
 
-            // Check if image width was forced, and additionally if width was set as pixels, with "px" in the value.
-            const forcedWidth = props.width || (props.style && props.style.width);
-            const srcSetAutoWidths = getSrcSetAutoSizes(forcedWidth);
-            srcSetAutoWidths.forEach(width => {
-                srcSet[width + "w"] = imagePlugin.getImageSrc({
-                    src,
-                    transform: { ...transform, width }
+                // Check if image width was forced, and additionally if width was set as pixels, with "px" in the value.
+                const forcedWidth = props.width || (props.style && props.style.width);
+                const srcSetAutoWidths = getSrcSetAutoSizes(forcedWidth);
+                srcSetAutoWidths.forEach(width => {
+                    srcSet[width + "w"] = imagePlugin.getImageSrc({
+                        src,
+                        transform: { ...transform, width }
+                    });
                 });
-            });
+            }
+
+            return <Image {...imageProps} srcSet={srcSet} src={src} />;
         }
-
-        return <Image {...imageProps} srcSet={srcSet} src={src} />;
     }
-};
 
-export default imagePlugin;
+    return imagePlugin;
+};

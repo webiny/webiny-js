@@ -104,10 +104,10 @@ export default createTemplate<AdminAppOptions>(opts => {
 
     const otherPlugins = [
         fileUploadPlugin(),
-        imagePlugin,
-        adminPlugins,
-        i18nPlugins,
-        securityPlugins,
+        imagePlugin(),
+        adminPlugins(),
+        i18nPlugins(),
+        securityPlugins(),
         cognito(opts.cognito),
         cognitoTheme(),
         ...(opts.plugins || [])

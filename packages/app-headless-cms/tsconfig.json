@@ -4,6 +4,7 @@
     { "path": "../app" },
     { "path": "../app-admin" },
     { "path": "../app-i18n" },
+    { "path": "../app-template" },
     { "path": "../form" },
     { "path": "../plugins" }
 

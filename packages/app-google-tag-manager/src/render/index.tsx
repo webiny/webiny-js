@@ -37,7 +37,7 @@ function GoogleTagManager({ settings }) {
     return null;
 }
 
-export default {
+export default (): PbAddonRenderPlugin => ({
     type: "addon-render",
     name: "addon-render-google-tag-manager",
     component: (
@@ -49,4 +49,4 @@ export default {
             }}
         </Query>
     )
-} as PbAddonRenderPlugin;
+});

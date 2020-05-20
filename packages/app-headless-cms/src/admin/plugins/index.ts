@@ -9,10 +9,10 @@ import header from "./contentDetails/header";
 import contentForm from "./contentDetails/contentForm";
 import footer from "./contentDetails/footer";
 import contentRevisions from "./contentDetails/contentRevisions";
-
 import contentModelEditorPlugins from "./../editor/plugins";
+import appTemplateRenderer from "./appTemplatePlugins";
 
-export default [
+export default () => [
     install,
     routes,
     menus,
@@ -24,8 +24,9 @@ export default [
     footer,
     contentRevisions,
 
-    // Editor.
+    // Editor
     fields,
     validators,
-    contentModelEditorPlugins
+    contentModelEditorPlugins,
+    appTemplateRenderer
 ];

@@ -9,8 +9,9 @@ import routes from "./routes";
 import menus from "./menus";
 import install from "./install";
 import scopesList from "./scopesList";
+import appTemplatePlugins from "./appTemplatePlugins";
 
-export default [
+export default () => [
     header,
     revisionContent,
     previewContent,
@@ -21,5 +22,6 @@ export default [
     routes,
     menus,
     scopesList,
-    install
+    install,
+    appTemplatePlugins
 ];

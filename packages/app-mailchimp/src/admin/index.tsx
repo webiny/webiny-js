@@ -30,8 +30,8 @@ const PreviewBox = styled("div")({
 
 const ROLE_PB_SETTINGS = ["pb:page:crud"];
 
-export default [
-    ...render,
+export default () => [
+    ...render(),
     {
         name: "pb-page-element-mailchimp",
         type: "pb-editor-page-element",
