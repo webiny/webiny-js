@@ -98,8 +98,16 @@ describe("Data Manager Handler", () => {
         categoryModel.indexes = [{ fields: ["slug"] }];
         await categoryModel.save();
 
-        const count = await collection("CmsContentEntrySearch").countDocuments();
+        let count = await collection("CmsContentEntrySearch").countDocuments();
         expect(count).toBe(15);
+
+        // Remove all indexes - this should only generate `fields=id` index for each locale
+        categoryModel.indexes = [];
+        await categoryModel.save();
+
+        count = await collection("CmsContentEntrySearch").countDocuments();
+        // 3 locales * 3 entries = 9 index entries
+        expect(count).toBe(9);
 
         // Restore indexes
         categoryModel.indexes = [{ fields: ["title"] }, { fields: ["title", "slug"] }];
