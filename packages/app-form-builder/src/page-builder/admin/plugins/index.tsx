@@ -20,7 +20,7 @@ const PreviewBox = styled("div")({
 });
 
 export default () => [
-    formsSitePlugins,
+    formsSitePlugins(),
     {
         name: "pb-page-element-form",
         type: "pb-editor-page-element",

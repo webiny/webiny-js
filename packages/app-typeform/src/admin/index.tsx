@@ -24,7 +24,7 @@ const PreviewBox = styled("div")({
 });
 
 export default () => [
-    render,
+    render(),
     {
         name: "pb-page-element-typeform",
         type: "pb-editor-page-element",
