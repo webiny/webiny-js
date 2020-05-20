@@ -1,5 +1,5 @@
 {
-  "name": "api-cms-handler",
+  "name": "api-cms-api",
   "version": "0.1.0",
   "scripts": {
     "build": "webiny run build"
