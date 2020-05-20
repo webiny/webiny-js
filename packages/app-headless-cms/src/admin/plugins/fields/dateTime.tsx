@@ -16,8 +16,12 @@ const plugin: CmsEditorFieldTypePlugin = {
         description: t`Store date and time.`,
         icon: <DateTimeIcon />,
         validators: ["required", "gte", "lte"],
-        canHaveMultipleValues: true,
-        canHavePredefinedValues: true,
+        allowMultipleValues: true,
+        allowPredefinedValues: true,
+        allowIndexes: {
+            singleValue: true,
+            multipleValues: false
+        },
         createField() {
             return {
                 type: this.type,

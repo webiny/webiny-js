@@ -12,8 +12,12 @@ const plugin: CmsEditorFieldTypePlugin = {
         label: t`Boolean`,
         description: t`Store boolean ("yes" or "no" ) values.`,
         icon: <BooleanIcon />,
-        canHaveMultipleValues: false,
-        canHavePredefinedValues: false,
+        allowMultipleValues: false,
+        allowPredefinedValues: false,
+        allowIndexes: {
+            singleValue: true,
+            multipleValues: false
+        },
         createField() {
             return {
                 type: this.type,

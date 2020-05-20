@@ -10,13 +10,17 @@ import { IconPrefix, IconName } from "@fortawesome/fontawesome-svg-core";
 export type CmsEditorFieldTypePlugin = Plugin & {
     type: "cms-editor-field-type";
     field: {
-        group?: string;
-        unique?: boolean;
         type: string;
         label: string;
         validators?: string[];
         description: string;
         icon: React.ReactNode;
+        allowMultipleValues: boolean;
+        allowPredefinedValues: boolean;
+        allowIndexes: {
+            singleValue: boolean;
+            multipleValues: false; // At the moment, we don't support indexing fields with multiple values.
+        };
         createField: ({ i18n: any }) => CmsEditorField;
         renderSettings?: (params: {
             form: FormChildrenFunctionParams;
@@ -103,7 +107,6 @@ export type CmsContentDetailsRevisionContentPlugin = Plugin & {
     type: "cms-content-details-revision-content";
     render(params: any): ReactElement;
 };
-
 
 export type CmsFormFieldPatternValidatorPlugin = Plugin & {
     type: "cms-editor-field-validator-pattern";
