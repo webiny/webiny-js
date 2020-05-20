@@ -7,18 +7,19 @@ import { useContentModelEditor } from "@webiny/app-headless-cms/admin/components
 import { I18NInput } from "@webiny/app-i18n/admin/components";
 import { useI18N } from "@webiny/app-i18n/hooks/useI18N";
 import { validation } from "@webiny/validation";
-import { CmsEditorField } from "@webiny/app-headless-cms/types";
+import { CmsEditorField, CmsEditorFieldTypePlugin } from "@webiny/app-headless-cms/types";
 import { FormChildrenFunctionParams } from "@webiny/form/Form";
 
 type GeneralTabProps = {
     field: CmsEditorField;
     form: FormChildrenFunctionParams;
+    fieldPlugin: CmsEditorFieldTypePlugin;
 };
 
-const GeneralTab = ({ field, form }: GeneralTabProps) => {
+const GeneralTab = ({ field, form, fieldPlugin }: GeneralTabProps) => {
     const { Bind, setValue } = form;
     const inputRef = useRef(null);
-    const { getField, getFieldPlugin } = useContentModelEditor();
+    const { getField } = useContentModelEditor();
     const { getValue } = useI18N();
 
     // Had problems with auto-focusing the "label" field. A couple of comments on this.
@@ -49,8 +50,6 @@ const GeneralTab = ({ field, form }: GeneralTabProps) => {
         throw new Error("Please enter a unique Field ID");
     }, undefined);
 
-    const fieldPlugin = getFieldPlugin({ type: field.type });
-
     let additionalSettings = null;
     if (typeof fieldPlugin.field.renderSettings === "function") {
         additionalSettings = fieldPlugin.field.renderSettings({
@@ -80,6 +79,16 @@ const GeneralTab = ({ field, form }: GeneralTabProps) => {
                         <Input label={"Field ID"} disabled={!!field._id} />
                     </Bind>
                 </Cell>
+
+                <Cell span={12}>
+                    <Bind name={"multipleValues"}>
+                        <Switch
+                            label={"Multiple values"}
+                            disabled={!fieldPlugin.field.allowMultipleValues}
+                        />
+                    </Bind>
+                </Cell>
+
                 <Cell span={12}>
                     <Bind name={"helpText"}>
                         <I18NInput label={"Help text"} description={"Help text (optional)"} />
@@ -87,13 +96,6 @@ const GeneralTab = ({ field, form }: GeneralTabProps) => {
                 </Cell>
             </Grid>
             {additionalSettings}
-            <Grid>
-                <Cell span={6}>
-                    <Bind name={"unique"}>
-                        <Switch label={"Unique"} />
-                    </Bind>
-                </Cell>
-            </Grid>
         </>
     );
 };
