@@ -15,10 +15,11 @@ const plugin: CmsEditorFieldTypePlugin = {
         description: t`Store numbers.`,
         icon: <FloatIcon />,
         validators: ["required", "gte", "lte"],
+        canHaveMultipleValues: true,
+        canHavePredefinedValues: true,
         createField() {
             return {
                 type: this.type,
-                name: this.name,
                 validation: [],
                 settings: {
                     defaultValue: ""

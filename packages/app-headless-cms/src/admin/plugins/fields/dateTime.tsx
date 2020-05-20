@@ -16,10 +16,11 @@ const plugin: CmsEditorFieldTypePlugin = {
         description: t`Store date and time.`,
         icon: <DateTimeIcon />,
         validators: ["required", "gte", "lte"],
+        canHaveMultipleValues: true,
+        canHavePredefinedValues: true,
         createField() {
             return {
                 type: this.type,
-                name: this.name,
                 validation: [],
                 settings: {
                     defaultValue: ""
@@ -40,13 +41,13 @@ const plugin: CmsEditorFieldTypePlugin = {
                     <Cell span={12}>
                         <Bind name={"settings.type"}>
                             <Select label={t`Format`} description={t`Cannot be changed later`}>
-                                <option value={t`date`}>Date only</option>
-                                <option value={t`time`}>Time only</option>
+                                <option value={t`date`}>{t`Date only`}</option>
+                                <option value={t`time`}>{t`Time only`}</option>
                                 <option value={t`dateTimeWithTimezone`}>
-                                    Date and time with timezone
+                                    {t`Date and time with timezone`}
                                 </option>
                                 <option value={t`dateTimeWithoutTimezone`}>
-                                    Date and time without timezone
+                                    {t`Date and time without timezone`}
                                 </option>
                             </Select>
                         </Bind>
