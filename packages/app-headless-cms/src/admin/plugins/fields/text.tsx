@@ -16,8 +16,12 @@ const plugin: CmsEditorFieldTypePlugin = {
         label: t`Text`,
         description: t`Titles, names, single line values.`,
         icon: <TextIcon />,
-        canHaveMultipleValues: true,
-        canHavePredefinedValues: true,
+        allowMultipleValues: true,
+        allowPredefinedValues: true,
+        allowIndexes: {
+            singleValue: true,
+            multipleValues: false
+        },
         createField() {
             return {
                 type: this.type,

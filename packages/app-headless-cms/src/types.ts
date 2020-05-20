@@ -15,8 +15,12 @@ export type CmsEditorFieldTypePlugin = Plugin & {
         validators?: string[];
         description: string;
         icon: React.ReactNode;
-        canHaveMultipleValues: boolean;
-        canHavePredefinedValues: boolean;
+        allowMultipleValues: boolean;
+        allowPredefinedValues: boolean;
+        allowIndexes: {
+            singleValue: boolean;
+            multipleValues: false; // At the moment, we don't support indexing fields with multiple values.
+        };
         createField: ({ i18n: any }) => CmsEditorField;
         renderSettings?: (params: {
             form: FormChildrenFunctionParams;
