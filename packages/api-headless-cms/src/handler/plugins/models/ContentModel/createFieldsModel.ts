@@ -1,25 +1,50 @@
-import { i18nString } from "@webiny/api-i18n/fields";
 import { validation } from "@webiny/validation";
-import { withFields, string, fields, object, setOnce } from "@webiny/commodo";
+import { withFields, string, object, setOnce, boolean, fields } from "@webiny/commodo";
+import { i18nField } from "@webiny/api-headless-cms/handler/plugins/modelFields/i18nFields";
+import { any } from "@webiny/api-headless-cms/handler/plugins/models/anyField";
 
 const required = validation.create("required");
+const requiredShortString = validation.create("required,maxLength:256");
+const shortString = validation.create("maxLength:265");
 
-export default context =>
-    withFields({
-        _id: setOnce()(string({ validation: required })),
-        fieldId: setOnce()(string({ validation: required })),
-        label: i18nString({ context, validation: required }),
-        helpText: i18nString({ context }),
-        placeholderText: i18nString({ context }),
-        type: setOnce()(string({ validation: required })),
+export default context => {
+    const PredefinedValueModel = withFields({
+        value: i18nField({ field: any(), context }),
+        label: i18nField({ field: any(), context })
+    });
+
+    const RendererModel = withFields({
+        name: string({ validation: requiredShortString })
+    })();
+
+    return withFields({
+        _id: setOnce()(string({ validation: requiredShortString })),
+        fieldId: setOnce()(string({ validation: requiredShortString })),
+        label: i18nField({
+            field: string({ validation: requiredShortString }),
+            context
+        }),
+        helpText: i18nField({
+            field: string({ validation: shortString }),
+            context
+        }),
+        placeholderText: i18nField({
+            field: string({ validation: shortString }),
+            context
+        }),
+        type: setOnce()(string({ validation: requiredShortString })),
+        multipleValues: boolean(),
+        predefinedValues: fields({ instanceOf: PredefinedValueModel, list: true }),
+        renderer: fields({ instanceOf: RendererModel, validation: required }),
         validation: fields({
             list: true,
             value: [],
             instanceOf: withFields({
-                name: string({ validation: required }),
-                message: i18nString({ context }),
+                name: string({ validation: requiredShortString }),
+                message: i18nField({ field: string({ validation: shortString }), context }),
                 settings: object({ value: {} })
             })()
         }),
         settings: object({ value: {} })
     })();
+};
