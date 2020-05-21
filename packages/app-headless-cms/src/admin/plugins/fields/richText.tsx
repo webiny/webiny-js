@@ -1,5 +1,5 @@
 import React from "react";
-import { ReactComponent as NotesIcon } from "./icons/notes-black-24px.svg";
+import { ReactComponent as NotesIcon } from "./icons/round-text_fields-24px.svg";
 import { Grid, Cell } from "@webiny/ui/Grid";
 import { I18NInput } from "@webiny/app-i18n/admin/components";
 import { CmsEditorFieldTypePlugin } from "@webiny/app-headless-cms/types";
