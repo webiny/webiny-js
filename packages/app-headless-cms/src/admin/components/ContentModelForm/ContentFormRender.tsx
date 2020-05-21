@@ -51,14 +51,14 @@ const RenderFieldElement = (props: {
             let name, validators;
             if (field.multipleValues) {
                 name = field.fieldId;
-                validators = field.multipleValuesValidators;
+                validators = field.multipleValuesValidation;
                 if (index >= 0) {
                     name = `${name}.${index}`;
-                    validators = field.validators;
+                    validators = field.validation;
                 }
             } else {
                 name = field.fieldId;
-                validators = field.validators;
+                validators = field.validation;
             }
 
             memoizedBindComponents.current[memoKey] = function Bind({ children }) {
