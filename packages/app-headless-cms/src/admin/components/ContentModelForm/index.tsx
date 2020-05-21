@@ -67,7 +67,8 @@ export const ContentModelForm: React.FC<CmsContentModelFormProps> = props => {
 
     const getDefaultValues = (overrides = {}) => {
         const values = {};
-        fields.forEach(field => {
+        // TODO: finish default values.
+        /*fields.forEach(field => {
             const fieldId = field.fieldId;
 
             if (
@@ -77,7 +78,7 @@ export const ContentModelForm: React.FC<CmsContentModelFormProps> = props => {
             ) {
                 values[fieldId] = field.settings.defaultValue;
             }
-        });
+        });*/
         return { ...values, ...overrides };
     };
 
