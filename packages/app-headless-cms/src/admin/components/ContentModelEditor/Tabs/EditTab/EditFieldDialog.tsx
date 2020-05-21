@@ -93,6 +93,7 @@ const EditFieldDialog = ({ field, onSubmit, ...props }: EditFieldDialogProps) =>
                                         </Tab>
                                     )}
 
+                                {/* TODO: Add validators functionality.
                                 {Array.isArray(fieldPlugin.field.validators) &&
                                     fieldPlugin.field.validators.length > 0 && (
                                         <Tab label={"Validators"}>
@@ -102,7 +103,7 @@ const EditFieldDialog = ({ field, onSubmit, ...props }: EditFieldDialogProps) =>
                                                 fieldPlugin={fieldPlugin}
                                             />
                                         </Tab>
-                                    )}
+                                    )}*/}
                                 <Tab label={t`Appearance`}>
                                     <AppearanceTab
                                         form={form}
