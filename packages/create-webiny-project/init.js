@@ -7,6 +7,7 @@ process.on("unhandledRejection", err => {
 const chalk = require("chalk");
 const execa = require("execa");
 const fg = require("fast-glob");
+const findUp = require("find-up");
 const fs = require("fs-extra");
 const Listr = require("listr");
 const loadJsonFile = require("load-json-file");
@@ -103,6 +104,22 @@ module.exports = async function({ root, appName, templateName, tag, log }) {
                         const keys = Object.keys(json.dependencies).filter(k =>
                             k.startsWith("@webiny")
                         );
+                        const currentDir = jsonPath.match(/(.*)[\/\\]/)[1] || "";
+
+                        const baseTsConfigPath = path
+                            .relative(
+                                currentDir,
+                                findUp.sync("tsconfig.json", {
+                                    cwd: root
+                                })
+                            )
+                            .replace(/\\/g, "/");
+
+                        const tsConfigPath = path.join(currentDir, "tsconfig.json");
+                        const tsconfig = require(tsConfigPath);
+                        tsconfig.extends = baseTsConfigPath;
+                        fs.writeFileSync(tsConfigPath, JSON.stringify(tsconfig, null, 2));
+
                         await Promise.all(
                             keys.map(async name => {
                                 if (tag.startsWith(".")) {
