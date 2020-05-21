@@ -6,7 +6,7 @@ const path = require("path");
 const { v4: uuidv4 } = require("uuid");
 
 module.exports = ({ appName, root }) => {
-    const filesToCopy = require("./files-to-copy");
+    const filesToCopy = require("./filesToCopy");
     for (let i = 0; i < filesToCopy.length; i++) {
         if (!fs.existsSync(path.join(root, filesToCopy[i].dir, filesToCopy[i].newFile))) {
             fs.moveSync(
