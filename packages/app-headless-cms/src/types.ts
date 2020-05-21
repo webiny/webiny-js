@@ -61,7 +61,6 @@ export type CmsEditorField = {
     renderer: {
         name: string;
     };
-    settings: { [key: string]: any };
 };
 
 export type CmsEditorFieldId = string;
