@@ -6,8 +6,9 @@ import { GraphQLDateTime } from "graphql-iso-date";
 import GraphQLLong from "graphql-type-long";
 import { RefInput } from "./RefInputScalar";
 import { Number } from "./NumberScalar";
+import { Any } from "./AnyScalar";
 import { PluginsContainer, GraphQLSchemaPlugin, GraphQLScalarPlugin, Context } from "../types";
-import { applyContextPlugins } from "./contextPlugins";
+import { applyContextPlugins } from "@webiny/graphql";
 
 type PrepareSchemaParams = { plugins: PluginsContainer };
 
@@ -38,6 +39,7 @@ export async function prepareSchema({ plugins }: PrepareSchemaParams) {
                 scalar DateTime
                 scalar RefInput
                 scalar Number
+                scalar Any
             `,
             resolvers: {
                 ...scalars.reduce((acc, s) => {
@@ -48,7 +50,8 @@ export async function prepareSchema({ plugins }: PrepareSchemaParams) {
                 DateTime: GraphQLDateTime,
                 Long: GraphQLLong,
                 RefInput,
-                Number
+                Number,
+                Any
             }
         }
     ];
