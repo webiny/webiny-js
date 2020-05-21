@@ -43,7 +43,8 @@ describe("Data Manager Handler", () => {
         const { invoke } = useDataManagerHandler();
         let [response] = await invoke({
             environment: "production",
-            operation: { action: "generateContentModelIndexes", contentModel: "category" }
+            action: "generateContentModelIndexes",
+            contentModel: "category"
         });
 
         expect(response.error).toBe(undefined);
@@ -89,7 +90,8 @@ describe("Data Manager Handler", () => {
         const { invoke } = useDataManagerHandler();
         await invoke({
             environment: "production",
-            operation: { action: "generateContentModelIndexes", contentModel: "category" }
+            action: "generateContentModelIndexes",
+            contentModel: "category"
         });
 
         const categoryModel = await models.CmsContentModel.findOne({ modelId: "category" });
@@ -119,7 +121,8 @@ describe("Data Manager Handler", () => {
         const { invoke } = useDataManagerHandler();
         await invoke({
             environment: "production",
-            operation: { action: "generateContentModelIndexes", contentModel: "category" }
+            action: "generateContentModelIndexes",
+            contentModel: "category"
         });
 
         let count = await collection("CmsContentEntrySearch").countDocuments();
@@ -139,11 +142,9 @@ describe("Data Manager Handler", () => {
         // Re-generate indexes for this revision
         await invoke({
             environment: "production",
-            operation: {
-                action: "generateRevisionIndexes",
-                contentModel: "category",
-                revision: category.id
-            }
+            action: "generateRevisionIndexes",
+            contentModel: "category",
+            revision: category.id
         });
 
         const find = {
@@ -168,7 +169,8 @@ describe("Data Manager Handler", () => {
         const { invoke } = useDataManagerHandler();
         await invoke({
             environment: "production",
-            operation: { action: "generateContentModelIndexes", contentModel: "category" }
+            action: "generateContentModelIndexes",
+            contentModel: "category"
         });
 
         // Insert a new environment
@@ -192,8 +194,9 @@ describe("Data Manager Handler", () => {
 
         // Copy data
         await invoke({
-            environment: "production",
-            operation: { action: "copyEnvironment", copyFrom: environmentId, copyTo: newEnvId }
+            action: "copyEnvironment",
+            copyFrom: environmentId,
+            copyTo: newEnvId
         });
 
         // Count records for new environment
@@ -218,7 +221,8 @@ describe("Data Manager Handler", () => {
         const { invoke } = useDataManagerHandler();
         await invoke({
             environment: "production",
-            operation: { action: "generateContentModelIndexes", contentModel: "category" }
+            action: "generateContentModelIndexes",
+            contentModel: "category"
         });
 
         // Insert a new environment
@@ -238,14 +242,15 @@ describe("Data Manager Handler", () => {
 
         // Copy data
         await invoke({
-            environment: "production",
-            operation: { action: "copyEnvironment", copyFrom: environmentId, copyTo: newEnvId }
+            action: "copyEnvironment",
+            copyFrom: environmentId,
+            copyTo: newEnvId
         });
 
         // Delete data
         await invoke({
-            environment: "staging",
-            operation: { action: "deleteEnvironment", environment: newEnvId }
+            action: "deleteEnvironment",
+            environment: newEnvId
         });
 
         const countQuery = { environment: newEnvId };

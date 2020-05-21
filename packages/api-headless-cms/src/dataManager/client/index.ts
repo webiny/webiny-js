@@ -10,7 +10,10 @@ export default ({ dataManagerFunction }: Params): ContextPlugin => {
         type: "context",
         name: "context-cms-data-manager",
         apply(context) {
-            context.cms = context.cms || {};
+            if (!context.cms) {
+                context.cms = {};
+            }
+
             context.cms.dataManager = new DataManagerClient({ dataManagerFunction, context });
         }
     };
