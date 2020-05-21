@@ -23,7 +23,7 @@
       "apps/*",
       "api/apolloGateway",
       "api/databaseProxy",
-      "api/files",
+      "api/files/*",
       "api/formBuilder",
       "api/headless/*",
       "api/i18n/*",

@@ -208,27 +208,9 @@ module.exports = async function({ root, appName, templateName, tag, log }) {
         {
             title: "Run template-specific actions",
             task: async () => {
-                // Remove template from dependencies
-                if (!templateName.startsWith(".") && !templateName.startsWith("file:")) {
-                    try {
-                        execa.sync("rm", ["-r", "node_modules/" + templateName], {
-                            cwd: root
-                        });
-                    } catch (err) {
-                        console.log(err);
-                        console.error("Unable to remove " + templateName);
-                    }
-                }
-
                 //run the setup for cwp-template-full
                 try {
-                    let cwpTemplate;
-                    if (!templateName.startsWith(".") && !templateName.startsWith("file:")) {
-                        cwpTemplate = require(templateName);
-                    } else {
-                        cwpTemplate = require(path.join(templatePath, "index"));
-                    }
-                    await cwpTemplate({ appName, root });
+                    await require(templatePath)({ appName, root });
                 } catch (err) {
                     console.log(err);
                     throw new Error("Unable to perform template-specific actions.", err);

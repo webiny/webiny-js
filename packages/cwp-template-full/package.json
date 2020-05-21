@@ -1,6 +1,7 @@
 {
   "name": "@webiny/cwp-template-full",
   "version": "0.1.34",
+  "main": "index.js",
   "repository": {
     "type": "git",
     "directory": "packages/cwp-template-full"
