@@ -2,7 +2,7 @@ import React from "react";
 import { I18NValue } from "@webiny/app-i18n/components";
 import { getPlugins } from "@webiny/plugins";
 import { cloneDeep, pick } from "lodash";
-import { ContentModelFormRender } from "./ContentModelFormRender";
+import { ContentFormRender } from "./ContentFormRender";
 
 import {
     CmsContentModelFormProps,
@@ -84,7 +84,7 @@ export const ContentModelForm: React.FC<CmsContentModelFormProps> = props => {
     const { content, onSubmit, onChange, locale, onForm } = props;
 
     return (
-        <ContentModelFormRender
+        <ContentFormRender
             onForm={onForm}
             locale={locale}
             getFields={getFields}

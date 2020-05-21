@@ -25,6 +25,7 @@ declare module "@webiny/commodo" {
     export const fields: any;
     export const withStaticProps: any;
     export const createPaginationMeta: any;
+    export const createField: any;
     export const Collection: any;
     export const getName: any;
 }

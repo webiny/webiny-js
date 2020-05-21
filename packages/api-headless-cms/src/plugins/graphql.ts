@@ -1,5 +1,5 @@
 import { GraphQLSchemaPlugin } from "@webiny/graphql/types";
-import merge from "lodash.merge";
+import { merge } from "lodash";
 import gql from "graphql-tag";
 import cmsEnvironment from "./graphql/environment";
 import cmsEnvironmentAlias from "./graphql/environmentAlias";

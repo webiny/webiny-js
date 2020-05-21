@@ -20,13 +20,18 @@ export const FIELDS_FIELDS = `
         helpText {
             ${I18N_FIELDS}
         }  
-        options {
+        predefinedValues {
             label {
                 ${I18N_FIELDS}
             }
-            value
+            value {
+                ${I18N_FIELDS}
+            }
         }
-        unique
+        multipleValues 
+        renderer {
+            name
+        }
         validation {
             name
             settings

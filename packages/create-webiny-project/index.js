@@ -148,7 +148,7 @@ function informationHandler() {
 }
 
 async function install({ root, dependencies }) {
-    const command = "yarnpkg";
+    const command = "yarn";
     const args = ["add", "--exact"];
     [].push.apply(args, dependencies);
     args.push("--cwd");
@@ -163,12 +163,12 @@ async function install({ root, dependencies }) {
 async function run({ root, appName, template, tag, log }) {
     const dependencies = [];
     try {
-        let templateName = "cwp-template-" + template;
+        let templateName = `@webiny/cwp-template-${template}`;
 
         if (template.startsWith(".") || template.startsWith("file:")) {
             templateName = "file:" + path.relative(appName, template.replace("file:", ""));
         }
-        dependencies.push(templateName);
+        dependencies.push(`${templateName}@${tag}`);
         const tasks = new Listr([
             {
                 title: `Installing core dependencies of create-webiny-project`,

@@ -13,13 +13,7 @@ const PROJECT_FOLDER = "sample-project";
     console.log(`✍️  Writing environment config files...`);
     // Create root .env.json
     const rootEnvJsonPath = path.resolve(PROJECT_FOLDER, ".env.json");
-    const rootExampleEnvJsonPath = path.resolve(
-        "packages",
-        "cli",
-        "create",
-        "template",
-        "example.env.json"
-    );
+    const rootExampleEnvJsonPath = path.resolve(PROJECT_FOLDER, "example.env.json");
     if (fs.existsSync(rootEnvJsonPath)) {
         console.log(`⚠️  ${green("sample-project/.env.json")} already exists, skipping.`);
     } else {
@@ -87,26 +81,6 @@ const PROJECT_FOLDER = "sample-project";
         console.log(`✅️ Packages were built successfully!`);
     } catch (err) {
         console.log(`🚨 Failed to build packages: ${err.message}`);
-    }
-
-    // Link `@webiny/cli`
-    try {
-        console.log(`🔗 Linking ${green("@webiny/cli")}...`);
-        // NOTE: using `npm` here as `yarn` has issues with linking binaries.
-        await execa("npm", ["link"], {
-            cwd: path.resolve("packages", "cli"),
-            stdio: "inherit"
-        });
-        fs.unlinkSync(path.resolve("packages", "cli", "package-lock.json"));
-    } catch (err) {
-        console.log(`🚨 Failed to link ${green("@webiny/cli")} package: ${err.message}`);
-        console.log(
-            `📖 If you already have ${green(
-                "@webiny/cli"
-            )} linked or installed globally, you can ignore this. Otherwise, try linking the package manually by running ${green(
-                "npm link"
-            )} in the ${green("packages/cli")} folder.`
-        );
     }
 
     console.log(`\n🏁 Your repo is almost ready!`);

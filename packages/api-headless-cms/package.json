@@ -22,17 +22,17 @@
     "@webiny/commodo": "^3.0.0",
     "@webiny/commodo-graphql": "^3.0.0",
     "@webiny/handler": "^0.1.0",
+    "@webiny/handler-apollo-server": "^0.1.0",
     "@webiny/validation": "^3.0.0",
+    "apollo-server-lambda": "^2.13.1",
+    "boolean": "^3.0.1",
     "fecha": "^4.0.0",
     "graphql-tag": "^2.10.1",
-    "lodash.merge": "^4.6.2",
-    "lodash.upperfirst": "^4.3.1",
-    "lodash.forown": "^4.4.0",
-    "lodash.isobject": "^3.0.2",
     "fast-deep-equal": "^3.1.1",
-    "lodash.clonedeep": "^4.5.0",
+    "lodash": "^4.5.0",
     "pluralize": "^8.0.0",
-    "shortid": "^2.2.15"
+    "shortid": "^2.2.15",
+    "slugify": "^1.4.0"
   },
   "devDependencies": {
     "@babel/cli": "^7.5.5",
@@ -46,8 +46,8 @@
     "chalk": "^3.0.0",
     "graphql": "^14.6.0",
     "mdbid": "^1.0.0",
+    "mongodb": "^3.5.7",
     "prettier": "^1.19.1",
-
     "sinon": "^9.0.2"
   },
   "publishConfig": {

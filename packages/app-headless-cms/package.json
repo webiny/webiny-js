@@ -36,6 +36,7 @@
     "apollo-link": "^1.2.14",
     "apollo-link-batch-http": "^1.2.14",
     "apollo-link-error": "^1.1.13",
+    "classnames": "^2.2.6",
     "emotion": "^10.0.17",
     "graphql-tag": "^2.10.1",
     "lodash": "^4.17.10",

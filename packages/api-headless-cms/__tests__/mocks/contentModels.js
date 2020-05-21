@@ -8,7 +8,10 @@ export default [
         description: "Product category",
         modelId: "category",
         group: contentModelGroup.id,
-        indexes: [{ fields: ["title", "slug"] }, { fields: ["slug"] }],
+        indexes: [{ fields: ["id"] }, { fields: ["title", "slug"] }, { fields: ["slug"] }],
+        getUniqueIndexFields() {
+            return ["id", "title", "slug"];
+        },
         fields: [
             {
                 _id: shortId.generate(),
@@ -17,7 +20,6 @@ export default [
                 },
                 type: "text",
                 fieldId: "title",
-                unique: false,
                 validation: [
                     {
                         name: "required",
@@ -45,7 +47,7 @@ export default [
                 },
                 type: "text",
                 fieldId: "slug",
-                unique: true,
+
                 validation: [
                     {
                         name: "required",
@@ -62,6 +64,10 @@ export default [
         description: "Product review",
         modelId: "review",
         group: contentModelGroup.id,
+        indexes: [{ fields: ["id"] }],
+        getUniqueIndexFields() {
+            return ["id"];
+        },
         fields: [
             {
                 _id: shortId.generate(),
@@ -69,7 +75,7 @@ export default [
                     values: [{ locale: locales.en.id, value: "Text" }]
                 },
                 type: "text",
-                unique: false,
+
                 fieldId: "text",
                 validation: [
                     {
@@ -86,7 +92,7 @@ export default [
                     values: [{ locale: locales.en.id, value: "Product" }]
                 },
                 type: "ref",
-                unique: false,
+
                 fieldId: "product",
                 validation: [],
                 settings: {
@@ -100,7 +106,7 @@ export default [
                     values: [{ locale: locales.en.id, value: "Rating" }]
                 },
                 type: "number",
-                unique: false,
+
                 fieldId: "rating",
                 validation: []
             }
@@ -111,6 +117,10 @@ export default [
         modelId: "product",
         description: "Products being sold in our webshop",
         group: contentModelGroup.id,
+        indexes: [{ fields: ["id"] }],
+        getUniqueIndexFields() {
+            return ["id"];
+        },
         fields: [
             {
                 _id: shortId.generate(),
@@ -118,7 +128,7 @@ export default [
                     values: [{ locale: locales.en.id, value: "Title" }]
                 },
                 fieldId: "title",
-                unique: false,
+
                 type: "text",
                 validation: [
                     {
@@ -137,7 +147,7 @@ export default [
                     values: [{ locale: locales.en.id, value: "Category" }]
                 },
                 fieldId: "category",
-                unique: false,
+
                 type: "ref",
                 validation: [
                     {
@@ -159,7 +169,6 @@ export default [
                 },
                 fieldId: "reviews",
                 type: "ref",
-                unique: false,
                 validation: [],
                 settings: {
                     type: "many",
@@ -172,7 +181,7 @@ export default [
                     values: [{ locale: locales.en.id, value: "Price" }]
                 },
                 fieldId: "price",
-                unique: false,
+
                 type: "number",
                 validation: [
                     {
@@ -189,7 +198,7 @@ export default [
                     values: [{ locale: locales.en.id, value: "Price" }]
                 },
                 fieldId: "inStock",
-                unique: false,
+
                 type: "boolean",
                 validation: []
             },
@@ -199,7 +208,7 @@ export default [
                     values: [{ locale: locales.en.id, value: "Price" }]
                 },
                 fieldId: "itemsInStock",
-                unique: false,
+
                 type: "number",
                 validation: []
             },
@@ -209,7 +218,7 @@ export default [
                     values: [{ locale: locales.en.id, value: "Available on" }]
                 },
                 fieldId: "availableOn",
-                unique: false,
+
                 type: "datetime",
                 settings: {
                     type: "date"

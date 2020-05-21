@@ -61,7 +61,6 @@ const plugin: CmsModelFieldToCommodoFieldPlugin = {
     name: "cms-model-field-to-commodo-field-datetime",
     type: "cms-model-field-to-commodo-field",
     fieldType: "datetime",
-    isSortable: true,
     dataModel({ model, field, validation, context }) {
         withFields({
             [field.fieldId]: i18nField({

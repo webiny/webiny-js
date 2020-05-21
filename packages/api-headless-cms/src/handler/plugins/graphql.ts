@@ -8,7 +8,7 @@ import {
     resolveList
 } from "@webiny/commodo-graphql";
 import gql from "graphql-tag";
-import merge from "lodash.merge";
+import { merge } from "lodash";
 import { hasScope } from "@webiny/api-security";
 import { CmsContext } from "@webiny/api-headless-cms/types";
 import { generateSchemaPlugins } from "./schema/schemaPlugins";
@@ -67,6 +67,8 @@ export default ({ type }) => [
             typeDefs: gql`
                 ${i18nFieldType("CmsString", "String")}
                 ${i18nFieldInput("CmsString", "String")}
+                ${i18nFieldType("CmsAny", "Any")}
+                ${i18nFieldInput("CmsAny", "Any")}
 
                 input CmsSearchInput {
                     query: String
@@ -147,43 +149,48 @@ export default ({ type }) => [
                     settings: JSON
                 }
 
-                type CmsFieldOptions {
-                    label: CmsString
-                    value: String
+                type CmsFieldPredefinedValue {
+                    label: [CmsAny]
+                    value: [CmsAny]
                 }
 
-                input CmsFieldOptionsInput {
-                    label: CmsStringInput
-                    value: String
+                input CmsFieldPredefinedValueInput {
+                    label: [CmsAnyInput]
+                    value: [CmsAnyInput]
                 }
 
+                type CmsFieldRenderer {
+                    name: String
+                }
 
+                input CmsFieldRendererInput {
+                    name: String
+                }
+                
                 type CmsContentModelField {
-                    _id: String
+                    _id: ID
                     label: CmsString
                     helpText: CmsString
                     placeholderText: CmsString
                     fieldId: String
                     type: String
-                    unique: Boolean
-                    searchable: Boolean
-                    sortable: Boolean
-                    options: [CmsFieldOptions]
+                    multipleValues: Boolean
+                    predefinedValues: [CmsFieldPredefinedValue]
+                    renderer: CmsFieldRenderer
                     validation: [CmsFieldValidation]
                     settings: JSON
                 }
 
                 input CmsContentModelFieldInput {
-                    _id: String
+                    _id: ID
                     label: CmsStringInput
                     helpText: CmsStringInput
                     placeholderText: CmsStringInput
                     fieldId: String
                     type: String
-                    unique: Boolean
-                    searchable: Boolean
-                    sortable: Boolean
-                    options: [CmsFieldOptionsInput]
+                    multipleValues: Boolean
+                    predefinedValues: [CmsFieldPredefinedValueInput]
+                    renderer: CmsFieldRendererInput
                     validation: [CmsFieldValidationInput]
                     settings: JSON
                 }

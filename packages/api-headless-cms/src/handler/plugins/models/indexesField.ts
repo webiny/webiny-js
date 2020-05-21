@@ -1,4 +1,14 @@
-import { withFields, withProps, string, fields, onSet } from "@webiny/commodo";
+import {
+    withFields,
+    withProps,
+    string,
+    fields,
+    onSet,
+    pipe,
+    skipOnPopulate,
+    setOnce,
+    date
+} from "@webiny/commodo";
 import isEqual from "fast-deep-equal";
 
 const getRawData = fields => {
@@ -19,7 +29,11 @@ export const indexes = () => {
         fields({
             list: true,
             instanceOf: withFields({
-                fields: string({ list: true })
+                fields: string({ list: true }),
+                createdOn: pipe(
+                    skipOnPopulate(),
+                    setOnce()
+                )(date({ value: new Date() }))
             })(),
             value: { value: [{ fields: ["id"] }] }
         })

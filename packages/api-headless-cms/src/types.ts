@@ -73,7 +73,6 @@ export type CmsContentModelField = {
     label: CmsModelFieldValue<string>;
     type: string;
     fieldId: string;
-    unique: boolean;
     validation: CmsFieldValidation[];
     settings?: { [key: string]: any };
 };
@@ -99,8 +98,11 @@ export type CmsModelFieldPatternValidatorPlugin = Plugin & {
     };
 };
 
+export type FieldId = string;
+
 export type CmsContentModelIndex = {
-    fields: string[];
+    fields: FieldId[];
+    createdOn: Date;
 };
 
 export type CmsContentModel = {
@@ -112,14 +114,13 @@ export type CmsContentModel = {
     titleFieldId: string;
     indexes: CmsContentModelIndex[];
     fields: CmsContentModelField[];
-    getUniqueIndexFields(): string[];
+    getUniqueIndexFields(): FieldId[];
     save(): Promise<boolean>;
 };
 
 export type CmsModelFieldToCommodoFieldPlugin<TContext = CmsContext> = Plugin & {
     type: "cms-model-field-to-commodo-field";
     fieldType: string;
-    isSortable: boolean;
     dataModel(params: {
         context: TContext;
         model: Function;
@@ -136,7 +137,6 @@ export type CmsModelFieldToCommodoFieldPlugin<TContext = CmsContext> = Plugin & 
 
 export type CmsModelFieldToGraphQLPlugin = Plugin & {
     type: "cms-model-field-to-graphql";
-    isSortable: boolean;
     fieldType: string;
     read: {
         createGetFilters?(params: { model: CmsContentModel; field: CmsContentModelField }): string;

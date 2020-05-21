@@ -6,7 +6,6 @@ const plugin: CmsModelFieldToCommodoFieldPlugin = {
     name: "cms-model-field-to-commodo-field-json",
     type: "cms-model-field-to-commodo-field",
     fieldType: "json",
-    isSortable: false,
     dataModel({ model, field, validation, context }) {
         return withFields({
             [field.fieldId]: i18nField({

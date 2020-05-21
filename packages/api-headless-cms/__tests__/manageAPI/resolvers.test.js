@@ -1,5 +1,5 @@
 import { graphql } from "graphql";
-import get from "lodash.get";
+import { get } from "lodash";
 import setupContentModels from "../setup/setupContentModels";
 import { createUtils } from "../utils";
 import createCategories from "../mocks/createCategories.manage";
@@ -39,7 +39,7 @@ describe("MANAGE - Resolvers", () => {
     test(`get category by ID`, async () => {
         // Test resolvers
         const query = /* GraphQL */ `
-            query GetCategory($id: ID) {
+            query GetCategory($id: ID!) {
                 getCategory(where: { id: $id }) {
                     data {
                         id
@@ -78,9 +78,10 @@ describe("MANAGE - Resolvers", () => {
         });
     });
 
-    test(`get category by slug`, async () => {
+    // TODO: bring this test back once we implement "unique" validators.
+    /*test(`get category by slug`, async () => {
         // Test resolvers
-        const query = /* GraphQL */ `
+        const query = /!* GraphQL *!/ `
             query GetCategory($slug: String) {
                 getCategory(where: { slug: $slug }) {
                     data {
@@ -118,7 +119,7 @@ describe("MANAGE - Resolvers", () => {
                 slug: get(categories[0].data, "fields.slug")
             }
         });
-    });
+    });*/
 
     test(`list categories (no parameters)`, async () => {
         // Test resolvers

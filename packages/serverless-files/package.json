@@ -4,14 +4,9 @@
   "main": "serverless.js",
   "license": "MIT",
   "dependencies": {
-    "@serverless/aws-s3": "^4.0.0",
     "@webiny/handler": "^0.1.0",
     "@webiny/project-utils": "^1.0.2",
-    "aws-sdk": "^2.539.0",
-    "lodash.get": "^4.4.2",
-    "lodash.merge": "^4.6.2",
-    "lodash.set": "^4.3.2",
-    "p-retry": "^4.1.0"
+    "aws-sdk": "^2.539.0"
   },
   "devDependencies": {
     "@babel/preset-env": "^7.6.3",
