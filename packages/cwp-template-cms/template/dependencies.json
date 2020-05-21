@@ -23,6 +23,14 @@
     "@types/react-dom": "^16.9.4"
   },
   "workspaces": {
-    "packages": ["apps/*"]
+    "packages": [
+      "apps/*",
+      "api/apolloGateway",
+      "api/databaseProxy",
+      "api/files/*",
+      "api/headless/*",
+      "api/i18n/*",
+      "api/security/*"
+    ]
   }
 }
