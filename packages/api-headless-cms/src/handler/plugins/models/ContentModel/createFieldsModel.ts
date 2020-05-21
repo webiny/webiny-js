@@ -3,7 +3,6 @@ import { withFields, string, object, setOnce, boolean, fields } from "@webiny/co
 import { i18nField } from "@webiny/api-headless-cms/handler/plugins/modelFields/i18nFields";
 import { any } from "@webiny/api-headless-cms/handler/plugins/models/anyField";
 
-const required = validation.create("required");
 const requiredShortString = validation.create("required,maxLength:256");
 const shortString = validation.create("maxLength:265");
 
@@ -35,7 +34,7 @@ export default context => {
         type: setOnce()(string({ validation: requiredShortString })),
         multipleValues: boolean(),
         predefinedValues: fields({ instanceOf: PredefinedValueModel, list: true }),
-        renderer: fields({ instanceOf: RendererModel, validation: required }),
+        renderer: fields({ instanceOf: RendererModel, validation: shortString }),
         validation: fields({
             list: true,
             value: [],
