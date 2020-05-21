@@ -55,6 +55,7 @@ export type CmsEditorField = {
     helpText?: I18NStringValue;
     placeholderText?: I18NStringValue;
     validation?: CmsEditorFieldValidator[];
+    multipleValuesValidation?: CmsEditorFieldValidator[];
     multipleValues?: boolean;
     predefinedValues?: Array<{ label: I18NValue; value: I18NValue }>;
     renderer: {
