@@ -2,7 +2,7 @@ import { pipe, withFields, withStaticProps, setOnce, withHooks } from "@webiny/c
 import { cloneDeep } from "lodash";
 
 const modifyQueryArgs = (args = {}, environment) => {
-    const returnArgs: any = cloneDeep(args);
+    const returnArgs = cloneDeep<any>(args);
     if (returnArgs.query) {
         returnArgs.query = {
             $and: [{ environment: environment.id }, returnArgs.query]
