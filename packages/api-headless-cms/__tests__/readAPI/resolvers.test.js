@@ -96,7 +96,7 @@ describe("READ - Resolvers", () => {
             slug: "hardware-en"
         });
 
-        const aa= REZA;
+        const aa = REZA;
         // expect(data.getCategory).toMatchObject(targetResult);
     });
 

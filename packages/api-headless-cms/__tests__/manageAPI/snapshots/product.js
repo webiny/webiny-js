@@ -53,7 +53,7 @@ export default /* GraphQL */ `
     }
 
     input ProductUpdateWhereInput {
-      id: ID
+        id: ID
     }
 
     input ProductDeleteWhereInput {
@@ -70,7 +70,7 @@ export default /* GraphQL */ `
         meta: CmsListMeta
         error: CmsError
     }
-    
+
     enum ProductListSorter {
         id_ASC
         id_DESC
