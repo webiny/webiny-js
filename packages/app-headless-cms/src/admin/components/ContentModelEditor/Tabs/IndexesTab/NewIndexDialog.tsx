@@ -33,7 +33,7 @@ export type NewContentModelDialogProps = {
 
 const NewContentModelDialog: React.FC<NewContentModelDialogProps> = ({ open, onClose }) => {
     const { showSnackbar } = useSnackbar();
-    const { data, setData } = useContentModelEditor();
+    const { data, setData, getFieldPlugin } = useContentModelEditor();
 
     return (
         <Dialog
@@ -73,6 +73,23 @@ const NewContentModelDialog: React.FC<NewContentModelDialogProps> = ({ open, onC
                         }
                     });
 
+                    const indexableFields = data.fields
+                        .map(field => {
+                            const fieldPlugin = getFieldPlugin({ type: field.type });
+                            if (field.multipleValues) {
+                                if (!fieldPlugin.field.allowIndexes.multipleValues) {
+                                    return null;
+                                }
+                            } else {
+                                if (!fieldPlugin.field.allowIndexes.singleValue) {
+                                    return null;
+                                }
+                            }
+                            return field;
+                        })
+                        .filter(Boolean);
+
+                    console.log({ indexableFields });
                     return (
                         <>
                             <DialogTitle>{t`Create index`}</DialogTitle>
@@ -102,8 +119,8 @@ const NewContentModelDialog: React.FC<NewContentModelDialogProps> = ({ open, onC
                                                         />
                                                     </Cell>
 
-                                                    {data.fields.map(({ label, fieldId, type }) => {
-                                                        return (
+                                                    {indexableFields.map(
+                                                        ({ label, fieldId, type }) => (
                                                             <Cell span={6} key={fieldId}>
                                                                 <Checkbox
                                                                     value={getValue(fieldId)}
@@ -126,8 +143,8 @@ const NewContentModelDialog: React.FC<NewContentModelDialogProps> = ({ open, onC
                                                                     }
                                                                 />
                                                             </Cell>
-                                                        );
-                                                    })}
+                                                        )
+                                                    )}
                                                 </Grid>
                                             </>
                                         )}
