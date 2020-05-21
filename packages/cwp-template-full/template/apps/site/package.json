@@ -8,9 +8,7 @@
     "react-dom": "^16.13.1"
   },
   "devDependencies": {
-    "env-cmd": "^10.1.0",
-    "@webiny/cli": "latest",
-    "@webiny/project-utils": "latest"
+    "env-cmd": "^10.1.0"
   },
   "scripts": {
     "build:dev": "env-cmd -r .env.json -e default,dev webiny run build",
