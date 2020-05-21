@@ -1,11 +1,3 @@
 {
-  "extends": "../../../tsconfig",
-  "references": [
-    { "path": "../../../packages/api-plugin-commodo-db-proxy" },
-    { "path": "../../../packages/api-i18n" },
-    { "path": "../../../packages/api-security" },
-    { "path": "../../../packages/api-form-builder" },
-    { "path": "../../../packages/handler" },
-    { "path": "../../../packages/handler-apollo-server" }
-  ]
+  "extends": "../../../tsconfig"
 }
