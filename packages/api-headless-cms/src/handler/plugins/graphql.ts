@@ -67,6 +67,8 @@ export default ({ type }) => [
             typeDefs: gql`
                 ${i18nFieldType("CmsString", "String")}
                 ${i18nFieldInput("CmsString", "String")}
+                ${i18nFieldType("CmsJSON", "JSON")}
+                ${i18nFieldInput("CmsJSON", "JSON")}
                 ${i18nFieldType("CmsAny", "Any")}
                 ${i18nFieldInput("CmsAny", "Any")}
 
@@ -75,10 +77,10 @@ export default ({ type }) => [
                     fields: [String]
                     operator: String
                 }
-                
+
                 ${contentModelGroup.getTypeDefs(type)}
                 ${meta.typeDefs}
-                
+
                 type SecurityUser {
                     id: ID
                     firstName: String
@@ -95,7 +97,7 @@ export default ({ type }) => [
                     next: String
                     previous: String
                 }
-                
+
                 type CmsListMeta {
                     cursors: CmsCursors
                     hasNextPage: Boolean
@@ -166,7 +168,7 @@ export default ({ type }) => [
                 input CmsFieldRendererInput {
                     name: String
                 }
-                
+
                 type CmsContentModelField {
                     _id: ID
                     label: CmsString

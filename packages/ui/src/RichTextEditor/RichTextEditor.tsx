@@ -64,6 +64,7 @@ export type RichTextEditorProps = FormComponentProps & {
     disabled?: boolean;
     readOnly?: boolean;
     description?: string;
+    placeholder?: string;
     label?: string;
     plugins?: RichTextEditorPlugin[];
 };
@@ -188,7 +189,7 @@ export class RichTextEditor extends React.Component<RichTextEditorProps, State> 
     };
 
     render() {
-        const { plugins, label, disabled, description, validation } = this.props;
+        const { plugins, label, disabled, description, validation, placeholder } = this.props;
 
         return (
             <div className={classNames({ [classes.disable]: disabled })}>
@@ -219,7 +220,7 @@ export class RichTextEditor extends React.Component<RichTextEditorProps, State> 
                             autoCorrect: false,
                             spellCheck: false,
                             plugins: this.plugins.editor,
-                            placeholder: "Enter some text...",
+                            placeholder: placeholder || "Enter some text...",
                             value: this.state.value,
                             onChange: this.onChange,
                             activatePlugin: this.activatePlugin,
