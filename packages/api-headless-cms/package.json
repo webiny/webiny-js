@@ -22,7 +22,7 @@
     "@webiny/commodo": "^3.0.0",
     "@webiny/commodo-graphql": "^3.0.0",
     "@webiny/handler": "^0.1.0",
-    "@webiny/handler-apollo-server": "^1.0.0",
+    "@webiny/handler-apollo-server": "^0.1.0",
     "@webiny/validation": "^3.0.0",
     "apollo-server-lambda": "^2.13.1",
     "boolean": "^3.0.1",
