@@ -15,11 +15,6 @@ module.exports = [
         newFile: ".env.json"
     },
     {
-        dir: "apps/site",
-        oldFile: "example.env.json",
-        newFile: ".env.json"
-    },
-    {
         dir: "",
         oldFile: "example.babel.node.js",
         newFile: ".babel.node.js"
