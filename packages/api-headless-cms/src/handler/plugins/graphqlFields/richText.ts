@@ -1,20 +1,15 @@
-
 import { CmsModelFieldToGraphQLPlugin } from "@webiny/api-headless-cms/types";
 
 const plugin: CmsModelFieldToGraphQLPlugin = {
     name: "cms-model-field-to-graphql-rich-text",
     type: "cms-model-field-to-graphql",
     fieldType: "rich-text",
-    isSortable: false,
     read: {
         createTypeField({ field }) {
             const localeArg = "(locale: String)";
             return `${field.fieldId}${localeArg}: JSON`;
         },
         createGetFilters({ field }) {
-            if (!field.unique) {
-                return null;
-            }
             return `${field.fieldId}: JSON`;
         },
         createResolver({ field }) {
