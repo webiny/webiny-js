@@ -1,6 +1,7 @@
 {
   "private": true,
   "dependencies": {
+    "@webiny/cli": "latest",
     "@webiny/cli-plugin-deploy-components": "latest",
     "@webiny/cli-plugin-scaffold": "latest",
     "@webiny/cli-plugin-scaffold-graphql-service": "latest",
