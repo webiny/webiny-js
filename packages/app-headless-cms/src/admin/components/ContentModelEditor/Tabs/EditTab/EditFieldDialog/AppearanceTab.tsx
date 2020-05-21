@@ -1,6 +1,5 @@
 import React from "react";
 import { getPlugins } from "@webiny/plugins";
-import { useContentModelEditor } from "@webiny/app-headless-cms/admin/components/ContentModelEditor/Context";
 import { Grid, Cell } from "@webiny/ui/Grid";
 import { CmsEditorFieldRendererPlugin } from "@webiny/app-headless-cms/types";
 import { i18n } from "@webiny/app/i18n";
@@ -22,7 +21,6 @@ const style = {
 };
 
 const AppearanceTab = props => {
-    const { getFieldPlugin } = useContentModelEditor();
     const {
         field,
         form: { Bind }
