@@ -32,7 +32,7 @@ export default context => {
             context
         }),
         type: setOnce()(string({ validation: requiredShortString })),
-        multipleValues: boolean(),
+        multipleValues: boolean({ value: false }),
         predefinedValues: fields({ instanceOf: PredefinedValueModel, list: true }),
         renderer: fields({ instanceOf: RendererModel, validation: shortString }),
         validation: fields({
