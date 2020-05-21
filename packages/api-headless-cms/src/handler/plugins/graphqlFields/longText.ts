@@ -28,16 +28,12 @@ const plugin: CmsModelFieldToGraphQLPlugin = {
     name: "cms-model-field-to-graphql-long-text",
     type: "cms-model-field-to-graphql",
     fieldType: "long-text",
-    isSortable: false,
     read: {
         createTypeField({ field }) {
             const localeArg = "(locale: String)";
             return `${field.fieldId}${localeArg}: String`;
         },
         createGetFilters({ field }) {
-            if (!field.unique) {
-                return null;
-            }
             return `${field.fieldId}: String`;
         },
         createListFilters,

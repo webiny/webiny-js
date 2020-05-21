@@ -19,7 +19,7 @@ const plugin: CmsEditorFieldTypePlugin = {
         allowMultipleValues: true,
         allowPredefinedValues: true,
         allowIndexes: {
-            singleValue: true,
+            singleValue: false,
             multipleValues: false
         },
         createField() {
@@ -28,6 +28,9 @@ const plugin: CmsEditorFieldTypePlugin = {
                 validation: [],
                 settings: {
                     defaultValue: ""
+                },
+                renderer: {
+                    name: ""
                 }
             };
         },
