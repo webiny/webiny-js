@@ -2,7 +2,7 @@ import { cloneDeep } from "lodash";
 import { pipe, withStaticProps } from "@webiny/commodo";
 
 const modifyQuery = (modelId, args = {}) => {
-    const returnArgs = cloneDeep(args);
+    const returnArgs: any = cloneDeep(args);
     if (returnArgs.query) {
         returnArgs.query = {
             $and: [{ model: modelId }, returnArgs.query]
