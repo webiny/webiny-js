@@ -4,6 +4,8 @@ import Switch from "./fields/Switch";
 import Time from "./fields/Time";
 import DateTimeWithoutTimezone from "./fields/DateTimeWithoutTimezone";
 import DateTimeWithTimezone from "./fields/DateTimeWithTimezone";
+import SingleFile from "./fields/SingleFile";
+import MultipleFile from "./fields/MultipleFile";
 import { BindComponentRenderProp, Form } from "@webiny/form";
 import { CmsEditorField } from "@webiny/app-headless-cms/types";
 import { Grid, Cell } from "@webiny/ui/Grid";
@@ -39,6 +41,14 @@ const renderFieldElement = (props: { field: CmsEditorField; bind: BindComponentR
             return <Input {...props} type="number" />;
         case "boolean":
             return <Switch {...props} />;
+        case "file":
+            if (props.field.settings.type === "single") {
+                return <SingleFile {...props} />;
+            }
+            if (props.field.settings.type === "multiple") {
+                return <MultipleFile {...props} />;
+            }
+            return <span>You have selected wrong type</span>;
         case "datetime":
             if (props.field.settings.type === "dateTimeWithoutTimezone") {
                 return <DateTimeWithoutTimezone {...props} />;
