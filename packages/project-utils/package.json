@@ -25,7 +25,7 @@
     "@types/webpack-env": "^1.15.2",
     "@webiny/app": "^3.0.6",
     "@webiny/handler": "^0.1.0",
-    "@webiny/handler-index": "^1.0.0",
+    "@webiny/handler-index": "^0.1.0",
     "@webiny/handler-files": "^0.1.0",
     "@webiny/handler-ssr": "^0.1.0",
     "@webiny/react-router": "^2.0.2",
