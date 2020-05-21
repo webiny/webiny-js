@@ -18,3 +18,8 @@ export type I18NObjectValue = {
     value?: { [key: string]: any };
     values: Array<{ locale: string; value: any }>;
 };
+
+export type I18NValue<T = any> = {
+    value?: T;
+    values: Array<{ locale: string; value: T }>;
+};

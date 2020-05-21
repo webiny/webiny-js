@@ -1,5 +1,5 @@
 import { graphql } from "graphql";
-import get from "lodash.get";
+import { get } from "lodash";
 import setupContentModels from "../setup/setupContentModels";
 import { createUtils } from "../utils";
 import createCategories from "../mocks/createCategories.manage";

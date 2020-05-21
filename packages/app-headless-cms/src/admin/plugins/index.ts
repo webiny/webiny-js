@@ -1,6 +1,7 @@
 import routes from "./routes";
 import menus from "./menus";
 import fields from "./fields";
+import fieldRenderers from "./fieldRenderers";
 import validators from "./validators";
 import icons from "./icons";
 import install from "./install";
@@ -26,6 +27,7 @@ export default () => [
 
     // Editor
     fields,
+    fieldRenderers,
     validators,
     contentModelEditorPlugins,
     appTemplateRenderer

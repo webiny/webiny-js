@@ -1,7 +1,7 @@
 import { ApolloServer } from "apollo-server-lambda";
 import { boolean } from "boolean";
 import { CreateSchemaPlugin } from "@webiny/handler-apollo-server/types";
-import get from "lodash.get";
+import { get } from "lodash";
 import { HandlerContext } from "@webiny/handler/types";
 
 function normalizeEvent(event) {

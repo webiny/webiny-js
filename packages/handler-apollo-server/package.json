@@ -14,24 +14,20 @@
     "Adrian Smijulj <adrian@webiny.com>"
   ],
   "dependencies": {
-    "apollo-graphql": "^0.4.1",
     "@babel/runtime": "^7.5.5",
     "@webiny/handler": "^0.1.0",
     "@webiny/plugins": "^3.0.1",
     "@webiny/graphql": "^1.0.0",
+    "apollo-server-lambda": "^2.13.1",
     "graphql-tag": "^2.10.1",
-    "graphql-tools": "^4.0.5",
-    "graphql-type-json": "^0.3.0",
-    "graphql-type-long": "^0.1.1",
     "boolean": "^3.0.1",
-    "graphql": "^14.4.2",
-    "graphql-iso-date": "^3.6.1",
-    "@apollo/federation": "^0.10.2"
+    "graphql": "^14.4.2"
   },
   "devDependencies": {
     "@babel/cli": "^7.5.5",
     "@babel/core": "^7.5.5",
-    "@babel/preset-env": "^7.5.5"
+    "@babel/preset-env": "^7.5.5",
+    "jest-mock-console": "^1.0.0"
   },
   "publishConfig": {
     "access": "public",

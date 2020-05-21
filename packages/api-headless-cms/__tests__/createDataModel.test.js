@@ -120,6 +120,8 @@ describe(`createDataModel`, () => {
         });
 
         try {
+            // TODO: fix this, the "entry" only has the "title" property in the "fields" key, but "slug" field is present
+            // TODO: in content model's indexes list. Errors at dataManager/handler/createRevisionIndexes.ts:37
             await product.save();
         } catch (e) {
             if (e.data) {
