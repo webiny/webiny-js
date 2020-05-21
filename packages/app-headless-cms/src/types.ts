@@ -58,6 +58,7 @@ export type CmsEditorField = {
     multipleValuesValidation?: CmsEditorFieldValidator[];
     multipleValues?: boolean;
     predefinedValues?: Array<{ label: I18NValue; value: I18NValue }>;
+    settings?: { [key: string]: any };
     renderer: {
         name: string;
     };
