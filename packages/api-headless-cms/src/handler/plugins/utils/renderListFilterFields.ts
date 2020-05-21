@@ -13,8 +13,15 @@ export const renderListFilterFields: RenderListFilterFields = ({
     type,
     fieldTypePlugins
 }) => {
-    return model.fields
-        .map(field => {
+    const uniqueIndexFields = model.getUniqueIndexFields();
+
+    return uniqueIndexFields
+        .map(fieldId => {
+            if (fieldId === "id") {
+                return ["id: ID", "id_not: ID", "id_in: [ID]", "id_not_in: [ID]"].join("\n");
+            }
+
+            const field = model.fields.find(item => item.fieldId === fieldId);
             const { createListFilters } = fieldTypePlugins[field.type][type];
             if (typeof createListFilters === "function") {
                 return createListFilters({ model, field });

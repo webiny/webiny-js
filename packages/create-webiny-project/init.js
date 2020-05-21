@@ -219,9 +219,15 @@ module.exports = async function({ root, appName, templateName, tag, log }) {
 
                 //run the setup for cwp-template-full
                 try {
-                    const cwpTemplate = require(path.join(templatePath, "./index"));
+                    let cwpTemplate;
+                    if (!templateName.startsWith(".") && !templateName.startsWith("file:")) {
+                        cwpTemplate = require(templateName);
+                    } else {
+                        cwpTemplate = require(path.join(templatePath, "index"));
+                    }
                     await cwpTemplate({ appName, root });
                 } catch (err) {
+                    console.log(err);
                     throw new Error("Unable to perform template-specific actions.", err);
                 }
             }

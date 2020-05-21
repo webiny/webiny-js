@@ -23,8 +23,8 @@ const PreviewBox = styled("div")({
     }
 });
 
-export default [
-    render,
+export default () => [
+    render(),
     {
         name: "pb-page-element-typeform",
         type: "pb-editor-page-element",
@@ -40,7 +40,11 @@ export default [
                 );
             }
         },
-        settings: ["pb-editor-page-element-settings-delete", "", "pb-editor-page-element-settings-height"],
+        settings: [
+            "pb-editor-page-element-settings-delete",
+            "",
+            "pb-editor-page-element-settings-height"
+        ],
         target: ["column", "row", "list-item"],
         onCreate: "open-settings",
         render({ element }) {

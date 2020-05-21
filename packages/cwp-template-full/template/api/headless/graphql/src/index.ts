@@ -3,6 +3,7 @@ import apolloServerPlugins from "@webiny/handler-apollo-server";
 import dbProxy from "@webiny/api-plugin-commodo-db-proxy";
 import securityServicePlugins from "@webiny/api-security/plugins/service";
 import headlessCmsPlugins from "@webiny/api-headless-cms/plugins";
+import dataManagerPlugins from "@webiny/api-headless-cms/dataManager/client";
 
 export const handler = createHandler(
     apolloServerPlugins({
@@ -20,5 +21,6 @@ export const handler = createHandler(
         },
         validateAccessTokenFunction: process.env.VALIDATE_ACCESS_TOKEN_FUNCTION
     }),
-    headlessCmsPlugins()
+    headlessCmsPlugins(),
+    dataManagerPlugins({ dataManagerFunction: process.env.CMS_DATA_MANAGER_FUNCTION })
 );

@@ -167,9 +167,6 @@ export default ({ type }) => [
                     placeholderText: CmsString
                     fieldId: String
                     type: String
-                    unique: Boolean
-                    searchable: Boolean
-                    sortable: Boolean
                     options: [CmsFieldOptions]
                     validation: [CmsFieldValidation]
                     settings: JSON
@@ -182,9 +179,6 @@ export default ({ type }) => [
                     placeholderText: CmsStringInput
                     fieldId: String
                     type: String
-                    unique: Boolean
-                    searchable: Boolean
-                    sortable: Boolean
                     options: [CmsFieldOptionsInput]
                     validation: [CmsFieldValidationInput]
                     settings: JSON

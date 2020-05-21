@@ -14,7 +14,7 @@ import formSubmissions from "./formDetails/formSubmissions";
 import install from "./install";
 import scopesList from "./scopesList";
 
-export default [
+export default () => [
     install,
     settings,
     routes,
@@ -29,5 +29,5 @@ export default [
     groups,
     validators,
     formEditorPlugins,
-    formSitePlugins
+    formSitePlugins()
 ];

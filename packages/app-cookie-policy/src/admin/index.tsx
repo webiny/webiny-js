@@ -11,7 +11,7 @@ const t = i18n.ns("app-cookie-policy/admin");
 
 const ROLE_PB_SETTINGS = ["pb:page:crud"];
 
-const plugins = [
+export default () => [
     {
         type: "route",
         name: "route-settings-page-builder-cookie-policy",
@@ -37,5 +37,3 @@ const plugins = [
         }
     } as PbMenuSettingsItemPlugin
 ];
-
-export default plugins;

@@ -18,6 +18,15 @@ export const createReadSDL: CreateManageSDL = ({ model, fieldTypePlugins }): str
     const typeName = createTypeName(model.modelId);
     const rTypeName = createReadTypeName(typeName);
 
+    const listFilterFieldsRender = renderListFilterFields({
+        model,
+        type: "read",
+        fieldTypePlugins
+    });
+
+    const sortEnumRender = renderSortEnum({ model, fieldTypePlugins });
+    const getFilterFieldsRender = renderGetFilterFields({ model, fieldTypePlugins });
+
     return `
         "${model.description}"
         type ${rTypeName} {
@@ -30,25 +39,22 @@ export const createReadSDL: CreateManageSDL = ({ model, fieldTypePlugins }): str
             ${renderFields({ model, type: "read", fieldTypePlugins })}
         }
         
-        input ${rTypeName}GetWhereInput {
-            ${renderGetFilterFields({ model, fieldTypePlugins })}
-        }
+        ${getFilterFieldsRender &&
+            `input ${rTypeName}GetWhereInput {
+            ${getFilterFieldsRender}
+        }`}
         
-        input ${rTypeName}ListWhereInput {
-            id: ID
-            id_not: ID
-            id_in: [ID]
-            id_not_in: [ID]
-            ${renderListFilterFields({ model, type: "read", fieldTypePlugins })}
-        }
         
-        enum ${rTypeName}ListSorter {
-            createdOn_ASC
-            createdOn_DESC
-            updatedOn_ASC
-            updatedOn_DESC
-            ${renderSortEnum({ model, fieldTypePlugins })}
-        }
+        ${listFilterFieldsRender &&
+            `input ${rTypeName}ListWhereInput {
+            ${listFilterFieldsRender}
+        }`}
+        
+        
+        ${sortEnumRender &&
+            `enum ${rTypeName}ListSorter {
+            ${sortEnumRender}
+        }`}
         
         type ${rTypeName}Response {
             data: ${rTypeName}

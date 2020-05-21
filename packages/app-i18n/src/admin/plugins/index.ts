@@ -20,12 +20,12 @@ const globalSearchHotkey: AdminGlobalSearchPreventHotkeyPlugin = {
     }
 };
 
-export default [
+export default () => [
     routes,
     menus,
     scopesList,
     richTextEditor,
-    i18nSitePlugins,
+    i18nSitePlugins(),
     globalSearchHotkey,
     install
 ];

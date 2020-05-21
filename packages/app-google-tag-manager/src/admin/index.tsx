@@ -12,7 +12,7 @@ const t = i18n.ns("app-google-tag-manager/admin");
 
 const ROLE_PB_SETTINGS = ["pb:page:crud"];
 
-const plugins = [
+export default () => [
     {
         type: "route",
         name: "route-settings-page-builder-google-tag-manager",
@@ -43,5 +43,3 @@ const plugins = [
         }
     } as PbMenuSettingsItemPlugin
 ];
-
-export default plugins;

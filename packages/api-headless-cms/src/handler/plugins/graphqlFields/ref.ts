@@ -7,7 +7,6 @@ const plugin: CmsModelFieldToGraphQLPlugin = {
     name: "cms-model-field-to-graphql-ref",
     type: "cms-model-field-to-graphql",
     fieldType: "ref",
-    isSortable: false,
     read: {
         createTypeField({ model, field }) {
             const localeArg = "(locale: String)";

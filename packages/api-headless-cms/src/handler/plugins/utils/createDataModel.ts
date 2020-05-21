@@ -126,8 +126,8 @@ export const createDataModel = (
                 // Determine if there are any dirty fields
                 const dirty = relFields.filter(Boolean).length > 0;
 
-                if (dirty) {
-                    // If index related fields are dirty, we need to call DataManager to rebuild indexes
+                if (dirty || !this.isExisting()) {
+                    // If index related fields are dirty (or this is a new entry), we need to call DataManager to rebuild indexes
                     const removeCallback = this.hook("afterSave", async () => {
                         removeCallback();
                         await context.cms.dataManager.generateRevisionIndexes({ revision: this });

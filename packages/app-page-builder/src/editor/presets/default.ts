@@ -13,7 +13,7 @@ import slateEditorPlugins from "./../plugins/slate";
 import pageSettingsPlugins from "./../plugins/pageSettings";
 import breadcrumbs from "./../plugins/breadcrumbs";
 
-export default [
+export default () => [
     contentBackground,
     breadcrumbs,
     elementActions,

@@ -1,6 +1,6 @@
 import { i18nString } from "@webiny/api-i18n/fields";
 import { validation } from "@webiny/validation";
-import { withFields, string, fields, object, boolean, setOnce } from "@webiny/commodo";
+import { withFields, string, fields, object, setOnce } from "@webiny/commodo";
 
 const required = validation.create("required");
 
@@ -12,7 +12,6 @@ export default context =>
         helpText: i18nString({ context }),
         placeholderText: i18nString({ context }),
         type: setOnce()(string({ validation: required })),
-        unique: boolean({ validation: required, value: false }),
         validation: fields({
             list: true,
             value: [],

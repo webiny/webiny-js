@@ -35,7 +35,7 @@ const InvalidateExpiredSsrCache = () => {
     return null;
 };
 
-export default [
+export default () => [
     {
         type: "addon-render",
         name: "addon-render-ssr-cache-invalidation",

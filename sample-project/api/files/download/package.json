@@ -6,6 +6,6 @@
   },
   "dependencies": {
     "@webiny/handler": "^0.1.0",
-    "@webiny/serverless-files": "^2.1.0"
+    "@webiny/serverless-files": "^3.1.0"
   }
 }
