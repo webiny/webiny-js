@@ -118,7 +118,7 @@ function processDeps({ deps, npm }) {
         }
 
         const currentVersion = deps[key];
-        const newVersion = npm[key][DIST_TAG];
+        const newVersion = `^${npm[key][DIST_TAG]}`;
 
         if (currentVersion !== newVersion) {
             console.log(`- ${key}@${blue(currentVersion)} => ${key}@${blue(newVersion)}`);
