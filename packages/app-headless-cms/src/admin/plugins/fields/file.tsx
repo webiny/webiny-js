@@ -26,7 +26,7 @@ const plugin: CmsEditorFieldTypePlugin = {
                 type: this.type,
                 validation: [],
                 settings: {
-                    defaultValue: "",
+                    type: "",
                 },
                 renderer: {
                     name: ""
