@@ -33,7 +33,7 @@
     "@babel/preset-typescript": "^7.8.3",
     "@shelf/jest-mongodb": "^1.1.5",
     "@webiny/api-plugin-commodo-mongodb": "^2.0.2",
-    "@webiny/handler": "^1.0.0",
+    "@webiny/handler": "^0.1.0",
     "eslint-plugin-jest": "^22.17.0",
     "mongodb": "^3.5.7"
   },

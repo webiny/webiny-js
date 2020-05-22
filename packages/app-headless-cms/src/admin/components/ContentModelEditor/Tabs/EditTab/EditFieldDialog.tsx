@@ -7,9 +7,11 @@ import { Tabs, Tab } from "@webiny/ui/Tabs";
 import GeneralTab from "./EditFieldDialog/GeneralTab";
 import ValidatorsTab from "./EditFieldDialog/ValidatorsTab";
 import AppearanceTab from "./EditFieldDialog/AppearanceTab";
+import PredefinedValuesTab from "./EditFieldDialog/PredefinedValuesTab";
 import { i18n } from "@webiny/app/i18n";
 import { useContentModelEditor } from "@webiny/app-headless-cms/admin/components/ContentModelEditor/Context";
-import { CmsEditorField } from "@webiny/app-headless-cms/types";
+import { CmsEditorField, CmsEditorFieldRendererPlugin } from "@webiny/app-headless-cms/types";
+import { getPlugins } from "@webiny/plugins";
 const t = i18n.namespace("app-headless-cms/admin/components/editor");
 
 const dialogBody = css({
@@ -31,7 +33,23 @@ const EditFieldDialog = ({ field, onSubmit, ...props }: EditFieldDialogProps) =>
     const { getFieldPlugin } = useContentModelEditor();
 
     useEffect(() => {
-        setCurrent(cloneDeep(field));
+        if (!field) {
+            return setCurrent(field);
+        }
+
+        const clonedField = cloneDeep(field);
+
+        if (!clonedField.renderer || !clonedField.renderer.name) {
+            const [renderPlugin] = getPlugins<CmsEditorFieldRendererPlugin>(
+                "cms-editor-field-renderer"
+            ).filter(item => item.renderer.canUse({ field }));
+
+            if (renderPlugin) {
+                clonedField.renderer = { name: renderPlugin.renderer.rendererName };
+            }
+        }
+
+        setCurrent(clonedField);
     }, [field]);
 
     const onClose = useCallback(() => {
@@ -63,6 +81,19 @@ const EditFieldDialog = ({ field, onSubmit, ...props }: EditFieldDialogProps) =>
                                         fieldPlugin={fieldPlugin}
                                     />
                                 </Tab>
+                                {fieldPlugin.field.allowPredefinedValues &&
+                                    typeof fieldPlugin.field.renderPredefinedValues ===
+                                        "function" && (
+                                        <Tab label={t`Predefined Values`}>
+                                            <PredefinedValuesTab
+                                                form={form}
+                                                field={current}
+                                                fieldPlugin={fieldPlugin}
+                                            />
+                                        </Tab>
+                                    )}
+
+                                {/* TODO: Add validators functionality.
                                 {Array.isArray(fieldPlugin.field.validators) &&
                                     fieldPlugin.field.validators.length > 0 && (
                                         <Tab label={"Validators"}>
@@ -72,7 +103,7 @@ const EditFieldDialog = ({ field, onSubmit, ...props }: EditFieldDialogProps) =>
                                                 fieldPlugin={fieldPlugin}
                                             />
                                         </Tab>
-                                    )}
+                                    )}*/}
                                 <Tab label={t`Appearance`}>
                                     <AppearanceTab
                                         form={form}

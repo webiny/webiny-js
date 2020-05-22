@@ -1,7 +1,3 @@
 {
-  "extends": "../../../../tsconfig",
-  "references": [
-    { "path": "../../../../packages/handler" },
-    { "path": "../../../../packages/handler-apollo-gateway" }
-  ]
+  "extends": "../../../../tsconfig"
 }

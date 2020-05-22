@@ -1,7 +1,7 @@
 const {
     startApp,
     buildApp,
-    buildAppHandler,
+    buildAppHandlerWithSSR,
     buildAppSSR,
     updateEnvValues
 } = require("@webiny/project-utils");
@@ -22,8 +22,8 @@ module.exports = {
         async build(...args) {
             // Bundle app for deployment
             await buildApp(...args);
-            // Build Lambda handler which will serve files to CDN
-            await buildAppHandler(...args);
+            // Build Lambda handler which will run a server-side render
+            await buildAppHandlerWithSSR(...args);
         },
         async buildSsr(options, context) {
             // Build app for deployment

@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useState, useRef } from "react";
+import React, { useCallback, useMemo, useState } from "react";
 import useReactRouter from "use-react-router";
 import styled from "@emotion/styled";
 import { renderPlugins } from "@webiny/app/plugins";

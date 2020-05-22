@@ -1,3 +1,3 @@
 module.exports = {
-    hooks: ["../apps/admin", "../apps/site"]
+    hooks: ["../apps/admin"]
 };

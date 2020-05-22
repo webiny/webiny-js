@@ -1,10 +1,12 @@
 const fetch = require("node-fetch");
 const pRetry = require("p-retry");
 const semver = require("semver");
+const execa = require("execa");
 
 function getPackageVersion(name, tag = "latest") {
     const getVersion = async () => {
-        const res = await fetch(`https://registry.npmjs.org/${name}`);
+        const { stdout: registry } = await execa("npm", ["config", "get", "registry"]);
+        const res = await fetch(`${registry}${name}`);
         const json = await res.json();
 
         const tagVersion = json["dist-tags"][tag];

@@ -5,7 +5,7 @@ import { FormElementMessage } from "../FormElementMessage";
 
 type Props = FormComponentProps & {
     // Component label.
-    label?: string;
+    label?: React.ReactNode;
 
     // Is radio disabled?
     disabled?: boolean;
@@ -35,6 +35,7 @@ class Radio extends React.Component<Props> {
                     disabled={disabled}
                     checked={Boolean(value)}
                     onChange={this.onChange}
+                    // @ts-ignore Although the label is React.ReactNode internally, an error is still thrown.
                     label={label}
                 />
                 {validation.isValid === false && (

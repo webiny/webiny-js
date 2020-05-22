@@ -67,16 +67,20 @@ export default ({ type }) => [
             typeDefs: gql`
                 ${i18nFieldType("CmsString", "String")}
                 ${i18nFieldInput("CmsString", "String")}
+                ${i18nFieldType("CmsJSON", "JSON")}
+                ${i18nFieldInput("CmsJSON", "JSON")}
+                ${i18nFieldType("CmsAny", "Any")}
+                ${i18nFieldInput("CmsAny", "Any")}
 
                 input CmsSearchInput {
                     query: String
                     fields: [String]
                     operator: String
                 }
-                
+
                 ${contentModelGroup.getTypeDefs(type)}
                 ${meta.typeDefs}
-                
+
                 type SecurityUser {
                     id: ID
                     firstName: String
@@ -93,7 +97,7 @@ export default ({ type }) => [
                     next: String
                     previous: String
                 }
-                
+
                 type CmsListMeta {
                     cursors: CmsCursors
                     hasNextPage: Boolean
@@ -147,37 +151,48 @@ export default ({ type }) => [
                     settings: JSON
                 }
 
-                type CmsFieldOptions {
-                    label: CmsString
-                    value: String
+                type CmsFieldPredefinedValue {
+                    label: [CmsAny]
+                    value: [CmsAny]
                 }
 
-                input CmsFieldOptionsInput {
-                    label: CmsStringInput
-                    value: String
+                input CmsFieldPredefinedValueInput {
+                    label: [CmsAnyInput]
+                    value: [CmsAnyInput]
                 }
 
+                type CmsFieldRenderer {
+                    name: String
+                }
+
+                input CmsFieldRendererInput {
+                    name: String
+                }
 
                 type CmsContentModelField {
-                    _id: String
+                    _id: ID
                     label: CmsString
                     helpText: CmsString
                     placeholderText: CmsString
                     fieldId: String
                     type: String
-                    options: [CmsFieldOptions]
+                    multipleValues: Boolean
+                    predefinedValues: [CmsFieldPredefinedValue]
+                    renderer: CmsFieldRenderer
                     validation: [CmsFieldValidation]
                     settings: JSON
                 }
 
                 input CmsContentModelFieldInput {
-                    _id: String
+                    _id: ID
                     label: CmsStringInput
                     helpText: CmsStringInput
                     placeholderText: CmsStringInput
                     fieldId: String
                     type: String
-                    options: [CmsFieldOptionsInput]
+                    multipleValues: Boolean
+                    predefinedValues: [CmsFieldPredefinedValueInput]
+                    renderer: CmsFieldRendererInput
                     validation: [CmsFieldValidationInput]
                     settings: JSON
                 }

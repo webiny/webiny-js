@@ -7,6 +7,7 @@ process.on("unhandledRejection", err => {
 const chalk = require("chalk");
 const execa = require("execa");
 const fg = require("fast-glob");
+const findUp = require("find-up");
 const fs = require("fs-extra");
 const Listr = require("listr");
 const loadJsonFile = require("load-json-file");
@@ -92,41 +93,64 @@ module.exports = async function({ root, appName, templateName, tag, log }) {
             task: async () => {
                 // Set proper @webiny package versions
                 const workspaces = await fg(["**/package.json"], {
-                    ignore: ["**/dist/**", "**/node_modules/**"],
+                    ignore: ["**/dist/**", "**/node_modules/**", root],
                     cwd: root
                 });
 
-                try {
-                    await Promise.all(
-                        workspaces.map(async jsonPath => {
-                            jsonPath = path.join(root, jsonPath);
-                            const json = await loadJsonFile(jsonPath);
-                            const keys = Object.keys(json.dependencies).filter(k =>
-                                k.startsWith("@webiny")
-                            );
-                            await Promise.all(
-                                keys.map(async name => {
-                                    if (tag.startsWith(".")) {
-                                        // This means `tag` points to the location of all @webiny packages
-                                        json.dependencies[name] =
-                                            "link:" +
-                                            path.relative(
-                                                path.dirname(jsonPath),
-                                                path.join(process.cwd(), tag, name)
-                                            );
-                                    } else {
-                                        // Pull tag version from npm
+                await Promise.all(
+                    workspaces.map(async jsonPath => {
+                        const relativeJsonPath = jsonPath;
+                        jsonPath = path.join(root, jsonPath);
+                        const json = await loadJsonFile(jsonPath);
+                        const keys = Object.keys(json.dependencies).filter(k =>
+                            k.startsWith("@webiny")
+                        );
+                        const currentDir = jsonPath.match(/(.*)[\/\\]/)[1] || "";
+
+                        const baseTsConfigPath = path
+                            .relative(
+                                currentDir,
+                                findUp.sync("tsconfig.json", {
+                                    cwd: root
+                                })
+                            )
+                            .replace(/\\/g, "/");
+
+                        // We don't want to modify tsconfig file in the root of the project
+                        if (relativeJsonPath !== "package.json") {
+                            const tsConfigPath = path.join(currentDir, "tsconfig.json");
+                            const tsconfig = require(tsConfigPath);
+                            tsconfig.extends = baseTsConfigPath;
+                            fs.writeFileSync(tsConfigPath, JSON.stringify(tsconfig, null, 2));
+                        }
+
+                        await Promise.all(
+                            keys.map(async name => {
+                                if (tag.startsWith(".")) {
+                                    // This means `tag` points to the location of all @webiny packages
+                                    json.dependencies[name] =
+                                        "link:" +
+                                        path.relative(
+                                            path.dirname(jsonPath),
+                                            path.join(process.cwd(), tag, name)
+                                        );
+                                } else {
+                                    // Pull tag version from npm
+                                    try {
                                         json.dependencies[name] =
                                             `^` + (await getPackageVersion(name, tag));
+                                    } catch (err) {
+                                        console.log(
+                                            `Failed to get package version for "${name}: ${err.message}"`
+                                        );
+                                        process.exit(1);
                                     }
-                                })
-                            );
-                            await writeJsonFile(jsonPath, json);
-                        })
-                    );
-                } catch (err) {
-                    throw new Error("Unable to retrieve packages for new project.", err);
-                }
+                                }
+                            })
+                        );
+                        await writeJsonFile(jsonPath, json);
+                    })
+                );
             }
         },
         {
@@ -205,27 +229,9 @@ module.exports = async function({ root, appName, templateName, tag, log }) {
         {
             title: "Run template-specific actions",
             task: async () => {
-                // Remove template from dependencies
-                if (!templateName.startsWith(".") && !templateName.startsWith("file:")) {
-                    try {
-                        execa.sync("rm", ["-r", "node_modules/" + templateName], {
-                            cwd: root
-                        });
-                    } catch (err) {
-                        console.log(err);
-                        console.error("Unable to remove " + templateName);
-                    }
-                }
-
                 //run the setup for cwp-template-full
                 try {
-                    let cwpTemplate;
-                    if (!templateName.startsWith(".") && !templateName.startsWith("file:")) {
-                        cwpTemplate = require(templateName);
-                    } else {
-                        cwpTemplate = require(path.join(templatePath, "index"));
-                    }
-                    await cwpTemplate({ appName, root });
+                    await require(templatePath)({ appName, root });
                 } catch (err) {
                     console.log(err);
                     throw new Error("Unable to perform template-specific actions.", err);

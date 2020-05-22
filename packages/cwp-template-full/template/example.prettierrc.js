@@ -1,5 +1,4 @@
 module.exports = {
-    parser: "typescript",
     printWidth: 100,
     tabWidth: 2,
     overrides: [

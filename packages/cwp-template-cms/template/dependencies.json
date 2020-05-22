@@ -1,6 +1,7 @@
 {
   "private": true,
   "dependencies": {
+    "@webiny/cli": "latest",
     "@webiny/cli-plugin-deploy-components": "latest",
     "@webiny/cli-plugin-scaffold": "latest",
     "@webiny/cli-plugin-scaffold-graphql-service": "latest",
@@ -23,6 +24,14 @@
     "@types/react-dom": "^16.9.4"
   },
   "workspaces": {
-    "packages": ["apps/*"]
+    "packages": [
+      "apps/*",
+      "api/apolloGateway",
+      "api/databaseProxy",
+      "api/files/*",
+      "api/headless/*",
+      "api/i18n/*",
+      "api/security/*"
+    ]
   }
 }

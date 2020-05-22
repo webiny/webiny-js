@@ -25,12 +25,26 @@ const plugin: CmsEditorFieldTypePlugin = {
             return {
                 type: this.type,
                 validation: [],
-                settings: {
-                    defaultValue: ""
+                renderer: {
+                    name: ""
                 }
             };
         },
         renderSettings({ form: { Bind } }) {
+            return (
+                <Grid>
+                    <Cell span={12}>
+                        <Bind name={"placeholderText"}>
+                            <I18NInput
+                                label={t`Placeholder text`}
+                                description={t`Placeholder text (optional)`}
+                            />
+                        </Bind>
+                    </Cell>
+                </Grid>
+            );
+        },
+        renderPredefinedValues({ form: { Bind } }) {
             return (
                 <Grid>
                     <Cell span={12}>

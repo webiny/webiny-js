@@ -97,21 +97,18 @@ export const createDataModel = (
                 this.meta.latestVersion = true;
 
                 if (this.meta.version > 1) {
-                    const removeCallback = this.hook("afterCreate", async () => {
-                        const previousLatest = await Model.findOne({
-                            query: {
-                                parent: this.meta.parent,
-                                latestVersion: true,
-                                version: { $ne: this.meta.version }
-                            }
-                        });
-
-                        if (previousLatest) {
-                            previousLatest.meta.latestVersion = false;
-                            await previousLatest.save();
+                    const previousLatest = await Model.findOne({
+                        query: {
+                            parent: this.meta.parent,
+                            latestVersion: true,
+                            version: { $ne: this.meta.version }
                         }
-                        removeCallback();
                     });
+
+                    if (previousLatest) {
+                        previousLatest.meta.latestVersion = false;
+                        await previousLatest.save();
+                    }
                 }
             },
             async beforeSave() {

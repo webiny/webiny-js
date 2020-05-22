@@ -12,7 +12,7 @@ const plugin: FbBuilderFieldPlugin = {
         name: "textarea",
         type: "textarea",
         validators: ["required", "minLength", "maxLength", "pattern"],
-        label: "Long Test",
+        label: "Long Text",
         description: "Descriptions, comments or paragraphs or text",
         icon: <TextIcon />,
         createField() {
