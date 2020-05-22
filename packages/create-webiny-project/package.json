@@ -24,6 +24,7 @@
     "fast-glob": "^3.2.2",
     "find-up": "^4.1.0",
     "fs-extra": "^9.0.0",
+    "indent-string": "^4.0.0",
     "listr": "^0.14.3",
     "load-json-file": "^6.2.0",
     "node-fetch": "^2.6.0",
@@ -38,5 +39,6 @@
   "publishConfig": {
     "access": "public",
     "directory": "."
-  }
+  },
+  "gitHead": "8607b9afe88b777e47015ae1af992f7fd58c2a08"
 }
