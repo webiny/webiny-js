@@ -71,7 +71,7 @@ describe("Data Manager Client", () => {
 
         await category.save();
 
-        expect(spy.callCount).toBe(0);
+        expect(spy.callCount).toBe(1);
     });
 
     it(`should call "generateRevisionIndexes" if content entry index fields have changed`, async () => {
