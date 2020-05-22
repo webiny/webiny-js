@@ -36,7 +36,8 @@ const SpacerContainer = props => {
     const { elementStyle, customClasses, combineClassNames } = props;
 
     const [localHeight, setHeight] = useState(null);
-    let { height = MIN_HEIGHT, ...spacerStyle } = elementStyle;
+    const { initialHeight = MIN_HEIGHT, ...spacerStyle } = elementStyle;
+    let height = initialHeight;
     if (localHeight) {
         height = localHeight;
     }

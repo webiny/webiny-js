@@ -15,19 +15,23 @@
   ],
   "license": "MIT",
   "dependencies": {
-    "@commodo/fields": "^1.0.0",
-    "@commodo/fields-storage": "^1.0.0",
-    "@commodo/fields-storage-ref": "^1.0.0",
-    "@commodo/fields-storage-soft-delete": "^1.0.0",
-    "@commodo/hooks": "^1.0.0",
-    "@commodo/name": "^1.0.2",
+    "@commodo/fields": "1.0.3-next.11",
+    "@commodo/fields-storage": "2.0.0-next.11",
+    "@commodo/fields-storage-ref": "1.0.3-next.11",
+    "@commodo/fields-storage-soft-delete": "2.0.0-next.11",
+    "@commodo/hooks": "1.0.3-next.11",
+    "@commodo/name": "1.1.1-next.11",
     "commodo-fields-date": "^1.0.3",
+    "commodo-fields-int": "^1.0.1",
+    "commodo-fields-float": "^1.0.2",
     "commodo-fields-object": "^1.0.3",
     "commodo-fields-storage-crud-logs": "^1.0.2",
+    "ramda": "^0.26.1",
     "repropose": "^1.0.2"
   },
   "publishConfig": {
-    "access": "public"
+    "access": "public",
+    "directory": "dist"
   },
   "scripts": {
     "build": "rimraf ./dist *.tsbuildinfo && babel src -d dist --source-maps --copy-files --extensions \".ts\"",

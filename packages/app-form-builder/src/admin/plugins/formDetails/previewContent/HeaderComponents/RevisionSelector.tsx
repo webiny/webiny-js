@@ -8,7 +8,6 @@ import { MenuItem } from "@rmwc/menu";
 import { Typography } from "@webiny/ui/Typography";
 import { Menu } from "@webiny/ui/Menu";
 import { get } from "lodash";
-import { FbFormModel } from "@webiny/app-form-builder/types";
 const buttonStyle = css({
     "&.mdc-button": {
         color: "var(--mdc-theme-text-primary-on-background) !important"

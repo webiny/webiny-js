@@ -1,0 +1,5 @@
+Copyright (c) 2019 Serverless, Inc. https://serverless.com
+
+This product includes software developed by Serverless, Inc. https://serverless.com.
+
+Portions of this software were developed by Webiny, Ltd. https://www.webiny.com

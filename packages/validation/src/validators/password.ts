@@ -1,7 +1,9 @@
 import ValidationError from "./../validationError";
 
 export default (value: any, params: Array<string> = []) => {
-    if (!value) return;
+    if (!value) {
+        return;
+    }
     value = value + "";
 
     const length = params[0] || 6;

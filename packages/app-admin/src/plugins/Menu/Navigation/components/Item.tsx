@@ -28,20 +28,29 @@ const submenuList = css({
     }
 });
 
-type Props = { label: React.ReactNode; path: string };
+type Props = {
+    label: React.ReactNode;
+    path: string;
+    style?: React.CSSProperties;
+    onClick?: () => any;
+};
 
 export default function Item(props: Props) {
-    const { path, label } = props;
+    const { path, label, style, onClick } = props;
     const { hideMenu } = useNavigation();
     return (
-        <React.Fragment>
-            <List className={submenuList}>
-                <ListItem className={submenuItems}>
+        <List className={submenuList} style={style}>
+            <ListItem className={submenuItems}>
+                {path ? (
                     <Link className={linkStyle} to={path} onClick={hideMenu}>
                         {label}
                     </Link>
-                </ListItem>
-            </List>
-        </React.Fragment>
+                ) : (
+                    <span onClick={onClick} className={linkStyle}>
+                        {label}
+                    </span>
+                )}
+            </ListItem>
+        </List>
     );
 }

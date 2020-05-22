@@ -86,7 +86,9 @@ const I18NInstaller = ({ onInstalled }) => {
                         </Grid>
                     </SimpleFormContent>
                     <SimpleFormFooter>
-                        <ButtonPrimary data-testid="install-i18n-button" onClick={submit}>Install I18N</ButtonPrimary>
+                        <ButtonPrimary data-testid="install-i18n-button" onClick={submit}>
+                            Install I18N
+                        </ButtonPrimary>
                     </SimpleFormFooter>
                 </SimpleForm>
             )}
@@ -96,7 +98,7 @@ const I18NInstaller = ({ onInstalled }) => {
 
 export default {
     name: "installation-i18n",
-    type: "installation",
+    type: "admin-installation",
     title: "I18N app",
     dependencies: ["installation-security"],
     secure: true,

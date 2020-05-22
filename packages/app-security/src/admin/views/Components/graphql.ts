@@ -4,17 +4,19 @@ export const rolesAutoComplete = gql`
     query LoadRoles(
         $where: JSON
         $sort: JSON
-        $page: Int
-        $perPage: Int
         $search: SecurityRoleSearchInput
+        $limit: Int
+        $after: String
+        $before: String
     ) {
         security {
             roles: listRoles(
                 where: $where
                 sort: $sort
-                page: $page
-                perPage: $perPage
                 search: $search
+                limit: $limit
+                after: $after
+                before: $before
             ) {
                 data {
                     id
@@ -29,17 +31,19 @@ export const groupsAutoComplete = gql`
     query LoadGroups(
         $where: JSON
         $sort: JSON
-        $page: Int
-        $perPage: Int
         $search: SecurityGroupSearchInput
+        $limit: Int
+        $after: String
+        $before: String
     ) {
         security {
             groups: listGroups(
                 where: $where
                 sort: $sort
-                page: $page
-                perPage: $perPage
                 search: $search
+                limit: $limit
+                after: $after
+                before: $before
             ) {
                 data {
                     id

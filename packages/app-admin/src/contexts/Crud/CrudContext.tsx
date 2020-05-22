@@ -36,6 +36,7 @@ export const CrudProvider = ({ children, ...props }: CrudProviderProps) => {
     const list = useDataList({
         query: get(props, "list.query", props.list),
         variables: get(props, "list.variables"),
+        client: get(props, "list.options.client"),
         // "useDataList" will know how to handle no-handler-provided situations.
         getData: get(props, "list.getData"),
         getMeta: get(props, "list.getMeta"),
@@ -62,6 +63,7 @@ export const CrudProvider = ({ children, ...props }: CrudProviderProps) => {
     );
 
     const readQuery = useQuery(props.read.query || props.read, {
+        ...(props.read.options || {}),
         variables: { id },
         skip: !id,
         onCompleted(data) {
@@ -122,7 +124,7 @@ export const CrudProvider = ({ children, ...props }: CrudProviderProps) => {
 
                 if (error) {
                     if (error.code === "VALIDATION_FAILED_INVALID_FIELDS") {
-                        showSnackbar(t`One or more fields invalid.`);
+                        showSnackbar(t`One or more fields are not valid!`);
                         setInvalidFields(error.data.invalidFields);
                     } else {
                         const message = error.message || t`Could not save record.`;
@@ -130,6 +132,7 @@ export const CrudProvider = ({ children, ...props }: CrudProviderProps) => {
                             title: t`Something unexpected happened`
                         });
                     }
+                    setMutationInProgress(false);
                     return;
                 }
 

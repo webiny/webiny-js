@@ -1,10 +1,10 @@
 import React from "react";
-import { LayoutPlugin } from "@webiny/app-admin/types";
+import { AdminLayoutComponentPlugin } from "@webiny/app-admin/types";
 import Header from "./Header";
 
-const plugin: LayoutPlugin = {
-    name: "header",
-    type: "layout",
+const plugin: AdminLayoutComponentPlugin = {
+    name: "admin-layout-component-header",
+    type: "admin-layout-component",
     render() {
         return <Header />;
     }

@@ -20,25 +20,25 @@ export type AuthenticationProps = {
 };
 
 const Authentication: React.FC<AuthenticationProps> = ({ onIdToken, ...viewProps }) => {
-    const { view: SignIn } = getPlugin("cognito-view-sign-in") as SecurityCognitoViewSignInPlugin;
+    const { view: SignIn } = getPlugin<SecurityCognitoViewSignInPlugin>("cognito-view-sign-in");
     invariant(SignIn, `Missing "cognito-view-sign-in" plugin!`);
 
-    const { view: RequireNewPassword } = getPlugin(
+    const { view: RequireNewPassword } = getPlugin<SecurityCognitoViewRequireNewPasswordPlugin>(
         "cognito-view-require-new-password"
-    ) as SecurityCognitoViewRequireNewPasswordPlugin;
+    );
     invariant(RequireNewPassword, `Missing "cognito-view-require-new-password" plugin!`);
 
-    const { view: ForgotPassword } = getPlugin(
+    const { view: ForgotPassword } = getPlugin<SecurityCognitoViewForgotPasswordPlugin>(
         "cognito-view-forgot-password"
-    ) as SecurityCognitoViewForgotPasswordPlugin;
+    );
     invariant(ForgotPassword, `Missing "cognito-view-forgot-password" plugin!`);
 
-    const { view: SetNewPassword } = getPlugin(
+    const { view: SetNewPassword } = getPlugin<SecurityCognitoViewSetNewPasswordPlugin>(
         "cognito-view-set-new-password"
-    ) as SecurityCognitoViewSetNewPasswordPlugin;
+    );
     invariant(SetNewPassword, `Missing "cognito-view-set-new-password" plugin!`);
 
-    const { view: Loading } = getPlugin("cognito-view-loading") as SecurityCognitoViewLoadingPlugin;
+    const { view: Loading } = getPlugin<SecurityCognitoViewLoadingPlugin>("cognito-view-loading");
     invariant(Loading, `Missing "cognito-view-loading" plugin!`);
 
     return (

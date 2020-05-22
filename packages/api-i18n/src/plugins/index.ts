@@ -7,8 +7,8 @@ export default () => [
     graphql,
     i18n,
     {
-        name: "graphql-context-i18n-get-locales",
-        type: "graphql-context-i18n-get-locales",
+        name: "context-i18n-get-locales",
+        type: "context-i18n-get-locales",
         async resolve({ context }) {
             const { I18NLocale } = context.models;
             const locales = await I18NLocale.find();

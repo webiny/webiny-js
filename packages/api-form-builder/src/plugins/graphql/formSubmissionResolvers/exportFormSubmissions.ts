@@ -1,4 +1,4 @@
-import { Response, NotFoundResponse } from "@webiny/api";
+import { Response, NotFoundResponse } from "@webiny/graphql";
 import { parseAsync } from "json2csv";
 import uploadFile from "./uploadFile";
 

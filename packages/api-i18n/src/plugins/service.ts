@@ -1,50 +1,43 @@
 import i18n from "./i18n";
-import { GraphQLClient } from "graphql-request";
-import get from "lodash/get";
-import { validation } from '@webiny/validation';
-import { GraphQLContextI18NGetLocales } from "@webiny/api-i18n/types";
+import { ContextI18NGetLocales } from "@webiny/api-i18n/types";
+import LambdaClient from "aws-sdk/clients/lambda";
+import { Context } from "@webiny/graphql/types";
 
 let localesCache;
 
-const GET_I18N_INFORMATION = /* GraphQL */ `
-    {
-        i18n {
-            getI18NInformation {
-                locales {
-                    id
-                    code
-                    default
-                }
-            }
-        }
-    }
-`;
+type ServicePluginsOptions = { localesFunction: string };
 
-export default () => [
-    i18n,
-    {
-        name: "graphql-context-i18n-get-locales",
-        type: "graphql-context-i18n-get-locales",
-        async resolve() {
-            if (Array.isArray(localesCache)) {
+export default (options: ServicePluginsOptions) => {
+    if (!options.localesFunction) {
+        throw new Error(`I18N service plugins error - "localesFunction" not specified.`);
+    }
+
+    return [
+        i18n,
+        {
+            name: "context-i18n-get-locales",
+            type: "context-i18n-get-locales",
+            async resolve() {
+                if (Array.isArray(localesCache)) {
+                    return localesCache;
+                }
+
+                const Lambda = new LambdaClient({ region: process.env.AWS_REGION });
+                const { Payload } = await Lambda.invoke({
+                    FunctionName: options.localesFunction
+                }).promise();
+
+                let parsedPayload;
+
+                try {
+                    parsedPayload = JSON.parse(Payload as string);
+                } catch (e) {
+                    throw new Error("Could not JSON.parse DB Proxy's response.");
+                }
+
+                localesCache = parsedPayload;
                 return localesCache;
             }
-
-            if (!process.env.I18N_API_URL) {
-                throw new Error('I18N_API_URL environment variable is missing. Please check the service configuration, located in the "api/serverless.yml" file.');
-            }
-
-            try {
-                validation.validateSync(process.env.I18N_API_URL, "url");
-            } catch (e) {
-                throw new Error('The value specified for the I18N_API_URL env variable is not a valid URL. Please check the service configuration, located in the "api/serverless.yml" file.')
-            }
-
-            const client = new GraphQLClient(process.env.I18N_API_URL);
-
-            const response = await client.request(GET_I18N_INFORMATION);
-            localesCache = get(response, "i18n.getI18NInformation.locales", []);
-            return localesCache;
-        }
-    } as GraphQLContextI18NGetLocales
-];
+        } as ContextI18NGetLocales<Context>
+    ];
+};

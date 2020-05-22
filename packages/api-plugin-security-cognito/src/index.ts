@@ -4,7 +4,7 @@ import jwt from "jsonwebtoken";
 import jwkToPem from "jwk-to-pem";
 import request from "request-promise";
 import util from "util";
-import { GraphQLSchemaPlugin } from "@webiny/api/types";
+import { GraphQLSchemaPlugin } from "@webiny/graphql/types";
 import { SecurityAuthenticationProviderPlugin } from "@webiny/api-security/types";
 
 const verify = util.promisify(jwt.verify);

@@ -5,6 +5,18 @@ import { loadPages } from "./graphql";
 import { getPlugins } from "@webiny/plugins";
 import { PbPageElementPagesListComponentPlugin } from "@webiny/app-page-builder/types";
 
+declare global {
+    // eslint-disable-next-line
+    namespace JSX {
+        interface IntrinsicElements {
+            "ssr-cache": {
+                class?: string;
+                id?: string;
+            };
+        }
+    }
+}
+
 const PagesList = props => {
     const {
         data: { component, ...vars },
@@ -39,9 +51,9 @@ const PagesList = props => {
         sort,
         tags: vars.tags,
         tagsRule: vars.tagsRule,
-        perPage: parseInt(vars.resultsPerPage),
-        pagesLimit: parseInt(vars.pagesLimit),
-        page: 1
+        limit: parseInt(vars.resultsPerPage),
+        after: undefined,
+        before: undefined
     };
 
     const { data, loading, refetch } = useQuery(loadPages, { variables });
@@ -57,15 +69,13 @@ const PagesList = props => {
     }
 
     let prevPage = null;
-    if (pages.meta.previousPage !== null) {
-        prevPage = () => refetch({ ...variables, page: pages.meta.previousPage });
+    if (pages.meta.hasPreviousPage) {
+        prevPage = () => refetch({ ...variables, before: pages.meta.cursors.previous });
     }
 
     let nextPage = null;
-    if (pages.meta.nextPage !== null) {
-        if (!variables.pagesLimit || variables.pagesLimit >= pages.meta.nextPage) {
-            nextPage = () => refetch({ ...variables, page: pages.meta.nextPage });
-        }
+    if (pages.meta.hasNextPage) {
+        nextPage = () => refetch({ ...variables, after: pages.meta.cursors.next });
     }
 
     return (

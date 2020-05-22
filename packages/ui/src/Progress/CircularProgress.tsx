@@ -10,6 +10,7 @@ type Props = {
     spinnerColor: string;
     spinnerWidth: number;
     visible: boolean;
+    style?: React.CSSProperties;
 };
 
 const SpinnerWrapper = styled("div")({
@@ -37,9 +38,9 @@ const Label = styled("div")({
     marginTop: 15
 });
 
-const CircularProgress = ({ label, size, spinnerWidth, spinnerColor, visible }: Props) => {
+const CircularProgress = ({ label, size, spinnerWidth, spinnerColor, visible, style }: Props) => {
     return (
-        <SpinnerWrapper>
+        <SpinnerWrapper style={style}>
             {process.env.REACT_APP_ENV === "ssr" ? null : (
                 <div>
                     <Spinner

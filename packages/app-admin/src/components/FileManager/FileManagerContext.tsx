@@ -7,7 +7,7 @@ function init({ accept }) {
         hasPreviouslyUploadedFiles: null,
         queryParams: {
             types: accept,
-            perPage: 50,
+            limit: 50,
             sort: { createdOn: -1 }
         }
     };
@@ -31,7 +31,7 @@ function fileManagerReducer(state, action) {
                 ...state.queryParams,
                 ...action.queryParams,
                 types: state.queryParams.types,
-                perPage: 40,
+                limit: 40,
                 sort: { createdOn: -1 }
             };
             break;

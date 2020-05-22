@@ -7,11 +7,13 @@ type RenderParams = {
     content: React.ReactNode;
 };
 
-export type ContentPlugin = Plugin & {
+export type AdminLayoutComponentPlugin = Plugin & {
+    type: "admin-layout-component";
     render(params: RenderParams): React.ReactNode;
 };
 
-export type GlobalSearchPlugin = Plugin & {
+export type AdminGlobalSearchPlugin = Plugin & {
+    type: "admin-global-search";
     label: string;
     route: string;
     search?: {
@@ -20,23 +22,30 @@ export type GlobalSearchPlugin = Plugin & {
     };
 };
 
-export type GlobalSearchPreventHotkeyPlugin = Plugin & {
+export type AdminGlobalSearchPreventHotkeyPlugin = Plugin & {
+    type: "admin-global-search-prevent-hotkey";
     preventOpen(e: React.KeyboardEvent): boolean | void;
 };
 
-export type HeaderLogoPlugin = Plugin & {
+export type AdminHeaderLogoPlugin = Plugin & {
+    name: "admin-header-logo";
+    type: "admin-header-logo";
     render(): React.ReactElement;
 };
 
-export type HeaderUserMenuPlugin = Plugin & {
+export type AdminHeaderUserMenuPlugin = Plugin & {
+    type: "admin-header-user-menu";
     render(): React.ReactElement;
 };
 
-export type HeaderUserMenuHandlePlugin = Plugin & {
+export type AdminHeaderUserMenuHandlePlugin = Plugin & {
+    name: "admin-header-user-menu-handle";
+    type: "admin-header-user-menu-handle";
     render(): React.ReactElement;
 };
 
-export type HeaderUserMenuUserInfoPlugin = Plugin & {
+export type AdminHeaderUserMenuUserInfoPlugin = Plugin & {
+    type: "admin-header-user-menu-user-info";
     render(): React.ReactElement;
 };
 
@@ -44,8 +53,8 @@ export type HeaderUserMenuUserInfoPlugin = Plugin & {
  * Enables adding custom menu sections and items in the main menu, located on the left side of the screen.
  * @see https://docs.webiny.com/docs/webiny-apps/admin/development/plugins-reference/app#menu
  */
-export type MenuPlugin = Plugin & {
-    type: "menu";
+export type AdminMenuPlugin = Plugin & {
+    type: "admin-menu";
     render(props: {
         Menu: typeof Menu;
         Section: typeof Section;
@@ -54,7 +63,8 @@ export type MenuPlugin = Plugin & {
     order?: number;
 };
 
-export type MenuContentSectionPlugin = Plugin & {
+export type AdminMenuContentSectionPlugin = Plugin & {
+    type: "admin-menu-content-section";
     render(props: { Section: typeof Section; Item: typeof Item }): React.ReactNode;
 };
 
@@ -62,8 +72,8 @@ export type MenuContentSectionPlugin = Plugin & {
  * Enables adding custom header elements to the left side of the top bar.
  * @see https://docs.webiny.com/docs/webiny-apps/admin/development/plugins-reference/app#header-left
  */
-export type HeaderLeftPlugin = Plugin & {
-    type: "header-left";
+export type AdminHeaderLeftPlugin = Plugin & {
+    type: "admin-header-left";
     render(params: RenderParams): React.ReactNode;
 };
 
@@ -71,8 +81,8 @@ export type HeaderLeftPlugin = Plugin & {
  * Enables adding custom header elements to the right side of the top bar.
  * @see https://docs.webiny.com/docs/webiny-apps/admin/development/plugins-reference/app#header-right
  */
-export type HeaderRightPlugin = Plugin & {
-    type: "header-right";
+export type AdminHeaderRightPlugin = Plugin & {
+    type: "admin-header-right";
     render(params: RenderParams): React.ReactNode;
 };
 
@@ -80,21 +90,18 @@ export type HeaderRightPlugin = Plugin & {
  * Enables adding custom header elements to the middle of the top bar.
  * @see https://docs.webiny.com/docs/webiny-apps/admin/development/plugins-reference/app#header-middle
  */
-export type HeaderMiddlePlugin = Plugin & {
-    type: "header-middle";
+export type AdminHeaderMiddlePlugin = Plugin & {
+    type: "admin-header-middle";
     render(params: RenderParams): React.ReactNode;
 };
 
-export type SettingsPlugin = Plugin & {
-    settings: {
-        name: string;
-        type?: "app" | "integration" | "other";
-        show?: () => boolean;
-        route: React.ReactElement;
-    };
+export type AdminMenuSettingsPlugin = Plugin & {
+    type: "admin-menu-settings";
+    render(props: { Section: typeof Section; Item: typeof Item }): React.ReactNode;
 };
 
-export type FileManagerFileTypePlugin = Plugin & {
+export type AdminFileManagerFileTypePlugin = Plugin & {
+    type: "admin-file-manager-file-type";
     types?: string[];
     render({ file }): React.ReactNode;
     fileDetails?: {
@@ -102,13 +109,11 @@ export type FileManagerFileTypePlugin = Plugin & {
     };
 };
 
-export type InstallationPlugin = Plugin & {
+export type AdminInstallationPlugin = Plugin & {
+    type: "admin-installation";
     isInstalled(params: { client: ApolloClient<object> }): Promise<boolean>;
     title: string;
     dependencies?: string[];
     secure: boolean;
     render({ onInstalled }): React.ReactNode;
 };
-
-export type LayoutPlugin = ContentPlugin;
-export type EmptyLayoutPlugin = ContentPlugin;

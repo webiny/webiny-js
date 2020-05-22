@@ -1,10 +1,10 @@
-import { GraphQLContextPlugin } from "@webiny/api/types";
+import { ContextPlugin } from "@webiny/graphql/types";
 
 export default [
     {
-        type: "graphql-context",
-        name: "graphql-context-files",
-        apply: async (context): Promise<any> => {
+        type: "context",
+        name: "context-files",
+        async apply(context) {
             const { FilesSettings } = context.models;
 
             const self = {
@@ -18,5 +18,5 @@ export default [
 
             context.files = self;
         }
-    } as GraphQLContextPlugin
+    } as ContextPlugin
 ];

@@ -77,9 +77,9 @@ export class Redux {
                 })) ||
             compose;
 
-        const middlewareFromPlugins: Middleware[] = (getPlugins(
+        const middlewareFromPlugins: Middleware[] = getPlugins<PbEditorReduxMiddlewarePlugin>(
             "pb-editor-redux-middleware"
-        ) as PbEditorReduxMiddlewarePlugin[])
+        )
             .map(pl => wrapMiddleware(pl.middleware, Array.isArray(pl.actions) ? pl.actions : null))
             .reverse();
 

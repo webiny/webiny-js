@@ -1,10 +1,13 @@
 import React from "react";
 import Hamburger from "./Hamburger";
+import { AdminHeaderLeftPlugin } from "@webiny/app-admin/types";
 
-export default {
-    name: "header-main-menu-icon",
-    type: "header-left",
+const plugin: AdminHeaderLeftPlugin = {
+    name: "admin-header-main-menu-icon",
+    type: "admin-header-left",
     render() {
         return <Hamburger />;
     }
 };
+
+export default plugin;

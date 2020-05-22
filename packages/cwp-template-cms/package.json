@@ -1,0 +1,21 @@
+{
+  "name": "@webiny/cwp-template-cms",
+  "version": "0.1.34",
+  "repository": {
+    "type": "git",
+    "directory": "packages/cwp-template-cms"
+  },
+  "publishConfig": {
+    "access": "public",
+    "directory": "."
+  },
+  "dependencies": {
+    "fs-extra": "^9.0.0",
+    "uuid": "^7.0.3"
+  },
+  "adio": {
+    "ignoreDirs": [
+      "template"
+    ]
+  }
+}

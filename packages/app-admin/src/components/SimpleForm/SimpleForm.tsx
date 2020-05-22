@@ -54,7 +54,7 @@ export const SimpleForm = (props: {
 };
 
 export const SimpleFormHeader = (props: {
-    title: string;
+    title: React.ReactNode;
     icon?: React.ReactElement<any>;
     children?: React.ReactNode;
 }) => {

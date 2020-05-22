@@ -28,10 +28,7 @@ import { DELETE_ELEMENT, UPDATE_ELEMENT } from "./graphql";
 import EditBlockDialog from "./EditBlockDialog";
 import { listItem, ListItemTitle, listStyle, TitleContent } from "./SearchBlocksStyled";
 import * as Styled from "./StyledComponents";
-import {
-    PbEditorBlockCategoryPlugin,
-    PbEditorBlockPlugin
-} from "@webiny/app-page-builder/types";
+import { PbEditorBlockCategoryPlugin, PbEditorBlockPlugin } from "@webiny/app-page-builder/types";
 
 const allBlockCategory: PbEditorBlockCategoryPlugin = {
     type: "pb-editor-block-category",
@@ -72,12 +69,12 @@ const SearchBar = props => {
     const allCategories = useMemo(
         () => [
             allBlockCategory,
-            ...(getPlugins("pb-editor-block-category") as PbEditorBlockCategoryPlugin[])
+            ...getPlugins<PbEditorBlockCategoryPlugin>("pb-editor-block-category")
         ],
         []
     );
 
-    const allBlocks = getPlugins("pb-editor-block") as PbEditorBlockPlugin[];
+    const allBlocks = getPlugins<PbEditorBlockPlugin>("pb-editor-block");
 
     const { addKeyHandler, removeKeyHandler } = useKeyHandler();
 
@@ -301,10 +298,7 @@ const SearchBar = props => {
     );
 };
 
-export default connect<any, any, any>(
-    state => ({ content: getContent(state) }),
-    {
-        deactivatePlugin,
-        updateElement
-    }
-)(SearchBar);
+export default connect<any, any, any>(state => ({ content: getContent(state) }), {
+    deactivatePlugin,
+    updateElement
+})(SearchBar);

@@ -40,9 +40,9 @@ class AutoComplete extends React.Component<AutoCompleteProps, State> {
 
     componentDidUpdate(previousProps: any) {
         const { value, options } = this.props;
-        const { value: previousValue } = previousProps;
+        const { value: previousValue, options: previousOptions } = previousProps;
 
-        if (!isEqual(value, previousValue)) {
+        if (!isEqual(value, previousValue) || !isEqual(options, previousOptions)) {
             let item = null;
 
             if (value) {

@@ -1,0 +1,24 @@
+{
+  "name": "@webiny/serverless-aws-api-gateway",
+  "version": "3.0.1",
+  "main": "./serverless.js",
+  "publishConfig": {
+    "access": "public",
+    "directory": "."
+  },
+  "author": "Serverless, Inc.",
+  "contributors": [
+    "Pavel Denisjuk <pavel@webiny.com>",
+    "Sven Al Hamad <sven@webiny.com>",
+    "Adrian Smijulj <adrian@webiny.com>"
+  ],
+  "license": "Apache",
+  "dependencies": {
+    "@webiny/serverless-component": "^0.1.0",
+    "@serverless/core": "^1.0.0",
+    "aws-sdk": "^2.0.0",
+    "lodash.isequal": "^4.5.0",
+    "p-retry": "^4.1.0"
+  },
+  "gitHead": "71cab7d5607b2e32a63034e324a663770507b32b"
+}

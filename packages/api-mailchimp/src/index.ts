@@ -1,16 +1,16 @@
 import gql from "graphql-tag";
 import { emptyResolver, resolveGetSettings, resolveUpdateSettings } from "@webiny/commodo-graphql";
-import { ListErrorResponse, ListResponse, ErrorResponse } from "@webiny/api";
+import { ListErrorResponse, ListResponse, ErrorResponse } from "@webiny/graphql";
 import { hasScope } from "@webiny/api-security";
 import mailchimpSettings from "./mailchimpSettings.model";
 import MailchimpApi from "./MailchimpApi";
 import { get } from "lodash";
-import { GraphQLContext } from "@webiny/api/types";
+import { Context } from "@webiny/graphql/types";
 
 export default () => [
     {
-        type: "graphql-context",
-        name: "graphql-context-models-mailchimp",
+        type: "context",
+        name: "context-models-mailchimp",
         apply({ models }) {
             models.MailchimpSettings = mailchimpSettings({ createBase: models.createBase });
         }
@@ -35,15 +35,16 @@ export default () => [
                     apiKey: String
                 }
 
+                type MailchimpCursors {
+                    next: String
+                    previous: String
+                }
+
                 type MailchimpListMeta {
+                    cursors: MailchimpCursors
+                    hasNextPage: Boolean
+                    hasPreviousPage: Boolean
                     totalCount: Int
-                    totalPages: Int
-                    page: Int
-                    perPage: Int
-                    from: Int
-                    to: Int
-                    previousPage: Int
-                    nextPage: Int
                 }
 
                 type MailchimpError {
@@ -122,13 +123,15 @@ export default () => [
                             return new ListErrorResponse(e);
                         }
                     },
-                    getSettings: resolveGetSettings(({ models }) => models.MailchimpSettings)
+                    getSettings: hasScope("pb:settings")(
+                        resolveGetSettings(({ models }) => models.MailchimpSettings)
+                    )
                 },
                 MailchimpMutation: {
                     addToList: async (
                         _: any,
                         { list: listId, email }: { [key: string]: any },
-                        context: GraphQLContext
+                        context: Context
                     ) => {
                         const { MailchimpSettings } = context.models;
 
@@ -147,6 +150,7 @@ export default () => [
                             await mailchimp.post({
                                 path: `/lists/${listId}/members`,
                                 body: {
+                                    // eslint-disable-next-line
                                     email_address: email,
                                     status: listResponse.body.double_optin
                                         ? "pending"
@@ -170,19 +174,11 @@ export default () => [
                             });
                         }
                     },
-                    updateSettings: resolveUpdateSettings(({ models }) => models.MailchimpSettings)
-                }
-            }
-        },
-        security: {
-            shield: {
-                MailchimpQuery: {
-                    getSettings: hasScope("pb:settings")
-                },
-                MailchimpMutation: {
-                    updateSettings: hasScope("pb:settings")
+                    updateSettings: hasScope("pb:settings")(
+                        resolveUpdateSettings(({ models }) => models.MailchimpSettings)
+                    )
                 }
             }
         }
-    },
+    }
 ];

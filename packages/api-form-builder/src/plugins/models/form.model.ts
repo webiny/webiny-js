@@ -137,7 +137,6 @@ export default ({ context, createBase, FormSettings }) => {
                     }
 
                     const allForms = await Form.find({ query: { parent: this.parent } });
-                    console.log('alee forme', { query: { parent: this.parent } })
                     const stats = {
                         submissions: 0,
                         views: 0,

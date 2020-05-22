@@ -4,7 +4,8 @@
   "main": "index.js",
   "repository": {
     "type": "git",
-    "url": "https://github.com/webiny/webiny-js.git"
+    "url": "https://github.com/webiny/webiny-js.git",
+    "directory": "packages/api-cookie-policy"
   },
   "description": "The API for the Webiny Cookie Policy (webiny-app-cookie-policy) app.",
   "author": "Adrian Smijulj",
@@ -26,7 +27,8 @@
     "@svgr/webpack": "^4.3.2"
   },
   "publishConfig": {
-    "access": "public"
+    "access": "public",
+    "directory": "dist"
   },
   "scripts": {
     "build": "rimraf ./dist *.tsbuildinfo && babel src -d dist --source-maps --copy-files --extensions \".ts\"",

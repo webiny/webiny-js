@@ -64,45 +64,44 @@ const drawerStyle = css({
     }
 });
 
-const ToolbarDrawer = connect<any, any, any>(
-    null,
-    { deactivatePlugin }
-)(({ name, active, children, deactivatePlugin }: any) => {
-    const { removeKeyHandler, addKeyHandler } = useKeyHandler();
-    const last = useRef({ active: null });
-    useEffect(() => {
-        if (active && !last.current.active) {
-            addKeyHandler("escape", e => {
-                e.preventDefault();
-                deactivatePlugin({ name });
-            });
-        }
+const ToolbarDrawer = connect<any, any, any>(null, { deactivatePlugin })(
+    ({ name, active, children, deactivatePlugin }: any) => {
+        const { removeKeyHandler, addKeyHandler } = useKeyHandler();
+        const last = useRef({ active: null });
+        useEffect(() => {
+            if (active && !last.current.active) {
+                addKeyHandler("escape", e => {
+                    e.preventDefault();
+                    deactivatePlugin({ name });
+                });
+            }
 
-        if (!active && last.current.active) {
-            removeKeyHandler("escape");
-        }
-    });
+            if (!active && last.current.active) {
+                removeKeyHandler("escape");
+            }
+        });
 
-    useEffect(() => {
-        last.current = { active };
-    });
+        useEffect(() => {
+            last.current = { active };
+        });
 
-    return (
-        <DrawerContainer open={active}>
-            <Drawer dismissible open={active} className={drawerStyle}>
-                <DrawerContent>{children}</DrawerContent>
-            </Drawer>
-        </DrawerContainer>
-    );
-});
+        return (
+            <DrawerContainer open={active}>
+                <Drawer dismissible open={active} className={drawerStyle}>
+                    <DrawerContent>{children}</DrawerContent>
+                </Drawer>
+            </DrawerContainer>
+        );
+    }
+);
 
 const renderPlugin = (plugin: PbEditorToolbarTopPlugin | PbEditorToolbarBottomPlugin) => {
     return React.cloneElement(plugin.renderAction(), { key: plugin.name });
 };
 
 const Toolbar = ({ activePluginsTop }) => {
-    const actionsTop = getPlugins("pb-editor-toolbar-top") as PbEditorToolbarTopPlugin[];
-    const actionsBottom = getPlugins("pb-editor-toolbar-bottom") as PbEditorToolbarBottomPlugin[];
+    const actionsTop = getPlugins<PbEditorToolbarTopPlugin>("pb-editor-toolbar-top");
+    const actionsBottom = getPlugins<PbEditorToolbarBottomPlugin>("pb-editor-toolbar-bottom");
 
     return (
         <React.Fragment>

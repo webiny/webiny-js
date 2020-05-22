@@ -39,8 +39,12 @@ const Revisions = ({ revisions, history }) => {
         >
             {revisions.map(rev => {
                 let status = "draft";
-                if (rev.published) status = "published";
-                if (rev.locked && !rev.published) status = "locked";
+                if (rev.published) {
+                    status = "published";
+                }
+                if (rev.locked && !rev.published) {
+                    status = "locked";
+                }
 
                 return (
                     <MenuItem key={rev.id} disabled={status !== "draft"}>

@@ -10,6 +10,17 @@ import { ElementAnimation } from "@webiny/app-page-builder/render/components";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { get } from "lodash";
 
+declare global {
+    // eslint-disable-next-line
+    namespace JSX {
+        interface IntrinsicElements {
+            "test-id": {
+                children?: React.ReactNode;
+            };
+        }
+    }
+}
+
 const EmptySelect = styled("div")({
     width: "100%",
     height: "100%",

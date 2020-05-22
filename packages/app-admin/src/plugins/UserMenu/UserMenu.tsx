@@ -4,6 +4,11 @@ import { renderPlugins, renderPlugin } from "@webiny/app/plugins";
 import { Menu } from "@webiny/ui/Menu";
 import { List } from "@webiny/ui/List";
 import { TopAppBarActionItem } from "@webiny/ui/TopAppBar";
+import {
+    AdminHeaderUserMenuHandlePlugin,
+    AdminHeaderUserMenuPlugin,
+    AdminHeaderUserMenuUserInfoPlugin
+} from "@webiny/app-admin/types";
 
 const menuDialog = css({
     "&.mdc-menu": {
@@ -18,11 +23,19 @@ const UserMenu = () => {
                 <Menu
                     className={menuDialog}
                     anchor={"topEnd"}
-                    handle={<menu-handle>{renderPlugin("user-menu-handle")}</menu-handle>}
+                    handle={
+                        <div>
+                            {renderPlugin<AdminHeaderUserMenuHandlePlugin>(
+                                "admin-header-user-menu-handle"
+                            )}
+                        </div>
+                    }
                 >
                     <List data-testid="logged-in-user-menu-list">
-                        {renderPlugin("header-user-menu-user-info")}
-                        {renderPlugins("header-user-menu")}
+                        {renderPlugin<AdminHeaderUserMenuUserInfoPlugin>(
+                            "admin-header-user-menu-user-info"
+                        )}
+                        {renderPlugins<AdminHeaderUserMenuPlugin>("admin-header-user-menu")}
                     </List>
                 </Menu>
             }

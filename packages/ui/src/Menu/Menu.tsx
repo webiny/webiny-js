@@ -40,6 +40,9 @@ type MenuProps = RmwcMenuProps & {
     // Class that will be added to the Menu element.
     className?: string;
 
+    onOpen?: () => void;
+    onClose?: () => void;
+
     // For testing purposes.
     "data-testid"?: string;
 };
@@ -93,9 +96,13 @@ class Menu extends React.Component<MenuProps, State> {
         menu.style.top = anchorRect.top + "px";
     }
 
-    openMenu = () => this.setState({ menuIsOpen: true });
+    openMenu = () => {
+        this.setState({ menuIsOpen: true }, () => this.props.onOpen && this.props.onOpen());
+    };
 
-    closeMenu = () => this.setState({ menuIsOpen: false });
+    closeMenu = () => {
+        this.setState({ menuIsOpen: false }, () => this.props.onClose && this.props.onClose());
+    };
 
     renderMenuWithPortal = () => {
         return ReactDOM.createPortal(

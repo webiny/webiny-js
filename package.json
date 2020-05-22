@@ -3,13 +3,21 @@
   "workspaces": {
     "packages": [
       "packages/*",
-      "components/*",
-      "examples/apps/*"
+      "sample-project/apps/*",
+      "sample-project/api/apolloGateway",
+      "sample-project/api/databaseProxy",
+      "sample-project/api/files/*",
+      "sample-project/api/formBuilder",
+      "sample-project/api/headless/*",
+      "sample-project/api/i18n",
+      "sample-project/api/pageBuilder",
+      "sample-project/api/security/*"
     ],
     "nohoist": [
       "**/inquirer/**",
       "**/mime/**",
-      "**/@types/mocha"
+      "**/@types/mocha",
+      "**/semver"
     ]
   },
   "contributors": [
@@ -28,6 +36,7 @@
     "@commitlint/config-conventional": "^8.3.4",
     "@shelf/jest-mongodb": "^1.1.0",
     "@testing-library/cypress": "^5.0.2",
+    "@types/fs-extra": "^8.0.1",
     "@types/jest": "^24.0.24",
     "@types/jquery": "^3.3.31",
     "@types/node": "^12.12.22",
@@ -47,7 +56,6 @@
     "cross-env": "^5.2.0",
     "cypress": "^4.4.0",
     "cz-customizable": "^5.2.0",
-    "dotenv": "^5.0.1",
     "empty": "^0.10.1",
     "env-ci": "2.0.1",
     "eslint": "^6.8.0",
@@ -60,6 +68,7 @@
     "eslint-plugin-promise": "^4.2.1",
     "eslint-plugin-react": "^7.17.0",
     "eslint-plugin-standard": "^4.0.1",
+    "eslint-plugin-webiny-i18n": "file:./eslint/webiny-i18n",
     "execa": "^1.0.0",
     "flatten": "^1.0.2",
     "fs-extra": "^7.0.0",
@@ -68,14 +77,17 @@
     "git-cz": "^1.7.1",
     "glob": "^7.1.3",
     "globby": "^8.0.1",
+    "got": "^9.6.0",
     "husky": "^4.2.3",
     "inquirer": "^7.0.0",
     "inquirer-autocomplete-prompt": "^1.0.1",
+    "inquirer-checkbox-plus-prompt": "^1.0.1",
     "inquirer-maxlength-input-prompt": "^1.0.0",
     "jest": "^24.9.0",
     "jest-extended": "^0.11.2",
-    "lerna": "3.19.0",
+    "lerna": "^3.21.0",
     "lint-staged": "^7.2.2",
+    "listr": "^0.14.3",
     "load-json-file": "^6.2.0",
     "lodash": "^4.17.11",
     "longest": "^2.0.1",
@@ -83,6 +95,7 @@
     "node-fetch": "^2.6.0",
     "prettier": "^1.14.2",
     "rimraf": "^2.6.2",
+    "rxjs": "^6.5.5",
     "semver": "^6.3.0",
     "serverless": "^1.53.0",
     "serverless-dotenv-plugin": "^2.1.1",
@@ -91,7 +104,6 @@
     "ts-jest": "^24.2.0",
     "typescript": "3.7.4",
     "utf-8-validate": "^5.0.2",
-    "verdaccio": "^3.11.6",
     "webpack": "^4.39.2",
     "write-json-file": "^4.2.0",
     "yargs": "^12.0.1"
@@ -100,27 +112,30 @@
     "fsevents": "^2.0.7"
   },
   "scripts": {
+    "eslint": "eslint \"packages/**/*.{ts,tsx}\" --quiet",
+    "build": "lerna run build --stream",
     "build:components": "lerna run build --scope=@webiny/serverless-* --stream",
     "build:apps": "lerna run build --scope=@webiny/app* --stream",
-    "build:api": "lerna run build --scope=@webiny/api* --stream",
+    "build:app-templates": "lerna run build --scope=@webiny/app-template* --stream",
+    "build:api": "lerna run build --scope=@webiny/api* --scope=@webiny/handler* --stream",
     "build:packages": "lerna run build --scope=@webiny/* --ignore=@webiny/serv* --stream",
     "watch:apps": "lerna run watch --scope=@webiny/app* --stream --parallel",
     "watch:api": "lerna run watch --scope=@webiny/api* --stream --parallel",
     "watch:packages": "lerna run watch --scope=@webiny/* --ignore=@webiny/serv* --stream --parallel",
-    "clear-dist": "yarn rimraf components/*/dist packages/*/dist",
+    "clear-dist": "yarn rimraf packages/*/dist",
     "contributors:add": "all-contributors add",
     "contributors:generate": "all-contributors generate",
     "commit": "node ./scripts/commitizen.js",
     "commit:no-verify": "yarn commit --no-verify",
     "commit:verify": "yarn lint-staged",
+    "commodo-versions": "node ./scripts/commodoVersions.js",
     "lint-staged": "lint-staged",
+    "postinstall": "node ./scripts/linkPackages.js",
     "prettier": "prettier --config .prettierrc.js --write",
     "setup-repo": "node scripts/setupRepo",
     "test": "jest --config jest.config.js",
     "validate-packages": "node scripts/validatePackages.js",
-    "webiny-ui-build-storybook": "cd packages/ui && cross-env OUT=../../netlify-static yarn build-storybook",
-    "wby:fns": "cross-env NODE_ENV=development sls offline start --stage=local",
-    "wby:fns:inspect": "yarn wby:fns --inspect=9001"
+    "webiny-ui-build-storybook": "cd packages/ui && cross-env OUT=../../netlify-static yarn build-storybook"
   },
   "husky": {
     "hooks": {
@@ -131,8 +146,8 @@
   "lint-staged": {
     "**/*.js": [
       "adio",
-      "prettier --write",
-      "eslint --fix",
+      "prettier --config .prettierrc.js --write",
+      "eslint",
       "git add",
       "jest --config jest.config.js --findRelatedTests"
     ]
@@ -147,6 +162,8 @@
     }
   },
   "commitlint": {
-    "extends": ["@commitlint/config-conventional"]
+    "extends": [
+      "@commitlint/config-conventional"
+    ]
   }
 }

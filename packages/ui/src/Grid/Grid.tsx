@@ -32,7 +32,7 @@ export const Cell = (props: CellProps) => {
 
 export type GridInnerProps = {
     // One or more Cell components.
-    children: React.ReactElement<typeof Cell>[];
+    children: React.ReactElement<typeof Cell> | React.ReactElement<typeof Cell>[];
 
     /**
      * CSS class name

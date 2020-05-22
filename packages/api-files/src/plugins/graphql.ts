@@ -58,15 +58,16 @@ export default [
                     data: [UploadFileResponseData]!
                 }
 
+                type FileCursors {
+                    next: String
+                    previous: String
+                }
+
                 type FileListMeta {
+                    cursors: FileCursors
+                    hasNextPage: Boolean
+                    hasPreviousPage: Boolean
                     totalCount: Int
-                    totalPages: Int
-                    page: Int
-                    perPage: Int
-                    from: Int
-                    to: Int
-                    previousPage: Int
-                    nextPage: Int
                 }
 
                 type FileError {
@@ -112,12 +113,12 @@ export default [
                     getFile(id: ID, where: JSON, sort: String): FileResponse
 
                     listFiles(
-                        page: Int
-                        perPage: Int
+                        limit: Int
+                        after: String
+                        before: String
                         types: [String]
                         tags: [String]
                         ids: [ID]
-                        sort: JSON
                         search: String
                     ): FileListResponse
 
@@ -169,32 +170,19 @@ export default [
                     files: emptyResolver
                 },
                 FilesQuery: {
-                    getFile: resolveGet(getFile),
+                    getFile: hasScope("files:file:crud")(resolveGet(getFile)),
                     listFiles: listFiles,
                     listTags: listTags,
                     isInstalled
                 },
                 FilesMutation: {
-                    uploadFile,
+                    uploadFile: hasScope("files:file:crud")(uploadFile),
                     uploadFiles,
-                    createFile: resolveCreate(getFile),
-                    updateFile: resolveUpdate(getFile),
+                    createFile: hasScope("files:file:crud")(resolveCreate(getFile)),
+                    updateFile: hasScope("files:file:crud")(resolveUpdate(getFile)),
                     createFiles,
-                    deleteFile,
+                    deleteFile: hasScope("files:file:crud")(deleteFile),
                     install
-                }
-            }
-        },
-        security: {
-            shield: {
-                FilesQuery: {
-                    getFile: hasScope("files:file:crud")
-                },
-                FilesMutation: {
-                    uploadFile: hasScope("files:file:crud"),
-                    createFile: hasScope("files:file:crud"),
-                    updateFile: hasScope("files:file:crud"),
-                    deleteFile: hasScope("files:file:crud")
                 }
             }
         }

@@ -21,8 +21,7 @@ context("Forms Creation", () => {
             .findByTestId("pb-content-add-block-button")
             .click();
 
-
-            /*
+        /*
             .findByTestId("pb-editor-back-button")
             .click()
             .wait(1000);

@@ -1,4 +1,5 @@
 import * as React from "react";
+import noop from "lodash/noop";
 
 import {
     Dialog,
@@ -55,8 +56,8 @@ class ConfirmationDialog extends React.Component<Props, State> {
     __isMounted = false;
 
     callbacks: ConfirmationCallbacks = {
-        onAccept: () => {},
-        onCancel: () => {}
+        onAccept: noop,
+        onCancel: noop
     };
 
     state = {
@@ -112,7 +113,12 @@ class ConfirmationDialog extends React.Component<Props, State> {
                     <DialogContent>{this.props.message}</DialogContent>
                     <DialogActions>
                         <DialogCancel onClick={this.onCancel}>Cancel</DialogCancel>
-                        <DialogButton onClick={this.onAccept}>Confirm</DialogButton>
+                        <DialogButton
+                            data-testid="confirmationdialog-confirm-action"
+                            onClick={this.onAccept}
+                        >
+                            Confirm
+                        </DialogButton>
                     </DialogActions>
                 </Dialog>
                 {this.props.children({

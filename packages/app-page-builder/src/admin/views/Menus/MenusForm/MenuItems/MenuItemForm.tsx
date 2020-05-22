@@ -32,7 +32,7 @@ const MenuItemForm = props => {
     });
 
     const { currentMenuItem } = props;
-    const plugins = getPlugins("pb-menu-item") as PbMenuItemPlugin[];
+    const plugins = getPlugins<PbMenuItemPlugin>("pb-menu-item");
     const plugin = plugins.find(pl => pl.menuItem.type === currentMenuItem.type);
     if (!plugin) {
         return null;

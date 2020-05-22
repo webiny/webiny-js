@@ -14,6 +14,7 @@
   "license": "MIT",
   "dependencies": {
     "@babel/runtime": "^7.5.5",
+    "@emotion/styled": "^10.0.27",
     "@webiny/app": "^3.0.6",
     "@webiny/app-admin": "^3.0.8",
     "@webiny/form": "^3.0.2",
@@ -46,7 +47,8 @@
     "react-dom": "^16.8.6"
   },
   "publishConfig": {
-    "access": "public"
+    "access": "public",
+    "directory": "dist"
   },
   "scripts": {
     "build": "rimraf ./dist *.tsbuildinfo && babel src -d dist --source-maps --copy-files --extensions \".ts,.tsx\"",

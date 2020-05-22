@@ -23,7 +23,7 @@ const Element = (props: ElementProps) => {
 
     const plugin = getPlugins<PbRenderElementPlugin>("pb-render-page-element").find(
         pl => pl.elementType === element.type
-    ) as PbRenderElementPlugin;
+    );
 
     if (!plugin) {
         return null;

@@ -3,7 +3,10 @@ import { set } from "dot-prop-immutable";
 import { withRouter, WithRouterProps } from "@webiny/react-router";
 import Downshift from "downshift";
 import { getPlugins } from "@webiny/plugins";
-import { GlobalSearchPlugin, GlobalSearchPreventHotkeyPlugin } from "@webiny/app-admin/types";
+import {
+    AdminGlobalSearchPlugin,
+    AdminGlobalSearchPreventHotkeyPlugin
+} from "@webiny/app-admin/types";
 import classnames from "classnames";
 import { Hotkeys } from "react-hotkeyz";
 
@@ -31,9 +34,9 @@ type SearchBarState = {
     active: boolean;
     searchTerm: { previous: string; current: string };
     plugins: {
-        list: Array<GlobalSearchPlugin>;
-        hotKeys: Array<GlobalSearchPreventHotkeyPlugin>;
-        current?: GlobalSearchPlugin;
+        list: Array<AdminGlobalSearchPlugin>;
+        hotKeys: Array<AdminGlobalSearchPreventHotkeyPlugin>;
+        current?: AdminGlobalSearchPlugin;
     };
 };
 
@@ -45,9 +48,11 @@ class SearchBar extends React.Component<SearchBarProps, SearchBarState> {
             current: ""
         },
         plugins: {
-            // List of all registered "global-search" plugins.
-            list: getPlugins<GlobalSearchPlugin>("global-search"),
-            hotKeys: getPlugins<GlobalSearchPreventHotkeyPlugin>("global-search-prevent-hotkey"),
+            // List of all registered "admin-global-search" plugins.
+            list: getPlugins<AdminGlobalSearchPlugin>("admin-global-search"),
+            hotKeys: getPlugins<AdminGlobalSearchPreventHotkeyPlugin>(
+                "admin-global-search-prevent-hotkey"
+            ),
             // Current plugin - set by examining current route and its query params (on construct).
             current: undefined
         }
@@ -210,7 +215,9 @@ class SearchBar extends React.Component<SearchBarProps, SearchBarState> {
                                                         this.setState({ active: true });
                                                         openMenu();
                                                     },
-                                                    onChange: e => {
+                                                    onChange: (
+                                                        e: React.ChangeEvent<HTMLInputElement>
+                                                    ) => {
                                                         const value = e.target.value || "";
                                                         this.setState(state => {
                                                             state.searchTerm.current = value;

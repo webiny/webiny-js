@@ -1,23 +1,48 @@
 import gql from "graphql-tag";
 
-const fields = `
-    id email firstName lastName fullName avatar { id src } groups { id name } roles { id name }
+const fields = /* GraphQL */ `
+    {
+        id
+        email
+        firstName
+        lastName
+        fullName
+        avatar {
+            id
+            src
+        }
+        groups {
+            id
+            name
+        }
+        roles {
+            id
+            name
+        }
+        personalAccessTokens {
+            id
+            name
+            token
+        }
+    }
 `;
 
 export const LIST_USERS = gql`
     query listUsers(
         $where: JSON
         $sort: JSON
-        $page: Int
-        $perPage: Int
+        $limit: Int
+        $after: String
+        $before: String
         $search: SecurityUserSearchInput
     ) {
         security {
             users: listUsers(
                 where: $where
                 sort: $sort
-                page: $page
-                perPage: $perPage
+                limit: $limit
+                after: $after
+                before: $before
                 search: $search
             ) {
                 data {
@@ -33,11 +58,13 @@ export const LIST_USERS = gql`
                     createdOn
                 }
                 meta {
+                    cursors {
+                        next
+                        previous
+                    }
+                    hasNextPage
+                    hasPreviousPage
                     totalCount
-                    to
-                    from
-                    nextPage
-                    previousPage
                 }
             }
         }
@@ -48,9 +75,7 @@ export const READ_USER = gql`
     query getUser($id: ID!) {
         security {
             user: getUser(id: $id){
-                data {
-                    ${fields}
-                }
+                data ${fields}
                 error {
                     code
                     message
@@ -64,9 +89,7 @@ export const CREATE_USER = gql`
     mutation createUser($data: SecurityUserInput!){
         security {
             user: createUser(data: $data) {
-                data {
-                    ${fields}
-                }
+                data ${fields}
                 error {
                     code
                     message
@@ -81,9 +104,7 @@ export const UPDATE_USER = gql`
     mutation updateUser($id: ID!, $data: SecurityUserInput!){
         security {
             user: updateUser(id: $id, data: $data) {
-                data {
-                    ${fields}
-                }
+                data ${fields}
                 error {
                     code
                     message

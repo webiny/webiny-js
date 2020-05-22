@@ -4,6 +4,7 @@ import { ApolloClient } from "apollo-client";
 import { CSSProperties } from "react";
 
 export type WebinyInitPlugin = Plugin & {
+    type: "webiny-init";
     init(): void;
 };
 
@@ -12,6 +13,7 @@ export type UploadOptions = {
 };
 
 export type FileUploaderPlugin = Plugin & {
+    type: "file-uploader";
     // TODO: @adrian define type for the returned object
     upload(file: File, options: UploadOptions): Promise<any>;
 };
@@ -35,6 +37,7 @@ export type ImageProps = {
  * the Image component. This is ideal in cases where manual creation of image src is needed.
  */
 export type ImageComponentPlugin = Plugin & {
+    type: "image-component";
     render: (props: ImageProps) => React.ReactElement;
     getImageSrc: (props?: Object) => string;
     presets: { [key: string]: any };

@@ -1,0 +1,26 @@
+{
+  "name": "@webiny/serverless-aws-s3",
+  "version": "0.1.0",
+  "main": "./serverless.js",
+  "publishConfig": {
+    "access": "public",
+    "directory": "."
+  },
+  "author": "Serverless, Inc.",
+  "contributors": [
+    "Pavel Denisjuk <pavel@webiny.com>"
+  ],
+  "license": "Apache",
+  "dependencies": {
+    "@serverless/core": "^1.1.2",
+    "@webiny/serverless-component": "^0.1.0",
+    "archiver": "^3.0.0",
+    "aws-sdk": "^2.488.0",
+    "fs-extra": "^7.0.0",
+    "klaw-sync": "^6.0.0",
+    "mime-types": "^2.1.22",
+    "p-retry": "^4.2.0",
+    "ramda": "^0.26.1",
+    "s3-stream-upload": "^2.0.2"
+  }
+}

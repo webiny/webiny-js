@@ -101,7 +101,10 @@ export const AppInstaller = ({ children, security }) => {
             <Elevation z={1}>
                 <SuccessDialog>
                     <p>You have successfully installed all new applications!</p>
-                    <ButtonPrimary data-testid={"open-webiny-cms-admin-button"} onClick={() => setFinished(true)}>
+                    <ButtonPrimary
+                        data-testid={"open-webiny-cms-admin-button"}
+                        onClick={() => setFinished(true)}
+                    >
                         Open Webiny CMS Administration
                     </ButtonPrimary>
                 </SuccessDialog>

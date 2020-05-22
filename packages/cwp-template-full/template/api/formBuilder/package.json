@@ -1,0 +1,15 @@
+{
+  "name": "api-form-builder",
+  "version": "0.1.0",
+  "scripts": {
+    "build": "webiny run build"
+  },
+  "dependencies": {
+    "@webiny/handler": "^0.1.0",
+    "@webiny/handler-apollo-server": "^0.1.0",
+    "@webiny/api-plugin-commodo-db-proxy": "^2.0.4",
+    "@webiny/api-security": "^3.1.0",
+    "@webiny/api-i18n": "^3.0.3",
+    "@webiny/api-form-builder": "^2.1.0"
+  }
+}

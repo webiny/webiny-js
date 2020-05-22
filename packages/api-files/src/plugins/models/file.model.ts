@@ -46,7 +46,7 @@ export default ({ createBase, context }) => {
                         }
 
                         for (let i = 0; i < tags.length; i++) {
-                            let tag = tags[i];
+                            const tag = tags[i];
                             if (typeof tag !== "string") {
                                 throw Error("Tag must be typeof string.");
                             }

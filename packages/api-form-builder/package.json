@@ -4,7 +4,8 @@
   "main": "index.js",
   "repository": {
     "type": "git",
-    "url": "https://github.com/webiny/webiny-js.git"
+    "url": "https://github.com/webiny/webiny-js.git",
+    "directory": "packages/api-form-builder"
   },
   "contributors": [
     "Pavel Denisjuk <pavel@webiny.com>",
@@ -14,12 +15,12 @@
   "license": "MIT",
   "dependencies": {
     "@babel/runtime": "^7.5.5",
-    "@webiny/api": "^3.0.2",
+    "@webiny/graphql": "^1.0.0",
     "@webiny/api-i18n": "^3.0.4",
     "@webiny/api-security": "^3.1.0",
     "@webiny/commodo": "^3.0.1",
     "@webiny/commodo-graphql": "^3.0.2",
-    "@webiny/http-handler-ssr": "^2.2.0",
+    "@webiny/handler-ssr": "^0.1.0",
     "@webiny/validation": "^3.0.1",
     "form-data": "^2.5.0",
     "got": "^9.6.0",
@@ -37,10 +38,12 @@
     "@babel/core": "^7.5.5",
     "@babel/preset-env": "^7.5.5",
     "@babel/preset-typescript": "^7.8.3",
+    "@webiny/api-plugin-commodo-db-proxy": "^2.0.4",
     "flow-copy-source": "^2.0.2"
   },
   "publishConfig": {
-    "access": "public"
+    "access": "public",
+    "directory": "dist"
   },
   "scripts": {
     "build": "rimraf ./dist *.tsbuildinfo && babel src -d dist --source-maps --copy-files --extensions \".ts\"",

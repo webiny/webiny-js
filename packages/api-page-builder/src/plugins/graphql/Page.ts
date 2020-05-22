@@ -6,6 +6,7 @@ import {
     resolveGet,
     resolveList
 } from "@webiny/commodo-graphql";
+import { hasScope } from "@webiny/api-security";
 import createRevisionFrom from "./pageResolvers/createRevisionFrom";
 import listPages from "./pageResolvers/listPages";
 import listPublishedPages from "./pageResolvers/listPublishedPages";
@@ -27,7 +28,7 @@ export default {
         extend type SecurityUser @key(fields: "id") {
             id: ID @external
         }
-            
+
         type PbPage {
             id: ID
             createdBy: SecurityUser
@@ -50,11 +51,11 @@ export default {
             parent: ID
             revisions: [PbPage]
         }
-        
+
         type PbPageSettings {
             _empty: String
         }
-        
+
         type PbElement {
             id: ID
             name: String
@@ -63,7 +64,7 @@ export default {
             content: JSON
             preview: File
         }
-        
+
         input PbElementInput {
             name: String!
             type: String!
@@ -71,14 +72,14 @@ export default {
             content: JSON!
             preview: RefInput
         }
-                
+
         input PbUpdateElementInput {
             name: String
             category: String
             content: JSON
             preview: RefInput
         }
-        
+
         input PbUpdatePageInput {
             title: String
             snippet: String
@@ -87,85 +88,73 @@ export default {
             settings: PbPageSettingsInput
             content: JSON
         }
-        
+
         input PbPageSettingsInput {
             _empty: String
         }
-        
+
         input PbCreatePageInput {
             category: ID!
-        }
-        
-        # Response types
-        type PbPageListMeta {
-            totalCount: Int
-            totalPages: Int
-            page: Int
-            perPage: Int
-            from: Int
-            to: Int
-            previousPage: Int
-            nextPage: Int
         }
 
         type PbPageDeleteResponse {
             data: Boolean
             error: PbError
         }
-            
+
         type PbPageResponse {
             data: PbPage
             error: PbError
         }
-        
+
         type PbPageListResponse {
             data: [PbPage]
             meta: PbListMeta
             error: PbError
         }
-        
+
         type PbElementResponse {
             data: PbElement
             error: PbError
         }
-        
+
         type PbElementListResponse {
             data: [PbElement]
             meta: PbListMeta
         }
-        
+
         type PbSearchTagsResponse {
-            data: [String] 
+            data: [String]
         }
-        
+
         type PbOembedResponse {
             data: JSON
             error: PbError
         }
-        
+
         input PbOEmbedInput {
             url: String!
             width: Int
             height: Int
         }
-        
+
         input PbPageSortInput {
             title: Int
             publishedOn: Int
         }
-        
+
         enum PbTagsRule {
           ALL
           ANY
         }
-        
+
         extend type PbQuery {
             getPage(
-                id: ID 
+                id: ID
                 where: JSON
                 sort: String
             ): PbPageResponse
-            
+
             getPublishedPage(
                 id: ID
                 url: String
@@ -174,15 +163,16 @@ export default {
                 returnErrorPage: Boolean
                 preview: Boolean
             ): PbPageResponse
-            
+
             listPages(
-                page: Int
-                perPage: Int
                 sort: JSON
                 search: String
                 parent: String
+                limit: Int
+                after: String
+                before: String
             ): PbPageListResponse
-            
+
             listPublishedPages(
                 search: String
                 category: String
@@ -190,71 +180,72 @@ export default {
                 tags: [String]
                 tagsRule: PbTagsRule
                 sort: PbPageSortInput
-                page: Int
-                perPage: Int
+                limit: Int
+                after: String
+                before: String
             ): PbPageListResponse
-            
-            listElements(perPage: Int): PbElementListResponse
-            
-            # Returns existing tags based on given search term.        
+
+            listElements(limit: Int): PbElementListResponse
+
+            # Returns existing tags based on given search term.
             searchTags(query: String!): PbSearchTagsResponse
-            
+
             oembedData(
-                url: String! 
+                url: String!
                 width: String
                 height: String
             ): PbOembedResponse
         }
-        
+
         extend type PbMutation {
             createPage(
                 data: PbCreatePageInput!
             ): PbPageResponse
-            
+
             # Sets given page as new homepage.
             setHomePage(id: ID!): PbPageResponse
-            
+
             # Create a new revision from an existing revision
             createRevisionFrom(
                 revision: ID!
             ): PbPageResponse
-            
+
             # Update revision
              updateRevision(
                 id: ID!
                 data: PbUpdatePageInput!
             ): PbPageResponse
-            
+
             # Publish revision
             publishRevision(
                 id: ID!
             ): PbPageResponse
-            
+
             # Delete page and all of its revisions
             deletePage(
                 id: ID!
             ): PbDeleteResponse
-            
+
             # Delete a single revision
             deleteRevision(
                 id: ID!
             ): PbDeleteResponse
-            
+
             # Create element
             createElement(
                 data: PbElementInput!
             ): PbElementResponse
-            
-            updateElement(      
+
+            updateElement(
                 id: ID!
                 data: PbUpdateElementInput!
             ): PbElementResponse
-            
+
             # Delete element
             deleteElement(
                 id: ID!
             ): PbDeleteResponse
-            
+
             updateImageSize: PbDeleteResponse
         },
     `,
@@ -274,10 +265,10 @@ export default {
         },
         PbQuery: {
             getPage: resolveGet(pageFetcher),
-            listPages: listPages,
+            listPages: hasScope("pb:page:crud")(listPages),
             listPublishedPages,
             getPublishedPage,
-            listElements: resolveList(elementFetcher),
+            listElements: hasScope("pb:element:crud")(resolveList(elementFetcher)),
             searchTags: async (
                 root: any,
                 args: { [key: string]: any },
@@ -288,29 +279,29 @@ export default {
 
                 return { data: await resolver.resolve({ root, args, context, info }) };
             },
-            oembedData: oembed
+            oembedData: hasScope("pb:oembed:read")(oembed)
         },
         PbMutation: {
             // Creates a new page
-            createPage: resolveCreate(pageFetcher),
+            createPage: hasScope("pb:page:crud")(resolveCreate(pageFetcher)),
             // Deletes the entire page
-            deletePage: resolveDelete(pageFetcher),
+            deletePage: hasScope("pb:page:crud")(resolveDelete(pageFetcher)),
             // Sets given page as home page.
             setHomePage,
             // Creates a revision from the given revision
-            createRevisionFrom: createRevisionFrom,
+            createRevisionFrom: hasScope("pb:page:crud")(createRevisionFrom),
             // Updates revision
-            updateRevision: resolveUpdate(pageFetcher),
+            updateRevision: hasScope("pb:page:crud")(resolveUpdate(pageFetcher)),
             // Publish revision (must be given an exact revision ID to publish)
-            publishRevision,
+            publishRevision: hasScope("pb:page:crud")(publishRevision),
             // Delete a revision
-            deleteRevision: resolveDelete(pageFetcher),
+            deleteRevision: hasScope("pb:page:crud")(resolveDelete(pageFetcher)),
             // Creates a new element
-            createElement: resolveCreate(elementFetcher),
+            createElement: hasScope("pb:page:crud")(resolveCreate(elementFetcher)),
             // Updates an element
-            updateElement: resolveUpdate(elementFetcher),
+            updateElement: hasScope("pb:page:crud")(resolveUpdate(elementFetcher)),
             // Deletes an element
-            deleteElement: resolveDelete(elementFetcher)
+            deleteElement: hasScope("pb:page:crud")(resolveDelete(elementFetcher))
         },
         PbPageSettings: {
             _empty: () => ""

@@ -5,8 +5,8 @@ import googleTagManagerSettings from "./googleTagManagerSettings.model";
 
 export default () => [
     {
-        type: "graphql-context",
-        name: "graphql-context-models-google-tag-manager",
+        type: "context",
+        name: "context-models-google-tag-manager",
         apply({ models }) {
             models.GoogleTagManagerSettings = googleTagManagerSettings({
                 createBase: models.createBase
@@ -66,16 +66,9 @@ export default () => [
                     getSettings: resolveGetSettings(({ models }) => models.GoogleTagManagerSettings)
                 },
                 GtmMutation: {
-                    updateSettings: resolveUpdateSettings(
-                        ({ models }) => models.GoogleTagManagerSettings
+                    updateSettings: hasScope("pb:settings")(
+                        resolveUpdateSettings(({ models }) => models.GoogleTagManagerSettings)
                     )
-                }
-            }
-        },
-        security: {
-            shield: {
-                GtmMutation: {
-                    updateSettings: hasScope("pb:settings")
                 }
             }
         }

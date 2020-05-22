@@ -16,7 +16,7 @@ import {
 } from "@webiny/app-page-builder/editor/selectors";
 import { updateChildPaths } from "@webiny/app-page-builder/editor/utils";
 import undoable from "./history";
-import {Action, PbElement, PbEditorPageElementPlugin, PbPageRevision} from "@webiny/app-page-builder/types";
+import { Action, PbElement, PbEditorPageElementPlugin } from "@webiny/app-page-builder/types";
 
 export const DRAG_START = `Drag start`;
 export const DRAG_END = `Drag end`;
@@ -164,7 +164,7 @@ addReducer([DRAG_END], "ui.dragging", () => false);
 
 export const elementCreated = createAction(ELEMENT_CREATED);
 
-export type PbUpdateElement = (params: { element: PbElement}) => Action;
+export type PbUpdateElement = (params: { element: PbElement }) => Action;
 
 export const updateElement = createAction(UPDATE_ELEMENT) as PbUpdateElement;
 
@@ -198,7 +198,7 @@ addMiddleware([DELETE_ELEMENT], ({ store, next, action }) => {
     store.dispatch(deactivateElement());
     const state = store.getState();
 
-    let { element } = action.payload;
+    const { element } = action.payload;
     let parent = getParentElementWithChildren(state, element.id);
 
     // Remove child from parent
@@ -211,7 +211,7 @@ addMiddleware([DELETE_ELEMENT], ({ store, next, action }) => {
     store.dispatch(updateElement({ element: parent }));
 
     // Execute `onChildDeleted` if defined
-    const plugins = getPlugins("pb-editor-page-element") as PbEditorPageElementPlugin[];
+    const plugins = getPlugins<PbEditorPageElementPlugin>("pb-editor-page-element");
     const plugin = plugins.find(pl => pl.elementType === parent.type);
     if (!plugin) {
         return;
@@ -233,7 +233,7 @@ addMiddleware([ELEMENT_DROPPED], ({ store, next, action }) => {
         return;
     }
 
-    const plugins = getPlugins("pb-editor-page-element") as PbEditorPageElementPlugin[];
+    const plugins = getPlugins<PbEditorPageElementPlugin>("pb-editor-page-element");
     const plugin = plugins.find(pl => pl.elementType === target.type);
 
     if (!plugin) {

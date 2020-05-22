@@ -107,7 +107,7 @@ const ButtonSettings = ({ element, updateElement }) => {
 let icons;
 const getIcons = (): PbIcon[] => {
     if (!icons) {
-        const plugins = getPlugins("pb-icons") as PbIconsPlugin[];
+        const plugins = getPlugins<PbIconsPlugin>("pb-icons");
         icons = plugins.reduce((icons, pl) => {
             return icons.concat(pl.getIcons());
         }, []);
@@ -126,7 +126,6 @@ const getSvg = (id: string[], props: any = {}) => {
     return renderToStaticMarkup(React.cloneElement(icon.svg, props));
 };
 
-export default connect<any, any, any>(
-    state => ({ element: getActiveElement(state) }),
-    { updateElement }
-)(React.memo(ButtonSettings));
+export default connect<any, any, any>(state => ({ element: getActiveElement(state) }), {
+    updateElement
+})(React.memo(ButtonSettings));

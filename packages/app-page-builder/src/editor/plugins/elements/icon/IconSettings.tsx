@@ -62,7 +62,6 @@ const IconSettings = ({ element, updateElement }) => {
     );
 };
 
-export default connect<any, any, any>(
-    state => ({ element: getActiveElement(state) }),
-    { updateElement }
-)(IconSettings);
+export default connect<any, any, any>(state => ({ element: getActiveElement(state) }), {
+    updateElement
+})(IconSettings);

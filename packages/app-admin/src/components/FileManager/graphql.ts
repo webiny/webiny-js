@@ -15,16 +15,18 @@ const fileFields = /* GraphQL */ `
 `;
 
 export const LIST_FILES = gql`
-     query ListFiles($types: [String], $tags: [String], $sort: JSON, $page: Int, $perPage: Int, $search: String) {
+     query ListFiles($types: [String], $tags: [String], $limit: Int, $search: String, $after: String, $before: String) {
         files {
-            listFiles(types: $types, sort: $sort, page: $page, perPage: $perPage, search: $search, tags: $tags) {
+            listFiles(types: $types, limit: $limit, search: $search, tags: $tags, after: $after, before: $before) {
                 data ${fileFields}
                 meta {
+                    cursors {
+                        next
+                        previous
+                    }
+                    hasNextPage
+                    hasPreviousPage
                     totalCount
-                    to
-                    from
-                    nextPage
-                    previousPage
                 }
             }
         }

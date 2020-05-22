@@ -5,6 +5,7 @@ import {
     resolveList,
     resolveUpdate
 } from "@webiny/commodo-graphql";
+import { hasScope } from "@webiny/api-security";
 
 const groupFetcher = ctx => ctx.models.SecurityGroup;
 
@@ -33,17 +34,6 @@ export default {
             operator: String
         }
 
-        type SecurityGroupListMeta {
-            totalCount: Int
-            totalPages: Int
-            page: Int
-            perPage: Int
-            from: Int
-            to: Int
-            previousPage: Int
-            nextPage: Int
-        }
-
         type SecurityGroupError {
             code: String
             message: String
@@ -62,18 +52,19 @@ export default {
 
         type SecurityGroupListResponse {
             data: [SecurityGroup]
-            meta: SecurityGroupListMeta
+            meta: SecurityListMeta
             error: SecurityGroupError
         }
         extend type SecurityQuery {
             getGroup(id: ID, where: JSON, sort: String): SecurityGroupResponse
 
             listGroups(
-                page: Int
-                perPage: Int
                 where: JSON
                 sort: JSON
                 search: SecurityGroupSearchInput
+                limit: Int
+                after: String
+                before: String
             ): SecurityGroupListResponse
         }
 
@@ -85,13 +76,13 @@ export default {
     `,
     resolvers: {
         SecurityQuery: {
-            getGroup: resolveGet(groupFetcher),
-            listGroups: resolveList(groupFetcher)
+            getGroup: hasScope("security:group:crud")(resolveGet(groupFetcher)),
+            listGroups: hasScope("security:group:crud")(resolveList(groupFetcher))
         },
         SecurityMutation: {
-            createGroup: resolveCreate(groupFetcher),
-            updateGroup: resolveUpdate(groupFetcher),
-            deleteGroup: resolveDelete(groupFetcher)
+            createGroup: hasScope("security:group:crud")(resolveCreate(groupFetcher)),
+            updateGroup: hasScope("security:group:crud")(resolveUpdate(groupFetcher)),
+            deleteGroup: hasScope("security:group:crud")(resolveDelete(groupFetcher))
         }
     }
 };

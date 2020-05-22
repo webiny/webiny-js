@@ -14,7 +14,8 @@
     "Adrian Smijulj <adrian@webiny.com>"
   ],
   "dependencies": {
-    "@babel/runtime": "^7.5.5"
+    "@babel/runtime": "^7.5.5",
+    "@webiny/commodo": "^3.0.1"
   },
   "devDependencies": {
     "@babel/cli": "^7.5.5",
@@ -22,7 +23,8 @@
     "@babel/preset-env": "^7.5.5"
   },
   "publishConfig": {
-    "access": "public"
+    "access": "public",
+    "directory": "dist"
   },
   "scripts": {
     "build": "rimraf ./dist *.tsbuildinfo && babel src -d dist --source-maps --copy-files --extensions \".ts\"",

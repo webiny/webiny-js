@@ -108,7 +108,7 @@ class MultiImageUpload extends React.Component<Props, State> {
         validate && (await validate());
     };
 
-    handleSelectedImages = async (images: Array<SelectedFile>, selectedIndex: number = 0) => {
+    handleSelectedImages = async (images: Array<SelectedFile>, selectedIndex = 0) => {
         this.setState({ errors: null, loading: true }, async () => {
             const selectedImages = {};
             for (let i = 0; i < images.length; i++) {

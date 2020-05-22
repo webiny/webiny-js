@@ -1,10 +1,10 @@
 import React from "react";
-import { HeaderUserMenuPlugin } from "@webiny/app-admin/types";
+import { AdminHeaderUserMenuPlugin } from "@webiny/app-admin/types";
 import DarkMode from "./DarkMode";
 
-const plugin: HeaderUserMenuPlugin = {
-    name: "user-menu-dark-mode",
-    type: "header-user-menu",
+const plugin: AdminHeaderUserMenuPlugin = {
+    name: "admin-user-menu-dark-mode",
+    type: "admin-header-user-menu",
     render() {
         return <DarkMode />;
     }

@@ -4,6 +4,7 @@ import styled from "@emotion/styled";
 import { css } from "emotion";
 import { TopAppBarSecondary, TopAppBarSection } from "@webiny/ui/TopAppBar";
 import { IconButton } from "@webiny/ui/Button";
+import noop from "lodash/noop";
 
 import { ReactComponent as CloseIcon } from "./icons/close.svg";
 
@@ -57,7 +58,7 @@ export class OverlayLayout extends React.Component<OverlayLayoutProps, State> {
     }
 
     static defaultProps = {
-        onExited: () => {}
+        onExited: noop
     };
 
     state = { isVisible: true };

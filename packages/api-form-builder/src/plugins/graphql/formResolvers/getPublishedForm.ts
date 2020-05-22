@@ -1,6 +1,6 @@
-import { Response, NotFoundResponse } from "@webiny/api";
+import { Response, NotFoundResponse } from "@webiny/graphql";
 import { listPublishedForms } from "./listPublishedForms";
-import { GraphQLFieldResolver } from "@webiny/api/types";
+import { GraphQLFieldResolver } from "@webiny/graphql/types";
 
 /**
  * Returns published forms by given ID or parent. If parent is set, latest published revision with it will be returned.
@@ -15,7 +15,7 @@ const resolver: GraphQLFieldResolver = async (root, args, context, info) => {
     }
 
     // We utilize the same query used for listing published forms (single source of truth = less maintenance).
-    const listArgs = { ...args, perPage: 1 };
+    const listArgs = { ...args, limit: 1 };
     if (!listArgs.version) {
         listArgs.sort = { version: -1 };
     }

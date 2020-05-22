@@ -8,6 +8,7 @@ import { CircularProgress } from "@webiny/ui/Progress";
 import {
     AddImageIconWrapper,
     AddImageWrapper,
+    AddImageWrapperRound,
     EditImage,
     ImagePreviewWrapper,
     RemoveImage
@@ -23,6 +24,7 @@ type Props = {
     placeholder: string;
     style?: { [key: string]: any };
     renderImagePreview?: (props: any) => React.ReactElement<any>;
+    round?: boolean;
 };
 
 class Image extends React.Component<Props> {
@@ -31,10 +33,12 @@ class Image extends React.Component<Props> {
     };
 
     renderBlank() {
-        const { uploadImage } = this.props;
+        const { uploadImage, round } = this.props;
+
+        const ImageWrapper = round ? AddImageWrapperRound : AddImageWrapper;
 
         return (
-            <AddImageWrapper
+            <ImageWrapper
                 data-role={"select-image"}
                 onClick={() => {
                     uploadImage();
@@ -44,7 +48,7 @@ class Image extends React.Component<Props> {
                     <AddImageIcon />
                     <Typography use={"caption"}>{this.props.placeholder}</Typography>
                 </AddImageIconWrapper>
-            </AddImageWrapper>
+            </ImageWrapper>
         );
     }
 

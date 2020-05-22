@@ -4,7 +4,7 @@ import MailchimpDefaultForm from "./components/MailchimpDefaultForm";
 import { PbRenderElementPlugin } from "@webiny/app-page-builder/types";
 import { PbPageElementMailchimpComponentPlugin } from "../types";
 
-export default [
+export default () => [
     {
         name: "pb-render-page-element-mailchimp",
         type: "pb-render-page-element",

@@ -46,10 +46,11 @@ export type MenuProps = {
     label: React.ReactNode;
     icon: React.ReactNode;
     children: React.ReactNode;
+    onClick?: (toggleSection: () => void) => void;
 };
 
 export default function Menu(props: MenuProps) {
-    const { name } = props;
+    const { name, onClick } = props;
     const { sectionIsExpanded, toggleSection } = useNavigation();
 
     const sectionExpanded = sectionIsExpanded(name);
@@ -57,7 +58,15 @@ export default function Menu(props: MenuProps) {
     return (
         <>
             <List className={classNames(menuTitle, { [menuTitleActive]: sectionExpanded })}>
-                <ListItem onClick={() => toggleSection(name)}>
+                <ListItem
+                    onClick={() => {
+                        if (typeof onClick === "function") {
+                            onClick(() => toggleSection(name));
+                        } else {
+                            toggleSection(name);
+                        }
+                    }}
+                >
                     {props.icon && (
                         <ListItemGraphic>
                             <IconButton icon={props.icon} />

@@ -1,8 +1,0 @@
-{
-  "extends": "../../tsconfig",
-  "references": [
-    {"path": "../http-handler"},
-    {"path": "../commodo"},
-    {"path": "../commodo-fields-storage-db-proxy"}
-  ]
-}

@@ -1,0 +1,34 @@
+{
+  "private": true,
+  "dependencies": {
+    "@webiny/cli": "latest",
+    "@webiny/cli-plugin-deploy-components": "latest",
+    "@webiny/cli-plugin-scaffold": "latest",
+    "@webiny/cli-plugin-scaffold-graphql-service": "latest",
+    "@webiny/cli-plugin-scaffold-lambda": "latest",
+    "@webiny/project-utils": "latest",
+    "@webiny/serverless-api-gateway": "latest",
+    "@webiny/serverless-app": "latest",
+    "@webiny/serverless-aws-api-gateway": "latest",
+    "@webiny/serverless-aws-cloudfront": "latest",
+    "@webiny/serverless-aws-cognito-user-pool": "latest",
+    "@webiny/serverless-aws-lambda": "latest",
+    "@webiny/serverless-aws-s3-object": "latest",
+    "@webiny/serverless-component": "latest",
+    "@webiny/serverless-files": "latest",
+    "@webiny/serverless-function": "latest"
+  },
+  "workspaces": {
+    "packages": [
+      "apps/*",
+      "api/apolloGateway",
+      "api/databaseProxy",
+      "api/files/*",
+      "api/formBuilder",
+      "api/headless/*",
+      "api/i18n/*",
+      "api/pageBuilder",
+      "api/security/*"
+    ]
+  }
+}

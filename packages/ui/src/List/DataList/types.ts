@@ -1,12 +1,13 @@
 import * as React from "react";
 
 export type MetaProp = {
-    from?: number;
-    to?: number;
+    cursors?: {
+        next: string;
+        previous: string;
+    };
+    hasNextPage?: boolean;
+    hasPreviousPage?: boolean;
     totalCount?: number;
-    totalPages?: number;
-    nextPage?: number;
-    previousPage?: number;
 };
 
 export type SortersProp = Array<{ label: string; sorters: { [key: string]: number } }>;

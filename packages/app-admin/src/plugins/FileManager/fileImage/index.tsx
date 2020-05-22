@@ -1,7 +1,7 @@
 import * as React from "react";
 import { css } from "emotion";
 import { Image } from "@webiny/app/components";
-import { FileManagerFileTypePlugin } from "@webiny/app-admin/types";
+import { AdminFileManagerFileTypePlugin } from "@webiny/app-admin/types";
 
 import EditAction from "./EditAction";
 
@@ -15,9 +15,9 @@ const styles = css({
     transform: "translateX(-50%) translateY(-50%)"
 });
 
-const imageFilePlugin: FileManagerFileTypePlugin = {
+const imageFilePlugin: AdminFileManagerFileTypePlugin = {
     name: "file-manager-file-type-image",
-    type: "file-manager-file-type",
+    type: "admin-file-manager-file-type",
     types: [
         "image/jpeg",
         "image/jpg",

@@ -15,7 +15,9 @@ import ValidationError from "./../validationError";
  * });
  */
 export default (value: any, params: Array<string>) => {
-    if (!value) return;
+    if (!value) {
+        return;
+    }
     value = value + "";
 
     // Intentionally put '==' instead of '===' because passed parameter for this validator is always sent inside a string (eg. "eq:test").

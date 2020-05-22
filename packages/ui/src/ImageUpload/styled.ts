@@ -37,6 +37,13 @@ export const AddImageWrapper = styled("div")({
     }
 });
 
+export const AddImageWrapperRound = styled(AddImageWrapper)({
+    margin: "auto",
+    width: "150px",
+    height: "150px",
+    borderRadius: "50%"
+});
+
 export const RemoveImage = styled("div")({
     position: "absolute",
     cursor: "pointer",

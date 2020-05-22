@@ -16,7 +16,7 @@ export default ({ page: { url, id }, domain }) => {
 
     previewUrl = trimEnd(previewUrl, "/");
     previewUrl += url;
-    previewUrl += "?preview=" + id + '&ssr-no-cache';
+    previewUrl += "?preview=" + id + "&ssr-no-cache";
 
     return previewUrl;
 };

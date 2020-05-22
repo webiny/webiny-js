@@ -1,0 +1,9 @@
+{
+  "name": "[PACKAGE_NAME]",
+  "version": "1.0.0",
+  "description": "",
+  "license": "MIT",
+  "scripts": {
+    "build": "webiny run build"
+  }
+}

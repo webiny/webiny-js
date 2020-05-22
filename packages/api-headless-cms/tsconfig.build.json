@@ -1,0 +1,32 @@
+{
+  "extends": "../../tsconfig.build.json",
+  "include": ["src"],
+  "exclude": [
+    "node_modules",
+    "../graphql",
+    "../api-i18n",
+    "../api-plugin-commodo-db-proxy",
+    "../api-security",
+    "../commodo",
+    "../commodo-graphql",
+    "../handler",
+    "../handler-apollo-server",
+    "../validation",
+    "./jest.config.js"
+  ],
+  "compilerOptions": {
+    "outDir": "dist",
+    "rootDir": "src",
+    "declarationDir": "dist"
+  },
+  "references": [
+    { "path": "../graphql/tsconfig.build.json" },
+    { "path": "../api-i18n/tsconfig.build.json" },
+    { "path": "../api-plugin-commodo-db-proxy/tsconfig.build.json" },
+    { "path": "../api-security/tsconfig.build.json" },
+    { "path": "../commodo-graphql/tsconfig.build.json" },
+    { "path": "../handler/tsconfig.build.json" },
+    { "path": "../handler-apollo-server/tsconfig.build.json" },
+    { "path": "../validation/tsconfig.build.json" }
+  ]
+}

@@ -1,12 +1,13 @@
-import { ListResponse } from "@webiny/api";
+import { ListResponse, requiresTotalCount } from "@webiny/graphql";
+import { GraphQLResolveInfo } from "graphql";
 
-export const listPublishedPages = async ({ context, args }) => {
+export const listPublishedPages = async params => {
+    const { context, args, info = null } = params;
     const { PbCategory, PbPage } = context.models;
 
     const {
-        page = 1,
         search,
-        perPage = 10,
+        limit = 10,
         category = null,
         parent = null,
         id = null,
@@ -14,7 +15,9 @@ export const listPublishedPages = async ({ context, args }) => {
         sort = null,
         tags = null,
         tagsRule = null,
-        preview = false
+        preview = false,
+        after,
+        before
     } = args;
 
     let baseFilters: any = [{ published: true, deleted: false }];
@@ -70,10 +73,17 @@ export const listPublishedPages = async ({ context, args }) => {
         }
     }
 
-    return PbPage.find({ query: { $and: baseFilters }, sort, page, perPage });
+    return PbPage.find({
+        query: { $and: baseFilters },
+        sort,
+        limit,
+        after,
+        before,
+        totalCount: info ? requiresTotalCount(info) : false
+    });
 };
 
-export default async (root: any, args: Object, context: Object) => {
-    const list = await listPublishedPages({ args, context });
+export default async (root: any, args: Object, context: Object, info: GraphQLResolveInfo) => {
+    const list = await listPublishedPages({ args, context, info });
     return new ListResponse(list, list.getMeta());
 };

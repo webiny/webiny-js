@@ -21,18 +21,20 @@ const BASE_FORM_FIELDS = `
 `;
 
 export const LIST_FORMS = gql`
-    query FormsListForms($sort: JSON, $page: Int, $perPage: Int, $search: String) {
+    query FormsListForms($sort: JSON, $limit: Int, $search: String, $after: String, $before: String) {
         forms {
-            listForms(sort: $sort, page: $page, perPage: $perPage, search: $search) {
+            listForms(sort: $sort, limit: $limit, search: $search, after: $after, before: $before) {
                 data {  
                     ${BASE_FORM_FIELDS}
                 }
                 meta {
+                    cursors {
+                        next
+                        previous
+                    }
+                    hasNextPage
+                    hasPreviousPage
                     totalCount
-                    to
-                    from
-                    nextPage
-                    previousPage
                 }
             }
         }
@@ -90,18 +92,20 @@ export const GET_FORM = gql`
 export const LIST_FORM_SUBMISSIONS = gql`
     query FormsListFormSubmissions(
         $sort: JSON
-        $page: Int
-        $perPage: Int
         $search: String
         $where: JSON
+        $limit: Int
+        $after: String
+        $before: String
     ) {
         forms {
             listFormSubmissions(
                 sort: $sort
-                page: $page
-                perPage: $perPage
                 search: $search
                 where: $where
+                limit: $limit
+                after: $after
+                before: $before
             ) {
                 data {
                     id
@@ -134,11 +138,13 @@ export const LIST_FORM_SUBMISSIONS = gql`
                     }
                 }
                 meta {
+                    cursors {
+                        next
+                        previous
+                    }
+                    hasNextPage
+                    hasPreviousPage
                     totalCount
-                    to
-                    from
-                    nextPage
-                    previousPage
                 }
             }
         }

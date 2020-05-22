@@ -12,17 +12,19 @@ export const LIST_GROUPS = gql`
     query listGroups(
         $where: JSON
         $sort: JSON
-        $page: Int
-        $perPage: Int
         $search: SecurityGroupSearchInput
+        $limit: Int
+        $after: String
+        $before: String
     ) {
         security {
             groups: listGroups(
                 where: $where
                 sort: $sort
-                page: $page
-                perPage: $perPage
                 search: $search
+                limit: $limit
+                after: $after
+                before: $before
             ) {
                 data {
                     id
@@ -31,11 +33,13 @@ export const LIST_GROUPS = gql`
                     createdOn
                 }
                 meta {
+                    cursors {
+                        next
+                        previous
+                    }
+                    hasNextPage
+                    hasPreviousPage
                     totalCount
-                    to
-                    from
-                    nextPage
-                    previousPage
                 }
             }
         }
