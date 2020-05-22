@@ -1,4 +1,4 @@
-import { pipe, withFields, withStaticProps, setOnce, withHooks } from "@webiny/commodo";
+import { pipe, withFields, withStaticProps, withProps, setOnce, withHooks } from "@webiny/commodo";
 import { cloneDeep } from "lodash";
 
 const modifyQueryArgs = (args = {}, environment) => {
@@ -27,6 +27,24 @@ export const createEnvironmentBase = ({ context, addEnvironmentField }) => () =>
             },
             findOne(args) {
                 return findOne.call(this, modifyQueryArgs(args, environment));
+            }
+        })),
+        withProps(({ save, delete: deleteModel }) => ({
+            save(args) {
+                return save.call(this, {
+                    ...args,
+                    getId(instance) {
+                        return { id: instance.id, environment: environment.id };
+                    }
+                });
+            },
+            delete(args) {
+                return deleteModel.call(this, {
+                    ...args,
+                    getId(instance) {
+                        return { id: instance.id, environment: environment.id };
+                    }
+                });
             }
         }))
     )(context.models.createBase());

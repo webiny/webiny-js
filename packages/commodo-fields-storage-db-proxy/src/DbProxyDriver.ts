@@ -56,6 +56,7 @@ class DbProxyClient {
 
 type Item = {
     name: string;
+    query: { [key: string]: any };
     data: { [key: string]: any };
 };
 
@@ -80,10 +81,10 @@ class DbProxyDriver {
     }
 
     async update(items: Item[]) {
-        const payload = items.map(({ name, data }) => {
+        const payload = items.map(({ name, query, data }) => {
             return {
                 collection: this.getCollectionName(name),
-                operation: ["updateOne", { id: data.id }, { $set: data }]
+                operation: ["updateOne", query, { $set: data }]
             };
         });
 
