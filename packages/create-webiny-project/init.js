@@ -93,12 +93,13 @@ module.exports = async function({ root, appName, templateName, tag, log }) {
             task: async () => {
                 // Set proper @webiny package versions
                 const workspaces = await fg(["**/package.json"], {
-                    ignore: ["**/dist/**", "**/node_modules/**"],
+                    ignore: ["**/dist/**", "**/node_modules/**", root],
                     cwd: root
                 });
 
                 await Promise.all(
                     workspaces.map(async jsonPath => {
+                        const relativeJsonPath = jsonPath;
                         jsonPath = path.join(root, jsonPath);
                         const json = await loadJsonFile(jsonPath);
                         const keys = Object.keys(json.dependencies).filter(k =>
@@ -115,10 +116,13 @@ module.exports = async function({ root, appName, templateName, tag, log }) {
                             )
                             .replace(/\\/g, "/");
 
-                        const tsConfigPath = path.join(currentDir, "tsconfig.json");
-                        const tsconfig = require(tsConfigPath);
-                        tsconfig.extends = baseTsConfigPath;
-                        fs.writeFileSync(tsConfigPath, JSON.stringify(tsconfig, null, 2));
+                        // We don't want to modify tsconfig file in the root of the project
+                        if (relativeJsonPath !== "package.json") {
+                            const tsConfigPath = path.join(currentDir, "tsconfig.json");
+                            const tsconfig = require(tsConfigPath);
+                            tsconfig.extends = baseTsConfigPath;
+                            fs.writeFileSync(tsConfigPath, JSON.stringify(tsconfig, null, 2));
+                        }
 
                         await Promise.all(
                             keys.map(async name => {
