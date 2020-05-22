@@ -3,6 +3,20 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.0.0-beta.0](https://github.com/Webiny/webiny-js/compare/v1.15.1...v4.0.0-beta.0) (2020-05-22)
+
+
+### Bug Fixes
+
+* disable S3 acceleration feature by default ([f9f785c](https://github.com/Webiny/webiny-js/commit/f9f785ca39a6acc22f891a0a1acdcbda8dec98b5))
+* fix eslint error ([a5a9206](https://github.com/Webiny/webiny-js/commit/a5a920676c6e58bc66987c7ab8848e8e6ad4fb0f))
+* rename env variable ([aaea6c8](https://github.com/Webiny/webiny-js/commit/aaea6c8ffffb7cc79a8533ae1325008b56049772))
+* update dependencies ([471d34a](https://github.com/Webiny/webiny-js/commit/471d34a26ed878aeab0c3d99a82d4e117c1072de))
+
+
+
+
+
 # [3.1.0](https://github.com/webiny/webiny-js/compare/@webiny/serverless-files@3.1.0-next.0...@webiny/serverless-files@3.1.0) (2020-04-20)
 
 **Note:** Version bump only for package @webiny/serverless-files

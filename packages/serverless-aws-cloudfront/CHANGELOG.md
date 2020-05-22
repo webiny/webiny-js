@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.0.0-beta.0](https://github.com/Webiny/webiny-js/compare/v1.15.1...v4.0.0-beta.0) (2020-05-22)
+
+
+### Bug Fixes
+
+* add missing file ([0fcb064](https://github.com/Webiny/webiny-js/commit/0fcb06442443d0c6cffd8bca7f702d8b4a29db52))
+
+
+
+
+
 ## [3.0.3](https://github.com/webiny/webiny-js/compare/@webiny/serverless-aws-cloudfront@3.0.3-next.0...@webiny/serverless-aws-cloudfront@3.0.3) (2020-04-16)
 
 **Note:** Version bump only for package @webiny/serverless-aws-cloudfront

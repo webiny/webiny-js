@@ -3,6 +3,29 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.0.0-beta.0](https://github.com/webiny/webiny-js/compare/v1.15.1...v4.0.0-beta.0) (2020-05-22)
+
+
+### Bug Fixes
+
+* add missing await ([#691](https://github.com/webiny/webiny-js/issues/691)) ([b1fb17d](https://github.com/webiny/webiny-js/commit/b1fb17dc6f03346af2d0ffa053dafbdc2abefc66)), closes [#687](https://github.com/webiny/webiny-js/issues/687)
+* remove unneeded console.log ([4916916](https://github.com/webiny/webiny-js/commit/4916916aadb5abca1d4111dd7bb827e3dc9073d0))
+* update plugin names and usage ([38754f2](https://github.com/webiny/webiny-js/commit/38754f2c1c4d71667cab35c84436662c36dcec04))
+* use "@webiny/graphql" package instead of "@webiny/graphql" ([6ada8f1](https://github.com/webiny/webiny-js/commit/6ada8f106a715df351c6d253a72e3727fbb27322))
+* use lower-case header name ([17c95a0](https://github.com/webiny/webiny-js/commit/17c95a078af0affc31642010df6ae6b3c558c043))
+
+
+### Features
+
+* ✨  Wrap resolvers in `hasScope` ([7309a73](https://github.com/webiny/webiny-js/commit/7309a73c863d1bd3dbc41ea2b73864010407414d))
+* improved scopes selection auto-complete component([#743](https://github.com/webiny/webiny-js/issues/743)) ([f3acbc5](https://github.com/webiny/webiny-js/commit/f3acbc5aa467ac3d70649628bfbe68727345487e)), closes [#729](https://github.com/webiny/webiny-js/issues/729)
+* replace FILES_API_URL env variable with a header ([5a72104](https://github.com/webiny/webiny-js/commit/5a72104da680dc31e47f2e54f6929cf902112fa4))
+* TypeScript && improved SSR mechanisms ([#677](https://github.com/webiny/webiny-js/issues/677)) ([3da0566](https://github.com/webiny/webiny-js/commit/3da0566f29e1d46df0e7c357be0b42bdaa4c7d2b))
+
+
+
+
+
 ## [2.1.2](https://github.com/webiny/webiny-js/compare/@webiny/api-form-builder@2.1.2-next.0...@webiny/api-form-builder@2.1.2) (2020-04-16)
 
 **Note:** Version bump only for package @webiny/api-form-builder

@@ -3,6 +3,28 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.0.0-beta.0](https://github.com/webiny/webiny-js/compare/v1.15.1...v4.0.0-beta.0) (2020-05-22)
+
+
+### Bug Fixes
+
+* security and i18n installation. ([bb8aa0c](https://github.com/webiny/webiny-js/commit/bb8aa0ca0287d31a82de2af0392547500aff7913))
+* synced dependencies across all packages ([#567](https://github.com/webiny/webiny-js/issues/567)) ([38eda54](https://github.com/webiny/webiny-js/commit/38eda547bead6e8a2c46875730bbcd8f1227e475))
+* update package versions ([878baa5](https://github.com/webiny/webiny-js/commit/878baa51dd747e3a2962da89cbb68ea15779a04f))
+* use "@webiny/graphql" package instead of "@webiny/graphql" ([6769941](https://github.com/webiny/webiny-js/commit/6769941e98d9738fe018d87450d8ebcd63c20dbd))
+
+
+### Features
+
+* add support for DB drivers ([#623](https://github.com/webiny/webiny-js/issues/623)) ([82a6d66](https://github.com/webiny/webiny-js/commit/82a6d66d5ad96e4da13c035d2524c03bd50a7dff))
+* pluginable security authentication providers. ([01287d1](https://github.com/webiny/webiny-js/commit/01287d14e1fa6de400aa00c061f5600473acad82))
+* sync Cognito data with Webiny user data, add create/update/delete handlers. ([9fcc931](https://github.com/webiny/webiny-js/commit/9fcc931142dd194a686dd87c678a10897cf0ee1e))
+* TypeScript && improved SSR mechanisms ([#677](https://github.com/webiny/webiny-js/issues/677)) ([3da0566](https://github.com/webiny/webiny-js/commit/3da0566f29e1d46df0e7c357be0b42bdaa4c7d2b))
+
+
+
+
+
 ## [3.0.3](https://github.com/webiny/webiny-js/compare/@webiny/api-plugin-security-cognito@3.0.3-next.0...@webiny/api-plugin-security-cognito@3.0.3) (2020-03-09)
 
 **Note:** Version bump only for package @webiny/api-plugin-security-cognito

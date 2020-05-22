@@ -3,6 +3,32 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.0.0-beta.0](https://github.com/webiny/webiny-js/compare/v1.15.1...v4.0.0-beta.0) (2020-05-22)
+
+
+### Bug Fixes
+
+* adapt settings menus to the new structure ([3728d01](https://github.com/webiny/webiny-js/commit/3728d01fdaec09a1b864a83514bf3d76656e94d7))
+* convert all app plugins to factories ([b3553fa](https://github.com/webiny/webiny-js/commit/b3553fa2b3d7aa00d73df9ab700dc8a90631bf96))
+* convert withSecurity to useSecurity, refactor the remaining recompose usages. ([6671df2](https://github.com/webiny/webiny-js/commit/6671df2adb5fb7aef14516f271aabb9a5579c57f))
+* editor plugin types and TS types location. ([031f064](https://github.com/webiny/webiny-js/commit/031f0644c52fa2bd1f7095f0b80818c549d7672d))
+* fix eslint error ([b7079c1](https://github.com/webiny/webiny-js/commit/b7079c1f61209e5096350598da5d8f6101e5959d))
+* fix eslint error ([a1af24e](https://github.com/webiny/webiny-js/commit/a1af24edf167be31f2502372d989f8abbd7dee81))
+* implement useHandler(s) and usePageBuilder hooks. ([bf4c0fe](https://github.com/webiny/webiny-js/commit/bf4c0fe2c03c1966ee99f3b40a902184e34f55d6))
+* package version ([7a5aa5d](https://github.com/webiny/webiny-js/commit/7a5aa5d8fedcb267e7d93b99040c5b285499cf4f))
+* update dependencies ([2def479](https://github.com/webiny/webiny-js/commit/2def479886ed356e7981b7be61b957edcc87f887))
+* use correct type ([54a428a](https://github.com/webiny/webiny-js/commit/54a428a50a6aa0019b2f9d37e2a2d9ab21bca6fc))
+
+
+### Features
+
+* form inputs validators refactor ([4bca7b4](https://github.com/webiny/webiny-js/commit/4bca7b463699bdc0ad94a71ea42d5a10d1353caa))
+* TypeScript && improved SSR mechanisms ([#677](https://github.com/webiny/webiny-js/issues/677)) ([3da0566](https://github.com/webiny/webiny-js/commit/3da0566f29e1d46df0e7c357be0b42bdaa4c7d2b))
+
+
+
+
+
 ## [3.0.15](https://github.com/webiny/webiny-js/compare/@webiny/app-mailchimp@3.0.14...@webiny/app-mailchimp@3.0.15) (2020-05-04)
 
 **Note:** Version bump only for package @webiny/app-mailchimp

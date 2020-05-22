@@ -3,6 +3,31 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.0.0-beta.0](https://github.com/webiny/webiny-js/compare/v1.15.1...v4.0.0-beta.0) (2020-05-22)
+
+
+### Bug Fixes
+
+* add compose and pipe functions as separate exports ([e5f0f58](https://github.com/webiny/webiny-js/commit/e5f0f58c5ce56275ec2614da106e0b9d9f343796))
+* bump patch version ([fba6afe](https://github.com/webiny/webiny-js/commit/fba6afe7ffbd114bd1b433c4c9031bd4642c2ef9))
+* clean "api" folder ([5ec07b4](https://github.com/webiny/webiny-js/commit/5ec07b4d866f5f1c953c07b2483018a7ea5981e1))
+* synced dependencies across all packages ([#567](https://github.com/webiny/webiny-js/issues/567)) ([38eda54](https://github.com/webiny/webiny-js/commit/38eda547bead6e8a2c46875730bbcd8f1227e475))
+* update [@commodo](https://github.com/commodo) package version ([5bc9f06](https://github.com/webiny/webiny-js/commit/5bc9f061c77964ce878f038747b4c974409c5759))
+* update dependencies ([9be07d8](https://github.com/webiny/webiny-js/commit/9be07d82f913dd9109300e1b9738a1595a1ca7c0))
+* update versions ([b78e637](https://github.com/webiny/webiny-js/commit/b78e63756034301f50b11f5f95dfe91350797812))
+* update versions ([7de87da](https://github.com/webiny/webiny-js/commit/7de87da0f34f80be6ed744cf18817cda94c0b28c))
+
+
+### Features
+
+* add Content Model Groups route ([aa2dc43](https://github.com/webiny/webiny-js/commit/aa2dc43fb38b1f1da2baf26b75fdd3b4de3fd970))
+* add float and integer fields. ([c4f8d02](https://github.com/webiny/webiny-js/commit/c4f8d0255b657b0289192c5d57df1ed309f207f3))
+* TypeScript && improved SSR mechanisms ([#677](https://github.com/webiny/webiny-js/issues/677)) ([3da0566](https://github.com/webiny/webiny-js/commit/3da0566f29e1d46df0e7c357be0b42bdaa4c7d2b))
+
+
+
+
+
 ## [3.0.1](https://github.com/webiny/webiny-js/compare/@webiny/commodo@3.0.1-next.0...@webiny/commodo@3.0.1) (2020-02-07)
 
 **Note:** Version bump only for package @webiny/commodo

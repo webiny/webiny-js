@@ -1,6 +1,6 @@
 {
   "name": "@webiny/app-template-admin-full",
-  "version": "1.0.0",
+  "version": "4.0.0-beta.0",
   "main": "index.js",
   "repository": {
     "type": "git",
@@ -16,16 +16,16 @@
   "license": "MIT",
   "dependencies": {
     "@babel/runtime": "^7.5.5",
-    "@webiny/app-cookie-policy": "^3.0.4",
-    "@webiny/app-form-builder": "^2.0.5",
-    "@webiny/app-form-builder-theme": "^2.0.3",
-    "@webiny/app-google-tag-manager": "^3.0.4",
-    "@webiny/app-headless-cms": "^2.0.8",
-    "@webiny/app-mailchimp": "^3.0.5",
-    "@webiny/app-page-builder": "^3.1.3",
-    "@webiny/app-page-builder-theme": "^2.0.4",
-    "@webiny/app-template-admin": "^1.0.0",
-    "@webiny/app-typeform": "^3.0.5"
+    "@webiny/app-cookie-policy": "^4.0.0-beta.0",
+    "@webiny/app-form-builder": "^4.0.0-beta.0",
+    "@webiny/app-form-builder-theme": "^4.0.0-beta.0",
+    "@webiny/app-google-tag-manager": "^4.0.0-beta.0",
+    "@webiny/app-headless-cms": "^4.0.0-beta.0",
+    "@webiny/app-mailchimp": "^4.0.0-beta.0",
+    "@webiny/app-page-builder": "^4.0.0-beta.0",
+    "@webiny/app-page-builder-theme": "^4.0.0-beta.0",
+    "@webiny/app-template-admin": "^4.0.0-beta.0",
+    "@webiny/app-typeform": "^4.0.0-beta.0"
   },
   "devDependencies": {
     "@babel/cli": "^7.5.5",

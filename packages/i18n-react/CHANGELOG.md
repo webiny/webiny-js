@@ -3,6 +3,23 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.0.0-beta.0](https://github.com/webiny/webiny-js/compare/v1.15.1...v4.0.0-beta.0) (2020-05-22)
+
+
+### Bug Fixes
+
+* add types form "i18n-text" and "i18n-text-part" ([12048c3](https://github.com/webiny/webiny-js/commit/12048c3bc8cc57de8a78b56c6e46c6b788d43d43))
+* remove unnecessary file ([5b8dd6f](https://github.com/webiny/webiny-js/commit/5b8dd6ff7d288936e7094c3bd8716953bc7dc86b))
+
+
+### Features
+
+* TypeScript && improved SSR mechanisms ([#677](https://github.com/webiny/webiny-js/issues/677)) ([3da0566](https://github.com/webiny/webiny-js/commit/3da0566f29e1d46df0e7c357be0b42bdaa4c7d2b))
+
+
+
+
+
 ## [3.0.1](https://github.com/webiny/webiny-js/compare/@webiny/i18n-react@3.0.1-next.0...@webiny/i18n-react@3.0.1) (2020-02-07)
 
 **Note:** Version bump only for package @webiny/i18n-react
