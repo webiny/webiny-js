@@ -189,7 +189,9 @@ describe("MANAGE - GraphQL Schema", () => {
     test(`should correctly check if "indexes" field is "dirty"`, async () => {
         const { models } = await useContext();
         // Get content model to fetch model indexes
-        const categoryModel = await models.CmsContentModel.findOne({ modelId: "category" });
+        const categoryModel = await models.CmsContentModel.findOne({
+            query: { modelId: "category" }
+        });
 
         // Update content model indexes
         categoryModel.indexes = [{ fields: ["slug"] }];

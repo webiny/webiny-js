@@ -59,7 +59,9 @@ describe("Data Manager Handler", () => {
         expect(entries.length).toBe(3);
 
         // Get content model to fetch model indexes
-        const categoryModel = await models.CmsContentModel.findOne({ modelId: "category" });
+        const categoryModel = await models.CmsContentModel.findOne({
+            query: { modelId: "category" }
+        });
 
         // Check if all indexes have proper values
         for (let i = 0; i < categoryModel.indexes.length; i++) {
@@ -94,7 +96,9 @@ describe("Data Manager Handler", () => {
             contentModel: "category"
         });
 
-        const categoryModel = await models.CmsContentModel.findOne({ modelId: "category" });
+        const categoryModel = await models.CmsContentModel.findOne({
+            query: { modelId: "category" }
+        });
 
         // Update content model indexes
         categoryModel.indexes = [{ fields: ["slug"] }];
