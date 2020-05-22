@@ -129,6 +129,7 @@
     "commit:no-verify": "yarn commit --no-verify",
     "commit:verify": "yarn lint-staged",
     "commodo-versions": "node ./scripts/commodoVersions.js",
+    "webiny-versions": "node ./scripts/webinyVersions.js",
     "lint-staged": "lint-staged",
     "postinstall": "node ./scripts/linkPackages.js",
     "prettier": "prettier --config .prettierrc.js --write",
