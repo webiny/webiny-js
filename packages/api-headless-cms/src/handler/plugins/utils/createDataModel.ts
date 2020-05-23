@@ -158,6 +158,23 @@ export const createDataModel = (
                     }
                 }
             },
+            async beforePublish() {
+                // Deactivate previously published revision.
+                const publishedRev = await Model.findOne({
+                    query: { published: true, parent: this.meta.parent }
+                });
+
+                if (publishedRev) {
+                    this.hook("afterPublish", async () => {
+                        publishedRev.meta.published = false;
+                        await publishedRev.save();
+                        // We only want to keep indexes for `published` and `latestVersion` revisions
+                        if (!publishedRev.latestVersion) {
+                            await deleteRevisionIndexes(publishedRev, context);
+                        }
+                    });
+                }
+            },
             async beforeDelete() {
                 // If parent is being deleted, do not do anything. Both parent and children will be deleted anyways.
                 if (this.id === this.meta.parent) {
@@ -197,23 +214,6 @@ export const createDataModel = (
                     });
 
                     return Promise.all(revisions.map(rev => rev.delete()));
-                }
-            },
-            async beforePublish() {
-                // Deactivate previously published revision.
-                const publishedRev = await Model.findOne({
-                    query: { published: true, parent: this.meta.parent }
-                });
-
-                if (publishedRev) {
-                    this.hook("afterPublish", async () => {
-                        publishedRev.meta.published = false;
-                        await publishedRev.save();
-                        // We only want to keep indexes for `published` and `latestVersion` revisions
-                        if (!publishedRev.latestVersion) {
-                            await deleteRevisionIndexes(publishedRev, context);
-                        }
-                    });
                 }
             }
         }),
