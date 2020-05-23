@@ -82,35 +82,6 @@ export const createDataModel = (
             }
         })),
         withHooks({
-            async beforeCreate() {
-                this.meta.environment = context.cms.getEnvironment().id;
-
-                if (!this.id) {
-                    this.id = mdbid();
-                }
-
-                if (!this.meta.parent) {
-                    this.meta.parent = this.id;
-                }
-
-                this.meta.version = await this.getNextVersion();
-                this.meta.latestVersion = true;
-
-                if (this.meta.version > 1) {
-                    const previousLatest = await Model.findOne({
-                        query: {
-                            parent: this.meta.parent,
-                            latestVersion: true,
-                            version: { $ne: this.meta.version }
-                        }
-                    });
-
-                    if (previousLatest) {
-                        previousLatest.meta.latestVersion = false;
-                        await previousLatest.save();
-                    }
-                }
-            },
             async beforeSave() {
                 // Check if any of the index fields are dirty
                 const indexFields = contentModel.getUniqueIndexFields();
@@ -156,6 +127,35 @@ export const createDataModel = (
                         //TODO @adrian: await contentModel.save();
                     });
                     break;
+                }
+            },
+            async beforeCreate() {
+                this.meta.environment = context.cms.getEnvironment().id;
+
+                if (!this.id) {
+                    this.id = mdbid();
+                }
+
+                if (!this.meta.parent) {
+                    this.meta.parent = this.id;
+                }
+
+                this.meta.version = await this.getNextVersion();
+                this.meta.latestVersion = true;
+
+                if (this.meta.version > 1) {
+                    const previousLatest = await Model.findOne({
+                        query: {
+                            parent: this.meta.parent,
+                            latestVersion: true,
+                            version: { $ne: this.meta.version }
+                        }
+                    });
+
+                    if (previousLatest) {
+                        previousLatest.meta.latestVersion = false;
+                        await previousLatest.save();
+                    }
                 }
             },
             async beforeDelete() {
