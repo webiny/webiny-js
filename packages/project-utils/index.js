@@ -1,4 +1,3 @@
-const { getStateValues, updateEnvValues } = require("./serverless");
 const { buildFunction } = require("./bundling/function");
 const { startApp, buildApp } = require("./bundling/app");
 const { buildAppHandler, buildAppHandlerWithSSR } = require("./bundling/appHandler");
@@ -11,7 +10,5 @@ module.exports = {
     startApp,
     buildAppSSR,
     buildAppSSRFromSource,
-    buildFunction,
-    getStateValues,
-    updateEnvValues
+    buildFunction
 };
