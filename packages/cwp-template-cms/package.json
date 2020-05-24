@@ -16,7 +16,7 @@
   },
   "adio": {
     "ignoreDirs": [
-      "template"
+      "/template/"
     ]
   }
 }

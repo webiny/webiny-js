@@ -24,6 +24,7 @@
     "@webiny/ui": "^4.0.0-beta.1",
     "@webiny/validation": "^4.0.0-beta.1",
     "classnames": "^2.2.6",
+    "downshift": "^5.4.2",
     "emotion": "10.0.17",
     "graphql-tag": "^2.10.1",
     "is-hotkey": "^0.1.3",

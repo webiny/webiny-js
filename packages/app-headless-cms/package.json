@@ -49,7 +49,6 @@
     "react-helmet": "^5.2.0",
     "react-hotkeyz": "^1.0.4",
     "react-router": "^5.1.2",
-    "react-sortable-hoc": "^1.9.1",
     "react-virtualized": "^9.21.2",
     "shortid": "^2.2.14",
     "slugify": "^1.4.0",
