@@ -1,5 +1,14 @@
 import { Context, Plugin } from "@webiny/graphql/types";
 
+export type SecurityOptions = {
+    public?: boolean;
+    token: {
+        expiresIn: string;
+        secret: string;
+    };
+    validateAccessTokenFunction: string;
+};
+
 export type SecurityPlugin = Plugin & {
     type: "graphql-security";
     authenticate(context: any): Promise<void>;

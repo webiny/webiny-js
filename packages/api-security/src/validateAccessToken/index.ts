@@ -1,4 +1,4 @@
-import { applyContextPlugins } from "@webiny/graphql/createSchema/contextPlugins";
+import { applyContextPlugins } from "@webiny/graphql";
 import securityModels from "../plugins/models";
 import validateAccessToken from "./validateAccessToken";
 

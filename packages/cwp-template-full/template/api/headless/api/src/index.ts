@@ -8,6 +8,7 @@ import dataManagerPlugins from "@webiny/api-headless-cms/dataManager/client";
 export const handler = createHandler(
     dbProxy({ functionName: process.env.DB_PROXY_FUNCTION }),
     securityServicePlugins({
+        public: false,
         token: {
             expiresIn: process.env.JWT_TOKEN_EXPIRES_IN,
             secret: process.env.JWT_TOKEN_SECRET
