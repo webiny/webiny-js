@@ -35,7 +35,8 @@ class ServerlessFunction extends Component {
             output.concurrencyLimit = null;
             if (inputs.concurrencyLimit) {
                 this.context.instance.debug(
-                    `Setting function's concurrency limit to ${inputs.concurrencyLimit}.`
+                    `Setting function's concurrency limit to %o.`,
+                    inputs.concurrencyLimit
                 );
                 const lambdaClient = new LambdaClient({ region: inputs.region });
                 await lambdaClient
