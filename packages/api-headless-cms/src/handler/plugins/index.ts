@@ -35,6 +35,13 @@ export default (
             if (!context.cms.MANAGE) {
                 context.resolvedValues = new TypeValueEmitter();
             }
+
+            if (context.cms.MANAGE) {
+                // Only allow authenticated users to access this API
+                if (!context.getUser()) {
+                    throw Error(`Not authenticated!`);
+                }
+            }
         }
     } as ContextPlugin,
     models(),
