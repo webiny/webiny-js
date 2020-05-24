@@ -2,13 +2,14 @@ const {
     startApp,
     buildApp,
     buildAppHandlerWithSSR,
-    buildAppSSR,
-    updateEnvValues
+    buildAppSSR
 } = require("@webiny/project-utils");
+
+const { updateEnvValues } = require("@webiny/cli-plugin-deploy-components/utils");
 
 module.exports = {
     hooks: {
-        stateChanged: updateEnvValues(__dirname, {
+        afterDeploy: updateEnvValues(__dirname, {
             REACT_APP_GRAPHQL_API_URL: "${cdn.url}/graphql",
             REACT_APP_API_URL: "${cdn.url}",
             REACT_APP_FILES_PROXY: "${cdn.url}"

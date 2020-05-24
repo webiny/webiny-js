@@ -1,8 +1,9 @@
-const { startApp, buildApp, buildAppHandler, updateEnvValues } = require("@webiny/project-utils");
+const { startApp, buildApp, buildAppHandler } = require("@webiny/project-utils");
+const { updateEnvValues } = require("@webiny/cli-plugin-deploy-components/utils");
 
 module.exports = {
     hooks: {
-        stateChanged: updateEnvValues(__dirname, {
+        afterDeploy: updateEnvValues(__dirname, {
             REACT_APP_USER_POOL_REGION: "${cognito.userPool.Region}",
             REACT_APP_GRAPHQL_API_URL: "${cdn.url}/graphql",
             REACT_APP_API_URL: "${cdn.url}",

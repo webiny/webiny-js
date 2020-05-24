@@ -10,6 +10,7 @@
     "directory": "."
   },
   "dependencies": {
+    "chalk": "^4.0.0",
     "fs-extra": "^9.0.0",
     "uuid": "^7.0.3"
   },
