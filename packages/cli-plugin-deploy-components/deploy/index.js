@@ -1,6 +1,6 @@
 const { dim } = require("chalk");
 
-module.exports = {
+module.exports = (options = {}) => ({
     type: "cli-command",
     name: "cli-command-deploy",
     create({ yargs, context }) {
@@ -31,9 +31,9 @@ module.exports = {
                 });
             },
             async argv => {
-                await require("./deploy")({ ...argv, debug: true }, context);
+                await require("./deploy")({ ...argv, debug: true, options }, context);
                 process.exit(0);
             }
         );
     }
-};
+});
