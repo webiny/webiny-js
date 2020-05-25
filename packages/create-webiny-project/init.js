@@ -254,7 +254,6 @@ module.exports = async function({ root, appName, templateName, tag, log }) {
 
     console.log(
         [
-        [
             "",
             `Your new Webiny project ${blue(appName)} is ready!`,
             `Finish the configuration by following these steps:`,
