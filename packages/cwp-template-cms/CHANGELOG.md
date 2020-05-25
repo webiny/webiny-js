@@ -3,6 +3,24 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.0.0-beta.2](https://github.com/Webiny/webiny-js/compare/v4.0.0-beta.1...v4.0.0-beta.2) (2020-05-25)
+
+
+### Bug Fixes
+
+* **cwp-templates:** add missing devDependencies ([9659f07](https://github.com/Webiny/webiny-js/commit/9659f07fddaf59225ee7b8b104cb47229c1bbc95))
+* add eslint config files ([53ef175](https://github.com/Webiny/webiny-js/commit/53ef1759e236f15b6b5701b84cbda77185bec8c3))
+
+
+### Features
+
+* **api-security:** add "public" option to control unauthenticated access to API ([6b30e1c](https://github.com/Webiny/webiny-js/commit/6b30e1c2f67d179c75d4b9bb182653a9d4389317))
+* **cwp-template:** add afterDeploy hook ([6febdad](https://github.com/Webiny/webiny-js/commit/6febdad483fdb1cf53df7d1f634bbe8fe709772c))
+
+
+
+
+
 # [4.0.0-beta.1](https://github.com/webiny/webiny-js/compare/v4.0.0-beta.0...v4.0.0-beta.1) (2020-05-22)
 
 **Note:** Version bump only for package @webiny/cwp-template-cms

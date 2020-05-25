@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.0.0-beta.2](https://github.com/webiny/webiny-js/compare/v4.0.0-beta.1...v4.0.0-beta.2) (2020-05-25)
+
+
+### Bug Fixes
+
+* **cli:** improve console.log handling ([7c28fc0](https://github.com/webiny/webiny-js/commit/7c28fc0cd8c56b223f2897696b7944c87d905f3a))
+* **cli:** indent all output for improved readability ([f703b6a](https://github.com/webiny/webiny-js/commit/f703b6aab2a22180c55910ec07f74fb1d37f04ff))
+
+
+
+
+
 # [4.0.0-beta.1](https://github.com/webiny/webiny-js/compare/v4.0.0-beta.0...v4.0.0-beta.1) (2020-05-22)
 
 **Note:** Version bump only for package @webiny/cli

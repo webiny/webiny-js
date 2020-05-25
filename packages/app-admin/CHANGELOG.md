@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.0.0-beta.2](https://github.com/webiny/webiny-js/compare/v4.0.0-beta.1...v4.0.0-beta.2) (2020-05-25)
+
+
+### Bug Fixes
+
+* **app-admin:** update style declarations ([d98b67a](https://github.com/webiny/webiny-js/commit/d98b67a759831e6057b00af376fa9e28ccb27f49))
+* 🐛  update `plugin` name ([589077a](https://github.com/webiny/webiny-js/commit/589077a5d926156db37b27a333a0d49a4b795c40))
+
+
+
+
+
 # [4.0.0-beta.1](https://github.com/webiny/webiny-js/compare/v4.0.0-beta.0...v4.0.0-beta.1) (2020-05-22)
 
 **Note:** Version bump only for package @webiny/app-admin

@@ -3,6 +3,19 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.0.0-beta.2](https://github.com/webiny/webiny-js/compare/v4.0.0-beta.1...v4.0.0-beta.2) (2020-05-25)
+
+
+### Bug Fixes
+
+* **project-utils:** open browser after build ([8c928e9](https://github.com/webiny/webiny-js/commit/8c928e9fcd21658eb3ee7536363215433f0c8c5c))
+* **project-utils:** remove updateEnvValues utility ([a128f27](https://github.com/webiny/webiny-js/commit/a128f2778704c652b80b3fa699fd11ce2112f772))
+* **project-utils:** set default openBrowser value ([e2d757a](https://github.com/webiny/webiny-js/commit/e2d757a8979f9625e28c0962fba38290794f424f))
+
+
+
+
+
 # [4.0.0-beta.1](https://github.com/webiny/webiny-js/compare/v4.0.0-beta.0...v4.0.0-beta.1) (2020-05-22)
 
 **Note:** Version bump only for package @webiny/project-utils

@@ -3,6 +3,29 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.0.0-beta.2](https://github.com/webiny/webiny-js/compare/v4.0.0-beta.1...v4.0.0-beta.2) (2020-05-25)
+
+
+### Bug Fixes
+
+* change title ([5162941](https://github.com/webiny/webiny-js/commit/5162941c033c4141fbcceed57fa019765f70d82b))
+* correct operation name ([812c310](https://github.com/webiny/webiny-js/commit/812c3106a7aea438425b0ac214f4ca4efe0bd1ee))
+* correct visual incosistencies ([048c04d](https://github.com/webiny/webiny-js/commit/048c04d6be749453a10c42e43d76ee4ba01ecd8b))
+* remove console.log ([bd3b178](https://github.com/webiny/webiny-js/commit/bd3b17879065407f1f884ee2cf7f2d835334b94b))
+* remove unused query ([ca9fe39](https://github.com/webiny/webiny-js/commit/ca9fe39437de7ceb3831b4ded0bd4579ddb639cd))
+* temporary add delay before refreshing content list ([42c82f4](https://github.com/webiny/webiny-js/commit/42c82f41c4a09e057922a8bf2a4c69c78f50eab1))
+* use "LIST_MENU_CONTENT_GROUPS_MODELS" query to get the list of groups ([8680d3d](https://github.com/webiny/webiny-js/commit/8680d3d01dc3dc49a689a4fbb58993c1fe7c3214))
+* **app-headless-cms:** don't create new value entry for empty string ([#881](https://github.com/webiny/webiny-js/issues/881)) ([c5dd03b](https://github.com/webiny/webiny-js/commit/c5dd03be5c74f71c91ab444a465e4a573e91b5a2))
+
+
+### Features
+
+* **editor:** add "View content" button to the top bar ([726354a](https://github.com/webiny/webiny-js/commit/726354a281aa600847ac8b020b27eceabc3008d0))
+
+
+
+
+
 # [4.0.0-beta.1](https://github.com/webiny/webiny-js/compare/v4.0.0-beta.0...v4.0.0-beta.1) (2020-05-22)
 
 **Note:** Version bump only for package @webiny/app-headless-cms
