@@ -38,10 +38,11 @@ type Props = {
  * @constructor
  */
 export const ButtonDefault = (props: Props) => {
-    const { disabled, onClick, children, small, ripple = true, className = "" } = props;
+    const { disabled, onClick, children, small, ripple = true, className = "", style } = props;
 
     return (
         <R.Button
+            style={style}
             disabled={disabled}
             dense={small}
             onClick={onClick}
