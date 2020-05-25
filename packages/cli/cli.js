@@ -28,7 +28,11 @@ createCommands(yargs, context);
 // Add indentation to console.log output
 const log = console.log;
 console.log = (first = "", ...args) => {
-    log(indentString(first, 2), ...args);
+    if (typeof first === "string") {
+        log(indentString(first, 2), ...args);
+    } else {
+        log(first, ...args);
+    }
 };
 
 // Run
