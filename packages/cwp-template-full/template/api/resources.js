@@ -15,7 +15,7 @@ const apolloGatewayServices = {
     LAMBDA_SERVICE_FILES: "${filesGraphQL.name}",
     LAMBDA_SERVICE_PAGE_BUILDER: "${pageBuilderGraphQL.name}",
     LAMBDA_SERVICE_FORM_BUILDER: "${formBuilderGraphQL.name}",
-    LAMBDA_SERVICE_HEADLESS_CMS: "${cmsContent.name}"
+    LAMBDA_SERVICE_HEADLESS_CMS: "${cmsGraphQL.name}"
 };
 
 module.exports = () => ({
