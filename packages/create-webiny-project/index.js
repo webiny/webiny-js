@@ -211,13 +211,13 @@ async function run({ root, appName, template, tag, log }) {
         dependencies.push(`${templateName}@${tag}`);
         const tasks = new Listr([
             {
-                title: `Installing core dependencies of create-webiny-project`,
+                title: `Install template package`,
                 task: async () => {
                     try {
                         await install({ root, dependencies });
                     } catch (err) {
                         throw new Error(
-                            "Failed installing core dependencies of create-webiny-project"
+                            "Failed to install template package"
                         );
                     }
                 }
