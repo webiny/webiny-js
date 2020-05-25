@@ -89,7 +89,6 @@ const NewContentModelDialog: React.FC<NewContentModelDialogProps> = ({ open, onC
                         })
                         .filter(Boolean);
 
-                    console.log({ indexableFields });
                     return (
                         <>
                             <DialogTitle>{t`Create index`}</DialogTitle>
