@@ -1,0 +1,14 @@
+{
+  "name": "api-cms-data-manager",
+  "version": "0.1.0",
+  "scripts": {
+    "build": "webiny run build"
+  },
+  "dependencies": {
+    "@webiny/graphql": "^1.0.0",
+    "@webiny/handler": "^0.1.0",
+    "@webiny/api-headless-cms": "^0.1.0",
+    "@webiny/api-i18n": "^3.0.4",
+    "@webiny/api-plugin-commodo-mongodb": "^2.0.2"
+  }
+}

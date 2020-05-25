@@ -14,7 +14,7 @@ module.exports = {
 
 function printFirstDeploySummary({ state }) {
     const hasGraphQL = state.apolloGateway;
-    const hasCMS = state.headlessCmsAPI;
+    const hasCMS = state.cmsContent;
     if (state.cdn && state.apolloGateway) {
         console.log(
             [
@@ -50,7 +50,7 @@ function printFirstDeploySummary({ state }) {
 
 function printDeploySummary({ state }) {
     const hasGraphQL = state.apolloGateway;
-    const hasCMS = state.headlessCmsAPI;
+    const hasCMS = state.cmsContent;
     if (state.cdn && state.apolloGateway) {
         console.log(
             [

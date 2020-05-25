@@ -2,7 +2,7 @@ import { graphql } from "graphql";
 import setupContentModels from "../setup/setupContentModels";
 import { createUtils } from "../utils";
 import createCategories from "../mocks/createCategories.read";
-import headlessPlugins from "../../src/handler/plugins";
+import headlessPlugins from "../../src/content/plugins";
 import setupDefaultEnvironment from "../setup/setupDefaultEnvironment";
 
 describe("READ - Resolvers", () => {

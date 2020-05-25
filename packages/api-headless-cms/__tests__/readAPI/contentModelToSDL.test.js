@@ -1,6 +1,6 @@
 import prettier from "prettier";
-import graphqlFieldPlugins from "../../src/handler/plugins/graphqlFields";
-import { createReadSDL } from "../../src/handler/plugins/schema/createReadSDL";
+import graphqlFieldPlugins from "../../src/content/plugins/graphqlFields";
+import { createReadSDL } from "../../src/content/plugins/schema/createReadSDL";
 import contentModels from "../mocks/contentModels";
 import categorySDL from "./snapshots/category";
 import productSDL from "./snapshots/product";

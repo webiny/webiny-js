@@ -1,5 +1,5 @@
 import { setupContext } from "@webiny/graphql/testing";
-import validatorPlugins from "../src/handler/plugins/validators";
+import validatorPlugins from "../src/content/plugins/validators";
 
 describe("Headless CMS - Field validators", () => {
     let context;

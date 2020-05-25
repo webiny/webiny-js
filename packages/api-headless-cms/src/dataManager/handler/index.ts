@@ -1,7 +1,7 @@
 import { applyContextPlugins } from "@webiny/graphql";
 import { HandlerPlugin } from "@webiny/handler/types";
 import { createResponse } from "@webiny/handler";
-import headlessPlugins from "../../handler/plugins";
+import headlessPlugins from "../../content/plugins";
 import { generateContentModelIndexes } from "./generateContentModelIndexes";
 import { generateRevisionIndexes } from "./generateRevisionIndexes";
 import { deleteEnvironmentData } from "./deleteEnvironmentData";

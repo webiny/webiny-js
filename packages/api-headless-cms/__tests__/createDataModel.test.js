@@ -3,8 +3,8 @@ import setupDefaultEnvironment from "./setup/setupDefaultEnvironment";
 import contentModels from "./mocks/contentModels";
 import { locales } from "./mocks/I18NLocales";
 import { createUtils } from "./utils";
-import { createDataModel } from "../src/handler/plugins/utils/createDataModel";
-import headlessPlugins from "../src/handler/plugins";
+import { createDataModel } from "../src/content/plugins/utils/createDataModel";
+import headlessPlugins from "../src/content/plugins";
 
 describe(`createDataModel`, () => {
     let context;

@@ -2,7 +2,7 @@ import mdbid from "mdbid";
 import { createUtils } from "./utils";
 import setupContentModels from "./setup/setupContentModels";
 import setupDefaultEnvironment from "./setup/setupDefaultEnvironment";
-import headlessPlugins from "../src/handler/plugins";
+import headlessPlugins from "../src/content/plugins";
 import createCategories from "./mocks/createCategories.manage";
 import { locales } from "./mocks/I18NLocales";
 
