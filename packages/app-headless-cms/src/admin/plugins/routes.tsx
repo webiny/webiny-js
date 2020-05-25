@@ -162,7 +162,7 @@ const plugins: RoutePlugin[] = [
                 render={() => (
                     <SecureRoute scopes={ROLE_CMS_ACCESS_TOKENS}>
                         <AdminLayout>
-                            <Helmet title={t`Headless CMS - Environment Aliases Settings`} />
+                            <Helmet title={t`Headless CMS - Access Tokens Settings`} />
                             <Loader>
                                 <AccessTokensView />
                             </Loader>

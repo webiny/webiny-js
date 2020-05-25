@@ -1,8 +1,8 @@
 import React from "react";
 import { SplitView, LeftPanel, RightPanel } from "@webiny/app-admin/components/SplitView";
 import { FloatingActionButton } from "@webiny/app-admin/components/FloatingActionButton";
-import EnvironmentAliasesDataList from "./EnvironmentAliasesDataList";
-import EnvironmentAliasesForm from "./EnvironmentAliasesForm";
+import AccessTokensDataList from "./AccessTokensDataList";
+import AccessTokensForm from "./AccessTokensForm";
 import { CrudProvider } from "@webiny/app-admin/contexts/Crud";
 import {
     READ_ENVIRONMENT_ALIAS,
@@ -32,15 +32,12 @@ function EnvironmentAliases() {
         >
             {({ actions }) => (
                 <>
-                    jdgfhsdhdf
                     <SplitView>
                         <LeftPanel span={4}>
-                            {/*<EnvironmentAliasesDataList />*/}
-                            123
+                            <AccessTokensDataList />
                         </LeftPanel>
                         <RightPanel span={8}>
-                            {/*<EnvironmentAliasesForm />*/}
-                            4567654754
+                            <AccessTokensForm />
                         </RightPanel>
                     </SplitView>
                     <FloatingActionButton
@@ -51,12 +48,6 @@ function EnvironmentAliases() {
             )}
         </CrudProvider>
     );
-}
-
-// export default EnvironmentAliases;
-
-function Boss() {
-    return "HEllo!";
 }
 
 export default EnvironmentAliases;
