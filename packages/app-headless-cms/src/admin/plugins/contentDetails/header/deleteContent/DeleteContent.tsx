@@ -27,7 +27,7 @@ const DeleteContent = ({ contentModel, content, dataList, getLoading, setLoading
     const title = I18NValue({ value: get(content, "meta.title") });
 
     const { showConfirmation } = useConfirmationDialog({
-        title: t`Delete page`,
+        title: t`Delete content entry`,
         message: (
             <p>
                 {t`You are about to delete this content entry and all of its revisions!
