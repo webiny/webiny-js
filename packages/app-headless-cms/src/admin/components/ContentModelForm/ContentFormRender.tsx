@@ -9,9 +9,11 @@ import { getPlugins } from "@webiny/plugins";
 import { i18n } from "@webiny/app/i18n";
 const t = i18n.ns("app-headless-cms/admin/components/content-form");
 
+const empty = [null, undefined];
+
 const setValue = ({ value, bind, locale }) => {
     const newValue = cloneDeep({ values: [], ...bind.value });
-    const index = value ? newValue.values.findIndex(item => item.locale === locale) : -1;
+    const index = empty.includes(value) ? -1 : newValue.values.findIndex(item => item.locale === locale);
     if (index >= 0) {
         newValue.values[index].value = value;
     } else {
