@@ -62,7 +62,13 @@ module.exports = async function({ root, appName, templateName, tag, log }) {
                 const projectDeps = require(path.join(root, "dependencies.json"));
 
                 Object.assign(appPackage.dependencies, projectDeps.dependencies);
-                Object.assign(appPackage.devDependencies, projectDeps.devDependencies);
+
+                if (appPackage.devDependencies) {
+                    Object.assign(appPackage.devDependencies, projectDeps.devDependencies);
+                } else {
+                    appPackage.devDependencies = Object.assign({}, projectDeps.devDependencies);
+                }
+
                 if (appPackage.workspaces) {
                     Object.assign(appPackage.workspaces, projectDeps.workspaces);
                 } else {
