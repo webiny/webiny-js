@@ -30,10 +30,7 @@ export const indexes = () => {
             list: true,
             instanceOf: withFields({
                 fields: string({ list: true }),
-                createdOn: pipe(
-                    skipOnPopulate(),
-                    setOnce()
-                )(date({ value: new Date() }))
+                createdOn: pipe(skipOnPopulate(), setOnce())(date({ value: new Date() }))
             })(),
             value: { value: [{ fields: ["id"] }] }
         })

@@ -4,10 +4,7 @@ module.exports = {
         plugins: [
             require("@webiny/cli-plugin-deploy-components")({
                 hooks: {
-                    api: [
-                        "@webiny/cwp-template-cms/hooks/api",
-                        "./apps/admin/webiny.config.js"
-                    ]
+                    api: ["@webiny/cwp-template-cms/hooks/api", "./apps/admin/webiny.config.js"]
                 }
             }),
             "@webiny/cli-plugin-scaffold",

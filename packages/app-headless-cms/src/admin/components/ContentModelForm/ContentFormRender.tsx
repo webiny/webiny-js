@@ -13,7 +13,9 @@ const empty = [null, undefined];
 
 const setValue = ({ value, bind, locale }) => {
     const newValue = cloneDeep({ values: [], ...bind.value });
-    const index = empty.includes(value) ? -1 : newValue.values.findIndex(item => item.locale === locale);
+    const index = empty.includes(value)
+        ? -1
+        : newValue.values.findIndex(item => item.locale === locale);
     if (index >= 0) {
         newValue.values[index].value = value;
     } else {
