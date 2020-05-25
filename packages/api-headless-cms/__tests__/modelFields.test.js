@@ -2,7 +2,7 @@ import { blue } from "chalk";
 import setupDefaultEnvironment from "./setup/setupDefaultEnvironment";
 import { locales } from "./mocks/I18NLocales";
 import { createUtils } from "./utils";
-import headlessPlugins from "../src/handler/plugins";
+import headlessPlugins from "../src/content/plugins";
 
 describe("Model fields", () => {
     let context;

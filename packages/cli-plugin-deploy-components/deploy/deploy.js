@@ -1,4 +1,4 @@
-const { join, resolve } = require("path");
+const { join } = require("path");
 const fs = require("fs");
 const { green, red } = require("chalk");
 const notifier = require("node-notifier");
@@ -15,7 +15,7 @@ const notify = ({ message }) => {
     });
 };
 
-module.exports = async (inputs, context) => {
+module.exports = async ({ options, ...inputs }, context) => {
     const { env, folder } = inputs;
 
     const isEnvDeployed = async ({ folder, env }) => {
@@ -56,43 +56,31 @@ module.exports = async (inputs, context) => {
     }
 
     const afterDeploy = async ({ output, duration }) => {
-        const configFile = resolve("webiny.config.js");
+        console.log(`\n🎉 Done! Deploy finished in ${green(duration + "s")}.\n`);
+        notify({ message: `"${folder}" stack deployed in ${duration}s.` });
 
-        // Run app state hooks
-        if (fs.existsSync(configFile)) {
-            const config = require(configFile);
+        if (options.hooks) {
+            // Get hooks for current stack
+            const hooks = options.hooks[folder] || [];
 
-            for (let i = 0; i < config.hooks.length; i++) {
-                const appLocation = resolve(config.hooks[i]);
-                try {
-                    const { hooks } = require(join(appLocation, "webiny.config.js"));
-                    const hookPath = context.replaceProjectRoot(appLocation);
-                    if (hooks && hooks.stateChanged) {
-                        console.log(
-                            `🎣 Processing ${green("stateChanged")} hook in ${green(
-                                context.replaceProjectRoot(hookPath)
-                            )}`
-                        );
-
-                        await hooks.stateChanged({ env, state: output });
+            for (let i = 0; i < hooks.length; i++) {
+                const hook = hooks[i];
+                if (typeof hook === "string") {
+                    try {
+                        const hookPath = hook.startsWith(".") ? context.resolve(hook) : hook;
+                        const handler = require(hookPath);
+                        if (handler.hooks && typeof handler.hooks.afterDeploy === "function") {
+                            await handler.hooks.afterDeploy({
+                                stack: folder,
+                                isFirstDeploy,
+                                env,
+                                state: output
+                            });
+                        }
+                    } catch (err) {
+                        console.log(`⚠️ Hook ${green(hook)} encountered an error: ${err.message}`);
                     }
-                } catch (err) {
-                    console.log(
-                        `⚠️ ${red(err.message)}, while processing hooks at ${green(appLocation)}.`
-                    );
                 }
-            }
-        }
-
-        console.log(`\n🎉 Done! Deploy finished in ${green(duration + "s")}.`);
-        notify({ message: `API deploy completed in ${duration}s.` });
-
-        if (output.cdn) {
-            console.log(`🚀 Stack URL: ${green(output.cdn.url)}`);
-            if (isFirstDeploy) {
-                console.log(
-                    `⏳ Please note that CDN distribution takes some time to propagate, so expect this URL to become accessible in ~10 minutes.`
-                );
             }
         }
     };

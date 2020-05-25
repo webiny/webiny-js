@@ -7,7 +7,7 @@ export default function getFileTypePlugin(file) {
         return null;
     }
 
-    const plugins = getPlugins<AdminFileManagerFileTypePlugin>("file-manager-file-type");
+    const plugins = getPlugins<AdminFileManagerFileTypePlugin>("admin-file-manager-file-type");
 
     let plugin = null;
     for (let i = 0; i < plugins.length; i++) {

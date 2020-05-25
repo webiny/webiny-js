@@ -2,7 +2,7 @@ import { createRevisionIndexes } from "./createRevisionIndexes";
 
 export const generateRevisionIndexes = async ({ context, contentModel, revision }) => {
     const { CmsContentModel } = context.models;
-    const model = await CmsContentModel.findOne({ modelId: contentModel });
+    const model = await CmsContentModel.findOne({ query: { modelId: contentModel } });
 
     const driver = CmsContentModel.getStorageDriver();
     const environment = context.cms.getEnvironment();

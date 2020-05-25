@@ -1,3 +1,4 @@
 import security from "./security";
+import { SecurityOptions } from "../types";
 
-export default options => [security(options)];
+export default (options: SecurityOptions) => [security(options)];

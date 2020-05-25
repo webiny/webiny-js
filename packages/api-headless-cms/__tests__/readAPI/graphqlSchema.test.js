@@ -1,6 +1,6 @@
 import { graphql } from "graphql";
 import { createUtils } from "../utils";
-import headlessPlugins from "../../src/handler/plugins";
+import headlessPlugins from "../../src/content/plugins";
 import setupDefaultEnvironment from "../setup/setupDefaultEnvironment";
 import setupContentModels from "../setup/setupContentModels";
 

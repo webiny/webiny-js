@@ -1,6 +1,6 @@
 {
   "name": "@webiny/cli",
-  "version": "3.2.8",
+  "version": "4.0.0-beta.2",
   "main": "index.js",
   "bin": {
     "webiny": "./bin.js"
@@ -13,8 +13,8 @@
   "author": "Pavel Denisjuk <pavel@webiny.com>",
   "description": "A tool to bootstrap a Webiny project.",
   "dependencies": {
-    "@webiny/plugins": "^3.0.1",
-    "@webiny/tracking": "^3.1.0",
+    "@webiny/plugins": "^4.0.0-beta.1",
+    "@webiny/tracking": "^4.0.0-beta.1",
     "camelcase": "^5.3.1",
     "chalk": "^2.4.2",
     "debug": "^4.1.1",
@@ -22,6 +22,7 @@
     "execa": "^2.0.5",
     "find-up": "^4.1.0",
     "fs-extra": "^9.0.0",
+    "indent-string": "^4.0.0",
     "load-json-file": "^6.2.0",
     "semver": "^7.3.2",
     "uniqid": "^5.0.3",

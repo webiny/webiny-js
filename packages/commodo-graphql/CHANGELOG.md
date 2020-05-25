@@ -3,6 +3,37 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.0.0-beta.1](https://github.com/webiny/webiny-js/compare/v4.0.0-beta.0...v4.0.0-beta.1) (2020-05-22)
+
+**Note:** Version bump only for package @webiny/commodo-graphql
+
+
+
+
+
+# [4.0.0-beta.0](https://github.com/webiny/webiny-js/compare/v1.15.1...v4.0.0-beta.0) (2020-05-22)
+
+
+### Bug Fixes
+
+* clean "api" folder ([5ec07b4](https://github.com/webiny/webiny-js/commit/5ec07b4d866f5f1c953c07b2483018a7ea5981e1))
+* correct constant name ([5194fc8](https://github.com/webiny/webiny-js/commit/5194fc8b3cdddf76b2ce80295834a2de11fc5fa8))
+* package description ([b3704a2](https://github.com/webiny/webiny-js/commit/b3704a24feb07a0b53824649fd1dcba4a4f88ff0))
+* revert changes in settings resolvers ([0960268](https://github.com/webiny/webiny-js/commit/09602687d4ddc9b175e3e3ecd56d5fff5201ebd8))
+* synced dependencies across all packages ([#567](https://github.com/webiny/webiny-js/issues/567)) ([38eda54](https://github.com/webiny/webiny-js/commit/38eda547bead6e8a2c46875730bbcd8f1227e475))
+* use "@webiny/graphql" package instead of "@webiny/graphql" ([3518481](https://github.com/webiny/webiny-js/commit/35184811ba79a92891b1c96930edff39219763f5))
+
+
+### Features
+
+* add support for DB drivers ([#623](https://github.com/webiny/webiny-js/issues/623)) ([82a6d66](https://github.com/webiny/webiny-js/commit/82a6d66d5ad96e4da13c035d2524c03bd50a7dff))
+* implement cursor pagination ([3c7524e](https://github.com/webiny/webiny-js/commit/3c7524e67ed978eb2465793a57bf7fc9d7fb9bf3))
+* TypeScript && improved SSR mechanisms ([#677](https://github.com/webiny/webiny-js/issues/677)) ([3da0566](https://github.com/webiny/webiny-js/commit/3da0566f29e1d46df0e7c357be0b42bdaa4c7d2b))
+
+
+
+
+
 ## [3.0.2](https://github.com/webiny/webiny-js/compare/@webiny/commodo-graphql@3.0.2-next.0...@webiny/commodo-graphql@3.0.2) (2020-02-24)
 
 **Note:** Version bump only for package @webiny/commodo-graphql

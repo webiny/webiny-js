@@ -4,6 +4,7 @@ import { dataManagerPlugins } from "../mocks/dataManagerClient";
 
 import useDatabase from "./useDatabase";
 import useApolloHandler from "./useApolloHandler";
+import useApiHandler from "./useApiHandler";
 import useDataManagerHandler from "./useDataManagerHandler";
 import useContext from "./useContext";
 import useSchema from "./useSchema";
@@ -17,6 +18,7 @@ export const createUtils = (plugins = []) => {
         plugins => ({
             useDatabase: useDatabase(utilsId, plugins),
             useApolloHandler: useApolloHandler(plugins),
+            useApiHandler: useApiHandler(plugins),
             useDataManagerHandler: useDataManagerHandler(plugins),
             useContext: useContext(plugins),
             useSchema: useSchema(plugins)

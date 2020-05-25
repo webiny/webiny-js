@@ -2,7 +2,7 @@ import { createRevisionIndexes } from "./createRevisionIndexes";
 
 export const generateContentModelIndexes = async ({ context, contentModel }) => {
     const { CmsContentModel } = context.models;
-    const model = await CmsContentModel.findOne({ modelId: contentModel });
+    const model = await CmsContentModel.findOne({ query: { modelId: contentModel } });
 
     const driver = CmsContentModel.getStorageDriver();
     const environment = context.cms.getEnvironment();
@@ -57,7 +57,12 @@ export const generateContentModelIndexes = async ({ context, contentModel }) => 
         }
 
         for (let i = 0; i < entries.length; i++) {
-            await createRevisionIndexes({ model, entry: entries[i], context, autoDelete: false });
+            await createRevisionIndexes({
+                model,
+                entry: entries[i],
+                context,
+                autoDelete: false
+            });
         }
 
         if (!cursor) {

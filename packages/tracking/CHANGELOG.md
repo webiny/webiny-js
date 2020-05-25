@@ -3,6 +3,35 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.0.0-beta.1](https://github.com/webiny/webiny-js/compare/v4.0.0-beta.0...v4.0.0-beta.1) (2020-05-22)
+
+**Note:** Version bump only for package @webiny/tracking
+
+
+
+
+
+# [4.0.0-beta.0](https://github.com/Webiny/webiny-js/compare/v1.15.1...v4.0.0-beta.0) (2020-05-22)
+
+
+### Bug Fixes
+
+* add component version to tracking. ([6fdaad9](https://github.com/Webiny/webiny-js/commit/6fdaad944cb5ff0d5d30fa1638cdfcc7314370e5))
+* fall back to "unknown" user id if config is not found. ([1c9ff4c](https://github.com/Webiny/webiny-js/commit/1c9ff4cbbb1083954f2f8756653305f8d78d3024))
+* print only the component name in the debug message. ([863a830](https://github.com/Webiny/webiny-js/commit/863a830a629d395d5dfddae2fe8e2de1d173a30f))
+* update stats URL. ([5875469](https://github.com/Webiny/webiny-js/commit/58754691404d2db62d7f73233694dbd7ea4336d2))
+
+
+### Features
+
+* improve CLI usage tracking ([#723](https://github.com/Webiny/webiny-js/issues/723)) ([1bbf80a](https://github.com/Webiny/webiny-js/commit/1bbf80aa9a6ad9be87d007162d7899ce85da7a2d))
+* improve resource handling and build process ([#772](https://github.com/Webiny/webiny-js/issues/772)) ([f9738f0](https://github.com/Webiny/webiny-js/commit/f9738f092f098e58be7f768a86d055788f2fbcf5))
+* TypeScript && improved SSR mechanisms ([#677](https://github.com/Webiny/webiny-js/issues/677)) ([3da0566](https://github.com/Webiny/webiny-js/commit/3da0566f29e1d46df0e7c357be0b42bdaa4c7d2b))
+
+
+
+
+
 # [3.1.0](https://github.com/Webiny/webiny-js/compare/@webiny/tracking@3.1.0-next.0...@webiny/tracking@3.1.0) (2020-02-18)
 
 **Note:** Version bump only for package @webiny/tracking

@@ -33,5 +33,15 @@ module.exports = [
         dir: "",
         oldFile: "example.prettierrc.js",
         newFile: ".prettierrc.js"
+    },
+    {
+        dir: "",
+        oldFile: "example.eslintignore",
+        newFile: ".eslintignore"
+    },
+    {
+        dir: "",
+        oldFile: "example.eslintrc.js",
+        newFile: ".eslintrc.js"
     }
 ];

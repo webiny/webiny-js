@@ -28,6 +28,7 @@ export const NameWrapper = styled("div")({
 export const FormName = styled("div")({
     border: "1px solid transparent",
     fontSize: 20,
+    lineHeight: 1.25,
     whiteSpace: "nowrap",
     overflow: "hidden",
     textOverflow: "ellipsis",

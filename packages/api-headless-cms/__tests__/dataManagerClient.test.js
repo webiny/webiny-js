@@ -2,7 +2,7 @@ import sinon from "sinon";
 import { createUtils } from "./utils";
 import setupContentModels from "./setup/setupContentModels";
 import setupDefaultEnvironment from "./setup/setupDefaultEnvironment";
-import headlessPlugins from "../src/handler/plugins";
+import headlessPlugins from "../src/content/plugins";
 import { locales } from "./mocks/I18NLocales";
 
 const sandbox = sinon.createSandbox();
@@ -32,7 +32,9 @@ describe("Data Manager Client", () => {
     it(`should call "generateContentModelIndexes" when content model indexes are modified`, async () => {
         const spy = sandbox.spy(context.cms.dataManager, "generateContentModelIndexes");
 
-        const contentModel = await context.models.CmsContentModel.findOne({ modelId: "category" });
+        const contentModel = await context.models.CmsContentModel.findOne({
+            query: { modelId: "category" }
+        });
         contentModel.indexes = [{ fields: ["price"] }];
         await contentModel.save();
 
@@ -45,7 +47,9 @@ describe("Data Manager Client", () => {
     it(`should not call "generateRevisionIndexes" if content entry index fields have not changed`, async () => {
         const spy = sandbox.spy(context.cms.dataManager, "generateRevisionIndexes");
 
-        const contentModel = await context.models.CmsContentModel.findOne({ modelId: "category" });
+        const contentModel = await context.models.CmsContentModel.findOne({
+            query: { modelId: "category" }
+        });
         contentModel.indexes = [{ fields: ["price"] }];
         await contentModel.save();
 
@@ -67,13 +71,15 @@ describe("Data Manager Client", () => {
 
         await category.save();
 
-        expect(spy.callCount).toBe(0);
+        expect(spy.callCount).toBe(1);
     });
 
     it(`should call "generateRevisionIndexes" if content entry index fields have changed`, async () => {
         const spy = sandbox.spy(context.cms.dataManager, "generateRevisionIndexes");
 
-        const contentModel = await context.models.CmsContentModel.findOne({ modelId: "category" });
+        const contentModel = await context.models.CmsContentModel.findOne({
+            query: { modelId: "category" }
+        });
         contentModel.indexes = [{ fields: ["slug"] }];
         await contentModel.save();
 

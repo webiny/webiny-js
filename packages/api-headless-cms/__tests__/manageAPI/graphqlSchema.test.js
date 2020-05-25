@@ -1,6 +1,6 @@
 import { graphql } from "graphql";
 import { createUtils } from "../utils";
-import headlessPlugins from "../../src/handler/plugins";
+import headlessPlugins from "../../src/content/plugins";
 import setupDefaultEnvironment from "../setup/setupDefaultEnvironment";
 import setupContentModels from "../setup/setupContentModels";
 import camelCase from "lodash/camelCase";
@@ -189,7 +189,9 @@ describe("MANAGE - GraphQL Schema", () => {
     test(`should correctly check if "indexes" field is "dirty"`, async () => {
         const { models } = await useContext();
         // Get content model to fetch model indexes
-        const categoryModel = await models.CmsContentModel.findOne({ modelId: "category" });
+        const categoryModel = await models.CmsContentModel.findOne({
+            query: { modelId: "category" }
+        });
 
         // Update content model indexes
         categoryModel.indexes = [{ fields: ["slug"] }];

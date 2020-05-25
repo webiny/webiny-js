@@ -13,7 +13,7 @@ const apolloGatewayServices = {
     LAMBDA_SERVICE_SECURITY: "${securityGraphQL.name}",
     LAMBDA_SERVICE_I18N: "${i18nGraphQL.name}",
     LAMBDA_SERVICE_FILES: "${filesGraphQL.name}",
-    LAMBDA_SERVICE_HEADLESS_CMS: "${headlessCmsGraphQL.name}"
+    LAMBDA_SERVICE_HEADLESS_CMS: "${cmsGraphQL.name}"
 };
 
 module.exports = () => ({
@@ -277,61 +277,61 @@ module.exports = () => ({
                 }
             }
         },
-        headlessCmsGraphQL: {
-            watch: ["./headless/graphql/build"],
+        cmsGraphQL: {
+            watch: ["./cms/graphql/build"],
             build: {
-                root: "./headless/graphql",
+                root: "./cms/graphql",
                 script: "yarn build"
             },
             deploy: {
                 component: "@webiny/serverless-function",
                 inputs: {
                     region: process.env.AWS_REGION,
-                    description: "I18N GraphQL API",
-                    code: "./headless/graphql/build",
+                    description: "CMS Admin GraphQL API",
+                    code: "./cms/graphql/build",
                     handler: "handler.handler",
                     memory: 512,
                     env: {
                         ...apolloServiceEnv,
-                        CMS_DATA_MANAGER_FUNCTION: "${headlessCmsDataManager.name}"
+                        CMS_DATA_MANAGER_FUNCTION: "${cmsDataManager.name}"
                     }
                 }
             }
         },
-        headlessCmsAPI: {
-            watch: ["./headless/api/build"],
+        cmsContent: {
+            watch: ["./cms/content/build"],
             build: {
-                root: "./headless/api",
+                root: "./cms/content",
                 script: "yarn build"
             },
             deploy: {
                 component: "@webiny/serverless-function",
                 inputs: {
-                    description: "Headless CMS GraphQL API (handler)",
+                    description: "CMS Content API",
                     region: process.env.AWS_REGION,
-                    code: "./headless/api/build",
+                    code: "./cms/content/build",
                     handler: "handler.handler",
                     memory: 512,
                     env: {
                         ...apolloServiceEnv,
                         I18N_LOCALES_FUNCTION: "${i18nLocales.name}",
-                        CMS_DATA_MANAGER_FUNCTION: "${headlessCmsDataManager.name}"
+                        CMS_DATA_MANAGER_FUNCTION: "${cmsDataManager.name}"
                     }
                 }
             }
         },
-        headlessCmsDataManager: {
-            watch: ["./headless/dataManager/build"],
+        cmsDataManager: {
+            watch: ["./cms/dataManager/build"],
             build: {
-                root: "./headless/dataManager",
+                root: "./cms/dataManager",
                 script: "yarn build"
             },
             deploy: {
                 component: "@webiny/serverless-function",
                 inputs: {
-                    description: "Headless CMS Data Manager",
+                    description: "CMS Data Manager",
                     region: process.env.AWS_REGION,
-                    code: "./headless/dataManager/build",
+                    code: "./cms/dataManager/build",
                     handler: "handler.handler",
                     memory: 512,
                     env: {
@@ -362,7 +362,7 @@ module.exports = () => ({
                     {
                         path: "/cms/{key+}",
                         method: "ANY",
-                        function: "${headlessCmsAPI.arn}"
+                        function: "${cmsContent.arn}"
                     }
                 ]
             }

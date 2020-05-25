@@ -3,6 +3,47 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.0.0-beta.2](https://github.com/webiny/webiny-js/compare/v4.0.0-beta.1...v4.0.0-beta.2) (2020-05-25)
+
+**Note:** Version bump only for package @webiny/api-mailchimp
+
+
+
+
+
+# [4.0.0-beta.1](https://github.com/webiny/webiny-js/compare/v4.0.0-beta.0...v4.0.0-beta.1) (2020-05-22)
+
+**Note:** Version bump only for package @webiny/api-mailchimp
+
+
+
+
+
+# [4.0.0-beta.0](https://github.com/webiny/webiny-js/compare/v1.15.1...v4.0.0-beta.0) (2020-05-22)
+
+
+### Bug Fixes
+
+* clean "api" folder ([5ec07b4](https://github.com/webiny/webiny-js/commit/5ec07b4d866f5f1c953c07b2483018a7ea5981e1))
+* fix eslint error ([b7079c1](https://github.com/webiny/webiny-js/commit/b7079c1f61209e5096350598da5d8f6101e5959d))
+* models and resolvers ([6d311a9](https://github.com/webiny/webiny-js/commit/6d311a9d2d9598c1e8bb4a4fafe48efb1495df8d))
+* synced dependencies across all packages ([#567](https://github.com/webiny/webiny-js/issues/567)) ([38eda54](https://github.com/webiny/webiny-js/commit/38eda547bead6e8a2c46875730bbcd8f1227e475))
+* update dependencies ([2def479](https://github.com/webiny/webiny-js/commit/2def479886ed356e7981b7be61b957edcc87f887))
+* update dependencies. ([a399620](https://github.com/webiny/webiny-js/commit/a3996203dc726709582fb39eb98143be62e2d2ca))
+* update package versions ([878baa5](https://github.com/webiny/webiny-js/commit/878baa51dd747e3a2962da89cbb68ea15779a04f))
+* use "@webiny/graphql" package instead of "@webiny/graphql" ([ed16ee2](https://github.com/webiny/webiny-js/commit/ed16ee2f02dbd268f81618e67b75f152e89b6de6))
+
+
+### Features
+
+* ✨  Wrap resolvers in `hasScope` ([7309a73](https://github.com/webiny/webiny-js/commit/7309a73c863d1bd3dbc41ea2b73864010407414d))
+* add support for DB drivers ([#623](https://github.com/webiny/webiny-js/issues/623)) ([82a6d66](https://github.com/webiny/webiny-js/commit/82a6d66d5ad96e4da13c035d2524c03bd50a7dff))
+* TypeScript && improved SSR mechanisms ([#677](https://github.com/webiny/webiny-js/issues/677)) ([3da0566](https://github.com/webiny/webiny-js/commit/3da0566f29e1d46df0e7c357be0b42bdaa4c7d2b))
+
+
+
+
+
 ## [3.0.3](https://github.com/webiny/webiny-js/compare/@webiny/api-mailchimp@3.0.3-next.0...@webiny/api-mailchimp@3.0.3) (2020-03-09)
 
 **Note:** Version bump only for package @webiny/api-mailchimp

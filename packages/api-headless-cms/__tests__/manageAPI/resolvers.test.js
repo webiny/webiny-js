@@ -4,7 +4,7 @@ import setupContentModels from "../setup/setupContentModels";
 import { createUtils } from "../utils";
 import createCategories from "../mocks/createCategories.manage";
 import { locales } from "../mocks/I18NLocales";
-import headlessPlugins from "../../src/handler/plugins";
+import headlessPlugins from "../../src/content/plugins";
 import setupDefaultEnvironment from "../setup/setupDefaultEnvironment";
 
 describe("MANAGE - Resolvers", () => {

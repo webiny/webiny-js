@@ -3,6 +3,43 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.0.0-beta.2](https://github.com/webiny/webiny-js/compare/v4.0.0-beta.1...v4.0.0-beta.2) (2020-05-25)
+
+**Note:** Version bump only for package @webiny/app-plugin-security-cognito
+
+
+
+
+
+# [4.0.0-beta.1](https://github.com/webiny/webiny-js/compare/v4.0.0-beta.0...v4.0.0-beta.1) (2020-05-22)
+
+**Note:** Version bump only for package @webiny/app-plugin-security-cognito
+
+
+
+
+
+# [4.0.0-beta.0](https://github.com/webiny/webiny-js/compare/v1.15.1...v4.0.0-beta.0) (2020-05-22)
+
+
+### Bug Fixes
+
+* add i18n to cognito plugin. ([d6826fc](https://github.com/webiny/webiny-js/commit/d6826fcc0c837f597b99846fe57b071d363dc9b2))
+* security and i18n installation. ([bb8aa0c](https://github.com/webiny/webiny-js/commit/bb8aa0ca0287d31a82de2af0392547500aff7913))
+* synced dependencies across all packages ([#567](https://github.com/webiny/webiny-js/issues/567)) ([38eda54](https://github.com/webiny/webiny-js/commit/38eda547bead6e8a2c46875730bbcd8f1227e475))
+* update plugin names and usage ([38754f2](https://github.com/webiny/webiny-js/commit/38754f2c1c4d71667cab35c84436662c36dcec04))
+
+
+### Features
+
+* cognito security authentication plugin. ([39f0dd7](https://github.com/webiny/webiny-js/commit/39f0dd72d034864fa34c74856b9b7914bd14ee34))
+* sync Cognito data with Webiny user data, add create/update/delete handlers. ([9fcc931](https://github.com/webiny/webiny-js/commit/9fcc931142dd194a686dd87c678a10897cf0ee1e))
+* TypeScript && improved SSR mechanisms ([#677](https://github.com/webiny/webiny-js/issues/677)) ([3da0566](https://github.com/webiny/webiny-js/commit/3da0566f29e1d46df0e7c357be0b42bdaa4c7d2b))
+
+
+
+
+
 ## [3.0.8](https://github.com/webiny/webiny-js/compare/@webiny/app-plugin-security-cognito@3.0.8-next.0...@webiny/app-plugin-security-cognito@3.0.8) (2020-04-23)
 
 **Note:** Version bump only for package @webiny/app-plugin-security-cognito

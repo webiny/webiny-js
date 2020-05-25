@@ -3,6 +3,45 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.0.0-beta.2](https://github.com/webiny/webiny-js/compare/v4.0.0-beta.1...v4.0.0-beta.2) (2020-05-25)
+
+**Note:** Version bump only for package @webiny/app-google-tag-manager
+
+
+
+
+
+# [4.0.0-beta.1](https://github.com/webiny/webiny-js/compare/v4.0.0-beta.0...v4.0.0-beta.1) (2020-05-22)
+
+**Note:** Version bump only for package @webiny/app-google-tag-manager
+
+
+
+
+
+# [4.0.0-beta.0](https://github.com/webiny/webiny-js/compare/v1.15.1...v4.0.0-beta.0) (2020-05-22)
+
+
+### Bug Fixes
+
+* adapt settings menus to the new structure ([3728d01](https://github.com/webiny/webiny-js/commit/3728d01fdaec09a1b864a83514bf3d76656e94d7))
+* convert all app plugins to factories ([b3553fa](https://github.com/webiny/webiny-js/commit/b3553fa2b3d7aa00d73df9ab700dc8a90631bf96))
+* convert withSecurity to useSecurity, refactor the remaining recompose usages. ([6671df2](https://github.com/webiny/webiny-js/commit/6671df2adb5fb7aef14516f271aabb9a5579c57f))
+* fix eslint error ([b7079c1](https://github.com/webiny/webiny-js/commit/b7079c1f61209e5096350598da5d8f6101e5959d))
+* package version ([7a5aa5d](https://github.com/webiny/webiny-js/commit/7a5aa5d8fedcb267e7d93b99040c5b285499cf4f))
+* update dependencies ([2def479](https://github.com/webiny/webiny-js/commit/2def479886ed356e7981b7be61b957edcc87f887))
+* use correct type ([54a428a](https://github.com/webiny/webiny-js/commit/54a428a50a6aa0019b2f9d37e2a2d9ab21bca6fc))
+
+
+### Features
+
+* introduce create-webiny-project package ([7236ec3](https://github.com/webiny/webiny-js/commit/7236ec36a40ca816c0d20099c793745fa125ddce))
+* TypeScript && improved SSR mechanisms ([#677](https://github.com/webiny/webiny-js/issues/677)) ([3da0566](https://github.com/webiny/webiny-js/commit/3da0566f29e1d46df0e7c357be0b42bdaa4c7d2b))
+
+
+
+
+
 ## [3.0.14](https://github.com/webiny/webiny-js/compare/@webiny/app-google-tag-manager@3.0.13...@webiny/app-google-tag-manager@3.0.14) (2020-05-04)
 
 **Note:** Version bump only for package @webiny/app-google-tag-manager

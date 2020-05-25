@@ -3,6 +3,27 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.0.0-beta.1](https://github.com/webiny/webiny-js/compare/v4.0.0-beta.0...v4.0.0-beta.1) (2020-05-22)
+
+**Note:** Version bump only for package @webiny/plugins
+
+
+
+
+
+# [4.0.0-beta.0](https://github.com/webiny/webiny-js/compare/v1.15.1...v4.0.0-beta.0) (2020-05-22)
+
+
+### Features
+
+* export "plugins" instance ([2ef8487](https://github.com/webiny/webiny-js/commit/2ef8487aff227cacd6ebe2a2f8cbabad58e76c43))
+* introduce create-webiny-project package ([7236ec3](https://github.com/webiny/webiny-js/commit/7236ec36a40ca816c0d20099c793745fa125ddce))
+* TypeScript && improved SSR mechanisms ([#677](https://github.com/webiny/webiny-js/issues/677)) ([3da0566](https://github.com/webiny/webiny-js/commit/3da0566f29e1d46df0e7c357be0b42bdaa4c7d2b))
+
+
+
+
+
 ## [3.0.1](https://github.com/webiny/webiny-js/compare/@webiny/plugins@3.0.1-next.0...@webiny/plugins@3.0.1) (2020-02-07)
 
 **Note:** Version bump only for package @webiny/plugins

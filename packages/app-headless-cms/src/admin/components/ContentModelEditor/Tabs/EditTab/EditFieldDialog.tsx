@@ -81,6 +81,8 @@ const EditFieldDialog = ({ field, onSubmit, ...props }: EditFieldDialogProps) =>
                                         fieldPlugin={fieldPlugin}
                                     />
                                 </Tab>
+
+                               {/* TODO: Add predefined values functionality.
                                 {fieldPlugin.field.allowPredefinedValues &&
                                     typeof fieldPlugin.field.renderPredefinedValues ===
                                         "function" && (
@@ -91,7 +93,7 @@ const EditFieldDialog = ({ field, onSubmit, ...props }: EditFieldDialogProps) =>
                                                 fieldPlugin={fieldPlugin}
                                             />
                                         </Tab>
-                                    )}
+                                    )}*/}
 
                                 {/* TODO: Add validators functionality.
                                 {Array.isArray(fieldPlugin.field.validators) &&

@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-const chalk = require("chalk");
+const { red, green, blue, bold, cyan } = require("chalk");
 const envinfo = require("envinfo");
 const execa = require("execa");
 const fs = require("fs-extra");
@@ -7,7 +7,11 @@ const Listr = require("listr");
 const os = require("os");
 const path = require("path");
 const yargs = require("yargs");
+const indent = require("indent-string");
 const validateProjectName = require("validate-npm-package-name");
+
+const originalLog = console.log;
+console.log = str => originalLog(indent(str, 2));
 
 const packageJson = require("./package.json");
 const init = require("./init.js");
@@ -41,7 +45,7 @@ yargs.command(
         });
         yargs.option("template", {
             describe:
-                "Name of template to use, if no template is selected it will default to use our 'full' template",
+                "Name of template to use, if no template is provided it will default to 'full' template",
             alias: "t",
             type: "string",
             default: "full",
@@ -69,28 +73,64 @@ function checkAppName(appName) {
     const validationResult = validateProjectName(appName);
     if (!validationResult.validForNewPackages) {
         console.error(
-            chalk.red(
-                `Cannot create a project named ${chalk.green(
+            red(
+                `Cannot create a project named ${green(
                     `"${appName}"`
                 )} because of npm naming restrictions:\n`
             )
         );
         [...(validationResult.errors || []), ...(validationResult.warnings || [])].forEach(
             error => {
-                console.error(chalk.red(`  * ${error}`));
+                console.error(red(`  * ${error}`));
             }
         );
-        console.error(chalk.red("\nPlease choose a different project name."));
+        console.error(red("\nPlease choose a different project name."));
         process.exit(1);
     }
 }
 
-function createApp({ projectName, template, tag, log }) {
+async function createApp({ projectName, template, tag, log }) {
     if (!projectName) {
         throw Error("You must provide a name for the project to use.");
     }
+
     const root = path.resolve(projectName);
     const appName = path.basename(root);
+
+    if (fs.existsSync(root)) {
+        console.log(`\nSorry, target folder ${red(projectName)} already exists!`);
+        process.exit(1);
+    }
+
+    // Check if @webiny/cli is installed globally and warn user
+    try {
+        await execa("npm", ["list", "-g", "@webiny/cli"]);
+        console.log(
+            [
+                "",
+                "IMPORTANT NOTICE:",
+                "----------------------------------------",
+                `We've detected a global installation of ${blue(
+                    "@webiny/cli"
+                )}. This might not play well with your new project.`,
+                `We recommend you do one of the following things:\n`,
+                ` - uninstall the global @webiny/cli package by running ${blue(
+                    "npm rm -g @webiny/cli"
+                )} or`,
+                ` - run webiny commands using ${blue(
+                    "yarn webiny"
+                )} so that the package is always resolved to your project dependencies\n`,
+                `The second option is also recommended if you have an older version of Webiny project you want to keep using.`,
+                "----------------------------------------",
+                ""
+            ].join("\n")
+        );
+    } catch (err) {
+        // @webiny/cli is not installed globally
+    }
+
+    console.log(`Creating project at ${blue(root)}:`);
+
     const tasks = new Listr([
         {
             title: "Pre-template setup",
@@ -104,7 +144,7 @@ function createApp({ projectName, template, tag, log }) {
                         }
                     },
                     {
-                        title: `Creating your Webiny app in ${chalk.green(root)}.`,
+                        title: `Creating your Webiny app in ${green(root)}.`,
                         task: () => {
                             const packageJson = {
                                 name: appName,
@@ -128,7 +168,7 @@ function createApp({ projectName, template, tag, log }) {
 }
 
 function informationHandler() {
-    console.log(chalk.bold("\nEnvironment Info:"));
+    console.log(bold("\nEnvironment Info:"));
     console.log(`\n  current version of ${packageJson.name}: ${packageJson.version}`);
     console.log(`  running from ${__dirname}`);
     return envinfo
@@ -171,13 +211,13 @@ async function run({ root, appName, template, tag, log }) {
         dependencies.push(`${templateName}@${tag}`);
         const tasks = new Listr([
             {
-                title: `Installing core dependencies of create-webiny-project`,
+                title: `Install template package`,
                 task: async () => {
                     try {
                         await install({ root, dependencies });
                     } catch (err) {
                         throw new Error(
-                            "Failed installing core dependencies of create-webiny-project"
+                            "Failed to install template package"
                         );
                     }
                 }
@@ -190,9 +230,9 @@ async function run({ root, appName, template, tag, log }) {
     } catch (reason) {
         console.log("\nAborting installation.");
         if (reason.command) {
-            console.log(`  ${chalk.cyan(reason.command)} has failed.`);
+            console.log(`  ${cyan(reason.command)} has failed.`);
         } else {
-            console.log(chalk.red("Unexpected error. Please report it as a bug:"));
+            console.log(red("Unexpected error. Please report it as a bug:"));
             console.log(reason);
         }
         console.log("\nDone.");

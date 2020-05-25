@@ -43,17 +43,6 @@ export const LIST_CONTENT_MODEL_GROUPS = gql`
     }
 `;
 
-export const GET_CONTENT_MODEL_GROUP_BY_SLUG = gql`
-    query getContentModelGroupBySlug($slug: String) {
-        getContentModelGroup(where: { slug: $slug }) {
-            data {
-                name
-                id
-            }
-        }
-    }
-`;
-
 export const GET_CONTENT_MODEL_GROUP = gql`
     query GetContentModelGroup($id: ID!) {
         contentModelGroup: getContentModelGroup(id: $id){

@@ -3,6 +3,34 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.0.0-beta.1](https://github.com/webiny/webiny-js/compare/v4.0.0-beta.0...v4.0.0-beta.1) (2020-05-22)
+
+**Note:** Version bump only for package @webiny/validation
+
+
+
+
+
+# [4.0.0-beta.0](https://github.com/webiny/webiny-js/compare/v1.15.1...v4.0.0-beta.0) (2020-05-22)
+
+
+### Bug Fixes
+
+* allow http://localhost and https://localhost ([7526771](https://github.com/webiny/webiny-js/commit/7526771dceb21461e3511b405f533acdd7a0b59a))
+* fix eslint error ([a1af24e](https://github.com/webiny/webiny-js/commit/a1af24edf167be31f2502372d989f8abbd7dee81))
+* update dependencies ([2def479](https://github.com/webiny/webiny-js/commit/2def479886ed356e7981b7be61b957edcc87f887))
+
+
+### Features
+
+* add "allowRelative" option for the `url` validator ([#597](https://github.com/webiny/webiny-js/issues/597)) ([653d619](https://github.com/webiny/webiny-js/commit/653d619e771eb98b224384cd5251239ebc346a14))
+* memoize created validators ([2334397](https://github.com/webiny/webiny-js/commit/233439707846a9892dcc2aa8bfe9ac16c13196ac))
+* TypeScript && improved SSR mechanisms ([#677](https://github.com/webiny/webiny-js/issues/677)) ([3da0566](https://github.com/webiny/webiny-js/commit/3da0566f29e1d46df0e7c357be0b42bdaa4c7d2b))
+
+
+
+
+
 ## [3.0.1](https://github.com/webiny/webiny-js/compare/@webiny/validation@3.0.1-next.0...@webiny/validation@3.0.1) (2020-02-07)
 
 **Note:** Version bump only for package @webiny/validation

@@ -3,6 +3,33 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.0.0-beta.2](https://github.com/Webiny/webiny-js/compare/v4.0.0-beta.1...v4.0.0-beta.2) (2020-05-25)
+
+
+### Bug Fixes
+
+* **serverless-function:** highlight concurrency value ([0b203cb](https://github.com/Webiny/webiny-js/commit/0b203cbd7fa4c24e5c7295bb247e1e6d20d9626c))
+
+
+
+
+
+# [4.0.0-beta.1](https://github.com/webiny/webiny-js/compare/v4.0.0-beta.0...v4.0.0-beta.1) (2020-05-22)
+
+**Note:** Version bump only for package @webiny/serverless-function
+
+
+
+
+
+# [4.0.0-beta.0](https://github.com/Webiny/webiny-js/compare/v1.15.1...v4.0.0-beta.0) (2020-05-22)
+
+**Note:** Version bump only for package @webiny/serverless-function
+
+
+
+
+
 ## [3.0.1](https://github.com/Webiny/webiny-js/compare/@webiny/serverless-function@3.0.1-next.0...@webiny/serverless-function@3.0.1) (2020-02-07)
 
 **Note:** Version bump only for package @webiny/serverless-function

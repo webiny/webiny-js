@@ -34,6 +34,10 @@ export const createRevisionIndexes = async ({ model, entry, context, autoDelete 
                 if (fields[f] === "id") {
                     value = entry.id;
                 } else {
+                    if (!entry.fields[fields[f]]) {
+                        indexValues[`v${f}`] = undefined;
+                        continue;
+                    }
                     const i18nValue = entry.fields[fields[f]].values.find(
                         item => item.locale === locale.id
                     );

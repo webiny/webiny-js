@@ -3,6 +3,38 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.0.0-beta.2](https://github.com/Webiny/webiny-js/compare/v4.0.0-beta.1...v4.0.0-beta.2) (2020-05-25)
+
+**Note:** Version bump only for package @webiny/app-form-builder-theme
+
+
+
+
+
+# [4.0.0-beta.1](https://github.com/webiny/webiny-js/compare/v4.0.0-beta.0...v4.0.0-beta.1) (2020-05-22)
+
+**Note:** Version bump only for package @webiny/app-form-builder-theme
+
+
+
+
+
+# [4.0.0-beta.0](https://github.com/Webiny/webiny-js/compare/v1.15.1...v4.0.0-beta.0) (2020-05-22)
+
+
+### Bug Fixes
+
+* fix eslint error ([a1af24e](https://github.com/Webiny/webiny-js/commit/a1af24edf167be31f2502372d989f8abbd7dee81))
+
+
+### Features
+
+* TypeScript && improved SSR mechanisms ([#677](https://github.com/Webiny/webiny-js/issues/677)) ([3da0566](https://github.com/Webiny/webiny-js/commit/3da0566f29e1d46df0e7c357be0b42bdaa4c7d2b))
+
+
+
+
+
 ## [2.0.13](https://github.com/webiny/webiny-js/compare/@webiny/app-form-builder-theme@2.0.12...@webiny/app-form-builder-theme@2.0.13) (2020-05-04)
 
 **Note:** Version bump only for package @webiny/app-form-builder-theme

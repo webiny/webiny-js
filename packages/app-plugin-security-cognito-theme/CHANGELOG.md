@@ -3,6 +3,44 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.0.0-beta.2](https://github.com/Webiny/webiny-js/compare/v4.0.0-beta.1...v4.0.0-beta.2) (2020-05-25)
+
+**Note:** Version bump only for package @webiny/app-plugin-security-cognito-theme
+
+
+
+
+
+# [4.0.0-beta.1](https://github.com/webiny/webiny-js/compare/v4.0.0-beta.0...v4.0.0-beta.1) (2020-05-22)
+
+**Note:** Version bump only for package @webiny/app-plugin-security-cognito-theme
+
+
+
+
+
+# [4.0.0-beta.0](https://github.com/Webiny/webiny-js/compare/v1.15.1...v4.0.0-beta.0) (2020-05-22)
+
+
+### Bug Fixes
+
+* editor plugin types and TS types location. ([031f064](https://github.com/Webiny/webiny-js/commit/031f0644c52fa2bd1f7095f0b80818c549d7672d))
+* fix eslint error ([a1af24e](https://github.com/Webiny/webiny-js/commit/a1af24edf167be31f2502372d989f8abbd7dee81))
+
+
+### Features
+
+* Account settings page now looks much more awesome ([0e131da](https://github.com/Webiny/webiny-js/commit/0e131dabf5c526184a8da27abad25c6db1a9cf32))
+* Add PATs & Remove Avatar & Restyle form ([5766ed7](https://github.com/Webiny/webiny-js/commit/5766ed771bf0acf0940d375720f2f4a43e8764f0))
+* added 'Tokens' to User Account Form (displayed in Account Settings) ([b4fa936](https://github.com/Webiny/webiny-js/commit/b4fa936aa9b98c848ab43f4d2ee0382b07270847))
+* separate groups from roles in UI ([ae6674b](https://github.com/Webiny/webiny-js/commit/ae6674b7ac701845d8cca441fb31642c5265b69f))
+* Split "Account" form into 3 "Section" elements ([23e2e7e](https://github.com/Webiny/webiny-js/commit/23e2e7eeea49c959ec27ff773103e323308824b6))
+* TypeScript && improved SSR mechanisms ([#677](https://github.com/Webiny/webiny-js/issues/677)) ([3da0566](https://github.com/Webiny/webiny-js/commit/3da0566f29e1d46df0e7c357be0b42bdaa4c7d2b))
+
+
+
+
+
 ## [2.0.9](https://github.com/webiny/webiny-js/compare/@webiny/app-plugin-security-cognito-theme@2.0.9-next.0...@webiny/app-plugin-security-cognito-theme@2.0.9) (2020-04-23)
 
 **Note:** Version bump only for package @webiny/app-plugin-security-cognito-theme

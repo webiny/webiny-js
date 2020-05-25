@@ -58,7 +58,7 @@ export default createTemplate<AdminAppOptions>(opts => {
                         <Route
                             exact
                             path="/"
-                            render={() => <Redirect to={opts.defaultRoute || "/users"} />}
+                            render={() => <Redirect to={opts.defaultRoute || "/account"} />}
                         />
                     </BrowserRouter>
                 );

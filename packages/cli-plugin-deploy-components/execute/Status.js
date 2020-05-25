@@ -58,7 +58,7 @@ class Status {
         // Write content
         console.log();
         const content = `${dim(this.seconds + "s")} ${dim(figures.pointerSmall)} Deploying...`;
-        process.stdout.write(content);
+        process.stdout.write("  " + content);
 
         // Put cursor to starting position for next view
         console.log(os.EOL);
@@ -91,7 +91,7 @@ class Status {
         const content = `${dim(this.seconds + "s")} ${dim(figures.pointerSmall)} ${
             this.status.message
         }...`;
-        process.stdout.write(content);
+        process.stdout.write("  " + content);
         console.log();
 
         // Get cursor starting position according to terminal & content width

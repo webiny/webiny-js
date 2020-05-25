@@ -3,6 +3,25 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.0.0-beta.1](https://github.com/webiny/webiny-js/compare/v4.0.0-beta.0...v4.0.0-beta.1) (2020-05-22)
+
+**Note:** Version bump only for package @webiny/serverless-aws-lambda
+
+
+
+
+
+# [4.0.0-beta.0](https://github.com/Webiny/webiny-js/compare/v1.15.1...v4.0.0-beta.0) (2020-05-22)
+
+
+### Features
+
+* remove layer functionality and add support for Lambda permissions ([d5298b1](https://github.com/Webiny/webiny-js/commit/d5298b17cf9f9b7faab2f4694a726724f9cda11d))
+
+
+
+
+
 ## [2.0.1](https://github.com/Webiny/webiny-js/compare/@webiny/serverless-aws-lambda@2.0.1-next.0...@webiny/serverless-aws-lambda@2.0.1) (2020-02-07)
 
 **Note:** Version bump only for package @webiny/serverless-aws-lambda

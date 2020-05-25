@@ -3,6 +3,67 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.0.0-beta.2](https://github.com/webiny/webiny-js/compare/v4.0.0-beta.1...v4.0.0-beta.2) (2020-05-25)
+
+
+### Bug Fixes
+
+* **app-form-builder:** allow a single checkbox to be submitted ([#858](https://github.com/webiny/webiny-js/issues/858)) ([c60b47f](https://github.com/webiny/webiny-js/commit/c60b47f1b7b06ea85821f6a8a06fb142f15ed93c))
+
+
+
+
+
+# [4.0.0-beta.1](https://github.com/webiny/webiny-js/compare/v4.0.0-beta.0...v4.0.0-beta.1) (2020-05-22)
+
+**Note:** Version bump only for package @webiny/app-form-builder
+
+
+
+
+
+# [4.0.0-beta.0](https://github.com/webiny/webiny-js/compare/v1.15.1...v4.0.0-beta.0) (2020-05-22)
+
+
+### Bug Fixes
+
+* adapt settings menus to the new structure ([c4c0c63](https://github.com/webiny/webiny-js/commit/c4c0c63ccfb5fb2ab62cc50c200c51023951e830))
+* add minHeight to list items (prevents list from "jumping") ([51ae1eb](https://github.com/webiny/webiny-js/commit/51ae1eb2f6ad77c888041b1b6fdd3732b80d6c94))
+* add missing file ([5f68768](https://github.com/webiny/webiny-js/commit/5f6876873e06acd9c6c8d81109a6d56fe43386ef))
+* change label "Form Builder" to "Forms" ([eec4ab7](https://github.com/webiny/webiny-js/commit/eec4ab7d2e3e32f05291fecbdaeab02dfa972450))
+* convert all app plugins to factories ([b3553fa](https://github.com/webiny/webiny-js/commit/b3553fa2b3d7aa00d73df9ab700dc8a90631bf96))
+* editor plugin types and TS types location. ([031f064](https://github.com/webiny/webiny-js/commit/031f0644c52fa2bd1f7095f0b80818c549d7672d))
+* execute plugin factory ([8b0404d](https://github.com/webiny/webiny-js/commit/8b0404d4de1a934ed5fbb541a713571561180d5f))
+* extend Window object with Cypress ([fb8dc83](https://github.com/webiny/webiny-js/commit/fb8dc835b96c3289b34ae322bb9d7cc0f0ba3337))
+* fix eslint error ([b7079c1](https://github.com/webiny/webiny-js/commit/b7079c1f61209e5096350598da5d8f6101e5959d))
+* fix eslint error ([a1af24e](https://github.com/webiny/webiny-js/commit/a1af24edf167be31f2502372d989f8abbd7dee81))
+* fix typo ([f9241f2](https://github.com/webiny/webiny-js/commit/f9241f2eb964499db4ea73af594ec9abf816bcb8))
+* refetch forms in page builder element ([#694](https://github.com/webiny/webiny-js/issues/694)) ([4ee88f5](https://github.com/webiny/webiny-js/commit/4ee88f5f56704ff6eaf71d0624ecc7ea872c3a20)), closes [#678](https://github.com/webiny/webiny-js/issues/678)
+* remove unused import ([f9a6515](https://github.com/webiny/webiny-js/commit/f9a6515a0cdb2b31b7e4fbffc72975468974c0ab))
+* restore Block component ([07789ba](https://github.com/webiny/webiny-js/commit/07789ba8b5a6f4fdefb074ca6f4a14e1eb7e5367))
+* restore file ([a6df76d](https://github.com/webiny/webiny-js/commit/a6df76d318fb4dbb5f62c336409fca952cde6be9))
+* typescript ([5ddd281](https://github.com/webiny/webiny-js/commit/5ddd281b6ee206362f7163c5c063e3eea1cd72a2))
+* update plugin names and usage ([38754f2](https://github.com/webiny/webiny-js/commit/38754f2c1c4d71667cab35c84436662c36dcec04))
+* use "MenuContentSectionPlugin" instead of "MenuPlugin" ([54e43bb](https://github.com/webiny/webiny-js/commit/54e43bb10a499c67a2cf6417341754663954a798))
+* **page-builder:** simplify usage and improve performance when loading with pages ([91c12c8](https://github.com/webiny/webiny-js/commit/91c12c8dfbdfe2adef809b556ab2eee40eb3a2ca))
+
+
+### Features
+
+* fixed Storybook local deployment. Added 'Section' component ([ea5b7ee](https://github.com/webiny/webiny-js/commit/ea5b7ee30d72d38eae8b326eda424ab7ac3b9d2c))
+* improved scopes selection auto-complete component([#743](https://github.com/webiny/webiny-js/issues/743)) ([f3acbc5](https://github.com/webiny/webiny-js/commit/f3acbc5aa467ac3d70649628bfbe68727345487e)), closes [#729](https://github.com/webiny/webiny-js/issues/729)
+* migrate from offset pagination to cursor pagination ([0780b11](https://github.com/webiny/webiny-js/commit/0780b116f293c8da686b91e0612dd4ee254c5554))
+* TypeScript && improved SSR mechanisms ([#677](https://github.com/webiny/webiny-js/issues/677)) ([3da0566](https://github.com/webiny/webiny-js/commit/3da0566f29e1d46df0e7c357be0b42bdaa4c7d2b))
+
+
+### BREAKING CHANGES
+
+* We're now using cursor pagination, which means we no longer have a page and perPage parameters, but rather a "limit" and "after" + "before" cursors.
+
+
+
+
+
 ## [2.2.5](https://github.com/webiny/webiny-js/compare/@webiny/app-form-builder@2.2.4...@webiny/app-form-builder@2.2.5) (2020-05-04)
 
 **Note:** Version bump only for package @webiny/app-form-builder
