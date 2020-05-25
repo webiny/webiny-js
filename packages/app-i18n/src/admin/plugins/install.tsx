@@ -15,6 +15,7 @@ import {
     SimpleFormFooter,
     SimpleFormContent
 } from "@webiny/app-admin/components/SimpleForm";
+import { useI18N } from "@webiny/app-i18n/hooks/useI18N";
 
 const t = i18n.ns("app-i18n/admin/installation");
 
@@ -50,6 +51,7 @@ const I18NInstaller = ({ onInstalled }) => {
     const client = useApolloClient();
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
+    const { refetchLocales } = useI18N();
 
     const onSubmit = useCallback(async form => {
         setLoading(true);
@@ -62,6 +64,7 @@ const I18NInstaller = ({ onInstalled }) => {
             return;
         }
 
+        refetchLocales();
         onInstalled();
     }, []);
 
