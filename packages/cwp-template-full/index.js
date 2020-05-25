@@ -32,9 +32,10 @@ module.exports = ({ appName, root }) => {
     apiEnv = apiEnv.replace("[BUCKET]", `${projectId}-${appName}-files`);
     fs.writeFileSync(path.join(root, "api", ".env.json"), apiEnv);
 
-    let baseEnv = fs.readFileSync(path.join(root, ".env.json"), "utf-8");
-    baseEnv = baseEnv.replace("webiny", `${projectId}-${appName}`);
-    fs.writeFileSync(path.join(root, ".env.json"), baseEnv);
+    const baseEnvPath = require(path.join(root, ".env.json"));
+    const baseEnv = require(baseEnvPath);
+    baseEnv.default["MONGODB_NAME"] = appName;
+    fs.writeFileSync(baseEnvPath, JSON.stringify(baseEnv, null, 2));
 
     let webinyRoot = fs.readFileSync(path.join(root, "webiny.root.js"), "utf-8");
     webinyRoot = webinyRoot.replace("webiny-js", appName);
