@@ -1,0 +1,15 @@
+{
+  "extends": "../../tsconfig.build.json",
+  "include": ["./src"],
+  "exclude": ["node_modules", "../graphql", "../commodo-fields-storage-nedb", "../handler"],
+  "compilerOptions": {
+    "rootDir": "./src",
+    "outDir": "./dist",
+    "declarationDir": "./dist"
+  },
+  "references": [
+    { "path": "../graphql/tsconfig.build.json" },
+    { "path": "../handler/tsconfig.build.json" },
+    { "path": "../commodo-fields-storage-nedb/tsconfig.build.json" }
+  ]
+}
