@@ -1,4 +1,4 @@
-module.exports = async (options = { openBrowser: false }) => {
+module.exports = async (options = { openBrowser: true }) => {
     const path = require("path");
     const appIndexJs = path.resolve("src", "index.tsx");
 
