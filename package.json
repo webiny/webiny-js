@@ -8,7 +8,7 @@
       "sample-project/api/databaseProxy",
       "sample-project/api/files/*",
       "sample-project/api/formBuilder",
-      "sample-project/api/headless/*",
+      "sample-project/api/cms/*",
       "sample-project/api/i18n",
       "sample-project/api/pageBuilder",
       "sample-project/api/security/*"

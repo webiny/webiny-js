@@ -41,7 +41,7 @@
       "api/databaseProxy",
       "api/files/*",
       "api/formBuilder",
-      "api/headless/*",
+      "api/cms/*",
       "api/i18n/*",
       "api/pageBuilder",
       "api/security/*"

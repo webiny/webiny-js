@@ -62,6 +62,7 @@ module.exports = async function({ root, appName, templateName, tag, log }) {
                 const projectDeps = require(path.join(root, "dependencies.json"));
 
                 Object.assign(appPackage.dependencies, projectDeps.dependencies);
+                Object.assign(appPackage.devDependencies, projectDeps.devDependencies);
                 if (appPackage.workspaces) {
                     Object.assign(appPackage.workspaces, projectDeps.workspaces);
                 } else {
@@ -75,7 +76,7 @@ module.exports = async function({ root, appName, templateName, tag, log }) {
             }
         },
         {
-            title: `Initialize git in ${appName}`,
+            title: `Initialize git in ${green(appName)}`,
             task: task => {
                 try {
                     execa.sync("git", ["--version"]);
@@ -253,6 +254,7 @@ module.exports = async function({ root, appName, templateName, tag, log }) {
 
     console.log(
         [
+        [
             "",
             `Your new Webiny project ${blue(appName)} is ready!`,
             `Finish the configuration by following these steps:`,
@@ -272,7 +274,9 @@ module.exports = async function({ root, appName, templateName, tag, log }) {
             "For more information on setting up your database connection:\nhttps://docs.webiny.com/docs/get-started/quick-start#3-setup-database-connection",
             "",
             "Want to delve deeper into Webiny? Check out https://docs.webiny.com/docs/webiny/introduction",
-            "Like the tool? Star us on Github! https://github.com/webiny/webiny-js\n",
+            "Like the project? Star us on Github! https://github.com/webiny/webiny-js\n",
+            "",
+            "Need help? Join our Slack community at https://www.webiny.com/slack",
             "",
             "Happy coding!"
         ].join("\n")

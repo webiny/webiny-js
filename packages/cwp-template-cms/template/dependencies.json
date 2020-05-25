@@ -40,7 +40,7 @@
       "api/apolloGateway",
       "api/databaseProxy",
       "api/files/*",
-      "api/headless/*",
+      "api/cms/*",
       "api/i18n/*",
       "api/security/*"
     ]
