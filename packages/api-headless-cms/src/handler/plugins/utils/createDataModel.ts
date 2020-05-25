@@ -54,6 +54,7 @@ export const createDataModel = (
     const Model: any = pipe(
         withName("CmsContentEntry"),
         withProps(({ toStorage, populateFromStorage }) => ({
+            contentModel,
             async toStorage() {
                 // When storing data to DB, we restructure data:
                 // - all user-defined fields are stored in the `fields` object
@@ -76,57 +77,69 @@ export const createDataModel = (
                 const rest = omit<any>(storageData, metaFieldsList);
 
                 return populateFromStorage.call(this, { ...rest, ...rest.fields, meta });
-            },
-            get contentModel() {
-                return contentModel;
             }
         })),
         withHooks({
             async beforeSave() {
-                // Check if any of the index fields are dirty
-                const indexFields = contentModel.getUniqueIndexFields();
+                let mustUpdateIndexes, mustDeleteIndexes;
 
-                // Get entry fields that match indexes and are dirty
-                const relFields = indexFields
-                    .filter(f => Boolean(this[f]))
-                    .map(f => this.getField(f).isDirty());
-
-                // Determine if there are any dirty fields
-                const dirty = relFields.filter(Boolean).length > 0;
-
-                if (dirty || !this.isExisting()) {
-                    // If index related fields are dirty (or this is a new entry), we need to call DataManager to rebuild indexes
-                    const removeCallback = this.hook("afterSave", async () => {
-                        removeCallback();
-                        await context.cms.dataManager.generateRevisionIndexes({ revision: this });
-                    });
-                }
-
-                // Let's mark fields on actual content model as used.
-                const fields = contentModel.fields || [];
-                const usedFields = contentModel.usedFields || [];
-
-                for (let i = 0; i < fields.length; i++) {
-                    const field = fields[i];
-                    if (usedFields.includes(field.fieldId)) {
-                        continue;
+                while (true) {
+                    // 1. If we are creating a new revision, it's gonna be a new latest version,
+                    // which means we can update the indexes without doing any further checks.
+                    if (!this.isExisting()) {
+                        mustUpdateIndexes = true;
+                        break;
                     }
 
-                    const removeCallback = this.hook("afterSave", async () => {
-                        removeCallback();
-
-                        for (let i = 0; i < fields.length; i++) {
-                            const fieldId = fields[i].fieldId;
-                            if (usedFields.includes(fieldId)) {
-                                continue;
-                            }
-                            usedFields.push(fieldId);
+                    // 2. Before we move on to checking for changes in fields that are part of entries in defined
+                    // indexes, let's make a few basic checks. First of all, let's see if we have changes in
+                    // "latestVersion" and "published" flags.
+                    // 2.1. If both are false, that means we can directly remove the entry from the index.
+                    // 2.2. If one of these are false, that means we can do an update of the entry.
+                    const meta = this.meta;
+                    if (
+                        meta.getField("latestVersion").isDirty() ||
+                        meta.getField("published").isDirty()
+                    ) {
+                        if (!meta.latestVersion && !meta.published) {
+                            mustDeleteIndexes = true;
+                            break;
                         }
 
-                        contentModel.usedFields = usedFields;
-                        //TODO @adrian: await contentModel.save();
-                    });
+                        if (!meta.latestVersion || !meta.latestVersion) {
+                            mustUpdateIndexes = true;
+                            break;
+                        }
+                    }
+
+                    // 3. Finally, if non of the above was matched, let's check if there where changes on
+                    // fields that are included in the defined list of indexes. If so, we must do updates.
+                    const indexFields = contentModel.getUniqueIndexFields();
+
+                    const relFields = indexFields
+                        .filter(f => Boolean(this[f]))
+                        .map(f => this.getField(f).isDirty());
+
+                    const dirtyIndexFields = relFields.filter(Boolean).length > 0;
+                    if (dirtyIndexFields) {
+                        mustUpdateIndexes = true;
+                        break;
+                    }
+
                     break;
+                }
+
+                if (mustUpdateIndexes || mustDeleteIndexes) {
+                    const removeCallback = this.hook("afterSave", async () => {
+                        removeCallback();
+                        if (mustUpdateIndexes) {
+                            await context.cms.dataManager.generateRevisionIndexes({
+                                revision: this
+                            });
+                        } else if (mustDeleteIndexes) {
+                            await deleteRevisionIndexes(this, context);
+                        }
+                    });
                 }
             },
             async beforeCreate() {
@@ -143,6 +156,8 @@ export const createDataModel = (
                 this.meta.version = await this.getNextVersion();
                 this.meta.latestVersion = true;
 
+                // When creating revisions number 2 and above, we need to load the previous latest version,
+                // and unmark it as latest, since the newly created on is now the latest revision.
                 if (this.meta.version > 1) {
                     const previousLatest = await Model.findOne({
                         query: {
@@ -153,8 +168,11 @@ export const createDataModel = (
                     });
 
                     if (previousLatest) {
-                        previousLatest.meta.latestVersion = false;
-                        await previousLatest.save();
+                        const removeCallback = this.hook("afterCreate", async () => {
+                            removeCallback();
+                            previousLatest.meta.latestVersion = false;
+                            await previousLatest.save();
+                        });
                     }
                 }
             },
@@ -168,10 +186,6 @@ export const createDataModel = (
                     this.hook("afterPublish", async () => {
                         publishedRev.meta.published = false;
                         await publishedRev.save();
-                        // We only want to keep indexes for `published` and `latestVersion` revisions
-                        if (!publishedRev.latestVersion) {
-                            await deleteRevisionIndexes(publishedRev, context);
-                        }
                     });
                 }
             },
