@@ -7,7 +7,7 @@
 		"type": "git",
 		"url": "https://github.com/webiny/webiny-js.git"
 	},
-	"description": "Webiny API plugin that provides a Commodo driver for Nedb.",
+	"description": "Webiny API plugin that provides a Commodo driver for NEdb.",
 	"contributors": [
 		"Pavel Denisjuk <pavel@webiny.com>",
 		"Sven Al Hamad <sven@webiny.com>",
@@ -20,7 +20,8 @@
 		"@babel/cli": "^7.5.5",
 		"@babel/core": "^7.5.5",
 		"@babel/preset-env": "^7.5.5",
-		"@webiny/graphql": "^4.0.0-beta.1"
+		"@webiny/graphql": "^4.0.0-beta.1",
+		"@commodo/fields-storage-nedb": "",
 	},
 	"publishConfig": {
 		"access": "public",

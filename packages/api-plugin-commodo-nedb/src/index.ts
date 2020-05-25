@@ -1,4 +1,4 @@
-import { NeDbDriver, id } from "@webiny/commodo-fields-storage-nedb";
+import { NeDbDriver, id } from "@commodo/fields-storage-nedb";
 import { ContextPlugin } from "@webiny/graphql/types";
 
 export default ({ database }) => {
