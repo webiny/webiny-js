@@ -1,5 +1,5 @@
 import mdbid from "mdbid";
-import useApiHandler from "./utils/useApiHandler";
+import useCmsHandler from "./utils/useCmsHandler";
 import { locales } from "./mocks/I18NLocales";
 import mocks from "./mocks/indexesManagement";
 
@@ -22,7 +22,7 @@ const CREATE_CONTENT_MODEL = /* GraphQL */ `
 // and publishing of new content revisions. We are also checking GraphQL responses (create, list, publish) in order
 // to be sure the user sees the correct data when performing these actions.
 describe("Indexes Management test", () => {
-    const { content, database, invoke } = useApiHandler();
+    const { environment, database, invoke } = useCmsHandler();
     const ids = { environment: mdbid(), contentModelGroup: mdbid() };
 
     beforeAll(async () => {
@@ -46,43 +46,36 @@ describe("Indexes Management test", () => {
 
     it("should update search catalog accordingly", async () => {
         // 1. Create a basic "Product" model. No additional indexes specified, which means we'll only have the "id" index.
-        await invoke({
-            pathParameters: { key: `manage/${ids.environment}` },
-            body: {
-                query: CREATE_CONTENT_MODEL,
-                variables: {
-                    data: {
-                        name: "Product",
-                        group: ids.contentModelGroup,
-                        fields: [
-                            {
-                                _id: "vqk-UApan",
-                                fieldId: "title",
-                                label: {
-                                    values: [
-                                        {
-                                            locale: locales.en.id,
-                                            value: "Title"
-                                        },
-                                        {
-                                            locale: locales.de.id,
-                                            value: "Titel"
-                                        }
-                                    ]
+        const { content, createContentModel } = environment(ids.environment);
+
+        await createContentModel({
+            data: {
+                name: "Product",
+                group: ids.contentModelGroup,
+                fields: [
+                    {
+                        _id: "vqk-UApan",
+                        fieldId: "title",
+                        label: {
+                            values: [
+                                {
+                                    locale: locales.en.id,
+                                    value: "Title"
                                 },
-                                type: "text"
-                            }
-                        ]
+                                {
+                                    locale: locales.de.id,
+                                    value: "Titel"
+                                }
+                            ]
+                        },
+                        type: "text"
                     }
-                }
+                ]
             }
         });
 
         // 2. Create a new product entry.
-        const products = await content({
-            environmentId: ids.environment,
-            modelId: "product"
-        });
+        const products = await content("product");
 
         let productRev1 = await products.create({
             data: {
