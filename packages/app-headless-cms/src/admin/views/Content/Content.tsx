@@ -22,7 +22,16 @@ const ContentRender = ({ contentModel }) => {
 
     const dataList = useDataList({
         client: apolloClient,
-        query: LIST_QUERY
+        query: LIST_QUERY,
+        getData: response => {
+            return get(response, "content.data");
+        },
+        getMeta: response => {
+            return get(response, "content.meta");
+        },
+        getError: response => {
+            return get(response, "content.error");
+        }
     });
 
     return (
