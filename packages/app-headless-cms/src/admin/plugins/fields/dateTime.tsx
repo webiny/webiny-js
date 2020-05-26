@@ -25,6 +25,9 @@ const plugin: CmsEditorFieldTypePlugin = {
         createField() {
             return {
                 type: this.type,
+                settings: {
+                    type: "date"
+                },
                 validation: [],
                 renderer: {
                     name: ""
