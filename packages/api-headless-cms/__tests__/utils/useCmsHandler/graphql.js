@@ -36,6 +36,26 @@ const createFieldsList = contentModel => {
     return fields.join("\n");
 };
 
+export const CREATE_CONTENT_MODEL = /* GraphQL */ `
+    mutation CreateContentModel($data: CmsContentModelInput!) {
+        createContentModel(data: $data) {
+            data {
+                name
+                fields {
+                    _id
+                    fieldId
+                    multipleValues
+                }
+            }
+            error {
+                message
+                data
+                code
+            }
+        }
+    }
+`;
+
 export const FIELDS_FIELDS = `
         _id
         fieldId
