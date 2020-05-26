@@ -69,6 +69,16 @@ const Install = ({ onInstalled }) => {
     const onSubmit = useCallback(async form => {
         setLoading(true);
         setError(null);
+        if (typeof auth.onSubmit === "function") {
+            try {
+                await auth.onSubmit({ data: form });
+            } catch (err) {
+                setLoading(false);
+                setError(err);
+                return;
+            }
+        }
+
         const { data: res } = await client.mutate({ mutation: INSTALL, variables: { data: form } });
         setLoading(false);
         const { error, data } = res.security.install;
