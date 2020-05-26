@@ -5,6 +5,7 @@ import { Form } from "@webiny/form";
 import { i18n } from "@webiny/app/i18n";
 import { ButtonPrimary } from "@webiny/ui/Button";
 import { Input } from "@webiny/ui/Input";
+import { Checkbox } from "@webiny/ui/Checkbox";
 import { Alert } from "@webiny/ui/Alert";
 import { Typography } from "@webiny/ui/Typography";
 import { Grid, Cell } from "@webiny/ui/Grid";
@@ -66,7 +67,7 @@ const Install = ({ onInstalled }) => {
     const [authUserMessage, setAuthUserMessage] = useState(null);
     const [error, setError] = useState(null);
 
-    const onSubmit = useCallback(async form => {
+    const onSubmit = useCallback(async ({ subscribed, ...form}) => {
         setLoading(true);
         setError(null);
         if (typeof auth.onSubmit === "function") {
@@ -90,6 +91,20 @@ const Install = ({ onInstalled }) => {
         if (!data.authUser) {
             setAuthUserMessage(true);
             return;
+        }
+
+        if(subscribed) {
+            fetch (
+                'https://app.mailerlite.com/webforms/submit/g9f1i1?fields%5Bemail%5D=' +
+                  encodeURIComponent (form.email) +
+                  '&ml-submit=1&ajax=1',
+                {
+                  method: 'GET',
+                  headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                  },
+                }
+              );
         }
 
         onInstalled();
@@ -156,6 +171,15 @@ const Install = ({ onInstalled }) => {
                                     )
                                 }
                             })}
+                            {!authUserMessage && (
+                                <Grid>
+                                    <Cell span={12}>
+                                        <Bind name="subscribed">
+                                            <Checkbox label={t`Subscribe to Newsletter`} />
+                                        </Bind>
+                                    </Cell>
+                                </Grid>                                    
+                            )}
                     </SimpleFormContent>
                     <SimpleFormFooter>
                         {!authUserMessage && (
