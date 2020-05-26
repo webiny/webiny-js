@@ -5,33 +5,28 @@ import useReactRouter from "use-react-router";
 import {
     createCreateFromMutation,
     createCreateMutation,
+    createListQuery,
     createUpdateMutation
 } from "@webiny/app-headless-cms/admin/components/ContentModelForm/graphql";
 import { useMutation } from "@webiny/app-headless-cms/admin/hooks";
 import { useCallback, useMemo } from "react";
-import get from "lodash.get";
+import get from "lodash/get";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
+import cloneDeep from "lodash/cloneDeep";
 
 const pageInnerWrapper = css({
     overflowY: "scroll",
     position: "relative"
 });
 
-const ContentForm = ({
-    contentModel,
-    content,
-    dataList,
-    getLocale,
-    setLoading,
-    getLoading,
-    setState
-}) => {
+const ContentForm = ({ contentModel, content, getLocale, setLoading, getLoading, setState }) => {
     const query = new URLSearchParams(location.search);
     const { history } = useReactRouter();
     const { showSnackbar } = useSnackbar();
 
-    const { CREATE_CONTENT, UPDATE_CONTENT, CREATE_CONTENT_FROM } = useMemo(() => {
+    const { CREATE_CONTENT, UPDATE_CONTENT, CREATE_CONTENT_FROM, LIST_CONTENT } = useMemo(() => {
         return {
+            LIST_CONTENT: createListQuery(contentModel),
             CREATE_CONTENT: createCreateMutation(contentModel),
             UPDATE_CONTENT: createUpdateMutation(contentModel),
             CREATE_CONTENT_FROM: createCreateFromMutation(contentModel)
@@ -46,7 +41,21 @@ const ContentForm = ({
         async data => {
             setLoading(true);
             const response = await createMutation({
-                variables: { data }
+                variables: { data },
+                update(cache, response) {
+                    if (response.data.content.error) {
+                        return;
+                    }
+
+                    // Prepend the newly created item to the content list.
+                    const data = cloneDeep(
+                        cache.readQuery<any>({
+                            query: LIST_CONTENT
+                        })
+                    );
+                    data.content.data = [response.data.content.data, ...data.content.data];
+                    cache.writeQuery({ query: LIST_CONTENT, data: data });
+                }
             });
             setLoading(false);
 
@@ -58,8 +67,6 @@ const ContentForm = ({
             const { id } = response.data.content.data;
             query.set("id", id);
             history.push({ search: query.toString() });
-            // This is a hack - replace data-list refreshes with directly updating the Apollo cache.
-            setTimeout(dataList.refresh, 500);
         },
         [contentModel.modelId]
     );
@@ -85,7 +92,17 @@ const ContentForm = ({
         async (id, data) => {
             setLoading(true);
             const response = await createFromMutation({
-                variables: { revision: id, data }
+                variables: { revision: id, data },
+                update(cache, response) {
+                    if (response.data.content.error) {
+                        return;
+                    }
+
+                    const data = cloneDeep(cache.readQuery<any>({ query: LIST_CONTENT }));
+                    const previousItemIndex = data.content.data.findIndex(item => item.id === id);
+                    data.content.data.splice(previousItemIndex, 1, response.data.content.data);
+                    cache.writeQuery({ query: LIST_CONTENT, data });
+                }
             });
             setLoading(false);
 
@@ -97,8 +114,6 @@ const ContentForm = ({
             const { id: revisionId } = response.data.content.data;
             query.set("id", revisionId);
             history.push({ search: query.toString() });
-            // This is a hack - replace data-list refreshes with directly updating the Apollo cache.
-            setTimeout(dataList.refresh, 500);
         },
         [contentModel.modelId]
     );
