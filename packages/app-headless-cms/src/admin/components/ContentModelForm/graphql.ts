@@ -87,7 +87,7 @@ export const createListQuery = model => {
 
     return gql`
         query list${ucFirstPluralizedModelId}($where: ${ucFirstModelId}ListWhereInput, $sort: [${ucFirstModelId}ListSorter], $limit: Int, $after: String, $before: String) {
-            list${ucFirstPluralizedModelId}(
+            content: list${ucFirstPluralizedModelId}(
                 where: $where
                 sort: $sort
                 limit: $limit
