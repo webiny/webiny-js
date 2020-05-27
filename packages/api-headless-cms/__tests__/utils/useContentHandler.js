@@ -18,7 +18,7 @@ import {
     createReadQuery,
     createCreateFromMutation,
     createUnpublishMutation
-} from "./useCmsHandler/graphql";
+} from "./useContentHandler/graphql";
 
 const database = new Database();
 
@@ -72,6 +72,10 @@ export default () => {
                             variables
                         }
                     });
+
+                    if (body.errors) {
+                        throw body.errors;
+                    }
 
                     const { data, error } = body.data.createContentModel;
                     if (error) {
