@@ -30,6 +30,9 @@ const plugin: CmsModelFieldToGraphQLPlugin = {
     read: {
         createTypeField({ field }) {
             const localeArg = "(locale: String)";
+            if (field.multipleValues) {
+                return `${field.fieldId}${localeArg}: [String]`;
+            }
             return `${field.fieldId}${localeArg}: String`;
         },
         createGetFilters({ field }) {
@@ -81,10 +84,16 @@ const plugin: CmsModelFieldToGraphQLPlugin = {
             };
         },
         createTypeField({ field }) {
-            return field.fieldId + ": CmsText";
+            if (field.multipleValues) {
+                return field.fieldId + ": CmsStringList";
+            }
+            return field.fieldId + ": CmsString";
         },
         createInputField({ field }) {
-            return field.fieldId + ": CmsTextInput";
+            if (field.multipleValues) {
+                return field.fieldId + ": CmsStringListInput";
+            }
+            return field.fieldId + ": CmsStringInput";
         }
     }
 };
