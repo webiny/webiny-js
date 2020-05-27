@@ -1,28 +1,13 @@
 import mdbid from "mdbid";
-import useCmsHandler from "./utils/useCmsHandler";
+import useContentHandler from "./utils/useContentHandler";
 import { locales } from "./mocks/I18NLocales";
 import mocks from "./mocks/indexesManagement";
-
-const CREATE_CONTENT_MODEL = /* GraphQL */ `
-    mutation CreateContentModel($data: CmsContentModelInput!) {
-        createContentModel(data: $data) {
-            data {
-                name
-            }
-            error {
-                message
-                data
-                code
-            }
-        }
-    }
-`;
 
 // This is an E2E test that validates that the "CmsContentEntrySearch" table is updated accordingly on the creation
 // and publishing of new content revisions. We are also checking GraphQL responses (create, list, publish) in order
 // to be sure the user sees the correct data when performing these actions.
 describe("Indexes Management test", () => {
-    const { environment, database, invoke } = useCmsHandler();
+    const { environment, database, invoke } = useContentHandler();
     const ids = { environment: mdbid(), contentModelGroup: mdbid() };
 
     beforeAll(async () => {
