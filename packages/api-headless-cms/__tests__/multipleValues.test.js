@@ -1,9 +1,9 @@
 import mdbid from "mdbid";
-import useCmsHandler from "./utils/useCmsHandler";
-import { locales } from "./mocks/I18NLocales";
+import useContentHandler from "./utils/useContentHandler";
+import mocks from "./mocks/multipleValues";
 
 describe("Multiple Values Test", () => {
-    const { database, environment } = useCmsHandler();
+    const { database, environment } = useContentHandler();
     const ids = { environment: mdbid(), contentModelGroup: mdbid() };
 
     beforeAll(async () => {
@@ -29,47 +29,7 @@ describe("Multiple Values Test", () => {
         const { content, createContentModel } = environment(ids.environment);
 
         const contentModel = await createContentModel({
-            data: {
-                name: "Product",
-                group: ids.contentModelGroup,
-                fields: [
-                    {
-                        _id: "vqk-UApan",
-                        fieldId: "title",
-                        label: {
-                            values: [
-                                {
-                                    locale: locales.en.id,
-                                    value: "Title"
-                                },
-                                {
-                                    locale: locales.de.id,
-                                    value: "Titel"
-                                }
-                            ]
-                        },
-                        type: "text"
-                    },
-                    {
-                        _id: "vqk-UApan",
-                        fieldId: "tags",
-                        multipleValues: true,
-                        label: {
-                            values: [
-                                {
-                                    locale: locales.en.id,
-                                    value: "Tags"
-                                },
-                                {
-                                    locale: locales.de.id,
-                                    value: "Stichworte"
-                                }
-                            ]
-                        },
-                        type: "text"
-                    }
-                ]
-            }
+            data: mocks.contentModel({ contentModelGroupId: ids.contentModelGroup })
         });
 
         expect(contentModel.fields[0].multipleValues).toBe(false);
@@ -79,60 +39,9 @@ describe("Multiple Values Test", () => {
         const products = await content("product");
 
         const product = await products.create({
-            data: {
-                title: {
-                    values: [
-                        {
-                            locale: locales.en.id,
-                            value: "Test Pen"
-                        },
-                        {
-                            locale: locales.de.id,
-                            value: "Test Kugelschreiber"
-                        }
-                    ]
-                },
-                tags: {
-                    values: [
-                        {
-                            locale: locales.en.id,
-                            value: ["Pen", "Pencil", "Eraser", "Sharpener"]
-                        },
-                        {
-                            locale: locales.de.id,
-                            value: ["Kugelschreiber", "Bleistift"]
-                        }
-                    ]
-                }
-            }
+            data: mocks.createProduct
         });
 
-        expect(product).toEqual({
-            id: product.id,
-            title: {
-                values: [
-                    {
-                        value: "Test Pen",
-                        locale: locales.en.id
-                    },
-                    {
-                        value: "Test Kugelschreiber",
-                        locale: locales.de.id
-                    }
-                ]
-            },
-            tags: {
-                values: [
-                    {
-                        value: ["Pen", "Pencil", "Eraser", "Sharpener"],
-                        locale: locales.en.id
-                    },
-                    {
-                        value: ["Kugelschreiber", "Bleistift"],
-                        locale: locales.de.id
-                    }
-                ]
-            }
-        });
+        expect(product).toEqual(mocks.createdProduct(product.id));
     });
 });
