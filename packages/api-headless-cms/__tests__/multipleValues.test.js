@@ -25,7 +25,7 @@ describe("Multiple Values Test", () => {
         });
     });
 
-    it("should update search catalog accordingly", async () => {
+    it("should be able to create and populate multiple-values fields", async () => {
         const { content, createContentModel } = environment(ids.environment);
 
         const contentModel = await createContentModel({
@@ -36,6 +36,23 @@ describe("Multiple Values Test", () => {
                     {
                         _id: "vqk-UApan",
                         fieldId: "title",
+                        label: {
+                            values: [
+                                {
+                                    locale: locales.en.id,
+                                    value: "Title"
+                                },
+                                {
+                                    locale: locales.de.id,
+                                    value: "Titel"
+                                }
+                            ]
+                        },
+                        type: "text"
+                    },
+                    {
+                        _id: "vqk-UApan",
+                        fieldId: "tags",
                         multipleValues: true,
                         label: {
                             values: [
@@ -55,25 +72,66 @@ describe("Multiple Values Test", () => {
             }
         });
 
-        expect(contentModel.fields[0].multipleValues).toBe(true);
+        expect(contentModel.fields[0].multipleValues).toBe(false);
+        expect(contentModel.fields[1].multipleValues).toBe(true);
 
         // 2. Create a new product entry.
         const products = await content("product");
 
-        let productRev1 = await products.create({
+        const product = await products.create({
             data: {
                 title: {
                     values: [
                         {
                             locale: locales.en.id,
-                            value: "Pen"
+                            value: "Test Pen"
                         },
                         {
                             locale: locales.de.id,
-                            value: "Kugelschreiber"
+                            value: "Test Kugelschreiber"
+                        }
+                    ]
+                },
+                tags: {
+                    values: [
+                        {
+                            locale: locales.en.id,
+                            value: ["Pen", "Pencil", "Eraser", "Sharpener"]
+                        },
+                        {
+                            locale: locales.de.id,
+                            value: ["Kugelschreiber", "Bleistift"]
                         }
                     ]
                 }
+            }
+        });
+
+        expect(product).toEqual({
+            id: product.id,
+            title: {
+                values: [
+                    {
+                        value: "Test Pen",
+                        locale: locales.en.id
+                    },
+                    {
+                        value: "Test Kugelschreiber",
+                        locale: locales.de.id
+                    }
+                ]
+            },
+            tags: {
+                values: [
+                    {
+                        value: ["Pen", "Pencil", "Eraser", "Sharpener"],
+                        locale: locales.en.id
+                    },
+                    {
+                        value: ["Kugelschreiber", "Bleistift"],
+                        locale: locales.de.id
+                    }
+                ]
             }
         });
     });
