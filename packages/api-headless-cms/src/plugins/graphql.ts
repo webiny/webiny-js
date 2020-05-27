@@ -3,6 +3,7 @@ import { merge } from "lodash";
 import gql from "graphql-tag";
 import cmsEnvironment from "./graphql/environment";
 import cmsEnvironmentAlias from "./graphql/environmentAlias";
+import cmsAccessToken from "./graphql/accessToken";
 import cmsInstall from "./graphql/install";
 
 import { emptyResolver } from "@webiny/commodo-graphql";
@@ -70,6 +71,7 @@ export default () => [
                 ${cmsInstall.typeDefs}
                 ${cmsEnvironment.typeDefs}
                 ${cmsEnvironmentAlias.typeDefs}
+                ${cmsAccessToken.typeDefs}
             `,
             resolvers: merge(
                 {
@@ -82,7 +84,8 @@ export default () => [
                 },
                 cmsInstall.resolvers,
                 cmsEnvironment.resolvers,
-                cmsEnvironmentAlias.resolvers
+                cmsEnvironmentAlias.resolvers,
+                cmsAccessToken.resolvers
             )
         }
     } as GraphQLSchemaPlugin
