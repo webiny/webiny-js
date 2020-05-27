@@ -1,5 +1,6 @@
 import * as React from "react";
 import ReactDOM from "react-dom";
+import { useHotkeys } from "react-hotkeyz";
 import { Input } from "@webiny/ui/Input";
 import { Grid, Cell } from "@webiny/ui/Grid";
 import I18NRichTextEditor from "./I18NRichTextEditor";
@@ -37,6 +38,15 @@ type ContentProps = {
 };
 
 const Content = ({ richText, onClose, values, onSubmit }: ContentProps) => {
+    useHotkeys({
+        zIndex: 121,
+        keys: {
+            esc: (event: KeyboardEvent) => {
+                event.stopPropagation();
+                onClose();
+            }
+        }
+    });
     const { getLocales } = useI18N();
     const [activeLocaleIndex, setActiveLocaleIndex] = React.useState(0);
 
