@@ -1,5 +1,7 @@
 import gql from "graphql-tag";
 import { CmsModelFieldToGraphQLPlugin } from "@webiny/api-headless-cms/types";
+import { i18nFieldType } from "./../graphqlTypes/i18nFieldType";
+import { i18nFieldInput } from "./../graphqlTypes/i18nFieldInput";
 
 const createListFilters = ({ field }) => {
     return `
@@ -55,24 +57,8 @@ const plugin: CmsModelFieldToGraphQLPlugin = {
         createSchema() {
             return {
                 typeDefs: gql`
-                    input CmsTextLocalizedInput {
-                        value: String
-                        locale: ID!
-                    }
-
-                    input CmsTextInput {
-                        values: [CmsTextLocalizedInput]
-                    }
-
-                    type CmsTextLocalized {
-                        value: String
-                        locale: ID!
-                    }
-
-                    type CmsText {
-                        value(locale: String): String
-                        values: [CmsTextLocalized]!
-                    }
+                    ${i18nFieldType("CmsText", "String")}
+                    ${i18nFieldInput("CmsText", "String")}
                 `,
                 resolvers: {
                     CmsText: {
@@ -85,15 +71,15 @@ const plugin: CmsModelFieldToGraphQLPlugin = {
         },
         createTypeField({ field }) {
             if (field.multipleValues) {
-                return field.fieldId + ": CmsStringList";
+                return field.fieldId + ": CmsTextList";
             }
-            return field.fieldId + ": CmsString";
+            return field.fieldId + ": CmsText";
         },
         createInputField({ field }) {
             if (field.multipleValues) {
-                return field.fieldId + ": CmsStringListInput";
+                return field.fieldId + ": CmsTextListInput";
             }
-            return field.fieldId + ": CmsStringInput";
+            return field.fieldId + ": CmsTextInput";
         }
     }
 };

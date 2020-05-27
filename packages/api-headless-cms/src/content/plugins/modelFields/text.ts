@@ -14,7 +14,7 @@ const plugin: CmsModelFieldToCommodoFieldPlugin = {
             })
         })(model);
     },
-    searchModel({ model, field, validation }) {
+    searchModel ({ model, field, validation }) {
         // Searching multiple-value fields is not supported.
         if (field.multipleValues) {
             return;

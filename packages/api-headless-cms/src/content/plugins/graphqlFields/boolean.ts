@@ -1,5 +1,7 @@
 import gql from "graphql-tag";
 import { CmsModelFieldToGraphQLPlugin } from "@webiny/api-headless-cms/types";
+import { i18nFieldType } from "./../graphqlTypes/i18nFieldType";
+import { i18nFieldInput } from "./../graphqlTypes/i18nFieldInput";
 
 const createListFilters = ({ field }) => {
     return `
@@ -25,6 +27,10 @@ const plugin: CmsModelFieldToGraphQLPlugin = {
         },
         createTypeField({ field }) {
             const localeArg = "(locale: String)";
+            if (field.multipleValues) {
+                return `${field.fieldId}${localeArg}: [Boolean]`;
+            }
+
             return `${field.fieldId}${localeArg}: Boolean`;
         }
     },
@@ -38,31 +44,23 @@ const plugin: CmsModelFieldToGraphQLPlugin = {
         createSchema() {
             return {
                 typeDefs: gql`
-                    input CmsBooleanLocalizedInput {
-                        value: Boolean
-                        locale: ID!
-                    }
-
-                    input CmsBooleanInput {
-                        values: [CmsBooleanLocalizedInput]
-                    }
-
-                    type CmsBooleanLocalized {
-                        value: Boolean
-                        locale: ID!
-                    }
-
-                    type CmsBoolean {
-                        value: Boolean
-                        values: [CmsBooleanLocalized]!
-                    }
+                    ${i18nFieldType("CmsBoolean", "Boolean")}
+                    ${i18nFieldInput("CmsBoolean", "Boolean")}
                 `
             };
         },
         createTypeField({ field }) {
+            if (field.multipleValues) {
+                return field.fieldId + ": CmsBooleanList";
+            }
+
             return field.fieldId + ": CmsBoolean";
         },
         createInputField({ field }) {
+            if (field.multipleValues) {
+                return field.fieldId + ": CmsBooleanListInput";
+            }
+
             return field.fieldId + ": CmsBooleanInput";
         }
     }
