@@ -5,12 +5,12 @@ export const i18nFieldType = (name, type) => /* GraphQL */ `
     }
 
     type ${name} {
-        value: ${type}
+        value(locale: String): ${type}
         values: [${name}Localized]!
     }
     
     type ${name}ListLocalized {
-        value: [${type}]
+        value(locale: String): [${type}]
         locale: ID!
     }
 
