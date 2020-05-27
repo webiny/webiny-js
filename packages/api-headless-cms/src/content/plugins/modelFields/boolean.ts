@@ -9,12 +9,17 @@ const plugin: CmsModelFieldToCommodoFieldPlugin = {
     dataModel({ model, field, validation, context }) {
         withFields({
             [field.fieldId]: i18nField({
-                field: boolean({ validation }),
+                field: boolean({ validation, list: field.multipleValues }),
                 context
             })
         })(model);
     },
     searchModel({ model, field, validation }) {
+        // Searching multiple-value fields is not supported.
+        if (field.multipleValues) {
+            return;
+        }
+
         withFields({
             [field.fieldId]: boolean({ validation })
         })(model);
