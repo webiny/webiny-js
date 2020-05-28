@@ -15,6 +15,7 @@ export type SchemaDefinitionFactory = (params: {
 }) => GraphQLSchemaModule | Promise<GraphQLSchemaModule>;
 
 export type GraphQLSchemaPlugin<T = Context> = Plugin & {
+    type: "graphql-schema";
     prepare?: (params: { context: T }) => Promise<void>;
     schema: GraphQLSchemaModule | SchemaDefinitionFactory;
     [key: string]: any;
@@ -28,6 +29,7 @@ export type ContextPlugin<T = Context> = Plugin & {
 };
 
 export type GraphQLScalarPlugin = Plugin & {
+    type: "graphql-scalar";
     scalar: GraphQLScalarType;
 };
 
