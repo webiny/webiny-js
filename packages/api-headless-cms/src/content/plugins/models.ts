@@ -3,6 +3,7 @@ import { pipe, withStorage, withCrudLogs, withSoftDelete, withFields } from "@we
 import { ContextPlugin } from "@webiny/graphql/types";
 import { Context } from "@webiny/api-plugin-commodo-db-proxy/types";
 import contentModel from "./models/contentModel.model";
+import cmsAccessToken from "../../plugins/models/accessToken.model";
 import environmentModel from "../../plugins/models/environment.model";
 import environmentModelAlias from "../../plugins/models/environmentAlias.model";
 import contentModelGroup from "./models/contentModelGroup.model";
@@ -37,7 +38,8 @@ export default () => {
             CmsEnvironmentAlias: environmentModelAlias({
                 createBase,
                 context
-            })
+            }),
+            CmsAccessToken: cmsAccessToken({ createBase, context })
         };
 
         // Before continuing with the rest of the models, we must load the environment and assign it to the context.
