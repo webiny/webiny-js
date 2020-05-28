@@ -19,15 +19,15 @@ export default ({ createBase, context }) =>
             token: string({
                 validation: validation.create("maxLength:64"),
                 value: generateToken()
-            })
+            }),
             // environments: ref({
             //     list: true,
             //     instanceOf: [context.models.CmsEnvironment]
             // })
-            // environments: ref({
-            //     list: true,
-            //     instanceOf: [context.models.CmsEnvironment, "environment"],
-            //     using: [context.models.CmsEnvironment2CmsAccessToken, "accessToken"]
-            // })
+            environments: ref({
+                list: true,
+                instanceOf: [context.models.CmsEnvironment, "environment"],
+                using: [context.models.CmsEnvironment2CmsAccessToken, "accessToken"]
+            })
         }))
     )(createBase());
