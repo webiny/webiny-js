@@ -24,7 +24,8 @@
     "@babel/core": "^7.5.5",
     "@babel/preset-env": "^7.5.5",
     "@babel/preset-typescript": "^7.8.3",
-    "@svgr/webpack": "^4.3.2"
+    "@svgr/webpack": "^4.3.2",
+    "@webiny/api-settings-manager": "^4.0.0-beta.1"
   },
   "publishConfig": {
     "access": "public",

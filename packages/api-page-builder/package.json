@@ -46,6 +46,7 @@
     "@babel/plugin-proposal-export-default-from": "^7.5.2",
     "@babel/preset-env": "^7.5.5",
     "@babel/preset-typescript": "^7.8.3",
+    "@webiny/api-settings-manager": "^4.0.0-beta.1",
     "flow-copy-source": "^2.0.2"
   },
   "publishConfig": {

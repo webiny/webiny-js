@@ -1,11 +1,14 @@
 import gql from "graphql-tag";
-import { emptyResolver, resolveGetSettings, resolveUpdateSettings } from "@webiny/commodo-graphql";
+import { emptyResolver, resolveUpdateSettings } from "@webiny/commodo-graphql";
 import { ListErrorResponse, ListResponse, ErrorResponse } from "@webiny/graphql";
 import { hasScope } from "@webiny/api-security";
 import mailchimpSettings from "./mailchimpSettings.model";
 import MailchimpApi from "./MailchimpApi";
 import { get } from "lodash";
-import { Context } from "@webiny/graphql/types";
+import { Context, ContextPlugin, GraphQLSchemaPlugin } from "@webiny/graphql/types";
+import { Context as SettingsManagerContext } from "@webiny/api-settings-manager/types";
+
+type SettingsContext = Context & SettingsManagerContext;
 
 export default () => [
     {
@@ -14,7 +17,7 @@ export default () => [
         apply({ models }) {
             models.MailchimpSettings = mailchimpSettings({ createBase: models.createBase });
         }
-    },
+    } as ContextPlugin,
     {
         name: "graphql-schema-mailchimp",
         type: "graphql-schema",
@@ -124,7 +127,14 @@ export default () => [
                         }
                     },
                     getSettings: hasScope("pb:settings")(
-                        resolveGetSettings(({ models }) => models.MailchimpSettings)
+                        async (_, args, context: SettingsContext) => {
+                            try {
+                                const data = await context.settingsManager.getSettings("mailchimp");
+                                return { data };
+                            } catch (err) {
+                                return new ErrorResponse(err);
+                            }
+                        }
                     )
                 },
                 MailchimpMutation: {
@@ -180,5 +190,5 @@ export default () => [
                 }
             }
         }
-    }
+    } as GraphQLSchemaPlugin
 ];

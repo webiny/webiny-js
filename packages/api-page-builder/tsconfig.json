@@ -3,6 +3,7 @@
   "references": [
     { "path": "../graphql" },
     { "path": "../api-security" },
+    { "path": "../api-settings-manager" },
     { "path": "../commodo" },
     { "path": "../commodo-graphql" },
     { "path": "../handler-ssr" },
