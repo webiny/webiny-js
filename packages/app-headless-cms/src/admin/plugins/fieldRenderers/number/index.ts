@@ -1,3 +1,4 @@
 import numberInput from "./numberInput";
+import numberInputs from "./numberInputs";
 
-export default [numberInput]
+export default [numberInput, numberInputs];

@@ -19,13 +19,13 @@ const style = {
 
 const plugin: CmsEditorFieldRendererPlugin = {
     type: "cms-editor-field-renderer",
-    name: "cms-editor-field-renderer-text-inputs",
+    name: "cms-editor-field-renderer-long-text-inputs",
     renderer: {
-        rendererName: "text-inputs",
-        name: t`Text Inputs`,
-        description: t`Renders a simple list of text inputs.`,
+        rendererName: "long-text-inputs",
+        name: t`Text Areas`,
+        description: t`Renders a simple list of text areas.`,
         canUse({ field }) {
-            return field.type === "text" && field.multipleValues && !field.predefinedValues;
+            return field.type === "long-text" && field.multipleValues && !field.predefinedValues;
         },
         render({ field, getBind, Label }) {
             const Bind = getBind();
@@ -43,6 +43,8 @@ const plugin: CmsEditorFieldRendererPlugin = {
                                     {bind => (
                                         <Input
                                             {...bind}
+                                            rows={5}
+                                            type="long-text"
                                             label={t`Value {number}`({ number: 1 })}
                                             placeholder={I18NValue({
                                                 value: field.placeholderText
@@ -55,11 +57,13 @@ const plugin: CmsEditorFieldRendererPlugin = {
                             {value.slice(1).map((item, index) => {
                                 const Bind = getBind(index + 1);
                                 return (
-                                    <Cell span={12} key={index+1}>
+                                    <Cell span={12} key={index + 1}>
                                         <Bind>
                                             {bind => (
                                                 <Input
                                                     {...bind}
+                                                    rows={5}
+                                                    type="long-text"
                                                     trailingIcon={{
                                                         icon: <DeleteIcon />,
                                                         onClick: bind.removeValue
