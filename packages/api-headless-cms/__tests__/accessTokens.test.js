@@ -10,6 +10,10 @@ const CREATE_ACCESS_TOKEN = /* GraphQL */ `
                     name
                     description
                     token
+                    # environments {
+                    #     id
+                    #     name
+                    # }
                 }
                 error {
                     code
@@ -53,6 +57,7 @@ const GET_ACCESS_TOKEN = /* GraphQL */ `
         }
     }
 `;
+
 const UPDATE_ACCESS_TOKEN = /* GraphQL */ `
     mutation updateAccessToken($id: ID!, $data: CmsAccessTokenUpdateInput!) {
         cms {
@@ -75,18 +80,28 @@ const DELETE_ACCESS_TOKEN = /* GraphQL */ `
 `;
 
 describe("Environments test", () => {
-    const { useApolloHandler } = createUtils();
+    const { /*useDatabase,*/ useApolloHandler } = createUtils();
+    // const { getCollection } = useDatabase();
     const { invoke } = useApolloHandler();
+    // const initialEnvironment = { id: mdbid() };
     const accessTokenInput = {
         name: "Access Token #1",
-        description: "description...",
-        token: "hhhxxxyyy"
+        description: "description..."
+        // environments: [initialEnvironment.id]
     };
     const newTokenName = "Access Token #1 (renamed)";
     let createdAccessToken;
-    let updatedAccessToken;
 
-    it("Should create an Access Token", async () => {
+    // beforeAll(async () => {
+    //     await getCollection("CmsEnvironment").insertOne({
+    //         id: initialEnvironment.id,
+    //         name: "Test Environment",
+    //         description: "... test env description ...",
+    //         createdFrom: null
+    //     });
+    // });
+
+    it.only("Should create an Access Token", async () => {
         let [{ errors, data }] = await invoke({
             body: {
                 query: CREATE_ACCESS_TOKEN,
@@ -95,12 +110,15 @@ describe("Environments test", () => {
                 }
             }
         });
-        if (errors) {
-            throw JSON.stringify(errors, null, 2);
+        if (errors || data.cms.createAccessToken.error) {
+            throw JSON.stringify(errors || data.cms.createAccessToken.error, null, 2);
         }
         createdAccessToken = data.cms.createAccessToken.data;
         expect(createdAccessToken).toMatchObject(accessTokenInput);
         expect(createdAccessToken.id).toBeTruthy();
+        expect(createdAccessToken.token).toBeTruthy();
+        // expect(createdAccessToken.environments).toBeTruthy();
+        // console.log(createdAccessToken.environments);
     });
 
     it("Should list access tokens", async () => {

@@ -17,8 +17,7 @@ export default {
             description: String
             token: String
             createdOn: DateTime
-            # environmentAliases: [CmsEnvironmentAlias]
-            # environments: [CmsEnvironment]
+            environments: [CmsEnvironment]
         }
 
         # Response types
@@ -36,14 +35,14 @@ export default {
         input CmsAccessTokenCreateInput {
             name: String
             description: String
-            # environmentAliases: [CmsEnvironmentAlias]
-            token: String
+            # token: String
+            environments: [ID]
         }
 
         input CmsAccessTokenUpdateInput {
             name: String
             description: String
-            # environmentAliases: [CmsEnvironmentAlias]
+            environments: [ID]
         }
 
         extend type CmsQuery {

@@ -1,22 +1,13 @@
 import { validation } from "@webiny/validation";
 import withChangedOnFields from "./withChangedOnFields";
-import {
-    pipe,
-    fields,
-    withFields,
-    setOnce,
-    string,
-    ref,
-    withName,
-    withHooks,
-    withProps
-} from "@webiny/commodo";
+import { pipe, withFields, string, ref, withName } from "@webiny/commodo";
+import crypto from "crypto";
 
-// id: ID
-// name: String
-// description: String
-// token: String
-// createdOn: DateTime
+const generateToken = (tokenLength = 48) =>
+    crypto
+        .randomBytes(Math.ceil(tokenLength / 2))
+        .toString("hex")
+        .slice(0, tokenLength);
 
 export default ({ createBase, context }) =>
     pipe(
@@ -25,40 +16,18 @@ export default ({ createBase, context }) =>
         withFields(() => ({
             name: string({ validation: validation.create("required,maxLength:100") }),
             description: string({ validation: validation.create("required,maxLength:100") }),
-            token: string({ validation: validation.create("required,maxLength:64") })
-            // environmentAliases: fields({
+            token: string({
+                validation: validation.create("maxLength:64"),
+                value: generateToken()
+            })
+            // environments: ref({
             //     list: true,
-            //     value: [],
-            //     instanceOf: withFields({
-            //         type: string({
-            //             validation: validation.create("required,in:error:warning:info:success"),
-            //             message: string(),
-            //             data: object(),
-            //             createdOn: date({ value: new Date() })
-            //         })
-            //     })()
+            //     instanceOf: [context.models.CmsEnvironment]
             // })
-
-            //   ref({
-            //     instanceOf: context.models.CmsEnvironment
+            // environments: ref({
+            //     list: true,
+            //     instanceOf: [context.models.CmsEnvironment, "environment"],
+            //     using: [context.models.CmsEnvironment2CmsAccessToken, "accessToken"]
             // })
-        })),
-        withProps({
-            // get environmentAliases() {
-            //     const { CmsEnvironmentAlias } = context.models;
-            //
-            //     return ["alias 1", "alias 2", "..."];
-            // },
-            // get environments() {
-            //     // return CmsEnvironmentAlias.findOne({
-            //     //     query: { environment: this.id }
-            //     // });
-            //
-            //     // return this.environmentAliases.then(environmentAlias => {
-            //     //     return environmentAlias && environmentAlias.isProduction === true;
-            //     // });
-            //
-            //     return ["env 1", "env 2", "..."];
-            // }
-        })
+        }))
     )(createBase());
