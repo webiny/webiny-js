@@ -77,12 +77,12 @@ const EditFieldDialog = ({ field, onSubmit, ...props }: EditFieldDialogProps) =>
                                 <Tab label={t`General`}>
                                     <GeneralTab
                                         form={form}
-                                        field={current}
+                                        field={form.data as CmsEditorField}
                                         fieldPlugin={fieldPlugin}
                                     />
                                 </Tab>
 
-                               {/* TODO: Add predefined values functionality.
+                                {/* TODO: Add predefined values functionality.
                                 {fieldPlugin.field.allowPredefinedValues &&
                                     typeof fieldPlugin.field.renderPredefinedValues ===
                                         "function" && (
@@ -109,7 +109,7 @@ const EditFieldDialog = ({ field, onSubmit, ...props }: EditFieldDialogProps) =>
                                 <Tab label={t`Appearance`}>
                                     <AppearanceTab
                                         form={form}
-                                        field={current}
+                                        field={form.data as CmsEditorField}
                                         fieldPlugin={fieldPlugin}
                                     />
                                 </Tab>
