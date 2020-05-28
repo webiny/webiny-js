@@ -35,6 +35,9 @@ export type InputProps = FormComponentProps &
 
         onKeyDown?: (e: React.SyntheticEvent<HTMLInputElement>) => any;
 
+        // A callback that gets triggered when the user presses the "Enter" key.
+        onEnter?: () => any;
+
         // CSS class name
         className?: string;
     };
@@ -101,6 +104,7 @@ export class Input extends React.Component<InputProps> {
             validation,
             icon,
             trailingIcon,
+            onEnter,
             ...props
         } = this.props;
 
@@ -113,6 +117,15 @@ export class Input extends React.Component<InputProps> {
             <React.Fragment>
                 <TextField
                     {...pick(props, Input.rmwcProps)}
+                    onKeyDown={(e, ...rest) => {
+                        if (typeof onEnter === "function" && e.key === "Enter") {
+                            onEnter();
+                        }
+
+                        if (typeof props.onKeyDown === "function") {
+                            return props.onKeyDown(e, ...rest);
+                        }
+                    }}
                     autoFocus={autoFocus}
                     textarea={Boolean(rows)}
                     value={inputValue}
