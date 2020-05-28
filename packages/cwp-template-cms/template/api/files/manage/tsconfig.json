@@ -1,3 +1,7 @@
 {
-  "extends": "../../../../../tsconfig"
+  "extends": "../../../../tsconfig",
+  "references": [
+    { "path": "../../../../packages/serverless-files" },
+    { "path": "../../../../packages/handler" }
+  ]
 }

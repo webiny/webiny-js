@@ -8,6 +8,7 @@ import mailchimpPlugins from "@webiny/api-mailchimp";
 import pageBuilderResolvers from "@webiny/api-plugin-page-builder-resolvers-mongodb";
 import pageBuilderPlugins from "@webiny/api-page-builder/plugins";
 import useSsrCacheTagsPlugins from "@webiny/api-page-builder/plugins/useSsrCacheTags";
+import settingsManagerPlugins from "@webiny/api-settings-manager/client";
 
 export const handler = createHandler(
     apolloServerPlugins({
@@ -18,6 +19,7 @@ export const handler = createHandler(
         }
     }),
     dbProxy({ functionName: process.env.DB_PROXY_FUNCTION }),
+    settingsManagerPlugins({ functionName: process.env.SETTINGS_MANAGER_FUNCTION }),
     securityServicePlugins({
         token: {
             expiresIn: process.env.JWT_TOKEN_EXPIRES_IN,

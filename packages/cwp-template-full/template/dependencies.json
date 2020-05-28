@@ -44,7 +44,8 @@
       "api/cms/*",
       "api/i18n/*",
       "api/pageBuilder",
-      "api/security/*"
+      "api/security/*",
+      "api/settingsManager"
     ]
   }
 }

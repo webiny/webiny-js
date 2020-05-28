@@ -42,7 +42,8 @@
       "api/files/*",
       "api/cms/*",
       "api/i18n/*",
-      "api/security/*"
+      "api/security/*",
+      "api/settingsManager"
     ]
   }
 }

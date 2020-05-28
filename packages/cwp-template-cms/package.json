@@ -12,7 +12,9 @@
   "dependencies": {
     "chalk": "^4.0.0",
     "fs-extra": "^9.0.0",
-    "uuid": "^7.0.3"
+    "load-json-file": "^6.2.0",
+    "uuid": "^7.0.3",
+    "write-json-file": "^4.3.0"
   },
   "adio": {
     "ignoreDirs": [
