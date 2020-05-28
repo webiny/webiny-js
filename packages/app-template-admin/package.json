@@ -1,6 +1,6 @@
 {
   "name": "@webiny/app-template-admin",
-  "version": "4.0.0-beta.2",
+  "version": "4.0.0-beta.3",
   "main": "index.js",
   "repository": {
     "type": "git",
@@ -19,9 +19,9 @@
     "@babel/runtime": "^7.5.5",
     "@webiny/app": "^4.0.0-beta.2",
     "@webiny/app-admin": "^4.0.0-beta.2",
-    "@webiny/app-i18n": "^4.0.0-beta.2",
+    "@webiny/app-i18n": "^4.0.0-beta.3",
     "@webiny/app-plugin-security-cognito": "^4.0.0-beta.2",
-    "@webiny/app-plugin-security-cognito-theme": "^4.0.0-beta.2",
+    "@webiny/app-plugin-security-cognito-theme": "^4.0.0-beta.3",
     "@webiny/app-security": "^4.0.0-beta.2",
     "@webiny/app-template": "^4.0.0-beta.2",
     "@webiny/react-router": "^4.0.0-beta.1",

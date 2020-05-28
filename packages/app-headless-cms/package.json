@@ -1,6 +1,6 @@
 {
   "name": "@webiny/app-headless-cms",
-  "version": "4.0.0-beta.2",
+  "version": "4.0.0-beta.3",
   "main": "index.js",
   "repository": {
     "type": "git",
@@ -24,7 +24,7 @@
     "@svgr/webpack": "^4.3.2",
     "@webiny/app": "^4.0.0-beta.2",
     "@webiny/app-admin": "^4.0.0-beta.2",
-    "@webiny/app-i18n": "^4.0.0-beta.2",
+    "@webiny/app-i18n": "^4.0.0-beta.3",
     "@webiny/app-security": "^4.0.0-beta.2",
     "@webiny/form": "^4.0.0-beta.1",
     "@webiny/plugins": "^4.0.0-beta.1",

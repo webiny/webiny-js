@@ -1,5 +1,7 @@
 import gql from "graphql-tag";
 import { CmsModelFieldToGraphQLPlugin } from "@webiny/api-headless-cms/types";
+import { i18nFieldType } from "./../graphqlTypes/i18nFieldType";
+import { i18nFieldInput } from "./../graphqlTypes/i18nFieldInput";
 
 const createListFilters = ({ field }) => {
     return `
@@ -43,6 +45,9 @@ const plugin: CmsModelFieldToGraphQLPlugin = {
         },
         createTypeField({ field }) {
             const localeArg = "(locale: String)";
+            if (field.multipleValues) {
+                return `${field.fieldId}${localeArg}: [String]`;
+            }
 
             return `${field.fieldId}${localeArg}: String`;
         }
@@ -57,109 +62,70 @@ const plugin: CmsModelFieldToGraphQLPlugin = {
         createSchema() {
             return {
                 typeDefs: gql`
-                    # dateTimeWithTimezone types
-                    input CmsDateTimeWithTzLocalizedInput {
-                        value: String
-                        locale: ID!
-                    }
-
-                    input CmsDateTimeWithTzInput {
-                        values: [CmsDateTimeWithTzLocalizedInput]
-                    }
-
-                    type CmsDateTimeWithTzLocalized {
-                        value: String
-                        locale: ID!
-                    }
-
-                    type CmsDateTimeWithTz {
-                        value: String
-                        values: [CmsDateTimeWithTzLocalized]!
-                    }
-
-                    # dateTimeWithoutTimezone types
-                    input CmsDateTimeLocalizedInput {
-                        value: String
-                        locale: ID!
-                    }
-
-                    input CmsDateTimeInput {
-                        values: [CmsDateTimeLocalizedInput]
-                    }
-
-                    type CmsDateTimeLocalized {
-                        value: String
-                        locale: ID!
-                    }
-
-                    type CmsDateTime {
-                        value: String
-                        values: [CmsDateTimeLocalized]!
-                    }
-
-                    # date types
-                    input CmsDateLocalizedInput {
-                        value: String
-                        locale: ID!
-                    }
-
-                    input CmsDateInput {
-                        values: [CmsDateLocalizedInput]
-                    }
-
-                    type CmsDateLocalized {
-                        value: String
-                        locale: ID!
-                    }
-
-                    type CmsDate {
-                        value: String
-                        values: [CmsDateLocalized]!
-                    }
-
-                    # time types
-                    input CmsTimeLocalizedInput {
-                        value: String
-                        locale: ID!
-                    }
-
-                    input CmsTimeInput {
-                        values: [CmsTimeLocalizedInput]
-                    }
-
-                    type CmsTimeLocalized {
-                        value: String
-                        locale: ID!
-                    }
-
-                    type CmsTime {
-                        value: String
-                        values: [CmsTimeLocalized]!
-                    }
+                    ${i18nFieldType("CmsDateTimeWithTz", "String")}
+                    ${i18nFieldInput("CmsDateTimeWithTz", "String")}
+                    ${i18nFieldType("CmsDateTime", "String")}
+                    ${i18nFieldInput("CmsDateTime", "String")}
+                    ${i18nFieldType("CmsDate", "String")}
+                    ${i18nFieldInput("CmsDate", "String")}
+                    ${i18nFieldType("CmsTime", "String")}
+                    ${i18nFieldInput("CmsTime", "String")}
                 `
             };
         },
         createTypeField({ field }) {
             switch (field.settings.type) {
                 case "dateTimeWithTimezone":
+                    if (field.multipleValues) {
+                        return field.fieldId + ": CmsDateTimeWithTzList";
+                    }
+
                     return field.fieldId + ": CmsDateTimeWithTz";
                 case "dateTimeWithoutTimezone":
+                    if (field.multipleValues) {
+                        return field.fieldId + ": CmsDateTimeList";
+                    }
+
                     return field.fieldId + ": CmsDateTime";
                 case "date":
+                    if (field.multipleValues) {
+                        return field.fieldId + ": CmsDateList";
+                    }
+
                     return field.fieldId + ": CmsDate";
                 case "time":
+                    if (field.multipleValues) {
+                        return field.fieldId + ": CmsTimeList";
+                    }
+
                     return field.fieldId + ": CmsTime";
             }
         },
         createInputField({ field }) {
             switch (field.settings.type) {
                 case "dateTimeWithTimezone":
+                    if (field.multipleValues) {
+                        return field.fieldId + ": CmsDateTimeWithTzListInput";
+                    }
+
                     return field.fieldId + ": CmsDateTimeWithTzInput";
                 case "dateTimeWithoutTimezone":
+                    if (field.multipleValues) {
+                        return field.fieldId + ": CmsDateTimeListInput";
+                    }
+
                     return field.fieldId + ": CmsDateTimeInput";
                 case "date":
+                    if (field.multipleValues) {
+                        return field.fieldId + ": CmsDateListInput";
+                    }
+
                     return field.fieldId + ": CmsDateInput";
                 case "time":
+                    if (field.multipleValues) {
+                        return field.fieldId + ": CmsTimeListInput";
+                    }
+
                     return field.fieldId + ": CmsTimeInput";
             }
         }
