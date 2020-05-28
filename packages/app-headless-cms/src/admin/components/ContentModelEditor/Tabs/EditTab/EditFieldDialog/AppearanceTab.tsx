@@ -31,6 +31,7 @@ const AppearanceTab = props => {
     ).filter(item => item.renderer.canUse({ field }));
 
     useEffect(() => {
+        // If the currently selected render plugin is no longer available, select the first available one.
         const currentlySelectedRenderAvailable = renderPlugins.find(
             item => item.renderer.rendererName === field.renderer.name
         );
