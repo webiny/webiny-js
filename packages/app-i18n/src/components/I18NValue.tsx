@@ -1,7 +1,8 @@
-import React from "react";
-import { Editor } from "slate-react";
-import { Value } from "slate";
+import React, { useMemo } from "react";
+import { Editable, withReact, Slate } from "slate-react";
+import { createEditor } from "slate";
 import { getPlugins } from "@webiny/plugins";
+import { pluginsToProps } from "./pluginsToProps";
 import {
     I18NStringValue,
     I18NObjectValue,
@@ -39,6 +40,8 @@ function getValue(valueObject?: string | I18NStringValue | I18NObjectValue): str
 }
 
 export function I18NValue(props: I18NValueProps): any {
+    const editor = useMemo(() => withReact(createEditor()), []);
+
     if (!props) {
         return "";
     }
@@ -63,7 +66,11 @@ export function I18NValue(props: I18NValueProps): any {
         editorPlugins = [...editorPlugins, ...props.editorPlugins];
     }
 
-    return <Editor readOnly plugins={editorPlugins} value={Value.fromJSON(value)} />;
+    return (
+        <Slate editor={editor} value={value} onChange={null}>
+            <Editable readOnly {...pluginsToProps(editorPlugins, { editor })} />
+        </Slate>
+    );
 }
 
 export default I18NValue;

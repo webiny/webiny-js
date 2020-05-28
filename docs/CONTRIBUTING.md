@@ -26,9 +26,10 @@ You can use `yarn commit` to commit via `commitizen` or you can commit manually,
 
 ### Pull Requests (PRs)
 
-When submitting a PR, please do not leave the PR title / body incomplete or empty. We are an open-source project, which means a lot of people will be contributing to it (hopefully ☺️), so we have to maintain a certain level of professionalism. 
+When submitting a PR, please do not leave the PR title / body incomplete or empty. We are an open-source project, which means a lot of people will be contributing to it (hopefully ☺️), so we have to maintain a certain level of professionalism.
 
 Try to make your PRs as informative as possible:
+
 - link the related issue you are resolving
 - add some info about how you've resolved the issue
 - if applicable, attach an image as well
@@ -37,7 +38,7 @@ For example:
 ![Snipaste_2020-04-19_20-10-44](https://user-images.githubusercontent.com/5121148/79717886-20ebe280-82db-11ea-9c23-f46e5ab01724.png)
 
 There's nothing nicer than a well-formed PR. 🤓
- 
+
 ## Repo overview
 
 Once you clone the repository, you will have a monorepo which consists of a bunch of different packages, located in the `/packages` directory.
@@ -81,13 +82,17 @@ Once you clone the repository, you will have a monorepo which consists of a bunc
 
 3. Run `yarn setup-repo`. This will setup all the necessary environment config files and build all packages to generate `dist` folders and TS declarations. You need to manually update the DB connection string, edit your `sample-project/.env.json` file.
 
-4. Deploy you API to use with local React apps by running `webiny deploy api` from the `sample-project` folder. Once deployed, it will automatically update you React apps' `.env.json` files with the necessary variables.
+4. Configure your MongoDB connection data in `sample-project/.env.json`. See https://docs.webiny.com/docs/get-started/quick-start/#3-setup-database-connection for more details.
 
-> NOTE: `webiny` should be run from the root of the Webiny project, and since `sample-project` folder is a `sandbox`, this is the place to run your `webiny` commands from.
+5. Deploy you API to use with local React apps by running `npx webiny deploy api --env=local` from the `sample-project` folder. Once deployed, it will automatically update you React apps' `.env.json` files with the necessary variables.
 
-5. Begin working on React apps by navigating to `sample-project/apps/{admin|site}` and run `yarn start`. React apps are regular `create-react-app` apps, slightly modified, but all the CRA rules apply.
+> IMPORTANT: `webiny` should be run from the root of the Webiny project, and since `sample-project` folder is a `sandbox`, this is the place to run your `webiny` commands from.
 
-6. Run `watch` on packages you are working on so that your changes are automatically built into the corresponding `dist` folder. React app build will automatically rebuild and hot-reload changes that happen in the `dist` folder of all related packages.
+> IMPORTANT: Within our repository, you should use `npx` to run Webiny CLI, for example: `npx webiny deploy api --env=local`. Why? Because `npx` will correctly resolve the CLI binary to the node_modules in the root of your repository.
+
+6. Begin working on React apps by navigating to `sample-project/apps/{admin|site}` and run `yarn start`. React apps are regular `create-react-app` apps, slightly modified, but all the CRA rules apply.
+
+7. Run `watch` on packages you are working on so that your changes are automatically built into the corresponding `dist` folder. React app build will automatically rebuild and hot-reload changes that happen in the `dist` folder of all related packages.
 
 The easiest way to run a watch is by running `lerna run watch --scope=your-scope --stream --parallel`. For more details visit the [official lerna filtering docs](https://github.com/lerna/lerna/tree/master/core/filter-options).
 
