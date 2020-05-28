@@ -240,6 +240,27 @@ module.exports = () => ({
                 }
             }
         },
+        filesSettings: {
+            watch: ["./files/settings/build"],
+            build: {
+                root: "./files/settings",
+                script: "yarn build"
+            },
+            deploy: {
+                component: "@webiny/serverless-function",
+                inputs: {
+                    region: process.env.AWS_REGION,
+                    code: "./files/settings/build",
+                    handler: "handler.handler",
+                    memory: 256,
+                    timeout: 30,
+                    env: {
+                        DB_PROXY_FUNCTION: "${databaseProxy.arn}",
+                        DEBUG: process.env.DEBUG
+                    }
+                }
+            }
+        },
         i18nGraphQL: {
             watch: ["./i18n/graphql/build"],
             build: {
@@ -374,7 +395,8 @@ module.exports = () => ({
                     env: {
                         ...apolloServiceEnv,
                         I18N_LOCALES_FUNCTION: "${i18nLocales.name}",
-                        CMS_DATA_MANAGER_FUNCTION: "${cmsDataManager.name}"
+                        CMS_DATA_MANAGER_FUNCTION: "${cmsDataManager.name}",
+                        FILES_SETTINGS_FUNCTION: "${filesSettings.name}"
                     }
                 }
             }
