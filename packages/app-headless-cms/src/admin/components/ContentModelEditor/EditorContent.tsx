@@ -1,4 +1,4 @@
-import React, { useRef } from "react";
+import React, { useRef, useState } from "react";
 import { css } from "emotion";
 import styled from "@emotion/styled";
 import { SplitView, LeftPanel, RightPanel } from "@webiny/app-admin/components/SplitView";
@@ -46,6 +46,8 @@ const formTabs = css({
 
 export default function EditorContent() {
     const tabsRef = useRef();
+    const [activeTabIndex, setActiveTabIndex] = useState(0);
+
     return (
         <ContentContainer>
             <SplitView>
@@ -66,15 +68,15 @@ export default function EditorContent() {
                     </LeftBarFieldList>
                 </LeftPanel>
                 <RightPanel span={8}>
-                    <Tabs className={formTabs} ref={tabsRef}>
+                    <Tabs className={formTabs} ref={tabsRef} onActivate={e => setActiveTabIndex(e)}>
                         <Tab label={"Edit"}>
-                            <EditTab />
+                            <EditTab activeTab={activeTabIndex === 0} />
                         </Tab>
                         <Tab label={"Preview"}>
-                            <PreviewTab />
+                            <PreviewTab activeTab={activeTabIndex === 1} />
                         </Tab>
                         <Tab label={"Indexes"}>
-                            <IndexesTab />
+                            <IndexesTab activeTab={activeTabIndex === 2} />
                         </Tab>
                     </Tabs>
                 </RightPanel>
