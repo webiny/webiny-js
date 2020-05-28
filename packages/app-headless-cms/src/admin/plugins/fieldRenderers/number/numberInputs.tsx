@@ -1,21 +1,11 @@
 import React from "react";
 import { CmsEditorFieldRendererPlugin } from "@webiny/app-headless-cms/types";
-import { I18NValue } from "@webiny/app-i18n/components";
 import { Input } from "@webiny/ui/Input";
-import { ButtonDefault } from "@webiny/ui/Button";
 import { i18n } from "@webiny/app/i18n";
-import { Cell, Grid } from "@webiny/ui/Grid";
 import { ReactComponent as DeleteIcon } from "@webiny/app-headless-cms/admin/icons/close.svg";
-import { css } from "emotion";
+import DynamicListMultipleValues from "./../DynamicListMultipleValues";
 
 const t = i18n.ns("app-headless-cms/admin/fields/text");
-
-const style = {
-    addButton: css({
-        textAlign: "center",
-        width: "100%"
-    })
-};
 
 const plugin: CmsEditorFieldRendererPlugin = {
     type: "cms-editor-field-renderer",
@@ -27,64 +17,25 @@ const plugin: CmsEditorFieldRendererPlugin = {
         canUse({ field }) {
             return field.type === "number" && field.multipleValues && !field.predefinedValues;
         },
-        render({ field, getBind, Label }) {
-            const Bind = getBind();
-            const FirstFieldBind = getBind(0);
-
+        render(props) {
             return (
-                <Bind>
-                    {({ appendValue, value }) => (
-                        <Grid>
-                            <Cell span={12}>
-                                <Label>
-                                    <I18NValue value={field.label} />
-                                </Label>
-                                <FirstFieldBind>
-                                    {bind => (
-                                        <Input
-                                            {...bind}
-                                            type="number"
-                                            label={t`Value {number}`({ number: 1 })}
-                                            placeholder={I18NValue({
-                                                value: field.placeholderText
-                                            })}
-                                        />
-                                    )}
-                                </FirstFieldBind>
-                            </Cell>
-
-                            {value.slice(1).map((item, index) => {
-                                const Bind = getBind(index + 1);
-                                return (
-                                    <Cell span={12} key={index + 1}>
-                                        <Bind>
-                                            {bind => (
-                                                <Input
-                                                    {...bind}
-                                                    type="number"
-                                                    trailingIcon={{
-                                                        icon: <DeleteIcon />,
-                                                        onClick: bind.removeValue
-                                                    }}
-                                                    label={t`Value {number}`({ number: index + 2 })}
-                                                    placeholder={I18NValue({
-                                                        value: field.placeholderText
-                                                    })}
-                                                />
-                                            )}
-                                        </Bind>
-                                    </Cell>
-                                );
-                            })}
-                            <Cell span={12} className={style.addButton}>
-                                <ButtonDefault
-                                    disabled={value[0] === undefined}
-                                    onClick={() => appendValue("")}
-                                >{t`+ Add value`}</ButtonDefault>
-                            </Cell>
-                        </Grid>
+                <DynamicListMultipleValues {...props}>
+                    {({ bind, index }) => (
+                        <Input
+                            {...bind.index}
+                            autoFocus
+                            onEnter={() => bind.field.appendValue("")}
+                            label={t`Value {number}`({ number: index + 1 })}
+                            type="number"
+                            trailingIcon={
+                                index > 0 && {
+                                    icon: <DeleteIcon />,
+                                    onClick: bind.index.removeValue
+                                }
+                            }
+                        />
                     )}
-                </Bind>
+                </DynamicListMultipleValues>
             );
         }
     }
