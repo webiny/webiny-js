@@ -1,4 +1,4 @@
-import { applyContextPlugins } from "@webiny/graphql/createSchema/contextPlugins";
+import { applyContextPlugins } from "@webiny/graphql";
 import models from "../plugins/models";
 
 export default () => [

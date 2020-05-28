@@ -1,16 +1,11 @@
 import * as React from "react";
 import { Plugin } from "@webiny/plugins/types";
 import { ReactElement, ReactNode } from "react";
-
 import { I18NStringValue, I18NValue } from "@webiny/app-i18n/types";
-import {
-    BindComponent,
-    FormChildrenFunctionParams,
-    Form,
-    BindComponentRenderProp
-} from "@webiny/form";
+import { BindComponent, FormChildrenFunctionParams, Form } from "@webiny/form";
 import { ApolloClient } from "apollo-client";
 import { IconPrefix, IconName } from "@fortawesome/fontawesome-svg-core";
+import Label from "@webiny/app-headless-cms/admin/components/ContentModelForm/ContentFormRender/components/Label";
 
 export type CmsEditorFieldTypePlugin = Plugin & {
     type: "cms-editor-field-type";
@@ -43,7 +38,11 @@ export type CmsEditorFieldRendererPlugin = Plugin & {
         name: React.ReactNode;
         description: React.ReactNode;
         canUse(props: { field: CmsEditorField }): boolean;
-        render(props: { field: CmsEditorField; getBind: () => any }): React.ReactNode;
+        render(props: {
+            field: CmsEditorField;
+            Label: typeof Label;
+            getBind: (index?: number) => any;
+        }): React.ReactNode;
     };
 };
 
