@@ -38,6 +38,58 @@ export default (
         }
     } as ContextPlugin,
     models(),
+    {
+        name: "context-cms-validate-access-token",
+        type: "context",
+        apply(context) {
+            console.log("Going in the promise...");
+
+            return new Promise(async (resolve, reject) => {
+                console.log("Inside the promise...");
+                try {
+                    console.log("Trying...");
+                    console.log(context);
+                    if (context.event && (context.cms.READ || context.cms.PREVIEW)) {
+                        console.log("1");
+                        const accessToken = context.event.headers["access-token"];
+                        console.log("2");
+                        const { CmsAccessToken } = context.models;
+
+                        console.log("3");
+                        const token = await CmsAccessToken.findOne({
+                            query: { token: accessToken }
+                        });
+                        console.log("4");
+
+                        console.log("Token = ");
+                        console.log(token);
+                        if (!token) {
+                            return reject("Access token is invalid!");
+                        }
+
+                        console.log("");
+                        console.log("");
+                        console.log("");
+                        console.log(context);
+                        console.log("");
+                        // console.log(JSON.stringify(context, null, 2));
+                        console.log("");
+                        console.log("");
+                        console.log("Hellooo        f");
+                        console.log("Hellooo        ");
+                        console.log("Hellooo        ");
+                        console.log("Hellooo        ");
+                        console.log("Hellooo        ");
+                        // throw 848128123;
+                    }
+                } catch (e) {
+                    console.log(e);
+                    return reject(e);
+                }
+                return resolve();
+            });
+        }
+    },
     graphql(options),
     modelFields,
     graphqlFields,
