@@ -44,4 +44,53 @@ describe("Multiple Values Test", () => {
 
         expect(product).toEqual(mocks.createdProduct(product.id));
     });
+
+    it("should not allow setting a multiple-values field as the entry title", async () => {
+        const { createContentModel, updateContentModel } = environment(ids.environment);
+
+        let error, product;
+
+        // Creating should not be allowed.
+        try {
+            await createContentModel({
+                data: mocks.cannotSetAsEntryTitle({
+                    contentModelGroupId: ids.contentModelGroup,
+                    titleFieldId: "someMultipleValueTextField"
+                })
+            });
+        } catch (e) {
+            error = e;
+        }
+
+        expect(error.message).toBe(
+            `Fields that accept multiple values cannot be used as the entry title (tried to use "someMultipleValueTextField" field)`
+        );
+
+        // Updating should not be allowed as well. Let's create a new content model and try to update it.
+        error = null;
+        try {
+            product = await createContentModel({
+                data: mocks.cannotSetAsEntryTitle({ contentModelGroupId: ids.contentModelGroup })
+            });
+        } catch (e) {
+            error = e;
+        }
+
+        expect(error).toBe(null);
+
+        try {
+            await updateContentModel({
+                id: product.id,
+                data: {
+                    titleFieldId: "someMultipleValueTextField"
+                }
+            });
+        } catch (e) {
+            error = e;
+        }
+
+        expect(error.message).toBe(
+            `Fields that accept multiple values cannot be used as the entry title (tried to use "someMultipleValueTextField" field)`
+        );
+    });
 });
