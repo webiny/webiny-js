@@ -13,7 +13,7 @@ const plugin: CmsEditorFieldRendererPlugin = {
         name: t`File Input`,
         description: t`Renders inputs for file.`,
         canUse({ field }) {
-            return field.type === "file" && field.multipleValues && !field.predefinedValues;
+            return field.type === "file" && !field.multipleValues && !field.predefinedValues;
         },
         render({ field, getBind }) {
             const Bind = getBind();

@@ -16,9 +16,9 @@ const plugin: CmsEditorFieldTypePlugin = {
         icon: <FileIcon />,
         validators: ["required"],
         allowMultipleValues: true,
-        allowPredefinedValues: false,
+        allowPredefinedValues: true,
         allowIndexes: {
-            singleValue: false,
+            singleValue: true,
             multipleValues: false
         },
         createField() {
@@ -26,7 +26,7 @@ const plugin: CmsEditorFieldTypePlugin = {
                 type: this.type,
                 validation: [],
                 settings: {
-                    type: "",
+                    type: "single",
                 },
                 renderer: {
                     name: ""

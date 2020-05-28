@@ -1,5 +1,6 @@
+import cloneDeep from "lodash.clonedeep";
 import { CmsModelFieldToCommodoFieldPlugin } from "@webiny/api-headless-cms/types";
-import { withFields, string, onSet, onGet, pipe } from "@webiny/commodo";
+import { withFields, string } from "@webiny/commodo";
 import { i18nField } from "./i18nFields";
 
 enum FILE_TYPE {
@@ -12,22 +13,32 @@ function getFileField({ field, validation, context }) {
     let cField;
     switch (type) {
         case FILE_TYPE.SINGLE_FILE:
-            cField = pipe(
-                onGet(value => {
-                    // Prepend `srcPrefix`
-                    const settings = context.files.getFileSettings();
-                    return settings.srcPrefix + value;
-                }),
-                onSet(value => {
+            cField = string({
+                validation,
+                async getStorageValue() {
+                    // Not using getValue method because it would load the model without need.
+                    const element = cloneDeep(this.current);
+
                     // Only save `key`
                     const settings = context.files.getFileSettings();
-                    if (value.includes(settings.srcPrefix)) {
-                        const [, key] = value.split(settings.srcPrefix);
+                    if (element.includes(settings.srcPrefix)) {
+                        const [, key] = element.split(settings.srcPrefix);
                         return key;
                     }
-                    return value;
-                })
-            )(string({ validation }));
+
+                    return element;
+                },
+                async setStorageValue(element) {
+                    const settings = context.files.getFileSettings();
+                    const fullSrc = settings.srcPrefix + element;
+
+                    this.setValue(fullSrc, {
+                        skipDifferenceCheck: true,
+                        forceSetAsClean: true
+                    });
+                    return this;
+                }
+            });
             break;
         case FILE_TYPE.MULTIPLE_FILE:
             cField = string({ validation });
