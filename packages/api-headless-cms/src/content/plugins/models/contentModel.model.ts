@@ -113,7 +113,7 @@ export default ({ createBase, context }: { createBase: Function; context: CmsCon
                     this.titleFieldId = null;
                     for (let i = 0; i < fields.length; i++) {
                         const field = fields[i];
-                        if (field.type === "text") {
+                        if (field.type === "text" && !field.multipleValues) {
                             this.titleFieldId = field.fieldId;
                             break;
                         }
@@ -124,6 +124,12 @@ export default ({ createBase, context }: { createBase: Function; context: CmsCon
                     const field = fields.find(item => item.fieldId === this.titleFieldId);
                     if (field.type !== "text") {
                         throw new Error("Only text fields can be used as an entry title.");
+                    }
+
+                    if (field.multipleValues) {
+                        throw new Error(
+                            `Fields that accept multiple values cannot be used as the entry title (tried to use "${this.titleFieldId}" field)`
+                        );
                     }
                 }
 
