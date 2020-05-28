@@ -3,73 +3,45 @@ import gql from "graphql-tag";
 const fields = `
     id
     name
-    slug
     description
-    environment {
-        id
-        name
+    token
+`;
+
+export const LIST_ACCESS_TOKENS = gql`
+    {
+        cms {
+            listAccessTokens {
+                data {
+                    ${fields}
+                }
+                error {
+                    code
+                    message
+                }
+            }
+        }
     }
 `;
 
-export const LIST_ENVIRONMENT_ALIASES = gql`
-    query listEnvironmentAliases(
-        $where: JSON
-        $sort: JSON
-        $search: CmsSearchInput
-        $limit: Int
-        $after: String
-        $before: String
-    ) {
+export const GET_ACCESS_TOKEN = gql`
+    query getAccessToken($id: ID!) {
         cms {
-            environmentAliases: listEnvironmentAliases(
-                where: $where
-                sort: $sort
-                search: $search
-                limit: $limit
-                after: $after
-                before: $before
-            ) {
+            getAccessToken(id: $id) {
                 data {
                     id
                     name
-                    slug
-                    createdOn
-                    environment {
-                        id
-                        name
-                    }
-                }
-                meta {
-                    cursors {
-                        next
-                        previous
-                    }
-                    hasNextPage
-                    hasPreviousPage
-                    totalCount
+                    description
+                    token
                 }
             }
         }
     }
 `;
 
-export const GET_ENVIRONMENT_ALIAS_BY_SLUG = gql`
-    query getEnvironmentAliasBySlug($slug: String) {
+export const CREATE_ACCESS_TOKEN = gql`
+    mutation createAccesstoken($data: CmsAccessTokenCreateInput!) {
         cms {
-            getEnvironmentAlias(where: { slug: $slug }) {
-                data {
-                    name
-                    id
-                }
-            }
-        }
-    }
-`;
-
-export const READ_ENVIRONMENT_ALIAS = gql`
-    query getEnvironmentAlias($id: ID!) {
-        cms {
-            environmentAlias: getEnvironmentAlias(id: $id){
+            createAccessToken(data: $data) {
                 data {
                     ${fields}
                 }
@@ -81,45 +53,25 @@ export const READ_ENVIRONMENT_ALIAS = gql`
         }
     }
 `;
-
-export const CREATE_ENVIRONMENT_ALIAS = gql`
-    mutation createEnvironmentAlias($data: CmsEnvironmentAliasInput!){
+export const UPDATE_ACCESS_TOKEN = gql`
+    mutation updateAccessToken($id: ID!, $data: CmsAccessTokenUpdateInput!) {
         cms {
-            environmentAlias: createEnvironmentAlias(data: $data) {
+            updateAccessToken(id: $id, data: $data) {
                 data {
                     ${fields}
                 }
                 error {
                     code
                     message
-                    data
                 }
             }
         }
     }
 `;
-
-export const UPDATE_ENVIRONMENT_ALIAS = gql`
-    mutation updateEnvironmentAlias($id: ID!, $data: CmsEnvironmentAliasInput!){
+export const DELETE_ACCESS_TOKEN = gql`
+    mutation deleteAccessToken($id: ID!) {
         cms {
-            environmentAlias: updateEnvironmentAlias(id: $id, data: $data) {
-                data {
-                    ${fields}
-                }
-                error {
-                    code
-                    message
-                    data
-                }
-            }
-        }
-    }
-`;
-
-export const DELETE_ENVIRONMENT_ALIAS = gql`
-    mutation deleteEnvironmentAlias($id: ID!) {
-        cms {
-            deleteEnvironmentAlias(id: $id) {
+            deleteAccessToken(id: $id) {
                 data
                 error {
                     code

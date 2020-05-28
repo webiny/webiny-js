@@ -8,7 +8,6 @@ import { useCrud } from "@webiny/app-admin/hooks/useCrud";
 import { i18n } from "@webiny/app/i18n";
 import { useApolloClient } from "react-apollo";
 import get from "lodash.get";
-import { GET_ENVIRONMENT_ALIAS_BY_SLUG } from "./graphql";
 import NameSlug from "../../components/NameSlug";
 import { AutoComplete } from "@webiny/ui/AutoComplete";
 
@@ -20,8 +19,9 @@ import {
     SimpleFormFooter,
     SimpleFormContent
 } from "@webiny/app-admin/components/SimpleForm";
+import { validation } from "@webiny/validation";
 
-const t = i18n.ns("app-headless-cms/admin/environmentAliases/form");
+const t = i18n.ns("app-headless-cms/admin/accessTokens/form");
 
 function EnvironmentAliasesForm() {
     const { form: crudForm } = useCrud();
@@ -39,65 +39,38 @@ function EnvironmentAliasesForm() {
                     <SimpleFormHeader title={data.name ? data.name : t`New Access Token`} />
                     <SimpleFormContent>
                         <Grid>
-                            {/*<NameSlug*/}
-                            {/*    newEntry={!crudForm.id}*/}
-                            {/*    Bind={Bind}*/}
-                            {/*    setValue={setValue}*/}
-                            {/*    slug={{*/}
-                            {/*        description: t`Will be used as part of the GraphQL API URL.`*/}
-                            {/*    }}*/}
-                            {/*    validateSlugUniqueness={async () => {*/}
-                            {/*        if (data.id) {*/}
-                            {/*            return;*/}
-                            {/*        }*/}
-
-                            {/*        const getEnvironmentAliasBySlug = await apolloClient.query({*/}
-                            {/*            query: GET_ENVIRONMENT_ALIAS_BY_SLUG,*/}
-                            {/*            variables: {*/}
-                            {/*                slug: data.slug*/}
-                            {/*            }*/}
-                            {/*        });*/}
-
-                            {/*        const existingEnvironmentAlias = get(*/}
-                            {/*            getEnvironmentAliasBySlug,*/}
-                            {/*            "data.cms.getEnvironmentAlias.data"*/}
-                            {/*        );*/}
-
-                            {/*        if (existingEnvironmentAlias) {*/}
-                            {/*            throw new Error(*/}
-                            {/*                t`Environment with slug "{slug}" already exists.`({*/}
-                            {/*                    slug: data.slug*/}
-                            {/*                })*/}
-                            {/*            );*/}
-                            {/*        }*/}
-                            {/*    }}*/}
-                            {/*/>*/}
-                            {/*<Cell span={12}>*/}
-                            {/*    <Bind name="description">*/}
-                            {/*        {props => (*/}
-                            {/*            <Input*/}
-                            {/*                {...props}*/}
-                            {/*                rows={4}*/}
-                            {/*                maxLength={200}*/}
-                            {/*                characterCount*/}
-                            {/*                label={t`Description`}*/}
-                            {/*            />*/}
-                            {/*        )}*/}
-                            {/*    </Bind>*/}
-                            {/*</Cell>*/}
-                            {/*<Cell span={12}>*/}
-                            {/*    <Bind name="environment">*/}
-                            {/*        {props => (*/}
-                            {/*            <AutoComplete*/}
-                            {/*                {...props}*/}
-                            {/*                placeholder={t`No environment selected.`}*/}
-                            {/*                label={t`Environment`}*/}
-                            {/*                options={environmentsOptions}*/}
-                            {/*                description={t`Choose an existing environment to which this alias will point to.`}*/}
-                            {/*            />*/}
-                            {/*        )}*/}
-                            {/*    </Bind>*/}
-                            {/*</Cell>*/}
+                            <Cell span={12}>
+                                <Bind
+                                    name="name"
+                                    validators={validation.create("required,maxLength:100")}
+                                >
+                                    <Input label={t`Name`} />
+                                </Bind>
+                            </Cell>
+                            <Cell span={12}>
+                                <Bind name="description">
+                                    {props => (
+                                        <Input
+                                            {...props}
+                                            rows={4}
+                                            maxLength={100}
+                                            characterCount
+                                            label={t`Description`}
+                                        />
+                                    )}
+                                </Bind>
+                            </Cell>
+                            <Cell span={12}>
+                                <Bind name="token">
+                                    <Input disabled label={t`Token`} />
+                                </Bind>
+                            </Cell>
+                            <Cell span={12}>
+                                <SimpleFormHeader title={t`Environments`} />
+                                <div>(to be continued)</div>
+                                <div>(to be continued)</div>
+                                <div>(to be continued)</div>
+                            </Cell>
                         </Grid>
                     </SimpleFormContent>
                     <SimpleFormFooter>

@@ -5,28 +5,28 @@ import AccessTokensDataList from "./AccessTokensDataList";
 import AccessTokensForm from "./AccessTokensForm";
 import { CrudProvider } from "@webiny/app-admin/contexts/Crud";
 import {
-    READ_ENVIRONMENT_ALIAS,
-    LIST_ENVIRONMENT_ALIASES,
-    CREATE_ENVIRONMENT_ALIAS,
-    UPDATE_ENVIRONMENT_ALIAS,
-    DELETE_ENVIRONMENT_ALIAS
+    GET_ACCESS_TOKEN,
+    LIST_ACCESS_TOKENS,
+    CREATE_ACCESS_TOKEN,
+    UPDATE_ACCESS_TOKEN,
+    DELETE_ACCESS_TOKEN
 } from "./graphql";
 
 function EnvironmentAliases() {
     return (
         <CrudProvider
             delete={{
-                mutation: DELETE_ENVIRONMENT_ALIAS
+                mutation: DELETE_ACCESS_TOKEN
             }}
-            read={READ_ENVIRONMENT_ALIAS}
+            read={GET_ACCESS_TOKEN}
             create={{
-                mutation: CREATE_ENVIRONMENT_ALIAS
+                mutation: CREATE_ACCESS_TOKEN
             }}
             update={{
-                mutation: UPDATE_ENVIRONMENT_ALIAS
+                mutation: UPDATE_ACCESS_TOKEN
             }}
             list={{
-                query: LIST_ENVIRONMENT_ALIASES,
+                query: LIST_ACCESS_TOKENS,
                 variables: { sort: { savedOn: -1 } }
             }}
         >
