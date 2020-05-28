@@ -69,6 +69,7 @@ const Field = props => {
                 <Typography use={"subtitle1"}>{getValue(field.label)} </Typography>
                 <Typography use={"caption"}>
                     {fieldPlugin && fieldPlugin.field.label}{" "}
+                    {field.multipleValues && <>({t`multiple values`})</>}
                     {field.fieldId === data.titleFieldId && <>({t`entry title`})</>}
                 </Typography>
             </Info>
