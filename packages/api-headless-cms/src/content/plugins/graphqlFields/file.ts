@@ -57,22 +57,9 @@ const plugin: CmsModelFieldToGraphQLPlugin = {
         createSchema() {
             return {
                 typeDefs: gql`
-                    # TODO: Not sure that's how it should be done
-                    type File @key(fields: "id") {
-                        id: ID
-                        key: String
-                        name: String
-                        size: Int
-                        type: String
-                        src: String
-                        tags: [String]
-                        meta: JSON
-                        createdOn: DateTime
-                    }
-
                     # single file types
                     input CmsFileSingleLocalizedInput {
-                        value: RefInput
+                        value: String
                         locale: ID!
                     }
 
@@ -81,18 +68,18 @@ const plugin: CmsModelFieldToGraphQLPlugin = {
                     }
 
                     type CmsFileSingleLocalized {
-                        value: File
+                        value: String
                         locale: ID!
                     }
 
                     type CmsFileSingle {
-                        value: File
+                        value: String
                         values: [CmsFileSingleLocalized]!
                     }
 
                     # multiple file types
                     input CmsFileMultipleLocalizedInput {
-                        value: [RefInput]
+                        value: [String]
                         locale: ID!
                     }
 
@@ -101,12 +88,12 @@ const plugin: CmsModelFieldToGraphQLPlugin = {
                     }
 
                     type CmsFileMultipleLocalized {
-                        value: [File]
+                        value: [String]
                         locale: ID!
                     }
 
                     type CmsFileMultiple {
-                        value: File
+                        value: ID
                         values: [CmsFileMultipleLocalized]!
                     }
                 `

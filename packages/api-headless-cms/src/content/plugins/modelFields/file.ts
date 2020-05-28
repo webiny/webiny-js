@@ -1,5 +1,5 @@
 import { CmsModelFieldToCommodoFieldPlugin } from "@webiny/api-headless-cms/types";
-import { withFields } from "@webiny/commodo";
+import { withFields, string, onSet, onGet, pipe } from "@webiny/commodo";
 import { i18nField } from "./i18nFields";
 
 enum FILE_TYPE {
@@ -7,15 +7,30 @@ enum FILE_TYPE {
     MULTIPLE_FILE = "multiple"
 }
 
-function getFileField({ context, field, validation }) {
+function getFileField({ field, validation, context }) {
     const type: FILE_TYPE = field.settings.type;
     let cField;
     switch (type) {
         case FILE_TYPE.SINGLE_FILE:
-            cField = context.commodo.fields.id();
+            cField = pipe(
+                onGet(value => {
+                    // Prepend `srcPrefix`
+                    const settings = context.files.getFileSettings();
+                    return settings.srcPrefix + value;
+                }),
+                onSet(value => {
+                    // Only save `key`
+                    const settings = context.files.getFileSettings();
+                    if (value.includes(settings.srcPrefix)) {
+                        const [, key] = value.split(settings.srcPrefix);
+                        return key;
+                    }
+                    return value;
+                })
+            )(string({ validation }));
             break;
         case FILE_TYPE.MULTIPLE_FILE:
-            cField = context.commodo.fields.id();
+            cField = string({ validation });
             break;
     }
 
@@ -29,14 +44,14 @@ const plugin: CmsModelFieldToCommodoFieldPlugin = {
     dataModel({ model, field, validation, context }) {
         withFields({
             [field.fieldId]: i18nField({
-                field: getFileField({ context, field, validation }),
+                field: getFileField({ field, validation, context }),
                 context
             })
         })(model);
     },
     searchModel({ model, field, context }) {
         withFields({
-            [field.fieldId]: getFileField({ context, field, validation: false })
+            [field.fieldId]: getFileField({ field, validation: false, context })
         })(model);
     }
 };
