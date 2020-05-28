@@ -27,6 +27,9 @@
     "@svgr/webpack": "^4.3.2",
     "@webiny/api-settings-manager": "^4.0.0-beta.1"
   },
+  "peerDependencies": {
+    "@webiny/graphql": "^4.0.0-beta.0"
+  },
   "publishConfig": {
     "access": "public",
     "directory": "dist"
