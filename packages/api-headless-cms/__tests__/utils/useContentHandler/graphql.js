@@ -38,8 +38,9 @@ const createFieldsList = contentModel => {
 
 export const CREATE_CONTENT_MODEL = /* GraphQL */ `
     mutation CreateContentModel($data: CmsContentModelInput!) {
-        createContentModel(data: $data) {
+        content: createContentModel(data: $data) {
             data {
+                id
                 name
                 fields {
                     _id
@@ -47,11 +48,26 @@ export const CREATE_CONTENT_MODEL = /* GraphQL */ `
                     multipleValues
                 }
             }
-            error {
-                message
-                data
-                code
+            error ${ERROR_FIELD}
+        }
+    }
+`;
+
+export const UPDATE_CONTENT_MODEL = /* GraphQL */ `
+    mutation UpdateContentModel($id: ID!, $data: CmsContentModelInput!) {
+        content: updateContentModel(id: $id, data: $data) {
+            data {
+                id
+                name
+                titleFieldId
+                fields {
+                      _id
+                    fieldId
+                    multipleValues
+                }
+                layout
             }
+            error ${ERROR_FIELD}
         }
     }
 `;
@@ -81,7 +97,7 @@ export const FIELDS_FIELDS = `
 
 export const GET_CONTENT_MODEL_BY_MODEL_ID = /* GraphQL */ `
     query getContentByModelId($modelId: String) {
-        getContentModel(where: { modelId: $modelId }) {
+        content: getContentModel(where: { modelId: $modelId }) {
             data {
                 id
                 modelId

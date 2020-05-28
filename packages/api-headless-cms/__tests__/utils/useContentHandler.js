@@ -1,14 +1,17 @@
 import { createHandler } from "@webiny/handler";
 import headlessCmsHandler from "@webiny/api-headless-cms/content";
+import get from "lodash/get";
 import neDb from "@webiny/api-plugin-commodo-nedb";
 import { Database } from "@commodo/fields-storage-nedb";
 import securityServicePlugins from "@webiny/api-security/plugins/service";
 import i18n from "@webiny/api-i18n/plugins/i18n";
 import i18nLocales from "../mocks/I18NLocales";
+import getData from "./useContentHandler/getData";
 import { dataManagerPlugins } from "../mocks/dataManagerClient";
 import {
     GET_CONTENT_MODEL_BY_MODEL_ID,
     CREATE_CONTENT_MODEL,
+    UPDATE_CONTENT_MODEL,
     createCreateMutation,
     createListQuery,
     createDeleteMutation,
@@ -73,16 +76,18 @@ export default () => {
                         }
                     });
 
-                    if (body.errors) {
-                        throw body.errors;
-                    }
+                    return getData(body);
+                },
 
-                    const { data, error } = body.data.createContentModel;
-                    if (error) {
-                        throw error;
-                    }
+                async updateContentModel(variables) {
+                    const [body] = await environmentApi.invoke({
+                        body: {
+                            query: UPDATE_CONTENT_MODEL,
+                            variables
+                        }
+                    });
 
-                    return data;
+                    return getData(body);
                 },
                 async content(modelId) {
                     const [body] = await environmentApi.invoke({
@@ -105,16 +110,7 @@ export default () => {
                             }
                         });
 
-                        if (body.errors) {
-                            throw body.errors;
-                        }
-
-                        const { data, error } = body.data.content;
-                        if (error) {
-                            throw error;
-                        }
-
-                        return data;
+                        return getData(body);
                     };
 
                     return {
