@@ -78,7 +78,7 @@ const Field = props => {
                 <Menu className={menuStyles} handle={<IconButton icon={<MoreVerticalIcon />} />}>
                     {plugins.map(pl => React.cloneElement(pl.render(), { key: pl.name }))}
                     <MenuItem
-                        disabled={field.type !== "text"}
+                        disabled={field.multipleValues || field.type !== "text"}
                         onClick={async () => {
                             const response = await setData(data => {
                                 data.titleFieldId = field.fieldId;
