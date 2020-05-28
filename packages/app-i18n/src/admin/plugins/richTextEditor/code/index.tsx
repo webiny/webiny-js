@@ -1,19 +1,10 @@
 import * as React from "react";
 import { css } from "emotion";
 import { isKeyHotkey } from "is-hotkey";
-import { Editor } from "slate";
 import { ReactComponent as FormatCodeIcon } from "@webiny/app-i18n/admin/assets/icons/format_code.svg";
 import { I18NInputRichTextEditorPlugin } from "@webiny/app-i18n/types";
 
-const isBoldHotkey = isKeyHotkey("mod+`");
-
-const hasMark = (value, type) => {
-    return Boolean(value.activeMarks.find(mark => mark.type === type));
-};
-
-const onClickMark = (type, editor, onChange) => {
-    editor.change(change => onChange(change.toggleMark(type)));
-};
+const isCodeHotkey = isKeyHotkey("mod+`");
 
 const mark = "code";
 
@@ -30,13 +21,11 @@ const plugin: I18NInputRichTextEditorPlugin = {
     plugin: {
         name: "code",
         menu: {
-            render({ MenuButton, editor, onChange }) {
-                const isActive = hasMark(editor.value, mark);
-
+            render({ MenuButton, editor }) {
                 return (
                     <MenuButton
-                        onClick={() => onClickMark(mark, editor, onChange)}
-                        active={isActive}
+                        onClick={() => editor.toggleMark(mark)}
+                        active={editor.hasMark(mark)}
                     >
                         <FormatCodeIcon />
                     </MenuButton>
@@ -44,9 +33,9 @@ const plugin: I18NInputRichTextEditorPlugin = {
             }
         },
         editor: {
-            onKeyDown(event: React.SyntheticEvent<KeyboardEvent>, editor: Editor, next: Function) {
+            onKeyDown({ event, editor }, next) {
                 // Decide what to do based on the key code...
-                if (isBoldHotkey(event)) {
+                if (isCodeHotkey(event)) {
                     event.preventDefault();
                     editor.toggleMark(mark);
                     return true;
@@ -54,16 +43,16 @@ const plugin: I18NInputRichTextEditorPlugin = {
 
                 return next();
             },
-            renderMark(props, next) {
-                if (props.mark.type === mark) {
+            renderLeaf({ leaf, attributes, children }) {
+                if (leaf[mark] === true) {
                     return (
-                        <code className={codeStyle} {...props.attributes}>
-                            {props.children}
+                        <code className={codeStyle} {...attributes}>
+                            {children}
                         </code>
                     );
                 }
 
-                return next();
+                return children;
             }
         }
     }

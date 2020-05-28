@@ -3,6 +3,8 @@ import styled from "@emotion/styled";
 import { css } from "emotion";
 import { getLinkRange, TYPE } from "./utils";
 import { Elevation } from "@webiny/ui/Elevation";
+import { useSlate } from "slate-react";
+import { Editor } from "slate";
 
 const Tooltip = styled("span")({
     display: "flex",
@@ -44,10 +46,18 @@ const getSelectionRect = () => {
     return range.getBoundingClientRect();
 };
 
-const LinkTooltip = ({ editor, onChange, activatePlugin }) => {
+const LinkTooltip = ({ activatePlugin }) => {
+    return null;
+
+    /*const editor = useSlate();
     const menuRef = useRef(null);
     const menu = menuRef.current;
-    const link = editor.value.inlines.find(inline => inline.type === "link");
+
+    const inlines = Editor.nodes(editor, {
+        match: n => Editor.isInline(editor, n)
+    });
+
+    const link = inlines.find(inline => inline[0].type === "link");
     const { selection } = editor.value;
 
     useEffect(() => {
@@ -99,7 +109,7 @@ const LinkTooltip = ({ editor, onChange, activatePlugin }) => {
         <Tooltip ref={menuRef} style={{ display: "none" }}>
             <Elevation className={tooltipInner} z={1}>
                 <span>
-                    Link: {/* eslint-disable-next-line react/jsx-no-target-blank */}
+                    Link: {/!* eslint-disable-next-line react/jsx-no-target-blank *!/}
                     <a href={href} target={"_blank"}>
                         {href.length > 50 ? compressLink(href) : href}
                     </a>
@@ -107,7 +117,7 @@ const LinkTooltip = ({ editor, onChange, activatePlugin }) => {
                 | <a onClick={activateLink}>Change</a> | <a onClick={removeLink}>Remove</a>
             </Elevation>
         </Tooltip>
-    );
+    );*/
 };
 
 export default LinkTooltip;
