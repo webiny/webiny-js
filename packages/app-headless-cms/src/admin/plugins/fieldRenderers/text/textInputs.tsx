@@ -55,7 +55,7 @@ const plugin: CmsEditorFieldRendererPlugin = {
                             {value.slice(1).map((item, index) => {
                                 const Bind = getBind(index + 1);
                                 return (
-                                    <Cell span={12} key={index+1}>
+                                    <Cell span={12} key={index + 1}>
                                         <Bind>
                                             {bind => (
                                                 <Input
@@ -76,6 +76,7 @@ const plugin: CmsEditorFieldRendererPlugin = {
                             })}
                             <Cell span={12} className={style.addButton}>
                                 <ButtonDefault
+                                    disabled={value[0] === undefined}
                                     onClick={() => appendValue("")}
                                 >{t`+ Add value`}</ButtonDefault>
                             </Cell>

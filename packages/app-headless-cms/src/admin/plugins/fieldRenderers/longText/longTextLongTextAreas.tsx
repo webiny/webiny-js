@@ -80,6 +80,7 @@ const plugin: CmsEditorFieldRendererPlugin = {
                             })}
                             <Cell span={12} className={style.addButton}>
                                 <ButtonDefault
+                                    disabled={value[0] === undefined}
                                     onClick={() => appendValue("")}
                                 >{t`+ Add value`}</ButtonDefault>
                             </Cell>
