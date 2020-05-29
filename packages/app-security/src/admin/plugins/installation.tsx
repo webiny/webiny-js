@@ -94,21 +94,27 @@ const Install = ({ onInstalled }) => {
         }
 
         if(subscribed) {
-            fetch (
-                'https://app.mailerlite.com/webforms/submit/g9f1i1?fields%5Bemail%5D=' +
-                  encodeURIComponent (form.email) +
-                  '&ml-submit=1&ajax=1',
-                {
-                  method: 'GET',
-                  headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded',
-                  },
-                }
-              );
+            try {
+                await fetch (
+                    'https://app.mailerlite.com/webforms/submit/g9f1i1?fields%5Bemail%5D=' +
+                        encodeURIComponent(form.email) +
+                    '&ml-submit=1&ajax=1',
+                    {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    }
+                )               
+            } catch (err) {
+                setError("Unable to subscribe you to the newsletter "+ err);
+            }
         }
 
         onInstalled();
     }, []);
+    
+    const privacyPolicyLink = <a href="https://www.webiny.com/privacy-policy">privacy policy</a>;
 
     return (
         <Form onSubmit={onSubmit} submitOnEnter>
@@ -175,10 +181,10 @@ const Install = ({ onInstalled }) => {
                                 <Grid>
                                     <Cell span={12}>
                                         <Bind name="subscribed">
-                                            <Checkbox label={t`Subscribe to Newsletter`} />
+                                            <Checkbox label={<span>I want to receive updates on product improvements and new features. Doing so I accept Webiny's {privacyPolicyLink}.</span> }/>
                                         </Bind>
                                     </Cell>
-                                </Grid>                                    
+                                </Grid>
                             )}
                     </SimpleFormContent>
                     <SimpleFormFooter>
