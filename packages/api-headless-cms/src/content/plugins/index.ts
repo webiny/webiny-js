@@ -50,12 +50,14 @@ export default (
                     console.log("Trying...");
                     console.log(context);
                     if (context.event && (context.cms.READ || context.cms.PREVIEW)) {
+                        // TODO refactor this: move context.event inside
                         console.log("1");
                         const accessToken = context.event.headers["access-token"];
                         console.log("2");
                         const { CmsAccessToken } = context.models;
 
                         console.log("3");
+                        console.log(options.environment);
                         const token = await CmsAccessToken.findOne({
                             query: { token: accessToken }
                         });
@@ -66,7 +68,15 @@ export default (
                         if (!token) {
                             return reject("Access token is invalid!");
                         }
-
+                        const allowedEnvironments = await token.environments;
+                        const currentEnvironment = context.cms.getEnvironment();
+                        console.log(allowedEnvironments);
+                        console.log(currentEnvironment);
+                        if (!allowedEnvironments.find(env => env.id === currentEnvironment.id)) {
+                            return reject(
+                                `Your Token cannot access environment ${currentEnvironment.name}`
+                            );
+                        }
                         console.log("");
                         console.log("");
                         console.log("");
