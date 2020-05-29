@@ -12,49 +12,55 @@ import {
     DialogActions,
     DialogButton
 } from "@webiny/ui/Dialog";
-import { getLinkRange, isLink, TYPE } from "./utils";
 import { validation } from "@webiny/validation";
+import { Editor, Transforms, Range } from "slate";
 
 const LinkDialog = props => {
-    const { open, closeDialog, activePlugin } = props;
+    const { editor, open, closeDialog, activePlugin } = props;
+
+    if (activePlugin) {
+        Transforms.select(editor, activePlugin.selection);
+    }
 
     let linkData = null;
-    if (activePlugin) {
-        const { selection, inlines } = activePlugin.value;
-        let { anchorText } = activePlugin.value;
-        const link = inlines.find(isLink);
 
-        if (typeof anchorText !== "string") {
-            anchorText = anchorText.getText();
+    if (activePlugin) {
+        const [item] = Editor.nodes(editor, { match: n => n.type === "link" });
+        const link = Array.isArray(item) ? item[0] : null;
+        let selectedText = "";
+
+        if (link) {
+            selectedText = link.children[0].children[0].text;
+        } else {
+            const [fragment] = activePlugin.fragment;
+            selectedText = fragment ? fragment.children[0].text : "";
         }
 
-        const selectedText = link
-            ? anchorText
-            : anchorText.substr(
-                  selection.anchor.offset,
-                  selection.focus.offset - selection.anchor.offset
-              );
-
-        linkData = { ...(link && link.data), text: selectedText };
+        linkData = { ...link, text: selectedText };
     }
 
     const updateLink = useHandler(
         props,
-        ({ editor, onChange, closeDialog, activePlugin }) => ({ text, ...data }) => {
-            editor.change(change => {
-                const { selection } = activePlugin.value;
-                const linkSelection = getLinkRange(change, selection);
-                change
-                    .select(linkSelection)
-                    .unwrapInline(TYPE)
-                    .insertText(text)
-                    .moveAnchorBackward(text.length)
-                    .wrapInline({ type: TYPE, data })
-                    .moveToEnd();
+        ({ closeDialog, activePlugin, editor }) => ({ text, ...data }) => {
+            const { selection } = activePlugin;
+            const isCollapsed = selection && Range.isCollapsed(selection);
+            const link = {
+                type: "link",
+                ...data,
+                children: isCollapsed ? [{ text }] : []
+            };
 
-                onChange(change);
-                closeDialog();
-            });
+            Transforms.select(editor, selection);
+            console.log("selection", editor.selection);
+
+
+            if (isCollapsed) {
+                Transforms.insertNodes(editor, link);
+            } else {
+                Transforms.wrapNodes(editor, link, { split: true, at: selection });
+                Transforms.collapse(editor, { edge: "end" });
+            }
+            closeDialog();
         }
     );
 

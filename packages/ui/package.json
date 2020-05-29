@@ -62,9 +62,9 @@
     "react-spinner-material": "1.1.4",
     "react-transition-group": "^4.3.0",
     "shortid": "^2.2.12",
-    "slate": "^0.42.2",
-    "slate-plain-serializer": "^0.6.15",
-    "slate-react": "^0.19.3"
+    "slate": "^0.58.1",
+    "slate-react": "^0.58.1",
+    "slate-history": "^0.58.1"
   },
   "devDependencies": {
     "@babel/cli": "^7.5.5",

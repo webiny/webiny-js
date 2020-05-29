@@ -1,20 +1,17 @@
 import React from "react";
-import { Editor } from "slate";
 import { ReactComponent as FormatItalicIcon } from "@webiny/app-i18n/admin/assets/icons/format_italic.svg";
 import { isKeyHotkey } from "is-hotkey";
 import { I18NInputRichTextEditorPlugin } from "@webiny/app-i18n/types";
+import { css } from "emotion";
 
 const isItalicHotkey = isKeyHotkey("mod+i");
 
-const hasMark = (value, type) => {
-    return Boolean(value.activeMarks.find(mark => mark.type === type));
-};
-
-const onClickMark = (type, onChange, editor) => {
-    editor.change(change => onChange(change.toggleMark(type)));
-};
-
 const mark = "italic";
+
+/* prettier-ignore */
+const italicStyle = css`
+    font-style: italic !important;
+`;
 
 const plugin: I18NInputRichTextEditorPlugin = {
     name: "i18n-input-rich-text-editor-italic",
@@ -22,30 +19,33 @@ const plugin: I18NInputRichTextEditorPlugin = {
     plugin: {
         name: "italic",
         editor: {
-            onKeyDown(event: React.SyntheticEvent, editor: Editor, next: Function) {
+            onKeyDown({ event, editor }, next) {
                 if (isItalicHotkey(event)) {
                     event.preventDefault();
                     editor.toggleMark(mark);
                     return true;
                 }
+
                 return next();
             },
-            renderMark(props, next) {
-                if (props.mark.type === mark) {
-                    return <em {...props.attributes}>{props.children}</em>;
+            renderLeaf({ leaf, attributes, children }) {
+                if (leaf[mark] === true) {
+                    return (
+                        <em className={italicStyle} {...attributes}>
+                            {children}
+                        </em>
+                    );
                 }
-                return next();
+                return children;
             }
         },
         menu: {
-            render({ MenuButton, editor, onChange }) {
-                const isActive = hasMark(editor.value, mark);
-
+            render({ MenuButton, editor }) {
                 return (
                     // eslint-disable-next-line react/jsx-no-bind
                     <MenuButton
-                        onClick={() => onClickMark(mark, onChange, editor)}
-                        active={isActive}
+                        onClick={() => editor.toggleMark(mark)}
+                        active={editor.hasMark(mark)}
                     >
                         <FormatItalicIcon />
                     </MenuButton>

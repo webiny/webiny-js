@@ -1,27 +1,16 @@
 import * as React from "react";
 import { css } from "emotion";
 import { isKeyHotkey } from "is-hotkey";
-import { Editor } from "slate";
 import { ReactComponent as FormatBoldIcon } from "@webiny/app-i18n/admin/assets/icons/format_bold.svg";
 import { I18NInputRichTextEditorPlugin } from "@webiny/app-i18n/types";
 
 const isBoldHotkey = isKeyHotkey("mod+b");
 
-const hasMark = (value, type) => {
-    return Boolean(value.activeMarks.find(mark => mark.type === type));
-};
-
-const onClickMark = (type, editor, onChange) => {
-    editor.change(change => onChange(change.toggleMark(type)));
-};
-
 const mark = "bold";
 
 /* prettier-ignore */
 const strongStyle = css`
-    [class*="mdc-typography--"] {
-        fontWeight: "bold !important";
-    }
+    font-weight: bold !important;
 `;
 
 const plugin: I18NInputRichTextEditorPlugin = {
@@ -30,13 +19,11 @@ const plugin: I18NInputRichTextEditorPlugin = {
     plugin: {
         name: "bold",
         menu: {
-            render({ MenuButton, editor, onChange }) {
-                const isActive = hasMark(editor.value, mark);
-
+            render({ MenuButton, editor }) {
                 return (
                     <MenuButton
-                        onClick={() => onClickMark(mark, editor, onChange)}
-                        active={isActive}
+                        onClick={() => editor.toggleMark(mark)}
+                        active={editor.hasMark(mark)}
                     >
                         <FormatBoldIcon />
                     </MenuButton>
@@ -44,7 +31,7 @@ const plugin: I18NInputRichTextEditorPlugin = {
             }
         },
         editor: {
-            onKeyDown(event: React.SyntheticEvent<KeyboardEvent>, editor: Editor, next: Function) {
+            onKeyDown({ event, editor }, next) {
                 // Decide what to do based on the key code...
                 if (isBoldHotkey(event)) {
                     event.preventDefault();
@@ -54,16 +41,16 @@ const plugin: I18NInputRichTextEditorPlugin = {
 
                 return next();
             },
-            renderMark(props, next) {
-                if (props.mark.type === mark) {
+            renderLeaf({ leaf, attributes, children }) {
+                if (leaf[mark] === true) {
                     return (
-                        <strong className={strongStyle} {...props.attributes}>
-                            {props.children}
+                        <strong className={strongStyle} {...attributes}>
+                            {children}
                         </strong>
                     );
                 }
 
-                return next();
+                return children;
             }
         }
     }
