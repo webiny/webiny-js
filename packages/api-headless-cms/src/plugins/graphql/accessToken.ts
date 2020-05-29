@@ -42,6 +42,7 @@ export default {
         input CmsAccessTokenUpdateInput {
             name: String
             description: String
+            token: String
             environments: [ID]
         }
 

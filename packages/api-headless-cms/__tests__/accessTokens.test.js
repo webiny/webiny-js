@@ -64,6 +64,7 @@ const UPDATE_ACCESS_TOKEN = /* GraphQL */ `
             updateAccessToken(id: $id, data: $data) {
                 data {
                     name
+                    token
                 }
             }
         }
@@ -101,7 +102,7 @@ describe("Environments test", () => {
     //     });
     // });
 
-    it.only("Should create an Access Token", async () => {
+    it("Should create an Access Token", async () => {
         let [{ errors, data }] = await invoke({
             body: {
                 query: CREATE_ACCESS_TOKEN,
@@ -166,6 +167,25 @@ describe("Environments test", () => {
         }
         expect(data.cms.updateAccessToken.data.name).toEqual(newTokenName);
     });
+
+    it("Should not update access token value", async () => {
+        let [{ errors, data }] = await invoke({
+            body: {
+                query: UPDATE_ACCESS_TOKEN,
+                variables: {
+                    id: createdAccessToken.id,
+                    data: {
+                        token: "" + Math.random()
+                    }
+                }
+            }
+        });
+        if (errors) {
+            throw JSON.stringify(errors, null, 2);
+        }
+        expect(data.cms.updateAccessToken.data.token).toEqual(createdAccessToken.token);
+    });
+
     it("Should delete access token", async () => {
         let [{ errors, data }] = await invoke({
             body: {
