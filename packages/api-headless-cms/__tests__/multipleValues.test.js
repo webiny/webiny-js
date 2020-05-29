@@ -52,12 +52,12 @@ describe("Multiple Values Test", () => {
 
         // Creating should not be allowed.
         try {
-            await createContentModel({
-                data: mocks.cannotSetAsEntryTitle({
+            await createContentModel(
+                mocks.cannotSetAsEntryTitle({
                     contentModelGroupId: ids.contentModelGroup,
                     titleFieldId: "someMultipleValueTextField"
                 })
-            });
+            );
         } catch (e) {
             error = e;
         }
@@ -69,9 +69,9 @@ describe("Multiple Values Test", () => {
         // Updating should not be allowed as well. Let's create a new content model and try to update it.
         error = null;
         try {
-            product = await createContentModel({
-                data: mocks.cannotSetAsEntryTitle({ contentModelGroupId: ids.contentModelGroup })
-            });
+            product = await createContentModel(
+                mocks.cannotSetAsEntryTitle({ contentModelGroupId: ids.contentModelGroup })
+            );
         } catch (e) {
             error = e;
         }
@@ -91,6 +91,34 @@ describe("Multiple Values Test", () => {
 
         expect(error.message).toBe(
             `Fields that accept multiple values cannot be used as the entry title (tried to use "someMultipleValueTextField" field)`
+        );
+    });
+
+    it(`locked fields' "multipleValues" flag must not be changeable`, async () => {
+        const { createContentModel, updateContentModel, content } = environment(ids.environment);
+
+        let error;
+
+        // 1. Create a content model with tags field, multipleValues is set to true.
+        const productContentModel = await createContentModel(
+            mocks.blogWithTagsSetToMultipleValue({ contentModelGroupId: ids.contentModelGroup })
+        );
+
+        // 2. Create a new product entry.
+        const products = await content("blog");
+
+        await products.create(mocks.createProductWithTagsAssigned);
+
+        try {
+            await updateContentModel(
+                mocks.blogWithTagsSetToSingleValue({ productId: productContentModel.id })
+            );
+        } catch (e) {
+            error = e;
+        }
+
+        expect(error.message).toBe(
+            `Cannot change "multipleValues" for the "tags" field because it's already in use in created content.`
         );
     });
 });
