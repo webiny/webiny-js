@@ -5,6 +5,10 @@ const fields = `
     name
     description
     token
+    environments {
+        id
+        name
+    }
 `;
 
 export const LIST_ACCESS_TOKENS = gql`
@@ -28,10 +32,7 @@ export const GET_ACCESS_TOKEN = gql`
         cms {
             getAccessToken(id: $id) {
                 data {
-                    id
-                    name
-                    description
-                    token
+                    ${fields}
                 }
             }
         }

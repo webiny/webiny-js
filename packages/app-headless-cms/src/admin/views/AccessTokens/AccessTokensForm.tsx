@@ -6,10 +6,7 @@ import { ButtonPrimary } from "@webiny/ui/Button";
 import { CircularProgress } from "@webiny/ui/Progress";
 import { useCrud } from "@webiny/app-admin/hooks/useCrud";
 import { i18n } from "@webiny/app/i18n";
-import { useApolloClient } from "react-apollo";
-import get from "lodash.get";
-import NameSlug from "../../components/NameSlug";
-import { AutoComplete } from "@webiny/ui/AutoComplete";
+import { CheckboxGroup, Checkbox } from "@webiny/ui/Checkbox";
 
 import { useCms } from "@webiny/app-headless-cms/admin/hooks";
 
@@ -25,15 +22,11 @@ const t = i18n.ns("app-headless-cms/admin/accessTokens/form");
 
 function EnvironmentAliasesForm() {
     const { form: crudForm } = useCrud();
-    const {
-        environments: { environments: environmentsOptions }
-    } = useCms();
-
-    const apolloClient = useApolloClient();
+    const environments = useCms().environments.environments;
 
     return (
         <Form {...crudForm}>
-            {({ data, form, Bind, setValue }) => (
+            {({ data, form, Bind }) => (
                 <SimpleForm data-testid={"pb-environmentAliases-form"}>
                     {crudForm.loading && <CircularProgress />}
                     <SimpleFormHeader title={data.name ? data.name : t`New Access Token`} />
@@ -66,10 +59,31 @@ function EnvironmentAliasesForm() {
                                 </Bind>
                             </Cell>
                             <Cell span={12}>
-                                <SimpleFormHeader title={t`Environments`} />
-                                <div>(to be continued)</div>
-                                <div>(to be continued)</div>
-                                <div>(to be continued)</div>
+                                <Bind
+                                    name="selectedEnvironmentIds"
+                                    defaultValue={(data.environments || []).map(env => env.id)}
+                                >
+                                    <CheckboxGroup
+                                        label="Environments"
+                                        description={
+                                            "Select the environments this Token will be allowed to access."
+                                        }
+                                    >
+                                        {({ onChange, getValue }) => (
+                                            <React.Fragment>
+                                                {environments.map(({ id, name }) => (
+                                                    <div key={`access-token-environment-${id}`}>
+                                                        <Checkbox
+                                                            label={name}
+                                                            value={getValue(id)}
+                                                            onChange={onChange(id)}
+                                                        />
+                                                    </div>
+                                                ))}
+                                            </React.Fragment>
+                                        )}
+                                    </CheckboxGroup>
+                                </Bind>
                             </Cell>
                         </Grid>
                     </SimpleFormContent>

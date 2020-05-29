@@ -12,6 +12,15 @@ import {
     DELETE_ACCESS_TOKEN
 } from "./graphql";
 
+const getMutationVariables = formData => {
+    delete formData.token;
+    formData.environments = formData.selectedEnvironmentIds;
+    delete formData.selectedEnvironmentIds;
+    return {
+        data: formData
+    };
+};
+
 function EnvironmentAliases() {
     return (
         <CrudProvider
@@ -20,16 +29,12 @@ function EnvironmentAliases() {
             }}
             read={GET_ACCESS_TOKEN}
             create={{
-                mutation: CREATE_ACCESS_TOKEN
+                mutation: CREATE_ACCESS_TOKEN,
+                variables: getMutationVariables
             }}
             update={{
                 mutation: UPDATE_ACCESS_TOKEN,
-                variables: formData => {
-                    delete formData.token;
-                    return {
-                        data: formData
-                    };
-                }
+                variables: getMutationVariables
             }}
             list={{
                 query: LIST_ACCESS_TOKENS,
