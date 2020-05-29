@@ -35,14 +35,12 @@ export default {
         input CmsAccessTokenCreateInput {
             name: String
             description: String
-            # token: String
             environments: [ID]
         }
 
         input CmsAccessTokenUpdateInput {
             name: String
             description: String
-            token: String
             environments: [ID]
         }
 
@@ -52,7 +50,6 @@ export default {
             listAccessTokens(
                 where: JSON
                 sort: JSON
-                search: CmsSearchInput
                 limit: Int
                 after: String
                 before: String
@@ -69,17 +66,17 @@ export default {
     `,
     resolvers: {
         CmsQuery: {
-            getAccessToken: hasScope("cms:access-tokens:crud")(resolveGet(AccessTokenFetcher)),
-            listAccessTokens: hasScope("cms:access-tokens:crud")(resolveList(AccessTokenFetcher))
+            getAccessToken: hasScope("cms:access-token:crud")(resolveGet(AccessTokenFetcher)),
+            listAccessTokens: hasScope("cms:access-token:crud")(resolveList(AccessTokenFetcher))
         },
         CmsMutation: {
-            createAccessToken: hasScope("cms:access-tokens:crud")(
+            createAccessToken: hasScope("cms:access-token:crud")(
                 resolveCreate(AccessTokenFetcher)
             ),
-            updateAccessToken: hasScope("cms:access-tokens:crud")(
+            updateAccessToken: hasScope("cms:access-token:crud")(
                 resolveUpdate(AccessTokenFetcher)
             ),
-            deleteAccessToken: hasScope("cms:access-tokens:crud")(resolveDelete(AccessTokenFetcher))
+            deleteAccessToken: hasScope("cms:access-token:crud")(resolveDelete(AccessTokenFetcher))
         }
     }
 };

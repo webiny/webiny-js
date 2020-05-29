@@ -43,13 +43,15 @@ export default (
         type: "context",
         async apply(context) {
             if (process.env.NODE_ENV === "test") {
-                // Skip authentication when running our tests
+                // Skip authentication when running tests
                 return;
             }
 
             if (context.cms.READ || context.cms.PREVIEW) {
                 if (!context.event) {
-                    throw "context.event cannot be empty when accessing /read or /preview routes!";
+                    throw new Error(
+                        "context.event cannot be empty when accessing /read or /preview routes!"
+                    );
                 }
 
                 const accessToken = context.event.headers["access-token"];
@@ -67,9 +69,13 @@ export default (
                 const currentEnvironment = context.cms.getEnvironment();
                 if (!allowedEnvironments.find(env => env.id === currentEnvironment.id)) {
                     throw new Error(
-                        `Your Token cannot access environment ${currentEnvironment.name}`
+                        `You are not authorized to access "${currentEnvironment.name}" environment!`
                     );
                 }
+            }
+
+            if (context.cms.MANAGE && !context.user) {
+                throw new Error("Not authorized!");
             }
         }
     },

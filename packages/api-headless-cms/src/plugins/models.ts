@@ -5,7 +5,7 @@ import cmsEnvironmentAlias from "./models/environmentAlias.model";
 import cmsSettings from "./models/cmsSettings.model";
 import cmsContentModelGroup from "./models/contentModelGroup.model";
 import cmsAccessToken from "./models/accessToken.model";
-import cmsEnvironment2CmsAccessToken from "./models/environment2accessToken";
+import CmsEnvironment2AccessToken from "./models/environment2accessToken";
 
 export default () => ({
     name: "context-models",
@@ -36,7 +36,7 @@ export default () => ({
         context.models.CmsSettings = cmsSettings({ createBase });
         context.models.CmsContentModelGroup = cmsContentModelGroup({ createBase, context });
         context.models.CmsAccessToken = cmsAccessToken({ createBase, context });
-        context.models.CmsEnvironment2CmsAccessToken = cmsEnvironment2CmsAccessToken({
+        context.models.CmsEnvironment2AccessToken = CmsEnvironment2AccessToken({
             createBase,
             context
         });

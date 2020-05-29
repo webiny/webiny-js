@@ -1,14 +1,14 @@
 import mdbid from "mdbid";
 import { createUtils } from "./utils";
 const CREATE_ACCESS_TOKEN = /* GraphQL */ `
-    mutation createAccesstoken($data: CmsAccessTokenCreateInput!) {
+    mutation createAccessToken($data: CmsAccessTokenCreateInput!) {
         cms {
             createAccessToken(data: $data) {
                 data {
                     id
                     name
-                    description
                     token
+                    description
                     environments {
                         id
                         name
@@ -22,6 +22,7 @@ const CREATE_ACCESS_TOKEN = /* GraphQL */ `
         }
     }
 `;
+
 const LIST_ACCESS_TOKENS = /* GraphQL */ `
     {
         cms {
@@ -44,6 +45,7 @@ const LIST_ACCESS_TOKENS = /* GraphQL */ `
         }
     }
 `;
+
 const GET_ACCESS_TOKEN = /* GraphQL */ `
     query getAccessToken($id: ID!) {
         cms {
@@ -62,18 +64,19 @@ const GET_ACCESS_TOKEN = /* GraphQL */ `
         }
     }
 `;
+
 const UPDATE_ACCESS_TOKEN = /* GraphQL */ `
     mutation updateAccessToken($id: ID!, $data: CmsAccessTokenUpdateInput!) {
         cms {
             updateAccessToken(id: $id, data: $data) {
                 data {
                     name
-                    token
                 }
             }
         }
     }
 `;
+
 const DELETE_ACCESS_TOKEN = /* GraphQL */ `
     mutation deleteAccessToken($id: ID!) {
         cms {
@@ -83,6 +86,7 @@ const DELETE_ACCESS_TOKEN = /* GraphQL */ `
         }
     }
 `;
+
 describe("Environments test", () => {
     const { useDatabase, useApolloHandler } = createUtils();
     const { getCollection } = useDatabase();
@@ -141,7 +145,7 @@ describe("Environments test", () => {
             throw JSON.stringify(errors, null, 2);
         }
         expect(data.cms.listAccessTokens.data.length).toEqual(1);
-        expect(data.cms.listAccessTokens.data[0]).toEqual(createdAccessToken);
+        expect(data.cms.listAccessTokens.data[0]).toMatchObject(createdAccessToken);
     });
     it("Should get access token", async () => {
         let [{ errors, data }] = await invoke({
@@ -155,7 +159,7 @@ describe("Environments test", () => {
         if (errors) {
             throw JSON.stringify(errors, null, 2);
         }
-        expect(data.cms.getAccessToken.data).toEqual(createdAccessToken);
+        expect(data.cms.getAccessToken.data).toMatchObject(createdAccessToken);
     });
     it("Should update access token", async () => {
         let [{ errors, data }] = await invoke({
@@ -174,23 +178,7 @@ describe("Environments test", () => {
         }
         expect(data.cms.updateAccessToken.data.name).toEqual(newTokenName);
     });
-    it("Should not update access token value", async () => {
-        let [{ errors, data }] = await invoke({
-            body: {
-                query: UPDATE_ACCESS_TOKEN,
-                variables: {
-                    id: createdAccessToken.id,
-                    data: {
-                        token: "" + Math.random()
-                    }
-                }
-            }
-        });
-        if (errors) {
-            throw JSON.stringify(errors, null, 2);
-        }
-        expect(data.cms.updateAccessToken.data.token).toEqual(createdAccessToken.token);
-    });
+
     it("Should delete access token", async () => {
         let [{ errors, data }] = await invoke({
             body: {
@@ -205,6 +193,7 @@ describe("Environments test", () => {
         }
         expect(data.cms.deleteAccessToken.data).toEqual(true);
     });
+
     it("Should get access token (null after deletion)", async () => {
         let [{ errors, data }] = await invoke({
             body: {

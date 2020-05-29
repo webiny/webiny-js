@@ -25,7 +25,7 @@ export default ({ createBase, context }) =>
             environments: ref({
                 list: true,
                 instanceOf: [context.models.CmsEnvironment, "accessToken"],
-                using: [context.models.CmsEnvironment2CmsAccessToken, "environment"]
+                using: [context.models.CmsEnvironment2AccessToken, "environment"]
             })
         }))
     )(createBase());
