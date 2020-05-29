@@ -60,7 +60,9 @@ describe("Used fields", () => {
             error = e;
         }
 
-        expect(error.message).toBe(`Cannot remove field "title" because it's already in use in created content.`)
+        expect(error.message).toBe(
+            `Cannot remove field "title" because it's already in use in created content.`
+        );
 
         // 4. Try creating another product, with title missing completely.
         await products.create(mocks.createProductWithoutValues);
