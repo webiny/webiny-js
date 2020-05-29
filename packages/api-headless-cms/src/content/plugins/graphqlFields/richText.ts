@@ -7,6 +7,10 @@ const plugin: CmsModelFieldToGraphQLPlugin = {
     read: {
         createTypeField({ field }) {
             const localeArg = "(locale: String)";
+            if (field.multipleValues) {
+                return `${field.fieldId}${localeArg}: [JSON]`;
+            }
+
             return `${field.fieldId}${localeArg}: JSON`;
         },
         createGetFilters({ field }) {
@@ -26,8 +30,14 @@ const plugin: CmsModelFieldToGraphQLPlugin = {
         },
         createTypeField({ field }) {
             return field.fieldId + ": CmsJSON";
+            if (field.multipleValues) {
+                return field.fieldId + ": CmsJSONList";
+            }
         },
         createInputField({ field }) {
+            if (field.multipleValues) {
+                return field.fieldId + ": CmsJSONListInput";
+            }
             return field.fieldId + ": CmsJSONInput";
         }
     }

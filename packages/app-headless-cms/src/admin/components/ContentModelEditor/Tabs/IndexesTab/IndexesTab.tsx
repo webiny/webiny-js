@@ -20,6 +20,7 @@ import { i18n } from "@webiny/app/i18n";
 import TimeAgo from "timeago-react";
 import { Tooltip } from "@webiny/ui/Tooltip";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
+import { CmsEditorContentTab } from "@webiny/app-headless-cms/types";
 
 const t = i18n.ns("app-headless-cms/admin/components/editor/tabs/indexes");
 
@@ -50,7 +51,7 @@ const style = {
     })
 };
 
-export const IndexesTab = () => {
+export const IndexesTab: CmsEditorContentTab = () => {
     const { data, setData } = useContentModelEditor();
     const [dialogOpen, setDialogOpen] = useState(false);
     const { showSnackbar } = useSnackbar();

@@ -74,6 +74,7 @@ export type CmsContentModelField = {
     type: string;
     fieldId: string;
     validation: CmsFieldValidation[];
+    multipleValues: boolean;
     settings?: { [key: string]: any };
 };
 
