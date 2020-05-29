@@ -4,7 +4,6 @@ import dbProxy from "@webiny/api-plugin-commodo-db-proxy";
 import securityServicePlugins from "@webiny/api-security/plugins/service";
 import i18nServicePlugins from "@webiny/api-i18n/plugins/service";
 import dataManagerPlugins from "@webiny/api-headless-cms/dataManager/client";
-import filesSettingsPlugins from "@webiny/api-files/plugins/service";
 import settingsManagerPlugins from "@webiny/api-settings-manager/client";
 
 export const handler = createHandler(
@@ -19,9 +18,6 @@ export const handler = createHandler(
     }),
     i18nServicePlugins({
         localesFunction: process.env.I18N_LOCALES_FUNCTION
-    }),
-    filesSettingsPlugins({
-        filesFunction: process.env.FILES_SETTINGS_FUNCTION
     }),
     headlessCmsHandler({
         debug: process.env.DEBUG,
