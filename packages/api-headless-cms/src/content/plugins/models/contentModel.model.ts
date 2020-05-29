@@ -78,6 +78,19 @@ export default ({ createBase, context }: { createBase: Function; context: CmsCon
                     );
                 }
             },
+            async beforeUpdate() {
+                // We must not allow removal of fields that are already in use in content entries.
+                const usedFields = this.usedFields || [];
+                for (let i = 0; i < usedFields.length; i++) {
+                    const usedFieldId = usedFields[i];
+                    const fieldExists = this.fields.find(item => item.fieldId === usedFieldId);
+                    if (!fieldExists) {
+                        throw new Error(
+                            `Cannot remove field "${usedFieldId}" because it's already in use in created content.`
+                        );
+                    }
+                }
+            },
             async beforeSave() {
                 if (this.getField("indexes").isDirty()) {
                     const removeCallback = this.hook("afterSave", async () => {
@@ -90,18 +103,6 @@ export default ({ createBase, context }: { createBase: Function; context: CmsCon
                 }
 
                 const fields = this.fields || [];
-
-                // We must not allow removal of fields that are already in use in content entries.
-                const usedFields = this.usedFields || [];
-                for (let i = 0; i < usedFields.length; i++) {
-                    const usedFieldId = usedFields[i];
-                    const fieldExists = fields.find(item => item.fieldId === usedFieldId);
-                    if (!fieldExists) {
-                        throw new Error(
-                            `Cannot remove field "${usedFieldId}" because it's already in use in created content.`
-                        );
-                    }
-                }
 
                 // If no title field set, just use the first "text" field.
                 let hasTitleFieldId = false;
