@@ -41,63 +41,28 @@ export default (
     {
         name: "context-cms-validate-access-token",
         type: "context",
-        apply(context) {
-            console.log("Going in the promise...");
+        async apply(context) {
+            if (context.event && (context.cms.READ || context.cms.PREVIEW)) {
+                // TODO refactor this: move context.event inside
+                const accessToken = context.event.headers["access-token"];
+                const { CmsAccessToken } = context.models;
 
-            return new Promise(async (resolve, reject) => {
-                console.log("Inside the promise...");
-                try {
-                    console.log("Trying...");
-                    console.log(context);
-                    if (context.event && (context.cms.READ || context.cms.PREVIEW)) {
-                        // TODO refactor this: move context.event inside
-                        console.log("1");
-                        const accessToken = context.event.headers["access-token"];
-                        console.log("2");
-                        const { CmsAccessToken } = context.models;
+                const token = await CmsAccessToken.findOne({
+                    query: { token: accessToken }
+                });
 
-                        console.log("3");
-                        console.log(options.environment);
-                        const token = await CmsAccessToken.findOne({
-                            query: { token: accessToken }
-                        });
-                        console.log("4");
-
-                        console.log("Token = ");
-                        console.log(token);
-                        if (!token) {
-                            return reject("Access token is invalid!");
-                        }
-                        const allowedEnvironments = await token.environments;
-                        const currentEnvironment = context.cms.getEnvironment();
-                        console.log(allowedEnvironments);
-                        console.log(currentEnvironment);
-                        if (!allowedEnvironments.find(env => env.id === currentEnvironment.id)) {
-                            return reject(
-                                `Your Token cannot access environment ${currentEnvironment.name}`
-                            );
-                        }
-                        console.log("");
-                        console.log("");
-                        console.log("");
-                        console.log(context);
-                        console.log("");
-                        // console.log(JSON.stringify(context, null, 2));
-                        console.log("");
-                        console.log("");
-                        console.log("Hellooo        f");
-                        console.log("Hellooo        ");
-                        console.log("Hellooo        ");
-                        console.log("Hellooo        ");
-                        console.log("Hellooo        ");
-                        // throw 848128123;
-                    }
-                } catch (e) {
-                    console.log(e);
-                    return reject(e);
+                if (!token) {
+                    throw new Error("Access token is invalid!");
                 }
-                return resolve();
-            });
+
+                const allowedEnvironments = await token.environments;
+                const currentEnvironment = context.cms.getEnvironment();
+                if (!allowedEnvironments.find(env => env.id === currentEnvironment.id)) {
+                    throw new Error(
+                        `Your Token cannot access environment ${currentEnvironment.name}`
+                    );
+                }
+            }
         }
     },
     graphql(options),
