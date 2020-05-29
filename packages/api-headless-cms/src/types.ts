@@ -106,7 +106,7 @@ export type CmsContentModelIndex = {
     createdOn: Date;
 };
 
-export type UsedField = {
+export type LockedField = {
     fieldId: string;
     multipleValues: boolean;
     type: string;
@@ -117,7 +117,7 @@ export type CmsContentModel = {
     title: string;
     description: string;
     modelId: string;
-    usedFields: UsedField[];
+    lockedFields: LockedField[];
     titleFieldId: string;
     indexes: CmsContentModelIndex[];
     fields: CmsContentModelField[];

@@ -144,28 +144,28 @@ export const createDataModel = (
 
                 // Let's mark fields on actual content model as used.
                 const fields = contentModel.fields || [];
-                const usedFields = contentModel.usedFields || [];
+                const lockedFields = contentModel.lockedFields || [];
 
                 for (let i = 0; i < fields.length; i++) {
                     const field = fields[i];
-                    if (usedFields.find(usedField => usedField.fieldId === field.fieldId)) {
+                    if (lockedFields.find(lockedField => lockedField.fieldId === field.fieldId)) {
                         continue;
                     }
 
-                    // If just a single field is not in the content model's "usedFields" list, we must update it.
+                    // If just a single field is not in the content model's "lockedFields" list, we must update it.
                     const removeCallback = this.hook("afterSave", async () => {
                         removeCallback();
 
                         const fields = contentModel.fields || [];
-                        let usedFields = contentModel.usedFields || [];
+                        let lockedFields = contentModel.lockedFields || [];
 
                         for (let i = 0; i < fields.length; i++) {
                             const field = fields[i];
-                            if (usedFields.find(usedField => usedField.fieldId === field.fieldId)) {
+                            if (lockedFields.find(lockedField => lockedField.fieldId === field.fieldId)) {
                                 continue;
                             }
-                            usedFields = [
-                                ...usedFields,
+                            lockedFields = [
+                                ...lockedFields,
                                 {
                                     fieldId: field.fieldId,
                                     multipleValues: field.multipleValues,
@@ -174,7 +174,7 @@ export const createDataModel = (
                             ];
                         }
 
-                        contentModel.usedFields = usedFields;
+                        contentModel.lockedFields = lockedFields;
                         await contentModel.save();
                     });
                     break;

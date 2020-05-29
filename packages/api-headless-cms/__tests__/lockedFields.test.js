@@ -1,6 +1,6 @@
 import mdbid from "mdbid";
 import useContentHandler from "./utils/useContentHandler";
-import mocks from "./mocks/usedFields";
+import mocks from "./mocks/lockedFields";
 
 describe("Used fields", () => {
     const { database, environment } = useContentHandler();
@@ -35,7 +35,7 @@ describe("Used fields", () => {
             mocks.withTitleFieldOnly({ contentModelGroupId: ids.contentModelGroup })
         );
 
-        expect(contentModel.usedFields).toBe(null);
+        expect(contentModel.lockedFields).toBe(null);
 
         // 2. Create a new product entry.
         const products = await content("product");
@@ -48,7 +48,7 @@ describe("Used fields", () => {
             id: contentModel.id
         });
 
-        expect(contentModel.usedFields).toEqual([
+        expect(contentModel.lockedFields).toEqual([
             {
                 fieldId: "title",
                 multipleValues: false,

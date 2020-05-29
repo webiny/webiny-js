@@ -13,7 +13,7 @@ import {
     skipOnPopulate
 } from "@webiny/commodo";
 import createFieldsModel from "./ContentModel/createFieldsModel";
-import createUsedFieldsModel from "./ContentModel/createUsedFieldsModel";
+import createLockedFieldsModel from "./ContentModel/createLockedFieldsModel";
 import camelCase from "lodash/camelCase";
 import pluralize from "pluralize";
 import { indexes } from "./indexesField";
@@ -23,7 +23,7 @@ const required = validation.create("required");
 
 export default ({ createBase, context }: { createBase: Function; context: CmsContext }) => {
     const ContentModelFieldsModel = createFieldsModel(context);
-    const UsedFieldsModel = createUsedFieldsModel();
+    const LockedFieldsModel = createLockedFieldsModel();
 
     const CmsContentModel = pipe(
         withName(`CmsContentModel`),
@@ -40,7 +40,7 @@ export default ({ createBase, context }: { createBase: Function; context: CmsCon
 
             // Contains a list of all fields that were utilized by existing content entries. If a field is on the list,
             // it cannot be removed/edited anymore.
-            usedFields: skipOnPopulate()(fields({ list: true, instanceOf: UsedFieldsModel })),
+            lockedFields: skipOnPopulate()(fields({ list: true, instanceOf: LockedFieldsModel })),
             fields: fields({
                 list: true,
                 value: [],
@@ -82,21 +82,21 @@ export default ({ createBase, context }: { createBase: Function; context: CmsCon
             },
             async beforeUpdate() {
                 // We must not allow removal of fields that are already in use in content entries.
-                const usedFields = this.usedFields || [];
-                for (let i = 0; i < usedFields.length; i++) {
-                    const usedField = usedFields[i];
+                const lockedFields = this.lockedFields || [];
+                for (let i = 0; i < lockedFields.length; i++) {
+                    const lockedField = lockedFields[i];
                     const existingField = this.fields.find(
-                        item => item.fieldId === usedField.fieldId
+                        item => item.fieldId === lockedField.fieldId
                     );
                     if (!existingField) {
                         throw new Error(
-                            `Cannot remove the field "${usedField.fieldId}" because it's already in use in created content.`
+                            `Cannot remove the field "${lockedField.fieldId}" because it's already in use in created content.`
                         );
                     }
 
-                    if (usedField.multipleValues !== existingField.multipleValues) {
+                    if (lockedField.multipleValues !== existingField.multipleValues) {
                         throw new Error(
-                            `Cannot change "multipleValues" for the "${usedField.fieldId}" field because it's already in use in created content.`
+                            `Cannot change "multipleValues" for the "${lockedField.fieldId}" field because it's already in use in created content.`
                         );
                     }
                 }

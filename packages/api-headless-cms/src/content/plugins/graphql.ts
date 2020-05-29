@@ -110,7 +110,7 @@ export default ({ type }) => [
                     error: CmsError
                 }
 
-                type CmsUsedField {
+                type CmsLockedField {
                     fieldId: String
                     multipleValues: Boolean
                     type: String
@@ -131,7 +131,7 @@ export default ({ type }) => [
                     titleFieldId: String
                     fields: [CmsContentModelField]
                     indexes: [ContentModelIndexes]
-                    usedFields: [CmsUsedField]
+                    lockedFields: [CmsLockedField]
                 }
 
                 input CmsContentModelInput {

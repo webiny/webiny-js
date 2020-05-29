@@ -51,7 +51,7 @@ export const GET_CONTENT_MODEL = gql`
                 description
                 modelId
                 titleFieldId
-                usedFields
+                lockedFields
                 fields {
                     ${FIELDS_FIELDS}
                 }
