@@ -42,8 +42,16 @@ export default (
         name: "context-cms-validate-access-token",
         type: "context",
         async apply(context) {
-            if (context.event && (context.cms.READ || context.cms.PREVIEW)) {
-                // TODO refactor this: move context.event inside
+            if (process.env.NODE_ENV === "test") {
+                // Skip authentication when running our tests
+                return;
+            }
+
+            if (context.cms.READ || context.cms.PREVIEW) {
+                if (!context.event) {
+                    throw "context.event cannot be empty when accessing /read or /preview routes!";
+                }
+
                 const accessToken = context.event.headers["access-token"];
                 const { CmsAccessToken } = context.models;
 
