@@ -18,7 +18,9 @@
       "**/inquirer/**",
       "**/mime/**",
       "**/@types/mocha",
-      "**/semver"
+      "**/semver",
+      "**/slate",
+      "**/slate-react"
     ]
   },
   "contributors": [

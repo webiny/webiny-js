@@ -6,9 +6,7 @@ const mark = "bold";
 
 /* prettier-ignore */
 const strongStyle = css`
-    [class*="mdc-typography--"]: {
-        fontWeight: "bold !important";
-    }
+    font-weight: bold !important;
 `;
 
 const editor: I18NInputRichTextEditorPlugin = {
@@ -17,16 +15,16 @@ const editor: I18NInputRichTextEditorPlugin = {
     plugin: {
         name: "bold",
         editor: {
-            renderMark(props, next) {
-                if (props.mark.type === mark) {
+            renderLeaf({ leaf, attributes, children }) {
+                if (leaf[mark] === true) {
                     return (
-                        <strong className={strongStyle} {...props.attributes}>
-                            {props.children}
+                        <strong className={strongStyle} {...attributes}>
+                            {children}
                         </strong>
                     );
                 }
 
-                return next();
+                return children;
             }
         }
     }

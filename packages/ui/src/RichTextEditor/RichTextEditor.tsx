@@ -1,16 +1,15 @@
 import * as React from "react";
-import { get } from "lodash";
-import { Editor as SlateEditor } from "slate-react";
-import { Value, Editor } from "slate";
-import Plain from "slate-plain-serializer";
+import { Editable, withReact, Slate } from "slate-react";
+import { Editor as SlateEditor, createEditor } from "slate";
+import { withHistory } from "slate-history";
 import styled from "@emotion/styled";
 import { css } from "emotion";
 import classNames from "classnames";
 import { FormElementMessage } from "@webiny/ui/FormElementMessage";
-import { MenuButton } from "@webiny/ui/RichTextEditor";
+import { MenuButton } from "./index";
 import { Menu } from "./Menu";
-import shortid from "shortid"; // TODO: remove this one
 import { FormComponentProps } from "./../types";
+import { pluginsToProps } from "./pluginsToProps";
 
 const EditorWrapper = styled("div")({
     border: "1px solid var(--mdc-theme-on-background)",
@@ -38,6 +37,11 @@ const classes = {
         opacity: 0.7,
         pointerEvents: "none"
     })
+};
+
+export type Editor = SlateEditor & {
+    hasMark?(mark: string): boolean;
+    toggleMark?(mark: string): void;
 };
 
 export type EditorPlugin = { [key: string]: any };
@@ -70,12 +74,31 @@ export type RichTextEditorProps = FormComponentProps & {
 };
 
 type State = {
-    ts?: number;
-    modified: boolean;
     showMenu: boolean;
     value: any;
     readOnly: boolean;
     activePlugin?: { [key: string]: any };
+};
+
+const initialValue = [{ type: "paragraph", children: [{ text: "" }] }];
+
+const withUtils = (editor: Editor) => {
+    editor.hasMark = mark => {
+        const marks = SlateEditor.marks(editor);
+        return marks ? marks[mark] === true : false;
+    };
+
+    editor.toggleMark = mark => {
+        const isActive = editor.hasMark(mark);
+
+        if (isActive) {
+            SlateEditor.removeMark(editor, mark);
+        } else {
+            SlateEditor.addMark(editor, mark, true);
+        }
+    };
+
+    return editor;
 };
 
 export class RichTextEditor extends React.Component<RichTextEditorProps, State> {
@@ -83,80 +106,46 @@ export class RichTextEditor extends React.Component<RichTextEditorProps, State> 
         validation: { isValid: null }
     };
 
-    id: string;
-    plugins: { editor: Array<Object> };
-    nextElement?: EventTarget;
+    plugins: { editor: Object[]; menu: Object[] };
     editor?: Editor;
+    editorProps: any;
 
     constructor(props: RichTextEditorProps) {
         super(props);
-        this.id = shortid.generate();
-        this.nextElement = null;
 
         this.state = {
-            modified: false,
             showMenu: false,
-            value: props.value ? Value.fromJSON(props.value) : Plain.deserialize(""),
+            value: props.value || initialValue,
             readOnly: !props.onChange,
             activePlugin: null
         };
 
-        this.plugins = {
-            editor: props.plugins.map(plugin => plugin.editor).filter(Boolean)
-        };
+        this.editor = withUtils(withHistory(withReact(createEditor())));
+        this.editorProps = pluginsToProps(props.plugins, {
+            editor: this.editor,
+            activatePlugin: this.activatePlugin
+        });
     }
 
-    static getDerivedStateFromProps(props: RichTextEditorProps, state: State) {
-        if (!state.modified && !props.readOnly) {
+    static getDerivedStateFromProps(props: RichTextEditorProps) {
+        if (!props.readOnly) {
             // Got new editor value through props.
             return {
-                value: props.value ? Value.fromJSON(props.value) : Plain.deserialize("")
+                value: props.value ? props.value : initialValue
             };
         }
 
         return null;
     }
 
-    componentDidMount() {
-        document.getElementById(this.id).addEventListener("mousedown", this.trackNextElement);
-        document.getElementById(this.id).addEventListener("mouseup", this.untrackNextElement);
-    }
-
-    componentWillUnmount() {
-        document.getElementById(this.id).removeEventListener("mousedown", this.trackNextElement);
-        document.getElementById(this.id).removeEventListener("mouseup", this.untrackNextElement);
-    }
-
-    trackNextElement = (e: MouseEvent) => {
-        // Store the clicked element. If it is set, it means we clicked inside the editor div.
-        this.nextElement = e.target;
-    };
-
-    untrackNextElement = () => {
-        this.nextElement = null;
-    };
-
-    onChange = (change: any) => {
-        // Prevent `onChange` if it is a `set_value` operation.
-        // We only need to handle changes on user input.
-        if (get(change.operations.toJSON(), "0.type") === "set_value") {
-            return;
-        }
-
-        // Only update local state.
+    onChange = (value: any) => {
         this.setState(state => ({
             ...state,
-            value: change.value,
-            modified: true
+            value
         }));
-    };
 
-    onBlur = () => {
-        if (!this.nextElement) {
-            this.setState({ modified: false });
-            const { onChange } = this.props;
-            typeof onChange === "function" && onChange(this.state.value.toJSON());
-        }
+        const { onChange } = this.props;
+        typeof onChange === "function" && onChange(value);
     };
 
     activatePlugin = (plugin: string) => {
@@ -165,16 +154,8 @@ export class RichTextEditor extends React.Component<RichTextEditorProps, State> 
         this.setState({
             activePlugin: {
                 plugin,
-                value: {
-                    selection: value.selection.toJSON(),
-                    anchorText: value.anchorText.getText(),
-                    focusText: value.focusText.getText(),
-                    inlines: value.inlines.toJSON(),
-                    marks: value.marks.toJSON(),
-                    activeMarks: value.activeMarks.toJSON(),
-                    blocks: value.blocks.toJSON(),
-                    texts: value.texts.toJSON()
-                }
+                selection: this.editor.selection,
+                fragment: this.editor.getFragment()
             }
         });
     };
@@ -183,13 +164,9 @@ export class RichTextEditor extends React.Component<RichTextEditorProps, State> 
         this.setState({ activePlugin: null });
     };
 
-    setEditorRef = editor => {
-        this.editor = editor;
-        this.setState({ ts: new Date().getTime() });
-    };
-
     render() {
         const { plugins, label, disabled, description, validation, placeholder } = this.props;
+        const { renderEditor, ...editorProps } = this.editorProps;
 
         return (
             <div className={classNames({ [classes.disable]: disabled })}>
@@ -203,31 +180,30 @@ export class RichTextEditor extends React.Component<RichTextEditorProps, State> 
                         {label}
                     </div>
                 )}
-                <EditorWrapper id={this.id}>
-                    <Menu
-                        plugins={plugins}
+                <EditorWrapper>
+                    <Slate
+                        editor={this.editor as any}
                         value={this.state.value}
                         onChange={this.onChange}
-                        editor={this.editor}
-                        activePlugin={this.state.activePlugin}
-                        activatePlugin={this.activatePlugin}
-                        deactivatePlugin={this.deactivatePlugin}
-                    />
-                    <EditorContent>
-                        {React.createElement<any>(SlateEditor, {
-                            onBlur: this.onBlur,
-                            ref: this.setEditorRef,
-                            autoCorrect: false,
-                            spellCheck: false,
-                            plugins: this.plugins.editor,
-                            placeholder: placeholder || "Enter some text...",
-                            value: this.state.value,
-                            onChange: this.onChange,
-                            activatePlugin: this.activatePlugin,
-                            activePlugin: this.state.activePlugin,
-                            deactivatePlugin: this.deactivatePlugin
-                        })}
-                    </EditorContent>
+                    >
+                        <Menu
+                            plugins={plugins}
+                            activePlugin={this.state.activePlugin}
+                            activatePlugin={this.activatePlugin}
+                            deactivatePlugin={this.deactivatePlugin}
+                        />
+                        <EditorContent>
+                            {renderEditor(
+                                <Editable
+                                    readOnly={disabled}
+                                    placeholder={placeholder}
+                                    spellCheck
+                                    autoFocus
+                                    {...editorProps}
+                                />
+                            )}
+                        </EditorContent>
+                    </Slate>
                 </EditorWrapper>
                 {validation.isValid === false && (
                     <FormElementMessage error>{validation.message}</FormElementMessage>
@@ -240,3 +216,28 @@ export class RichTextEditor extends React.Component<RichTextEditorProps, State> 
         );
     }
 }
+
+/*<EditorContent>
+    {React.createElement<any>(SlateEditor, {
+        onBlur: this.onBlur,
+        ref: this.setEditorRef,
+        autoCorrect: false,
+        spellCheck: false,
+        plugins: this.plugins.editor,
+        placeholder: placeholder || "Enter some text...",
+        value: this.state.value,
+        onChange: this.onChange,
+        activatePlugin: this.activatePlugin,
+        activePlugin: this.state.activePlugin,
+        deactivatePlugin: this.deactivatePlugin
+    })}
+</EditorContent>*/
+
+/*<Menu
+    plugins={plugins}
+    value={this.state.value}
+    onChange={this.onChange}
+    activePlugin={this.state.activePlugin}
+    activatePlugin={this.activatePlugin}
+    deactivatePlugin={this.deactivatePlugin}
+/>*/

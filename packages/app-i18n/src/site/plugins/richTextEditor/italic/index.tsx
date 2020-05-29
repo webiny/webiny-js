@@ -1,5 +1,10 @@
 import React from "react";
 import { I18NInputRichTextEditorPlugin } from "@webiny/app-i18n/types";
+import { css } from "emotion";
+
+const italicStyle = css`
+    font-style: italic !important;
+`;
 
 const editor: I18NInputRichTextEditorPlugin = {
     name: "i18n-value-rich-text-editor-italic",
@@ -7,11 +12,15 @@ const editor: I18NInputRichTextEditorPlugin = {
     plugin: {
         name: "italic",
         editor: {
-            renderMark(props, next) {
-                if (props.mark.type === "italic") {
-                    return <em {...props.attributes}>{props.children}</em>;
+            renderLeaf({ leaf, attributes, children }) {
+                if (leaf.italic === true) {
+                    return (
+                        <em className={italicStyle} {...attributes}>
+                            {children}
+                        </em>
+                    );
                 }
-                return next();
+                return children;
             }
         }
     }
