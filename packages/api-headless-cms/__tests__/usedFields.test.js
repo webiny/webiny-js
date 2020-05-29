@@ -48,7 +48,13 @@ describe("Used fields", () => {
             id: contentModel.id
         });
 
-        expect(contentModel.usedFields).toEqual(["title"]);
+        expect(contentModel.usedFields).toEqual([
+            {
+                fieldId: "title",
+                multipleValues: false,
+                type: "text"
+            }
+        ]);
 
         // 3. Let's try to remove the field. An error should be thrown because it's used.
         let error;
@@ -63,8 +69,5 @@ describe("Used fields", () => {
         expect(error.message).toBe(
             `Cannot remove field "title" because it's already in use in created content.`
         );
-
-        // 4. Try creating another product, with title missing completely.
-        await products.create(mocks.createProductWithoutValues);
     });
 });
