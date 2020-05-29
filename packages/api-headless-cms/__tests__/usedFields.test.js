@@ -31,9 +31,9 @@ describe("Used fields", () => {
         );
 
         // 1. Create a content model with a single "title" field.
-        let contentModel = await createContentModel({
-            data: mocks.withTitleFieldOnly({ contentModelGroupId: ids.contentModelGroup })
-        });
+        let contentModel = await createContentModel(
+            mocks.withTitleFieldOnly({ contentModelGroupId: ids.contentModelGroup })
+        );
 
         expect(contentModel.usedFields).toBe(null);
 
@@ -67,7 +67,7 @@ describe("Used fields", () => {
         }
 
         expect(error.message).toBe(
-            `Cannot remove field "title" because it's already in use in created content.`
+            `Cannot remove the field "title" because it's already in use in created content.`
         );
     });
 });
