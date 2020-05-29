@@ -1,7 +1,11 @@
 import gql from "graphql-tag";
-import { emptyResolver, resolveGetSettings, resolveUpdateSettings } from "@webiny/commodo-graphql";
+import { emptyResolver, ErrorResponse, resolveUpdateSettings } from "@webiny/commodo-graphql";
 import { hasScope } from "@webiny/api-security";
 import cookiePolicySettings from "./cookiePolicySettings.model";
+import { Context } from "@webiny/graphql/types";
+import { Context as SettingsManagerContext } from "@webiny/api-settings-manager/types";
+
+type SettingsContext = Context & SettingsManagerContext;
 
 export default () => [
     {
@@ -102,7 +106,14 @@ export default () => [
                     cookiePolicy: emptyResolver
                 },
                 CookiePolicyQuery: {
-                    getSettings: resolveGetSettings(({ models }) => models.CookiePolicySettings)
+                    getSettings: async (_, args, context: SettingsContext) => {
+                        try {
+                            const data = await context.settingsManager.getSettings("cookie-policy");
+                            return { data };
+                        } catch (err) {
+                            return new ErrorResponse(err);
+                        }
+                    }
                 },
                 CookiePolicyMutation: {
                     updateSettings: hasScope("pb:settings")(

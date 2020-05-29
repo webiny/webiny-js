@@ -103,6 +103,10 @@ export type CmsEditorFieldValidatorPlugin = Plugin & {
     };
 };
 
+export type CmsEditorContentTab = React.FC<{
+    activeTab: boolean;
+}>;
+
 // ------------------------------------------------------------------------------------------------------------
 
 export type CmsContentModelFormProps = {

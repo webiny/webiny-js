@@ -7,6 +7,7 @@
   "dependencies": {
     "@webiny/handler": "^4.0.0-beta.1",
     "@webiny/api-headless-cms": "^4.0.0-beta.1",
-    "@webiny/api-files": "^4.0.0-beta.2"
+    "@webiny/api-files": "^4.0.0-beta.2",
+    "@webiny/api-settings-manager": "^4.0.0-beta.1"
   }
 }

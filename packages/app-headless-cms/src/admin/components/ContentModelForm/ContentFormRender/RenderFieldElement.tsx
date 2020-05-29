@@ -53,46 +53,33 @@ const RenderFieldElement = (props: {
                             const props = {
                                 ...bind,
                                 value,
-                                onChange,
-                                // Multiple-values functions below.
-                                appendValue: newValue => {
-                                    if (!field.multipleValues) {
-                                        throw Error(
-                                            `"appendValue" callback can only be used for multiple value fields.`
-                                        );
-                                    }
-                                    if (Array.isArray(newValue)) {
-                                        return onChange([...value, ...newValue]);
-                                    }
-                                    return onChange([...value, newValue]);
-                                },
-                                prependValue: newValue => {
-                                    if (!field.multipleValues) {
-                                        throw Error(
-                                            `"prependValue" callback can only be used for multiple value fields.`
-                                        );
-                                    }
-
-                                    return onChange([newValue, ...value]);
-                                },
-                                removeValue: () => {
-                                    if (!field.multipleValues) {
-                                        throw Error(
-                                            `"removeValue" callback can only be used for multiple value fields.`
-                                        );
-                                    }
-
-                                    if (index >= 0) {
-                                        let value = getValue({ bind, locale, field, index: -1 });
-                                        value = [
-                                            ...value.slice(0, index),
-                                            ...value.slice(index + 1)
-                                        ];
-
-                                        setValue({ value, bind, locale, field, index: -1 });
-                                    }
-                                }
+                                onChange
                             };
+
+                            // Multiple-values functions below.
+                            if (field.multipleValues) {
+                                if (index >= 0) {
+                                    props.removeValue = () => {
+                                        if (index >= 0) {
+                                            let value = getValue({
+                                                bind,
+                                                locale,
+                                                field,
+                                                index: -1
+                                            });
+                                            value = [
+                                                ...value.slice(0, index),
+                                                ...value.slice(index + 1)
+                                            ];
+
+                                            setValue({ value, bind, locale, field, index: -1 });
+                                        }
+                                    };
+                                } else {
+                                    props.appendValue = newValue => onChange([...value, newValue]);
+                                    props.prependValue = newValue => onChange([newValue, ...value]);
+                                }
+                            }
 
                             if (typeof children === "function") {
                                 return children(props);

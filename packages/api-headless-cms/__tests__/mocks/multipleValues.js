@@ -324,5 +324,47 @@ export default {
                 }
             ]
         }
+    }),
+    cannotSetAsEntryTitle: ({ contentModelGroupId, titleFieldId = "" }) => ({
+        name: "Product",
+        group: contentModelGroupId,
+        titleFieldId,
+        fields: [
+            {
+                _id: "vqk-UApa0",
+                fieldId: "title",
+                type: "text",
+                label: {
+                    values: [
+                        {
+                            locale: locales.en.id,
+                            value: "Title"
+                        },
+                        {
+                            locale: locales.de.id,
+                            value: "Titel"
+                        }
+                    ]
+                }
+            },
+            {
+                _id: "id-text",
+                fieldId: "someMultipleValueTextField",
+                type: "text",
+                multipleValues: true,
+                label: {
+                    values: [
+                        {
+                            locale: locales.en.id,
+                            value: "Text-en"
+                        },
+                        {
+                            locale: locales.de.id,
+                            value: "Text-de"
+                        }
+                    ]
+                }
+            }
+        ]
     })
 };

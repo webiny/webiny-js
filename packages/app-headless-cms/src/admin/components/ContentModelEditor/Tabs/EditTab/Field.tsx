@@ -69,6 +69,7 @@ const Field = props => {
                 <Typography use={"subtitle1"}>{getValue(field.label)} </Typography>
                 <Typography use={"caption"}>
                     {fieldPlugin && fieldPlugin.field.label}{" "}
+                    {field.multipleValues && <>({t`multiple values`})</>}
                     {field.fieldId === data.titleFieldId && <>({t`entry title`})</>}
                 </Typography>
             </Info>
@@ -77,7 +78,7 @@ const Field = props => {
                 <Menu className={menuStyles} handle={<IconButton icon={<MoreVerticalIcon />} />}>
                     {plugins.map(pl => React.cloneElement(pl.render(), { key: pl.name }))}
                     <MenuItem
-                        disabled={field.type !== "text"}
+                        disabled={field.multipleValues || field.type !== "text"}
                         onClick={async () => {
                             const response = await setData(data => {
                                 data.titleFieldId = field.fieldId;
