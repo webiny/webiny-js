@@ -49,9 +49,7 @@ export default (
 
             if (context.cms.READ || context.cms.PREVIEW) {
                 if (!context.event) {
-                    throw new Error(
-                        "context.event cannot be empty when accessing /read or /preview routes!"
-                    );
+                    return;
                 }
 
                 const accessToken = context.event.headers["access-token"];
@@ -62,7 +60,7 @@ export default (
                 });
 
                 if (!token) {
-                    throw new Error("Access token is invalid!");
+                    throw new Error("Not authorized!");
                 }
 
                 const allowedEnvironments = await token.environments;
