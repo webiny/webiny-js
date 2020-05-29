@@ -44,6 +44,7 @@
     "@webiny/api-plugin-commodo-db-proxy": "^4.0.0-beta.1",
     "@webiny/api-plugin-commodo-mongodb": "^4.0.0-beta.1",
     "@webiny/api-plugin-commodo-nedb": "^4.0.0-beta.2",
+    "@webiny/api-settings-manager": "^4.0.0-beta.2",
     "apollo-graphql": "^0.4.1",
     "chalk": "^3.0.0",
     "graphql": "^14.6.0",
