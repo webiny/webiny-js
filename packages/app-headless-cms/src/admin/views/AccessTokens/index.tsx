@@ -23,7 +23,13 @@ function EnvironmentAliases() {
                 mutation: CREATE_ACCESS_TOKEN
             }}
             update={{
-                mutation: UPDATE_ACCESS_TOKEN
+                mutation: UPDATE_ACCESS_TOKEN,
+                variables: formData => {
+                    delete formData.token;
+                    return {
+                        data: formData
+                    };
+                }
             }}
             list={{
                 query: LIST_ACCESS_TOKENS,
