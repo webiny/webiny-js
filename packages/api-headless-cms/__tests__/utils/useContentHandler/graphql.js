@@ -98,6 +98,30 @@ export const FIELDS_FIELDS = `
         settings
 `;
 
+export const GET_CONTENT_MODEL = /* GraphQL */ `
+    query GetContentModel($id: ID!) {
+        content: getContentModel(id: $id) {
+            data {
+                 id
+                name
+                titleFieldId
+                usedFields
+                fields {
+                      _id
+                    fieldId
+                    multipleValues
+                }
+                layout
+            }
+            error {
+                code
+                message
+                data
+            }
+        }
+    }
+`;
+
 export const GET_CONTENT_MODEL_BY_MODEL_ID = /* GraphQL */ `
     query getContentByModelId($modelId: String) {
         content: getContentModel(where: { modelId: $modelId }) {
