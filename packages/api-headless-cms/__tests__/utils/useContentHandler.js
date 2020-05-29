@@ -23,23 +23,25 @@ import {
     createUnpublishMutation
 } from "./useContentHandler/graphql";
 
-const database = new Database();
+export default ({ database, type = "manage" } = {}) => {
+    if (!database) {
+        database = new Database();
+    }
 
-const createCmsHandler = () =>
-    createHandler(
-        neDb({ database }),
-        securityServicePlugins({
-            token: {
-                secret: "secret"
-            }
-        }),
-        i18n,
-        i18nLocales(),
-        headlessCmsHandler(),
-        dataManagerPlugins()
-    );
+    const createCmsHandler = () =>
+        createHandler(
+            neDb({ database }),
+            securityServicePlugins({
+                token: {
+                    secret: "secret"
+                }
+            }),
+            i18n,
+            i18nLocales(),
+            headlessCmsHandler(),
+            dataManagerPlugins()
+        );
 
-export default () => {
     const cmsHandler = createCmsHandler();
 
     const invoke = async ({ httpMethod = "POST", body, headers = {}, ...rest }) => {
@@ -64,7 +66,7 @@ export default () => {
                         args.pathParameters = {};
                     }
 
-                    args.pathParameters.key = `manage/${environmentId}`;
+                    args.pathParameters.key = `${type}/${environmentId}`;
 
                     return invoke(args);
                 },
