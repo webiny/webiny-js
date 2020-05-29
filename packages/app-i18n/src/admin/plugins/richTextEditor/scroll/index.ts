@@ -1,4 +1,3 @@
-import { Editor } from "slate";
 import { I18NInputRichTextEditorPlugin } from "@webiny/app-i18n/types";
 
 const plugin: I18NInputRichTextEditorPlugin = {
@@ -7,7 +6,7 @@ const plugin: I18NInputRichTextEditorPlugin = {
     plugin: {
         name: "scroll",
         editor: {
-            onKeyDown(event: React.SyntheticEvent, editor: Editor, next: Function) {
+            onKeyDown({ event }, next) {
                 const native = window.getSelection();
                 if (native.type === "None") {
                     return { top: 0, left: 0, width: 0, height: 0 };

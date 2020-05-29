@@ -1,7 +1,7 @@
 import * as React from "react";
 import { I18NInputRichTextEditorPlugin } from "@webiny/app-i18n/types";
 import TypographySelector from "./TypographySelector";
-import theme from './theme';
+import theme from "./theme";
 
 const plugin: I18NInputRichTextEditorPlugin = {
     name: "i18n-input-rich-text-editor-typography",
@@ -18,10 +18,10 @@ const plugin: I18NInputRichTextEditorPlugin = {
             }
         },
         editor: {
-            renderNode(props, next) {
-                const { attributes, children, node } = props;
+            renderElement(props, next) {
+                const { attributes, children, element } = props;
                 // @ts-ignore
-                const { type } = node;
+                const { type } = element;
 
                 // @ts-ignore
                 const { typography } = theme;
@@ -31,9 +31,7 @@ const plugin: I18NInputRichTextEditorPlugin = {
 
                     let nodeProps: any = {
                         ...attributes,
-                        className,
-                        // @ts-ignore
-                        style: { textAlign: `${node.data.get("align")}` }
+                        className
                     };
 
                     if (typeof Component !== "string") {
