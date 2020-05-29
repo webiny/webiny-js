@@ -88,9 +88,7 @@ function EnvironmentAliasesForm() {
                         </Grid>
                     </SimpleFormContent>
                     <SimpleFormFooter>
-                        <ButtonPrimary
-                            onClick={form.submit}
-                        >{t`Save environment alias`}</ButtonPrimary>
+                        <ButtonPrimary onClick={form.submit}>{t`Save Access Token`}</ButtonPrimary>
                     </SimpleFormFooter>
                 </SimpleForm>
             )}
