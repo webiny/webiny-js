@@ -148,7 +148,7 @@ export const createDataModel = (
 
                 for (let i = 0; i < fields.length; i++) {
                     const field = fields[i];
-                    if (usedFields.includes(field.fieldId)) {
+                    if (usedFields.find(usedField => usedField.fieldId === field.fieldId)) {
                         continue;
                     }
 
@@ -157,14 +157,21 @@ export const createDataModel = (
                         removeCallback();
 
                         const fields = contentModel.fields || [];
-                        const usedFields = contentModel.usedFields || [];
+                        let usedFields = contentModel.usedFields || [];
 
                         for (let i = 0; i < fields.length; i++) {
-                            const fieldId = fields[i].fieldId;
-                            if (usedFields.includes(fieldId)) {
+                            const field = fields[i];
+                            if (usedFields.find(usedField => usedField.fieldId === field.fieldId)) {
                                 continue;
                             }
-                            usedFields.push(fieldId);
+                            usedFields = [
+                                ...usedFields,
+                                {
+                                    fieldId: field.fieldId,
+                                    multipleValues: field.multipleValues,
+                                    type: field.type
+                                }
+                            ];
                         }
 
                         contentModel.usedFields = usedFields;

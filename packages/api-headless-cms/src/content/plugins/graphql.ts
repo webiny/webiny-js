@@ -110,6 +110,12 @@ export default ({ type }) => [
                     error: CmsError
                 }
 
+                type CmsUsedField {
+                    fieldId: String
+                    multipleValues: Boolean
+                    type: String
+                }
+                
                 type CmsContentModel {
                     id: ID
                     name: String
@@ -125,7 +131,7 @@ export default ({ type }) => [
                     titleFieldId: String
                     fields: [CmsContentModelField]
                     indexes: [ContentModelIndexes]
-                    usedFields: [String]
+                    usedFields: [CmsUsedField]
                 }
 
                 input CmsContentModelInput {

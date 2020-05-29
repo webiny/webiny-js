@@ -106,12 +106,18 @@ export type CmsContentModelIndex = {
     createdOn: Date;
 };
 
+export type UsedField = {
+    fieldId: string;
+    multipleValues: boolean;
+    type: string;
+};
+
 export type CmsContentModel = {
     environment: string;
     title: string;
     description: string;
     modelId: string;
-    usedFields: string[];
+    usedFields: UsedField[];
     titleFieldId: string;
     indexes: CmsContentModelIndex[];
     fields: CmsContentModelField[];
