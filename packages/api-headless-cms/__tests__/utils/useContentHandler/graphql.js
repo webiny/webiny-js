@@ -121,7 +121,6 @@ export const GET_CONTENT_MODEL = /* GraphQL */ `
         }
     }
 `;
-
 export const GET_CONTENT_MODEL_BY_MODEL_ID = /* GraphQL */ `
     query getContentByModelId($modelId: String) {
         content: getContentModel(where: { modelId: $modelId }) {

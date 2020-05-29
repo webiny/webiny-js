@@ -48,6 +48,8 @@ export default () => {
             headers,
             body: JSON.stringify(body),
             ...rest
+          
+          
         });
 
         return [JSON.parse(response.body), response];
@@ -107,6 +109,7 @@ export default () => {
                     });
 
                     const { data: contentModel, contentModelError } = body.data.content;
+
                     if (contentModelError) {
                         throw contentModelError;
                     }
