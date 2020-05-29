@@ -26,9 +26,9 @@ function printFirstDeploySummary({ state }) {
                 hasGraphQL && `🔗 Main GraphQL API: ${green(state.cdn.url + "/graphql")}`,
                 hasCMS && `🔗 CMS API:`,
                 hasCMS &&
-                `   - Content Delivery API: ${green(state.cdn.url + "/cms/read/production")}`,
+                    `   - Content Delivery API: ${green(state.cdn.url + "/cms/read/production")}`,
                 hasCMS &&
-                `   - Content Preview API: ${green(state.cdn.url + "/cms/preview/production")}`,
+                    `   - Content Preview API: ${green(state.cdn.url + "/cms/preview/production")}`,
                 ``,
                 ``,
                 `To finish the system setup, you need to start your ${green(
@@ -57,9 +57,9 @@ function printDeploySummary({ state }) {
                 hasGraphQL && `🔗 Main GraphQL API: ${green(state.cdn.url + "/graphql")}`,
                 hasCMS && `🔗 CMS API:`,
                 hasCMS &&
-                `   - Content Delivery API: ${green(state.cdn.url + "/cms/read/production")}`,
+                    `   - Content Delivery API: ${green(state.cdn.url + "/cms/read/production")}`,
                 hasCMS &&
-                `   - Content Preview API: ${green(state.cdn.url + "/cms/preview/production")}`
+                    `   - Content Preview API: ${green(state.cdn.url + "/cms/preview/production")}`
             ]
                 .filter(l => l !== false)
                 .join("\n")

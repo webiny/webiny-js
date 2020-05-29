@@ -51,6 +51,7 @@ export default [
                 <Section label={t`Headless CMS`}>
                     <Item label={t`Environments`} path={"/settings/cms/environments"} />
                     <Item label={t`Aliases`} path={"/settings/cms/environments/aliases"} />
+                    <Item label={t`Access Tokens`} path={"/settings/cms/accessTokens"} />
                 </Section>
             );
         }

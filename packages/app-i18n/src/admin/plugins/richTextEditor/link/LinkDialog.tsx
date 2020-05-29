@@ -53,7 +53,6 @@ const LinkDialog = props => {
             Transforms.select(editor, selection);
             console.log("selection", editor.selection);
 
-
             if (isCollapsed) {
                 Transforms.insertNodes(editor, link);
             } else {

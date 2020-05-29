@@ -38,6 +38,47 @@ export default (
         }
     } as ContextPlugin,
     models(),
+    {
+        name: "context-cms-validate-access-token",
+        type: "context",
+        async apply(context) {
+            if (process.env.NODE_ENV === "test") {
+                // Skip authentication when running tests
+                return;
+            }
+
+            if (context.cms.READ || context.cms.PREVIEW) {
+                if (!context.event) {
+                    throw new Error(
+                        "context.event cannot be empty when accessing /read or /preview routes!"
+                    );
+                }
+
+                const accessToken = context.event.headers["access-token"];
+                const { CmsAccessToken } = context.models;
+
+                const token = await CmsAccessToken.findOne({
+                    query: { token: accessToken }
+                });
+
+                if (!token) {
+                    throw new Error("Access token is invalid!");
+                }
+
+                const allowedEnvironments = await token.environments;
+                const currentEnvironment = context.cms.getEnvironment();
+                if (!allowedEnvironments.find(env => env.id === currentEnvironment.id)) {
+                    throw new Error(
+                        `You are not authorized to access "${currentEnvironment.name}" environment!`
+                    );
+                }
+            }
+
+            if (context.cms.MANAGE && !context.user) {
+                throw new Error("Not authorized!");
+            }
+        }
+    },
     graphql(options),
     modelFields,
     graphqlFields,

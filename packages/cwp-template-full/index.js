@@ -8,7 +8,6 @@ const writeJsonFile = require("write-json-file");
 const { v4: uuidv4 } = require("uuid");
 
 module.exports = async ({ appName, root }) => {
-
     const { name, version } = require("./package.json");
     const filesToCopy = require("./filesToCopy");
     for (let i = 0; i < filesToCopy.length; i++) {
