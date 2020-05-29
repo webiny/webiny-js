@@ -4,6 +4,7 @@ import { ContextPlugin } from "@webiny/graphql/types";
 import { Context } from "@webiny/api-plugin-commodo-db-proxy/types";
 import contentModel from "./models/contentModel.model";
 import cmsAccessToken from "../../plugins/models/accessToken.model";
+import cmsEnvironment2CmsAccessToken from "../../plugins/models/environment2accessToken";
 import environmentModel from "../../plugins/models/environment.model";
 import environmentModelAlias from "../../plugins/models/environmentAlias.model";
 import contentModelGroup from "./models/contentModelGroup.model";
@@ -36,6 +37,10 @@ export default () => {
             createBase,
             CmsEnvironment: environmentModel({ createBase, context }),
             CmsEnvironmentAlias: environmentModelAlias({
+                createBase,
+                context
+            }),
+            CmsEnvironment2CmsAccessToken: cmsEnvironment2CmsAccessToken({
                 createBase,
                 context
             }),
