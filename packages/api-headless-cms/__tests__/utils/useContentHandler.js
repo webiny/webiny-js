@@ -12,6 +12,7 @@ import {
     GET_CONTENT_MODEL_BY_MODEL_ID,
     CREATE_CONTENT_MODEL,
     UPDATE_CONTENT_MODEL,
+    GET_CONTENT_MODEL,
     createCreateMutation,
     createListQuery,
     createDeleteMutation,
@@ -78,11 +79,20 @@ export default () => {
 
                     return getData(body);
                 },
-
                 async updateContentModel(variables) {
                     const [body] = await environmentApi.invoke({
                         body: {
                             query: UPDATE_CONTENT_MODEL,
+                            variables
+                        }
+                    });
+
+                    return getData(body);
+                },
+                async getContentModel(variables) {
+                    const [body] = await environmentApi.invoke({
+                        body: {
+                            query: GET_CONTENT_MODEL,
                             variables
                         }
                     });
@@ -97,7 +107,7 @@ export default () => {
                         }
                     });
 
-                    const { data: contentModel, contentModelError } = body.data.getContentModel;
+                    const { data: contentModel, contentModelError } = body.data.content;
                     if (contentModelError) {
                         throw contentModelError;
                     }

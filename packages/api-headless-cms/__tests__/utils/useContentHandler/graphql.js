@@ -42,6 +42,8 @@ export const CREATE_CONTENT_MODEL = /* GraphQL */ `
             data {
                 id
                 name
+                titleFieldId
+                usedFields
                 fields {
                     _id
                     fieldId
@@ -60,6 +62,7 @@ export const UPDATE_CONTENT_MODEL = /* GraphQL */ `
                 id
                 name
                 titleFieldId
+                usedFields
                 fields {
                       _id
                     fieldId
@@ -68,6 +71,30 @@ export const UPDATE_CONTENT_MODEL = /* GraphQL */ `
                 layout
             }
             error ${ERROR_FIELD}
+        }
+    }
+`;
+
+export const GET_CONTENT_MODEL = /* GraphQL */ `
+    query GetContentModel($id: ID!) {
+        content: getContentModel(id: $id) {
+            data {
+                 id
+                name
+                titleFieldId
+                usedFields
+                fields {
+                      _id
+                    fieldId
+                    multipleValues
+                }
+                layout
+            }
+            error {
+                code
+                message
+                data
+            }
         }
     }
 `;
