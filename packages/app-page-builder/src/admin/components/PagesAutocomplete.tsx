@@ -7,7 +7,7 @@ import { useAutocomplete } from "@webiny/app/hooks/useAutocomplete";
 
 // We utilize the same "listPages" GraphQL field.
 const GET_PAGE = gql`
-    query getPublishedPage($parent: String) {
+    query getPublishedPage($parent: ID) {
         pageBuilder {
             page: getPublishedPage(parent: $parent) {
                 data {

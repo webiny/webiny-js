@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.0.0-beta.2](https://github.com/webiny/webiny-js/compare/v4.0.0-beta.1...v4.0.0-beta.2) (2020-05-25)
+
+
+### Bug Fixes
+
+* pass "style" prop in the "ButtonDefault" component ([4ccd5dd](https://github.com/webiny/webiny-js/commit/4ccd5ddee2158f6f23933a5e3347a37efc62f41f))
+
+
+
+
+
 # [4.0.0-beta.1](https://github.com/webiny/webiny-js/compare/v4.0.0-beta.0...v4.0.0-beta.1) (2020-05-22)
 
 **Note:** Version bump only for package @webiny/ui

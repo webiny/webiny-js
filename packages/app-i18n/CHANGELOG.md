@@ -3,6 +3,25 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.0.0-beta.3](https://github.com/webiny/webiny-js/compare/v4.0.0-beta.2...v4.0.0-beta.3) (2020-05-25)
+
+
+### Bug Fixes
+
+* refetch locales on successful I18N app installation ([d6dde2e](https://github.com/webiny/webiny-js/commit/d6dde2e9309e2ddeabd0aae789e1108a689ebb84))
+
+
+
+
+
+# [4.0.0-beta.2](https://github.com/webiny/webiny-js/compare/v4.0.0-beta.1...v4.0.0-beta.2) (2020-05-25)
+
+**Note:** Version bump only for package @webiny/app-i18n
+
+
+
+
+
 # [4.0.0-beta.1](https://github.com/webiny/webiny-js/compare/v4.0.0-beta.0...v4.0.0-beta.1) (2020-05-22)
 
 **Note:** Version bump only for package @webiny/app-i18n

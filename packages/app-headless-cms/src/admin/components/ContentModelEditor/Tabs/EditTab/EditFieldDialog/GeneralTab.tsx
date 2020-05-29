@@ -79,8 +79,7 @@ const GeneralTab = ({ field, form, fieldPlugin }: GeneralTabProps) => {
                         <Input label={"Field ID"} disabled={!!field._id} />
                     </Bind>
                 </Cell>
-{/*
-            TODO: add multiple-values functionality.
+
                 <Cell span={12}>
                     <Bind name={"multipleValues"}>
                         <Switch
@@ -89,7 +88,6 @@ const GeneralTab = ({ field, form, fieldPlugin }: GeneralTabProps) => {
                         />
                     </Bind>
                 </Cell>
-*/}
 
                 <Cell span={12}>
                     <Bind name={"helpText"}>

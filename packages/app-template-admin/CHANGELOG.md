@@ -3,6 +3,25 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.0.0-beta.3](https://github.com/webiny/webiny-js/compare/v4.0.0-beta.2...v4.0.0-beta.3) (2020-05-25)
+
+**Note:** Version bump only for package @webiny/app-template-admin
+
+
+
+
+
+# [4.0.0-beta.2](https://github.com/webiny/webiny-js/compare/v4.0.0-beta.1...v4.0.0-beta.2) (2020-05-25)
+
+
+### Bug Fixes
+
+* set default admin app route to /account ([26051d9](https://github.com/webiny/webiny-js/commit/26051d9b2be3b28ee1d1f88c8e85d21e0dd6d506))
+
+
+
+
+
 # [4.0.0-beta.1](https://github.com/webiny/webiny-js/compare/v4.0.0-beta.0...v4.0.0-beta.1) (2020-05-22)
 
 **Note:** Version bump only for package @webiny/app-template-admin

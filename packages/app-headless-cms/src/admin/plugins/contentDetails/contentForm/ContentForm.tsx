@@ -58,7 +58,8 @@ const ContentForm = ({
             const { id } = response.data.content.data;
             query.set("id", id);
             history.push({ search: query.toString() });
-            dataList.refresh();
+            // This is a hack - replace data-list refreshes with directly updating the Apollo cache.
+            setTimeout(dataList.refresh, 500);
         },
         [contentModel.modelId]
     );
@@ -96,7 +97,8 @@ const ContentForm = ({
             const { id: revisionId } = response.data.content.data;
             query.set("id", revisionId);
             history.push({ search: query.toString() });
-            dataList.refresh();
+            // This is a hack - replace data-list refreshes with directly updating the Apollo cache.
+            setTimeout(dataList.refresh, 500);
         },
         [contentModel.modelId]
     );

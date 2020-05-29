@@ -141,6 +141,37 @@ export const createDataModel = (
                         }
                     });
                 }
+
+                // Let's mark fields on actual content model as used.
+                const fields = contentModel.fields || [];
+                const usedFields = contentModel.usedFields || [];
+
+                for (let i = 0; i < fields.length; i++) {
+                    const field = fields[i];
+                    if (usedFields.includes(field.fieldId)) {
+                        continue;
+                    }
+
+                    // If just a single field is not in the content model's "usedFields" list, we must update it.
+                    const removeCallback = this.hook("afterSave", async () => {
+                        removeCallback();
+
+                        const fields = contentModel.fields || [];
+                        const usedFields = contentModel.usedFields || [];
+
+                        for (let i = 0; i < fields.length; i++) {
+                            const fieldId = fields[i].fieldId;
+                            if (usedFields.includes(fieldId)) {
+                                continue;
+                            }
+                            usedFields.push(fieldId);
+                        }
+
+                        contentModel.usedFields = usedFields;
+                        await contentModel.save();
+                    });
+                    break;
+                }
             },
             async beforeCreate() {
                 this.meta.environment = context.cms.getEnvironment().id;

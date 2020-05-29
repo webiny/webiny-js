@@ -1,0 +1,13 @@
+{
+  "extends": "../../tsconfig.build.json",
+  "compilerOptions": {
+    "rootDir": "./src",
+    "outDir": "./dist",
+    "declarationDir": "./dist"
+  },
+  "exclude": ["node_modules", "dist", "../graphql", "../handler"],
+  "references": [
+    { "path": "../handler/tsconfig.build.json" },
+    { "path": "../graphql/tsconfig.build.json" }
+  ]
+}

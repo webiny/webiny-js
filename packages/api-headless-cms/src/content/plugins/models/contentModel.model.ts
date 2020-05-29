@@ -38,7 +38,7 @@ export default ({ createBase, context }: { createBase: Function; context: CmsCon
 
             // Contains a list of all fields that were utilized by existing content entries. If a field is on the list,
             // it cannot be removed anymore, because we don't want the user to loose any previously inserted data.
-            usedFields: skipOnPopulate()(string({ list: true, value: [] })),
+            usedFields: skipOnPopulate()(string({ list: true })),
             fields: fields({
                 list: true,
                 value: [],
@@ -78,6 +78,19 @@ export default ({ createBase, context }: { createBase: Function; context: CmsCon
                     );
                 }
             },
+            async beforeUpdate() {
+                // We must not allow removal of fields that are already in use in content entries.
+                const usedFields = this.usedFields || [];
+                for (let i = 0; i < usedFields.length; i++) {
+                    const usedFieldId = usedFields[i];
+                    const fieldExists = this.fields.find(item => item.fieldId === usedFieldId);
+                    if (!fieldExists) {
+                        throw new Error(
+                            `Cannot remove field "${usedFieldId}" because it's already in use in created content.`
+                        );
+                    }
+                }
+            },
             async beforeSave() {
                 if (this.getField("indexes").isDirty()) {
                     const removeCallback = this.hook("afterSave", async () => {
@@ -91,18 +104,6 @@ export default ({ createBase, context }: { createBase: Function; context: CmsCon
 
                 const fields = this.fields || [];
 
-                // We must not allow removal of fields that are already in use in content entries.
-                const usedFields = this.usedFields || [];
-                for (let i = 0; i < usedFields.length; i++) {
-                    const usedFieldId = usedFields[i];
-                    const fieldExists = fields.find(item => item.fieldId === usedFieldId);
-                    if (!fieldExists) {
-                        throw new Error(
-                            `Cannot remove field "${usedFieldId}" because it's already in use in created content.`
-                        );
-                    }
-                }
-
                 // If no title field set, just use the first "text" field.
                 let hasTitleFieldId = false;
                 if (this.titleFieldId && fields.find(item => item.fieldId === this.titleFieldId)) {
@@ -113,7 +114,7 @@ export default ({ createBase, context }: { createBase: Function; context: CmsCon
                     this.titleFieldId = null;
                     for (let i = 0; i < fields.length; i++) {
                         const field = fields[i];
-                        if (field.type === "text") {
+                        if (field.type === "text" && !field.multipleValues) {
                             this.titleFieldId = field.fieldId;
                             break;
                         }
@@ -124,6 +125,12 @@ export default ({ createBase, context }: { createBase: Function; context: CmsCon
                     const field = fields.find(item => item.fieldId === this.titleFieldId);
                     if (field.type !== "text") {
                         throw new Error("Only text fields can be used as an entry title.");
+                    }
+
+                    if (field.multipleValues) {
+                        throw new Error(
+                            `Fields that accept multiple values cannot be used as the entry title (tried to use "${this.titleFieldId}" field)`
+                        );
                     }
                 }
 

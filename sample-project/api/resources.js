@@ -7,6 +7,7 @@ const apolloServiceEnv = {
     GRAPHQL_PLAYGROUND: process.env.GRAPHQL_PLAYGROUND,
     JWT_TOKEN_EXPIRES_IN: "2592000",
     JWT_TOKEN_SECRET: process.env.JWT_SECRET,
+    SETTINGS_MANAGER_FUNCTION: "${settingsManager.arn}",
     VALIDATE_ACCESS_TOKEN_FUNCTION: "${securityValidateAccessToken.name}"
 };
 const apolloGatewayServices = {
@@ -74,6 +75,28 @@ module.exports = () => ({
                 }
             }
         },
+        settingsManager: {
+            watch: ["./settingsManager/build"],
+            build: {
+                root: "./settingsManager",
+                script: "yarn build"
+            },
+            deploy: {
+                component: "@webiny/serverless-function",
+                inputs: {
+                    description: "Settings Manager",
+                    region: process.env.AWS_REGION,
+                    code: "./settingsManager/build",
+                    handler: "handler.handler",
+                    memory: 128,
+                    timeout: 20,
+                    env: {
+                        DB_PROXY_FUNCTION: "${databaseProxy.arn}",
+                        DEBUG: process.env.DEBUG
+                    }
+                }
+            }
+        },
         securityGraphQL: {
             watch: ["./security/graphql/build"],
             build: {
@@ -105,7 +128,7 @@ module.exports = () => ({
                     region: process.env.AWS_REGION,
                     code: "./security/validateAccessToken/build",
                     handler: "handler.handler",
-                    memory: 512,
+                    memory: 256,
                     timeout: 30,
                     env: {
                         DB_PROXY_FUNCTION: "${databaseProxy.arn}",
@@ -332,7 +355,10 @@ module.exports = () => ({
                     handler: "handler.handler",
                     memory: 512,
                     timeout: 30,
-                    env: { ...apolloServiceEnv, I18N_LOCALES_FUNCTION: "${i18nLocales.name}" }
+                    env: {
+                        ...apolloServiceEnv,
+                        I18N_LOCALES_FUNCTION: "${i18nLocales.name}"
+                    }
                 }
             }
         },
@@ -374,7 +400,8 @@ module.exports = () => ({
                     env: {
                         ...apolloServiceEnv,
                         I18N_LOCALES_FUNCTION: "${i18nLocales.name}",
-                        CMS_DATA_MANAGER_FUNCTION: "${cmsDataManager.name}"
+                        CMS_DATA_MANAGER_FUNCTION: "${cmsDataManager.name}",
+                        SETTINGS_MANAGER_FUNCTION: "${settingsManager.arn}"
                     }
                 }
             }

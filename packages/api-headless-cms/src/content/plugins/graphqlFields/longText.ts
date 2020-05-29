@@ -1,5 +1,7 @@
 import gql from "graphql-tag";
 import { CmsModelFieldToGraphQLPlugin } from "@webiny/api-headless-cms/types";
+import { i18nFieldType } from "./../graphqlTypes/i18nFieldType";
+import { i18nFieldInput } from "./../graphqlTypes/i18nFieldInput";
 
 const createListFilters = ({ field }) => {
     return `
@@ -31,6 +33,10 @@ const plugin: CmsModelFieldToGraphQLPlugin = {
     read: {
         createTypeField({ field }) {
             const localeArg = "(locale: String)";
+            if (field.multipleValues) {
+                return `${field.fieldId}${localeArg}: [String]`;
+            }
+
             return `${field.fieldId}${localeArg}: String`;
         },
         createGetFilters({ field }) {
@@ -53,24 +59,8 @@ const plugin: CmsModelFieldToGraphQLPlugin = {
         createSchema() {
             return {
                 typeDefs: gql`
-                    input CmsLongTextLocalizedInput {
-                        value: String
-                        locale: ID!
-                    }
-
-                    input CmsLongTextInput {
-                        values: [CmsLongTextLocalizedInput]
-                    }
-
-                    type CmsLongTextLocalized {
-                        value: String
-                        locale: ID!
-                    }
-
-                    type CmsLongText {
-                        value(locale: String): String
-                        values: [CmsLongTextLocalized]!
-                    }
+                    ${i18nFieldType("CmsLongText", "String")}
+                    ${i18nFieldInput("CmsLongText", "String")}
                 `,
                 resolvers: {
                     CmsLongText: {
@@ -82,9 +72,17 @@ const plugin: CmsModelFieldToGraphQLPlugin = {
             };
         },
         createTypeField({ field }) {
+            if (field.multipleValues) {
+                return field.fieldId + ": CmsLongTextList";
+            }
+
             return field.fieldId + ": CmsLongText";
         },
         createInputField({ field }) {
+            if (field.multipleValues) {
+                return field.fieldId + ": CmsLongTextListInput";
+            }
+
             return field.fieldId + ": CmsLongTextInput";
         }
     }

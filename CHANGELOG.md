@@ -3,6 +3,68 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.0.0-beta.3](https://github.com/webiny/webiny-js/compare/v4.0.0-beta.2...v4.0.0-beta.3) (2020-05-25)
+
+
+### Bug Fixes
+
+* refetch locales on successful I18N app installation ([d6dde2e](https://github.com/webiny/webiny-js/commit/d6dde2e9309e2ddeabd0aae789e1108a689ebb84))
+
+
+
+
+
+# [4.0.0-beta.2](https://github.com/webiny/webiny-js/compare/v4.0.0-beta.1...v4.0.0-beta.2) (2020-05-25)
+
+
+### Bug Fixes
+
+* change title ([5162941](https://github.com/webiny/webiny-js/commit/5162941c033c4141fbcceed57fa019765f70d82b))
+* pass "style" prop in the "ButtonDefault" component ([4ccd5dd](https://github.com/webiny/webiny-js/commit/4ccd5ddee2158f6f23933a5e3347a37efc62f41f))
+* temporary add delay before refreshing content list ([42c82f4](https://github.com/webiny/webiny-js/commit/42c82f41c4a09e057922a8bf2a4c69c78f50eab1))
+* **app-admin:** update style declarations ([d98b67a](https://github.com/webiny/webiny-js/commit/d98b67a759831e6057b00af376fa9e28ccb27f49))
+* **app-form-builder:** allow a single checkbox to be submitted ([#858](https://github.com/webiny/webiny-js/issues/858)) ([c60b47f](https://github.com/webiny/webiny-js/commit/c60b47f1b7b06ea85821f6a8a06fb142f15ed93c))
+* **app-headless-cms:** don't create new value entry for empty string ([#881](https://github.com/webiny/webiny-js/issues/881)) ([c5dd03b](https://github.com/webiny/webiny-js/commit/c5dd03be5c74f71c91ab444a465e4a573e91b5a2))
+* **cli:** improve console.log handling ([7c28fc0](https://github.com/webiny/webiny-js/commit/7c28fc0cd8c56b223f2897696b7944c87d905f3a))
+* **create-webiny-project:** improve output formatting ([9b6a2d4](https://github.com/webiny/webiny-js/commit/9b6a2d496c900273d148b98305fa82ec8bc96ad1))
+* **project-utils:** set default openBrowser value ([e2d757a](https://github.com/webiny/webiny-js/commit/e2d757a8979f9625e28c0962fba38290794f424f))
+* 🐛  update `plugin` name ([589077a](https://github.com/webiny/webiny-js/commit/589077a5d926156db37b27a333a0d49a4b795c40))
+* add "@webiny/api-plugin-commodo-nedb" to the list ([5e04fa9](https://github.com/webiny/webiny-js/commit/5e04fa9a4002e94cc4423021411abf369f22e337))
+* add eslint config files ([53ef175](https://github.com/webiny/webiny-js/commit/53ef1759e236f15b6b5701b84cbda77185bec8c3))
+* copy template devDependencies to project ([5187d8a](https://github.com/webiny/webiny-js/commit/5187d8aa1ef4b7c2f972c20ffb1dab52e9933941))
+* correct operation name ([812c310](https://github.com/webiny/webiny-js/commit/812c3106a7aea438425b0ac214f4ca4efe0bd1ee))
+* correct visual incosistencies ([048c04d](https://github.com/webiny/webiny-js/commit/048c04d6be749453a10c42e43d76ee4ba01ecd8b))
+* remove console.log ([bd3b178](https://github.com/webiny/webiny-js/commit/bd3b17879065407f1f884ee2cf7f2d835334b94b))
+* remove duplicate bracket ([87b0c64](https://github.com/webiny/webiny-js/commit/87b0c6436fdeb8d1d0d1a8e30cc0837fec848984))
+* remove unused query ([ca9fe39](https://github.com/webiny/webiny-js/commit/ca9fe39437de7ceb3831b4ded0bd4579ddb639cd))
+* use "LIST_MENU_CONTENT_GROUPS_MODELS" query to get the list of groups ([8680d3d](https://github.com/webiny/webiny-js/commit/8680d3d01dc3dc49a689a4fbb58993c1fe7c3214))
+* **api-headless-cms:** check user authentication in manage API ([f0dccdb](https://github.com/webiny/webiny-js/commit/f0dccdb19ef308d467f69bdae17aa563c60d1b25))
+* **cli:** indent all output for improved readability ([f703b6a](https://github.com/webiny/webiny-js/commit/f703b6aab2a22180c55910ec07f74fb1d37f04ff))
+* **create-webiny-project:** add checks for node, target folder, and improve output ([6ed5b00](https://github.com/webiny/webiny-js/commit/6ed5b00578a8edb62a3d8c2bb00e755a902f5b0f))
+* **cwp-template-full:** set the correct graphql service ([31c3c19](https://github.com/webiny/webiny-js/commit/31c3c198bbe7ee39ec57cc6a34a673da88fc2dd7))
+* **cwp-templates:** add missing devDependencies ([9659f07](https://github.com/webiny/webiny-js/commit/9659f07fddaf59225ee7b8b104cb47229c1bbc95))
+* **project-utils:** open browser after build ([8c928e9](https://github.com/webiny/webiny-js/commit/8c928e9fcd21658eb3ee7536363215433f0c8c5c))
+* set default admin app route to /account ([26051d9](https://github.com/webiny/webiny-js/commit/26051d9b2be3b28ee1d1f88c8e85d21e0dd6d506))
+* update @webiny/* package versions (must point to latest "beta" tag) ([b2071f3](https://github.com/webiny/webiny-js/commit/b2071f3c392c3b3d7987ac31f29480761a45e6c5))
+* update search table on changes of latestVersion / published flags ([e7ff2f9](https://github.com/webiny/webiny-js/commit/e7ff2f9e71060c10066c24d6d9882f4ed4ebef62))
+* **project-utils:** remove updateEnvValues utility ([a128f27](https://github.com/webiny/webiny-js/commit/a128f2778704c652b80b3fa699fd11ce2112f772))
+* **serverless-function:** highlight concurrency value ([0b203cb](https://github.com/webiny/webiny-js/commit/0b203cbd7fa4c24e5c7295bb247e1e6d20d9626c))
+
+
+### Features
+
+* **editor:** add "View content" button to the top bar ([726354a](https://github.com/webiny/webiny-js/commit/726354a281aa600847ac8b020b27eceabc3008d0))
+* create "api-plugin-commodo-nedb" package ([70d531a](https://github.com/webiny/webiny-js/commit/70d531a6916c5e8e42bb6de08548970b5d640698))
+* create "api-plugin-commodo-nedb" package ([5fc0ec1](https://github.com/webiny/webiny-js/commit/5fc0ec187a43b32ae84fb847867ac72f7cb1da68))
+* **api-cms-handler:** allow unauthenticated requests ([3ba4aca](https://github.com/webiny/webiny-js/commit/3ba4acaae1339bf664d53ebcd2564efbdd64e62e))
+* **api-security:** add "public" option to control unauthenticated access to API ([6b30e1c](https://github.com/webiny/webiny-js/commit/6b30e1c2f67d179c75d4b9bb182653a9d4389317))
+* **cli-plugin-deploy-components:** process user-defined hooks ([6375741](https://github.com/webiny/webiny-js/commit/6375741599504e711e72c06bc4c3a445e391550f))
+* **cwp-template:** add afterDeploy hook ([6febdad](https://github.com/webiny/webiny-js/commit/6febdad483fdb1cf53df7d1f634bbe8fe709772c))
+
+
+
+
+
 # [4.0.0-beta.1](https://github.com/webiny/webiny-js/compare/v4.0.0-beta.0...v4.0.0-beta.1) (2020-05-22)
 
 

@@ -3,6 +3,25 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.0.0-beta.3](https://github.com/webiny/webiny-js/compare/v4.0.0-beta.2...v4.0.0-beta.3) (2020-05-25)
+
+**Note:** Version bump only for package @webiny/app-form-builder
+
+
+
+
+
+# [4.0.0-beta.2](https://github.com/webiny/webiny-js/compare/v4.0.0-beta.1...v4.0.0-beta.2) (2020-05-25)
+
+
+### Bug Fixes
+
+* **app-form-builder:** allow a single checkbox to be submitted ([#858](https://github.com/webiny/webiny-js/issues/858)) ([c60b47f](https://github.com/webiny/webiny-js/commit/c60b47f1b7b06ea85821f6a8a06fb142f15ed93c))
+
+
+
+
+
 # [4.0.0-beta.1](https://github.com/webiny/webiny-js/compare/v4.0.0-beta.0...v4.0.0-beta.1) (2020-05-22)
 
 **Note:** Version bump only for package @webiny/app-form-builder

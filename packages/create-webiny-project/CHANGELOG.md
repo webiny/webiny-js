@@ -3,6 +3,20 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.0.0-beta.2](https://github.com/Webiny/webiny-js/compare/v4.0.0-beta.1...v4.0.0-beta.2) (2020-05-25)
+
+
+### Bug Fixes
+
+* **create-webiny-project:** improve output formatting ([9b6a2d4](https://github.com/Webiny/webiny-js/commit/9b6a2d496c900273d148b98305fa82ec8bc96ad1))
+* copy template devDependencies to project ([5187d8a](https://github.com/Webiny/webiny-js/commit/5187d8aa1ef4b7c2f972c20ffb1dab52e9933941))
+* remove duplicate bracket ([87b0c64](https://github.com/Webiny/webiny-js/commit/87b0c6436fdeb8d1d0d1a8e30cc0837fec848984))
+* **create-webiny-project:** add checks for node, target folder, and improve output ([6ed5b00](https://github.com/Webiny/webiny-js/commit/6ed5b00578a8edb62a3d8c2bb00e755a902f5b0f))
+
+
+
+
+
 # [4.0.0-beta.1](https://github.com/webiny/webiny-js/compare/v4.0.0-beta.0...v4.0.0-beta.1) (2020-05-22)
 
 **Note:** Version bump only for package create-webiny-project

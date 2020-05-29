@@ -30,8 +30,13 @@ $webiny-theme-dark-caret-down: url("data:image/svg+xml,%3Csvg%20width%3D%2210px%
 $webiny-theme-typography-font-family: "Source Sans Pro" !default;
 
 // import required fonts
-@import url('https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,600,700');
+@import url("https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,600,700");
 
-body{
-    font-size: 16px;
+body {
+  font-size: 16px;
+}
+
+a {
+  color: var(--webiny-theme-color-primary, #ee896b);
+  text-decoration: none;
 }

@@ -1,6 +1,6 @@
 {
   "name": "@webiny/api-page-builder",
-  "version": "4.0.0-beta.1",
+  "version": "4.0.0-beta.2",
   "main": "index.js",
   "repository": {
     "type": "git",
@@ -16,7 +16,7 @@
   "license": "MIT",
   "dependencies": {
     "@babel/runtime": "^7.5.5",
-    "@webiny/api-security": "^4.0.0-beta.1",
+    "@webiny/api-security": "^4.0.0-beta.2",
     "@webiny/commodo": "^4.0.0-beta.1",
     "@webiny/commodo-graphql": "^4.0.0-beta.1",
     "@webiny/graphql": "^4.0.0-beta.1",
@@ -46,6 +46,7 @@
     "@babel/plugin-proposal-export-default-from": "^7.5.2",
     "@babel/preset-env": "^7.5.5",
     "@babel/preset-typescript": "^7.8.3",
+    "@webiny/api-settings-manager": "^4.0.0-beta.1",
     "flow-copy-source": "^2.0.2"
   },
   "publishConfig": {

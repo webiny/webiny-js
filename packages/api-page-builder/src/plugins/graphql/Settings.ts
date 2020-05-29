@@ -1,4 +1,8 @@
-import { resolveUpdateSettings, resolveGetSettings } from "@webiny/commodo-graphql";
+import { resolveUpdateSettings, ErrorResponse } from "@webiny/commodo-graphql";
+import { Context } from "@webiny/graphql/types";
+import { Context as SettingsManagerContext } from "@webiny/api-settings-manager/types";
+
+type SettingsContext = Context & SettingsManagerContext;
 
 export default {
     name: "graphql-schema-settings-page-builder",
@@ -81,7 +85,14 @@ export default {
     `,
     resolvers: {
         PbQuery: {
-            getSettings: resolveGetSettings(ctx => ctx.models.PbSettings)
+            getSettings: async (_, args, context: SettingsContext) => {
+                try {
+                    const data = await context.settingsManager.getSettings("page-builder");
+                    return { data };
+                } catch (err) {
+                    return new ErrorResponse(err);
+                }
+            }
         },
         PbMutation: {
             updateSettings: resolveUpdateSettings(ctx => ctx.models.PbSettings)

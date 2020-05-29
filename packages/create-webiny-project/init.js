@@ -268,7 +268,7 @@ module.exports = async function({ root, appName, templateName, tag, log }) {
             `2.  Update the ${blue("MONGODB_SERVER")} variable in the ${blue(
                 `${appName}/.env.json`
             )} file with your database connection string.`,
-            `3.  ${blue("webiny deploy")} api --env=local`,
+            `3.  ${blue("yarn webiny deploy")} api --env=local`,
             `4.  ${blue("cd")} apps/admin`,
             `5.  ${blue("yarn start")}`,
             "",
@@ -281,7 +281,7 @@ module.exports = async function({ root, appName, templateName, tag, log }) {
             "Want to delve deeper into Webiny? Check out https://docs.webiny.com/docs/webiny/introduction",
             "Like the project? Star us on Github! https://github.com/webiny/webiny-js",
             "",
-            "Need help? Join our Slack community at https://www.webiny.com/slack",
+            "Need help? Join our Slack community! https://www.webiny.com/slack",
             "",
             "🚀 Happy coding!"
         ].join("\n")

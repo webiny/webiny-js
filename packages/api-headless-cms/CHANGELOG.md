@@ -3,6 +3,19 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.0.0-beta.2](https://github.com/webiny/webiny-js/compare/v4.0.0-beta.1...v4.0.0-beta.2) (2020-05-25)
+
+
+### Bug Fixes
+
+* add "@webiny/api-plugin-commodo-nedb" to the list ([5e04fa9](https://github.com/webiny/webiny-js/commit/5e04fa9a4002e94cc4423021411abf369f22e337))
+* update search table on changes of latestVersion / published flags ([e7ff2f9](https://github.com/webiny/webiny-js/commit/e7ff2f9e71060c10066c24d6d9882f4ed4ebef62))
+* **api-headless-cms:** check user authentication in manage API ([f0dccdb](https://github.com/webiny/webiny-js/commit/f0dccdb19ef308d467f69bdae17aa563c60d1b25))
+
+
+
+
+
 # [4.0.0-beta.1](https://github.com/webiny/webiny-js/compare/v4.0.0-beta.0...v4.0.0-beta.1) (2020-05-22)
 
 **Note:** Version bump only for package @webiny/api-headless-cms

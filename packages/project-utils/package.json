@@ -1,6 +1,6 @@
 {
   "name": "@webiny/project-utils",
-  "version": "4.0.0-beta.1",
+  "version": "4.0.0-beta.2",
   "main": "index.js",
   "description": "A collection of utilities for Webiny project.",
   "repository": {
@@ -23,7 +23,7 @@
     "@hot-loader/react-dom": "^16.13.0",
     "@svgr/webpack": "4.3.3",
     "@types/webpack-env": "^1.15.2",
-    "@webiny/app": "^4.0.0-beta.1",
+    "@webiny/app": "^4.0.0-beta.2",
     "@webiny/handler": "^4.0.0-beta.1",
     "@webiny/handler-files": "^4.0.0-beta.1",
     "@webiny/handler-index": "^4.0.0-beta.1",
