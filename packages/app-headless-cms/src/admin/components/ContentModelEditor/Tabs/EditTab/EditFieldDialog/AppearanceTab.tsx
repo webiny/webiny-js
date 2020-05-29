@@ -40,7 +40,7 @@ const AppearanceTab = props => {
             if (renderPlugins[0]) {
                 form.setValue("renderer.name", renderPlugins[0].renderer.rendererName);
             } else {
-                throw new Error("No renderers found.")
+                throw new Error("No renderers found.");
             }
         }
     });

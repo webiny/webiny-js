@@ -69,7 +69,9 @@ export default () => [
                 GtmQuery: {
                     getSettings: async (_, args, context: SettingsContext) => {
                         try {
-                            const data = await context.settingsManager.getSettings("google-tag-manager");
+                            const data = await context.settingsManager.getSettings(
+                                "google-tag-manager"
+                            );
                             return { data };
                         } catch (err) {
                             return new ErrorResponse(err);
