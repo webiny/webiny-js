@@ -1,6 +1,5 @@
 import { createHandler } from "@webiny/handler";
 import headlessCmsHandler from "@webiny/api-headless-cms/content";
-import get from "lodash/get";
 import neDb from "@webiny/api-plugin-commodo-nedb";
 import { Database } from "@commodo/fields-storage-nedb";
 import securityServicePlugins from "@webiny/api-security/plugins/service";

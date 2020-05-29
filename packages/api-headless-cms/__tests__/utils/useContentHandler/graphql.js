@@ -75,30 +75,6 @@ export const UPDATE_CONTENT_MODEL = /* GraphQL */ `
     }
 `;
 
-export const GET_CONTENT_MODEL = /* GraphQL */ `
-    query GetContentModel($id: ID!) {
-        content: getContentModel(id: $id) {
-            data {
-                 id
-                name
-                titleFieldId
-                usedFields
-                fields {
-                      _id
-                    fieldId
-                    multipleValues
-                }
-                layout
-            }
-            error {
-                code
-                message
-                data
-            }
-        }
-    }
-`;
-
 export const FIELDS_FIELDS = `
         _id
         fieldId
