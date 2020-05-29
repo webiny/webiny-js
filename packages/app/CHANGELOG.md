@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.0.0-beta.4](https://github.com/webiny/webiny-js/compare/v4.0.0-beta.3...v4.0.0-beta.4) (2020-05-29)
+
+
+### Bug Fixes
+
+* get "getData", "getMeta" and "getError" callbacks correctly ([ffb23d8](https://github.com/webiny/webiny-js/commit/ffb23d8d8c974f7bca90545fb8d8c9a16cf6c6f5))
+
+
+
+
+
 # [4.0.0-beta.2](https://github.com/webiny/webiny-js/compare/v4.0.0-beta.1...v4.0.0-beta.2) (2020-05-25)
 
 **Note:** Version bump only for package @webiny/app

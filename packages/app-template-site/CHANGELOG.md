@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.0.0-beta.4](https://github.com/webiny/webiny-js/compare/v4.0.0-beta.3...v4.0.0-beta.4) (2020-05-29)
+
+
+### Features
+
+* migrate to the latest version of slate ([2473ef6](https://github.com/webiny/webiny-js/commit/2473ef66366d1d5c2f0f185add4d3e6add78d621))
+
+
+
+
+
 # [4.0.0-beta.3](https://github.com/webiny/webiny-js/compare/v4.0.0-beta.2...v4.0.0-beta.3) (2020-05-25)
 
 **Note:** Version bump only for package @webiny/app-template-site

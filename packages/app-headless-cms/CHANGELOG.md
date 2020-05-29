@@ -3,6 +3,44 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.0.0-beta.4](https://github.com/webiny/webiny-js/compare/v4.0.0-beta.3...v4.0.0-beta.4) (2020-05-29)
+
+
+### Bug Fixes
+
+* add "CmsEditorContentTab" type ([0a67c98](https://github.com/webiny/webiny-js/commit/0a67c98c99cd63d8a156c32621e01a5bc3ad86a8))
+* add component type ([8b47130](https://github.com/webiny/webiny-js/commit/8b471308982e7f78405d5bd2664be557e0456604))
+* add icon ([6d60f05](https://github.com/webiny/webiny-js/commit/6d60f05bd62da6634c2c0ae16cf1cc89d2d93012))
+* add missing fields to improve latter cache utilization ([23424e8](https://github.com/webiny/webiny-js/commit/23424e8b56b4f87b5528033cc3945d3feecf612a))
+* add missing types ([0be38b0](https://github.com/webiny/webiny-js/commit/0be38b0183be627e9a5ed39d028d193d66f388ce))
+* append useful methods on when needed ([1f97fad](https://github.com/webiny/webiny-js/commit/1f97fadece753a60f5c06664a92168475382bcdd))
+* create a component that enables creating simple dynamic lists of values ([b7050e7](https://github.com/webiny/webiny-js/commit/b7050e7917963f8c6fa8b389b29894cad5b0bcf1))
+* disable "Add Value" button if the initial input has no value ([3d7efe6](https://github.com/webiny/webiny-js/commit/3d7efe6eaa4f3255b0eebd8eec5803b2bafdc186))
+* do not refresh lists, make changes to Apollo cache instead ([e5234a4](https://github.com/webiny/webiny-js/commit/e5234a4b3e40358d60ee9da1a7ff092778d7811a))
+* enable multipleValues support ([6e945a5](https://github.com/webiny/webiny-js/commit/6e945a5c7f8ddbdbcba93608ce81845954dc959f))
+* if multipleValues is enabled, prevent setting a field as a title field ([5707abb](https://github.com/webiny/webiny-js/commit/5707abbd2200fc75fb9bbf7da0bbcdf7429c07a3))
+* in the field label, show "(multiple values)" accordingly ([e9b9292](https://github.com/webiny/webiny-js/commit/e9b9292d0510216fc38ba9aa3a45aad8516b2803))
+* only render form if needed (prevents errors in data when changing field types) ([e5a3731](https://github.com/webiny/webiny-js/commit/e5a37318ed26f07fb63527a5bddf22153d2eab20))
+* provide default "settings.type" value for dateTime field ([#895](https://github.com/webiny/webiny-js/issues/895)) ([a53eb19](https://github.com/webiny/webiny-js/commit/a53eb19da998ffbd1cf05bb6ee3de3bb6008059c))
+* rename "usedFields" to "lockedFields" ([5a815cb](https://github.com/webiny/webiny-js/commit/5a815cb56d1060dc2836816c51a9a889bd152d10))
+* send activeTab property to tabs ([951a42e](https://github.com/webiny/webiny-js/commit/951a42eb584974a7a2d4dbc13a446c0e390985a4))
+* simplify using the `DynamicListMultipleValues` component ([e689cf7](https://github.com/webiny/webiny-js/commit/e689cf7bb26d5c45695692cb09eafa76d996ce69))
+* treat lockedFiles as an array of object, not an array of strings ([8f74af3](https://github.com/webiny/webiny-js/commit/8f74af3f8d0a04ddabf94dd9df20b3bca6f6c74e))
+* uncomment Multiple Values switch ([d5a301b](https://github.com/webiny/webiny-js/commit/d5a301b7f312569da0b87cf3d40faba4419b588a))
+* use "content" key when listing content ([8c5e815](https://github.com/webiny/webiny-js/commit/8c5e81545fb5199e5139b26707ad2dd8bdd920ab))
+
+
+### Features
+
+* **headless-cms:** access tokens ([#904](https://github.com/webiny/webiny-js/issues/904)) ([4fee3af](https://github.com/webiny/webiny-js/commit/4fee3af605cc2a7aeb69c3f11f0101b5eb81024b))
+* create "multipleValues" field renderers ([70a668f](https://github.com/webiny/webiny-js/commit/70a668f89731398d1a2e136a270ff7cf05f6e23d))
+* create field renderer for "multipleValue" text fields ([b2f6ed6](https://github.com/webiny/webiny-js/commit/b2f6ed663c625d9a88d88c111901a7c191630fac))
+* migrate to the latest version of slate ([2473ef6](https://github.com/webiny/webiny-js/commit/2473ef66366d1d5c2f0f185add4d3e6add78d621))
+
+
+
+
+
 # [4.0.0-beta.3](https://github.com/webiny/webiny-js/compare/v4.0.0-beta.2...v4.0.0-beta.3) (2020-05-25)
 
 **Note:** Version bump only for package @webiny/app-headless-cms

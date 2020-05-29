@@ -3,6 +3,41 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.0.0-beta.4](https://github.com/webiny/webiny-js/compare/v4.0.0-beta.3...v4.0.0-beta.4) (2020-05-29)
+
+
+### Bug Fixes
+
+* add "locale" argument to the value field ([757aecc](https://github.com/webiny/webiny-js/commit/757aeccfcaa191c9fcae68d4f93e45deafdac11a))
+* add "locale" argument to the value field ([224a497](https://github.com/webiny/webiny-js/commit/224a4973a725bece5fb8fd8ac11d48bb67e5d7b9))
+* add "multipleValues" field ([7584825](https://github.com/webiny/webiny-js/commit/7584825f2d918a14c1e30a4de6c696ce3c3526d4))
+* add "multipleValues" field ([f537a32](https://github.com/webiny/webiny-js/commit/f537a322fb73c09c81ba7758c929c219e9826f0c))
+* add "multipleValues" support ([507e829](https://github.com/webiny/webiny-js/commit/507e829d985527c4a015a7897b121d202e646c6b))
+* add "multipleValues" support ([763903d](https://github.com/webiny/webiny-js/commit/763903dcbb4b8a4842928d181d148bbe29241af1))
+* don't throw error if event is not present. ([5702c41](https://github.com/webiny/webiny-js/commit/5702c41ea74cb814cadbdf4d4c617d326653f4f5))
+* enable support for "multipleValues" ([559a1da](https://github.com/webiny/webiny-js/commit/559a1daeb66545272f69c8b08502ac53ae0cca75))
+* enable support for "multipleValues" ([9c1418b](https://github.com/webiny/webiny-js/commit/9c1418b1c9d405d3fc03aac2e67d16519353740d))
+* make sure multiple-value fields cannot be set as entry title ([6302fe6](https://github.com/webiny/webiny-js/commit/6302fe6ba0ef694d8128b926ae9f950f326a560d))
+* make sure multiple-value fields cannot be set as entry title ([b1141f0](https://github.com/webiny/webiny-js/commit/b1141f0b15787e4f6246ffca9d64cf82ac2f42e4))
+* move used-fields checking into "beforeUpdate" hook ([5d7f6af](https://github.com/webiny/webiny-js/commit/5d7f6af8a12dea9b641a7802da653f3d10124b76))
+* remodel usedFields - make it an array of models ([b374e58](https://github.com/webiny/webiny-js/commit/b374e58f9a75a66938393c351650604a8e4236a9))
+* remove defatult "[]" value for "usedFields" field ([73352d8](https://github.com/webiny/webiny-js/commit/73352d8c2ba56b0ad5102830787b3141341780b8))
+* rename "usedFields" to "lockedFields" ([5a815cb](https://github.com/webiny/webiny-js/commit/5a815cb56d1060dc2836816c51a9a889bd152d10))
+* update the "usedFields" field on the content model ([8b9678d](https://github.com/webiny/webiny-js/commit/8b9678da6999c3eb49fe2ad271cb71a21b660584))
+
+
+### Features
+
+* **headless-cms:** access tokens ([#904](https://github.com/webiny/webiny-js/issues/904)) ([4fee3af](https://github.com/webiny/webiny-js/commit/4fee3af605cc2a7aeb69c3f11f0101b5eb81024b))
+* add list inputs ([4366900](https://github.com/webiny/webiny-js/commit/4366900d9196246f5362aa2bafad27c6d5d0ede6))
+* add list inputs ([22bd089](https://github.com/webiny/webiny-js/commit/22bd089d37d39be888009d3c422c1f164445b553))
+* create list types as well ([c7c1052](https://github.com/webiny/webiny-js/commit/c7c10524b6b2aed69851453cbd884e0d51e84986))
+* create list types as well ([0d5839d](https://github.com/webiny/webiny-js/commit/0d5839d15646a2c845ed01330a90a504b882faed))
+
+
+
+
+
 # [4.0.0-beta.2](https://github.com/webiny/webiny-js/compare/v4.0.0-beta.1...v4.0.0-beta.2) (2020-05-25)
 
 

@@ -1,6 +1,6 @@
 {
   "name": "@webiny/api-plugin-commodo-db-proxy",
-  "version": "4.0.0-beta.1",
+  "version": "4.0.0-beta.4",
   "main": "index.js",
   "license": "MIT",
   "repository": {
@@ -25,7 +25,7 @@
     "@babel/preset-env": "^7.5.5",
     "@shelf/jest-mongodb": "^1.1.5",
     "@types/mongodb": "^3.5.16",
-    "@webiny/graphql": "^4.0.0-beta.1",
+    "@webiny/graphql": "^4.0.0-beta.4",
     "@webiny/handler": "^4.0.0-beta.1"
   },
   "publishConfig": {

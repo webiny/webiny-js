@@ -1,6 +1,6 @@
 {
   "name": "@webiny/api-form-builder",
-  "version": "4.0.0-beta.2",
+  "version": "4.0.0-beta.4",
   "main": "index.js",
   "repository": {
     "type": "git",
@@ -15,11 +15,11 @@
   "license": "MIT",
   "dependencies": {
     "@babel/runtime": "^7.5.5",
-    "@webiny/api-i18n": "^4.0.0-beta.2",
-    "@webiny/api-security": "^4.0.0-beta.2",
+    "@webiny/api-i18n": "^4.0.0-beta.4",
+    "@webiny/api-security": "^4.0.0-beta.4",
     "@webiny/commodo": "^4.0.0-beta.1",
-    "@webiny/commodo-graphql": "^4.0.0-beta.1",
-    "@webiny/graphql": "^4.0.0-beta.1",
+    "@webiny/commodo-graphql": "^4.0.0-beta.4",
+    "@webiny/graphql": "^4.0.0-beta.4",
     "@webiny/handler-ssr": "^4.0.0-beta.1",
     "@webiny/validation": "^4.0.0-beta.1",
     "form-data": "^2.5.0",
@@ -38,8 +38,8 @@
     "@babel/core": "^7.5.5",
     "@babel/preset-env": "^7.5.5",
     "@babel/preset-typescript": "^7.8.3",
-    "@webiny/api-plugin-commodo-db-proxy": "^4.0.0-beta.1",
-    "@webiny/api-settings-manager": "^4.0.0-beta.1",
+    "@webiny/api-plugin-commodo-db-proxy": "^4.0.0-beta.4",
+    "@webiny/api-settings-manager": "^4.0.0-beta.4",
     "flow-copy-source": "^2.0.2"
   },
   "publishConfig": {
