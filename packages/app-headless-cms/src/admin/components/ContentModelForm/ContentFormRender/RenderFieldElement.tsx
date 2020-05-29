@@ -61,7 +61,9 @@ const RenderFieldElement = (props: {
                                             `"appendValue" callback can only be used for multiple value fields.`
                                         );
                                     }
-
+                                    if (Array.isArray(newValue)) {
+                                        return onChange([...value, ...newValue]);
+                                    }
                                     return onChange([...value, newValue]);
                                 },
                                 prependValue: newValue => {
