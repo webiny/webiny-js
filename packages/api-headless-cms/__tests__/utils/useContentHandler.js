@@ -1,6 +1,5 @@
 import { createHandler } from "@webiny/handler";
 import headlessCmsHandler from "@webiny/api-headless-cms/content";
-import get from "lodash/get";
 import neDb from "@webiny/api-plugin-commodo-nedb";
 import { Database } from "@commodo/fields-storage-nedb";
 import securityServicePlugins from "@webiny/api-security/plugins/service";
@@ -12,6 +11,7 @@ import {
     GET_CONTENT_MODEL_BY_MODEL_ID,
     CREATE_CONTENT_MODEL,
     UPDATE_CONTENT_MODEL,
+    GET_CONTENT_MODEL,
     createCreateMutation,
     createListQuery,
     createDeleteMutation,
@@ -48,6 +48,8 @@ export default () => {
             headers,
             body: JSON.stringify(body),
             ...rest
+          
+          
         });
 
         return [JSON.parse(response.body), response];
@@ -78,11 +80,20 @@ export default () => {
 
                     return getData(body);
                 },
-
                 async updateContentModel(variables) {
                     const [body] = await environmentApi.invoke({
                         body: {
                             query: UPDATE_CONTENT_MODEL,
+                            variables
+                        }
+                    });
+
+                    return getData(body);
+                },
+                async getContentModel(variables) {
+                    const [body] = await environmentApi.invoke({
+                        body: {
+                            query: GET_CONTENT_MODEL,
                             variables
                         }
                     });
@@ -97,7 +108,8 @@ export default () => {
                         }
                     });
 
-                    const { data: contentModel, contentModelError } = body.data.getContentModel;
+                    const { data: contentModel, contentModelError } = body.data.content;
+
                     if (contentModelError) {
                         throw contentModelError;
                     }
