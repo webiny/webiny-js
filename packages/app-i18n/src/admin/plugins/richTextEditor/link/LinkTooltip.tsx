@@ -54,11 +54,11 @@ const LinkTooltip = ({ activatePlugin }) => {
     const menu = menuRef.current;
 
     const inlines = Editor.nodes(editor, {
-        match: n => Editor.isInline(editor, n)
+        match: n => n.type === 'link' ? true : Editor.isInline(editor, n)
     });
 
     const link = inlines.find(inline => inline[0].type === "link");
-    const { selection } = editor.value;
+    const { selection } = editor;
 
     useEffect(() => {
         if (!link && selection.isFocused) {

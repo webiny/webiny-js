@@ -59,16 +59,18 @@ export function I18NValue(props: I18NValueProps): any {
     }
 
     let editorPlugins = getPlugins("i18n-value-rich-text-editor")
-        .map((item: I18NInputRichTextEditorPlugin) => item.plugin.editor)
+        .map((item: I18NInputRichTextEditorPlugin) => item.plugin)
         .filter(Boolean);
 
     if (Array.isArray(props.editorPlugins)) {
         editorPlugins = [...editorPlugins, ...props.editorPlugins];
     }
 
+    const { renderEditor, ...editorProps } = pluginsToProps(editorPlugins, { editor });
+
     return (
         <Slate editor={editor} value={value} onChange={null}>
-            <Editable readOnly {...pluginsToProps(editorPlugins, { editor })} />
+            {renderEditor(<Editable readOnly {...editorProps} />)}
         </Slate>
     );
 }

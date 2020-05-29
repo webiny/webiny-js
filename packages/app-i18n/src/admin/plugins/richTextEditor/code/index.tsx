@@ -46,7 +46,7 @@ const plugin: I18NInputRichTextEditorPlugin = {
             renderLeaf({ leaf, attributes, children }) {
                 if (leaf[mark] === true) {
                     return (
-                        <code className={codeStyle} {...attributes}>
+                        <code className={"webiny-rich-typography-code"} {...attributes}>
                             {children}
                         </code>
                     );

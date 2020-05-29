@@ -152,7 +152,11 @@ export class RichTextEditor extends React.Component<RichTextEditorProps, State> 
         const { value } = this.state;
 
         this.setState({
-            activePlugin: { plugin, value }
+            activePlugin: {
+                plugin,
+                selection: this.editor.selection,
+                fragment: this.editor.getFragment()
+            }
         });
     };
 

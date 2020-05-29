@@ -91,7 +91,7 @@ export const Menu = (props: MenuProps) => {
                 )}
 
             {plugins
-                .filter(pl => pl.menu && pl.menu.renderDialog === "function")
+                .filter(pl => pl.menu && typeof pl.menu.renderDialog === "function")
                 .map(pl => {
                     const props = {
                         editor,

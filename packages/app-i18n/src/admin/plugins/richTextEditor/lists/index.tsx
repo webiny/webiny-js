@@ -69,7 +69,7 @@ const plugins: I18NInputRichTextEditorPlugin[] = [
                         case "unordered-list":
                             return (
                                 <ul
-                                    className={"webiny-admin-typography-unordered-list"}
+                                    className={"webiny-rich-typography-unordered-list"}
                                     {...attributes}
                                 >
                                     {children}
@@ -117,7 +117,7 @@ const plugins: I18NInputRichTextEditorPlugin[] = [
                         case "ordered-list":
                             return (
                                 <ol
-                                    className={"webiny-admin-typography-ordered-list"}
+                                    className={"webiny-rich-typography-ordered-list"}
                                     {...attributes}
                                 >
                                     {children}

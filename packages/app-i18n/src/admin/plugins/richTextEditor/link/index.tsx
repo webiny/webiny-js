@@ -12,7 +12,12 @@ const plugin: I18NInputRichTextEditorPlugin = {
         menu: {
             render({ MenuButton, activatePlugin }) {
                 return (
-                    <MenuButton onMouseDown={() => activatePlugin("link")}>
+                    <MenuButton
+                        onMouseDown={e => {
+                            e.preventDefault();
+                            activatePlugin("link");
+                        }}
+                    >
                         <LinkIcon />
                     </MenuButton>
                 );
@@ -24,6 +29,7 @@ const plugin: I18NInputRichTextEditorPlugin = {
         editor: {
             renderElement(props, next) {
                 const { attributes, children, element } = props;
+                console.log("renderElement", element);
 
                 if (element.type === "link") {
                     const { href, noFollow } = element;
