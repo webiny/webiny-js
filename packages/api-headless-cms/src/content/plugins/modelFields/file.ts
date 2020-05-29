@@ -15,12 +15,26 @@ function getFileField({ field, validation, context }) {
         case FILE_TYPE.SINGLE_FILE:
             cField = string({
                 validation,
+                list: field.multipleValues,
                 async getStorageValue() {
                     // Not using getValue method because it would load the model without need.
                     const element = cloneDeep(this.current);
 
                     // Only save `key`
                     const settings = context.files.getFileSettings();
+                    let elementWithoutSrcPrefix;
+
+                    if (Array.isArray(element)) {
+                        elementWithoutSrcPrefix = element.map(el => {
+                            if (el.includes(settings.srcPrefix)) {
+                                const [, key] = el.split(settings.srcPrefix);
+                                return key;
+                            }
+                            return el;
+                        });
+                        return elementWithoutSrcPrefix;
+                    }
+
                     if (element.includes(settings.srcPrefix)) {
                         const [, key] = element.split(settings.srcPrefix);
                         return key;
@@ -30,9 +44,14 @@ function getFileField({ field, validation, context }) {
                 },
                 async setStorageValue(element) {
                     const settings = context.files.getFileSettings();
-                    const fullSrc = settings.srcPrefix + element;
+                    let elementWithSrcPrefix;
+                    if (Array.isArray(element)) {
+                        elementWithSrcPrefix = element.map(el => settings.srcPrefix + el);
+                    } else {
+                        elementWithSrcPrefix = settings.srcPrefix + element;
+                    }
 
-                    this.setValue(fullSrc, {
+                    this.setValue(elementWithSrcPrefix, {
                         skipDifferenceCheck: true,
                         forceSetAsClean: true
                     });
@@ -61,6 +80,11 @@ const plugin: CmsModelFieldToCommodoFieldPlugin = {
         })(model);
     },
     searchModel({ model, field, context }) {
+        // Searching multiple-value fields is not supported.
+        if (field.multipleValues) {
+            return;
+        }
+
         withFields({
             [field.fieldId]: getFileField({ field, validation: false, context })
         })(model);

@@ -1,5 +1,7 @@
 import gql from "graphql-tag";
 import { CmsModelFieldToGraphQLPlugin } from "@webiny/api-headless-cms/types";
+import { i18nFieldType } from "./../graphqlTypes/i18nFieldType";
+import { i18nFieldInput } from "./../graphqlTypes/i18nFieldInput";
 
 const createListFilters = ({ field }) => {
     return `
@@ -57,60 +59,29 @@ const plugin: CmsModelFieldToGraphQLPlugin = {
         createSchema() {
             return {
                 typeDefs: gql`
-                    # single file types
-                    input CmsFileSingleLocalizedInput {
-                        value: String
-                        locale: ID!
+                    ${i18nFieldType("CmsFile", "String")}
+                    ${i18nFieldInput("CmsFile", "String")}
+                `,
+                resolvers: {
+                    CmsFile: {
+                        value(field, args) {
+                            return field.value(args.locale);
+                        }
                     }
-
-                    input CmsFileSingleInput {
-                        values: [CmsFileSingleLocalizedInput]
-                    }
-
-                    type CmsFileSingleLocalized {
-                        value: String
-                        locale: ID!
-                    }
-
-                    type CmsFileSingle {
-                        value: String
-                        values: [CmsFileSingleLocalized]!
-                    }
-
-                    # multiple file types
-                    input CmsFileMultipleLocalizedInput {
-                        value: [String]
-                        locale: ID!
-                    }
-
-                    input CmsFileMultipleInput {
-                        values: [CmsFileMultipleLocalizedInput]
-                    }
-
-                    type CmsFileMultipleLocalized {
-                        value: [String]
-                        locale: ID!
-                    }
-
-                    type CmsFileMultiple {
-                        value: ID
-                        values: [CmsFileMultipleLocalized]!
-                    }
-                `
+                }
             };
         },
         createTypeField({ field }) {
-            const { type } = field.settings;
-
-            return field.fieldId + `: ${type === "single" ? `CmsFileSingle` : `CmsFileMultiple`}`;
+            if (field.multipleValues) {
+                return field.fieldId + ": CmsFileList";
+            }
+            return field.fieldId + ": CmsFile";
         },
         createInputField({ field }) {
-            const { type } = field.settings;
-
-            return (
-                field.fieldId +
-                `: ${type === "single" ? `CmsFileSingleInput` : `CmsFileMultipleInput`}`
-            );
+            if (field.multipleValues) {
+                return field.fieldId + ": CmsFileListInput";
+            }
+            return field.fieldId + ": CmsFileInput";
         }
     }
 };
