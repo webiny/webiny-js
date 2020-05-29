@@ -130,7 +130,6 @@ describe("Environments test", () => {
         expect(createdAccessToken.id).toBeTruthy();
         expect(createdAccessToken.token).toBeTruthy();
         expect(createdAccessToken.environments).toBeTruthy();
-        // console.log(createdAccessToken.environments);
     });
     it("Should list access tokens", async () => {
         let [{ errors, data }] = await invoke({
