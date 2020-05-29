@@ -38,7 +38,7 @@ export default ({ createBase, context }: { createBase: Function; context: CmsCon
 
             // Contains a list of all fields that were utilized by existing content entries. If a field is on the list,
             // it cannot be removed anymore, because we don't want the user to loose any previously inserted data.
-            usedFields: skipOnPopulate()(string({ list: true, value: [] })),
+            usedFields: skipOnPopulate()(string({ list: true })),
             fields: fields({
                 list: true,
                 value: [],
