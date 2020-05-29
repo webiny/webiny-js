@@ -100,6 +100,5 @@ describe("Access Tokens Authentication Test", () => {
         expect(body.errors[0].message).toBe(
             "Your Token cannot access environment Initial Environment"
         );
-
     });
 });

@@ -17,5 +17,5 @@ export default [
     codePlugins,
     breakPlugins,
     // linkPlugins,
-    scrollPlugins,
+    scrollPlugins
 ];
