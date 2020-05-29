@@ -22,14 +22,10 @@ export default ({ createBase, context }) =>
                     value: generateToken()
                 })
             ),
-            // environments: ref({
-            //     list: true,
-            //     instanceOf: [context.models.CmsEnvironment]
-            // })
             environments: ref({
                 list: true,
-                instanceOf: [context.models.CmsEnvironment, "environment"],
-                using: [context.models.CmsEnvironment2CmsAccessToken, "accessToken"]
+                instanceOf: [context.models.CmsEnvironment, "accessToken"],
+                using: [context.models.CmsEnvironment2CmsAccessToken, "environment"]
             })
         }))
     )(createBase());

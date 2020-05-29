@@ -1,6 +1,5 @@
 import mdbid from "mdbid";
 import { createUtils } from "./utils";
-
 const CREATE_ACCESS_TOKEN = /* GraphQL */ `
     mutation createAccesstoken($data: CmsAccessTokenCreateInput!) {
         cms {
@@ -10,10 +9,10 @@ const CREATE_ACCESS_TOKEN = /* GraphQL */ `
                     name
                     description
                     token
-                    # environments {
-                    #     id
-                    #     name
-                    # }
+                    environments {
+                        id
+                        name
+                    }
                 }
                 error {
                     code
@@ -23,7 +22,6 @@ const CREATE_ACCESS_TOKEN = /* GraphQL */ `
         }
     }
 `;
-
 const LIST_ACCESS_TOKENS = /* GraphQL */ `
     {
         cms {
@@ -33,6 +31,10 @@ const LIST_ACCESS_TOKENS = /* GraphQL */ `
                     name
                     description
                     token
+                    environments {
+                        id
+                        name
+                    }
                 }
                 error {
                     code
@@ -42,7 +44,6 @@ const LIST_ACCESS_TOKENS = /* GraphQL */ `
         }
     }
 `;
-
 const GET_ACCESS_TOKEN = /* GraphQL */ `
     query getAccessToken($id: ID!) {
         cms {
@@ -52,12 +53,15 @@ const GET_ACCESS_TOKEN = /* GraphQL */ `
                     name
                     description
                     token
+                    environments {
+                        id
+                        name
+                    }
                 }
             }
         }
     }
 `;
-
 const UPDATE_ACCESS_TOKEN = /* GraphQL */ `
     mutation updateAccessToken($id: ID!, $data: CmsAccessTokenUpdateInput!) {
         cms {
@@ -79,29 +83,36 @@ const DELETE_ACCESS_TOKEN = /* GraphQL */ `
         }
     }
 `;
-
 describe("Environments test", () => {
-    const { /*useDatabase,*/ useApolloHandler } = createUtils();
-    // const { getCollection } = useDatabase();
+    const { useDatabase, useApolloHandler } = createUtils();
+    const { getCollection } = useDatabase();
     const { invoke } = useApolloHandler();
-    // const initialEnvironment = { id: mdbid() };
+    const initialEnvironment = { id: mdbid() };
     const accessTokenInput = {
         name: "Access Token #1",
-        description: "description..."
-        // environments: [initialEnvironment.id]
+        description: "description...",
+        environments: initialEnvironment.id
+    };
+    const accessTokenInputResponse = {
+        name: "Access Token #1",
+        description: "description...",
+        environments: [
+            {
+                id: initialEnvironment.id,
+                name: "Test Environment"
+            }
+        ]
     };
     const newTokenName = "Access Token #1 (renamed)";
     let createdAccessToken;
-
-    // beforeAll(async () => {
-    //     await getCollection("CmsEnvironment").insertOne({
-    //         id: initialEnvironment.id,
-    //         name: "Test Environment",
-    //         description: "... test env description ...",
-    //         createdFrom: null
-    //     });
-    // });
-
+    beforeAll(async () => {
+        await getCollection("CmsEnvironment").insertOne({
+            id: initialEnvironment.id,
+            name: "Test Environment",
+            description: "... test env description ...",
+            createdFrom: null
+        });
+    });
     it("Should create an Access Token", async () => {
         let [{ errors, data }] = await invoke({
             body: {
@@ -115,13 +126,12 @@ describe("Environments test", () => {
             throw JSON.stringify(errors || data.cms.createAccessToken.error, null, 2);
         }
         createdAccessToken = data.cms.createAccessToken.data;
-        expect(createdAccessToken).toMatchObject(accessTokenInput);
+        expect(createdAccessToken).toMatchObject(accessTokenInputResponse);
         expect(createdAccessToken.id).toBeTruthy();
         expect(createdAccessToken.token).toBeTruthy();
-        // expect(createdAccessToken.environments).toBeTruthy();
+        expect(createdAccessToken.environments).toBeTruthy();
         // console.log(createdAccessToken.environments);
     });
-
     it("Should list access tokens", async () => {
         let [{ errors, data }] = await invoke({
             body: {
@@ -134,7 +144,6 @@ describe("Environments test", () => {
         expect(data.cms.listAccessTokens.data.length).toEqual(1);
         expect(data.cms.listAccessTokens.data[0]).toEqual(createdAccessToken);
     });
-
     it("Should get access token", async () => {
         let [{ errors, data }] = await invoke({
             body: {
@@ -149,7 +158,6 @@ describe("Environments test", () => {
         }
         expect(data.cms.getAccessToken.data).toEqual(createdAccessToken);
     });
-
     it("Should update access token", async () => {
         let [{ errors, data }] = await invoke({
             body: {
@@ -167,7 +175,6 @@ describe("Environments test", () => {
         }
         expect(data.cms.updateAccessToken.data.name).toEqual(newTokenName);
     });
-
     it("Should not update access token value", async () => {
         let [{ errors, data }] = await invoke({
             body: {
@@ -185,7 +192,6 @@ describe("Environments test", () => {
         }
         expect(data.cms.updateAccessToken.data.token).toEqual(createdAccessToken.token);
     });
-
     it("Should delete access token", async () => {
         let [{ errors, data }] = await invoke({
             body: {
