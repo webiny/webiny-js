@@ -1,5 +1,5 @@
 {
-  "name": "api-security",
+  "name": "api-security-graphql",
   "version": "0.1.0",
   "scripts": {
     "build": "webiny run build"
@@ -9,6 +9,8 @@
     "@webiny/handler-apollo-server": "^4.0.0-beta.0",
     "@webiny/api-plugin-commodo-db-proxy": "^4.0.0-beta.0",
     "@webiny/api-security": "^4.0.0-beta.0",
-    "@webiny/api-settings-manager": "^4.0.0-beta.0"
+    "@webiny/api-plugin-security-cognito": "^4.0.0-beta.0",
+    "@webiny/api-settings-manager": "^4.0.0-beta.0",
+    "@webiny/project-utils": "^4.0.0-beta.4"
   }
 }

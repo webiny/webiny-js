@@ -36,6 +36,17 @@ module.exports = {
         dependencies: ["@babel/runtime"],
         devDependencies: true
     },
-    ignoreDirs: ["node_modules", "dist"],
-    packages: ["packages/*"]
+    ignoreDirs: ["node_modules", "dist", "build"],
+    packages: [
+        "packages/*",
+        "sample-project/api/apolloGateway",
+        "sample-project/api/settingsManager",
+        "sample-project/api/databaseProxy",
+        "sample-project/api/files/*",
+        "sample-project/api/formBuilder",
+        "sample-project/api/cms/*",
+        "sample-project/api/i18n/*",
+        "sample-project/api/pageBuilder",
+        "sample-project/api/security/*"
+    ]
 };

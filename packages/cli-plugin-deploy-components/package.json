@@ -51,6 +51,9 @@
     "ignore": {
       "src": [
         "vm"
+      ],
+      "dependencies": [
+        "execa"
       ]
     }
   },

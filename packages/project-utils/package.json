@@ -103,6 +103,7 @@
         "@svgr/webpack",
         "@types/webpack-env",
         "babel-plugin-lodash",
+        "chalk",
         "raw-loader",
         "node-sass"
       ]
