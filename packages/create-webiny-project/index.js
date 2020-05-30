@@ -216,9 +216,7 @@ async function run({ root, appName, template, tag, log }) {
                     try {
                         await install({ root, dependencies });
                     } catch (err) {
-                        throw new Error(
-                            "Failed to install template package"
-                        );
+                        throw new Error("Failed to install template package");
                     }
                 }
             }

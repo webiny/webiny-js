@@ -17,11 +17,13 @@ const ContentModelsView = lazy(() => import("../views/ContentModels/ContentModel
 const ContentModelGroupsView = lazy(() => import("../views/ContentModelGroups/ContentModelGroups"));
 const EnvironmentsView = lazy(() => import("../views/Environments/Environments"));
 const EnvironmentAliasesView = lazy(() => import("../views/EnvironmentAliases/EnvironmentAliases"));
+const AccessTokensView = lazy(() => import("../views/AccessTokens"));
 const ContentView = lazy(() => import("../views/Content/Content"));
 
 const ROLE_CMS_CONTENT_GROUPS = ["cms:content-model-group:crud"];
 const ROLE_CMS_ENVIRONMENT = ["cms:environment:crud"];
 const ROLE_CMS_ENVIRONMENT_ALIAS = ["cms:environment-alias:crud"];
+const ROLE_CMS_ACCESS_TOKENS = ["cms:access-tokens:crud"];
 const ROLE_CMS_CONTENT_MODELS = ["cms:content-model:crud"];
 
 const plugins: RoutePlugin[] = [
@@ -143,6 +145,26 @@ const plugins: RoutePlugin[] = [
                             <Helmet title={t`Headless CMS - Environment Aliases Settings`} />
                             <Loader>
                                 <EnvironmentAliasesView />
+                            </Loader>
+                        </AdminLayout>
+                    </SecureRoute>
+                )}
+            />
+        )
+    },
+    {
+        type: "route",
+        name: "route-settings-cms-access-tokens",
+        route: (
+            <Route
+                exact
+                path="/settings/cms/accessTokens"
+                render={() => (
+                    <SecureRoute scopes={ROLE_CMS_ACCESS_TOKENS}>
+                        <AdminLayout>
+                            <Helmet title={t`Headless CMS - Access Tokens Settings`} />
+                            <Loader>
+                                <AccessTokensView />
                             </Loader>
                         </AdminLayout>
                     </SecureRoute>

@@ -1,6 +1,6 @@
 {
   "name": "create-webiny-project",
-  "version": "4.0.0-beta.2",
+  "version": "4.0.0-beta.4",
   "description": "local build tool to create webiny project with specific template",
   "main": "index.js",
   "scripts": {

@@ -326,45 +326,160 @@ export default {
         }
     }),
     cannotSetAsEntryTitle: ({ contentModelGroupId, titleFieldId = "" }) => ({
-        name: "Product",
-        group: contentModelGroupId,
-        titleFieldId,
-        fields: [
-            {
-                _id: "vqk-UApa0",
-                fieldId: "title",
-                type: "text",
-                label: {
-                    values: [
-                        {
-                            locale: locales.en.id,
-                            value: "Title"
-                        },
-                        {
-                            locale: locales.de.id,
-                            value: "Titel"
-                        }
-                    ]
+        data: {
+            name: "Product",
+            group: contentModelGroupId,
+            titleFieldId,
+            fields: [
+                {
+                    _id: "vqk-UApa0",
+                    fieldId: "title",
+                    type: "text",
+                    label: {
+                        values: [
+                            {
+                                locale: locales.en.id,
+                                value: "Title"
+                            },
+                            {
+                                locale: locales.de.id,
+                                value: "Titel"
+                            }
+                        ]
+                    }
+                },
+                {
+                    _id: "id-text",
+                    fieldId: "someMultipleValueTextField",
+                    type: "text",
+                    multipleValues: true,
+                    label: {
+                        values: [
+                            {
+                                locale: locales.en.id,
+                                value: "Text-en"
+                            },
+                            {
+                                locale: locales.de.id,
+                                value: "Text-de"
+                            }
+                        ]
+                    }
                 }
+            ]
+        }
+    }),
+    createProductWithTagsAssigned: {
+        data: {
+            title: {
+                values: [
+                    {
+                        value: "Test Pen",
+                        locale: locales.en.id
+                    },
+                    {
+                        value: "Test Kugelschreiber",
+                        locale: locales.de.id
+                    }
+                ]
             },
-            {
-                _id: "id-text",
-                fieldId: "someMultipleValueTextField",
-                type: "text",
-                multipleValues: true,
-                label: {
-                    values: [
-                        {
-                            locale: locales.en.id,
-                            value: "Text-en"
-                        },
-                        {
-                            locale: locales.de.id,
-                            value: "Text-de"
-                        }
-                    ]
-                }
+            tags: {
+                values: [
+                    {
+                        value: ["Pen", "Pencil", "Eraser", "Sharpener"],
+                        locale: locales.en.id
+                    },
+                    {
+                        value: ["Kugelschreiber", "Bleistift"],
+                        locale: locales.de.id
+                    }
+                ]
             }
-        ]
+        }
+    },
+    blogWithTagsSetToMultipleValue: ({ contentModelGroupId }) => ({
+        data: {
+            name: "Blog",
+            group: contentModelGroupId,
+            fields: [
+                {
+                    _id: "vqk-UApa0",
+                    fieldId: "title",
+                    type: "text",
+                    label: {
+                        values: [
+                            {
+                                locale: locales.en.id,
+                                value: "Title"
+                            },
+                            {
+                                locale: locales.de.id,
+                                value: "Titel"
+                            }
+                        ]
+                    }
+                },
+                {
+                    _id: "id-text",
+                    fieldId: "tags",
+                    type: "text",
+                    multipleValues: true,
+                    label: {
+                        values: [
+                            {
+                                locale: locales.en.id,
+                                value: "Tags"
+                            },
+                            {
+                                locale: locales.de.id,
+                                value: "Stichworte"
+                            }
+                        ]
+                    }
+                }
+            ]
+        }
+    }),
+    blogWithTagsSetToSingleValue: ({ productId }) => ({
+        id: productId,
+        data: {
+            fields: [
+                {
+                    _id: "vqk-UApa0",
+                    fieldId: "title",
+                    type: "text",
+                    label: {
+                        values: [
+                            {
+                                locale: locales.en.id,
+                                value: "Title"
+                            },
+                            {
+                                locale: locales.de.id,
+                                value: "Titel"
+                            }
+                        ]
+                    }
+                },
+                {
+                    _id: "id-text",
+                    fieldId: "tags",
+                    type: "text",
+                    multipleValues: false,
+                    label: {
+                        values: [
+                            {
+                                locale: locales.en.id,
+                                value: "Tags"
+                            },
+                            {
+                                locale: locales.de.id,
+                                value: "Stichworte"
+                            }
+                        ]
+                    }
+                }
+            ]
+        }
     })
 };

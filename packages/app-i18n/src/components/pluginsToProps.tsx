@@ -84,7 +84,7 @@ const createLeafMiddleware = fns => {
             if (!fn) {
                 return children;
             }
-            
+
             return next({ children: fn({ ...args, children }) });
         }
 

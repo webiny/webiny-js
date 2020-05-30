@@ -5,12 +5,12 @@
     "build": "webiny run build"
   },
   "dependencies": {
-    "@webiny/handler": "^4.0.0-beta.1",
-    "@webiny/handler-apollo-server": "^4.0.0-beta.1",
-    "@webiny/api-plugin-commodo-db-proxy": "^4.0.0-beta.1",
-    "@webiny/api-settings-manager": "^4.0.0-beta.1",
-    "@webiny/api-security": "^4.0.0-beta.1",
-    "@webiny/api-i18n": "^4.0.0-beta.1",
-    "@webiny/api-page-builder": "^4.0.0-beta.1"
+    "@webiny/handler": "^4.0.0-beta.0",
+    "@webiny/handler-apollo-server": "^4.0.0-beta.0",
+    "@webiny/api-plugin-commodo-db-proxy": "^4.0.0-beta.0",
+    "@webiny/api-settings-manager": "^4.0.0-beta.0",
+    "@webiny/api-security": "^4.0.0-beta.0",
+    "@webiny/api-i18n": "^4.0.0-beta.0",
+    "@webiny/api-page-builder": "^4.0.0-beta.0"
   }
 }

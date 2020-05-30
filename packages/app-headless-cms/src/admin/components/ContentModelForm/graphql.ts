@@ -87,7 +87,7 @@ export const createListQuery = model => {
 
     return gql`
         query list${ucFirstPluralizedModelId}($where: ${ucFirstModelId}ListWhereInput, $sort: [${ucFirstModelId}ListSorter], $limit: Int, $after: String, $before: String) {
-            list${ucFirstPluralizedModelId}(
+            content: list${ucFirstPluralizedModelId}(
                 where: $where
                 sort: $sort
                 limit: $limit
@@ -134,7 +134,11 @@ export const createCreateMutation = model => {
             content: create${ucFirstModelId}(data: $data) {
                 data {
                     id
+                    savedOn
                     ${createFieldsList(model)}
+                    meta {
+                        ${CONTENT_META_FIELDS}
+                    }
                 }
                 error ${ERROR_FIELD}
             }
@@ -150,10 +154,9 @@ export const createCreateFromMutation = model => {
             content: create${ucFirstModelId}From(revision: $revision, data: $data) {
                 data {
                     id
+                    savedOn
                     meta {
-                        published
-                        status
-                        locked
+                        ${CONTENT_META_FIELDS}
                     }
                 }
                 error ${ERROR_FIELD}
@@ -170,6 +173,8 @@ export const createUpdateMutation = model => {
                 data {
                     id
                     ${createFieldsList(model)}
+                    savedOn
+                    meta { ${CONTENT_META_FIELDS} }
                 }
                 error ${ERROR_FIELD}
             }

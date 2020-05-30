@@ -3,6 +3,24 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.0.0-beta.4](https://github.com/webiny/webiny-js/compare/v4.0.0-beta.3...v4.0.0-beta.4) (2020-05-29)
+
+
+### Bug Fixes
+
+* add missing files ([a0145b3](https://github.com/webiny/webiny-js/commit/a0145b357f5a7b453bfd4638c42d2236f62df177))
+* **headless-cms:** prevent hiding Fields Dialog when pressing "Esc" in I18N overlay ([f1097c5](https://github.com/webiny/webiny-js/commit/f1097c5c54ddd506fbb108efba3efeeae163f609))
+
+
+### Features
+
+* **headless-cms:** access tokens ([#904](https://github.com/webiny/webiny-js/issues/904)) ([4fee3af](https://github.com/webiny/webiny-js/commit/4fee3af605cc2a7aeb69c3f11f0101b5eb81024b))
+* migrate to the latest version of slate ([2473ef6](https://github.com/webiny/webiny-js/commit/2473ef66366d1d5c2f0f185add4d3e6add78d621))
+
+
+
+
+
 # [4.0.0-beta.3](https://github.com/webiny/webiny-js/compare/v4.0.0-beta.2...v4.0.0-beta.3) (2020-05-25)
 
 

@@ -1,6 +1,6 @@
 {
   "name": "@webiny/ui",
-  "version": "4.0.0-beta.2",
+  "version": "4.0.0-beta.4",
   "main": "index.js",
   "repository": {
     "type": "git",
@@ -61,10 +61,9 @@
     "react-loading-skeleton": "^0.5.0",
     "react-spinner-material": "1.1.4",
     "react-transition-group": "^4.3.0",
-    "shortid": "^2.2.12",
     "slate": "^0.58.1",
-    "slate-react": "^0.58.1",
-    "slate-history": "^0.58.1"
+    "slate-history": "^0.58.1",
+    "slate-react": "^0.58.1"
   },
   "devDependencies": {
     "@babel/cli": "^7.5.5",

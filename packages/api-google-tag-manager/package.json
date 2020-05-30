@@ -1,6 +1,6 @@
 {
   "name": "@webiny/api-google-tag-manager",
-  "version": "4.0.0-beta.2",
+  "version": "4.0.0-beta.4",
   "main": "index.js",
   "repository": {
     "type": "git",
@@ -12,10 +12,10 @@
   "license": "MIT",
   "dependencies": {
     "@babel/runtime": "^7.5.5",
-    "@webiny/api-security": "^4.0.0-beta.2",
+    "@webiny/api-security": "^4.0.0-beta.4",
     "@webiny/commodo": "^4.0.0-beta.1",
-    "@webiny/commodo-graphql": "^4.0.0-beta.1",
-    "@webiny/graphql": "^4.0.0-beta.0",
+    "@webiny/commodo-graphql": "^4.0.0-beta.4",
+    "@webiny/graphql": "^4.0.0-beta.4",
     "graphql-tag": "^2.10.1",
     "lodash": "^4.17.4"
   },
@@ -24,8 +24,8 @@
     "@babel/core": "^7.5.5",
     "@babel/preset-env": "^7.5.5",
     "@babel/preset-typescript": "^7.8.3",
-    "@webiny/api-settings-manager": "^4.0.0-beta.1",
-    "@svgr/webpack": "^4.3.2"
+    "@svgr/webpack": "^4.3.2",
+    "@webiny/api-settings-manager": "^4.0.0-beta.4"
   },
   "peerDependencies": {
     "@webiny/graphql": "^4.0.0-beta.0"

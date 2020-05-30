@@ -3,6 +3,91 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.0.0-beta.4](https://github.com/webiny/webiny-js/compare/v4.0.0-beta.3...v4.0.0-beta.4) (2020-05-29)
+
+
+### Bug Fixes
+
+* add "CmsEditorContentTab" type ([0a67c98](https://github.com/webiny/webiny-js/commit/0a67c98c99cd63d8a156c32621e01a5bc3ad86a8))
+* add "CmsEditorContentTab" type ([3a697ef](https://github.com/webiny/webiny-js/commit/3a697ef374d22b9a3f69296e370925c9bd9eecd4))
+* add "locale" argument to the value field ([757aecc](https://github.com/webiny/webiny-js/commit/757aeccfcaa191c9fcae68d4f93e45deafdac11a))
+* add "locale" argument to the value field ([224a497](https://github.com/webiny/webiny-js/commit/224a4973a725bece5fb8fd8ac11d48bb67e5d7b9))
+* add "multipleValues" field ([7584825](https://github.com/webiny/webiny-js/commit/7584825f2d918a14c1e30a4de6c696ce3c3526d4))
+* add "multipleValues" field ([f537a32](https://github.com/webiny/webiny-js/commit/f537a322fb73c09c81ba7758c929c219e9826f0c))
+* add "multipleValues" support ([507e829](https://github.com/webiny/webiny-js/commit/507e829d985527c4a015a7897b121d202e646c6b))
+* add "multipleValues" support ([763903d](https://github.com/webiny/webiny-js/commit/763903dcbb4b8a4842928d181d148bbe29241af1))
+* add component type ([8b47130](https://github.com/webiny/webiny-js/commit/8b471308982e7f78405d5bd2664be557e0456604))
+* add component type ([0a87d4a](https://github.com/webiny/webiny-js/commit/0a87d4a0a49fbd6fabef98cecc36caf1c5633830))
+* add icon ([6d60f05](https://github.com/webiny/webiny-js/commit/6d60f05bd62da6634c2c0ae16cf1cc89d2d93012))
+* add icon ([3b56521](https://github.com/webiny/webiny-js/commit/3b56521811e0b136fd490ca9fcde59f219f7eccd))
+* add missing fields to improve latter cache utilization ([23424e8](https://github.com/webiny/webiny-js/commit/23424e8b56b4f87b5528033cc3945d3feecf612a))
+* add missing files ([a0145b3](https://github.com/webiny/webiny-js/commit/a0145b357f5a7b453bfd4638c42d2236f62df177))
+* add missing type key to plugin types ([fc0c29d](https://github.com/webiny/webiny-js/commit/fc0c29da57b276c5d92f29c7fb56263e17785a86))
+* add missing types ([0be38b0](https://github.com/webiny/webiny-js/commit/0be38b0183be627e9a5ed39d028d193d66f388ce))
+* add missing types ([53d590d](https://github.com/webiny/webiny-js/commit/53d590d63ef862d6057ef4e2c290df149d50e638))
+* append useful methods on when needed ([1f97fad](https://github.com/webiny/webiny-js/commit/1f97fadece753a60f5c06664a92168475382bcdd))
+* append useful methods on when needed ([8ed1f47](https://github.com/webiny/webiny-js/commit/8ed1f47c67425d570f873d1f2db87492a7624404))
+* create a component that enables creating simple dynamic lists of values ([b7050e7](https://github.com/webiny/webiny-js/commit/b7050e7917963f8c6fa8b389b29894cad5b0bcf1))
+* create a component that enables creating simple dynamic lists of values ([4a7d767](https://github.com/webiny/webiny-js/commit/4a7d7673a83e7319e2889e5c7a4ce962648fc515))
+* disable "Add Value" button if the initial input has no value ([3d7efe6](https://github.com/webiny/webiny-js/commit/3d7efe6eaa4f3255b0eebd8eec5803b2bafdc186))
+* disable "Add Value" button if the initial input has no value ([3346545](https://github.com/webiny/webiny-js/commit/3346545d3edff531ccd4077523df27e4cf58974f))
+* do not refresh lists, make changes to Apollo cache instead ([e5234a4](https://github.com/webiny/webiny-js/commit/e5234a4b3e40358d60ee9da1a7ff092778d7811a))
+* don't throw error if event is not present. ([5702c41](https://github.com/webiny/webiny-js/commit/5702c41ea74cb814cadbdf4d4c617d326653f4f5))
+* enable multipleValues support ([6e945a5](https://github.com/webiny/webiny-js/commit/6e945a5c7f8ddbdbcba93608ce81845954dc959f))
+* enable multipleValues support ([03f6a69](https://github.com/webiny/webiny-js/commit/03f6a697008208cc81d5a42b60d3f6a69b2d5ff5))
+* enable support for "multipleValues" ([559a1da](https://github.com/webiny/webiny-js/commit/559a1daeb66545272f69c8b08502ac53ae0cca75))
+* enable support for "multipleValues" ([9c1418b](https://github.com/webiny/webiny-js/commit/9c1418b1c9d405d3fc03aac2e67d16519353740d))
+* get "getData", "getMeta" and "getError" callbacks correctly ([ffb23d8](https://github.com/webiny/webiny-js/commit/ffb23d8d8c974f7bca90545fb8d8c9a16cf6c6f5))
+* if multipleValues is enabled, prevent setting a field as a title field ([5707abb](https://github.com/webiny/webiny-js/commit/5707abbd2200fc75fb9bbf7da0bbcdf7429c07a3))
+* if multipleValues is enabled, prevent setting a field as a title field ([f9fc0cd](https://github.com/webiny/webiny-js/commit/f9fc0cdc69b88177997a147384a341495b4ec688))
+* in the field label, show "(multiple values)" accordingly ([e9b9292](https://github.com/webiny/webiny-js/commit/e9b9292d0510216fc38ba9aa3a45aad8516b2803))
+* in the field label, show "(multiple values)" accordingly ([5daefc0](https://github.com/webiny/webiny-js/commit/5daefc01604b5712585ca52a19d9225cffd3abf3))
+* make sure multiple-value fields cannot be set as entry title ([6302fe6](https://github.com/webiny/webiny-js/commit/6302fe6ba0ef694d8128b926ae9f950f326a560d))
+* make sure multiple-value fields cannot be set as entry title ([b1141f0](https://github.com/webiny/webiny-js/commit/b1141f0b15787e4f6246ffca9d64cf82ac2f42e4))
+* move used-fields checking into "beforeUpdate" hook ([5d7f6af](https://github.com/webiny/webiny-js/commit/5d7f6af8a12dea9b641a7802da653f3d10124b76))
+* only render form if needed (prevents errors in data when changing field types) ([e5a3731](https://github.com/webiny/webiny-js/commit/e5a37318ed26f07fb63527a5bddf22153d2eab20))
+* only render form if needed (prevents errors in data when changing field types) ([71b72b7](https://github.com/webiny/webiny-js/commit/71b72b7de1b8bb889ff12e2d02751450e92fe604))
+* provide default "settings.type" value for dateTime field ([#895](https://github.com/webiny/webiny-js/issues/895)) ([a53eb19](https://github.com/webiny/webiny-js/commit/a53eb19da998ffbd1cf05bb6ee3de3bb6008059c))
+* remodel usedFields - make it an array of models ([b374e58](https://github.com/webiny/webiny-js/commit/b374e58f9a75a66938393c351650604a8e4236a9))
+* remove defatult "[]" value for "usedFields" field ([73352d8](https://github.com/webiny/webiny-js/commit/73352d8c2ba56b0ad5102830787b3141341780b8))
+* rename "usedFields" to "lockedFields" ([5a815cb](https://github.com/webiny/webiny-js/commit/5a815cb56d1060dc2836816c51a9a889bd152d10))
+* replace String parameter with ID ([3c45e8e](https://github.com/webiny/webiny-js/commit/3c45e8ebbcae99da30555ac75c960530f9a86999))
+* send activeTab property to tabs ([951a42e](https://github.com/webiny/webiny-js/commit/951a42eb584974a7a2d4dbc13a446c0e390985a4))
+* send activeTab property to tabs ([13f52ef](https://github.com/webiny/webiny-js/commit/13f52ef12d89b36d4441e4f6c1b08891b269f754))
+* simplify import statement ([4f27ee1](https://github.com/webiny/webiny-js/commit/4f27ee1e689a06235fe1078d0ff42df04cc91376))
+* simplify import statement ([7c167fe](https://github.com/webiny/webiny-js/commit/7c167fe2611688edd0ac24786ec3f6c4accfb382))
+* simplify using the `DynamicListMultipleValues` component ([e689cf7](https://github.com/webiny/webiny-js/commit/e689cf7bb26d5c45695692cb09eafa76d996ce69))
+* simplify using the `DynamicListMultipleValues` component ([ae736cb](https://github.com/webiny/webiny-js/commit/ae736cbf04467368f22f159383817c7d9f432c53))
+* treat lockedFiles as an array of object, not an array of strings ([8f74af3](https://github.com/webiny/webiny-js/commit/8f74af3f8d0a04ddabf94dd9df20b3bca6f6c74e))
+* uncomment Multiple Values switch ([d5a301b](https://github.com/webiny/webiny-js/commit/d5a301b7f312569da0b87cf3d40faba4419b588a))
+* uncomment Multiple Values switch ([47dfe9f](https://github.com/webiny/webiny-js/commit/47dfe9f616ba0ee45d5818fb6e07a9796983415d))
+* update the "usedFields" field on the content model ([8b9678d](https://github.com/webiny/webiny-js/commit/8b9678da6999c3eb49fe2ad271cb71a21b660584))
+* use "content" key when listing content ([8c5e815](https://github.com/webiny/webiny-js/commit/8c5e81545fb5199e5139b26707ad2dd8bdd920ab))
+* **headless-cms:** prevent hiding Fields Dialog when pressing "Esc" in I18N overlay ([f1097c5](https://github.com/webiny/webiny-js/commit/f1097c5c54ddd506fbb108efba3efeeae163f609))
+
+
+### Features
+
+* **headless-cms:** access tokens ([#904](https://github.com/webiny/webiny-js/issues/904)) ([4fee3af](https://github.com/webiny/webiny-js/commit/4fee3af605cc2a7aeb69c3f11f0101b5eb81024b))
+* add "onEnter" prop ([b9dec13](https://github.com/webiny/webiny-js/commit/b9dec13c658d49232883c771f33a9fce76f2705f))
+* add "onEnter" prop ([211b81a](https://github.com/webiny/webiny-js/commit/211b81a09bcdbbf3729aef81c5b2b90885def87b))
+* add list inputs ([4366900](https://github.com/webiny/webiny-js/commit/4366900d9196246f5362aa2bafad27c6d5d0ede6))
+* add list inputs ([22bd089](https://github.com/webiny/webiny-js/commit/22bd089d37d39be888009d3c422c1f164445b553))
+* add settings manager to project templates ([ad1151c](https://github.com/webiny/webiny-js/commit/ad1151c9ffba09f4aa2eff52296c281079274a11))
+* create "multipleValues" field renderers ([70a668f](https://github.com/webiny/webiny-js/commit/70a668f89731398d1a2e136a270ff7cf05f6e23d))
+* create "multipleValues" field renderers ([cac8e66](https://github.com/webiny/webiny-js/commit/cac8e669230b3d299d88210024ca3ca48492c5af))
+* create field renderer for "multipleValue" text fields ([b2f6ed6](https://github.com/webiny/webiny-js/commit/b2f6ed663c625d9a88d88c111901a7c191630fac))
+* create field renderer for "multipleValue" text fields ([7a02dd2](https://github.com/webiny/webiny-js/commit/7a02dd23581f8ec6b9397caac7b8c227036b87d4))
+* create list types as well ([c7c1052](https://github.com/webiny/webiny-js/commit/c7c10524b6b2aed69851453cbd884e0d51e84986))
+* create list types as well ([0d5839d](https://github.com/webiny/webiny-js/commit/0d5839d15646a2c845ed01330a90a504b882faed))
+* introduce api-settings-manager package ([cbb2508](https://github.com/webiny/webiny-js/commit/cbb25088a372306fff5b121716c18c4ff38a30f9))
+* migrate to the latest version of slate ([2473ef6](https://github.com/webiny/webiny-js/commit/2473ef66366d1d5c2f0f185add4d3e6add78d621))
+* **app-security:** add onSubmit callback to installation plugin ([6757458](https://github.com/webiny/webiny-js/commit/6757458e692de4b6be0fb6fbc9936af0369c8246))
+
+
+
+
+
 # [4.0.0-beta.3](https://github.com/webiny/webiny-js/compare/v4.0.0-beta.2...v4.0.0-beta.3) (2020-05-25)
 
 

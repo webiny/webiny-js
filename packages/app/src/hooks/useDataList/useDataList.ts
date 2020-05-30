@@ -73,9 +73,9 @@ const useDataList = (params: UseDataListParams) => {
     const prevLoadParamsRef = useRef({});
 
     const dataListProps: ReturnProps = {
-        data: get(queryData, "list.getData", getData)(queryData.data),
-        meta: get(queryData, "list.getMeta", getMeta)(queryData.data),
-        error: get(queryData, "list.getError", getError)(queryData.data),
+        data: get(params, "getData", getData)(queryData.data),
+        meta: get(params, "getMeta", getMeta)(queryData.data),
+        error: get(params, "getError", getError)(queryData.data),
 
         loading: queryData.loading,
         init() {

@@ -1,6 +1,6 @@
 import mdbid from "mdbid";
 import useContentHandler from "./utils/useContentHandler";
-import mocks from "./mocks/usedFields";
+import mocks from "./mocks/lockedFields";
 
 describe("Used fields", () => {
     const { database, environment } = useContentHandler();
@@ -31,11 +31,11 @@ describe("Used fields", () => {
         );
 
         // 1. Create a content model with a single "title" field.
-        let contentModel = await createContentModel({
-            data: mocks.withTitleFieldOnly({ contentModelGroupId: ids.contentModelGroup })
-        });
+        let contentModel = await createContentModel(
+            mocks.withTitleFieldOnly({ contentModelGroupId: ids.contentModelGroup })
+        );
 
-        expect(contentModel.usedFields).toBe(null);
+        expect(contentModel.lockedFields).toBe(null);
 
         // 2. Create a new product entry.
         const products = await content("product");
@@ -48,7 +48,13 @@ describe("Used fields", () => {
             id: contentModel.id
         });
 
-        expect(contentModel.usedFields).toEqual(["title"]);
+        expect(contentModel.lockedFields).toEqual([
+            {
+                fieldId: "title",
+                multipleValues: false,
+                type: "text"
+            }
+        ]);
 
         // 3. Let's try to remove the field. An error should be thrown because it's used.
         let error;
@@ -61,10 +67,7 @@ describe("Used fields", () => {
         }
 
         expect(error.message).toBe(
-            `Cannot remove field "title" because it's already in use in created content.`
+            `Cannot remove the field "title" because it's already in use in created content.`
         );
-
-        // 4. Try creating another product, with title missing completely.
-        await products.create(mocks.createProductWithoutValues);
     });
 });

@@ -87,7 +87,7 @@ export const i18nField = ({ field, context: { i18n, commodo }, list, ...rest }: 
                         return this.values.map(values => {
                             const value = values.find(value => value.locale === locale.id);
                             return value ? value.value : undefined;
-                        })
+                        });
                     }
 
                     const value = this.values.find(value => value.locale === locale.id);
