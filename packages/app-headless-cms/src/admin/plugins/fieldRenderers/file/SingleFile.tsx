@@ -4,6 +4,7 @@ import SingleImageUpload from "@webiny/app-admin/components/SingleImageUpload";
 import fileIcon from "../../fields/icons/round_insert_drive_file-24px.svg";
 
 const imageExtensions = [".jpg", ".jpeg", ".gif", ".png", ".svg"];
+const imagePreviewProps = { transform: { width: 300 }, style: { width: '100%', height: 300, objectFit: 'contain' } };
 
 const SingleFile = props => {
     const [previewURL, setPreviewURL] = React.useState(null);
@@ -48,10 +49,10 @@ const SingleFile = props => {
             }
         }}
         value={getValue()}
-        imagePreviewProps={{ transform: { width: 400 }, style: { width: '100%', height: 300, objectFit: 'contain' } }}
+        imagePreviewProps={imagePreviewProps}
         accept={[]}
         placeholder="Select a file"
-        renderImagePreview={!isImage && makeRenderImagePreview(props.bind.value)}
+        renderImagePreview={!isImage && makeRenderImagePreview({ value: props.bind.value, imagePreviewProps })}
     />;
 };
 

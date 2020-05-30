@@ -1,9 +1,10 @@
 import * as React from "react";
 import SingleImageUpload from "@webiny/app-admin/components/SingleImageUpload";
 import fileIcon from "../../fields/icons/round_insert_drive_file-24px.svg";
-import { makeRenderImagePreview } from "./utils";
+import { makeRenderImagePreview, imageWrapperStyles } from "./utils";
 
 const imageExtensions = [".jpg", ".jpeg", ".gif", ".png", ".svg"];
+const imagePreviewProps = { transform: { width: 300 }, style: { width: '100%', height: 232, objectFit: 'cover' } };
 
 const MultipleFile = props => {
     const [isImage, setIsImage] = React.useState(true);
@@ -61,12 +62,12 @@ const MultipleFile = props => {
             }
         }}
         value={getValue()}
-        imagePreviewProps={{ transform: { width: 300 }, style: { width: '100%', height: '100%', objectFit: 'contain' } }}
+        imagePreviewProps={imagePreviewProps}
         accept={[]}
         multiple={props.field.multipleValues}
         placeholder="Select a file"
-        styles={{ width: '100%', height: 200 }}
-        renderImagePreview={!isImage && makeRenderImagePreview(props.bind.value)}
+        className={imageWrapperStyles}
+        renderImagePreview={!isImage && makeRenderImagePreview({ value: props.bind.value, imagePreviewProps })}
     />;
 };
 

@@ -98,8 +98,8 @@ export default class SingleImageUpload extends React.Component<SingleImageUpload
         } = this.props;
 
         const defaultRenderImagePreview = (renderImageProps) => (
-            <Image {...renderImageProps} {...imagePreviewProps} renderImagePreview={renderImagePreview || renderImageProps.renderImagePreview} />
-        )
+            <Image {...renderImageProps} {...imagePreviewProps} />
+        );
 
         return (
             <ImageUploadWrapper className={className}>
