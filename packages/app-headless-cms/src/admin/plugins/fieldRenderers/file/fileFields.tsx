@@ -15,7 +15,7 @@ function CmsEditorFieldRenderer({ field, getBind, Label }) {
 
     return (
         <Bind>
-            {({ appendValue, value }) => (
+            {({ appendValues, value, appendValue }) => (
                 <Grid>
                     <Cell span={12}>
                         <Label>
@@ -25,7 +25,14 @@ function CmsEditorFieldRenderer({ field, getBind, Label }) {
                     <Cell span={3}>
                         <FirstFieldBind>
                             {bind => (
-                                <MultipleFile previewURLs={previewURLs} setPreviewURLs={setPreviewURLs} field={field} bind={bind} appendValue={appendValue} removeValue={bind.removeValue} />
+                                <MultipleFile
+                                    previewURLs={previewURLs}
+                                    setPreviewURLs={setPreviewURLs}
+                                    field={field}
+                                    bind={bind}
+                                    appendValue={appendValues}
+                                    removeValue={bind.removeValue}
+                                />
                             )}
                         </FirstFieldBind>
                     </Cell>
@@ -36,12 +43,29 @@ function CmsEditorFieldRenderer({ field, getBind, Label }) {
                             <Cell span={3} key={index + 1}>
                                 <Bind>
                                     {bind => (
-                                        <MultipleFile previewURLs={previewURLs} setPreviewURLs={setPreviewURLs} field={field} bind={bind} appendValue={appendValue} removeValue={bind.removeValue} />
+                                        <MultipleFile
+                                            previewURLs={previewURLs}
+                                            setPreviewURLs={setPreviewURLs}
+                                            field={field}
+                                            bind={bind}
+                                            appendValue={appendValues}
+                                            removeValue={bind.removeValue}
+                                        />
                                     )}
                                 </Bind>
                             </Cell>
                         );
                     })}
+                    {value.length >= 1 && <Cell span={3}>
+                        <MultipleFile
+                            previewURLs={previewURLs}
+                            setPreviewURLs={setPreviewURLs}
+                            field={field}
+                            bind={{ value: null, onChange: appendValue }}
+                            appendValue={appendValues}
+                            removeValue={() => null}
+                        />
+                    </Cell>}
                 </Grid>
             )}
         </Bind>
