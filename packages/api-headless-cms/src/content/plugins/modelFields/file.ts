@@ -21,7 +21,7 @@ function getFileField({ field, validation, context }) {
                     const element = cloneDeep(this.current);
 
                     // Only save `key`
-                    const settings = context.files.getFileSettings();
+                    const settings = await context.settingsManager.getSettings("file-manager");
                     let elementWithoutSrcPrefix;
 
                     if (Array.isArray(element)) {
@@ -43,7 +43,7 @@ function getFileField({ field, validation, context }) {
                     return element;
                 },
                 async setStorageValue(element) {
-                    const settings = context.files.getFileSettings();
+                    const settings = await context.settingsManager.getSettings("file-manager");
                     let elementWithSrcPrefix;
                     if (Array.isArray(element)) {
                         elementWithSrcPrefix = element.map(el => settings.srcPrefix + el);
