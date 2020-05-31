@@ -1,11 +1,11 @@
 {
   "name": "@webiny/serverless-api-gateway",
-  "version": "4.0.0-beta.1",
+  "version": "4.0.0-beta.5",
   "main": "serverless.js",
   "license": "MIT",
   "dependencies": {
-    "@webiny/serverless-aws-api-gateway": "^4.0.0-beta.1",
-    "@webiny/serverless-component": "^4.0.0-beta.1"
+    "@webiny/serverless-aws-api-gateway": "^4.0.0-beta.5",
+    "@webiny/serverless-component": "^4.0.0-beta.5"
   },
   "publishConfig": {
     "access": "public",
