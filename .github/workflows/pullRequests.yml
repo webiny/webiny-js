@@ -1,11 +1,11 @@
-name: Check Pull Request
+name: Pull Request Actions
 
 on:
   pull_request:
     branches: [ release-4.x ]
 
 jobs:
-  build-test-release:
+  build-test:
     name: Build and test
     runs-on: ubuntu-latest
     steps:

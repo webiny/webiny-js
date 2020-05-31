@@ -1,4 +1,4 @@
-name: Next Release
+name: Push Actions
 
 on:
   push:
