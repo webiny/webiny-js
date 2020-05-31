@@ -2,23 +2,27 @@ name: Check Pull Request
 
 on:
   pull_request:
-    branches: [ master ]
+    branches: [ release-4.x ]
 
 jobs:
-  build-and-test:
+  build-test-release:
     name: Build and test
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
 
+      - uses: actions/setup-node@v2-beta
+        with:
+          node-version: '12'
+
       - name: Install dependencies
-        run: yarn
+        run: yarn --frozen-lockfile
 
       - name: Check dependencies
         run: yarn adio
 
       - name: Build packages
-        run: yarn lerna run build --stream
+        run: yarn build
 
-      - name: Run Jest tests
+      - name: Run tests
         run: yarn test
