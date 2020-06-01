@@ -8,9 +8,33 @@ import {
 import { Cell, Grid } from "@webiny/ui/Grid";
 import { Form } from "@webiny/form";
 import { ButtonPrimary } from "@webiny/ui/Button";
-import { RichTextEditor } from "@webiny/ui/RichTextEditor";
+import { RichTextEditor } from "@webiny/app-i18n/admin/components/RichTextEditor/RichTextEditor";
 import { getPlugins } from "@webiny/plugins";
 import { I18NInputRichTextEditorPlugin } from "@webiny/app-i18n/types";
+
+const initialValue = [
+    {
+        type: "paragraph",
+        children: [
+            {
+                text: "A wrapper around the provider "
+            },
+            {
+                type: "link",
+                href: "https://docs.slatejs.org/libraries/slate-react",
+                children: [
+                    {
+                        text: "to handle onChange"
+                    }
+                ]
+            },
+            {
+                text:
+                    ' events, because the editor is a mutable singleton so it won\'t ever register as "changed" otherwise.'
+            }
+        ]
+    }
+];
 
 const SlateView = () => {
     const plugins = React.useMemo(
@@ -25,7 +49,10 @@ const SlateView = () => {
         <Grid>
             <Cell span={2} />
             <Cell span={8}>
-                <Form onSubmit={data => console.log(JSON.stringify(data.richText, null, 2))}>
+                <Form
+                    data={{ richText: initialValue }}
+                    onSubmit={data => console.log(JSON.stringify(data.richText, null, 2))}
+                >
                     {({ form, Bind }) => (
                         <SimpleForm>
                             <SimpleFormHeader title={"Slate Editor"} />
