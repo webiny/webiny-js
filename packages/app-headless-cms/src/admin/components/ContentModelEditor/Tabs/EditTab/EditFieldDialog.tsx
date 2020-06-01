@@ -81,19 +81,15 @@ const EditFieldDialog = ({ field, onSubmit, ...props }: EditFieldDialogProps) =>
                                         fieldPlugin={fieldPlugin}
                                     />
                                 </Tab>
-
-                                {/* TODO: Add predefined values functionality.
-                                {fieldPlugin.field.allowPredefinedValues &&
-                                    typeof fieldPlugin.field.renderPredefinedValues ===
-                                        "function" && (
-                                        <Tab label={t`Predefined Values`}>
-                                            <PredefinedValuesTab
-                                                form={form}
-                                                field={current}
-                                                fieldPlugin={fieldPlugin}
-                                            />
-                                        </Tab>
-                                    )}*/}
+                                {fieldPlugin.field.allowPredefinedValues && (
+                                    <Tab label={t`Predefined Values`}>
+                                        <PredefinedValuesTab
+                                            form={form}
+                                            field={form.data as CmsEditorField}
+                                            fieldPlugin={fieldPlugin}
+                                        />
+                                    </Tab>
+                                )}
 
                                 {/* TODO: Add validators functionality.
                                 {Array.isArray(fieldPlugin.field.validators) &&
