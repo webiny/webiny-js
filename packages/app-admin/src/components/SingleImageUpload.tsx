@@ -57,24 +57,11 @@ type SingleImageUploadProps = FormComponentProps & {
 
     // Is the wrapper round?
     round?: boolean;
-
-    // Placeholder text when hovering over file
-    placeholder?: string;
-
-    // upload multiple files
-    multiple?: boolean;
-
-    // Image wrapper styles
-    styles?: object;
-
-    // render image preview function
-    renderImagePreview?: any;
 };
 
 export default class SingleImageUpload extends React.Component<SingleImageUploadProps> {
     static defaultProps = {
-        validation: { isValid: null },
-        styles: { width: "100%", height: "auto" }
+        validation: { isValid: null }
     };
 
     render() {
@@ -90,16 +77,8 @@ export default class SingleImageUpload extends React.Component<SingleImageUpload
             multipleMaxCount,
             multipleMaxSize,
             imagePreviewProps,
-            round,
-            multiple,
-            placeholder,
-            styles,
-            renderImagePreview
+            round
         } = this.props;
-
-        const defaultRenderImagePreview = (renderImageProps) => (
-            <Image {...renderImageProps} {...imagePreviewProps} />
-        );
 
         return (
             <ImageUploadWrapper className={className}>
@@ -114,19 +93,19 @@ export default class SingleImageUpload extends React.Component<SingleImageUpload
                     accept={accept}
                     images={!accept}
                     maxSize={maxSize}
-                    multiple={multiple}
                     multipleMaxCount={multipleMaxCount}
                     multipleMaxSize={multipleMaxSize}
                 >
                     {({ showFileManager }) => (
                         <Ui.Image
-                            renderImagePreview={renderImagePreview || defaultRenderImagePreview}
-                            style={styles}
+                            renderImagePreview={renderImageProps => (
+                                <Image {...renderImageProps} {...imagePreviewProps} />
+                            )}
+                            style={{ width: "100%", height: "auto" }}
                             value={value}
                             uploadImage={showFileManager}
                             removeImage={onChange}
                             round={round}
-                            placeholder={placeholder}
                         />
                     )}
                 </FileManager>
