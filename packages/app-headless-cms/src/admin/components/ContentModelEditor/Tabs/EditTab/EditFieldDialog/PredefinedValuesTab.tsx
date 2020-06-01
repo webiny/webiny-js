@@ -56,8 +56,7 @@ const PredefinedValuesTab = props => {
         name: defaultRenderPlugin.renderer.rendererName
     };
 
-    const onChange=useCallback(debounce(() => {}), [])
-    const {Bind} = form;
+    const { Bind } = form;
     return (
         <>
             <Grid>
@@ -77,8 +76,7 @@ const PredefinedValuesTab = props => {
                     }}
                 />
             </Bind>
-
-        </Bind>
+        </>
     );
 };
 

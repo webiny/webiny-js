@@ -21,12 +21,7 @@ export const FIELDS_FIELDS = `
             ${I18N_FIELDS}
         }  
         predefinedValues {
-            label {
-                ${I18N_FIELDS}
-            }
-            value {
-                ${I18N_FIELDS}
-            }
+            ${I18N_FIELDS}
         }
         multipleValues 
         renderer {
