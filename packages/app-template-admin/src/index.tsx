@@ -1,7 +1,6 @@
 import React from "react";
 import { createTemplate } from "@webiny/app-template";
 import { ApolloProvider } from "react-apollo";
-import Helmet from "react-helmet";
 
 // App structure imports
 import { UiProvider } from "@webiny/app/contexts/Ui";
@@ -26,11 +25,8 @@ import { NetworkError } from "./apolloClient/NetworkError";
 // Router
 import { BrowserRouter, Route, Redirect } from "@webiny/react-router";
 
-import { AdminLayout } from "@webiny/app-admin/components/AdminLayout";
-import Welcome from "./Welcome";
 
 export type AdminAppOptions = {
-    welcomeScreen?: boolean;
     cognito: {
         region: string;
         userPoolId: string;
@@ -104,25 +100,8 @@ export default createTemplate<AdminAppOptions>(opts => {
             render(children) {
                 return <ThemeProvider>{children}</ThemeProvider>;
             }
-        },
-        opts.welcomeScreen !== false ?
-        {   
-            name: "route-welcome",
-            type: "route",
-            route: (
-                <Route
-                    exact
-                    path={"/"}
-                    render={() => (
-                        <AdminLayout>
-                            <Helmet title={"Welcome!"} />
-                            <Welcome />
-                        </AdminLayout>
-                    )}
-                />
-            )
-        } : null,
-    ].filter(Boolean);
+        }
+    ];
 
     const otherPlugins = [
         fileUploadPlugin(),

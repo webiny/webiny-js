@@ -9,9 +9,11 @@ type RenderParams = {
 
 export type AdminWelcomeScreenWidgetPlugin = Plugin & {
     type: "admin-welcome-screen-widget";
-    title: string;
-    description: string;
-    cta: React.ReactNode;
+    widget: {
+        title: string;
+        description: string;
+        cta: React.ReactNode;
+    };
 }
 
 export type AdminLayoutComponentPlugin = Plugin & {
