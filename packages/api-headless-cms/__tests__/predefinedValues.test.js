@@ -14,7 +14,6 @@ describe("Predefined values Test", () => {
             description: "This is the initial environment.",
             createdFrom: null
         });
-
         await database.collection("CmsContentModelGroup").insert({
             id: ids.contentModelGroup,
             name: "Ungrouped",
