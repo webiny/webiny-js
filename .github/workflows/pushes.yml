@@ -1,8 +1,8 @@
 name: Push Actions
 
-# on:
-#  push:
-#    branches: [ release-4.x ]
+on:
+  push:
+    branches: [ release-4.x ]
 
 env:
   GH_TOKEN: ${{ secrets.GH_TOKEN }}
