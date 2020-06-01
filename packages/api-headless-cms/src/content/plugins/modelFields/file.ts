@@ -1,4 +1,4 @@
-import cloneDeep from "lodash.clonedeep";
+import cloneDeep from "lodash/cloneDeep";
 import { CmsModelFieldToCommodoFieldPlugin } from "@webiny/api-headless-cms/types";
 import { withFields, string } from "@webiny/commodo";
 import { i18nField } from "./i18nFields";
