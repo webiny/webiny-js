@@ -70,7 +70,7 @@ export type CmsEditorContentModel = {
     id: CmsEditorFieldId;
     version: number;
     parent: string;
-    layout: CmsEditorFieldsLayout;
+    layout?: CmsEditorFieldsLayout;
     fields: CmsEditorField[];
     name: string;
     modelId: string;

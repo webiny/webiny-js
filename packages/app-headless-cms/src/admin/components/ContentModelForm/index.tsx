@@ -20,10 +20,17 @@ export const ContentModelForm: React.FC<CmsContentModelFormProps> = props => {
     };
 
     const getFields = () => {
-        const fields: any = cloneDeep(layout);
+        let returnFields = [];
+        if (layout) {
+            returnFields = cloneDeep(layout);
+        } else {
+            // If no layout provided, just render all fields one below other.
+            returnFields = [...fields.map(item => [item._id])]
+        }
+
         const validatorPlugins: CmsFormFieldValidatorPlugin[] = getPlugins("form-field-validator");
 
-        fields.forEach(row => {
+        returnFields.forEach(row => {
             row.forEach((id, idIndex) => {
                 row[idIndex] = getFieldById(id);
 
@@ -62,7 +69,8 @@ export const ContentModelForm: React.FC<CmsContentModelFormProps> = props => {
                     .filter(Boolean);
             });
         });
-        return fields;
+
+        return returnFields;
     };
 
     const getDefaultValues = (overrides = {}) => {
