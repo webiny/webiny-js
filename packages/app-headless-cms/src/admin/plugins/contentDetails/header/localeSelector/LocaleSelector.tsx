@@ -1,6 +1,5 @@
 import React from "react";
 import { css } from "emotion";
-import { withRouter } from "@webiny/react-router";
 import { ButtonDefault } from "@webiny/ui/Button";
 import { Icon } from "@webiny/ui/Icon";
 import { ReactComponent as DownButton } from "@webiny/app-headless-cms/admin/icons/round-arrow_drop_down-24px.svg";
@@ -48,4 +47,4 @@ const LocaleSelector = ({ getLocale, setLocale, getLoading }) => {
     );
 };
 
-export default withRouter(LocaleSelector);
+export default LocaleSelector;
