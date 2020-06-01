@@ -1,15 +1,18 @@
-import * as React from "react";
-import SingleImageUpload from "@webiny/app-admin/components/SingleImageUpload";
+import React, { useState, useEffect, useCallback } from "react";
+import FileUpload from "./FileUpload";
 import fileIcon from "../../fields/icons/round_insert_drive_file-24px.svg";
-import { makeRenderImagePreview, imageWrapperStyles } from "./utils";
+import { RenderFilePreview, imageWrapperStyles } from "./utils";
+
+import { i18n } from "@webiny/app/i18n";
+const t = i18n.ns("app-headless-cms/admin/fields/file");
 
 const imageExtensions = [".jpg", ".jpeg", ".gif", ".png", ".svg"];
 const imagePreviewProps = { transform: { width: 300 }, style: { width: '100%', height: 232, objectFit: 'cover' } };
 
 const MultipleFile = props => {
-    const [isImage, setIsImage] = React.useState(true);
+    const [isImage, setIsImage] = useState(true);
     // Update `previewURL`
-    React.useEffect(() => {
+    useEffect(() => {
         if (props.bind.value && props.bind.value.includes("http")) {
             const key = props.bind.value.split("/").pop();
             if (props.previewURLs[key] === undefined) {
@@ -18,20 +21,20 @@ const MultipleFile = props => {
         }
     }, [props.bind.value, props.previewURLs]);
     // Update `isImage`
-    React.useEffect(() => {
+    useEffect(() => {
         if (props.bind.value) {
             setIsImage(imageExtensions.some(extension => props.bind.value.includes(extension)));
         }
     }, [props.bind.value]);
 
-    const getImageSrc = React.useCallback(() => {
+    const getImageSrc = useCallback(() => {
         if (imageExtensions.some(extension => props.bind.value.includes(extension))) {
             return props.bind.value;
         }
         return fileIcon;
     }, [props.bind.value]);
 
-    const getValue = React.useCallback(() => {
+    const getValue = useCallback(() => {
         if (!props.bind.value) {
             return props.bind.value;
         }
@@ -39,7 +42,7 @@ const MultipleFile = props => {
         return { src: props.previewURLs[props.bind.value] || getImageSrc() };
     }, [props.previewURLs, props.bind.value]);
 
-    return <SingleImageUpload
+    return <FileUpload
         {...props.bind}
         onChange={value => {
             if (value !== null) {
@@ -65,9 +68,9 @@ const MultipleFile = props => {
         imagePreviewProps={imagePreviewProps}
         accept={[]}
         multiple={props.field.multipleValues}
-        placeholder="Select a file"
+        placeholder={t`Select a file"`}
         className={imageWrapperStyles}
-        renderImagePreview={!isImage && makeRenderImagePreview({ value: props.bind.value, imagePreviewProps })}
+        renderImagePreview={!isImage && RenderFilePreview({ value: props.bind.value, imagePreviewProps })}
     />;
 };
 

@@ -17,7 +17,7 @@ const fileLabel = css({
     backgroundColor: "var(--mdc-theme-on-background)"
 });
 
-export const makeRenderImagePreview = ({ value, imagePreviewProps }) => {
+export const RenderFilePreview = ({ value, imagePreviewProps }) => {
     const plugin: AdminFileManagerFileTypePlugin = getPlugin("file-manager-file-type-default");
     const fileName = getFileName(value);
 
