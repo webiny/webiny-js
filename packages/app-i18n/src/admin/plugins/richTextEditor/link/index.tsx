@@ -1,7 +1,7 @@
 import React from "react";
 import { ReactComponent as LinkIcon } from "@webiny/app-i18n/admin/assets/icons/link.svg";
-import LinkDialog from "./LinkDialog";
-import LinkTooltip from "./LinkTooltip";
+import { LinkDialog } from "./LinkDialog";
+import { LinkTooltip } from "./LinkTooltip";
 import { I18NInputRichTextEditorPlugin } from "@webiny/app-i18n/types";
 
 const plugin: I18NInputRichTextEditorPlugin = {
@@ -10,11 +10,14 @@ const plugin: I18NInputRichTextEditorPlugin = {
     plugin: {
         name: "link",
         menu: {
-            render({ MenuButton, activatePlugin }) {
+            render({ MenuButton, editor, activatePlugin }) {
                 return (
                     <MenuButton
-                        onMouseDown={e => {
-                            e.preventDefault();
+                        onMouseDown={() => {
+                            if (!editor.selection) {
+                                return;
+                            }
+
                             activatePlugin("link");
                         }}
                     >
@@ -29,7 +32,6 @@ const plugin: I18NInputRichTextEditorPlugin = {
         editor: {
             renderElement(props, next) {
                 const { attributes, children, element } = props;
-                console.log("renderElement", element);
 
                 if (element.type === "link") {
                     const { href, noFollow } = element;
