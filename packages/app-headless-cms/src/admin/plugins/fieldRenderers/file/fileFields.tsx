@@ -5,7 +5,7 @@ import { i18n } from "@webiny/app/i18n";
 import { Cell, Grid } from "@webiny/ui/Grid";
 import MultipleFile from "./MultipleFile";
 
-const t = i18n.ns("app-headless-cms/admin/fields/date-time");
+const t = i18n.ns("app-headless-cms/admin/fields/file");
 
 function CmsEditorFieldRenderer({ field, getBind, Label }) {
     const [previewURLs, setPreviewURLs] = useState({});
@@ -78,7 +78,7 @@ const plugin: CmsEditorFieldRendererPlugin = {
     renderer: {
         rendererName: "file-inputs",
         name: t`File Inputs`,
-        description: t`Renders a list of file inputs.`,
+        description: t`Enables selecting multiple files via File Manager.`,
         canUse({ field }) {
             return field.type === "file" && field.multipleValues && !field.predefinedValues;
         },

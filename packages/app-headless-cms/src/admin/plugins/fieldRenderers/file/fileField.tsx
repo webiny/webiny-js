@@ -4,7 +4,7 @@ import SingleFile from "./SingleFile";
 import { I18NValue } from "@webiny/app-i18n/components";
 import { i18n } from "@webiny/app/i18n";
 import { Cell, Grid } from "@webiny/ui/Grid";
-const t = i18n.ns("app-headless-cms/admin/fields/date-time");
+const t = i18n.ns("app-headless-cms/admin/fields/file");
 
 const plugin: CmsEditorFieldRendererPlugin = {
     type: "cms-editor-field-renderer",
@@ -12,7 +12,7 @@ const plugin: CmsEditorFieldRendererPlugin = {
     renderer: {
         rendererName: "file-input",
         name: t`File Input`,
-        description: t`Renders inputs for file.`,
+        description: t`Enables selecting a single file via File Manager.`,
         canUse({ field }) {
             return field.type === "file" && !field.multipleValues && !field.predefinedValues;
         },
