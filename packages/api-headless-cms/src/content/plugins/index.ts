@@ -47,11 +47,11 @@ export default (
                 return;
             }
 
-            if (context.cms.READ || context.cms.PREVIEW) {
-                if (!context.event) {
-                    return;
-                }
+            if (!context.event) {
+                return;
+            }
 
+            if (context.cms.READ || context.cms.PREVIEW) {
                 const accessToken = context.event.headers["access-token"];
                 const { CmsAccessToken } = context.models;
 
