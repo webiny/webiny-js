@@ -3,68 +3,52 @@ import { CmsModelFieldToCommodoFieldPlugin } from "@webiny/api-headless-cms/type
 import { withFields, string } from "@webiny/commodo";
 import { i18nField } from "./i18nFields";
 
-enum FILE_TYPE {
-    SINGLE_FILE = "single",
-    MULTIPLE_FILE = "multiple"
-}
-
 function getFileField({ field, validation, context }) {
-    const type: FILE_TYPE = field.settings.type;
-    let cField;
-    switch (type) {
-        case FILE_TYPE.SINGLE_FILE:
-            cField = string({
-                validation,
-                list: field.multipleValues,
-                async getStorageValue() {
-                    // Not using getValue method because it would load the model without need.
-                    const element = cloneDeep(this.current);
+    return string({
+        validation,
+        list: field.multipleValues,
+        async getStorageValue() {
+            // Not using getValue method because it would load the model without need.
+            const element = cloneDeep(this.current);
 
-                    // Only save `key`
-                    const settings = await context.settingsManager.getSettings("file-manager");
-                    let elementWithoutSrcPrefix;
+            // Only save `key`
+            const settings = await context.settingsManager.getSettings("file-manager");
+            let elementWithoutSrcPrefix;
 
-                    if (Array.isArray(element)) {
-                        elementWithoutSrcPrefix = element.map(el => {
-                            if (el.includes(settings.srcPrefix)) {
-                                const [, key] = el.split(settings.srcPrefix);
-                                return key;
-                            }
-                            return el;
-                        });
-                        return elementWithoutSrcPrefix;
-                    }
-
-                    if (element.includes(settings.srcPrefix)) {
-                        const [, key] = element.split(settings.srcPrefix);
+            if (Array.isArray(element)) {
+                elementWithoutSrcPrefix = element.map(el => {
+                    if (el.includes(settings.srcPrefix)) {
+                        const [, key] = el.split(settings.srcPrefix);
                         return key;
                     }
+                    return el;
+                });
+                return elementWithoutSrcPrefix;
+            }
 
-                    return element;
-                },
-                async setStorageValue(element) {
-                    const settings = await context.settingsManager.getSettings("file-manager");
-                    let elementWithSrcPrefix;
-                    if (Array.isArray(element)) {
-                        elementWithSrcPrefix = element.map(el => settings.srcPrefix + el);
-                    } else {
-                        elementWithSrcPrefix = settings.srcPrefix + element;
-                    }
+            if (element.includes(settings.srcPrefix)) {
+                const [, key] = element.split(settings.srcPrefix);
+                return key;
+            }
 
-                    this.setValue(elementWithSrcPrefix, {
-                        skipDifferenceCheck: true,
-                        forceSetAsClean: true
-                    });
-                    return this;
-                }
+            return element;
+        },
+        async setStorageValue(element) {
+            const settings = await context.settingsManager.getSettings("file-manager");
+            let elementWithSrcPrefix;
+            if (Array.isArray(element)) {
+                elementWithSrcPrefix = element.map(el => settings.srcPrefix + el);
+            } else {
+                elementWithSrcPrefix = settings.srcPrefix + element;
+            }
+
+            this.setValue(elementWithSrcPrefix, {
+                skipDifferenceCheck: true,
+                forceSetAsClean: true
             });
-            break;
-        case FILE_TYPE.MULTIPLE_FILE:
-            cField = string({ validation });
-            break;
-    }
-
-    return cField;
+            return this;
+        }
+    });
 }
 
 const plugin: CmsModelFieldToCommodoFieldPlugin = {

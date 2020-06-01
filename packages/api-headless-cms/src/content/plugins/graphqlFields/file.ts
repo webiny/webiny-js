@@ -17,18 +17,6 @@ const createListFilters = ({ field }) => {
 
         # Matches if the field value does not equal any of the given values
         ${field.fieldId}_not_in: [String]
-
-        # Matches if the field value is strictly smaller than the given value
-        ${field.fieldId}_lt: String
-
-        # Matches if the field value is smaller than or equal to the given value
-        ${field.fieldId}_lte: String
-
-        # Matches if the field value is strictly greater than the given value
-        ${field.fieldId}_gt: String
-
-        # Matches if the field value is greater than or equal to the given value
-        ${field.fieldId}_gte: String
     `;
 };
 
