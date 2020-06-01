@@ -9,12 +9,13 @@ import {
 } from "@webiny/app-admin/components/SimpleForm";
 import { Typography } from "@webiny/ui/Typography";
 import { Cell, Grid } from "@webiny/ui/Grid";
-import { ButtonPrimary } from "@webiny/ui/Button";
 import { Elevation } from "@webiny/ui/Elevation";
 import GithubIcon from "../assets/icons/github-logo.svg";
 import SlackIcon from "../assets/icons/slack-logo.svg";
 import MediumIcon from "../assets/icons/medium-logo.svg";
 import TwitterIcon from "../assets/icons/twitter-logo.svg";
+import TextbookIcon from "../assets/icons/textbook.svg";
+import LaptopIcon from "../assets/icons/laptop.svg";
 
 import { useSecurity } from "@webiny/app-security/hooks/useSecurity";
 
@@ -27,7 +28,8 @@ const linkStyle = css({
     textDecoration: "none",
     "&:hover": {
         textDecoration: "none"
-    }
+    },
+    color: "var(--mdc-theme-text-primary-on-background)"
 });
 
 const imageStyle = css({
@@ -60,6 +62,11 @@ const pGetStartedStyle = css({
 });
 
 const widgetButtonStyle = css({
+    textAlign: "center"
+});
+
+const footerTextStyle = css({
+    backgroundColor: "var(--mdc-theme-on-background)",
     textAlign: "center"
 });
 
@@ -145,41 +152,51 @@ const Welcome = () => {
                                     </p>
                                 </Typography>
                             </Cell>
-                            <Cell span={4}>
-                                <Link to="cms/content-models" className={linkStyle}>
-                                    <ButtonPrimary>Documentation</ButtonPrimary>
+                            <Cell span={4} className={footerTextStyle}>
+                                <Link to="https://docs.webiny.com/" className={linkStyle}>
+                                    <Typography use={"headline6"}>
+                                        <div>
+                                            <img className={imageStyle} src={TextbookIcon} />
+                                            <p>Documentation</p>                                            
+                                        </div>
+                                    </Typography>
                                 </Link>
                             </Cell>
-                            <Cell span={4}>
+                            <Cell span={4} className={footerTextStyle}>
                                 <Link to="cms/content-models" className={linkStyle}>
-                                    <ButtonPrimary>Code examples</ButtonPrimary>
+                                    <Typography use={"headline6"}>
+                                        <div>
+                                            <img className={imageStyle} src={LaptopIcon} />
+                                            <p>Code examples</p>                                            
+                                        </div>
+                                    </Typography>
                                 </Link>
                             </Cell>
-                            <Cell span={1}>
+                            <Cell span={1} className={communityStyle}>
                                 <img className={imageStyle} src={SlackIcon} />
                                 <Link to="https://www.webiny.com/slack/" className={linkStyle}>
-                                    <p style={{ textAlign: "left" }}>Slack</p>
+                                    <p>Slack</p>
                                 </Link>
                             </Cell>
-                            <Cell span={1}>
+                            <Cell span={1} className={communityStyle}>
                                 <img className={imageStyle} src={GithubIcon} />
                                 <Link
                                     to="https://github.com/webiny/webiny-js"
                                     className={linkStyle}
                                 >
-                                    <p style={{ textAlign: "left" }}>Github</p>
+                                    <p>Github</p>
                                 </Link>
                             </Cell>
-                            <Cell span={1}>
+                            <Cell span={1} className={communityStyle}>
                                 <img className={imageStyle} src={MediumIcon} />
                                 <Link to="https://blog.webiny.com" className={linkStyle}>
-                                    <p style={{ textAlign: "left" }}>Medium</p>
+                                    <p>Medium</p>
                                 </Link>
                             </Cell>
-                            <Cell span={1}>
+                            <Cell span={1} className={communityStyle}>
                                 <img className={imageStyle} src={TwitterIcon} />
                                 <Link to="https://twitter.com/WebinyPlatform" className={linkStyle}>
-                                    <p style={{ textAlign: "left" }}>Twitter</p>
+                                    <p>Twitter</p>
                                 </Link>
                             </Cell>
                         </Grid>
