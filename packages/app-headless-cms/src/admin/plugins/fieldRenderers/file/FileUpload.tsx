@@ -12,12 +12,6 @@ const FileUploadWrapper = styled("div")({
         opacity: 0.75,
         pointerEvents: "none"
     },
-    ".mdc-floating-label--float-above": {
-        transform: "scale(0.75)",
-        top: 10,
-        left: 10,
-        color: "var(--mdc-theme-text-secondary-on-background)"
-    },
     ".mdc-text-field-helper-text": {
         color: "var(--mdc-theme-text-secondary-on-background)"
     }
@@ -83,7 +77,6 @@ export default class FileUpload extends React.Component<FileUploadProps> {
             onChange,
             value,
             validation,
-            label,
             description,
             accept,
             maxSize,
@@ -103,16 +96,9 @@ export default class FileUpload extends React.Component<FileUploadProps> {
 
         return (
             <FileUploadWrapper className={className}>
-                {label && (
-                    <div className="mdc-floating-label mdc-floating-label--float-above">
-                        {label}
-                    </div>
-                )}
-
                 <FileManager
                     onChange={onChange}
                     accept={accept}
-                    images={!accept}
                     maxSize={maxSize}
                     multiple={multiple}
                     multipleMaxCount={multipleMaxCount}

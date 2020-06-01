@@ -1,12 +1,11 @@
 import React, { useState, useEffect, useCallback } from "react";
 import FileUpload from "./FileUpload";
 import fileIcon from "../../fields/icons/round_insert_drive_file-24px.svg";
-import { RenderFilePreview, imageWrapperStyles } from "./utils";
+import { RenderFilePreview, imageWrapperStyles, imageExtensions } from "./utils";
 
 import { i18n } from "@webiny/app/i18n";
 const t = i18n.ns("app-headless-cms/admin/fields/file");
 
-const imageExtensions = [".jpg", ".jpeg", ".gif", ".png", ".svg"];
 const imagePreviewProps = { transform: { width: 300 }, style: { width: '100%', height: 232, objectFit: 'cover' } };
 
 const MultipleFile = props => {
@@ -66,7 +65,6 @@ const MultipleFile = props => {
         }}
         value={getValue()}
         imagePreviewProps={imagePreviewProps}
-        accept={[]}
         multiple={props.field.multipleValues}
         placeholder={t`Select a file"`}
         className={imageWrapperStyles}

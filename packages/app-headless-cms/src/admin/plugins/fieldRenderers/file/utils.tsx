@@ -3,6 +3,8 @@ import { css } from "emotion";
 import { getPlugin } from "@webiny/plugins";
 import { AdminFileManagerFileTypePlugin } from "@webiny/app-admin/types";
 
+export const imageExtensions = [".jpg", ".jpeg", ".gif", ".png", ".svg"];
+
 export const imageWrapperStyles = css({
     height: 232
 });

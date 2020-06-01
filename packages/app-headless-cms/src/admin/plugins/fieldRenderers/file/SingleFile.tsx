@@ -1,12 +1,11 @@
 import React, { useState, useEffect, useCallback } from "react";
-import { RenderFilePreview } from "./utils";
+import { RenderFilePreview, imageExtensions } from "./utils";
 import FileUpload from "./FileUpload";
 import fileIcon from "../../fields/icons/round_insert_drive_file-24px.svg";
 
 import { i18n } from "@webiny/app/i18n";
 const t = i18n.ns("app-headless-cms/admin/fields/file");
 
-const imageExtensions = [".jpg", ".jpeg", ".gif", ".png", ".svg"];
 const imagePreviewProps = { transform: { width: 300 }, style: { width: '100%', height: 300, objectFit: 'contain' } };
 
 const SingleFile = props => {
@@ -53,7 +52,6 @@ const SingleFile = props => {
         }}
         value={getValue()}
         imagePreviewProps={imagePreviewProps}
-        accept={[]}
         placeholder={t`Select a file"`}
         renderImagePreview={!isImage && RenderFilePreview({ value: props.bind.value, imagePreviewProps })}
     />;
