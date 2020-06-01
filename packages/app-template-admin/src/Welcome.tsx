@@ -19,7 +19,9 @@ import TwitterIcon from "./assets/icons/twitter-logo.svg";
 import { useSecurity } from "@webiny/app-security/hooks/useSecurity";
 
 import { css } from "emotion";
-
+import styled from "@emotion/styled";
+import { AdminWelcomeScreenWidgetPlugin } from "@webiny/app-admin/types";
+import { getPlugins } from "@webiny/plugins";
 
 const linkStyle = css({
     textDecoration: "none",
@@ -34,7 +36,7 @@ const imageStyle = css({
 });
 
 const communityStyle = css({
-    textAlign: "left",
+    textAlign: "left"
 });
 
 const welcomeStyle = css({
@@ -44,6 +46,45 @@ const welcomeStyle = css({
 const pFormContentStyle = css({
     fontWeight: "bold"
 });
+
+const Widget = styled("div")({
+    width: 400
+});
+
+/*<Grid>
+    <Cell span={12}>
+        <Typography use={"body1"} className={welcomeStyle}>
+            To get started - pick one of the actions below:<br></br>
+        </Typography>
+    </Cell>
+    <Cell span={4}>
+        <Elevation z={2}>
+            <Typography use={"headline6"}>
+                Headless CMS
+            </Typography>
+            <Link to="cms/content-models" className={linkStyle}>
+                <ButtonSecondary>
+                    New Content Model
+                </ButtonSecondary>
+            </Link>
+        </Elevation>
+    </Cell>
+    <Cell span={4}>
+        <Elevation z={2}>
+            <Typography use={"headline6"}>
+                Page Builder
+            </Typography>
+            <Typography use={"body1"} className={communityStyle}>
+                <p>Explore the Webiny documentation, learn about the architecture and check out code examples and guides:</p>
+            </Typography>
+            <Link to="cms/content-models" className={linkStyle}>
+                <ButtonSecondary>
+                    Build a new Page
+                </ButtonSecondary>
+            </Link>
+        </Elevation>
+    </Cell>
+</Grid>*/
 
 const Welcome = () => {
     const security = useSecurity();
@@ -60,40 +101,17 @@ const Welcome = () => {
                 <SimpleForm>
                     <SimpleFormHeader title={`Welcome ${fullName.split(" ")[0]}!`} />
                     <SimpleFormContent>
-                        <Grid>
-                            <Cell span={12}>
-                                <Typography use={"body1"} className={welcomeStyle}>
-                                    To get started - pick one of the actions below:<br></br>
-                                </Typography>
-                            </Cell>
-                            <Cell span={4}>
-                                <Elevation z={2}>
-                                    <Typography use={"headline6"}>
-                                        Headless CMS
-                                    </Typography>
-                                    <Link to="cms/content-models" className={linkStyle}>
-                                        <ButtonSecondary>
-                                            New Content Model
-                                        </ButtonSecondary>   
-                                    </Link>                                    
-                                </Elevation>
-                            </Cell>
-                            <Cell span={4}>
-                                <Elevation z={2}>
-                                    <Typography use={"headline6"}>
-                                        Page Builder
-                                    </Typography>
-                                    <Typography use={"body1"} className={communityStyle}>
-                                        <p>Explore the Webiny documentation, learn about the architecture and check out code examples and guides:</p>
-                                    </Typography>
-                                    <Link to="cms/content-models" className={linkStyle}>
-                                        <ButtonSecondary>
-                                            Build a new Page
-                                        </ButtonSecondary>
-                                    </Link>
-                                </Elevation>
-                            </Cell>
-                        </Grid>
+                        {getPlugins<AdminWelcomeScreenWidgetPlugin>(
+                            "admin-welcome-screen-widget"
+                        ).map(pl => {
+                            return (
+                                <Widget key={pl.name}>
+                                    <span>{pl.title}</span>
+                                    <p>{pl.description}</p>
+                                    {pl.cta}
+                                </Widget>
+                            );
+                        })}
                     </SimpleFormContent>
                     <SimpleFormFooter>
                         <Grid>
@@ -109,62 +127,55 @@ const Welcome = () => {
                             </Cell>
                             <Cell span={8}>
                                 <Typography use={"body1"} className={communityStyle}>
-                                    <p>Explore the Webiny documentation, learn about the architecture and check out code examples and guides:</p>
+                                    <p>
+                                        Explore the Webiny documentation, learn about the
+                                        architecture and check out code examples and guides:
+                                    </p>
                                 </Typography>
                             </Cell>
                             <Cell span={4}>
                                 <Typography use={"body1"} className={communityStyle}>
-                                    <p>Get to know Webiny team members, discuss new ideas and get help:</p>
+                                    <p>
+                                        Get to know Webiny team members, discuss new ideas and get
+                                        help:
+                                    </p>
                                 </Typography>
                             </Cell>
                             <Cell span={4}>
                                 <Link to="cms/content-models" className={linkStyle}>
-                                    <ButtonPrimary>
-                                        Documentation
-                                    </ButtonPrimary>
+                                    <ButtonPrimary>Documentation</ButtonPrimary>
                                 </Link>
                             </Cell>
                             <Cell span={4}>
                                 <Link to="cms/content-models" className={linkStyle}>
-                                    <ButtonPrimary>
-                                        Code examples
-                                    </ButtonPrimary>
+                                    <ButtonPrimary>Code examples</ButtonPrimary>
                                 </Link>
                             </Cell>
                             <Cell span={1}>
-                                <img
-                                    className={imageStyle}
-                                    src={SlackIcon}
-                                />
+                                <img className={imageStyle} src={SlackIcon} />
                                 <Link to="https://www.webiny.com/slack/" className={linkStyle}>
-                                    <p style={{textAlign: "left"}}>Slack</p>
+                                    <p style={{ textAlign: "left" }}>Slack</p>
                                 </Link>
                             </Cell>
                             <Cell span={1}>
-                                <img
-                                    className={imageStyle}
-                                    src={GithubIcon}
-                                />
-                                <Link to="https://github.com/webiny/webiny-js" className={linkStyle}>
-                                    <p style={{textAlign: "left"}}>Github</p>
+                                <img className={imageStyle} src={GithubIcon} />
+                                <Link
+                                    to="https://github.com/webiny/webiny-js"
+                                    className={linkStyle}
+                                >
+                                    <p style={{ textAlign: "left" }}>Github</p>
                                 </Link>
                             </Cell>
                             <Cell span={1}>
-                                <img
-                                    className={imageStyle}
-                                    src={MediumIcon}
-                                />
+                                <img className={imageStyle} src={MediumIcon} />
                                 <Link to="https://blog.webiny.com" className={linkStyle}>
-                                    <p style={{textAlign: "left"}}>Medium</p>
+                                    <p style={{ textAlign: "left" }}>Medium</p>
                                 </Link>
                             </Cell>
                             <Cell span={1}>
-                                <img
-                                    className={imageStyle}
-                                    src={TwitterIcon}
-                                />
+                                <img className={imageStyle} src={TwitterIcon} />
                                 <Link to="https://twitter.com/WebinyPlatform" className={linkStyle}>
-                                    <p style={{textAlign: "left"}}>Twitter</p>
+                                    <p style={{ textAlign: "left" }}>Twitter</p>
                                 </Link>
                             </Cell>
                         </Grid>
