@@ -12,6 +12,7 @@ import footer from "./contentDetails/footer";
 import contentRevisions from "./contentDetails/contentRevisions";
 import contentModelEditorPlugins from "./../editor/plugins";
 import appTemplateRenderer from "./appTemplatePlugins";
+import welcomeScreenWidget from "./welcomeScreenWidget";
 
 export default () => [
     install,
@@ -30,5 +31,7 @@ export default () => [
     fieldRenderers,
     validators,
     contentModelEditorPlugins,
-    appTemplateRenderer
+    appTemplateRenderer,
+
+    welcomeScreenWidget
 ];
