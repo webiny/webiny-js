@@ -28,21 +28,18 @@ export default ({ database, type = "manage" } = {}) => {
         database = new Database();
     }
 
-    const createCmsHandler = () =>
-        createHandler(
-            neDb({ database }),
-            securityServicePlugins({
-                token: {
-                    secret: "secret"
-                }
-            }),
-            i18n,
-            i18nLocales(),
-            headlessCmsHandler(),
-            dataManagerPlugins()
-        );
-
-    const cmsHandler = createCmsHandler();
+    const cmsHandler = createHandler(
+        neDb({ database }),
+        securityServicePlugins({
+            token: {
+                secret: "secret"
+            }
+        }),
+        i18n,
+        i18nLocales(),
+        headlessCmsHandler(),
+        dataManagerPlugins()
+    );
 
     const invoke = async ({ httpMethod = "POST", body, headers = {}, ...rest }) => {
         const response = await cmsHandler({
