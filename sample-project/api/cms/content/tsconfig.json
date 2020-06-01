@@ -4,7 +4,6 @@
     { "path": "../../../../packages/api-plugin-commodo-db-proxy" },
     { "path": "../../../../packages/api-headless-cms" },
     { "path": "../../../../packages/api-i18n" },
-    { "path": "../../../../packages/api-files" },
     { "path": "../../../../packages/api-security" },
     { "path": "../../../../packages/api-settings-manager" },
     { "path": "../../../../packages/handler" }
