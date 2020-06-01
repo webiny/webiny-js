@@ -1,6 +1,6 @@
 import React, { useRef, useCallback, cloneElement } from "react";
 import { CmsEditorField, CmsEditorFieldRendererPlugin } from "@webiny/app-headless-cms/types";
-import get from "lodash.get";
+import get from "lodash/get";
 import { i18n } from "@webiny/app/i18n";
 import getValue from "./functions/getValue";
 import setValue from "./functions/setValue";
@@ -23,7 +23,7 @@ const RenderFieldElement = (props: {
 
     const getBind = useCallback(
         (index = -1) => {
-            const memoKey = field.fieldId + field.multipleValues + index;
+            const memoKey = field.fieldId + field.multipleValues + index + locale;
             if (memoizedBindComponents.current[memoKey]) {
                 return memoizedBindComponents.current[memoKey];
             }
