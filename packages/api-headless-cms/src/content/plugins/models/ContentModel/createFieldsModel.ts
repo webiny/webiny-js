@@ -7,11 +7,6 @@ const requiredShortString = validation.create("required,maxLength:256");
 const shortString = validation.create("maxLength:265");
 
 export default context => {
-    const PredefinedValueModel = withFields({
-        value: i18nField({ field: any(), context }),
-        label: i18nField({ field: any(), context })
-    });
-
     const RendererModel = withFields({
         name: string({ validation: requiredShortString })
     })();
@@ -33,7 +28,7 @@ export default context => {
         }),
         type: setOnce()(string({ validation: requiredShortString })),
         multipleValues: boolean({ value: false }),
-        predefinedValues: fields({ instanceOf: PredefinedValueModel, list: true }),
+        predefinedValues: i18nField({ field: any({ list: true }), context }),
         renderer: fields({ instanceOf: RendererModel, validation: shortString }),
         validation: fields({
             list: true,
