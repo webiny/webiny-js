@@ -7,6 +7,7 @@ name: Push Actions
 env:
   GH_TOKEN: ${{ secrets.GH_TOKEN }}
   NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+  NODE_OPTIONS: --max_old_space_size=4096
 
 jobs:
   build-test-release:
