@@ -40,3 +40,10 @@ jobs:
 
       - name: Set git username
         run: git config --global user.name "doitadrian"
+
+      - name: Create a release on GitHub
+        run: yarn lerna version --conventional-prerelease --force-publish --preid beta --yes
+
+      - name: Release packages to NPM
+        run: yarn lerna publish from-package --dist-tag beta --yes
+
