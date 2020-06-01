@@ -165,6 +165,16 @@ export default ({ type }) => [
                     name: String
                 }
 
+                type PredefinedValues {
+                    enabled: Boolean
+                    values: CmsAnyList
+                }
+                
+                input PredefinedValuesInput {
+                    enabled: Boolean
+                    values: CmsAnyListInput
+                }
+                
                 type CmsContentModelField {
                     _id: ID
                     label: CmsString
@@ -173,7 +183,7 @@ export default ({ type }) => [
                     fieldId: String
                     type: String
                     multipleValues: Boolean
-                    predefinedValues: CmsAnyList
+                    predefinedValues: PredefinedValues
                     renderer: CmsFieldRenderer
                     validation: [CmsFieldValidation]
                     settings: JSON
@@ -187,7 +197,7 @@ export default ({ type }) => [
                     fieldId: String
                     type: String
                     multipleValues: Boolean
-                    predefinedValues: CmsAnyListInput
+                    predefinedValues: PredefinedValuesInput
                     renderer: CmsFieldRendererInput
                     validation: [CmsFieldValidationInput]
                     settings: JSON

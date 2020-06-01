@@ -28,7 +28,13 @@ export default context => {
         }),
         type: setOnce()(string({ validation: requiredShortString })),
         multipleValues: boolean({ value: false }),
-        predefinedValues: i18nField({ field: any({ list: true }), context }),
+        predefinedValues: fields({
+            value: {},
+            instanceOf: withFields({
+                enabled: boolean(),
+                values: i18nField({ field: any({ list: true }), context })
+            })()
+        }),
         renderer: fields({ instanceOf: RendererModel, validation: shortString }),
         validation: fields({
             list: true,
