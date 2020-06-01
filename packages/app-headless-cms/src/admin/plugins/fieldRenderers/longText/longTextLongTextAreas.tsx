@@ -26,7 +26,6 @@ const plugin: CmsEditorFieldRendererPlugin = {
                             {...bind.index}
                             autoFocus
                             rows={5}
-                            onEnter={() => bind.field.appendValue("")}
                             label={t`Value {number}`({ number: index + 1 })}
                             trailingIcon={
                                 index > 0 && {
