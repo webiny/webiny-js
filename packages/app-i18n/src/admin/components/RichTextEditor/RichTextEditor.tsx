@@ -8,8 +8,9 @@ import classNames from "classnames";
 import { FormElementMessage } from "@webiny/ui/FormElementMessage";
 import { MenuButton } from "./index";
 import { Menu } from "./Menu";
-import { FormComponentProps } from "./../types";
+import { FormComponentProps } from "@webiny/ui/types";
 import { pluginsToProps } from "./pluginsToProps";
+import { Range, Descendant } from "slate";
 
 const EditorWrapper = styled("div")({
     border: "1px solid var(--mdc-theme-on-background)",
@@ -49,7 +50,6 @@ export type EditorPlugin = { [key: string]: any };
 interface MenuPluginRender {
     MenuButton: typeof MenuButton;
     editor: Editor;
-    onChange: () => void;
     activatePlugin(name: string): void;
 }
 
@@ -83,6 +83,8 @@ type State = {
 const initialValue = [{ type: "paragraph", children: [{ text: "" }] }];
 
 const withUtils = (editor: Editor) => {
+    const { isInline } = editor;
+
     editor.hasMark = mark => {
         const marks = SlateEditor.marks(editor);
         return marks ? marks[mark] === true : false;
@@ -96,6 +98,11 @@ const withUtils = (editor: Editor) => {
         } else {
             SlateEditor.addMark(editor, mark, true);
         }
+    };
+
+    // TODO: add `enhanceEditor` method to editor plugins and move this to `link` plugin
+    editor.isInline = element => {
+        return element.type === "link" ? true : isInline(element);
     };
 
     return editor;
@@ -149,8 +156,6 @@ export class RichTextEditor extends React.Component<RichTextEditorProps, State> 
     };
 
     activatePlugin = (plugin: string) => {
-        const { value } = this.state;
-
         this.setState({
             activePlugin: {
                 plugin,

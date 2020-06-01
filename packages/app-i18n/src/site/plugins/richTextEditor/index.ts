@@ -1,6 +1,6 @@
 import boldPlugins from "./bold";
 import italicPlugins from "./italic";
-//import linkPlugins from "./link";
+import linkPlugins from "./link";
 import underlinePlugins from "./underline";
 import listsPlugins from "./lists";
 import codePlugins from "./code";
@@ -12,5 +12,6 @@ export default [
     italicPlugins,
     underlinePlugins,
     listsPlugins,
-    codePlugins
+    codePlugins,
+    linkPlugins
 ];

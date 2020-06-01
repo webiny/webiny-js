@@ -3,7 +3,7 @@ import styled from "@emotion/styled";
 import { css } from "emotion";
 import { useSlate } from "slate-react";
 import classNames from "classnames";
-import { FormComponentProps } from "./../types";
+import { FormComponentProps } from "@webiny/ui/types";
 
 const MenuContainer = styled("div")({
     position: "relative",
