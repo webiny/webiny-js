@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from "react";
-import { RenderFilePreview, imageExtensions } from "./utils";
+import { createRenderImagePreview, imageExtensions } from "./utils";
 import FileUpload from "./FileUpload";
 import fileIcon from "../../fields/icons/round_insert_drive_file-24px.svg";
 
@@ -53,7 +53,7 @@ const SingleFile = props => {
         value={getValue()}
         imagePreviewProps={imagePreviewProps}
         placeholder={t`Select a file"`}
-        renderImagePreview={!isImage && RenderFilePreview({ value: props.bind.value, imagePreviewProps })}
+        renderImagePreview={!isImage && createRenderImagePreview({ value: props.bind.value, imagePreviewProps })}
     />;
 };
 

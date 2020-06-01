@@ -1,7 +1,6 @@
 import * as React from "react";
 import { css } from "emotion";
-import { getPlugin } from "@webiny/plugins";
-import { AdminFileManagerFileTypePlugin } from "@webiny/app-admin/types";
+import { ReactComponent as FileIcon } from "../../fields/icons/round_insert_drive_file-24px.svg";
 
 export const imageExtensions = [".jpg", ".jpeg", ".gif", ".png", ".svg"];
 
@@ -19,14 +18,27 @@ const fileLabel = css({
     backgroundColor: "var(--mdc-theme-on-background)"
 });
 
-export const RenderFilePreview = ({ value, imagePreviewProps }) => {
-    const plugin: AdminFileManagerFileTypePlugin = getPlugin("file-manager-file-type-default");
+const IconWrapperStyle = css({
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    height: 200
+});
+
+const IconStyle = css({
+    width: 64,
+    height: 64
+});
+
+export const createRenderImagePreview = ({ value, imagePreviewProps }) => {
     const fileName = getFileName(value);
 
     const renderImagePreview = (renderImageProps) => {
         return (
             <div {...renderImageProps} {...imagePreviewProps}>
-                {plugin.render({ file: null })}
+                <div className={IconWrapperStyle}>
+                    <FileIcon className={IconStyle} />
+                </div>
                 <div className={fileLabel}>{fileName}</div>
             </div>
         );
