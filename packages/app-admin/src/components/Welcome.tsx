@@ -38,7 +38,7 @@ const imageStyle = css({
 });
 
 const communityStyle = css({
-    textAlign: "center",
+    textAlign: "left",
 });
 
 const widgetTitleStyle = css({
@@ -80,8 +80,8 @@ const ContentTheme = styled("div")({
 });
 
 const Widget = styled("div")({
-    marginLeft: "1rem",
-    marginRight: "1rem",
+    marginLeft: "1.5rem",
+    marginRight: "1.5rem",
     marginBottom: "2rem"
 });
 
@@ -98,7 +98,7 @@ const Welcome = () => {
         <Grid>
             <Cell span={12}>
                 <SimpleForm>
-                    <SimpleFormHeader title={`Welcome ${fullName.split(" ")[0]}!`} />
+                    <SimpleFormHeader title={`Hi ${fullName.split(" ")[0]}!`} />
                     <SimpleFormContent>
                         <ContentTheme>
                             <Cell span={12}>
@@ -159,7 +159,7 @@ const Welcome = () => {
                             </Cell>
                             <Cell span={4} className={footerTextStyle}>
                                 <Link to="https://docs.webiny.com/" className={linkStyle}>
-                                    <Typography use={"headline6"}>
+                                    <Typography use={"headline5"}>
                                         <div className={footerContainerStyle}>
                                             <img className={imageStyle} src={TextbookIcon} />
                                             <p className={pFormContentStyle}>Documentation</p>
@@ -168,8 +168,8 @@ const Welcome = () => {
                                 </Link>
                             </Cell>
                             <Cell span={4} className={footerTextStyle}>
-                                <Link to="cms/content-models" className={linkStyle}>
-                                    <Typography use={"headline6"}>
+                                <Link to="https://github.com/webiny/webiny-examples" className={linkStyle}>
+                                    <Typography use={"headline5"}>
                                         <div className={footerContainerStyle}>
                                             <img className={imageStyle} src={LaptopIcon} />
                                             <p className={pFormContentStyle}>Code examples</p>                                            
@@ -177,7 +177,7 @@ const Welcome = () => {
                                     </Typography>
                                 </Link>
                             </Cell>
-                            <Cell span={1} className={communityStyle} align="middle">
+                            <Cell span={1} className={widgetDescriptionStyle} align="middle">
                                 <img className={imageStyle} src={GithubIcon} />
                                 <Link
                                     to="https://github.com/webiny/webiny-js"
@@ -186,19 +186,19 @@ const Welcome = () => {
                                     <p>Github</p>
                                 </Link>
                             </Cell>
-                            <Cell span={1} className={communityStyle} align="middle">
+                            <Cell span={1} className={widgetDescriptionStyle} align="middle">
                                 <img className={imageStyle} src={SlackIcon} />
                                 <Link to="https://www.webiny.com/slack/" className={linkStyle}>
                                     <p>Slack</p>
                                 </Link>
                             </Cell>
-                            <Cell span={1} className={communityStyle} align="middle">
+                            <Cell span={1} className={widgetDescriptionStyle} align="middle">
                                 <img className={imageStyle} src={MediumIcon} />
                                 <Link to="https://blog.webiny.com" className={linkStyle}>
                                     <p>Medium</p>
                                 </Link>
                             </Cell>
-                            <Cell span={1} className={communityStyle} align="middle">
+                            <Cell span={1} className={widgetDescriptionStyle} align="middle">
                                 <img className={imageStyle} src={TwitterIcon} />
                                 <Link to="https://twitter.com/WebinyPlatform" className={linkStyle}>
                                     <p>Twitter</p>
