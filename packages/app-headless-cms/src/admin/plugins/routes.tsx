@@ -109,7 +109,6 @@ const plugins: RoutePlugin[] = [
             />
         )
     },
-
     {
         type: "route",
         name: "route-settings-cms-environments",

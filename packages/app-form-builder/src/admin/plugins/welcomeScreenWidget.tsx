@@ -18,17 +18,17 @@ const buttonStyle = css({
 
 const plugin: AdminWelcomeScreenWidgetPlugin = {
     type: "admin-welcome-screen-widget",
-    name: "admin-welcome-screen-widget-page-builder",
+    name: "admin-welcome-screen-widget-form-builder",
     widget: {
         cta: (
-            <Link to="page-builder/pages" className={linkStyle}>
+            <Link to="/forms" className={linkStyle}>
                 <ButtonSecondary className={buttonStyle}>
-                    Build a new Page
+                    Create a new Form
                 </ButtonSecondary>                 
             </Link>
         ),
-        description: "Build stunning landing pages with an easy to use drag and drop editor.",
-        title: "Page Builder"        
+        description: "Create forms using a drag and drop interface and track conversions.",
+        title: "Form Builder"        
     }
 };
 

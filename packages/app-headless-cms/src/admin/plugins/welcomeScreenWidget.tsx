@@ -18,17 +18,17 @@ const buttonStyle = css({
 
 const plugin: AdminWelcomeScreenWidgetPlugin = {
     type: "admin-welcome-screen-widget",
-    name: "admin-welcome-screen-widget-page-builder",
+    name: "admin-welcome-screen-widget-headless-cms",
     widget: {
         cta: (
-            <Link to="page-builder/pages" className={linkStyle}>
+            <Link to="cms/content-models" className={linkStyle}>
                 <ButtonSecondary className={buttonStyle}>
-                    Build a new Page
+                    New Content Model
                 </ButtonSecondary>                 
             </Link>
         ),
-        description: "Build stunning landing pages with an easy to use drag and drop editor.",
-        title: "Page Builder"        
+        description: "GraphQL based headless CMS with powerful content modeling features.",
+        title: "Headless CMS"        
     }
 };
 
