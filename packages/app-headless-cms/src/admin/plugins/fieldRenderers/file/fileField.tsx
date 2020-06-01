@@ -14,7 +14,7 @@ const plugin: CmsEditorFieldRendererPlugin = {
         name: t`File Input`,
         description: t`Enables selecting a single file via File Manager.`,
         canUse({ field }) {
-            return field.type === "file" && !field.multipleValues && !field.predefinedValues;
+            return field.type === "file" && !field.multipleValues;
         },
         render({ field, getBind, Label }) {
             const Bind = getBind();

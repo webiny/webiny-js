@@ -80,7 +80,7 @@ const plugin: CmsEditorFieldRendererPlugin = {
         name: t`File Inputs`,
         description: t`Enables selecting multiple files via File Manager.`,
         canUse({ field }) {
-            return field.type === "file" && field.multipleValues && !field.predefinedValues;
+            return field.type === "file" && field.multipleValues;
         },
         render({ field, getBind, Label }) {
             return <CmsEditorFieldRenderer field={field} getBind={getBind} Label={Label} />
