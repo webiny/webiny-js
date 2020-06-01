@@ -1,6 +1,6 @@
 {
   "extends": "../../tsconfig.build.json",
-  "include": ["./src", "./custom.d.ts"],
+  "include": ["./src", "./custom.d.ts", "./slate.d.ts", "./slate-react.d.ts"],
   "exclude": [
     "node_modules",
     "../app",
