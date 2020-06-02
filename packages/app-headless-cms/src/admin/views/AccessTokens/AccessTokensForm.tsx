@@ -2,6 +2,7 @@ import React from "react";
 import { Form } from "@webiny/form";
 import { Grid, Cell } from "@webiny/ui/Grid";
 import { Input } from "@webiny/ui/Input";
+import { CopyButton } from "@webiny/ui/Button";
 import { ButtonPrimary } from "@webiny/ui/Button";
 import { CircularProgress } from "@webiny/ui/Progress";
 import { useCrud } from "@webiny/app-admin/hooks/useCrud";
@@ -17,6 +18,8 @@ import {
     SimpleFormContent
 } from "@webiny/app-admin/components/SimpleForm";
 import { validation } from "@webiny/validation";
+import { FormElementMessage } from "@webiny/ui/FormElementMessage";
+import { webinyCheckboxTitle } from "@webiny/ui/Checkbox/Checkbox.styles";
 
 const t = i18n.ns("app-headless-cms/admin/accessTokens/form");
 
@@ -55,7 +58,38 @@ function EnvironmentAliasesForm() {
                             </Cell>
                             <Cell span={12}>
                                 <Bind name="token">
-                                    <Input disabled label={t`Token`} />
+                                    <div>
+                                        <div
+                                            className={
+                                                "mdc-text-field-helper-text mdc-text-field-helper-text--persistent " +
+                                                webinyCheckboxTitle
+                                            }
+                                        >
+                                            Token
+                                        </div>
+                                        <div
+                                            style={{
+                                                background: "var(--mdc-theme-background)",
+                                                padding: "8px",
+                                                paddingLeft: "16px"
+                                            }}
+                                        >
+                                            <span
+                                                style={{
+                                                    lineHeight: "48px",
+                                                    verticalAlign: "middle"
+                                                }}
+                                            >
+                                                {data.token}
+                                            </span>
+                                            <span style={{ position: "absolute", right: "32px" }}>
+                                                <CopyButton value={data.token} />
+                                            </span>
+                                        </div>
+                                        <FormElementMessage>
+                                            Your Token will be shown once you save the form
+                                        </FormElementMessage>
+                                    </div>
                                 </Bind>
                             </Cell>
                             <Cell span={12}>
