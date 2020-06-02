@@ -1,6 +1,6 @@
 {
 	"name": "@webiny/commodo-fields-storage-db-proxy",
-	"version": "4.0.0-beta.9",
+	"version": "4.0.0-beta.10",
 	"main": "index.js",
 	"repository": {
 		"type": "git",
