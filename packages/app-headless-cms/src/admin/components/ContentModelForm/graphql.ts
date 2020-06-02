@@ -10,6 +10,22 @@ const I18N_FIELD = /* GraphQL */ `
     }
 `;
 
+const I18N_FIELD_WITH_CONTENT = /* GraphQL */ `
+    {
+        values {
+            value {
+                id
+                meta {
+                    title {
+                        value
+                    }
+                }
+            }
+            locale
+        }
+    }
+`;
+
 const ERROR_FIELD = /* GraphQL */ `
     {
         message
@@ -31,6 +47,9 @@ const CONTENT_META_FIELDS = /* GraphQL */ `
 
 const createFieldsList = contentModel => {
     const fields = contentModel.fields.map(field => {
+        if (field.type === "ref") {
+            return `${field.fieldId} ${I18N_FIELD_WITH_CONTENT}`;
+        }
         return `${field.fieldId} ${I18N_FIELD}`;
     });
 
@@ -197,7 +216,7 @@ export const createPublishMutation = model => {
                             meta {
                                 ${CONTENT_META_FIELDS}
                             }
-                        }    
+                        }
                     }
                 }
                 error ${ERROR_FIELD}
@@ -220,7 +239,7 @@ export const createUnpublishMutation = model => {
                             meta {
                                 ${CONTENT_META_FIELDS}
                             }
-                        }    
+                        }
                     }
                 }
                 error ${ERROR_FIELD}

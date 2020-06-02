@@ -6,7 +6,7 @@ const ERROR_FIELDS = `
     data
 `;
 
-const BASE_CONTENT_MODEL_FIELDS = `  
+const BASE_CONTENT_MODEL_FIELDS = `
     id
     name
     savedOn
@@ -39,6 +39,7 @@ export const LIST_CONTENT_MODELS = gql`
         listContentModels(sort: $sort, after: $after, before: $before, limit: $limit) {
             data {
                 ${BASE_CONTENT_MODEL_FIELDS}
+                modelId
             }
             meta {
                 cursors {

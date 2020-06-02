@@ -1,7 +1,11 @@
 import gql from "graphql-tag";
 import { CmsModelFieldToGraphQLPlugin } from "@webiny/api-headless-cms/types";
-import { i18nFieldType } from "./../graphqlTypes/i18nFieldType";
 import { i18nFieldInput } from "./../graphqlTypes/i18nFieldInput";
+import { createTypeName } from "../utils/createTypeName";
+
+const createRefTypeName = (host, target) => {
+    return `${host}To${target}`;
+};
 
 const plugin: CmsModelFieldToGraphQLPlugin = {
     name: "cms-model-field-to-graphql-ref",
@@ -30,16 +34,50 @@ const plugin: CmsModelFieldToGraphQLPlugin = {
         createSchema() {
             return {
                 typeDefs: gql`
-                    ${i18nFieldType("CmsRef", "BlogPost")}
                     ${i18nFieldInput("CmsRef", "ID")}
                 `
             };
         },
-        createTypeField({ field }) {
+        createTypeField({ field, model }) {
+            const fieldTypeName = createTypeName(model.modelId);
+            const mTypeName = createTypeName(field.settings.modelId);
+            const name = `${"CmsRef" + createRefTypeName(fieldTypeName, mTypeName)}`;
+
             if (field.multipleValues) {
-                return field.fieldId + ": CmsRefList";
+                return {
+                    fields:
+                        field.fieldId +
+                        ": CmsRef" +
+                        createRefTypeName(fieldTypeName, mTypeName) +
+                        "List",
+                    typeDefs: `
+                        type ${name}ListLocalized {
+                            value: [${mTypeName}]
+                            locale: ID!
+                        }
+
+                        type ${name}List {
+                            value(locale: String): [${mTypeName}]
+                            values: [${name}ListLocalized]!
+                        }
+                    `
+                };
             }
-            return field.fieldId + ": CmsRef";
+            return {
+                fields: field.fieldId + ": CmsRef" + createRefTypeName(fieldTypeName, mTypeName),
+                // TODO: `i18nFieldType` creates list value as well
+                typeDefs: `
+                    type ${name}Localized {
+                        value: ${mTypeName}
+                        locale: ID!
+                    }
+
+                    type ${name} {
+                        value(locale: String): ${mTypeName}
+                        values: [${name}Localized]!
+                    }
+                `
+            };
         },
         createInputField({ field }) {
             if (field.multipleValues) {

@@ -3,7 +3,6 @@ import gql from "graphql-tag";
 import { CmsEditorFieldRendererPlugin } from "@webiny/app-headless-cms/types";
 import { I18NValue } from "@webiny/app-i18n/components";
 import { AutoComplete } from "@webiny/ui/AutoComplete";
-import { css } from "emotion";
 import { useQuery } from "@webiny/app-headless-cms/admin/hooks";
 import get from "lodash/get";
 import upperFirst from "lodash/upperFirst";
@@ -11,14 +10,6 @@ import pluralize from "pluralize";
 
 import { i18n } from "@webiny/app/i18n";
 const t = i18n.ns("app-headless-cms/admin/fields/ref");
-
-const selectStyles = css({
-    color: 'red',
-    '& label': {
-        top: '8px !important',
-        transform: 'translateY(-15%) scale(0.75) !important'
-    }
-});
 
 const extractValue = (value) => {
     if (!value) {
@@ -42,7 +33,7 @@ const plugin: CmsEditorFieldRendererPlugin = {
         name: t`Reference Input`,
         description: t`Renders a simple input with its type set to "text".`,
         canUse({ field }) {
-            return field.type === "ref" && !field.multipleValues && !field.predefinedValues;
+            return field.type === "ref" && !field.multipleValues;
         },
         render({ field, getBind }) {
             const Bind = getBind();
@@ -81,7 +72,6 @@ const plugin: CmsEditorFieldRendererPlugin = {
                             }}
                             label={I18NValue({ value: field.label })}
                             description={I18NValue({ value: field.helpText })}
-                            className={selectStyles}
                             options={contentEntries}
                         />
                     )}

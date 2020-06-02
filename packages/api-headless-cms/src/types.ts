@@ -142,6 +142,11 @@ export type CmsModelFieldToCommodoFieldPlugin<TContext = CmsContext> = Plugin & 
     }): void;
 };
 
+export type CmsModelFieldDefinition = {
+    fields: string;
+    typeDefs?: string;
+};
+
 export type CmsModelFieldToGraphQLPlugin = Plugin & {
     type: "cms-model-field-to-graphql";
     fieldType: string;
@@ -161,7 +166,7 @@ export type CmsModelFieldToGraphQLPlugin = Plugin & {
             models: CmsContentModel[];
             model: CmsContentModel;
         }): GraphQLSchemaModule;
-        createTypeField(params: { model: CmsContentModel; field: CmsContentModelField }): string;
+        createTypeField(params: { model: CmsContentModel; field: CmsContentModelField }): CmsModelFieldDefinition | string;
         createInputField(params: { model: CmsContentModel; field: CmsContentModelField }): string;
         createResolver(params: {
             models: CmsContentModel[];
