@@ -1,6 +1,6 @@
 {
   "name": "@webiny/api-security",
-  "version": "4.0.0-beta.10",
+  "version": "4.0.0-beta.11",
   "main": "index.js",
   "repository": {
     "type": "git",
@@ -15,10 +15,10 @@
   "license": "MIT",
   "dependencies": {
     "@babel/runtime": "^7.5.5",
-    "@webiny/commodo": "^4.0.0-beta.10",
-    "@webiny/commodo-graphql": "^4.0.0-beta.10",
-    "@webiny/graphql": "^4.0.0-beta.10",
-    "@webiny/validation": "^4.0.0-beta.10",
+    "@webiny/commodo": "^4.0.0-beta.11",
+    "@webiny/commodo-graphql": "^4.0.0-beta.11",
+    "@webiny/graphql": "^4.0.0-beta.11",
+    "@webiny/validation": "^4.0.0-beta.11",
     "bcryptjs": "^2.4.3",
     "graphql": "^14.6.0",
     "graphql-tag": "^2.10.1",
@@ -32,8 +32,8 @@
     "@babel/preset-env": "^7.5.5",
     "@babel/preset-typescript": "^7.8.3",
     "@shelf/jest-mongodb": "^1.1.5",
-    "@webiny/api-plugin-commodo-mongodb": "^4.0.0-beta.10",
-    "@webiny/handler": "^4.0.0-beta.10",
+    "@webiny/api-plugin-commodo-mongodb": "^4.0.0-beta.11",
+    "@webiny/handler": "^4.0.0-beta.11",
     "eslint-plugin-jest": "^22.17.0",
     "mongodb": "^3.5.7"
   },
