@@ -42,12 +42,16 @@ export default (
         name: "context-cms-validate-access-token",
         type: "context",
         async apply(context) {
-            if (process.env.NODE_ENV === "test") {
-                // Skip authentication when running tests
+            if (!context.event) {
                 return;
             }
 
-            if (!context.event) {
+            if (context.event.isMetaQuery) {
+                return;
+            }
+
+            if (process.env.NODE_ENV === "test") {
+                // Skip authentication when running tests
                 return;
             }
 
