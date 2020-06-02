@@ -9,13 +9,12 @@ import {
 } from "@webiny/app-admin/components/SimpleForm";
 import { Typography } from "@webiny/ui/Typography";
 import { Cell, Grid } from "@webiny/ui/Grid";
+import { ButtonPrimary } from "@webiny/ui/Button";
 import { Elevation } from "@webiny/ui/Elevation";
 import GithubIcon from "../assets/icons/github-logo.svg";
 import SlackIcon from "../assets/icons/slack-logo.svg";
 import MediumIcon from "../assets/icons/medium-logo.svg";
 import TwitterIcon from "../assets/icons/twitter-logo.svg";
-import TextbookIcon from "../assets/icons/textbook.svg";
-import LaptopIcon from "../assets/icons/laptop.svg";
 
 import { useSecurity } from "@webiny/app-security/hooks/useSecurity";
 
@@ -28,8 +27,7 @@ const linkStyle = css({
     textDecoration: "none",
     "&:hover": {
         textDecoration: "none"
-    },
-    color: "var(--mdc-theme-text-primary-on-background)"
+    }
 });
 
 const imageStyle = css({
@@ -38,53 +36,20 @@ const imageStyle = css({
 });
 
 const communityStyle = css({
-    textAlign: "left",
+    textAlign: "left"
 });
 
-const widgetTitleStyle = css({
-    fontWeight: 600,
-    paddingTop: "1rem",
-    paddingBottom: "1rem",
-    textAlign: "center"
-});
-
-const widgetDescriptionStyle = css({
-    textAlign: "center", 
-});
-
-const pFormContentStyle = css({
-    fontWeight: 600
-});
-
-const pGetStartedStyle = css({
-    paddingLeft: "1.5rem",
-    paddingTop: "1.5rem"
-});
-
-const footerContainerStyle = css({
-    paddingTop: "1rem",
-    paddingBottom: "1rem"
-});
-
-const widgetButtonStyle = css({
-    textAlign: "center"
-});
-
-const footerTextStyle = css({
-    backgroundColor: "var(--mdc-theme-on-background)",
-    textAlign: "center"
-});
-
-const ContentTheme = styled("div")({
+const welcomeStyle = css({
     color: "var(--mdc-theme-text-primary-on-background)"
 });
 
-const Widget = styled("div")({
-    marginLeft: "1.5rem",
-    marginRight: "1.5rem",
-    marginBottom: "2rem"
+const pFormContentStyle = css({
+    fontWeight: "bold"
 });
 
+const Widget = styled("div")({
+    width: 400
+});
 
 const Welcome = () => {
     const security = useSecurity();
@@ -99,36 +64,30 @@ const Welcome = () => {
         <Grid>
             <Cell span={12}>
                 <SimpleForm>
-                    <SimpleFormHeader title={`Hi ${fullName.split(" ")[0]}!`} />
+                    <SimpleFormHeader title={`Welcome ${fullName.split(" ")[0]}!`} />
                     <SimpleFormContent>
-                        <ContentTheme>
-                            <Cell span={12}>
-                                <Typography use={"headline6"}>
-                                    <p className={pGetStartedStyle}>To get started - pick one of the actions below:</p><br></br>
-                                </Typography>
-                            </Cell>
-                            <div style={{display: "flex"}}>
-                                {getPlugins<AdminWelcomeScreenWidgetPlugin>(
-                                    "admin-welcome-screen-widget"
-                                ).map(pl => {
-                                    return (
-                                        <Widget key={pl.name}>
-                                            <Elevation z={2}>
-                                                <Typography use={"headline6"}>
-                                                    <p className={widgetTitleStyle}>{pl.widget.title}</p>
-                                                </Typography>
-                                                <Typography use={"body1"}>
-                                                    <p className={widgetDescriptionStyle}>{pl.widget.description}</p>
-                                                </Typography>
-                                                <div className={widgetButtonStyle}>
-                                                    {pl.widget.cta}
-                                                </div>
-                                            </Elevation>
-                                        </Widget>
-                                    );
-                                })}                            
-                            </div>
-                        </ContentTheme>
+                        <Cell span={12}>
+                            <Typography use={"body1"} className={welcomeStyle}>
+                                To get started - pick one of the actions below:<br></br>
+                            </Typography>
+                        </Cell>
+                        {getPlugins<AdminWelcomeScreenWidgetPlugin>(
+                            "admin-welcome-screen-widget"
+                        ).map(pl => {
+                            return (
+                                <Elevation z={2} key={pl.name}>
+                                    <Widget>
+                                        <Typography use={"headline6"} className={welcomeStyle}>
+                                            {pl.widget.title}
+                                        </Typography>
+                                        <Typography use={"body1"} className={communityStyle}>
+                                            {pl.widget.description}
+                                        </Typography>
+                                        {pl.widget.cta}
+                                    </Widget>
+                                </Elevation>
+                            );
+                        })}
                     </SimpleFormContent>
                     <SimpleFormFooter>
                         <Grid>
@@ -158,51 +117,41 @@ const Welcome = () => {
                                     </p>
                                 </Typography>
                             </Cell>
-                            <Cell span={4} className={footerTextStyle}>
-                                <Link to="https://docs.webiny.com/" className={linkStyle}>
-                                    <Typography use={"headline5"}>
-                                        <div className={footerContainerStyle}>
-                                            <img className={imageStyle} src={TextbookIcon} />
-                                            <p className={pFormContentStyle}>Documentation</p>
-                                        </div>
-                                    </Typography>
+                            <Cell span={4}>
+                                <Link to="cms/content-models" className={linkStyle}>
+                                    <ButtonPrimary>Documentation</ButtonPrimary>
                                 </Link>
                             </Cell>
-                            <Cell span={4} className={footerTextStyle}>
-                                <Link to="https://github.com/webiny/webiny-examples" className={linkStyle}>
-                                    <Typography use={"headline5"}>
-                                        <div className={footerContainerStyle}>
-                                            <img className={imageStyle} src={LaptopIcon} />
-                                            <p className={pFormContentStyle}>Code examples</p>                                            
-                                        </div>
-                                    </Typography>
+                            <Cell span={4}>
+                                <Link to="cms/content-models" className={linkStyle}>
+                                    <ButtonPrimary>Code examples</ButtonPrimary>
                                 </Link>
                             </Cell>
-                            <Cell span={1} className={widgetDescriptionStyle} align="middle">
+                            <Cell span={1}>
+                                <img className={imageStyle} src={SlackIcon} />
+                                <Link to="https://www.webiny.com/slack/" className={linkStyle}>
+                                    <p style={{ textAlign: "left" }}>Slack</p>
+                                </Link>
+                            </Cell>
+                            <Cell span={1}>
                                 <img className={imageStyle} src={GithubIcon} />
                                 <Link
                                     to="https://github.com/webiny/webiny-js"
                                     className={linkStyle}
                                 >
-                                    <p>Github</p>
+                                    <p style={{ textAlign: "left" }}>Github</p>
                                 </Link>
                             </Cell>
-                            <Cell span={1} className={widgetDescriptionStyle} align="middle">
-                                <img className={imageStyle} src={SlackIcon} />
-                                <Link to="https://www.webiny.com/slack/" className={linkStyle}>
-                                    <p>Slack</p>
-                                </Link>
-                            </Cell>
-                            <Cell span={1} className={widgetDescriptionStyle} align="middle">
+                            <Cell span={1}>
                                 <img className={imageStyle} src={MediumIcon} />
                                 <Link to="https://blog.webiny.com" className={linkStyle}>
-                                    <p>Medium</p>
+                                    <p style={{ textAlign: "left" }}>Medium</p>
                                 </Link>
                             </Cell>
-                            <Cell span={1} className={widgetDescriptionStyle} align="middle">
+                            <Cell span={1}>
                                 <img className={imageStyle} src={TwitterIcon} />
                                 <Link to="https://twitter.com/WebinyPlatform" className={linkStyle}>
-                                    <p>Twitter</p>
+                                    <p style={{ textAlign: "left" }}>Twitter</p>
                                 </Link>
                             </Cell>
                         </Grid>
