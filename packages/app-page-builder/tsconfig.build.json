@@ -5,6 +5,7 @@
     "node_modules",
     "../app",
     "../app-admin",
+    "../app-plugin-admin-welcome-screen",
     "../app-template",
     "../app-security",
     "../plugins",
@@ -20,6 +21,7 @@
   "references": [
     { "path": "../app/tsconfig.build.json" },
     { "path": "../app-admin/tsconfig.build.json" },
+    { "path": "../app-plugin-admin-welcome-screen/tsconfig.build.json" },
     { "path": "../app-template/tsconfig.build.json" },
     { "path": "../app-security/tsconfig.build.json" },
     { "path": "../plugins/tsconfig.build.json" },

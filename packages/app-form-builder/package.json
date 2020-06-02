@@ -58,6 +58,7 @@
     "graphql.macro": "^1.4.2"
   },
   "peerDependencies": {
+    "@webiny/app-plugins-admin-welcome-screen": "^4.0.0-beta.12",
     "react": "^16.8.6",
     "react-dom": "^16.8.6"
   },

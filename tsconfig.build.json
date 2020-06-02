@@ -62,6 +62,10 @@
       "@webiny/app-page-builder-theme/*": ["./packages/app-page-builder-theme/src/*"],
       "@webiny/app-security": ["./packages/app-security/src"],
       "@webiny/app-security/*": ["./packages/app-security/src/*"],
+      "@webiny/app-plugin-admin-welcome-screen/*": [
+        "./packages/app-plugin-admin-welcome-screen/src/*"
+      ],
+      "@webiny/app-plugin-admin-welcome-screen": ["./packages/app-plugin-admin-welcome-screen/src"],
       "@webiny/app-plugin-security-cognito": ["./packages/app-plugin-security-cognito/src"],
       "@webiny/app-plugin-security-cognito/*": ["./packages/app-plugin-security-cognito/src/*"],
       "@webiny/app-plugin-security-cognito-theme": [
