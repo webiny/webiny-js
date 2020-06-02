@@ -62,9 +62,7 @@ export type CmsEditorField = {
     multipleValues?: boolean;
     predefinedValues?: {
         enabled: boolean;
-        values: {
-            values: I18NListValue;
-        };
+        values: I18NListValue;
     };
     settings?: { [key: string]: any };
     renderer: {
