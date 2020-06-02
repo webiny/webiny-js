@@ -20,9 +20,10 @@ const getPackages = () => {
 
 const allPackages = {
     groups: {
+        base: [],
         api: [],
         app: [],
-        base: [],
+        handler: [],
         serverless: []
     },
     list: getPackages()
@@ -30,18 +31,24 @@ const allPackages = {
 
 for (let i = 0; i < allPackages.list.length; i++) {
     const item = allPackages.list[i];
-    if (item.packageJsonPath.includes("/api-")) {
+    if (item.packageJsonPath.includes("/api")) {
         allPackages.groups.api.push(item);
         continue;
     }
 
-    if (item.packageJsonPath.includes("/app-")) {
+    if (item.packageJsonPath.includes("/app")) {
         allPackages.groups.app.push(item);
         continue;
     }
 
-    if (item.packageJsonPath.includes("/serverless-")) {
+    if (item.packageJsonPath.includes("/serverless")) {
         allPackages.groups.serverless.push(item);
+        continue;
+    }
+
+    // Using "/handler-" instead of "/handler", because "handler" is a base package.
+    if (item.packageJsonPath.includes("/handler-")) {
+        allPackages.groups.handler.push(item);
         continue;
     }
 
@@ -49,9 +56,9 @@ for (let i = 0; i < allPackages.list.length; i++) {
 }
 
 const outputStdOut = (title, stdout) => {
-    console.log(`-------------------------- ${title} --------------------------`);
+    console.log(yellow(`-------------------------- [START] Packages group: "${title}" --------------------------`));
     console.log(stdout);
-    console.log(`-------------------------- ${title} --------------------------`);
+    console.log(yellow(`-------------------------- [END] Packages group: "${title}" --------------------------`));
 };
 
 const executeLernaBuild = packagesGroup => {
@@ -74,29 +81,26 @@ const executeLernaBuild = packagesGroup => {
     const concurrentBuilds = [];
 
     concurrentBuilds.push(
-        new Promise(resolve => {
-            executeLernaBuild("api").then(executedProcess => {
-                outputStdOut("api-*", executedProcess.stdout);
-                resolve();
-            });
+        executeLernaBuild("handler").then(executedProcess => {
+            outputStdOut("/handler-", executedProcess.stdout);
         })
     );
 
     concurrentBuilds.push(
-        new Promise(resolve => {
-            executeLernaBuild("app").then(executedProcess => {
-                outputStdOut("app-*", executedProcess.stdout);
-                resolve();
-            });
+        executeLernaBuild("api").then(executedProcess => {
+            outputStdOut("/api", executedProcess.stdout);
         })
     );
 
     concurrentBuilds.push(
-        new Promise(resolve => {
-            executeLernaBuild("serverless").then(executedProcess => {
-                outputStdOut("serverless-*", executedProcess.stdout);
-                resolve();
-            });
+        executeLernaBuild("app").then(executedProcess => {
+            outputStdOut("/app", executedProcess.stdout);
+        })
+    );
+
+    concurrentBuilds.push(
+        executeLernaBuild("serverless").then(executedProcess => {
+            outputStdOut("/serverless", executedProcess.stdout);
         })
     );
 
