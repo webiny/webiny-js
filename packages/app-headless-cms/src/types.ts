@@ -41,6 +41,7 @@ export type CmsEditorFieldRendererPlugin = Plugin & {
             field: CmsEditorField;
             Label: typeof Label;
             getBind: (index?: number) => any;
+            locale: string;
         }): React.ReactNode;
     };
 };

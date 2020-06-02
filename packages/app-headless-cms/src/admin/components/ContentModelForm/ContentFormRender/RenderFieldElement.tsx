@@ -102,7 +102,7 @@ const RenderFieldElement = (props: {
         });
     }
 
-    return renderPlugin.renderer.render({ field, getBind, Label });
+    return renderPlugin.renderer.render({ field, getBind, Label, locale });
 };
 
 export default RenderFieldElement;
