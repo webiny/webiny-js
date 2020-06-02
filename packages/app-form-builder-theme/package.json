@@ -1,13 +1,13 @@
 {
   "name": "@webiny/app-form-builder-theme",
-  "version": "4.0.0-beta.7",
+  "version": "4.0.0-beta.8",
   "main": "index.js",
   "license": "MIT",
   "dependencies": {
-    "@webiny/app-form-builder": "^4.0.0-beta.7",
-    "@webiny/app-i18n": "^4.0.0-beta.7",
-    "@webiny/form": "^4.0.0-beta.7",
-    "@webiny/validation": "^4.0.0-beta.7"
+    "@webiny/app-form-builder": "^4.0.0-beta.8",
+    "@webiny/app-i18n": "^4.0.0-beta.8",
+    "@webiny/form": "^4.0.0-beta.8",
+    "@webiny/validation": "^4.0.0-beta.8"
   },
   "peerDependencies": {
     "react": "^16.8.6"
