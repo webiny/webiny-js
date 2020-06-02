@@ -1,4 +1,4 @@
-import React, { useEffect, useCallback, useRef } from "react";
+import React, { useEffect, useCallback, useRef, useMemo } from "react";
 import { Input } from "@webiny/ui/Input";
 import { Switch } from "@webiny/ui/Switch";
 import { Grid, Cell } from "@webiny/ui/Grid";
@@ -59,6 +59,13 @@ const GeneralTab = ({ field, form, fieldPlugin }: GeneralTabProps) => {
         });
     }
 
+    const predefinedValuesEnabled = useMemo(
+        () =>
+            fieldPlugin.field.allowPredefinedValues &&
+            typeof fieldPlugin.field.renderPredefinedValues === "function",
+        [field.fieldId]
+    );
+
     return (
         <>
             <Grid>
@@ -80,11 +87,19 @@ const GeneralTab = ({ field, form, fieldPlugin }: GeneralTabProps) => {
                     </Bind>
                 </Cell>
 
-                <Cell span={12}>
+                <Cell span={6}>
                     <Bind name={"multipleValues"}>
                         <Switch
                             label={"Multiple values"}
                             disabled={!fieldPlugin.field.allowMultipleValues}
+                        />
+                    </Bind>
+                </Cell>
+                <Cell span={6}>
+                    <Bind name={"predefinedValues.enabled"}>
+                        <Switch
+                            label={"Use predefined values"}
+                            disabled={!predefinedValuesEnabled}
                         />
                     </Bind>
                 </Cell>
