@@ -1,6 +1,6 @@
 {
   "name": "@webiny/app-template",
-  "version": "4.0.0-beta.6",
+  "version": "4.0.0-beta.7",
   "main": "index.js",
   "repository": {
     "type": "git",
@@ -15,8 +15,8 @@
   "license": "MIT",
   "dependencies": {
     "@babel/runtime": "^7.5.5",
-    "@webiny/app": "^4.0.0-beta.6",
-    "@webiny/plugins": "^4.0.0-beta.6"
+    "@webiny/app": "^4.0.0-beta.7",
+    "@webiny/plugins": "^4.0.0-beta.7"
   },
   "devDependencies": {
     "@babel/cli": "^7.5.5",

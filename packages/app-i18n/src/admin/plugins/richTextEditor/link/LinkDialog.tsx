@@ -14,23 +14,41 @@ import {
 } from "@webiny/ui/Dialog";
 import { validation } from "@webiny/validation";
 import { Editor, Transforms, Range } from "slate";
+import { ReactEditor } from "slate-react";
 
-const LinkDialog = props => {
+const getLink = editor => {
+    const [item] = Editor.nodes(editor, { match: n => n.type === "link" });
+    return item;
+};
+
+const createLink = (data, children) => {
+    return {
+        type: "link",
+        ...data,
+        children
+    };
+};
+
+export const LinkDialog = props => {
     const { editor, open, closeDialog, activePlugin } = props;
-
-    if (activePlugin) {
-        Transforms.select(editor, activePlugin.selection);
-    }
 
     let linkData = null;
 
     if (activePlugin) {
-        const [item] = Editor.nodes(editor, { match: n => n.type === "link" });
-        const link = Array.isArray(item) ? item[0] : null;
+        Transforms.select(editor, activePlugin.selection);
+        const item = getLink(editor);
+        const [link, path] = Array.isArray(item) ? [item[0], item[1]] : [null, null];
         let selectedText = "";
 
         if (link) {
-            selectedText = link.children[0].children[0].text;
+            activePlugin.selection = {
+                anchor: Editor.start(editor, path),
+                focus: Editor.end(editor, path)
+            };
+        }
+
+        if (link) {
+            selectedText = link.children[0].text;
         } else {
             const [fragment] = activePlugin.fragment;
             selectedText = fragment ? fragment.children[0].text : "";
@@ -43,29 +61,33 @@ const LinkDialog = props => {
         props,
         ({ closeDialog, activePlugin, editor }) => ({ text, ...data }) => {
             const { selection } = activePlugin;
-            const isCollapsed = selection && Range.isCollapsed(selection);
-            const link = {
-                type: "link",
-                ...data,
-                children: isCollapsed ? [{ text }] : []
-            };
-
             Transforms.select(editor, selection);
-            console.log("selection", editor.selection);
+            const isCollapsed = selection && Range.isCollapsed(selection);
 
-            if (isCollapsed) {
-                Transforms.insertNodes(editor, link);
+            const existingLink = getLink(editor);
+            if (existingLink) {
+                const path = ReactEditor.findPath(editor, existingLink[0]);
+                Transforms.setNodes(editor, createLink(data, [{ text }]), { at: path });
+                Transforms.insertText(editor, text, { at: path });
+            } else if (isCollapsed) {
+                Transforms.insertNodes(editor, createLink(data, [{ text }]));
             } else {
-                Transforms.wrapNodes(editor, link, { split: true, at: selection });
+                Transforms.wrapNodes(editor, createLink(data, []), { split: true, at: selection });
                 Transforms.collapse(editor, { edge: "end" });
             }
+
+            Transforms.deselect(editor);
+
             closeDialog();
         }
     );
 
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { children, type, ...formData } = linkData || {};
+
     return (
         <Dialog open={open} onClose={closeDialog} style={{ zIndex: 11000 }}>
-            <Form data={linkData} onSubmit={updateLink}>
+            <Form data={formData} onSubmit={updateLink}>
                 {({ Bind, submit }) => (
                     <Fragment>
                         <DialogTitle>Edit Link</DialogTitle>
@@ -112,5 +134,3 @@ const LinkDialog = props => {
         </Dialog>
     );
 };
-
-export default LinkDialog;

@@ -1,6 +1,6 @@
 {
   "name": "@webiny/app-i18n",
-  "version": "4.0.0-beta.6",
+  "version": "4.0.0-beta.7",
   "main": "index.js",
   "repository": {
     "type": "git",
@@ -15,14 +15,14 @@
   "dependencies": {
     "@babel/runtime": "^7.5.5",
     "@emotion/styled": "^10.0.17",
-    "@webiny/app": "^4.0.0-beta.6",
-    "@webiny/app-admin": "^4.0.0-beta.6",
-    "@webiny/app-security": "^4.0.0-beta.6",
-    "@webiny/form": "^4.0.0-beta.6",
-    "@webiny/plugins": "^4.0.0-beta.6",
-    "@webiny/react-router": "^4.0.0-beta.6",
-    "@webiny/ui": "^4.0.0-beta.6",
-    "@webiny/validation": "^4.0.0-beta.6",
+    "@webiny/app": "^4.0.0-beta.7",
+    "@webiny/app-admin": "^4.0.0-beta.7",
+    "@webiny/app-security": "^4.0.0-beta.7",
+    "@webiny/form": "^4.0.0-beta.7",
+    "@webiny/plugins": "^4.0.0-beta.7",
+    "@webiny/react-router": "^4.0.0-beta.7",
+    "@webiny/ui": "^4.0.0-beta.7",
+    "@webiny/validation": "^4.0.0-beta.7",
     "classnames": "^2.2.6",
     "downshift": "^5.4.2",
     "emotion": "10.0.17",
@@ -33,8 +33,9 @@
     "react-apollo": "^3.1.3",
     "react-helmet": "^5.2.0",
     "react-hotkeyz": "^1.0.4",
-    "slate": "^0.58.1",
-    "slate-react": "^0.58.2"
+    "slate": "0.58.1",
+    "slate-history": "0.58.1",
+    "slate-react": "0.58.2"
   },
   "devDependencies": {
     "@babel/cli": "^7.5.5",

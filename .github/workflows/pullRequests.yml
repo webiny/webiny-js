@@ -4,6 +4,9 @@ on:
   pull_request:
     branches: [ release-4.x ]
 
+env:
+  NODE_OPTIONS: --max_old_space_size=4096
+
 jobs:
   build-test:
     name: Build and test

@@ -19,6 +19,14 @@ const SupportedFileTypes = ({ accept }) => {
         return null;
     }
 
+    if (accept.length === 0) {
+        return (
+            <span>
+                Showing all file extensions.
+            </span>
+        );
+    }
+
     return (
         <span>
             Showing the following file extensions: {getUniqueFileExtensions(accept).join(", ")}.
