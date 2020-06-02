@@ -90,7 +90,7 @@ export default () => {
             createBase: createEnvironmentBase
         });
 
-        context.createEnvironmentBase = createEnvironmentBase;
+        context.models.createEnvironmentBase = createEnvironmentBase;
 
         // Build Commodo models from CmsContentModels
         const contentModels = await context.models.CmsContentModel.find();
