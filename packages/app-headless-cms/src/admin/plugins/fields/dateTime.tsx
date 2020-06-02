@@ -16,7 +16,7 @@ const plugin: CmsEditorFieldTypePlugin = {
         description: t`Store date and time.`,
         icon: <DateTimeIcon />,
         validators: ["required", "gte", "lte"],
-        allowMultipleValues: true,
+        allowMultipleValues: false, // TODO: set to true once the multiValue renderer is created.
         allowPredefinedValues: true,
         allowIndexes: {
             singleValue: true,

@@ -14,7 +14,7 @@ const plugin: CmsEditorFieldTypePlugin = {
         label: t`Rich text`,
         description: t`Text formatting with references and media.`,
         icon: <NotesIcon />,
-        allowMultipleValues: false,
+        allowMultipleValues: false, // TODO: set to true once the multiValue renderer is created.
         allowPredefinedValues: false,
         allowIndexes: {
             singleValue: false,
