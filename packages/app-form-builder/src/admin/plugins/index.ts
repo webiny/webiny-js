@@ -13,6 +13,7 @@ import formRevisions from "./formDetails/formRevisions";
 import formSubmissions from "./formDetails/formSubmissions";
 import install from "./install";
 import scopesList from "./scopesList";
+import welcomeScreenWidget from "./welcomeScreenWidget";
 
 export default () => [
     install,
@@ -29,5 +30,7 @@ export default () => [
     groups,
     validators,
     formEditorPlugins,
-    formSitePlugins()
+    formSitePlugins(),
+
+    welcomeScreenWidget
 ];
