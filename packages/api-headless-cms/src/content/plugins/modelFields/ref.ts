@@ -7,36 +7,19 @@ const plugin: CmsModelFieldToCommodoFieldPlugin = {
     type: "cms-model-field-to-commodo-field",
     fieldType: "ref",
     dataModel({ model, field, validation, context }) {
-        const { type, modelId } = field.settings;
+        const { modelId } = field.settings;
 
-        if (type === "one") {
-            return withFields(instance => ({
-                [field.fieldId]: i18nField({
-                    field: ref({
-                        instanceOf: context.models[modelId],
-                        parent: instance,
-                        validation
-                    }),
-                    context
-                })
-            }))(model);
-        }
-
-        if (type === "many") {
-            return withFields(instance => ({
-                [field.fieldId]: i18nField({
-                    field: ref({
-                        list: true,
-                        instanceOf: context.models[modelId],
-                        parent: instance,
-                        validation
-                    }),
-                    context
-                })
-            }))(model);
-        }
-
-        return model;
+        return withFields(instance => ({
+            [field.fieldId]: i18nField({
+                field: ref({
+                    list: field.multipleValues,
+                    instanceOf: context.models[modelId],
+                    parent: instance,
+                    validation
+                }),
+                context
+            })
+        }))(model);
     }
 };
 
