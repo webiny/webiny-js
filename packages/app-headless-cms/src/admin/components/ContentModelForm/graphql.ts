@@ -10,22 +10,6 @@ const I18N_FIELD = /* GraphQL */ `
     }
 `;
 
-const I18N_FIELD_WITH_CONTENT = /* GraphQL */ `
-    {
-        values {
-            value {
-                id
-                meta {
-                    title {
-                        value
-                    }
-                }
-            }
-            locale
-        }
-    }
-`;
-
 const ERROR_FIELD = /* GraphQL */ `
     {
         message
@@ -47,9 +31,10 @@ const CONTENT_META_FIELDS = /* GraphQL */ `
 
 const createFieldsList = contentModel => {
     const fields = contentModel.fields.map(field => {
-        if (field.type === "ref") {
-            return `${field.fieldId} ${I18N_FIELD_WITH_CONTENT}`;
+        if (field.graphql && field.graphql.queryField) {
+            return `${field.fieldId} ${field.graphql.queryField}`;
         }
+
         return `${field.fieldId} ${I18N_FIELD}`;
     });
 

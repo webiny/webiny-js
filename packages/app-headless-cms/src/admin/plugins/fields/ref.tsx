@@ -13,69 +13,86 @@ import get from "lodash/get";
 const t = i18n.ns("app-headless-cms/admin/fields");
 
 const plugin: CmsEditorFieldTypePlugin = {
-  type: "cms-editor-field-type",
-  name: "cms-editor-field-type-ref",
-  field: {
-    type: "ref",
-    validators: [],
-    label: t`Reference`,
-    description: t`For example a Product can ref its category(s).`,
-    icon: <RefIcon />,
-    allowMultipleValues: true,
-    allowPredefinedValues: true,
-    allowIndexes: {
-      singleValue: true,
-      multipleValues: false
-    },
-    createField() {
-      return {
-        type: this.type,
-        settings: {
-          modelId: ""
+    type: "cms-editor-field-type",
+    name: "cms-editor-field-type-ref",
+    field: {
+        type: "ref",
+        validators: [],
+        label: t`Reference`,
+        description: t`For example a Product can ref its category(s).`,
+        icon: <RefIcon />,
+        allowMultipleValues: true,
+        allowPredefinedValues: true,
+        allowIndexes: {
+            singleValue: true,
+            multipleValues: false
         },
-        validation: [],
-        renderer: {
-          name: ""
+        createField() {
+            return {
+                type: this.type,
+                settings: {
+                    modelId: ""
+                },
+                validation: [],
+                renderer: {
+                    name: ""
+                }
+            };
+        },
+        renderSettings({ form: { Bind } }) {
+            const { data, loading, error } = useQuery(LIST_CONTENT_MODELS);
+            const { showSnackbar } = useSnackbar();
+
+            if (error) {
+                showSnackbar(error.message);
+                return null;
+            }
+
+            const contentModels = get(data, "listContentModels.data", []).map(item => {
+                return { value: item.modelId, label: item.name };
+            });
+
+            return (
+                <Grid>
+                    {loading && <CircularProgress />}
+                    <Cell span={12}>
+                        <Bind name={"settings.modelId"} validators={validation.create("required")}>
+                            <Select
+                                label={t`Content Model`}
+                                description={t`Cannot be changed later`}
+                            >
+                                <option value="">{t`Choose a content model`}</option>
+                                {contentModels.map(contentModel => {
+                                    return (
+                                        <option key={contentModel.value} value={contentModel.value}>
+                                            {contentModel.label}
+                                        </option>
+                                    );
+                                })}
+                            </Select>
+                        </Bind>
+                    </Cell>
+                </Grid>
+            );
+        },
+        graphql: {
+            queryField: /* GraphQL */ `
+                {
+                    values {
+                        value {
+                            id
+                            meta {
+                                title {
+                                    value
+                                }
+                            }
+                        }
+                        locale
+                    }
+                }
+            `
         }
-      };
-    },
-    renderSettings({ form: { Bind } }) {
-      const { data, loading, error } = useQuery(LIST_CONTENT_MODELS);
-      const { showSnackbar } = useSnackbar();
-
-      if (error) {
-        showSnackbar(error.message);
-        return null;
-      }
-
-      const contentModels = get(data, "listContentModels.data", []).map(item => {
-        return { value: item.modelId, label: item.name };
-      });
-
-      return (
-        <Grid>
-          {loading && <CircularProgress />}
-          <Cell span={12}>
-            <Bind
-              name={"settings.modelId"}
-              validators={validation.create("required")}
-            >
-              <Select label={t`Content Model`} description={t`Cannot be changed later`}>
-                <option value="">{t`Choose a content model`}</option>
-                {contentModels.map(contentModel => {
-                  return (
-                    <option key={contentModel.value} value={contentModel.value}>
-                      {contentModel.label}
-                    </option>
-                  );
-                })}
-              </Select>
-            </Bind>
-          </Cell>
-        </Grid>
-      );
     }
-  }
 };
 
 export default plugin;

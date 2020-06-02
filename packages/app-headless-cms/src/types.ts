@@ -28,6 +28,9 @@ export type CmsEditorFieldTypePlugin = Plugin & {
             uniqueFieldIdValidator: (fieldId: string) => void;
         }) => React.ReactNode;
         renderPredefinedValues?: (params: { form: FormChildrenFunctionParams }) => React.ReactNode;
+        graphql?: {
+            queryField?: string;
+        };
     };
 };
 
