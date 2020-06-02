@@ -1,6 +1,5 @@
 import { useApolloClient } from "react-apollo";
-import { ButtonDefault, IconButton } from "@webiny/ui/Button";
-import { ReactComponent as CopyToClipboardIcon } from "@webiny/app-security/admin/assets/icons/file_copy-24px.svg";
+import { ButtonDefault, CopyButton } from "@webiny/ui/Button";
 import { Form } from "@webiny/form";
 import React, { useState } from "react";
 import { Typography } from "@webiny/ui/Typography";
@@ -127,12 +126,7 @@ const TokensElement = ({ setFormIsLoading, data, setValue }) => {
                             <PatContainer>
                                 <Typography use="overline">{tokenHash}</Typography>
                             </PatContainer>
-                            <>
-                                <IconButton
-                                    onClick={() => navigator.clipboard.writeText(tokenHash)}
-                                    icon={<CopyToClipboardIcon />}
-                                />
-                            </>
+                            <CopyButton value={tokenHash} />
                         </div>
                     </div>
                 </DialogContent>
