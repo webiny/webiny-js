@@ -1,6 +1,6 @@
 {
 	"name": "@webiny/api-plugin-commodo-nedb",
-	"version": "4.0.0-beta.6",
+	"version": "4.0.0-beta.9",
 	"main": "index.js",
 	"license": "MIT",
 	"repository": {
@@ -21,7 +21,7 @@
 		"@babel/core": "^7.5.5",
 		"@babel/preset-env": "^7.5.5",
 		"@commodo/fields-storage-nedb": "^2.0.0-next.16",
-		"@webiny/graphql": "^4.0.0-beta.6"
+		"@webiny/graphql": "^4.0.0-beta.9"
 	},
 	"publishConfig": {
 		"access": "public",
@@ -30,7 +30,6 @@
 	"scripts": {
 		"build": "rimraf ./dist *.tsbuildinfo && babel src -d dist --source-maps --copy-files --extensions \".ts\"",
 		"watch": "babel src -d dist --source-maps --copy-files --extensions \".ts\" --watch",
-		"postbuild": "cp package.json LICENSE README.md dist/ && tsc -p tsconfig.build.json",
-		"prepublishOnly": "yarn build"
+		"postbuild": "cp package.json LICENSE README.md dist/ && tsc -p tsconfig.build.json"
 	}
 }

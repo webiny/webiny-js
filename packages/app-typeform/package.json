@@ -1,6 +1,6 @@
 {
   "name": "@webiny/app-typeform",
-  "version": "4.0.0-beta.6",
+  "version": "4.0.0-beta.9",
   "main": "index.js",
   "repository": {
     "type": "git",
@@ -12,9 +12,9 @@
   "dependencies": {
     "@babel/runtime": "^7.5.5",
     "@emotion/styled": "^10.0.17",
-    "@webiny/app-page-builder": "^4.0.0-beta.6",
-    "@webiny/ui": "^4.0.0-beta.6",
-    "@webiny/validation": "^4.0.0-beta.6",
+    "@webiny/app-page-builder": "^4.0.0-beta.9",
+    "@webiny/ui": "^4.0.0-beta.9",
+    "@webiny/validation": "^4.0.0-beta.9",
     "lodash": "^4.17.4"
   },
   "devDependencies": {
@@ -37,8 +37,7 @@
   "scripts": {
     "build": "rimraf ./dist *.tsbuildinfo && babel src -d dist --source-maps --copy-files --extensions \".ts,.tsx\"",
     "watch": "babel src -d dist --source-maps --copy-files --extensions \".ts,.tsx\" --watch",
-    "postbuild": "cp package.json LICENSE README.md dist/ && tsc -p tsconfig.build.json",
-    "prepublishOnly": "yarn build"
+    "postbuild": "cp package.json LICENSE README.md dist/ && tsc -p tsconfig.build.json"
   },
   "gitHead": "1c3e8fd44a71306cb449c653725d5d34a9a90e36"
 }

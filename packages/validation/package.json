@@ -1,6 +1,6 @@
 {
   "name": "@webiny/validation",
-  "version": "4.0.0-beta.6",
+  "version": "4.0.0-beta.9",
   "main": "index.js",
   "repository": {
     "type": "git",
@@ -35,8 +35,7 @@
   "scripts": {
     "build": "rimraf ./dist *.tsbuildinfo && babel src -d dist --source-maps --copy-files --extensions \".ts\"",
     "watch": "babel src -d dist --source-maps --copy-files --extensions \".ts\" --watch",
-    "postbuild": "cp package.json LICENSE README.md dist/ && tsc -p tsconfig.build.json",
-    "prepublishOnly": "yarn build"
+    "postbuild": "cp package.json LICENSE README.md dist/ && tsc -p tsconfig.build.json"
   },
   "gitHead": "71cab7d5607b2e32a63034e324a663770507b32b"
 }

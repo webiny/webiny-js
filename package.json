@@ -115,7 +115,7 @@
   },
   "scripts": {
     "eslint": "eslint \"packages/**/*.{ts,tsx}\" --quiet",
-    "build": "lerna run build --stream",
+    "build": "node scripts/buildProject.js",
     "build:components": "lerna run build --scope=@webiny/serverless-* --stream",
     "build:apps": "lerna run build --scope=@webiny/app* --stream",
     "build:app-templates": "lerna run build --scope=@webiny/app-template* --stream",
@@ -134,6 +134,7 @@
     "webiny-versions": "node ./scripts/webinyVersions.js",
     "lint-staged": "lint-staged",
     "postinstall": "node ./scripts/linkPackages.js",
+    "prepublishOnly": "node scripts/prepublishOnly.js",
     "prettier": "prettier --config .prettierrc.js --write",
     "setup-repo": "node scripts/setupRepo",
     "test": "jest --config jest.config.js",

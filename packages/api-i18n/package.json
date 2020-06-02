@@ -1,6 +1,6 @@
 {
   "name": "@webiny/api-i18n",
-  "version": "4.0.0-beta.6",
+  "version": "4.0.0-beta.9",
   "main": "index.js",
   "repository": {
     "type": "git",
@@ -16,11 +16,11 @@
   "license": "MIT",
   "dependencies": {
     "@babel/runtime": "^7.5.5",
-    "@webiny/api-security": "^4.0.0-beta.6",
-    "@webiny/commodo": "^4.0.0-beta.6",
-    "@webiny/commodo-graphql": "^4.0.0-beta.6",
-    "@webiny/graphql": "^4.0.0-beta.6",
-    "@webiny/validation": "^4.0.0-beta.6",
+    "@webiny/api-security": "^4.0.0-beta.9",
+    "@webiny/commodo": "^4.0.0-beta.9",
+    "@webiny/commodo-graphql": "^4.0.0-beta.9",
+    "@webiny/graphql": "^4.0.0-beta.9",
+    "@webiny/validation": "^4.0.0-beta.9",
     "accept-language-parser": "^1.5.0",
     "graphql-tag": "^2.10.1",
     "i18n-locales": "^0.0.2",
@@ -31,7 +31,7 @@
     "@babel/core": "^7.5.5",
     "@babel/preset-env": "^7.5.5",
     "@babel/preset-typescript": "^7.8.3",
-    "@webiny/api-plugin-commodo-db-proxy": "^4.0.0-beta.6"
+    "@webiny/api-plugin-commodo-db-proxy": "^4.0.0-beta.9"
   },
   "optionalDependencies": {
     "fsevents": "^2.1.3"
@@ -43,8 +43,7 @@
   "scripts": {
     "build": "rimraf ./dist *.tsbuildinfo && babel src -d dist --source-maps --copy-files --extensions \".ts\"",
     "watch": "babel src -d dist --source-maps --copy-files --extensions \".ts\" --watch",
-    "postbuild": "cp package.json LICENSE README.md dist/ && tsc -p tsconfig.build.json",
-    "prepublishOnly": "yarn build"
+    "postbuild": "cp package.json LICENSE README.md dist/ && tsc -p tsconfig.build.json"
   },
   "svgo": {
     "plugins": {

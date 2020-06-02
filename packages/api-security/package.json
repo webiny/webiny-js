@@ -1,6 +1,6 @@
 {
   "name": "@webiny/api-security",
-  "version": "4.0.0-beta.6",
+  "version": "4.0.0-beta.9",
   "main": "index.js",
   "repository": {
     "type": "git",
@@ -15,10 +15,10 @@
   "license": "MIT",
   "dependencies": {
     "@babel/runtime": "^7.5.5",
-    "@webiny/commodo": "^4.0.0-beta.6",
-    "@webiny/commodo-graphql": "^4.0.0-beta.6",
-    "@webiny/graphql": "^4.0.0-beta.6",
-    "@webiny/validation": "^4.0.0-beta.6",
+    "@webiny/commodo": "^4.0.0-beta.9",
+    "@webiny/commodo-graphql": "^4.0.0-beta.9",
+    "@webiny/graphql": "^4.0.0-beta.9",
+    "@webiny/validation": "^4.0.0-beta.9",
     "bcryptjs": "^2.4.3",
     "graphql": "^14.6.0",
     "graphql-tag": "^2.10.1",
@@ -32,8 +32,8 @@
     "@babel/preset-env": "^7.5.5",
     "@babel/preset-typescript": "^7.8.3",
     "@shelf/jest-mongodb": "^1.1.5",
-    "@webiny/api-plugin-commodo-mongodb": "^4.0.0-beta.6",
-    "@webiny/handler": "^4.0.0-beta.6",
+    "@webiny/api-plugin-commodo-mongodb": "^4.0.0-beta.9",
+    "@webiny/handler": "^4.0.0-beta.9",
     "eslint-plugin-jest": "^22.17.0",
     "mongodb": "^3.5.7"
   },
@@ -47,8 +47,7 @@
   "scripts": {
     "build": "rimraf ./dist *.tsbuildinfo && babel src -d dist --source-maps --copy-files --extensions \".ts\"",
     "watch": "babel src -d dist --source-maps --copy-files --extensions \".ts\" --watch",
-    "postbuild": "cp package.json LICENSE README.md dist/ && tsc -p tsconfig.build.json",
-    "prepublishOnly": "yarn build"
+    "postbuild": "cp package.json LICENSE README.md dist/ && tsc -p tsconfig.build.json"
   },
   "svgo": {
     "plugins": {
