@@ -3,7 +3,7 @@ export {
     ButtonPrimary,
     ButtonSecondary,
     ButtonFloating,
-    ButtonIcon,
+    ButtonIcon
 } from "./Button";
 
 export * from "./IconButton/IconButton";
