@@ -18,11 +18,10 @@ const plugin: CmsEditorFieldRendererPlugin = {
         render({ field, getBind, locale }) {
             const Bind = getBind();
 
-            let options = field.predefinedValues.values.values.find(item => item.locale === locale);
-            if (options) {
-                options = Array.isArray(options.value) ? options.value : [];
-            } else {
-                options = [];
+            const valuesItem = field.predefinedValues.values.values.find(item => item.locale === locale);
+            let options = [];
+            if (valuesItem) {
+                options = Array.isArray(valuesItem.value) ? valuesItem.value : [];
             }
 
             return (

@@ -41,7 +41,7 @@ const Header = styled("div")({
     marginBottom: 15
 });
 
-function PredefinedValuesDynamicFieldset({ getBind, renderValueInput }) {
+function PredefinedValuesDynamicFieldset({ getBind, renderValueInput = null }) {
     const Bind = getBind();
 
     return (
