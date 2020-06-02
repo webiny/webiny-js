@@ -49,7 +49,7 @@ const widgetTitleStyle = css({
 });
 
 const widgetDescriptionStyle = css({
-    textAlign: "center"
+    textAlign: "center", 
 });
 
 const pFormContentStyle = css({
@@ -84,6 +84,7 @@ const Widget = styled("div")({
     marginRight: "1.5rem",
     marginBottom: "2rem"
 });
+
 
 const Welcome = () => {
     const security = useSecurity();
@@ -125,7 +126,7 @@ const Welcome = () => {
                                             </Elevation>
                                         </Widget>
                                     );
-                                })}
+                                })}                            
                             </div>
                         </ContentTheme>
                     </SimpleFormContent>
@@ -161,7 +162,7 @@ const Welcome = () => {
                                 <Link to="https://docs.webiny.com/" className={linkStyle}>
                                     <Typography use={"headline5"}>
                                         <div className={footerContainerStyle}>
-                                            <img className={imageStyle} src={TextbookIcon}/>
+                                            <img className={imageStyle} src={TextbookIcon} />
                                             <p className={pFormContentStyle}>Documentation</p>
                                         </div>
                                     </Typography>
@@ -172,7 +173,7 @@ const Welcome = () => {
                                     <Typography use={"headline5"}>
                                         <div className={footerContainerStyle}>
                                             <img className={imageStyle} src={LaptopIcon} />
-                                            <p className={pFormContentStyle}>Code examples</p>
+                                            <p className={pFormContentStyle}>Code examples</p>                                            
                                         </div>
                                     </Typography>
                                 </Link>

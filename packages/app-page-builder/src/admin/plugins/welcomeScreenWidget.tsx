@@ -24,7 +24,7 @@ const plugin: AdminWelcomeScreenWidgetPlugin = {
             <Link to="page-builder/pages" className={linkStyle}>
                 <ButtonSecondary className={buttonStyle}>
                     Build a new Page
-                </ButtonSecondary>                 
+                </ButtonSecondary>
             </Link>
         ),
         description: "Build stunning landing pages with an easy to use drag and drop editor.",
