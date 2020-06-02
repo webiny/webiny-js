@@ -9,12 +9,12 @@ import {
 } from "@webiny/app-admin/components/SimpleForm";
 import { Typography } from "@webiny/ui/Typography";
 import { Cell, Grid } from "@webiny/ui/Grid";
-import { ButtonPrimary, ButtonSecondary } from "@webiny/ui/Button";
+import { ButtonPrimary } from "@webiny/ui/Button";
 import { Elevation } from "@webiny/ui/Elevation";
-import GithubIcon from "./assets/icons/github-logo.svg";
-import SlackIcon from "./assets/icons/slack-logo.svg";
-import MediumIcon from "./assets/icons/medium-logo.svg";
-import TwitterIcon from "./assets/icons/twitter-logo.svg";
+import GithubIcon from "../assets/icons/github-logo.svg";
+import SlackIcon from "../assets/icons/slack-logo.svg";
+import MediumIcon from "../assets/icons/medium-logo.svg";
+import TwitterIcon from "../assets/icons/twitter-logo.svg";
 
 import { useSecurity } from "@webiny/app-security/hooks/useSecurity";
 
@@ -51,41 +51,6 @@ const Widget = styled("div")({
     width: 400
 });
 
-/*<Grid>
-    <Cell span={12}>
-        <Typography use={"body1"} className={welcomeStyle}>
-            To get started - pick one of the actions below:<br></br>
-        </Typography>
-    </Cell>
-    <Cell span={4}>
-        <Elevation z={2}>
-            <Typography use={"headline6"}>
-                Headless CMS
-            </Typography>
-            <Link to="cms/content-models" className={linkStyle}>
-                <ButtonSecondary>
-                    New Content Model
-                </ButtonSecondary>
-            </Link>
-        </Elevation>
-    </Cell>
-    <Cell span={4}>
-        <Elevation z={2}>
-            <Typography use={"headline6"}>
-                Page Builder
-            </Typography>
-            <Typography use={"body1"} className={communityStyle}>
-                <p>Explore the Webiny documentation, learn about the architecture and check out code examples and guides:</p>
-            </Typography>
-            <Link to="cms/content-models" className={linkStyle}>
-                <ButtonSecondary>
-                    Build a new Page
-                </ButtonSecondary>
-            </Link>
-        </Elevation>
-    </Cell>
-</Grid>*/
-
 const Welcome = () => {
     const security = useSecurity();
 
@@ -101,15 +66,26 @@ const Welcome = () => {
                 <SimpleForm>
                     <SimpleFormHeader title={`Welcome ${fullName.split(" ")[0]}!`} />
                     <SimpleFormContent>
+                        <Cell span={12}>
+                            <Typography use={"body1"} className={welcomeStyle}>
+                                To get started - pick one of the actions below:<br></br>
+                            </Typography>
+                        </Cell>
                         {getPlugins<AdminWelcomeScreenWidgetPlugin>(
                             "admin-welcome-screen-widget"
                         ).map(pl => {
                             return (
-                                <Widget key={pl.name}>
-                                    <span>{pl.title}</span>
-                                    <p>{pl.description}</p>
-                                    {pl.cta}
-                                </Widget>
+                                <Elevation z={2} key={pl.name}>
+                                    <Widget>
+                                        <Typography use={"headline6"} className={welcomeStyle}>
+                                            {pl.widget.title}
+                                        </Typography>
+                                        <Typography use={"body1"} className={communityStyle}>
+                                            {pl.widget.description}
+                                        </Typography>
+                                        {pl.widget.cta}
+                                    </Widget>
+                                </Elevation>
                             );
                         })}
                     </SimpleFormContent>

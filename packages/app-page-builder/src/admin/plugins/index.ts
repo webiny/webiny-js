@@ -10,6 +10,7 @@ import menus from "./menus";
 import install from "./install";
 import scopesList from "./scopesList";
 import appTemplatePlugins from "./appTemplatePlugins";
+import welcomeScreenWidget from "./welcomeScreenWidget";
 
 export default () => [
     header,
@@ -23,5 +24,6 @@ export default () => [
     menus,
     scopesList,
     install,
-    appTemplatePlugins
+    appTemplatePlugins,
+    welcomeScreenWidget
 ];
