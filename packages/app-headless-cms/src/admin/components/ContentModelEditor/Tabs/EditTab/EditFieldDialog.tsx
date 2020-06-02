@@ -70,32 +70,37 @@ const EditFieldDialog = ({ field, onSubmit, ...props }: EditFieldDialogProps) =>
 
         render = (
             <Form data={current} onSubmit={onSubmit}>
-                {form => (
-                    <>
-                        <DialogContent className={dialogBody}>
-                            <Tabs>
-                                <Tab label={t`General`}>
-                                    <GeneralTab
-                                        form={form}
-                                        field={form.data as CmsEditorField}
-                                        fieldPlugin={fieldPlugin}
-                                    />
-                                </Tab>
+                {form => {
+                    const predefinedValuesTabEnabled =
+                        fieldPlugin.field.allowPredefinedValues &&
+                        form.data.predefinedValues &&
+                        form.data.predefinedValues.enabled;
 
-                                {/* TODO: Add predefined values functionality.
-                                {fieldPlugin.field.allowPredefinedValues &&
-                                    typeof fieldPlugin.field.renderPredefinedValues ===
-                                        "function" && (
-                                        <Tab label={t`Predefined Values`}>
+                    return (
+                        <>
+                            <DialogContent className={dialogBody}>
+                                <Tabs>
+                                    <Tab label={t`General`}>
+                                        <GeneralTab
+                                            form={form}
+                                            field={form.data as CmsEditorField}
+                                            fieldPlugin={fieldPlugin}
+                                        />
+                                    </Tab>
+                                    <Tab
+                                        label={t`Predefined Values`}
+                                        disabled={!predefinedValuesTabEnabled}
+                                    >
+                                        {predefinedValuesTabEnabled && (
                                             <PredefinedValuesTab
                                                 form={form}
-                                                field={current}
+                                                field={form.data as CmsEditorField}
                                                 fieldPlugin={fieldPlugin}
                                             />
-                                        </Tab>
-                                    )}*/}
+                                        )}
+                                    </Tab>
 
-                                {/* TODO: Add validators functionality.
+                                    {/* TODO: Add validators functionality.
                                 {Array.isArray(fieldPlugin.field.validators) &&
                                     fieldPlugin.field.validators.length > 0 && (
                                         <Tab label={"Validators"}>
@@ -106,27 +111,28 @@ const EditFieldDialog = ({ field, onSubmit, ...props }: EditFieldDialogProps) =>
                                             />
                                         </Tab>
                                     )}*/}
-                                <Tab label={t`Appearance`}>
-                                    <AppearanceTab
-                                        form={form}
-                                        field={form.data as CmsEditorField}
-                                        fieldPlugin={fieldPlugin}
-                                    />
-                                </Tab>
-                            </Tabs>
-                        </DialogContent>
-                        <DialogActions
-                            style={{
-                                justifyContent: "flex-end"
-                            }}
-                        >
-                            <div>
-                                <DialogButton onClick={onClose}>{t`Cancel`}</DialogButton>
-                                <DialogButton onClick={form.submit}>{t`Save`}</DialogButton>
-                            </div>
-                        </DialogActions>
-                    </>
-                )}
+                                    <Tab label={t`Appearance`}>
+                                        <AppearanceTab
+                                            form={form}
+                                            field={form.data as CmsEditorField}
+                                            fieldPlugin={fieldPlugin}
+                                        />
+                                    </Tab>
+                                </Tabs>
+                            </DialogContent>
+                            <DialogActions
+                                style={{
+                                    justifyContent: "flex-end"
+                                }}
+                            >
+                                <div>
+                                    <DialogButton onClick={onClose}>{t`Cancel`}</DialogButton>
+                                    <DialogButton onClick={form.submit}>{t`Save`}</DialogButton>
+                                </div>
+                            </DialogActions>
+                        </>
+                    );
+                }}
             </Form>
         );
     }

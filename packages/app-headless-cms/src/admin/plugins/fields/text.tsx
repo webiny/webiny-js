@@ -4,6 +4,8 @@ import { Grid, Cell } from "@webiny/ui/Grid";
 import { I18NInput } from "@webiny/app-i18n/admin/components";
 import { CmsEditorFieldTypePlugin } from "@webiny/app-headless-cms/types";
 import { i18n } from "@webiny/app/i18n";
+import { Input } from "@webiny/ui/Input";
+import PredefinedValuesDynamicFieldset from "./PredefinedValuesDynamicFieldset";
 const t = i18n.ns("app-headless-cms/admin/fields");
 
 const plugin: CmsEditorFieldTypePlugin = {
@@ -42,6 +44,13 @@ const plugin: CmsEditorFieldTypePlugin = {
                         </Bind>
                     </Cell>
                 </Grid>
+            );
+        },
+        renderPredefinedValues(props) {
+            return (
+                <PredefinedValuesDynamicFieldset {...props}>
+                    <Input label={t`Value`} />
+                </PredefinedValuesDynamicFieldset>
             );
         }
     }

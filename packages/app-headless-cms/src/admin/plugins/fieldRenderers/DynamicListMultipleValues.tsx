@@ -25,9 +25,12 @@ const DynamicListMultipleValues = ({ field, getBind, Label, children }) => {
                 return (
                     <Grid>
                         <Cell span={12}>
-                            <Label>
-                                <I18NValue value={field.label} />
-                            </Label>
+                            {field.label && (
+                                <Label>
+                                    <I18NValue value={field.label} />
+                                </Label>
+                            )}
+
                             <FirstFieldBind>
                                 {bindIndex =>
                                     children({
