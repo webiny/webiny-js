@@ -36,19 +36,41 @@ const imageStyle = css({
 });
 
 const communityStyle = css({
-    textAlign: "left"
+    textAlign: "left",
 });
 
-const welcomeStyle = css({
-    color: "var(--mdc-theme-text-primary-on-background)"
+const widgetTitleStyle = css({
+    fontWeight: "bold",
+    paddingTop: "1rem",
+    paddingBottom: "1rem",
+    textAlign: "center",    
+});
+
+const widgetDescriptionStyle = css({
+    textAlign: "center", 
 });
 
 const pFormContentStyle = css({
     fontWeight: "bold"
 });
 
+const pGetStartedStyle = css({
+    paddingLeft: "1.5rem",
+    paddingTop: "1.5rem"
+});
+
+const widgetButtonStyle = css({
+    textAlign: "center"
+});
+
+const ContentTheme = styled("div")({
+    color: "var(--mdc-theme-text-primary-on-background)"
+});
+
 const Widget = styled("div")({
-    width: 400
+    marginLeft: "1rem",
+    marginRight: "1rem",
+    marginBottom: "2rem"
 });
 
 const Welcome = () => {
@@ -66,28 +88,34 @@ const Welcome = () => {
                 <SimpleForm>
                     <SimpleFormHeader title={`Welcome ${fullName.split(" ")[0]}!`} />
                     <SimpleFormContent>
-                        <Cell span={12}>
-                            <Typography use={"body1"} className={welcomeStyle}>
-                                To get started - pick one of the actions below:<br></br>
-                            </Typography>
-                        </Cell>
-                        {getPlugins<AdminWelcomeScreenWidgetPlugin>(
-                            "admin-welcome-screen-widget"
-                        ).map(pl => {
-                            return (
-                                <Elevation z={2} key={pl.name}>
-                                    <Widget>
-                                        <Typography use={"headline6"} className={welcomeStyle}>
-                                            {pl.widget.title}
-                                        </Typography>
-                                        <Typography use={"body1"} className={communityStyle}>
-                                            {pl.widget.description}
-                                        </Typography>
-                                        {pl.widget.cta}
-                                    </Widget>
-                                </Elevation>
-                            );
-                        })}
+                        <ContentTheme>
+                            <Cell span={12}>
+                                <Typography use={"headline6"}>
+                                    <p className={pGetStartedStyle}>To get started - pick one of the actions below:</p><br></br>
+                                </Typography>
+                            </Cell>
+                            <div style={{display: "flex"}}>
+                                {getPlugins<AdminWelcomeScreenWidgetPlugin>(
+                                    "admin-welcome-screen-widget"
+                                ).map(pl => {
+                                    return (
+                                        <Widget key={pl.name}>
+                                            <Elevation z={2}>
+                                                <Typography use={"headline6"}>
+                                                    <p className={widgetTitleStyle}>{pl.widget.title}</p>
+                                                </Typography>
+                                                <Typography use={"body1"}>
+                                                    <p className={widgetDescriptionStyle}>{pl.widget.description}</p>
+                                                </Typography>
+                                                <div className={widgetButtonStyle}>
+                                                    {pl.widget.cta}
+                                                </div>
+                                            </Elevation>
+                                        </Widget>
+                                    );
+                                })}                            
+                            </div>
+                        </ContentTheme>
                     </SimpleFormContent>
                     <SimpleFormFooter>
                         <Grid>
