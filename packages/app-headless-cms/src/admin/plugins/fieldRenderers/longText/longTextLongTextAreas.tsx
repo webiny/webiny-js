@@ -18,7 +18,6 @@ const plugin: CmsEditorFieldRendererPlugin = {
             return field.type === "long-text" && field.multipleValues && !field.predefinedValues;
         },
         render(props) {
-
             return (
                 <DynamicListMultipleValues {...props}>
                     {({ bind, index }) => (

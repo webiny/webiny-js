@@ -14,7 +14,7 @@ export type AdminWelcomeScreenWidgetPlugin = Plugin & {
         description: string;
         cta: React.ReactNode;
     };
-}
+};
 
 export type AdminLayoutComponentPlugin = Plugin & {
     type: "admin-layout-component";

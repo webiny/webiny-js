@@ -25,9 +25,7 @@ const plugin: CmsEditorFieldRendererPlugin = {
                         <Label>
                             <I18NValue value={field.label} />
                         </Label>
-                        <Bind>
-                            {bind => <SingleFile field={field} bind={bind} />}
-                        </Bind>
+                        <Bind>{bind => <SingleFile field={field} bind={bind} />}</Bind>
                     </Cell>
                 </Grid>
             );

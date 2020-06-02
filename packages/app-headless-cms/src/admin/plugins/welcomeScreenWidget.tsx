@@ -22,13 +22,11 @@ const plugin: AdminWelcomeScreenWidgetPlugin = {
     widget: {
         cta: (
             <Link to="cms/content-models" className={linkStyle}>
-                <ButtonSecondary className={buttonStyle}>
-                    New Content Model
-                </ButtonSecondary>                 
+                <ButtonSecondary className={buttonStyle}>New Content Model</ButtonSecondary>
             </Link>
         ),
         description: "GraphQL based headless CMS with powerful content modeling features.",
-        title: "Headless CMS"        
+        title: "Headless CMS"
     }
 };
 

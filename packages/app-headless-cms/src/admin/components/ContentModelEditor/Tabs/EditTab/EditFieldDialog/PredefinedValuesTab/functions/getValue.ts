@@ -20,7 +20,6 @@ const getValue = ({ bind, locale, index, name }) => {
     }
 
     return valueForLocale || [];
-
 };
 
 export default getValue;

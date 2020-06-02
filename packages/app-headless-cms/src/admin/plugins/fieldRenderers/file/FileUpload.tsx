@@ -90,7 +90,7 @@ export default class FileUpload extends React.Component<FileUploadProps> {
             renderImagePreview
         } = this.props;
 
-        const defaultRenderImagePreview = (renderImageProps) => (
+        const defaultRenderImagePreview = renderImageProps => (
             <Image {...renderImageProps} {...imagePreviewProps} />
         );
 

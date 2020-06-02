@@ -161,7 +161,11 @@ export const createDataModel = (
 
                         for (let i = 0; i < fields.length; i++) {
                             const field = fields[i];
-                            if (lockedFields.find(lockedField => lockedField.fieldId === field.fieldId)) {
+                            if (
+                                lockedFields.find(
+                                    lockedField => lockedField.fieldId === field.fieldId
+                                )
+                            ) {
                                 continue;
                             }
                             lockedFields = [

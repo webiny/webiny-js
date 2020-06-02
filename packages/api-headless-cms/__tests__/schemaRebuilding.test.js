@@ -72,7 +72,7 @@ describe("Schema Rebuilding Test", () => {
             .collection("CmsEnvironment")
             .findOne()
             .then(item => item.changedOn);
-        expect(changedOn.next > changedOn.prev).toBe(true)
+        expect(changedOn.next > changedOn.prev).toBe(true);
 
         // 2. Let's use the manage API, we don't care about this result.
         const modelTwos = await content("modelTwo");

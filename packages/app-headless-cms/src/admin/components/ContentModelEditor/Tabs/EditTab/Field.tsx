@@ -98,13 +98,17 @@ const Field = props => {
                         {t`Use as title`}
                     </MenuItem>
                     <MenuItem
-                        disabled={lockedFields.find(lockedField => lockedField.fieldId === field.fieldId)}
+                        disabled={lockedFields.find(
+                            lockedField => lockedField.fieldId === field.fieldId
+                        )}
                         onClick={() => onDelete(field)}
                     >
                         <ListItemGraphic>
                             <Icon icon={<DeleteIcon />} />
                         </ListItemGraphic>
-                        {lockedFields.find(lockedField => lockedField.fieldId === field.fieldId) ? t`Cannot delete` : t`Delete`}
+                        {lockedFields.find(lockedField => lockedField.fieldId === field.fieldId)
+                            ? t`Cannot delete`
+                            : t`Delete`}
                     </MenuItem>
                 </Menu>
             </Actions>

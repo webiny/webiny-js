@@ -22,13 +22,11 @@ const plugin: AdminWelcomeScreenWidgetPlugin = {
     widget: {
         cta: (
             <Link to="/forms" className={linkStyle}>
-                <ButtonSecondary className={buttonStyle}>
-                    Create a new Form
-                </ButtonSecondary>                 
+                <ButtonSecondary className={buttonStyle}>Create a new Form</ButtonSecondary>
             </Link>
         ),
         description: "Create forms using a drag and drop interface and track conversions.",
-        title: "Form Builder"        
+        title: "Form Builder"
     }
 };
 

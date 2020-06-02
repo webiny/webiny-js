@@ -13,12 +13,16 @@ const plugin: CmsEditorFieldRendererPlugin = {
         name: t`Radio Buttons`,
         description: t`Renders radio buttons, allowing selection of a single value.`,
         canUse({ field }) {
-            return !field.multipleValues && field.predefinedValues && field.predefinedValues.enabled;
+            return (
+                !field.multipleValues && field.predefinedValues && field.predefinedValues.enabled
+            );
         },
         render({ field, getBind, locale }) {
             const Bind = getBind();
 
-            const valuesItem = field.predefinedValues.values.values.find(item => item.locale === locale);
+            const valuesItem = field.predefinedValues.values.values.find(
+                item => item.locale === locale
+            );
             let options = [];
             if (valuesItem) {
                 options = Array.isArray(valuesItem.value) ? valuesItem.value : [];

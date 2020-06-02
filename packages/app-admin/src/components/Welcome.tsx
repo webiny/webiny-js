@@ -38,7 +38,7 @@ const imageStyle = css({
 });
 
 const communityStyle = css({
-    textAlign: "left",
+    textAlign: "left"
 });
 
 const widgetTitleStyle = css({
@@ -55,7 +55,7 @@ const widgetDescriptionStyle = css({
 });
 
 const iconTextStyle = css({
-    textAlign: "center",
+    textAlign: "center"
 });
 
 const pFormContentStyle = css({
@@ -69,7 +69,7 @@ const pGetStartedStyle = css({
 
 const footerContainerStyle = css({
     display: "flex",
-    padding: "1rem",
+    padding: "1rem"
 });
 
 const widgetButtonStyle = css({
@@ -115,10 +115,13 @@ const Welcome = () => {
                         <ContentTheme>
                             <Cell span={12}>
                                 <Typography use={"headline6"}>
-                                    <p className={pGetStartedStyle}>To get started - pick one of the actions below:</p><br></br>
+                                    <p className={pGetStartedStyle}>
+                                        To get started - pick one of the actions below:
+                                    </p>
+                                    <br></br>
                                 </Typography>
                             </Cell>
-                            <div style={{display: "flex"}}>
+                            <div style={{ display: "flex" }}>
                                 {getPlugins<AdminWelcomeScreenWidgetPlugin>(
                                     "admin-welcome-screen-widget"
                                 ).map(pl => {
@@ -126,10 +129,14 @@ const Welcome = () => {
                                         <Widget key={pl.name}>
                                             <Elevation z={2}>
                                                 <Typography use={"headline6"}>
-                                                    <p className={widgetTitleStyle}>{pl.widget.title}</p>
+                                                    <p className={widgetTitleStyle}>
+                                                        {pl.widget.title}
+                                                    </p>
                                                 </Typography>
                                                 <Typography use={"body1"}>
-                                                    <p className={widgetDescriptionStyle}>{pl.widget.description}</p>
+                                                    <p className={widgetDescriptionStyle}>
+                                                        {pl.widget.description}
+                                                    </p>
                                                 </Typography>
                                                 <div className={widgetButtonStyle}>
                                                     {pl.widget.cta}
@@ -148,7 +155,7 @@ const Welcome = () => {
                                     <p className={pFormContentStyle}>Learn more about Webiny:</p>
                                 </Typography>
                             </Cell>
-                            <Cell span={4} style={{marginLeft: "1rem"}}>
+                            <Cell span={4} style={{ marginLeft: "1rem" }}>
                                 <Typography use={"headline6"} className={communityStyle}>
                                     <p className={pFormContentStyle}>Join our community:</p>
                                 </Typography>
@@ -161,7 +168,7 @@ const Welcome = () => {
                                     </p>
                                 </Typography>
                             </Cell>
-                            <Cell span={4} style={{marginLeft: "1rem"}}>
+                            <Cell span={4} style={{ marginLeft: "1rem" }}>
                                 <Typography use={"body1"} className={communityStyle}>
                                     <p>
                                         Get to know Webiny team members, discuss new ideas and get
@@ -169,18 +176,29 @@ const Welcome = () => {
                                     </p>
                                 </Typography>
                             </Cell>
-                            <Cell span={4} className={footerTextStyle} style={{margin: "1rem 1rem 1rem 0rem"}}>
+                            <Cell
+                                span={4}
+                                className={footerTextStyle}
+                                style={{ margin: "1rem 1rem 1rem 0rem" }}
+                            >
                                 <Link to="https://docs.webiny.com/" className={linkStyle}>
                                     <Typography use={"headline5"}>
                                         <div className={footerContainerStyle}>
-                                            <img className={imageStyle} src={TextbookIcon}/>
+                                            <img className={imageStyle} src={TextbookIcon} />
                                             <p className={footerLinkTextStyle}>Documentation</p>
                                         </div>
                                     </Typography>
                                 </Link>
                             </Cell>
-                            <Cell span={4} className={footerTextStyle} style={{margin: "1rem 1rem 1rem 9px"}}>
-                                <Link to="https://github.com/webiny/webiny-examples" className={linkStyle}>
+                            <Cell
+                                span={4}
+                                className={footerTextStyle}
+                                style={{ margin: "1rem 1rem 1rem 9px" }}
+                            >
+                                <Link
+                                    to="https://github.com/webiny/webiny-examples"
+                                    className={linkStyle}
+                                >
                                     <Typography use={"headline5"}>
                                         <div className={footerContainerStyle}>
                                             <img className={imageStyle} src={LaptopIcon} />

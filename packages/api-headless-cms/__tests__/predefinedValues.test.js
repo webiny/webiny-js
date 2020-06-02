@@ -28,7 +28,9 @@ describe("Predefined Values Test", () => {
     it("should be able to enable predefined values and populate entries", async () => {
         const { content, createContentModel } = environment(ids.environment);
 
-        const contentModel = await createContentModel(mocks.contentModel({ contentModelGroupId: ids.contentModelGroup }));
+        const contentModel = await createContentModel(
+            mocks.contentModel({ contentModelGroupId: ids.contentModelGroup })
+        );
 
         expect(contentModel.fields).toEqual(mocks.createdContentModelFields);
 
@@ -38,7 +40,5 @@ describe("Predefined Values Test", () => {
         let product = await products.create(mocks.createProductValidValues);
 
         expect(product).toEqual(mocks.createProductWithValidValues(product.id));
-
     });
-
 });

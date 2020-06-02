@@ -78,7 +78,8 @@ const RenderFieldElement = (props: {
                                 } else {
                                     props.appendValue = newValue => onChange([...value, newValue]);
                                     props.prependValue = newValue => onChange([newValue, ...value]);
-                                    props.appendValues = newValues => onChange([...value, ...newValues]);
+                                    props.appendValues = newValues =>
+                                        onChange([...value, ...newValues]);
                                 }
                             }
 
