@@ -34,7 +34,11 @@ const fs = require("fs-extra");
 
             const target = path.resolve(packages[i], targetDirectory);
 
-            await fs.unlink(path.join(target, "package.json"));
+            const distPackageJson = path.join(target, "package.json");
+            if (fs.existsSync(distPackageJson)) {
+                await fs.unlink(distPackageJson);
+            }
+
             await fs.copyFile(packageJson, path.join(target, "package.json"));
         } catch (err) {
             console.log(`Failed ${packages[i].name}: ${err.message}`);
