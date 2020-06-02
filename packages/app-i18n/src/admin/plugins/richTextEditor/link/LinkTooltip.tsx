@@ -1,10 +1,10 @@
 import React, { useCallback, useRef, useEffect } from "react";
+import ReactDOM from "react-dom";
 import styled from "@emotion/styled";
 import { css } from "emotion";
-import { getLinkRange, TYPE } from "./utils";
 import { Elevation } from "@webiny/ui/Elevation";
-import { useSlate } from "slate-react";
-import { Editor } from "slate";
+import { useFocused, useSlate } from "slate-react";
+import { Editor, Transforms } from "slate";
 
 const Tooltip = styled("span")({
     display: "flex",
@@ -12,7 +12,7 @@ const Tooltip = styled("span")({
     position: "fixed",
     top: 20,
     left: 0,
-    zIndex: 1,
+    zIndex: 100,
     width: "auto",
     maxWidth: 520,
     "> span:not(:first-of-type)": {
@@ -46,34 +46,33 @@ const getSelectionRect = () => {
     return range.getBoundingClientRect();
 };
 
-const LinkTooltip = ({ activatePlugin }) => {
-    return null;
+export const Portal = ({ children }) => {
+    return ReactDOM.createPortal(children, document.body);
+};
 
-    /*const editor = useSlate();
+export const LinkTooltip = ({ activatePlugin }) => {
+    const editor = useSlate();
+    const focused = useFocused();
     const menuRef = useRef(null);
     const menu = menuRef.current;
 
-    const inlines = Editor.nodes(editor, {
-        match: n => n.type === 'link' ? true : Editor.isInline(editor, n)
-    });
+    const [inline] = Editor.nodes(editor, {
+        match: n => n.type === "link"
+    }) as any[];
 
-    const link = inlines.find(inline => inline[0].type === "link");
-    const { selection } = editor;
+    const link = !!inline ? inline[0] : null;
 
     useEffect(() => {
-        if (!link && selection.isFocused) {
-            menu.style.display = "none";
-            return;
-        }
-
-        if (!selection.isFocused) {
-            // Don't reposition the tooltip;
-            // When we attempt to click the button, editor focus is lost.
+        if ((!link && focused) || !focused) {
+            if (menu) {
+                menu.style.display = "none";
+            }
             return;
         }
 
         // Calculate position
         if (menu) {
+            menu.style.display = "flex";
             const editorRect = menu.parentNode.getBoundingClientRect();
             const menuRect = menu.getBoundingClientRect();
             const { top, left, height } = getSelectionRect();
@@ -82,42 +81,37 @@ const LinkTooltip = ({ activatePlugin }) => {
             const diff = editorRect.right - menuRight;
 
             // Position menu
-            const position = { top: top + height, left: diff < 0 ? left + diff : left };
+            const position = { top: top + height, left: diff < 0 ? left + diff - 30 : left };
 
-            menu.style.display = "flex";
             menu.style.top = position.top + "px";
             menu.style.left = position.left + "px";
         }
     });
 
-    const activateLink = useCallback(
-        () => activatePlugin("i18n-input-rich-text-editor-menu-link"),
-        []
-    );
-    const removeLink = useCallback(() => {
-        editor.change(change => {
-            // Restore selection
-            change.select(getLinkRange(change, change.value.selection)).unwrapInline(TYPE);
-            onChange(change);
-            menu.style.display = "none";
-        });
+    const activateLink = useCallback(() => {
+        activatePlugin("link");
     }, []);
 
-    const href = link ? link.data.get("href") : "";
+    const removeLink = useCallback(() => {
+        Transforms.unwrapNodes(editor, { match: n => n.type === "link" });
+    }, []);
+
+    const href = link ? link.href : "";
 
     return (
-        <Tooltip ref={menuRef} style={{ display: "none" }}>
-            <Elevation className={tooltipInner} z={1}>
-                <span>
-                    Link: {/!* eslint-disable-next-line react/jsx-no-target-blank *!/}
-                    <a href={href} target={"_blank"}>
-                        {href.length > 50 ? compressLink(href) : href}
-                    </a>
-                </span>{" "}
-                | <a onClick={activateLink}>Change</a> | <a onClick={removeLink}>Remove</a>
-            </Elevation>
-        </Tooltip>
-    );*/
+        <Portal>
+            <Tooltip ref={menuRef} style={{ display: "none" }}>
+                <Elevation className={tooltipInner} z={1}>
+                    <span>
+                        Link: {/* eslint-disable-next-line react/jsx-no-target-blank */}
+                        <a href={href} target={"_blank"}>
+                            {href.length > 50 ? compressLink(href) : href}
+                        </a>
+                    </span>{" "}
+                    | <a onMouseDown={activateLink}>Change</a> |{" "}
+                    <a onMouseDown={removeLink}>Remove</a>
+                </Elevation>
+            </Tooltip>
+        </Portal>
+    );
 };
-
-export default LinkTooltip;

@@ -1,5 +1,5 @@
 import { Plugin } from "@webiny/app/types";
-import { MenuPlugin, EditorPlugin } from "@webiny/ui/RichTextEditor";
+import { MenuPlugin, EditorPlugin } from "./admin/components/RichTextEditor";
 
 export type I18NInputRichTextEditorPlugin = Plugin & {
     plugin: {

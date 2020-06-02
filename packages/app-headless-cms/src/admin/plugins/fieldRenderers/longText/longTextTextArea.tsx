@@ -1,9 +1,9 @@
 import React from "react";
 import { CmsEditorFieldRendererPlugin } from "@webiny/app-headless-cms/types";
 import { Input } from "@webiny/ui/Input";
-import { ReactComponent as DeleteIcon } from "@webiny/app-headless-cms/admin/icons/close.svg";
+import { I18NValue } from "@webiny/app-i18n/components";
 import { i18n } from "@webiny/app/i18n";
-import DynamicListMultipleValues from "./../DynamicListMultipleValues";
+
 const t = i18n.ns("app-headless-cms/admin/fields/text");
 
 const plugin: CmsEditorFieldRendererPlugin = {
@@ -16,26 +16,20 @@ const plugin: CmsEditorFieldRendererPlugin = {
         canUse({ field }) {
             return field.type === "long-text" && !field.multipleValues && !field.predefinedValues;
         },
-        render(props) {
+        render({ field, getBind }) {
+            const Bind = getBind();
+
             return (
-                <DynamicListMultipleValues {...props}>
-                    {({ bind, index }) => (
+                <Bind>
+                    {bind => (
                         <Input
-                            {...bind.index}
+                            {...bind}
                             autoFocus
                             rows={5}
-                            onEnter={() => bind.field.appendValue("")}
-                            label={t`Value {number}`({ number: index + 1 })}
-                            type="number"
-                            trailingIcon={
-                                index > 0 && {
-                                    icon: <DeleteIcon />,
-                                    onClick: bind.index.removeValue
-                                }
-                            }
+                            label={I18NValue({ value: field.label })}
                         />
                     )}
-                </DynamicListMultipleValues>
+                </Bind>
             );
         }
     }

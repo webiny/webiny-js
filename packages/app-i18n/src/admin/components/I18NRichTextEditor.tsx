@@ -1,5 +1,5 @@
 import React from "react";
-import { RichTextEditor, RichTextEditorProps } from "@webiny/ui/RichTextEditor";
+import { RichTextEditor, RichTextEditorProps } from "./RichTextEditor";
 import { getPlugins } from "@webiny/plugins";
 import { I18NInputRichTextEditorPlugin } from "@webiny/app-i18n/types";
 
