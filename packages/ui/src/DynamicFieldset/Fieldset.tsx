@@ -10,10 +10,10 @@ interface ChildrenRenderProp {
 }
 
 type FieldsetProps = {
-    value: Array<Object>;
+    value?: Array<Object>;
     description?: string;
     validation?: { isValid: null | boolean; message?: string };
-    onChange: Function;
+    onChange?: Function;
     children: (props: ChildrenRenderProp) => React.ReactNode;
 };
 
