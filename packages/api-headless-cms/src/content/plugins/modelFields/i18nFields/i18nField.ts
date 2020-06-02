@@ -9,7 +9,8 @@ const getRawData = value => {
 };
 
 export type I18NField = {
-    field: any;
+    field?: any;
+    createField?: (valuesInstance: any) => any;
     context: CommodoContext & I18NContext;
     [key: string]: any;
 };
@@ -52,8 +53,19 @@ export const getI18NValues = (
     return [];
 };
 
-export const i18nField = ({ field, context: { i18n, commodo }, list, ...rest }: I18NField) => {
+export const i18nField = ({
+    field = null,
+    createField = null,
+    context: { i18n, commodo },
+    list,
+    ...rest
+}: I18NField) => {
     const { id } = commodo.fields;
+
+    const ValuesModel = withFields(valuesModel => ({
+        locale: id({ validation: validation.create("required") }),
+        value: typeof createField === "function" ? createField(valuesModel) : field
+    }))();
 
     const i18nFields = fields({
         list,
@@ -65,10 +77,7 @@ export const i18nField = ({ field, context: { i18n, commodo }, list, ...rest }: 
                     fields({
                         list: true,
                         value: [],
-                        instanceOf: withFields({
-                            locale: id({ validation: validation.create("required") }),
-                            value: field
-                        })()
+                        instanceOf: ValuesModel
                     })
                 )
             }),
