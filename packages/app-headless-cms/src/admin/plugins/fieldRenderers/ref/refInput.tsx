@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import gql from "graphql-tag";
 import { CmsEditorFieldRendererPlugin } from "@webiny/app-headless-cms/types";
 import { I18NValue } from "@webiny/app-i18n/components";
@@ -16,13 +16,69 @@ const extractValue = (value) => {
         return "";
     }
 
-    if (typeof value === "string") {
-        return value;
+    if (Array.isArray(value) && value.filter(Boolean).length) {
+        const [first] = value;
+        if (typeof first === "string") {
+            return first;
+        }
+
+        if (first.id) {
+            return first.id;
+        }
     }
 
-    if (value.id) {
-        return value.id;
-    }
+    return "";
+}
+
+const AutoCompleteContainer = ({ field, value, onChange }) => {
+    const [title, setTitle] = useState("");
+    // Initialize value
+    useEffect(() => {
+        if (Array.isArray(value) && value.length !== 0 && value.some(v => typeof v !== "string")) {
+            const onlyIds = value.map(i => i && i.id);
+            const [firstId] = onlyIds;
+            onChange([firstId]);
+        }
+    }, [])
+
+    const typeName = upperFirst(field.settings.modelId);
+
+    const LIST_CONTENT_ENTRIES = gql`
+                query HeadlessCmsListContentEntries($where: [${typeName}WhereInput], $sort: [${typeName}ListSorter], $after: String, $before: String, $limit: Int) {
+                    list${pluralize(typeName)}(where: $where, sort: $sort, after: $after, before: $before, limit: $limit) {
+                        data {
+                            id
+                            meta {
+                                model
+                                title {
+                                    value
+                                }
+                            }
+                        }
+                    }
+                }
+            `;
+
+    const { data } = useQuery(LIST_CONTENT_ENTRIES);
+
+    const contentEntries = get(data, `list${pluralize(typeName)}.data`, []).map(item => {
+        return { id: item.id, name: item.meta.title.value };
+    });
+
+    return (
+        <AutoComplete
+            value={extractValue(value)}
+            onChange={(value) => {
+                onChange([value]);
+            }}
+            onInput={inputValue => {
+                setTitle(inputValue);
+            }}
+            label={I18NValue({ value: field.label })}
+            description={I18NValue({ value: field.helpText })}
+            options={contentEntries}
+        />
+    )
 }
 
 const plugin: CmsEditorFieldRendererPlugin = {
@@ -37,42 +93,13 @@ const plugin: CmsEditorFieldRendererPlugin = {
         },
         render({ field, getBind }) {
             const Bind = getBind();
-            const typeName = upperFirst(field.settings.modelId);
-
-            const LIST_CONTENT_ENTRIES = gql`
-                query HeadlessCmsListContentEntries($sort: [${typeName}ListSorter], $after: String, $before: String, $limit: Int) {
-                    list${pluralize(typeName)}(sort: $sort, after: $after, before: $before, limit: $limit) {
-                        data {
-                            id
-                            meta {
-                                model
-                                title {
-                                    value
-                                }
-                            }
-                        }
-                    }
-                }
-            `;
-
-            const { data } = useQuery(LIST_CONTENT_ENTRIES);
-
-            const contentEntries = get(data, `list${pluralize(typeName)}.data`, []).map(item => {
-                return { id: item.id, name: item.meta.title.value };
-            });
 
             return (
                 <Bind>
                     {bind => (
-                        <AutoComplete
+                        <AutoCompleteContainer
                             {...bind}
-                            value={extractValue(bind.value)}
-                            onChange={(value) => {
-                                bind.onChange(value);
-                            }}
-                            label={I18NValue({ value: field.label })}
-                            description={I18NValue({ value: field.helpText })}
-                            options={contentEntries}
+                            field={field}
                         />
                     )}
                 </Bind>
