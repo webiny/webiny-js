@@ -56,7 +56,7 @@ const plugin: CmsModelFieldToCommodoFieldPlugin = {
                         withHooks({
                             beforeSave() {
                                 if (!valuesModel.locale) {
-                                    throw Error("modifyQueryArgs kobasico");
+                                    throw Error(`Locale is missing for field ${field.fieldId}.`);
                                 }
                                 this.locale = valuesModel.locale;
                             }
