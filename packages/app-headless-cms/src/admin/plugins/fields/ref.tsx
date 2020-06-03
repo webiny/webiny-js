@@ -13,7 +13,7 @@ import get from "lodash/get";
 import { i18n } from "@webiny/app/i18n";
 const t = i18n.ns("app-headless-cms/admin/fields");
 
-const extractValue = (value) => {
+const extractValue = value => {
     if (!value) {
         return "";
     }
@@ -25,7 +25,7 @@ const extractValue = (value) => {
     if (value.id) {
         return value.id;
     }
-}
+};
 
 const plugin: CmsEditorFieldTypePlugin = {
     type: "cms-editor-field-type",
@@ -37,7 +37,7 @@ const plugin: CmsEditorFieldTypePlugin = {
         description: t`For example a Product can ref its category(s).`,
         icon: <RefIcon />,
         allowMultipleValues: true,
-        allowPredefinedValues: true,
+        allowPredefinedValues: false,
         allowIndexes: {
             singleValue: false,
             multipleValues: false
@@ -75,7 +75,7 @@ const plugin: CmsEditorFieldTypePlugin = {
                             {bind => (
                                 <AutoComplete
                                     value={extractValue(bind.value)}
-                                    onChange={(value) => {
+                                    onChange={value => {
                                         bind.onChange(value);
                                     }}
                                     label={t`Content Model`}
