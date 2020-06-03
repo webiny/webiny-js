@@ -1,47 +1,49 @@
-import React, { useEffect } from "react";
+import React, { useState, useEffect, useCallback, useMemo } from "react";
 import gql from "graphql-tag";
 import { CmsEditorFieldRendererPlugin } from "@webiny/app-headless-cms/types";
 import { I18NValue } from "@webiny/app-i18n/components";
+import { CircularProgress } from "@webiny/ui/Progress";
 import { MultiAutoComplete } from "@webiny/ui/AutoComplete";
 import { useQuery } from "@webiny/app-headless-cms/admin/hooks";
 import get from "lodash/get";
 import upperFirst from "lodash/upperFirst";
 import pluralize from "pluralize";
-import { i18n } from "@webiny/app/i18n";
+import debounce from "lodash/debounce";
+import { extractIdsFromValue, GET_CONTENT_MODEL } from "./utils";
 
+import { i18n } from "@webiny/app/i18n";
 const t = i18n.ns("app-headless-cms/admin/fields/ref");
 
-const extractValue = (values, list) => {
-    if (!values) {
-        return [];
-    }
-    const IDs = values.map(value => {
-        if (typeof value === "string") {
-            return value;
-        }
-        if (value.id) {
-            return value.id;
-        }
-        return "";
-    }).filter(Boolean);
-
-    return list.filter(item => IDs.some(id => id === item.id));
-}
-
-const MultiAutoCompleteContainer = ({ field, value, onChange }) => {
+const MultiAutoCompleteContainer = ({ field, value, onChange, titleFieldId }) => {
+    const [title, setTitle] = useState([]);
     // Initialize values
     useEffect(() => {
-        if (Array.isArray(value) && value.length !== 0 && value.some(v => typeof v !== "string")) {
+        if (Array.isArray(value) && value.length !== 0) {
             const onlyIds = value.map(i => i.id);
             onChange(onlyIds);
+        }
+    }, [])
+
+    // Reset title
+    useEffect(() => {
+        if (Array.isArray(value) && value.length !== 0) {
+            const titles = [];
+            value.forEach(v => {
+                if (v && v.meta && v.meta.title.value) {
+                    titles.push(v.meta.title.value);
+                }
+            })
+            if (titles.length) {
+                setTitle(titles);
+            }
         }
     }, [value])
 
     const typeName = upperFirst(field.settings.modelId);
 
     const LIST_CONTENT_ENTRIES = gql`
-                query HeadlessCmsListContentEntries($sort: [${typeName}ListSorter], $after: String, $before: String, $limit: Int) {
-                    list${pluralize(typeName)}(sort: $sort, after: $after, before: $before, limit: $limit) {
+                query HeadlessCmsListContentEntries($where: ${typeName}ListWhereInput, $sort: [${typeName}ListSorter], $after: String, $before: String, $limit: Int) {
+                    list${pluralize(typeName)}(where: $where, sort: $sort, after: $after, before: $before, limit: $limit) {
                         data {
                             id
                             meta {
@@ -55,21 +57,33 @@ const MultiAutoCompleteContainer = ({ field, value, onChange }) => {
                 }
             `;
 
-    const { data } = useQuery(LIST_CONTENT_ENTRIES);
+    const { data } = useQuery(LIST_CONTENT_ENTRIES, { variables: { where: { [`${titleFieldId}_in`]: title } } });
 
     const contentEntries = get(data, `list${pluralize(typeName)}.data`, []).map(item => {
         return { id: item.id, name: item.meta.title.value };
     });
 
+    const handleOnInput = useCallback(inputValue => {
+        if (inputValue.length) {
+            setTitle([...title, inputValue]);
+        }
+    }, []);
+
+    const debounceOnInput = useMemo(() => debounce(handleOnInput, 250), []);
+
+    const label = I18NValue({ value: field.label });
+    const description = I18NValue({ value: field.helpText });
+
     return (
         <MultiAutoComplete
-            value={extractValue(value, contentEntries)}
+            value={extractIdsFromValue(value, contentEntries)}
             onChange={(value) => {
                 onChange(value.map(item => item.id));
             }}
+            onInput={debounceOnInput}
             options={contentEntries}
-            label={I18NValue({ value: field.label })}
-            description={I18NValue({ value: field.helpText })}
+            label={label}
+            description={description}
         />
     );
 }
@@ -87,12 +101,21 @@ const plugin: CmsEditorFieldRendererPlugin = {
         render({ field, getBind }) {
             const Bind = getBind();
 
+            const { data, loading } = useQuery(GET_CONTENT_MODEL, { variables: { where: { modelId: field.settings.modelId } } });
+
+            if (loading) {
+                return <CircularProgress />;
+            }
+
+            const { titleFieldId } = get(data, `getContentModel.data`, {});
+
             return (
                 <Bind>
                     {bind => (
                         <MultiAutoCompleteContainer
                             {...bind}
                             field={field}
+                            titleFieldId={titleFieldId}
                         />
                     )}
                 </Bind>
