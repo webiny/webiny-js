@@ -45,6 +45,7 @@ export type CmsEditorFieldRendererPlugin = Plugin & {
             field: CmsEditorField;
             Label: typeof Label;
             getBind: (index?: number) => any;
+            contentModel: CmsEditorContentModel;
         }): React.ReactNode;
     };
 };
@@ -77,6 +78,7 @@ export type CmsEditorContentModel = {
     fields: CmsEditorField[];
     name: string;
     modelId: string;
+    titleFieldId: string;
     settings: any;
     status: string;
     savedOn: string;

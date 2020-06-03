@@ -11,6 +11,7 @@ export const ContentFormRender = ({
     getDefaultValues,
     loading = false,
     content,
+    contentModel,
     onSubmit,
     onChange,
     locale,
@@ -50,6 +51,7 @@ export const ContentFormRender = ({
                                             Bind={Bind}
                                             locale={locale}
                                             renderPlugins={renderPlugins}
+                                            contentModel={contentModel}
                                         />
                                     </Cell>
                                 ))}

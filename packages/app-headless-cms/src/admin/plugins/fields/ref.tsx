@@ -4,13 +4,28 @@ import { useQuery } from "@webiny/app-headless-cms/admin/hooks";
 import { LIST_CONTENT_MODELS } from "../../viewsGraphql";
 import { validation } from "@webiny/validation";
 import { Grid, Cell } from "@webiny/ui/Grid";
-import { Select } from "@webiny/ui/Select";
+import { AutoComplete } from "@webiny/ui/AutoComplete";
 import { CircularProgress } from "@webiny/ui/Progress";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { CmsEditorFieldTypePlugin } from "@webiny/app-headless-cms/types";
-import { i18n } from "@webiny/app/i18n";
 import get from "lodash/get";
+
+import { i18n } from "@webiny/app/i18n";
 const t = i18n.ns("app-headless-cms/admin/fields");
+
+const extractValue = (value) => {
+    if (!value) {
+        return "";
+    }
+
+    if (typeof value === "string") {
+        return value;
+    }
+
+    if (value.id) {
+        return value.id;
+    }
+}
 
 const plugin: CmsEditorFieldTypePlugin = {
     type: "cms-editor-field-type",
@@ -24,7 +39,7 @@ const plugin: CmsEditorFieldTypePlugin = {
         allowMultipleValues: true,
         allowPredefinedValues: true,
         allowIndexes: {
-            singleValue: true,
+            singleValue: false,
             multipleValues: false
         },
         createField() {
@@ -49,7 +64,7 @@ const plugin: CmsEditorFieldTypePlugin = {
             }
 
             const contentModels = get(data, "listContentModels.data", []).map(item => {
-                return { value: item.modelId, label: item.name };
+                return { id: item.modelId, name: item.name };
             });
 
             return (
@@ -57,19 +72,17 @@ const plugin: CmsEditorFieldTypePlugin = {
                     {loading && <CircularProgress />}
                     <Cell span={12}>
                         <Bind name={"settings.modelId"} validators={validation.create("required")}>
-                            <Select
-                                label={t`Content Model`}
-                                description={t`Cannot be changed later`}
-                            >
-                                <option value="">{t`Choose a content model`}</option>
-                                {contentModels.map(contentModel => {
-                                    return (
-                                        <option key={contentModel.value} value={contentModel.value}>
-                                            {contentModel.label}
-                                        </option>
-                                    );
-                                })}
-                            </Select>
+                            {bind => (
+                                <AutoComplete
+                                    value={extractValue(bind.value)}
+                                    onChange={(value) => {
+                                        bind.onChange(value);
+                                    }}
+                                    label={t`Content Model`}
+                                    description={t`Cannot be changed later`}
+                                    options={contentModels}
+                                />
+                            )}
                         </Bind>
                     </Cell>
                 </Grid>
