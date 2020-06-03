@@ -33,7 +33,7 @@ describe(`createDataModel`, () => {
         for (let i = 0; i < models.length; i++) {
             const model = models[i];
             context.models[model.modelId] = createDataModel(
-                context.createEnvironmentBase,
+                context.models.createEnvironmentBase,
                 model,
                 context
             );

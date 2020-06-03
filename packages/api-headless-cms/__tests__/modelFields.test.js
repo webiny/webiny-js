@@ -32,7 +32,7 @@ describe("Model fields", () => {
             .byType("cms-model-field-to-commodo-field")
             .find(pl => pl.fieldType === "datetime");
 
-        const model = context.createEnvironmentBase();
+        const model = context.models.createEnvironmentBase();
 
         datetime.dataModel({
             model,
