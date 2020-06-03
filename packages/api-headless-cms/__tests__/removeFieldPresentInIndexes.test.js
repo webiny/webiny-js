@@ -2,7 +2,7 @@ import useContentHandler from "./utils/useContentHandler";
 import mocks from "./mocks/removeFieldPresentInIndexes";
 import { createContentModelGroup, createEnvironment } from "@webiny/api-headless-cms/testing";
 
-describe("Creating indexes on title field change", () => {
+describe("Removing fields that are present in indexes", () => {
     const { database, environment } = useContentHandler();
     const initial = {};
 
@@ -12,7 +12,7 @@ describe("Creating indexes on title field change", () => {
         initial.contentModelGroup = await createContentModelGroup({ database });
     });
 
-    it(`should create an index when a new title field has been set`, async () => {
+    it(`should not allow deletion of a field that is present in one or more indexes`, async () => {
         const { createContentModel, getContentModel, updateContentModel } = environment(
             initial.environment.id
         );
