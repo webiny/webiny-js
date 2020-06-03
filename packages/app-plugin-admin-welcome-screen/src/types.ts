@@ -8,4 +8,4 @@ export type AdminWelcomeScreenWidgetPlugin = Plugin & {
         description: string;
         cta: React.ReactNode;
     };
-}
+};
