@@ -176,7 +176,11 @@ export default ({ createBase, context }: { createBase: Function; context: CmsCon
                     if (Array.isArray(index.fields)) {
                         for (let j = 0; j < index.fields.length; j++) {
                             const field = index.fields[j];
-                            if (!this.getField(field)) {
+                            // "id" is built-in, no need to do any checks here.
+                            if (field === 'id') {
+                                continue;
+                            }
+                            if (!this.fields.find(item => item.fieldId === field)) {
                                 throw new Error(
                                     `Before removing the "${field}" field, please remove all of the indexes that include it in in their list of fields.`
                                 );
