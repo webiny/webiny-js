@@ -7,7 +7,9 @@ import {
     string,
     withStaticProps,
     withHooks,
-    setOnce
+    setOnce,
+    onSet,
+    onGet
 } from "@webiny/commodo";
 import { i18nField } from "./i18nFields";
 import cloneDeep from "lodash/cloneDeep";
@@ -86,13 +88,31 @@ const plugin: CmsModelFieldToCommodoFieldPlugin = {
                         }))
                     )(context.models.createEnvironmentBase());
 
-                    return ref({
-                        list: true,
-                        parent: instance,
-                        validation,
-                        instanceOf: [context.models[modelId], "entry1"],
-                        using: [CmsEntries2Entries, "entry2"]
-                    });
+                    return pipe(
+                        onSet(value => {
+                            if (Array.isArray(value)) {
+                                return value;
+                            }
+
+                            return [value].filter(Boolean);
+                        }),
+                        onGet(async value => {
+                            if (field.multipleValues) {
+                                return value;
+                            }
+
+                            const awaitedValue = await value;
+                            return awaitedValue && awaitedValue[0];
+                        })
+                    )(
+                        ref({
+                            list: true,
+                            parent: instance,
+                            validation,
+                            instanceOf: [context.models[modelId], "entry1"],
+                            using: [CmsEntries2Entries, "entry2"]
+                        })
+                    );
                 },
                 context
             })
