@@ -142,14 +142,20 @@ const mocks = {
                         value: [book1Id, book2Id]
                     },
                     {
-                        locale: locales.de.id,
+                        locale: locales.it.id,
                         value: [book2Id]
                     }
                 ]
             }
         }
     }),
-    newAuthorRevisionSearchEntries: ({ environmentId, authorRev1Id, authorRev2Id, book1Id, book2Id }) => [
+    newAuthorRevisionEntries2Entries: ({
+        environmentId,
+        authorRev1Id,
+        authorRev2Id,
+        book1Id,
+        book2Id
+    }) => [
         {
             locale: locales.en.id,
             deleted: false,
@@ -187,7 +193,7 @@ const mocks = {
             environment: environmentId
         },
         {
-            locale: locales.de.id,
+            locale: locales.it.id,
             deleted: false,
             entry1: authorRev2Id,
             entry2: book2Id,
@@ -195,7 +201,49 @@ const mocks = {
             entry2ClassId: "CmsBook",
             environment: environmentId
         }
-    ]
+    ],
+    getAuthorViaGqlBooksField: ({ book1Id, book2Id }) => ({
+        values: [
+            {
+                value: [],
+                locale: locales.en.id
+            },
+            {
+                value: [
+                    {
+                        id: book2Id,
+                        meta: {
+                            title: {
+                                value: "Book2-en"
+                            }
+                        }
+                    },
+                    {
+                        id: book1Id,
+                        meta: {
+                            title: {
+                                value: "Book1-en"
+                            }
+                        }
+                    }
+                ],
+                locale: locales.de.id
+            },
+            {
+                value: [
+                    {
+                        id: book2Id,
+                        meta: {
+                            title: {
+                                value: "Book2-en"
+                            }
+                        }
+                    }
+                ],
+                locale: locales.it.id
+            }
+        ]
+    })
 };
 
 export default mocks;

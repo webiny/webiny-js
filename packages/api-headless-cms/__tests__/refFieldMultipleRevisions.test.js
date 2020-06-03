@@ -63,7 +63,7 @@ describe("Ref Field - Multiple Revisions Test", () => {
         );
 
         expect(await getEntries2Entries()).toEqual(
-            mocks.newAuthorRevisionSearchEntries({
+            mocks.newAuthorRevisionEntries2Entries({
                 environmentId: initial.environment.id,
                 authorRev1Id: createdAuthor1.id,
                 authorRev2Id: createdAuthor1Revision2.id,
@@ -72,6 +72,13 @@ describe("Ref Field - Multiple Revisions Test", () => {
             })
         );
 
+        const getAuthor = await authors.read({ id: createdAuthor1Revision2.id });
 
+        expect(getAuthor.books).toEqual(
+            mocks.getAuthorViaGqlBooksField({
+                book1Id: createdBook1.id,
+                book2Id: createdBook2.id
+            })
+        );
     });
 });
