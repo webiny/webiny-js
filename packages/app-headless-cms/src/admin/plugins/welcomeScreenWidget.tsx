@@ -21,7 +21,7 @@ const plugin: AdminWelcomeScreenWidgetPlugin = {
     name: "admin-welcome-screen-widget-headless-cms",
     widget: {
         cta: (
-            <Link to="cms/content-models" className={linkStyle}>
+            <Link to="/cms/content-models" className={linkStyle}>
                 <ButtonSecondary className={buttonStyle}>New Content Model</ButtonSecondary>
             </Link>
         ),
