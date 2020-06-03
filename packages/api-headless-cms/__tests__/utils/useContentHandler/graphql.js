@@ -133,6 +133,9 @@ export const GET_CONTENT_MODEL = /* GraphQL */ `
                 id
                 name
                 titleFieldId
+                indexes {
+                    fields
+                }
                 lockedFields {
                     fieldId
                     multipleValues

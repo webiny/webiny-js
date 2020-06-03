@@ -142,6 +142,51 @@ export default ({ createBase, context }: { createBase: Function; context: CmsCon
                             `Fields that accept multiple values cannot be used as the entry title (tried to use "${this.titleFieldId}" field)`
                         );
                     }
+
+                    // When a field is set as a title field, we automatically create an index, so that we can
+                    // immediately search entries by its title. Convenient for users, and ensures there is always
+                    // at least one field we can do a search with. Makes generic auto-complete / multi-auto-complete
+                    // components possible.
+                    let indexAlreadyExists = false;
+                    for (let i = 0; i < this.indexes.length; i++) {
+                        const index = this.indexes[i];
+                        if (
+                            Array.isArray(index.fields) &&
+                            index.fields.length === 1 &&
+                            index.fields[0] === this.titleFieldId
+                        ) {
+                            indexAlreadyExists = true;
+                            break;
+                        }
+                    }
+
+                    if (!indexAlreadyExists) {
+                        this.indexes = [
+                            ...this.indexes,
+                            {
+                                fields: [this.titleFieldId]
+                            }
+                        ];
+                    }
+                }
+
+                // Check if the indexes list contains all fields that actually exists.
+                for (let i = 0; i < this.indexes.length; i++) {
+                    const index = this.indexes[i];
+                    if (Array.isArray(index.fields)) {
+                        for (let j = 0; j < index.fields.length; j++) {
+                            const field = index.fields[j];
+                            // "id" is built-in, no need to do any checks here.
+                            if (field === 'id') {
+                                continue;
+                            }
+                            if (!this.fields.find(item => item.fieldId === field)) {
+                                throw new Error(
+                                    `Before removing the "${field}" field, please remove all of the indexes that include it in in their list of fields.`
+                                );
+                            }
+                        }
+                    }
                 }
 
                 if (this.isDirty()) {
