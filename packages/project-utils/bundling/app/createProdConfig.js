@@ -25,7 +25,6 @@ module.exports = async (options = {}) => {
     });
 
     // Ensure environment variables are read.
-    require("./config/env");
     const configFactory = require("./config/webpack.config");
 
     const measureFileSizesBeforeBuild = FileSizeReporter.measureFileSizesBeforeBuild;
