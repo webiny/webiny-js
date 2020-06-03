@@ -3,10 +3,6 @@ import { CmsModelFieldToGraphQLPlugin } from "@webiny/api-headless-cms/types";
 import { i18nFieldInput } from "./../graphqlTypes/i18nFieldInput";
 import { createTypeName } from "../utils/createTypeName";
 
-const createRefTypeName = (host, target) => {
-    return `${host}To${target}`;
-};
-
 const plugin: CmsModelFieldToGraphQLPlugin = {
     name: "cms-model-field-to-graphql-ref",
     type: "cms-model-field-to-graphql",
@@ -39,32 +35,48 @@ const plugin: CmsModelFieldToGraphQLPlugin = {
             };
         },
         createTypeField({ field, model }) {
-            const fieldTypeName = createTypeName(model.modelId);
-            const mTypeName = createTypeName(field.settings.modelId);
-            const name = `${"CmsRef" + createRefTypeName(fieldTypeName, mTypeName)}`;
+            const modelIdType = createTypeName(model.modelId);
+            const fieldIdType = createTypeName(field.fieldId);
+            const refModelIdType = createTypeName(field.settings.modelId);
+
+            const refPrefix = `CmsRef${modelIdType}${fieldIdType}`;
+
+            if (field.multipleValues) {
+                return {
+                    fields: `${field.fieldId}: ${refPrefix}List`,
+                    typeDefs: `
+                        type ${refPrefix}ListLocalized {
+                            value: [${refModelIdType}]
+                            locale: ID!
+                        }
+    
+                        type ${refPrefix}List {
+                            value(locale: String): [${refModelIdType}]
+                            values: [${refPrefix}ListLocalized]!
+                        }`
+                };
+            }
 
             return {
-                fields:
-                    field.fieldId +
-                    ": CmsRef" +
-                    createRefTypeName(fieldTypeName, mTypeName) +
-                    "List",
+                fields: `${field.fieldId}: ${refPrefix}`,
                 typeDefs: `
-                    type ${name}ListLocalized {
-                        value: [${mTypeName}]
-                        locale: ID!
-                    }
-
-                    type ${name}List {
-                        value(locale: String): [${mTypeName}]
-                        values: [${name}ListLocalized]!
-                    }
-                `
+                        type ${refPrefix}Localized {
+                            value: ${refModelIdType}
+                            locale: ID!
+                        }
+    
+                        type ${refPrefix} {
+                            value(locale: String): ${refModelIdType}
+                            values: [${refPrefix}Localized]!
+                        }`
             };
-
         },
         createInputField({ field }) {
-            return field.fieldId + ": CmsRefListInput";
+            if (field.multipleValues) {
+                return field.fieldId + ": CmsRefListInput";
+            }
+
+            return field.fieldId + ": CmsRefInput";
         }
     }
 };
