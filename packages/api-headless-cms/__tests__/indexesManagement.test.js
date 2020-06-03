@@ -73,7 +73,7 @@ describe("Indexes Management test", () => {
             .find()
             .sort({ id: -1 });
 
-        expect(searchEntries.length).toBe(3);
+        expect(searchEntries.length).toBe(5);
         expect(searchEntries.map(({ id, _id, ...rest }) => rest)).toEqual(
             mocks.CmsContentEntrySearch.initialProductCreated({
                 environmentId: initial.environment.id,
@@ -90,14 +90,14 @@ describe("Indexes Management test", () => {
         productRev1 = await products.publish({ revision: productRev1.id });
         expect(productRev1.meta.published).toBe(true);
 
-        // We should still have three entries in the search table, only this time, every entry should be marked both
+        // We should still have five entries in the search table, only this time, every entry should be marked both
         // as the "latestVersion" and "published".
         searchEntries = await database
             .collection("CmsContentEntrySearch")
             .find()
             .sort({ id: -1 });
 
-        expect(searchEntries.length).toBe(3);
+        expect(searchEntries.length).toBe(5);
 
         expect(searchEntries.map(({ id, _id, ...rest }) => rest)).toEqual(
             mocks.CmsContentEntrySearch.initialProductPublished({
@@ -132,13 +132,13 @@ describe("Indexes Management test", () => {
             .find()
             .sort({ id: -1 });
 
-        expect(searchEntries.length).toBe(6);
+        expect(searchEntries.length).toBe(10);
 
         expect(searchEntries.map(({ id, _id, ...rest }) => rest)).toEqual(
             mocks.CmsContentEntrySearch.secondRevisionCreated({
                 environmentId: initial.environment.id,
-                productRev1,
-                productRev2
+                productRev1: productRev1.id,
+                productRev2: productRev2.id
             })
         );
 
@@ -166,19 +166,19 @@ describe("Indexes Management test", () => {
             }
         });
 
-        // Again, we should have six entries, but the previous revision 2 that was present in the search table, should
+        // Again, we should have ten entries, but the previous revision 2 that was present in the search table, should
         // now be replaced with the newly created revision 3. The revision 1 must still be present.
         searchEntries = await database
             .collection("CmsContentEntrySearch")
             .find()
             .sort({ id: -1 });
 
-        expect(searchEntries.length).toBe(6);
+        expect(searchEntries.length).toBe(10);
         expect(searchEntries.map(({ id, _id, ...rest }) => rest)).toEqual(
             mocks.CmsContentEntrySearch.thirdRevisionCreated({
                 environmentId: initial.environment.id,
-                productRev1,
-                productRev3
+                productRev1: productRev1.id,
+                productRev3: productRev3.id
             })
         );
 
@@ -193,12 +193,12 @@ describe("Indexes Management test", () => {
 
         // We should now have revisions 2 and 3 in the search table, marked as published but not latest, and marked
         // as latest and not published, respectively.
-        expect(searchEntries.length).toBe(6);
+        expect(searchEntries.length).toBe(10);
         expect(searchEntries.map(({ id, _id, ...rest }) => rest)).toEqual(
             mocks.CmsContentEntrySearch.secondRevisionPublished({
                 environmentId: initial.environment.id,
-                productRev2,
-                productRev3
+                productRev2: productRev2.id,
+                productRev3: productRev3.id
             })
         );
     });
