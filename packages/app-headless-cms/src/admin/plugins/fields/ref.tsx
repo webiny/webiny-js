@@ -8,9 +8,18 @@ import { Select } from "@webiny/ui/Select";
 import { CircularProgress } from "@webiny/ui/Progress";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { CmsEditorFieldTypePlugin } from "@webiny/app-headless-cms/types";
-import { i18n } from "@webiny/app/i18n";
 import get from "lodash/get";
+import { css } from "emotion";
+
+import { i18n } from "@webiny/app/i18n";
 const t = i18n.ns("app-headless-cms/admin/fields");
+
+const selectStyles = css({
+    '& label': {
+        top: '10px !important',
+        transform: 'translateY(-16%) scale(0.75) !important'
+    }
+});
 
 const plugin: CmsEditorFieldTypePlugin = {
     type: "cms-editor-field-type",
@@ -24,11 +33,12 @@ const plugin: CmsEditorFieldTypePlugin = {
         allowMultipleValues: true,
         allowPredefinedValues: true,
         allowIndexes: {
-            singleValue: true,
+            singleValue: false,
             multipleValues: false
         },
         createField() {
             return {
+                multipleValues: true,
                 type: this.type,
                 settings: {
                     modelId: ""
@@ -60,6 +70,7 @@ const plugin: CmsEditorFieldTypePlugin = {
                             <Select
                                 label={t`Content Model`}
                                 description={t`Cannot be changed later`}
+                                className={selectStyles}
                             >
                                 <option value="">{t`Choose a content model`}</option>
                                 {contentModels.map(contentModel => {

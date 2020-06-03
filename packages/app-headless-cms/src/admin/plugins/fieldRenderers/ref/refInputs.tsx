@@ -11,12 +11,21 @@ import { i18n } from "@webiny/app/i18n";
 
 const t = i18n.ns("app-headless-cms/admin/fields/ref");
 
-const extractValue = (value, list) => {
-    if (!value) {
+const extractValue = (values, list) => {
+    if (!values) {
         return [];
     }
+    const IDs = values.map(value => {
+        if (typeof value === "string") {
+            return value;
+        }
+        if (value.id) {
+            return value.id;
+        }
+        return "";
+    }).filter(Boolean);
 
-    return list.filter(item => value.some(id => id === item.id));
+    return list.filter(item => IDs.some(id => id === item.id));
 }
 
 const plugin: CmsEditorFieldRendererPlugin = {
@@ -61,7 +70,6 @@ const plugin: CmsEditorFieldRendererPlugin = {
                         <MultiAutoComplete
                             value={extractValue(value, contentEntries)}
                             onChange={(value) => {
-                                console.log("onChange -> value", value);
                                 onChange(value.map(item => item.id));
                             }}
                             label={I18NValue({ value: field.label })}
