@@ -8,7 +8,8 @@ module.exports = {
                         "@webiny/cwp-template-full/hooks/api",
                         "./apps/admin/webiny.config.js",
                         "./apps/site/webiny.config.js"
-                    ]
+                    ],
+                    apps: ["@webiny/cwp-template-full/hooks/apps"]
                 }
             }),
             "@webiny/cli-plugin-scaffold",
