@@ -91,6 +91,7 @@ export const ContentModelForm: React.FC<CmsContentModelFormProps> = props => {
             getFields={getFields}
             getDefaultValues={getDefaultValues}
             content={content}
+            contentModel={contentModel}
             onChange={onChange}
             onSubmit={async data => {
                 const fieldsIds = contentModel.fields.map(item => item.fieldId);

@@ -1,5 +1,5 @@
 import React, { useRef, useCallback, cloneElement } from "react";
-import { CmsEditorField, CmsEditorFieldRendererPlugin } from "@webiny/app-headless-cms/types";
+import { CmsEditorField, CmsEditorFieldRendererPlugin, CmsEditorContentModel } from "@webiny/app-headless-cms/types";
 import get from "lodash.get";
 import { i18n } from "@webiny/app/i18n";
 import getValue from "./functions/getValue";
@@ -12,9 +12,10 @@ const RenderFieldElement = (props: {
     field: CmsEditorField;
     Bind: any;
     locale: any;
+    contentModel: CmsEditorContentModel;
     renderPlugins: CmsEditorFieldRendererPlugin[];
 }) => {
-    const { renderPlugins, field, Bind: BaseFormBind, locale } = props;
+    const { renderPlugins, field, Bind: BaseFormBind, locale, contentModel } = props;
     const renderPlugin = renderPlugins.find(
         plugin => plugin.renderer.rendererName === get(field, "renderer.name")
     );
@@ -103,7 +104,7 @@ const RenderFieldElement = (props: {
         });
     }
 
-    return renderPlugin.renderer.render({ field, getBind, Label });
+    return renderPlugin.renderer.render({ field, getBind, Label, contentModel });
 };
 
 export default RenderFieldElement;
