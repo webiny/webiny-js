@@ -54,7 +54,6 @@ const EnvironmentAliasesDataList = () => {
                                     <Typography use={"overline"}>{t`(default)`}</Typography>
                                 )}
                                 <ListItemTextSecondary>
-                                    {console.log(item)}
                                     {item.environments.length
                                         ? t`Assigned to: {environments}`({
                                               environments: (
@@ -65,11 +64,6 @@ const EnvironmentAliasesDataList = () => {
                                                                   key={env.id}
                                                                   onClick={e => e.stopPropagation()}
                                                                   to={`/settings/cms/environments?id=${env.id}`}
-                                                                  title={t`This environment alias points to the "{environment}" environment.`(
-                                                                      {
-                                                                          environment: env.name
-                                                                      }
-                                                                  )}
                                                               >
                                                                   {env.name}
                                                               </Link>
