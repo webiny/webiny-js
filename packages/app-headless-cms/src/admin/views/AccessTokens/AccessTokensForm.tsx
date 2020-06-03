@@ -20,10 +20,12 @@ import {
 import { validation } from "@webiny/validation";
 import { FormElementMessage } from "@webiny/ui/FormElementMessage";
 import { webinyCheckboxTitle } from "@webiny/ui/Checkbox/Checkbox.styles";
+import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 
 const t = i18n.ns("app-headless-cms/admin/accessTokens/form");
 
 function EnvironmentAliasesForm() {
+    const { showSnackbar } = useSnackbar();
     const { form: crudForm } = useCrud();
     const environments = useCms().environments.environments;
 
@@ -86,7 +88,10 @@ function EnvironmentAliasesForm() {
                                                 <span
                                                     style={{ position: "absolute", right: "32px" }}
                                                 >
-                                                    <CopyButton value={data.token} />
+                                                    <CopyButton
+                                                        value={data.token}
+                                                        showSnackbar={showSnackbar}
+                                                    />
                                                 </span>
                                             </div>
                                         ) : (
