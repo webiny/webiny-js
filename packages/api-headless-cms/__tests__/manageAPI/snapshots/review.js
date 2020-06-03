@@ -1,5 +1,14 @@
 export default /* GraphQL */ `
     "Product review"
+    type CmsRefReviewProductLocalized {
+      value: Product
+      locale: ID!
+    }
+    
+    type CmsRefReviewProduct {
+      value(locale: String): Product
+      values: [CmsRefReviewProductLocalized]!
+    }
     type Review {
         id: ID
         createdBy: SecurityUser
@@ -9,7 +18,7 @@ export default /* GraphQL */ `
         savedOn: DateTime
         meta: ReviewMeta
         text: CmsText
-        product: CmsRefOne
+        product: CmsRefReviewProduct
         rating: CmsNumber
     }
 
@@ -29,7 +38,7 @@ export default /* GraphQL */ `
 
     input ReviewInput {
         text: CmsTextInput
-        product: CmsRefOneInput
+        product: CmsRefInput
         rating: CmsNumberInput
     }
 
