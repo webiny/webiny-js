@@ -1,12 +1,10 @@
-import mdbid from "mdbid";
 import useContentHandler from "./utils/useContentHandler";
 import mocks from "./mocks/fields/refFieldCrud";
 import pick from "lodash/pick";
+import { createContentModelGroup, createEnvironment } from "@webiny/api-headless-cms/testing";
 
 describe("Ref Field - CRUD Test", () => {
     const { database, environment } = useContentHandler();
-    const ids = { environment: mdbid(), contentModelGroup: mdbid() };
-
     const getEntries2Entries = () =>
         database
             .collection("CmsEntries2Entries")
@@ -26,34 +24,23 @@ describe("Ref Field - CRUD Test", () => {
                 )
             );
 
+    const initial = {};
+
     beforeAll(async () => {
         // Let's create a basic environment and a content model group.
-        await database.collection("CmsEnvironment").insert({
-            id: ids.environment,
-            name: "Initial Environment",
-            description: "This is the initial environment.",
-            createdFrom: null
-        });
-
-        await database.collection("CmsContentModelGroup").insert({
-            id: ids.contentModelGroup,
-            name: "Ungrouped",
-            slug: "ungrouped",
-            description: "A generic content model group",
-            icon: "fas/star",
-            environment: ids.environment
-        });
+        initial.environment = await createEnvironment({ database });
+        initial.contentModelGroup = await createContentModelGroup({ database });
     });
 
     it(`should be able to assert basic CRUD operations`, async () => {
-        const { content, createContentModel } = environment(ids.environment);
+        const { content, createContentModel } = environment(initial.environment.id);
 
         await createContentModel({
-            data: mocks.bookContentModel({ contentModelGroupId: ids.contentModelGroup })
+            data: mocks.bookContentModel({ contentModelGroupId: initial.contentModelGroup.id })
         });
 
         await createContentModel({
-            data: mocks.authorContentModel({ contentModelGroupId: ids.contentModelGroup })
+            data: mocks.authorContentModel({ contentModelGroupId: initial.contentModelGroup.id })
         });
 
         // 2. Create a new author entry.
@@ -73,7 +60,7 @@ describe("Ref Field - CRUD Test", () => {
 
         expect(entries2entries).toEqual(
             mocks.createdAuthor1Entries2Entries({
-                environmentId: ids.environment,
+                environmentId: initial.environment.id,
                 authorId: createdAuthor1.id,
                 book1Id: createdBook1.id,
                 book2Id: createdBook2.id
@@ -97,7 +84,7 @@ describe("Ref Field - CRUD Test", () => {
 
         expect(await getEntries2Entries()).toEqual(
             mocks.updatedAuthor1Entries2Entries({
-                environmentId: ids.environment,
+                environmentId: initial.environment.id,
                 authorId: createdAuthor1.id,
                 book1Id: createdBook1.id,
                 book2Id: createdBook2.id,
@@ -127,7 +114,7 @@ describe("Ref Field - CRUD Test", () => {
 
         expect(await getEntries2Entries()).toEqual(
             mocks.createdAuthor2Entries2Entries({
-                environmentId: ids.environment,
+                environmentId: initial.environment.id,
                 author1Id: createdAuthor1.id,
                 author2Id: createdAuthor2.id,
                 book1Id: createdBook1.id,
@@ -149,7 +136,7 @@ describe("Ref Field - CRUD Test", () => {
 
         expect(await getEntries2Entries()).toEqual(
             mocks.updatedAuthor2Entries2Entries({
-                environmentId: ids.environment,
+                environmentId: initial.environment.id,
                 author1Id: createdAuthor1.id,
                 author2Id: createdAuthor2.id,
                 book1Id: createdBook1.id,
@@ -174,7 +161,7 @@ describe("Ref Field - CRUD Test", () => {
 
         expect(await getEntries2Entries()).toEqual(
             mocks.updatedAuthorsRemovedBooksEntries2Entries({
-                environmentId: ids.environment,
+                environmentId: initial.environment.id,
                 author1Id: createdAuthor1.id,
                 author2Id: createdAuthor2.id,
                 book1Id: createdBook1.id,
