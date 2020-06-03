@@ -67,28 +67,33 @@ function EnvironmentAliasesForm() {
                                         >
                                             Token
                                         </div>
-                                        <div
-                                            style={{
-                                                background: "var(--mdc-theme-background)",
-                                                padding: "8px",
-                                                paddingLeft: "16px"
-                                            }}
-                                        >
-                                            <span
+                                        {data.token ? (
+                                            <div
                                                 style={{
-                                                    lineHeight: "48px",
-                                                    verticalAlign: "middle"
+                                                    background: "var(--mdc-theme-background)",
+                                                    padding: "8px",
+                                                    paddingLeft: "16px"
                                                 }}
                                             >
-                                                {data.token}
-                                            </span>
-                                            <span style={{ position: "absolute", right: "32px" }}>
-                                                <CopyButton value={data.token} />
-                                            </span>
-                                        </div>
-                                        <FormElementMessage>
-                                            Your Token will be shown once you save the form
-                                        </FormElementMessage>
+                                                <span
+                                                    style={{
+                                                        lineHeight: "48px",
+                                                        verticalAlign: "middle"
+                                                    }}
+                                                >
+                                                    {data.token}
+                                                </span>
+                                                <span
+                                                    style={{ position: "absolute", right: "32px" }}
+                                                >
+                                                    <CopyButton value={data.token} />
+                                                </span>
+                                            </div>
+                                        ) : (
+                                            <FormElementMessage>
+                                                Your Token will be shown once you save the form
+                                            </FormElementMessage>
+                                        )}
                                     </div>
                                 </Bind>
                             </Cell>
