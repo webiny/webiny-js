@@ -24,9 +24,16 @@ describe("Removing fields that are present in indexes", () => {
         const getAuthorContentModel = await getContentModel(authorContentModel);
         let error;
 
+        await updateContentModel(
+            mocks.updatedAuthorContentModel({
+                authorContentModelId: getAuthorContentModel.id,
+                contentModelGroupId: initial.contentModelGroup.id
+            })
+        );
+
         try {
             await updateContentModel(
-                mocks.updatedAuthorContentModel({
+                mocks.removeFieldUpdateAuthorContentModel({
                     authorContentModelId: getAuthorContentModel.id,
                     contentModelGroupId: initial.contentModelGroup.id
                 })
