@@ -11,6 +11,7 @@ import {
 } from "@webiny/commodo";
 import { i18nField } from "./i18nFields";
 import cloneDeep from "lodash/cloneDeep";
+import upperFirst from "lodash/upperFirst";
 
 const modifyQueryArgs = (args = {}, environment, valuesModel) => {
     if (!valuesModel.locale) {
@@ -38,6 +39,7 @@ const plugin: CmsModelFieldToCommodoFieldPlugin = {
 
         return withFields(instance => ({
             [field.fieldId]: i18nField({
+                name: upperFirst(field.fieldId),
                 createField: valuesModel => {
                     const instanceOf = Object.values(context.models.contentModels);
 

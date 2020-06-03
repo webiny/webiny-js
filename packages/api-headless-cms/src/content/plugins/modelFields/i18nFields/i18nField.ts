@@ -1,4 +1,4 @@
-import { pipe, onGet, fields, withFields, withProps } from "@webiny/commodo";
+import { pipe, onGet, fields, withFields, withProps, withName } from "@webiny/commodo";
 import { validation } from "@webiny/validation";
 import { Context as CommodoContext } from "@webiny/api-plugin-commodo-db-proxy/types";
 import { Context as I18NContext } from "@webiny/api-i18n/types";
@@ -58,6 +58,7 @@ export const i18nField = ({
     createField = null,
     context: { i18n, commodo },
     list,
+    name,
     ...rest
 }: I18NField) => {
     const { id } = commodo.fields;
@@ -72,6 +73,7 @@ export const i18nField = ({
         ...rest,
         value: list ? [] : {},
         instanceOf: pipe(
+            name ? withName(name) : model => model,
             withFields({
                 values: onGet(value => getI18NValues(value, i18n, list))(
                     fields({
