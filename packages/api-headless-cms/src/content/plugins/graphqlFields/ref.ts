@@ -43,47 +43,28 @@ const plugin: CmsModelFieldToGraphQLPlugin = {
             const mTypeName = createTypeName(field.settings.modelId);
             const name = `${"CmsRef" + createRefTypeName(fieldTypeName, mTypeName)}`;
 
-            if (field.multipleValues) {
-                return {
-                    fields:
-                        field.fieldId +
-                        ": CmsRef" +
-                        createRefTypeName(fieldTypeName, mTypeName) +
-                        "List",
-                    typeDefs: `
-                        type ${name}ListLocalized {
-                            value: [${mTypeName}]
-                            locale: ID!
-                        }
-
-                        type ${name}List {
-                            value(locale: String): [${mTypeName}]
-                            values: [${name}ListLocalized]!
-                        }
-                    `
-                };
-            }
             return {
-                fields: field.fieldId + ": CmsRef" + createRefTypeName(fieldTypeName, mTypeName),
-                // TODO: `i18nFieldType` creates list value as well
+                fields:
+                    field.fieldId +
+                    ": CmsRef" +
+                    createRefTypeName(fieldTypeName, mTypeName) +
+                    "List",
                 typeDefs: `
-                    type ${name}Localized {
-                        value: ${mTypeName}
+                    type ${name}ListLocalized {
+                        value: [${mTypeName}]
                         locale: ID!
                     }
 
-                    type ${name} {
-                        value(locale: String): ${mTypeName}
-                        values: [${name}Localized]!
+                    type ${name}List {
+                        value(locale: String): [${mTypeName}]
+                        values: [${name}ListLocalized]!
                     }
                 `
             };
+
         },
         createInputField({ field }) {
-            if (field.multipleValues) {
-                return field.fieldId + ": CmsRefListInput";
-            }
-            return field.fieldId + ": CmsRefInput";
+            return field.fieldId + ": CmsRefListInput";
         }
     }
 };
