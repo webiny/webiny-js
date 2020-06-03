@@ -2,6 +2,7 @@ import * as React from "react";
 import { ReactComponent as CopyToClipboardIcon } from "../assets/file_copy-24px.svg";
 import { IconButton } from "../index";
 import { FormComponentProps } from "../../types";
+import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 
 export type CopyButtonProps = FormComponentProps & {
     value: string;
@@ -14,15 +15,15 @@ export type CopyButtonProps = FormComponentProps & {
  * @constructor
  */
 const CopyButton = (props: CopyButtonProps) => {
+    const { showSnackbar } = useSnackbar();
     const { value, ...otherProps } = props;
 
-    return (
-        <IconButton
-            {...otherProps}
-            onClick={() => navigator.clipboard.writeText(value)}
-            icon={<CopyToClipboardIcon />}
-        />
-    );
+    const copyToClipboard = () => {
+        navigator.clipboard.writeText(value);
+        showSnackbar("Succesfully copied!");
+    };
+
+    return <IconButton {...otherProps} onClick={copyToClipboard} icon={<CopyToClipboardIcon />} />;
 };
 
 export { CopyButton };
