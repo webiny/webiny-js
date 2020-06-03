@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# 4.0.0-beta.16 (2020-06-03)
+
+
+### Bug Fixes
+
+* **create-webiny-project:** pass cwd to git init command ([978372b](https://github.com/webiny/commodo/commit/978372b02757c3525372fb711e62786580319f5e))
+
+
+
+
+
 # 4.0.0-beta.15 (2020-06-03)
 
 
